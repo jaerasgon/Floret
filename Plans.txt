@@ -1,0 +1,211 @@
+# Consistency Pass
+
+Goal: tighten cross-node consistency in Nodule (a node-based creative tool for
+non-programmers — see CLAUDE.md / project memory for positioning). Each item
+below is a pure audit with no architectural risk. Tackle in order; each builds
+trust for the next.
+
+Codebase orientation:
+  - Node defs live in src/nodes/<category>/*.ts, registered via
+    `registerNode({...})` from src/nodes/registry.ts.
+  - Every NodeDef shape is documented in src/nodes/types.ts (`NodeDef`,
+    `PortSpec`). Inputs/outputs are arrays of PortSpec; `dynamicInputs`
+    optionally varies them by params.
+  - Custom node UI lives in src/editor/nodes/*.tsx. GenericNode is the default;
+    GroupNode (the +/− chrome) is shared by transform/group, color/palette,
+    and the math binops.
+  - Samples (built-in patches) in src/persistence/samples.ts will get tripped
+    by any port-name change. Test suite catches it: `npx vitest run`.
+
+---
+
+## 1. Default values matching identities
+
+Rule: every NodeDef's static `default` on each input should be the operation's
+neutral element, so an unwired node produces a sensible "do-nothing" result.
+
+Why: a user dropping a fresh Mul into a patch and seeing `0` (because b's
+default is 1 but a's is 0) looks broken. Defaults should mean "this slot is
+absent" — and the absence of a multiplicand is 1, the absence of an addend
+is 0.
+
+Audit:
+  - src/nodes/math/binops.ts
+    - mul: change a from 0 → 1 (b is already 1).
+    - div: change a from 0 → 1 (so unwired Div = 1, not 0).
+    - min/max: pick a documented "no inputs" rule (currently the variadic
+      compute returns 0; either keep and document, or default to NaN/null
+      and short-circuit).
+    - add, sub, atan2, mod, pow: review for the same property.
+  - src/nodes/math/unary.ts — every unary op (sin, cos, abs, floor, …):
+    confirm default produces the identity output (sin 0 → 0, abs 0 → 0, etc.)
+  - src/nodes/vec2/vec2.ts — make/split defaults: (0, 0) is correct.
+  - src/nodes/color/color.ts — RGB defaults: pick white or black consistently
+    (currently varies).
+  - src/nodes/transform/translate.ts, affine.ts — translate (0,0), rotate 0,
+    scale 1 — confirm.
+
+Verification: `npx vitest run`. No new tests needed; existing sample tests
+catch regressions because samples lean on defaults.
+
+
+## 2. Description grammar
+
+Rule: every NodeDef.description is one imperative sentence ≤80 chars,
+period-terminated, explaining what the node DOES (not why or how).
+
+Why: descriptions appear in palette tooltips and search. Inconsistency
+("Sum of all wired inputs" vs "Combine multiple Layer wires into one Layer")
+makes palette browsing feel jagged. Short and consistent reads as a polished
+product. Imperative ("Sum N numbers") beats descriptive ("This node sums…")
+for scannability.
+
+Audit: every NodeDef across src/nodes/. Roughly 180 nodes total.
+
+Process:
+  - Pass 1: read every description, rewrite to the rule. Don't change behavior.
+  - Pass 2: nodes WITHOUT a description get one.
+  - Pass 3: where the description used to carry "see X" or "use + / − to grow",
+    move that detail into the node's `component` tooltip or strip it (it
+    duplicates the +/− chrome's own affordance).
+
+Style examples:
+  - GOOD: "Sum all wired inputs."
+  - GOOD: "Concatenate two spreads end-to-end."
+  - GOOD: "Pick one element from a spread by integer index."
+  - BAD:  "This node takes two numbers and returns their sum."
+  - BAD:  "Sum of all wired inputs"  (no period)
+  - BAD:  "Combine multiple Layer wires into one Layer. Use + / − on the
+           node to grow or shrink the slot count. Each slot accepts one wire
+           — single layers or ForEach spreads both work."  (3 sentences,
+           explains chrome that's already visible)
+
+Verification: visual. Skim the palette tooltips after the pass. No tests.
+
+
+## 3. Output port naming
+
+Rule: a node with one output names it `out`. A node with multiple outputs
+uses descriptive names that disambiguate by meaning (not by type).
+
+Why: today some single-output nodes use `out`, others use `spread` or
+`value`. Wire labels in the editor read inconsistently. With one output,
+the name doesn't carry information — `out` is the convention.
+
+Audit: grep for `outputs: [{ name:` across src/nodes/. Sweep:
+  - src/nodes/spread-ops/ops.ts — most spread ops output `spread`; change
+    to `out`. EXCEPTION: any node whose output port carries something
+    OTHER than its single output (rare; check first).
+  - src/nodes/state/state.ts — `current` is meaningful (vs `next`/`init`);
+    keep.
+  - src/nodes/vec2/vec2.ts — `vec2/split` outputs `x` and `y` (two outputs);
+    keep.
+  - src/nodes/io/* — most have multiple outputs; keep descriptive names.
+
+Verification: `npx vitest run` will catch any sample that wires to the
+renamed port. Each rename: update samples.ts edges referencing the old name.
+
+
+## 4. Pin order convention
+
+Rule: within a node, input pins go in this order:
+  1. Primary data flow (the value being transformed)
+  2. Per-element modifiers (style, scale, offset, …)
+  3. Mode / option params (mode, type, format, …)
+  4. Trigger / control (boolean edges that fire actions)
+
+Outputs stay in their existing order (changing them would break edges).
+
+Why: a user wiring a node reads top-to-bottom. Putting the "thing being
+worked on" first matches mental model; modifiers second; rarely-changed
+options third. Currently each author picks; e.g. envelope is
+`in, trigger, attack, decay, sustain, release, level` which mixes data
+(in), trigger, and modifiers (attack..release) and the level modifier
+last. With the rule it becomes
+`in | attack, decay, sustain, release, level | trigger`.
+
+Audit: nodes with 3+ inputs. Search by reading src/nodes/*/*.ts files.
+High-impact targets:
+  - sound/envelope, sound/oscillator, sound/filter, sound/delay, sound/reverb,
+    sound/distortion, sound/compressor, sound/mono-synth
+  - draw/rect, draw/ellipse, draw/walker-cluster, draw/image
+  - region/foreach (special; review carefully — port order matters for
+    region semantics)
+  - spread/walk-step, spread/gol-step, spread/elementary-ca
+
+Process per node:
+  - Reorder `inputs` array.
+  - If `dynamicInputs` exists, reorder the builder's output too.
+  - If samples wire to these by port NAME (they do), there's no break.
+  - If samples wire by INDEX (some `computeRaw` paths do `inputs[3]`), update
+    the indices in the compute function to match the new order.
+
+Verification: `npx vitest run` — sample patches will smoke out any
+index-vs-name reordering bug. Spot-check each sound node by running its
+sample patch in the browser.
+
+
+## 5. State pattern story
+
+Rule: pick ONE pattern as canonical, document the others as variants.
+
+Current state of play (post-today):
+  - `state/value` — scalar cross-frame state (init / next / current ports
+    on one node).
+  - `state/spread` — same but spread-kind ports (for trails, grids, …).
+  - `state/read` + `state/write` — split pair (scalar only) for left-to-right
+    drag-and-drop without back-edges.
+
+The split into Read/Write specifically refuses spreads (we tried generalizing
+it today; broke Paint Trail). Non-programmers face three patterns for the
+same concept.
+
+Options (pick one):
+
+  A. Keep all three; rename Read/Write to "Read (scalar)" / "Write (scalar)"
+     and add a description sentence pointing to State* for spread use cases.
+     Lowest risk.
+
+  B. Collapse value/spread into one State node with a `kind: single | spread`
+     mode param. Read/Write stays as the drag-and-drop variant. Two patterns
+     instead of three.
+
+  C. Drop value/spread entirely; keep only Read/Write, and add a `kind`
+     param to them too. One pattern.
+
+Recommendation: A. The Read/Write split has a real UX reason
+(no back-edges in the patch); state/value vs state/spread is a kind
+distinction that's hard to merge without breaking the kind system. Lowest
+risk + clearest labels.
+
+Audit (for option A):
+  - src/nodes/state/state.ts — rename labels, sharpen descriptions to say
+    "Scalar only. Use State* for spreads."
+  - No sample changes needed.
+
+Verification: `npx vitest run`. No behavioral change in option A.
+
+
+---
+
+## Order of work
+
+1. Defaults (item 1) — small, surgical, no port renames.
+2. Descriptions (item 2) — pure prose, no risk.
+3. Output port naming (item 3) — touches samples but contained.
+4. State labels (item 5, option A) — two lines of code.
+5. Pin order (item 4) — biggest pass; do last when the smaller wins have
+   built confidence in the test/sample feedback loop.
+
+After each item: run `npx vitest run` AND `npx tsc --noEmit`. If both green,
+commit with a one-line summary ("consistency: defaults", "consistency:
+descriptions", …).
+
+## Out of scope
+
+These came up in discussion but are NOT part of this pass:
+  - Pin sorting alphabetically by type (rejected: scrambles semantic order).
+  - Empty-app starter patch (separate UX call).
+  - Sample ID naming (`force-field` vs `random-walk` vs `gol`) — cosmetic, do
+    when convenient but not part of this pass.
+  - Folder rename `src/p5-driver/` → `src/preview/` — separate cleanup pass.

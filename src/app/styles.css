@@ -1,0 +1,2724 @@
+:root {
+  --bg-0: #0d0f12;
+  --bg-1: #14171c;
+  --bg-2: #1c2027;
+  --bg-3: #262b34;
+  --border: #2e333d;
+  --fg-0: #e6e8ec;
+  --fg-1: #a4a9b3;
+  --fg-2: #6b7180;
+  --accent: #7cffb2;
+  --accent-dim: #4aaa78;
+  --danger: #ff7a7a;
+  --port-number: #7cffb2;
+  --port-vec2: #ffd47c;
+  --port-color: #ff7cc8;
+  --port-layer: #7cb6ff;
+  --port-bool: #c9c97c;
+  --port-style: #d4a4ff;
+  --port-audio: #ff9cd9;
+  --port-image: #f0b46e;
+  --port-any: #888c95;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ─── Scrollbars (compact, dark, blend with the UI) ─────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-3) transparent;
+}
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--bg-3);
+  border-radius: 3px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--border);
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-0);
+  color: var(--fg-0);
+  font-family: var(--font-ui);
+  font-size: 13px;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--bg-3);
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--fg-0);
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-rows: 32px 1fr 22px;
+  height: 100%;
+  width: 100%;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.toolbar .title {
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: var(--fg-0);
+}
+
+.toolbar .spacer {
+  flex: 1;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+/* Distinct primary/secondary styling for the run-state buttons.
+   Play/Pause carries an accent tint; Refresh is muted secondary. */
+.toolbar-run-btn {
+  min-width: 76px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+.toolbar-run-btn.running {
+  color: var(--fg-1);
+  border-color: var(--border);
+}
+.toolbar-run-btn:hover {
+  filter: brightness(1.15);
+}
+.toolbar-refresh-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  color: var(--fg-1);
+}
+.toolbar-refresh-btn:hover {
+  color: var(--accent);
+}
+
+/* ─── Floating overlays: node search + context menu ─────────────────────── */
+
+.node-search {
+  position: fixed;
+  width: 280px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  font-size: 12px;
+}
+
+.node-search-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-2);
+}
+
+.node-search-input {
+  flex: 1;
+  font-size: 12px;
+  padding: 4px 8px;
+  background: var(--bg-0);
+}
+
+.node-search-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--fg-2);
+  padding: 1px 5px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+
+.node-search-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.node-search-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--fg-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.node-search-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.node-search-item.selected {
+  background: var(--bg-3);
+}
+.node-search-item-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.node-search-item-cat {
+  font-size: 9px;
+  color: var(--fg-2);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.node-search-item-label {
+  color: var(--fg-0);
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.node-search-item-type {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--fg-2);
+  white-space: nowrap;
+}
+
+/* Context menu */
+.context-menu {
+  position: fixed;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+  padding: 4px 0;
+  z-index: 2100;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+}
+.context-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 5px 12px;
+  text-align: left;
+  color: var(--fg-0);
+  cursor: pointer;
+  font-size: 12px;
+}
+.context-item:hover:not(:disabled) {
+  background: var(--bg-3);
+}
+.context-item:disabled {
+  color: var(--fg-2);
+  cursor: not-allowed;
+}
+.context-item.danger {
+  color: var(--danger);
+}
+.context-shortcut {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-2);
+}
+.context-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.sample-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  min-width: 280px;
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+.sample-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.sample-menu-item:last-child { border-bottom: 0; }
+.sample-menu-item:hover { background: var(--bg-2); }
+.sample-name {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--fg-0);
+  margin-bottom: 2px;
+}
+.sample-desc {
+  font-size: 10px;
+  color: var(--fg-2);
+  line-height: 1.4;
+}
+
+.statusbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 10px;
+  background: var(--bg-1);
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-2);
+}
+.statusbar-left,
+.statusbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.statusbar-right {
+  justify-content: flex-end;
+}
+.statusbar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.statusbar-version {
+  color: var(--fg-2);
+  letter-spacing: 0.5px;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 4px var(--preview-width, 480px);
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.split .pane {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+}
+
+.split .resizer {
+  background: var(--border);
+  cursor: col-resize;
+  transition: background 0.15s;
+}
+
+.split .resizer:hover,
+.split .resizer.dragging {
+  background: var(--accent-dim);
+}
+
+.editor-pane {
+  background: var(--bg-0);
+}
+
+.preview-pane {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-pane canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  /* 1px white outline so the canvas bounds are visible against a black
+     background — especially useful when the patch draws nothing in some
+     region or when the canvas is smaller than the preview pane. */
+  outline: 1px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 0;
+}
+
+.preview-empty {
+  color: var(--fg-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.preview-host {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-overlay {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  background: rgba(20, 23, 28, 0.92);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 11px;
+  color: var(--fg-1);
+  font-family: var(--font-ui);
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+}
+.preview-overlay.warn  { border-color: #b58a3a; }
+.preview-overlay.error { border-color: var(--danger); }
+.overlay-title {
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  color: var(--fg-0);
+}
+.preview-overlay.warn  .overlay-title { color: #ffcb6b; }
+.preview-overlay.error .overlay-title { color: var(--danger); }
+.overlay-line {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--fg-1);
+  word-break: break-word;
+}
+.overlay-line b { color: var(--fg-0); }
+
+/* ─── Editor: palette + canvas split ─────────────────────────────────────── */
+
+.editor-with-palette {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  height: 100%;
+  transition: grid-template-columns 0.18s ease;
+}
+
+.editor-with-palette[data-palette-collapsed='1'] {
+  grid-template-columns: 28px 1fr;
+}
+
+.palette-collapsed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 0;
+  background: var(--bg-1);
+  border-right: 1px solid var(--border);
+}
+
+.palette-collapsed-hint {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--fg-2);
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.palette-collapse-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 10px;
+  cursor: pointer;
+  color: var(--fg-2);
+}
+.palette-collapse-btn:hover {
+  color: var(--fg-0);
+  background: var(--bg-2);
+  border-color: var(--border);
+}
+
+.canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  outline: none;
+}
+
+.value-tooltip {
+  position: fixed;
+  pointer-events: none;
+  z-index: 3000;
+  background: var(--bg-0);
+  border: 1px solid var(--accent-dim);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  /* Fixed width so the box doesn't jitter as values change. The value
+   * still wraps inside when it overflows, but the frame stays stable. */
+  width: 220px;
+  /* Tabular-nums keeps digit columns aligned across frame updates so
+   * the "1 of 80" badge doesn't bounce horizontally. */
+  font-variant-numeric: tabular-nums;
+}
+.value-tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 9px;
+  color: var(--fg-2);
+  margin-bottom: 2px;
+}
+.value-tooltip-port {
+  color: var(--fg-1);
+}
+.value-tooltip-type {
+  color: var(--fg-2);
+}
+.value-tooltip-spread {
+  color: var(--pin-spread, #f0d800);
+  font-weight: 500;
+}
+.value-tooltip-body {
+  color: var(--accent);
+  word-break: break-word;
+  white-space: pre-wrap;
+  /* Reserve at least one line of height so the box doesn't collapse
+   * to nothing when a value briefly resolves to an empty string. */
+  min-height: 1.2em;
+}
+
+.node-row-label.inspectable {
+  cursor: help;
+}
+
+.empty-canvas-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--fg-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  z-index: 5;
+  user-select: none;
+}
+.empty-canvas-line em {
+  color: var(--fg-1);
+  font-style: normal;
+}
+.empty-canvas-hint kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-1);
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 6px;
+  box-shadow: 0 1px 0 var(--border);
+}
+
+.canvas-wrapper:focus-visible {
+  outline: none;
+}
+
+/* React Flow overrides */
+.react-flow {
+  background: var(--bg-0);
+}
+/* Pane cursor: RF sets `cursor: pointer` (finger) whenever selection-on-drag
+ * is enabled, which feels wrong for an editor canvas. Force the default arrow
+ * — RF still swaps to `grab`/`grabbing` automatically when the pan-activation
+ * key (Alt) is held or middle-mouse panning is active. The `.react-flow`
+ * parent qualifier bumps specificity above RF's own `.selection` rule, which
+ * is loaded after ours and would otherwise win at equal specificity. */
+.react-flow .react-flow__pane,
+.react-flow .react-flow__pane.selection {
+  cursor: default;
+}
+/* Wire colour subtly tints from its source port's type — pins stay vivid,
+ * wires stay readable. Driven through React Flow's own `--xy-edge-stroke`
+ * custom property (their default CSS rule for `.react-flow__edge-path`
+ * loads after ours and would otherwise overwrite a plain `stroke:`).
+ * SpreadEdge.tsx sets `--edge-stroke` on each path to the raw port
+ * colour; we mix it with `--fg-2` so the canvas doesn't look like a
+ * Christmas tree when many wires run. */
+.react-flow__edge-path {
+  --xy-edge-stroke: color-mix(in srgb, var(--edge-stroke, var(--fg-1)) 55%, var(--fg-2));
+  stroke-width: 1.4px;
+  stroke-opacity: 0.85;
+  transition: stroke-width 100ms ease, stroke-opacity 100ms ease, opacity 100ms ease;
+}
+.react-flow__edge:hover .react-flow__edge-path {
+  /* Hover brightens to the full port colour — confirms which wire you're over. */
+  --xy-edge-stroke: var(--edge-stroke, var(--fg-1));
+  stroke-width: 2px;
+  stroke-opacity: 1;
+}
+.react-flow__edge.selected .react-flow__edge-path,
+.react-flow__edge:focus .react-flow__edge-path,
+.react-flow__edge.selectable:focus .react-flow__edge-path,
+.react-flow__edge.selectable:focus-visible .react-flow__edge-path {
+  --xy-edge-stroke: var(--accent);
+  stroke-width: 2.2px;
+  stroke-opacity: 1;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 70%, transparent));
+}
+
+/* Optional wire flow animation — toggled by `body[data-wire-flow="1"]`
+ * from the Toolbar's Flow button. Animates a dashed segment along each
+ * edge from source to target. Subtle by design. */
+@keyframes nodule-wire-flow {
+  to { stroke-dashoffset: -16; }
+}
+body[data-wire-flow='1'] .react-flow__edge-path {
+  stroke-dasharray: 4 4;
+  animation: nodule-wire-flow 0.8s linear infinite;
+}
+
+/* In-progress connection (while user is dragging a new wire). React
+   Flow draws a temporary path under `.react-flow__connection`. Style
+   it as a slightly translucent accent so users see the wire being
+   "constructed" rather than the stock light-grey default. */
+.react-flow__connection-path {
+  stroke: var(--accent);
+  stroke-width: 1.6px;
+  stroke-dasharray: 5 4;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 60%, transparent));
+}
+.react-flow__controls,
+.react-flow__minimap {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+}
+.react-flow__controls-button {
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--border);
+  color: var(--fg-1);
+  fill: var(--fg-1);
+}
+.react-flow__controls-button:hover {
+  background: var(--bg-2);
+}
+
+/* ─── Palette ────────────────────────────────────────────────────────────── */
+
+.palette {
+  background: var(--bg-1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Thin click-strip along the panel's right edge — primary way to
+   collapse/expand the palette. The base border is the panel border
+   itself; the strip's hover state thickens it to an accent. */
+.palette-edge-toggle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -3px;
+  width: 6px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  cursor: ew-resize;
+  z-index: 10;
+  transition: background 0.12s;
+}
+.palette-edge-toggle:hover {
+  background: var(--accent-dim);
+}
+
+.palette-header {
+  padding: 4px 8px 4px 12px;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.palette-search-wrap {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.palette-search {
+  width: 100%;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 3px;
+}
+
+.palette-empty {
+  padding: 16px 12px;
+  color: var(--fg-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: center;
+}
+
+.palette-scroll {
+  overflow-y: auto;
+  flex: 1;
+  padding: 4px 0;
+}
+
+.palette-group {
+  margin-bottom: 2px;
+}
+
+.palette-group-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--cat-accent, var(--accent-dim));
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 4px 10px;
+  cursor: pointer;
+  user-select: none;
+  text-align: left;
+}
+.palette-group-title:hover {
+  color: var(--cat-accent, var(--accent));
+  background: var(--bg-2);
+  filter: brightness(1.15);
+}
+.palette-group[data-open='1'] .palette-group-title {
+  color: var(--cat-accent, var(--accent));
+  filter: brightness(1.1);
+}
+.palette-group-chevron {
+  font-size: 9px;
+  color: var(--fg-2);
+  width: 8px;
+  flex-shrink: 0;
+}
+.palette-group-count {
+  margin-left: auto;
+  font-size: 9px;
+  color: var(--fg-2);
+  font-weight: normal;
+}
+
+.palette-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 3px 10px 3px 24px;
+  border-radius: 0;
+  cursor: grab;
+  user-select: none;
+  font-size: 11px;
+}
+
+.palette-item:hover {
+  background: var(--bg-2);
+}
+
+.palette-item:active {
+  cursor: grabbing;
+  background: var(--bg-3);
+}
+
+.palette-item-label {
+  font-family: var(--font-mono);
+}
+
+.palette-item-type {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--fg-2);
+}
+
+/* ─── Node visual ────────────────────────────────────────────────────────── */
+
+.node {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  min-width: 160px;
+  font-size: 10px;
+  color: var(--fg-0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+.node:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cat-accent, var(--accent)) 55%, transparent),
+    0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Unified node row layout ────────────────────────────────────────────
+   Used by GenericNode for every node by default. Rows are PAIRED:
+   left side carries an input pin/label + optional inline editor,
+   right side carries an output label + pin. The editor sits right
+   next to its label; a flex spacer pushes the output side to the
+   right edge. */
+.node-grid {
+  min-width: 150px;
+}
+.node-rows {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+.node-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  height: 18px;
+  position: relative;
+}
+.node-row-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.node-row.wired .node-row-label-left {
+  color: var(--accent);
+}
+.node-row.has-port-value .node-row-label-left {
+  color: var(--fg-0);
+  font-weight: 500;
+}
+.node-row-label-left.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+.node-row-label-left.clickable:hover {
+  color: var(--fg-0);
+}
+.node-row-label-left.clickable.expanded {
+  color: var(--fg-0);
+}
+.node-row-spacer {
+  flex: 1;
+  min-width: 8px;
+}
+.node-row-handle.node-row-handle-left {
+  position: absolute !important;
+  left: 0 !important;
+  transform: translate(-50%, -50%) !important;
+}
+.node-row-handle.node-row-handle-right {
+  position: absolute !important;
+  right: 0 !important;
+  transform: translate(50%, -50%) !important;
+}
+
+/* Pin hover affordance: a soft glow halo so it's obvious the pin is
+   a hit target. Uses currentColor of the handle's port-type fill via
+   `box-shadow` so each port type lights up in its own colour. */
+.node-row-handle:hover {
+  box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 30%, transparent);
+}
+
+/* Spread-kind pins paint yellow — shape stays the same circle, the
+ * colour is what signals "this port carries a list". The type info
+ * (number / color / layer / …) moves to the tooltip on hover. */
+:root { --pin-spread: #f0d800; }
+
+.node-inline-input {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 5px;
+  height: 14px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--fg-0);
+  width: 60px;
+  min-width: 0;
+}
+.node-inline-input:focus {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+/* Scrub-input — number field that doubles as a horizontal drag handle.
+   Cursor hints at the dual nature; while scrubbing the border lights
+   up so the user sees they're in scrub mode (text caret is suppressed). */
+.scrub-input {
+  cursor: ew-resize;
+  text-align: right;
+}
+.scrub-input.scrubbing {
+  border-color: var(--accent) !important;
+  background: var(--bg-0);
+}
+.scrub-input:focus {
+  cursor: text;
+  text-align: left;
+}
+.node-inline-color {
+  padding: 0;
+  cursor: pointer;
+  width: 28px;
+}
+.node-inline-select {
+  padding: 0 4px;
+  cursor: pointer;
+}
+.node-inline-checkbox {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.node[data-selected='1'] {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 1px var(--accent),
+    0 0 12px color-mix(in srgb, var(--cat-accent, var(--accent)) 35%, transparent),
+    0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.node-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-3);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.node-label {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.node-type {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--fg-2);
+}
+
+/* ─── Compact math nodes ────────────────────────────────────────────────
+   Math ops (math/add, math/sub, math/sin, …) are the glue of any patch
+   — there are typically dozens of them, and at the default node size
+   they dominate visual real estate. We give them a tight, chip-like
+   look: no type subtitle, smaller min-width, the operator symbol in
+   place of the label, and shorter rows. The rest of a node's
+   semantics (pin colours, value tooltips, the wire badge, the
+   right-click port editor) are unchanged. */
+.node[data-math='1'] {
+  min-width: 72px;
+}
+.node[data-math='1'].node-grid {
+  min-width: 72px;
+}
+.node[data-math='1'] .node-header {
+  padding: 2px 8px;
+  /* Override the category-accent gradient applied by
+   * `.node[data-category] .node-header` so math nodes read as
+   * a neutral utility chip instead of joining the colour story. */
+  background: transparent;
+  border-bottom: 1px dashed color-mix(in srgb, var(--border) 60%, transparent);
+}
+/* Stronger selector to beat `.node[data-category] .node-header` (same
+ * specificity but ours sits later in the cascade only when math also
+ * has data-category — make sure it always wins). */
+.node[data-math='1'][data-category] .node-header {
+  background: transparent;
+}
+.node[data-math='1'] .node-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--fg-0);
+  /* Centre the symbol when no other header chrome competes for space. */
+  flex: 1;
+  text-align: center;
+}
+.node[data-math='1'] .node-rows {
+  padding: 2px 0;
+}
+.node[data-math='1'] .node-row {
+  height: 14px;
+  padding: 0 6px;
+  gap: 4px;
+}
+.node[data-math='1'] .node-row-label {
+  font-size: 9px;
+  color: var(--fg-2);
+}
+/* Wired labels still light up to the accent, just at the compact size. */
+.node[data-math='1'] .node-row.wired .node-row-label-left {
+  color: var(--accent);
+}
+
+.node-params {
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.param-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.param-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-1);
+}
+
+.param-input {
+  width: 60px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 4px;
+}
+
+.node-ports {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 6px 0;
+  gap: 0;
+}
+
+.port-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* Output column always lives in grid column 2 — guarantees right alignment
+   even when a node (Slider, Toggle, ColorPicker, XYPad, etc.) skips the
+   input column entirely. */
+.port-col-out {
+  grid-column-start: 2;
+}
+
+.port-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  height: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.port-row.right {
+  justify-content: flex-end;
+}
+
+.port-name {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.port-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-1);
+}
+
+/* React Flow handle styling — circle that picks up port colour from inline style */
+.react-flow__handle {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  transition: transform 0.1s ease;
+}
+
+/* Invisible expanded hit area so the pin is easier to target with the cursor.
+   The visible pin stays 9 px; clicks within 6 px of it still land. */
+.react-flow__handle::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+}
+
+/* Wire-drag affinity: when a wire is being dragged, every handle gets
+   tagged via the body `data-wire-dragging` flag plus a per-handle
+   `data-wire-affinity` attribute. Compatible handles brighten; the
+   rest dim out of the way. */
+body[data-wire-dragging='1'] .react-flow__handle:not([data-wire-affinity='match']) {
+  opacity: 0.18;
+  transition: opacity 0.12s;
+}
+body[data-wire-dragging='1'] .react-flow__handle[data-wire-affinity='match'] {
+  box-shadow: 0 0 0 3px rgba(124, 255, 178, 0.35);
+  animation: wire-affinity-pulse 1.2s ease-in-out infinite;
+}
+@keyframes wire-affinity-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(124, 255, 178, 0.35); }
+  50%      { box-shadow: 0 0 0 5px rgba(124, 255, 178, 0.55); }
+}
+
+/* Hover scale.
+   React Flow centres handles via `transform: translate(0, -50%)`. CSS
+   transforms don't compose — declaring `transform: scale(...)` would
+   *replace* the translate and shove the pin off-centre. So the hover
+   rules explicitly chain both: the original centring translate first,
+   then the scale. transform-origin defaults to 50% 50% (the box centre),
+   so the visible pin grows around the same point. */
+.react-flow__handle-left:hover,
+.react-flow__handle-right:hover {
+  transform: translate(0, -50%) scale(1.7);
+  z-index: 10;
+}
+.react-flow__handle-top:hover,
+.react-flow__handle-bottom:hover {
+  transform: translate(-50%, 0) scale(1.7);
+  z-index: 10;
+}
+
+/* When a port has an override value AND no wire connected, brighten the
+   port name — the value chip beside it is the primary indicator. */
+.port-row.has-port-value .port-name {
+  color: var(--fg-0);
+  font-weight: 500;
+}
+
+.port-value-readout {
+  margin-left: 4px;
+  padding: 0 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--accent);
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  white-space: nowrap;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Port-value popover */
+.port-editor {
+  position: fixed;
+  background: var(--bg-1);
+  border: 1px solid var(--accent-dim);
+  border-radius: 5px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+  padding: 8px 10px;
+  z-index: 2200;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.port-editor-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 10px;
+}
+.port-editor-label-text {
+  font-family: var(--font-mono);
+  color: var(--fg-0);
+  font-weight: 600;
+}
+.port-editor-label-type {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--fg-2);
+  text-transform: uppercase;
+}
+.port-editor-input {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 3px 6px;
+  background: var(--bg-0);
+}
+.port-editor-hint {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--fg-2);
+}
+
+/* ─── Regions + splicers ─────────────────────────────────────────────────── */
+
+.region-node {
+  position: relative;
+  background: rgba(124, 255, 178, 0.04);
+  border: 1px dashed rgba(124, 255, 178, 0.45);
+  border-radius: 6px;
+  /* Allow children + the resize handles to receive pointer events. */
+  pointer-events: all;
+}
+.region-node[data-selected='1'] {
+  border-color: var(--accent);
+  border-style: solid;
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.region-node.region-foreach { border-color: rgba(124, 255, 178, 0.55); }
+.region-node.region-if      { border-color: rgba(255, 200, 100, 0.6); background: rgba(255, 200, 100, 0.04); }
+.region-node.region-cache   { border-color: rgba(124, 182, 255, 0.6); background: rgba(124, 182, 255, 0.04); }
+
+/* Rubber-band preview while drawing a new region. Screen-space
+   positioned, so it stays put as React Flow's viewport pans. */
+.region-draw-preview {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1500;
+  border: 1px dashed var(--accent);
+  background: rgba(124, 255, 178, 0.10);
+  border-radius: 4px;
+}
+.region-draw-preview-if      { border-color: rgba(255, 200, 100, 0.9); background: rgba(255, 200, 100, 0.10); }
+.region-draw-preview-cache   { border-color: rgba(124, 182, 255, 0.9); background: rgba(124, 182, 255, 0.10); }
+.region-draw-preview-label {
+  position: absolute;
+  top: -16px;
+  left: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-0);
+  background: var(--bg-0);
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+/* Active drop target during a Space+drag — pulses the border so the
+   user sees which region will receive the dragged node on release. */
+.region-node[data-drop-target='1'] {
+  border-color: var(--accent) !important;
+  border-style: solid !important;
+  background: rgba(124, 255, 178, 0.12) !important;
+  box-shadow: 0 0 0 2px var(--accent), 0 0 24px rgba(124, 255, 178, 0.4);
+}
+
+/* When space is held globally, hint with a thin accent ring on every
+   region so the user knows reparent mode is armed. */
+body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
+  border-color: rgba(124, 255, 178, 0.7) !important;
+  border-style: dashed !important;
+}
+
+.region-header {
+  position: absolute;
+  top: -22px;
+  left: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  /* Receives pointer events so it can act as the React Flow `dragHandle`
+   * for region nodes (set in Canvas.tsx's projectedNodes). The body of
+   * the region is intentionally NOT a drag handle — its cursor reverts
+   * to `default` via the rules below so users aren't misled into thinking
+   * they can drag the whole frame. */
+  pointer-events: auto;
+  cursor: grab;
+}
+.react-flow__node.dragging .region-header,
+.region-header:active {
+  cursor: grabbing;
+}
+/* Region body: clear RF's default `.draggable { cursor: grab }` since the
+ * frame's body is not a drag-initiator (dragHandle restricts it to the
+ * header). Keeps the cursor honest. */
+.react-flow__node .region-node {
+  cursor: default;
+}
+.region-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  color: var(--fg-0);
+  background: var(--bg-0);
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+.region-type {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--fg-2);
+}
+
+/* Resize handles are always rendered (so the user can drag from edges
+   and corners without having to select first), but kept subtle until
+   hover so they don't compete with the region's own border. */
+.region-resize-line {
+  border-color: transparent !important;
+  border-width: 6px !important;
+}
+.region-node:hover .region-resize-line,
+.region-node[data-selected='1'] .region-resize-line {
+  border-color: rgba(124, 255, 178, 0.45) !important;
+  border-width: 1px !important;
+}
+.region-resize-handle {
+  background: var(--accent) !important;
+  border-color: var(--bg-0) !important;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.region-node:hover .region-resize-handle,
+.region-node[data-selected='1'] .region-resize-handle {
+  opacity: 1;
+}
+
+.region-static-port {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-1);
+  padding-left: 6px;
+}
+.region-static-label {
+  background: var(--bg-1);
+  padding: 1px 5px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+}
+
+/* ─── Region frame ports ──────────────────────────────────────────────────
+   Each port renders three absolutely-positioned elements on the region:
+   a horizontal bridge tab straddling the border, the outer handle
+   anchored at the tab's outer end, and the inner handle anchored at the
+   tab's inner end. The visual ties inner→outer together so the
+   left-to-right data flow is unambiguous. */
+.region-handle {
+  /* React Flow centres handles via transform: translate(0, -50%).
+     We position via inline `top` + `left` and let the transform handle
+     vertical centring around that point. */
+  z-index: 5;
+  width: 8px !important;
+  height: 8px !important;
+  border: 1.5px solid var(--bg-0) !important;
+}
+
+/* Port Pill — the draggable pill on a Region's frame edge. Bridges an
+ * outer pin and an inner pin, with the port name centred inside. */
+.region-port-tab {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  /* Pill shape — half the height makes a clean semicircle on each end. */
+  border-radius: 999px;
+  padding: 0 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1;
+  color: var(--fg-1);
+  cursor: text;
+  user-select: none;
+  pointer-events: all;
+  z-index: 4;
+}
+.region-port-tab:hover {
+  color: var(--fg-0);
+  background: var(--bg-3);
+  cursor: grab;
+}
+.region-port-tab.dragging,
+.region-port-tab.dragging:hover {
+  cursor: grabbing;
+  background: var(--bg-3);
+  outline: 1px dashed var(--fg-1);
+  outline-offset: 1px;
+}
+/* Selected Port Pill — same accent ring as selected nodes and edges,
+ * so the visual language is consistent. Survives drag-state too. */
+.region-port-tab.selected,
+.region-port-tab.selected:hover,
+.region-port-tab.selected.dragging {
+  outline: 1.5px solid var(--accent);
+  outline-offset: 1px;
+  background: color-mix(in srgb, var(--accent) 20%, var(--bg-3));
+  color: var(--fg-0);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+.region-port-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 36px;
+}
+.region-port-arrow {
+  font-size: 8px;
+  color: var(--fg-2);
+  flex-shrink: 0;
+}
+.region-port-tab-output .region-port-arrow {
+  order: 2;
+}
+.region-port-input {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 0 2px;
+  width: 44px;
+  background: var(--bg-0);
+  border: 0;
+  outline: 1px solid var(--accent);
+  color: var(--fg-0);
+}
+
+.splicer-node {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--fg-1);
+  min-width: 40px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+.splicer-node[data-selected='1'] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.splicer-arrow {
+  font-size: 9px;
+  color: var(--fg-2);
+}
+
+/* Accumulator: a taller pill with two ports stacked on each side */
+.accumulator-node {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+  height: 56px;
+  font-size: 10px;
+  color: var(--fg-1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+.accumulator-node[data-selected='1'] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.accumulator-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 28px;
+}
+.accumulator-divider {
+  height: 1px;
+  background: var(--border);
+}
+.accumulator-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--fg-1);
+}
+
+/* ─── Category accent colours ────────────────────────────────────────────
+ * Each category defines a `--cat-accent` token. Rules below use it
+ * uniformly for: a 3px left-edge color bar on the node, a brighter
+ * header gradient, a subtler hover/select glow, and the mini-map dot.
+ * Bumping the colors here updates everything downstream at once. */
+[data-category='math']      { --cat-accent: #7fc88a; }
+[data-category='time']      { --cat-accent: #d5a566; }
+[data-category='draw']      { --cat-accent: #5fa6ff; }
+[data-category='style']     { --cat-accent: #c97bd5; }
+[data-category='transform'] { --cat-accent: #a880ff; }
+[data-category='value']     { --cat-accent: #6cb6ff; }
+[data-category='render']    { --cat-accent: #ff9a4a; }
+[data-category='io']        { --cat-accent: #5fd8a6; }
+[data-category='input']     { --cat-accent: #ff8a6c; }
+[data-category='spread']    { --cat-accent: #e5d05f; }
+[data-category='region']    { --cat-accent: #5fd5c4; }
+[data-category='logic']     { --cat-accent: #ff7fb5; }
+[data-category='random']    { --cat-accent: #7d92ff; }
+[data-category='vec2']      { --cat-accent: #4ed8d8; }
+[data-category='color']     { --cat-accent: #ff6b6b; }
+[data-category='convert']   { --cat-accent: #9aa4b8; }
+[data-category='meta']      { --cat-accent: #f0d896; }
+
+.node[data-category] .node-header {
+  background:
+    linear-gradient(to right,
+      color-mix(in srgb, var(--cat-accent) 22%, var(--bg-3)),
+      var(--bg-3) 70%);
+}
+
+/* ─── Pro mode ──────────────────────────────────────────────────────────
+   `body[data-pro-mode='1']` collapses every node down to its title +
+   pins. Rationale: advanced users who already know their patches by
+   shape don't need to read row labels or scrub inline editors —
+   they want the smallest possible footprint on the canvas.
+
+   What stays visible:
+     - The header (title + slot badge + warning chip)
+     - Every Handle (pins on left/right edges)
+
+   What hides:
+     - All row content except handles (labels, inline editors, value chips)
+     - The `node-type` subtitle in the header
+     - The header's separator line
+
+   And the category gradient extends to the bottom of the node, so the
+   whole card reads as a single coloured pill.
+
+   Active-state styling on the Pro button itself lives at the bottom.
+*/
+
+body[data-pro-mode='1'] .node {
+  position: relative;
+}
+body[data-pro-mode='1'] .node-rows {
+  /* Tighten vertical rhythm — rows just need to fit the pin glyph.
+   * The label sits as an absolute overlay (see below), so the body
+   * height is the only thing setting node height. */
+  padding: 4px 0;
+}
+body[data-pro-mode='1'] .node-row {
+  height: 14px;
+  padding: 0;
+  gap: 0;
+}
+/* Hide everything inside a row EXCEPT the React Flow handles, which
+ * are what render the visible pins. The handles position absolutely
+ * on the row's left/right edge so they stay put. */
+body[data-pro-mode='1'] .node-row > :not(.react-flow__handle) {
+  display: none !important;
+}
+/* Type subtitle ("spread/grid") — gone in pro mode. */
+body[data-pro-mode='1'] .node-type {
+  display: none;
+}
+/* Header → centred overlay. The header lifts out of normal flow so the
+ * node's height is dictated by the (already-compact) rows. The label
+ * sits vertically centred between the pins, with any slot controls
+ * (group/palette +/−) stacked underneath it.
+ *
+ * z-index keeps the header above the body so clicks on the +/− buttons
+ * don't get eaten by node-rows below. The header itself stays
+ * pointer-events: none (so dragging the node still works from the
+ * label area); only its concrete children re-enable events. */
+body[data-pro-mode='1'] .node-header {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 14px;
+  border: none !important;
+  background: transparent !important;
+  pointer-events: none;
+  z-index: 2;
+}
+body[data-pro-mode='1'] .node-header > * {
+  pointer-events: auto;
+}
+/* +/− slot controls float as an inline cluster directly under the label,
+ * not stretched across the header width. */
+body[data-pro-mode='1'] .group-slot-controls {
+  pointer-events: auto;
+}
+body[data-pro-mode='1'] .group-slot-controls,
+body[data-pro-mode='1'] .group-slot-btn {
+  /* Bigger, easier-to-hit buttons in Pro mode since the rest of the
+   * header chrome is gone. */
+  font-size: 13px;
+}
+body[data-pro-mode='1'] .group-slot-btn {
+  padding: 0 6px;
+}
+/* GroupNode-style nodes in Pro mode get a 3-band layout: label on top,
+ * pin rows in the middle, slot chrome on the bottom. Without this,
+ * the header overlay centres both label and chrome together and the
+ * chrome ends up at the same Y as a pin row — wires into that pin
+ * visually cross the +/− buttons. */
+body[data-pro-mode='1'] .node.node-group .node-header {
+  justify-content: space-between;
+  padding: 2px 14px;
+}
+body[data-pro-mode='1'] .node.node-group .node-rows {
+  /* Minimum clearance above (label) and below (chrome) — pin row
+   * centres sit ~1px outside the label/chrome boxes. */
+  padding: 18px 0 13px;
+}
+body[data-pro-mode='1'] .node-label {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+/* For input-less GenericNode-based nodes (Number, String, …), replace
+ * the title with the editable value in Pro mode. Read: a constant
+ * node should display its constant, not its type name — the category
+ * tint behind it is identification enough.
+ *
+ * Selector: a `.node` with no left-side input handles anywhere inside.
+ * Param-row inline editor gets un-hidden + centred; the header label
+ * is hidden so the value is the focal point. */
+body[data-pro-mode='1'] .node:not(:has(.node-row-handle-left)) .node-header .node-label {
+  display: none;
+}
+body[data-pro-mode='1'] .node:not(:has(.node-row-handle-left)) .node-row {
+  height: 22px;
+  padding: 2px 10px;
+  gap: 6px;
+  justify-content: center;
+}
+body[data-pro-mode='1'] .node:not(:has(.node-row-handle-left)) .node-row > .node-inline-input {
+  display: inline-block !important;
+  flex: 0 1 auto;
+  font-size: 14px;
+  height: 18px;
+  min-width: 48px;
+  text-align: center;
+}
+/* Math nodes override the label size at higher specificity, so Pro mode
+ * needs to bump theirs explicitly. Same selector shape (data-math +
+ * data-category) so we beat the existing math rule. */
+body[data-pro-mode='1'] .node[data-math='1'] .node-label,
+body[data-pro-mode='1'] .node[data-math='1'][data-category] .node-label {
+  font-size: 22px;
+  font-weight: 500;
+  /* Math symbols (× ÷ · √ etc.) benefit from a hair more visual weight
+   * than alpha labels at the same px size — they're single glyphs. */
+}
+/* Extend the category gradient over the whole node body. */
+body[data-pro-mode='1'] .node[data-category] {
+  background:
+    linear-gradient(to right,
+      color-mix(in srgb, var(--cat-accent) 22%, var(--bg-3)),
+      var(--bg-3) 70%);
+}
+/* Math nodes already had a neutral header — keep them as-is in Pro
+ * mode (no gradient flood) so they stay readable as utility chips. */
+body[data-pro-mode='1'] .node[data-math='1'] {
+  background: var(--bg-3);
+}
+
+/* Pro button — visually distinguish the active state. */
+.toolbar-pro-btn.active {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+}
+
+/* ─── Spread length badge on wires ──────────────────────────────────────── */
+
+.spread-badge-fo {
+  overflow: visible;
+  pointer-events: none;
+}
+
+.spread-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  color: var(--fg-1);
+  font: 600 10px/14px ui-monospace, SFMono-Regular, Menlo, monospace;
+  text-align: center;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  /* Take the colour of the wire it sits on — so a vec2 spread reads as
+     amber, a colour spread reads as pink, etc. Falls back to fg-1 on
+     wires whose source we can't resolve (region passthroughs, etc.). */
+  border-color: color-mix(in srgb, var(--edge-stroke, var(--fg-2)) 50%, var(--border));
+  color: color-mix(in srgb, var(--edge-stroke, var(--fg-1)) 85%, var(--fg-0));
+}
+
+/* ─── Region iteration count badge ──────────────────────────────────────── */
+
+.region-iter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  color: var(--fg-0);
+  font: 600 10px/14px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.2px;
+  margin-left: 6px;
+  cursor: help;
+}
+.region-iter-badge.capped {
+  border-color: var(--danger, #d97565);
+  color: var(--danger, #d97565);
+}
+.region-iter-cap { font-size: 9px; line-height: 1; }
+
+/* ─── Per-node warning chip + warned-node outline ───────────────────────── */
+
+.node[data-warning='1'] {
+  outline: 1px solid var(--danger, #d97565);
+  outline-offset: 1px;
+}
+.node-warning-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--danger, #d97565);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  margin: 0 6px;
+  cursor: help;
+}
+
+/* Slot pairing badge — shown on state/read & state/write headers.
+   Outlined chip rather than a solid block so it doesn't compete with
+   the node label visually; the accent border is enough to read at a
+   glance which slot belongs with which. */
+.node-slot-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  margin: 0 6px;
+}
+
+/* ─── Comment node ──────────────────────────────────────────────────────── */
+
+.comment-node {
+  position: relative;
+  background: rgba(255, 220, 120, 0.08);
+  border: 1px dashed rgba(255, 220, 120, 0.45);
+  border-radius: 4px;
+  padding: 8px 10px;
+  color: #f0d896;
+  font: 12px/1.45 var(--font-sans, system-ui, sans-serif);
+  cursor: text;
+  user-select: text;
+  /* Make sure comments render under regular nodes when overlapping. */
+  z-index: 0;
+}
+.comment-node[data-selected='1'] {
+  border-style: solid;
+  border-color: rgba(255, 220, 120, 0.7);
+  background: rgba(255, 220, 120, 0.12);
+}
+.comment-body {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+.comment-placeholder {
+  color: rgba(240, 216, 150, 0.4);
+  font-style: italic;
+}
+.comment-textarea {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  color: #f0d896;
+  font: 12px/1.45 var(--font-sans, system-ui, sans-serif);
+  padding: 0;
+}
+.comment-resize-line { border-color: rgba(255, 220, 120, 0.5); }
+.comment-resize-handle {
+  background: rgba(255, 220, 120, 0.7);
+  border-color: rgba(255, 220, 120, 0.9);
+}
+
+/* ─── Status bar warnings popover ───────────────────────────────────────── */
+
+.status-warnings {
+  background: none;
+  border: none;
+  padding: 0 6px;
+  font: inherit;
+  cursor: pointer;
+}
+.status-warnings:hover { text-decoration: underline; }
+
+.warnings-popover {
+  position: absolute;
+  right: 16px;
+  bottom: 28px;
+  background: var(--bg-1);
+  border: 1px solid var(--danger, #d97565);
+  border-radius: 6px;
+  max-width: 480px;
+  max-height: 280px;
+  overflow: auto;
+  padding: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+.warnings-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 6px 8px;
+  color: var(--fg-0);
+  font: 11px/1.4 var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.warnings-row:hover:not(:disabled) { background: var(--bg-2); }
+.warnings-row:disabled { cursor: default; opacity: 0.7; }
+.warnings-row-bullet {
+  color: var(--danger, #d97565);
+  font-size: 12px;
+  flex: 0 0 auto;
+}
+.warnings-row-msg {
+  flex: 1 1 auto;
+  word-break: break-word;
+}
+
+/* ─── IO box visuals ─────────────────────────────────────────────────────── */
+
+.node.io {
+  min-width: 160px;
+}
+
+.node-iobox-body {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Slider */
+.iobox-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bg-1);
+  outline: none;
+  margin: 0;
+  padding: 0;
+}
+.iobox-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: ew-resize;
+  border: 2px solid var(--bg-0);
+}
+.iobox-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: ew-resize;
+  border: 2px solid var(--bg-0);
+}
+.iobox-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--fg-2);
+}
+
+/* Toggle */
+.iobox-toggle {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.iobox-toggle.on {
+  background: var(--accent);
+  color: var(--bg-0);
+  border-color: var(--accent);
+}
+.iobox-toggle.off {
+  background: var(--bg-1);
+  color: var(--fg-1);
+}
+
+/* Color picker */
+.iobox-color {
+  width: 100%;
+  height: 36px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+}
+.iobox-color-readout {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-2);
+  text-align: center;
+}
+
+/* ─── Fill node (mode-switching) ──────────────────────────────────────────
+   One row per input port: pin + label + inline editor (when not wired).
+   Compact: 9px font, tight padding, narrow value boxes. */
+.fill-node {
+  min-width: 160px;
+  font-size: 10px;
+}
+.fill-mode-select {
+  background: var(--bg-1);
+  color: var(--fg-0);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 0 2px;
+  height: 16px;
+  cursor: pointer;
+}
+.fill-rows {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+.fill-input-row {
+  display: grid;
+  grid-template-columns: 1fr 56px;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  height: 18px;
+  position: relative;
+}
+.fill-input-row .port-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-1);
+}
+.fill-input-row.wired .port-name {
+  color: var(--accent);
+}
+.fill-inline-input {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 4px;
+  height: 14px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--fg-0);
+  width: 100%;
+}
+.fill-inline-input.fill-inline-color {
+  height: 14px;
+  padding: 0;
+  cursor: pointer;
+}
+.fill-outputs {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+.fill-output-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  height: 18px;
+  position: relative;
+}
+.fill-output-row .port-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-1);
+}
+
+/* HSL color picker — live swatch + three channels. Each channel renders
+   an input handle on the left, a gradient-tinted slider in the middle,
+   and the live value on the right. */
+.hsl-swatch {
+  width: 100%;
+  height: 22px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+.hsl-channels {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+.hsl-channel {
+  display: grid;
+  grid-template-columns: 12px 1fr 26px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  height: 16px;
+  position: relative;
+}
+.hsl-channel.wired .hsl-slider {
+  filter: grayscale(0.6) brightness(0.7);
+  cursor: not-allowed;
+}
+.hsl-channel.wired .hsl-label {
+  color: var(--accent);
+}
+.hsl-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-1);
+  text-align: center;
+}
+.hsl-value {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-2);
+  text-align: right;
+}
+.hsl-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  outline: none;
+  margin: 0;
+  padding: 0;
+  cursor: ew-resize;
+}
+.hsl-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--fg-0);
+  border: 1px solid var(--bg-0);
+  cursor: ew-resize;
+}
+.hsl-slider::-moz-range-thumb {
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--fg-0);
+  border: 1px solid var(--bg-0);
+  cursor: ew-resize;
+}
+
+/* XY pad */
+.iobox-xypad {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  background:
+    radial-gradient(circle, transparent 0, var(--bg-1) 100%),
+    linear-gradient(to right, transparent calc(50% - 1px), var(--border) 50%, transparent calc(50% + 1px)),
+    linear-gradient(to bottom, transparent calc(50% - 1px), var(--border) 50%, transparent calc(50% + 1px)),
+    var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: crosshair;
+  touch-action: none;
+}
+.iobox-xypad-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--bg-0);
+}
+
+/* ─── Subpatch ─────────────────────────────────────────────────────────── */
+
+/* Expanded subpatch frame uses the region-node base with this overlay. */
+.region-node.region-subpatch {
+  border-color: rgba(180, 140, 255, 0.55);
+  background: rgba(180, 140, 255, 0.04);
+  border-style: solid;
+}
+.region-node.region-subpatch[data-selected='1'] {
+  border-color: rgba(200, 160, 255, 0.95);
+  box-shadow: 0 0 0 1px rgba(200, 160, 255, 0.95);
+}
+
+/* Collapsed subpatch — looks like a normal node with a distinctive
+   purple accent on the header. */
+.node.node-subpatch {
+  border: 1px solid rgba(180, 140, 255, 0.5);
+  background: rgba(180, 140, 255, 0.06);
+  border-radius: 6px;
+  min-width: 140px;
+}
+.node.node-subpatch[data-selected='1'] {
+  border-color: rgba(200, 160, 255, 0.95);
+  box-shadow: 0 0 0 1px rgba(200, 160, 255, 0.95);
+}
+.node.node-subpatch .subpatch-header {
+  cursor: pointer;
+  user-select: none;
+}
+.node.node-subpatch .subpatch-header .node-label {
+  color: rgba(220, 200, 255, 0.95);
+}
+.node.node-subpatch .subpatch-header:hover .node-label {
+  color: #fff;
+}
+.node.node-subpatch .node-row-label-empty {
+  visibility: hidden;
+}
+
+/* ─── Subpatch breadcrumb ──────────────────────────────────────────────── */
+.subpatch-breadcrumb {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: rgba(20, 22, 28, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-1);
+  backdrop-filter: blur(4px);
+  pointer-events: auto;
+}
+.subpatch-breadcrumb[data-empty='1'] {
+  /* At root view: keep the breadcrumb visible but very muted so users
+     learn it's there before they start nesting. */
+  opacity: 0.55;
+}
+.subpatch-crumb-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.subpatch-crumb {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--fg-1);
+  font: inherit;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.subpatch-crumb:hover {
+  background: rgba(180, 140, 255, 0.15);
+  color: #fff;
+}
+.subpatch-crumb[data-current='1'] {
+  color: rgba(220, 200, 255, 0.95);
+  background: rgba(180, 140, 255, 0.12);
+  cursor: default;
+}
+.subpatch-crumb-sep {
+  color: var(--fg-2);
+}
+.subpatch-crumb-exit {
+  margin-left: 6px;
+  appearance: none;
+  background: rgba(180, 140, 255, 0.15);
+  border: 1px solid rgba(180, 140, 255, 0.4);
+  color: rgba(220, 200, 255, 0.95);
+  font: inherit;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+.subpatch-crumb-exit:hover {
+  background: rgba(180, 140, 255, 0.3);
+  color: #fff;
+}
+
+/* ─── File picker node ─────────────────────────────────────────────────── */
+.node.node-file {
+  min-width: 180px;
+}
+.file-node-body {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
+}
+.file-node-body-drop {
+  background: rgba(124, 255, 178, 0.12);
+  outline: 1px dashed rgba(124, 255, 178, 0.6);
+  outline-offset: -2px;
+}
+.file-node-pick {
+  appearance: none;
+  background: rgba(124, 182, 255, 0.18);
+  border: 1px solid rgba(124, 182, 255, 0.5);
+  color: var(--fg-0);
+  font: inherit;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.file-node-pick:hover {
+  background: rgba(124, 182, 255, 0.32);
+}
+.file-node-clear {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg-2);
+  font: inherit;
+  font-size: 11px;
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.file-node-clear:hover {
+  color: var(--fg-0);
+  border-color: var(--fg-2);
+}
+.file-node-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 4px 8px 2px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-1);
+}
+.file-node-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+.file-node-size {
+  color: var(--fg-2);
+}
+.file-node-size-warn {
+  color: rgba(255, 200, 100, 0.95);
+}
+.file-node-busy,
+.file-node-error,
+.file-node-drop-hint {
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+.file-node-busy { color: var(--fg-2); }
+.file-node-error { color: rgba(255, 110, 110, 0.95); }
+.file-node-drop-hint {
+  color: rgba(124, 255, 178, 0.95);
+  text-align: center;
+}
+
+/* ─── Group node +/− slot controls ─────────────────────────────────────── */
+.node.node-group .group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.group-slot-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 2px;
+}
+.group-slot-btn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--fg-1);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 0;
+}
+.group-slot-btn:hover:not(:disabled) {
+  background: rgba(124, 182, 255, 0.25);
+  color: #fff;
+}
+.group-slot-btn:disabled {
+  color: var(--fg-2);
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+.group-slot-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-1);
+  min-width: 14px;
+  text-align: center;
+}
+.group-slot-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-2);
+  min-width: 12px;
+}
+
+/* ─── Palette node ─────────────────────────────────────────────────────────
+   Each stop row is (left handle + colour swatch). Rows are tighter than
+   the default node-row since the swatch is the only content — there's
+   no text label or scrub input competing for height. The swatch fills
+   the row and reads as the dominant element. */
+.node.node-palette .palette-stop-row {
+  padding: 1px 8px;
+  gap: 6px;
+  height: 18px;
+}
+.palette-stop-swatch {
+  flex: 1;
+  height: 14px;
+  width: auto;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+}
+.palette-stop-swatch::-webkit-color-swatch-wrapper { padding: 0; }
+.palette-stop-swatch::-webkit-color-swatch { border: none; border-radius: 2px; }
+.palette-stop-swatch::-moz-color-swatch { border: none; border-radius: 2px; }
+.node.node-palette .palette-output-row {
+  padding: 2px 8px;
+  border-top: 1px dashed color-mix(in srgb, var(--border) 60%, transparent);
+  margin-top: 2px;
+}
+
+/* ─── Sample category tabs ─────────────────────────────────────────────── */
+.sample-menu-tabbed {
+  width: 360px;
+  max-width: 95vw;
+}
+.sample-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 4px 4px 0;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border);
+}
+.sample-tab {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--fg-2);
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  padding: 5px 9px;
+  border-radius: 3px 3px 0 0;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+.sample-tab:hover { color: var(--fg-0); background: rgba(255,255,255,0.04); }
+.sample-tab[data-active='1'] {
+  color: rgba(124, 182, 255, 0.95);
+  background: rgba(124, 182, 255, 0.12);
+}
+.sample-tab-body {
+  max-height: 60vh;
+  overflow: auto;
+}
+
+/* ─── Settings modal ───────────────────────────────────────────────────── */
+.toolbar-settings-btn {
+  font-size: 14px;
+  padding: 2px 8px;
+}
+.settings-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.settings-modal {
+  background: var(--bg-0);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  width: 380px;
+  max-height: 80vh;
+  overflow: auto;
+  color: var(--fg-0);
+  font-size: 12px;
+}
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.settings-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+.settings-close {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--fg-2);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+.settings-close:hover { color: var(--fg-0); background: rgba(255,255,255,0.06); }
+.settings-body {
+  padding: 12px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.settings-section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 10px;
+  color: var(--fg-2);
+  margin-bottom: 8px;
+}
+.settings-row {
+  display: flex;
+  gap: 14px;
+}
+.settings-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+.settings-radio input { margin: 0; }
+.settings-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.settings-toggle-row:last-child { border-bottom: none; }
+.settings-toggle-row:hover .settings-toggle-label { color: #fff; }
+.settings-toggle-label {
+  color: var(--fg-1);
+}
+.settings-reset {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg-1);
+  font: inherit;
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.settings-reset:hover {
+  background: rgba(255, 200, 100, 0.15);
+  border-color: rgba(255, 200, 100, 0.4);
+  color: rgba(255, 200, 100, 0.95);
+}
+
+/* ─── Library menu ─────────────────────────────────────────────────────── */
+.library-menu .library-import {
+  border-bottom: 1px solid var(--border);
+  color: rgba(124, 182, 255, 0.95);
+}
+.library-menu .library-import .sample-name {
+  color: rgba(180, 210, 255, 0.95);
+}
+.library-error {
+  padding: 8px 10px;
+  font-size: 11px;
+  color: rgba(255, 110, 110, 0.95);
+  background: rgba(255, 110, 110, 0.08);
+  border-bottom: 1px solid var(--border);
+}
+.library-empty {
+  padding: 12px 10px;
+  font-size: 11px;
+  color: var(--fg-2);
+  text-align: center;
+}
+.library-block {
+  border-top: 1px solid var(--border);
+}
+.library-block:first-of-type { border-top: none; }
+.library-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px 4px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.library-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: var(--fg-1);
+  text-transform: uppercase;
+}
+.library-remove {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--fg-2);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0 4px;
+  border-radius: 2px;
+}
+.library-remove:hover {
+  color: rgba(255, 110, 110, 0.95);
+  background: rgba(255, 110, 110, 0.12);
+}
+.library-patch .sample-name {
+  padding-left: 6px;
+}
+.library-header-actions {
+  display: inline-flex;
+  gap: 4px;
+}
+.library-separator {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+.library-patch-row {
+  display: flex;
+  align-items: stretch;
+}
+.library-patch-row .library-patch {
+  flex: 1 1 auto;
+}
+.library-patch-remove {
+  align-self: center;
+  margin-right: 6px;
+}
+.library-empty-inline {
+  padding: 6px 12px;
+  text-align: left;
+  font-size: 10px;
+}
+
+/* ─── Save-to-library inputs ───────────────────────────────────────────── */
+.library-select,
+.library-input {
+  width: 100%;
+  background: var(--bg-1);
+  color: var(--fg-0);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 5px 8px;
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+  margin-top: 4px;
+}
+.library-select:focus,
+.library-input:focus {
+  border-color: rgba(124, 182, 255, 0.6);
+}
+.library-textarea {
+  resize: vertical;
+  min-height: 50px;
+  font-family: var(--font-sans, inherit);
+}
+.library-save-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.library-save-btn {
+  appearance: none;
+  background: rgba(124, 182, 255, 0.25);
+  border: 1px solid rgba(124, 182, 255, 0.55);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.library-save-btn:hover:not(:disabled) {
+  background: rgba(124, 182, 255, 0.4);
+}
+.library-save-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

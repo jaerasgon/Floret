@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"D:\\\\Artifacts\\\\Nodule\")",
+      "PowerShell(python --version)",
+      "PowerShell(python -c \"import sys; print\\(sys.executable\\)\")",
+      "PowerShell(pip --version)",
+      "WebSearch",
+      "WebFetch(domain:reactflow.dev)",
+      "Bash(npm list *)",
+      "Bash(xargs grep -l \"interface Node\")",
+      "Bash(xargs cat)"
+    ]
+  }
+}

@@ -26,7 +26,7 @@ export function migratePatch(patch: PatchFile): MigrateResult {
   if (cur.version > CURRENT_PATCH_VERSION) {
     throw new Error(
       `patch version ${cur.version} is newer than this app (max ${CURRENT_PATCH_VERSION}). ` +
-        'Please update Nodule.',
+        'Please update Floret.',
     );
   }
 

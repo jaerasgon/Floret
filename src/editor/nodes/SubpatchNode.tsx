@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Handle, NodeResizer, Position, useUpdateNodeInternals, type NodeProps } from '@xyflow/react';
-import { useEditor, type NoduleNodeData, type RegionPortDescriptor } from '../editor-state';
+import { useEditor, type FloretNodeData, type RegionPortDescriptor } from '../editor-state';
 import { nodeRegistry } from '../../nodes/registry';
 import { portColorVar } from '../connection-rules';
 
@@ -35,7 +35,7 @@ const PORT_TAB_INSET = 4;
 
 export const SubpatchNode = memo(function SubpatchNode(props: NodeProps) {
   const { id, data, selected } = props;
-  const nodeData = data as unknown as NoduleNodeData;
+  const nodeData = data as unknown as FloretNodeData;
   const def = nodeRegistry.get(nodeData.defType);
   const isCurrentView = useEditor((s) => s.viewStack[s.viewStack.length - 1] === id);
   const enterSubpatch = useEditor((s) => s.enterSubpatch);

@@ -3,7 +3,7 @@ import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { nodeRegistry } from '../../nodes/registry';
 import { portColorVar } from '../connection-rules';
 import { useNodeParam } from '../useNodeParam';
-import type { NoduleNodeData } from '../editor-state';
+import type { FloretNodeData } from '../editor-state';
 
 /**
  * Slider IO box. Three params:
@@ -22,7 +22,7 @@ import type { NoduleNodeData } from '../editor-state';
  */
 export const SliderNode = memo(function SliderNode(props: NodeProps) {
   const { id, data, selected } = props;
-  const nodeData = data as unknown as NoduleNodeData;
+  const nodeData = data as unknown as FloretNodeData;
   const def = nodeRegistry.get(nodeData.defType)!;
   const [value, setLive, commit] = useNodeParam<number>(id, 'value', 0);
   const [min] = useNodeParam<number>(id, 'min', 0);

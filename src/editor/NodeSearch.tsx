@@ -44,7 +44,7 @@ export function NodeSearch() {
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
-      const popover = document.getElementById('nodule-node-search');
+      const popover = document.getElementById('floret-node-search');
       if (popover && !popover.contains(e.target as Node)) close();
     };
     window.addEventListener('mousedown', onDown, true);
@@ -189,7 +189,7 @@ export function NodeSearch() {
 
   return (
     <div
-      id="nodule-node-search"
+      id="floret-node-search"
       className="node-search"
       style={{ left, top }}
       onKeyDown={onKey}

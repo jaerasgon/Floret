@@ -40,7 +40,7 @@ export function Toolbar() {
 
   return (
     <div className="toolbar">
-      <span className="title">NODULE</span>
+      <span className="title">FLORET</span>
       <span className="toolbar-divider" />
       <FileMenu />
       <span className="toolbar-divider" />

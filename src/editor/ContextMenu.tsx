@@ -14,7 +14,7 @@ export function ContextMenu() {
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
-      const popover = document.getElementById('nodule-context-menu');
+      const popover = document.getElementById('floret-context-menu');
       if (popover && !popover.contains(e.target as Node)) close();
     };
     const onKey = (e: KeyboardEvent) => {
@@ -38,7 +38,7 @@ export function ContextMenu() {
 
   return (
     <div
-      id="nodule-context-menu"
+      id="floret-context-menu"
       className="context-menu"
       style={{ left, top, minWidth: MENU_W }}
     >

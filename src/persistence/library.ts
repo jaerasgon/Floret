@@ -1,4 +1,4 @@
-import type { NoduleEdge, NoduleNode } from '../editor/editor-state';
+import type { FloretEdge, FloretNode } from '../editor/editor-state';
 import type { PatchFile } from './schema';
 import { deserializePatch } from './serialize';
 
@@ -20,7 +20,7 @@ export interface LibraryEntry {
 }
 
 export interface PatchLibrary {
-  kind: 'nodule.library';
+  kind: 'floret.library';
   version: number;
   name: string;
   description?: string;
@@ -29,7 +29,7 @@ export interface PatchLibrary {
 }
 
 const LIBRARY_VERSION = 1;
-const LS_KEY = 'nodule.libraries.v1';
+const LS_KEY = 'floret.libraries.v1';
 
 interface StoredLibrary {
   /** Stable id derived from the library's name; lets us upsert on re-import. */
@@ -76,7 +76,7 @@ function writeStore(libs: StoredLibrary[]): void {
 export function parseLibrary(raw: unknown): { ok: true; library: PatchLibrary } | { ok: false; error: string } {
   if (!raw || typeof raw !== 'object') return { ok: false, error: 'expected a JSON object' };
   const obj = raw as Record<string, unknown>;
-  if (obj.kind !== 'nodule.library') return { ok: false, error: `kind must be "nodule.library", got ${JSON.stringify(obj.kind)}` };
+  if (obj.kind !== 'floret.library') return { ok: false, error: `kind must be "floret.library", got ${JSON.stringify(obj.kind)}` };
   if (typeof obj.name !== 'string' || obj.name.trim() === '') return { ok: false, error: 'name is required' };
   if (!Array.isArray(obj.patches)) return { ok: false, error: 'patches must be an array' };
   for (const p of obj.patches as unknown[]) {
@@ -89,7 +89,7 @@ export function parseLibrary(raw: unknown): { ok: true; library: PatchLibrary } 
   return {
     ok: true,
     library: {
-      kind: 'nodule.library',
+      kind: 'floret.library',
       version: typeof obj.version === 'number' ? obj.version : LIBRARY_VERSION,
       name: obj.name as string,
       description: typeof obj.description === 'string' ? obj.description : undefined,
@@ -126,7 +126,7 @@ export function removeLibrary(slug: string): void {
  * Resolve a (librarySlug, patchId) pair to editor-ready nodes+edges.
  * Throws if either is missing — caller handles UI fallback.
  */
-export function loadLibraryPatch(slug: string, patchId: string): { nodes: NoduleNode[]; edges: NoduleEdge[]; name: string } {
+export function loadLibraryPatch(slug: string, patchId: string): { nodes: FloretNode[]; edges: FloretEdge[]; name: string } {
   const lib = readStore().find((l) => l.slug === slug);
   if (!lib) throw new Error(`library not found: ${slug}`);
   const entry = lib.library.patches.find((p) => p.id === patchId);
@@ -141,7 +141,7 @@ export function loadLibraryPatch(slug: string, patchId: string): { nodes: Nodule
  */
 export function createLibrary(name: string, description?: string): StoredLibrary {
   const library: PatchLibrary = {
-    kind: 'nodule.library',
+    kind: 'floret.library',
     version: LIBRARY_VERSION,
     name: name.trim(),
     description: description?.trim() || undefined,

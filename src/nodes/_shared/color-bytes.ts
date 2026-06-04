@@ -5,7 +5,7 @@ import type { Color } from '../../runtime/types';
  *
  * ImageData stores pixels as 4 sequential `Uint8ClampedArray` bytes per
  * pixel in row-major order: `[r, g, b, a, r, g, b, a, ...]`, channels in
- * 0..255. Nodule's runtime `Color` shape is `{ r, g, b, a }` in 0..1
+ * 0..255. Floret's runtime `Color` shape is `{ r, g, b, a }` in 0..1
  * floats (see `runtime/types.ts`). Every image node that crosses the
  * boundary did the multiply/divide inline — these helpers centralise it.
  *

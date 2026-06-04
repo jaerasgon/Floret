@@ -12,7 +12,7 @@ import {
   type Node as RFNode,
   type OnConnectStartParams,
 } from '@xyflow/react';
-import { NoduleNode } from './nodes/NoduleNode';
+import { FloretNode } from './nodes/FloretNode';
 import { SpreadEdge } from './SpreadEdge';
 import { useEditor, getDefTypeFor, getRegionPortsFor, getParamsFor, getEdgesSnapshot } from './editor-state';
 import { arePortsCompatible, buildIsValidConnection, categoryColor, isMultiTargetPort, parseHandle } from './connection-rules';
@@ -149,7 +149,7 @@ function CanvasInner() {
     }
   }
 
-  const nodeTypes = useMemo(() => ({ nodule: NoduleNode }), []);
+  const nodeTypes = useMemo(() => ({ floret: FloretNode }), []);
   const edgeTypes = useMemo(() => ({ default: SpreadEdge }), []);
 
   // While reparent mode is on, strip `extent: 'parent'` from every
@@ -263,7 +263,7 @@ function CanvasInner() {
   const onDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
-      const defType = e.dataTransfer.getData('application/nodule-def');
+      const defType = e.dataTransfer.getData('application/floret-def');
       if (!defType) return;
       const position = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
       // Region NodeDefs enter draw mode rather than placing instantly.
@@ -898,15 +898,15 @@ function CanvasInner() {
         reactFlow.fitView({ duration: 300, padding: 0.2 });
       }
     }
-    window.addEventListener('nodule:open-search', onOpenSearch);
-    window.addEventListener('nodule:paste', onPaste);
-    window.addEventListener('nodule:focus-node', onFocusNode);
-    window.addEventListener('nodule:fit-selection', onFitSelection);
+    window.addEventListener('floret:open-search', onOpenSearch);
+    window.addEventListener('floret:paste', onPaste);
+    window.addEventListener('floret:focus-node', onFocusNode);
+    window.addEventListener('floret:fit-selection', onFitSelection);
     return () => {
-      window.removeEventListener('nodule:open-search', onOpenSearch);
-      window.removeEventListener('nodule:paste', onPaste);
-      window.removeEventListener('nodule:focus-node', onFocusNode);
-      window.removeEventListener('nodule:fit-selection', onFitSelection);
+      window.removeEventListener('floret:open-search', onOpenSearch);
+      window.removeEventListener('floret:paste', onPaste);
+      window.removeEventListener('floret:focus-node', onFocusNode);
+      window.removeEventListener('floret:fit-selection', onFitSelection);
     };
   }, [openSearch, pasteAt, reactFlow]);
 
@@ -988,7 +988,7 @@ function CanvasInner() {
   }, []);
 
   // Type assertion for nodes since React Flow's generic Node type narrows
-  // strictly on `data`; our editor store holds a stricter `NoduleNodeData`.
+  // strictly on `data`; our editor store holds a stricter `FloretNodeData`.
   return (
     <div
       ref={wrapperRef}

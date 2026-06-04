@@ -114,7 +114,7 @@ export interface NodeDef {
 
   /**
    * Optional custom React Flow node component. Default: GenericNode.
-   * Receives React Flow's full NodeProps — cast `data` to `NoduleNodeData`
+   * Receives React Flow's full NodeProps — cast `data` to `FloretNodeData`
    * inside the component.
    */
   component?: React.ComponentType<NodeProps>;

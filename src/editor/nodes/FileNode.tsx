@@ -1,6 +1,6 @@
 import { memo, useCallback, useRef, useState } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import { useEditor, type NoduleNodeData } from '../editor-state';
+import { useEditor, type FloretNodeData } from '../editor-state';
 import { nodeRegistry } from '../../nodes/registry';
 import { portColorVar } from '../connection-rules';
 
@@ -19,7 +19,7 @@ const SIZE_HINT_LIMIT = 8 * 1024 * 1024; // 8 MB — above this we warn
 
 export const FileNode = memo(function FileNode(props: NodeProps) {
   const { id, data, selected } = props;
-  const nodeData = data as unknown as NoduleNodeData;
+  const nodeData = data as unknown as FloretNodeData;
   const def = nodeRegistry.get(nodeData.defType);
   const setNodeParam = useEditor((s) => s.setNodeParam);
   const warningText = useEditor((s) =>

@@ -16,7 +16,7 @@ export function StatusBar() {
       nodes: s.nodes.map((n) => ({ ...n, selected: n.id === nodeId })),
     }));
     // Bring the node into view via React Flow's fitView event hook.
-    window.dispatchEvent(new CustomEvent('nodule:focus-node', { detail: nodeId }));
+    window.dispatchEvent(new CustomEvent('floret:focus-node', { detail: nodeId }));
     setOpen(false);
   };
 

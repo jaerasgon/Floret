@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { nodeRegistry } from '../../nodes/registry';
 import { portColorVar } from '../connection-rules';
-import type { NoduleNodeData } from '../editor-state';
+import type { FloretNodeData } from '../editor-state';
 
 /**
  * Splicer In / Out visuals — small pill-shaped child nodes anchored to a
@@ -13,7 +13,7 @@ import type { NoduleNodeData } from '../editor-state';
 
 export const SplicerInNode = memo(function SplicerInNode(props: NodeProps) {
   const { data, selected } = props;
-  const nodeData = data as unknown as NoduleNodeData;
+  const nodeData = data as unknown as FloretNodeData;
   const def = nodeRegistry.get(nodeData.defType);
   if (!def) return null;
   const portType = def.inputs[0]!.type;
@@ -38,7 +38,7 @@ export const SplicerInNode = memo(function SplicerInNode(props: NodeProps) {
 
 export const SplicerOutNode = memo(function SplicerOutNode(props: NodeProps) {
   const { data, selected } = props;
-  const nodeData = data as unknown as NoduleNodeData;
+  const nodeData = data as unknown as FloretNodeData;
   const def = nodeRegistry.get(nodeData.defType);
   if (!def) return null;
   const portType = def.outputs[0]!.type;

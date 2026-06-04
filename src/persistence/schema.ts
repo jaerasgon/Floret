@@ -17,7 +17,7 @@ export interface SerializedNode {
   params: Record<string, unknown>;
   /** Parent region id (omitted for root-scope nodes). */
   parentId?: string;
-  /** Per-input-port constant overrides — see NoduleNodeData.portValues. */
+  /** Per-input-port constant overrides — see FloretNodeData.portValues. */
   portValues?: Record<string, unknown>;
   /** Dynamic frame ports on region nodes. */
   ports?: SerializedRegionPort[];
@@ -43,7 +43,7 @@ export interface SerializedEdge {
 
 export interface PatchFile {
   /** Format marker. */
-  kind: 'nodule.patch';
+  kind: 'floret.patch';
   version: number;
   /** App version that wrote the file (for diagnostics — not used for migration). */
   appVersion?: string;
@@ -61,7 +61,7 @@ export interface PatchFile {
 export function emptyPatch(name?: string): PatchFile {
   const now = new Date().toISOString();
   return {
-    kind: 'nodule.patch',
+    kind: 'floret.patch',
     version: CURRENT_PATCH_VERSION,
     appVersion: '0.0.1',
     meta: { name, createdAt: now, modifiedAt: now },
@@ -74,7 +74,7 @@ export function isPatchFile(v: unknown): v is PatchFile {
   if (!v || typeof v !== 'object') return false;
   const obj = v as Record<string, unknown>;
   return (
-    obj.kind === 'nodule.patch' &&
+    obj.kind === 'floret.patch' &&
     typeof obj.version === 'number' &&
     Array.isArray(obj.nodes) &&
     Array.isArray(obj.edges)

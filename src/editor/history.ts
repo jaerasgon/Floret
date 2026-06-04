@@ -1,5 +1,5 @@
 import { paramStore } from '../runtime/param-store';
-import { _setHistoryPush, _setHistoryReset, useEditor, type NoduleEdge, type NoduleNode } from './editor-state';
+import { _setHistoryPush, _setHistoryReset, useEditor, type FloretEdge, type FloretNode } from './editor-state';
 
 /**
  * Undo / redo.
@@ -23,8 +23,8 @@ const MAX_HISTORY = 100;
 const COALESCE_MS = 250;
 
 interface Snapshot {
-  nodes: NoduleNode[];
-  edges: NoduleEdge[];
+  nodes: FloretNode[];
+  edges: FloretEdge[];
   params: Record<string, Record<string, unknown>>;
 }
 

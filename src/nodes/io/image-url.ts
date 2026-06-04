@@ -26,7 +26,7 @@ export const imageUrlNode = registerNode({
   description: 'Load an image from a URL.',
   defaultParams: {
     // Picsum returns deterministic JPEGs per seed and serves CORS headers.
-    url: 'https://picsum.photos/seed/nodule/500/500',
+    url: 'https://picsum.photos/seed/floret/500/500',
   },
   inputs: [],
   outputs: [

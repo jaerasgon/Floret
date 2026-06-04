@@ -17,7 +17,7 @@ import { SaveToLibraryModal } from './SaveToLibraryModal';
  * Library browser — toolbar dropdown showing every imported library
  * and the patches inside each. Click a patch to load it (same effect as
  * a sample). "Import library…" at the top opens a file picker that
- * accepts a `nodule.library` JSON file.
+ * accepts a `floret.library` JSON file.
  *
  * Libraries persist in localStorage; the menu pulls a fresh snapshot
  * each time it opens, so import / remove side effects don't need to
@@ -96,7 +96,7 @@ export function LibraryMenu() {
           <button
             className="sample-menu-item library-import"
             onClick={() => fileInputRef.current?.click()}
-            title="Import a nodule.library JSON file"
+            title="Import a floret.library JSON file"
           >
             <div className="sample-name">＋ Import library…</div>
             <div className="sample-desc">Pick a `.json` library file from disk.</div>

@@ -2,7 +2,7 @@ import { BaseEdge, getBezierPath, type EdgeProps } from '@xyflow/react';
 import { useShallow } from 'zustand/react/shallow';
 import { nodeRegistry } from '../nodes/registry';
 import { parseHandle, portColorVar } from './connection-rules';
-import { useEditor, type NoduleNodeData } from './editor-state';
+import { useEditor, type FloretNodeData } from './editor-state';
 import type { PortType } from '../runtime/types';
 
 /**
@@ -34,12 +34,12 @@ export function SpreadEdge(props: EdgeProps) {
     useShallow((s) => {
       const node = s.nodes.find((n) => n.id === source);
       if (!node) return null as PortType | null;
-      const def = nodeRegistry.get((node.data as NoduleNodeData).defType);
+      const def = nodeRegistry.get((node.data as FloretNodeData).defType);
       if (!def) return null;
       const parsed = sourceHandleId ? parseHandle(sourceHandleId) : null;
       if (!parsed) return null;
       if (def.regionKind) {
-        const ports = (node.data as NoduleNodeData).ports ?? [];
+        const ports = (node.data as FloretNodeData).ports ?? [];
         const matching = ports.find((p) => p.id === parsed.name);
         return matching?.type ?? null;
       }

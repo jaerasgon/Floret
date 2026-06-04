@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo } from 'react';
 import { type NodeProps } from '@xyflow/react';
-import { useEditor, type NoduleNodeData } from '../editor-state';
+import { useEditor, type FloretNodeData } from '../editor-state';
 import { nodeRegistry } from '../../nodes/registry';
 import { getResolvedInputs } from '../../nodes/types';
 import { useNodeParam } from '../useNodeParam';
@@ -24,7 +24,7 @@ const DEFAULT_STOPS = 4;
 
 export const PaletteNode = memo(function PaletteNode(props: NodeProps) {
   const { id, data, selected } = props;
-  const nodeData = data as unknown as NoduleNodeData;
+  const nodeData = data as unknown as FloretNodeData;
   const def = nodeRegistry.get(nodeData.defType);
   const setNodeParam = useEditor((s) => s.setNodeParam);
   const warningText = useEditor((s) =>

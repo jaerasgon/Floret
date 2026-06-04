@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { NodeResizer, type NodeProps } from '@xyflow/react';
-import { useEditor, type NoduleNodeData } from '../editor-state';
+import { useEditor, type FloretNodeData } from '../editor-state';
 
 /**
  * Free-floating comment box. No pins, no compute. Just a draggable,
@@ -13,7 +13,7 @@ import { useEditor, type NoduleNodeData } from '../editor-state';
  */
 export const CommentNode = memo(function CommentNode(props: NodeProps) {
   const { id, data, selected } = props;
-  const nodeData = data as unknown as NoduleNodeData;
+  const nodeData = data as unknown as FloretNodeData;
   const setNodeParam = useEditor((s) => s.setNodeParam);
 
   const w = (nodeData.params.width as number | undefined) ?? 200;

@@ -23,7 +23,7 @@ export const rgbNode = registerNode({
     { name: 'b', type: 'number', default: 255 },
     { name: 'a', type: 'number', default: 255 },
   ],
-  outputs: [{ name: 'out', type: 'color' }],
+  outputs: [{ name: 'out', label: 'color', type: 'color' }],
   compute: (r, g, b, a) => [{
     r: clamp01((r as number) / 255),
     g: clamp01((g as number) / 255),
@@ -43,7 +43,7 @@ export const hslNode = registerNode({
     { name: 'l', type: 'number', default: 100 },
     { name: 'a', type: 'number', default: 255 },
   ],
-  outputs: [{ name: 'out', type: 'color' }],
+  outputs: [{ name: 'out', label: 'color', type: 'color' }],
   compute: (h, s, l, a) => [hslToColor01(h as number, s as number, l as number, (a as number) / 255)],
 });
 
@@ -53,7 +53,7 @@ export const hexNode = registerNode({
   label: 'Hex',
   description: 'Parse a "#rrggbb" string into a color.',
   inputs: [{ name: 'hex', type: 'string', default: '#ffffff' }],
-  outputs: [{ name: 'out', type: 'color' }],
+  outputs: [{ name: 'out', label: 'color', type: 'color' }],
   compute: (hex) => [hexToColor01(hex as string)],
 });
 
@@ -106,7 +106,7 @@ export const setAlphaNode = registerNode({
     { name: 'color', type: 'color', default: WHITE },
     { name: 'a', type: 'number', default: 255 },
   ],
-  outputs: [{ name: 'out', type: 'color' }],
+  outputs: [{ name: 'out', label: 'color', type: 'color' }],
   compute: (c, a) => {
     const col = toColor(c);
     return [{ ...col, a: clamp01((a as number) / 255) }];
@@ -123,7 +123,7 @@ export const lerpNode = registerNode({
     { name: 'b', type: 'color', default: WHITE },
     { name: 't', type: 'number', default: 0 },
   ],
-  outputs: [{ name: 'out', type: 'color' }],
+  outputs: [{ name: 'out', label: 'color', type: 'color' }],
   compute: (a, b, t) => {
     const pa = toColor(a);
     const pb = toColor(b);
@@ -151,7 +151,7 @@ export const gradientNode = registerNode({
     { name: 'colors', type: 'color', kind: 'spread' },
     { name: 't', type: 'number', default: 0 },
   ],
-  outputs: [{ name: 'out', type: 'color' }],
+  outputs: [{ name: 'out', label: 'color', type: 'color' }],
   computeRaw: (inputs): PortValue[] => {
     const stops = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const t = Number(inputs[1]?.[0] ?? 0);

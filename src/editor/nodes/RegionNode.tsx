@@ -103,11 +103,28 @@ export const RegionNode = memo(function RegionNode(props: NodeProps) {
     updateNodeInternals(id);
   }, [id, portSig, updateNodeInternals]);
 
+  const onDoubleClick = useCallback((e: React.MouseEvent) => {
+    // Open the node search at the cursor. Any node created from this
+    // search will be auto-parented into this region (the parent is
+    // detected by flow-position in NodeSearch.commit).
+    if (e.target !== e.currentTarget) {
+      // Only fire when the double-click lands on the region body itself,
+      // not on a child node, port pill, or resize handle.
+      const t = e.target as HTMLElement;
+      if (!t.classList.contains('region-node')) return;
+    }
+    e.stopPropagation();
+    window.dispatchEvent(
+      new CustomEvent('floret:open-search', { detail: { x: e.clientX, y: e.clientY } }),
+    );
+  }, []);
+
   return (
     <div
       className={`region-node ${kindClass}`}
       data-selected={selected ? 1 : 0}
       style={{ width: w, height: h }}
+      onDoubleClick={onDoubleClick}
     >
       <NodeResizer
         minWidth={200}

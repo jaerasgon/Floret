@@ -21,7 +21,7 @@ import { hexToColor01, hslToColor01 } from '../_shared/color-conv';
 
 type FillMode = 'rgb' | 'hsl' | 'hex' | 'color';
 
-const BASE_PORT: PortSpec = { name: 'base', type: 'style' };
+const BASE_PORT: PortSpec = { name: 'base', label: 'style', type: 'style' };
 
 /** Fold a possibly-null base Style into the current resolved style. */
 function applyBase(base: Style | null | undefined, current: ResolvedStyle): ResolvedStyle {
@@ -35,7 +35,7 @@ export const fillNode = registerNode({
   description: 'Set the fill colour for downstream shapes.',
   inputs: [BASE_PORT],
   outputs: [
-    { name: 'out', type: 'style' },
+    { name: 'out', label: 'style', type: 'style' },
     { name: 'color', type: 'color' },
   ],
   defaultParams: { mode: 'rgb' as FillMode },
@@ -117,9 +117,9 @@ export const strokeNode = registerNode({
   inputs: [
     { name: 'color', type: 'color', default: null },
     { name: 'width', type: 'number', default: 1 },
-    { name: 'base', type: 'style' },
+    { name: 'base', label: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'style' }],
+  outputs: [{ name: 'out', label: 'style', type: 'style' }],
   compute: (color, width, base) => {
     const c = (color as Color | null) ?? { r: 0, g: 0, b: 0, a: 1 };
     const w = width as number;
@@ -144,9 +144,9 @@ export const strokeWeightNode = registerNode({
   description: 'Set the stroke thickness in pixels.',
   inputs: [
     { name: 'w', type: 'number', default: 1 },
-    { name: 'base', type: 'style' },
+    { name: 'base', label: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'style' }],
+  outputs: [{ name: 'out', label: 'style', type: 'style' }],
   compute: (w, base) => {
     const wv = w as number;
     const baseStyle = base as Style | null;
@@ -160,8 +160,8 @@ export const noFillNode = registerNode({
   category: 'Style',
   label: 'NoFill',
   description: 'Disable the fill on downstream shapes.',
-  inputs: [{ name: 'base', type: 'style' }],
-  outputs: [{ name: 'out', type: 'style' }],
+  inputs: [{ name: 'base', label: 'style', type: 'style' }],
+  outputs: [{ name: 'out', label: 'style', type: 'style' }],
   compute: (base) => {
     const baseStyle = base as Style | null;
     const style: Style = (s) => ({ ...applyBase(baseStyle, s), fill: null });
@@ -174,8 +174,8 @@ export const noStrokeNode = registerNode({
   category: 'Style',
   label: 'NoStroke',
   description: 'Disable the stroke on downstream shapes.',
-  inputs: [{ name: 'base', type: 'style' }],
-  outputs: [{ name: 'out', type: 'style' }],
+  inputs: [{ name: 'base', label: 'style', type: 'style' }],
+  outputs: [{ name: 'out', label: 'style', type: 'style' }],
   compute: (base) => {
     const baseStyle = base as Style | null;
     const style: Style = (s) => ({ ...applyBase(baseStyle, s), stroke: null });

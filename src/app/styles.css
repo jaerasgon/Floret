@@ -1961,6 +1961,31 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   font-family: var(--font-mono);
   font-size: 9px;
   color: var(--fg-2);
+  gap: 4px;
+}
+.iobox-range-input {
+  width: 48px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  color: var(--fg-1);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 1px 3px;
+  border-radius: 3px;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.iobox-range-input:last-child {
+  text-align: right;
+}
+.iobox-range-input::-webkit-outer-spin-button,
+.iobox-range-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.iobox-range-input:focus {
+  outline: none;
+  border-color: var(--accent-dim);
 }
 
 /* Toggle */

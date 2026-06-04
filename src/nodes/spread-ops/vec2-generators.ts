@@ -13,13 +13,15 @@ const intCount = (v: unknown): number => Math.max(0, Math.floor(Number(v ?? 0)))
 export const gridNode = registerNode({
   type: 'spread/grid',
   category: 'Spread',
-  label: 'Grid',
-  description: 'Generate a `cols × rows` grid of points centred on the origin.',
+  label: 'GridSpread',
+  description: 'Generate a `cols × rows` grid of points centred on (cx, cy).',
   inputs: [
     { name: 'cols', type: 'number', default: 8, integer: true },
     { name: 'rows', type: 'number', default: 8, integer: true },
     { name: 'w', type: 'number', default: 400 },
     { name: 'h', type: 'number', default: 400 },
+    { name: 'cx', type: 'number', default: 0 },
+    { name: 'cy', type: 'number', default: 0 },
   ],
   outputs: [{ name: 'out', type: 'vec2', kind: 'spread' }],
   computeRaw: (inputs) => {
@@ -27,11 +29,13 @@ export const gridNode = registerNode({
     const rows = intCount(inputs[1]?.[0]);
     const w = Number(inputs[2]?.[0] ?? 0);
     const h = Number(inputs[3]?.[0] ?? 0);
+    const cx = Number(inputs[4]?.[0] ?? 0);
+    const cy = Number(inputs[5]?.[0] ?? 0);
     if (cols === 0 || rows === 0) return [[]];
     const dx = cols === 1 ? 0 : w / (cols - 1);
     const dy = rows === 1 ? 0 : h / (rows - 1);
-    const ox = -w / 2;
-    const oy = -h / 2;
+    const ox = cx - w / 2;
+    const oy = cy - h / 2;
     const out = new Array<Vec2>(cols * rows);
     let k = 0;
     for (let r = 0; r < rows; r++) {
@@ -47,7 +51,7 @@ export const gridNode = registerNode({
 export const spiralNode = registerNode({
   type: 'spread/spiral',
   category: 'Spread',
-  label: 'Spiral',
+  label: 'SpiralSpread',
   description: 'Generate points along an Archimedean spiral.',
   inputs: [
     { name: 'count', type: 'number', default: 64, integer: true },
@@ -80,7 +84,7 @@ const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 export const fibonacciNode = registerNode({
   type: 'spread/fibonacci',
   category: 'Spread',
-  label: 'Fibonacci',
+  label: 'FibonacciSpread',
   description: 'Generate a sunflower spiral using the golden angle.',
   inputs: [
     { name: 'count', type: 'number', default: 200, integer: true },

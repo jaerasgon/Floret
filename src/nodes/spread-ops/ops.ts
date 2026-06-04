@@ -15,8 +15,8 @@ export const countNode = registerNode({
   category: 'Spread',
   label: 'Count',
   description: 'Length of a spread.',
-  inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'number' }],
+  inputs: [{ name: 'spread', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'out', label: 'count', type: 'number' }],
   computeRaw: (inputs) => [[(inputs[0] ?? []).length]],
 });
 
@@ -25,8 +25,8 @@ export const reverseNode = registerNode({
   category: 'Spread',
   label: 'Reverse',
   description: 'Reverse the order of elements.',
-  inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  inputs: [{ name: 'spread', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'out', label: 'spread', type: 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const out = new Array(src.length);

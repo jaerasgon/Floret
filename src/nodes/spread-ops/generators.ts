@@ -41,7 +41,7 @@ export const linearSpreadNode = registerNode({
 export const rangeNode = registerNode({
   type: 'spread/range',
   category: 'Spread',
-  label: 'Range',
+  label: 'RangeSpread',
   description: 'Generate the integers 0, 1, …, count − 1.',
   inputs: [{ name: 'count', type: 'number', default: 8, integer: true }],
   outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
@@ -57,7 +57,7 @@ export const rangeNode = registerNode({
 export const repeatNode = registerNode({
   type: 'spread/repeat',
   category: 'Spread',
-  label: 'Repeat',
+  label: 'RepeatSpread',
   description: 'Repeat a value N times into a spread.',
   inputs: [
     { name: 'value', type: 'any', default: 0 },
@@ -96,7 +96,7 @@ export const circularSpreadNode = registerNode({
 export const randomizeNode = registerNode({
   type: 'spread/randomize',
   category: 'Spread',
-  label: 'Randomize',
+  label: 'RandomSpread',
   description: 'Generate `count` uniform random numbers in [min, max).',
   inputs: [
     { name: 'count', type: 'number', default: 8, integer: true },

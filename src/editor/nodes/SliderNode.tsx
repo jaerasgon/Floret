@@ -25,8 +25,8 @@ export const SliderNode = memo(function SliderNode(props: NodeProps) {
   const nodeData = data as unknown as FloretNodeData;
   const def = nodeRegistry.get(nodeData.defType)!;
   const [value, setLive, commit] = useNodeParam<number>(id, 'value', 0);
-  const [min] = useNodeParam<number>(id, 'min', 0);
-  const [max] = useNodeParam<number>(id, 'max', 1);
+  const [min, setMinLive, commitMin] = useNodeParam<number>(id, 'min', 0);
+  const [max, setMaxLive, commitMax] = useNodeParam<number>(id, 'max', 1);
   const span = max - min;
   const safeMax = span === 0 ? min + 1 : max;
   const range = safeMax - min;
@@ -60,8 +60,24 @@ export const SliderNode = memo(function SliderNode(props: NodeProps) {
           onBlur={commit}
         />
         <div className="iobox-range-labels">
-          <span>{min}</span>
-          <span>{safeMax}</span>
+          <input
+            className="iobox-range-input nodrag"
+            type="number"
+            value={min}
+            step={range > 100 ? 1 : 0.1}
+            onChange={(e) => setMinLive(Number(e.target.value))}
+            onBlur={commitMin}
+            title="Min"
+          />
+          <input
+            className="iobox-range-input nodrag"
+            type="number"
+            value={safeMax}
+            step={range > 100 ? 1 : 0.1}
+            onChange={(e) => setMaxLive(Number(e.target.value))}
+            onBlur={commitMax}
+            title="Max"
+          />
         </div>
       </div>
       <div className="node-ports">

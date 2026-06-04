@@ -27,9 +27,9 @@ export const rectModeNode = registerNode({
   description: 'Set how Rect interprets (x, y, w, h).',
   inputs: [
     { name: 'mode', type: 'string', default: 'corner', param: 'mode' },
-    { name: 'base', type: 'style' },
+    { name: 'base', label: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'style' }],
+  outputs: [{ name: 'out', label: 'style', type: 'style' }],
   defaultParams: { mode: 'corner' as RectMode },
   paramOptions: { mode: ['corner', 'center', 'corners', 'radius'] },
   compute: (mode, base) => {
@@ -47,9 +47,9 @@ export const ellipseModeNode = registerNode({
   description: 'Set how Ellipse interprets (x, y, w, h).',
   inputs: [
     { name: 'mode', type: 'string', default: 'center', param: 'mode' },
-    { name: 'base', type: 'style' },
+    { name: 'base', label: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'style' }],
+  outputs: [{ name: 'out', label: 'style', type: 'style' }],
   defaultParams: { mode: 'center' as EllipseMode },
   paramOptions: { mode: ['corner', 'center', 'corners', 'radius'] },
   compute: (mode, base) => {
@@ -67,9 +67,9 @@ export const strokeCapNode = registerNode({
   description: 'Set the line end-cap shape.',
   inputs: [
     { name: 'cap', type: 'string', default: 'round', param: 'cap' },
-    { name: 'base', type: 'style' },
+    { name: 'base', label: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'style' }],
+  outputs: [{ name: 'out', label: 'style', type: 'style' }],
   defaultParams: { cap: 'round' as StrokeCap },
   paramOptions: { cap: ['butt', 'round', 'square'] },
   compute: (cap, base) => {
@@ -87,9 +87,9 @@ export const strokeJoinNode = registerNode({
   description: 'Set how stroke corners are joined.',
   inputs: [
     { name: 'join', type: 'string', default: 'miter', param: 'join' },
-    { name: 'base', type: 'style' },
+    { name: 'base', label: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'style' }],
+  outputs: [{ name: 'out', label: 'style', type: 'style' }],
   defaultParams: { join: 'miter' as StrokeJoin },
   paramOptions: { join: ['miter', 'bevel', 'round'] },
   compute: (join, base) => {

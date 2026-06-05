@@ -57,8 +57,8 @@ export const rangeNode = registerNode({
 export const repeatNode = registerNode({
   type: 'spread/repeat',
   category: 'Spread',
-  label: 'RepeatSpread',
-  description: 'Repeat a value N times into a spread.',
+  label: 'FillSpread',
+  description: 'Fill a spread of length N with the same value.',
   inputs: [
     { name: 'value', type: 'any', default: 0 },
     { name: 'count', type: 'number', default: 8, integer: true },

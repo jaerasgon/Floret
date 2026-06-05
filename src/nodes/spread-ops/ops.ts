@@ -99,7 +99,7 @@ export const sliceNode = registerNode({
 export const cycleNode = registerNode({
   type: 'spread/cycle',
   category: 'Spread',
-  label: 'CycleSpread',
+  label: 'RepeatSpread',
   description: 'Repeat a spread cyclically until the output reaches `count` elements.',
   inputs: [
     { name: 'spread', type: 'any', kind: 'spread' },

@@ -96,6 +96,26 @@ export const sliceNode = registerNode({
   },
 });
 
+export const cycleNode = registerNode({
+  type: 'spread/cycle',
+  category: 'Spread',
+  label: 'CycleSpread',
+  description: 'Repeat a spread cyclically until the output reaches `count` elements.',
+  inputs: [
+    { name: 'spread', type: 'any', kind: 'spread' },
+    { name: 'count', type: 'number', default: 8, integer: true },
+  ],
+  outputs: [{ name: 'out', label: 'spread', type: 'any', kind: 'spread' }],
+  computeRaw: (inputs) => {
+    const src = inputs[0] ?? [];
+    const n = intCount(inputs[1]?.[0]);
+    if (n === 0 || src.length === 0) return [[]];
+    const out = new Array(n);
+    for (let i = 0; i < n; i++) out[i] = src[i % src.length];
+    return [out];
+  },
+});
+
 export const stackNode = registerNode({
   type: 'spread/stack',
   category: 'Spread',

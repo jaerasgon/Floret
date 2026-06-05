@@ -587,10 +587,14 @@ export function defToRuntimeNode(
  */
 function defaultForPort(p: { kind?: 'single' | 'spread' | 'multi'; type: string; default?: unknown }): PortValue {
   const kind = p.kind ?? 'single';
+  const hasExplicit = p.default !== undefined;
   if (kind === 'spread' || kind === 'multi') {
-    return p.default !== undefined ? [p.default] : [];
+    return hasExplicit ? [p.default] : [];
   }
-  return [p.default ?? defaultByType(p.type)];
+  // Honour an explicit `default: null` — some nodes (palette stops, fill
+  // in 'color' mode) use `null` to mean "unwired sentinel" and switch on
+  // it. `??` would replace null with the per-type default, defeating that.
+  return [hasExplicit ? p.default : defaultByType(p.type)];
 }
 
 function defaultByType(t: string): unknown {

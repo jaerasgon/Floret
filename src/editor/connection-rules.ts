@@ -264,14 +264,14 @@ export function buildIsValidConnection(
  */
 export function categoryColor(category: string | undefined): string {
   switch ((category ?? '').toLowerCase()) {
-    case 'math':       return '#7fc88a';
+    case 'math':       return '#c4a85f';
     case 'time':       return '#d5a566';
     case 'draw':       return '#5fa6ff';
     case 'style':      return '#c97bd5';
     case 'transform':  return '#a880ff';
     case 'value':      return '#6cb6ff';
     case 'render':     return '#ff9a4a';
-    case 'io':         return '#5fd8a6';
+    case 'io':         return '#d4a574';
     case 'input':      return '#ff8a6c';
     case 'spread':     return '#e5d05f';
     case 'region':     return '#5fd5c4';

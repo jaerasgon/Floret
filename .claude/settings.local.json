@@ -9,7 +9,13 @@
       "WebFetch(domain:reactflow.dev)",
       "Bash(npm list *)",
       "Bash(xargs grep -l \"interface Node\")",
-      "Bash(xargs cat)"
+      "Bash(xargs cat)",
+      "Bash(grep -n \"green\\\\|#[0-9a-fA-F]\\\\{3,6\\\\}\\\\|hsl\\\\|rgb\\\\|--color\\\\|--accent\" src/app/styles.css)",
+      "Bash(grep -rn \"124, *255, *178\\\\|7cffb2\\\\|4aaa78\\\\|#[0-9a-fA-F]\\\\{6\\\\}\" src/ --include=\"*.css\" --include=\"*.ts\" --include=\"*.tsx\")",
+      "Bash(sed -i '' 's/rgba\\(124, 255, 178,/rgba\\(244, 197, 66,/g' src/app/styles.css)",
+      "Bash(sed -i '' \"s/\\\\[data-category='math'\\\\]      { --cat-accent: #7fc88a; }/[data-category='math']      { --cat-accent: #c4a85f; }/\" src/app/styles.css)",
+      "Bash(sed -i '' \"s/\\\\[data-category='io'\\\\]        { --cat-accent: #5fd8a6; }/[data-category='io']        { --cat-accent: #d4a574; }/\" src/app/styles.css)",
+      "mcp__Claude_Preview__preview_start"
     ]
   }
 }

@@ -1,16 +1,16 @@
 :root {
-  --bg-0: #0d0f12;
-  --bg-1: #14171c;
-  --bg-2: #1c2027;
-  --bg-3: #262b34;
-  --border: #2e333d;
-  --fg-0: #e6e8ec;
-  --fg-1: #a4a9b3;
-  --fg-2: #6b7180;
-  --accent: #7cffb2;
-  --accent-dim: #4aaa78;
+  --bg-0: #100f0d;
+  --bg-1: #181715;
+  --bg-2: #211f1c;
+  --bg-3: #2c2926;
+  --border: #36322d;
+  --fg-0: #ece8e2;
+  --fg-1: #a8a39a;
+  --fg-2: #6e6960;
+  --accent: #f4c542;
+  --accent-dim: #a8842a;
   --danger: #ff7a7a;
-  --port-number: #7cffb2;
+  --port-number: #d8d4cc;
   --port-vec2: #ffd47c;
   --port-color: #ff7cc8;
   --port-layer: #7cb6ff;
@@ -1159,12 +1159,12 @@ body[data-wire-dragging='1'] .react-flow__handle:not([data-wire-affinity='match'
   transition: opacity 0.12s;
 }
 body[data-wire-dragging='1'] .react-flow__handle[data-wire-affinity='match'] {
-  box-shadow: 0 0 0 3px rgba(124, 255, 178, 0.35);
+  box-shadow: 0 0 0 3px rgba(244, 197, 66, 0.35);
   animation: wire-affinity-pulse 1.2s ease-in-out infinite;
 }
 @keyframes wire-affinity-pulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(124, 255, 178, 0.35); }
-  50%      { box-shadow: 0 0 0 5px rgba(124, 255, 178, 0.55); }
+  0%, 100% { box-shadow: 0 0 0 3px rgba(244, 197, 66, 0.35); }
+  50%      { box-shadow: 0 0 0 5px rgba(244, 197, 66, 0.55); }
 }
 
 /* Hover scale.
@@ -1254,8 +1254,8 @@ body[data-wire-dragging='1'] .react-flow__handle[data-wire-affinity='match'] {
 
 .region-node {
   position: relative;
-  background: rgba(124, 255, 178, 0.04);
-  border: 1px dashed rgba(124, 255, 178, 0.45);
+  background: rgba(244, 197, 66, 0.04);
+  border: 1px dashed rgba(244, 197, 66, 0.45);
   border-radius: 6px;
   /* Allow children + the resize handles to receive pointer events. */
   pointer-events: all;
@@ -1265,7 +1265,7 @@ body[data-wire-dragging='1'] .react-flow__handle[data-wire-affinity='match'] {
   border-style: solid;
   box-shadow: 0 0 0 1px var(--accent);
 }
-.region-node.region-foreach { border-color: rgba(124, 255, 178, 0.55); }
+.region-node.region-foreach { border-color: rgba(244, 197, 66, 0.55); }
 .region-node.region-if      { border-color: rgba(255, 200, 100, 0.6); background: rgba(255, 200, 100, 0.04); }
 .region-node.region-cache   { border-color: rgba(124, 182, 255, 0.6); background: rgba(124, 182, 255, 0.04); }
 
@@ -1276,7 +1276,7 @@ body[data-wire-dragging='1'] .react-flow__handle[data-wire-affinity='match'] {
   pointer-events: none;
   z-index: 1500;
   border: 1px dashed var(--accent);
-  background: rgba(124, 255, 178, 0.10);
+  background: rgba(244, 197, 66, 0.10);
   border-radius: 4px;
 }
 .region-draw-preview-if      { border-color: rgba(255, 200, 100, 0.9); background: rgba(255, 200, 100, 0.10); }
@@ -1299,14 +1299,14 @@ body[data-wire-dragging='1'] .react-flow__handle[data-wire-affinity='match'] {
 .region-node[data-drop-target='1'] {
   border-color: var(--accent) !important;
   border-style: solid !important;
-  background: rgba(124, 255, 178, 0.12) !important;
-  box-shadow: 0 0 0 2px var(--accent), 0 0 24px rgba(124, 255, 178, 0.4);
+  background: rgba(244, 197, 66, 0.12) !important;
+  box-shadow: 0 0 0 2px var(--accent), 0 0 24px rgba(244, 197, 66, 0.4);
 }
 
 /* When space is held globally, hint with a thin accent ring on every
    region so the user knows reparent mode is armed. */
 body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
-  border-color: rgba(124, 255, 178, 0.7) !important;
+  border-color: rgba(244, 197, 66, 0.7) !important;
   border-style: dashed !important;
 }
 
@@ -1360,7 +1360,7 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
 }
 .region-node:hover .region-resize-line,
 .region-node[data-selected='1'] .region-resize-line {
-  border-color: rgba(124, 255, 178, 0.45) !important;
+  border-color: rgba(244, 197, 66, 0.45) !important;
   border-width: 1px !important;
 }
 .region-resize-handle {
@@ -1539,14 +1539,14 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
  * uniformly for: a 3px left-edge color bar on the node, a brighter
  * header gradient, a subtler hover/select glow, and the mini-map dot.
  * Bumping the colors here updates everything downstream at once. */
-[data-category='math']      { --cat-accent: #7fc88a; }
+[data-category='math']      { --cat-accent: #c4a85f; }
 [data-category='time']      { --cat-accent: #d5a566; }
 [data-category='draw']      { --cat-accent: #5fa6ff; }
 [data-category='style']     { --cat-accent: #c97bd5; }
 [data-category='transform'] { --cat-accent: #a880ff; }
 [data-category='value']     { --cat-accent: #6cb6ff; }
 [data-category='render']    { --cat-accent: #ff9a4a; }
-[data-category='io']        { --cat-accent: #5fd8a6; }
+[data-category='io']        { --cat-accent: #d4a574; }
 [data-category='input']     { --cat-accent: #ff8a6c; }
 [data-category='spread']    { --cat-accent: #e5d05f; }
 [data-category='region']    { --cat-accent: #5fd5c4; }
@@ -2300,8 +2300,8 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   background: rgba(255, 255, 255, 0.02);
 }
 .file-node-body-drop {
-  background: rgba(124, 255, 178, 0.12);
-  outline: 1px dashed rgba(124, 255, 178, 0.6);
+  background: rgba(244, 197, 66, 0.12);
+  outline: 1px dashed rgba(244, 197, 66, 0.6);
   outline-offset: -2px;
 }
 .file-node-pick {
@@ -2366,7 +2366,7 @@ body[data-pro-mode='1'] .node[data-math='1'] {
 .file-node-busy { color: var(--fg-2); }
 .file-node-error { color: rgba(255, 110, 110, 0.95); }
 .file-node-drop-hint {
-  color: rgba(124, 255, 178, 0.95);
+  color: rgba(244, 197, 66, 0.95);
   text-align: center;
 }
 

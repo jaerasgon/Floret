@@ -177,6 +177,16 @@ export interface PolygonShape {
   points: ReadonlyArray<Vec2>;
   closed: boolean;
   style: ResolvedStyle;
+  /**
+   * Optional curve smoothness, 0..1.
+   *   0 (or omitted) → straight `lineTo` between points (classic polyline).
+   *   >0             → Catmull–Rom spline converted to cubic Béziers, so
+   *                    the curve passes through every input point with
+   *                    progressively rounder corners as tension rises.
+   * The Path draw node exposes this; existing polygon callers (triangles,
+   * etc.) leave it undefined and get the original straight-line render.
+   */
+  tension?: number;
 }
 
 export interface TextShape {

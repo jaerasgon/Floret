@@ -13,7 +13,7 @@ const intCount = (v: unknown): number => Math.max(0, Math.floor(Number(v ?? 0)))
 export const gridNode = registerNode({
   type: 'spread/grid',
   category: 'Spread',
-  label: 'Grid',
+  label: 'GridSpread',
   description: 'Generate a `cols × rows` grid of points centred on the origin.',
   inputs: [
     { name: 'cols', type: 'number', default: 8, integer: true },
@@ -47,7 +47,7 @@ export const gridNode = registerNode({
 export const spiralNode = registerNode({
   type: 'spread/spiral',
   category: 'Spread',
-  label: 'Spiral',
+  label: 'SpiralSpread',
   description: 'Generate points along an Archimedean spiral.',
   inputs: [
     { name: 'count', type: 'number', default: 64, integer: true },
@@ -80,7 +80,7 @@ const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 export const fibonacciNode = registerNode({
   type: 'spread/fibonacci',
   category: 'Spread',
-  label: 'Fibonacci',
+  label: 'FibonacciSpread',
   description: 'Generate a sunflower spiral using the golden angle.',
   inputs: [
     { name: 'count', type: 'number', default: 200, integer: true },

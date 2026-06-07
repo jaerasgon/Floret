@@ -590,7 +590,14 @@ function defaultForPort(p: { kind?: 'single' | 'spread' | 'multi'; type: string;
   if (kind === 'spread' || kind === 'multi') {
     return p.default !== undefined ? [p.default] : [];
   }
-  return [p.default ?? defaultByType(p.type)];
+  // Distinguish "no default declared" (use the type's fallback — white for
+  // color, 0 for number, …) from "explicit null default" (the node author
+  // wants compute to see null so it can branch into a hex/picker fallback
+  // path; see color/palette c0..cN, style/fill 'color' mode input). The
+  // previous `p.default ?? defaultByType(p.type)` collapsed both into the
+  // type fallback, which made palette stops always emit white because the
+  // compute never saw an unwired-null signal.
+  return [p.default !== undefined ? p.default : defaultByType(p.type)];
 }
 
 function defaultByType(t: string): unknown {

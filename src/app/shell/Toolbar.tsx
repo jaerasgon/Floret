@@ -1,4 +1,13 @@
 import { useEffect, useState } from 'react';
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  Settings as SettingsIcon,
+  LayoutGrid,
+  Waves,
+  Sparkles,
+} from 'lucide-react';
 import { useAppStore } from '../store';
 import { usePrefs } from '../prefs';
 import { useEditor } from '../../editor/editor-state';
@@ -7,6 +16,7 @@ import { FileMenu } from './FileMenu';
 import { SampleMenu } from './SampleMenu';
 import { LibraryMenu } from './LibraryMenu';
 import { SettingsModal } from './SettingsModal';
+import { Tooltip } from './Tooltip';
 
 export function Toolbar() {
   const running = useAppStore((s) => s.running);
@@ -40,7 +50,7 @@ export function Toolbar() {
 
   return (
     <div className="toolbar">
-      <span className="title">NODULE</span>
+      <span className="title">FLORET</span>
       <span className="toolbar-divider" />
       <FileMenu />
       <span className="toolbar-divider" />
@@ -48,45 +58,64 @@ export function Toolbar() {
       <span className="toolbar-divider" />
       <LibraryMenu />
       <div className="spacer" />
-      <button onClick={tidy} title="Auto-arrange nodes left-to-right by data flow">
-        Tidy
-      </button>
-      <button
-        onClick={() => setPref('wireFlowAnimation', !wireFlow)}
-        title={wireFlow ? 'Hide wire flow animation' : 'Animate dashes along wires'}
-        aria-pressed={wireFlow}
+      <Tooltip label="Auto-arrange nodes" shortcut="⇧T">
+        <button className="tb-icon-btn" onClick={tidy} aria-label="Tidy">
+          <LayoutGrid size={14} strokeWidth={1.6} />
+        </button>
+      </Tooltip>
+      <Tooltip
+        label={wireFlow ? 'Hide wire flow' : 'Animate wires'}
       >
-        Flow {wireFlow ? '●' : '○'}
-      </button>
-      <button
-        className={`toolbar-run-btn${running ? ' running' : ''}`}
-        onClick={toggleRunning}
-        title={running ? 'Pause the runtime' : 'Resume the runtime'}
+        <button
+          className={`tb-icon-btn tb-toggle${wireFlow ? ' active' : ''}`}
+          onClick={() => setPref('wireFlowAnimation', !wireFlow)}
+          aria-pressed={wireFlow}
+          aria-label="Toggle wire flow"
+        >
+          <Waves size={14} strokeWidth={1.6} />
+        </button>
+      </Tooltip>
+      <Tooltip label={running ? 'Pause runtime' : 'Resume runtime'} shortcut="Space">
+        <button
+          className={`toolbar-run-btn${running ? ' running' : ''}`}
+          onClick={toggleRunning}
+          aria-label={running ? 'Pause' : 'Play'}
+        >
+          {running ? <Pause size={13} strokeWidth={1.8} /> : <Play size={13} strokeWidth={1.8} />}
+          <span>{running ? 'Pause' : 'Play'}</span>
+        </button>
+      </Tooltip>
+      <Tooltip label="Restart scene — reset time to 0">
+        <button
+          className="toolbar-refresh-btn tb-icon-btn"
+          onClick={refresh}
+          aria-label="Refresh"
+        >
+          <RotateCcw size={13} strokeWidth={1.8} />
+        </button>
+      </Tooltip>
+      <Tooltip
+        label={proMode ? 'Exit Pro mode' : 'Enter Pro mode'}
       >
-        {running ? '❚❚ Pause' : '▶ Play'}
-      </button>
-      <button
-        className="toolbar-refresh-btn"
-        onClick={refresh}
-        title="Restart the scene — resets time to 0 and re-mounts the canvas"
-      >
-        ↻ Refresh
-      </button>
-      <button
-        className={`toolbar-pro-btn${proMode ? ' active' : ''}`}
-        onClick={() => setPref('proMode', !proMode)}
-        title={proMode ? 'Exit Pro mode — show full node UI' : 'Enter Pro mode — collapse nodes to title + pins'}
-        aria-pressed={proMode}
-      >
-        Pro
-      </button>
-      <button
-        className="toolbar-settings-btn"
-        onClick={() => setSettingsOpen(true)}
-        title="Open Settings"
-      >
-        ⚙
-      </button>
+        <button
+          className={`toolbar-pro-btn tb-pill${proMode ? ' active' : ''}`}
+          onClick={() => setPref('proMode', !proMode)}
+          aria-pressed={proMode}
+          aria-label="Toggle Pro mode"
+        >
+          <Sparkles size={12} strokeWidth={1.6} />
+          <span>Pro</span>
+        </button>
+      </Tooltip>
+      <Tooltip label="Settings">
+        <button
+          className="toolbar-settings-btn tb-icon-btn"
+          onClick={() => setSettingsOpen(true)}
+          aria-label="Settings"
+        >
+          <SettingsIcon size={14} strokeWidth={1.6} />
+        </button>
+      </Tooltip>
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
     </div>
   );

@@ -21,7 +21,46 @@
   --port-any: #888c95;
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-std: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-slow: 260ms;
+
+  /* Elevation */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.40);
+  --shadow-3: 0 6px 16px rgba(0, 0, 0, 0.50);
+  --shadow-4: 0 12px 32px rgba(0, 0, 0, 0.55);
+
+  /* Focus */
+  --focus-ring: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent);
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
   color-scheme: dark;
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 * {
@@ -43,9 +82,10 @@
 *::-webkit-scrollbar-thumb {
   background: var(--bg-3);
   border-radius: 3px;
+  transition: background var(--dur-fast) var(--ease-std);
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: var(--border);
+  background: var(--accent-dim);
 }
 *::-webkit-scrollbar-corner {
   background: transparent;
@@ -69,13 +109,36 @@ button {
   color: inherit;
   background: var(--bg-2);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   padding: 4px 10px;
   cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease-std),
+    color var(--dur-fast) var(--ease-std),
+    border-color var(--dur-fast) var(--ease-std),
+    transform var(--dur-fast) var(--ease-std),
+    box-shadow var(--dur-fast) var(--ease-std),
+    opacity var(--dur-fast) var(--ease-std);
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background: var(--bg-3);
+  border-color: color-mix(in srgb, var(--border) 60%, var(--fg-2));
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+}
+
+button:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 input, select, textarea {
@@ -86,11 +149,16 @@ input, select, textarea {
   border: 1px solid var(--border);
   border-radius: 3px;
   padding: 2px 6px;
+  transition:
+    border-color var(--dur-fast) var(--ease-std),
+    box-shadow var(--dur-fast) var(--ease-std),
+    background var(--dur-fast) var(--ease-std);
 }
 
 input:focus, select:focus, textarea:focus {
-  outline: 1px solid var(--accent);
-  outline-offset: -1px;
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 70%, var(--border));
+  box-shadow: var(--focus-ring);
 }
 
 .app-shell {
@@ -158,17 +226,19 @@ input:focus, select:focus, textarea:focus {
 
 .node-search {
   position: fixed;
-  width: 280px;
+  width: min(280px, calc(100vw - 16px));
   background: var(--bg-1);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-4);
   overflow: hidden;
   z-index: 2000;
   display: flex;
   flex-direction: column;
-  max-height: 320px;
+  max-height: min(320px, calc(100vh - 16px));
   font-size: 12px;
+  animation: pop-in var(--dur-base) var(--ease-out);
+  transform-origin: top left;
 }
 
 .node-search-header {
@@ -253,13 +323,18 @@ input:focus, select:focus, textarea:focus {
   position: fixed;
   background: var(--bg-1);
   border: 1px solid var(--border);
-  border-radius: 5px;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-4);
   padding: 4px 0;
   z-index: 2100;
   font-size: 12px;
   display: flex;
   flex-direction: column;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+  animation: pop-in var(--dur-base) var(--ease-out);
+  transform-origin: top left;
 }
 .context-item {
   display: flex;
@@ -274,9 +349,14 @@ input:focus, select:focus, textarea:focus {
   color: var(--fg-0);
   cursor: pointer;
   font-size: 12px;
+  transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std);
 }
 .context-item:hover:not(:disabled) {
   background: var(--bg-3);
+}
+.context-item:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring) inset;
 }
 .context-item:disabled {
   color: var(--fg-2);
@@ -302,12 +382,15 @@ input:focus, select:focus, textarea:focus {
   left: 0;
   background: var(--bg-1);
   border: 1px solid var(--border);
-  border-radius: 4px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
-  min-width: 280px;
-  max-height: 320px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-3);
+  min-width: min(280px, calc(100vw - 16px));
+  max-width: calc(100vw - 16px);
+  max-height: min(320px, calc(100vh - 16px));
   overflow-y: auto;
   z-index: 1000;
+  animation: pop-in var(--dur-base) var(--ease-out);
+  transform-origin: top left;
 }
 .sample-menu-item {
   display: block;
@@ -319,9 +402,14 @@ input:focus, select:focus, textarea:focus {
   border-radius: 0;
   padding: 8px 12px;
   cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-std);
 }
 .sample-menu-item:last-child { border-bottom: 0; }
 .sample-menu-item:hover { background: var(--bg-2); }
+.sample-menu-item:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring) inset;
+}
 .sample-name {
   font-weight: 600;
   font-size: 12px;
@@ -366,7 +454,7 @@ input:focus, select:focus, textarea:focus {
 
 .split {
   display: grid;
-  grid-template-columns: 1fr 4px var(--preview-width, 480px);
+  grid-template-columns: 1fr 12px var(--preview-width, 480px);
   height: 100%;
   width: 100%;
   overflow: hidden;
@@ -381,13 +469,15 @@ input:focus, select:focus, textarea:focus {
 
 .split .resizer {
   background: var(--border);
+  background-clip: content-box;
+  padding: 0 4px;
   cursor: col-resize;
-  transition: background 0.15s;
+  transition: background-color var(--dur-fast) var(--ease-std);
 }
 
 .split .resizer:hover,
 .split .resizer.dragging {
-  background: var(--accent-dim);
+  background-color: var(--accent-dim);
 }
 
 .editor-pane {
@@ -469,7 +559,7 @@ input:focus, select:focus, textarea:focus {
   display: grid;
   grid-template-columns: 200px 1fr;
   height: 100%;
-  transition: grid-template-columns 0.18s ease;
+  transition: grid-template-columns var(--dur-base) var(--ease-out);
 }
 
 .editor-with-palette[data-palette-collapsed='1'] {
@@ -530,10 +620,12 @@ input:focus, select:focus, textarea:focus {
   font-family: var(--font-mono);
   font-size: 10px;
   color: var(--fg-0);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  box-shadow: var(--shadow-3);
   /* Fixed width so the box doesn't jitter as values change. The value
    * still wraps inside when it overflows, but the frame stays stable. */
   width: 220px;
+  max-width: calc(100vw - 16px);
+  animation: fade-in var(--dur-fast) var(--ease-std);
   /* Tabular-nums keeps digit columns aligned across frame updates so
    * the "1 of 80" badge doesn't bounce horizontally. */
   font-variant-numeric: tabular-nums;
@@ -629,7 +721,7 @@ input:focus, select:focus, textarea:focus {
   --xy-edge-stroke: color-mix(in srgb, var(--edge-stroke, var(--fg-1)) 55%, var(--fg-2));
   stroke-width: 1.4px;
   stroke-opacity: 0.85;
-  transition: stroke-width 100ms ease, stroke-opacity 100ms ease, opacity 100ms ease;
+  transition: stroke-width var(--dur-fast) var(--ease-std), stroke-opacity var(--dur-fast) var(--ease-std), opacity var(--dur-fast) var(--ease-std);
 }
 .react-flow__edge:hover .react-flow__edge-path {
   /* Hover brightens to the full port colour — confirms which wire you're over. */
@@ -710,10 +802,14 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   padding: 0;
   cursor: ew-resize;
   z-index: 10;
-  transition: background 0.12s;
+  transition: background var(--dur-fast) var(--ease-std);
 }
 .palette-edge-toggle:hover {
   background: var(--accent-dim);
+}
+.palette-edge-toggle:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--accent) 60%, transparent);
 }
 
 .palette-header {
@@ -805,6 +901,7 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   cursor: grab;
   user-select: none;
   font-size: 11px;
+  transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std);
 }
 
 .palette-item:hover {
@@ -816,8 +913,15 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   background: var(--bg-3);
 }
 
+.palette-item:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring) inset;
+  background: var(--bg-2);
+}
+
 .palette-item-label {
   font-family: var(--font-mono);
+  color: var(--fg-0);
 }
 
 .palette-item-type {
@@ -835,13 +939,24 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   min-width: 160px;
   font-size: 10px;
   color: var(--fg-0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  transition: box-shadow 120ms ease, border-color 120ms ease;
+  box-shadow: var(--shadow-2);
+  transition:
+    box-shadow var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
 }
 .node:hover {
+  transform: translateY(-1px);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--cat-accent, var(--accent)) 55%, transparent),
-    0 4px 10px rgba(0, 0, 0, 0.4);
+    var(--shadow-3);
+}
+.node.dragging,
+.react-flow__node.dragging .node {
+  transform: scale(1.02);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 60%, transparent),
+    var(--shadow-4);
 }
 
 /* ─── Unified node row layout ────────────────────────────────────────────
@@ -955,6 +1070,14 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   padding: 0;
   cursor: pointer;
   width: 28px;
+}
+/* `hex` text input — wide enough for `#rrggbb` (7 chars in mono) with
+ * a tiny bit of breathing room, and uppercase so typed `ff0000` reads
+ * as the canonical hex form. The colour-swatch chip lives in the
+ * left border (set inline by StringEditor) so the visual cue stays. */
+.node-inline-hex {
+  width: 70px;
+  text-transform: lowercase;
 }
 .node-inline-select {
   padding: 0 4px;
@@ -1156,7 +1279,7 @@ body[data-wire-flow='1'] .react-flow__edge-path {
    rest dim out of the way. */
 body[data-wire-dragging='1'] .react-flow__handle:not([data-wire-affinity='match']) {
   opacity: 0.18;
-  transition: opacity 0.12s;
+  transition: opacity var(--dur-fast) var(--ease-std);
 }
 body[data-wire-dragging='1'] .react-flow__handle[data-wire-affinity='match'] {
   box-shadow: 0 0 0 3px rgba(244, 197, 66, 0.35);
@@ -1212,13 +1335,17 @@ body[data-wire-dragging='1'] .react-flow__handle[data-wire-affinity='match'] {
   position: fixed;
   background: var(--bg-1);
   border: 1px solid var(--accent-dim);
-  border-radius: 5px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-4);
   padding: 8px 10px;
   z-index: 2200;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100vh - 16px);
+  animation: pop-in var(--dur-base) var(--ease-out);
+  transform-origin: top left;
 }
 .port-editor-label {
   display: flex;
@@ -1367,7 +1494,7 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
   background: var(--accent) !important;
   border-color: var(--bg-0) !important;
   opacity: 0;
-  transition: opacity 0.12s;
+  transition: opacity var(--dur-fast) var(--ease-std);
 }
 .region-node:hover .region-resize-handle,
 .region-node[data-selected='1'] .region-resize-handle {
@@ -1664,9 +1791,10 @@ body[data-pro-mode='1'] .node.node-group .node-rows {
   padding: 18px 0 13px;
 }
 body[data-pro-mode='1'] .node-label {
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.4px;
+  line-height: 1.1;
 }
 
 /* For input-less GenericNode-based nodes (Number, String, …), replace
@@ -1674,14 +1802,15 @@ body[data-pro-mode='1'] .node-label {
  * node should display its constant, not its type name — the category
  * tint behind it is identification enough.
  *
- * Selector: a `.node` with no left-side input handles anywhere inside.
- * Param-row inline editor gets un-hidden + centred; the header label
- * is hidden so the value is the focal point. */
-body[data-pro-mode='1'] .node:not(:has(.node-row-handle-left)) .node-header .node-label {
+ * Selector: a `.node` with no left-side input handles AND with an
+ * editable inline input somewhere — without the second clause, source
+ * nodes that have neither (Time, Now, etc.) would render blank because
+ * we'd hide their label with nothing to put in its place. */
+body[data-pro-mode='1'] .node:not(:has(.node-row-handle-left)):has(.node-inline-input) .node-header .node-label {
   display: none;
 }
 body[data-pro-mode='1'] .node:not(:has(.node-row-handle-left)) .node-row {
-  height: 22px;
+  height: 18px;
   padding: 2px 10px;
   gap: 6px;
   justify-content: center;
@@ -1689,20 +1818,21 @@ body[data-pro-mode='1'] .node:not(:has(.node-row-handle-left)) .node-row {
 body[data-pro-mode='1'] .node:not(:has(.node-row-handle-left)) .node-row > .node-inline-input {
   display: inline-block !important;
   flex: 0 1 auto;
-  font-size: 14px;
-  height: 18px;
+  font-size: 12px;
+  height: 16px;
   min-width: 48px;
   text-align: center;
 }
 /* Math nodes override the label size at higher specificity, so Pro mode
  * needs to bump theirs explicitly. Same selector shape (data-math +
- * data-category) so we beat the existing math rule. */
+ * data-category) so we beat the existing math rule. Sized to match
+ * other Pro-mode labels — single-glyph math symbols get a touch more
+ * weight so they read at the same visual size as alpha labels. */
 body[data-pro-mode='1'] .node[data-math='1'] .node-label,
 body[data-pro-mode='1'] .node[data-math='1'][data-category] .node-label {
-  font-size: 22px;
-  font-weight: 500;
-  /* Math symbols (× ÷ · √ etc.) benefit from a hair more visual weight
-   * than alpha labels at the same px size — they're single glyphs. */
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 /* Extend the category gradient over the whole node body. */
 body[data-pro-mode='1'] .node[data-category] {
@@ -1878,13 +2008,15 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   bottom: 28px;
   background: var(--bg-1);
   border: 1px solid var(--danger, #d97565);
-  border-radius: 6px;
-  max-width: 480px;
-  max-height: 280px;
+  border-radius: var(--radius-md);
+  max-width: min(480px, calc(100vw - 32px));
+  max-height: min(280px, calc(100vh - 60px));
   overflow: auto;
   padding: 4px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-3);
   z-index: 100;
+  animation: pop-in var(--dur-base) var(--ease-out);
+  transform-origin: bottom right;
 }
 .warnings-row {
   display: flex;
@@ -1961,6 +2093,66 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   font-family: var(--font-mono);
   font-size: 9px;
   color: var(--fg-2);
+  gap: 4px;
+}
+/* The min/max scrub inputs sit where the old static span labels were.
+ * They read as plain text until hovered/focused, then pick up a subtle
+ * border so the user knows they're editable. Right-aligning max keeps
+ * the digits flush with the slider's right edge. */
+.iobox-range-input {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--fg-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 0 3px;
+  width: 44px;
+  cursor: ew-resize;
+  transition:
+    background var(--dur-fast) var(--ease-std),
+    border-color var(--dur-fast) var(--ease-std),
+    color var(--dur-fast) var(--ease-std);
+}
+.iobox-range-input-min { text-align: left; }
+.iobox-range-input-max { text-align: right; }
+
+/* Slider node: keep the slider track and the output pin on the same row
+ * so we save the vertical real estate the old dedicated `.node-ports`
+ * row was taking. The pin is React-Flow's absolutely-positioned Handle
+ * anchored at Position.Right; we just have to reserve a little right
+ * padding on the row so the track doesn't run under the pin glyph. */
+.iobox-slider-node .node-iobox-body {
+  padding-bottom: 6px;
+}
+.iobox-slider-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-right: 10px;
+}
+.iobox-slider-row .iobox-slider {
+  flex: 1;
+  min-width: 0;
+}
+.iobox-slider-handle {
+  /* Vertically centre on the slider track regardless of where React Flow
+   * would otherwise place the handle (default is the node's own center). */
+  top: 50% !important;
+  transform: translateY(-50%);
+}
+.iobox-range-input:hover:not(:focus) {
+  color: var(--fg-1);
+  border-color: var(--border);
+  background: var(--bg-1);
+}
+.iobox-range-input:focus {
+  color: var(--fg-0);
+  background: var(--bg-0);
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
+  box-shadow: var(--focus-ring);
+  outline: none;
+  cursor: text;
 }
 
 /* Toggle */
@@ -1974,7 +2166,7 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   font-weight: 600;
   border: 1px solid var(--border);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std), border-color var(--dur-fast) var(--ease-std);
 }
 .iobox-toggle.on {
   background: var(--accent);
@@ -2501,17 +2693,20 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: fade-in var(--dur-base) var(--ease-std);
+  backdrop-filter: blur(2px);
 }
 .settings-modal {
   background: var(--bg-0);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
-  width: 380px;
-  max-height: 80vh;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-4);
+  width: min(380px, calc(100vw - 32px));
+  max-height: min(80vh, calc(100vh - 32px));
   overflow: auto;
   color: var(--fg-0);
   font-size: 12px;
+  animation: pop-in var(--dur-slow) var(--ease-out);
 }
 .settings-header {
   display: flex;
@@ -2721,4 +2916,262 @@ body[data-pro-mode='1'] .node[data-math='1'] {
 .library-save-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* ─── Responsive breakpoints ─────────────────────────────────────────────
+ * Floret is a desktop tool, but it shouldn't break on a 13" laptop or a
+ * narrow split-screen. These rules collapse the palette and let the
+ * toolbar scroll horizontally when the viewport gets cramped. */
+
+@media (max-width: 1100px) {
+  .editor-with-palette {
+    grid-template-columns: 28px 1fr !important;
+  }
+  .toolbar {
+    padding: 0 6px;
+    gap: 6px;
+  }
+  .split {
+    grid-template-columns: 1fr 12px var(--preview-width, 360px);
+  }
+}
+
+@media (max-width: 880px) {
+  .toolbar {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    flex-wrap: nowrap;
+  }
+  .toolbar > * {
+    flex-shrink: 0;
+  }
+  .split {
+    grid-template-columns: 1fr 12px var(--preview-width, 280px);
+  }
+}
+
+/* ─── Unified tooltip system ──────────────────────────────────────────────
+ * Any element with [data-tooltip="..."] gets a delayed Notion-style
+ * tooltip via ::after. Set [data-tooltip-side="top"|"bottom"] to flip
+ * the anchor direction. Tooltips are pointer-events: none so they never
+ * interfere with hit-testing. */
+
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  background: var(--bg-0);
+  color: var(--fg-0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-3);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 5000;
+  transition:
+    opacity var(--dur-fast) var(--ease-out) 0ms,
+    transform var(--dur-fast) var(--ease-out) 0ms;
+}
+[data-tooltip][data-tooltip-side='bottom']::after {
+  top: calc(100% + 6px);
+}
+[data-tooltip]:not([data-tooltip-side='bottom'])::after {
+  bottom: calc(100% + 6px);
+}
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  /* Delay before showing — Notion-style ~400ms */
+  transition-delay: 400ms;
+}
+
+/* ─── Toolbar icon buttons ────────────────────────────────────────────────
+ * Three flavors:
+ *   .tb-icon-btn  → square icon-only button
+ *   .tb-pill      → icon + label (Pro mode)
+ *   .toolbar-run-btn → primary action with icon + label (Play/Pause) */
+
+.toolbar .tb-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  padding: 0;
+  color: var(--fg-1);
+}
+.toolbar .tb-icon-btn:hover:not(:disabled) {
+  color: var(--fg-0);
+}
+.toolbar .tb-icon-btn.tb-toggle.active {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-2));
+}
+
+.toolbar .toolbar-run-btn,
+.toolbar .tb-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+}
+.toolbar .toolbar-run-btn svg,
+.toolbar .tb-pill svg {
+  flex-shrink: 0;
+}
+.toolbar .toolbar-run-btn.running {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+/* ─── Status bar — colored state dot + pills ──────────────────────────── */
+
+.statusbar {
+  font-family: var(--font-ui);
+  gap: 12px;
+}
+.statusbar-left {
+  gap: 6px;
+}
+
+.status-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 8px 1px 7px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--fg-1);
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fg-2);
+  box-shadow: 0 0 0 0 transparent;
+  transition: background var(--dur-fast) var(--ease-std), box-shadow var(--dur-base) var(--ease-out);
+}
+.status-state-running .status-dot {
+  background: #6ddc8f;
+  box-shadow: 0 0 6px color-mix(in srgb, #6ddc8f 60%, transparent);
+  animation: status-pulse 2.2s ease-in-out infinite;
+}
+.status-state-warning .status-dot {
+  background: var(--accent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.status-state-paused .status-dot {
+  background: var(--fg-2);
+}
+.status-state-error .status-dot {
+  background: var(--danger);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--danger) 70%, transparent);
+}
+.status-state-running { color: var(--fg-0); }
+.status-state-warning { color: var(--accent); }
+
+@keyframes status-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.15); opacity: 0.85; }
+}
+
+.status-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--border);
+  margin: 0 2px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  color: var(--fg-2);
+  font-variant-numeric: tabular-nums;
+}
+.status-pill svg {
+  color: var(--fg-2);
+}
+.status-pill-label {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  color: var(--fg-2);
+}
+.status-pill-value {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--fg-0);
+}
+
+.statusbar-version {
+  color: var(--fg-2);
+  letter-spacing: 0.5px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.status-warnings {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 8px;
+  background: color-mix(in srgb, var(--danger) 14%, var(--bg-1));
+  border: 1px solid color-mix(in srgb, var(--danger) 50%, var(--border));
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+}
+.status-warnings:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger) 22%, var(--bg-1));
+  text-decoration: none;
+}
+.status-warnings-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 14px;
+  padding: 0 4px;
+  background: var(--danger);
+  color: var(--bg-0);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+}
+.status-warnings-label {
+  letter-spacing: 0.3px;
+}
+.status-clean {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--fg-2);
 }

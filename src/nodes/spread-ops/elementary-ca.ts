@@ -15,7 +15,7 @@ import { registerNode } from '../registry';
 export const elementaryCAStepNode = registerNode({
   type: 'spread/elementary-ca',
   category: 'Spread',
-  label: 'ElementaryCA',
+  label: 'ElementaryCASpread',
   description: 'Advance a 1D elementary cellular automaton by one tick.',
   inputs: [
     { name: 'row', type: 'boolean', kind: 'spread' },
@@ -47,7 +47,7 @@ export const elementaryCAStepNode = registerNode({
 export const caSeedNode = registerNode({
   type: 'spread/ca-seed',
   category: 'Spread',
-  label: 'CASeed',
+  label: 'CASeedSpread',
   description: 'Seed a 1D CA row with one live cell at `index`.',
   inputs: [
     { name: 'count', type: 'number', default: 64, integer: true },
@@ -76,7 +76,7 @@ export const caSeedNode = registerNode({
 export const scrollUpNode = registerNode({
   type: 'spread/scroll-up',
   category: 'Spread',
-  label: 'ScrollUp',
+  label: 'ScrollUpSpread',
   description: 'Scroll a 2D boolean grid up one row and append newRow at the bottom.',
   inputs: [
     { name: 'grid', type: 'boolean', kind: 'spread' },
@@ -108,7 +108,7 @@ export const scrollUpNode = registerNode({
 export const lastRowNode = registerNode({
   type: 'spread/last-row',
   category: 'Spread',
-  label: 'LastRow',
+  label: 'LastRowSpread',
   description: 'Slice the bottom row from a 2D boolean grid.',
   inputs: [
     { name: 'grid', type: 'boolean', kind: 'spread' },
@@ -133,7 +133,7 @@ export const lastRowNode = registerNode({
 export const caGridSeedNode = registerNode({
   type: 'spread/ca-grid-seed',
   category: 'Spread',
-  label: 'CAGridSeed',
+  label: 'CAGridSeedSpread',
   description: 'Seed a 2D boolean grid with one live cell in the bottom row.',
   inputs: [
     { name: 'cols', type: 'number', default: 64, integer: true },

@@ -3,7 +3,7 @@ import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { nodeRegistry } from '../../nodes/registry';
 import { portColorVar } from '../connection-rules';
 import { useNodeParam } from '../useNodeParam';
-import type { NoduleNodeData } from '../editor-state';
+import type { FloretNodeData } from '../editor-state';
 
 /**
  * XY Pad — a 2D draggable area. Outputs `x` and `y` in [0, 1].
@@ -11,7 +11,7 @@ import type { NoduleNodeData } from '../editor-state';
  */
 export const XYPadNode = memo(function XYPadNode(props: NodeProps) {
   const { id, data, selected } = props;
-  const nodeData = data as unknown as NoduleNodeData;
+  const nodeData = data as unknown as FloretNodeData;
   const def = nodeRegistry.get(nodeData.defType)!;
   const [x, setX, commitX] = useNodeParam<number>(id, 'x', 0.5);
   const [y, setY, commitY] = useNodeParam<number>(id, 'y', 0.5);

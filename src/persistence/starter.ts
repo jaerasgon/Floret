@@ -1,4 +1,4 @@
-import type { NoduleEdge, NoduleNode } from '../editor/editor-state';
+import type { FloretEdge, FloretNode } from '../editor/editor-state';
 
 /**
  * First-run starter patch.
@@ -12,7 +12,7 @@ import type { NoduleEdge, NoduleNode } from '../editor/editor-state';
  * The patch: a centred ellipse whose diameter breathes with `sin(time)`.
  * Five nodes — Time → Sin → Map → Ellipse → Renderer. Picked for being
  * small enough to read at a glance and clearly demonstrating the
- * source→transform→draw→render flow that every patch in Nodule follows.
+ * source→transform→draw→render flow that every patch in Floret follows.
  */
 
 let _seq = 0;
@@ -26,10 +26,10 @@ function node(
   defType: string,
   pos: { x: number; y: number },
   params: Record<string, unknown> = {},
-): NoduleNode {
+): FloretNode {
   return {
     id,
-    type: 'nodule',
+    type: 'floret',
     position: pos,
     data: {
       defType,
@@ -44,7 +44,7 @@ function edge(
   sourcePort: string,
   target: string,
   targetPort: string,
-): NoduleEdge {
+): FloretEdge {
   return {
     id: uid('e'),
     source,
@@ -54,7 +54,7 @@ function edge(
   };
 }
 
-export function starterPatch(): { nodes: NoduleNode[]; edges: NoduleEdge[] } {
+export function starterPatch(): { nodes: FloretNode[]; edges: FloretEdge[] } {
   _seq = 0;
   const time     = node('starter_time',     'time/seconds',    { x: -360, y:  20 });
   const sinT     = node('starter_sin',      'math/sin',        { x: -200, y:  20 });

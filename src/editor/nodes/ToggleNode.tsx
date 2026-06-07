@@ -3,11 +3,11 @@ import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { nodeRegistry } from '../../nodes/registry';
 import { portColorVar } from '../connection-rules';
 import { useNodeParam } from '../useNodeParam';
-import type { NoduleNodeData } from '../editor-state';
+import type { FloretNodeData } from '../editor-state';
 
 export const ToggleNode = memo(function ToggleNode(props: NodeProps) {
   const { id, data, selected } = props;
-  const nodeData = data as unknown as NoduleNodeData;
+  const nodeData = data as unknown as FloretNodeData;
   const def = nodeRegistry.get(nodeData.defType)!;
   const [value, setLive, commit] = useNodeParam<boolean>(id, 'value', false);
 

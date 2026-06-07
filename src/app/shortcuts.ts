@@ -52,7 +52,7 @@ export function useGlobalShortcuts(): void {
       // We dispatch via a custom event the Canvas listens to so we
       // stay decoupled from the React Flow API.
       window.dispatchEvent(
-        new CustomEvent('nodule:open-search', { detail: screen }),
+        new CustomEvent('floret:open-search', { detail: screen }),
       );
     }
 
@@ -84,11 +84,11 @@ export function useGlobalShortcuts(): void {
       }
 
       // F → fit-view to the current selection (or all nodes if nothing
-      // is selected). Canvas listens via `nodule:fit-selection` and
+      // is selected). Canvas listens via `floret:fit-selection` and
       // calls reactFlow.fitView with the chosen ids.
       if ((e.key === 'f' || e.key === 'F') && !editable && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
-        window.dispatchEvent(new CustomEvent('nodule:fit-selection'));
+        window.dispatchEvent(new CustomEvent('floret:fit-selection'));
         return;
       }
 
@@ -128,7 +128,7 @@ export function useGlobalShortcuts(): void {
       if (e.key === 's' || e.key === 'S') {
         if (editable) return;
         e.preventDefault();
-        window.dispatchEvent(new CustomEvent('nodule:save'));
+        window.dispatchEvent(new CustomEvent('floret:save'));
         return;
       }
 
@@ -169,7 +169,7 @@ export function useGlobalShortcuts(): void {
         // window event and converts via React Flow's projector.
         const screen = lastMouse ?? viewportCentre().screen;
         window.dispatchEvent(
-          new CustomEvent('nodule:paste', { detail: screen }),
+          new CustomEvent('floret:paste', { detail: screen }),
         );
         return;
       }

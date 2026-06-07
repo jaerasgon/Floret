@@ -4,7 +4,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { nodeRegistry } from '../../nodes/registry';
 import { getResolvedInputs, getResolvedOutputs, type PortSpec } from '../../nodes/types';
 import { getUpstreamTypes, parseHandle, portColorVar } from '../connection-rules';
-import { useEditor, type NoduleNodeData } from '../editor-state';
+import { useEditor, type FloretNodeData } from '../editor-state';
 import { useNodeParam } from '../useNodeParam';
 import { openPortValueEditor } from '../PortValueEditor';
 import { ScrubInput } from '../ScrubInput';
@@ -29,7 +29,7 @@ import { syntheticSplicerId } from '../../runtime/compile';
  */
 export const GenericNode = memo(function GenericNode(props: NodeProps) {
   const { id, data, selected } = props;
-  const nodeData = data as unknown as NoduleNodeData;
+  const nodeData = data as unknown as FloretNodeData;
   const def = nodeRegistry.get(nodeData.defType);
 
   // Which input ports on this node have an incoming wire?
@@ -367,12 +367,12 @@ export function InputPin({
       if (!edge || !edge.source) return null;
       const srcNode = s.nodes.find((n) => n.id === edge.source);
       if (!srcNode) return null;
-      const srcDef = nodeRegistry.get((srcNode.data as NoduleNodeData).defType);
+      const srcDef = nodeRegistry.get((srcNode.data as FloretNodeData).defType);
       if (!srcDef) return null;
       const srcHandle = parseHandle(edge.sourceHandle);
       if (!srcHandle) return null;
       if (srcDef.regionKind) {
-        const ports = (srcNode.data as NoduleNodeData).ports ?? [];
+        const ports = (srcNode.data as FloretNodeData).ports ?? [];
         const matchingPort = ports.find((p) => p.id === srcHandle.name);
         if (matchingPort) {
           return {

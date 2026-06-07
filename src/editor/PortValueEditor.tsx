@@ -85,7 +85,7 @@ export function PortValueEditor() {
   useEffect(() => {
     if (!s.open) return;
     const onDown = (e: MouseEvent) => {
-      const root = document.getElementById('nodule-port-editor');
+      const root = document.getElementById('floret-port-editor');
       if (root && !root.contains(e.target as Node)) close();
     };
     window.addEventListener('mousedown', onDown, true);
@@ -137,7 +137,7 @@ export function PortValueEditor() {
 
   return (
     <div
-      id="nodule-port-editor"
+      id="floret-port-editor"
       className="port-editor"
       style={{ left, top, width: POPOVER_W }}
     >

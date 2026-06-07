@@ -22,7 +22,7 @@ export interface Prefs {
   proMode: boolean;
 }
 
-const LS_KEY = 'nodule.prefs.v1';
+const LS_KEY = 'floret.prefs.v1';
 
 const DEFAULTS: Prefs = {
   wireFlowAnimation: true,

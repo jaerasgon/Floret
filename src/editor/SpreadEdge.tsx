@@ -3,7 +3,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { nodeRegistry } from '../nodes/registry';
 import { getResolvedOutputs } from '../nodes/types';
 import { getUpstreamTypes, parseHandle, portColorVar } from './connection-rules';
-import { useEditor, type NoduleNodeData } from './editor-state';
+import { useEditor, type FloretNodeData } from './editor-state';
 import type { PortType } from '../runtime/types';
 
 /**
@@ -35,7 +35,7 @@ export function SpreadEdge(props: EdgeProps) {
     useShallow((s) => {
       const node = s.nodes.find((n) => n.id === source);
       if (!node) return null as PortType | null;
-      const data = node.data as NoduleNodeData;
+      const data = node.data as FloretNodeData;
       const def = nodeRegistry.get(data.defType);
       if (!def) return null;
       const parsed = sourceHandleId ? parseHandle(sourceHandleId) : null;

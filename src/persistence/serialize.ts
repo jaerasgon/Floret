@@ -1,4 +1,4 @@
-import type { NoduleEdge, NoduleNode } from '../editor/editor-state';
+import type { FloretEdge, FloretNode } from '../editor/editor-state';
 import { CURRENT_PATCH_VERSION, type PatchFile, type SerializedEdge, type SerializedNode } from './schema';
 
 /**
@@ -12,8 +12,8 @@ import { CURRENT_PATCH_VERSION, type PatchFile, type SerializedEdge, type Serial
  */
 
 export interface SerializeInput {
-  nodes: ReadonlyArray<NoduleNode>;
-  edges: ReadonlyArray<NoduleEdge>;
+  nodes: ReadonlyArray<FloretNode>;
+  edges: ReadonlyArray<FloretEdge>;
   name?: string;
 }
 
@@ -49,7 +49,7 @@ export function serializePatch(input: SerializeInput): PatchFile {
     targetHandle: e.targetHandle ?? null,
   }));
   return {
-    kind: 'nodule.patch',
+    kind: 'floret.patch',
     version: CURRENT_PATCH_VERSION,
     appVersion: '0.0.1',
     meta: {
@@ -67,11 +67,11 @@ export function serializePatch(input: SerializeInput): PatchFile {
  * the editor store's loadPatch action mounts the result and seeds the
  * ParamStore.
  */
-export function deserializePatch(patch: PatchFile): { nodes: NoduleNode[]; edges: NoduleEdge[] } {
-  const nodes: NoduleNode[] = patch.nodes.map((n) => {
-    const out: NoduleNode = {
+export function deserializePatch(patch: PatchFile): { nodes: FloretNode[]; edges: FloretEdge[] } {
+  const nodes: FloretNode[] = patch.nodes.map((n) => {
+    const out: FloretNode = {
       id: n.id,
-      type: 'nodule',
+      type: 'floret',
       position: { ...n.position },
       data: {
         defType: n.defType,
@@ -98,7 +98,7 @@ export function deserializePatch(patch: PatchFile): { nodes: NoduleNode[]; edges
     }
     return out;
   });
-  const edges: NoduleEdge[] = patch.edges.map((e) => ({
+  const edges: FloretEdge[] = patch.edges.map((e) => ({
     id: e.id,
     source: e.source,
     target: e.target,
@@ -123,9 +123,9 @@ export function deserializePatch(patch: PatchFile): { nodes: NoduleNode[]; edges
  * Pure — returns a new edge list. Safe to call multiple times.
  */
 export function migrateLegacyEdges(
-  nodes: ReadonlyArray<NoduleNode>,
-  edges: ReadonlyArray<NoduleEdge>,
-): NoduleEdge[] {
+  nodes: ReadonlyArray<FloretNode>,
+  edges: ReadonlyArray<FloretEdge>,
+): FloretEdge[] {
   const styleSources = new Set<string>();
   for (const n of nodes) {
     const t = (n.data as { defType?: string } | undefined)?.defType;

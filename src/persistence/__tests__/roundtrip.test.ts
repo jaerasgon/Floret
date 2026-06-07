@@ -2,30 +2,30 @@ import { describe, expect, it } from 'vitest';
 import { serializePatch, deserializePatch } from '../serialize';
 import { migratePatch } from '../migrate';
 import { CURRENT_PATCH_VERSION, emptyPatch, isPatchFile } from '../schema';
-import type { NoduleEdge, NoduleNode } from '../../editor/editor-state';
+import type { FloretEdge, FloretNode } from '../../editor/editor-state';
 
-const sampleNodes: NoduleNode[] = [
+const sampleNodes: FloretNode[] = [
   {
     id: 'time_1',
-    type: 'nodule',
+    type: 'floret',
     position: { x: 100, y: 100 },
     data: { defType: 'time/seconds', params: {} },
   },
   {
     id: 'slider_1',
-    type: 'nodule',
+    type: 'floret',
     position: { x: 300, y: 100 },
     data: { defType: 'io/slider', params: { value: 0.42, min: 0, max: 1 } },
   },
   {
     id: 'renderer_1',
-    type: 'nodule',
+    type: 'floret',
     position: { x: 500, y: 100 },
     data: { defType: 'render/renderer', params: {} },
   },
 ];
 
-const sampleEdges: NoduleEdge[] = [
+const sampleEdges: FloretEdge[] = [
   {
     id: 'e1',
     source: 'time_1',
@@ -58,7 +58,7 @@ describe('persistence round-trip', () => {
     expect(isPatchFile(null)).toBe(false);
     expect(isPatchFile({})).toBe(false);
     expect(isPatchFile({ kind: 'something-else', version: 1, nodes: [], edges: [] })).toBe(false);
-    expect(isPatchFile({ kind: 'nodule.patch', version: 1, nodes: [], edges: [] })).toBe(true);
+    expect(isPatchFile({ kind: 'floret.patch', version: 1, nodes: [], edges: [] })).toBe(true);
   });
 
   it('emptyPatch is shape-valid', () => {
@@ -72,7 +72,7 @@ describe('persistence round-trip', () => {
   it('migrate rejects newer-than-current versions', () => {
     expect(() =>
       migratePatch({
-        kind: 'nodule.patch',
+        kind: 'floret.patch',
         version: CURRENT_PATCH_VERSION + 1,
         nodes: [],
         edges: [],
@@ -82,7 +82,7 @@ describe('persistence round-trip', () => {
 
   it('migrate is no-op for current version', () => {
     const cur: PatchAtVersion1 = {
-      kind: 'nodule.patch',
+      kind: 'floret.patch',
       version: CURRENT_PATCH_VERSION,
       nodes: [],
       edges: [],
@@ -94,7 +94,7 @@ describe('persistence round-trip', () => {
 });
 
 type PatchAtVersion1 = {
-  kind: 'nodule.patch';
+  kind: 'floret.patch';
   version: number;
   nodes: never[];
   edges: never[];

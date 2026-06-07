@@ -2,7 +2,7 @@ import type { Connection, Edge, Node } from '@xyflow/react';
 import { nodeRegistry } from '../nodes/registry';
 import { getResolvedInputs } from '../nodes/types';
 import type { PortType } from '../runtime/types';
-import type { NoduleNodeData, RegionPortDescriptor } from './editor-state';
+import type { FloretNodeData, RegionPortDescriptor } from './editor-state';
 
 type PortKind = 'single' | 'spread' | 'multi';
 
@@ -309,7 +309,7 @@ export function getUpstreamTypes(
     if (!srcNode) continue;
     const srcParsed = parseHandle(e.sourceHandle);
     if (!srcParsed) continue;
-    const data = srcNode.data as NoduleNodeData | undefined;
+    const data = srcNode.data as FloretNodeData | undefined;
     const def = data ? nodeRegistry.get(data.defType) : undefined;
     // Region/subpatch nodes carry runtime-derived ports on data.ports.
     if (def?.regionKind) {

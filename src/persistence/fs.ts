@@ -39,8 +39,8 @@ declare global {
 
 const PATCH_FILE_TYPES = [
   {
-    description: 'Nodule patch',
-    accept: { 'application/json': ['.nodule.json', '.json'] },
+    description: 'Floret patch',
+    accept: { 'application/json': ['.floret.json', '.json'] },
   },
 ];
 
@@ -128,7 +128,7 @@ function parseAndMigrate(text: string): PatchFile {
     throw new Error(`patch is not valid JSON: ${(e as Error).message}`);
   }
   if (!isPatchFile(raw)) {
-    throw new Error('file is not a Nodule patch');
+    throw new Error('file is not a Floret patch');
   }
   return migratePatch(raw).patch;
 }
@@ -136,12 +136,12 @@ function parseAndMigrate(text: string): PatchFile {
 function suggestedFilename(patch: PatchFile): string {
   const name = patch.meta?.name ?? 'untitled';
   const safe = name.replace(/[^a-z0-9._-]+/gi, '-').toLowerCase();
-  return `${safe}.nodule.json`;
+  return `${safe}.floret.json`;
 }
 
 // ─── localStorage autosave (small patches; not for large work) ──────────────
 
-const AUTOSAVE_KEY = 'nodule:autosave';
+const AUTOSAVE_KEY = 'floret:autosave';
 
 export function autosave(patch: PatchFile): void {
   try {

@@ -1,4 +1,4 @@
-import type { NoduleEdge, NoduleNode } from './editor-state';
+import type { FloretEdge, FloretNode } from './editor-state';
 
 /**
  * In-memory clipboard for nodes + their internal edges.
@@ -11,7 +11,7 @@ import type { NoduleEdge, NoduleNode } from './editor-state';
  * selection so paste can land at any anchor point and preserve layout.
  */
 
-export const CLIPBOARD_KIND = 'nodule.clipboard';
+export const CLIPBOARD_KIND = 'floret.clipboard';
 
 interface ClipboardNode {
   defType: string;
@@ -39,8 +39,8 @@ let buffer: Clipboard | null = null;
  * the selection) into the buffer. No-op if nothing is selected.
  */
 export function copySelectionToClipboard(
-  nodes: ReadonlyArray<NoduleNode>,
-  edges: ReadonlyArray<NoduleEdge>,
+  nodes: ReadonlyArray<FloretNode>,
+  edges: ReadonlyArray<FloretEdge>,
 ): number {
   const selected = nodes.filter((n) => n.selected);
   if (selected.length === 0) return 0;
@@ -87,26 +87,26 @@ export function hasClipboard(): boolean {
  * (so the caller can re-select them after paste).
  */
 export function pasteFromClipboard(anchor: { x: number; y: number }): {
-  nodes: NoduleNode[];
-  edges: NoduleEdge[];
+  nodes: FloretNode[];
+  edges: FloretEdge[];
   ids: string[];
 } {
   if (!buffer) return { nodes: [], edges: [], ids: [] };
 
   const idMap = new Map<number, string>();
-  const newNodes: NoduleNode[] = buffer.nodes.map((cn, i) => {
+  const newNodes: FloretNode[] = buffer.nodes.map((cn, i) => {
     const id = `${cn.defType.replace(/[^a-z0-9_]/gi, '_')}_paste_${randSuffix()}`;
     idMap.set(i, id);
     return {
       id,
-      type: 'nodule',
+      type: 'floret',
       position: { x: anchor.x + cn.rel.x, y: anchor.y + cn.rel.y },
       data: { defType: cn.defType, params: { ...cn.params } },
       selected: true,
     };
   });
 
-  const newEdges: NoduleEdge[] = buffer.edges.map((ce) => {
+  const newEdges: FloretEdge[] = buffer.edges.map((ce) => {
     const id = `e_paste_${randSuffix()}`;
     return {
       id,

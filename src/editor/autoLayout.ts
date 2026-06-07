@@ -1,4 +1,4 @@
-import type { NoduleNode, NoduleEdge } from './editor-state';
+import type { FloretNode, FloretEdge } from './editor-state';
 
 /**
  * Simple left-to-right layered layout. For each scope (root + each
@@ -16,13 +16,13 @@ const REGION_INNER_PADDING_X = 20;
 const REGION_INNER_PADDING_Y = 36;
 
 export function autoLayoutPatch(
-  nodes: ReadonlyArray<NoduleNode>,
-  edges: ReadonlyArray<NoduleEdge>,
-): NoduleNode[] {
+  nodes: ReadonlyArray<FloretNode>,
+  edges: ReadonlyArray<FloretEdge>,
+): FloretNode[] {
   const positions = new Map<string, { x: number; y: number }>();
   // Compute per-scope layouts. Run for root first, then each region in
   // depth-first order so children's local positions are stable.
-  const byParent = new Map<string | null, NoduleNode[]>();
+  const byParent = new Map<string | null, FloretNode[]>();
   for (const n of nodes) {
     const k = n.parentId ?? null;
     const list = byParent.get(k) ?? [];

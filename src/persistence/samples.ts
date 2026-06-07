@@ -1,4 +1,4 @@
-import type { NoduleEdge, NoduleNode } from '../editor/editor-state';
+import type { FloretEdge, FloretNode } from '../editor/editor-state';
 import { migrateLegacyEdges } from './serialize';
 
 /**
@@ -17,7 +17,7 @@ export interface Sample {
    * the Samples menu. Missing / empty falls back to "Misc".
    */
   category?: string;
-  build: () => { nodes: NoduleNode[]; edges: NoduleEdge[] };
+  build: () => { nodes: FloretNode[]; edges: FloretEdge[] };
 }
 
 let _seq = 0;
@@ -47,11 +47,11 @@ function node(
   pos: { x: number; y: number },
   params: Record<string, unknown> = {},
   parentId?: string,
-  extra: Partial<NoduleNode> = {},
-): NoduleNode {
-  const n: NoduleNode = {
+  extra: Partial<FloretNode> = {},
+): FloretNode {
+  const n: FloretNode = {
     id,
-    type: 'nodule',
+    type: 'floret',
     position: pos,
     data: {
       defType,
@@ -90,7 +90,7 @@ const nodeWithPorts = node;
 const SAMPLE_SX = 1.4;
 const SAMPLE_SY = 2.5;
 
-function spaced(result: { nodes: NoduleNode[]; edges: NoduleEdge[] }) {
+function spaced(result: { nodes: FloretNode[]; edges: FloretEdge[] }) {
   for (const n of result.nodes) {
     n.position = {
       x: n.position.x * SAMPLE_SX,
@@ -125,7 +125,7 @@ function edge(
   sourcePort: string,
   target: string,
   targetPort: string,
-): NoduleEdge {
+): FloretEdge {
   return {
     id: uid('e'),
     source,
@@ -153,9 +153,9 @@ function buildLissajous() {
   const cy = node('lj_cy', 'value/number', { x: -380, y: 500 }, { value: 0 });
 
   const RID = 'lj_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: -120, y: 20 },
     data: {
       defType: 'region/foreach',
@@ -253,7 +253,7 @@ function buildKaleidoscope() {
   // morphs without any state.
   const N = 12;
   const url = node('ks_url', 'io/image-url', { x: -560, y: 20 }, {
-    url: 'https://picsum.photos/seed/nodule-kaleido/500/500',
+    url: 'https://picsum.photos/seed/floret-kaleido/500/500',
   });
   const time = node('ks_time', 'time/seconds', { x: -560, y: 100 });
 
@@ -279,9 +279,9 @@ function buildKaleidoscope() {
   const idxs = nodeWithPorts('ks_idxs', 'spread/range', { x: -560, y: 280 }, { count: N });
 
   const RID = 'ks_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: 620, y: 220 },
     data: {
       defType: 'region/foreach',
@@ -364,9 +364,9 @@ function buildRippleField() {
   const timeScale = node('rf_timeScale', 'value/number', { x: -420, y: 400 }, { value: 3 });
 
   const RID = 'rf_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: -140, y: 20 },
     data: {
       defType: 'region/foreach',
@@ -466,9 +466,9 @@ function buildStarfield() {
   const phaseScale = node('sf_phaseScale', 'value/number', { x: -420, y: 300 }, { value: 0.3 });
 
   const RID = 'sf_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: -120, y: 20 },
     data: {
       defType: 'region/foreach',
@@ -571,9 +571,9 @@ function buildToneSurface() {
   const grid = nodeWithPorts('ts_grid', 'spread/grid', { x: -420, y: 200 }, { cols: 20, rows: 20, w: 480, h: 480 });
 
   const RID = 'ts_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: -160, y: 200 },
     data: {
       defType: 'region/foreach',
@@ -675,9 +675,9 @@ function buildFFTBloom() {
   const idxs = nodeWithPorts('fb_idxs', 'spread/range', { x: -420, y: 200 }, { count: 64 });
 
   const RID = 'fb_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: -160, y: 200 },
     data: {
       defType: 'region/foreach',
@@ -781,9 +781,9 @@ function buildRandomWalkTrail() {
   const idx = node('rw_idx', 'spread/range', { x: -480, y: 340 }, { count: N });
 
   const RID = 'rw_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: 200, y: 80 },
     data: {
       defType: 'region/foreach',
@@ -876,9 +876,9 @@ function buildGameOfLife() {
   const idx = node('gol_idx', 'spread/range', { x: -480, y: 300 }, { count: N });
 
   const RID = 'gol_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: 200, y: 20 },
     data: {
       defType: 'region/foreach',
@@ -989,9 +989,9 @@ function buildNoiseWave() {
   const noiseScale = node('dm_noiseScale', 'value/number', { x: -480, y: 300 }, { value: 0.018 });
 
   const RID = 'dm_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: 200, y: 20 },
     data: {
       defType: 'region/foreach',
@@ -1109,7 +1109,7 @@ function buildDatamosh() {
 
   // Load image. Set a reasonable default; the user can swap the URL.
   const imgLoader = node('imd_img', 'io/image-url', { x: -540, y: 160 }, {
-    url: 'https://picsum.photos/seed/nodule/500/500',
+    url: 'https://picsum.photos/seed/floret/500/500',
   });
 
   // Image bounds: top-left at (-200, -200) with size (400, 400) so the
@@ -1234,9 +1234,9 @@ function buildForceField() {
   const sw = node('ff_sw', 'style/stroke-weight', { x: -260, y: 380 }, { w: 2 });
 
   const RID = 'ff_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: 200, y: 20 },
     data: {
       defType: 'region/foreach',
@@ -1361,9 +1361,9 @@ function buildCSVBarChart() {
   const heightScale = node('csv_heightScale', 'value/number', { x: -480, y: 420 }, { value: 4 });
 
   const RID = 'csv_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: 200, y: 60 },
     data: {
       defType: 'region/foreach',
@@ -1466,8 +1466,8 @@ function buildIslamicPattern() {
   // ── Layer 1: 6 outer outlined circles (flower-of-life ring) ────────────
   const outerAngles = nodeWithPorts('ip_outerAngles', 'spread/circular', { x: -540, y: 240 }, { count: 6 });
   const OUTER_RID = 'ip_outerRegion';
-  const outerRegion: NoduleNode = {
-    id: OUTER_RID, type: 'nodule', position: { x: -260, y: 240 },
+  const outerRegion: FloretNode = {
+    id: OUTER_RID, type: 'floret', position: { x: -260, y: 240 },
     data: { defType: 'region/foreach',
       params: { width: 700, height: 200, label: 'Outer Circles' },
       ports: [
@@ -1484,8 +1484,8 @@ function buildIslamicPattern() {
   // ── Layer 2: 6 teal filled inner-ring petals ───────────────────────────
   const midAngles = nodeWithPorts('ip_midAngles', 'spread/circular', { x: -540, y: 480 }, { count: 6 });
   const MID_RID = 'ip_midRegion';
-  const midRegion: NoduleNode = {
-    id: MID_RID, type: 'nodule', position: { x: -260, y: 480 },
+  const midRegion: FloretNode = {
+    id: MID_RID, type: 'floret', position: { x: -260, y: 480 },
     data: { defType: 'region/foreach',
       params: { width: 700, height: 180, label: 'Mid Petals' },
       ports: [
@@ -1506,8 +1506,8 @@ function buildIslamicPattern() {
   const starIdxs = nodeWithPorts('ip_starIdxs', 'spread/range', { x: -540, y: 700 }, { count: 16 });
   const starStep = node('ip_starStep', 'value/number', { x: -540, y: 760 }, { value: (Math.PI * 2) / 16 });
   const STAR_RID = 'ip_starRegion';
-  const starRegion: NoduleNode = {
-    id: STAR_RID, type: 'nodule', position: { x: -260, y: 700 },
+  const starRegion: FloretNode = {
+    id: STAR_RID, type: 'floret', position: { x: -260, y: 700 },
     data: { defType: 'region/foreach',
       params: { width: 720, height: 220, label: 'Star Vertices' },
       ports: [
@@ -1530,8 +1530,8 @@ function buildIslamicPattern() {
   // ── Layer 4: 6 small red dots at innermost ring ────────────────────────
   const innerAngles = nodeWithPorts('ip_innerAngles', 'spread/circular', { x: -540, y: 940 }, { count: 6 });
   const INNER_RID = 'ip_innerRegion';
-  const innerRegion: NoduleNode = {
-    id: INNER_RID, type: 'nodule', position: { x: -260, y: 940 },
+  const innerRegion: FloretNode = {
+    id: INNER_RID, type: 'floret', position: { x: -260, y: 940 },
     data: { defType: 'region/foreach',
       params: { width: 700, height: 160, label: 'Inner Dots' },
       ports: [
@@ -1658,9 +1658,9 @@ function buildPhotoMosaic() {
   const bg = node('pm_bg', 'color/rgb', { x: -340, y: 340 }, { r: 8, g: 8, b: 12, a: 255 });
 
   const RID = 'pm_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: 0, y: 20 },
     data: {
       defType: 'region/foreach',
@@ -1972,9 +1972,9 @@ function buildSubpatchPetals() {
 
   // ForEach region — fan the 8 angles through the petal subpatch.
   const RID = 'sp_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: -200, y: 20 },
     data: {
       defType: 'region/foreach',
@@ -1989,9 +1989,9 @@ function buildSubpatchPetals() {
 
   // Subpatch lives inside the region — runs once per iteration.
   const SID = 'sp_petal';
-  const subpatch: NoduleNode = {
+  const subpatch: FloretNode = {
     id: SID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: 100, y: 40 },
     data: {
       defType: 'meta/subpatch',
@@ -2118,7 +2118,7 @@ function buildSlicerDrift() {
   const SLICE = 84; // displayed slice size (px)
 
   const img    = node('sl_img',   'io/image-url', { x: -540, y:  20 },
-                      { url: 'https://picsum.photos/seed/nodule-slicer/600/600' });
+                      { url: 'https://picsum.photos/seed/floret-slicer/600/600' });
   const time   = node('sl_time',  'time/seconds', { x: -540, y: 100 });
   const slicer = nodeWithPorts('sl_slicer', 'image/slicer',
                                { x: -340, y:  20 }, { cols: COLS, rows: ROWS });
@@ -2129,9 +2129,9 @@ function buildSlicerDrift() {
   // ForEach region carries one image + one seed per iteration and emits
   // one positioned layer.
   const RID = 'sl_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: -100, y: 20 },
     data: {
       defType: 'region/foreach',
@@ -2197,7 +2197,7 @@ function buildMixedMedia() {
 
   // ── Slicer drift (background) ─────────────────────────────
   const img    = node('mm_img',   'io/image-url', { x: -560, y:  20 },
-                      { url: 'https://picsum.photos/seed/nodule-mix/600/600' });
+                      { url: 'https://picsum.photos/seed/floret-mix/600/600' });
   const time   = node('mm_time',  'time/seconds', { x: -560, y: 100 });
   const slicer = nodeWithPorts('mm_slicer', 'image/slicer',
                                { x: -340, y:  20 }, { cols: COLS, rows: ROWS });
@@ -2205,9 +2205,9 @@ function buildMixedMedia() {
                                { x: -560, y: 180 }, { count: N });
 
   const SLICE_R = 'mm_slice_region';
-  const sliceRegion: NoduleNode = {
+  const sliceRegion: FloretNode = {
     id: SLICE_R,
-    type: 'nodule',
+    type: 'floret',
     position: { x: -100, y: 20 },
     data: {
       defType: 'region/foreach',
@@ -2232,9 +2232,9 @@ function buildMixedMedia() {
                                { x: -560, y: 380 }, { count: RING_N, phase: 0 });
 
   const RING_R = 'mm_ring_region';
-  const ringRegion: NoduleNode = {
+  const ringRegion: FloretNode = {
     id: RING_R,
-    type: 'nodule',
+    type: 'floret',
     position: { x: -100, y: 360 },
     data: {
       defType: 'region/foreach',
@@ -2617,9 +2617,9 @@ function buildParticleFountain() {
   const time  = node('pf_time', 'time/seconds', { x: -560, y: 140 });
 
   const RID = 'pf_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: -340, y: 60 },
     data: {
       defType: 'region/foreach',
@@ -2744,9 +2744,9 @@ function buildMoversInNoise() {
   const time  = node('mn_time', 'time/seconds', { x: -560, y: 140 });
 
   const RID = 'mn_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: -340, y: 60 },
     data: {
       defType: 'region/foreach',
@@ -2830,8 +2830,8 @@ function buildNocRandomWalker() {
   const idxs = node('rwk_idxs', 'spread/range', { x: -440, y: 340 }, { count: N });
 
   const RID = 'rwk_region';
-  const region: NoduleNode = {
-    id: RID, type: 'nodule', position: { x: -160, y: 20 },
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: -160, y: 20 },
     data: { defType: 'region/foreach',
       params: { width: 800, height: 400, label: 'ForEach' },
       ports: [
@@ -2911,8 +2911,8 @@ function buildNocGaussian() {
   const seeds = node('gau_xSeeds', 'spread/range', { x: -440, y: 100 }, { count: N });
 
   const RID = 'gau_region';
-  const region: NoduleNode = {
-    id: RID, type: 'nodule', position: { x: -60, y: 20 },
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: -60, y: 20 },
     data: { defType: 'region/foreach', params: { width: 700, height: 360, label: 'ForEach' },
       ports: [
         { id: 'i', name: 'i', type: 'number', direction: 'input' },
@@ -3469,8 +3469,8 @@ function buildNocSineWave() {
   const xOffset = node('sw_xOffset', 'value/number', { x: -440, y: 460 }, { value: -250 });
 
   const RID = 'sw_region';
-  const region: NoduleNode = {
-    id: RID, type: 'nodule', position: { x: -100, y: 20 },
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: -100, y: 20 },
     data: { defType: 'region/foreach',
       params: { width: 760, height: 460, label: 'ForEach' },
       ports: [
@@ -3542,8 +3542,8 @@ function buildNocAdditiveWave() {
   const xOffset = node('aw_xOffset', 'value/number', { x: -440, y: 540 }, { value: -250 });
 
   const RID = 'aw_region';
-  const region: NoduleNode = {
-    id: RID, type: 'nodule', position: { x: -100, y: 20 },
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: -100, y: 20 },
     data: { defType: 'region/foreach',
       params: { width: 800, height: 520, label: 'ForEach' },
       ports: [
@@ -3708,8 +3708,8 @@ function buildNocWaveClock() {
   const stepN = node('wc_step', 'value/number', { x: -380, y: 240 }, { value: (Math.PI * 2) / N });
 
   const RID = 'wc_region';
-  const region: NoduleNode = {
-    id: RID, type: 'nodule', position: { x: -120, y: 20 },
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: -120, y: 20 },
     data: { defType: 'region/foreach',
       params: { width: 880, height: 460, label: 'ForEach' },
       ports: [
@@ -3864,8 +3864,8 @@ function buildNocFlowField() {
   const grid = node('flo_grid', 'spread/grid', { x: -440, y: 260 }, { cols: N, rows: N, w: 460, h: 460 });
 
   const RID = 'flo_region';
-  const region: NoduleNode = {
-    id: RID, type: 'nodule', position: { x: -120, y: 20 },
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: -120, y: 20 },
     data: { defType: 'region/foreach',
       params: { width: 880, height: 480, label: 'ForEach' },
       ports: [
@@ -3960,8 +3960,8 @@ function buildNocRule90() {
   const idx = node('r90_idx', 'spread/range', { x: -480, y: 280 }, { count: COLS * ROWS });
 
   const RID = 'r90_region';
-  const region: NoduleNode = {
-    id: RID, type: 'nodule', position: { x: 200, y: 280 },
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: 200, y: 280 },
     data: { defType: 'region/foreach',
       params: { width: 880, height: 400, label: 'ForEach Cell' },
       ports: [
@@ -4076,8 +4076,8 @@ function buildNocFractalTree() {
   const renderer = node('ft_renderer', 'render/renderer', { x: 600, y: 20 }, { width: 500, height: 500 });
 
   // Per-branch line + stroke-weight chain. Weight = level (4 for trunk, 1 for tips).
-  const nodes: NoduleNode[] = [strokeC, strokeStyle, bg, renderer];
-  const edges: NoduleEdge[] = [
+  const nodes: FloretNode[] = [strokeC, strokeStyle, bg, renderer];
+  const edges: FloretEdge[] = [
     edge('ft_bg', 'out', 'ft_renderer', 'background'),
     edge('ft_strokeC', 'out', 'ft_stroke', 'color'),
   ];
@@ -4128,9 +4128,9 @@ function buildGridArt() {
                         { width: CANVAS, height: CANVAS });
 
   const RID = 'ga_region';
-  const region: NoduleNode = {
+  const region: FloretNode = {
     id: RID,
-    type: 'nodule',
+    type: 'floret',
     position: { x: -200, y: 20 },
     data: {
       defType: 'region/foreach',

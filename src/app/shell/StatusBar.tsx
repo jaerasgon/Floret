@@ -18,7 +18,7 @@ export function StatusBar() {
     useEditor.setState((s) => ({
       nodes: s.nodes.map((n) => ({ ...n, selected: n.id === nodeId })),
     }));
-    window.dispatchEvent(new CustomEvent('nodule:focus-node', { detail: nodeId }));
+    window.dispatchEvent(new CustomEvent('floret:focus-node', { detail: nodeId }));
     setOpen(false);
   };
 

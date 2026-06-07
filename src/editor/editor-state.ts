@@ -54,7 +54,7 @@ function resetHistory(): void {
   _historyReset?.();
 }
 
-export interface NoduleNodeData extends Record<string, unknown> {
+export interface FloretNodeData extends Record<string, unknown> {
   defType: string;
   params: Record<string, unknown>;
   /**
@@ -101,8 +101,8 @@ export interface RegionPortDescriptor {
  * compile step uses the same field to build the scope tree.
  */
 
-export type NoduleNode = Node<NoduleNodeData>;
-export type NoduleEdge = Edge;
+export type FloretNode = Node<FloretNodeData>;
+export type FloretEdge = Edge;
 
 let _nextId = 0;
 function newId(prefix: string): string {
@@ -115,7 +115,7 @@ function newId(prefix: string): string {
  * `nodes` array. We sort by walking the parentId chain depth — roots
  * first, then one-level-deep, etc. Stable within each depth band.
  */
-export function sortNodesParentFirst(nodes: NoduleNode[]): NoduleNode[] {
+export function sortNodesParentFirst(nodes: FloretNode[]): FloretNode[] {
   const idIndex = new Map<string, number>();
   for (let i = 0; i < nodes.length; i++) idIndex.set(nodes[i]!.id, i);
   const depth = new Map<string, number>();
@@ -137,8 +137,8 @@ export function sortNodesParentFirst(nodes: NoduleNode[]): NoduleNode[] {
 }
 
 interface EditorState {
-  nodes: NoduleNode[];
-  edges: NoduleEdge[];
+  nodes: FloretNode[];
+  edges: FloretEdge[];
   runtime: RuntimeGraph | null;
   /** Stable subscription bumped whenever the runtime graph rebuilds. */
   runtimeVersion: number;
@@ -158,8 +158,8 @@ interface EditorState {
   /** Replace the view stack wholesale (used by breadcrumb clicks). */
   setViewStack: (stack: string[]) => void;
 
-  setNodes: (n: NoduleNode[]) => void;
-  setEdges: (e: NoduleEdge[]) => void;
+  setNodes: (n: FloretNode[]) => void;
+  setEdges: (e: FloretEdge[]) => void;
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (conn: Connection) => void;
@@ -167,7 +167,7 @@ interface EditorState {
   addNode: (defType: string, position: { x: number; y: number }) => string;
   removeSelected: () => void;
   setNodeParam: (nodeId: string, key: string, value: unknown) => void;
-  loadPatch: (nodes: NoduleNode[], edges: NoduleEdge[]) => void;
+  loadPatch: (nodes: FloretNode[], edges: FloretEdge[]) => void;
 
   /**
    * Currently-selected Port Pills (the draggable port tabs on a Region's
@@ -297,7 +297,7 @@ interface EditorState {
 }
 
 /** Convert editor nodes/edges to the opaque shape compileGraph expects. */
-function toEditorRefs(state: { nodes: NoduleNode[]; edges: NoduleEdge[] }): {
+function toEditorRefs(state: { nodes: FloretNode[]; edges: FloretEdge[] }): {
   nodes: EditorNodeRef[];
   edges: EditorEdgeRef[];
 } {
@@ -607,9 +607,9 @@ export const useEditor = create<EditorState>((set, get) => {
         })),
       ];
 
-      const sub: NoduleNode = {
+      const sub: FloretNode = {
         id: subId,
-        type: 'nodule',
+        type: 'floret',
         position: { x: cx, y: cy },
         data: { defType: 'meta/subpatch', params: subParams, ports },
       };
@@ -623,11 +623,11 @@ export const useEditor = create<EditorState>((set, get) => {
       ]);
 
       set((s) => {
-        const newNodes: NoduleNode[] = s.nodes.map((n) => {
+        const newNodes: FloretNode[] = s.nodes.map((n) => {
           if (!selectedIds.has(n.id)) return n;
           // Reparent selected node into the subpatch; convert its
           // position from shared-parent local to subpatch-local.
-          const next: NoduleNode = {
+          const next: FloretNode = {
             ...n,
             parentId: subId,
             extent: 'parent' as const,
@@ -689,7 +689,7 @@ export const useEditor = create<EditorState>((set, get) => {
     },
 
     onNodesChange: (changes) => {
-      set((s) => ({ nodes: applyNodeChanges(changes, s.nodes) as NoduleNode[] }));
+      set((s) => ({ nodes: applyNodeChanges(changes, s.nodes) as FloretNode[] }));
       if (changes.some(isStructuralNodeChange)) {
         _compile();
         pushHistory();
@@ -757,9 +757,9 @@ export const useEditor = create<EditorState>((set, get) => {
       // React Flow before invoking us, and React Flow's flow coords are
       // relative to the parent's origin for children of a parent node.
       const currentView = get().viewStack[get().viewStack.length - 1];
-      const node: NoduleNode = {
+      const node: FloretNode = {
         id,
-        type: 'nodule',
+        type: 'floret',
         position,
         data: {
           defType,
@@ -993,9 +993,9 @@ export const useEditor = create<EditorState>((set, get) => {
       if (!def) return null;
       const id = newId(src.data.defType.replace('/', '_'));
       const params = { ...src.data.params };
-      const node: NoduleNode = {
+      const node: FloretNode = {
         id,
-        type: 'nodule',
+        type: 'floret',
         position: { x: src.position.x + offset.x, y: src.position.y + offset.y },
         data: { defType: src.data.defType, params },
         selected: true,
@@ -1020,19 +1020,19 @@ export const useEditor = create<EditorState>((set, get) => {
         idMap.set(n.id, newId(n.data.defType.replace('/', '_')));
       }
 
-      const newNodes: NoduleNode[] = selected.map((n) => {
+      const newNodes: FloretNode[] = selected.map((n) => {
         const newNodeId = idMap.get(n.id)!;
         // Clone region ports too — they carry edge connections.
-        const dataClone: NoduleNodeData = {
+        const dataClone: FloretNodeData = {
           defType: n.data.defType,
           params: { ...n.data.params },
           ...(n.data.portValues ? { portValues: { ...n.data.portValues } } : {}),
           ...(n.data.ports ? { ports: n.data.ports.map((p) => ({ ...p })) } : {}),
         };
         paramStore.setNode(newNodeId, dataClone.params);
-        const copy: NoduleNode = {
+        const copy: FloretNode = {
           id: newNodeId,
-          type: 'nodule',
+          type: 'floret',
           position: { x: n.position.x + offset.x, y: n.position.y + offset.y },
           data: dataClone,
           selected: false, // originals stay selected so the active drag follows them
@@ -1049,7 +1049,7 @@ export const useEditor = create<EditorState>((set, get) => {
       });
 
       // Duplicate edges where BOTH ends were in the selection.
-      const newEdges: NoduleEdge[] = [];
+      const newEdges: FloretEdge[] = [];
       for (const e of state.edges) {
         const src = idMap.get(e.source);
         const dst = idMap.get(e.target);
@@ -1094,9 +1094,9 @@ export const useEditor = create<EditorState>((set, get) => {
       const h = options?.height ?? (regionParams.height as number) ?? 280;
       regionParams.width = w;
       regionParams.height = h;
-      const region: NoduleNode = {
+      const region: FloretNode = {
         id,
-        type: 'nodule',
+        type: 'floret',
         position,
         data: { defType: regionDefType, params: regionParams, ports: [] },
         style: { width: w, height: h },
@@ -1244,7 +1244,7 @@ export const useEditor = create<EditorState>((set, get) => {
         nodes: sortNodesParentFirst(
           s.nodes.map((n) => {
             if (n.id !== nodeId) return n;
-            const next: NoduleNode = {
+            const next: FloretNode = {
               ...n,
               parentId: parentId ?? undefined,
               extent: parentId ? 'parent' : undefined,
@@ -1313,7 +1313,7 @@ export function getParamsFor(nodeId: string): Record<string, unknown> | undefine
 }
 
 /** Live edges snapshot for connection-rules' cycle check. */
-export function getEdgesSnapshot(): ReadonlyArray<NoduleEdge> {
+export function getEdgesSnapshot(): ReadonlyArray<FloretEdge> {
   return useEditor.getState().edges;
 }
 

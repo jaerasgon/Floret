@@ -46,7 +46,7 @@ export function NodePalette({ collapsed = false, onToggleCollapse }: PaletteProp
   }, [q]);
 
   const onDragStart = (e: React.DragEvent, def: NodeDef) => {
-    e.dataTransfer.setData('application/nodule-def', def.type);
+    e.dataTransfer.setData('application/floret-def', def.type);
     e.dataTransfer.effectAllowed = 'move';
   };
 

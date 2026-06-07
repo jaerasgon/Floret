@@ -742,12 +742,12 @@ input:focus, select:focus, textarea:focus {
 /* Optional wire flow animation — toggled by `body[data-wire-flow="1"]`
  * from the Toolbar's Flow button. Animates a dashed segment along each
  * edge from source to target. Subtle by design. */
-@keyframes nodule-wire-flow {
+@keyframes floret-wire-flow {
   to { stroke-dashoffset: -16; }
 }
 body[data-wire-flow='1'] .react-flow__edge-path {
   stroke-dasharray: 4 4;
-  animation: nodule-wire-flow 0.8s linear infinite;
+  animation: floret-wire-flow 0.8s linear infinite;
 }
 
 /* In-progress connection (while user is dragging a new wire). React

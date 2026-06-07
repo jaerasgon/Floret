@@ -1,4 +1,4 @@
-# Nodule Changelog
+# Floret Changelog
 
 A complete record of every change made to this project, in chronological order.
 Each section is a coherent phase of work; bullets within are individual
@@ -31,7 +31,7 @@ changes (file additions, fixes, behavior shifts).
 
 Goal: working skeleton with the editor, preview, and toolbar wired up.
 
-- Initialised Vite + React + TypeScript project at `D:\Artifacts\Nodule\`.
+- Initialised Vite + React + TypeScript project at `D:\Artifacts\Floret\`.
 - Installed `@xyflow/react`, `p5`, `zustand`, `vitest`, plus types.
 - Configured `tsconfig.json` (strict, `noUncheckedIndexedAccess`) and
   `tsconfig.node.json` for `vite.config.ts`.
@@ -160,7 +160,7 @@ Goal: make patches interactive.
 - `src/editor/useNodeParam.ts` — `useSyncExternalStore` hook giving an
   IO-box component `[value, setLive, commit]` — exactly the live/commit
   split above.
-- `src/editor/nodes/NoduleNode.tsx` — dispatcher: looks up the NodeDef's
+- `src/editor/nodes/FloretNode.tsx` — dispatcher: looks up the NodeDef's
   optional `component` field and uses it, else falls through to
   `GenericNode`. Registered as the sole React Flow node `type`.
 - `src/runtime/__tests__/param-store.test.ts` — 5 tests: live ParamStore
@@ -215,7 +215,7 @@ Goal: usability cleanup before calling it shippable.
 - **`src/app/shortcuts.ts`** — global keyboard handler:
   - Ctrl/Cmd+Z → undo
   - Ctrl/Cmd+Shift+Z, Ctrl/Cmd+Y → redo
-  - Ctrl/Cmd+S → save (dispatched via `nodule:save` window event so
+  - Ctrl/Cmd+S → save (dispatched via `floret:save` window event so
     `FileMenu.tsx` stays decoupled from shortcut logic)
   - Skipped when focus is in an INPUT/TEXTAREA/SELECT/contentEditable.
 - **Warnings surface in the status bar** — `useEditor.warnings`
@@ -267,7 +267,7 @@ edges in the editor experience.
   per row now lays them out correctly. Bumped node `min-width` to
   160 px and added `text-overflow: ellipsis` on port names so long
   labels truncate.
-- **Vite watcher EBUSY**: a Python venv at `D:\Artifacts\Nodule\ComfyUI`
+- **Vite watcher EBUSY**: a Python venv at `D:\Artifacts\Floret\ComfyUI`
   was being watched by Vite, hitting a locked `.pyc`. Added
   `server.watch.ignored` patterns for `ComfyUI/**`, `**/.venv/**`,
   `**/__pycache__/**`, etc.
@@ -309,7 +309,7 @@ edges in the editor experience.
 
 ## Editor UX Polish (clipboard, context menu, node search)
 
-A user-driven round of editor ergonomics that turns Nodule from
+A user-driven round of editor ergonomics that turns Floret from
 "navigable" into "fluent."
 
 ### Clipboard
@@ -377,7 +377,7 @@ A user-driven round of editor ergonomics that turns Nodule from
 
 ### Window-event bridge for shortcuts → flow coords
 
-- Shortcuts dispatch `nodule:open-search` / `nodule:paste` with screen
+- Shortcuts dispatch `floret:open-search` / `floret:paste` with screen
   coordinates as `CustomEvent.detail`. `Canvas.tsx` listens for these
   inside the React Flow provider so it can convert to flow coordinates
   via `screenToFlowPosition`. This keeps the shortcuts file decoupled
@@ -398,7 +398,7 @@ value on the node itself.
 
 ### Per-port constant overrides
 
-- **Schema**: `NoduleNodeData` gained `portValues?: Record<string, unknown>`
+- **Schema**: `FloretNodeData` gained `portValues?: Record<string, unknown>`
   — per-input-port constant overrides. Saved with the patch, so the next
   open round-trips identically.
 - **Runtime priority**: `gatherInputs` now picks per port:
@@ -488,7 +488,7 @@ cross the boundary explicitly.
   aren't stable post-iteration; must use a splicer-out.
 
 **Editor**
-- `NoduleNodeData` declares no new fields, but the React Flow node now
+- `FloretNodeData` declares no new fields, but the React Flow node now
   carries `parentId` + `extent: 'parent'` for region children.
 - `sortNodesParentFirst` helper applied on every mutation — React Flow
   v12 requires parents to appear before their children in the array.
@@ -668,7 +668,7 @@ The biggest visual change: splicer-in / splicer-out are no longer
 visible child nodes inside a region. Instead, each region has its own
 list of dynamic ports rendered as tabs on the frame's edges.
 
-- **Data**: `NoduleNodeData.ports?: RegionPortDescriptor[]` — `{ id,
+- **Data**: `FloretNodeData.ports?: RegionPortDescriptor[]` — `{ id,
   name, type, direction: 'input' | 'output' }`. Stored on the region
   node itself; persisted via the save format.
 - **Visual**: each port is one **bridge tab** straddling the border —

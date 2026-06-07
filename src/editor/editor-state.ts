@@ -241,7 +241,7 @@ interface EditorState {
   /** Add a port to a region's frame. Returns the new port id. */
   addRegionPort: (
     regionId: string,
-    spec: { name?: string; type: import('../runtime/types').PortType; direction: 'input' | 'output' },
+    spec: { name?: string; type: import('../runtime/types').PortType; direction: 'input' | 'output'; y?: number },
   ) => string;
   /** Remove a port from a region (and any edges that referenced it). */
   removeRegionPort: (regionId: string, portId: string) => void;
@@ -1147,11 +1147,13 @@ export const useEditor = create<EditorState>((set, get) => {
           if (n.id !== regionId) return n;
           const ports = n.data.ports ?? [];
           const name = spec.name ?? uniquePortName(ports, spec.type, spec.direction);
+          const newPort: RegionPortDescriptor = { id: portId, name, type: spec.type, direction: spec.direction };
+          if (spec.y !== undefined) newPort.y = spec.y;
           return {
             ...n,
             data: {
               ...n.data,
-              ports: [...ports, { id: portId, name, type: spec.type, direction: spec.direction }],
+              ports: [...ports, newPort],
             },
           };
         }),

@@ -462,6 +462,7 @@ function CanvasInner() {
         const newPortId = addRegionPort(edgeHit.regionId, {
           type: sourcePort,
           direction,
+          y: edgeHit.localY,
         });
         // The new port's outer/inner handles use `in-<id>` / `out-<id>`
         // — the edge wires the dragged pin to the appropriate side.
@@ -1354,7 +1355,7 @@ const EDGE_BAND_PX = 24;
 function findRegionEdgeAtFlow(
   nodes: ReadonlyArray<RFNode>,
   flowPoint: { x: number; y: number },
-): { regionId: string; edge: 'input' | 'output' } | null {
+): { regionId: string; edge: 'input' | 'output'; localY: number } | null {
   const byId = new Map<string, RFNode>();
   for (const n of nodes) byId.set(n.id, n);
   function absPos(id: string): { x: number; y: number } {
@@ -1365,7 +1366,7 @@ function findRegionEdgeAtFlow(
     return { x: n.position.x + p.x, y: n.position.y + p.y };
   }
 
-  let best: { regionId: string; edge: 'input' | 'output' } | null = null;
+  let best: { regionId: string; edge: 'input' | 'output'; localY: number } | null = null;
   let bestArea = Infinity;
   for (const n of nodes) {
     const defType = (n.data as { defType?: string } | undefined)?.defType;
@@ -1396,7 +1397,10 @@ function findRegionEdgeAtFlow(
 
     const area = w * h;
     if (area < bestArea) {
-      best = { regionId: n.id, edge: hit };
+      // Clamp local y inside the region body so the pill renders on-frame
+      // regardless of how close to the band edge the drop was.
+      const localY = Math.max(8, Math.min(h - 8, flowPoint.y - pos.y));
+      best = { regionId: n.id, edge: hit, localY };
       bestArea = area;
     }
   }

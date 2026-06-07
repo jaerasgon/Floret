@@ -190,12 +190,38 @@ function emitPoint(s: EmitState, p: PointShape): void {
 }
 
 function emitPolygon(s: EmitState, pg: PolygonShape): void {
-  if (pg.points.length === 0) return;
-  const pts = pg.points.map(p => `${p.x},${p.y}`).join(' ');
-  const tag = pg.closed ? 'polygon' : 'polyline';
-  // Open polylines must explicitly disable fill; SVG defaults to black fill.
+  const n = pg.points.length;
+  if (n === 0) return;
+  const tension = pg.tension ?? 0;
+  // Straight polyline / polygon — original fast path.
+  if (tension <= 0 || n < 3) {
+    const pts = pg.points.map(p => `${p.x},${p.y}`).join(' ');
+    const tag = pg.closed ? 'polygon' : 'polyline';
+    const extraFill = pg.closed ? '' : ' fill="none"';
+    s.out.push(`<${tag} points="${pts}" ${styleAttrs(pg.style)}${extraFill}/>`);
+    return;
+  }
+  // Curved variant — emit an SVG `<path>` with Catmull–Rom segments
+  // expressed as cubic Béziers. Same control-point math as the canvas
+  // renderer so raster and vector outputs agree pixel-for-pixel.
+  const pts = pg.points;
+  const k = tension / 6;
+  const parts: string[] = [`M${pts[0]!.x},${pts[0]!.y}`];
+  const last = pg.closed ? n : n - 1;
+  for (let i = 0; i < last; i++) {
+    const p0 = pts[pg.closed ? (i - 1 + n) % n : Math.max(0, i - 1)]!;
+    const p1 = pts[i]!;
+    const p2 = pts[pg.closed ? (i + 1) % n : i + 1]!;
+    const p3 = pts[pg.closed ? (i + 2) % n : Math.min(n - 1, i + 2)]!;
+    const c1x = p1.x + (p2.x - p0.x) * k;
+    const c1y = p1.y + (p2.y - p0.y) * k;
+    const c2x = p2.x - (p3.x - p1.x) * k;
+    const c2y = p2.y - (p3.y - p1.y) * k;
+    parts.push(`C${c1x},${c1y} ${c2x},${c2y} ${p2.x},${p2.y}`);
+  }
+  if (pg.closed) parts.push('Z');
   const extraFill = pg.closed ? '' : ' fill="none"';
-  s.out.push(`<${tag} points="${pts}" ${styleAttrs(pg.style)}${extraFill}/>`);
+  s.out.push(`<path d="${parts.join(' ')}" ${styleAttrs(pg.style)}${extraFill}/>`);
 }
 
 function emitText(s: EmitState, t: TextShape): void {

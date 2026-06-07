@@ -91,6 +91,22 @@ export interface NodeDef {
   dynamicInputs?: (params: Record<string, unknown>) => ReadonlyArray<PortSpec>;
 
   /**
+   * Optional: per-instance output override that can react to what's
+   * currently wired into the node's inputs. Mirrors `dynamicInputs`, but
+   * receives an extra `upstreamTypes` map (input port name → source
+   * port type) so the node can declare polymorphic outputs.
+   *
+   * Used by Repeat / Sort / Reverse / Slice — anything whose output
+   * type SHOULD echo its input rather than read `any`. When no upstream
+   * is connected the lookup yields undefined and the implementation
+   * should fall back to the static type.
+   */
+  dynamicOutputs?: (
+    params: Record<string, unknown>,
+    upstreamTypes: Record<string, PortType | undefined>,
+  ) => ReadonlyArray<PortSpec>;
+
+  /**
    * The common path: pure scalar function. Auto-lifted to spreads by the
    * runtime. Use this unless the node needs spread-aware logic.
    */
@@ -218,6 +234,25 @@ export function getResolvedInputs(
   params: Record<string, unknown>,
 ): ReadonlyArray<PortSpec> {
   return def.dynamicInputs ? def.dynamicInputs(params) : def.inputs;
+}
+
+/**
+ * Resolve a node's active output ports — uses `dynamicOutputs(params,
+ * upstreamTypes)` when present so output types can echo whatever's wired
+ * into the inputs. Falls back to the static `outputs` array.
+ *
+ * `upstreamTypes` maps input-port-name → the source port's PortType (or
+ * undefined for unconnected inputs). The editor builds this from the
+ * current edge set just before calling here.
+ */
+export function getResolvedOutputs(
+  def: NodeDef,
+  params: Record<string, unknown>,
+  upstreamTypes: Record<string, PortType | undefined>,
+): ReadonlyArray<PortSpec> {
+  return def.dynamicOutputs
+    ? def.dynamicOutputs(params, upstreamTypes)
+    : def.outputs;
 }
 
 /** Re-export common types so node files only need to import from './types'. */

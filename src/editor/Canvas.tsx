@@ -15,9 +15,9 @@ import {
 import { FloretNode } from './nodes/FloretNode';
 import { SpreadEdge } from './SpreadEdge';
 import { useEditor, getDefTypeFor, getRegionPortsFor, getParamsFor, getEdgesSnapshot } from './editor-state';
-import { arePortsCompatible, buildIsValidConnection, categoryColor, isMultiTargetPort, parseHandle } from './connection-rules';
+import { arePortsCompatible, buildIsValidConnection, categoryColor, getUpstreamTypes, isMultiTargetPort, parseHandle } from './connection-rules';
 import { nodeRegistry } from '../nodes/registry';
-import { getResolvedInputs } from '../nodes/types';
+import { getResolvedInputs, getResolvedOutputs } from '../nodes/types';
 import { useOverlay, type ContextMenuItem, type PendingConnection } from './overlay-store';
 import { NodeSearch } from './NodeSearch';
 import { ContextMenu } from './ContextMenu';
@@ -1203,11 +1203,34 @@ function resolveDraggedPortType(
     // Fall through to NodeDef static ports (e.g. If.condition).
   }
 
-  const portList = handleType === 'source'
-    ? def.outputs
-    : getResolvedInputs(def, getParamsFor(nodeId) ?? {});
-  const port = portList.find((p) => p.name === handleName);
+  if (handleType === 'source') {
+    // Source-side type lookup must honour dynamicOutputs so that wires
+    // dragged from a polymorphic node (Repeat with a Color upstream, …)
+    // carry the resolved type into wire validation and into any region
+    // port that gets created on drop. Without this, a Repeat→ForEach
+    // drop creates a port typed `any` instead of `color`.
+    const params = getParamsFor(nodeId) ?? {};
+    const outputs = def.dynamicOutputs
+      ? getResolvedOutputs(def, params, getUpstreamTypesFor(nodeId))
+      : def.outputs;
+    return outputs.find((p) => p.name === handleName)?.type ?? null;
+  }
+
+  const port = getResolvedInputs(def, getParamsFor(nodeId) ?? {})
+    .find((p) => p.name === handleName);
   return port?.type ?? null;
+}
+
+/**
+ * Module-local helper: build the upstreamTypes map for a node by reading
+ * the editor store's current edge/node lists. Used by
+ * `resolveDraggedPortType` (which can't call useEditor() since it's not
+ * a hook) so dynamicOutputs sees the same upstream picture the visual
+ * layer does.
+ */
+function getUpstreamTypesFor(nodeId: string) {
+  const state = useEditor.getState();
+  return getUpstreamTypes(nodeId, state.edges, state.nodes);
 }
 
 /**

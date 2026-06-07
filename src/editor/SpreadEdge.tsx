@@ -1,7 +1,8 @@
 import { BaseEdge, getBezierPath, type EdgeProps } from '@xyflow/react';
 import { useShallow } from 'zustand/react/shallow';
 import { nodeRegistry } from '../nodes/registry';
-import { parseHandle, portColorVar } from './connection-rules';
+import { getResolvedOutputs } from '../nodes/types';
+import { getUpstreamTypes, parseHandle, portColorVar } from './connection-rules';
 import { useEditor, type FloretNodeData } from './editor-state';
 import type { PortType } from '../runtime/types';
 
@@ -34,16 +35,23 @@ export function SpreadEdge(props: EdgeProps) {
     useShallow((s) => {
       const node = s.nodes.find((n) => n.id === source);
       if (!node) return null as PortType | null;
-      const def = nodeRegistry.get((node.data as FloretNodeData).defType);
+      const data = node.data as FloretNodeData;
+      const def = nodeRegistry.get(data.defType);
       if (!def) return null;
       const parsed = sourceHandleId ? parseHandle(sourceHandleId) : null;
       if (!parsed) return null;
       if (def.regionKind) {
-        const ports = (node.data as FloretNodeData).ports ?? [];
+        const ports = data.ports ?? [];
         const matching = ports.find((p) => p.id === parsed.name);
         return matching?.type ?? null;
       }
-      const port = def.outputs.find((p) => p.name === parsed.name);
+      // Use resolved outputs so dynamic-typed nodes (Repeat, Sort, …)
+      // colour their downstream wires according to the upstream type
+      // they're tiling rather than a flat 'any'.
+      const outputs = def.dynamicOutputs
+        ? getResolvedOutputs(def, data.params, getUpstreamTypes(source, s.edges, s.nodes))
+        : def.outputs;
+      const port = outputs.find((p) => p.name === parsed.name);
       return port?.type ?? null;
     }),
   );

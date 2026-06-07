@@ -13,7 +13,7 @@ const intCount = (v: unknown): number => Math.max(0, Math.floor(Number(v ?? 0)))
 export const countNode = registerNode({
   type: 'spread/count',
   category: 'Spread',
-  label: 'Count',
+  label: 'CountSpread',
   description: 'Length of a spread.',
   inputs: [{ name: 'spread', type: 'any', kind: 'spread' }],
   outputs: [{ name: 'out', label: 'count', type: 'number' }],
@@ -23,7 +23,7 @@ export const countNode = registerNode({
 export const reverseNode = registerNode({
   type: 'spread/reverse',
   category: 'Spread',
-  label: 'Reverse',
+  label: 'ReverseSpread',
   description: 'Reverse the order of elements.',
   inputs: [{ name: 'spread', type: 'any', kind: 'spread' }],
   outputs: [{ name: 'out', label: 'spread', type: 'any', kind: 'spread' }],
@@ -44,13 +44,14 @@ export const reverseNode = registerNode({
 export const takeNode = registerNode({
   type: 'spread/take',
   category: 'Spread',
-  label: 'Take',
+  label: 'TakeSpread',
   description: 'Keep the first N elements.',
   inputs: [
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'count', type: 'number', default: 0, integer: true },
   ],
   outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const n = intCount(inputs[1]?.[0]);
@@ -62,13 +63,14 @@ export const takeNode = registerNode({
 export const skipNode = registerNode({
   type: 'spread/skip',
   category: 'Spread',
-  label: 'Skip',
+  label: 'SkipSpread',
   description: 'Drop the first N elements.',
   inputs: [
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'count', type: 'number', default: 0, integer: true },
   ],
   outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const n = intCount(inputs[1]?.[0]);
@@ -79,7 +81,7 @@ export const skipNode = registerNode({
 export const sliceNode = registerNode({
   type: 'spread/slice',
   category: 'Spread',
-  label: 'Slice',
+  label: 'SliceSpread',
   description: 'Slice elements from start to end (end ≤ 0 counts from the end).',
   inputs: [
     { name: 'spread', type: 'any', kind: 'spread' },
@@ -87,6 +89,7 @@ export const sliceNode = registerNode({
     { name: 'end', type: 'number', default: 0, integer: true },
   ],
   outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const start = Math.floor(Number(inputs[1]?.[0] ?? 0));
@@ -119,13 +122,22 @@ export const cycleNode = registerNode({
 export const stackNode = registerNode({
   type: 'spread/stack',
   category: 'Spread',
-  label: 'Stack',
+  label: 'StackSpread',
   description: 'Concatenate two spreads end-to-end.',
   inputs: [
     { name: 'a', type: 'any', kind: 'spread' },
     { name: 'b', type: 'any', kind: 'spread' },
   ],
   outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  // Stack picks the more specific of the two inputs — if one is wired
+  // and the other isn't, use the wired one. If both are wired with
+  // different types, the more permissive wins (whichever isn't 'any').
+  dynamicOutputs: (_p, up) => {
+    const a = up.a;
+    const b = up.b;
+    const t = a && a !== 'any' ? a : b && b !== 'any' ? b : a ?? b ?? 'any';
+    return [{ name: 'out', type: t, kind: 'spread' }];
+  },
   computeRaw: (inputs) => {
     const a = inputs[0] ?? [];
     const b = inputs[1] ?? [];
@@ -142,13 +154,14 @@ export const stackNode = registerNode({
 export const atNode = registerNode({
   type: 'spread/at',
   category: 'Spread',
-  label: 'At',
+  label: 'AtSpread',
   description: 'Pick one element from a spread by index.',
   inputs: [
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'index', type: 'number', default: 0, integer: true },
   ],
   outputs: [{ name: 'out', type: 'any', kind: 'single' }],
+  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'single' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     if (src.length === 0) return [[null]];
@@ -162,7 +175,7 @@ export const atNode = registerNode({
 export const resampleNode = registerNode({
   type: 'spread/resample',
   category: 'Spread',
-  label: 'Resample',
+  label: 'ResampleSpread',
   description: 'Resample a spread to a new length by linear interpolation.',
   inputs: [
     { name: 'spread', type: 'number', kind: 'spread' },
@@ -195,7 +208,7 @@ export const resampleNode = registerNode({
 export const sortNode = registerNode({
   type: 'spread/sort',
   category: 'Spread',
-  label: 'Sort',
+  label: 'SortSpread',
   description: 'Sort numerically, ascending by default.',
   inputs: [
     { name: 'spread', type: 'number', kind: 'spread' },
@@ -214,7 +227,7 @@ export const sortNode = registerNode({
 export const shuffleNode = registerNode({
   type: 'spread/shuffle',
   category: 'Spread',
-  label: 'Shuffle',
+  label: 'ShuffleSpread',
   description: 'Shuffle deterministically by seed.',
   inputs: [
     { name: 'spread', type: 'number', kind: 'spread' },

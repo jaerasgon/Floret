@@ -179,12 +179,44 @@ function renderPoint(ctx: RenderingContext2D, p: import('./scene').PointShape): 
 }
 
 function renderPolygon(ctx: RenderingContext2D, pg: PolygonShape): void {
-  if (pg.points.length === 0) return;
+  const n = pg.points.length;
+  if (n === 0) return;
   applyStyle(ctx, pg.style);
   ctx.beginPath();
-  ctx.moveTo(pg.points[0]!.x, pg.points[0]!.y);
-  for (let i = 1; i < pg.points.length; i++) {
-    ctx.lineTo(pg.points[i]!.x, pg.points[i]!.y);
+  const tension = pg.tension ?? 0;
+  if (tension <= 0 || n < 3) {
+    // Straight polyline — original behaviour.
+    ctx.moveTo(pg.points[0]!.x, pg.points[0]!.y);
+    for (let i = 1; i < n; i++) {
+      ctx.lineTo(pg.points[i]!.x, pg.points[i]!.y);
+    }
+  } else {
+    // Catmull–Rom → cubic Bézier conversion. For each segment p1 → p2 we
+    // need a "previous" p0 and a "next" p3 to derive the two control
+    // points. At the endpoints we mirror the neighbour so the curve
+    // still passes through the first/last point cleanly.
+    //
+    // Bézier control points:
+    //   c1 = p1 + (p2 - p0) * (tension / 6)
+    //   c2 = p2 - (p3 - p1) * (tension / 6)
+    // The /6 normalises so tension=1 reproduces the canonical
+    // uniform Catmull–Rom (which is itself a tau=0.5 Cardinal spline).
+    const t = tension;
+    const k = t / 6;
+    const pts = pg.points;
+    ctx.moveTo(pts[0]!.x, pts[0]!.y);
+    const last = pg.closed ? n : n - 1;
+    for (let i = 0; i < last; i++) {
+      const p0 = pts[pg.closed ? (i - 1 + n) % n : Math.max(0, i - 1)]!;
+      const p1 = pts[i]!;
+      const p2 = pts[pg.closed ? (i + 1) % n : i + 1]!;
+      const p3 = pts[pg.closed ? (i + 2) % n : Math.min(n - 1, i + 2)]!;
+      const c1x = p1.x + (p2.x - p0.x) * k;
+      const c1y = p1.y + (p2.y - p0.y) * k;
+      const c2x = p2.x - (p3.x - p1.x) * k;
+      const c2y = p2.y - (p3.y - p1.y) * k;
+      ctx.bezierCurveTo(c1x, c1y, c2x, c2y, p2.x, p2.y);
+    }
   }
   if (pg.closed) {
     ctx.closePath();

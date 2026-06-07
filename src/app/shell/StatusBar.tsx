@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { AlertTriangle, Activity } from 'lucide-react';
 import { useAppStore } from '../store';
 import { useEditor } from '../../editor/editor-state';
+import { Tooltip } from './Tooltip';
 
 export function StatusBar() {
+  const running = useAppStore((s) => s.running);
   const fps = useAppStore((s) => s.fps);
   const frameCount = useAppStore((s) => s.frameCount);
   const nodeCount = useAppStore((s) => s.nodeCount);
@@ -15,33 +18,70 @@ export function StatusBar() {
     useEditor.setState((s) => ({
       nodes: s.nodes.map((n) => ({ ...n, selected: n.id === nodeId })),
     }));
-    // Bring the node into view via React Flow's fitView event hook.
     window.dispatchEvent(new CustomEvent('floret:focus-node', { detail: nodeId }));
     setOpen(false);
   };
 
+  // State dot color tells the story at a glance:
+  // green = running clean, yellow = running with warnings, red = halted/error,
+  // grey = paused. The dot is the strongest signal in the whole status bar.
+  const state: 'running' | 'warning' | 'paused' | 'error' =
+    warnings.length > 0 && running ? 'warning'
+      : !running ? 'paused'
+      : 'running';
+
   return (
     <div className="statusbar">
       <div className="statusbar-left">
-        <span>fps {fps.toFixed(1).padStart(5)}</span>
-        <span>frame {frameCount.toString().padStart(6)}</span>
-        <span>nodes {nodeCount}</span>
+        <Tooltip label={running ? 'Runtime active' : 'Runtime paused'} side="top">
+          <span className={`status-state status-state-${state}`} role="status">
+            <span className="status-dot" />
+            <span className="status-state-label">
+              {running ? 'live' : 'paused'}
+            </span>
+          </span>
+        </Tooltip>
+        <span className="status-sep" />
+        <Tooltip label="Frames per second" side="top">
+          <span className="status-pill">
+            <Activity size={10} strokeWidth={1.8} />
+            <span className="status-pill-label">FPS</span>
+            <span className="status-pill-value">{fps.toFixed(1)}</span>
+          </span>
+        </Tooltip>
+        <Tooltip label="Frame count" side="top">
+          <span className="status-pill">
+            <span className="status-pill-label">FRAME</span>
+            <span className="status-pill-value">{frameCount}</span>
+          </span>
+        </Tooltip>
+        <Tooltip label="Number of nodes in the patch" side="top">
+          <span className="status-pill">
+            <span className="status-pill-label">NODES</span>
+            <span className="status-pill-value">{nodeCount}</span>
+          </span>
+        </Tooltip>
       </div>
       <div className="statusbar-center">
-        <span className="statusbar-version">v0.0.1</span>
+        <span className="statusbar-version">FLORET v0.0.1</span>
       </div>
       <div className="statusbar-right">
         {warnings.length > 0 ? (
           <>
-            <button
-              className="status-warnings"
-              type="button"
-              onClick={() => setOpen((v) => !v)}
-              aria-expanded={open}
-              style={{ color: 'var(--danger)' }}
-            >
-              ⚠ {warnings.length} warning{warnings.length === 1 ? '' : 's'}
-            </button>
+            <Tooltip label="Show warnings" side="top">
+              <button
+                className="status-warnings"
+                type="button"
+                onClick={() => setOpen((v) => !v)}
+                aria-expanded={open}
+              >
+                <AlertTriangle size={11} strokeWidth={1.8} />
+                <span className="status-warnings-badge">{warnings.length}</span>
+                <span className="status-warnings-label">
+                  warning{warnings.length === 1 ? '' : 's'}
+                </span>
+              </button>
+            </Tooltip>
             {open && (
               <div className="warnings-popover" role="dialog" onMouseLeave={() => setOpen(false)}>
                 {warnings.map((w, i) => {
@@ -55,7 +95,7 @@ export function StatusBar() {
                       disabled={!target}
                       title={target ? `Focus ${target}` : 'No node to focus'}
                     >
-                      <span className="warnings-row-bullet">⚠</span>
+                      <AlertTriangle size={10} strokeWidth={1.8} className="warnings-row-bullet" />
                       <span className="warnings-row-msg">{w.message}</span>
                     </button>
                   );
@@ -64,7 +104,7 @@ export function StatusBar() {
             )}
           </>
         ) : (
-          <span>ready</span>
+          <span className="status-clean">all clear</span>
         )}
       </div>
     </div>

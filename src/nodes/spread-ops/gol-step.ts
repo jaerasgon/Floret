@@ -15,7 +15,7 @@ import { registerNode } from '../registry';
 export const golStepNode = registerNode({
   type: 'spread/gol-step',
   category: 'Spread',
-  label: 'GoLStep',
+  label: 'GoLStepSpread',
   description: "Advance Conway's Game of Life by one tick.",
   inputs: [
     { name: 'grid', type: 'boolean', kind: 'spread' },
@@ -65,7 +65,7 @@ export const golStepNode = registerNode({
 export const golSeedNode = registerNode({
   type: 'spread/gol-seed',
   category: 'Spread',
-  label: 'GoLSeed',
+  label: 'GoLSeedSpread',
   description: 'Seed a Game-of-Life grid with random live cells.',
   inputs: [
     { name: 'cols', type: 'number', default: 16, integer: true },

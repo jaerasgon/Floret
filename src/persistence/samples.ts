@@ -1,4 +1,5 @@
 import type { FloretEdge, FloretNode } from '../editor/editor-state';
+import { migrateLegacyEdges } from './serialize';
 
 /**
  * Sample patches — under the regions-only model with frame-edge ports.
@@ -111,6 +112,11 @@ function spaced(result: { nodes: FloretNode[]; edges: FloretEdge[] }) {
       }
     }
   }
+  // Samples were authored before the style-node output rename
+  // (`out` → `style`). Funnel them through the same handle migration
+  // the save loader uses so legacy `edge(fill, 'out', shape, 'style')`
+  // calls keep wiring up correctly without touching every sample.
+  result.edges = migrateLegacyEdges(result.nodes, result.edges);
   return result;
 }
 

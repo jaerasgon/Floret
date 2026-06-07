@@ -1,8 +1,8 @@
-import type { Connection, Edge } from '@xyflow/react';
+import type { Connection, Edge, Node } from '@xyflow/react';
 import { nodeRegistry } from '../nodes/registry';
 import { getResolvedInputs } from '../nodes/types';
 import type { PortType } from '../runtime/types';
-import type { RegionPortDescriptor } from './editor-state';
+import type { FloretNodeData, RegionPortDescriptor } from './editor-state';
 
 type PortKind = 'single' | 'spread' | 'multi';
 
@@ -264,14 +264,14 @@ export function buildIsValidConnection(
  */
 export function categoryColor(category: string | undefined): string {
   switch ((category ?? '').toLowerCase()) {
-    case 'math':       return '#7fc88a';
+    case 'math':       return '#c4a85f';
     case 'time':       return '#d5a566';
     case 'draw':       return '#5fa6ff';
     case 'style':      return '#c97bd5';
     case 'transform':  return '#a880ff';
     case 'value':      return '#6cb6ff';
     case 'render':     return '#ff9a4a';
-    case 'io':         return '#5fd8a6';
+    case 'io':         return '#d4a574';
     case 'input':      return '#ff8a6c';
     case 'spread':     return '#e5d05f';
     case 'region':     return '#5fd5c4';
@@ -284,6 +284,43 @@ export function categoryColor(category: string | undefined): string {
     case 'sound':      return '#ff9cd9';
     default:           return '#6b7080';
   }
+}
+
+/**
+ * Build the `upstreamTypes` map a node's `dynamicOutputs` hook expects.
+ * Walks the edge list, finds each incoming wire targeting `nodeId`, and
+ * resolves the source port's PortType from the source node's registry
+ * def. Region nodes carry their port type on the node data instead.
+ *
+ * Returned map is keyed by INPUT port name on the target node. Missing
+ * keys = no wire connected.
+ */
+export function getUpstreamTypes(
+  nodeId: string,
+  edges: ReadonlyArray<Edge>,
+  nodes: ReadonlyArray<Node>,
+): Record<string, PortType | undefined> {
+  const out: Record<string, PortType | undefined> = {};
+  for (const e of edges) {
+    if (e.target !== nodeId) continue;
+    const targetParsed = parseHandle(e.targetHandle);
+    if (!targetParsed || targetParsed.kind !== 'in') continue;
+    const srcNode = nodes.find((n) => n.id === e.source);
+    if (!srcNode) continue;
+    const srcParsed = parseHandle(e.sourceHandle);
+    if (!srcParsed) continue;
+    const data = srcNode.data as FloretNodeData | undefined;
+    const def = data ? nodeRegistry.get(data.defType) : undefined;
+    // Region/subpatch nodes carry runtime-derived ports on data.ports.
+    if (def?.regionKind) {
+      const port = data?.ports?.find((p) => p.id === srcParsed.name);
+      if (port?.type) out[targetParsed.name] = port.type as PortType;
+      continue;
+    }
+    const port = def?.outputs.find((p) => p.name === srcParsed.name);
+    if (port) out[targetParsed.name] = port.type;
+  }
+  return out;
 }
 
 /** Visual colour per port type, sourced from CSS vars in styles.css. */

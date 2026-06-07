@@ -18,7 +18,7 @@ import type { Vec2 } from '../../runtime/types';
 export const walkStepNode = registerNode({
   type: 'spread/walk-step',
   category: 'Spread',
-  label: 'WalkStep',
+  label: 'WalkStepSpread',
   description: 'Advance a vec2 trail by one random-walk step.',
   inputs: [
     { name: 'trail', type: 'vec2', kind: 'spread' },

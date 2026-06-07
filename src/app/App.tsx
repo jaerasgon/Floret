@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Canvas } from '../editor/Canvas';
 import { NodePalette } from '../editor/NodePalette';
 import { Preview } from '../preview/Preview';
@@ -12,6 +12,19 @@ export function App() {
   useGlobalShortcuts();
   const [previewWidth, setPreviewWidth] = useState<number>(480);
   const [paletteCollapsed, setPaletteCollapsed] = useState<boolean>(false);
+  const [narrowViewport, setNarrowViewport] = useState<boolean>(
+    typeof window !== 'undefined' ? window.innerWidth <= 880 : false,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 880px)');
+    const update = () => setNarrowViewport(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
+  const previewMin = narrowViewport ? 200 : 240;
 
   return (
     <div className="app-shell">
@@ -32,7 +45,7 @@ export function App() {
             <Canvas />
           </div>
         </div>
-        <Resizer onResize={(dx) => setPreviewWidth((w) => Math.max(240, Math.min(1200, w - dx)))} />
+        <Resizer onResize={(dx) => setPreviewWidth((w) => Math.max(previewMin, Math.min(1200, w - dx)))} />
         <div className="pane preview-pane">
           <Preview />
         </div>

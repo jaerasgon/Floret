@@ -2,8 +2,8 @@ import { memo, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { useShallow } from 'zustand/react/shallow';
 import { nodeRegistry } from '../../nodes/registry';
-import { getResolvedInputs, type PortSpec } from '../../nodes/types';
-import { parseHandle, portColorVar } from '../connection-rules';
+import { getResolvedInputs, getResolvedOutputs, type PortSpec } from '../../nodes/types';
+import { getUpstreamTypes, parseHandle, portColorVar } from '../connection-rules';
 import { useEditor, type NoduleNodeData } from '../editor-state';
 import { useNodeParam } from '../useNodeParam';
 import { openPortValueEditor } from '../PortValueEditor';
@@ -93,9 +93,33 @@ export const GenericNode = memo(function GenericNode(props: NodeProps) {
     .map(([key, defaultVal]) => ({ kind: 'param' as const, key, defaultVal }));
   const inputItems: LeftItem[] = resolvedInputs.map((port) => ({ kind: 'input' as const, port }));
   const leftItems: LeftItem[] = [...pureParamItems, ...inputItems];
+  // Resolve outputs *after* inputs so polymorphic nodes (Repeat, Sort, …)
+  // can read upstream types and echo them on their output ports.
+  //
+  // Two-stage memoization to avoid an infinite re-render loop:
+  //   1. The Zustand selector returns a STABLE STRING ("value:color,b:number")
+  //      so identity comparison settles between frames.
+  //   2. useMemo rebuilds the actual PortSpec[] only when that string flips.
+  // The previous shape — selector returning a fresh array on every call —
+  // looked fine in dev hot-reload but black-screened on a clean cold-start
+  // because Zustand compares by reference and re-rendered forever.
+  const upstreamTypesKey = useEditor((s) => {
+    if (!def.dynamicOutputs) return '';
+    const up = getUpstreamTypes(id, s.edges, s.nodes);
+    return Object.keys(up).sort().map((k) => `${k}:${up[k]}`).join(',');
+  });
+  const resolvedOutputs = useMemo(() => {
+    if (!def.dynamicOutputs) return def.outputs;
+    const up: Record<string, PortType | undefined> = {};
+    for (const pair of upstreamTypesKey.split(',').filter(Boolean)) {
+      const [k, v] = pair.split(':');
+      if (k && v) up[k] = v as PortType;
+    }
+    return getResolvedOutputs(def, nodeData.params, up);
+  }, [def, nodeData.params, upstreamTypesKey]);
   // Outputs pair with rows starting from row 0 — so single-output
   // source nodes (Number, Time) sit on a single line `value [N] | out`.
-  const numRows = Math.max(leftItems.length, def.outputs.length);
+  const numRows = Math.max(leftItems.length, resolvedOutputs.length);
 
   // Math nodes (math/add, math/mul, math/sin, …) get a compact visual
   // since they're the most-used "glue" nodes in any patch. We hide the
@@ -129,7 +153,7 @@ export const GenericNode = memo(function GenericNode(props: NodeProps) {
       <div className="node-rows">
         {Array.from({ length: numRows }, (_, i) => {
           const left = leftItems[i];
-          const right = def.outputs[i];
+          const right = resolvedOutputs[i];
           const rightIdx = i;
           return (
             <NodeRow
@@ -512,14 +536,33 @@ function NumberEditor({ nodeId, paramKey, defaultVal }: { nodeId: string; paramK
 function StringEditor({ nodeId, paramKey, defaultVal }: { nodeId: string; paramKey: string; defaultVal: string }) {
   const [val, setLive, commit] = useNodeParam<string>(nodeId, paramKey, defaultVal);
   const isHex = paramKey === 'hex';
+  // For `hex` params we keep a TEXT input (so the user can type a hex
+  // code directly — Cmd-V a #rrggbb, retype channels by hand, etc.) but
+  // tint the input's background with the live value so it still reads
+  // as a colour at a glance. We previously used `<input type="color">`
+  // which opened the OS picker on click and made typing impossible.
+  const isValidHex = isHex && /^#?[0-9a-fA-F]{6}$/.test(val);
+  const swatchStyle = isHex && isValidHex
+    ? {
+        // Small left-side colour chip via a wide left border, so the
+        // colour reads but the typing area still spans the input.
+        borderLeftWidth: 10,
+        borderLeftStyle: 'solid' as const,
+        borderLeftColor: val.startsWith('#') ? val : `#${val}`,
+      }
+    : undefined;
   return (
     <input
-      type={isHex ? 'color' : 'text'}
-      className={`node-inline-input nodrag${isHex ? ' node-inline-color' : ''}`}
+      type="text"
+      className={`node-inline-input nodrag${isHex ? ' node-inline-hex' : ''}`}
       value={val}
       onChange={(e) => setLive(e.target.value)}
       onBlur={commit}
       onPointerUp={commit}
+      style={swatchStyle}
+      spellCheck={false}
+      autoCorrect="off"
+      autoCapitalize="off"
     />
   );
 }

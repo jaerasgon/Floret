@@ -105,5 +105,36 @@ export function deserializePatch(patch: PatchFile): { nodes: NoduleNode[]; edges
     sourceHandle: e.sourceHandle,
     targetHandle: e.targetHandle,
   }));
-  return { nodes, edges };
+  return { nodes, edges: migrateLegacyEdges(nodes, edges) };
+}
+
+/**
+ * Per-load handle migration. Today only one rule is in flight:
+ *   `out-out` → `out-style` when the source node is a style node.
+ *
+ * Background: style nodes (Fill / Stroke / NoFill / RectMode / …) used
+ * to expose their single output as `name: 'out'`. The user-facing
+ * convention now is that the output matches the consumer's input name
+ * — and shapes take `style` — so every style node's output was renamed
+ * to `style`. Any saved patch or sample that wired `out-out` against
+ * one of those nodes would silently disconnect on load without this
+ * fixup, since React Flow drops edges that reference unknown handles.
+ *
+ * Pure — returns a new edge list. Safe to call multiple times.
+ */
+export function migrateLegacyEdges(
+  nodes: ReadonlyArray<NoduleNode>,
+  edges: ReadonlyArray<NoduleEdge>,
+): NoduleEdge[] {
+  const styleSources = new Set<string>();
+  for (const n of nodes) {
+    const t = (n.data as { defType?: string } | undefined)?.defType;
+    if (t && t.startsWith('style/')) styleSources.add(n.id);
+  }
+  return edges.map((e) => {
+    if (e.sourceHandle === 'out-out' && styleSources.has(e.source)) {
+      return { ...e, sourceHandle: 'out-style' };
+    }
+    return e;
+  });
 }

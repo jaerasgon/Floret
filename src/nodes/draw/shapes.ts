@@ -6,6 +6,8 @@ import {
   LINE_DEFAULT_STYLE,
   type Layer,
   type Vec2,
+  type Color,
+  colorToCss,
 } from '../../runtime/types';
 import type { PortValue } from '../types';
 import { toVec2 } from '../_shared/coerce';
@@ -150,6 +152,68 @@ export const polygonNode = registerNode({
       points: pts,
       closed,
       style: resolveStyle(s, baseStyle),
+    };
+    return [[node]];
+  },
+});
+
+/**
+ * Path — the "draw a line through these points" convenience node.
+ *
+ * Polygon's pin-heavy interface (points, closed, style, plus a separate
+ * Stroke / StrokeWeight chain) is too much friction for the common case
+ * of "stroke a smooth curve in this colour at this width." Path takes
+ * the three knobs that 95% of strokes actually need and bakes them into
+ * the resolved style itself — no Style chain required.
+ *
+ *   points       vec2 spread       polyline vertices
+ *   color        Color (or null)   stroke colour; null falls back to black
+ *   strokeWidth  number            px; clamps to 0 (invisible) or above
+ *   tension      number 0..1       0 = straight lines, 1 = full Catmull–Rom
+ *
+ * The path is rendered as an OPEN polyline (no fill), which is what
+ * "path" reads as in every vector tool. Wire a `transform/close` or use
+ * Polygon if you need a closed filled region.
+ */
+export const pathNode = registerNode({
+  type: 'draw/path',
+  category: 'Draw',
+  label: 'Path',
+  description:
+    'Stroke a path through a spread of vec2 points. Tension > 0 turns straight lines into Catmull–Rom curves.',
+  inputs: [
+    { name: 'points', type: 'vec2', kind: 'spread' },
+    { name: 'color', type: 'color', default: null },
+    { name: 'strokeWidth', type: 'number', default: 2 },
+    { name: 'tension', type: 'number', default: 0 },
+  ],
+  outputs: [{ name: 'out', type: 'layer' }],
+  computeRaw: (inputs): PortValue[] => {
+    const ptsSpread = (inputs[0] ?? []) as ReadonlyArray<unknown>;
+    const colorIn = inputs[1]?.[0] as Color | null | undefined;
+    const widthIn = Number(inputs[2]?.[0] ?? 2);
+    const tensionIn = Number(inputs[3]?.[0] ?? 0);
+    const pts: Vec2[] = ptsSpread.map(toVec2);
+    // Clamp tension into [0, 1]. Above 1 starts producing loops at sharp
+    // corners — interesting but rarely what the user asked for. Below 0
+    // is meaningless. We let the renderer's `tension <= 0` branch handle
+    // the "straight lines" path so this stays a pure clamp.
+    const tension = tensionIn < 0 ? 0 : tensionIn > 1 ? 1 : tensionIn;
+    // Path is stroke-driven: start from the line default (no fill, thin
+    // black stroke), then override stroke colour & width with the inputs.
+    // A null colour input falls back to the default black so an unwired
+    // node still renders something visible.
+    const stroke = colorIn ? colorToCss(colorIn) : LINE_DEFAULT_STYLE.stroke;
+    const node: Layer = {
+      kind: 'polygon',
+      points: pts,
+      closed: false,
+      tension,
+      style: {
+        ...LINE_DEFAULT_STYLE,
+        stroke,
+        strokeWeight: Math.max(0, widthIn),
+      },
     };
     return [[node]];
   },

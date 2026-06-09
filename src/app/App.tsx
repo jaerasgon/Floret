@@ -1,20 +1,22 @@
 import { useEffect, useState } from 'react';
 import { Canvas } from '../editor/Canvas';
 import { NodePalette } from '../editor/NodePalette';
-import { Preview } from '../preview/Preview';
+import { HelpPanel } from '../editor/HelpPanel';
+import { PreviewPanel } from '../preview/PreviewPanel';
 import { PortValueEditor } from '../editor/PortValueEditor';
 import { Toolbar } from './shell/Toolbar';
 import { StatusBar } from './shell/StatusBar';
-import { Resizer } from './shell/Resizer';
+import { WelcomeModal } from './shell/WelcomeModal';
 import { useGlobalShortcuts } from './shortcuts';
+import { useAppStore } from './store';
 
 export function App() {
   useGlobalShortcuts();
-  const [previewWidth, setPreviewWidth] = useState<number>(480);
-  const [paletteCollapsed, setPaletteCollapsed] = useState<boolean>(false);
   const [narrowViewport, setNarrowViewport] = useState<boolean>(
     typeof window !== 'undefined' ? window.innerWidth <= 880 : false,
   );
+  const previews = useAppStore((s) => s.previews);
+  const setPreviewRenderer = useAppStore((s) => s.setPreviewRenderer);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 880px)');
@@ -23,35 +25,33 @@ export function App() {
     mq.addEventListener('change', update);
     return () => mq.removeEventListener('change', update);
   }, []);
-
-  const previewMin = narrowViewport ? 200 : 240;
+  void narrowViewport;
 
   return (
     <div className="app-shell">
       <Toolbar />
-      <div
-        className="split"
-        style={{ ['--preview-width' as string]: `${previewWidth}px` }}
-      >
+      <div className="split single-pane">
         <div className="pane editor-pane">
-          <div
-            className="editor-with-palette"
-            data-palette-collapsed={paletteCollapsed ? 1 : 0}
-          >
-            <NodePalette
-              collapsed={paletteCollapsed}
-              onToggleCollapse={() => setPaletteCollapsed((c) => !c)}
+          {/* Docked panels position themselves via flex `order` so left
+              panels render before the canvas and right panels render
+              after, regardless of declaration order here. */}
+          <NodePalette />
+          <Canvas />
+          <HelpPanel />
+          {previews.map((p) => (
+            <PreviewPanel
+              key={p.panelId}
+              panelId={p.panelId}
+              rendererId={p.rendererId}
+              onSelectRenderer={(id) => setPreviewRenderer(p.panelId, id)}
+              title={p.panelId === 'preview' ? 'Preview' : `Preview ${p.panelId.slice('preview-'.length)}`}
             />
-            <Canvas />
-          </div>
-        </div>
-        <Resizer onResize={(dx) => setPreviewWidth((w) => Math.max(previewMin, Math.min(1200, w - dx)))} />
-        <div className="pane preview-pane">
-          <Preview />
+          ))}
         </div>
       </div>
       <StatusBar />
       <PortValueEditor />
+      <WelcomeModal />
     </div>
   );
 }

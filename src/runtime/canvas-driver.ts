@@ -4,33 +4,21 @@ import type { SceneNode } from './scene';
 import { colorToCss } from './scene';
 import { tick } from './tick';
 import { publishTickOutputs, publishRegionStats } from './inspector';
-import type { RuntimeGraph } from './graph';
+import type { RuntimeGraph, NodeId } from './graph';
 import { isDirty, clearDirty } from './dirty';
 import { paramStore } from './param-store';
-import * as renderBridge from './render-bridge';
+import { RenderBridge } from './render-bridge';
 
 /**
- * Canvas driver — owns the canvas DOM element, the RAF loop, and the
- * input event listeners. Mounted by `preview/Preview.tsx`.
+ * Canvas driver — owns ONE canvas + RAF loop + input listeners for ONE
+ * Renderer node in the graph. The editor instantiates one driver per
+ * mounted Preview panel; multiple Previews each get their own driver
+ * (and their own worker).
  *
- * Owns three things only:
- *   1. The canvas DOM element + its 2D context.
- *   2. The RAF loop that ticks the runtime + renders the scene tree.
- *   3. The input event listeners (mouse/key/wheel) that feed FrameCtx.
- *
- * Drawing is delegated to `renderScene(ctx, node)` from
- * `scene-renderer.ts`. The runtime is unchanged — it still emits
- * a spread of "layers" on the renderer's `layers` port, but those
- * layers are now `SceneNode`s (data), not `(p: p5) => void` thunks.
- *
- * Lifecycle (matches the old `mountP5` API so callers can swap):
- *   - `mountCanvas(container, opts)` — create canvas, attach RAF, return handle.
- *   - `unmountCanvas()` — stop loop, detach listeners, remove DOM node.
- *   - `getActiveInstance()` — read-only accessor for the active driver
- *     (used by nodes that allocate offscreen surfaces).
- *
- * No `window`/`document` access at module top-level — module is
- * import-safe in workers and in Node test environments.
+ * Lifecycle:
+ *   - `createCanvasDriver(container, opts)` — create canvas, attach
+ *     RAF, return handle.
+ *   - `driver.stop()` — stop loop, detach listeners, remove DOM node.
  */
 
 const DEFAULT_W = 500;
@@ -40,6 +28,11 @@ const MAX_CANVAS = 4096;
 
 export interface DriverOptions {
   graphRef: { current: RuntimeGraph | null };
+  /** Which Renderer's layer spread this driver should display.
+   *  When `null`, the driver auto-binds to whichever renderer is at
+   *  index 0 of `graph.rendererIds` each tick — matching legacy
+   *  single-renderer behaviour. */
+  rendererId?: NodeId | null;
   onTick?: (fps: number, frameCount: number) => void;
   isRunning: () => boolean;
 }
@@ -52,15 +45,13 @@ export interface ActiveDriver {
   stop: () => void;
 }
 
-let active: ActiveDriver | null = null;
+/** Currently-mounted drivers, keyed by their container element. Used by
+ *  the few callers that grab an arbitrary "active" driver (legacy from
+ *  the singleton era). New code should hold its driver reference. */
+const drivers = new Set<ActiveDriver>();
 
-/**
- * Construct an offscreen canvas + 2D context — used by nodes that need
- * to rasterise something into a bitmap (image/from-layer, future cache
- * primitives). Returns a fresh canvas each call; the caller is
- * responsible for stashing it in a per-node registry if they want it
- * to survive across frames.
- */
+/** Construct an offscreen canvas + 2D context — used by nodes that
+ *  need to rasterise something into a bitmap (image/from-layer). */
 export function createOffscreen(w: number, h: number): {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -73,17 +64,15 @@ export function createOffscreen(w: number, h: number): {
   return { canvas, ctx };
 }
 
-/** Read-only accessor for the currently mounted driver. */
+/** Read-only accessor for any active driver. When multiple Previews
+ *  are mounted this returns the first registered one — callers should
+ *  retain their own reference if they need a specific driver. */
 export function getActiveDriver(): ActiveDriver | null {
-  return active;
+  for (const d of drivers) return d;
+  return null;
 }
 
-export function mountCanvas(container: HTMLElement, opts: DriverOptions): ActiveDriver {
-  if (active) {
-    active.stop();
-    active = null;
-  }
-
+export function createCanvasDriver(container: HTMLElement, opts: DriverOptions): ActiveDriver {
   const canvas = document.createElement('canvas');
   canvas.width = DEFAULT_W;
   canvas.height = DEFAULT_H;
@@ -94,23 +83,11 @@ export function mountCanvas(container: HTMLElement, opts: DriverOptions): Active
   canvas.style.maxHeight = `${DEFAULT_H}px`;
   container.appendChild(canvas);
 
-  // Render pipeline lives in a Worker via OffscreenCanvas — main thread
-  // never touches the canvas's 2D context after this point. Local
-  // `canvasW`/`canvasH` mirror the size we last asked the worker for,
-  // since `canvas.width` is the OffscreenCanvas's now, not ours.
   let canvasW = DEFAULT_W;
   let canvasH = DEFAULT_H;
-  renderBridge.mount(canvas);
-  // For backward compat with `ActiveDriver.ctx` — we no longer expose
-  // a usable 2D context. Anything that wants ctx access has to talk
-  // to the worker via render-bridge.
+  const bridge = new RenderBridge(canvas);
   const ctx = null as unknown as CanvasRenderingContext2D;
 
-  // ── Input state ─────────────────────────────────────────────────────
-  // Mouse coords are reported relative to the canvas centre (matching
-  // the runtime's centred-origin convention). When the cursor leaves
-  // the canvas we freeze the last in-bounds value so patches don't see
-  // jumps to (-window/2, -window/2).
   let mouseX = 0, mouseY = 0;
   let mouseInBounds = false;
   let mouseIsPressed = false;
@@ -144,13 +121,25 @@ export function mountCanvas(container: HTMLElement, opts: DriverOptions): Active
   window.addEventListener('keydown', onKeyDown);
   window.addEventListener('keyup', onKeyUp);
 
-  // ── Frame loop ──────────────────────────────────────────────────────
   let frameCount = 0;
   let raf = 0;
   let stopped = false;
   const startTime = performance.now() / 1000;
   let lastTime = startTime;
   const fpsWindow: number[] = [];
+
+  /** Resolve which Renderer this driver is showing this tick. Honours
+   *  the driver's `rendererId` option when set; otherwise falls back to
+   *  `graph.rendererIds[0]`. Returns null if the patch has no renderers. */
+  const resolveRendererId = (g: RuntimeGraph | null): NodeId | null => {
+    if (!g) return null;
+    if (opts.rendererId) {
+      // Verify the explicit choice still exists; if the user removed
+      // that Renderer the driver gracefully falls back to nothing.
+      return g.rendererIds.includes(opts.rendererId) ? opts.rendererId : null;
+    }
+    return g.rendererIds[0] ?? null;
+  };
 
   const loop = () => {
     if (stopped) return;
@@ -159,17 +148,18 @@ export function mountCanvas(container: HTMLElement, opts: DriverOptions): Active
     if (!opts.isRunning()) return;
 
     const g = opts.graphRef.current;
+    const rendererId = resolveRendererId(g);
 
     // Resize → message the worker. Style sizing is ours to set so the
     // visible HTMLCanvasElement reflects the new dims.
-    if (g?.rendererId) {
-      const w = paramStore.getKey<number>(g.rendererId, 'width');
-      const h = paramStore.getKey<number>(g.rendererId, 'height');
+    if (rendererId) {
+      const w = paramStore.getKey<number>(rendererId, 'width');
+      const h = paramStore.getKey<number>(rendererId, 'height');
       const cw = clamp(typeof w === 'number' && isFinite(w) ? w : DEFAULT_W);
       const ch = clamp(typeof h === 'number' && isFinite(h) ? h : DEFAULT_H);
       if (cw !== canvasW || ch !== canvasH) {
         canvasW = cw; canvasH = ch;
-        renderBridge.resize(cw, ch);
+        bridge.resize(cw, ch);
         canvas.style.maxWidth = `${cw}px`;
         canvas.style.maxHeight = `${ch}px`;
       }
@@ -184,9 +174,8 @@ export function mountCanvas(container: HTMLElement, opts: DriverOptions): Active
       ? (fpsWindow.length - 1) / (fpsWindow[fpsWindow.length - 1]! - fpsWindow[0]!)
       : 0;
 
-    if (!g) {
-      // No graph compiled — paint black through the worker.
-      void renderBridge.frame([], '#000000', false);
+    if (!g || !rendererId) {
+      void bridge.frame([], '#000000', false);
       frameCount++;
       if (opts.onTick) opts.onTick(fps, frameCount);
       return;
@@ -217,17 +206,13 @@ export function mountCanvas(container: HTMLElement, opts: DriverOptions): Active
     publishTickOutputs(result.outputs);
     publishRegionStats(result.regionStats);
 
-    // Background colour from the renderer's second output port.
-    const bgRaw = g.rendererId
-      ? (result.outputs.get(g.rendererId)?.[1] as ReadonlyArray<unknown> | undefined)?.[0]
-      : null;
+    const bgRaw = (result.outputs.get(rendererId)?.[1] as ReadonlyArray<unknown> | undefined)?.[0];
     const bgCss = (bgRaw && typeof bgRaw === 'object' && 'r' in bgRaw)
       ? colorToCss(bgRaw as Color)
       : '#000000';
 
-    // Flatten the runtime's `layers` spread. ForEach output may include
-    // nested arrays; the worker bridge expects a flat list.
-    const scene = result.layers as unknown as ReadonlyArray<SceneNode | SceneNode[]>;
+    const myLayers = result.layersByRenderer.get(rendererId) ?? [];
+    const scene = myLayers as unknown as ReadonlyArray<SceneNode | SceneNode[]>;
     const flat: SceneNode[] = [];
     for (const layer of scene) {
       if (Array.isArray(layer)) {
@@ -236,7 +221,7 @@ export function mountCanvas(container: HTMLElement, opts: DriverOptions): Active
         flat.push(layer);
       }
     }
-    void renderBridge.frame(flat, bgCss, true);
+    void bridge.frame(flat, bgCss, true);
 
     clearDirty();
     frameCount++;
@@ -255,18 +240,32 @@ export function mountCanvas(container: HTMLElement, opts: DriverOptions): Active
     window.removeEventListener('mouseup', onMouseUp);
     window.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('keyup', onKeyUp);
-    renderBridge.dispose();
+    bridge.dispose();
     if (canvas.parentNode === container) container.removeChild(canvas);
+    drivers.delete(driver);
   };
 
-  active = { canvas, ctx, container, stop };
-  return active;
+  const driver: ActiveDriver = { canvas, ctx, container, stop };
+  drivers.add(driver);
+  return driver;
 }
 
+/** Legacy single-driver API for callers that haven't migrated yet.
+ *  Wraps `createCanvasDriver`; tearing down via `unmountCanvas` only
+ *  affects the most-recently mounted driver. */
+let legacy: ActiveDriver | null = null;
+export function mountCanvas(container: HTMLElement, opts: DriverOptions): ActiveDriver {
+  if (legacy) {
+    legacy.stop();
+    legacy = null;
+  }
+  legacy = createCanvasDriver(container, opts);
+  return legacy;
+}
 export function unmountCanvas(): void {
-  if (active) {
-    active.stop();
-    active = null;
+  if (legacy) {
+    legacy.stop();
+    legacy = null;
   }
 }
 
@@ -276,6 +275,7 @@ function clamp(v: number): number {
 
 if (typeof import.meta.hot !== 'undefined' && import.meta.hot) {
   import.meta.hot.dispose(() => {
-    unmountCanvas();
+    for (const d of [...drivers]) d.stop();
+    legacy = null;
   });
 }

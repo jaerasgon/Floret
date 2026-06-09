@@ -459,6 +459,11 @@ input:focus, select:focus, textarea:focus {
   width: 100%;
   overflow: hidden;
 }
+.split.single-pane {
+  /* Preview is now a docked Panel inside the editor pane, so the
+     classic split column collapses to one full-width pane. */
+  grid-template-columns: 1fr;
+}
 
 .split .pane {
   position: relative;
@@ -482,6 +487,10 @@ input:focus, select:focus, textarea:focus {
 
 .editor-pane {
   background: var(--bg-0);
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  overflow: hidden;
 }
 
 .preview-pane {
@@ -604,9 +613,12 @@ input:focus, select:focus, textarea:focus {
 
 .canvas-wrapper {
   position: relative;
+  flex: 1 1 0;
+  min-width: 0;
   width: 100%;
   height: 100%;
   outline: none;
+  order: 0;
 }
 
 .value-tooltip {
@@ -3174,4 +3186,537 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   letter-spacing: 0.6px;
   text-transform: uppercase;
   color: var(--fg-2);
+}
+
+/* ─── Help panel ───────────────────────────────────────────────────────── */
+.editor-with-palette {
+  position: relative;
+}
+.help-panel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 280px;
+  max-height: calc(100% - 20px);
+  display: flex;
+  flex-direction: column;
+  background: rgba(20, 23, 28, 0.94);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  z-index: 50;
+  font-family: var(--font-ui);
+  color: var(--fg-1);
+  overflow: hidden;
+}
+.help-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-2);
+}
+.help-panel-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--fg-0);
+}
+.help-panel-collapse {
+  background: transparent;
+  border: 0;
+  color: var(--fg-2);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+  line-height: 1;
+}
+.help-panel-collapse:hover {
+  color: var(--fg-0);
+}
+.help-panel-tab {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-2);
+  color: var(--fg-1);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  z-index: 50;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.help-panel-tab:hover {
+  background: var(--bg-3);
+  color: var(--fg-0);
+}
+.help-panel-empty {
+  padding: 18px 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.help-panel-empty p {
+  margin: 0 0 8px 0;
+}
+.help-panel-hint {
+  font-size: 11px;
+  color: var(--fg-2);
+  opacity: 0.85;
+}
+.help-panel-body {
+  padding: 12px 14px;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.help-panel-node-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.help-panel-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg-0);
+}
+.help-panel-type {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-2);
+}
+.help-panel-category {
+  font-size: 10px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-top: 2px;
+  margin-bottom: 10px;
+}
+.help-panel-desc {
+  margin: 0 0 14px 0;
+  color: var(--fg-1);
+}
+.help-panel-section {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+.help-panel-section-title {
+  margin: 0 0 6px 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+.help-panel-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.help-panel-port {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.help-panel-pin {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  flex: 0 0 8px;
+}
+.help-panel-port-name {
+  color: var(--fg-0);
+  font-weight: 600;
+}
+.help-panel-port-type {
+  color: var(--fg-2);
+}
+.help-panel-port-kind {
+  color: var(--accent);
+  font-style: italic;
+}
+.help-panel-port-default {
+  margin-left: auto;
+  color: var(--fg-2);
+  font-size: 10px;
+}
+.help-panel-port-empty {
+  font-size: 11px;
+  color: var(--fg-2);
+  font-style: italic;
+}
+.help-panel-region-note {
+  margin: 0;
+  font-size: 11px;
+  color: var(--fg-1);
+}
+
+/* ─── Welcome modal ────────────────────────────────────────────────────── */
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+.welcome-card {
+  position: relative;
+  width: min(560px, 92vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  padding: 26px 28px 22px 28px;
+  font-family: var(--font-ui);
+  color: var(--fg-1);
+}
+.welcome-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: transparent;
+  border: 0;
+  color: var(--fg-2);
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 6px;
+}
+.welcome-close:hover {
+  color: var(--fg-0);
+}
+.welcome-title {
+  margin: 0 0 4px 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--fg-0);
+}
+.welcome-lede {
+  margin: 0 0 18px 0;
+  font-size: 13px;
+  color: var(--fg-1);
+}
+.welcome-section-title {
+  margin: 18px 0 4px 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.welcome-section-lede {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  color: var(--fg-1);
+}
+.welcome-featured {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.welcome-sample {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  padding: 10px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--fg-1);
+  cursor: pointer;
+}
+.welcome-sample:hover {
+  background: var(--bg-3);
+  border-color: var(--accent-dim);
+}
+.welcome-sample-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fg-0);
+}
+.welcome-sample-desc {
+  font-size: 11px;
+  color: var(--fg-2);
+  line-height: 1.4;
+}
+.welcome-tips {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.welcome-tips p {
+  margin: 0 0 8px 0;
+}
+.welcome-tips kbd {
+  font-family: var(--font-mono);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 11px;
+}
+.welcome-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+.welcome-skip {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg-1);
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.welcome-skip:hover {
+  background: var(--bg-2);
+  color: var(--fg-0);
+}
+
+/* ─── Panel framework ─────────────────────────────────────────────────────
+   Universal chrome for resizable / collapsible / detachable / dockable
+   panels (NodePalette, HelpPanel, …). Three render modes:
+     - .panel-docked.panel-dock-left   → flex item, order -1
+     - .panel-docked.panel-dock-right  → flex item, order  1
+     - .panel-float                    → portaled to body, absolute
+*/
+.panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-1);
+  color: var(--fg-1);
+  font-family: var(--font-ui);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+}
+.panel-docked {
+  height: 100%;
+  border-top: 0;
+  border-bottom: 0;
+  flex: 0 0 auto;
+}
+.panel-docked.panel-dock-left {
+  order: -1;
+  border-left: 0;
+}
+.panel-docked.panel-dock-right {
+  order: 1;
+  border-right: 0;
+}
+.panel-docked[data-collapsed='1'] {
+  width: 32px;
+  min-width: 32px;
+}
+.panel-docked[data-collapsed='1'] .panel-title {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  padding: 8px 0;
+}
+.panel-docked[data-collapsed='1'] .panel-header {
+  flex-direction: column;
+  padding: 4px 2px;
+  border-bottom: 0;
+}
+.panel-docked[data-collapsed='1'] .panel-header-actions {
+  flex-direction: column;
+  gap: 2px;
+}
+
+.panel-float {
+  position: fixed;
+  background: rgba(20, 23, 28, 0.96);
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  z-index: 120;
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px 6px 10px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  cursor: grab;
+  user-select: none;
+  flex: 0 0 auto;
+}
+.panel-header[data-dragging-hint='1'] { cursor: grab; }
+.panel-header:active { cursor: grabbing; }
+.panel-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--fg-0);
+}
+.panel-header-actions {
+  display: flex;
+  gap: 2px;
+}
+.panel-action {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: var(--fg-2);
+  font-size: 11px;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.panel-action:hover {
+  color: var(--fg-0);
+  background: var(--bg-3);
+  border-color: var(--border);
+}
+.panel-action[data-active='1'] {
+  background: var(--bg-3);
+  color: var(--accent);
+  border-color: var(--accent-dim);
+}
+.panel-action-close:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.panel-body {
+  flex: 1 1 auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.panel-body-docked, .panel-body-float {
+  height: 100%;
+}
+
+.panel-resize-edge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: ew-resize;
+  background: transparent;
+  transition: background var(--dur-fast) var(--ease-std);
+  z-index: 5;
+}
+.panel-resize-edge:hover {
+  background: var(--accent-dim);
+}
+.panel-resize-edge-right { right: -3px; }
+.panel-resize-edge-left  { left: -3px; }
+
+.panel-resize-grip {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  cursor: nwse-resize;
+  background:
+    linear-gradient(135deg, transparent 0 6px, var(--fg-2) 6px 7px, transparent 7px 9px, var(--fg-2) 9px 10px, transparent 10px);
+  opacity: 0.7;
+}
+.panel-resize-grip:hover { opacity: 1; }
+
+.panel-hidden-tab-wrap {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 8px;
+  flex: 0 0 auto;
+  order: 1;
+}
+.panel-hidden-tab {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  background: var(--bg-1);
+  color: var(--fg-2);
+  border: 1px solid var(--border);
+  border-right: 0;
+  padding: 8px 4px;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px 0 0 4px;
+}
+.panel-hidden-tab:hover {
+  color: var(--fg-0);
+  background: var(--bg-2);
+}
+
+/* Inner content for the palette body (now nested inside Panel chrome). */
+.palette-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.palette-inner .palette-scroll {
+  flex: 1 1 auto;
+}
+
+/* ─── Preview panel chrome ─────────────────────────────────────────────── */
+.preview-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-1);
+  flex: 0 0 auto;
+}
+.preview-picker-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+.preview-picker-select {
+  flex: 1;
+  background: var(--bg-2);
+  color: var(--fg-1);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 2px 4px;
+}
+.preview-picker-select:focus {
+  outline: none;
+  border-color: var(--accent-dim);
+}
+.preview-picker-hint {
+  font-size: 10px;
+  color: var(--fg-2);
+  font-style: italic;
 }

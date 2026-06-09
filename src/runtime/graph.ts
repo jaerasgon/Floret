@@ -117,7 +117,12 @@ export interface RuntimeGraph {
    * map by the time inner nodes look for them.
    */
   edgesByTarget: Map<NodeId, RuntimeEdge[]>;
+  /** First renderer id — back-compat shorthand for `rendererIds[0] ?? null`. */
   rendererId: NodeId | null;
+  /** Every `render/renderer` node at the root scope, in declaration
+   *  order. Multiple renderers each get their own Preview / output
+   *  canvas; the runtime's tick stage produces a layer spread per id. */
+  rendererIds: NodeId[];
   /**
    * Slot → state/write node lookup, refreshed at the start of each tick
    * by `tick()` via `buildSlotWriters`. `state/read` resolves its paired
@@ -141,6 +146,10 @@ export interface RuntimeGraph {
 export interface RuntimeGraphInput {
   nodes: RuntimeNode[];
   edges: RuntimeEdge[];
+  /** Either supply all renderer ids OR a single id via `rendererId`;
+   *  the graph normalises one to the other so callers can pass whichever
+   *  is convenient. */
+  rendererIds?: NodeId[];
   rendererId?: NodeId | null;
 }
 
@@ -301,10 +310,13 @@ export function buildRuntimeGraph(input: RuntimeGraphInput): RuntimeGraph {
     scopes.set(key, { parentId: key, order, splicerInIds, splicerOutIds, accumulatorIds });
   }
 
+  const rendererIds = input.rendererIds
+    ?? (input.rendererId ? [input.rendererId] : []);
   return {
     nodes,
     scopes,
     edgesByTarget,
-    rendererId: input.rendererId ?? null,
+    rendererId: rendererIds[0] ?? null,
+    rendererIds,
   };
 }

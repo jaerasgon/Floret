@@ -15,8 +15,8 @@ export const countNode = registerNode({
   category: 'Spread',
   label: 'CountSpread',
   description: 'Length of a spread.',
-  inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'number' }],
+  inputs: [{ name: 'spread', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'out', label: 'count', type: 'number' }],
   computeRaw: (inputs) => [[(inputs[0] ?? []).length]],
 });
 
@@ -25,8 +25,8 @@ export const reverseNode = registerNode({
   category: 'Spread',
   label: 'ReverseSpread',
   description: 'Reverse the order of elements.',
-  inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  inputs: [{ name: 'spread', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'out', label: 'spread', type: 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const out = new Array(src.length);
@@ -96,6 +96,26 @@ export const sliceNode = registerNode({
     const endIn = Math.floor(Number(inputs[2]?.[0] ?? 0));
     const end = endIn === 0 ? src.length : endIn;
     return [src.slice(start, end < 0 ? src.length + end : end)];
+  },
+});
+
+export const cycleNode = registerNode({
+  type: 'spread/cycle',
+  category: 'Spread',
+  label: 'CycleSpread',
+  description: 'Repeat a spread cyclically until the output reaches `count` elements.',
+  inputs: [
+    { name: 'spread', type: 'any', kind: 'spread' },
+    { name: 'count', type: 'number', default: 8, integer: true },
+  ],
+  outputs: [{ name: 'out', label: 'spread', type: 'any', kind: 'spread' }],
+  computeRaw: (inputs) => {
+    const src = inputs[0] ?? [];
+    const n = intCount(inputs[1]?.[0]);
+    if (n === 0 || src.length === 0) return [[]];
+    const out = new Array(n);
+    for (let i = 0; i < n; i++) out[i] = src[i % src.length];
+    return [out];
   },
 });
 

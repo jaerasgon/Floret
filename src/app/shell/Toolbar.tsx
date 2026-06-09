@@ -7,6 +7,7 @@ import {
   LayoutGrid,
   Waves,
   Sparkles,
+  Monitor,
 } from 'lucide-react';
 import { useAppStore } from '../store';
 import { usePrefs } from '../prefs';
@@ -22,6 +23,8 @@ export function Toolbar() {
   const running = useAppStore((s) => s.running);
   const toggleRunning = useAppStore((s) => s.toggleRunning);
   const refresh = useAppStore((s) => s.refresh);
+  const addPreview = useAppStore((s) => s.addPreview);
+  const previewCount = useAppStore((s) => s.previews.length);
   const wireFlow = usePrefs((s) => s.wireFlowAnimation);
   const proMode = usePrefs((s) => s.proMode);
   const setPref = usePrefs((s) => s.set);
@@ -92,6 +95,16 @@ export function Toolbar() {
           aria-label="Refresh"
         >
           <RotateCcw size={13} strokeWidth={1.8} />
+        </button>
+      </Tooltip>
+      <Tooltip label={`Add another Preview panel (${previewCount} open)`}>
+        <button
+          className="tb-icon-btn"
+          onClick={addPreview}
+          aria-label="Add preview"
+        >
+          <Monitor size={14} strokeWidth={1.6} />
+          <span style={{ fontSize: 10, marginLeft: 2 }}>+</span>
         </button>
       </Tooltip>
       <Tooltip

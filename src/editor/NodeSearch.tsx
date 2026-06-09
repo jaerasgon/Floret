@@ -2,9 +2,43 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { nodeRegistry } from '../nodes/registry';
 import { getResolvedInputs, type NodeDef } from '../nodes/types';
 import { useOverlay } from './overlay-store';
-import { useEditor } from './editor-state';
+import { useEditor, type FloretNode } from './editor-state';
 import { arePortsCompatible } from './connection-rules';
 import type { PortType } from '../runtime/types';
+
+/**
+ * Locate the smallest region whose bounds contain the given flow-coord
+ * point and whose parent matches the current view scope. Used to
+ * auto-parent newly-created nodes into the region the user dropped them in.
+ */
+function findRegionAtFlow(
+  nodes: ReadonlyArray<FloretNode>,
+  flowPoint: { x: number; y: number },
+  newNodeId: string,
+  scopeParent: string | null,
+): { id: string; pos: { x: number; y: number } } | null {
+  let best: { id: string; pos: { x: number; y: number } } | null = null;
+  let bestArea = Infinity;
+  for (const n of nodes) {
+    if (n.id === newNodeId) continue;
+    if ((n.parentId ?? null) !== scopeParent) continue;
+    const def = nodeRegistry.get(n.data.defType);
+    if (!def?.regionKind) continue;
+    const w = (n.data.params?.width as number | undefined) ?? 480;
+    const h = (n.data.params?.height as number | undefined) ?? 280;
+    if (
+      flowPoint.x >= n.position.x && flowPoint.x <= n.position.x + w &&
+      flowPoint.y >= n.position.y && flowPoint.y <= n.position.y + h
+    ) {
+      const area = w * h;
+      if (area < bestArea) {
+        best = { id: n.id, pos: n.position };
+        bestArea = area;
+      }
+    }
+  }
+  return best;
+}
 
 /**
  * Command-palette-style node picker. Opens at a screen position; when an
@@ -24,6 +58,7 @@ export function NodeSearch() {
   const addNode = useEditor((s) => s.addNode);
   const addEdge = useEditor((s) => s.addEdge);
   const removeEdge = useEditor((s) => s.removeEdge);
+  const setNodeParent = useEditor((s) => s.setNodeParent);
 
   const [query, setQuery] = useState('');
   const [highlight, setHighlight] = useState(0);
@@ -117,6 +152,26 @@ export function NodeSearch() {
 
   const commit = (def: NodeDef) => {
     const id = addNode(def.type, flowPos);
+
+    // Auto-parent the new node into a containing region (if any).
+    // addNode already handles the subpatch case via viewStack; this
+    // covers regions that live at the current view's scope.
+    const st = useEditor.getState();
+    const created = st.nodes.find((n) => n.id === id);
+    const currentView = st.viewStack[st.viewStack.length - 1] ?? null;
+    const newParentScope = created?.parentId ?? null;
+    // Only auto-parent when the new node is at the current view scope
+    // (i.e. addNode didn't already parent it elsewhere, e.g. inside a
+    // subpatch — that's already handled by viewStack).
+    if (created && newParentScope === currentView) {
+      const region = findRegionAtFlow(st.nodes, flowPos, id, currentView);
+      if (region && region.id !== currentView) {
+        setNodeParent(id, region.id, {
+          x: flowPos.x - region.pos.x,
+          y: flowPos.y - region.pos.y,
+        });
+      }
+    }
 
     if (insertion) {
       // Split the original edge: source → new node → original target.

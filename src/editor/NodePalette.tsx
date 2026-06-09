@@ -1,18 +1,26 @@
 import { useMemo, useState, useSyncExternalStore } from 'react';
 import { nodeRegistry } from '../nodes/registry';
 import type { NodeDef } from '../nodes/types';
+import { Panel } from './panel/Panel';
 
 /**
- * Left sidebar: every registered NodeDef grouped by category. Categories
- * collapsed by default — open one with a click. The palette's right
- * edge is a thin click-strip that toggles the panel's collapsed state.
+ * Node palette — search + category tree of every registered NodeDef.
+ * Wrapped in a generic `Panel` so the user can dock, float, resize, or
+ * collapse it from a single uniform chrome.
  */
-interface PaletteProps {
-  collapsed?: boolean;
-  onToggleCollapse?: () => void;
+export function NodePalette() {
+  return (
+    <Panel
+      id="palette"
+      title="Nodes"
+      defaults={{ dock: 'left', width: 260, height: 600, floatX: 60, floatY: 80 }}
+    >
+      <PaletteBody />
+    </Panel>
+  );
 }
 
-export function NodePalette({ collapsed = false, onToggleCollapse }: PaletteProps) {
+function PaletteBody() {
   useSyncExternalStore(
     (cb) => nodeRegistry.subscribe(cb),
     () => nodeRegistry.version(),
@@ -59,26 +67,8 @@ export function NodePalette({ collapsed = false, onToggleCollapse }: PaletteProp
     });
   };
 
-  if (collapsed) {
-    return (
-      <div className="palette palette-collapsed">
-        <div className="palette-collapsed-hint">N&nbsp;O&nbsp;D&nbsp;E&nbsp;S</div>
-        {/* The right edge is the toggle — click anywhere on it to expand. */}
-        <button
-          className="palette-edge-toggle"
-          onClick={onToggleCollapse}
-          title="Expand node palette"
-          aria-label="Expand node palette"
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="palette">
-      <div className="palette-header">
-        <span>Nodes</span>
-      </div>
+    <div className="palette-inner">
       <div className="palette-search-wrap">
         <input
           className="palette-search"
@@ -127,13 +117,6 @@ export function NodePalette({ collapsed = false, onToggleCollapse }: PaletteProp
           })
         )}
       </div>
-      {/* Right-edge click strip — click anywhere on it to collapse. */}
-      <button
-        className="palette-edge-toggle"
-        onClick={onToggleCollapse}
-        title="Collapse node palette"
-        aria-label="Collapse node palette"
-      />
     </div>
   );
 }

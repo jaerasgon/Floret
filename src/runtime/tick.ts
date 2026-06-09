@@ -14,8 +14,13 @@ import { paramStore } from './param-store';
 export interface TickResult {
   /** Outputs of root-scope nodes only (region inner outputs are scoped per-iteration). */
   outputs: Map<NodeId, PortValue[]>;
-  /** Layers reaching the Renderer node, in wire order. */
+  /** Layers reaching the FIRST renderer node — back-compat shorthand
+   *  for `layersByRenderer.get(rendererId)`. Single-renderer drivers
+   *  read from here; multi-renderer ones use the map below. */
   layers: ReadonlyArray<Layer>;
+  /** Per-renderer layer spread, keyed by renderer NodeId. Multiple
+   *  Preview panels can each look up their own renderer here. */
+  layersByRenderer: Map<NodeId, ReadonlyArray<Layer>>;
   /**
    * Per-region statistics from this tick — iteration count, per-splicer-in
    * lengths, which input limited iteration (if any). Used by the editor
@@ -63,14 +68,19 @@ export function tick(graph: RuntimeGraph, frame: FrameCtx): TickResult {
     captureStatefulNext(graph, rootScope, outputs);
   }
 
-  let layers: ReadonlyArray<Layer> = [];
-  if (graph.rendererId) {
-    const rendererOut = outputs.get(graph.rendererId);
-    if (rendererOut && rendererOut[0]) {
-      layers = rendererOut[0] as ReadonlyArray<Layer>;
+  const layersByRenderer = new Map<NodeId, ReadonlyArray<Layer>>();
+  for (const id of graph.rendererIds) {
+    const out = outputs.get(id);
+    if (out && out[0]) {
+      layersByRenderer.set(id, out[0] as ReadonlyArray<Layer>);
+    } else {
+      layersByRenderer.set(id, []);
     }
   }
-  return { outputs, layers, regionStats };
+  const layers = graph.rendererId
+    ? (layersByRenderer.get(graph.rendererId) ?? [])
+    : [];
+  return { outputs, layers, layersByRenderer, regionStats };
 }
 
 function captureStatefulNext(

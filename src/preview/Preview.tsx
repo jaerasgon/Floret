@@ -1,16 +1,18 @@
 import { useEffect, useRef } from 'react';
-import { mountCanvas, unmountCanvas, getActiveDriver } from '../runtime/canvas-driver';
+import { createCanvasDriver, getActiveDriver } from '../runtime/canvas-driver';
 import { useAppStore } from '../app/store';
 import { useEditor } from '../editor/editor-state';
-import type { RuntimeGraph } from '../runtime/graph';
+import type { RuntimeGraph, NodeId } from '../runtime/graph';
 
 /**
- * Preview pane — mounts the canvas driver into a host div. The driver
- * owns the canvas, the RAF loop, and input event listeners. We just
- * hand it a `graphRef` that points at the latest compiled runtime
- * graph + an `isRunning` getter for the global pause toggle.
+ * Preview pane — mounts a canvas-driver instance into a host div. Each
+ * Preview owns ONE driver (one canvas + one worker) bound to ONE
+ * Renderer node in the graph. The editor can host multiple Preview
+ * panels to show different renderers side-by-side; when no
+ * `rendererId` is passed, the preview auto-tracks the first renderer
+ * in the graph (back-compat).
  */
-function PreviewOverlay() {
+function PreviewOverlay({ rendererId }: { rendererId: NodeId | null }) {
   const runtime = useEditor((s) => s.runtime);
   const nodes = useEditor((s) => s.nodes);
   const warnings = useEditor((s) => s.warnings);
@@ -26,7 +28,10 @@ function PreviewOverlay() {
     );
   }
 
-  if (!runtime?.rendererId) {
+  const hasAnyRenderer = (runtime?.rendererIds.length ?? 0) > 0;
+  const myRendererBound = rendererId && runtime?.rendererIds.includes(rendererId);
+
+  if (!hasAnyRenderer) {
     if (nodes.length === 0) {
       return (
         <div className="preview-overlay">
@@ -48,10 +53,28 @@ function PreviewOverlay() {
     );
   }
 
+  if (rendererId && !myRendererBound) {
+    return (
+      <div className="preview-overlay warn">
+        <div className="overlay-title">renderer gone</div>
+        <div className="overlay-line">
+          This preview was bound to a Renderer that no longer exists in the
+          patch. Pick another from the dropdown above.
+        </div>
+      </div>
+    );
+  }
+
   return null;
 }
 
-export function Preview() {
+export interface PreviewProps {
+  /** Which Renderer this preview shows. Null = auto-bind to the first
+   *  Renderer in the graph (single-preview back-compat). */
+  rendererId?: NodeId | null;
+}
+
+export function Preview({ rendererId = null }: PreviewProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const runningRef = useRef<boolean>(useAppStore.getState().running);
   const graphRef = useRef<RuntimeGraph | null>(useEditor.getState().runtime);
@@ -76,8 +99,9 @@ export function Preview() {
     const setFps = useAppStore.getState().setFps;
     const setFrame = useAppStore.getState().setFrameCount;
 
-    mountCanvas(el, {
+    const driver = createCanvasDriver(el, {
       graphRef,
+      rendererId,
       isRunning: () => runningRef.current,
       onTick: (fps, frame) => {
         setFps(fps);
@@ -86,14 +110,14 @@ export function Preview() {
     });
 
     return () => {
-      unmountCanvas();
+      driver.stop();
     };
-  }, [refreshKey]);
+  }, [refreshKey, rendererId]);
 
   return (
     <div className="preview-host">
       <div ref={containerRef} className="preview-canvas" />
-      <PreviewOverlay />
+      <PreviewOverlay rendererId={rendererId} />
     </div>
   );
 }

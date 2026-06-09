@@ -103,11 +103,31 @@ export const RegionNode = memo(function RegionNode(props: NodeProps) {
     updateNodeInternals(id);
   }, [id, portSig, updateNodeInternals]);
 
+  const onDoubleClick = useCallback((e: React.MouseEvent) => {
+    // Open the node search at the cursor. Any node created from this
+    // search will be auto-parented into this region (the parent is
+    // detected by flow-position in NodeSearch.commit).
+    //
+    // Bail when the double-click belongs to a different node visually
+    // sitting inside the region — those siblings have their own
+    // .react-flow__node wrapper, so we just check the nearest one
+    // matches us. Port pills swallow their own dblclick for renaming,
+    // so we don't need to special-case them here.
+    const t = e.target as HTMLElement;
+    const nearestNode = t.closest('.react-flow__node') as HTMLElement | null;
+    if (nearestNode && nearestNode.dataset.id !== id) return;
+    e.stopPropagation();
+    window.dispatchEvent(
+      new CustomEvent('floret:open-search', { detail: { x: e.clientX, y: e.clientY } }),
+    );
+  }, [id]);
+
   return (
     <div
       className={`region-node ${kindClass}`}
       data-selected={selected ? 1 : 0}
       style={{ width: w, height: h }}
+      onDoubleClick={onDoubleClick}
     >
       <NodeResizer
         minWidth={200}

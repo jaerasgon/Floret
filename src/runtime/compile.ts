@@ -347,14 +347,16 @@ export function compileGraph(
     );
   }
 
-  // Sole Renderer pick — only consider root-scope renderers.
-  const rendererId =
-    nodes.find((n) => n.defType === 'render/renderer' && !n.parentId)?.id ?? null;
+  // Every root-scope renderer is a render target. The graph keeps the
+  // ordered list; `rendererId` is back-compat shorthand for the first.
+  const rendererIds = nodes
+    .filter((n) => n.defType === 'render/renderer' && !n.parentId)
+    .map((n) => n.id);
 
   const graph = buildRuntimeGraph({
     nodes: runtimeNodes,
     edges: runtimeEdges,
-    rendererId,
+    rendererIds,
   });
 
   // Cook-on-change scheduling: figure out whether this patch needs the
@@ -480,6 +482,11 @@ export function defToRuntimeNode(
       inputKinds,
       outputKinds,
     );
+  } else if (def.inputs.length === 0 && def.outputs.length === 0) {
+    // Editor-only annotation node (e.g. meta/comment). Produces nothing,
+    // consumes nothing — the runtime treats it as a no-op so it can sit
+    // in a patch without breaking compile.
+    compute = () => [];
   } else {
     throw new Error(
       `NodeDef ${def.type} has no compute / computeRaw / readFromContext / regionKind / regionRole`,
@@ -587,8 +594,9 @@ export function defToRuntimeNode(
  */
 function defaultForPort(p: { kind?: 'single' | 'spread' | 'multi'; type: string; default?: unknown }): PortValue {
   const kind = p.kind ?? 'single';
+  const hasExplicit = p.default !== undefined;
   if (kind === 'spread' || kind === 'multi') {
-    return p.default !== undefined ? [p.default] : [];
+    return hasExplicit ? [p.default] : [];
   }
   // Distinguish "no default declared" (use the type's fallback — white for
   // color, 0 for number, …) from "explicit null default" (the node author
@@ -597,7 +605,7 @@ function defaultForPort(p: { kind?: 'single' | 'spread' | 'multi'; type: string;
   // previous `p.default ?? defaultByType(p.type)` collapsed both into the
   // type fallback, which made palette stops always emit white because the
   // compute never saw an unwired-null signal.
-  return [p.default !== undefined ? p.default : defaultByType(p.type)];
+  return [hasExplicit ? p.default : defaultByType(p.type)];
 }
 
 function defaultByType(t: string): unknown {

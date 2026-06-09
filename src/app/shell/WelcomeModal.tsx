@@ -1,0 +1,133 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useEditor } from '../../editor/editor-state';
+import { paramStore } from '../../runtime/param-store';
+import { history } from '../../editor/history';
+import { SAMPLES } from '../../persistence/samples';
+
+/**
+ * Welcome card shown on first launch. Points new users at the Tutorial
+ * track and exposes one-click loaders for the first few lessons.
+ *
+ * Visibility:
+ *   - shown when the patch is the empty starter AND the user hasn't
+ *     dismissed it before (localStorage flag).
+ *   - dismissed permanently when the user clicks "Skip" / loads a sample,
+ *     or temporarily when the user adds their first node.
+ */
+
+const LS_KEY = 'floret.welcomeDismissed.v1';
+
+const FEATURED_IDS = [
+  'tut-01-hello-rect',
+  'tut-03-animate',
+  'tut-07-grid',
+  'tut-50-showcase',
+];
+
+export function WelcomeModal() {
+  const loadPatch = useEditor((s) => s.loadPatch);
+  const nodes = useEditor((s) => s.nodes);
+  const [dismissed, setDismissed] = useState<boolean>(() => {
+    try { return localStorage.getItem(LS_KEY) === '1'; } catch { return false; }
+  });
+
+  // Treat "no nodes" or "just the starter (one rect + one renderer)" as
+  // empty for the purpose of showing the welcome.
+  const isEmpty = useMemo(() => {
+    if (nodes.length === 0) return true;
+    if (nodes.length <= 3) {
+      // Pure starter patches only contain a draw/rect → renderer (with
+      // maybe a value/number). If everything is in those, count as empty.
+      const allStarter = nodes.every((n) =>
+        ['draw/rect', 'render/renderer', 'value/number'].includes(n.data.defType),
+      );
+      if (allStarter) return true;
+    }
+    return false;
+  }, [nodes]);
+
+  // Auto-dismiss when the user has built something real.
+  useEffect(() => {
+    if (!isEmpty && !dismissed) {
+      // Soft dismiss for this session — don't persist, so users get the
+      // welcome again next time they open an empty canvas. We do mark
+      // them dismissed in component state so the modal hides immediately.
+      setDismissed(true);
+    }
+  }, [isEmpty, dismissed]);
+
+  const dismissPermanent = () => {
+    setDismissed(true);
+    try { localStorage.setItem(LS_KEY, '1'); } catch { /* ignore */ }
+  };
+
+  const loadSample = (id: string) => {
+    const sample = SAMPLES.find((s) => s.id === id);
+    if (!sample) return;
+    const { nodes: ns, edges: es } = sample.build();
+    paramStore.replaceAll(ns.map((n) => [n.id, n.data.params] as const));
+    loadPatch(ns, es);
+    history.reset();
+    dismissPermanent();
+  };
+
+  if (dismissed || !isEmpty) return null;
+
+  const featured = FEATURED_IDS
+    .map((id) => SAMPLES.find((s) => s.id === id))
+    .filter(<T,>(s: T | undefined): s is T => Boolean(s));
+
+  return (
+    <div className="welcome-overlay" onClick={(e) => { if (e.target === e.currentTarget) dismissPermanent(); }}>
+      <div className="welcome-card" role="dialog" aria-labelledby="welcome-title">
+        <button
+          className="welcome-close"
+          title="Skip — don't show again"
+          onClick={dismissPermanent}
+        >
+          ×
+        </button>
+        <h2 id="welcome-title" className="welcome-title">Welcome to Floret</h2>
+        <p className="welcome-lede">
+          A node-based creative tool — wire shapes, sounds, and data
+          together to make visual sketches.
+        </p>
+        <h3 className="welcome-section-title">Start here</h3>
+        <p className="welcome-section-lede">
+          The Tutorial tab in the Samples menu has 50 lessons that build
+          up from a single rectangle to full audio-reactive compositions.
+        </p>
+        <div className="welcome-featured">
+          {featured.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              className="welcome-sample"
+              onClick={() => loadSample(s.id)}
+            >
+              <span className="welcome-sample-name">{s.name}</span>
+              <span className="welcome-sample-desc">{s.description}</span>
+            </button>
+          ))}
+        </div>
+        <div className="welcome-tips">
+          <p>
+            <strong>Editor basics</strong> — drag from output pins (right) to
+            input pins (left). Double-click empty space to open the node
+            search. Press <kbd>Tab</kbd> anywhere to do the same.
+          </p>
+          <p>
+            <strong>See what's happening</strong> — hover any pin for its
+            live value. Select a node to read its docs in the Help panel
+            on the right.
+          </p>
+        </div>
+        <div className="welcome-actions">
+          <button type="button" className="welcome-skip" onClick={dismissPermanent}>
+            Skip — I'll explore on my own
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

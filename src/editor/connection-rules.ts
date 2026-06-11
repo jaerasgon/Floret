@@ -336,6 +336,10 @@ export function portColorVar(t: PortType): string {
     case 'style':   return 'var(--port-style)';
     case 'audio':   return 'var(--port-audio)';
     case 'image':   return 'var(--port-image)';
+    case 'world':   return 'var(--port-world)';
+    case 'force':   return 'var(--port-force)';
+    case 'collider':return 'var(--port-collider)';
+    case 'particle':return 'var(--port-particle)';
     case 'any':     return 'var(--port-any)';
     default:        return 'var(--fg-1)';
   }

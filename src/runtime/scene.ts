@@ -1,4 +1,5 @@
 import type { Color, Vec2 } from './types';
+import type { ParticleBuffer, ParticleTemplate } from './particles';
 
 /**
  * Retained-mode scene description.
@@ -47,8 +48,19 @@ export interface ResolvedStyle {
   strokeWeight: number;
   strokeCap: StrokeCap;
   strokeJoin: StrokeJoin;
-  /** Font specifier — full CSS `font` value (e.g. "16px sans-serif"). */
-  font: string;
+  /** Font size in pixels. Composed into the CSS `font` shorthand at render
+   *  time by `composeFontCss(style)`. */
+  fontSize: number;
+  /** CSS font-family stack (e.g. "sans-serif", "Inter, sans-serif"). */
+  fontFamily: string;
+  /** CSS font-weight (e.g. "normal", "bold", "600"). */
+  fontWeight: string;
+  /** CSS font-style ("normal" | "italic" | "oblique"). */
+  fontStyle: string;
+  /** Letter-spacing in pixels (Canvas2D `letterSpacing`, SVG `letter-spacing`). */
+  letterSpacing: number;
+  /** Multiplier on fontSize for line spacing in multi-line text. */
+  lineHeight: number;
   textAlign: TextAlign;
   textBaseline: TextBaseline;
   /** How (x,y,w,h) is interpreted for rects (and similar). The Rect
@@ -70,7 +82,12 @@ export const DEFAULT_STYLE: ResolvedStyle = Object.freeze({
   strokeWeight: 1,
   strokeCap: 'butt',
   strokeJoin: 'miter',
-  font: '14px sans-serif',
+  fontSize: 14,
+  fontFamily: 'sans-serif',
+  fontWeight: 'normal',
+  fontStyle: 'normal',
+  letterSpacing: 0,
+  lineHeight: 1.2,
   textAlign: 'left',
   textBaseline: 'alphabetic',
   rectMode: 'corner',
@@ -197,6 +214,59 @@ export interface TextShape {
   style: ResolvedStyle;
 }
 
+/**
+ * Particle batch — the CPU "instancing" SceneNode. Each frame the
+ * renderer walks one of these with a single tight loop over the typed
+ * arrays inside `buffer`, drawing `count` particles using `template`.
+ *
+ * The buffer is shared by reference with the upstream Emitter — there
+ * is NO copy per frame. `count` is snapshotted at the end of the
+ * Emitter's tick so the renderer reads a stable value even if the
+ * Emitter is later advanced again before the draw call lands.
+ *
+ * See `runtime/particles.ts` for the buffer layout and lifecycle.
+ */
+export interface ParticleBatch {
+  kind: 'particle-batch';
+  buffer: ParticleBuffer;
+  count: number;
+  template: ParticleTemplate;
+  style: ResolvedStyle;
+  /** When true, use per-particle colour from the buffer; otherwise the
+   *  resolved style's fill is used uniformly across all particles. */
+  useBufferColor: boolean;
+}
+
+/**
+ * Per-particle trail batch. `history` is a ring buffer of past
+ * positions: `history[(slot * segments + seg) * 2 + 0..1]` is the
+ * (x, y) of segment `seg` for particle slot `slot`. `headIdx` is the
+ * latest write position; segments walk backwards from there.
+ */
+export interface ParticleTrailBatch {
+  kind: 'particle-trail-batch';
+  buffer: ParticleBuffer;
+  history: Float32Array;
+  segments: number;
+  /** Tail-most write index; segments walk backwards modulo `segments`. */
+  headIdx: number;
+  style: ResolvedStyle;
+  /** When true, segment opacity decays linearly from head → tail. */
+  fadeOut: boolean;
+  /** When true, use the particle's current colour from the buffer as
+   *  the stroke colour for its trail (so a fading particle takes its
+   *  trail with it). When false, use `style.stroke`. */
+  useBufferColor: boolean;
+  /** When true, segment line width tapers linearly from
+   *  `style.strokeWeight` at the head down to
+   *  `style.strokeWeight × tailWidth` at the tail. Combines cleanly
+   *  with `fadeOut` — opacity AND width can both decay. */
+  tapered: boolean;
+  /** Tail width as a fraction of head width (0..1). 0.1 leaves a thin
+   *  whisker; 0 vanishes the tail entirely. Only used when `tapered`. */
+  tailWidth: number;
+}
+
 export interface ImageShape {
   kind: 'image';
   source: CanvasImageSource;
@@ -236,7 +306,9 @@ export type ShapeNode =
   | PointShape
   | PolygonShape
   | TextShape
-  | ImageShape;
+  | ImageShape
+  | ParticleBatch
+  | ParticleTrailBatch;
 
 export type SceneNode = ShapeNode | GroupNode;
 
@@ -321,4 +393,19 @@ export function affine(a: number, b: number, c: number, d: number, e: number, f:
  */
 export function groupOf(children: ReadonlyArray<SceneNode>): GroupNode {
   return { kind: 'group', children };
+}
+
+/**
+ * Build a CSS `font` shorthand from the structured fields on a
+ * ResolvedStyle. Used by the Canvas2D renderer (assigns to `ctx.font`)
+ * and the SVG emitter (writes it into `style="font:..."`). Order matters
+ * — CSS expects `style weight size family`.
+ */
+export function composeFontCss(s: ResolvedStyle): string {
+  const parts: string[] = [];
+  if (s.fontStyle && s.fontStyle !== 'normal') parts.push(s.fontStyle);
+  if (s.fontWeight && s.fontWeight !== 'normal') parts.push(s.fontWeight);
+  parts.push(`${s.fontSize}px`);
+  parts.push(s.fontFamily || 'sans-serif');
+  return parts.join(' ');
 }

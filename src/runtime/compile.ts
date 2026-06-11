@@ -157,9 +157,41 @@ export function compileGraph(
     } else if (def.regionRole === 'splicer-out') {
       meta.splicerOutIndex.set(n.id, meta.splicerOutIds.length);
       meta.splicerOutIds.push(n.id);
-    } else if (def.regionRole === 'accumulator') {
-      meta.accumulatorIndex.set(n.id, meta.accumulatorIds.length);
-      meta.accumulatorIds.push(n.id);
+    }
+  }
+  // Second sweep: pair accumulator-read with accumulator-write by `slot`
+  // within each region. Each (Read, Write) pair occupies ONE entry in
+  // accumulatorIds (anchor = Read's id). Unmatched Reads/Writes get
+  // warnings and are dropped from the index.
+  for (const [regionId, meta] of regionMeta) {
+    const readsBySlot = new Map<number, string>();
+    const writesBySlot = new Map<number, string>();
+    for (const n of nodes) {
+      if (n.parentId !== regionId) continue;
+      const d = defByNodeId.get(n.id);
+      if (!d) continue;
+      const slot = Number(n.params?.slot ?? 1);
+      if (d.regionRole === 'accumulator-read') readsBySlot.set(slot, n.id);
+      else if (d.regionRole === 'accumulator-write') writesBySlot.set(slot, n.id);
+    }
+    for (const [slot, readId] of readsBySlot) {
+      const writeId = writesBySlot.get(slot);
+      if (writeId === undefined) {
+        warn(`Accumulator Read (slot ${slot}) in region "${regionId}" has no matching Write — pair dropped.`, [readId, regionId]);
+        continue;
+      }
+      // The anchor index is shared by both Read (for init in) and Write
+      // (for final out). Map both physical ids to the same accumIdx so
+      // edge-rewrite can resolve either side.
+      const idx = meta.accumulatorIds.length;
+      meta.accumulatorIndex.set(readId, idx);
+      meta.accumulatorIndex.set(writeId, idx);
+      meta.accumulatorIds.push(readId);
+    }
+    for (const [slot, writeId] of writesBySlot) {
+      if (!readsBySlot.has(slot)) {
+        warn(`Accumulator Write (slot ${slot}) in region "${regionId}" has no matching Read — pair dropped.`, [writeId, regionId]);
+      }
     }
   }
 
@@ -264,15 +296,15 @@ export function compileGraph(
       });
       continue;
     }
-    // Accumulator init: outer → accum.init becomes outer → region.input[nSplicersIn + accumIdx]
-    if (dstDef.regionRole === 'accumulator' && e.toPort === 'init' && dst.parentId && nodeById.get(dst.parentId)?.parentId === srcScope) {
+    // AccumulatorRead init: outer → accRead.init becomes outer → region.input[nSplicersIn + accumIdx]
+    if (dstDef.regionRole === 'accumulator-read' && e.toPort === 'init' && dst.parentId && nodeById.get(dst.parentId)?.parentId === srcScope) {
       const regionId = dst.parentId;
       const meta = regionMeta.get(regionId);
-      if (!meta) { warn(`Accumulator "${dst.id}" has no region meta — internal compile bug.`, [dst.id, regionId]); continue; }
+      if (!meta) { warn(`AccRead "${dst.id}" has no region meta — internal compile bug.`, [dst.id, regionId]); continue; }
       const fromIdx = srcDef.outputs.findIndex((p) => p.name === e.fromPort);
       if (fromIdx < 0) { warn(`Unknown output port "${e.fromPort}" on "${e.fromNode}" — wire dropped.`, [src.id]); continue; }
       const accIdx = meta.accumulatorIndex.get(dst.id);
-      if (accIdx === undefined) { warn(`Accumulator "${dst.id}" not indexed — internal compile bug.`, [dst.id, regionId]); continue; }
+      if (accIdx === undefined) { warn(`AccRead "${dst.id}" not paired with a Write — wire dropped.`, [dst.id, regionId]); continue; }
       const toIdx = resolvedInputsFor(regionId).length + meta.splicerInIds.length + accIdx;
       runtimeEdges.push({
         fromNode: e.fromNode, fromPort: fromIdx,
@@ -280,13 +312,13 @@ export function compileGraph(
       });
       continue;
     }
-    // Accumulator final: accum.final → outer becomes region.output[nSplicersOut + accumIdx] → outer
-    if (srcDef.regionRole === 'accumulator' && e.fromPort === 'final' && src.parentId && nodeById.get(src.parentId)?.parentId === dstScope) {
+    // AccumulatorWrite final: accWrite.final → outer becomes region.output[nSplicersOut + accumIdx] → outer
+    if (srcDef.regionRole === 'accumulator-write' && e.fromPort === 'final' && src.parentId && nodeById.get(src.parentId)?.parentId === dstScope) {
       const regionId = src.parentId;
       const meta = regionMeta.get(regionId);
-      if (!meta) { warn(`Accumulator "${src.id}" has no region meta — internal compile bug.`, [src.id, regionId]); continue; }
+      if (!meta) { warn(`AccWrite "${src.id}" has no region meta — internal compile bug.`, [src.id, regionId]); continue; }
       const accIdx = meta.accumulatorIndex.get(src.id);
-      if (accIdx === undefined) { warn(`Accumulator "${src.id}" not indexed — internal compile bug.`, [src.id, regionId]); continue; }
+      if (accIdx === undefined) { warn(`AccWrite "${src.id}" not paired with a Read — wire dropped.`, [src.id, regionId]); continue; }
       const fromIdx = meta.splicerOutIds.length + accIdx;
       const toIdx = dstInputs.findIndex((p) => p.name === e.toPort);
       if (toIdx < 0) { warn(`Unknown input port "${e.toPort}" on "${e.toNode}" — wire dropped.`, [dst.id]); continue; }
@@ -460,7 +492,12 @@ export function defToRuntimeNode(
 
   let compute: RawComputeFn | undefined;
 
-  if (def.regionRole === 'splicer-in' || def.regionRole === 'splicer-out' || def.regionRole === 'accumulator') {
+  if (
+    def.regionRole === 'splicer-in' ||
+    def.regionRole === 'splicer-out' ||
+    def.regionRole === 'accumulator-read' ||
+    def.regionRole === 'accumulator-write'
+  ) {
     // No compute — tick.ts evalNode handles these explicitly.
   } else if (def.stateful) {
     // No compute — tick.ts evalNode emits the persisted value (or init).
@@ -505,7 +542,15 @@ export function defToRuntimeNode(
 
   if (def.regionRole === 'splicer-in') node.splicerRole = 'splicer-in';
   else if (def.regionRole === 'splicer-out') node.splicerRole = 'splicer-out';
-  else if (def.regionRole === 'accumulator') node.splicerRole = 'accumulator';
+  else if (def.regionRole === 'accumulator-read') {
+    node.splicerRole = 'accumulator-read';
+    const slot = Number(ref.params?.slot ?? 1);
+    node.accSlot = Number.isFinite(slot) ? slot : 1;
+  } else if (def.regionRole === 'accumulator-write') {
+    node.splicerRole = 'accumulator-write';
+    const slot = Number(ref.params?.slot ?? 1);
+    node.accSlot = Number.isFinite(slot) ? slot : 1;
+  }
 
   if (def.stateful) {
     node.stateful = true;
@@ -533,7 +578,7 @@ export function defToRuntimeNode(
   //
   // Cache regions keep their own per-region cache and don't go through
   // this path (they short-circuit before evalNode's compute branch).
-  if (compute && !def.stateful && !def.regionKind && !def.regionRole && !def.readFromContext) {
+  if (compute && !def.stateful && !def.effectful && !def.regionKind && !def.regionRole && !def.readFromContext) {
     const hasAudioPort =
       resolvedInputs.some((p) => p.type === 'audio') ||
       def.outputs.some((p) => p.type === 'audio');
@@ -551,6 +596,14 @@ export function defToRuntimeNode(
   const multiPorts = new Set<number>();
   resolvedInputs.forEach((p, i) => { if (p.kind === 'multi') multiPorts.add(i); });
   if (multiPorts.size > 0) node.multiInPorts = multiPorts;
+
+  // Flag constant input ports — set-once values stashed on the node at
+  // compile time and never re-gathered per tick. The actual values are
+  // populated AFTER `defaultOverride` is set up below, since constants
+  // are read via the same priority chain (portValues → param → default).
+  const constantPorts = new Set<number>();
+  resolvedInputs.forEach((p, i) => { if (p.constant === true) constantPorts.add(i); });
+  if (constantPorts.size > 0) node.constantInPorts = constantPorts;
 
   // defaultOverride is consulted by tick() each frame for inputs with no
   // edge feeding them. Two fallback sources, in priority order:
@@ -578,6 +631,22 @@ export function defToRuntimeNode(
   if (def.readFromContext) {
     const fn = def.readFromContext;
     node.readFromContext = (f) => fn(f, paramCtx);
+  }
+
+  // Populate constant input values once, now. Pulls from the same
+  // priority chain `gatherInputs` uses for unwired ports: portValues
+  // override → PortSpec.param → PortSpec.default. Wires into constant
+  // pins are NOT honoured by this initial pass; a deferred compile-time
+  // pass (post node setup, before topo-sort yields ticks) will resolve
+  // simple upstream chains and overwrite these defaults — see
+  // `resolveWiredConstants` in the caller.
+  if (constantPorts.size > 0) {
+    const constants: PortValue[] = new Array(node.inArity);
+    for (const i of constantPorts) {
+      const override = node.defaultOverride?.(i);
+      constants[i] = override ?? node.defaults[i] ?? [];
+    }
+    node.constants = constants;
   }
 
   return node;

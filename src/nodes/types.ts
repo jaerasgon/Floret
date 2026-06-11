@@ -55,6 +55,27 @@ export interface PortSpec {
    * no runtime effect on its own; it's an editor-facing marker.
    */
   integer?: boolean;
+  /**
+   * Constant pin — sampled ONCE at compile time (or whenever the upstream
+   * source / edge / portValue changes) and stashed on
+   * `RuntimeNode.constants[name]`. The tick-time gather phase skips
+   * constant inputs entirely, so they cost zero per frame.
+   *
+   * Used for "set-once" parameters that shape topology or allocate
+   * memory: buffer capacity, RNG seed, integrator choice, render
+   * template selection, palette LUT size. Editing the upstream value
+   * triggers a recompile (the buffer reallocates, the LUT rebuilds);
+   * that's the cost of the per-frame win.
+   *
+   * Constant inputs MUST NOT participate in cycles — the compiler
+   * evaluates them in topo order at compile time, so a cycle through a
+   * constant pin is rejected.
+   *
+   * Editor renders the pin with a small `C` glyph and a dimmer ring so
+   * authors can tell at a glance which pins are set-once. See
+   * `GenericNode.tsx`.
+   */
+  constant?: boolean;
 }
 
 /**
@@ -193,7 +214,7 @@ export interface NodeDef {
    * Compile sets `RuntimeNode.splicerRole` / `accumulatorRole` from this;
    * `tick` special-cases their eval (no `compute` invocation).
    */
-  regionRole?: 'splicer-in' | 'splicer-out' | 'accumulator';
+  regionRole?: 'splicer-in' | 'splicer-out' | 'accumulator-read' | 'accumulator-write';
 
   /**
    * Cross-frame state node. Inputs are `init` (port 0, used on the
@@ -207,6 +228,19 @@ export interface NodeDef {
    * frame, then stashes the value on `RuntimeNode.runtimeState.value`.
    */
   stateful?: boolean;
+  /**
+   * Marks a node whose `compute` / `computeRaw` mutates internal state
+   * that persists across ticks (e.g. a ring-buffer accumulator like
+   * `particles/trail`). The runtime's per-tick memo would otherwise
+   * cache the first output and return it unchanged when the input set
+   * (often a single stable buffer reference + constants) doesn't shift.
+   *
+   * Setting this to `true` opts out of memoisation so the compute runs
+   * every tick. Use sparingly — most nodes don't need it. Use it when
+   * the same `compute(inputs)` produces a DIFFERENT output on the
+   * second call because the node has internal hidden state.
+   */
+  effectful?: boolean;
 
   /**
    * For stateful nodes only: index of the input port that carries the

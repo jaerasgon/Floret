@@ -4,6 +4,8 @@ import type {
   GroupNode,
   ImageShape,
   LineShape,
+  ParticleBatch,
+  ParticleTrailBatch,
   PolygonShape,
   RectShape,
   RenderingContext2D,
@@ -11,6 +13,7 @@ import type {
   SceneNode,
   TextShape,
 } from './scene';
+import { composeFontCss } from './scene';
 
 /**
  * Walk a SceneNode tree, emit Canvas2D calls.
@@ -51,6 +54,8 @@ export function renderScene(ctx: RenderingContext2D, node: SceneNode): void {
     case 'polygon': return renderPolygon(ctx, node);
     case 'text': return renderText(ctx, node);
     case 'image': return renderImage(ctx, node);
+    case 'particle-batch': return renderParticleBatch(ctx, node);
+    case 'particle-trail-batch': return renderParticleTrailBatch(ctx, node);
   }
 }
 
@@ -66,9 +71,15 @@ function applyStyle(ctx: RenderingContext2D, s: ResolvedStyle): void {
 }
 
 function applyTextStyle(ctx: RenderingContext2D, s: ResolvedStyle): void {
-  ctx.font = s.font;
+  ctx.font = composeFontCss(s);
   ctx.textAlign = s.textAlign;
   ctx.textBaseline = s.textBaseline;
+  // Canvas2D `letterSpacing` is supported in modern browsers as a string
+  // ("2px"). Older runtimes ignore the assignment silently — guard with
+  // an `in` check to avoid bumping a typed-array property by accident.
+  if ('letterSpacing' in ctx) {
+    (ctx as unknown as { letterSpacing: string }).letterSpacing = `${s.letterSpacing}px`;
+  }
 }
 
 // ─── Group ──────────────────────────────────────────────────────────────
@@ -228,8 +239,14 @@ function renderPolygon(ctx: RenderingContext2D, pg: PolygonShape): void {
 function renderText(ctx: RenderingContext2D, t: TextShape): void {
   applyStyle(ctx, t.style);
   applyTextStyle(ctx, t.style);
-  if (t.style.fill) ctx.fillText(t.text, t.x, t.y);
-  if (t.style.stroke) ctx.strokeText(t.text, t.x, t.y);
+  const lines = t.text.includes('\n') ? t.text.split('\n') : [t.text];
+  const dy = t.style.fontSize * t.style.lineHeight;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] ?? '';
+    const y = t.y + i * dy;
+    if (t.style.fill) ctx.fillText(line, t.x, y);
+    if (t.style.stroke) ctx.strokeText(line, t.x, y);
+  }
 }
 
 function renderImage(ctx: RenderingContext2D, im: ImageShape): void {
@@ -260,6 +277,164 @@ function renderImage(ctx: RenderingContext2D, im: ImageShape): void {
     ctx.drawImage(im.source, im.dst.x, im.dst.y, im.dst.w, im.dst.h);
   }
 }
+
+// ─── Particle batches ───────────────────────────────────────────────────
+
+/**
+ * Draw every alive particle of `b.buffer` with the given template. One
+ * tight loop over the typed arrays — the CPU analogue of GPU instancing.
+ *
+ * Performance notes:
+ * - We pull array references into locals so V8 can keep them in
+ *   registers across iterations.
+ * - For the `circle` template we reuse a single Path2D-style arc; only
+ *   `fillStyle` and the transform change per particle.
+ * - For the `layer` template we `save/translate/scale/restore` and walk
+ *   the sub-tree per particle. Cheaper than allocating N translated
+ *   copies of the SceneNode.
+ */
+function renderParticleBatch(ctx: RenderingContext2D, b: ParticleBatch): void {
+  const buf = b.buffer;
+  const cap = buf.capacity;
+  const alive = buf.alive;
+  const px = buf.posX, py = buf.posY;
+  const sz = buf.size;
+  const cr = buf.colorR, cg = buf.colorG, cb = buf.colorB, ca = buf.colorA;
+  const useColor = b.useBufferColor;
+  applyStyle(ctx, b.style);
+
+  if (b.template.kind === 'circle') {
+    for (let i = 0; i < cap; i++) {
+      if (!alive[i]) continue;
+      const r = sz[i]! * 0.5;
+      if (r <= 0) continue;
+      if (useColor) {
+        ctx.fillStyle = packRgba(cr[i]!, cg[i]!, cb[i]!, ca[i]!);
+      }
+      ctx.beginPath();
+      ctx.arc(px[i]!, py[i]!, r, 0, TAU);
+      if (b.style.fill || useColor) ctx.fill();
+      if (b.style.stroke) ctx.stroke();
+    }
+    return;
+  }
+
+  if (b.template.kind === 'rect') {
+    for (let i = 0; i < cap; i++) {
+      if (!alive[i]) continue;
+      const s = sz[i]!;
+      if (s <= 0) continue;
+      if (useColor) {
+        ctx.fillStyle = packRgba(cr[i]!, cg[i]!, cb[i]!, ca[i]!);
+      }
+      const x = px[i]! - s * 0.5;
+      const y = py[i]! - s * 0.5;
+      if (b.style.fill || useColor) ctx.fillRect(x, y, s, s);
+      if (b.style.stroke) ctx.strokeRect(x, y, s, s);
+    }
+    return;
+  }
+
+  if (b.template.kind === 'layer') {
+    const tpl = b.template.node;
+    // Template is authored at size = 1 (unit shape); per-particle size
+    // scales the whole template uniformly.
+    for (let i = 0; i < cap; i++) {
+      if (!alive[i]) continue;
+      const s = sz[i]!;
+      if (s <= 0) continue;
+      ctx.save();
+      ctx.translate(px[i]!, py[i]!);
+      const rot = buf.rotation[i]!;
+      if (rot !== 0) ctx.rotate(rot);
+      if (s !== 1) ctx.scale(s, s);
+      renderScene(ctx, tpl);
+      ctx.restore();
+    }
+  }
+}
+
+/**
+ * Draw a polyline trail per alive particle. `history` is interleaved
+ * (x, y) per segment per slot. We walk segments backwards from
+ * `headIdx` (most recent) so the line is drawn front-to-back.
+ *
+ * When `fadeOut` is true each segment's alpha decays linearly with its
+ * age so the trail tail fades into the background.
+ */
+function renderParticleTrailBatch(
+  ctx: RenderingContext2D,
+  b: ParticleTrailBatch,
+): void {
+  const buf = b.buffer;
+  const cap = buf.capacity;
+  const alive = buf.alive;
+  const segs = b.segments;
+  const hist = b.history;
+  const head = b.headIdx;
+  const useColor = b.useBufferColor;
+  const fadeOut = b.fadeOut;
+  const tapered = b.tapered;
+  const tailWidth = b.tailWidth;
+  // Either modifier forces per-segment strokes; without either we can
+  // do a single fast-path polyline per slot.
+  const perSegment = fadeOut || tapered;
+  const baseWidth = b.style.strokeWeight;
+  const cr = buf.colorR, cg = buf.colorG, cbr = buf.colorB, ca = buf.colorA;
+  applyStyle(ctx, b.style);
+
+  for (let slot = 0; slot < cap; slot++) {
+    if (!alive[slot]) continue;
+    // Per-particle stroke colour pulled from the buffer when requested.
+    // Setting strokeStyle once per slot is cheap; once per segment would
+    // be wasted churn for the uniform-color path.
+    if (useColor) {
+      ctx.strokeStyle = packRgba(cr[slot]!, cg[slot]!, cbr[slot]!, ca[slot]!);
+    }
+    const baseHist = slot * segs * 2;
+    let started = false;
+    // Walk newest → oldest.
+    for (let s = 0; s < segs; s++) {
+      const idx = (head - s + segs) % segs;
+      const x = hist[baseHist + idx * 2]!;
+      const y = hist[baseHist + idx * 2 + 1]!;
+      // Sentinel: uninitialised history slots are NaN — skip those.
+      if (!Number.isFinite(x) || !Number.isFinite(y)) break;
+      if (!started) {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        started = true;
+      } else {
+        if (perSegment) {
+          // Segment travels from age (s-1) to age s. Width samples at
+          // the average age so segments meet smoothly at vertices.
+          const ageAvg = (s - 0.5) / segs;
+          if (fadeOut) ctx.globalAlpha = 1 - ageAvg;
+          if (tapered) {
+            // 1 at head (ageAvg=0), `tailWidth` at tail (ageAvg=1).
+            const w = baseWidth * (1 - ageAvg * (1 - tailWidth));
+            ctx.lineWidth = w > 0 ? w : 0.001;
+          }
+          ctx.lineTo(x, y);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+    }
+    if (started && !perSegment) ctx.stroke();
+  }
+  if (fadeOut) ctx.globalAlpha = 1;
+  if (tapered) ctx.lineWidth = baseWidth;
+}
+
+function packRgba(r: number, g: number, b: number, a: number): string {
+  return `rgba(${(r * 255) | 0},${(g * 255) | 0},${(b * 255) | 0},${a})`;
+}
+
+const TAU = Math.PI * 2;
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 

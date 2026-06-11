@@ -27,6 +27,20 @@ export type PortType =
    *  null while loading). Drawn via `p.image(...)` which accepts both
    *  HTMLImageElement and p5.Image. */
   | 'image'
+  /** Physics world handle — gravity, drag, time-scale, and the registry
+   *  of registered global forces / colliders. One World can feed many
+   *  Emitters. See `runtime/particles.ts`. */
+  | 'world'
+  /** Opaque force descriptor. A Force mutates a particle buffer's
+   *  per-particle force accumulators in-place — no per-particle JS
+   *  allocations. See `Force` type in `runtime/particles.ts`. */
+  | 'force'
+  /** Opaque collider descriptor — analytic shape + collision mode. */
+  | 'collider'
+  /** A `ParticleBuffer` handle. Wires carry a length-1 spread of one
+   *  buffer (Struct-of-Arrays storage). Never an array of Particle
+   *  objects — that would defeat the perf model. */
+  | 'particle'
   /** Universal — accepts any port type. Used by convert/* nodes whose
    *  job is to coerce one type to another. */
   | 'any';
@@ -37,7 +51,7 @@ export type PortType =
  * See `runtime/scene.ts` for the full type + helpers.
  */
 export type { Style, ResolvedStyle, SceneNode } from './scene';
-export { DEFAULT_STYLE, LINE_DEFAULT_STYLE, resolveStyle, chainStyle, colorToCss } from './scene';
+export { DEFAULT_STYLE, LINE_DEFAULT_STYLE, resolveStyle, chainStyle, colorToCss, composeFontCss } from './scene';
 
 export interface Vec2 {
   x: number;

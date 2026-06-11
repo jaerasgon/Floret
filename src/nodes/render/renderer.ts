@@ -19,8 +19,17 @@ export const rendererNode = registerNode({
   label: 'Renderer',
   description: 'Render wired layers to the preview canvas.',
   inputs: [
-    { name: 'layers', type: 'layer', kind: 'spread' },
-    { name: 'background', type: 'color' },
+    // `multi` so a Renderer can take many layer wires at once — useful
+    // for compositing a background polygon, particle batch, trails, and
+    // force-viz rings into one frame. A single-wire feed (e.g. from a
+    // ForEach region carrying Spread<Layer>) still works: that one
+    // wire's items get gathered into the multi-spread verbatim.
+    { name: 'layers', type: 'layer', kind: 'multi' },
+    // Default to black so an unwired Renderer doesn't paint the canvas
+    // the same colour as DEFAULT_STYLE.fill (#ffffff) — which would make
+    // every shape invisible against the background. Patches that wire a
+    // Color into `background` override this normally.
+    { name: 'background', type: 'color', default: { r: 0, g: 0, b: 0, a: 1 } },
   ],
   outputs: [
     { name: 'layers', type: 'layer', kind: 'spread' },

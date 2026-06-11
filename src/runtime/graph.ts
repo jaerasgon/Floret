@@ -15,7 +15,9 @@ export interface RuntimeNode {
   readFromContext?: (frame: FrameCtx) => PortValue[];
   parentId?: NodeId;
   regionKind?: 'foreach' | 'if' | 'cache';
-  splicerRole?: 'splicer-in' | 'splicer-out' | 'accumulator';
+  splicerRole?: 'splicer-in' | 'splicer-out' | 'accumulator-read' | 'accumulator-write';
+  /** For accumulator-read / accumulator-write nodes: pairing slot (defaults 1). */
+  accSlot?: number;
   /** Number of *static* input ports declared by the region NodeDef itself.
    *  Splicer-ins (and accumulator inits) occupy port indices AFTER these. */
   regionStaticInArity?: number;
@@ -45,6 +47,23 @@ export interface RuntimeNode {
    *  Order within the gather is edge-insertion order in
    *  `graph.edgesByTarget`. */
   multiInPorts?: Set<number>;
+  /**
+   * Set of input port indices marked `constant: true` on their PortSpec.
+   *
+   * Contract:
+   *   - The compiler reads each constant input ONCE at compile time
+   *     (after upstream nodes' compute have been evaluated for the
+   *     compile-time topo pass) and stashes the value in `constants`.
+   *   - `gatherInputs` SKIPS these indices entirely each tick — they're
+   *     served from `constants[i]` instead of re-gathered from edges.
+   *   - When the editor mutates a constant pin's source (edge change,
+   *     param edit, portValue edit) the patch is marked for recompile,
+   *     not just re-eval. See `editor-state.ts` recompile bumper.
+   */
+  constantInPorts?: Set<number>;
+  /** Per-index constant values, populated at compile time. Index matches
+   *  `inputs` array; entries for non-constant ports are undefined. */
+  constants?: PortValue[];
   /**
    * True when this node's compute is a pure function of its inputs and
    * therefore safe to memoise across ticks. Set at compile time; the
@@ -90,8 +109,14 @@ export interface RuntimeScope {
   order: NodeId[];
   splicerInIds: NodeId[];
   splicerOutIds: NodeId[];
-  /** Accumulator children of a region scope, in declaration order. */
+  /** Accumulator entries for a region scope, in declaration order.
+   *  Each entry is a (Read, Write) pair matched by `slot`; the Read's
+   *  node id is the anchor used here. Order matches the region's
+   *  outer-input / outer-output layout for accumulators (one init slot
+   *  + one final slot per entry). */
   accumulatorIds: NodeId[];
+  /** Pair lookup: anchor (Read) id → both physical node ids. */
+  accumulatorPairs?: Map<NodeId, { readId: NodeId; writeId: NodeId }>;
 }
 
 export interface RuntimeGraph {
@@ -226,7 +251,10 @@ export function buildRuntimeGraph(input: RuntimeGraphInput): RuntimeGraph {
       // with consumers of the accum's `read` output. The edge still
       // exists in `edgesByTarget` so runRegion can gather the write
       // value after each iteration.
-      if (dst.splicerRole === 'accumulator') continue;
+      // accumulator-write.write is the per-iteration feedback into its
+      // paired accumulator-read — exclude from topo so the inner-scope
+      // chain Read → … → Write doesn't form a cycle.
+      if (dst.splicerRole === 'accumulator-write') continue;
       // Same idea for stateful nodes: the edge feeding `next` is the
       // cross-frame feedback loop — it depends on `current`, so
       // including it in topo would create a cycle. tick() gathers it
@@ -298,16 +326,40 @@ export function buildRuntimeGraph(input: RuntimeGraphInput): RuntimeGraph {
     const splicerInIds: NodeId[] = [];
     const splicerOutIds: NodeId[] = [];
     const accumulatorIds: NodeId[] = [];
+    // Pair Read with Write by `accSlot` for the split-form accumulator.
+    // The Read node id is used as the anchor in `accumulatorIds`; the
+    // pair's Write id is recorded in `accumulatorPairs` for runRegion
+    // to gather from + publish final to.
+    let accumulatorPairs: Map<NodeId, { readId: NodeId; writeId: NodeId }> | undefined;
     if (key !== null) {
+      const readsBySlot = new Map<number, NodeId>();
+      const writesBySlot = new Map<number, NodeId>();
       for (const id of ids) {
         const n = nodes.get(id)!;
         if (n.splicerRole === 'splicer-in') splicerInIds.push(id);
         else if (n.splicerRole === 'splicer-out') splicerOutIds.push(id);
-        else if (n.splicerRole === 'accumulator') accumulatorIds.push(id);
+        else if (n.splicerRole === 'accumulator-read') readsBySlot.set(n.accSlot ?? 1, id);
+        else if (n.splicerRole === 'accumulator-write') writesBySlot.set(n.accSlot ?? 1, id);
+      }
+      // Match by slot. Unmatched Reads / Writes are silently dropped from
+      // pair list — compile surfaces a warning earlier when expected.
+      for (const [slot, readId] of readsBySlot) {
+        const writeId = writesBySlot.get(slot);
+        if (writeId === undefined) continue;
+        if (!accumulatorPairs) accumulatorPairs = new Map();
+        accumulatorIds.push(readId);
+        accumulatorPairs.set(readId, { readId, writeId });
       }
     }
 
-    scopes.set(key, { parentId: key, order, splicerInIds, splicerOutIds, accumulatorIds });
+    scopes.set(key, {
+      parentId: key,
+      order,
+      splicerInIds,
+      splicerOutIds,
+      accumulatorIds,
+      ...(accumulatorPairs ? { accumulatorPairs } : {}),
+    });
   }
 
   const rendererIds = input.rendererIds

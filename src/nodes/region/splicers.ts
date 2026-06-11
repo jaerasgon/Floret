@@ -74,6 +74,14 @@ const SPLICEABLE_TYPES = {
   style: true,
   audio: false,
   image: true,
+  // Particle / physics handles must not be lifted across iteration
+  // boundaries — buffers and forces are mutable references owned by a
+  // single emitter / world. Splicing them would let two scopes mutate
+  // the same arrays concurrently.
+  world: false,
+  force: false,
+  collider: false,
+  particle: false,
   any: true,
 } satisfies Record<PortType, boolean>;
 

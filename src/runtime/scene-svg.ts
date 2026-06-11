@@ -13,6 +13,7 @@ import type {
   TextShape,
   TriangleShape,
 } from './scene';
+import { composeFontCss } from './scene';
 
 /**
  * Walk a SceneNode tree, emit an SVG document.
@@ -105,6 +106,54 @@ function emitNode(s: EmitState, n: SceneNode): void {
     case 'polygon':  return emitPolygon(s, n);
     case 'text':     return emitText(s, n);
     case 'image':    return emitImage(s, n);
+    case 'particle-batch': return emitParticleBatch(s, n);
+    case 'particle-trail-batch': return emitParticleTrailBatch(s, n);
+  }
+}
+
+function emitParticleBatch(s: EmitState, b: import('./scene').ParticleBatch): void {
+  // SVG export: one element per alive particle. Sized for fidelity, not
+  // speed (SVG isn't the hot path — Canvas2D is).
+  const buf = b.buffer;
+  const cap = buf.capacity;
+  for (let i = 0; i < cap; i++) {
+    if (!buf.alive[i]) continue;
+    const sz = buf.size[i]!;
+    if (sz <= 0) continue;
+    const fill = b.useBufferColor
+      ? `rgba(${(buf.colorR[i]! * 255) | 0},${(buf.colorG[i]! * 255) | 0},${(buf.colorB[i]! * 255) | 0},${buf.colorA[i]})`
+      : b.style.fill ?? '#fff';
+    const x = buf.posX[i]!;
+    const y = buf.posY[i]!;
+    if (b.template.kind === 'rect') {
+      s.out.push(`<rect x="${x - sz/2}" y="${y - sz/2}" width="${sz}" height="${sz}" fill="${fill}"/>`);
+    } else {
+      // circle or layer (layer falls back to circle in SVG for now)
+      s.out.push(`<circle cx="${x}" cy="${y}" r="${sz/2}" fill="${fill}"/>`);
+    }
+  }
+}
+
+function emitParticleTrailBatch(s: EmitState, b: import('./scene').ParticleTrailBatch): void {
+  const buf = b.buffer;
+  const segs = b.segments;
+  const head = b.headIdx;
+  const stroke = b.style.stroke ?? '#fff';
+  const sw = b.style.strokeWeight ?? 1;
+  for (let slot = 0; slot < buf.capacity; slot++) {
+    if (!buf.alive[slot]) continue;
+    const base = slot * segs * 2;
+    const pts: string[] = [];
+    for (let seg = 0; seg < segs; seg++) {
+      const idx = (head - seg + segs) % segs;
+      const x = b.history[base + idx * 2]!;
+      const y = b.history[base + idx * 2 + 1]!;
+      if (!Number.isFinite(x) || !Number.isFinite(y)) break;
+      pts.push(`${x},${y}`);
+    }
+    if (pts.length >= 2) {
+      s.out.push(`<polyline fill="none" stroke="${stroke}" stroke-width="${sw}" points="${pts.join(' ')}"/>`);
+    }
   }
 }
 
@@ -227,11 +276,28 @@ function emitPolygon(s: EmitState, pg: PolygonShape): void {
 function emitText(s: EmitState, t: TextShape): void {
   const anchor = textAnchor(t.style.textAlign);
   const baseline = dominantBaseline(t.style.textBaseline);
-  const fontAttr = ` style="font:${esc(t.style.font)}"`;
+  const fontCss = esc(composeFontCss(t.style));
+  const ls = t.style.letterSpacing;
+  const lsAttr = ls ? `;letter-spacing:${ls}px` : '';
+  const fontAttr = ` style="font:${fontCss}${lsAttr}"`;
+  const lines = t.text.includes('\n') ? t.text.split('\n') : [t.text];
+  const dy = t.style.fontSize * t.style.lineHeight;
+  if (lines.length === 1) {
+    s.out.push(
+      `<text x="${t.x}" y="${t.y}" text-anchor="${anchor}" dominant-baseline="${baseline}"`,
+      `${fontAttr} ${styleAttrs(t.style)}>${escText(lines[0] ?? '')}</text>`,
+    );
+    return;
+  }
   s.out.push(
     `<text x="${t.x}" y="${t.y}" text-anchor="${anchor}" dominant-baseline="${baseline}"`,
-    `${fontAttr} ${styleAttrs(t.style)}>${escText(t.text)}</text>`,
+    `${fontAttr} ${styleAttrs(t.style)}>`,
   );
+  for (let i = 0; i < lines.length; i++) {
+    const yOff = i === 0 ? 0 : dy;
+    s.out.push(`<tspan x="${t.x}" dy="${yOff}">${escText(lines[i] ?? '')}</tspan>`);
+  }
+  s.out.push('</text>');
 }
 
 function emitImage(s: EmitState, im: ImageShape): void {

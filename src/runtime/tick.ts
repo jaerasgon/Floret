@@ -173,11 +173,19 @@ function evalNode(
     return;
   }
 
-  // Accumulator: outputs[0] = read (current value); outputs[1] = final (same).
-  // Inputs are NOT gathered here — runRegion reads `write` after the iteration.
-  if (node.splicerRole === 'accumulator') {
+  // AccumulatorRead: emits the anchor's current value as `read`. The
+  // anchor key in accumulatorValues is the Read node's own id.
+  if (node.splicerRole === 'accumulator-read') {
     const current = iterCtx ? iterCtx.accumulatorValues.get(node.id) : undefined;
-    outputs.set(node.id, [[current], [current]]);
+    outputs.set(node.id, [[current]]);
+    return;
+  }
+
+  // AccumulatorWrite: the `write` input is gathered by runRegion after
+  // each iteration to advance the paired Read. `final` is published
+  // once after the loop completes; during the loop it emits undefined.
+  if (node.splicerRole === 'accumulator-write') {
+    outputs.set(node.id, [[undefined]]);
     return;
   }
 
@@ -422,6 +430,14 @@ function runRegion(
   const splicerInSet = new Set(innerScope.splicerInIds);
   const splicerOutSet = new Set(innerScope.splicerOutIds);
   const accumSet = new Set(innerScope.accumulatorIds);
+  // Pair members (read + write physical ids) also belong to the
+  // "accumulator" bucket for buffer / overwrite purposes.
+  if (innerScope.accumulatorPairs) {
+    for (const { readId, writeId } of innerScope.accumulatorPairs.values()) {
+      accumSet.add(readId);
+      accumSet.add(writeId);
+    }
+  }
   const bodyBuffers = new Map<NodeId, unknown[][]>();
 
   for (let iter = 0; iter < N; iter++) {
@@ -470,12 +486,15 @@ function runRegion(
       }
     }
 
-    // After the inner scope runs, read each accumulator's `write` input
-    // (port index 1) and stash it for the next iteration.
+    // After the inner scope runs, gather each accumulator pair's Write
+    // input (port 0) and stash it as the next iteration's read value.
     for (const accumId of innerScope.accumulatorIds) {
-      const accumNode = graph.nodes.get(accumId)!;
-      const accumInputs = gatherInputs(graph, accumNode, innerOutputs);
-      const writeVal = (accumInputs[1] ?? [])[0];
+      const pair = innerScope.accumulatorPairs?.get(accumId);
+      if (!pair) continue;
+      const writeNode = graph.nodes.get(pair.writeId);
+      if (!writeNode) continue;
+      const writeInputs = gatherInputs(graph, writeNode, innerOutputs);
+      const writeVal = (writeInputs[0] ?? [])[0];
       if (writeVal !== undefined) accumValues.set(accumId, writeVal);
     }
   }
@@ -499,7 +518,12 @@ function runRegion(
   }
   for (let i = 0; i < nAccums; i++) {
     const accumId = innerScope.accumulatorIds[i]!;
-    outputs.set(accumId, [accumBuffers[i]!, [accumValues.get(accumId)]]);
+    const pair = innerScope.accumulatorPairs?.get(accumId);
+    if (!pair) continue;
+    // Read anchor: outputs[0] = per-iteration trace of `read`.
+    outputs.set(pair.readId, [accumBuffers[i]!]);
+    // Write: outputs[0] = `final` (the last accumulator value).
+    outputs.set(pair.writeId, [[accumValues.get(accumId)]]);
   }
 
   // Region outputs: splicer-out spreads first, then accumulator finals.
@@ -536,8 +560,13 @@ function gatherInputs(
 ): PortValue[] {
   const result: PortValue[] = new Array(node.inArity);
   const multi = node.multiInPorts;
+  const constants = node.constantInPorts;
+  const constValues = node.constants;
   for (let i = 0; i < node.inArity; i++) {
-    if (multi?.has(i)) {
+    if (constants?.has(i)) {
+      // Constant — served from the compile-time cache, never re-gathered.
+      result[i] = constValues?.[i] ?? node.defaults[i] ?? [];
+    } else if (multi?.has(i)) {
       // Multi-kind starts empty; each incoming wire below appends to it.
       result[i] = [];
     } else {
@@ -551,6 +580,9 @@ function gatherInputs(
   if (!edges) return result;
 
   for (const e of edges) {
+    // Constant ports are pinned to their compile-time value — wires into
+    // them are honoured at compile, not here.
+    if (constants?.has(e.toPort)) continue;
     const upstream = outputs.get(e.fromNode);
     if (!upstream) continue;
     const v = upstream[e.fromPort];

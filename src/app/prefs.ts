@@ -20,6 +20,9 @@ export interface Prefs {
   autoGrowRegions: boolean;
   /** Pro mode — collapses nodes to title + pins only. */
   proMode: boolean;
+  /** Help panel auto-tracks the currently selected node. When off, the
+   *  panel is "pinned" to whatever was last picked via the search box. */
+  autoJumpHelp: boolean;
 }
 
 const LS_KEY = 'floret.prefs.v1';
@@ -28,6 +31,7 @@ const DEFAULTS: Prefs = {
   wireFlowAnimation: true,
   autoGrowRegions: true,
   proMode: false,
+  autoJumpHelp: true,
 };
 
 function loadFromStorage(): Prefs {
@@ -66,6 +70,7 @@ usePrefs.subscribe((s) => {
   prefsSnapshot.wireFlowAnimation = s.wireFlowAnimation;
   prefsSnapshot.autoGrowRegions = s.autoGrowRegions;
   prefsSnapshot.proMode = s.proMode;
+  prefsSnapshot.autoJumpHelp = s.autoJumpHelp;
   // Persist whole shape on every change. Small payload, infrequent
   // writes — no batching required.
   if (typeof window !== 'undefined') {
@@ -76,6 +81,7 @@ usePrefs.subscribe((s) => {
           wireFlowAnimation: s.wireFlowAnimation,
           autoGrowRegions: s.autoGrowRegions,
           proMode: s.proMode,
+          autoJumpHelp: s.autoJumpHelp,
         }),
       );
     } catch {

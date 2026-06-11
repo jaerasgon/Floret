@@ -19,6 +19,10 @@
   --port-audio: #ff9cd9;
   --port-image: #f0b46e;
   --port-any: #888c95;
+  --port-world:    #5fd3a8; /* mint — physics world */
+  --port-force:    #ff9966; /* warm coral — force */
+  --port-collider: #e0e0e0; /* near-white — collider */
+  --port-particle: #b890ff; /* lavender — particle buffer */
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
@@ -204,6 +208,15 @@ input:focus, select:focus, textarea:focus {
   letter-spacing: 0.3px;
   color: var(--accent);
   border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  /* Icon + label flex-centered so the SVG glyph and the text sit on the
+   * same baseline. Without this, the icon defaults to baseline alignment
+   * and looks misaligned in the panel header where the button has more
+   * vertical breathing room. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  line-height: 1;
 }
 .toolbar-run-btn.running {
   color: var(--fg-1);
@@ -1039,6 +1052,24 @@ body[data-wire-flow='1'] .react-flow__edge-path {
    `box-shadow` so each port type lights up in its own colour. */
 .node-row-handle:hover {
   box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 30%, transparent);
+}
+
+/* Constant pins — read-once at compile, not gathered each tick. The pin
+ * itself is dimmed inline (style on the handle); the label gets a small
+ * "C" badge that tooltips the contract. */
+.port-flag-constant {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 4px;
+  font-size: 9px;
+  line-height: 12px;
+  border: 1px solid var(--text-dim, #888);
+  border-radius: 6px;
+  color: var(--text-dim, #888);
+  opacity: 0.75;
+  vertical-align: middle;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 /* Spread-kind pins paint yellow — shape stays the same circle, the
@@ -3256,6 +3287,98 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   background: var(--bg-3);
   color: var(--fg-0);
 }
+/* ─── Help panel chrome additions ──────────────────────────────────────── */
+.help-panel-wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.help-panel-search-wrap {
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.help-panel-search {
+  width: 100%;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  background: var(--bg-1);
+  color: var(--fg-1);
+  border: 1px solid var(--border);
+}
+.help-panel-search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.help-panel-results {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  overflow-y: auto;
+  min-height: 0;
+}
+.help-panel-result {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 6px;
+  row-gap: 1px;
+  width: 100%;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  text-align: left;
+  cursor: pointer;
+  color: var(--fg-1);
+}
+.help-panel-result:hover {
+  background: var(--bg-2);
+  border-color: transparent;
+}
+.help-panel-result-label {
+  font-size: 12px;
+  font-weight: 500;
+  grid-column: 1;
+}
+.help-panel-result-cat {
+  font-size: 10px;
+  color: var(--fg-2);
+  grid-column: 2;
+  align-self: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.help-panel-result-type {
+  font-size: 10px;
+  color: var(--fg-2);
+  font-family: var(--font-mono);
+  grid-column: 1 / span 2;
+  opacity: 0.7;
+}
+/* Auto-track / pin toggle in the panel header. */
+.help-jump-toggle {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: var(--fg-2);
+}
+.help-jump-toggle:hover {
+  color: var(--fg-1);
+  background: var(--bg-2);
+}
+.help-jump-toggle.active {
+  color: var(--accent);
+}
+
 .help-panel-empty {
   padding: 18px 14px;
   font-size: 12px;
@@ -3275,6 +3398,10 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   overflow-y: auto;
   font-size: 12px;
   line-height: 1.5;
+  /* When wrapped in `.help-panel-wrap` (flex column), the body
+   * occupies the rest of the height after the search bar. */
+  flex: 1 1 auto;
+  min-height: 0;
 }
 .help-panel-node-head {
   display: flex;
@@ -3496,10 +3623,25 @@ body[data-pro-mode='1'] .node[data-math='1'] {
 /* ─── Panel framework ─────────────────────────────────────────────────────
    Universal chrome for resizable / collapsible / detachable / dockable
    panels (NodePalette, HelpPanel, …). Three render modes:
-     - .panel-docked.panel-dock-left   → flex item, order -1
-     - .panel-docked.panel-dock-right  → flex item, order  1
-     - .panel-float                    → portaled to body, absolute
-*/
+     - panel-docked → portaled into a .panel-rail (flex column), stacks
+       vertically with its rail-mates; in-rail `style.order` sorts.
+     - panel-float  → portaled to <body>, absolute positioning.
+     - hidden       → not rendered (use the hidden tab to restore).
+   The rails themselves (.panel-rail-left / .panel-rail-right) are
+   children of .editor-pane and bookend the canvas in flex-row order. */
+.panel-rail {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: transparent;
+  flex: 0 0 auto;
+  /* Width derives from the widest docked panel — flex column items
+     default to stretch, so all panels share the rail width. */
+}
+.panel-rail-left { order: -1; }
+.panel-rail-right { order: 1; }
+.panel-rail:empty { display: none; }
+
 .panel {
   display: flex;
   flex-direction: column;
@@ -3511,17 +3653,17 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   position: relative;
 }
 .panel-docked {
-  height: 100%;
-  border-top: 0;
-  border-bottom: 0;
-  flex: 0 0 auto;
+  /* In a vertical-stack rail, each docked panel takes its own height
+     (auto) and shares the rail width. flex: 1 1 auto lets panels grow
+     to fill the rail; `min-height: 0` keeps overflow honest. */
+  flex: 1 1 0;
+  min-height: 80px;
+  width: 100%;
 }
 .panel-docked.panel-dock-left {
-  order: -1;
   border-left: 0;
 }
 .panel-docked.panel-dock-right {
-  order: 1;
   border-right: 0;
 }
 .panel-docked[data-collapsed='1'] {
@@ -3575,6 +3717,81 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   letter-spacing: 0.6px;
   text-transform: uppercase;
   color: var(--fg-0);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.panel-grip {
+  font-size: 9px;
+  color: var(--fg-3);
+  letter-spacing: -2px;
+  margin-right: 6px;
+  line-height: 1;
+  opacity: 0.8;
+}
+.panel-header:hover .panel-grip {
+  color: var(--fg-1);
+  opacity: 1;
+}
+
+/* ─── Drag-driven dock overlay ──────────────────────────────────────────────
+   Rendered to <body> while any panel is being dragged. The active drop
+   target is highlighted as a single rectangle — either a quadrant of a
+   sibling panel (above / below / left / right) or one of the viewport
+   rails. The dragged panel itself follows the cursor; this overlay
+   just paints where it will land. */
+.dropzone-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9000;
+}
+/* While a drag is active, dim the panel being moved so the drop zone
+   highlight peeks through underneath it. The dragged panel still
+   tracks the cursor; this just keeps the user's focus on the target. */
+body:has(.dropzone-overlay) .panel-float {
+  opacity: 0.85;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+.dropzone-active {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  border: 2px solid var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 50%, transparent);
+  transition:
+    left 90ms ease,
+    top 90ms ease,
+    width 90ms ease,
+    height 90ms ease;
+  border-radius: 4px;
+}
+.dropzone-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--bg-1);
+  background: var(--accent);
+  border-radius: 4px;
+  padding: 6px 10px;
+}
+.dropzone-chip {
+  position: absolute;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--fg-0);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  white-space: nowrap;
 }
 .panel-header-actions {
   display: flex;

@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
+import { Pause, Play } from 'lucide-react';
 import { Preview } from './Preview';
 import { Panel } from '../editor/panel/Panel';
-import { useEditor } from '../editor/editor-state';
+import { useAppStore } from '../app/store';
+import { Tooltip } from '../app/shell/Tooltip';
 import type { NodeId } from '../runtime/graph';
 
 /**
@@ -9,92 +10,62 @@ import type { NodeId } from '../runtime/graph';
  * so it can dock left/right, float, resize, collapse, or hide along
  * with every other side panel.
  *
- * Each instance is bound to a specific Renderer node by id. The header
- * dropdown lets the user re-bind to another Renderer if the patch has
- * more than one.
- *
- * The panel id is parameterised so the App can render multiple
- * PreviewPanels with independent layout state (each with its own
- * dock-side, size, float position, …).
+ * Each preview is bound 1:1 to a specific `render/renderer` node. The
+ * App layer derives previews from the node list — there's no separate
+ * user-managed list, no add / remove, no rebinding. Delete the node and
+ * the preview goes; add a renderer node and a preview appears. That's
+ * also why the × close button is permanently hidden — the only way to
+ * "close" a preview is to delete its renderer node.
  */
 
 export interface PreviewPanelProps {
-  /** Per-instance panel id used for localStorage layout persistence. */
+  /** Per-instance panel id. The App passes the renderer node id so
+   *  layout state (dock side, size, float position) stays stable
+   *  across reloads via the existing panelState localStorage. */
   panelId: string;
-  /** Which Renderer this preview is bound to. Null means "track the
-   *  first Renderer in the graph" — useful for the single-preview
-   *  default. */
-  rendererId: NodeId | null;
-  /** User-rebinds this preview to another Renderer. The parent owns the
-   *  current selection so it can also surface the same dropdown
-   *  elsewhere (e.g. a status bar pill) if desired. */
-  onSelectRenderer: (id: NodeId | null) => void;
+  /** The Renderer node this preview is bound to. Always set — null
+   *  isn't meaningful in the derived-from-nodes model. */
+  rendererId: NodeId;
   /** Optional title override; defaults to "Preview". */
   title?: string;
 }
 
 export function PreviewPanel({
-  panelId, rendererId, onSelectRenderer, title = 'Preview',
+  panelId, rendererId, title = 'Preview',
 }: PreviewPanelProps) {
   return (
     <Panel
       id={panelId}
       title={title}
       defaults={{ dock: 'right', width: 460, height: 460, floatX: 360, floatY: 80 }}
+      hideClose
+      headerActions={<PreviewHeaderControls />}
     >
-      <RendererPicker
-        rendererId={rendererId}
-        onSelectRenderer={onSelectRenderer}
-      />
       <Preview rendererId={rendererId} />
     </Panel>
   );
 }
 
-function RendererPicker({
-  rendererId, onSelectRenderer,
-}: {
-  rendererId: NodeId | null;
-  onSelectRenderer: (id: NodeId | null) => void;
-}) {
-  const runtime = useEditor((s) => s.runtime);
-  const editorNodes = useEditor((s) => s.nodes);
-
-  const options = useMemo(() => {
-    const ids = runtime?.rendererIds ?? [];
-    return ids.map((id, idx) => {
-      // Surface a friendly name. Default = "Renderer #1", "Renderer #2", …
-      const node = editorNodes.find((n) => n.id === id);
-      const label = (node?.data.params as Record<string, unknown> | undefined)?.label as string | undefined;
-      return { id, label: label && label.trim() ? label : `Renderer #${idx + 1}`, idx };
-    });
-  }, [runtime, editorNodes]);
-
-  // When no rendererIds exist there's nothing to choose from — keep the
-  // picker around but disabled so users still see WHERE rebinding lives.
-  const showAuto = !rendererId;
-
+/**
+ * Pause, hosted on every Preview panel header. The action mutates
+ * global app state (`useAppStore`) so click behaviour is shared
+ * regardless of how many previews exist. Refresh is global (toolbar) —
+ * a scene reset isn't a per-preview thing.
+ */
+function PreviewHeaderControls() {
+  const running = useAppStore((s) => s.running);
+  const toggleRunning = useAppStore((s) => s.toggleRunning);
   return (
-    <div className="preview-picker">
-      <label className="preview-picker-label">Renderer</label>
-      <select
-        className="preview-picker-select nodrag"
-        value={rendererId ?? ''}
-        onChange={(e) => {
-          const v = e.target.value;
-          onSelectRenderer(v === '' ? null : v);
-        }}
+    <Tooltip label={running ? 'Pause runtime' : 'Resume runtime'} shortcut="Space">
+      <button
+        className={`toolbar-run-btn${running ? ' running' : ''}`}
+        onClick={toggleRunning}
+        aria-label={running ? 'Pause' : 'Play'}
       >
-        <option value="">Auto (first)</option>
-        {options.map((o) => (
-          <option key={o.id} value={o.id}>{o.label}</option>
-        ))}
-      </select>
-      {showAuto && options.length > 1 && (
-        <span className="preview-picker-hint" title="This preview tracks the first Renderer in the patch">
-          tracking #1
-        </span>
-      )}
-    </div>
+        {running ? <Pause size={13} strokeWidth={1.8} /> : <Play size={13} strokeWidth={1.8} />}
+        <span>{running ? 'Pause' : 'Play'}</span>
+      </button>
+    </Tooltip>
   );
 }
+

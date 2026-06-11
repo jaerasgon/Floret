@@ -1,13 +1,10 @@
 import { useEffect, useState } from 'react';
 import {
-  Play,
-  Pause,
   RotateCcw,
   Settings as SettingsIcon,
   LayoutGrid,
   Waves,
   Sparkles,
-  Monitor,
 } from 'lucide-react';
 import { useAppStore } from '../store';
 import { usePrefs } from '../prefs';
@@ -20,11 +17,11 @@ import { SettingsModal } from './SettingsModal';
 import { Tooltip } from './Tooltip';
 
 export function Toolbar() {
-  const running = useAppStore((s) => s.running);
-  const toggleRunning = useAppStore((s) => s.toggleRunning);
+  // Pause lives on the Preview panel header. Refresh is global here —
+  // it reboots the entire running scene by recompiling, which discards
+  // every node's hidden runtime state (particle buffers, trail history,
+  // stateful values, memo caches). The patch itself isn't reloaded.
   const refresh = useAppStore((s) => s.refresh);
-  const addPreview = useAppStore((s) => s.addPreview);
-  const previewCount = useAppStore((s) => s.previews.length);
   const wireFlow = usePrefs((s) => s.wireFlowAnimation);
   const proMode = usePrefs((s) => s.proMode);
   const setPref = usePrefs((s) => s.set);
@@ -78,33 +75,13 @@ export function Toolbar() {
           <Waves size={14} strokeWidth={1.6} />
         </button>
       </Tooltip>
-      <Tooltip label={running ? 'Pause runtime' : 'Resume runtime'} shortcut="Space">
-        <button
-          className={`toolbar-run-btn${running ? ' running' : ''}`}
-          onClick={toggleRunning}
-          aria-label={running ? 'Pause' : 'Play'}
-        >
-          {running ? <Pause size={13} strokeWidth={1.8} /> : <Play size={13} strokeWidth={1.8} />}
-          <span>{running ? 'Pause' : 'Play'}</span>
-        </button>
-      </Tooltip>
-      <Tooltip label="Restart scene — reset time to 0">
+      <Tooltip label="Restart scene — reboot runtime state (particles respawn, trails clear)">
         <button
           className="toolbar-refresh-btn tb-icon-btn"
           onClick={refresh}
           aria-label="Refresh"
         >
           <RotateCcw size={13} strokeWidth={1.8} />
-        </button>
-      </Tooltip>
-      <Tooltip label={`Add another Preview panel (${previewCount} open)`}>
-        <button
-          className="tb-icon-btn"
-          onClick={addPreview}
-          aria-label="Add preview"
-        >
-          <Monitor size={14} strokeWidth={1.6} />
-          <span style={{ fontSize: 10, marginLeft: 2 }}>+</span>
         </button>
       </Tooltip>
       <Tooltip

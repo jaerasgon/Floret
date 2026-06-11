@@ -127,6 +127,18 @@ export const GenericNode = memo(function GenericNode(props: NodeProps) {
   // CSS shrink padding / font size via the `data-math` selector.
   const isMath = def.type.startsWith('math/');
   const mathSymbol = isMath ? MATH_SYMBOLS[def.type] : undefined;
+  // Read/Write pair nodes (state + region/accumulator) carry a useful
+  // `#slot` badge that already disambiguates them. The long type
+  // subtitle (`region/accumulator-write/number`, etc.) just stretches
+  // the header — suppress it so the node sizes to its body.
+  const isReadWritePair =
+    def.type === 'state/read' ||
+    def.type === 'state/write' ||
+    def.type === 'state/read-spread' ||
+    def.type === 'state/write-spread' ||
+    def.type.startsWith('region/accumulator-read/') ||
+    def.type.startsWith('region/accumulator-write/');
+  const hideTypeSubtitle = isMath || isReadWritePair;
   return (
     <div
       className="node node-grid"
@@ -148,7 +160,7 @@ export const GenericNode = memo(function GenericNode(props: NodeProps) {
         {warningText && (
           <span className="node-warning-chip" title={warningText}>⚠</span>
         )}
-        {!isMath && <span className="node-type">{def.type}</span>}
+        {!hideTypeSubtitle && <span className="node-type">{def.type}</span>}
       </div>
       <div className="node-rows">
         {Array.from({ length: numRows }, (_, i) => {
@@ -251,6 +263,9 @@ function NodeRow({
             }}
           >
             {left.kind === 'input' ? (left.port.label ?? left.port.name) : left.key}
+            {left.kind === 'input' && left.port.constant && (
+              <span className="port-flag-constant" title="Set once at compile — won't react per tick">C</span>
+            )}
           </span>
           {showEditor && editorMode === 'param' && left.kind === 'input' && (
             <InlineEditor
@@ -403,7 +418,8 @@ export function InputPin({
         id={`in-${port.name}`}
         type="target"
         position={Position.Left}
-        className={`node-row-handle node-row-handle-left${port.kind === 'spread' ? ' node-row-handle-spread' : ''}`}
+        className={`node-row-handle node-row-handle-left${port.kind === 'spread' ? ' node-row-handle-spread' : ''}${port.constant ? ' node-row-handle-constant' : ''}`}
+        title={port.constant ? `${port.name} — constant (set once at compile)` : undefined}
         style={{
           // Spread pins paint yellow so they're immediately identifiable
           // regardless of port type — type info moves to the tooltip.
@@ -412,6 +428,8 @@ export function InputPin({
           // `color` matches the pin colour so the `:hover` glow halo
           // (defined via `currentColor` in styles.css) picks up the type.
           color: port.kind === 'spread' ? 'var(--pin-spread)' : portColorVar(port.type),
+          // Constant pins dim slightly — "set once" reads visually distinct.
+          opacity: port.constant ? 0.55 : undefined,
         }}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}

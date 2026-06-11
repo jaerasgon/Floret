@@ -19,6 +19,14 @@ export interface PanelState {
   floatY: number;
   /** True when the body is hidden behind a collapsed header. */
   collapsed: boolean;
+  /** In-rail stacking order (CSS `order`). Lower = closer to top of rail.
+   *  Fractional values are normalised back to integers after every drop. */
+  order: number;
+  /** Which column within the dock side. 0 = closest to canvas; higher =
+   *  further out. The editor renders one rail container per active
+   *  (dock, column) pair; columns are renormalised to 0..N-1 after
+   *  every drop. */
+  column: number;
 }
 
 export interface PanelStateDefaults {
@@ -28,6 +36,8 @@ export interface PanelStateDefaults {
   floatX: number;
   floatY: number;
   collapsed?: boolean;
+  order?: number;
+  column?: number;
 }
 
 const LS_PREFIX = 'floret.panel.';
@@ -44,6 +54,8 @@ function load(id: string, defaults: PanelStateDefaults): PanelState {
         floatX: parsed.floatX ?? defaults.floatX,
         floatY: parsed.floatY ?? defaults.floatY,
         collapsed: parsed.collapsed ?? defaults.collapsed ?? false,
+        order: parsed.order ?? defaults.order ?? 0,
+        column: parsed.column ?? defaults.column ?? 0,
       };
     }
   } catch { /* ignore */ }
@@ -54,6 +66,8 @@ function load(id: string, defaults: PanelStateDefaults): PanelState {
     floatX: defaults.floatX,
     floatY: defaults.floatY,
     collapsed: defaults.collapsed ?? false,
+    order: defaults.order ?? 0,
+    column: defaults.column ?? 0,
   };
 }
 
@@ -92,6 +106,12 @@ export function usePanelState(id: string, defaults: PanelStateDefaults) {
   const toggleCollapsed = useCallback(() => {
     setState((s) => ({ ...s, collapsed: !s.collapsed }));
   }, []);
+  const setOrder = useCallback((order: number) => {
+    setState((s) => ({ ...s, order }));
+  }, []);
+  const setColumn = useCallback((column: number) => {
+    setState((s) => ({ ...s, column }));
+  }, []);
 
   return {
     state,
@@ -101,5 +121,7 @@ export function usePanelState(id: string, defaults: PanelStateDefaults) {
     setFloatPos,
     setCollapsed,
     toggleCollapsed,
+    setOrder,
+    setColumn,
   };
 }

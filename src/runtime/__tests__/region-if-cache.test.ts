@@ -64,21 +64,30 @@ describe('If region', () => {
   });
 
   it('forwards accumulator init unchanged when condition=false', () => {
+    // Split Read/Write pair forms one accumulator entry; with the If
+    // region's condition false, runRegion forwards the Read.init value
+    // straight to the pair's final slot.
     const result = compileGraph(
       [
         { id: 'tgl', defType: 'io/toggle', params: { value: false } },
         { id: 'init', defType: 'value/number', params: { value: 7 } },
         { id: 'reg', defType: 'region/if', params: {} },
-        { id: 'acc', defType: 'region/accumulator/number', params: {}, parentId: 'reg' },
+        { id: 'read',  defType: 'region/accumulator-read/number',  params: { slot: 1 }, parentId: 'reg' },
+        { id: 'write', defType: 'region/accumulator-write/number', params: { slot: 1 }, parentId: 'reg' },
       ],
       [
         { fromNode: 'tgl', fromPort: 'out', toNode: 'reg', toPort: 'condition' },
-        { fromNode: 'init', fromPort: 'out', toNode: 'acc', toPort: 'init' },
+        { fromNode: 'init', fromPort: 'out', toNode: 'read', toPort: 'init' },
+        // A wire from read to write so the pair has an inner connection;
+        // doesn't matter what it does — the loop never runs.
+        { fromNode: 'read', fromPort: 'read', toNode: 'write', toPort: 'write' },
       ],
       {
         registry: realRegistry(),
         paramReader: (id) =>
-          id === 'tgl' ? { value: false } : id === 'init' ? { value: 7 } : {},
+          id === 'tgl' ? { value: false } :
+          id === 'init' ? { value: 7 } :
+          (id === 'read' || id === 'write') ? { slot: 1 } : {},
       },
     );
 

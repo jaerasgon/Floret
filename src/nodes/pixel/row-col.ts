@@ -9,14 +9,14 @@ import type { NodeParamContext } from '../types';
  * Per-axis pixel access: one row or column of an image as `Spread<Color>`,
  * and the inverse write-back nodes.
  *
- * Pair with `region/foreach` + `region/accumulator/image` to build
- * per-row / per-column transforms without paying the full-image
- * Spread<Color> cost: only the active row/col flows through the spread
- * layer (≤500 elements for a typical canvas).
+ * Pair with `region/foreach` + a Read/Write accumulator pair (image)
+ * to build per-row / per-column transforms without paying the
+ * full-image Spread<Color> cost: only the active row/col flows
+ * through the spread layer (≤500 elements for a typical canvas).
  *
  *   image → ForEach(0..h-1) ──┐
  *                             │
- *   image ──acc──init──→ read ┴→ get-row → spread/sort → set-row → write ──→ final
+ *   image ──→ Read(init) → read → get-row → spread/sort → set-row → Write ──→ final
  *                                                                              ↓
  *                                                                          rendered
  *

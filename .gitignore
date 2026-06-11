@@ -9,3 +9,10 @@ dist-ssr
 
 # Tauri (added when shell is scaffolded)
 src-tauri/target
+
+# Screenshots / playwright test artifacts at repo root
+*.jpg
+*.jpeg
+/*.png
+!docs/**/*.png
+.playwright-mcp/

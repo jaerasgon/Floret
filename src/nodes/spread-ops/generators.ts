@@ -1,6 +1,7 @@
 import { registerNode } from '../registry';
 import type { Spread } from '../../runtime/types';
 import { hashUnit } from '../random/prng';
+import { perlin2D } from '../random/noise';
 
 /**
  * Spread generators — these are the vvvv-defining nodes. They emit a
@@ -95,6 +96,38 @@ export const repeatNode = registerNode({
   },
 });
 
+export const pickSpreadNode = registerNode({
+  type: 'spread/pick',
+  category: 'Spread',
+  label: 'PickSpread',
+  description:
+    'Index into `source` using each entry of `indices`. Output length = indices length; output[i] = source[indices[i] mod source.length]. Out-of-range indices wrap.',
+  inputs: [
+    { name: 'source',  type: 'any',    kind: 'spread' },
+    { name: 'indices', type: 'number', kind: 'spread' },
+  ],
+  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  // Output type echoes the source spread — pick from colours, get colours;
+  // pick from strings, get strings.
+  dynamicOutputs: (_params, up) => [
+    { name: 'out', type: up.source ?? 'any', kind: 'spread' },
+  ],
+  computeRaw: (inputs) => {
+    const source = (inputs[0] ?? []) as ReadonlyArray<unknown>;
+    const indices = (inputs[1] ?? []) as ReadonlyArray<unknown>;
+    if (source.length === 0 || indices.length === 0) return [[]];
+    const n = source.length;
+    const out = new Array<unknown>(indices.length);
+    for (let i = 0; i < indices.length; i++) {
+      let idx = Math.floor(Number(indices[i] ?? 0));
+      // Wrap into [0, n) so palette[7] with a 4-stop palette still works.
+      idx = ((idx % n) + n) % n;
+      out[i] = source[idx];
+    }
+    return [out];
+  },
+});
+
 export const circularSpreadNode = registerNode({
   type: 'spread/circular',
   category: 'Spread',
@@ -155,6 +188,86 @@ export const randomizeNode = registerNode({
   },
 });
 
+export const sineSpreadNode = registerNode({
+  type: 'spread/sine',
+  category: 'Spread',
+  label: 'SineSpread',
+  description: 'Generate `count` samples of a sine wave.',
+  inputs: [
+    { name: 'count', type: 'number', default: 64, integer: true },
+    { name: 'amplitude', type: 'number', default: 1 },
+    { name: 'frequency', type: 'number', default: 1 },
+    { name: 'phase', type: 'number', default: 0 },
+    { name: 'offset', type: 'number', default: 0 },
+  ],
+  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  computeRaw: (inputs) => {
+    const count = intCount(inputs[0]?.[0]);
+    const amp = Number(inputs[1]?.[0] ?? 1);
+    const freq = Number(inputs[2]?.[0] ?? 1);
+    const phase = Number(inputs[3]?.[0] ?? 0);
+    const off = Number(inputs[4]?.[0] ?? 0);
+    if (count === 0) return [[]];
+    const out = new Array<number>(count);
+    const k = (Math.PI * 2 * freq) / count;
+    for (let i = 0; i < count; i++) out[i] = off + amp * Math.sin(k * i + phase);
+    return [out];
+  },
+});
+
+export const geometricSpreadNode = registerNode({
+  type: 'spread/geometric',
+  category: 'Spread',
+  label: 'GeometricSpread',
+  description: 'Geometric progression: start, start·ratio, start·ratio², …',
+  inputs: [
+    { name: 'start', type: 'number', default: 1 },
+    { name: 'ratio', type: 'number', default: 2 },
+    { name: 'count', type: 'number', default: 8, integer: true },
+  ],
+  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  computeRaw: (inputs) => {
+    const start = Number(inputs[0]?.[0] ?? 1);
+    const ratio = Number(inputs[1]?.[0] ?? 2);
+    const count = intCount(inputs[2]?.[0]);
+    if (count === 0) return [[]];
+    const out = new Array<number>(count);
+    let v = start;
+    for (let i = 0; i < count; i++) {
+      out[i] = v;
+      v *= ratio;
+    }
+    return [out];
+  },
+});
+
+export const noiseSpreadNode = registerNode({
+  type: 'spread/noise',
+  category: 'Spread',
+  label: 'NoiseSpread',
+  description: '1-D Perlin noise sampled at regular intervals, in [0, 1].',
+  inputs: [
+    { name: 'count', type: 'number', default: 64, integer: true },
+    { name: 'frequency', type: 'number', default: 1 },
+    { name: 'phase', type: 'number', default: 0 },
+    { name: 'seed', type: 'number', default: 0, integer: true },
+  ],
+  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  computeRaw: (inputs) => {
+    const count = intCount(inputs[0]?.[0]);
+    const freq = Number(inputs[1]?.[0] ?? 1);
+    const phase = Number(inputs[2]?.[0] ?? 0);
+    const seed = Number(inputs[3]?.[0] ?? 0) | 0;
+    if (count === 0) return [[]];
+    const out = new Array<number>(count);
+    for (let i = 0; i < count; i++) {
+      const x = phase + (i / Math.max(1, count)) * freq;
+      out[i] = perlin2D(x, 0, seed);
+    }
+    return [out];
+  },
+});
+
 // Suppress unused-type warning while we keep the Spread alias around for
-// future generators (e.g. NoiseSpread).
+// future generators.
 void (null as unknown as Spread<number>);

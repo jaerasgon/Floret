@@ -11,6 +11,7 @@ import {
 } from '../../runtime/types';
 import type { PortValue } from '../types';
 import { toVec2 } from '../_shared/coerce';
+import { buildOffsetPolygon, widthsAreVariable } from '../../runtime/stroke-offset';
 
 /**
  * Additional 2D primitives: arc, triangle, quad, point, polygon.
@@ -134,24 +135,54 @@ export const polygonNode = registerNode({
   type: 'draw/polygon',
   category: 'Draw',
   label: 'Polygon',
-  description: 'Draw a polygon from a spread of vec2 points.',
+  description:
+    'Draw a polygon from a spread of vec2 points. Optionally wire a `widths` spread to taper the stroke into a filled offset polygon.',
   inputs: [
-    { name: 'points', type: 'vec2', kind: 'spread' },
+    { name: 'points', type: 'vec2',    kind: 'spread' },
     { name: 'closed', type: 'boolean', default: true },
-    { name: 'style', type: 'style' },
+    { name: 'style',  type: 'style' },
+    // Per-vertex stroke widths. When non-empty AND varying, the node
+    // emits the Illustrator-style outlined polygon — fill colour comes
+    // from the resolved style's `stroke` (or `fill` if there's no
+    // stroke). Uniform / empty widths fall through to the regular
+    // stroke render.
+    { name: 'widths', type: 'number',  kind: 'spread', default: 0 },
   ],
   outputs: [{ name: 'out', type: 'layer' }],
   computeRaw: (inputs): PortValue[] => {
     const ptsSpread = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const closed = Boolean(inputs[1]?.[0] ?? true);
     const s = (inputs[2]?.[0] as Style | undefined) ?? null;
+    const widths = ((inputs[3] ?? []) as ReadonlyArray<unknown>).map((v) => Number(v));
     const pts: Vec2[] = ptsSpread.map(toVec2);
     const baseStyle = closed ? DEFAULT_STYLE : LINE_DEFAULT_STYLE;
+    const resolved = resolveStyle(s, baseStyle);
+
+    if (widthsAreVariable(widths) && pts.length >= 2) {
+      // Variable-width branch — outline the polyline and emit as a
+      // filled polygon. Prefer the user's fill colour (the ribbon IS
+      // a filled shape) and fall through to stroke when no fill is
+      // configured. Drop the stroke so we don't ALSO draw a thin
+      // outline around the ribbon.
+      const ribbon = buildOffsetPolygon(pts, widths, resolved.strokeWeight, closed);
+      const node: Layer = {
+        kind: 'polygon',
+        points: ribbon,
+        closed: true,
+        style: {
+          ...resolved,
+          fill: resolved.fill ?? resolved.stroke ?? '#ffffff',
+          stroke: null,
+        },
+      };
+      return [[node]];
+    }
+
     const node: Layer = {
       kind: 'polygon',
       points: pts,
       closed,
-      style: resolveStyle(s, baseStyle),
+      style: resolved,
     };
     return [[node]];
   },
@@ -180,12 +211,18 @@ export const pathNode = registerNode({
   category: 'Draw',
   label: 'Path',
   description:
-    'Stroke a path through a spread of vec2 points. Tension > 0 turns straight lines into Catmull–Rom curves.',
+    'Stroke a path through a spread of vec2 points. Tension > 0 turns straight lines into Catmull–Rom curves. Wire `widths` to taper.',
   inputs: [
-    { name: 'points', type: 'vec2', kind: 'spread' },
-    { name: 'color', type: 'color', default: null },
+    { name: 'points',      type: 'vec2',   kind: 'spread' },
+    { name: 'color',       type: 'color',  default: null },
     { name: 'strokeWidth', type: 'number', default: 2 },
-    { name: 'tension', type: 'number', default: 0 },
+    { name: 'tension',     type: 'number', default: 0 },
+    // Optional variable-width input — when non-empty and varying, the
+    // path becomes a filled offset polygon (Illustrator-style ribbon)
+    // instead of a stroked polyline. Tension > 0 still smooths the
+    // polyline before offsetting via straight Catmull–Rom sampling
+    // would be ideal, but for v1 we only offset the raw vertices.
+    { name: 'widths',      type: 'number', kind: 'spread', default: 0 },
   ],
   outputs: [{ name: 'out', type: 'layer' }],
   computeRaw: (inputs): PortValue[] => {
@@ -193,6 +230,7 @@ export const pathNode = registerNode({
     const colorIn = inputs[1]?.[0] as Color | null | undefined;
     const widthIn = Number(inputs[2]?.[0] ?? 2);
     const tensionIn = Number(inputs[3]?.[0] ?? 0);
+    const widths = ((inputs[4] ?? []) as ReadonlyArray<unknown>).map((v) => Number(v));
     const pts: Vec2[] = ptsSpread.map(toVec2);
     // Clamp tension into [0, 1]. Above 1 starts producing loops at sharp
     // corners — interesting but rarely what the user asked for. Below 0
@@ -204,6 +242,26 @@ export const pathNode = registerNode({
     // A null colour input falls back to the default black so an unwired
     // node still renders something visible.
     const stroke = colorIn ? colorToCss(colorIn) : LINE_DEFAULT_STYLE.stroke;
+    const baseWidth = Math.max(0, widthIn);
+
+    if (widthsAreVariable(widths) && pts.length >= 2) {
+      // Variable-width ribbon. Tension/smoothing is ignored for v1 —
+      // applying Catmull–Rom resampling before offsetting is a worthy
+      // follow-up.
+      const ribbon = buildOffsetPolygon(pts, widths, baseWidth, false);
+      const node: Layer = {
+        kind: 'polygon',
+        points: ribbon,
+        closed: true,
+        style: {
+          ...LINE_DEFAULT_STYLE,
+          fill: stroke ?? '#000',
+          stroke: null,
+        },
+      };
+      return [[node]];
+    }
+
     const node: Layer = {
       kind: 'polygon',
       points: pts,
@@ -212,7 +270,7 @@ export const pathNode = registerNode({
       style: {
         ...LINE_DEFAULT_STYLE,
         stroke,
-        strokeWeight: Math.max(0, widthIn),
+        strokeWeight: baseWidth,
       },
     };
     return [[node]];

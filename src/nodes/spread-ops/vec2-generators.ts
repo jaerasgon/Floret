@@ -48,6 +48,36 @@ export const gridNode = registerNode({
   },
 });
 
+export const ringNode = registerNode({
+  type: 'spread/ring',
+  category: 'Spread',
+  label: 'RingSpread',
+  description: 'Generate `count` Vec2 points evenly spaced on a circle.',
+  inputs: [
+    { name: 'count',  type: 'number', default: 24, integer: true },
+    { name: 'radius', type: 'number', default: 100 },
+    { name: 'cx',     type: 'number', default: 0 },
+    { name: 'cy',     type: 'number', default: 0 },
+    { name: 'phase',  type: 'number', default: 0 },
+  ],
+  outputs: [{ name: 'out', type: 'vec2', kind: 'spread' }],
+  computeRaw: (inputs) => {
+    const count = intCount(inputs[0]?.[0]);
+    const radius = Number(inputs[1]?.[0] ?? 0);
+    const cx = Number(inputs[2]?.[0] ?? 0);
+    const cy = Number(inputs[3]?.[0] ?? 0);
+    const phase = Number(inputs[4]?.[0] ?? 0);
+    if (count === 0) return [[]];
+    const out = new Array<Vec2>(count);
+    const step = (Math.PI * 2) / count;
+    for (let i = 0; i < count; i++) {
+      const a = phase + step * i;
+      out[i] = { x: cx + Math.cos(a) * radius, y: cy + Math.sin(a) * radius };
+    }
+    return [out];
+  },
+});
+
 export const spiralNode = registerNode({
   type: 'spread/spiral',
   category: 'Spread',

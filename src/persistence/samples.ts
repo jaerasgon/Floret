@@ -6164,8 +6164,8 @@ function buildTutAccumulator() {
   const c = note(
     't44_c',
     { x: -460, y: 0 },
-    'Accumulator: fold within a ForEach\n\nDrop a `region/accumulator/<type>` INSIDE a ForEach. Its `init` is seeded once; each iteration\'s `write` becomes the next iteration\'s `read`. After the loop, `final` carries the last value out.\n\nHere we sum 1..10 by accumulating an integer.',
-    { w: 440, h: 240 },
+    'Accumulator: fold within a ForEach\n\nThe split Read / Write pair lets you fold a spread without ever drawing a back-edge wire. Drop **AccRead** on the left of the region (it emits the running value via `read`) and **AccWrite** on the right (its `write` input becomes the next iteration\'s read; its `final` output is the last value once the loop ends). The pair is matched by `slot`.\n\nHere we sum 1..10 by accumulating an integer — every wire flows left to right.',
+    { w: 460, h: 260 },
   );
   const range = nodeWithPorts('t44_range', 'spread/range', { x: 60, y: 0 }, { count: 10 });
   const initVal = node('t44_init', 'value/number', { x: 60, y: 160 }, { value: 0 });
@@ -6177,40 +6177,44 @@ function buildTutAccumulator() {
     position: { x: 320, y: 0 },
     data: {
       defType: 'region/foreach',
-      params: { width: 560, height: 300, label: 'sum' },
+      params: { width: 680, height: 300, label: 'sum' },
       ports: [
         { id: 'i', name: 'i', type: 'number', direction: 'input', y: 40 },
       ],
     },
-    style: { width: 560, height: 300 },
+    style: { width: 680, height: 300 },
   };
-  // Accumulator: read previous sum, add current i+1, write back.
-  const acc = node('t44_acc', 'region/accumulator/number', { x: 40, y: 80 }, {}, RID);
-  const inc = node('t44_inc', 'math/add', { x: 220, y: 40 }, { b: 1 }, RID); // i + 1
-  const sum = node('t44_sum', 'math/add', { x: 380, y: 80 }, {}, RID);
+  // LTR layout inside the region:
+  //   AccRead (left) → math/add(+1) → math/add → AccWrite (right)
+  //   splicer-in i  ↗
+  const read  = node('t44_read',  'region/accumulator-read/number',  { x: 40,  y: 80 }, { slot: 1 }, RID);
+  const inc   = node('t44_inc',   'math/add', { x: 220, y: 160 }, { b: 1 }, RID); // i + 1
+  const sum   = node('t44_sum',   'math/add', { x: 400, y: 80 }, {}, RID);
+  const write = node('t44_write', 'region/accumulator-write/number', { x: 580, y: 80 }, { slot: 1 }, RID);
 
   // Display the final number with draw/text.
   const colN = node('t44_col', 'color/color', { x: 60, y: 280 }, { mode: 'rgb', r: 230, g: 240, b: 250, a: 255 });
   const fill = node('t44_fill', 'style/fill', { x: 240, y: 280 });
-  const txt = node('t44_text', 'draw/text', { x: 1000, y: 80 }, { string: '0', x: -60, y: 0, size: 48, align: 'left' });
+  const txt = node('t44_text', 'draw/text', { x: 1120, y: 80 }, { string: '0', x: -60, y: 0, size: 48, align: 'left' });
 
-  const renderer = node('t44_renderer', 'render/renderer', { x: 1240, y: 0 }, { width: 400, height: 400 });
+  const renderer = node('t44_renderer', 'render/renderer', { x: 1360, y: 0 }, { width: 400, height: 400 });
 
   return {
-    nodes: [c, range, initVal, region, acc, inc, sum, colN, fill, txt, renderer],
+    nodes: [c, range, initVal, region, read, inc, sum, write, colN, fill, txt, renderer],
     edges: [
       edge('t44_range', 'out', RID, 'i'),
-      edge('t44_init', 'out', 't44_acc', 'init'),
-      // inside: sum = acc.read + (i+1); write back
+      // Init flows into Read.init (outer edge, LTR).
+      edge('t44_init', 'out', 't44_read', 'init'),
+      // Inner: running = read + (i + 1), wired LTR.
       edge(RID, 'i', 't44_inc', 'a'),
-      edge('t44_acc', 'read', 't44_sum', 'a'),
+      edge('t44_read', 'read', 't44_sum', 'a'),
       edge('t44_inc', 'out', 't44_sum', 'b'),
-      edge('t44_sum', 'out', 't44_acc', 'write'),
-      // display final
+      edge('t44_sum', 'out', 't44_write', 'write'),
+      // Style chain for the displayed number (LTR).
       edge('t44_col', 'out', 't44_fill', 'color'),
       edge('t44_fill', 'style', 't44_text', 'style'),
-      // (final is read here just to drive the displayed number visually)
-      edge('t44_acc', 'final', 't44_text', 'x'),
+      // Final from the pair drives the displayed number's x-position.
+      edge('t44_write', 'final', 't44_text', 'x'),
       edge('t44_text', 'out', 't44_renderer', 'layers'),
     ],
   };
@@ -6387,6 +6391,998 @@ function buildTutFFT() {
   };
 }
 
+// ─── Kinetic Type ──────────────────────────────────────────────────────────
+// Cavalry-style traveling-wave kinetic typography. Every character of every
+// row gets its own x offset = sin(time·SPEED + charIdx·CHAR_PHASE − rowIdx·
+// ROW_DELAY). The CHAR_PHASE makes the letters within a row ripple
+// independently; the ROW_DELAY means each row plays the same animation
+// slightly later in time, so the wave appears to flow downward through the
+// rows. Rows are flattened into a single ForEach: Repeat tiles the chars to
+// (rows × chars), Range(rows × chars) gives a flat index, and mod/floor
+// recover row + char inside the region.
+const KT_ROWS = 40;
+function buildKineticType() {
+  const c = note(
+    'kt_c',
+    { x: -640, y: 0 },
+    'Kinetic typography\n\nEach character of every row gets its own (x, y). The phrase is split into a Spread<string> then Repeat-tiled rows times — paired with a Range of the same length, ForEach iterates the 24 × 9 grid. Inside: floor / mod recover (rowIdx, charIdx); the column offset (charIdx − centre) gets multiplied by a row-envelope so middle rows fan out and edges stay tight. The result curves like the reference — a wave of letterforms.\n\nEdit the String node to change the phrase; the grid count rebuilds itself.',
+    { w: 520, h: 320 },
+  );
+
+  // Outer scope.
+  const str   = node('kt_str',   'value/string',  { x: -580, y: 200 }, { value: 'I LOVE FLORET' });
+  const split = node('kt_split', 'string/split',  { x: -380, y: 160 }, { by: '' });
+  const len   = node('kt_len',   'string/length', { x: -380, y: 260 });
+  // Repeat tiles the char spread KT_ROWS times: length = chars × rows.
+  const tile  = node('kt_tile',  'spread/repeat', { x: -180, y: 160 }, { count: KT_ROWS });
+  // Range count = chars × rows so the index iterates in lockstep.
+  const total = node('kt_total', 'math/mul',      { x: -180, y: 260 }, { b: KT_ROWS });
+  const range = node('kt_range', 'spread/range',  { x:    0, y: 260 });
+  const time  = node('kt_time',  'time/seconds',  { x: -580, y: 360 });
+
+  // ── Per-word colour pipeline ──
+  // Author 3 swatches. WordIndices tags each char with its word index;
+  // PickSpread looks up palette[wordIdx] per char → Spread<Color> of length
+  // = chars per row. Repeat tiles it KT_ROWS times so it iterates in
+  // lockstep with the char + index spreads inside the region.
+  const palette = node('kt_palette', 'color/palette', { x: -580, y:  20 },
+                       { stopCount: 3, c0: '#ff5edb', c1: '#7afc6c', c2: '#ffd23b' });
+  const widx    = node('kt_widx',    'string/word-indices', { x: -380, y:  60 }, { by: ' ' });
+  const perChar = node('kt_perChar', 'spread/pick',         { x: -180, y:  60 });
+  const tileC   = node('kt_tileC',   'spread/repeat',       { x:    0, y:  60 }, { count: KT_ROWS });
+
+  // Background — your reference's electric blue.
+  const bg = node('kt_bg', 'color/color', { x: -380, y: 420 },
+                  { mode: 'rgb', r: 41, g: 70, b: 219, a: 255 });
+
+  const RID = 'kt_region';
+  const region: FloretNode = {
+    id: RID,
+    type: 'floret',
+    position: { x: 220, y: 0 },
+    data: {
+      defType: 'region/foreach',
+      params: { width: 1100, height: 700, label: 'ForEach (row × char)' },
+      ports: [
+        { id: 'ch',  name: 'ch',  type: 'string', direction: 'input' },
+        { id: 'i',   name: 'i',   type: 'number', direction: 'input' },
+        { id: 'col', name: 'col', type: 'color',  direction: 'input' },
+        { id: 'layer', name: 'layer', type: 'layer', direction: 'output' },
+      ],
+    },
+    style: { width: 1100, height: 700 },
+  };
+
+  // ── Recover (rowIdx, charIdx) from the flat index `i` and chars-per-row N.
+  // i is broadcast from the region; chars-per-row (N) is broadcast from kt_len.
+  const charIdxOff = node('kt_charIdxOff', 'math/mod',   { x:  40, y:  40 }, {}, RID); // i % N
+  const rowDiv     = node('kt_rowDiv',     'math/div',   { x:  40, y: 120 }, {}, RID); // i / N
+  const rowIdx     = node('kt_rowIdx',     'math/floor', { x: 200, y: 120 }, {}, RID); // floor(i/N)
+
+  // ── y = (rowIdx − (ROWS-1)/2) · ROW_H
+  const ROW_H = 22;
+  const yCenter = ((KT_ROWS - 1) / 2) * ROW_H;
+  const yMul = node('kt_yMul', 'math/mul', { x: 360, y: 120 }, { b: ROW_H },   RID);
+  const yOff = node('kt_yOff', 'math/add', { x: 520, y: 120 }, { b: -yCenter }, RID);
+
+  // ── Char column offset: (charIdx − centre).
+  // centre = (N − 1) / 2 — derive from chars-per-row so it stays correct.
+  const charCenter = node('kt_charCenter', 'math/sub', { x: 200, y:  40 }, { b: 1 }, RID); // N - 1
+  const charCenter2 = node('kt_charCenter2', 'math/div', { x: 360, y:  40 }, { b: 2 }, RID); // (N - 1) / 2
+  const charOff = node('kt_charOff', 'math/sub', { x: 520, y:  40 }, {}, RID); // charIdx − centre
+
+  // ── Traveling wave: arg = time · SPEED + charIdx · CHAR_PHASE − rowIdx · ROW_DELAY.
+  // CHAR_PHASE makes letters within a row ripple at different times;
+  // ROW_DELAY makes each row lag behind the one above so the whole wave
+  // travels down the page.
+  const tSpeed    = node('kt_tSpeed',    'math/mul', { x: 360, y: 280 }, { b: 1.6 }, RID);
+  const charPhase = node('kt_charPhase', 'math/mul', { x: 360, y: 200 }, { b: 0.55 }, RID);
+  const rowDelay  = node('kt_rowDelay',  'math/mul', { x: 360, y: 360 }, { b: 0.22 }, RID);
+  const waveAdd   = node('kt_waveAdd',   'math/add', { x: 520, y: 240 }, {}, RID); // tScaled + charPhase
+  const waveArg   = node('kt_waveArg',   'math/sub', { x: 680, y: 280 }, {}, RID); // − rowDelay
+  const waveSin   = node('kt_waveSin',   'math/sin', { x: 840, y: 280 }, {}, RID);
+  const xWave     = node('kt_xWave',     'math/mul', { x: 1000, y: 280 }, { b: 26 }, RID); // wave amplitude
+
+  // ── x = charOff · BASE_SPACING + xWave
+  const xBase = node('kt_xBase', 'math/mul', { x: 680, y:  40 }, { b: 24 }, RID);
+  const xOut  = node('kt_xOut',  'math/add', { x: 1000, y:  40 }, {}, RID);
+
+  // ── Per-iteration colour comes from the region's `col` port (palette
+  //    indexed by word index, tiled across rows). Fill takes it directly.
+  const fill  = node('kt_fill',  'style/fill',  { x: 220, y: 460 }, {}, RID);
+  const tp    = node('kt_tp',    'style/text-params', { x: 400, y: 460 },
+                     { font: 'monospace', bold: true, italic: false,
+                       align: 'center', baseline: 'middle',
+                       kerning: 0, lineSpacing: 1.0 }, RID);
+
+  const text = node('kt_text', 'draw/text', { x: 880, y:  40 },
+                    { string: '?', x: 0, y: 0, size: 16, align: 'center' }, RID);
+
+  const renderer = node('kt_renderer', 'render/renderer', { x: 1380, y: 0 },
+                        { width: 380, height: 640 });
+
+  return {
+    nodes: [
+      c, str, split, len, tile, total, range, time, bg, region,
+      palette, widx, perChar, tileC,
+      charIdxOff, rowDiv, rowIdx,
+      charCenter, charCenter2, charOff,
+      yMul, yOff,
+      tSpeed, charPhase, rowDelay, waveAdd, waveArg, waveSin, xWave,
+      xBase, xOut,
+      fill, tp, text,
+      renderer,
+    ],
+    edges: [
+      // Split phrase → char spread; Length → drive tile count + Range count.
+      edge('kt_str',   'out', 'kt_split', 'text'),
+      edge('kt_str',   'out', 'kt_len',   'text'),
+      edge('kt_split', 'out', 'kt_tile',  'value'),
+      edge('kt_len',   'out', 'kt_total', 'a'),
+      edge('kt_total', 'out', 'kt_range', 'count'),
+
+      // Per-word colour pipeline: phrase → WordIndices → Pick(palette) →
+      // tile by rows; lockstep with chars + indices.
+      edge('kt_str',     'out',    'kt_widx',    'text'),
+      edge('kt_palette', 'colors', 'kt_perChar', 'source'),
+      edge('kt_widx',    'out',    'kt_perChar', 'indices'),
+      edge('kt_perChar', 'out',    'kt_tileC',   'value'),
+
+      // Three lockstep spreads (length = rows × chars) into the region.
+      edge('kt_tile',  'out', RID, 'ch'),
+      edge('kt_range', 'out', RID, 'i'),
+      edge('kt_tileC', 'out', RID, 'col'),
+
+      // ── Recover rowIdx + charIdx ──
+      // charIdx = i % N
+      edge(RID, 'i', 'kt_charIdxOff', 'a'),
+      edge('kt_len', 'out', 'kt_charIdxOff', 'b'),
+      // rowIdx  = floor(i / N)
+      edge(RID, 'i', 'kt_rowDiv', 'a'),
+      edge('kt_len', 'out', 'kt_rowDiv', 'b'),
+      edge('kt_rowDiv', 'out', 'kt_rowIdx', 'x'),
+
+      // ── y = (rowIdx − centre) · ROW_H ──
+      edge('kt_rowIdx', 'out', 'kt_yMul', 'a'),
+      edge('kt_yMul',   'out', 'kt_yOff', 'a'),
+      edge('kt_yOff',   'out', 'kt_text', 'y'),
+
+      // ── Char centre: (N − 1) / 2 ──
+      edge('kt_len',         'out', 'kt_charCenter',  'a'),
+      edge('kt_charCenter',  'out', 'kt_charCenter2', 'a'),
+      edge('kt_charIdxOff',  'out', 'kt_charOff',     'a'),
+      edge('kt_charCenter2', 'out', 'kt_charOff',     'b'),
+
+      // ── Wave arg = time·SPEED + charIdx·CHAR_PHASE − rowIdx·ROW_DELAY ──
+      edge('kt_time',        't',  'kt_tSpeed',    'a'),
+      edge('kt_charIdxOff',  'out', 'kt_charPhase','a'),
+      edge('kt_rowIdx',      'out', 'kt_rowDelay', 'a'),
+      edge('kt_tSpeed',      'out', 'kt_waveAdd',  'a'),
+      edge('kt_charPhase',   'out', 'kt_waveAdd',  'b'),
+      edge('kt_waveAdd',     'out', 'kt_waveArg',  'a'),
+      edge('kt_rowDelay',    'out', 'kt_waveArg',  'b'),
+      edge('kt_waveArg',     'out', 'kt_waveSin',  'x'),
+      edge('kt_waveSin',     'out', 'kt_xWave',    'a'),
+
+      // ── x = charOff·BASE_SPACING + xWave ──
+      edge('kt_charOff', 'out', 'kt_xBase', 'a'),
+      edge('kt_xBase',   'out', 'kt_xOut',  'a'),
+      edge('kt_xWave',   'out', 'kt_xOut',  'b'),
+      edge('kt_xOut',    'out', 'kt_text',  'x'),
+
+      // Style chain — per-iter colour from the region's `col` port.
+      edge(RID, 'col', 'kt_fill', 'color'),
+      edge('kt_fill', 'style', 'kt_tp',   'base'),
+      edge('kt_tp',   'style', 'kt_text', 'style'),
+
+      // The character to draw (broadcast through the region).
+      edge(RID, 'ch', 'kt_text', 'string'),
+
+      // Output + background.
+      edge('kt_text', 'out', RID, 'layer'),
+      edge(RID, 'layer', 'kt_renderer', 'layers'),
+      edge('kt_bg', 'out', 'kt_renderer', 'background'),
+    ],
+  };
+}
+
+// ─── Type / Halo ──────────────────────────────────────────────────────────
+// Phrase characters laid out evenly around a circle; the whole ring spins
+// over time. Hue cycles per-character + per-time so the ring also runs a
+// chromatic chase. One ForEach iteration per character — angle = i · (TAU /
+// N) + time · SPIN; (cos, sin) · RADIUS gives (x, y).
+function buildTypeHalo() {
+  const c = note('th_c', { x: -560, y: 0 },
+    'Type halo\n\nThe phrase is split into characters, then a ForEach lays them around a circle. angle = i · (2π / N) + time · SPIN; (x, y) = (cos, sin) · RADIUS. Hue cycles per character + per time for a chromatic chase.',
+    { w: 500, h: 240 });
+
+  const str   = node('th_str',   'value/string',  { x: -560, y: 200 }, { value: 'GENERATIVE FLORET TYPE STUDIO ' });
+  const split = node('th_split', 'string/split',  { x: -360, y: 160 });
+  const len   = node('th_len',   'string/length', { x: -360, y: 260 });
+  const range = node('th_range', 'spread/range',  { x: -160, y: 260 });
+  const time  = node('th_time',  'time/seconds',  { x: -560, y: 320 });
+  const bg    = node('th_bg',    'color/color',   { x: -360, y: 340 },
+                     { mode: 'rgb', r: 12, g: 14, b: 24, a: 255 });
+
+  const RID = 'th_region';
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: 80, y: 0 },
+    data: {
+      defType: 'region/foreach',
+      params: { width: 920, height: 540, label: 'ForEach char' },
+      ports: [
+        { id: 'ch', name: 'ch', type: 'string', direction: 'input' },
+        { id: 'i',  name: 'i',  type: 'number', direction: 'input' },
+        { id: 'layer', name: 'layer', type: 'layer', direction: 'output' },
+      ],
+    },
+    style: { width: 920, height: 540 },
+  };
+
+  const TAU = Math.PI * 2;
+  const stepDiv = node('th_step',    'math/div', { x:  40, y:  40 }, { a: TAU }, RID); // TAU / N
+  const angBase = node('th_angBase', 'math/mul', { x: 200, y:  40 }, {},          RID);
+  const tSpin   = node('th_tSpin',   'math/mul', { x: 200, y: 120 }, { b: 0.35 }, RID);
+  const angle   = node('th_angle',   'math/add', { x: 360, y:  40 }, {},          RID);
+  const cosA    = node('th_cos',     'math/cos', { x: 520, y:  40 }, {},          RID);
+  const sinA    = node('th_sin',     'math/sin', { x: 520, y: 120 }, {},          RID);
+  const xOut    = node('th_x',       'math/mul', { x: 680, y:  40 }, { b: 150 }, RID);
+  const yOut    = node('th_y',       'math/mul', { x: 680, y: 120 }, { b: 150 }, RID);
+  // hue = i · 24 + time · 32
+  const hueI    = node('th_hueI',    'math/mul', { x:  40, y: 240 }, { b: 24 }, RID);
+  const hueT    = node('th_hueT',    'math/mul', { x:  40, y: 320 }, { b: 32 }, RID);
+  const hue     = node('th_hue',     'math/add', { x: 200, y: 240 }, {},        RID);
+  const hsl     = node('th_hsl',     'color/color', { x: 360, y: 240 },
+                       { mode: 'hsl', h: 0, s: 90, l: 65, a: 255 }, RID);
+  const fill    = node('th_fill',    'style/fill', { x: 520, y: 240 }, {}, RID);
+  const tp      = node('th_tp',      'style/text-params', { x: 680, y: 240 },
+                       { font: 'monospace', bold: true, italic: false,
+                         align: 'center', baseline: 'middle' }, RID);
+  const text    = node('th_text',    'draw/text', { x: 840, y:  40 },
+                       { string: '?', size: 30, align: 'center' }, RID);
+
+  const renderer = node('th_renderer', 'render/renderer', { x: 1080, y: 0 },
+                        { width: 540, height: 540 });
+
+  return {
+    nodes: [c, str, split, len, range, time, bg, region,
+            stepDiv, angBase, tSpin, angle, cosA, sinA, xOut, yOut,
+            hueI, hueT, hue, hsl, fill, tp, text, renderer],
+    edges: [
+      edge('th_str',   'out', 'th_split', 'text'),
+      edge('th_str',   'out', 'th_len',   'text'),
+      edge('th_len',   'out', 'th_range', 'count'),
+      edge('th_split', 'out', RID, 'ch'),
+      edge('th_range', 'out', RID, 'i'),
+
+      // angle
+      edge('th_len',    'out', 'th_step',    'b'),
+      edge(RID, 'i',          'th_angBase', 'a'),
+      edge('th_step',   'out', 'th_angBase', 'b'),
+      edge('th_time',   't',   'th_tSpin',   'a'),
+      edge('th_angBase','out', 'th_angle',   'a'),
+      edge('th_tSpin',  'out', 'th_angle',   'b'),
+
+      // (x, y) on the ring
+      edge('th_angle', 'out', 'th_cos', 'x'),
+      edge('th_angle', 'out', 'th_sin', 'x'),
+      edge('th_cos',   'out', 'th_x',   'a'),
+      edge('th_sin',   'out', 'th_y',   'a'),
+      edge('th_x',     'out', 'th_text', 'x'),
+      edge('th_y',     'out', 'th_text', 'y'),
+
+      // hue
+      edge(RID, 'i',          'th_hueI', 'a'),
+      edge('th_time', 't',    'th_hueT', 'a'),
+      edge('th_hueI', 'out',  'th_hue',  'a'),
+      edge('th_hueT', 'out',  'th_hue',  'b'),
+      edge('th_hue',  'out',  'th_hsl',  'h'),
+
+      // style + draw
+      edge('th_hsl', 'out',   'th_fill', 'color'),
+      edge('th_fill', 'style', 'th_tp',  'base'),
+      edge('th_tp',   'style', 'th_text','style'),
+      edge(RID, 'ch', 'th_text', 'string'),
+
+      edge('th_text', 'out', RID, 'layer'),
+      edge(RID, 'layer', 'th_renderer', 'layers'),
+      edge('th_bg',   'out', 'th_renderer', 'background'),
+    ],
+  };
+}
+
+// ─── Type / Spiral ────────────────────────────────────────────────────────
+// Phrase tiled K times → laid out on a logarithmic spiral. Each character's
+// radius grows with i; angle steps a small amount per character + drifts in
+// time. The spiral as a whole rotates slowly while individual characters
+// trace outward.
+function buildTypeSpiral() {
+  const TILE = 6;
+  const c = note('tsp_c', { x: -560, y: 0 },
+    'Type spiral\n\nThe phrase is RepeatSpread-tiled so we have plenty of characters. They march outward: r = R0 + i · dR, angle = i · dAngle − time · SPIN. (cos, sin) · r places them on a logarithmic spiral that rotates as a whole.',
+    { w: 500, h: 240 });
+
+  const str   = node('tsp_str',   'value/string',  { x: -560, y: 200 }, { value: 'FLORET TYPE ' });
+  const split = node('tsp_split', 'string/split',  { x: -360, y: 160 });
+  const tile  = node('tsp_tile',  'spread/repeat', { x: -180, y: 160 }, { count: TILE });
+  const len   = node('tsp_len',   'string/length', { x: -360, y: 260 });
+  const total = node('tsp_total', 'math/mul',      { x: -180, y: 260 }, { b: TILE });
+  const range = node('tsp_range', 'spread/range',  { x:    0, y: 260 });
+  const time  = node('tsp_time',  'time/seconds',  { x: -560, y: 320 });
+  const bg    = node('tsp_bg',    'color/color',   { x: -360, y: 340 },
+                     { mode: 'rgb', r: 8, g: 8, b: 16, a: 255 });
+
+  const RID = 'tsp_region';
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: 120, y: 0 },
+    data: {
+      defType: 'region/foreach',
+      params: { width: 920, height: 540, label: 'ForEach char' },
+      ports: [
+        { id: 'ch', name: 'ch', type: 'string', direction: 'input' },
+        { id: 'i',  name: 'i',  type: 'number', direction: 'input' },
+        { id: 'layer', name: 'layer', type: 'layer', direction: 'output' },
+      ],
+    },
+    style: { width: 920, height: 540 },
+  };
+
+  // angle = i · dAngle − time · SPIN
+  const iAng    = node('tsp_iAng',  'math/mul', { x:  40, y:  40 }, { b: 0.42 }, RID);
+  const tSpin   = node('tsp_tSpin', 'math/mul', { x:  40, y: 100 }, { b: 0.25 }, RID);
+  const angle   = node('tsp_angle', 'math/sub', { x: 200, y:  40 }, {}, RID);
+  // r = R0 + i · dR
+  const rDelta  = node('tsp_rDelta','math/mul', { x:  40, y: 180 }, { b: 4 },   RID);
+  const radius  = node('tsp_r',     'math/add', { x: 200, y: 180 }, { b: 28 }, RID);
+
+  const cosA    = node('tsp_cos',   'math/cos', { x: 360, y:  40 }, {}, RID);
+  const sinA    = node('tsp_sin',   'math/sin', { x: 360, y: 120 }, {}, RID);
+  const xOut    = node('tsp_x',     'math/mul', { x: 520, y:  40 }, {}, RID);
+  const yOut    = node('tsp_y',     'math/mul', { x: 520, y: 120 }, {}, RID);
+
+  // hue = i · 16 + time · 40
+  const hueI    = node('tsp_hueI',  'math/mul', { x:  40, y: 260 }, { b: 16 }, RID);
+  const hueT    = node('tsp_hueT',  'math/mul', { x:  40, y: 320 }, { b: 40 }, RID);
+  const hue     = node('tsp_hue',   'math/add', { x: 200, y: 260 }, {}, RID);
+  const hsl     = node('tsp_hsl',   'color/color', { x: 360, y: 260 },
+                       { mode: 'hsl', h: 0, s: 90, l: 65, a: 255 }, RID);
+  const fill    = node('tsp_fill',  'style/fill', { x: 520, y: 260 }, {}, RID);
+  const tp      = node('tsp_tp',    'style/text-params', { x: 680, y: 260 },
+                       { font: 'monospace', bold: true, italic: false,
+                         align: 'center', baseline: 'middle' }, RID);
+  const text    = node('tsp_text',  'draw/text', { x: 700, y:  40 },
+                       { string: '?', size: 20, align: 'center' }, RID);
+
+  const renderer = node('tsp_renderer', 'render/renderer', { x: 940, y: 0 },
+                        { width: 540, height: 540 });
+
+  return {
+    nodes: [c, str, split, tile, len, total, range, time, bg, region,
+            iAng, tSpin, angle, rDelta, radius,
+            cosA, sinA, xOut, yOut,
+            hueI, hueT, hue, hsl, fill, tp, text, renderer],
+    edges: [
+      edge('tsp_str',   'out', 'tsp_split', 'text'),
+      edge('tsp_str',   'out', 'tsp_len',   'text'),
+      edge('tsp_split', 'out', 'tsp_tile',  'value'),
+      edge('tsp_len',   'out', 'tsp_total', 'a'),
+      edge('tsp_total', 'out', 'tsp_range', 'count'),
+      edge('tsp_tile',  'out', RID, 'ch'),
+      edge('tsp_range', 'out', RID, 'i'),
+
+      // angle
+      edge(RID, 'i',           'tsp_iAng',  'a'),
+      edge('tsp_time', 't',    'tsp_tSpin', 'a'),
+      edge('tsp_iAng', 'out',  'tsp_angle', 'a'),
+      edge('tsp_tSpin','out',  'tsp_angle', 'b'),
+      // r
+      edge(RID, 'i',           'tsp_rDelta','a'),
+      edge('tsp_rDelta','out', 'tsp_r',     'a'),
+
+      edge('tsp_angle','out', 'tsp_cos', 'x'),
+      edge('tsp_angle','out', 'tsp_sin', 'x'),
+      edge('tsp_cos',  'out', 'tsp_x',   'a'),
+      edge('tsp_r',    'out', 'tsp_x',   'b'),
+      edge('tsp_sin',  'out', 'tsp_y',   'a'),
+      edge('tsp_r',    'out', 'tsp_y',   'b'),
+      edge('tsp_x',    'out', 'tsp_text','x'),
+      edge('tsp_y',    'out', 'tsp_text','y'),
+
+      // hue
+      edge(RID, 'i',           'tsp_hueI', 'a'),
+      edge('tsp_time', 't',    'tsp_hueT', 'a'),
+      edge('tsp_hueI', 'out',  'tsp_hue',  'a'),
+      edge('tsp_hueT', 'out',  'tsp_hue',  'b'),
+      edge('tsp_hue',  'out',  'tsp_hsl',  'h'),
+
+      // style + draw
+      edge('tsp_hsl',  'out',   'tsp_fill', 'color'),
+      edge('tsp_fill', 'style', 'tsp_tp',   'base'),
+      edge('tsp_tp',   'style', 'tsp_text', 'style'),
+      edge(RID, 'ch', 'tsp_text', 'string'),
+
+      edge('tsp_text', 'out', RID, 'layer'),
+      edge(RID, 'layer', 'tsp_renderer', 'layers'),
+      edge('tsp_bg',   'out', 'tsp_renderer', 'background'),
+    ],
+  };
+}
+
+// ─── Type / Drift ─────────────────────────────────────────────────────────
+// A grid of repeated characters, each cell displaced by 2D Perlin noise.
+// Two seeds for x and y → cells drift independently; the field flows over
+// time. Classic noise-field-meets-text composition.
+function buildTypeDrift() {
+  const COLS = 10, ROWS = 14, CELLS = COLS * ROWS;
+  const c = note('tdr_c', { x: -560, y: 0 },
+    'Type drift\n\nA grid of repeated characters (10 × 14) drifts through a 2D Perlin field. Per cell: (baseX, baseY) from row/col; noise samples at (baseX·s, baseY·s + time·v) for two seeds give independent x/y jitter. The field flows.',
+    { w: 500, h: 240 });
+
+  const str   = node('tdr_str',   'value/string',  { x: -560, y: 200 }, { value: 'FLORET ' });
+  const split = node('tdr_split', 'string/split',  { x: -360, y: 160 });
+  // Tile by CELLS so the spread is long enough to feed every cell.
+  const tile  = node('tdr_tile',  'spread/repeat', { x: -180, y: 160 }, { count: CELLS });
+  const range = node('tdr_range', 'spread/range',  { x: -180, y: 260 }, { count: CELLS });
+  const time  = node('tdr_time',  'time/seconds',  { x: -560, y: 320 });
+  const bg    = node('tdr_bg',    'color/color',   { x: -360, y: 340 },
+                     { mode: 'rgb', r: 18, g: 22, b: 30, a: 255 });
+
+  const RID = 'tdr_region';
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: 120, y: 0 },
+    data: {
+      defType: 'region/foreach',
+      params: { width: 1000, height: 580, label: 'ForEach cell' },
+      ports: [
+        { id: 'ch', name: 'ch', type: 'string', direction: 'input' },
+        { id: 'i',  name: 'i',  type: 'number', direction: 'input' },
+        { id: 'layer', name: 'layer', type: 'layer', direction: 'output' },
+      ],
+    },
+    style: { width: 1000, height: 580 },
+  };
+
+  // colIdx = i mod COLS; rowIdx = floor(i / COLS)
+  const colIdx = node('tdr_colIdx', 'math/mod',   { x:  40, y:  40 }, { b: COLS }, RID);
+  const rowDiv = node('tdr_rowDiv', 'math/div',   { x:  40, y: 100 }, { b: COLS }, RID);
+  const rowIdx = node('tdr_rowIdx', 'math/floor', { x: 200, y: 100 }, {}, RID);
+
+  // baseX = (colIdx − (COLS-1)/2) · COL_W
+  const COL_W = 38, ROW_H = 30;
+  const colOff = node('tdr_colOff', 'math/sub', { x: 200, y:  40 }, { b: (COLS - 1) / 2 }, RID);
+  const baseX  = node('tdr_baseX',  'math/mul', { x: 360, y:  40 }, { b: COL_W }, RID);
+  const rowOff = node('tdr_rowOff', 'math/sub', { x: 360, y: 100 }, { b: (ROWS - 1) / 2 }, RID);
+  const baseY  = node('tdr_baseY',  'math/mul', { x: 520, y: 100 }, { b: ROW_H }, RID);
+
+  // Noise inputs: scale baseX, baseY for noise space; add time·SPEED to baseY.
+  const nxS    = node('tdr_nxS',    'math/mul', { x:  40, y: 180 }, { b: 0.012 }, RID);
+  const nyS    = node('tdr_nyS',    'math/mul', { x:  40, y: 240 }, { b: 0.012 }, RID);
+  const tDrift = node('tdr_tDrift', 'math/mul', { x:  40, y: 300 }, { b: 0.6 },   RID);
+  const nyT    = node('tdr_nyT',    'math/add', { x: 200, y: 240 }, {},           RID);
+
+  const nx = node('tdr_nx', 'noise/perlin', { x: 360, y: 180 }, { seed: 1, octaves: 2, falloff: 0.5 }, RID);
+  const ny = node('tdr_ny', 'noise/perlin', { x: 360, y: 280 }, { seed: 7, octaves: 2, falloff: 0.5 }, RID);
+  // jitter = (noise − 0.5) · AMP
+  const nxSub  = node('tdr_nxSub', 'math/sub', { x: 520, y: 180 }, { b: 0.5 }, RID);
+  const nySub  = node('tdr_nySub', 'math/sub', { x: 520, y: 280 }, { b: 0.5 }, RID);
+  const xJit   = node('tdr_xJit',  'math/mul', { x: 680, y: 180 }, { b: 80 }, RID);
+  const yJit   = node('tdr_yJit',  'math/mul', { x: 680, y: 280 }, { b: 80 }, RID);
+  const xOut   = node('tdr_x',     'math/add', { x: 840, y:  60 }, {}, RID);
+  const yOut   = node('tdr_y',     'math/add', { x: 840, y: 140 }, {}, RID);
+
+  // hue from the noise itself — gives the field a colour wash.
+  const hueScale = node('tdr_hueScale', 'math/mul', { x: 520, y: 380 }, { b: 220 }, RID);
+  const hueBase  = node('tdr_hueBase',  'math/add', { x: 680, y: 380 }, { b: 200 }, RID);
+  const hsl   = node('tdr_hsl', 'color/color', { x: 840, y: 380 },
+                     { mode: 'hsl', h: 0, s: 70, l: 70, a: 255 }, RID);
+  const fill  = node('tdr_fill','style/fill',  { x: 1000, y: 380 }, {}, RID);
+  const tp    = node('tdr_tp',  'style/text-params', { x: 1160, y: 380 },
+                     { font: 'monospace', bold: true, italic: false,
+                       align: 'center', baseline: 'middle' }, RID);
+  const text  = node('tdr_text','draw/text',   { x: 1000, y:  80 },
+                     { string: '?', size: 20, align: 'center' }, RID);
+
+  const renderer = node('tdr_renderer', 'render/renderer', { x: 1380, y: 0 },
+                        { width: 600, height: 540 });
+
+  return {
+    nodes: [c, str, split, tile, range, time, bg, region,
+            colIdx, rowDiv, rowIdx, colOff, baseX, rowOff, baseY,
+            nxS, nyS, tDrift, nyT, nx, ny, nxSub, nySub, xJit, yJit, xOut, yOut,
+            hueScale, hueBase, hsl, fill, tp, text, renderer],
+    edges: [
+      edge('tdr_str',   'out', 'tdr_split', 'text'),
+      edge('tdr_split', 'out', 'tdr_tile',  'value'),
+      edge('tdr_tile',  'out', RID, 'ch'),
+      edge('tdr_range', 'out', RID, 'i'),
+
+      // colIdx, rowIdx
+      edge(RID, 'i',          'tdr_colIdx', 'a'),
+      edge(RID, 'i',          'tdr_rowDiv', 'a'),
+      edge('tdr_rowDiv','out','tdr_rowIdx', 'x'),
+
+      // baseX, baseY
+      edge('tdr_colIdx','out','tdr_colOff', 'a'),
+      edge('tdr_colOff','out','tdr_baseX',  'a'),
+      edge('tdr_rowIdx','out','tdr_rowOff', 'a'),
+      edge('tdr_rowOff','out','tdr_baseY',  'a'),
+
+      // noise inputs
+      edge('tdr_baseX', 'out', 'tdr_nxS', 'a'),
+      edge('tdr_baseY', 'out', 'tdr_nyS', 'a'),
+      edge('tdr_time',  't',   'tdr_tDrift', 'a'),
+      edge('tdr_nyS',   'out', 'tdr_nyT', 'a'),
+      edge('tdr_tDrift','out', 'tdr_nyT', 'b'),
+
+      // noise sample
+      edge('tdr_nxS', 'out', 'tdr_nx', 'x'),
+      edge('tdr_nyT', 'out', 'tdr_nx', 'y'),
+      edge('tdr_nxS', 'out', 'tdr_ny', 'x'),
+      edge('tdr_nyT', 'out', 'tdr_ny', 'y'),
+
+      // jitter
+      edge('tdr_nx',   'out', 'tdr_nxSub', 'a'),
+      edge('tdr_ny',   'out', 'tdr_nySub', 'a'),
+      edge('tdr_nxSub','out', 'tdr_xJit',  'a'),
+      edge('tdr_nySub','out', 'tdr_yJit',  'a'),
+
+      // x, y
+      edge('tdr_baseX','out', 'tdr_x', 'a'),
+      edge('tdr_xJit', 'out', 'tdr_x', 'b'),
+      edge('tdr_baseY','out', 'tdr_y', 'a'),
+      edge('tdr_yJit', 'out', 'tdr_y', 'b'),
+      edge('tdr_x',    'out', 'tdr_text', 'x'),
+      edge('tdr_y',    'out', 'tdr_text', 'y'),
+
+      // hue
+      edge('tdr_nx',      'out', 'tdr_hueScale', 'a'),
+      edge('tdr_hueScale','out', 'tdr_hueBase',  'a'),
+      edge('tdr_hueBase', 'out', 'tdr_hsl',      'h'),
+
+      // style + draw
+      edge('tdr_hsl', 'out',   'tdr_fill', 'color'),
+      edge('tdr_fill','style', 'tdr_tp',   'base'),
+      edge('tdr_tp',  'style', 'tdr_text', 'style'),
+      edge(RID, 'ch', 'tdr_text', 'string'),
+
+      edge('tdr_text', 'out', RID, 'layer'),
+      edge(RID, 'layer', 'tdr_renderer', 'layers'),
+      edge('tdr_bg',   'out', 'tdr_renderer', 'background'),
+    ],
+  };
+}
+
+// ─── Type / Rain ──────────────────────────────────────────────────────────
+// Matrix-style falling characters. Each column scrolls at a per-column
+// speed (noise-seeded so columns slip independently), with chars wrapping
+// at the bottom of the canvas. Brightness fades from head (bright) to tail
+// (dim) via a column-relative row factor.
+function buildTypeRain() {
+  const COLS = 18, ROWS = 22, CELLS = COLS * ROWS;
+  const CANVAS_H = 600;
+  const c = note('trn_c', { x: -540, y: 0 },
+    'Type rain\n\nA 18 × 22 grid where each column scrolls vertically at a unique noise-seeded speed. y = (rowIdx · ROW_H + time · speed[col]) mod CANVAS_H − CANVAS_H/2. Characters appear to fall like Matrix code.',
+    { w: 500, h: 240 });
+
+  const str   = node('trn_str',   'value/string',  { x: -540, y: 200 }, { value: 'FLORET01' });
+  const split = node('trn_split', 'string/split',  { x: -360, y: 160 });
+  const tile  = node('trn_tile',  'spread/repeat', { x: -180, y: 160 }, { count: CELLS });
+  const range = node('trn_range', 'spread/range',  { x: -180, y: 260 }, { count: CELLS });
+  const time  = node('trn_time',  'time/seconds',  { x: -540, y: 320 });
+  const bg    = node('trn_bg',    'color/color',   { x: -360, y: 340 },
+                     { mode: 'rgb', r: 4, g: 8, b: 6, a: 255 });
+
+  const RID = 'trn_region';
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: 120, y: 0 },
+    data: {
+      defType: 'region/foreach',
+      params: { width: 1100, height: 600, label: 'ForEach cell' },
+      ports: [
+        { id: 'ch', name: 'ch', type: 'string', direction: 'input' },
+        { id: 'i',  name: 'i',  type: 'number', direction: 'input' },
+        { id: 'layer', name: 'layer', type: 'layer', direction: 'output' },
+      ],
+    },
+    style: { width: 1100, height: 600 },
+  };
+
+  const COL_W = 26, ROW_H = 26;
+  // colIdx, rowIdx
+  const colIdx = node('trn_colIdx', 'math/mod',   { x:  40, y:  40 }, { b: COLS }, RID);
+  const rowDiv = node('trn_rowDiv', 'math/div',   { x:  40, y: 100 }, { b: COLS }, RID);
+  const rowIdx = node('trn_rowIdx', 'math/floor', { x: 200, y: 100 }, {}, RID);
+
+  // x = (colIdx − (COLS-1)/2) · COL_W
+  const colOff = node('trn_colOff', 'math/sub', { x: 200, y:  40 }, { b: (COLS - 1) / 2 }, RID);
+  const xOut   = node('trn_x',      'math/mul', { x: 360, y:  40 }, { b: COL_W }, RID);
+
+  // Per-column speed: noise(colIdx · 0.27, 0) · 90 + 60   (60..150 px/s)
+  const nArg   = node('trn_nArg',  'math/mul',     { x:  40, y: 180 }, { b: 0.27 }, RID);
+  const speedN = node('trn_speedN','noise/perlin', { x: 200, y: 180 }, { seed: 13 }, RID);
+  const speedM = node('trn_speedM','math/mul', { x: 360, y: 180 }, { b: 90 }, RID);
+  const speed  = node('trn_speed', 'math/add', { x: 520, y: 180 }, { b: 60 }, RID);
+
+  // scroll = time · speed
+  const scroll = node('trn_scroll','math/mul', { x: 680, y: 180 }, {}, RID);
+  // rowYRaw = rowIdx · ROW_H
+  const rowY   = node('trn_rowY',  'math/mul', { x: 360, y: 260 }, { b: ROW_H }, RID);
+  // ySum = rowY + scroll, then mod CANVAS_H, then − CANVAS_H/2
+  const ySum   = node('trn_ySum',  'math/add', { x: 840, y: 220 }, {}, RID);
+  const yWrap  = node('trn_yWrap', 'math/mod', { x: 1000, y: 220 }, { b: CANVAS_H }, RID);
+  const yOut   = node('trn_y',     'math/sub', { x: 1160, y: 220 }, { b: CANVAS_H / 2 }, RID);
+
+  // Brightness fade by yWrap / CANVAS_H (top = bright, bottom = dim).
+  const yNorm  = node('trn_yNorm', 'math/div', { x: 1000, y: 320 }, { b: CANVAS_H }, RID);
+  const dimSub = node('trn_dimSub','math/sub', { x: 1160, y: 320 }, { a: 1 }, RID); // 1 − yNorm
+  const lOut   = node('trn_lOut',  'math/mul', { x: 1320, y: 320 }, { b: 70 }, RID); // 0..70
+
+  const hsl   = node('trn_hsl', 'color/color', { x: 1480, y: 320 },
+                     { mode: 'hsl', h: 140, s: 90, l: 60, a: 255 }, RID);
+  const fill  = node('trn_fill','style/fill',  { x: 1640, y: 320 }, {}, RID);
+  const tp    = node('trn_tp',  'style/text-params', { x: 1800, y: 320 },
+                     { font: 'monospace', bold: true, italic: false,
+                       align: 'center', baseline: 'middle' }, RID);
+  const text  = node('trn_text','draw/text',   { x: 1320, y:  80 },
+                     { string: '?', size: 18, align: 'center' }, RID);
+
+  const renderer = node('trn_renderer', 'render/renderer', { x: 2000, y: 0 },
+                        { width: 520, height: 600 });
+
+  return {
+    nodes: [c, str, split, tile, range, time, bg, region,
+            colIdx, rowDiv, rowIdx, colOff, xOut,
+            nArg, speedN, speedM, speed, scroll, rowY, ySum, yWrap, yOut,
+            yNorm, dimSub, lOut, hsl, fill, tp, text, renderer],
+    edges: [
+      edge('trn_str',   'out', 'trn_split', 'text'),
+      edge('trn_split', 'out', 'trn_tile',  'value'),
+      edge('trn_tile',  'out', RID, 'ch'),
+      edge('trn_range', 'out', RID, 'i'),
+
+      // col/row
+      edge(RID, 'i',           'trn_colIdx', 'a'),
+      edge(RID, 'i',           'trn_rowDiv', 'a'),
+      edge('trn_rowDiv','out', 'trn_rowIdx', 'x'),
+
+      // x
+      edge('trn_colIdx','out', 'trn_colOff', 'a'),
+      edge('trn_colOff','out', 'trn_x',      'a'),
+      edge('trn_x',     'out', 'trn_text',   'x'),
+
+      // per-col speed
+      edge('trn_colIdx','out', 'trn_nArg',   'a'),
+      edge('trn_nArg',  'out', 'trn_speedN', 'x'),
+      edge('trn_speedN','out', 'trn_speedM', 'a'),
+      edge('trn_speedM','out', 'trn_speed',  'a'),
+
+      // scroll
+      edge('trn_time',  't',   'trn_scroll', 'a'),
+      edge('trn_speed', 'out', 'trn_scroll', 'b'),
+
+      // y
+      edge('trn_rowIdx','out', 'trn_rowY',  'a'),
+      edge('trn_rowY',  'out', 'trn_ySum',  'a'),
+      edge('trn_scroll','out', 'trn_ySum',  'b'),
+      edge('trn_ySum',  'out', 'trn_yWrap', 'a'),
+      edge('trn_yWrap', 'out', 'trn_y',     'a'),
+      edge('trn_y',     'out', 'trn_text',  'y'),
+
+      // brightness from y
+      edge('trn_yWrap', 'out', 'trn_yNorm', 'a'),
+      edge('trn_yNorm', 'out', 'trn_dimSub','b'),
+      edge('trn_dimSub','out', 'trn_lOut',  'a'),
+      edge('trn_lOut',  'out', 'trn_hsl',   'l'),
+
+      // style + draw
+      edge('trn_hsl',  'out',   'trn_fill', 'color'),
+      edge('trn_fill', 'style', 'trn_tp',   'base'),
+      edge('trn_tp',   'style', 'trn_text', 'style'),
+      edge(RID, 'ch', 'trn_text', 'string'),
+
+      edge('trn_text', 'out', RID, 'layer'),
+      edge(RID, 'layer', 'trn_renderer', 'layers'),
+      edge('trn_bg',   'out', 'trn_renderer', 'background'),
+    ],
+  };
+}
+
+// ─── Particles / Fountain ─────────────────────────────────────────────────
+// Simplest particle system — a single-point emitter, gravity from the
+// World, drag for terminal velocity, and a wrap-around boundary so the
+// canvas keeps cycling. The "hello, particles" patch.
+function buildParticlesFountain() {
+  const c = note(
+    'pf_c',
+    { x: -540, y: 0 },
+    'Particle fountain\n\nA Particles patch is four nodes at minimum: time/seconds → Emitter, an Emitter to spawn from, a World to integrate against, and a Render-As to draw the live buffer. Gravity lives on the World and applies to every Emitter wired to it.\n\nDrag tames terminal velocity; the wrap-bounds keep the canvas cycling.',
+    { w: 500, h: 260 },
+  );
+  const time  = node('pf_time',  'time/seconds', { x: -540, y: 240 });
+  const drag  = node('pf_drag',  'force/drag',   { x: -340, y: 240 }, { strength: 0.3 });
+  const bnds  = node('pf_bnds',  'particles/bounds', { x: -340, y: 320 },
+                     { size: { x: 520, y: 520 }, mode: 'wrap' });
+  const world = node('pf_world', 'physics/world',{ x: -140, y: 240 },
+                     { gravity: { x: 0, y: 380 }, drag: 0.05, integrator: 'euler' });
+  const emit  = node('pf_em',    'particles/emitter', { x:  140, y:  40 },
+                     { rate: 240, lifetime: 4, initialVel: { x: 0, y: -340 }, velSpread: 0.35,
+                       color: { r: 1, g: 0.85, b: 0.4, a: 1 }, size: 5,
+                       maxCount: 1500, overflowMode: 'drop', seed: 7 });
+  const render= node('pf_render','particles/render-as', { x: 440, y: 40 },
+                     { template: 'circle', useBufferColor: true });
+  const bg    = node('pf_bg',    'color/color',  { x: 140, y: 220 },
+                     { mode: 'rgb', r: 12, g: 12, b: 22, a: 255 });
+  const renderer = node('pf_renderer','render/renderer', { x: 720, y: 0 },
+                        { width: 540, height: 540 });
+  return {
+    nodes: [c, time, drag, bnds, world, emit, render, bg, renderer],
+    edges: [
+      edge('pf_drag', 'force',     'pf_world',   'forces'),
+      edge('pf_bnds', 'collider',  'pf_world',   'colliders'),
+      edge('pf_world','world',     'pf_em',      'world'),
+      edge('pf_time', 't',         'pf_em',      'time'),
+      edge('pf_em',   'particles', 'pf_render',  'particles'),
+      edge('pf_render','out',      'pf_renderer','layers'),
+      edge('pf_bg',   'out',       'pf_renderer','background'),
+    ],
+  };
+}
+
+// ─── Particles / Text Dust ────────────────────────────────────────────────
+// Showcases the text rasteriser in particles/from-layer — particles spawn
+// inside the actual glyph paths of "FLORET" (not the bounding box). Slow
+// upward drift + turbulence make the letters dissolve into smoke.
+function buildParticlesTextDust() {
+  const c = note(
+    'pt_c',
+    { x: -560, y: 0 },
+    'Text dust\n\nparticles/from-layer rasterises the wired text shape to an offscreen canvas and samples inside the alpha mask. The result is a Spread<vec2> of points INSIDE the glyphs — wire it into the Emitter\'s positions input and particles spawn from the letters themselves.\n\nTurbulence + slow upward drift turn the letters into smoke.',
+    { w: 500, h: 260 },
+  );
+  const time  = node('pt_time',  'time/seconds', { x: -540, y: 240 });
+  const str   = node('pt_str',   'value/string', { x: -540, y: 320 }, { value: 'FLORET' });
+  const fillC = node('pt_fillC', 'color/color',  { x: -340, y: 320 },
+                     { mode: 'rgb', r: 255, g: 255, b: 255, a: 255 });
+  const fill  = node('pt_fill',  'style/fill',   { x: -140, y: 320 });
+  const tp    = node('pt_tp',    'style/text-params', { x:  60, y: 320 },
+                     { font: 'sans-serif', bold: true, align: 'center', baseline: 'middle' });
+  const text  = node('pt_text',  'draw/text',    { x: 260, y: 320 },
+                     { x: 0, y: 0, size: 120, align: 'center' });
+  const fromL = node('pt_fromL', 'particles/from-layer', { x: 460, y: 320 },
+                     { mode: 'fill', density: 320 });
+
+  const turb  = node('pt_turb',  'force/turbulence', { x: -340, y: 460 },
+                     { scale: 0.015, speed: 0.3, strength: 30, seed: 3 });
+  const world = node('pt_world', 'physics/world', { x: -140, y: 460 },
+                     { gravity: { x: 0, y: -12 }, drag: 0.5, integrator: 'euler' });
+
+  const emit  = node('pt_em',    'particles/emitter', { x: 700, y: 100 },
+                     { rate: 600, lifetime: 5,
+                       initialVel: { x: 0, y: 0 }, velSpread: 0.04,
+                       color: { r: 1, g: 0.92, b: 0.78, a: 0.9 }, size: 1.8,
+                       maxCount: 3500, overflowMode: 'drop', seed: 11 });
+  const render= node('pt_render','particles/render-as', { x: 1000, y: 100 },
+                     { template: 'circle', useBufferColor: true });
+  const bg    = node('pt_bg',    'color/color', { x: 700, y: 240 },
+                     { mode: 'rgb', r: 8, g: 8, b: 16, a: 255 });
+  const renderer = node('pt_renderer','render/renderer', { x: 1240, y: 0 },
+                        { width: 560, height: 380 });
+  return {
+    nodes: [c, time, str, fillC, fill, tp, text, fromL, turb, world,
+            emit, render, bg, renderer],
+    edges: [
+      edge('pt_str','out','pt_text','string'),
+      edge('pt_fillC','out','pt_fill','color'),
+      edge('pt_fill','style','pt_tp','base'),
+      edge('pt_tp','style','pt_text','style'),
+      edge('pt_text','out','pt_fromL','layer'),
+      edge('pt_fromL','positions','pt_em','positions'),
+      edge('pt_turb','force','pt_world','forces'),
+      edge('pt_world','world','pt_em','world'),
+      edge('pt_time','t','pt_em','time'),
+      edge('pt_em','particles','pt_render','particles'),
+      edge('pt_render','out','pt_renderer','layers'),
+      edge('pt_bg','out','pt_renderer','background'),
+    ],
+  };
+}
+
+// ─── Particles / Attractor Field ──────────────────────────────────────────
+// A persistent cloud — turbulence keeps particles wandering, a central
+// attractor with visible falloff ring keeps them from leaving. The
+// attractor's `viz` output is wired into the renderer so you can SEE the
+// influence region.
+function buildParticlesAttractor() {
+  const c = note(
+    'pa_c',
+    { x: -540, y: 0 },
+    'Attractor field\n\nThree forces wired into the World: turbulence (perlin field), drag (terminal velocity), and an attractor pulling everything toward (0, 0).\n\nThe attractor\'s `viz` output draws its influence ring — toggle `showViz` to debug placement.',
+    { w: 500, h: 260 },
+  );
+  const time  = node('pa_time',  'time/seconds', { x: -540, y: 240 });
+  const turb  = node('pa_turb',  'force/turbulence', { x: -340, y: 200 },
+                     { scale: 0.005, speed: 0.4, strength: 140, seed: 5 });
+  const drag  = node('pa_drag',  'force/drag',   { x: -340, y: 280 }, { strength: 1.6 });
+  const attr  = node('pa_attr',  'force/attractor', { x: -340, y: 360 },
+                     { center: { x: 0, y: 0 }, strength: 240, radius: 360,
+                       falloff: 'linear', showViz: true });
+  const world = node('pa_world', 'physics/world',{ x: -140, y: 280 },
+                     { gravity: { x: 0, y: 0 }, drag: 0.0, integrator: 'euler' });
+  // Spawn positions: a noisy ring so the cloud has spread to start.
+  const ring  = node('pa_ring',  'spread/ring', { x: -140, y: 80 },
+                     { count: 60, radius: 180 });
+  const emit  = node('pa_em',    'particles/emitter', { x: 140, y: 80 },
+                     { rate: 600, lifetime: 6,
+                       initialVel: { x: 0, y: 0 }, velSpread: 0.0,
+                       color: { r: 0.6, g: 0.9, b: 1, a: 0.9 }, size: 2.5,
+                       maxCount: 2400, overflowMode: 'replace-oldest', seed: 13 });
+  const render= node('pa_render','particles/render-as', { x: 440, y: 80 },
+                     { template: 'circle', useBufferColor: true });
+  const bg    = node('pa_bg',    'color/color', { x: 140, y: 220 },
+                     { mode: 'rgb', r: 8, g: 10, b: 24, a: 255 });
+  const renderer = node('pa_renderer','render/renderer', { x: 720, y: 0 },
+                        { width: 540, height: 540 });
+  return {
+    nodes: [c, time, turb, drag, attr, world, ring, emit, render, bg, renderer],
+    edges: [
+      edge('pa_turb','force','pa_world','forces'),
+      edge('pa_drag','force','pa_world','forces'),
+      edge('pa_attr','force','pa_world','forces'),
+      // Also draw the attractor's viz ring straight into the renderer.
+      edge('pa_attr','viz','pa_renderer','layers'),
+      edge('pa_ring','out','pa_em','positions'),
+      edge('pa_world','world','pa_em','world'),
+      edge('pa_time','t','pa_em','time'),
+      edge('pa_em','particles','pa_render','particles'),
+      edge('pa_render','out','pa_renderer','layers'),
+      edge('pa_bg','out','pa_renderer','background'),
+    ],
+  };
+}
+
+// ─── Particles / Polygon Pinball ──────────────────────────────────────────
+// An octagonal "arena" built from a polygon shape doubles as a renderable
+// outline AND a collider — collider/from-layer over the same polygon
+// reflects particles off its edge normals (not centroid normals).
+function buildParticlesPinball() {
+  const c = note(
+    'pp_c',
+    { x: -540, y: 0 },
+    'Polygon pinball\n\ncollider/from-layer accepts any shape layer. Here a draw/polygon octagon is wired into BOTH the renderer (so you can see it) AND the collider (so it deflects particles). The collider precomputes edge normals at compile and uses them for proper bounce — not a centroid approximation.',
+    { w: 500, h: 280 },
+  );
+  const time = node('pp_time', 'time/seconds', { x: -540, y: 260 });
+  // Polygon arena — an octagon traced by spread/ring (8 Vec2 points on a
+  // circle), wired straight into draw/polygon's `points` spread.
+  const ring = node('pp_ring', 'spread/ring', { x: -540, y: 360 },
+                    { count: 8, radius: 220, phase: Math.PI / 2 });
+  const polyStroke = node('pp_polyC', 'color/color', { x: -340, y: 200 },
+                          { mode: 'rgb', r: 220, g: 220, b: 240, a: 255 });
+  const polyStr  = node('pp_polyS', 'style/stroke', { x: -140, y: 200 },
+                        { width: 2 });
+  const noFill   = node('pp_polyN', 'style/no-fill', { x:  60, y: 200 });
+  const poly = node('pp_poly', 'draw/polygon', { x: 260, y: 260 }, { closed: true });
+  const coll = node('pp_coll', 'collider/from-layer', { x: 480, y: 260 },
+                    { mode: 'bounce', restitution: 0.85, inverted: true });
+  const world= node('pp_world', 'physics/world', { x: 700, y: 260 },
+                    { gravity: { x: 0, y: 280 }, drag: 0.02, integrator: 'euler' });
+  // Per-spawn hue cycling — each ball gets a distinct colour, and its
+  // trail (useBufferColor=true) inherits the same hue.
+  const tHue = node('pp_tHue', 'math/mul', { x: 700, y: 200 }, { b: 540 });
+  const hsl  = node('pp_hsl',  'color/color', { x: 880, y: 200 },
+                    { mode: 'hsl', h: 0, s: 90, l: 60, a: 255 });
+  const emit = node('pp_em',    'particles/emitter', { x: 920, y: 40 },
+                    { rate: 60, lifetime: 12,
+                      initialVel: { x: 200, y: -200 }, velSpread: 0.6,
+                      size: 6,
+                      maxCount: 220, overflowMode: 'drop', seed: 19 });
+  const render = node('pp_render','particles/render-as', { x: 1180, y: 40 },
+                      { template: 'circle', useBufferColor: true });
+  const trailW = node('pp_trailW', 'style/stroke-weight', { x: 1000, y: 160 }, { w: 2.5 });
+  const trail  = node('pp_trail', 'particles/trail', { x: 1180, y: 160 },
+                      { segments: 18, fadeOut: true, useBufferColor: true });
+  const bg = node('pp_bg', 'color/color', { x: 920, y: 200 },
+                  { mode: 'rgb', r: 6, g: 10, b: 18, a: 255 });
+  const renderer = node('pp_renderer', 'render/renderer', { x: 1420, y: 0 },
+                        { width: 560, height: 560 });
+  return {
+    nodes: [c, time, ring, polyStroke, polyStr, noFill, poly, coll, world,
+            tHue, hsl, emit, render, trailW, trail, bg, renderer],
+    edges: [
+      // Build the octagon: 8 Vec2 points → polygon
+      edge('pp_ring','out','pp_poly','points'),
+      // Trail stroke weight chained into the trail's style input
+      edge('pp_trailW','style','pp_trail','style'),
+      // Per-spawn hue: time → mul → HSL → emitter.color
+      edge('pp_time','t','pp_tHue','a'),
+      edge('pp_tHue','out','pp_hsl','h'),
+      edge('pp_hsl','out','pp_em','color'),
+      // Outline style
+      edge('pp_polyC','out','pp_polyS','color'),
+      edge('pp_polyS','style','pp_polyN','base'),
+      edge('pp_polyN','style','pp_poly','style'),
+      // Polygon doubles as collider AND visible outline
+      edge('pp_poly','out','pp_coll','layer'),
+      edge('pp_poly','out','pp_renderer','layers'),
+      edge('pp_coll','collider','pp_world','colliders'),
+      edge('pp_world','world','pp_em','world'),
+      edge('pp_time','t','pp_em','time'),
+      edge('pp_em','particles','pp_trail','particles'),
+      edge('pp_em','particles','pp_render','particles'),
+      edge('pp_trail','out','pp_renderer','layers'),
+      edge('pp_render','out','pp_renderer','layers'),
+      edge('pp_bg','out','pp_renderer','background'),
+    ],
+  };
+}
+
+// ─── Particles / Galactic Spiral ──────────────────────────────────────────
+// Verlet integrator showcase — a vortex + central pull keeps particles in
+// long stable spirals that Euler would visibly drift on. Per-particle
+// trails carry the buffer colour so each filament keeps its hue.
+function buildParticlesSpiral() {
+  const c = note(
+    'ps_c',
+    { x: -540, y: 0 },
+    'Galactic spiral\n\nphysics/world.integrator is set to VERLET — two-pass integration that preserves long-running orbits much better than Euler. Vortex + central attractor produce stable spirals; trails (per-particle buffer colour, fadeOut) drag the colour through space.\n\nFlip the integrator to euler and watch the particles drift outward over time.',
+    { w: 500, h: 280 },
+  );
+  const time = node('ps_time', 'time/seconds', { x: -540, y: 280 });
+  const vortex = node('ps_vortex', 'force/vortex', { x: -340, y: 240 },
+                      { center: { x: 0, y: 0 }, axisStrength: 900, pull: 80,
+                        radius: 400, falloff: 'constant', showViz: false });
+  const attr = node('ps_attr', 'force/attractor', { x: -340, y: 340 },
+                    { center: { x: 0, y: 0 }, strength: 600, radius: 400,
+                      falloff: 'linear', showViz: false });
+  const world = node('ps_world', 'physics/world', { x: -140, y: 300 },
+                     { gravity: { x: 0, y: 0 }, drag: 0.02, integrator: 'verlet' });
+  // Per-spawn colour: time × 720 means hue cycles twice per second, so
+  // successive spawns ~16 ms apart get hues 11° apart — distinct enough
+  // that adjacent filaments read as different colours.
+  const tHue = node('ps_tHue', 'math/mul', { x: -540, y: 200 }, { b: 720 });
+  const hsl  = node('ps_hsl',  'color/color', { x: -340, y: 160 },
+                    { mode: 'hsl', h: 0, s: 90, l: 60, a: 255 });
+  // Spawn from a ring around the centre + velocity jitter so particles
+  // distribute across the spiral instead of stacking on one path.
+  const ring = node('ps_ring', 'spread/ring', { x: -140, y: 60 },
+                    { count: 80, radius: 220 });
+  const emit = node('ps_em',   'particles/emitter', { x: 140, y: 40 },
+                    { rate: 240, lifetime: 9,
+                      initialVel: { x: 0, y: 0 }, velSpread: 0.2,
+                      size: 2.0,
+                      maxCount: 1800, overflowMode: 'replace-oldest', seed: 23 });
+  const render = node('ps_render', 'particles/render-as', { x: 440, y: 40 },
+                      { template: 'circle', useBufferColor: true });
+  const trailW = node('ps_trailW', 'style/stroke-weight', { x: 280, y: 160 }, { w: 3 });
+  const trail  = node('ps_trail',  'particles/trail',     { x: 440, y: 160 },
+                      { segments: 32, fadeOut: true, useBufferColor: true,
+                        tapered: true, tailWidth: 0.05 });
+  const bg = node('ps_bg', 'color/color', { x: 140, y: 200 },
+                  { mode: 'rgb', r: 4, g: 4, b: 12, a: 255 });
+  const renderer = node('ps_renderer', 'render/renderer', { x: 720, y: 0 },
+                        { width: 600, height: 600 });
+  // Remove the unused ring placeholder above; just leave the other nodes.
+  return {
+    nodes: [c, time, vortex, attr, world, tHue, hsl, ring, emit, render, trailW, trail, bg, renderer],
+    edges: [
+      edge('ps_time','t','ps_tHue','a'),
+      edge('ps_tHue','out','ps_hsl','h'),
+      edge('ps_hsl','out','ps_em','color'),
+      edge('ps_vortex','force','ps_world','forces'),
+      edge('ps_attr','force','ps_world','forces'),
+      edge('ps_world','world','ps_em','world'),
+      edge('ps_ring','out','ps_em','positions'),
+      edge('ps_time','t','ps_em','time'),
+      edge('ps_em','particles','ps_trail','particles'),
+      edge('ps_em','particles','ps_render','particles'),
+      edge('ps_trailW','style','ps_trail','style'),
+      edge('ps_trail','out','ps_renderer','layers'),
+      edge('ps_render','out','ps_renderer','layers'),
+      edge('ps_bg','out','ps_renderer','background'),
+    ],
+  };
+}
+
 // ─── Tutorial 50: Final Showcase ───────────────────────────────────────────
 // Combine palette, grid, mouse, time, and noise into one composition.
 function buildTutShowcase() {
@@ -6498,6 +7494,8 @@ function buildTutShowcase() {
  */
 export const SAMPLE_CATEGORIES = [
   'Tutorial',
+  'Type',
+  'Particles',
   'Curves',
   'Fields',
   'Nature',
@@ -6816,7 +7814,7 @@ export const SAMPLES: Sample[] = [
     id: 'tut-44-accumulator',
     name: '44 · Accumulator (Fold)',
     category: 'Tutorial',
-    description: 'region/accumulator/number threads state across ForEach iterations — running sum of 1..10.',
+    description: 'AccRead / AccWrite split pair threads state across ForEach iterations — running sum of 1..10, all wires LTR.',
     build: () => spaced(buildTutAccumulator()),
   },
   {
@@ -6853,6 +7851,87 @@ export const SAMPLES: Sample[] = [
     category: 'Tutorial',
     description: 'sound/fft outputs a spectrum spread; 128 bars track mic input. Grant microphone permission.',
     build: () => spaced(buildTutFFT()),
+  },
+  {
+    id: 'type-kinetic-wave',
+    name: 'Kinetic Wave',
+    category: 'Type',
+    description:
+      'Cavalry-style traveling wave: rows × characters laid out with sin(time + charPhase − rowDelay). Per-word colour from a palette.',
+    build: () => spaced(buildKineticType()),
+  },
+  {
+    id: 'type-halo',
+    name: 'Halo',
+    category: 'Type',
+    description:
+      'Phrase laid around a circle; the whole ring spins. Hue cycles per character and per time for a chromatic chase.',
+    build: () => spaced(buildTypeHalo()),
+  },
+  {
+    id: 'type-spiral',
+    name: 'Spiral',
+    category: 'Type',
+    description:
+      'Logarithmic spiral of repeated characters — r grows with i, angle steps each char + drifts in time. Hue follows the spiral.',
+    build: () => spaced(buildTypeSpiral()),
+  },
+  {
+    id: 'type-drift',
+    name: 'Noise Drift',
+    category: 'Type',
+    description:
+      'Grid of repeated characters displaced by 2D Perlin noise. Two seeds drive x and y independently; hue follows the field.',
+    build: () => spaced(buildTypeDrift()),
+  },
+  {
+    id: 'type-rain',
+    name: 'Type Rain',
+    category: 'Type',
+    description:
+      'Matrix-style falling characters — every column scrolls at its own noise-seeded speed; brightness fades head → tail down the column.',
+    build: () => spaced(buildTypeRain()),
+  },
+  // ── Particles ──────────────────────────────────────────
+  {
+    id: 'particles-fountain',
+    name: 'Fountain',
+    category: 'Particles',
+    description:
+      'The "hello, particles" patch — point emitter, gravity from the world, drag for terminal velocity, wrap-bounds keep the canvas cycling.',
+    build: () => spaced(buildParticlesFountain()),
+  },
+  {
+    id: 'particles-text-dust',
+    name: 'Text Dust',
+    category: 'Particles',
+    description:
+      'particles/from-layer rasterises the wired text shape and samples inside the glyph alpha mask — particles spawn from the actual letterforms.',
+    build: () => spaced(buildParticlesTextDust()),
+  },
+  {
+    id: 'particles-attractor',
+    name: 'Attractor Field',
+    category: 'Particles',
+    description:
+      'Turbulence + drag + attractor wired into the world. The attractor\'s viz output draws its influence ring straight into the renderer.',
+    build: () => spaced(buildParticlesAttractor()),
+  },
+  {
+    id: 'particles-pinball',
+    name: 'Polygon Pinball',
+    category: 'Particles',
+    description:
+      'An octagonal arena wired into BOTH the renderer (visible) AND collider/from-layer (deflective). Edge-normal bounce, not centroid approximation.',
+    build: () => spaced(buildParticlesPinball()),
+  },
+  {
+    id: 'particles-spiral',
+    name: 'Galactic Spiral',
+    category: 'Particles',
+    description:
+      'Verlet integrator + vortex + central pull = long stable spirals. Per-particle trails carry the buffer colour so each filament keeps its hue.',
+    build: () => spaced(buildParticlesSpiral()),
   },
   {
     id: 'tut-50-showcase',

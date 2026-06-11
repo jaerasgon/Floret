@@ -31,13 +31,13 @@ export const textNode = registerNode({
   compute: (text, x, y, size, align, style) => {
     const sz = Math.max(1, size as number);
     const al = ((align as string) ?? 'left') as 'left' | 'center' | 'right';
-    // Build a text-tuned style: inherit fill/stroke from the wired
-    // style, override the font + alignment to honour the size/align
-    // params. Done by chaining a tiny override on top of the base.
+    // Inherit family/weight/italic/letterSpacing/lineHeight from the wired
+    // style chain (e.g. a TextParams node) — override fontSize from this
+    // node's own size param, and textAlign from the align param.
     const base: ResolvedStyle = resolveStyle(style as Style | null, DEFAULT_STYLE);
     const styled: ResolvedStyle = {
       ...base,
-      font: `${sz}px sans-serif`,
+      fontSize: sz,
       textAlign: al,
     };
     const node: Layer = {

@@ -8,6 +8,7 @@
 // Value
 import './value/number';
 import './value/string';
+import './value/string-ops';
 
 // Time
 import './time/time';
@@ -16,6 +17,7 @@ import './time/time';
 import './math/binops';
 import './math/unary';
 import './math/map';
+import './math/aggregate';
 
 // Logic
 import './logic/compare';
@@ -41,6 +43,11 @@ import './convert/convert';
 import './spread-ops/generators';
 import './spread-ops/vec2-generators';
 import './spread-ops/ops';
+import './spread-ops/slice-mutation';
+import './spread-ops/combine';
+import './spread-ops/filter';
+import './spread-ops/reorder';
+import './spread-ops/partition';
 import './spread-ops/gol-step';
 import './spread-ops/walk-step';
 import './spread-ops/elementary-ca';
@@ -89,6 +96,7 @@ import './pixel/sort';
 // Style
 import './style/fill';
 import './style/modes';
+import './style/text-params';
 
 // Render
 import './render/renderer';
@@ -144,6 +152,24 @@ import './sound/amplitude';
 import './sound/fft';
 import './sound/peak-detect';
 import './sound/midi';
+
+// Particles (Phase 1 + 2) — see CONCEPTS.md "Particle architecture"
+import './physics/world';
+import './particles/emitter';
+import './particles/from-layer';
+import './particles/render-as';
+import './particles/trail';
+import './particles/bounds';
+import './force/gravity';
+import './force/attractor';
+import './force/repulsor';
+import './force/drag';
+import './force/turbulence';
+import './force/wind';
+import './force/vortex';
+import './collider/circle';
+import './collider/rect';
+import './collider/from-layer';
 
 export { nodeRegistry, registerNode } from './registry';
 export type { NodeDef, PortSpec, NodeParamContext } from './types';

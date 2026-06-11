@@ -76,6 +76,15 @@ re-created when the node type changes or the editor node is deleted.
 | **Clamp** · `math/clamp` | `x, min, max: number` → `out: number` | `max(min, min(max, x))` |
 | **Mag** · `math/mag` | `x, y: number` → `out: number` | Distance from origin: `√(x² + y²)`. |
 | **Dist** · `math/dist` | `x1, y1, x2, y2: number` → `out: number` | Distance between (x1, y1) and (x2, y2). |
+| **Sum** · `math/sum` | `spread: number*` → `out: number` | Σ of a number spread. |
+| **Mean** · `math/mean` | `spread: number*` → `out: number` | Arithmetic mean. Empty spread → 0. |
+| **MinSpread** · `math/min-spread` | `spread: number*` → `out: number` | Minimum value across a spread. |
+| **MaxSpread** · `math/max-spread` | `spread: number*` → `out: number` | Maximum value across a spread. |
+| **Median** · `math/median` | `spread: number*` → `out: number` | Median (average of middles when even). |
+| **StdDev** · `math/stddev` | `spread: number*` → `out: number` | Population standard deviation. |
+| **Cumulative** · `math/cumulative` | `spread: number*` → `out: number*` | Running sum. Output length matches input. |
+| **Delta** · `math/delta` | `spread: number*` → `out: number*` | Pairwise differences. Length = N − 1. |
+| **Histogram** · `math/histogram` | `spread: number*, bins, min, max: number` → `out: number*` | Bin counts across `[min, max]`. |
 
 ## Logic
 
@@ -137,6 +146,31 @@ Seeded, deterministic noise and PRNGs. Wire `time/frame` into `seed` for per-fra
 | **Slice** · `spread/slice` | `spread: number*, start, end: number` → `spread: number*` | Elements `[start..end)`. Negative `end` means count-from-end. |
 | **Stack** · `spread/stack` | `a: number*, b: number*` → `spread: number*` | Concatenate two spreads: `a ++ b`. |
 | **Resample** · `spread/resample` | `spread: number*, count: number` → `spread: number*` | Resample a spread to length `count` (linear interpolation). |
+| **SineSpread** · `spread/sine` | `count, amplitude, frequency, phase, offset: number` → `spread: number*` | `count` samples of `offset + amplitude · sin(2π · frequency · i/count + phase)`. |
+| **GeometricSpread** · `spread/geometric` | `start, ratio, count: number` → `spread: number*` | Geometric progression `start, start·ratio, start·ratio², …`. |
+| **NoiseSpread** · `spread/noise` | `count, frequency, phase, seed: number` → `spread: number*` | 1-D Perlin noise sampled at regular intervals, in [0, 1]. |
+| **SetSlice** · `spread/set-slice` | `spread: T*, index: number, replacement: T*` → `out: T*` | Replace the element at `index` with the replacement spread (length grows when replacement > 1). |
+| **InsertSlice** · `spread/insert-slice` | `spread: T*, index: number, insertion: T*` → `out: T*` | Insert a spread at `index` without overwriting. |
+| **RemoveSlice** · `spread/remove-slice` | `spread: T*, index, count: number` → `out: T*` | Delete `count` elements starting at `index`. |
+| **Swap** · `spread/swap` | `spread: T*, i, j: number` → `out: T*` | Swap two elements by index. |
+| **Interleave** · `spread/interleave` | `a: T*, b: T*` → `out: T*` | `[a0,b0,a1,b1,…]`, truncated to the shorter input. |
+| **Uninterleave** · `spread/uninterleave` | `spread: T*` → `even, odd: T*` | Split into even- and odd-indexed elements. |
+| **CrossProduct** · `spread/cross` | `a: T*, b: U*` → `a: T*, b: U*` | Cartesian product as two parallel spreads of length `|a|·|b|`. |
+| **Cons** · `spread/cons` | `head: T, spread: T*` → `out: T*` | Prepend a single value. |
+| **Append** · `spread/append` | `spread: T*, tail: T` → `out: T*` | Append a single value. |
+| **Inject** · `spread/inject` | `spread: T*, marks: T*, count: number` → `out: T*` | Insert `marks` at `count` evenly-spaced positions in `spread`. |
+| **Sift** · `spread/sift` | `spread: T*, keep: boolean*` → `out: T*` | Keep elements where the parallel boolean is true. |
+| **Unique** · `spread/unique` | `spread: T*` → `out: T*` | Deduplicate, preserving first occurrence. |
+| **IndexOf** · `spread/index-of` | `spread: T*, value: T` → `index: number` | First index of `value`, or `-1` if missing. |
+| **CountWhere** · `spread/count-where` | `keep: boolean*` → `count: number` | Number of `true` entries. |
+| **IndicesByValue** · `spread/indices-by-value` | `spread: T*, value: T` → `out: number*` | All indices matching `value`. |
+| **Rotate** · `spread/rotate` | `spread: T*, shift: number` → `out: T*` | Cyclic shift by `shift` positions; negative shifts left. |
+| **Permute** · `spread/permute` | `spread: T*, indices: number*` → `out: T*` | Reorder by an index spread; out-of-range yields `null`. |
+| **SortByKey** · `spread/sort-by-key` | `spread: T*, keys: number*, descending: boolean` → `out: T*` | Sort the value spread by a parallel number spread. |
+| **Partition** · `spread/partition` | `spread: T*, bin: number` → `flat: T*, groupSize: number*` | Chunk into fixed-size groups; pair with `AtGroup` to access a single group. |
+| **AtGroup** · `spread/at-group` | `flat: T*, groupSize: number*, index: number` → `out: T*` | Pick the Nth group as a sub-spread; negative index counts from the end. |
+| **Pairwise** · `spread/pairwise` | `spread: T*` → `a: T*, b: T*` | Adjacent pairs: `(s[0..n-1], s[1..n])` for line-segment patterns. |
+| **Windows** · `spread/windows` | `spread: T*, size: number` → `flat: T*, windowSize: number*` | Sliding windows of length `size`, stride 1. |
 
 ## Vec2
 
@@ -355,8 +389,8 @@ Regions are scope containers. Inner nodes run with extra context (per-iteration 
 | **ForEach** · `region/foreach` | dynamic frame ports → dynamic frame ports | Iterate over a spread. Inner nodes run once per slot. |
 | **If** · `region/if` | `condition: boolean` + dynamic ports → dynamic ports | Run the inner scope when `condition` is true; otherwise emit empties / forward accumulator inits unchanged. |
 | **Cache** · `region/cache` | dynamic ports → dynamic ports | Memoise the inner scope by structural hash of its inputs. Re-runs only when inputs change. |
-| **Accumulator:number** · `region/accumulator/number` | outer `init: number`, inner `write: number` → inner `read: number`, outer `final: number` | State threaded between iterations. Init seeds the first iteration; `write` becomes the next iteration's `read`; the last `write` is exposed as `final` on the outside. |
-| **Accumulator:boolean** · `region/accumulator/boolean` | outer `init: boolean`, inner `write: boolean` → inner `read: boolean`, outer `final: boolean` | As above, for booleans. |
+| **Read** · `region/accumulator-read/{number,boolean,image}` | `init: T` → `read: T` | Per-iteration accumulator read. Paired by `slot` with a Write inside the same region. Drop on the LEFT of the inner scope so wires flow rightward into the loop body. |
+| **Write** · `region/accumulator-write/{number,boolean,image}` | `write: T` → `final: T` | Per-iteration accumulator write. The `write` input becomes the next iteration's `read`; the last value is exposed as `final` on the outer side once the loop completes. |
 
 ### Internal (hidden from palette)
 
@@ -364,3 +398,48 @@ These exist so the runtime has a node to schedule for each region frame port. Co
 
 - `region/splicer-in/{number,layer,boolean}` — receive an outer spread; deliver one slot per iteration.
 - `region/splicer-out/{number,layer,boolean}` — collect one value per iteration into an outer spread.
+
+
+## Particles
+
+Stateful particle simulation. See [CONCEPTS.md → Particle architecture](CONCEPTS.md) for the runtime contract; new port types `world`, `force`, `collider`, `particle` are introduced. Several pins are CONSTANT (`C` badge) — read once at compile.
+
+### Physics
+
+| Label · type | Inputs → Outputs | Description |
+|---|---|---|
+| **World** · `physics/world` | `gravity, drag, timeScale, bounds, forces*, colliders*, integrator (C)` → `world` | Physics world handle. Global forces / colliders wire here once, every Emitter sharing the world inherits them. |
+
+### Particles core
+
+| Label · type | Inputs → Outputs | Description |
+|---|---|---|
+| **Emitter** · `particles/emitter` | `world, positions*, rate, lifetime, initialVel, velSpread, color, size, maxCount (C), overflowMode (C), seed (C), localForces*` → `particles` | The system root. Owns a fixed-capacity ParticleBuffer; spawns at `rate`/sec from `positions`; integrates each tick. |
+| **FromLayer** · `particles/from-layer` | `layer, mode (C), density (C)` → `positions*` | Sample points on any shape (outline or fill). Wire into Emitter `positions` to emit from rects, ellipses, polygons, even text. |
+| **Render** · `particles/render-as` | `particles, template (C), templateLayer, style, tint, useBufferColor (C)` → `layer` | Convert a ParticleBuffer into a renderable Layer. Template is circle / rect / custom layer. |
+| **Trail** · `particles/trail` | `particles, segments (C), style, color, fadeOut` → `layer` | Render a polyline trail behind every alive particle. Ring buffer length fixed at compile. |
+| **Bounds** · `particles/bounds` | `size, center, mode (C), restitution` → `collider` | Wrap, kill, or bounce particles at the edges of a rectangle. Plug into a World's `colliders` input. |
+
+### Forces
+
+All output a `force` value plugged into a World's `forces` input (global) or an Emitter's `localForces` (per-emitter). Shaped forces also expose a `viz` layer output for debugging (toggle `showViz`).
+
+| Label · type | Inputs → Outputs | Description |
+|---|---|---|
+| **Gravity** · `force/gravity` | `direction, strength` → `force` | Uniform vector, scaled by particle mass. Use for *additional* gravity beyond what's on World. |
+| **Drag** · `force/drag` | `strength` → `force` | Velocity-proportional damping. Per-particle, composable. |
+| **Attractor** · `force/attractor` | `center, strength, radius, falloff (C), showViz (C)` → `force, viz` | Radial pull. Negative strength = repulsion. Falloff baked at compile. |
+| **Repulsor** · `force/repulsor` | `center, strength, radius, falloff (C), showViz (C)` → `force, viz` | Radial push. (Attractor with inverted semantics.) |
+| **Vortex** · `force/vortex` | `center, axisStrength, pull, radius, falloff (C), showViz (C)` → `force, viz` | Rotational + optional radial pull. Counter-clockwise when `axisStrength > 0`. |
+| **Wind** · `force/wind` | `direction, strength, noise, seed (C)` → `force` | Directional force with Perlin variation. Mass-independent. |
+| **Turbulence** · `force/turbulence` | `scale, speed, strength, seed (C)` → `force` | 2D Perlin noise field. Time drifts the field. ~5–10× the cost of gravity per particle. |
+
+### Colliders
+
+All output a `collider` value plugged into a World's `colliders` input. Modes: `bounce` (reflect velocity, scaled by `restitution`), `kill` (free the slot), `absorb` (zero velocity in place). `inverted` flips inside/outside.
+
+| Label · type | Inputs → Outputs | Description |
+|---|---|---|
+| **Circle** · `collider/circle` | `center, radius, mode (C), restitution, inverted (C)` → `collider` | Analytic circle. Cheap. |
+| **Rect** · `collider/rect` | `center, size, mode (C), restitution, inverted (C)` → `collider` | Axis-aligned rectangle. Cheap. |
+| **FromLayer** · `collider/from-layer` | `layer, mode (C), restitution, inverted (C)` → `collider` | Build a collider from any shape (rect / ellipse / triangle / polygon). Polygon bounce uses centroid-normal approximation. |

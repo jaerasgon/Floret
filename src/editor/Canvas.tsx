@@ -18,6 +18,7 @@ import { useEditor, getDefTypeFor, getRegionPortsFor, getParamsFor, getEdgesSnap
 import { arePortsCompatible, buildIsValidConnection, categoryColor, getUpstreamTypes, isMultiTargetPort, parseHandle } from './connection-rules';
 import { nodeRegistry } from '../nodes/registry';
 import { getResolvedInputs, getResolvedOutputs } from '../nodes/types';
+import { buildNodeIndex, absolutePosition, findAncestor, isDescendantOf } from './canvas-geometry';
 import { useOverlay, type ContextMenuItem, type PendingConnection } from './overlay-store';
 import { NodeSearch } from './NodeSearch';
 import { ContextMenu } from './ContextMenu';
@@ -178,15 +179,9 @@ function CanvasInner() {
       // parentId chain. A node is visible when its nearest subpatch
       // ancestor === currentViewId; root nodes (nearest = none) are
       // visible only when currentViewId === null.
-      const byId = new Map(nodes.map((n) => [n.id, n] as const));
-      function nearestSubpatchAncestor(id: string): string | null {
-        let cur: string | undefined = byId.get(id)?.parentId;
-        while (cur) {
-          if (subpatchIds.has(cur)) return cur;
-          cur = byId.get(cur)?.parentId;
-        }
-        return null;
-      }
+      const byId = buildNodeIndex(nodes);
+      const nearestSubpatchAncestor = (id: string): string | null =>
+        findAncestor(id, byId, (a) => subpatchIds.has(a.id))?.id ?? null;
       projected = nodes
         .filter((n) => {
           // The entered subpatch itself is visible.
@@ -213,15 +208,9 @@ function CanvasInner() {
         const d = nodeRegistry.get(n.data.defType);
         if (d?.regionKind === 'subpatch') subpatchIds.add(n.id);
       }
-      const byId = new Map(nodes.map((n) => [n.id, n] as const));
-      function insideSubpatch(id: string): boolean {
-        let cur: string | undefined = byId.get(id)?.parentId;
-        while (cur) {
-          if (subpatchIds.has(cur)) return true;
-          cur = byId.get(cur)?.parentId;
-        }
-        return false;
-      }
+      const byId = buildNodeIndex(nodes);
+      const insideSubpatch = (id: string): boolean =>
+        findAncestor(id, byId, (a) => subpatchIds.has(a.id)) !== null;
       projected = nodes.filter((n) => !insideSubpatch(n.id));
     }
     if (reparentMode) {
@@ -1318,24 +1307,7 @@ function findRegionContaining(
   flowPoint: { x: number; y: number },
   draggedId: string,
 ): RFNode | null {
-  // Build absolute positions for all nodes (account for parentId chains).
-  const byId = new Map<string, RFNode>();
-  for (const n of nodes) byId.set(n.id, n);
-  function absPos(id: string): { x: number; y: number } {
-    const n = byId.get(id);
-    if (!n) return { x: 0, y: 0 };
-    if (!n.parentId) return n.position;
-    const p = absPos(n.parentId);
-    return { x: n.position.x + p.x, y: n.position.y + p.y };
-  }
-  function isDescendantOf(id: string, ancestorId: string): boolean {
-    let cur: string | undefined = id;
-    while (cur) {
-      if (cur === ancestorId) return true;
-      cur = byId.get(cur)?.parentId;
-    }
-    return false;
-  }
+  const byId = buildNodeIndex(nodes);
 
   // Iterate in reverse so deeper / later-added regions win when stacked.
   let best: RFNode | null = null;
@@ -1346,11 +1318,11 @@ function findRegionContaining(
     const def = nodeRegistry.get(defType);
     if (!def?.regionKind) continue;
     if (n.id === draggedId) continue;
-    if (isDescendantOf(n.id, draggedId)) continue;
+    if (isDescendantOf(n.id, draggedId, byId)) continue;
 
     const w = (n.width ?? (n.style?.width as number | undefined)) ?? 480;
     const h = (n.height ?? (n.style?.height as number | undefined)) ?? 280;
-    const pos = absPos(n.id);
+    const pos = absolutePosition(n.id, byId);
     if (
       flowPoint.x >= pos.x && flowPoint.x <= pos.x + w &&
       flowPoint.y >= pos.y && flowPoint.y <= pos.y + h
@@ -1379,15 +1351,7 @@ function findRegionEdgeAtFlow(
   nodes: ReadonlyArray<RFNode>,
   flowPoint: { x: number; y: number },
 ): { regionId: string; edge: 'input' | 'output'; localY: number } | null {
-  const byId = new Map<string, RFNode>();
-  for (const n of nodes) byId.set(n.id, n);
-  function absPos(id: string): { x: number; y: number } {
-    const n = byId.get(id);
-    if (!n) return { x: 0, y: 0 };
-    if (!n.parentId) return n.position;
-    const p = absPos(n.parentId);
-    return { x: n.position.x + p.x, y: n.position.y + p.y };
-  }
+  const byId = buildNodeIndex(nodes);
 
   let best: { regionId: string; edge: 'input' | 'output'; localY: number } | null = null;
   let bestArea = Infinity;
@@ -1399,7 +1363,7 @@ function findRegionEdgeAtFlow(
 
     const w = (n.width ?? (n.style?.width as number | undefined)) ?? 480;
     const h = (n.height ?? (n.style?.height as number | undefined)) ?? 280;
-    const pos = absPos(n.id);
+    const pos = absolutePosition(n.id, byId);
 
     // Within vertical band of the region?
     if (flowPoint.y < pos.y - EDGE_BAND_PX || flowPoint.y > pos.y + h + EDGE_BAND_PX) continue;

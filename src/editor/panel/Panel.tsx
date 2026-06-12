@@ -152,12 +152,18 @@ export function Panel({ id, title, defaults, children, hideClose, headerActions 
             return ar.top - br.top;
           });
         let insertAt: number;
-        if (intent.kind === 'prepend') insertAt = 0;
-        else if (intent.kind === 'append') insertAt = siblings.length;
-        else {
+        // Check the panelId-bearing member first so TS narrows `intent`
+        // to it inside the block. (The other member's `kind` is itself a
+        // union — `'append' | 'prepend'` — so an `else` tail doesn't fully
+        // eliminate it, and `intent.panelId` wouldn't typecheck there.)
+        if (intent.kind === 'before' || intent.kind === 'after') {
           const idx = siblings.findIndex(s => s.id === intent.panelId);
           if (idx < 0) insertAt = siblings.length;
           else insertAt = intent.kind === 'before' ? idx : idx + 1;
+        } else if (intent.kind === 'prepend') {
+          insertAt = 0;
+        } else {
+          insertAt = siblings.length; // append
         }
         siblings.forEach((p, i) => p.setOrder(i < insertAt ? i : i + 1));
         return insertAt;

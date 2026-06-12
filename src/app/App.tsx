@@ -35,8 +35,11 @@ export function App() {
   // where the saved layout outlived the node).
   const reconcile = useDock((s) => s.reconcile);
   useEffect(() => {
-    const live = new Set(renderers.map((n) => n.id));
-    reconcile(live, 'pf_');
+    // Keep the four fixed panels + every live renderer's preview; evict
+    // any other panel (e.g. a preview whose node was deleted, or one left
+    // over from a previously-loaded patch).
+    const keep = new Set(['canvas', 'palette', 'help', 'library', ...renderers.map((n) => n.id)]);
+    reconcile(keep);
   }, [renderers, reconcile]);
 
   // The Library is toggled from the toolbar; drop it from the dock layout

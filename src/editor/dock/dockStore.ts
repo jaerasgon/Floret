@@ -4,6 +4,7 @@ import {
   type DockNode, type Side,
   group, split, collectPanels, findGroupOf, findGroup, removePanel as treeRemove,
   addTab, splitInsert, splitRoot, setSizes as treeSetSizes, setActive as treeSetActive,
+  maxIdSeq, ensureIdSeqAbove, sanitize,
 } from './dockTree';
 
 /**
@@ -54,14 +55,19 @@ interface DockState extends DockPersisted {
   hidePanel: (id: string) => void;
   setSizes: (splitId: string, sizes: number[]) => void;
   setActive: (groupId: string, active: number) => void;
-  /** Drop any preview-* panels whose node no longer exists. */
-  reconcile: (liveIds: ReadonlySet<string>, prunablePrefix: string) => void;
+  /** Drop any panel not in `keep` — used to evict preview panels whose
+   *  renderer node is gone. `keep` is the fixed panels + live renderer ids. */
+  reconcile: (keep: ReadonlySet<string>) => void;
 }
 
 function load(): DockPersisted {
   const p = loadJSON<Partial<DockPersisted>>(LS_KEY, {});
+  // Heal any tree corrupted by the earlier id-collision bug, then advance
+  // the id counter past every persisted id so new nodes can't collide.
+  const root = sanitize(p.root ?? null);
+  ensureIdSeqAbove(maxIdSeq(root));
   return {
-    root: p.root ?? null,
+    root,
     floating: Array.isArray(p.floating) ? p.floating : [],
     hidden: Array.isArray(p.hidden) ? p.hidden : [],
   };
@@ -171,9 +177,9 @@ export const useDock = create<DockState>((set, get) => {
       commit({ root: treeSetActive(s.root, groupId, active) });
     },
 
-    reconcile: (liveIds, prunablePrefix) => {
+    reconcile: (keep) => {
       const s = get();
-      const stale = [...everywhere(s)].filter((id) => id.startsWith(prunablePrefix) && !liveIds.has(id));
+      const stale = [...everywhere(s)].filter((id) => !keep.has(id));
       if (stale.length === 0) return;
       let root = s.root;
       for (const id of stale) root = treeRemove(root, id);

@@ -41,6 +41,57 @@ export function dockId(prefix = 'd'): string {
   return `${prefix}${_seq}`;
 }
 
+/** Highest numeric suffix used by any node id in the tree. */
+export function maxIdSeq(node: DockNode | null): number {
+  if (!node) return 0;
+  const n = (id: string) => { const m = /(\d+)$/.exec(id); return m && m[1] ? parseInt(m[1], 10) : 0; };
+  if (node.kind === 'group') return n(node.id);
+  return node.children.reduce((m, c) => Math.max(m, maxIdSeq(c)), n(node.id));
+}
+
+/** Bump the id counter so freshly-minted ids can't collide with the ones
+ *  already in a (loaded) tree — the counter resets to 0 on each page load,
+ *  so without this a new split could reuse a persisted id and the
+ *  find-by-id operations would corrupt the tree. */
+export function ensureIdSeqAbove(min: number): void {
+  if (_seq < min) _seq = min;
+}
+
+/**
+ * Repair a tree: drop duplicate panel occurrences (keep the first), prune
+ * emptied groups, collapse single-child splits, and regenerate any
+ * duplicate node ids. Defensive — heals trees corrupted by an earlier
+ * id-collision bug so they render cleanly instead of showing ghosts.
+ */
+export function sanitize(node: DockNode | null): DockNode | null {
+  if (!node) return null;
+  const seenPanels = new Set<string>();
+  const seenIds = new Set<string>();
+  function walk(n: DockNode): DockNode | null {
+    if (n.kind === 'group') {
+      const panels = n.panels.filter((p) => (seenPanels.has(p) ? false : (seenPanels.add(p), true)));
+      if (panels.length === 0) return null;
+      let id = n.id;
+      if (seenIds.has(id)) id = dockId('g');
+      seenIds.add(id);
+      return { ...n, id, panels, active: Math.min(n.active, panels.length - 1) };
+    }
+    const children: DockNode[] = [];
+    const sizes: number[] = [];
+    n.children.forEach((c, i) => {
+      const w = walk(c);
+      if (w) { children.push(w); sizes.push(n.sizes[i] ?? 1 / n.children.length); }
+    });
+    if (children.length === 0) return null;
+    if (children.length === 1) return children[0]!;
+    let id = n.id;
+    if (seenIds.has(id)) id = dockId('s');
+    seenIds.add(id);
+    return { ...n, id, children, sizes: normalise(sizes) };
+  }
+  return walk(node);
+}
+
 export function group(panels: string[], active = 0, id = dockId('g')): DockGroup {
   return { kind: 'group', id, panels, active: Math.max(0, Math.min(active, panels.length - 1)) };
 }

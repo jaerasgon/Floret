@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   group, split, collectPanels, findGroupOf, findGroup,
   removePanel, addTab, splitInsert, splitRoot, setSizes, setActive,
+  maxIdSeq, sanitize,
   type DockNode, type DockGroup,
 } from '../dockTree';
 
@@ -100,6 +101,35 @@ describe('dockTree — splitRoot', () => {
     expect(t.dir).toBe('col');
     expect(t.children).toHaveLength(2);
     expect(collectPanels(t.children[1]!)).toEqual(['X']); // bottom = after
+  });
+});
+
+describe('dockTree — sanitize / id seq', () => {
+  it('reports the highest id sequence', () => {
+    expect(maxIdSeq(tree())).toBe(0); // ids are non-numeric in this fixture (gA…)
+    expect(maxIdSeq(split('row', [group(['A'], 0, 'g1'), group(['B'], 0, 'g2')], [0.5, 0.5], 's7'))).toBe(7);
+  });
+
+  it('dedupes a panel that appears in two groups (keeps the first)', () => {
+    const corrupt = split('row', [group(['A'], 0, 'g1'), group(['A', 'B'], 0, 'g2')], [0.5, 0.5], 's1');
+    const fixed = sanitize(corrupt)!;
+    // 'A' kept only in the first group; second group keeps just 'B'.
+    expect(collectPanels(fixed)).toEqual(['A', 'B']);
+  });
+
+  it('regenerates duplicate node ids', () => {
+    // Two groups sharing id 'g1' — the second must be re-keyed.
+    const corrupt = split('row', [group(['A'], 0, 'g1'), group(['B'], 0, 'g1')], [0.5, 0.5], 's1');
+    const fixed = sanitize(corrupt) as Extract<DockNode, { kind: 'split' }>;
+    const ids = fixed.children.map((c) => c.id);
+    expect(new Set(ids).size).toBe(2); // no collision
+  });
+
+  it('collapses a split left with one child after dedup', () => {
+    const corrupt = split('row', [group(['A'], 0, 'g1'), group(['A'], 0, 'g2')], [0.5, 0.5], 's1');
+    const fixed = sanitize(corrupt)!;
+    expect(fixed.kind).toBe('group'); // second group emptied → split collapses
+    expect(collectPanels(fixed)).toEqual(['A']);
   });
 });
 

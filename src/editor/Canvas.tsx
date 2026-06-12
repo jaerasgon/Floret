@@ -396,8 +396,22 @@ function CanvasInner() {
   );
 
   // ─── Double-click empty pane: open node search ─────────────────────────────
-  const onPaneDoubleClick = useCallback(
+  // Listens for the browser's native `dblclick` on the wrapper instead of
+  // counting clicks via React Flow's `onPaneClick` + `e.detail`. With
+  // `selectionOnDrag`, RF doesn't attach a real click handler to the pane —
+  // it synthesises onPaneClick from pointerup, gated on internal flags
+  // (userSelectionRect / connectionInProgress / selectionInProgress). That
+  // path is brittle: pointerup's `detail` isn't a reliable click count
+  // (always 0 in Firefox), and a stuck connectionInProgress after a wire
+  // drag silently swallows every pane click until remount — the classic
+  // "double-click worked for a while, then stopped". Native dblclick can't
+  // be turned off by RF state, and `zoomOnDoubleClick={false}` keeps
+  // d3-zoom from consuming it. Gating on the target being the pane itself
+  // keeps node/edge double-clicks (which have their own handlers) out.
+  const onWrapperDoubleClick = useCallback(
     (e: React.MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.classList?.contains('react-flow__pane')) return;
       const flowPosition = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
       openSearch({
         screenPosition: { x: e.clientX, y: e.clientY },
@@ -987,6 +1001,7 @@ function CanvasInner() {
       onDragOver={onDragOver}
       onKeyDown={onKeyDown}
       onContextMenu={onContainerContextMenu}
+      onDoubleClick={onWrapperDoubleClick}
       tabIndex={0}
     >
       <ReactFlow
@@ -1002,12 +1017,12 @@ function CanvasInner() {
         onNodeDragStart={onNodeDragStart}
         onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragStop}
-        onPaneClick={(e) => {
-          // React Flow doesn't expose `onPaneDoubleClick`, so detect it via detail.
-          if (e.detail === 2) onPaneDoubleClick(e);
+        onPaneClick={() => {
           // Single click on empty canvas clears the Port Pill selection
           // alongside React Flow's own clear-of-node-selection behaviour.
-          else clearRegionPortSelection();
+          // (Double-click → node search lives on the wrapper's native
+          // dblclick — see onWrapperDoubleClick.)
+          clearRegionPortSelection();
         }}
         onPaneContextMenu={onPaneContextMenu}
         onNodeContextMenu={onNodeContextMenu}

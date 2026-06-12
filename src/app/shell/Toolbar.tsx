@@ -5,14 +5,14 @@ import {
   LayoutGrid,
   Waves,
   Sparkles,
+  Library as LibraryIcon,
 } from 'lucide-react';
 import { useAppStore } from '../store';
 import { usePrefs } from '../prefs';
 import { useEditor } from '../../editor/editor-state';
 import { autoLayoutPatch } from '../../editor/autoLayout';
+import { useLibraryUI } from '../libraryUI';
 import { FileMenu } from './FileMenu';
-import { SampleMenu } from './SampleMenu';
-import { LibraryMenu } from './LibraryMenu';
 import { SettingsModal } from './SettingsModal';
 import { Tooltip } from './Tooltip';
 
@@ -26,6 +26,8 @@ export function Toolbar() {
   const proMode = usePrefs((s) => s.proMode);
   const setPref = usePrefs((s) => s.set);
   const setNodes = useEditor((s) => s.setNodes);
+  const libraryVisible = useLibraryUI((s) => s.visible);
+  const toggleLibrary = useLibraryUI((s) => s.toggleVisible);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const tidy = () => {
@@ -54,9 +56,16 @@ export function Toolbar() {
       <span className="toolbar-divider" />
       <FileMenu />
       <span className="toolbar-divider" />
-      <SampleMenu />
-      <span className="toolbar-divider" />
-      <LibraryMenu />
+      <Tooltip label={libraryVisible ? 'Hide library' : 'Show library'}>
+        <button
+          className={`tb-icon-btn tb-toggle${libraryVisible ? ' active' : ''}`}
+          onClick={toggleLibrary}
+          aria-pressed={libraryVisible}
+          aria-label="Toggle library"
+        >
+          <LibraryIcon size={14} strokeWidth={1.6} />
+        </button>
+      </Tooltip>
       <div className="spacer" />
       <Tooltip label="Auto-arrange nodes" shortcut="⇧T">
         <button className="tb-icon-btn" onClick={tidy} aria-label="Tidy">

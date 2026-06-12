@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Canvas } from '../editor/Canvas';
 import { NodePalette } from '../editor/NodePalette';
 import { HelpPanel } from '../editor/HelpPanel';
+import { LibraryPanel } from '../editor/LibraryPanel';
 import { PreviewPanel } from '../preview/PreviewPanel';
 import { PortValueEditor } from '../editor/PortValueEditor';
 import { Toolbar } from './shell/Toolbar';
@@ -71,6 +72,7 @@ export function App() {
               into the rails (or to <body> when floating). */}
           <NodePalette />
           <HelpPanel />
+          <LibraryPanel />
           {renderers.map((node, idx) => {
             const label =
               (node.data.params as Record<string, unknown> | undefined)?.label as string | undefined;

@@ -2474,9 +2474,11 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   pointer-events: auto;
 }
 .subpatch-breadcrumb[data-empty='1'] {
-  /* At root view: keep the breadcrumb visible but very muted so users
-     learn it's there before they start nesting. */
-  opacity: 0.55;
+  /* At root view there's nothing to navigate. The breadcrumb's wrapper
+     is layout-collapsed (flex sibling of rails) so an absolute child
+     can bleed under a left-docked panel header — hide it entirely until
+     the user enters a subpatch. */
+  display: none;
 }
 .subpatch-crumb-row {
   display: inline-flex;
@@ -2858,10 +2860,13 @@ body[data-pro-mode='1'] .node[data-math='1'] {
 .library-block:first-of-type { border-top: none; }
 .library-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 4px;
   padding: 6px 10px 4px;
   background: rgba(255, 255, 255, 0.02);
+}
+.library-header .library-name {
+  flex: 1;
 }
 .library-name {
   font-family: var(--font-mono);
@@ -2908,6 +2913,73 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   align-self: center;
   margin-right: 6px;
 }
+/* Folder grouping + collapsible library headers + built-in tag. */
+.library-folder {
+  border-top: 1px solid var(--border);
+}
+.library-folder-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: var(--fg-1);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.library-folder-header:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.library-folder-name {
+  flex: 1;
+}
+.library-folder-body {
+  padding-left: 6px;
+}
+.library-header-toggle {
+  width: 100%;
+  border: none;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  color: var(--fg-1);
+  text-align: left;
+  font: inherit;
+}
+.library-header-toggle:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.library-disclosure {
+  display: inline-block;
+  width: 12px;
+  color: var(--fg-2);
+  font-size: 10px;
+}
+.library-count {
+  font-size: 10px;
+  color: var(--fg-2);
+  padding: 0 6px;
+}
+.library-tag {
+  font-size: 9px;
+  color: var(--fg-2);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 5px;
+  border-radius: 8px;
+  text-transform: none;
+  letter-spacing: 0.3px;
+  margin-left: 4px;
+}
+.library-block-nested {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+.library-block-nested:first-child { border-top: none; }
+
 .library-empty-inline {
   padding: 6px 12px;
   text-align: left;
@@ -2959,6 +3031,271 @@ body[data-pro-mode='1'] .node[data-math='1'] {
 .library-save-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* ─── Library panel (replaces dropdown) ─────────────────────────────── */
+.library-panel-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+.library-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  margin-right: 4px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.library-view-btn {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--fg-2);
+  width: 22px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std);
+}
+.library-view-btn:hover { background: var(--bg-2); color: var(--fg-1); }
+.library-view-btn.active {
+  background: rgba(124, 182, 255, 0.18);
+  color: rgba(180, 210, 255, 0.95);
+}
+.library-actions {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.library-action-btn {
+  appearance: none;
+  flex: 1;
+  background: rgba(124, 182, 255, 0.10);
+  border: 1px solid rgba(124, 182, 255, 0.24);
+  color: rgba(180, 210, 255, 0.95);
+  font: inherit;
+  font-size: 11px;
+  padding: 5px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-std);
+}
+.library-action-btn:hover:not(:disabled) {
+  background: rgba(124, 182, 255, 0.20);
+}
+.library-action-btn:disabled {
+  opacity: 0.40;
+  cursor: not-allowed;
+}
+.library-list-view {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.library-grid-view {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.library-crumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--fg-2);
+  padding: 2px 0 6px;
+  border-bottom: 1px solid var(--border);
+}
+.library-crumb-back {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--fg-2);
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 2px;
+}
+.library-crumb-back:hover { background: var(--bg-2); color: var(--fg-1); }
+.library-crumb-link {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 11px;
+  color: rgba(124, 182, 255, 0.85);
+  cursor: pointer;
+  padding: 0;
+}
+.library-crumb-link:hover { text-decoration: underline; }
+.library-crumb-current { color: var(--fg-1); }
+.library-crumb-sep { color: var(--fg-3); margin: 0 4px; }
+.library-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+.library-tile-wrap { position: relative; }
+.library-tile {
+  appearance: none;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--fg-1);
+  font: inherit;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  text-align: left;
+  width: 100%;
+  transition: background var(--dur-fast) var(--ease-std),
+              border-color var(--dur-fast) var(--ease-std);
+}
+.library-tile:hover {
+  border-color: rgba(124, 182, 255, 0.45);
+  background: var(--bg-2);
+}
+.library-tile-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 3px;
+  background:
+    linear-gradient(135deg,
+      hsl(var(--tile-hue, 200), 55%, 28%) 0%,
+      hsl(calc(var(--tile-hue, 200) + 40), 50%, 18%) 100%);
+  border: 1px solid hsl(var(--tile-hue, 200), 50%, 35%);
+  overflow: hidden;
+}
+.library-tile-icon-overlay {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  color: rgba(255, 255, 255, 0.55);
+  pointer-events: none;
+}
+.library-tile-folder .library-tile-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: linear-gradient(135deg, rgba(255, 200, 120, 0.18), rgba(255, 200, 120, 0.06));
+  border: 1px solid rgba(255, 200, 120, 0.30);
+  border-radius: 3px;
+  color: rgba(255, 220, 160, 0.85);
+}
+.library-tile-name {
+  font-size: 11px;
+  color: var(--fg-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.library-tile-meta {
+  font-size: 10px;
+  color: var(--fg-3);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.library-tile-desc {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.library-tag-inline {
+  margin-left: auto;
+  font-size: 9px;
+}
+.library-tile-action {
+  appearance: none;
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: rgba(20, 20, 20, 0.85);
+  color: var(--fg-2);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-std);
+}
+.library-tile-wrap:hover .library-tile-action { opacity: 1; }
+.library-tile-action:hover { background: var(--bg-2); color: var(--fg-1); }
+.library-column-view {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--border);
+}
+.library-column {
+  min-height: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+}
+.library-column:last-child { border-right: 0; }
+.library-column-row {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  color: var(--fg-1);
+  font: inherit;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--dur-fast) var(--ease-std);
+}
+.library-column-row:hover { background: var(--bg-2); }
+.library-column-row.active {
+  background: rgba(124, 182, 255, 0.18);
+  color: rgba(220, 235, 255, 0.98);
+}
+.library-column-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.library-column-chevron {
+  color: var(--fg-3);
+  font-size: 10px;
+}
+.library-column-hint {
+  padding: 12px 10px;
+  font-size: 11px;
+  color: var(--fg-3);
+  font-style: italic;
 }
 
 /* ─── Responsive breakpoints ─────────────────────────────────────────────

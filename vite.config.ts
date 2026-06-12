@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
@@ -8,6 +9,12 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
+  },
+  test: {
+    // Polyfill OffscreenCanvas (and createImageBitmap) so rasterising
+    // nodes run in the DOM-less Node test env instead of throwing. See
+    // src/test/setup-canvas.ts.
+    setupFiles: ['./src/test/setup-canvas.ts'],
   },
   server: {
     port: 5173,

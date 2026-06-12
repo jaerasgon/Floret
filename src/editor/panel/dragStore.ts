@@ -16,7 +16,7 @@
  * `useSyncExternalStore`.
  */
 export type DropTarget =
-  | { kind: 'edge'; side: 'left' | 'right' }
+  | { kind: 'edge'; side: 'left' | 'right' | 'bottom' }
   | { kind: 'panel'; panelId: string; position: 'above' | 'below' | 'left' | 'right' }
   | null;
 

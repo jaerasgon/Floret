@@ -94,6 +94,13 @@ function resolveTarget(x: number, y: number, draggingId: string): { target: Drop
       zone: { left: window.innerWidth - 220, top: 0, width: 220, height: window.innerHeight, label: 'Dock to right rail' },
     };
   }
+  if (y >= window.innerHeight - EDGE_W) {
+    const h = 220;
+    return {
+      target: { kind: 'edge', side: 'bottom' },
+      zone: { left: 0, top: window.innerHeight - h, width: window.innerWidth, height: h, label: 'Dock to bottom' },
+    };
+  }
   // 3. Free space — drop floats at the cursor.
   return { target: null, zone: null };
 }

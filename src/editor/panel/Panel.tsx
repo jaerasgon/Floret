@@ -36,7 +36,7 @@ export interface PanelProps {
 }
 
 export function Panel({ id, title, defaults, children, hideClose, headerActions }: PanelProps) {
-  const { state, setDock, setWidth, setHeight, setFloatPos, toggleCollapsed, setOrder, setColumn } =
+  const { state, setDock, setWidth, setHeight, resizeWidthBy, resizeHeightBy, setFloatPos, toggleCollapsed, setOrder, setColumn } =
     usePanelState(id, defaults);
 
   // Root element ref — used by the registry so the overlay can read
@@ -48,6 +48,10 @@ export function Panel({ id, title, defaults, children, hideClose, headerActions 
   // synchronously after each commit via useLayoutEffect.
   const [railEl, setRailEl] = useState<HTMLElement | null>(null);
   useLayoutEffect(() => {
+    if (state.dock === 'bottom') {
+      setRailEl(document.getElementById('panel-rail-bottom-0'));
+      return;
+    }
     if (state.dock !== 'left' && state.dock !== 'right') {
       setRailEl(null);
       return;
@@ -191,6 +195,23 @@ export function Panel({ id, title, defaults, children, hideClose, headerActions 
 
       const onDrop = (target: DropTarget, dropX: number, dropY: number) => {
         if (target?.kind === 'edge') {
+          if (target.side === 'bottom') {
+            // Bottom rail is a single horizontal strip (no columns) —
+            // append after the current rightmost bottom panel.
+            const oldSide: 'left' | 'right' | null =
+              state.dock === 'left' || state.dock === 'right' ? state.dock : null;
+            const maxOrder = listPanels()
+              .filter(p => p.dock === 'bottom' && p.id !== id)
+              .reduce((m, p) => Math.max(m, p.order), -1);
+            setDock('bottom');
+            setColumn(0);
+            setOrder(maxOrder + 1);
+            // A side panel's height (often 500–600) makes a clumsy strip —
+            // start bottom docks at a slimmer default the user can grow.
+            if (state.height > 320) setHeight(240);
+            if (oldSide) compactSide(oldSide);
+            return;
+          }
           // Edge of viewport → land at the *outermost* column on that side.
           const outerCol = listPanels()
             .filter(p => p.dock === target.side && p.id !== id)
@@ -283,7 +304,7 @@ export function Panel({ id, title, defaults, children, hideClose, headerActions 
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
     },
-    [id, title, state.width, setDock, setFloatPos, setOrder, setColumn],
+    [id, title, state.width, state.height, setDock, setFloatPos, setOrder, setColumn, setHeight],
   );
 
   // Hidden mode: render a small tab so the user can bring it back.
@@ -357,6 +378,7 @@ export function Panel({ id, title, defaults, children, hideClose, headerActions 
   // Docked: portal into the matching rail container (resolved above by
   // useLayoutEffect). The rail is a flex column, so panels stack
   // vertically within it; `style.order` decides vertical position.
+  const isBottom = state.dock === 'bottom';
   const dockedNode = (
     <div
       ref={rootRef as React.MutableRefObject<HTMLDivElement | null>}
@@ -364,13 +386,13 @@ export function Panel({ id, title, defaults, children, hideClose, headerActions 
       data-panel-id={id}
       data-collapsed={state.collapsed ? 1 : 0}
       style={{
-        // Width is shared across the whole rail — let the rail's
-        // intrinsic sizing decide, but allow each panel to express
-        // its preference via min-width so resize feels natural and
-        // the widest panel's preference wins. (state.width is the
-        // preferred width when this panel becomes the lone occupant
-        // or when floating.)
-        minWidth: state.collapsed ? undefined : state.width,
+        // Left/right rails share a width (each panel expresses a min-
+        // width preference); bottom panels get a fixed strip height so
+        // the top-edge resize maps directly to it and tall content
+        // scrolls inside rather than stretching the strip.
+        ...(isBottom
+          ? { height: state.collapsed ? undefined : state.height }
+          : { minWidth: state.collapsed ? undefined : state.width }),
         // Multiply by 1000 so fractional `state.order` values (used
         // briefly during a drop before normalisation completes)
         // survive integer truncation in CSS `order`.
@@ -381,10 +403,16 @@ export function Panel({ id, title, defaults, children, hideClose, headerActions 
       {!state.collapsed && (
         <>
           <div className="panel-body panel-body-docked">{children}</div>
-          <ResizeEdge
-            side={state.dock}
-            onResize={(dx) => setWidth(state.width + (state.dock === 'left' ? dx : -dx))}
-          />
+          {isBottom ? (
+            // Drag the top edge up to grow the strip (dragging up = -dy).
+            <ResizeEdge axis="vertical" onResize={(dy) => resizeHeightBy(-dy)} />
+          ) : (
+            <ResizeEdge
+              axis="horizontal"
+              side={state.dock === 'left' ? 'left' : 'right'}
+              onResize={(dx) => resizeWidthBy(state.dock === 'left' ? dx : -dx)}
+            />
+          )}
         </>
       )}
     </div>
@@ -396,18 +424,26 @@ export function Panel({ id, title, defaults, children, hideClose, headerActions 
 }
 
 /**
- * The vertical resize bar on the inward edge of a docked panel. Drag
- * left/right to widen or narrow.
+ * Resize bar on a docked panel's inward edge. Horizontal panels (left/
+ * right rails) get a vertical bar dragged left/right to change width;
+ * bottom-rail panels get a horizontal bar on their top edge dragged
+ * up/down to change height. `onResize` receives the cursor delta along
+ * the relevant axis.
  */
-function ResizeEdge({ side, onResize }: { side: 'left' | 'right'; onResize: (dx: number) => void }) {
+function ResizeEdge(
+  props:
+    | { axis: 'horizontal'; side: 'left' | 'right'; onResize: (dx: number) => void }
+    | { axis: 'vertical'; onResize: (dy: number) => void },
+) {
   const onMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return;
     e.preventDefault();
-    let lastX = e.clientX;
+    let last = props.axis === 'horizontal' ? e.clientX : e.clientY;
     const onMove = (ev: MouseEvent) => {
-      const dx = ev.clientX - lastX;
-      lastX = ev.clientX;
-      onResize(dx);
+      const cur = props.axis === 'horizontal' ? ev.clientX : ev.clientY;
+      const delta = cur - last;
+      last = cur;
+      props.onResize(delta);
     };
     const onUp = () => {
       document.removeEventListener('mousemove', onMove);
@@ -416,12 +452,10 @@ function ResizeEdge({ side, onResize }: { side: 'left' | 'right'; onResize: (dx:
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
   };
-  return (
-    <div
-      className={`panel-resize-edge panel-resize-edge-${side === 'left' ? 'right' : 'left'}`}
-      onMouseDown={onMouseDown}
-    />
-  );
+  const cls = props.axis === 'vertical'
+    ? 'panel-resize-edge panel-resize-edge-top'
+    : `panel-resize-edge panel-resize-edge-${props.side === 'left' ? 'right' : 'left'}`;
+  return <div className={cls} onMouseDown={onMouseDown} />;
 }
 
 /**

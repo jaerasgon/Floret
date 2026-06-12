@@ -44,30 +44,37 @@ export function App() {
       <Toolbar />
       <div className="split single-pane">
         <div className="pane editor-pane">
-          {/* Rail containers are flex columns; docked panels portal
-              themselves into the matching `panel-rail-<side>-<column>`
-              based on their `dock` + `column` state. Rails to the left
-              of the canvas use negative flex-order (closer-to-canvas
-              column = larger order → adjacent to canvas); rails to the
-              right use positive flex-order. Empty rails collapse via
-              CSS `:empty`, so we can over-provision a fixed count. */}
-          {Array.from({ length: 6 }).map((_, c) => (
-            <div
-              key={`l${c}`}
-              id={`panel-rail-left-${c}`}
-              className="panel-rail panel-rail-left"
-              style={{ order: -1 - c }}
-            />
-          ))}
-          <Canvas />
-          {Array.from({ length: 6 }).map((_, c) => (
-            <div
-              key={`r${c}`}
-              id={`panel-rail-right-${c}`}
-              className="panel-rail panel-rail-right"
-              style={{ order: 1 + c }}
-            />
-          ))}
+          {/* The editor pane is a column: a horizontal main row (left
+              rails | canvas | right rails) on top, and a full-width
+              bottom rail below it. Rail containers are flex containers;
+              docked panels portal themselves into the matching
+              `panel-rail-<side>-<column>` based on their `dock` state.
+              Left rails use negative flex-order (closer-to-canvas column
+              = larger order → adjacent to canvas); right rails use
+              positive flex-order. Empty rails collapse via CSS `:empty`,
+              so we can over-provision a fixed count. */}
+          <div className="editor-main-row">
+            {Array.from({ length: 6 }).map((_, c) => (
+              <div
+                key={`l${c}`}
+                id={`panel-rail-left-${c}`}
+                className="panel-rail panel-rail-left"
+                style={{ order: -1 - c }}
+              />
+            ))}
+            <Canvas />
+            {Array.from({ length: 6 }).map((_, c) => (
+              <div
+                key={`r${c}`}
+                id={`panel-rail-right-${c}`}
+                className="panel-rail panel-rail-right"
+                style={{ order: 1 + c }}
+              />
+            ))}
+          </div>
+          {/* Bottom rail — a single full-width horizontal strip; bottom-
+              docked panels sit side by side and share its height. */}
+          <div id="panel-rail-bottom-0" className="panel-rail panel-rail-bottom" />
           {/* Panels still live in the React tree here — they portal
               into the rails (or to <body> when floating). */}
           <NodePalette />

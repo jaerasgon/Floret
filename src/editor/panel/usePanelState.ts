@@ -7,7 +7,7 @@ import { loadJSON, saveJSON } from '../../persistence/local-store';
  * top of the editor; `hidden` removes it from the layout (the user
  * can bring it back from the View menu or via the tab handle).
  */
-export type PanelDock = 'left' | 'right' | 'float' | 'hidden';
+export type PanelDock = 'left' | 'right' | 'bottom' | 'float' | 'hidden';
 
 export interface PanelState {
   dock: PanelDock;
@@ -96,12 +96,24 @@ export function usePanelState(id: string, defaults: PanelStateDefaults) {
   const setColumn = useCallback((column: number) => {
     setState((s) => ({ ...s, column }));
   }, []);
+  // Incremental resize. A drag fires many small deltas while the handler
+  // closure holds a frozen `state` snapshot — applying each delta to the
+  // *current* value via the functional updater is the only way it
+  // accumulates correctly across the drag.
+  const resizeWidthBy = useCallback((dx: number) => {
+    setState((s) => ({ ...s, width: Math.max(160, Math.min(800, s.width + dx)) }));
+  }, []);
+  const resizeHeightBy = useCallback((dy: number) => {
+    setState((s) => ({ ...s, height: Math.max(140, Math.min(1200, s.height + dy)) }));
+  }, []);
 
   return {
     state,
     setDock,
     setWidth,
     setHeight,
+    resizeWidthBy,
+    resizeHeightBy,
     setFloatPos,
     setCollapsed,
     toggleCollapsed,

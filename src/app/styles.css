@@ -489,8 +489,18 @@ input:focus, select:focus, textarea:focus {
 .editor-pane {
   background: var(--bg-0);
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+}
+/* The horizontal band that holds the left rails, the canvas, and the
+   right rails. Fills the pane above the bottom rail. */
+.editor-main-row {
+  display: flex;
   flex-direction: row;
   align-items: stretch;
+  flex: 1 1 0;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -3994,6 +4004,24 @@ body[data-pro-mode='1'] .node[data-math='1'] {
 .panel-rail-right { order: 1; }
 .panel-rail:empty { display: none; }
 
+/* Bottom rail — a full-width horizontal strip below the main row.
+   Bottom-docked panels sit side by side (flex row) and share its height,
+   which derives from the tallest panel's min-height (mirroring how the
+   side rails derive width). */
+.panel-rail-bottom {
+  flex-direction: row;
+  width: 100%;
+  height: auto;
+  flex: 0 0 auto;
+  border-top: 1px solid var(--border);
+}
+.panel-dock-bottom {
+  /* Side-by-side in the strip: share width via flex, fill the rail height. */
+  flex: 1 1 0;
+  min-width: 120px;
+  height: 100%;
+}
+
 .panel {
   display: flex;
   flex-direction: column;
@@ -4203,6 +4231,16 @@ body:has(.dropzone-overlay) .panel-float {
 }
 .panel-resize-edge-right { right: -3px; }
 .panel-resize-edge-left  { left: -3px; }
+/* Top-edge handle for bottom-docked panels — horizontal bar, row-resize. */
+.panel-resize-edge-top {
+  top: -3px;
+  bottom: auto;
+  left: 0;
+  right: 0;
+  width: auto;
+  height: 6px;
+  cursor: ns-resize;
+}
 
 .panel-resize-grip {
   position: absolute;

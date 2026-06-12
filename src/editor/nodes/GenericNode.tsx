@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { useShallow } from 'zustand/react/shallow';
 import { nodeRegistry } from '../../nodes/registry';
@@ -62,14 +62,16 @@ export const GenericNode = memo(function GenericNode(props: NodeProps) {
   // Lives in component state (per-mount); resets if the patch reloads,
   // which is fine — the underlying value is preserved.
   const [expandedPorts, setExpandedPorts] = useState<Set<string>>(() => new Set());
-  const togglePort = (portName: string) => {
+  // Stable identity so it doesn't churn NodeRow's props every render
+  // (setExpandedPorts is itself stable, so an empty dep list is correct).
+  const togglePort = useCallback((portName: string) => {
     setExpandedPorts((prev) => {
       const next = new Set(prev);
       if (next.has(portName)) next.delete(portName);
       else next.add(portName);
       return next;
     });
-  };
+  }, []);
 
   if (!def) {
     return (
@@ -79,20 +81,24 @@ export const GenericNode = memo(function GenericNode(props: NodeProps) {
     );
   }
 
-  const resolvedInputs = getResolvedInputs(def, nodeData.params);
-  const portParamKeys = new Set(
-    resolvedInputs.map((p) => p.param).filter((x): x is string => !!x),
-  );
-
   // Left column items: pure params first (no pin), then input ports.
   type LeftItem =
     | { kind: 'param'; key: string; defaultVal: unknown }
     | { kind: 'input'; port: PortSpec };
-  const pureParamItems: LeftItem[] = Object.entries(def.defaultParams ?? {})
-    .filter(([key]) => !portParamKeys.has(key))
-    .map(([key, defaultVal]) => ({ kind: 'param' as const, key, defaultVal }));
-  const inputItems: LeftItem[] = resolvedInputs.map((port) => ({ kind: 'input' as const, port }));
-  const leftItems: LeftItem[] = [...pureParamItems, ...inputItems];
+  // Memoised on (def, params) so the per-row `left` objects keep a stable
+  // identity between renders — that's what lets `memo(NodeRow)` actually
+  // skip rows whose inputs didn't change.
+  const leftItems: LeftItem[] = useMemo(() => {
+    const resolvedInputs = getResolvedInputs(def, nodeData.params);
+    const portParamKeys = new Set(
+      resolvedInputs.map((p) => p.param).filter((x): x is string => !!x),
+    );
+    const pureParamItems: LeftItem[] = Object.entries(def.defaultParams ?? {})
+      .filter(([key]) => !portParamKeys.has(key))
+      .map(([key, defaultVal]) => ({ kind: 'param' as const, key, defaultVal }));
+    const inputItems: LeftItem[] = resolvedInputs.map((port) => ({ kind: 'input' as const, port }));
+    return [...pureParamItems, ...inputItems];
+  }, [def, nodeData.params]);
   // Resolve outputs *after* inputs so polymorphic nodes (Repeat, Sort, …)
   // can read upstream types and echo them on their output ports.
   //
@@ -202,7 +208,10 @@ interface NodeRowProps {
   togglePort: (portName: string) => void;
 }
 
-function NodeRow({
+// Memoised: with `togglePort` (useCallback) and `left`/`right` (memoised
+// arrays) now reference-stable, a re-render of the parent GenericNode only
+// re-renders the rows whose own props actually changed.
+const NodeRow = memo(function NodeRow({
   nodeId, left, right, rightIdx, connectedSet, portValues, paramOptions, dynamicOptions, expandedPorts, togglePort,
 }: NodeRowProps) {
   const leftIsInput = left?.kind === 'input';
@@ -308,7 +317,7 @@ function NodeRow({
       {right && <OutputPin nodeId={nodeId} port={right} portIdx={rightIdx} />}
     </div>
   );
-}
+});
 
 // ─── Inline editors ──────────────────────────────────────────────────────
 

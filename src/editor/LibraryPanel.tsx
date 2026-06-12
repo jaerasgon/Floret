@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { List, LayoutGrid, Columns3, ChevronLeft, Folder, FolderOpen, BookOpen, Download } from 'lucide-react';
 import { Panel } from './panel/Panel';
 import { useEditor } from './editor-state';
@@ -17,6 +17,9 @@ import {
 } from '../persistence/library';
 import { SaveToLibraryModal } from '../app/shell/SaveToLibraryModal';
 import { loadJSON, saveJSON } from '../persistence/local-store';
+import { deserializePatch } from '../persistence/serialize';
+import { renderPatchThumbnail } from '../persistence/thumbnail';
+import type { PatchFile } from '../persistence/schema';
 
 /**
  * Library panel — Finder-style browser for built-in samples + user
@@ -529,6 +532,7 @@ function GridView({ groups, onPatchClick, onSetError }: {
             name={p.name}
             description={p.description}
             hue={hueFor(currentLibrary.library.name)}
+            patch={p.patch}
             onClick={() => onPatchClick(currentLibrary.slug, p.id)}
           />
         ))}
@@ -644,9 +648,33 @@ function LibraryTile({ name, count, hue, builtIn, onClick, onDownload }: {
   );
 }
 
-function PatchTile({ name, description, hue, onClick }: {
-  name: string; description?: string; hue: number; onClick: () => void;
+function PatchTile({ name, description, hue, patch, onClick }: {
+  name: string; description?: string; hue: number; patch: PatchFile; onClick: () => void;
 }) {
+  // Lazily render a real thumbnail off the main path. The tinted gradient
+  // shows until (and if) the image resolves — audio-only patches and any
+  // that fail to render simply keep the placeholder.
+  const [thumb, setThumb] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    const run = () => {
+      try {
+        const { nodes, edges } = deserializePatch(patch);
+        void renderPatchThumbnail(nodes, edges).then((url) => {
+          if (!cancelled && url) setThumb(url);
+        });
+      } catch { /* keep placeholder */ }
+    };
+    // Defer to idle so a grid of tiles doesn't block paint.
+    const ric = (window as unknown as { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+    const id = ric ? ric(run) : window.setTimeout(run, 0);
+    return () => {
+      cancelled = true;
+      const cic = (window as unknown as { cancelIdleCallback?: (h: number) => void }).cancelIdleCallback;
+      if (ric && cic) cic(id as number); else window.clearTimeout(id as number);
+    };
+  }, [patch]);
+
   return (
     <button
       type="button"
@@ -655,7 +683,10 @@ function PatchTile({ name, description, hue, onClick }: {
       title={description ?? name}
       style={{ ['--tile-hue' as string]: `${hue}` }}
     >
-      <div className="library-tile-thumb" />
+      <div
+        className="library-tile-thumb"
+        style={thumb ? { backgroundImage: `url(${thumb})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+      />
       <div className="library-tile-name">{name}</div>
       {description && <div className="library-tile-meta library-tile-desc">{description}</div>}
     </button>

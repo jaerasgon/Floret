@@ -4,6 +4,7 @@ import { paramStore } from '../../runtime/param-store';
 import { autosave, clearAutosave, loadAutosave, loadPatch, savePatch } from '../../persistence/fs';
 import { deserializePatch, serializePatch } from '../../persistence/serialize';
 import { starterPatch } from '../../persistence/starter';
+import { buildShareUrl, consumeSharedPatch, hasSharedPatch } from '../../persistence/share';
 
 /**
  * Toolbar's File controls — New, Open, Save, Save As, plus a "live autosave"
@@ -44,19 +45,44 @@ export function FileMenu() {
   // via the toolbar still leaves the canvas blank — that's a different
   // intent than "I'm opening the app for the first time".
   useEffect(() => {
-    const restored = loadAutosave();
-    if (restored && restored.nodes.length > 0) {
-      const { nodes: ns, edges: es } = deserializePatch(restored);
-      // Hydrate ParamStore from saved params so IO-box reads land correctly.
-      paramStore.replaceAll(ns.map((n) => [n.id, n.data.params] as const));
-      loadEditor(ns, es);
-      if (restored.meta?.name) setFileName(restored.meta.name);
-      setStatus('autosave restored');
-    } else if (!restored) {
-      const { nodes: ns, edges: es } = starterPatch();
-      paramStore.replaceAll(ns.map((n) => [n.id, n.data.params] as const));
-      loadEditor(ns, es);
-      setStatus('starter patch');
+    // A shared link (#patch=…) wins over autosave — someone opened this URL
+    // specifically to see that patch.
+    if (hasSharedPatch()) {
+      void (async () => {
+        try {
+          const shared = await consumeSharedPatch();
+          if (shared) {
+            const { nodes: ns, edges: es } = deserializePatch(shared);
+            paramStore.replaceAll(ns.map((n) => [n.id, n.data.params] as const));
+            loadEditor(ns, es);
+            if (shared.meta?.name) setFileName(shared.meta.name);
+            setStatus('shared patch loaded');
+            return;
+          }
+        } catch (err) {
+          setStatus(`shared link failed: ${(err as Error).message.slice(0, 60)}`);
+        }
+        restoreAutosaveOrStarter();
+      })();
+      return;
+    }
+    restoreAutosaveOrStarter();
+
+    function restoreAutosaveOrStarter() {
+      const restored = loadAutosave();
+      if (restored && restored.nodes.length > 0) {
+        const { nodes: ns, edges: es } = deserializePatch(restored);
+        // Hydrate ParamStore from saved params so IO-box reads land correctly.
+        paramStore.replaceAll(ns.map((n) => [n.id, n.data.params] as const));
+        loadEditor(ns, es);
+        if (restored.meta?.name) setFileName(restored.meta.name);
+        setStatus('autosave restored');
+      } else if (!restored) {
+        const { nodes: ns, edges: es } = starterPatch();
+        paramStore.replaceAll(ns.map((n) => [n.id, n.data.params] as const));
+        loadEditor(ns, es);
+        setStatus('starter patch');
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -90,6 +116,26 @@ export function FileMenu() {
     await onSave();
   }, [handleRef, onSave]);
 
+  const onShare = useCallback(async () => {
+    if (nodes.length === 0) { setStatus('nothing to share — canvas is empty'); return; }
+    let url: string;
+    try {
+      url = await buildShareUrl(serializePatch({ nodes, edges, name: fileName }));
+    } catch (err) {
+      setStatus(`share failed: ${(err as Error).message.slice(0, 60)}`);
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setStatus(`link copied (${(url.length / 1024).toFixed(1)} KB)`);
+    } catch {
+      // Clipboard can be blocked (no focus, insecure context, permissions).
+      // Put the link in the address bar so it's always copyable by hand.
+      window.history.replaceState(null, '', url);
+      setStatus('link in address bar — copy it (clipboard blocked)');
+    }
+  }, [nodes, edges, fileName]);
+
   const onOpen = useCallback(async () => {
     try {
       const result = await loadPatch();
@@ -112,6 +158,7 @@ export function FileMenu() {
       <button onClick={onOpen} title="Open a .floret.json file">Open</button>
       <button onClick={onSave} title="Save (Ctrl+S)">Save</button>
       <button onClick={onSaveAs} title="Save under a new name">Save As</button>
+      <button onClick={onShare} title="Copy a shareable link to this patch">Share</button>
       <span style={{ color: 'var(--fg-2)', fontFamily: 'var(--font-mono)', marginLeft: 8 }}>
         {fileName}
       </span>

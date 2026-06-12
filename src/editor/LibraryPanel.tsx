@@ -121,7 +121,29 @@ function LibraryBody() {
   const [libraries, setLibraries] = useState(() => listLibraries());
   const [error, setError] = useState<string | null>(null);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [query, setQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Flat cross-library search. When the query is non-empty it replaces the
+  // active view with a single ranked result list — folder/library structure
+  // doesn't matter when you're hunting for a patch by name.
+  const searchResults = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return null;
+    const hits: { slug: string; libName: string; patchId: string; name: string; description?: string }[] = [];
+    for (const lib of libraries) {
+      for (const p of lib.library.patches) {
+        if (
+          p.name.toLowerCase().includes(q) ||
+          (p.description?.toLowerCase().includes(q) ?? false) ||
+          lib.library.name.toLowerCase().includes(q)
+        ) {
+          hits.push({ slug: lib.slug, libName: lib.library.name, patchId: p.id, name: p.name, description: p.description });
+        }
+      }
+    }
+    return hits;
+  }, [query, libraries]);
 
   // Group libraries by folder; `null`-folder libs render at root.
   const groups = useMemo(() => {
@@ -198,30 +220,50 @@ function LibraryBody() {
           onChange={onPickFile}
         />
       </div>
+      {libraries.length > 0 && (
+        <div className="library-search">
+          <input
+            className="library-search-input"
+            type="search"
+            placeholder="Search all patches…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          {query && (
+            <button className="library-search-clear" onClick={() => setQuery('')} title="Clear search">✕</button>
+          )}
+        </div>
+      )}
       {error && <div className="library-error">{error}</div>}
       {libraries.length === 0 && !error && (
         <div className="library-empty">No libraries yet. Use "Import…" above.</div>
       )}
-      {viewMode === 'list' && (
-        <ListView
-          groups={groups as ViewGroups}
-          onPatchClick={onPatchClick}
-          onSetError={setError}
-          refresh={refresh}
-        />
-      )}
-      {viewMode === 'grid' && (
-        <GridView
-          groups={groups as ViewGroups}
-          onPatchClick={onPatchClick}
-          onSetError={setError}
-        />
-      )}
-      {viewMode === 'column' && (
-        <ColumnView
-          groups={groups as ViewGroups}
-          onPatchClick={onPatchClick}
-        />
+      {searchResults !== null ? (
+        <SearchResults results={searchResults} onPatchClick={onPatchClick} />
+      ) : (
+        <>
+          {viewMode === 'list' && (
+            <ListView
+              groups={groups as ViewGroups}
+              onPatchClick={onPatchClick}
+              onSetError={setError}
+              refresh={refresh}
+            />
+          )}
+          {viewMode === 'grid' && (
+            <GridView
+              groups={groups as ViewGroups}
+              onPatchClick={onPatchClick}
+              onSetError={setError}
+            />
+          )}
+          {viewMode === 'column' && (
+            <ColumnView
+              groups={groups as ViewGroups}
+              onPatchClick={onPatchClick}
+            />
+          )}
+        </>
       )}
       {saveOpen && (
         <SaveToLibraryModal onClose={() => { setSaveOpen(false); refresh(); }} />
@@ -232,6 +274,41 @@ function LibraryBody() {
 
 type StoredLib = ReturnType<typeof listLibraries>[number];
 type ViewGroups = { folders: [string, StoredLib[]][]; root: StoredLib[] };
+
+interface SearchHit {
+  slug: string; libName: string; patchId: string; name: string; description?: string;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+ * Search results — flat cross-library list (replaces the active view
+ * while a query is present)
+ * ───────────────────────────────────────────────────────────────────── */
+
+function SearchResults({ results, onPatchClick }: {
+  results: SearchHit[];
+  onPatchClick: (slug: string, patchId: string) => void;
+}) {
+  if (results.length === 0) {
+    return <div className="library-empty">No patches match.</div>;
+  }
+  return (
+    <div className="library-search-results">
+      <div className="library-search-count">{results.length} {results.length === 1 ? 'result' : 'results'}</div>
+      {results.map((r) => (
+        <button
+          key={`${r.slug}::${r.patchId}`}
+          className="library-row library-patch"
+          onClick={() => onPatchClick(r.slug, r.patchId)}
+          title={r.description ?? ''}
+        >
+          <div className="sample-name">{r.name}</div>
+          <div className="library-search-lib">{r.libName}</div>
+          {r.description && <div className="sample-desc">{r.description}</div>}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 /* ─────────────────────────────────────────────────────────────────────
  * List view — collapsible tree

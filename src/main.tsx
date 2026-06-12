@@ -20,6 +20,13 @@ installAudioStartHook();
 import { installMidiHook } from './runtime/midi';
 installMidiHook();
 
+// Register the built-in sample libraries with the library system. Must
+// come AFTER ./nodes (samples reference NodeDefs by type) and BEFORE
+// the App mounts (so the Library dropdown sees them on first open).
+import { registerBuiltInLibraries } from './persistence/library';
+import { buildBuiltInSampleLibraries } from './persistence/samples';
+registerBuiltInLibraries(buildBuiltInSampleLibraries());
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />

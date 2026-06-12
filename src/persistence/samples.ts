@@ -1,5 +1,6 @@
 import type { FloretEdge, FloretNode } from '../editor/editor-state';
-import { migrateLegacyEdges } from './serialize';
+import { migrateLegacyEdges, serializePatch } from './serialize';
+import type { LibraryEntry, PatchLibrary } from './library';
 
 /**
  * Sample patches — under the regions-only model with frame-edge ports.
@@ -6120,3 +6121,56 @@ export const SAMPLES: Sample[] = [
     build: () => spaced(buildCSVBarChart()),
   },
 ];
+
+// ─── Built-in libraries (samples grouped by category) ─────────────────────
+//
+// Each `SAMPLE_CATEGORIES` entry becomes its own in-memory `PatchLibrary`
+// flagged `builtIn: true` and grouped under the "Samples" folder. The
+// LibraryMenu renders these alongside user-imported libraries; loading a
+// patch from a built-in library reuses the regular `loadLibraryPatch`
+// path because each sample's `build()` output is wrapped into a
+// `PatchFile` via `serializePatch`.
+//
+// Built once per session and cached — `SAMPLES` is hardcoded so there's
+// no reason to rebuild on every menu open.
+
+let BUILT_IN_LIBRARIES_CACHE: PatchLibrary[] | null = null;
+
+export function buildBuiltInSampleLibraries(): PatchLibrary[] {
+  if (BUILT_IN_LIBRARIES_CACHE) return BUILT_IN_LIBRARIES_CACHE;
+
+  const byCategory = new Map<string, LibraryEntry[]>();
+  for (const cat of SAMPLE_CATEGORIES) byCategory.set(cat, []);
+
+  for (const sample of SAMPLES) {
+    const cat = sample.category && SAMPLE_CATEGORIES.includes(sample.category as typeof SAMPLE_CATEGORIES[number])
+      ? sample.category
+      : null;
+    if (!cat) continue; // Skip uncategorised — none should exist after the trim.
+    const { nodes, edges } = sample.build();
+    const patchFile = serializePatch({ nodes, edges, name: sample.name });
+    byCategory.get(cat)!.push({
+      id: sample.id,
+      name: sample.name,
+      description: sample.description,
+      patch: patchFile,
+    });
+  }
+
+  const libs: PatchLibrary[] = [];
+  for (const cat of SAMPLE_CATEGORIES) {
+    const patches = byCategory.get(cat) ?? [];
+    if (patches.length === 0) continue;
+    libs.push({
+      kind: 'floret.library',
+      version: 1,
+      name: cat,
+      patches,
+      builtIn: true,
+      folder: 'Samples',
+    });
+  }
+
+  BUILT_IN_LIBRARIES_CACHE = libs;
+  return libs;
+}

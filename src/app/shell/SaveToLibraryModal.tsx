@@ -27,7 +27,12 @@ interface Props {
 export function SaveToLibraryModal({ onClose, onSaved }: Props) {
   const nodes = useEditor((s) => s.nodes);
   const edges = useEditor((s) => s.edges);
-  const [libraries, setLibraries] = useState(() => listLibraries());
+  // Built-in libraries are read-only — exclude them from the dropdown so
+  // users can't try to save into a target that would silently fail to
+  // persist.
+  const [libraries, setLibraries] = useState(() =>
+    listLibraries().filter((l) => !l.library.builtIn),
+  );
   // null = "new library" path. Otherwise the chosen library's slug.
   const [targetSlug, setTargetSlug] = useState<string | null>(
     libraries[0]?.slug ?? null,
@@ -58,7 +63,7 @@ export function SaveToLibraryModal({ onClose, onSaved }: Props) {
       if (isNew) {
         const created = createLibrary(newLibName);
         slug = created.slug;
-        setLibraries(listLibraries());
+        setLibraries(listLibraries().filter((l) => !l.library.builtIn));
       } else {
         slug = targetSlug!;
       }

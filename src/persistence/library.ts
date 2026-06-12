@@ -26,6 +26,15 @@ export interface PatchLibrary {
   description?: string;
   author?: string;
   patches: LibraryEntry[];
+  /** Built-in library — shipped with the app, lives in memory only.
+   *  Never written to localStorage. UI treats it as read-only: no delete
+   *  affordances, can't be a save target. Download stays so users can
+   *  fork the contents into their own library. */
+  builtIn?: boolean;
+  /** Optional folder grouping. Libraries that share a `folder` name
+   *  render under one collapsible header in the Library dropdown.
+   *  Libraries with no folder render at the root. */
+  folder?: string;
 }
 
 const LIBRARY_VERSION = 1;
@@ -99,13 +108,49 @@ export function parseLibrary(raw: unknown): { ok: true; library: PatchLibrary } 
   };
 }
 
+/**
+ * Built-in libraries — shipped with the app, derived from `SAMPLES` at
+ * startup. Stored in a module-level cache (NOT localStorage) so they
+ * always reflect the current code. Registered via
+ * `registerBuiltInLibraries` so this file stays free of circular imports
+ * with `samples.ts`.
+ */
+let BUILT_IN_LIBRARIES: StoredLibrary[] | null = null;
+const BUILT_IN_SLUG_PREFIX = 'builtin:';
+
+/** Register the built-in libraries — called once during app bootstrap
+ *  from a tiny init module (avoids circular import between library.ts
+ *  and samples.ts). Idempotent: a re-registration replaces. */
+export function registerBuiltInLibraries(libraries: PatchLibrary[]): void {
+  const importedAt = new Date(0).toISOString();
+  BUILT_IN_LIBRARIES = libraries.map((library) => ({
+    // Prefix the slug so it can never collide with a user-imported one
+    // and write guards can reject built-in slugs cheaply.
+    slug: `${BUILT_IN_SLUG_PREFIX}${slugify(library.name)}`,
+    library: { ...library, builtIn: true },
+    importedAt,
+  }));
+}
+
+function isBuiltInSlug(slug: string): boolean {
+  return slug.startsWith(BUILT_IN_SLUG_PREFIX);
+}
+
 export function listLibraries(): StoredLibrary[] {
-  return readStore();
+  return [...(BUILT_IN_LIBRARIES ?? []), ...readStore()];
 }
 
 export function importLibrary(library: PatchLibrary): StoredLibrary {
+  // Reject any payload that *claims* to be built-in — a user-imported
+  // JSON shouldn't be able to shadow real built-ins.
+  if (library.builtIn) {
+    throw new Error('Cannot import a library marked as built-in.');
+  }
   const all = readStore();
   const slug = slugify(library.name);
+  if (isBuiltInSlug(slug)) {
+    throw new Error(`Slug "${slug}" is reserved for built-in libraries.`);
+  }
   const entry: StoredLibrary = {
     slug,
     library,
@@ -119,15 +164,22 @@ export function importLibrary(library: PatchLibrary): StoredLibrary {
 }
 
 export function removeLibrary(slug: string): void {
+  if (isBuiltInSlug(slug)) {
+    throw new Error('Cannot remove a built-in library.');
+  }
   writeStore(readStore().filter((l) => l.slug !== slug));
 }
 
 /**
  * Resolve a (librarySlug, patchId) pair to editor-ready nodes+edges.
- * Throws if either is missing — caller handles UI fallback.
+ * Searches built-in libraries first, then localStorage. Throws if either
+ * is missing — caller handles UI fallback.
  */
 export function loadLibraryPatch(slug: string, patchId: string): { nodes: FloretNode[]; edges: FloretEdge[]; name: string } {
-  const lib = readStore().find((l) => l.slug === slug);
+  const builtIn = isBuiltInSlug(slug)
+    ? BUILT_IN_LIBRARIES?.find((l) => l.slug === slug)
+    : undefined;
+  const lib = builtIn ?? readStore().find((l) => l.slug === slug);
   if (!lib) throw new Error(`library not found: ${slug}`);
   const entry = lib.library.patches.find((p) => p.id === patchId);
   if (!entry) throw new Error(`patch not found in library: ${patchId}`);
@@ -157,6 +209,9 @@ export function createLibrary(name: string, description?: string): StoredLibrary
  * the updated stored library.
  */
 export function upsertLibraryEntry(slug: string, entry: LibraryEntry): StoredLibrary {
+  if (isBuiltInSlug(slug)) {
+    throw new Error('Cannot write into a built-in library.');
+  }
   const all = readStore();
   const idx = all.findIndex((l) => l.slug === slug);
   if (idx < 0) throw new Error(`library not found: ${slug}`);
@@ -176,6 +231,9 @@ export function upsertLibraryEntry(slug: string, entry: LibraryEntry): StoredLib
 
 /** Remove one patch entry from a library by id. Library stays in store even if empty. */
 export function removeLibraryEntry(slug: string, patchId: string): void {
+  if (isBuiltInSlug(slug)) {
+    throw new Error('Cannot remove a patch from a built-in library.');
+  }
   const all = readStore();
   const idx = all.findIndex((l) => l.slug === slug);
   if (idx < 0) return;
@@ -193,14 +251,27 @@ export function removeLibraryEntry(slug: string, patchId: string): void {
  */
 export function downloadLibrary(slug: string): void {
   if (typeof window === 'undefined') return;
-  const lib = readStore().find((l) => l.slug === slug);
+  const builtIn = isBuiltInSlug(slug)
+    ? BUILT_IN_LIBRARIES?.find((l) => l.slug === slug)
+    : undefined;
+  const lib = builtIn ?? readStore().find((l) => l.slug === slug);
   if (!lib) throw new Error(`library not found: ${slug}`);
-  const json = JSON.stringify(lib.library, null, 2);
+  // Strip the `builtIn` flag from the exported JSON so a re-import lands
+  // as a regular user library.
+  const exportable: PatchLibrary = { ...lib.library };
+  delete exportable.builtIn;
+  const json = JSON.stringify(exportable, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${lib.slug}.library.json`;
+  // Built-in slugs carry the `builtin:` prefix internally; strip it for
+  // the download filename so users get a clean name like
+  // `tutorial.library.json` rather than `builtin:tutorial.library.json`.
+  const filenameSlug = isBuiltInSlug(slug)
+    ? slug.slice(BUILT_IN_SLUG_PREFIX.length)
+    : slug;
+  a.download = `${filenameSlug}.library.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

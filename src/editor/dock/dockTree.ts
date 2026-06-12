@@ -222,9 +222,14 @@ export function splitRoot(root: DockNode, panelId: string, side: Exclude<Side, '
   const before = side === 'left' || side === 'top';
   const newGroup = group([panelId]);
   if (root.kind === 'split' && root.dir === dir) {
+    // Give the newcomer a sensible slice and shrink the existing children
+    // proportionally, so their relative sizes are preserved rather than
+    // reset to equal.
+    const f = 0.22;
+    const scaled = root.sizes.map((s) => s * (1 - f));
     const children = before ? [newGroup, ...root.children] : [...root.children, newGroup];
-    const share = 1 / children.length;
-    return { ...root, children, sizes: children.map(() => share) };
+    const sizes = before ? [f, ...scaled] : [...scaled, f];
+    return { ...root, children, sizes: normalise(sizes) };
   }
   return split(dir, before ? [newGroup, root] : [root, newGroup], [0.3, 0.7]);
 }

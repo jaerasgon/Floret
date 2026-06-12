@@ -624,16 +624,6 @@ input:focus, select:focus, textarea:focus {
   box-shadow: var(--shadow-3);
 }
 .dock-float { z-index: 1500; }
-/* The horizontal band that holds the left rails, the canvas, and the
-   right rails. Fills the pane above the bottom rail. */
-.editor-main-row {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  flex: 1 1 0;
-  min-height: 0;
-  overflow: hidden;
-}
 
 .preview-pane {
   background: #000;
@@ -4113,46 +4103,9 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   color: var(--fg-0);
 }
 
-/* ─── Panel framework ─────────────────────────────────────────────────────
-   Universal chrome for resizable / collapsible / detachable / dockable
-   panels (NodePalette, HelpPanel, …). Three render modes:
-     - panel-docked → portaled into a .panel-rail (flex column), stacks
-       vertically with its rail-mates; in-rail `style.order` sorts.
-     - panel-float  → portaled to <body>, absolute positioning.
-     - hidden       → not rendered (use the hidden tab to restore).
-   The rails themselves (.panel-rail-left / .panel-rail-right) are
-   children of .editor-pane and bookend the canvas in flex-row order. */
-.panel-rail {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: transparent;
-  flex: 0 0 auto;
-  /* Width derives from the widest docked panel — flex column items
-     default to stretch, so all panels share the rail width. */
-}
-.panel-rail-left { order: -1; }
-.panel-rail-right { order: 1; }
-.panel-rail:empty { display: none; }
-
-/* Bottom rail — a full-width horizontal strip below the main row.
-   Bottom-docked panels sit side by side (flex row) and share its height,
-   which derives from the tallest panel's min-height (mirroring how the
-   side rails derive width). */
-.panel-rail-bottom {
-  flex-direction: row;
-  width: 100%;
-  height: auto;
-  flex: 0 0 auto;
-  border-top: 1px solid var(--border);
-}
-.panel-dock-bottom {
-  /* Side-by-side in the strip: share width via flex, fill the rail height. */
-  flex: 1 1 0;
-  min-width: 120px;
-  height: 100%;
-}
-
+/* ─── Floating panel chrome ───────────────────────────────────────────────
+   The recursive dock (src/editor/dock) owns docked layout; only floating
+   panels still use this card chrome (header + body + resize grip). */
 .panel {
   display: flex;
   flex-direction: column;
@@ -4162,40 +4115,6 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   border: 1px solid var(--border);
   overflow: hidden;
   position: relative;
-}
-.panel-docked {
-  /* In a vertical-stack rail, each docked panel takes its own height
-     (auto) and shares the rail width. flex: 1 1 auto lets panels grow
-     to fill the rail; `min-height: 0` keeps overflow honest. */
-  flex: 1 1 0;
-  min-height: 80px;
-  width: 100%;
-}
-.panel-docked.panel-dock-left {
-  border-left: 0;
-}
-.panel-docked.panel-dock-right {
-  border-right: 0;
-}
-.panel-docked[data-collapsed='1'] {
-  width: 32px;
-  min-width: 32px;
-}
-.panel-docked[data-collapsed='1'] .panel-title {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-size: 9px;
-  letter-spacing: 0.3em;
-  padding: 8px 0;
-}
-.panel-docked[data-collapsed='1'] .panel-header {
-  flex-direction: column;
-  padding: 4px 2px;
-  border-bottom: 0;
-}
-.panel-docked[data-collapsed='1'] .panel-header-actions {
-  flex-direction: column;
-  gap: 2px;
 }
 
 .panel-float {
@@ -4245,65 +4164,6 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   opacity: 1;
 }
 
-/* ─── Drag-driven dock overlay ──────────────────────────────────────────────
-   Rendered to <body> while any panel is being dragged. The active drop
-   target is highlighted as a single rectangle — either a quadrant of a
-   sibling panel (above / below / left / right) or one of the viewport
-   rails. The dragged panel itself follows the cursor; this overlay
-   just paints where it will land. */
-.dropzone-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9000;
-}
-/* While a drag is active, dim the panel being moved so the drop zone
-   highlight peeks through underneath it. The dragged panel still
-   tracks the cursor; this just keeps the user's focus on the target. */
-body:has(.dropzone-overlay) .panel-float {
-  opacity: 0.85;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-}
-.dropzone-active {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: color-mix(in srgb, var(--accent) 28%, transparent);
-  border: 2px solid var(--accent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 50%, transparent);
-  transition:
-    left 90ms ease,
-    top 90ms ease,
-    width 90ms ease,
-    height 90ms ease;
-  border-radius: 4px;
-}
-.dropzone-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: var(--bg-1);
-  background: var(--accent);
-  border-radius: 4px;
-  padding: 6px 10px;
-}
-.dropzone-chip {
-  position: absolute;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  color: var(--fg-0);
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 4px 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
-  pointer-events: none;
-  white-space: nowrap;
-}
 .panel-header-actions {
   display: flex;
   gap: 2px;
@@ -4343,34 +4203,8 @@ body:has(.dropzone-overlay) .panel-float {
   display: flex;
   flex-direction: column;
 }
-.panel-body-docked, .panel-body-float {
+.panel-body-float {
   height: 100%;
-}
-
-.panel-resize-edge {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  cursor: ew-resize;
-  background: transparent;
-  transition: background var(--dur-fast) var(--ease-std);
-  z-index: 5;
-}
-.panel-resize-edge:hover {
-  background: var(--accent-dim);
-}
-.panel-resize-edge-right { right: -3px; }
-.panel-resize-edge-left  { left: -3px; }
-/* Top-edge handle for bottom-docked panels — horizontal bar, row-resize. */
-.panel-resize-edge-top {
-  top: -3px;
-  bottom: auto;
-  left: 0;
-  right: 0;
-  width: auto;
-  height: 6px;
-  cursor: ns-resize;
 }
 
 .panel-resize-grip {
@@ -4385,32 +4219,6 @@ body:has(.dropzone-overlay) .panel-float {
   opacity: 0.7;
 }
 .panel-resize-grip:hover { opacity: 1; }
-
-.panel-hidden-tab-wrap {
-  display: flex;
-  align-items: flex-start;
-  padding-top: 8px;
-  flex: 0 0 auto;
-  order: 1;
-}
-.panel-hidden-tab {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  background: var(--bg-1);
-  color: var(--fg-2);
-  border: 1px solid var(--border);
-  border-right: 0;
-  padding: 8px 4px;
-  font-size: 10px;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-radius: 4px 0 0 4px;
-}
-.panel-hidden-tab:hover {
-  color: var(--fg-0);
-  background: var(--bg-2);
-}
 
 /* Inner content for the palette body (now nested inside Panel chrome). */
 .palette-inner {

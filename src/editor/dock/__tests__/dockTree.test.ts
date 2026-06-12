@@ -102,6 +102,16 @@ describe('dockTree — splitRoot', () => {
     expect(t.children).toHaveLength(2);
     expect(collectPanels(t.children[1]!)).toEqual(['X']); // bottom = after
   });
+  it('preserves existing sibling proportions instead of equalizing', () => {
+    // Root row of A:B:C = 0.5 : 0.3 : 0.2. Dock X right with a 0.22 slice;
+    // the originals keep their 5:3:2 ratio within the remaining 0.78.
+    const root = split('row', [group(['A']), group(['B']), group(['C'])], [0.5, 0.3, 0.2]);
+    const t = splitRoot(root, 'X', 'right') as Extract<DockNode, { kind: 'split' }>;
+    expect(t.sizes).toHaveLength(4);
+    expect(t.sizes[3]).toBeCloseTo(0.22, 6);        // newcomer's slice
+    expect(t.sizes[0]! / t.sizes[1]!).toBeCloseTo(0.5 / 0.3, 6); // ratio kept
+    expect(t.sizes.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 6);
+  });
 });
 
 describe('dockTree — sanitize / id seq', () => {

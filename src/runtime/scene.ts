@@ -409,3 +409,71 @@ export function composeFontCss(s: ResolvedStyle): string {
   parts.push(s.fontFamily || 'sans-serif');
   return parts.join(' ');
 }
+
+/**
+ * Shared draw geometry — used by BOTH the Canvas2D renderer and the SVG
+ * emitter so raster and vector output frame identically. Keeping these
+ * here (rather than duplicated per backend) means the mode math and the
+ * spline control points can't silently drift apart.
+ */
+
+/**
+ * Resolve a mode-aware (x, y, w, h) into a uniform top-left + w/h.
+ *   - corner:  (x,y)=top-left, (w,h)=size
+ *   - center:  (x,y)=centre,   (w,h)=size
+ *   - corners: (x,y) and (w,h) are two opposite corners
+ *   - radius:  (x,y)=centre,   (w,h)=half-extents
+ */
+export function resolveBox(
+  x: number, y: number, w: number, h: number, mode: string,
+): [number, number, number, number] {
+  switch (mode) {
+    case 'center':  return [x - w / 2, y - h / 2, w, h];
+    case 'corners': return [Math.min(x, w), Math.min(y, h), Math.abs(w - x), Math.abs(h - y)];
+    case 'radius':  return [x - w, y - h, w * 2, h * 2];
+    case 'corner':
+    default:        return [x, y, w, h];
+  }
+}
+
+export interface BezierSegment {
+  c1x: number; c1y: number;   // first control point
+  c2x: number; c2y: number;   // second control point
+  ex: number; ey: number;     // segment end point
+}
+
+/**
+ * Convert a point list into uniform Catmull–Rom cubic-Bézier segments.
+ * Endpoints mirror their neighbour so the curve still passes through the
+ * first/last point. `tension` 1 reproduces the canonical uniform
+ * Catmull–Rom (a τ=0.5 Cardinal spline); the /6 normalises it.
+ *
+ * Returns one segment per (closed ? n : n-1) span — the caller emits the
+ * leading moveTo to `points[0]` itself, then feeds each segment to
+ * `bezierCurveTo` (canvas) or a path `C` command (SVG).
+ */
+export function catmullRomBeziers(
+  points: ReadonlyArray<{ x: number; y: number }>,
+  closed: boolean,
+  tension: number,
+): BezierSegment[] {
+  const n = points.length;
+  const k = tension / 6;
+  const segs: BezierSegment[] = [];
+  const last = closed ? n : n - 1;
+  for (let i = 0; i < last; i++) {
+    const p0 = points[closed ? (i - 1 + n) % n : Math.max(0, i - 1)]!;
+    const p1 = points[i]!;
+    const p2 = points[closed ? (i + 1) % n : i + 1]!;
+    const p3 = points[closed ? (i + 2) % n : Math.min(n - 1, i + 2)]!;
+    segs.push({
+      c1x: p1.x + (p2.x - p0.x) * k,
+      c1y: p1.y + (p2.y - p0.y) * k,
+      c2x: p2.x - (p3.x - p1.x) * k,
+      c2y: p2.y - (p3.y - p1.y) * k,
+      ex: p2.x,
+      ey: p2.y,
+    });
+  }
+  return segs;
+}

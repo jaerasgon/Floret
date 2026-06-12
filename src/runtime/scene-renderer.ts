@@ -13,7 +13,7 @@ import type {
   SceneNode,
   TextShape,
 } from './scene';
-import { composeFontCss } from './scene';
+import { composeFontCss, resolveBox, catmullRomBeziers } from './scene';
 
 /**
  * Walk a SceneNode tree, emit Canvas2D calls.
@@ -212,21 +212,10 @@ function renderPolygon(ctx: RenderingContext2D, pg: PolygonShape): void {
     //   c2 = p2 - (p3 - p1) * (tension / 6)
     // The /6 normalises so tension=1 reproduces the canonical
     // uniform Catmull–Rom (which is itself a tau=0.5 Cardinal spline).
-    const t = tension;
-    const k = t / 6;
     const pts = pg.points;
     ctx.moveTo(pts[0]!.x, pts[0]!.y);
-    const last = pg.closed ? n : n - 1;
-    for (let i = 0; i < last; i++) {
-      const p0 = pts[pg.closed ? (i - 1 + n) % n : Math.max(0, i - 1)]!;
-      const p1 = pts[i]!;
-      const p2 = pts[pg.closed ? (i + 1) % n : i + 1]!;
-      const p3 = pts[pg.closed ? (i + 2) % n : Math.min(n - 1, i + 2)]!;
-      const c1x = p1.x + (p2.x - p0.x) * k;
-      const c1y = p1.y + (p2.y - p0.y) * k;
-      const c2x = p2.x - (p3.x - p1.x) * k;
-      const c2y = p2.y - (p3.y - p1.y) * k;
-      ctx.bezierCurveTo(c1x, c1y, c2x, c2y, p2.x, p2.y);
+    for (const seg of catmullRomBeziers(pts, pg.closed, tension)) {
+      ctx.bezierCurveTo(seg.c1x, seg.c1y, seg.c2x, seg.c2y, seg.ex, seg.ey);
     }
   }
   if (pg.closed) {
@@ -435,24 +424,3 @@ function packRgba(r: number, g: number, b: number, a: number): string {
 }
 
 const TAU = Math.PI * 2;
-
-// ─── Helpers ────────────────────────────────────────────────────────────
-
-/**
- * Resolve the `(x, y, w, h)` quartet under a given rect/ellipse mode
- * into a uniform top-left `(x, y)` + width/height. Matches p5's mode
- * semantics:
- *   - corner: (x,y)=top-left, (w,h)=size
- *   - center: (x,y)=centre, (w,h)=size
- *   - corners: (x,y)=top-left, (w,h)=bottom-right corner
- *   - radius: (x,y)=centre, (w,h)=half-extents
- */
-function resolveBox(x: number, y: number, w: number, h: number, mode: string): [number, number, number, number] {
-  switch (mode) {
-    case 'center': return [x - w / 2, y - h / 2, w, h];
-    case 'corners': return [Math.min(x, w), Math.min(y, h), Math.abs(w - x), Math.abs(h - y)];
-    case 'radius': return [x - w, y - h, w * 2, h * 2];
-    case 'corner':
-    default: return [x, y, w, h];
-  }
-}

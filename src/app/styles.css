@@ -389,23 +389,11 @@ input:focus, select:focus, textarea:focus {
   margin: 4px 0;
 }
 
-.sample-menu {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  background: var(--bg-1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-3);
-  min-width: min(280px, calc(100vw - 16px));
-  max-width: calc(100vw - 16px);
-  max-height: min(320px, calc(100vh - 16px));
-  overflow-y: auto;
-  z-index: 1000;
-  animation: pop-in var(--dur-base) var(--ease-out);
-  transform-origin: top left;
-}
-.sample-menu-item {
+/* Library patch row — a clickable name/description button. (Formerly
+   `.sample-menu-item`, from the dropdown era; the dropdown container and
+   its tab chrome are gone, this row style is all that survived into the
+   panel.) */
+.library-row {
   display: block;
   width: 100%;
   text-align: left;
@@ -417,9 +405,9 @@ input:focus, select:focus, textarea:focus {
   cursor: pointer;
   transition: background var(--dur-fast) var(--ease-std);
 }
-.sample-menu-item:last-child { border-bottom: 0; }
-.sample-menu-item:hover { background: var(--bg-2); }
-.sample-menu-item:focus-visible {
+.library-row:last-child { border-bottom: 0; }
+.library-row:hover { background: var(--bg-2); }
+.library-row:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring) inset;
 }
@@ -2689,42 +2677,6 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   margin-top: 2px;
 }
 
-/* ─── Sample category tabs ─────────────────────────────────────────────── */
-.sample-menu-tabbed {
-  width: 360px;
-  max-width: 95vw;
-}
-.sample-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px;
-  padding: 4px 4px 0;
-  background: rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid var(--border);
-}
-.sample-tab {
-  appearance: none;
-  background: transparent;
-  border: none;
-  color: var(--fg-2);
-  font: inherit;
-  font-size: 11px;
-  letter-spacing: 0.3px;
-  padding: 5px 9px;
-  border-radius: 3px 3px 0 0;
-  cursor: pointer;
-  text-transform: uppercase;
-}
-.sample-tab:hover { color: var(--fg-0); background: rgba(255,255,255,0.04); }
-.sample-tab[data-active='1'] {
-  color: rgba(124, 182, 255, 0.95);
-  background: rgba(124, 182, 255, 0.12);
-}
-.sample-tab-body {
-  max-height: 60vh;
-  overflow: auto;
-}
-
 /* ─── Settings modal ───────────────────────────────────────────────────── */
 .toolbar-settings-btn {
   font-size: 14px;
@@ -2833,14 +2785,7 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   color: rgba(255, 200, 100, 0.95);
 }
 
-/* ─── Library menu ─────────────────────────────────────────────────────── */
-.library-menu .library-import {
-  border-bottom: 1px solid var(--border);
-  color: rgba(124, 182, 255, 0.95);
-}
-.library-menu .library-import .sample-name {
-  color: rgba(180, 210, 255, 0.95);
-}
+/* ─── Library panel ────────────────────────────────────────────────────── */
 .library-error {
   padding: 8px 10px;
   font-size: 11px;

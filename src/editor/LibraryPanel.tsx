@@ -327,7 +327,7 @@ function ListView({ groups, onPatchClick, onSetError, refresh }: {
         {!collapsed && entry.library.patches.map((p) => (
           <div key={p.id} className="library-patch-row">
             <button
-              className="sample-menu-item library-patch"
+              className="library-row library-patch"
               onClick={() => onPatchClick(entry.slug, p.id)}
               title={p.description ?? ''}
             >

@@ -144,6 +144,45 @@ function evalScope(
   }
 }
 
+/**
+ * Per-node error throttle. A node whose `compute` throws would do so on
+ * every one of the ~60 frames per second; without throttling the console
+ * floods and DevTools chokes. We warn once per (node, message) pair and
+ * stay quiet until the error clears or changes. The map is module-level
+ * and never explicitly cleared — node ids are stable and bounded by patch
+ * size, and a recompile produces a fresh graph whose still-broken nodes
+ * simply re-key on their first throw. Keeping a node out of the map after
+ * recovery lets it warn again if it breaks a second time.
+ */
+const lastComputeError = new Map<NodeId, string>();
+
+/**
+ * Run a node's `compute`, but never let a thrown exception halt the
+ * frame. A single bad node (divide-by-zero, out-of-range index, a typo
+ * in a future scripting node) used to abort the whole tick — every
+ * downstream node went un-evaluated and the canvas froze with no signal.
+ *
+ * On throw we emit the same empty-spread fallback the no-compute path
+ * uses (one empty spread per output port), warn at most once per distinct
+ * error, and return. The caller must NOT memoise this result, so the node
+ * retries next frame and recovers on its own once the cause is fixed.
+ */
+function safeCompute(node: RuntimeNode, inputs: PortValue[]): PortValue[] {
+  try {
+    const out = node.compute!(inputs);
+    // Recovered: allow a future failure to warn again.
+    if (lastComputeError.has(node.id)) lastComputeError.delete(node.id);
+    return out;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (lastComputeError.get(node.id) !== msg) {
+      lastComputeError.set(node.id, msg);
+      console.warn(`Node "${node.type}" (${node.id}) compute error — emitting empty output:`, err);
+    }
+    return Array.from({ length: node.outArity }, () => []);
+  }
+}
+
 function evalNode(
   graph: RuntimeGraph,
   node: RuntimeNode,
@@ -261,17 +300,23 @@ function evalNode(
       outputs.set(node.id, prev.outputs);
       return;
     }
-    const result = node.compute(inputs);
-    if (!memo) {
-      memo = new Map();
-      node.runtimeState.memo = memo;
+    const result = safeCompute(node, inputs);
+    // Don't memoise a thrown-and-recovered result: it returns the empty
+    // fallback, and caching that would pin the node to empty output until
+    // its inputs happen to change. Leaving it unmemoised means we retry
+    // next frame and recover the instant the underlying cause is fixed.
+    if (!lastComputeError.has(node.id)) {
+      if (!memo) {
+        memo = new Map();
+        node.runtimeState.memo = memo;
+      }
+      memo.set(iterIdx, { inputs, outputs: result });
     }
-    memo.set(iterIdx, { inputs, outputs: result });
     outputs.set(node.id, result);
     return;
   }
 
-  outputs.set(node.id, node.compute(inputs));
+  outputs.set(node.id, safeCompute(node, inputs));
 }
 
 /**

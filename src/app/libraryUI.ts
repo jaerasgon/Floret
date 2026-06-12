@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { getPanel } from '../editor/panel/panelRegistry';
+import { loadJSON, saveJSON } from '../persistence/local-store';
 
 /**
  * Library panel UI state — separate from `library.ts` (persistence) and
@@ -44,30 +45,20 @@ interface Persisted {
 }
 
 function load(): Persisted {
-  if (typeof window === 'undefined') {
-    return { visible: false, viewMode: 'list', selection: { folder: null, library: null } };
-  }
-  try {
-    const raw = window.localStorage.getItem(LS_KEY);
-    if (!raw) return { visible: false, viewMode: 'list', selection: { folder: null, library: null } };
-    const parsed = JSON.parse(raw) as Partial<Persisted>;
-    return {
-      visible: typeof parsed.visible === 'boolean' ? parsed.visible : false,
-      viewMode: parsed.viewMode === 'grid' || parsed.viewMode === 'column' || parsed.viewMode === 'list'
-        ? parsed.viewMode : 'list',
-      selection: {
-        folder: typeof parsed.selection?.folder === 'string' ? parsed.selection.folder : null,
-        library: typeof parsed.selection?.library === 'string' ? parsed.selection.library : null,
-      },
-    };
-  } catch {
-    return { visible: false, viewMode: 'list', selection: { folder: null, library: null } };
-  }
+  const parsed = loadJSON<Partial<Persisted>>(LS_KEY, {});
+  return {
+    visible: typeof parsed.visible === 'boolean' ? parsed.visible : false,
+    viewMode: parsed.viewMode === 'grid' || parsed.viewMode === 'column' || parsed.viewMode === 'list'
+      ? parsed.viewMode : 'list',
+    selection: {
+      folder: typeof parsed.selection?.folder === 'string' ? parsed.selection.folder : null,
+      library: typeof parsed.selection?.library === 'string' ? parsed.selection.library : null,
+    },
+  };
 }
 
 function persist(s: Persisted): void {
-  if (typeof window === 'undefined') return;
-  try { window.localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch { /* quota */ }
+  saveJSON(LS_KEY, s);
 }
 
 const initial = load();

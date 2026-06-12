@@ -16,6 +16,7 @@ import {
   removeLibraryEntry,
 } from '../persistence/library';
 import { SaveToLibraryModal } from '../app/shell/SaveToLibraryModal';
+import { loadJSON, saveJSON } from '../persistence/local-store';
 
 /**
  * Library panel — Finder-style browser for built-in samples + user
@@ -39,17 +40,11 @@ const FOLDER_COLLAPSE_LS_KEY = 'floret.libraryFolders.v1';
 const LIBRARY_COLLAPSE_LS_KEY = 'floret.libraryCollapse.v1';
 
 function readCollapseMap(key: string): Record<string, boolean> {
-  if (typeof window === 'undefined') return {};
-  try {
-    const raw = window.localStorage.getItem(key);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed as Record<string, boolean> : {};
-  } catch { return {}; }
+  const parsed = loadJSON<Record<string, boolean>>(key, {});
+  return parsed && typeof parsed === 'object' ? parsed : {};
 }
 function writeCollapseMap(key: string, map: Record<string, boolean>): void {
-  if (typeof window === 'undefined') return;
-  try { window.localStorage.setItem(key, JSON.stringify(map)); } catch { /* quota */ }
+  saveJSON(key, map);
 }
 
 /** Pick a hue from the library name so each library tile has a

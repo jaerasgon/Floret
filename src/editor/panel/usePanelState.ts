@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { loadJSON, saveJSON } from '../../persistence/local-store';
 
 /**
  * Where a panel lives in the shell. `left` / `right` dock it to the
@@ -43,38 +44,21 @@ export interface PanelStateDefaults {
 const LS_PREFIX = 'floret.panel.';
 
 function load(id: string, defaults: PanelStateDefaults): PanelState {
-  try {
-    const raw = localStorage.getItem(LS_PREFIX + id);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Partial<PanelState>;
-      return {
-        dock: parsed.dock ?? defaults.dock,
-        width: parsed.width ?? defaults.width,
-        height: parsed.height ?? defaults.height,
-        floatX: parsed.floatX ?? defaults.floatX,
-        floatY: parsed.floatY ?? defaults.floatY,
-        collapsed: parsed.collapsed ?? defaults.collapsed ?? false,
-        order: parsed.order ?? defaults.order ?? 0,
-        column: parsed.column ?? defaults.column ?? 0,
-      };
-    }
-  } catch { /* ignore */ }
+  const parsed = loadJSON<Partial<PanelState>>(LS_PREFIX + id, {});
   return {
-    dock: defaults.dock,
-    width: defaults.width,
-    height: defaults.height,
-    floatX: defaults.floatX,
-    floatY: defaults.floatY,
-    collapsed: defaults.collapsed ?? false,
-    order: defaults.order ?? 0,
-    column: defaults.column ?? 0,
+    dock: parsed.dock ?? defaults.dock,
+    width: parsed.width ?? defaults.width,
+    height: parsed.height ?? defaults.height,
+    floatX: parsed.floatX ?? defaults.floatX,
+    floatY: parsed.floatY ?? defaults.floatY,
+    collapsed: parsed.collapsed ?? defaults.collapsed ?? false,
+    order: parsed.order ?? defaults.order ?? 0,
+    column: parsed.column ?? defaults.column ?? 0,
   };
 }
 
 function save(id: string, state: PanelState): void {
-  try {
-    localStorage.setItem(LS_PREFIX + id, JSON.stringify(state));
-  } catch { /* ignore */ }
+  saveJSON(LS_PREFIX + id, state);
 }
 
 /**

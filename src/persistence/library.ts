@@ -1,6 +1,7 @@
 import type { FloretEdge, FloretNode } from '../editor/editor-state';
 import type { PatchFile } from './schema';
 import { deserializePatch } from './serialize';
+import { loadJSON, saveJSON } from './local-store';
 
 /**
  * Patch Library — a JSON bundle holding multiple full patches plus a
@@ -56,25 +57,12 @@ function slugify(s: string): string {
 }
 
 function readStore(): StoredLibrary[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = window.localStorage.getItem(LS_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed as StoredLibrary[];
-  } catch {
-    return [];
-  }
+  const parsed = loadJSON<StoredLibrary[]>(LS_KEY, []);
+  return Array.isArray(parsed) ? parsed : [];
 }
 
 function writeStore(libs: StoredLibrary[]): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(LS_KEY, JSON.stringify(libs));
-  } catch {
-    // ignore quota errors — library data is recoverable from the source JSON.
-  }
+  saveJSON(LS_KEY, libs);
 }
 
 /**

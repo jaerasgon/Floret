@@ -11,6 +11,7 @@
 
 import { isPatchFile, type PatchFile } from './schema';
 import { migratePatch } from './migrate';
+import { loadJSON, saveJSON, removeKey } from './local-store';
 
 declare global {
   interface Window {
@@ -144,29 +145,15 @@ function suggestedFilename(patch: PatchFile): string {
 const AUTOSAVE_KEY = 'floret:autosave';
 
 export function autosave(patch: PatchFile): void {
-  try {
-    localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(patch));
-  } catch {
-    // Quota or disabled — silently drop. Autosave is best-effort.
-  }
+  saveJSON(AUTOSAVE_KEY, patch);
 }
 
 export function loadAutosave(): PatchFile | null {
-  try {
-    const text = localStorage.getItem(AUTOSAVE_KEY);
-    if (!text) return null;
-    const raw = JSON.parse(text);
-    if (!isPatchFile(raw)) return null;
-    return migratePatch(raw).patch;
-  } catch {
-    return null;
-  }
+  const raw = loadJSON<unknown>(AUTOSAVE_KEY, null);
+  if (!raw || !isPatchFile(raw)) return null;
+  return migratePatch(raw).patch;
 }
 
 export function clearAutosave(): void {
-  try {
-    localStorage.removeItem(AUTOSAVE_KEY);
-  } catch {
-    // ignore
-  }
+  removeKey(AUTOSAVE_KEY);
 }

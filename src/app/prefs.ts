@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { loadJSON, saveJSON } from '../persistence/local-store';
 
 /**
  * User-facing preferences. Persisted to localStorage so they survive
@@ -35,17 +36,9 @@ const DEFAULTS: Prefs = {
 };
 
 function loadFromStorage(): Prefs {
-  if (typeof window === 'undefined') return DEFAULTS;
-  try {
-    const raw = window.localStorage.getItem(LS_KEY);
-    if (!raw) return DEFAULTS;
-    const parsed = JSON.parse(raw) as Partial<Prefs>;
-    // Spread DEFAULTS last so missing keys in older payloads fall back
-    // to the current default rather than `undefined`.
-    return { ...DEFAULTS, ...parsed };
-  } catch {
-    return DEFAULTS;
-  }
+  // Spread DEFAULTS first so missing keys in older payloads fall back to
+  // the current default rather than `undefined`.
+  return { ...DEFAULTS, ...loadJSON<Partial<Prefs>>(LS_KEY, {}) };
 }
 
 interface PrefsState extends Prefs {
@@ -73,19 +66,10 @@ usePrefs.subscribe((s) => {
   prefsSnapshot.autoJumpHelp = s.autoJumpHelp;
   // Persist whole shape on every change. Small payload, infrequent
   // writes — no batching required.
-  if (typeof window !== 'undefined') {
-    try {
-      window.localStorage.setItem(
-        LS_KEY,
-        JSON.stringify({
-          wireFlowAnimation: s.wireFlowAnimation,
-          autoGrowRegions: s.autoGrowRegions,
-          proMode: s.proMode,
-          autoJumpHelp: s.autoJumpHelp,
-        }),
-      );
-    } catch {
-      // Quota or private mode — silently ignore.
-    }
-  }
+  saveJSON(LS_KEY, {
+    wireFlowAnimation: s.wireFlowAnimation,
+    autoGrowRegions: s.autoGrowRegions,
+    proMode: s.proMode,
+    autoJumpHelp: s.autoJumpHelp,
+  });
 });

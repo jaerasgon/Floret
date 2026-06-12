@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { createCanvasDriver, getActiveDriver } from '../runtime/canvas-driver';
+import { createCanvasDriver, getActiveDriver, type ActiveDriver } from '../runtime/canvas-driver';
 import { useAppStore } from '../app/store';
 import { useEditor } from '../editor/editor-state';
 import type { RuntimeGraph, NodeId } from '../runtime/graph';
@@ -72,9 +72,12 @@ export interface PreviewProps {
   /** Which Renderer this preview shows. Null = auto-bind to the first
    *  Renderer in the graph (single-preview back-compat). */
   rendererId?: NodeId | null;
+  /** Receives this preview's driver when it mounts (and null on unmount)
+   *  so the panel header can export from the exact canvas it owns. */
+  onDriver?: (driver: ActiveDriver | null) => void;
 }
 
-export function Preview({ rendererId = null }: PreviewProps) {
+export function Preview({ rendererId = null, onDriver }: PreviewProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const runningRef = useRef<boolean>(useAppStore.getState().running);
   const graphRef = useRef<RuntimeGraph | null>(useEditor.getState().runtime);
@@ -108,11 +111,13 @@ export function Preview({ rendererId = null }: PreviewProps) {
         setFrame(frame);
       },
     });
+    onDriver?.(driver);
 
     return () => {
+      onDriver?.(null);
       driver.stop();
     };
-  }, [refreshKey, rendererId]);
+  }, [refreshKey, rendererId, onDriver]);
 
   return (
     <div className="preview-host">

@@ -43,6 +43,9 @@ export interface ActiveDriver {
   container: HTMLElement;
   /** Stop the RAF loop and remove listeners. Idempotent. */
   stop: () => void;
+  /** Snapshot the most recent frame's flattened scene — used by SVG
+   *  export, which needs the retained SceneNodes (not pixels). */
+  captureScene: () => { layers: SceneNode[]; background: string; width: number; height: number };
 }
 
 /** Currently-mounted drivers, keyed by their container element. Used by
@@ -124,6 +127,10 @@ export function createCanvasDriver(container: HTMLElement, opts: DriverOptions):
   let frameCount = 0;
   let raf = 0;
   let stopped = false;
+  // Latest frame's scene, retained for SVG export (which needs SceneNodes,
+  // not pixels).
+  let lastFlat: SceneNode[] = [];
+  let lastBg = '#000000';
   const startTime = performance.now() / 1000;
   let lastTime = startTime;
   const fpsWindow: number[] = [];
@@ -222,6 +229,8 @@ export function createCanvasDriver(container: HTMLElement, opts: DriverOptions):
       }
     }
     void bridge.frame(flat, bgCss, true);
+    lastFlat = flat;
+    lastBg = bgCss;
 
     clearDirty();
     frameCount++;
@@ -245,7 +254,14 @@ export function createCanvasDriver(container: HTMLElement, opts: DriverOptions):
     drivers.delete(driver);
   };
 
-  const driver: ActiveDriver = { canvas, ctx, container, stop };
+  const captureScene = () => ({
+    layers: lastFlat,
+    background: lastBg,
+    width: canvas.width,
+    height: canvas.height,
+  });
+
+  const driver: ActiveDriver = { canvas, ctx, container, stop, captureScene };
   drivers.add(driver);
   return driver;
 }

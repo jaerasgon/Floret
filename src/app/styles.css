@@ -3039,6 +3039,25 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   opacity: 0.40;
   cursor: not-allowed;
 }
+.export-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 140px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-3);
+  z-index: 1000;
+  overflow: hidden;
+  animation: pop-in var(--dur-base) var(--ease-out);
+}
+.export-menu .library-row {
+  font-size: 11px;
+  padding: 7px 12px;
+  color: var(--fg-1);
+}
+
 .library-search {
   position: relative;
   padding: 6px 10px;

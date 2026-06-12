@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { getPanel } from '../editor/panel/panelRegistry';
 import { loadJSON, saveJSON } from '../persistence/local-store';
 
 /**
@@ -63,23 +62,9 @@ function persist(s: Persisted): void {
 
 const initial = load();
 
-/**
- * When the toolbar makes the Library panel visible, peek at the panel's
- * current dock state. If it was previously 'hidden' (user clicked × at
- * some point — though we now hide × on this panel, persisted state from
- * an earlier session can still hold 'hidden'), snap back to 'left' so
- * the panel actually appears somewhere instead of just rendering its
- * sideways restore-tab. The panel doesn't register until after mount,
- * so we wait a tick.
- */
-function ensureLibraryDocked(): void {
-  // Two rAFs: one for React to mount the panel, one for usePanelState's
-  // post-mount registry sync. Enough in practice; harmless if late.
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    const p = getPanel('library');
-    if (p && p.dock === 'hidden') p.setDock('left');
-  }));
-}
+// Library placement (and removal when hidden) is handled by the dock
+// system — mounting LibraryPanel ensures it into the layout, and App
+// drops it from the dock when `visible` goes false.
 
 export const useLibraryUI = create<LibraryUIState>((set, get) => ({
   visible: initial.visible,
@@ -88,13 +73,11 @@ export const useLibraryUI = create<LibraryUIState>((set, get) => ({
   toggleVisible: () => {
     const next = !get().visible;
     set({ visible: next });
-    if (next) ensureLibraryDocked();
     const s = get();
     persist({ visible: s.visible, viewMode: s.viewMode, selection: s.selection });
   },
   setVisible: (visible) => {
     set({ visible });
-    if (visible) ensureLibraryDocked();
     const s = get();
     persist({ visible: s.visible, viewMode: s.viewMode, selection: s.selection });
   },

@@ -492,7 +492,138 @@ input:focus, select:focus, textarea:focus {
   flex-direction: column;
   align-items: stretch;
   overflow: hidden;
+  position: relative;
 }
+
+/* ─── Recursive dock layout ──────────────────────────────────────────── */
+.dock-area {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  padding: 4px;
+}
+.dock-area.dock-empty { background: var(--bg-0); }
+.dock-area > .dock-split,
+.dock-area > .dock-group { flex: 1 1 0; }
+
+.dock-split {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+.dock-split-row { flex-direction: row; }
+.dock-split-col { flex-direction: column; }
+.dock-split-child {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+.dock-split-child > .dock-group,
+.dock-split-child > .dock-split { flex: 1 1 0; min-width: 0; min-height: 0; }
+
+.dock-divider {
+  position: absolute;
+  z-index: 6;
+  background: transparent;
+  transition: background var(--dur-fast) var(--ease-std);
+}
+.dock-divider:hover { background: var(--accent-dim); }
+.dock-divider-row { top: 4px; bottom: 4px; right: -3px; width: 6px; cursor: col-resize; }
+.dock-divider-col { left: 4px; right: 4px; bottom: -3px; height: 6px; cursor: row-resize; }
+
+.dock-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  margin: 2px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.dock-tabbar {
+  display: flex;
+  flex-shrink: 0;
+  background: var(--bg-0);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.dock-tabbar::-webkit-scrollbar { display: none; }
+.dock-tab {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--border);
+  color: var(--fg-2);
+  font: inherit;
+  font-size: 11px;
+  padding: 5px 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std);
+}
+.dock-tab:hover { color: var(--fg-1); background: var(--bg-2); }
+.dock-tab.active { color: var(--fg-0); background: var(--bg-1); }
+.dock-tab-grip { color: var(--fg-3); font-size: 9px; letter-spacing: -1px; }
+.dock-tab-label { white-space: nowrap; }
+.dock-tab-actions { display: inline-flex; align-items: center; gap: 3px; margin-left: 6px; }
+.dock-group-body {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+}
+.dock-slot { flex: 1 1 0; min-width: 0; min-height: 0; }
+.dock-panel-body {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Drag overlay */
+.dock-drag-layer { position: fixed; inset: 0; z-index: 4000; pointer-events: none; }
+.dock-drop-zone {
+  position: fixed;
+  background: rgba(124, 182, 255, 0.16);
+  border: 2px solid rgba(124, 182, 255, 0.65);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: left 60ms, top 60ms, width 60ms, height 60ms;
+}
+.dock-drop-label {
+  font-size: 11px;
+  color: #fff;
+  background: rgba(20, 23, 28, 0.85);
+  padding: 3px 9px;
+  border-radius: 3px;
+}
+.dock-drag-chip {
+  position: fixed;
+  background: var(--bg-1);
+  border: 1px solid var(--accent-dim);
+  border-radius: 4px;
+  padding: 3px 9px;
+  font-size: 11px;
+  color: var(--fg-1);
+  box-shadow: var(--shadow-3);
+}
+.dock-float { z-index: 1500; }
 /* The horizontal band that holds the left rails, the canvas, and the
    right rails. Fills the pane above the bottom rail. */
 .editor-main-row {

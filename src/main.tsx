@@ -27,6 +27,10 @@ import { registerBuiltInLibraries } from './persistence/library';
 import { buildBuiltInSampleLibraries } from './persistence/samples';
 registerBuiltInLibraries(buildBuiltInSampleLibraries());
 
+// Seed the default dock layout on first run (no-op if a layout is saved).
+import { seedDefaultLayout } from './editor/dock/dockStore';
+seedDefaultLayout();
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />

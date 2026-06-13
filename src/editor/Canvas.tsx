@@ -107,6 +107,7 @@ function CanvasInner() {
   const openSearch = useOverlay((s) => s.openSearch);
   const openContext = useOverlay((s) => s.openContext);
   const armedRegionKind = useOverlay((s) => s.armedRegionKind);
+  const armRegionDraw = useOverlay((s) => s.armRegionDraw);
   const disarmRegionDraw = useOverlay((s) => s.disarmRegionDraw);
 
   const reactFlow = useReactFlow();
@@ -256,18 +257,18 @@ function CanvasInner() {
       e.preventDefault();
       const defType = e.dataTransfer.getData('application/floret-def');
       if (!defType) return;
-      const position = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
-      // Dragging a region from the palette drops one at a default size at
-      // the cursor (quick path). For precise sizing, click the region in
-      // the palette instead — that arms the crosshair draw tool below.
+      // Dragging a region from the palette arms the crosshair draw tool
+      // rather than dropping a fixed-size box — the user sizes it with a
+      // click-drag on the canvas, the same as every other region entry point.
       const def = nodeRegistry.get(defType);
       if (def?.regionKind && def.regionKind !== 'subpatch') {
-        addRegion(def.regionKind, position, { width: 320, height: 220, autoReparent: true });
+        armRegionDraw(def.regionKind);
         return;
       }
+      const position = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
       addNode(defType, position);
     },
-    [reactFlow, addNode, addRegion],
+    [reactFlow, addNode, armRegionDraw],
   );
 
   const onKeyDown = useCallback(

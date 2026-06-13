@@ -55,6 +55,7 @@ export function NodeSearch() {
   const insertion = useOverlay((s) => s.searchInsertion);
   const close = useOverlay((s) => s.closeSearch);
 
+  const armRegionDraw = useOverlay((s) => s.armRegionDraw);
   const addNode = useEditor((s) => s.addNode);
   const addEdge = useEditor((s) => s.addEdge);
   const removeEdge = useEditor((s) => s.removeEdge);
@@ -151,6 +152,13 @@ export function NodeSearch() {
   if (!open) return null;
 
   const commit = (def: NodeDef) => {
+    // Drawable regions don't drop at the click point — picking one arms the
+    // crosshair so the user sizes it with a click-drag on the canvas.
+    if (def.regionKind && def.regionKind !== 'subpatch') {
+      armRegionDraw(def.regionKind);
+      close();
+      return;
+    }
     const id = addNode(def.type, flowPos);
 
     // Auto-parent the new node into a containing region (if any).

@@ -118,13 +118,12 @@ function PaletteBody() {
                       className={`palette-item${regionKind ? ' palette-item-region' : ''}${armed ? ' armed' : ''}`}
                       draggable
                       onDragStart={(e) => onDragStart(e, def)}
-                      // Regions arm the draw tool on click: the canvas shows a
-                      // crosshair and a press-drag sizes the region. (Dragging
-                      // still drops one at a default size.) Other nodes are
-                      // drag-only.
+                      // Regions arm the draw tool — by click or by drag-out.
+                      // Either gesture shows a crosshair on the canvas and a
+                      // press-drag sizes the region. Other nodes are drag-only.
                       onClick={regionKind ? () => armRegionDraw(regionKind) : undefined}
                       title={regionKind
-                        ? `${def.description ?? def.type}\n\nClick, then drag on the canvas to draw the region.`
+                        ? `${def.description ?? def.type}\n\nClick or drag out, then drag on the canvas to draw the region.`
                         : def.description ?? def.type}
                     >
                       <span className="palette-item-label">{def.label}</span>

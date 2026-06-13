@@ -336,15 +336,16 @@ export function buildTutPolar() {
 
 
 // ─── Tutorial 12: Circle of Shapes ─────────────────────────────────────────
-// CircularSpread = N evenly-spaced angles. Polar layout from a spread.
+// RingSpread = N points on a circle. Here we use its `angles` output to
+// build the layout by hand; `positions` would give the points directly.
 export function buildTutCircleOfShapes() {
   const c = note(
     't12_c',
     { x: -400, y: 0 },
-    'Layouts on a circle\n\n`CircularSpread` outputs N evenly-spaced angles in [0, 2π). Inside a ForEach, take cos/sin of each angle, multiply by a radius, and draw a shape.\n\nResult: 24 dots evenly placed on a ring.',
+    'Layouts on a circle\n\n`RingSpread` lays N points around a circle. Its `positions` output gives them directly — but here we use the `angles` output and build the layout by hand: inside a ForEach, take cos/sin of each angle, multiply by a radius, and draw a shape.\n\nResult: 24 dots evenly placed on a ring.',
     { w: 380, h: 220 },
   );
-  const circ = nodeWithPorts('t12_circ', 'spread/circular', { x: 60, y: 0 }, { count: 24, phase: 0 });
+  const circ = nodeWithPorts('t12_circ', 'spread/ring', { x: 60, y: 0 }, { count: 24, phase: 0 });
   const R = node('t12_R', 'value/number', { x: 60, y: 180 }, { value: 150 });
 
   const RID = 't12_region';
@@ -373,7 +374,7 @@ export function buildTutCircleOfShapes() {
   return {
     nodes: [c, circ, R, region, cosN, sinN, mulX, mulY, ell, renderer],
     edges: [
-      edge('t12_circ', 'out', RID, 'a'),
+      edge('t12_circ', 'angles', RID, 'a'),
       edge('t12_R', 'out', RID, 'r'),
       edge(RID, 'a', 't12_cos', 'x'),
       edge(RID, 'a', 't12_sin', 'x'),

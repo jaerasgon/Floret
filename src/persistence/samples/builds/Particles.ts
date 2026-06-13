@@ -146,7 +146,7 @@ export function buildParticlesAttractor() {
       edge('pa_attr','force','pa_world','forces'),
       // Also draw the attractor's viz ring straight into the renderer.
       edge('pa_attr','viz','pa_renderer','layers'),
-      edge('pa_ring','out','pa_em','positions'),
+      edge('pa_ring','positions','pa_em','positions'),
       edge('pa_world','world','pa_em','world'),
       edge('pa_time','t','pa_em','time'),
       edge('pa_em','particles','pa_render','particles'),
@@ -207,7 +207,7 @@ export function buildParticlesPinball() {
             tHue, hsl, emit, render, trailW, trail, bg, renderer],
     edges: [
       // Build the octagon: 8 Vec2 points → polygon
-      edge('pp_ring','out','pp_poly','points'),
+      edge('pp_ring','positions','pp_poly','points'),
       // Trail stroke weight chained into the trail's style input
       edge('pp_trailW','style','pp_trail','style'),
       // Per-spawn hue: time → mul → HSL → emitter.color
@@ -289,7 +289,7 @@ export function buildParticlesSpiral() {
       edge('ps_vortex','force','ps_world','forces'),
       edge('ps_attr','force','ps_world','forces'),
       edge('ps_world','world','ps_em','world'),
-      edge('ps_ring','out','ps_em','positions'),
+      edge('ps_ring','positions','ps_em','positions'),
       edge('ps_time','t','ps_em','time'),
       edge('ps_em','particles','ps_trail','particles'),
       edge('ps_em','particles','ps_render','particles'),

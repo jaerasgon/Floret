@@ -128,26 +128,8 @@ export const pickSpreadNode = registerNode({
   },
 });
 
-export const circularSpreadNode = registerNode({
-  type: 'spread/circular',
-  category: 'Spread',
-  label: 'CircularSpread',
-  description: 'Generate `count` angles evenly spaced across [0, TAU).',
-  inputs: [
-    { name: 'count', type: 'number', default: 12, integer: true },
-    { name: 'phase', type: 'number', default: 0 },
-  ],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
-  computeRaw: (inputs) => {
-    const count = intCount(inputs[0]?.[0]);
-    const phase = Number(inputs[1]?.[0] ?? 0);
-    if (count === 0) return [[]];
-    const out = new Array<number>(count);
-    const step = (Math.PI * 2) / count;
-    for (let i = 0; i < count; i++) out[i] = phase + step * i;
-    return [out];
-  },
-});
+// CircularSpread (spread/circular) was removed — its angle output now lives
+// on RingSpread (spread/ring) alongside `positions`. See vec2-generators.ts.
 
 export const randomizeNode = registerNode({
   type: 'spread/randomize',

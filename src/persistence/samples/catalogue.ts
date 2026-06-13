@@ -107,7 +107,7 @@ export const SAMPLES: Sample[] = [
     id: 'tut-12-circle',
     name: '12 · Circle of Shapes',
     category: 'Tutorial',
-    description: 'CircularSpread + ForEach lays N evenly-spaced shapes on a ring.',
+    description: 'RingSpread + ForEach lays N evenly-spaced shapes on a ring.',
     build: () => spaced(buildTutCircleOfShapes()),
   },
   {

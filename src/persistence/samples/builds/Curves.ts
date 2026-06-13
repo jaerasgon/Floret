@@ -138,7 +138,7 @@ export function buildKaleidoscope() {
   const imgRegion = node('ks_imgRegion', 'draw/image-region', { x: 380, y: 100 },
     { sw: 200, sh: 200, dx: 30, dy: -100, dw: 200, dh: 200 });
 
-  const angles = nodeWithPorts('ks_angles', 'spread/circular', { x: -560, y: 220 }, { count: N });
+  const angles = nodeWithPorts('ks_angles', 'spread/ring', { x: -560, y: 220 }, { count: N });
   const idxs = nodeWithPorts('ks_idxs', 'spread/range', { x: -560, y: 280 }, { count: N });
 
   const RID = 'ks_region';
@@ -195,7 +195,7 @@ export function buildKaleidoscope() {
       edge('ks_sxAnim', 'out', 'ks_imgRegion', 'sx'),
       edge('ks_syAnim', 'out', 'ks_imgRegion', 'sy'),
       // ForEach: angle + i
-      edge('ks_angles', 'out', RID, 'angle'),
+      edge('ks_angles', 'angles', RID, 'angle'),
       edge('ks_idxs', 'out', RID, 'i'),
       // Sign = 1 - 2 * (i % 2)
       edge(RID, 'i', 'ks_iMod', 'a'),
@@ -244,7 +244,7 @@ export function buildIslamicPattern() {
   const redFill = node('ip_redFill', 'style/fill', { x: -360, y: 160 }, { mode: 'color' });
 
   // ── Layer 1: 6 outer outlined circles (flower-of-life ring) ────────────
-  const outerAngles = nodeWithPorts('ip_outerAngles', 'spread/circular', { x: -540, y: 240 }, { count: 6 });
+  const outerAngles = nodeWithPorts('ip_outerAngles', 'spread/ring', { x: -540, y: 240 }, { count: 6 });
   const OUTER_RID = 'ip_outerRegion';
   const outerRegion: FloretNode = {
     id: OUTER_RID, type: 'floret', position: { x: -260, y: 240 },
@@ -262,7 +262,7 @@ export function buildIslamicPattern() {
   const outerCircle = node('ip_outerCircle', 'draw/ellipse', { x: 380, y: 40 }, { w: 220, h: 220 }, OUTER_RID);
 
   // ── Layer 2: 6 teal filled inner-ring petals ───────────────────────────
-  const midAngles = nodeWithPorts('ip_midAngles', 'spread/circular', { x: -540, y: 480 }, { count: 6 });
+  const midAngles = nodeWithPorts('ip_midAngles', 'spread/ring', { x: -540, y: 480 }, { count: 6 });
   const MID_RID = 'ip_midRegion';
   const midRegion: FloretNode = {
     id: MID_RID, type: 'floret', position: { x: -260, y: 480 },
@@ -308,7 +308,7 @@ export function buildIslamicPattern() {
   const starPoly = node('ip_starPoly', 'draw/polygon', { x: 520, y: 700 }, { closed: true });
 
   // ── Layer 4: 6 small red dots at innermost ring ────────────────────────
-  const innerAngles = nodeWithPorts('ip_innerAngles', 'spread/circular', { x: -540, y: 940 }, { count: 6 });
+  const innerAngles = nodeWithPorts('ip_innerAngles', 'spread/ring', { x: -540, y: 940 }, { count: 6 });
   const INNER_RID = 'ip_innerRegion';
   const innerRegion: FloretNode = {
     id: INNER_RID, type: 'floret', position: { x: -260, y: 940 },
@@ -359,7 +359,7 @@ export function buildIslamicPattern() {
       edge('ip_redColor', 'out', 'ip_redFill', 'color'),
 
       // ── Outer circles ────────────────────────────────────────
-      edge('ip_outerAngles', 'out', OUTER_RID, 'a'),
+      edge('ip_outerAngles', 'angles', OUTER_RID, 'a'),
       edge(OUTER_RID, 'a', 'ip_outerFa', 'angle'),
       edge('ip_outerFa', 'out', 'ip_outerSplit', 'v'),
       edge('ip_outerSplit', 'x', 'ip_outerCircle', 'x'),
@@ -369,7 +369,7 @@ export function buildIslamicPattern() {
       edge('ip_outerCircle', 'out', OUTER_RID, 'layer'),
 
       // ── Mid teal petals ──────────────────────────────────────
-      edge('ip_midAngles', 'out', MID_RID, 'a'),
+      edge('ip_midAngles', 'angles', MID_RID, 'a'),
       edge(MID_RID, 'a', 'ip_midFa', 'angle'),
       edge('ip_midFa', 'out', 'ip_midSplit', 'v'),
       edge('ip_midSplit', 'x', 'ip_midEll', 'x'),
@@ -398,7 +398,7 @@ export function buildIslamicPattern() {
       edge('ip_redFill', 'out', 'ip_starPoly', 'style'),
 
       // ── Inner dots ───────────────────────────────────────────
-      edge('ip_innerAngles', 'out', INNER_RID, 'a'),
+      edge('ip_innerAngles', 'angles', INNER_RID, 'a'),
       edge(INNER_RID, 'a', 'ip_innerFa', 'angle'),
       edge('ip_innerFa', 'out', 'ip_innerSplit', 'v'),
       edge('ip_innerSplit', 'x', 'ip_innerDot', 'x'),

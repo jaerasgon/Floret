@@ -92,11 +92,17 @@ function GroupView({ node }: { node: DockGroup }) {
           const m = getDockMeta(pid);
           const active = i === node.active;
           return (
-            <button
+            // A tab is a `div role="tab"`, not a <button>: the active tab
+            // hosts the panel's header-action buttons, and a <button> may
+            // not contain <button>s (invalid DOM + unreliable clicks).
+            <div
               key={pid}
-              type="button"
+              role="tab"
+              tabIndex={0}
+              aria-selected={active}
               className={`dock-tab${active ? ' active' : ''}`}
               onClick={() => setActive(node.id, i)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActive(node.id, i); } }}
               onMouseDown={(e) => {
                 // Left-press on a tab can start a drag (threshold handled
                 // in beginDockDrag's move loop).
@@ -111,7 +117,7 @@ function GroupView({ node }: { node: DockGroup }) {
                   {m.headerActions}
                 </span>
               )}
-            </button>
+            </div>
           );
         })}
       </div>

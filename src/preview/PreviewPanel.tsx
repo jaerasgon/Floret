@@ -6,7 +6,7 @@ import { useAppStore } from '../app/store';
 import { Tooltip } from '../app/shell/Tooltip';
 import type { NodeId } from '../runtime/graph';
 import type { ActiveDriver } from '../runtime/canvas-driver';
-import { exportCanvasPng, exportSceneSvg, exportCanvasWebm } from '../persistence/export';
+import { exportCanvasPng, exportSceneSvg } from '../persistence/export';
 
 /**
  * Preview panel — `Preview` wrapped in the universal `Panel` chrome
@@ -80,16 +80,19 @@ function PreviewHeaderControls({ driverRef, name }: {
 }
 
 /**
- * Export dropdown — PNG (1×/2×/4×), SVG (vector), and WebM video for the
- * canvas this panel owns. Video shows a "recording…" state for its
- * duration. Filenames derive from the panel title.
+ * Export dropdown — captures the CURRENT (frozen) frame as PNG (1×/2×/4×)
+ * or SVG. Only enabled while the renderer is paused, so what you export is
+ * exactly the still you're looking at. Animated / interval / sequence
+ * output is intentionally not here — that's expressed in the patch with
+ * nodes, not baked into the export button. Filenames derive from the
+ * panel title.
  */
 function ExportMenu({ driverRef, name }: {
   driverRef: React.MutableRefObject<ActiveDriver | null>;
   name: string;
 }) {
+  const running = useAppStore((s) => s.running);
   const [open, setOpen] = useState(false);
-  const [recording, setRecording] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'floret';
 
@@ -106,37 +109,27 @@ function ExportMenu({ driverRef, name }: {
     }
     setOpen(false);
   };
-  const webm = async () => {
-    const d = driverRef.current;
-    setOpen(false);
-    if (!d) return;
-    setRecording(true);
-    try { await exportCanvasWebm(d.canvas, slug, 4000, 30); }
-    catch { /* surfaced via the disabled state resetting */ }
-    setRecording(false);
-  };
 
   return (
     <div ref={wrapRef} style={{ position: 'relative', display: 'inline-flex' }}>
-      <Tooltip label={recording ? 'Recording…' : 'Export PNG / SVG / video'}>
+      <Tooltip label={running ? 'Pause to export the current frame' : 'Export the paused frame as PNG / SVG'}>
         <button
-          className={`toolbar-run-btn${recording ? ' running' : ''}`}
+          className="toolbar-run-btn"
           onClick={() => setOpen((v) => !v)}
           aria-label="Export"
-          disabled={recording}
+          disabled={running}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
         >
           <Download size={13} strokeWidth={1.8} />
-          <span>{recording ? 'Rec…' : 'Export'}</span>
+          <span>Export</span>
         </button>
       </Tooltip>
-      {open && !recording && (
+      {open && !running && (
         <div className="export-menu">
           <button className="library-row" onClick={() => png(1)}>PNG · 1×</button>
           <button className="library-row" onClick={() => png(2)}>PNG · 2×</button>
           <button className="library-row" onClick={() => png(4)}>PNG · 4×</button>
           <button className="library-row" onClick={svg}>SVG · vector</button>
-          <button className="library-row" onClick={webm}>WebM · 4s video</button>
         </div>
       )}
     </div>

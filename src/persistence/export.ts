@@ -2,15 +2,16 @@ import type { SceneNode } from '../runtime/scene';
 import { sceneToSvg } from '../runtime/scene-svg';
 
 /**
- * Output helpers — get a sketch out of the editor as a file. Three forms:
+ * Output helpers — export the current (paused) frame as a file:
  *
- *   - PNG: a raster snapshot of the live preview canvas (optionally
- *     upscaled for print/poster use).
+ *   - PNG: a raster snapshot of the preview canvas (optionally upscaled
+ *     for print/poster use).
  *   - SVG: a vector export built from the retained scene graph — sharp at
  *     any size, the right pick for line/shape-heavy patches.
- *   - WebM: a video capture of the running canvas over a fixed duration.
  *
- * All three trigger a browser download; none touch the network.
+ * Both trigger a browser download; neither touches the network. Animated
+ * or sequence output isn't here by design — that's expressed in the patch
+ * with nodes, not the export button.
  */
 
 function triggerDownload(blob: Blob, filename: string): void {
@@ -65,39 +66,4 @@ export function exportSceneSvg(
 ): void {
   const svg = sceneToSvg(layers, { width, height, background });
   triggerDownload(new Blob([svg], { type: 'image/svg+xml' }), `${name}.svg`);
-}
-
-/**
- * Capture the canvas to a WebM video over `durationMs`. Resolves when the
- * recording stops and the file has been handed to the browser. Rejects if
- * MediaRecorder / captureStream isn't supported.
- */
-export function exportCanvasWebm(
-  canvas: HTMLCanvasElement,
-  name: string,
-  durationMs = 4000,
-  fps = 30,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (typeof (canvas as { captureStream?: unknown }).captureStream !== 'function' ||
-        typeof MediaRecorder === 'undefined') {
-      reject(new Error('Video capture not supported in this browser.'));
-      return;
-    }
-    // Prefer vp9, fall back to whatever the browser offers.
-    const mime = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm']
-      .find((t) => MediaRecorder.isTypeSupported(t)) ?? 'video/webm';
-    const stream = (canvas as HTMLCanvasElement & { captureStream: (fps: number) => MediaStream })
-      .captureStream(fps);
-    const recorder = new MediaRecorder(stream, { mimeType: mime });
-    const chunks: BlobPart[] = [];
-    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
-    recorder.onerror = () => reject(new Error('Recording failed.'));
-    recorder.onstop = () => {
-      triggerDownload(new Blob(chunks, { type: mime }), `${name}.webm`);
-      resolve();
-    };
-    recorder.start();
-    setTimeout(() => recorder.stop(), durationMs);
-  });
 }

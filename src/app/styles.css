@@ -225,6 +225,15 @@ input:focus, select:focus, textarea:focus {
 .toolbar-run-btn:hover {
   filter: brightness(1.15);
 }
+.toolbar-run-btn:disabled {
+  opacity: 0.4;
+  color: var(--fg-3);
+  border-color: var(--border);
+  cursor: not-allowed;
+}
+.toolbar-run-btn:disabled:hover {
+  filter: none;
+}
 .toolbar-refresh-btn {
   font-family: var(--font-mono);
   font-size: 11px;

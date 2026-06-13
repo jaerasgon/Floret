@@ -13,7 +13,7 @@ import type {
   TextShape,
   TriangleShape,
 } from './scene';
-import { composeFontCss, resolveBox, catmullRomBeziers } from './scene';
+import { resolveBox, catmullRomBeziers } from './scene';
 
 /**
  * Walk a SceneNode tree, emit an SVG document.
@@ -75,7 +75,7 @@ export function sceneToSvg(
   // Scene coordinates are centre-origin (the canvas renderer translates by
   // (w/2, h/2) before drawing each frame). Mirror that here, otherwise the
   // whole composition lands in the top-left quadrant, half off-canvas.
-  state.out.push(`<g transform="translate(${w / 2},${h / 2})">`);
+  state.out.push(`<g transform="translate(${n(w / 2)},${n(h / 2)})">`);
   for (const layer of layers) {
     if (layer) emitNode(state, layer);
   }
@@ -131,11 +131,12 @@ function emitParticleBatch(s: EmitState, b: import('./scene').ParticleBatch): vo
       : paint('fill', b.style.fill ?? '#fff');
     const x = buf.posX[i]!;
     const y = buf.posY[i]!;
+    if (!Number.isFinite(x) || !Number.isFinite(y)) continue; // skip diverged particles
     if (b.template.kind === 'rect') {
-      s.out.push(`<rect x="${x - sz/2}" y="${y - sz/2}" width="${sz}" height="${sz}" ${fillAttr}/>`);
+      s.out.push(`<rect x="${n(x - sz/2)}" y="${n(y - sz/2)}" width="${n(sz)}" height="${n(sz)}" ${fillAttr}/>`);
     } else {
       // circle or layer (layer falls back to circle in SVG for now)
-      s.out.push(`<circle cx="${x}" cy="${y}" r="${sz/2}" ${fillAttr}/>`);
+      s.out.push(`<circle cx="${n(x)}" cy="${n(y)}" r="${n(sz/2)}" ${fillAttr}/>`);
     }
   }
 }
@@ -179,8 +180,8 @@ function emitParticleTrailBatch(s: EmitState, b: import('./scene').ParticleTrail
 
     if (!perSegment) {
       const op = baseAlpha < 1 ? ` stroke-opacity="${baseAlpha}"` : '';
-      const pointStr = pts.map((p) => `${p[0]},${p[1]}`).join(' ');
-      s.out.push(`<polyline fill="none" stroke="${stroke}" stroke-width="${baseWidth}" stroke-linecap="round"${op} points="${pointStr}"/>`);
+      const pointStr = pts.map((p) => `${n(p[0])},${n(p[1])}`).join(' ');
+      s.out.push(`<polyline fill="none" stroke="${stroke}" stroke-width="${n(baseWidth)}" stroke-linecap="round"${op} points="${pointStr}"/>`);
       continue;
     }
     // Per-segment: width tapers head→tail, opacity fades head→tail.
@@ -190,7 +191,7 @@ function emitParticleTrailBatch(s: EmitState, b: import('./scene').ParticleTrail
       if (tapered) { w = baseWidth * (1 - ageAvg * (1 - tailWidth)); if (w <= 0) w = 0.001; }
       const op = fadeOut ? baseAlpha * (1 - ageAvg) : baseAlpha;
       const opAttr = op < 1 ? ` stroke-opacity="${op.toFixed(3)}"` : '';
-      s.out.push(`<line x1="${pts[i - 1]![0]}" y1="${pts[i - 1]![1]}" x2="${pts[i]![0]}" y2="${pts[i]![1]}" stroke="${stroke}" stroke-width="${w.toFixed(3)}" stroke-linecap="round"${opAttr}/>`);
+      s.out.push(`<line x1="${n(pts[i - 1]![0])}" y1="${n(pts[i - 1]![1])}" x2="${n(pts[i]![0])}" y2="${n(pts[i]![1])}" stroke="${stroke}" stroke-width="${n(w)}" stroke-linecap="round"${opAttr}/>`);
     }
   }
 }
@@ -199,7 +200,7 @@ function emitGroup(s: EmitState, g: GroupNode): void {
   const attrs: string[] = [];
   if (g.transform) {
     const m = g.transform;
-    attrs.push(`transform="matrix(${m[0]} ${m[1]} ${m[2]} ${m[3]} ${m[4]} ${m[5]})"`);
+    attrs.push(`transform="matrix(${n(m[0])} ${n(m[1])} ${n(m[2])} ${n(m[3])} ${n(m[4])} ${n(m[5])})"`);
   }
   if (g.blendMode && SVG_BLEND_MODES.has(g.blendMode)) {
     attrs.push(`style="mix-blend-mode:${g.blendMode}"`);
@@ -209,7 +210,7 @@ function emitGroup(s: EmitState, g: GroupNode): void {
     clipId = `clip${s.clipCounter++}`;
     s.out.push(
       `<defs><clipPath id="${clipId}">`,
-      `<rect x="${g.clip.x}" y="${g.clip.y}" width="${g.clip.w}" height="${g.clip.h}"/>`,
+      `<rect x="${n(g.clip.x)}" y="${n(g.clip.y)}" width="${n(g.clip.w)}" height="${n(g.clip.h)}"/>`,
       `</clipPath></defs>`,
     );
     attrs.push(`clip-path="url(#${clipId})"`);
@@ -221,7 +222,7 @@ function emitGroup(s: EmitState, g: GroupNode): void {
 
 function emitRect(s: EmitState, r: RectShape): void {
   const [x, y, w, h] = resolveBox(r.x, r.y, r.w, r.h, r.mode);
-  s.out.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" ${styleAttrs(r.style)}/>`);
+  s.out.push(`<rect x="${n(x)}" y="${n(y)}" width="${n(w)}" height="${n(h)}" ${styleAttrs(r.style)}/>`);
 }
 
 function emitEllipse(s: EmitState, e: EllipseShape): void {
@@ -230,12 +231,12 @@ function emitEllipse(s: EmitState, e: EllipseShape): void {
   const cy = y + h / 2;
   const rx = Math.abs(w / 2);
   const ry = Math.abs(h / 2);
-  s.out.push(`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" ${styleAttrs(e.style)}/>`);
+  s.out.push(`<ellipse cx="${n(cx)}" cy="${n(cy)}" rx="${n(rx)}" ry="${n(ry)}" ${styleAttrs(e.style)}/>`);
 }
 
 function emitLine(s: EmitState, l: LineShape): void {
   if (!l.style.stroke) return;
-  s.out.push(`<line x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" ${strokeAttrs(l.style)} fill="none"/>`);
+  s.out.push(`<line x1="${n(l.x1)}" y1="${n(l.y1)}" x2="${n(l.x2)}" y2="${n(l.y2)}" ${strokeAttrs(l.style)} fill="none"/>`);
 }
 
 function emitArc(s: EmitState, a: ArcShape): void {
@@ -255,16 +256,16 @@ function emitArc(s: EmitState, a: ArcShape): void {
   const span = a.stop - a.start;
   const large = Math.abs(span) > Math.PI ? 1 : 0;
   const sweep = span >= 0 ? 1 : 0;
-  const d = `M ${sx} ${sy} A ${rx} ${ry} 0 ${large} ${sweep} ${ex} ${ey}`;
+  const d = `M ${n(sx)} ${n(sy)} A ${n(rx)} ${n(ry)} 0 ${large} ${sweep} ${n(ex)} ${n(ey)}`;
   s.out.push(`<path d="${d}" ${styleAttrs(a.style)}/>`);
 }
 
 function emitTriangle(s: EmitState, t: TriangleShape): void {
-  s.out.push(`<polygon points="${t.x1},${t.y1} ${t.x2},${t.y2} ${t.x3},${t.y3}" ${styleAttrs(t.style)}/>`);
+  s.out.push(`<polygon points="${n(t.x1)},${n(t.y1)} ${n(t.x2)},${n(t.y2)} ${n(t.x3)},${n(t.y3)}" ${styleAttrs(t.style)}/>`);
 }
 
 function emitQuad(s: EmitState, q: QuadShape): void {
-  s.out.push(`<polygon points="${q.x1},${q.y1} ${q.x2},${q.y2} ${q.x3},${q.y3} ${q.x4},${q.y4}" ${styleAttrs(q.style)}/>`);
+  s.out.push(`<polygon points="${n(q.x1)},${n(q.y1)} ${n(q.x2)},${n(q.y2)} ${n(q.x3)},${n(q.y3)} ${n(q.x4)},${n(q.y4)}" ${styleAttrs(q.style)}/>`);
 }
 
 function emitPoint(s: EmitState, p: PointShape): void {
@@ -273,16 +274,16 @@ function emitPoint(s: EmitState, p: PointShape): void {
   const colour = p.style.stroke ?? p.style.fill;
   if (!colour) return;
   const sz = Math.max(1, p.style.strokeWeight);
-  s.out.push(`<rect x="${p.x - sz / 2}" y="${p.y - sz / 2}" width="${sz}" height="${sz}" ${paint('fill', colour)}/>`);
+  s.out.push(`<rect x="${n(p.x - sz / 2)}" y="${n(p.y - sz / 2)}" width="${n(sz)}" height="${n(sz)}" ${paint('fill', colour)}/>`);
 }
 
 function emitPolygon(s: EmitState, pg: PolygonShape): void {
-  const n = pg.points.length;
-  if (n === 0) return;
+  const count = pg.points.length;
+  if (count === 0) return;
   const tension = pg.tension ?? 0;
   // Straight polyline / polygon — original fast path.
-  if (tension <= 0 || n < 3) {
-    const pts = pg.points.map(p => `${p.x},${p.y}`).join(' ');
+  if (tension <= 0 || count < 3) {
+    const pts = pg.points.map(p => `${n(p.x)},${n(p.y)}`).join(' ');
     const tag = pg.closed ? 'polygon' : 'polyline';
     const extraFill = pg.closed ? '' : ' fill="none"';
     s.out.push(`<${tag} points="${pts}" ${styleAttrs(pg.style)}${extraFill}/>`);
@@ -292,9 +293,9 @@ function emitPolygon(s: EmitState, pg: PolygonShape): void {
   // expressed as cubic Béziers. Same control-point math as the canvas
   // renderer so raster and vector outputs agree pixel-for-pixel.
   const pts = pg.points;
-  const parts: string[] = [`M${pts[0]!.x},${pts[0]!.y}`];
+  const parts: string[] = [`M${n(pts[0]!.x)},${n(pts[0]!.y)}`];
   for (const seg of catmullRomBeziers(pts, pg.closed, tension)) {
-    parts.push(`C${seg.c1x},${seg.c1y} ${seg.c2x},${seg.c2y} ${seg.ex},${seg.ey}`);
+    parts.push(`C${n(seg.c1x)},${n(seg.c1y)} ${n(seg.c2x)},${n(seg.c2y)} ${n(seg.ex)},${n(seg.ey)}`);
   }
   if (pg.closed) parts.push('Z');
   const extraFill = pg.closed ? '' : ' fill="none"';
@@ -304,26 +305,32 @@ function emitPolygon(s: EmitState, pg: PolygonShape): void {
 function emitText(s: EmitState, t: TextShape): void {
   const anchor = textAnchor(t.style.textAlign);
   const baseline = dominantBaseline(t.style.textBaseline);
-  const fontCss = esc(composeFontCss(t.style));
-  const ls = t.style.letterSpacing;
-  const lsAttr = ls ? `;letter-spacing:${ls}px` : '';
-  const fontAttr = ` style="font:${fontCss}${lsAttr}"`;
+  // Emit explicit font-* presentation attributes rather than the CSS `font`
+  // shorthand: Illustrator / Figma / many SVG viewers don't honour the
+  // shorthand and silently fall back to a default face.
+  const fontAttrs = [
+    `font-family="${esc(t.style.fontFamily || 'sans-serif')}"`,
+    `font-size="${n(t.style.fontSize)}"`,
+    t.style.fontWeight && t.style.fontWeight !== 'normal' ? `font-weight="${esc(t.style.fontWeight)}"` : '',
+    t.style.fontStyle && t.style.fontStyle !== 'normal' ? `font-style="${esc(t.style.fontStyle)}"` : '',
+    t.style.letterSpacing ? `letter-spacing="${n(t.style.letterSpacing)}"` : '',
+  ].filter(Boolean).join(' ');
   const lines = t.text.includes('\n') ? t.text.split('\n') : [t.text];
   const dy = t.style.fontSize * t.style.lineHeight;
   if (lines.length === 1) {
     s.out.push(
-      `<text x="${t.x}" y="${t.y}" text-anchor="${anchor}" dominant-baseline="${baseline}"`,
-      `${fontAttr} ${styleAttrs(t.style)}>${escText(lines[0] ?? '')}</text>`,
+      `<text x="${n(t.x)}" y="${n(t.y)}" text-anchor="${anchor}" dominant-baseline="${baseline}"`,
+      ` ${fontAttrs} ${styleAttrs(t.style)}>${escText(lines[0] ?? '')}</text>`,
     );
     return;
   }
   s.out.push(
-    `<text x="${t.x}" y="${t.y}" text-anchor="${anchor}" dominant-baseline="${baseline}"`,
-    `${fontAttr} ${styleAttrs(t.style)}>`,
+    `<text x="${n(t.x)}" y="${n(t.y)}" text-anchor="${anchor}" dominant-baseline="${baseline}"`,
+    ` ${fontAttrs} ${styleAttrs(t.style)}>`,
   );
   for (let i = 0; i < lines.length; i++) {
     const yOff = i === 0 ? 0 : dy;
-    s.out.push(`<tspan x="${t.x}" dy="${yOff}">${escText(lines[i] ?? '')}</tspan>`);
+    s.out.push(`<tspan x="${n(t.x)}" dy="${n(yOff)}">${escText(lines[i] ?? '')}</tspan>`);
   }
   s.out.push('</text>');
 }
@@ -332,12 +339,12 @@ function emitImage(s: EmitState, im: ImageShape): void {
   const dataUrl = imageSourceToDataUrl(im);
   if (!dataUrl) return;
   s.out.push(
-    `<image x="${im.dst.x}" y="${im.dst.y}" width="${im.dst.w}" height="${im.dst.h}" `,
+    `<image x="${n(im.dst.x)}" y="${n(im.dst.y)}" width="${n(im.dst.w)}" height="${n(im.dst.h)}" `,
     `preserveAspectRatio="none" href="${dataUrl}"/>`,
   );
   if (im.tint) {
     s.out.push(
-      `<rect x="${im.dst.x}" y="${im.dst.y}" width="${im.dst.w}" height="${im.dst.h}" `,
+      `<rect x="${n(im.dst.x)}" y="${n(im.dst.y)}" width="${n(im.dst.w)}" height="${n(im.dst.h)}" `,
       `${paint('fill', im.tint)} style="mix-blend-mode:multiply"/>`,
     );
   }
@@ -350,7 +357,7 @@ function styleAttrs(s: ResolvedStyle): string {
   parts.push(s.fill ? paint('fill', s.fill) : `fill="none"`);
   if (s.stroke) {
     parts.push(paint('stroke', s.stroke));
-    parts.push(`stroke-width="${s.strokeWeight}"`);
+    parts.push(`stroke-width="${n(s.strokeWeight)}"`);
     if (s.strokeCap !== 'butt') parts.push(`stroke-linecap="${s.strokeCap}"`);
     if (s.strokeJoin !== 'miter') parts.push(`stroke-linejoin="${s.strokeJoin}"`);
   }
@@ -361,7 +368,7 @@ function styleAttrs(s: ResolvedStyle): string {
 function strokeAttrs(s: ResolvedStyle): string {
   const parts: string[] = [];
   parts.push(paint('stroke', s.stroke!));
-  parts.push(`stroke-width="${s.strokeWeight}"`);
+  parts.push(`stroke-width="${n(s.strokeWeight)}"`);
   if (s.strokeCap !== 'butt') parts.push(`stroke-linecap="${s.strokeCap}"`);
   if (s.strokeJoin !== 'miter') parts.push(`stroke-linejoin="${s.strokeJoin}"`);
   return parts.join(' ');
@@ -408,6 +415,23 @@ function paint(role: 'fill' | 'stroke', css: string): string {
   const m = /^rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)$/.exec(css);
   if (m) return `${role}="rgb(${m[1]},${m[2]},${m[3]})" ${role}-opacity="${m[4]}"`;
   return `${role}="${esc(css)}"`;
+}
+
+/**
+ * Format a coordinate / length for an SVG attribute. Two safeguards that
+ * keep exports robust across arbitrary scenes:
+ *   - Round to 3dp. Raw scene floats carry 15-digit / exponential noise
+ *     (e.g. `1.347e-14`) that bloats the file and trips stricter parsers;
+ *     sub-pixel precision is irrelevant for vector output anyway.
+ *   - Collapse non-finite values to 0. A diverged sim (physics blow-up,
+ *     normalise-of-zero, /0 position) can emit NaN/Infinity — Canvas2D
+ *     silently skips those, but `cx="NaN"` breaks the element (and, in
+ *     strict parsers, the whole document). Degrading to a harmless point
+ *     at the origin matches the canvas "drew nothing" outcome closely.
+ */
+function n(v: number): string {
+  if (!Number.isFinite(v)) return '0';
+  return (Math.round(v * 1000) / 1000).toString();
 }
 
 /** Escape for attribute values. */

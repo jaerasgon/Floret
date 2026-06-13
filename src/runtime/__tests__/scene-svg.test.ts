@@ -96,6 +96,42 @@ describe('sceneToSvg', () => {
     });
   });
 
+  describe('coordinate robustness', () => {
+    it('collapses non-finite coordinates to 0 (never emits NaN/Infinity)', () => {
+      const out = sceneToSvg(
+        [rect({ x: NaN, y: Infinity, w: 10, h: -Infinity })],
+        { width: 100, height: 100 },
+      );
+      expect(out).not.toMatch(/NaN|Infinity/);
+      expect(out).toContain('x="0"');
+      expect(out).toContain('y="0"');
+    });
+
+    it('rounds noisy floats to 3dp (no exponential / 15-digit bloat)', () => {
+      const out = sceneToSvg(
+        [rect({ x: 1.347e-14, y: 12.3456789, w: 10, h: 10 })],
+        { width: 100, height: 100 },
+      );
+      expect(out).toContain('x="0"');          // 1.3e-14 → 0
+      expect(out).toContain('y="12.346"');     // rounded
+      expect(out).not.toMatch(/e-|e\+/);       // no exponential notation
+    });
+  });
+
+  describe('text fonts', () => {
+    it('emits explicit font-* attributes, not the CSS font shorthand', () => {
+      const t: TextShape = {
+        kind: 'text', text: 'hi', x: 0, y: 0,
+        style: { ...DEFAULT_STYLE, fontFamily: 'Inter, sans-serif', fontSize: 24, fontWeight: 'bold' },
+      };
+      const out = sceneToSvg([t], { width: 100, height: 100 });
+      expect(out).toContain('font-family="Inter, sans-serif"');
+      expect(out).toContain('font-size="24"');
+      expect(out).toContain('font-weight="bold"');
+      expect(out).not.toContain('style="font:'); // portable, not the shorthand
+    });
+  });
+
   describe('shape emission', () => {
     it('emits <rect> with resolved x/y/w/h', () => {
       const out = sceneToSvg([rect({ x: 5, y: 10, w: 100, h: 50 })], { width: 200, height: 200 });

@@ -1081,6 +1081,22 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   background: var(--bg-3);
 }
 
+/* Region items arm a draw tool on click — hint with a pointer + a left
+   accent bar; brighten while armed (the canvas crosshair is active). */
+.palette-item-region { border-left: 2px solid transparent; }
+.palette-item-region:hover { border-left-color: var(--accent-dim); }
+.palette-item-region.armed {
+  background: rgba(124, 182, 255, 0.12);
+  border-left-color: var(--accent);
+}
+.palette-item-region.armed .palette-item-type { color: var(--accent); }
+
+/* Crosshair while the region draw tool is armed. More specific than React
+   Flow's own pane cursor, so it wins without !important. */
+.canvas-wrapper.region-arming,
+.canvas-wrapper.region-arming .react-flow__pane,
+.canvas-wrapper.region-arming .react-flow__renderer { cursor: crosshair; }
+
 .palette-item:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring) inset;

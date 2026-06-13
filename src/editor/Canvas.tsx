@@ -106,6 +106,8 @@ function CanvasInner() {
 
   const openSearch = useOverlay((s) => s.openSearch);
   const openContext = useOverlay((s) => s.openContext);
+  const armedRegionKind = useOverlay((s) => s.armedRegionKind);
+  const disarmRegionDraw = useOverlay((s) => s.disarmRegionDraw);
 
   const reactFlow = useReactFlow();
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -255,23 +257,17 @@ function CanvasInner() {
       const defType = e.dataTransfer.getData('application/floret-def');
       if (!defType) return;
       const position = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
-      // Region NodeDefs enter draw mode rather than placing instantly.
-      // The drop point becomes the first corner of the rectangle.
-      // Subpatches use the same regionKind machinery but aren't draw-
-      // sized — they're created collapsed and resized lazily, so we
-      // place them directly.
+      // Dragging a region from the palette drops one at a default size at
+      // the cursor (quick path). For precise sizing, click the region in
+      // the palette instead — that arms the crosshair draw tool below.
       const def = nodeRegistry.get(defType);
       if (def?.regionKind && def.regionKind !== 'subpatch') {
-        setDrawingRegion({
-          kind: def.regionKind,
-          startFlow: position,
-          currentFlow: position,
-        });
+        addRegion(def.regionKind, position, { width: 320, height: 220, autoReparent: true });
         return;
       }
       addNode(defType, position);
     },
-    [reactFlow, addNode],
+    [reactFlow, addNode, addRegion],
   );
 
   const onKeyDown = useCallback(
@@ -914,41 +910,59 @@ function CanvasInner() {
     };
   }, [openSearch, pasteAt, reactFlow]);
 
-  // ─── Region draw mode mouse + key handlers ──────────────────────────────
-  // When `drawingRegion` is set, track cursor moves to update the preview
-  // rectangle, and commit on the next click (or cancel with Escape).
+  // ─── Region draw tool (armed from the palette) ──────────────────────────
+  // Clicking a region in the palette arms `armedRegionKind`. The canvas then
+  // shows a crosshair; a left press-drag on the empty pane draws the region
+  // rectangle (press = first corner, release = opposite corner). Escape, a
+  // right-click, or completing the draw disarms.
   useEffect(() => {
-    if (!drawingRegion) return;
+    if (!armedRegionKind) return;
+    let startFlow: { x: number; y: number } | null = null;
+
+    function onDown(e: MouseEvent) {
+      if (e.button !== 0) return;
+      // Only begin on the empty canvas pane — not on a node, edge, panel,
+      // or control — so the tool never hijacks other interactions.
+      if (!(e.target as HTMLElement).closest?.('.react-flow__pane')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      startFlow = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      setDrawingRegion({ kind: armedRegionKind!, startFlow, currentFlow: startFlow });
+    }
     function onMove(e: MouseEvent) {
+      if (!startFlow) return;
       const flow = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
       setDrawingRegion((prev) => (prev ? { ...prev, currentFlow: flow } : prev));
     }
-    function onClick(e: MouseEvent) {
-      if (e.button !== 0) return; // left-click only
+    function onUp(e: MouseEvent) {
+      if (!startFlow) return;
+      const begin = startFlow;
+      startFlow = null;
       const flow = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
-      const draw = drawingRegion;
-      if (!draw) return;
-      const x = Math.min(draw.startFlow.x, flow.x);
-      const y = Math.min(draw.startFlow.y, flow.y);
-      const w = Math.max(60, Math.abs(flow.x - draw.startFlow.x));
-      const h = Math.max(60, Math.abs(flow.y - draw.startFlow.y));
-      addRegion(draw.kind, { x, y }, { width: w, height: h, autoReparent: true });
+      const x = Math.min(begin.x, flow.x);
+      const y = Math.min(begin.y, flow.y);
+      const w = Math.max(60, Math.abs(flow.x - begin.x));
+      const h = Math.max(60, Math.abs(flow.y - begin.y));
+      addRegion(armedRegionKind!, { x, y }, { width: w, height: h, autoReparent: true });
       setDrawingRegion(null);
+      disarmRegionDraw();
     }
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setDrawingRegion(null);
+      if (e.key === 'Escape') { startFlow = null; setDrawingRegion(null); disarmRegionDraw(); }
     }
+    // Capture-phase down/up so we beat React Flow's pane handlers (box-
+    // select / pan) before they start.
+    window.addEventListener('mousedown', onDown, true);
     window.addEventListener('mousemove', onMove);
-    // Use capture so we beat React Flow's own click handlers (which
-    // would otherwise deselect / start a panning gesture).
-    window.addEventListener('click', onClick, true);
+    window.addEventListener('mouseup', onUp, true);
     window.addEventListener('keydown', onKey);
     return () => {
+      window.removeEventListener('mousedown', onDown, true);
       window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('click', onClick, true);
+      window.removeEventListener('mouseup', onUp, true);
       window.removeEventListener('keydown', onKey);
     };
-  }, [drawingRegion, reactFlow, addRegion]);
+  }, [armedRegionKind, reactFlow, addRegion, disarmRegionDraw]);
 
   // Spacebar tracking — flips the reparent-on-drop modifier. We listen
   // at window level so it works regardless of focus, but skip when
@@ -996,7 +1010,7 @@ function CanvasInner() {
   return (
     <div
       ref={wrapperRef}
-      className="canvas-wrapper"
+      className={`canvas-wrapper${armedRegionKind ? ' region-arming' : ''}`}
       onDrop={onDrop}
       onDragOver={onDragOver}
       onKeyDown={onKeyDown}

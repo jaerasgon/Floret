@@ -74,6 +74,11 @@ interface OverlayState {
   contextScreenPosition: { x: number; y: number };
   contextItems: ContextMenuItem[];
 
+  /** When set, the region-draw tool is armed: the canvas shows a crosshair
+   *  and a press-drag draws a region of this kind. Cleared once drawn or
+   *  cancelled. Set by clicking a region node in the palette. */
+  armedRegionKind: 'foreach' | 'if' | 'cache' | null;
+
   openSearch: (args: {
     screenPosition: { x: number; y: number };
     flowPosition: { x: number; y: number };
@@ -87,6 +92,9 @@ interface OverlayState {
     items: ContextMenuItem[];
   }) => void;
   closeContext: () => void;
+
+  armRegionDraw: (kind: 'foreach' | 'if' | 'cache') => void;
+  disarmRegionDraw: () => void;
 }
 
 export const useOverlay = create<OverlayState>((set) => ({
@@ -99,6 +107,8 @@ export const useOverlay = create<OverlayState>((set) => ({
   contextOpen: false,
   contextScreenPosition: { x: 0, y: 0 },
   contextItems: [],
+
+  armedRegionKind: null,
 
   openSearch: ({ screenPosition, flowPosition, connection, insertion }) => {
     set({
@@ -121,4 +131,9 @@ export const useOverlay = create<OverlayState>((set) => ({
     });
   },
   closeContext: () => set({ contextOpen: false, contextItems: [] }),
+
+  // Arming the region tool closes any open overlay so the crosshair isn't
+  // competing with a search popover / context menu.
+  armRegionDraw: (kind) => set({ armedRegionKind: kind, searchOpen: false, contextOpen: false }),
+  disarmRegionDraw: () => set({ armedRegionKind: null }),
 }));

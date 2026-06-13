@@ -2,6 +2,13 @@ import { useMemo, useState, useSyncExternalStore } from 'react';
 import { nodeRegistry } from '../nodes/registry';
 import type { NodeDef } from '../nodes/types';
 import { Panel } from './panel/Panel';
+import { useOverlay } from './overlay-store';
+
+/** Drawable region kinds (subpatches aren't drag-sized). */
+function drawRegionKind(def: NodeDef): 'foreach' | 'if' | 'cache' | null {
+  const k = def.regionKind;
+  return k === 'foreach' || k === 'if' || k === 'cache' ? k : null;
+}
 
 /**
  * Node palette — search + category tree of every registered NodeDef.
@@ -27,6 +34,8 @@ function PaletteBody() {
     () => 0,
   );
 
+  const armRegionDraw = useOverlay((s) => s.armRegionDraw);
+  const armedRegionKind = useOverlay((s) => s.armedRegionKind);
   const [query, setQuery] = useState('');
   const q = query.trim().toLowerCase();
   /** Categories the user has manually expanded. Search overrides this. */
@@ -100,18 +109,29 @@ function PaletteBody() {
                   <span>{cat}</span>
                   <span className="palette-group-count">{defs.length}</span>
                 </button>
-                {isOpen && defs.map((def) => (
-                  <div
-                    key={def.type}
-                    className="palette-item"
-                    draggable
-                    onDragStart={(e) => onDragStart(e, def)}
-                    title={def.description ?? def.type}
-                  >
-                    <span className="palette-item-label">{def.label}</span>
-                    <span className="palette-item-type">{def.type}</span>
-                  </div>
-                ))}
+                {isOpen && defs.map((def) => {
+                  const regionKind = drawRegionKind(def);
+                  const armed = regionKind !== null && armedRegionKind === regionKind;
+                  return (
+                    <div
+                      key={def.type}
+                      className={`palette-item${regionKind ? ' palette-item-region' : ''}${armed ? ' armed' : ''}`}
+                      draggable
+                      onDragStart={(e) => onDragStart(e, def)}
+                      // Regions arm the draw tool on click: the canvas shows a
+                      // crosshair and a press-drag sizes the region. (Dragging
+                      // still drops one at a default size.) Other nodes are
+                      // drag-only.
+                      onClick={regionKind ? () => armRegionDraw(regionKind) : undefined}
+                      title={regionKind
+                        ? `${def.description ?? def.type}\n\nClick, then drag on the canvas to draw the region.`
+                        : def.description ?? def.type}
+                    >
+                      <span className="palette-item-label">{def.label}</span>
+                      <span className="palette-item-type">{armed ? 'draw on canvas…' : def.type}</span>
+                    </div>
+                  );
+                })}
               </div>
             );
           })

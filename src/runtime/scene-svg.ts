@@ -72,10 +72,14 @@ export function sceneToSvg(
   if (opts.background) {
     state.out.push(`<rect width="${w}" height="${h}" fill="${esc(opts.background)}"/>`);
   }
+  // Scene coordinates are centre-origin (the canvas renderer translates by
+  // (w/2, h/2) before drawing each frame). Mirror that here, otherwise the
+  // whole composition lands in the top-left quadrant, half off-canvas.
+  state.out.push(`<g transform="translate(${w / 2},${h / 2})">`);
   for (const layer of layers) {
     if (layer) emitNode(state, layer);
   }
-  state.out.push(`</svg>`);
+  state.out.push(`</g></svg>`);
   return state.out.join('');
 }
 
@@ -138,21 +142,48 @@ function emitParticleTrailBatch(s: EmitState, b: import('./scene').ParticleTrail
   const buf = b.buffer;
   const segs = b.segments;
   const head = b.headIdx;
-  const stroke = b.style.stroke ?? '#fff';
-  const sw = b.style.strokeWeight ?? 1;
+  const baseStroke = b.style.stroke ?? '#fff';
+  const baseWidth = b.style.strokeWeight ?? 1;
+  const { useBufferColor, tapered, fadeOut, tailWidth } = b;
+  // Tapering / fading vary per segment, so they need one <line> per
+  // segment; a plain trail collapses to a single fast <polyline>. Matches
+  // the canvas renderer's per-segment width/alpha exactly.
+  const perSegment = tapered || fadeOut;
+
   for (let slot = 0; slot < buf.capacity; slot++) {
     if (!buf.alive[slot]) continue;
+    const stroke = useBufferColor
+      ? `rgb(${(buf.colorR[slot]! * 255) | 0},${(buf.colorG[slot]! * 255) | 0},${(buf.colorB[slot]! * 255) | 0})`
+      : baseStroke;
+    const baseAlpha = useBufferColor ? buf.colorA[slot]! : 1;
+
+    // Collect this slot's points (newest → oldest), stopping at the first
+    // uninitialised (NaN) history sample.
     const base = slot * segs * 2;
-    const pts: string[] = [];
+    const pts: Array<[number, number]> = [];
     for (let seg = 0; seg < segs; seg++) {
       const idx = (head - seg + segs) % segs;
       const x = b.history[base + idx * 2]!;
       const y = b.history[base + idx * 2 + 1]!;
       if (!Number.isFinite(x) || !Number.isFinite(y)) break;
-      pts.push(`${x},${y}`);
+      pts.push([x, y]);
     }
-    if (pts.length >= 2) {
-      s.out.push(`<polyline fill="none" stroke="${stroke}" stroke-width="${sw}" points="${pts.join(' ')}"/>`);
+    if (pts.length < 2) continue;
+
+    if (!perSegment) {
+      const op = baseAlpha < 1 ? ` stroke-opacity="${baseAlpha}"` : '';
+      const pointStr = pts.map((p) => `${p[0]},${p[1]}`).join(' ');
+      s.out.push(`<polyline fill="none" stroke="${stroke}" stroke-width="${baseWidth}" stroke-linecap="round"${op} points="${pointStr}"/>`);
+      continue;
+    }
+    // Per-segment: width tapers head→tail, opacity fades head→tail.
+    for (let i = 1; i < pts.length; i++) {
+      const ageAvg = (i - 0.5) / segs;
+      let w = baseWidth;
+      if (tapered) { w = baseWidth * (1 - ageAvg * (1 - tailWidth)); if (w <= 0) w = 0.001; }
+      const op = fadeOut ? baseAlpha * (1 - ageAvg) : baseAlpha;
+      const opAttr = op < 1 ? ` stroke-opacity="${op.toFixed(3)}"` : '';
+      s.out.push(`<line x1="${pts[i - 1]![0]}" y1="${pts[i - 1]![1]}" x2="${pts[i]![0]}" y2="${pts[i]![1]}" stroke="${stroke}" stroke-width="${w.toFixed(3)}" stroke-linecap="round"${opAttr}/>`);
     }
   }
 }

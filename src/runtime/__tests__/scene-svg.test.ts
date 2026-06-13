@@ -63,6 +63,15 @@ describe('sceneToSvg', () => {
       const out = sceneToSvg([], { width: 0, height: -50 });
       expect(out).toContain('viewBox="0 0 1 1"');
     });
+
+    it('centres the content (matches the canvas renderer\'s origin translate)', () => {
+      // Scene coords are centre-origin; the SVG must translate by (w/2,h/2)
+      // or the whole composition lands in the top-left quadrant.
+      const out = sceneToSvg([rect()], { width: 400, height: 300 });
+      expect(out).toContain('<g transform="translate(200,150)">');
+      // The shape sits inside the group, before the closing </g></svg>.
+      expect(out).toMatch(/<g transform="translate\(200,150\)">.*<rect.*<\/g><\/svg>$/);
+    });
   });
 
   describe('shape emission', () => {

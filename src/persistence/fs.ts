@@ -41,7 +41,9 @@ declare global {
 const PATCH_FILE_TYPES = [
   {
     description: 'Floret patch',
-    accept: { 'application/json': ['.floret.json', '.json'] },
+    // .flora is our extension (the content is still JSON). The legacy
+    // .floret.json / .json are kept so older saves still open.
+    accept: { 'application/json': ['.flora', '.floret.json', '.json'] },
   },
 ];
 
@@ -111,7 +113,7 @@ function pickFileViaInput(): Promise<File> {
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.json,application/json';
+    input.accept = '.flora,.floret.json,.json,application/json';
     input.onchange = () => {
       const f = input.files?.[0];
       if (f) resolve(f);
@@ -137,7 +139,7 @@ function parseAndMigrate(text: string): PatchFile {
 function suggestedFilename(patch: PatchFile): string {
   const name = patch.meta?.name ?? 'untitled';
   const safe = name.replace(/[^a-z0-9._-]+/gi, '-').toLowerCase();
-  return `${safe}.floret.json`;
+  return `${safe}.flora`;
 }
 
 // ─── localStorage autosave (small patches; not for large work) ──────────────

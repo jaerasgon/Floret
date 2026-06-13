@@ -102,7 +102,7 @@ export function FileMenu() {
     try {
       const result = await savePatch(patch, handleRef.current);
       handleRef.current = result.handle;
-      setFileName(result.name.replace(/\.floret\.json$|\.json$/i, ''));
+      setFileName(result.name.replace(/\.flora$|\.floret\.json$|\.json$/i, ''));
       setStatus(`saved ${result.name}`);
     } catch (err) {
       if ((err as Error).name !== 'AbortError') {
@@ -143,7 +143,7 @@ export function FileMenu() {
       paramStore.replaceAll(ns.map((n) => [n.id, n.data.params] as const));
       loadEditor(ns, es);
       handleRef.current = result.handle;
-      setFileName(result.name.replace(/\.floret\.json$|\.json$/i, ''));
+      setFileName(result.name.replace(/\.flora$|\.floret\.json$|\.json$/i, ''));
       setStatus(`opened ${result.name}`);
     } catch (err) {
       if ((err as Error).name !== 'AbortError') {
@@ -155,7 +155,7 @@ export function FileMenu() {
   return (
     <>
       <button onClick={onNew} title="New empty patch">New</button>
-      <button onClick={onOpen} title="Open a .floret.json file">Open</button>
+      <button onClick={onOpen} title="Open a .flora file">Open</button>
       <button onClick={onSave} title="Save (Ctrl+S)">Save</button>
       <button onClick={onSaveAs} title="Save under a new name">Save As</button>
       <button onClick={onShare} title="Copy a shareable link to this patch">Share</button>

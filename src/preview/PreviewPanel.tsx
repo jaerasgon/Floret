@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Pause, Play, Download } from 'lucide-react';
 import { Preview } from './Preview';
 import { Panel } from '../editor/panel/Panel';
@@ -92,14 +93,25 @@ function ExportMenu({ driverRef, name }: {
   name: string;
 }) {
   const running = useAppStore((s) => s.running);
-  const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const [menuPos, setMenuPos] = useState<{ left: number; top: number } | null>(null);
+  const btnRef = useRef<HTMLButtonElement | null>(null);
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'floret';
+  const open = menuPos !== null;
+
+  const toggle = () => {
+    if (open) { setMenuPos(null); return; }
+    const r = btnRef.current?.getBoundingClientRect();
+    if (!r) return;
+    // Right-align the menu to the button and hang it below; clamp on-screen.
+    const W = 150;
+    const left = Math.max(8, Math.min(r.right - W, window.innerWidth - W - 8));
+    setMenuPos({ left, top: r.bottom + 4 });
+  };
 
   const png = (scale: number) => {
     const d = driverRef.current;
     if (d) exportCanvasPng(d.canvas, slug, scale);
-    setOpen(false);
+    setMenuPos(null);
   };
   const svg = () => {
     const d = driverRef.current;
@@ -107,32 +119,42 @@ function ExportMenu({ driverRef, name }: {
       const s = d.captureScene();
       exportSceneSvg(s.layers, s.width, s.height, s.background, slug);
     }
-    setOpen(false);
+    setMenuPos(null);
   };
 
   return (
-    <div ref={wrapRef} style={{ position: 'relative', display: 'inline-flex' }}>
+    <>
       <Tooltip label={running ? 'Pause to export the current frame' : 'Export the paused frame as PNG / SVG'}>
         <button
+          ref={btnRef}
           className="toolbar-run-btn"
-          onClick={() => setOpen((v) => !v)}
+          onClick={toggle}
           aria-label="Export"
           disabled={running}
-          onBlur={() => setTimeout(() => setOpen(false), 150)}
+          onBlur={() => setTimeout(() => setMenuPos(null), 150)}
         >
           <Download size={13} strokeWidth={1.8} />
           <span>Export</span>
         </button>
       </Tooltip>
-      {open && !running && (
-        <div className="export-menu">
+      {/* Portal to <body> so the dock tab bar's `overflow:hidden` can't
+          clip the dropdown to a sliver. Positioned at the button's rect. */}
+      {open && !running && menuPos && createPortal(
+        <div
+          className="export-menu export-menu-fixed"
+          style={{ left: menuPos.left, top: menuPos.top }}
+          // Keep focus on the button so its onBlur (close) fires after a
+          // menu click, not before.
+          onMouseDown={(e) => e.preventDefault()}
+        >
           <button className="library-row" onClick={() => png(1)}>PNG · 1×</button>
           <button className="library-row" onClick={() => png(2)}>PNG · 2×</button>
           <button className="library-row" onClick={() => png(4)}>PNG · 4×</button>
           <button className="library-row" onClick={svg}>SVG · vector</button>
-        </div>
+        </div>,
+        document.body,
       )}
-    </div>
+    </>
   );
 }
 

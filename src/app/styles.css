@@ -3192,6 +3192,15 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   overflow: hidden;
   animation: pop-in var(--dur-base) var(--ease-out);
 }
+/* Portaled to <body> with computed fixed coords so the dock tab bar's
+   overflow can't clip it. */
+.export-menu-fixed {
+  position: fixed;
+  top: auto;
+  right: auto;
+  width: 150px;
+  z-index: 6000;
+}
 .export-menu .library-row {
   font-size: 11px;
   padding: 7px 12px;

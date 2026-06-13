@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Pause, Play, Download } from 'lucide-react';
+import { Pause, Play, Download, Check } from 'lucide-react';
 import { Preview } from './Preview';
 import { Panel } from '../editor/panel/Panel';
 import { useAppStore } from '../app/store';
@@ -94,6 +94,8 @@ function ExportMenu({ driverRef, name }: {
 }) {
   const running = useAppStore((s) => s.running);
   const [menuPos, setMenuPos] = useState<{ left: number; top: number } | null>(null);
+  const [saved, setSaved] = useState(false);
+  const savedTimer = useRef<number | null>(null);
   const btnRef = useRef<HTMLButtonElement | null>(null);
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'floret';
   const open = menuPos !== null;
@@ -108,9 +110,19 @@ function ExportMenu({ driverRef, name }: {
     setMenuPos({ left, top: r.bottom + 4 });
   };
 
+  // A download is silent (no in-app surface), so flash the button to
+  // "Saved" briefly — otherwise a successful export reads as "nothing
+  // happened" if the browser's download UI is hidden.
+  const flashSaved = () => {
+    setSaved(true);
+    if (savedTimer.current) window.clearTimeout(savedTimer.current);
+    savedTimer.current = window.setTimeout(() => setSaved(false), 1400);
+  };
+  useEffect(() => () => { if (savedTimer.current) window.clearTimeout(savedTimer.current); }, []);
+
   const png = (scale: number) => {
     const d = driverRef.current;
-    if (d) exportCanvasPng(d.canvas, slug, scale);
+    if (d) { exportCanvasPng(d.canvas, slug, scale); flashSaved(); }
     setMenuPos(null);
   };
   const svg = () => {
@@ -118,6 +130,7 @@ function ExportMenu({ driverRef, name }: {
     if (d) {
       const s = d.captureScene();
       exportSceneSvg(s.layers, s.width, s.height, s.background, slug);
+      flashSaved();
     }
     setMenuPos(null);
   };
@@ -127,14 +140,14 @@ function ExportMenu({ driverRef, name }: {
       <Tooltip label={running ? 'Pause to export the current frame' : 'Export the paused frame as PNG / SVG'}>
         <button
           ref={btnRef}
-          className="toolbar-run-btn"
+          className={`toolbar-run-btn${saved ? ' running' : ''}`}
           onClick={toggle}
           aria-label="Export"
           disabled={running}
           onBlur={() => setTimeout(() => setMenuPos(null), 150)}
         >
-          <Download size={13} strokeWidth={1.8} />
-          <span>Export</span>
+          {saved ? <Check size={13} strokeWidth={2} /> : <Download size={13} strokeWidth={1.8} />}
+          <span>{saved ? 'Saved' : 'Export'}</span>
         </button>
       </Tooltip>
       {/* Portal to <body> so the dock tab bar's `overflow:hidden` can't

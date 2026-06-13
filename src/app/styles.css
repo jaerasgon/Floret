@@ -582,8 +582,23 @@ input:focus, select:focus, textarea:focus {
   transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std);
 }
 .dock-tab:hover { color: var(--fg-1); background: var(--bg-2); }
-.dock-tab.active { color: var(--fg-0); background: var(--bg-1); }
-.dock-tab-grip { color: var(--fg-3); font-size: 9px; letter-spacing: -1px; }
+.dock-tab.active {
+  color: var(--fg-0);
+  background: var(--bg-1);
+  /* A top accent bar marks the active tab clearly — the bg shift alone is
+     easy to miss against neighbouring tabs. */
+  box-shadow: inset 0 2px 0 var(--accent-dim);
+}
+/* The whole tab is draggable; the grip is just an affordance hint, so keep
+   it out of the way until the tab is hovered. */
+.dock-tab-grip {
+  color: var(--fg-3);
+  font-size: 9px;
+  letter-spacing: -1px;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-std);
+}
+.dock-tab:hover .dock-tab-grip { opacity: 0.7; }
 .dock-tab-label { white-space: nowrap; }
 .dock-tab-actions { display: inline-flex; align-items: center; gap: 3px; margin-left: 6px; }
 .dock-group-body {

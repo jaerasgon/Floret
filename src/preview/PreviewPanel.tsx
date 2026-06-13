@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Pause, Play, Download, Check } from 'lucide-react';
 import { Preview } from './Preview';
@@ -38,6 +38,11 @@ export function PreviewPanel({
   panelId, rendererId, title = 'Preview',
 }: PreviewPanelProps) {
   const driverRef = useRef<ActiveDriver | null>(null);
+  // Stable identity: Preview's driver-creating effect lists `onDriver` as a
+  // dependency, so an inline arrow here would re-create the driver — and
+  // reset the running scene (particles respawn, trails clear) — on EVERY
+  // re-render of this panel, e.g. whenever a node is selected on the canvas.
+  const onDriver = useCallback((d: ActiveDriver | null) => { driverRef.current = d; }, []);
   return (
     <Panel
       id={panelId}
@@ -46,7 +51,7 @@ export function PreviewPanel({
       hideClose
       headerActions={<PreviewHeaderControls driverRef={driverRef} name={title} />}
     >
-      <Preview rendererId={rendererId} onDriver={(d) => { driverRef.current = d; }} />
+      <Preview rendererId={rendererId} onDriver={onDriver} />
     </Panel>
   );
 }

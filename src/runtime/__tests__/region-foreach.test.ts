@@ -33,8 +33,8 @@ describe('ForEach region', () => {
         { id: 'sOut', defType: 'region/splicer-out/number', params: {}, parentId: 'r1' },
       ],
       [
-        { fromNode: 'count', fromPort: 'out', toNode: 'range', toPort: 'count' },
-        { fromNode: 'range', fromPort: 'out', toNode: 'sIn', toPort: 'outer' },
+        { fromNode: 'count', fromPort: 'number', toNode: 'range', toPort: 'count' },
+        { fromNode: 'range', fromPort: 'indices', toNode: 'sIn', toPort: 'outer' },
         { fromNode: 'sIn', fromPort: 'inner', toNode: 'sOut', toPort: 'inner' },
       ],
       {
@@ -64,13 +64,13 @@ describe('ForEach region', () => {
         { id: 'out', defType: 'region/splicer-out/number', params: {}, parentId: 'reg' },
       ],
       [
-        { fromNode: 'c7', fromPort: 'out', toNode: 'r7', toPort: 'count' },
-        { fromNode: 'c3', fromPort: 'out', toNode: 'r3', toPort: 'count' },
-        { fromNode: 'r7', fromPort: 'out', toNode: 'inA', toPort: 'outer' },
-        { fromNode: 'r3', fromPort: 'out', toNode: 'inB', toPort: 'outer' },
+        { fromNode: 'c7', fromPort: 'number', toNode: 'r7', toPort: 'count' },
+        { fromNode: 'c3', fromPort: 'number', toNode: 'r3', toPort: 'count' },
+        { fromNode: 'r7', fromPort: 'indices', toNode: 'inA', toPort: 'outer' },
+        { fromNode: 'r3', fromPort: 'indices', toNode: 'inB', toPort: 'outer' },
         { fromNode: 'inA', fromPort: 'inner', toNode: 'add', toPort: 'a' },
         { fromNode: 'inB', fromPort: 'inner', toNode: 'add', toPort: 'b' },
-        { fromNode: 'add', fromPort: 'out', toNode: 'out', toPort: 'inner' },
+        { fromNode: 'add', fromPort: 'sum', toNode: 'out', toPort: 'inner' },
       ],
       {
         registry: realRegistry(),
@@ -94,8 +94,8 @@ describe('ForEach region', () => {
         { id: 'sOut', defType: 'region/splicer-out/number', params: {}, parentId: 'reg' },
       ],
       [
-        { fromNode: 'c0', fromPort: 'out', toNode: 'range', toPort: 'count' },
-        { fromNode: 'range', fromPort: 'out', toNode: 'sIn', toPort: 'outer' },
+        { fromNode: 'c0', fromPort: 'number', toNode: 'range', toPort: 'count' },
+        { fromNode: 'range', fromPort: 'indices', toNode: 'sIn', toPort: 'outer' },
         { fromNode: 'sIn', fromPort: 'inner', toNode: 'sOut', toPort: 'inner' },
       ],
       {
@@ -120,11 +120,11 @@ describe('ForEach region', () => {
         { id: 'sOut', defType: 'region/splicer-out/number', params: {}, parentId: 'reg' },
       ],
       [
-        { fromNode: 'c5', fromPort: 'out', toNode: 'range', toPort: 'count' },
-        { fromNode: 'range', fromPort: 'out', toNode: 'sIn', toPort: 'outer' },
+        { fromNode: 'c5', fromPort: 'number', toNode: 'range', toPort: 'count' },
+        { fromNode: 'range', fromPort: 'indices', toNode: 'sIn', toPort: 'outer' },
         { fromNode: 'sIn', fromPort: 'inner', toNode: 'add', toPort: 'a' },
-        { fromNode: 'k100', fromPort: 'out', toNode: 'add', toPort: 'b' }, // broadcast!
-        { fromNode: 'add', fromPort: 'out', toNode: 'sOut', toPort: 'inner' },
+        { fromNode: 'k100', fromPort: 'number', toNode: 'add', toPort: 'b' }, // broadcast!
+        { fromNode: 'add', fromPort: 'sum', toNode: 'sOut', toPort: 'inner' },
       ],
       {
         registry: realRegistry(),

@@ -36,8 +36,8 @@ export function buildParticlesFountain() {
       edge('pf_world','world',     'pf_em',      'world'),
       edge('pf_time', 't',         'pf_em',      'time'),
       edge('pf_em',   'particles', 'pf_render',  'particles'),
-      edge('pf_render','out',      'pf_renderer','layers'),
-      edge('pf_bg',   'out',       'pf_renderer','background'),
+      edge('pf_render', 'layer',      'pf_renderer','layers'),
+      edge('pf_bg', 'color',       'pf_renderer','background'),
     ],
   };
 }
@@ -86,18 +86,18 @@ export function buildParticlesTextDust() {
     nodes: [c, time, str, fillC, fill, tp, text, fromL, turb, world,
             emit, render, bg, renderer],
     edges: [
-      edge('pt_str','out','pt_text','string'),
-      edge('pt_fillC','out','pt_fill','color'),
+      edge('pt_str', 'text','pt_text','string'),
+      edge('pt_fillC', 'color','pt_fill','color'),
       edge('pt_fill','style','pt_tp','base'),
       edge('pt_tp','style','pt_text','style'),
-      edge('pt_text','out','pt_fromL','layer'),
+      edge('pt_text', 'layer','pt_fromL','layer'),
       edge('pt_fromL','positions','pt_em','positions'),
       edge('pt_turb','force','pt_world','forces'),
       edge('pt_world','world','pt_em','world'),
       edge('pt_time','t','pt_em','time'),
       edge('pt_em','particles','pt_render','particles'),
-      edge('pt_render','out','pt_renderer','layers'),
-      edge('pt_bg','out','pt_renderer','background'),
+      edge('pt_render', 'layer','pt_renderer','layers'),
+      edge('pt_bg', 'color','pt_renderer','background'),
     ],
   };
 }
@@ -150,8 +150,8 @@ export function buildParticlesAttractor() {
       edge('pa_world','world','pa_em','world'),
       edge('pa_time','t','pa_em','time'),
       edge('pa_em','particles','pa_render','particles'),
-      edge('pa_render','out','pa_renderer','layers'),
-      edge('pa_bg','out','pa_renderer','background'),
+      edge('pa_render', 'layer','pa_renderer','layers'),
+      edge('pa_bg', 'color','pa_renderer','background'),
     ],
   };
 }
@@ -212,23 +212,23 @@ export function buildParticlesPinball() {
       edge('pp_trailW','style','pp_trail','style'),
       // Per-spawn hue: time → mul → HSL → emitter.color
       edge('pp_time','t','pp_tHue','a'),
-      edge('pp_tHue','out','pp_hsl','h'),
-      edge('pp_hsl','out','pp_em','color'),
+      edge('pp_tHue', 'product','pp_hsl','h'),
+      edge('pp_hsl', 'color','pp_em','color'),
       // Outline style
-      edge('pp_polyC','out','pp_polyS','color'),
+      edge('pp_polyC', 'color','pp_polyS','color'),
       edge('pp_polyS','style','pp_polyN','base'),
       edge('pp_polyN','style','pp_poly','style'),
       // Polygon doubles as collider AND visible outline
-      edge('pp_poly','out','pp_coll','layer'),
-      edge('pp_poly','out','pp_renderer','layers'),
+      edge('pp_poly', 'shape','pp_coll','layer'),
+      edge('pp_poly', 'shape','pp_renderer','layers'),
       edge('pp_coll','collider','pp_world','colliders'),
       edge('pp_world','world','pp_em','world'),
       edge('pp_time','t','pp_em','time'),
       edge('pp_em','particles','pp_trail','particles'),
       edge('pp_em','particles','pp_render','particles'),
-      edge('pp_trail','out','pp_renderer','layers'),
-      edge('pp_render','out','pp_renderer','layers'),
-      edge('pp_bg','out','pp_renderer','background'),
+      edge('pp_trail', 'layer','pp_renderer','layers'),
+      edge('pp_render', 'layer','pp_renderer','layers'),
+      edge('pp_bg', 'color','pp_renderer','background'),
     ],
   };
 }
@@ -284,8 +284,8 @@ export function buildParticlesSpiral() {
     nodes: [c, time, vortex, attr, world, tHue, hsl, ring, emit, render, trailW, trail, bg, renderer],
     edges: [
       edge('ps_time','t','ps_tHue','a'),
-      edge('ps_tHue','out','ps_hsl','h'),
-      edge('ps_hsl','out','ps_em','color'),
+      edge('ps_tHue', 'product','ps_hsl','h'),
+      edge('ps_hsl', 'color','ps_em','color'),
       edge('ps_vortex','force','ps_world','forces'),
       edge('ps_attr','force','ps_world','forces'),
       edge('ps_world','world','ps_em','world'),
@@ -294,9 +294,9 @@ export function buildParticlesSpiral() {
       edge('ps_em','particles','ps_trail','particles'),
       edge('ps_em','particles','ps_render','particles'),
       edge('ps_trailW','style','ps_trail','style'),
-      edge('ps_trail','out','ps_renderer','layers'),
-      edge('ps_render','out','ps_renderer','layers'),
-      edge('ps_bg','out','ps_renderer','background'),
+      edge('ps_trail', 'layer','ps_renderer','layers'),
+      edge('ps_render', 'layer','ps_renderer','layers'),
+      edge('ps_bg', 'color','ps_renderer','background'),
     ],
   };
 }

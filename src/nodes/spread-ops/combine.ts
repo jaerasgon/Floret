@@ -24,8 +24,8 @@ export const interleaveNode = registerNode({
     { name: 'a', type: 'any', kind: 'spread' },
     { name: 'b', type: 'any', kind: 'spread' },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: mergeType(up.a, up.b), kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'values', type: mergeType(up.a, up.b), kind: 'spread' }],
   computeRaw: (inputs) => {
     const a = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const b = (inputs[1] ?? []) as ReadonlyArray<unknown>;
@@ -111,9 +111,9 @@ export const consNode = registerNode({
     { name: 'head', type: 'any', default: 0 },
     { name: 'spread', type: 'any', kind: 'spread' },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
   dynamicOutputs: (_p, up) => [
-    { name: 'out', type: up.spread ?? up.head ?? 'any', kind: 'spread' },
+    { name: 'values', type: up.spread ?? up.head ?? 'any', kind: 'spread' },
   ],
   computeRaw: (inputs) => {
     const head = inputs[0]?.[0];
@@ -131,9 +131,9 @@ export const appendNode = registerNode({
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'tail', type: 'any', default: 0 },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
   dynamicOutputs: (_p, up) => [
-    { name: 'out', type: up.spread ?? up.tail ?? 'any', kind: 'spread' },
+    { name: 'values', type: up.spread ?? up.tail ?? 'any', kind: 'spread' },
   ],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
@@ -152,9 +152,9 @@ export const injectNode = registerNode({
     { name: 'marks', type: 'any', kind: 'spread' },
     { name: 'count', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
   dynamicOutputs: (_p, up) => [
-    { name: 'out', type: mergeType(up.spread, up.marks), kind: 'spread' },
+    { name: 'values', type: mergeType(up.spread, up.marks), kind: 'spread' },
   ],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;

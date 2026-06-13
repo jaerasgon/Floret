@@ -25,7 +25,7 @@ export const linearSpreadNode = registerNode({
     { name: 'to', type: 'number', default: 1 },
     { name: 'count', type: 'number', default: 8, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'number', kind: 'spread' }],
   computeRaw: (inputs) => {
     const from = Number(inputs[0]?.[0] ?? 0);
     const to = Number(inputs[1]?.[0] ?? 1);
@@ -45,7 +45,7 @@ export const rangeNode = registerNode({
   label: 'RangeSpread',
   description: 'Generate the integers 0, 1, …, count − 1.',
   inputs: [{ name: 'count', type: 'number', default: 8, integer: true }],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'indices', type: 'number', kind: 'spread' }],
   computeRaw: (inputs) => {
     const count = intCount(inputs[0]?.[0]);
     if (count === 0) return [[]];
@@ -69,12 +69,12 @@ export const repeatNode = registerNode({
     { name: 'value', type: 'any', kind: 'spread', default: 0 },
     { name: 'count', type: 'number', default: 8, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
   // Output type echoes whatever's wired into `value` — connect a Color
   // spread, get a Color spread out; connect a Number, get Number out.
   // Falls back to 'any' when nothing's connected.
   dynamicOutputs: (_params, up) => [
-    { name: 'out', type: up.value ?? 'any', kind: 'spread' },
+    { name: 'values', type: up.value ?? 'any', kind: 'spread' },
   ],
   computeRaw: (inputs) => {
     const value = (inputs[0] ?? []) as ReadonlyArray<unknown>;
@@ -106,11 +106,11 @@ export const pickSpreadNode = registerNode({
     { name: 'source',  type: 'any',    kind: 'spread' },
     { name: 'indices', type: 'number', kind: 'spread' },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
   // Output type echoes the source spread — pick from colours, get colours;
   // pick from strings, get strings.
   dynamicOutputs: (_params, up) => [
-    { name: 'out', type: up.source ?? 'any', kind: 'spread' },
+    { name: 'values', type: up.source ?? 'any', kind: 'spread' },
   ],
   computeRaw: (inputs) => {
     const source = (inputs[0] ?? []) as ReadonlyArray<unknown>;
@@ -144,12 +144,12 @@ export const randomizeNode = registerNode({
     { name: 'value', type: 'any', kind: 'spread', default: 0 },
     { name: 'seed', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
   // Output type mirrors whatever's wired into `value` — same pattern as
   // Repeat / Take / Skip / Slice. Falls back to 'any' when unwired so
   // the port colour stays neutral instead of guessing.
   dynamicOutputs: (_params, up) => [
-    { name: 'out', type: up.value ?? 'any', kind: 'spread' },
+    { name: 'values', type: up.value ?? 'any', kind: 'spread' },
   ],
   computeRaw: (inputs) => {
     const value = (inputs[0] ?? []) as ReadonlyArray<unknown>;
@@ -182,7 +182,7 @@ export const sineSpreadNode = registerNode({
     { name: 'phase', type: 'number', default: 0 },
     { name: 'offset', type: 'number', default: 0 },
   ],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'samples', type: 'number', kind: 'spread' }],
   computeRaw: (inputs) => {
     const count = intCount(inputs[0]?.[0]);
     const amp = Number(inputs[1]?.[0] ?? 1);
@@ -207,7 +207,7 @@ export const geometricSpreadNode = registerNode({
     { name: 'ratio', type: 'number', default: 2 },
     { name: 'count', type: 'number', default: 8, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'number', kind: 'spread' }],
   computeRaw: (inputs) => {
     const start = Number(inputs[0]?.[0] ?? 1);
     const ratio = Number(inputs[1]?.[0] ?? 2);
@@ -234,7 +234,7 @@ export const noiseSpreadNode = registerNode({
     { name: 'phase', type: 'number', default: 0 },
     { name: 'seed', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'samples', type: 'number', kind: 'spread' }],
   computeRaw: (inputs) => {
     const count = intCount(inputs[0]?.[0]);
     const freq = Number(inputs[1]?.[0] ?? 1);

@@ -36,7 +36,7 @@ export const cacheLayerNode = registerNode({
     { name: 'w', type: 'number', default: 0 },
     { name: 'h', type: 'number', default: 0 },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'rasterized', type: 'layer' }],
   computeRaw: (inputs: PortValue[], params: NodeParamContext) => {
     const layers = (inputs[0] ?? []) as ReadonlyArray<Layer>;
     const wIn = ((inputs[1] ?? [])[0] as number | undefined) ?? 0;

@@ -25,7 +25,7 @@ export const drawImageRegionNode = registerNode({
     { name: 'dh', type: 'number', default: 0 },
     { name: 'tint', type: 'color', default: null },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'layer', type: 'layer' }],
   compute: (image, sx, sy, sw, sh, dx, dy, dw, dh, tint) => {
     if (!isReadyImageCanvas(image)) {
       return [{ kind: 'group', children: [] } as Layer];

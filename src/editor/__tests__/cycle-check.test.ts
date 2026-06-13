@@ -44,7 +44,7 @@ const mkEdge = (source: string, target: string, targetHandle: string): Edge => (
   id: `${source}->${target}/${targetHandle}`,
   source,
   target,
-  sourceHandle: 'out-out',
+  sourceHandle: 'out-sum',
   targetHandle,
 });
 

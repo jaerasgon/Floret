@@ -17,7 +17,7 @@ export const makeNode = registerNode({
     { name: 'x', type: 'number', default: 0 },
     { name: 'y', type: 'number', default: 0 },
   ],
-  outputs: [{ name: 'out', type: 'vec2' }],
+  outputs: [{ name: 'vector', type: 'vec2' }],
   compute: (x, y) => [{ x: x as number, y: y as number }],
 });
 
@@ -46,7 +46,7 @@ export const fromAngleNode = registerNode({
     { name: 'angle', type: 'number', default: 0 },
     { name: 'mag', type: 'number', default: 1 },
   ],
-  outputs: [{ name: 'out', type: 'vec2' }],
+  outputs: [{ name: 'vector', type: 'vec2' }],
   compute: (angle, mag) => {
     const a = angle as number;
     const m = mag as number;
@@ -60,8 +60,6 @@ const ab = [
   { name: 'a', type: 'vec2' as const, default: ZERO },
   { name: 'b', type: 'vec2' as const, default: ZERO },
 ];
-const vOut = [{ name: 'out', type: 'vec2' as const }];
-const nOut = [{ name: 'out', type: 'number' as const }];
 
 export const addNode = registerNode({
   type: 'vec2/add',
@@ -69,7 +67,7 @@ export const addNode = registerNode({
   label: 'Add',
   description: 'Add two vec2s component-wise.',
   inputs: ab,
-  outputs: vOut,
+  outputs: [{ name: 'vector', type: 'vec2' }],
   compute: (a, b) => {
     const p = toVec2(a);
     const q = toVec2(b);
@@ -83,7 +81,7 @@ export const subNode = registerNode({
   label: 'Sub',
   description: 'Subtract b from a component-wise.',
   inputs: ab,
-  outputs: vOut,
+  outputs: [{ name: 'vector', type: 'vec2' }],
   compute: (a, b) => {
     const p = toVec2(a);
     const q = toVec2(b);
@@ -97,7 +95,7 @@ export const mulNode = registerNode({
   label: 'Mul',
   description: 'Component-wise multiply.',
   inputs: ab,
-  outputs: vOut,
+  outputs: [{ name: 'vector', type: 'vec2' }],
   compute: (a, b) => {
     const p = toVec2(a);
     const q = toVec2(b);
@@ -114,7 +112,7 @@ export const scaleNode = registerNode({
     { name: 'v', type: 'vec2', default: ZERO },
     { name: 's', type: 'number', default: 1 },
   ],
-  outputs: vOut,
+  outputs: [{ name: 'scaled', type: 'vec2' }],
   compute: (v, s) => {
     const p = toVec2(v);
     const k = s as number;
@@ -132,7 +130,7 @@ export const lerpNode = registerNode({
     { name: 'b', type: 'vec2', default: ZERO },
     { name: 't', type: 'number', default: 0 },
   ],
-  outputs: vOut,
+  outputs: [{ name: 'vector', type: 'vec2' }],
   compute: (a, b, t) => {
     const p = toVec2(a);
     const q = toVec2(b);
@@ -149,7 +147,7 @@ export const magNode = registerNode({
   label: 'Mag',
   description: 'Length of the vector.',
   inputs: [{ name: 'v', type: 'vec2', default: ZERO }],
-  outputs: nOut,
+  outputs: [{ name: 'length', type: 'number' }],
   compute: (v) => {
     const p = toVec2(v);
     return [Math.hypot(p.x, p.y)];
@@ -162,7 +160,7 @@ export const distNode = registerNode({
   label: 'Dist',
   description: 'Distance between two points.',
   inputs: ab,
-  outputs: nOut,
+  outputs: [{ name: 'distance', type: 'number' }],
   compute: (a, b) => {
     const p = toVec2(a);
     const q = toVec2(b);
@@ -176,7 +174,7 @@ export const dotNode = registerNode({
   label: 'Dot',
   description: 'Dot product of a and b.',
   inputs: ab,
-  outputs: nOut,
+  outputs: [{ name: 'dot', type: 'number' }],
   compute: (a, b) => {
     const p = toVec2(a);
     const q = toVec2(b);
@@ -190,7 +188,7 @@ export const headingNode = registerNode({
   label: 'Heading',
   description: 'Angle of the vector in radians.',
   inputs: [{ name: 'v', type: 'vec2', default: ZERO }],
-  outputs: nOut,
+  outputs: [{ name: 'angle', type: 'number' }],
   compute: (v) => {
     const p = toVec2(v);
     return [Math.atan2(p.y, p.x)];
@@ -203,7 +201,7 @@ export const angleBetweenNode = registerNode({
   label: 'AngleBetween',
   description: 'Signed angle from a to b, in radians.',
   inputs: ab,
-  outputs: nOut,
+  outputs: [{ name: 'angle', type: 'number' }],
   compute: (a, b) => {
     const p = toVec2(a);
     const q = toVec2(b);
@@ -219,7 +217,7 @@ export const normalizeNode = registerNode({
   label: 'Normalize',
   description: 'Unit vector in the same direction. Zero vectors stay zero.',
   inputs: [{ name: 'v', type: 'vec2', default: ZERO }],
-  outputs: vOut,
+  outputs: [{ name: 'normalized', type: 'vec2' }],
   compute: (v) => {
     const p = toVec2(v);
     const m = Math.hypot(p.x, p.y);
@@ -237,7 +235,7 @@ export const setMagNode = registerNode({
     { name: 'v', type: 'vec2', default: ZERO },
     { name: 'mag', type: 'number', default: 1 },
   ],
-  outputs: vOut,
+  outputs: [{ name: 'vector', type: 'vec2' }],
   compute: (v, mag) => {
     const p = toVec2(v);
     const target = mag as number;
@@ -257,7 +255,7 @@ export const limitNode = registerNode({
     { name: 'v', type: 'vec2', default: ZERO },
     { name: 'max', type: 'number', default: 1 },
   ],
-  outputs: vOut,
+  outputs: [{ name: 'vector', type: 'vec2' }],
   compute: (v, max) => {
     const p = toVec2(v);
     const cap = max as number;
@@ -277,7 +275,7 @@ export const rotateNode = registerNode({
     { name: 'v', type: 'vec2', default: ZERO },
     { name: 'angle', type: 'number', default: 0 },
   ],
-  outputs: vOut,
+  outputs: [{ name: 'rotated', type: 'vec2' }],
   compute: (v, angle) => {
     const p = toVec2(v);
     const a = angle as number;

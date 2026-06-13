@@ -126,60 +126,60 @@ export function buildKineticType() {
     ],
     edges: [
       // Split phrase → char spread; Length → drive tile count + Range count.
-      edge('kt_str',   'out', 'kt_split', 'text'),
-      edge('kt_str',   'out', 'kt_len',   'text'),
-      edge('kt_split', 'out', 'kt_tile',  'value'),
-      edge('kt_len',   'out', 'kt_total', 'a'),
-      edge('kt_total', 'out', 'kt_range', 'count'),
+      edge('kt_str', 'text', 'kt_split', 'text'),
+      edge('kt_str', 'text', 'kt_len',   'text'),
+      edge('kt_split', 'parts', 'kt_tile',  'value'),
+      edge('kt_len', 'length', 'kt_total', 'a'),
+      edge('kt_total', 'product', 'kt_range', 'count'),
 
       // Per-word colour pipeline: phrase → WordIndices → Pick(palette) →
       // tile by rows; lockstep with chars + indices.
-      edge('kt_str',     'out',    'kt_widx',    'text'),
+      edge('kt_str', 'text',    'kt_widx',    'text'),
       edge('kt_palette', 'colors', 'kt_perChar', 'source'),
-      edge('kt_widx',    'out',    'kt_perChar', 'indices'),
-      edge('kt_perChar', 'out',    'kt_tileC',   'value'),
+      edge('kt_widx', 'indices',    'kt_perChar', 'indices'),
+      edge('kt_perChar', 'values',    'kt_tileC',   'value'),
 
       // Three lockstep spreads (length = rows × chars) into the region.
-      edge('kt_tile',  'out', RID, 'ch'),
-      edge('kt_range', 'out', RID, 'i'),
-      edge('kt_tileC', 'out', RID, 'col'),
+      edge('kt_tile', 'values', RID, 'ch'),
+      edge('kt_range', 'indices', RID, 'i'),
+      edge('kt_tileC', 'values', RID, 'col'),
 
       // ── Recover rowIdx + charIdx ──
       // charIdx = i % N
       edge(RID, 'i', 'kt_charIdxOff', 'a'),
-      edge('kt_len', 'out', 'kt_charIdxOff', 'b'),
+      edge('kt_len', 'length', 'kt_charIdxOff', 'b'),
       // rowIdx  = floor(i / N)
       edge(RID, 'i', 'kt_rowDiv', 'a'),
-      edge('kt_len', 'out', 'kt_rowDiv', 'b'),
-      edge('kt_rowDiv', 'out', 'kt_rowIdx', 'x'),
+      edge('kt_len', 'length', 'kt_rowDiv', 'b'),
+      edge('kt_rowDiv', 'quotient', 'kt_rowIdx', 'x'),
 
       // ── y = (rowIdx − centre) · ROW_H ──
-      edge('kt_rowIdx', 'out', 'kt_yMul', 'a'),
-      edge('kt_yMul',   'out', 'kt_yOff', 'a'),
-      edge('kt_yOff',   'out', 'kt_text', 'y'),
+      edge('kt_rowIdx', 'floored', 'kt_yMul', 'a'),
+      edge('kt_yMul', 'product', 'kt_yOff', 'a'),
+      edge('kt_yOff', 'sum', 'kt_text', 'y'),
 
       // ── Char centre: (N − 1) / 2 ──
-      edge('kt_len',         'out', 'kt_charCenter',  'a'),
-      edge('kt_charCenter',  'out', 'kt_charCenter2', 'a'),
-      edge('kt_charIdxOff',  'out', 'kt_charOff',     'a'),
-      edge('kt_charCenter2', 'out', 'kt_charOff',     'b'),
+      edge('kt_len', 'length', 'kt_charCenter',  'a'),
+      edge('kt_charCenter', 'difference', 'kt_charCenter2', 'a'),
+      edge('kt_charIdxOff', 'remainder', 'kt_charOff',     'a'),
+      edge('kt_charCenter2', 'quotient', 'kt_charOff',     'b'),
 
       // ── Wave arg = time·SPEED + charIdx·CHAR_PHASE − rowIdx·ROW_DELAY ──
       edge('kt_time',        't',  'kt_tSpeed',    'a'),
-      edge('kt_charIdxOff',  'out', 'kt_charPhase','a'),
-      edge('kt_rowIdx',      'out', 'kt_rowDelay', 'a'),
-      edge('kt_tSpeed',      'out', 'kt_waveAdd',  'a'),
-      edge('kt_charPhase',   'out', 'kt_waveAdd',  'b'),
-      edge('kt_waveAdd',     'out', 'kt_waveArg',  'a'),
-      edge('kt_rowDelay',    'out', 'kt_waveArg',  'b'),
-      edge('kt_waveArg',     'out', 'kt_waveSin',  'x'),
-      edge('kt_waveSin',     'out', 'kt_xWave',    'a'),
+      edge('kt_charIdxOff', 'remainder', 'kt_charPhase','a'),
+      edge('kt_rowIdx', 'floored', 'kt_rowDelay', 'a'),
+      edge('kt_tSpeed', 'product', 'kt_waveAdd',  'a'),
+      edge('kt_charPhase', 'product', 'kt_waveAdd',  'b'),
+      edge('kt_waveAdd', 'sum', 'kt_waveArg',  'a'),
+      edge('kt_rowDelay', 'product', 'kt_waveArg',  'b'),
+      edge('kt_waveArg', 'difference', 'kt_waveSin',  'x'),
+      edge('kt_waveSin', 'sine', 'kt_xWave',    'a'),
 
       // ── x = charOff·BASE_SPACING + xWave ──
-      edge('kt_charOff', 'out', 'kt_xBase', 'a'),
-      edge('kt_xBase',   'out', 'kt_xOut',  'a'),
-      edge('kt_xWave',   'out', 'kt_xOut',  'b'),
-      edge('kt_xOut',    'out', 'kt_text',  'x'),
+      edge('kt_charOff', 'difference', 'kt_xBase', 'a'),
+      edge('kt_xBase', 'product', 'kt_xOut',  'a'),
+      edge('kt_xWave', 'product', 'kt_xOut',  'b'),
+      edge('kt_xOut', 'sum', 'kt_text',  'x'),
 
       // Style chain — per-iter colour from the region's `col` port.
       edge(RID, 'col', 'kt_fill', 'color'),
@@ -190,9 +190,9 @@ export function buildKineticType() {
       edge(RID, 'ch', 'kt_text', 'string'),
 
       // Output + background.
-      edge('kt_text', 'out', RID, 'layer'),
+      edge('kt_text', 'layer', RID, 'layer'),
       edge(RID, 'layer', 'kt_renderer', 'layers'),
-      edge('kt_bg', 'out', 'kt_renderer', 'background'),
+      edge('kt_bg', 'color', 'kt_renderer', 'background'),
     ],
   };
 }
@@ -261,44 +261,44 @@ export function buildTypeHalo() {
             stepDiv, angBase, tSpin, angle, cosA, sinA, xOut, yOut,
             hueI, hueT, hue, hsl, fill, tp, text, renderer],
     edges: [
-      edge('th_str',   'out', 'th_split', 'text'),
-      edge('th_str',   'out', 'th_len',   'text'),
-      edge('th_len',   'out', 'th_range', 'count'),
-      edge('th_split', 'out', RID, 'ch'),
-      edge('th_range', 'out', RID, 'i'),
+      edge('th_str', 'text', 'th_split', 'text'),
+      edge('th_str', 'text', 'th_len',   'text'),
+      edge('th_len', 'length', 'th_range', 'count'),
+      edge('th_split', 'parts', RID, 'ch'),
+      edge('th_range', 'indices', RID, 'i'),
 
       // angle
-      edge('th_len',    'out', 'th_step',    'b'),
+      edge('th_len', 'length', 'th_step',    'b'),
       edge(RID, 'i',          'th_angBase', 'a'),
-      edge('th_step',   'out', 'th_angBase', 'b'),
+      edge('th_step', 'quotient', 'th_angBase', 'b'),
       edge('th_time',   't',   'th_tSpin',   'a'),
-      edge('th_angBase','out', 'th_angle',   'a'),
-      edge('th_tSpin',  'out', 'th_angle',   'b'),
+      edge('th_angBase', 'product', 'th_angle',   'a'),
+      edge('th_tSpin', 'product', 'th_angle',   'b'),
 
       // (x, y) on the ring
-      edge('th_angle', 'out', 'th_cos', 'x'),
-      edge('th_angle', 'out', 'th_sin', 'x'),
-      edge('th_cos',   'out', 'th_x',   'a'),
-      edge('th_sin',   'out', 'th_y',   'a'),
-      edge('th_x',     'out', 'th_text', 'x'),
-      edge('th_y',     'out', 'th_text', 'y'),
+      edge('th_angle', 'sum', 'th_cos', 'x'),
+      edge('th_angle', 'sum', 'th_sin', 'x'),
+      edge('th_cos', 'cosine', 'th_x',   'a'),
+      edge('th_sin', 'sine', 'th_y',   'a'),
+      edge('th_x', 'product', 'th_text', 'x'),
+      edge('th_y', 'product', 'th_text', 'y'),
 
       // hue
       edge(RID, 'i',          'th_hueI', 'a'),
       edge('th_time', 't',    'th_hueT', 'a'),
-      edge('th_hueI', 'out',  'th_hue',  'a'),
-      edge('th_hueT', 'out',  'th_hue',  'b'),
-      edge('th_hue',  'out',  'th_hsl',  'h'),
+      edge('th_hueI', 'product',  'th_hue',  'a'),
+      edge('th_hueT', 'product',  'th_hue',  'b'),
+      edge('th_hue', 'sum',  'th_hsl',  'h'),
 
       // style + draw
-      edge('th_hsl', 'out',   'th_fill', 'color'),
+      edge('th_hsl', 'color',   'th_fill', 'color'),
       edge('th_fill', 'style', 'th_tp',  'base'),
       edge('th_tp',   'style', 'th_text','style'),
       edge(RID, 'ch', 'th_text', 'string'),
 
-      edge('th_text', 'out', RID, 'layer'),
+      edge('th_text', 'layer', RID, 'layer'),
       edge(RID, 'layer', 'th_renderer', 'layers'),
-      edge('th_bg',   'out', 'th_renderer', 'background'),
+      edge('th_bg', 'color', 'th_renderer', 'background'),
     ],
   };
 }
@@ -375,48 +375,48 @@ export function buildTypeSpiral() {
             cosA, sinA, xOut, yOut,
             hueI, hueT, hue, hsl, fill, tp, text, renderer],
     edges: [
-      edge('tsp_str',   'out', 'tsp_split', 'text'),
-      edge('tsp_str',   'out', 'tsp_len',   'text'),
-      edge('tsp_split', 'out', 'tsp_tile',  'value'),
-      edge('tsp_len',   'out', 'tsp_total', 'a'),
-      edge('tsp_total', 'out', 'tsp_range', 'count'),
-      edge('tsp_tile',  'out', RID, 'ch'),
-      edge('tsp_range', 'out', RID, 'i'),
+      edge('tsp_str', 'text', 'tsp_split', 'text'),
+      edge('tsp_str', 'text', 'tsp_len',   'text'),
+      edge('tsp_split', 'parts', 'tsp_tile',  'value'),
+      edge('tsp_len', 'length', 'tsp_total', 'a'),
+      edge('tsp_total', 'product', 'tsp_range', 'count'),
+      edge('tsp_tile', 'values', RID, 'ch'),
+      edge('tsp_range', 'indices', RID, 'i'),
 
       // angle
       edge(RID, 'i',           'tsp_iAng',  'a'),
       edge('tsp_time', 't',    'tsp_tSpin', 'a'),
-      edge('tsp_iAng', 'out',  'tsp_angle', 'a'),
-      edge('tsp_tSpin','out',  'tsp_angle', 'b'),
+      edge('tsp_iAng', 'product',  'tsp_angle', 'a'),
+      edge('tsp_tSpin', 'product',  'tsp_angle', 'b'),
       // r
       edge(RID, 'i',           'tsp_rDelta','a'),
-      edge('tsp_rDelta','out', 'tsp_r',     'a'),
+      edge('tsp_rDelta', 'product', 'tsp_r',     'a'),
 
-      edge('tsp_angle','out', 'tsp_cos', 'x'),
-      edge('tsp_angle','out', 'tsp_sin', 'x'),
-      edge('tsp_cos',  'out', 'tsp_x',   'a'),
-      edge('tsp_r',    'out', 'tsp_x',   'b'),
-      edge('tsp_sin',  'out', 'tsp_y',   'a'),
-      edge('tsp_r',    'out', 'tsp_y',   'b'),
-      edge('tsp_x',    'out', 'tsp_text','x'),
-      edge('tsp_y',    'out', 'tsp_text','y'),
+      edge('tsp_angle', 'difference', 'tsp_cos', 'x'),
+      edge('tsp_angle', 'difference', 'tsp_sin', 'x'),
+      edge('tsp_cos', 'cosine', 'tsp_x',   'a'),
+      edge('tsp_r', 'sum', 'tsp_x',   'b'),
+      edge('tsp_sin', 'sine', 'tsp_y',   'a'),
+      edge('tsp_r', 'sum', 'tsp_y',   'b'),
+      edge('tsp_x', 'product', 'tsp_text','x'),
+      edge('tsp_y', 'product', 'tsp_text','y'),
 
       // hue
       edge(RID, 'i',           'tsp_hueI', 'a'),
       edge('tsp_time', 't',    'tsp_hueT', 'a'),
-      edge('tsp_hueI', 'out',  'tsp_hue',  'a'),
-      edge('tsp_hueT', 'out',  'tsp_hue',  'b'),
-      edge('tsp_hue',  'out',  'tsp_hsl',  'h'),
+      edge('tsp_hueI', 'product',  'tsp_hue',  'a'),
+      edge('tsp_hueT', 'product',  'tsp_hue',  'b'),
+      edge('tsp_hue', 'sum',  'tsp_hsl',  'h'),
 
       // style + draw
-      edge('tsp_hsl',  'out',   'tsp_fill', 'color'),
+      edge('tsp_hsl', 'color',   'tsp_fill', 'color'),
       edge('tsp_fill', 'style', 'tsp_tp',   'base'),
       edge('tsp_tp',   'style', 'tsp_text', 'style'),
       edge(RID, 'ch', 'tsp_text', 'string'),
 
-      edge('tsp_text', 'out', RID, 'layer'),
+      edge('tsp_text', 'layer', RID, 'layer'),
       edge(RID, 'layer', 'tsp_renderer', 'layers'),
-      edge('tsp_bg',   'out', 'tsp_renderer', 'background'),
+      edge('tsp_bg', 'color', 'tsp_renderer', 'background'),
     ],
   };
 }
@@ -505,63 +505,63 @@ export function buildTypeDrift() {
             nxS, nyS, tDrift, nyT, nx, ny, nxSub, nySub, xJit, yJit, xOut, yOut,
             hueScale, hueBase, hsl, fill, tp, text, renderer],
     edges: [
-      edge('tdr_str',   'out', 'tdr_split', 'text'),
-      edge('tdr_split', 'out', 'tdr_tile',  'value'),
-      edge('tdr_tile',  'out', RID, 'ch'),
-      edge('tdr_range', 'out', RID, 'i'),
+      edge('tdr_str', 'text', 'tdr_split', 'text'),
+      edge('tdr_split', 'parts', 'tdr_tile',  'value'),
+      edge('tdr_tile', 'values', RID, 'ch'),
+      edge('tdr_range', 'indices', RID, 'i'),
 
       // colIdx, rowIdx
       edge(RID, 'i',          'tdr_colIdx', 'a'),
       edge(RID, 'i',          'tdr_rowDiv', 'a'),
-      edge('tdr_rowDiv','out','tdr_rowIdx', 'x'),
+      edge('tdr_rowDiv', 'quotient','tdr_rowIdx', 'x'),
 
       // baseX, baseY
-      edge('tdr_colIdx','out','tdr_colOff', 'a'),
-      edge('tdr_colOff','out','tdr_baseX',  'a'),
-      edge('tdr_rowIdx','out','tdr_rowOff', 'a'),
-      edge('tdr_rowOff','out','tdr_baseY',  'a'),
+      edge('tdr_colIdx', 'remainder','tdr_colOff', 'a'),
+      edge('tdr_colOff', 'difference','tdr_baseX',  'a'),
+      edge('tdr_rowIdx', 'floored','tdr_rowOff', 'a'),
+      edge('tdr_rowOff', 'difference','tdr_baseY',  'a'),
 
       // noise inputs
-      edge('tdr_baseX', 'out', 'tdr_nxS', 'a'),
-      edge('tdr_baseY', 'out', 'tdr_nyS', 'a'),
+      edge('tdr_baseX', 'product', 'tdr_nxS', 'a'),
+      edge('tdr_baseY', 'product', 'tdr_nyS', 'a'),
       edge('tdr_time',  't',   'tdr_tDrift', 'a'),
-      edge('tdr_nyS',   'out', 'tdr_nyT', 'a'),
-      edge('tdr_tDrift','out', 'tdr_nyT', 'b'),
+      edge('tdr_nyS', 'product', 'tdr_nyT', 'a'),
+      edge('tdr_tDrift', 'product', 'tdr_nyT', 'b'),
 
       // noise sample
-      edge('tdr_nxS', 'out', 'tdr_nx', 'x'),
-      edge('tdr_nyT', 'out', 'tdr_nx', 'y'),
-      edge('tdr_nxS', 'out', 'tdr_ny', 'x'),
-      edge('tdr_nyT', 'out', 'tdr_ny', 'y'),
+      edge('tdr_nxS', 'product', 'tdr_nx', 'x'),
+      edge('tdr_nyT', 'sum', 'tdr_nx', 'y'),
+      edge('tdr_nxS', 'product', 'tdr_ny', 'x'),
+      edge('tdr_nyT', 'sum', 'tdr_ny', 'y'),
 
       // jitter
-      edge('tdr_nx',   'out', 'tdr_nxSub', 'a'),
-      edge('tdr_ny',   'out', 'tdr_nySub', 'a'),
-      edge('tdr_nxSub','out', 'tdr_xJit',  'a'),
-      edge('tdr_nySub','out', 'tdr_yJit',  'a'),
+      edge('tdr_nx', 'noise', 'tdr_nxSub', 'a'),
+      edge('tdr_ny', 'noise', 'tdr_nySub', 'a'),
+      edge('tdr_nxSub', 'difference', 'tdr_xJit',  'a'),
+      edge('tdr_nySub', 'difference', 'tdr_yJit',  'a'),
 
       // x, y
-      edge('tdr_baseX','out', 'tdr_x', 'a'),
-      edge('tdr_xJit', 'out', 'tdr_x', 'b'),
-      edge('tdr_baseY','out', 'tdr_y', 'a'),
-      edge('tdr_yJit', 'out', 'tdr_y', 'b'),
-      edge('tdr_x',    'out', 'tdr_text', 'x'),
-      edge('tdr_y',    'out', 'tdr_text', 'y'),
+      edge('tdr_baseX', 'product', 'tdr_x', 'a'),
+      edge('tdr_xJit', 'product', 'tdr_x', 'b'),
+      edge('tdr_baseY', 'product', 'tdr_y', 'a'),
+      edge('tdr_yJit', 'product', 'tdr_y', 'b'),
+      edge('tdr_x', 'sum', 'tdr_text', 'x'),
+      edge('tdr_y', 'sum', 'tdr_text', 'y'),
 
       // hue
-      edge('tdr_nx',      'out', 'tdr_hueScale', 'a'),
-      edge('tdr_hueScale','out', 'tdr_hueBase',  'a'),
-      edge('tdr_hueBase', 'out', 'tdr_hsl',      'h'),
+      edge('tdr_nx', 'noise', 'tdr_hueScale', 'a'),
+      edge('tdr_hueScale', 'product', 'tdr_hueBase',  'a'),
+      edge('tdr_hueBase', 'sum', 'tdr_hsl',      'h'),
 
       // style + draw
-      edge('tdr_hsl', 'out',   'tdr_fill', 'color'),
+      edge('tdr_hsl', 'color',   'tdr_fill', 'color'),
       edge('tdr_fill','style', 'tdr_tp',   'base'),
       edge('tdr_tp',  'style', 'tdr_text', 'style'),
       edge(RID, 'ch', 'tdr_text', 'string'),
 
-      edge('tdr_text', 'out', RID, 'layer'),
+      edge('tdr_text', 'layer', RID, 'layer'),
       edge(RID, 'layer', 'tdr_renderer', 'layers'),
-      edge('tdr_bg',   'out', 'tdr_renderer', 'background'),
+      edge('tdr_bg', 'color', 'tdr_renderer', 'background'),
     ],
   };
 }
@@ -650,54 +650,54 @@ export function buildTypeRain() {
             nArg, speedN, speedM, speed, scroll, rowY, ySum, yWrap, yOut,
             yNorm, dimSub, lOut, hsl, fill, tp, text, renderer],
     edges: [
-      edge('trn_str',   'out', 'trn_split', 'text'),
-      edge('trn_split', 'out', 'trn_tile',  'value'),
-      edge('trn_tile',  'out', RID, 'ch'),
-      edge('trn_range', 'out', RID, 'i'),
+      edge('trn_str', 'text', 'trn_split', 'text'),
+      edge('trn_split', 'parts', 'trn_tile',  'value'),
+      edge('trn_tile', 'values', RID, 'ch'),
+      edge('trn_range', 'indices', RID, 'i'),
 
       // col/row
       edge(RID, 'i',           'trn_colIdx', 'a'),
       edge(RID, 'i',           'trn_rowDiv', 'a'),
-      edge('trn_rowDiv','out', 'trn_rowIdx', 'x'),
+      edge('trn_rowDiv', 'quotient', 'trn_rowIdx', 'x'),
 
       // x
-      edge('trn_colIdx','out', 'trn_colOff', 'a'),
-      edge('trn_colOff','out', 'trn_x',      'a'),
-      edge('trn_x',     'out', 'trn_text',   'x'),
+      edge('trn_colIdx', 'remainder', 'trn_colOff', 'a'),
+      edge('trn_colOff', 'difference', 'trn_x',      'a'),
+      edge('trn_x', 'product', 'trn_text',   'x'),
 
       // per-col speed
-      edge('trn_colIdx','out', 'trn_nArg',   'a'),
-      edge('trn_nArg',  'out', 'trn_speedN', 'x'),
-      edge('trn_speedN','out', 'trn_speedM', 'a'),
-      edge('trn_speedM','out', 'trn_speed',  'a'),
+      edge('trn_colIdx', 'remainder', 'trn_nArg',   'a'),
+      edge('trn_nArg', 'product', 'trn_speedN', 'x'),
+      edge('trn_speedN', 'noise', 'trn_speedM', 'a'),
+      edge('trn_speedM', 'product', 'trn_speed',  'a'),
 
       // scroll
       edge('trn_time',  't',   'trn_scroll', 'a'),
-      edge('trn_speed', 'out', 'trn_scroll', 'b'),
+      edge('trn_speed', 'sum', 'trn_scroll', 'b'),
 
       // y
-      edge('trn_rowIdx','out', 'trn_rowY',  'a'),
-      edge('trn_rowY',  'out', 'trn_ySum',  'a'),
-      edge('trn_scroll','out', 'trn_ySum',  'b'),
-      edge('trn_ySum',  'out', 'trn_yWrap', 'a'),
-      edge('trn_yWrap', 'out', 'trn_y',     'a'),
-      edge('trn_y',     'out', 'trn_text',  'y'),
+      edge('trn_rowIdx', 'floored', 'trn_rowY',  'a'),
+      edge('trn_rowY', 'product', 'trn_ySum',  'a'),
+      edge('trn_scroll', 'product', 'trn_ySum',  'b'),
+      edge('trn_ySum', 'sum', 'trn_yWrap', 'a'),
+      edge('trn_yWrap', 'remainder', 'trn_y',     'a'),
+      edge('trn_y', 'difference', 'trn_text',  'y'),
 
       // brightness from y
-      edge('trn_yWrap', 'out', 'trn_yNorm', 'a'),
-      edge('trn_yNorm', 'out', 'trn_dimSub','b'),
-      edge('trn_dimSub','out', 'trn_lOut',  'a'),
-      edge('trn_lOut',  'out', 'trn_hsl',   'l'),
+      edge('trn_yWrap', 'remainder', 'trn_yNorm', 'a'),
+      edge('trn_yNorm', 'quotient', 'trn_dimSub','b'),
+      edge('trn_dimSub', 'difference', 'trn_lOut',  'a'),
+      edge('trn_lOut', 'product', 'trn_hsl',   'l'),
 
       // style + draw
-      edge('trn_hsl',  'out',   'trn_fill', 'color'),
+      edge('trn_hsl', 'color',   'trn_fill', 'color'),
       edge('trn_fill', 'style', 'trn_tp',   'base'),
       edge('trn_tp',   'style', 'trn_text', 'style'),
       edge(RID, 'ch', 'trn_text', 'string'),
 
-      edge('trn_text', 'out', RID, 'layer'),
+      edge('trn_text', 'layer', RID, 'layer'),
       edge(RID, 'layer', 'trn_renderer', 'layers'),
-      edge('trn_bg',   'out', 'trn_renderer', 'background'),
+      edge('trn_bg', 'color', 'trn_renderer', 'background'),
     ],
   };
 }

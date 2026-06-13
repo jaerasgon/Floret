@@ -34,7 +34,7 @@ export const arcNode = registerNode({
     { name: 'stop', type: 'number', default: Math.PI },
     { name: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'shape', type: 'layer' }],
   compute: (x, y, w, h, start, stop, style) => {
     const resolved = resolveStyle(style as Style | null, DEFAULT_STYLE);
     const node: Layer = {
@@ -66,7 +66,7 @@ export const triangleNode = registerNode({
     { name: 'y3', type: 'number', default: 100 },
     { name: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'shape', type: 'layer' }],
   compute: (x1, y1, x2, y2, x3, y3, style) => {
     const node: Layer = {
       kind: 'triangle',
@@ -95,7 +95,7 @@ export const quadNode = registerNode({
     { name: 'y4', type: 'number', default: 100 },
     { name: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'shape', type: 'layer' }],
   compute: (x1, y1, x2, y2, x3, y3, x4, y4, style) => {
     const node: Layer = {
       kind: 'quad',
@@ -119,7 +119,7 @@ export const pointNode = registerNode({
     { name: 'y', type: 'number', default: 0 },
     { name: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'shape', type: 'layer' }],
   compute: (x, y, style) => {
     const node: Layer = {
       kind: 'point',
@@ -148,7 +148,7 @@ export const polygonNode = registerNode({
     // stroke render.
     { name: 'widths', type: 'number',  kind: 'spread', default: 0 },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'shape', type: 'layer' }],
   computeRaw: (inputs): PortValue[] => {
     const ptsSpread = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const closed = Boolean(inputs[1]?.[0] ?? true);
@@ -224,7 +224,7 @@ export const pathNode = registerNode({
     // would be ideal, but for v1 we only offset the raw vertices.
     { name: 'widths',      type: 'number', kind: 'spread', default: 0 },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'shape', type: 'layer' }],
   computeRaw: (inputs): PortValue[] => {
     const ptsSpread = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const colorIn = inputs[1]?.[0] as Color | null | undefined;

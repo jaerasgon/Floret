@@ -16,7 +16,7 @@ export const shearXNode = registerNode({
     { name: 'angle', type: 'number', default: 0 },
     { name: 'layer', type: 'layer' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'sheared', type: 'layer' }],
   compute: (angle, layer) => {
     const inner = layer as Layer;
     const node: Layer = {
@@ -37,7 +37,7 @@ export const shearYNode = registerNode({
     { name: 'angle', type: 'number', default: 0 },
     { name: 'layer', type: 'layer' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'sheared', type: 'layer' }],
   compute: (angle, layer) => {
     const inner = layer as Layer;
     const node: Layer = {
@@ -67,7 +67,7 @@ export const applyMatrixNode = registerNode({
     { name: 'f', type: 'number', default: 0 },
     { name: 'layer', type: 'layer' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'transformed', type: 'layer' }],
   compute: (a, b, c, d, e, f, layer) => {
     const inner = layer as Layer;
     const node: Layer = {

@@ -63,42 +63,42 @@ export function buildLissajous() {
       renderer,
     ],
     edges: [
-      edge('lj_range', 'out', RID, 'i'),
+      edge('lj_range', 'indices', RID, 'i'),
       // t = i * tStep
       edge(RID, 'i', 'lj_tMul', 'a'),
-      edge('lj_tStep', 'out', 'lj_tMul', 'b'),
+      edge('lj_tStep', 'number', 'lj_tMul', 'b'),
       // angleX = t*a + time
-      edge('lj_tMul', 'out', 'lj_axMul', 'a'),
-      edge('lj_a', 'out', 'lj_axMul', 'b'),
-      edge('lj_axMul', 'out', 'lj_axAdd', 'a'),
+      edge('lj_tMul', 'product', 'lj_axMul', 'a'),
+      edge('lj_a', 'number', 'lj_axMul', 'b'),
+      edge('lj_axMul', 'product', 'lj_axAdd', 'a'),
       edge('lj_time', 't', 'lj_axAdd', 'b'),
       // angleY = t*b + time
-      edge('lj_tMul', 'out', 'lj_ayMul', 'a'),
-      edge('lj_b', 'out', 'lj_ayMul', 'b'),
-      edge('lj_ayMul', 'out', 'lj_ayAdd', 'a'),
+      edge('lj_tMul', 'product', 'lj_ayMul', 'a'),
+      edge('lj_b', 'number', 'lj_ayMul', 'b'),
+      edge('lj_ayMul', 'product', 'lj_ayAdd', 'a'),
       edge('lj_time', 't', 'lj_ayAdd', 'b'),
       // cos/sin then scale by R then add center
-      edge('lj_axAdd', 'out', 'lj_cosX', 'x'),
-      edge('lj_ayAdd', 'out', 'lj_sinY', 'x'),
-      edge('lj_cosX', 'out', 'lj_rX', 'a'),
-      edge('lj_radius', 'out', 'lj_rX', 'b'),
-      edge('lj_sinY', 'out', 'lj_rY', 'a'),
-      edge('lj_radius', 'out', 'lj_rY', 'b'),
-      edge('lj_rX', 'out', 'lj_xFin', 'a'),
-      edge('lj_cx', 'out', 'lj_xFin', 'b'),
-      edge('lj_rY', 'out', 'lj_yFin', 'a'),
-      edge('lj_cy', 'out', 'lj_yFin', 'b'),
+      edge('lj_axAdd', 'sum', 'lj_cosX', 'x'),
+      edge('lj_ayAdd', 'sum', 'lj_sinY', 'x'),
+      edge('lj_cosX', 'cosine', 'lj_rX', 'a'),
+      edge('lj_radius', 'number', 'lj_rX', 'b'),
+      edge('lj_sinY', 'sine', 'lj_rY', 'a'),
+      edge('lj_radius', 'number', 'lj_rY', 'b'),
+      edge('lj_rX', 'product', 'lj_xFin', 'a'),
+      edge('lj_cx', 'number', 'lj_xFin', 'b'),
+      edge('lj_rY', 'product', 'lj_yFin', 'a'),
+      edge('lj_cy', 'number', 'lj_yFin', 'b'),
       // Hue + fill
       edge(RID, 'i', 'lj_hueMul', 'a'),
-      edge('lj_hueMul', 'out', 'lj_hsl', 'h'),
-      edge('lj_hsl', 'out', 'lj_fill', 'color'),
+      edge('lj_hueMul', 'product', 'lj_hsl', 'h'),
+      edge('lj_hsl', 'color', 'lj_fill', 'color'),
       // Dot
-      edge('lj_xFin', 'out', 'lj_dot', 'x'),
-      edge('lj_yFin', 'out', 'lj_dot', 'y'),
-      edge('lj_dotSize', 'out', 'lj_dot', 'w'),
-      edge('lj_dotSize', 'out', 'lj_dot', 'h'),
-      edge('lj_fill', 'out', 'lj_dot', 'style'),
-      edge('lj_dot', 'out', RID, 'p'),
+      edge('lj_xFin', 'sum', 'lj_dot', 'x'),
+      edge('lj_yFin', 'sum', 'lj_dot', 'y'),
+      edge('lj_dotSize', 'number', 'lj_dot', 'w'),
+      edge('lj_dotSize', 'number', 'lj_dot', 'h'),
+      edge('lj_fill', 'style', 'lj_dot', 'style'),
+      edge('lj_dot', 'shape', RID, 'p'),
       edge(RID, 'p', 'lj_renderer', 'layers'),
     ],
   };
@@ -179,36 +179,36 @@ export function buildKaleidoscope() {
       bg, renderer,
     ],
     edges: [
-      edge('ks_bg', 'out', 'ks_renderer', 'background'),
+      edge('ks_bg', 'color', 'ks_renderer', 'background'),
       // Time → sin/cos
       edge('ks_time', 't', 'ks_tScale', 'a'),
-      edge('ks_tScale', 'out', 'ks_sinT', 'x'),
-      edge('ks_tScale', 'out', 'ks_cosT', 'x'),
+      edge('ks_tScale', 'product', 'ks_sinT', 'x'),
+      edge('ks_tScale', 'product', 'ks_cosT', 'x'),
       // Offset × 120
-      edge('ks_sinT', 'out', 'ks_wOff', 'a'),
-      edge('ks_cosT', 'out', 'ks_hOff', 'a'),
+      edge('ks_sinT', 'sine', 'ks_wOff', 'a'),
+      edge('ks_cosT', 'cosine', 'ks_hOff', 'a'),
       // + 200 → centred-ish source coords
-      edge('ks_wOff', 'out', 'ks_sxAnim', 'a'),
-      edge('ks_hOff', 'out', 'ks_syAnim', 'a'),
+      edge('ks_wOff', 'product', 'ks_sxAnim', 'a'),
+      edge('ks_hOff', 'product', 'ks_syAnim', 'a'),
       // Image region: wire image + animated sx/sy
       edge('ks_url', 'image', 'ks_imgRegion', 'image'),
-      edge('ks_sxAnim', 'out', 'ks_imgRegion', 'sx'),
-      edge('ks_syAnim', 'out', 'ks_imgRegion', 'sy'),
+      edge('ks_sxAnim', 'sum', 'ks_imgRegion', 'sx'),
+      edge('ks_syAnim', 'sum', 'ks_imgRegion', 'sy'),
       // ForEach: angle + i
       edge('ks_angles', 'angles', RID, 'angle'),
-      edge('ks_idxs', 'out', RID, 'i'),
+      edge('ks_idxs', 'indices', RID, 'i'),
       // Sign = 1 - 2 * (i % 2)
       edge(RID, 'i', 'ks_iMod', 'a'),
-      edge('ks_iMod', 'out', 'ks_iMul', 'a'),
-      edge('ks_iMul', 'out', 'ks_sign', 'a'),
+      edge('ks_iMod', 'remainder', 'ks_iMul', 'a'),
+      edge('ks_iMul', 'product', 'ks_sign', 'a'),
       // scale(sign, 1) the image wedge (broadcast in from outer scope)
-      edge('ks_imgRegion', 'out', 'ks_scaled', 'layer'),
-      edge('ks_sign', 'out', 'ks_scaled', 'sx'),
+      edge('ks_imgRegion', 'layer', 'ks_scaled', 'layer'),
+      edge('ks_sign', 'sum', 'ks_scaled', 'sx'),
       // rotate(angle) the scaled wedge
-      edge('ks_scaled', 'out', 'ks_rotated', 'layer'),
+      edge('ks_scaled', 'scaled', 'ks_rotated', 'layer'),
       edge(RID, 'angle', 'ks_rotated', 'angle'),
       // Out
-      edge('ks_rotated', 'out', RID, 'out'),
+      edge('ks_rotated', 'rotated', RID, 'out'),
       edge(RID, 'out', 'ks_renderer', 'layers'),
     ],
   };
@@ -349,76 +349,76 @@ export function buildIslamicPattern() {
       bg, renderer,
     ],
     edges: [
-      edge('ip_bg', 'out', 'ip_renderer', 'background'),
+      edge('ip_bg', 'color', 'ip_renderer', 'background'),
       // Outline style chain: no-fill → stroke(color) → stroke-weight
-      edge('ip_outlineColor', 'out', 'ip_outlineStroke', 'color'),
-      edge('ip_outlineNoFill', 'out', 'ip_outlineStroke', 'base'),
-      edge('ip_outlineStroke', 'out', 'ip_outlineWeight', 'base'),
+      edge('ip_outlineColor', 'color', 'ip_outlineStroke', 'color'),
+      edge('ip_outlineNoFill', 'style', 'ip_outlineStroke', 'base'),
+      edge('ip_outlineStroke', 'style', 'ip_outlineWeight', 'base'),
       // Fill styles
-      edge('ip_tealColor', 'out', 'ip_tealFill', 'color'),
-      edge('ip_redColor', 'out', 'ip_redFill', 'color'),
+      edge('ip_tealColor', 'color', 'ip_tealFill', 'color'),
+      edge('ip_redColor', 'color', 'ip_redFill', 'color'),
 
       // ── Outer circles ────────────────────────────────────────
       edge('ip_outerAngles', 'angles', OUTER_RID, 'a'),
       edge(OUTER_RID, 'a', 'ip_outerFa', 'angle'),
-      edge('ip_outerFa', 'out', 'ip_outerSplit', 'v'),
+      edge('ip_outerFa', 'vector', 'ip_outerSplit', 'v'),
       edge('ip_outerSplit', 'x', 'ip_outerCircle', 'x'),
       edge('ip_outerSplit', 'y', 'ip_outerCircle', 'y'),
       // Outline style: no-fill → stroke(dark) → stroke-weight(2).
-      edge('ip_outlineWeight', 'out', 'ip_outerCircle', 'style'),
-      edge('ip_outerCircle', 'out', OUTER_RID, 'layer'),
+      edge('ip_outlineWeight', 'style', 'ip_outerCircle', 'style'),
+      edge('ip_outerCircle', 'shape', OUTER_RID, 'layer'),
 
       // ── Mid teal petals ──────────────────────────────────────
       edge('ip_midAngles', 'angles', MID_RID, 'a'),
       edge(MID_RID, 'a', 'ip_midFa', 'angle'),
-      edge('ip_midFa', 'out', 'ip_midSplit', 'v'),
+      edge('ip_midFa', 'vector', 'ip_midSplit', 'v'),
       edge('ip_midSplit', 'x', 'ip_midEll', 'x'),
       edge('ip_midSplit', 'y', 'ip_midEll', 'y'),
       // (petals are wide ellipses; aligning them tangentially would
       //  need a rotation transform around each petal's centre; for now
       //  they sit horizontal which still reads as a six-petal flower.)
-      edge('ip_tealFill', 'out', 'ip_midEll', 'style'),
-      edge('ip_midEll', 'out', MID_RID, 'layer'),
+      edge('ip_tealFill', 'style', 'ip_midEll', 'style'),
+      edge('ip_midEll', 'shape', MID_RID, 'layer'),
 
       // ── 8-point star polygon vertices ────────────────────────
-      edge('ip_starIdxs', 'out', STAR_RID, 'i'),
+      edge('ip_starIdxs', 'indices', STAR_RID, 'i'),
       // angle = i * (TAU/16)
       edge(STAR_RID, 'i', 'ip_starAng', 'a'),
-      edge('ip_starStep', 'out', 'ip_starAng', 'b'),
+      edge('ip_starStep', 'number', 'ip_starAng', 'b'),
       // r = 80 + (i mod 2)*-48 → 80 even, 32 odd
       edge(STAR_RID, 'i', 'ip_starMod', 'a'),
-      edge('ip_starMod', 'out', 'ip_starRMul', 'a'),
-      edge('ip_starRMul', 'out', 'ip_starR', 'a'),
+      edge('ip_starMod', 'remainder', 'ip_starRMul', 'a'),
+      edge('ip_starRMul', 'product', 'ip_starR', 'a'),
       // vec = from-angle(angle, r)
-      edge('ip_starAng', 'out', 'ip_starFa', 'angle'),
-      edge('ip_starR', 'out', 'ip_starFa', 'mag'),
-      edge('ip_starFa', 'out', STAR_RID, 'v'),
+      edge('ip_starAng', 'product', 'ip_starFa', 'angle'),
+      edge('ip_starR', 'sum', 'ip_starFa', 'mag'),
+      edge('ip_starFa', 'vector', STAR_RID, 'v'),
       // Build polygon from the vec2 spread, filled red.
       edge(STAR_RID, 'v', 'ip_starPoly', 'points'),
-      edge('ip_redFill', 'out', 'ip_starPoly', 'style'),
+      edge('ip_redFill', 'style', 'ip_starPoly', 'style'),
 
       // ── Inner dots ───────────────────────────────────────────
       edge('ip_innerAngles', 'angles', INNER_RID, 'a'),
       edge(INNER_RID, 'a', 'ip_innerFa', 'angle'),
-      edge('ip_innerFa', 'out', 'ip_innerSplit', 'v'),
+      edge('ip_innerFa', 'vector', 'ip_innerSplit', 'v'),
       edge('ip_innerSplit', 'x', 'ip_innerDot', 'x'),
       edge('ip_innerSplit', 'y', 'ip_innerDot', 'y'),
-      edge('ip_redFill', 'out', 'ip_innerDot', 'style'),
-      edge('ip_innerDot', 'out', INNER_RID, 'layer'),
+      edge('ip_redFill', 'style', 'ip_innerDot', 'style'),
+      edge('ip_innerDot', 'shape', INNER_RID, 'layer'),
 
       // ── Combine layers via three Stacks ──────────────────────
       // stack1 = outer ++ mid
       edge(OUTER_RID, 'layer', 'ip_stack1', 'a'),
       edge(MID_RID, 'layer', 'ip_stack1', 'b'),
       // stack2 = stack1 ++ [starPoly]
-      edge('ip_stack1', 'out', 'ip_stack2', 'a'),
-      edge('ip_starPoly', 'out', 'ip_stack2', 'b'),
+      edge('ip_stack1', 'values', 'ip_stack2', 'a'),
+      edge('ip_starPoly', 'shape', 'ip_stack2', 'b'),
       // stack3 = stack2 ++ inner-dots
-      edge('ip_stack2', 'out', 'ip_stack3', 'a'),
+      edge('ip_stack2', 'values', 'ip_stack3', 'a'),
       edge(INNER_RID, 'layer', 'ip_stack3', 'b'),
       // Group all into a single Layer for the renderer.
-      edge('ip_stack3', 'out', 'ip_grp', 's1'),
-      edge('ip_grp', 'out', 'ip_renderer', 'layers'),
+      edge('ip_stack3', 'values', 'ip_grp', 's1'),
+      edge('ip_grp', 'grouped', 'ip_renderer', 'layers'),
     ],
   };
 }
@@ -515,34 +515,34 @@ export function buildGridArt() {
       cache,
     ],
     edges: [
-      edge('ga_bg', 'out', 'ga_renderer', 'background'),
+      edge('ga_bg', 'color', 'ga_renderer', 'background'),
       // External → ForEach ports (spreads — drive the 36-iteration loop).
-      edge('ga_grid', 'out', RID, 'p'),
-      edge('ga_idx', 'out', RID, 'i'),
+      edge('ga_grid', 'positions', RID, 'p'),
+      edge('ga_idx', 'indices', RID, 'i'),
       // Inside: split the iteration's vec2 into x, y.
       edge(RID, 'p', 'ga_split', 'v'),
       // Per-cell seed = i + seedBase. Slider re-rolls all cells together.
       // Slider edge bypasses the region boundary as a broadcast.
       edge(RID, 'i', 'ga_seedSum', 'a'),
-      edge('ga_seedBase', 'out', 'ga_seedSum', 'b'),
+      edge('ga_seedBase', 'number', 'ga_seedSum', 'b'),
       // Walker — coords go straight through (driver centres the origin).
       edge('ga_split', 'x', 'ga_walker', 'x'),
       edge('ga_split', 'y', 'ga_walker', 'y'),
-      edge('ga_seedSum', 'out', 'ga_walker', 'seed'),
+      edge('ga_seedSum', 'sum', 'ga_walker', 'seed'),
       // Border style chain.
-      edge('ga_noFill', 'out', 'ga_stroke', 'base'),
-      edge('ga_stroke', 'out', 'ga_rectMode', 'base'),
+      edge('ga_noFill', 'style', 'ga_stroke', 'base'),
+      edge('ga_stroke', 'style', 'ga_rectMode', 'base'),
       edge('ga_split', 'x', 'ga_border', 'x'),
       edge('ga_split', 'y', 'ga_border', 'y'),
-      edge('ga_rectMode', 'out', 'ga_border', 'style'),
+      edge('ga_rectMode', 'style', 'ga_border', 'style'),
       // Group → ForEach output → Cache → Renderer. Runtime memoisation
       // keeps the upstream layer refs stable across ticks; Cache uses
       // that stability to skip rasterising and just blit the bitmap.
-      edge('ga_walker', 'out', 'ga_group', 's1'),
-      edge('ga_border', 'out', 'ga_group', 's2'),
-      edge('ga_group', 'out', RID, 'layer'),
+      edge('ga_walker', 'layer', 'ga_group', 's1'),
+      edge('ga_border', 'shape', 'ga_group', 's2'),
+      edge('ga_group', 'grouped', RID, 'layer'),
       edge(RID, 'layer', 'ga_cache', 'layer'),
-      edge('ga_cache', 'out', 'ga_renderer', 'layers'),
+      edge('ga_cache', 'rasterized', 'ga_renderer', 'layers'),
     ],
   };
 }

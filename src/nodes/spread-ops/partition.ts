@@ -71,8 +71,8 @@ export const atGroupNode = registerNode({
     { name: 'groupSize', type: 'number', kind: 'spread' },
     { name: 'index', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.flat ?? 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'values', type: up.flat ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const flat = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const sizes = (inputs[1] ?? []) as ReadonlyArray<unknown>;

@@ -28,8 +28,8 @@ export const siftNode = registerNode({
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'keep', type: 'boolean', kind: 'spread' },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'values', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const keep = (inputs[1] ?? []) as ReadonlyArray<unknown>;
@@ -48,8 +48,8 @@ export const uniqueNode = registerNode({
   label: 'UniqueSpread',
   description: 'Remove duplicates, preserving first occurrence.',
   inputs: [{ name: 'spread', type: 'any', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'values', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const seen = new Set<string | number | boolean | null | undefined>();
@@ -73,7 +73,7 @@ export const indexOfNode = registerNode({
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'value', type: 'any', default: 0 },
   ],
-  outputs: [{ name: 'out', label: 'index', type: 'number' }],
+  outputs: [{ name: 'index', label: 'index', type: 'number' }],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const needle = inputs[1]?.[0];
@@ -91,7 +91,7 @@ export const countWhereNode = registerNode({
   label: 'CountWhereSpread',
   description: 'Count true entries in a boolean spread.',
   inputs: [{ name: 'keep', type: 'boolean', kind: 'spread' }],
-  outputs: [{ name: 'out', label: 'count', type: 'number' }],
+  outputs: [{ name: 'count', label: 'count', type: 'number' }],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     let n = 0;
@@ -109,7 +109,7 @@ export const indicesByValueNode = registerNode({
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'value', type: 'any', default: 0 },
   ],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'indices', type: 'number', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const needle = inputs[1]?.[0];

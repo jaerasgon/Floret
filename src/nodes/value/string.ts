@@ -10,7 +10,7 @@ export const stringNode = registerNode({
   label: 'String',
   description: 'Hold a constant string.',
   inputs: [],
-  outputs: [{ name: 'out', type: 'string' }],
+  outputs: [{ name: 'text', type: 'string' }],
   defaultParams: { value: '' },
   readFromContext: (_frame, params) => {
     const v = params.param<string>('value', '');

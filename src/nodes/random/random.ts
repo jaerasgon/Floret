@@ -18,7 +18,7 @@ export const uniformNode = registerNode({
     { name: 'max', type: 'number', default: 1 },
     { name: 'seed', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'sample', type: 'number' }],
   compute: (min, max, seed) => {
     const mn = min as number;
     const mx = max as number;
@@ -37,7 +37,7 @@ export const gaussianNode = registerNode({
     { name: 'sd', type: 'number', default: 1 },
     { name: 'seed', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'sample', type: 'number' }],
   compute: (mean, sd, seed) => {
     const m = mean as number;
     const s = sd as number;

@@ -34,15 +34,15 @@ export function buildPixelSort() {
       edge('ps_img',  'image', 'ps_sort',  'image'),
       // hiFinal = hi + sin(time * 0.6) * 0.05
       edge('ps_time', 't',     'ps_tMul',  'a'),
-      edge('ps_tMul', 'out',   'ps_sinT',  'x'),
-      edge('ps_sinT', 'out',   'ps_wobMul','a'),
-      edge('ps_hi',   'out',   'ps_hiFinal','a'),
-      edge('ps_wobMul','out',  'ps_hiFinal','b'),
-      edge('ps_lo',   'out',   'ps_sort',  'lo'),
-      edge('ps_hiFinal','out', 'ps_sort',  'hi'),
+      edge('ps_tMul', 'product',   'ps_sinT',  'x'),
+      edge('ps_sinT', 'sine',   'ps_wobMul','a'),
+      edge('ps_hi', 'number',   'ps_hiFinal','a'),
+      edge('ps_wobMul', 'product',  'ps_hiFinal','b'),
+      edge('ps_lo', 'number',   'ps_sort',  'lo'),
+      edge('ps_hiFinal', 'sum', 'ps_sort',  'hi'),
       edge('ps_sort', 'image', 'ps_draw',  'image'),
-      edge('ps_draw', 'out',   'ps_renderer', 'layers'),
-      edge('ps_bg',   'out',   'ps_renderer', 'background'),
+      edge('ps_draw', 'layer',   'ps_renderer', 'layers'),
+      edge('ps_bg', 'color',   'ps_renderer', 'background'),
     ],
   };
 }

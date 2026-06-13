@@ -7,7 +7,7 @@ export const sliderNode = registerNode({
   label: 'Slider',
   description: 'Drag to set a number.',
   inputs: [],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'number', type: 'number' }],
   defaultParams: { value: 0.5, min: 0, max: 1 },
   readFromContext: (_frame, params) => [[params.param<number>('value', 0)]],
   component: SliderNode,

@@ -55,7 +55,7 @@ export const perlinNode = registerNode({
     { name: 'octaves', type: 'number', default: 1, integer: true },
     { name: 'falloff', type: 'number', default: 0.5 },
   ],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'noise', type: 'number' }],
   compute: (x, y, seed, octaves, falloff) => {
     const xv = x as number;
     const yv = y as number;

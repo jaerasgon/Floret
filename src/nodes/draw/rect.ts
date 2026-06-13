@@ -27,7 +27,7 @@ export const rectNode = registerNode({
     { name: 'h', type: 'number', default: 50 },
     { name: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'shape', type: 'layer' }],
   compute: (x, y, w, h, style) => {
     const resolved = resolveStyle(style as Style | null, DEFAULT_STYLE);
     const node: Layer = {
@@ -57,7 +57,7 @@ export const ellipseNode = registerNode({
     { name: 'h', type: 'number', default: 50 },
     { name: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'shape', type: 'layer' }],
   compute: (x, y, w, h, style) => {
     const resolved = resolveStyle(style as Style | null, DEFAULT_STYLE);
     const node: Layer = {
@@ -85,7 +85,7 @@ export const lineNode = registerNode({
     { name: 'y2', type: 'number', default: 100 },
     { name: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'shape', type: 'layer' }],
   compute: (x1, y1, x2, y2, style) => {
     const node: Layer = {
       kind: 'line',

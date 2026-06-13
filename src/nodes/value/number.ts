@@ -12,7 +12,7 @@ export const numberNode = registerNode({
   label: 'Number',
   description: 'Hold a constant number.',
   inputs: [],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'number', type: 'number' }],
   defaultParams: { value: 0 },
   readFromContext: (_frame, params) => {
     const v = params.param<number>('value', 0);

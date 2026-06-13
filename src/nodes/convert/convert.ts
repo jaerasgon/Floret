@@ -50,7 +50,7 @@ export const toStringNode = registerNode({
   label: 'ToString',
   description: 'Convert any value to a string.',
   inputs: [{ name: 'in', type: 'any' }],
-  outputs: [{ name: 'out', type: 'string' }],
+  outputs: [{ name: 'text', type: 'string' }],
   compute: (v) => [valueToString(v)],
 });
 
@@ -60,7 +60,7 @@ export const toNumberNode = registerNode({
   label: 'ToNumber',
   description: 'Convert any value to a number.',
   inputs: [{ name: 'in', type: 'any' }],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'number', type: 'number' }],
   compute: (v) => [valueToNumber(v)],
 });
 
@@ -70,7 +70,7 @@ export const toIntNode = registerNode({
   label: 'ToInt',
   description: 'Round any value to the nearest integer.',
   inputs: [{ name: 'in', type: 'any' }],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'integer', type: 'number' }],
   compute: (v) => [Math.round(valueToNumber(v))],
 });
 
@@ -80,7 +80,7 @@ export const toBoolNode = registerNode({
   label: 'ToBool',
   description: 'Convert any value to a boolean.',
   inputs: [{ name: 'in', type: 'any' }],
-  outputs: [{ name: 'out', type: 'boolean' }],
+  outputs: [{ name: 'bool', type: 'boolean' }],
   compute: (v) => [Boolean(v)],
 });
 
@@ -90,7 +90,7 @@ export const toDegreesNode = registerNode({
   label: 'ToDegrees',
   description: 'Scale a unit value [0, 1] to degrees [0, 360].',
   inputs: [{ name: 'in', type: 'number', default: 0 }],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'degrees', type: 'number' }],
   compute: (v) => [(v as number) * 360],
 });
 
@@ -100,6 +100,6 @@ export const toRadiansNode = registerNode({
   label: 'ToRadians',
   description: 'Convert an angle from degrees to radians.',
   inputs: [{ name: 'deg', type: 'number', default: 0 }],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'radians', type: 'number' }],
   compute: (v) => [(v as number) * (Math.PI / 180)],
 });

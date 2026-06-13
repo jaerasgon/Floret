@@ -27,7 +27,7 @@ export const drawImageTileNode = registerNode({
     { name: 'rows', type: 'number', default: 4, integer: true },
     { name: 'tint', type: 'color', default: null },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'layer', type: 'layer' }],
   compute: (image, x, y, w, h, cols, rows, tint) => {
     if (!isReadyImageCanvas(image)) {
       return [{ kind: 'group', children: [] } as Layer];

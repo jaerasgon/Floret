@@ -30,9 +30,9 @@ export const setSliceNode = registerNode({
     { name: 'index', type: 'number', default: 0, integer: true },
     { name: 'replacement', type: 'any', kind: 'spread' },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
   dynamicOutputs: (_p, up) => [
-    { name: 'out', type: up.spread ?? up.replacement ?? 'any', kind: 'spread' },
+    { name: 'values', type: up.spread ?? up.replacement ?? 'any', kind: 'spread' },
   ],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
@@ -56,9 +56,9 @@ export const insertSliceNode = registerNode({
     { name: 'index', type: 'number', default: 0, integer: true },
     { name: 'insertion', type: 'any', kind: 'spread' },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
   dynamicOutputs: (_p, up) => [
-    { name: 'out', type: up.spread ?? up.insertion ?? 'any', kind: 'spread' },
+    { name: 'values', type: up.spread ?? up.insertion ?? 'any', kind: 'spread' },
   ],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
@@ -81,8 +81,8 @@ export const removeSliceNode = registerNode({
     { name: 'index', type: 'number', default: 0, integer: true },
     { name: 'count', type: 'number', default: 1, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'values', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     if (src.length === 0) return [[]];
@@ -105,8 +105,8 @@ export const swapNode = registerNode({
     { name: 'i', type: 'number', default: 0, integer: true },
     { name: 'j', type: 'number', default: 1, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'values', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     if (src.length < 2) return [src.slice()];

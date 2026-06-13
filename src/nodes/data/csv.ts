@@ -22,7 +22,7 @@ export const csvInlineNode = registerNode({
     data: '12, 45, 22, 67, 38, 91, 54, 73, 29, 60, 84, 19, 41, 77, 33, 55',
   },
   inputs: [],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'number', kind: 'spread' }],
   readFromContext: (_frame, params: NodeParamContext) => {
     const text = params.param<string>('data', '');
     const parts = text.split(/[,\s\n\t]+/).map((s) => s.trim()).filter(Boolean);

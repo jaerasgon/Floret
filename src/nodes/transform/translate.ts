@@ -18,7 +18,7 @@ export const translateNode = registerNode({
     { name: 'y', type: 'number', default: 0 },
     { name: 'layer', type: 'layer' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'translated', type: 'layer' }],
   compute: (x, y, layer) => {
     const inner = layer as Layer;
     const node: Layer = {
@@ -39,7 +39,7 @@ export const rotateNode = registerNode({
     { name: 'angle', type: 'number', default: 0 },
     { name: 'layer', type: 'layer' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'rotated', type: 'layer' }],
   compute: (angle, layer) => {
     const inner = layer as Layer;
     const node: Layer = {
@@ -61,7 +61,7 @@ export const scaleNode = registerNode({
     { name: 'sy', type: 'number', default: 1 },
     { name: 'layer', type: 'layer' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'scaled', type: 'layer' }],
   compute: (sx, sy, layer) => {
     const inner = layer as Layer;
     const node: Layer = {

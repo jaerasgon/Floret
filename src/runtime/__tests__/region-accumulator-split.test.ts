@@ -25,13 +25,13 @@ describe('ForEach accumulator (split Read/Write, LTR)', () => {
         { id: 'write',defType: 'region/accumulator-write/number', params: { slot: 1 }, parentId: 'reg' },
       ],
       [
-        { fromNode: 'c', fromPort: 'out', toNode: 'range', toPort: 'count' },
-        { fromNode: 'range', fromPort: 'out', toNode: 'sIn', toPort: 'outer' },
-        { fromNode: 'init', fromPort: 'out', toNode: 'read', toPort: 'init' },
+        { fromNode: 'c', fromPort: 'number', toNode: 'range', toPort: 'count' },
+        { fromNode: 'range', fromPort: 'indices', toNode: 'sIn', toPort: 'outer' },
+        { fromNode: 'init', fromPort: 'number', toNode: 'read', toPort: 'init' },
         // LTR: read.read → add.a; splicer-in.inner → add.b; add.out → write.write
         { fromNode: 'read', fromPort: 'read', toNode: 'add', toPort: 'a' },
         { fromNode: 'sIn',  fromPort: 'inner', toNode: 'add', toPort: 'b' },
-        { fromNode: 'add',  fromPort: 'out', toNode: 'write', toPort: 'write' },
+        { fromNode: 'add', fromPort: 'sum', toNode: 'write', toPort: 'write' },
       ],
       {
         registry: realRegistry,
@@ -59,9 +59,9 @@ describe('ForEach accumulator (split Read/Write, LTR)', () => {
         { id: 'write',defType: 'region/accumulator-write/number', params: { slot: 1 }, parentId: 'reg' },
       ],
       [
-        { fromNode: 'c0', fromPort: 'out', toNode: 'range', toPort: 'count' },
-        { fromNode: 'range', fromPort: 'out', toNode: 'sIn', toPort: 'outer' },
-        { fromNode: 'init', fromPort: 'out', toNode: 'read', toPort: 'init' },
+        { fromNode: 'c0', fromPort: 'number', toNode: 'range', toPort: 'count' },
+        { fromNode: 'range', fromPort: 'indices', toNode: 'sIn', toPort: 'outer' },
+        { fromNode: 'init', fromPort: 'number', toNode: 'read', toPort: 'init' },
         // Loop never executes — Write never gets a value. Final = init.
         { fromNode: 'read', fromPort: 'read', toNode: 'write', toPort: 'write' },
       ],
@@ -94,13 +94,13 @@ describe('ForEach accumulator (split Read/Write, LTR)', () => {
         { id: 'sOut',  defType: 'region/splicer-out/number', params: {}, parentId: 'reg' },
       ],
       [
-        { fromNode: 'c', fromPort: 'out', toNode: 'r3', toPort: 'count' },
-        { fromNode: 'r3', fromPort: 'out', toNode: 'sIn', toPort: 'outer' },
-        { fromNode: 'init0', fromPort: 'out', toNode: 'read', toPort: 'init' },
+        { fromNode: 'c', fromPort: 'number', toNode: 'r3', toPort: 'count' },
+        { fromNode: 'r3', fromPort: 'indices', toNode: 'sIn', toPort: 'outer' },
+        { fromNode: 'init0', fromPort: 'number', toNode: 'read', toPort: 'init' },
         { fromNode: 'read', fromPort: 'read', toNode: 'add', toPort: 'a' },
         { fromNode: 'sIn',  fromPort: 'inner', toNode: 'add', toPort: 'b' },
-        { fromNode: 'add',  fromPort: 'out', toNode: 'write', toPort: 'write' },
-        { fromNode: 'add',  fromPort: 'out', toNode: 'sOut',  toPort: 'inner' },
+        { fromNode: 'add', fromPort: 'sum', toNode: 'write', toPort: 'write' },
+        { fromNode: 'add', fromPort: 'sum', toNode: 'sOut',  toPort: 'inner' },
       ],
       {
         registry: realRegistry,
@@ -126,8 +126,8 @@ describe('ForEach accumulator (split Read/Write, LTR)', () => {
         { id: 'read', defType: 'region/accumulator-read/number', params: { slot: 1 }, parentId: 'reg' },
       ],
       [
-        { fromNode: 'range', fromPort: 'out', toNode: 'sIn', toPort: 'outer' },
-        { fromNode: 'init', fromPort: 'out', toNode: 'read', toPort: 'init' },
+        { fromNode: 'range', fromPort: 'indices', toNode: 'sIn', toPort: 'outer' },
+        { fromNode: 'init', fromPort: 'number', toNode: 'read', toPort: 'init' },
       ],
       {
         registry: realRegistry,

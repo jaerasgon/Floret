@@ -16,7 +16,7 @@ export const countNode = registerNode({
   label: 'CountSpread',
   description: 'Length of a spread.',
   inputs: [{ name: 'spread', type: 'any', kind: 'spread' }],
-  outputs: [{ name: 'out', label: 'count', type: 'number' }],
+  outputs: [{ name: 'count', label: 'count', type: 'number' }],
   computeRaw: (inputs) => [[(inputs[0] ?? []).length]],
 });
 
@@ -26,7 +26,7 @@ export const reverseNode = registerNode({
   label: 'ReverseSpread',
   description: 'Reverse the order of elements.',
   inputs: [{ name: 'spread', type: 'any', kind: 'spread' }],
-  outputs: [{ name: 'out', label: 'spread', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', label: 'spread', type: 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const out = new Array(src.length);
@@ -50,8 +50,8 @@ export const takeNode = registerNode({
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'count', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'values', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const n = intCount(inputs[1]?.[0]);
@@ -69,8 +69,8 @@ export const skipNode = registerNode({
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'count', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'values', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const n = intCount(inputs[1]?.[0]);
@@ -88,8 +88,8 @@ export const sliceNode = registerNode({
     { name: 'start', type: 'number', default: 0, integer: true },
     { name: 'end', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'values', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const start = Math.floor(Number(inputs[1]?.[0] ?? 0));
@@ -108,7 +108,7 @@ export const cycleNode = registerNode({
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'count', type: 'number', default: 8, integer: true },
   ],
-  outputs: [{ name: 'out', label: 'spread', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', label: 'spread', type: 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const n = intCount(inputs[1]?.[0]);
@@ -128,7 +128,7 @@ export const stackNode = registerNode({
     { name: 'a', type: 'any', kind: 'spread' },
     { name: 'b', type: 'any', kind: 'spread' },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
   // Stack picks the more specific of the two inputs — if one is wired
   // and the other isn't, use the wired one. If both are wired with
   // different types, the more permissive wins (whichever isn't 'any').
@@ -136,7 +136,7 @@ export const stackNode = registerNode({
     const a = up.a;
     const b = up.b;
     const t = a && a !== 'any' ? a : b && b !== 'any' ? b : a ?? b ?? 'any';
-    return [{ name: 'out', type: t, kind: 'spread' }];
+    return [{ name: 'values', type: t, kind: 'spread' }];
   },
   computeRaw: (inputs) => {
     const a = inputs[0] ?? [];
@@ -160,8 +160,8 @@ export const atNode = registerNode({
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'index', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'single' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'single' }],
+  outputs: [{ name: 'value', type: 'any', kind: 'single' }],
+  dynamicOutputs: (_p, up) => [{ name: 'value', type: up.spread ?? 'any', kind: 'single' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     if (src.length === 0) return [[null]];
@@ -181,7 +181,7 @@ export const resampleNode = registerNode({
     { name: 'spread', type: 'number', kind: 'spread' },
     { name: 'count', type: 'number', default: 8, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'number', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const count = intCount(inputs[1]?.[0]);
@@ -214,7 +214,7 @@ export const sortNode = registerNode({
     { name: 'spread', type: 'number', kind: 'spread' },
     { name: 'descending', type: 'boolean', default: false },
   ],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'number', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<number>;
     const desc = Boolean(inputs[1]?.[0] ?? false);
@@ -233,7 +233,7 @@ export const shuffleNode = registerNode({
     { name: 'spread', type: 'number', kind: 'spread' },
     { name: 'seed', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'number', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<number>;
     const seed = (Number(inputs[1]?.[0] ?? 0)) | 0;

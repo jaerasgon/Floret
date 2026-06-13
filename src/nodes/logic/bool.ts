@@ -4,7 +4,6 @@ const ab = [
   { name: 'a', type: 'boolean' as const, default: false },
   { name: 'b', type: 'boolean' as const, default: false },
 ];
-const out = [{ name: 'out', type: 'boolean' as const }];
 
 export const andNode = registerNode({
   type: 'logic/and',
@@ -12,7 +11,7 @@ export const andNode = registerNode({
   label: 'And',
   description: 'True when both a and b are true.',
   inputs: ab,
-  outputs: out,
+  outputs: [{ name: 'result', type: 'boolean' }],
   compute: (a, b) => [Boolean(a) && Boolean(b)],
 });
 
@@ -22,7 +21,7 @@ export const orNode = registerNode({
   label: 'Or',
   description: 'True when either a or b is true.',
   inputs: ab,
-  outputs: out,
+  outputs: [{ name: 'result', type: 'boolean' }],
   compute: (a, b) => [Boolean(a) || Boolean(b)],
 });
 
@@ -32,6 +31,6 @@ export const notNode = registerNode({
   label: 'Not',
   description: 'Invert a boolean.',
   inputs: [{ name: 'x', type: 'boolean', default: false }],
-  outputs: out,
+  outputs: [{ name: 'result', type: 'boolean' }],
   compute: (x) => [!x],
 });

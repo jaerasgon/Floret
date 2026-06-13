@@ -37,9 +37,9 @@ describe('Region frame ports', () => {
         },
       ],
       [
-        { fromNode: 'count', fromPort: 'out', toNode: 'range', toPort: 'count' },
+        { fromNode: 'count', fromPort: 'number', toNode: 'range', toPort: 'count' },
         // outer spread → region.in-p1
-        { fromNode: 'range', fromPort: 'out', toNode: 'reg', toPort: 'p1' },
+        { fromNode: 'range', fromPort: 'indices', toNode: 'reg', toPort: 'p1' },
         // inner: region.out-p1 (per-iter slot) → region.in-p2 (collect)
         { fromNode: 'reg', fromPort: 'p1', toNode: 'reg', toPort: 'p2' },
       ],
@@ -73,11 +73,11 @@ describe('Region frame ports', () => {
         { id: 'add', defType: 'math/add', params: {}, parentId: 'reg' },
       ],
       [
-        { fromNode: 'c', fromPort: 'out', toNode: 'range', toPort: 'count' },
-        { fromNode: 'range', fromPort: 'out', toNode: 'reg', toPort: 'in1' },
+        { fromNode: 'c', fromPort: 'number', toNode: 'range', toPort: 'count' },
+        { fromNode: 'range', fromPort: 'indices', toNode: 'reg', toPort: 'in1' },
         { fromNode: 'reg', fromPort: 'in1', toNode: 'add', toPort: 'a' },
-        { fromNode: 'k', fromPort: 'out', toNode: 'add', toPort: 'b' },
-        { fromNode: 'add', fromPort: 'out', toNode: 'reg', toPort: 'out1' },
+        { fromNode: 'k', fromPort: 'number', toNode: 'add', toPort: 'b' },
+        { fromNode: 'add', fromPort: 'sum', toNode: 'reg', toPort: 'out1' },
       ],
       {
         registry: realRegistry(),

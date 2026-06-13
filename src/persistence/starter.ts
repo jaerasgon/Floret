@@ -70,11 +70,11 @@ export function starterPatch(): { nodes: FloretNode[]; edges: FloretEdge[] } {
     nodes: [time, sinT, sizeMap, ellipse, bg, renderer],
     edges: [
       edge('starter_time',    't',   'starter_sin',     'x'),
-      edge('starter_sin',     'out', 'starter_size',    'x'),
-      edge('starter_size',    'out', 'starter_ellipse', 'w'),
-      edge('starter_size',    'out', 'starter_ellipse', 'h'),
-      edge('starter_ellipse', 'out', 'starter_renderer','layers'),
-      edge('starter_bg',      'out', 'starter_renderer','background'),
+      edge('starter_sin',     'sine', 'starter_size',    'x'),
+      edge('starter_size',    'mapped', 'starter_ellipse', 'w'),
+      edge('starter_size',    'mapped', 'starter_ellipse', 'h'),
+      edge('starter_ellipse', 'shape', 'starter_renderer','layers'),
+      edge('starter_bg',      'color', 'starter_renderer','background'),
     ],
   };
 }

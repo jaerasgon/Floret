@@ -38,7 +38,7 @@ export const particlesRenderAsNode = registerNode({
     { name: 'tint',      type: 'color',    default: null },
     { name: 'useBufferColor', type: 'boolean', default: true, param: 'useBufferColor', constant: true },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'layer', type: 'layer' }],
   defaultParams: { template: 'circle', useBufferColor: true },
   paramOptions: { template: ['circle', 'rect', 'layer'] },
   computeRaw: (inputs) => {

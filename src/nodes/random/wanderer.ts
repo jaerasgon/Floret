@@ -25,7 +25,7 @@ export const wanderer2DNode = registerNode({
     { name: 'area', type: 'number', default: 100 },
     { name: 'seed', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'vec2' }],
+  outputs: [{ name: 'position', type: 'vec2' }],
   compute: (t, speed, area, seed) => {
     const tv = (t as number) * (speed as number);
     const a = area as number;

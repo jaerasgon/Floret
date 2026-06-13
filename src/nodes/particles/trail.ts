@@ -43,7 +43,7 @@ export const particlesTrailNode = registerNode({
     { name: 'tapered',   type: 'boolean',  default: false },
     { name: 'tailWidth', type: 'number',   default: 0.1 },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'layer', type: 'layer' }],
   defaultParams: { segments: 8 },
   computeRaw: (inputs: PortValue[], params: NodeParamContext): PortValue[] => {
     const stateBag = params as unknown as { __trail?: TrailState };

@@ -16,8 +16,8 @@ export const rotateNode = registerNode({
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'shift', type: 'number', default: 1, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'values', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const n = src.length;
@@ -40,8 +40,8 @@ export const permuteNode = registerNode({
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'indices', type: 'number', kind: 'spread' },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'values', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const idx = (inputs[1] ?? []) as ReadonlyArray<unknown>;
@@ -67,8 +67,8 @@ export const sortByKeyNode = registerNode({
     { name: 'keys', type: 'number', kind: 'spread' },
     { name: 'descending', type: 'boolean', default: false },
   ],
-  outputs: [{ name: 'out', type: 'any', kind: 'spread' }],
-  dynamicOutputs: (_p, up) => [{ name: 'out', type: up.spread ?? 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
+  dynamicOutputs: (_p, up) => [{ name: 'values', type: up.spread ?? 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const keys = (inputs[1] ?? []) as ReadonlyArray<unknown>;

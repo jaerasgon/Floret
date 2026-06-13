@@ -14,6 +14,6 @@ export const selectNode = registerNode({
     { name: 'a', type: 'any' },
     { name: 'b', type: 'any' },
   ],
-  outputs: [{ name: 'out', type: 'any' }],
+  outputs: [{ name: 'selected', type: 'any' }],
   compute: (cond, a, b) => [cond ? a : b],
 });

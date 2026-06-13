@@ -24,9 +24,9 @@ describe('If region', () => {
         { id: 'sOut', defType: 'region/splicer-out/number', params: {}, parentId: 'reg' },
       ],
       [
-        { fromNode: 'tgl', fromPort: 'out', toNode: 'reg', toPort: 'condition' },
+        { fromNode: 'tgl', fromPort: 'bool', toNode: 'reg', toPort: 'condition' },
         // k is in the outer scope; broadcast into the splicer-out's inner input.
-        { fromNode: 'k', fromPort: 'out', toNode: 'sOut', toPort: 'inner' },
+        { fromNode: 'k', fromPort: 'number', toNode: 'sOut', toPort: 'inner' },
       ],
       {
         registry: realRegistry(),
@@ -49,8 +49,8 @@ describe('If region', () => {
         { id: 'sOut', defType: 'region/splicer-out/number', params: {}, parentId: 'reg' },
       ],
       [
-        { fromNode: 'tgl', fromPort: 'out', toNode: 'reg', toPort: 'condition' },
-        { fromNode: 'k', fromPort: 'out', toNode: 'sOut', toPort: 'inner' },
+        { fromNode: 'tgl', fromPort: 'bool', toNode: 'reg', toPort: 'condition' },
+        { fromNode: 'k', fromPort: 'number', toNode: 'sOut', toPort: 'inner' },
       ],
       {
         registry: realRegistry(),
@@ -76,8 +76,8 @@ describe('If region', () => {
         { id: 'write', defType: 'region/accumulator-write/number', params: { slot: 1 }, parentId: 'reg' },
       ],
       [
-        { fromNode: 'tgl', fromPort: 'out', toNode: 'reg', toPort: 'condition' },
-        { fromNode: 'init', fromPort: 'out', toNode: 'read', toPort: 'init' },
+        { fromNode: 'tgl', fromPort: 'bool', toNode: 'reg', toPort: 'condition' },
+        { fromNode: 'init', fromPort: 'number', toNode: 'read', toPort: 'init' },
         // A wire from read to write so the pair has an inner connection;
         // doesn't matter what it does — the loop never runs.
         { fromNode: 'read', fromPort: 'read', toNode: 'write', toPort: 'write' },
@@ -108,8 +108,8 @@ describe('Cache region', () => {
       { id: 'sOut', defType: 'region/splicer-out/number', params: {}, parentId: 'reg' },
     ];
     const edges = [
-      { fromNode: 'c', fromPort: 'out', toNode: 'range', toPort: 'count' },
-      { fromNode: 'range', fromPort: 'out', toNode: 'sIn', toPort: 'outer' },
+      { fromNode: 'c', fromPort: 'number', toNode: 'range', toPort: 'count' },
+      { fromNode: 'range', fromPort: 'indices', toNode: 'sIn', toPort: 'outer' },
       { fromNode: 'sIn', fromPort: 'inner', toNode: 'sOut', toPort: 'inner' },
     ];
     const result = compileGraph(editorNodes, edges, {

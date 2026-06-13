@@ -23,7 +23,7 @@ export const gridNode = registerNode({
     { name: 'cx', type: 'number', default: 0 },
     { name: 'cy', type: 'number', default: 0 },
   ],
-  outputs: [{ name: 'out', type: 'vec2', kind: 'spread' }],
+  outputs: [{ name: 'positions', type: 'vec2', kind: 'spread' }],
   computeRaw: (inputs) => {
     const cols = intCount(inputs[0]?.[0]);
     const rows = intCount(inputs[1]?.[0]);
@@ -96,7 +96,7 @@ export const spiralNode = registerNode({
     { name: 'radius', type: 'number', default: 200 },
     { name: 'phase', type: 'number', default: 0 },
   ],
-  outputs: [{ name: 'out', type: 'vec2', kind: 'spread' }],
+  outputs: [{ name: 'positions', type: 'vec2', kind: 'spread' }],
   computeRaw: (inputs) => {
     const count = intCount(inputs[0]?.[0]);
     const turns = Number(inputs[1]?.[0] ?? 0);
@@ -128,7 +128,7 @@ export const fibonacciNode = registerNode({
     { name: 'scale', type: 'number', default: 10 },
     { name: 'phase', type: 'number', default: 0 },
   ],
-  outputs: [{ name: 'out', type: 'vec2', kind: 'spread' }],
+  outputs: [{ name: 'positions', type: 'vec2', kind: 'spread' }],
   computeRaw: (inputs) => {
     const count = intCount(inputs[0]?.[0]);
     const scale = Number(inputs[1]?.[0] ?? 1);

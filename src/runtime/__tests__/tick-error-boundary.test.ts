@@ -60,7 +60,7 @@ describe('tick error boundary', () => {
         { id: 'downstream', defType: 'test/echo', params: {} },
       ],
       [
-        { fromNode: 'num', fromPort: 'out', toNode: 'thrower', toPort: 'in' },
+        { fromNode: 'num', fromPort: 'number', toNode: 'thrower', toPort: 'in' },
         { fromNode: 'thrower', fromPort: 'out', toNode: 'downstream', toPort: 'in' },
       ],
       {
@@ -91,7 +91,7 @@ describe('tick error boundary', () => {
         { id: 'num', defType: 'value/number', params: { value: 1 } },
         { id: 'thrower-throttle', defType: 'test/throw', params: {} },
       ],
-      [{ fromNode: 'num', fromPort: 'out', toNode: 'thrower-throttle', toPort: 'in' }],
+      [{ fromNode: 'num', fromPort: 'number', toNode: 'thrower-throttle', toPort: 'in' }],
       {
         registry: registryWith(throwNode),
         paramReader: (id) => (id === 'num' ? { value: 1 } : {}),

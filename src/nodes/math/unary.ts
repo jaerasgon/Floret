@@ -1,7 +1,6 @@
 import { registerNode } from '../registry';
 
 const x = [{ name: 'x', type: 'number' as const, default: 0 }];
-const out = [{ name: 'out', type: 'number' as const }];
 
 export const sinNode = registerNode({
   type: 'math/sin',
@@ -9,7 +8,7 @@ export const sinNode = registerNode({
   label: 'Sin',
   description: 'Sine of x (radians).',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'sine', type: 'number' }],
   compute: (v) => [Math.sin(v as number)],
 });
 
@@ -19,7 +18,7 @@ export const cosNode = registerNode({
   label: 'Cos',
   description: 'Cosine of x (radians).',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'cosine', type: 'number' }],
   compute: (v) => [Math.cos(v as number)],
 });
 
@@ -29,7 +28,7 @@ export const tanNode = registerNode({
   label: 'Tan',
   description: 'Tangent of x (radians).',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'tangent', type: 'number' }],
   compute: (v) => [Math.tan(v as number)],
 });
 
@@ -39,7 +38,7 @@ export const absNode = registerNode({
   label: 'Abs',
   description: 'Absolute value of x.',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'absolute', type: 'number' }],
   compute: (v) => [Math.abs(v as number)],
 });
 
@@ -49,7 +48,7 @@ export const negNode = registerNode({
   label: 'Neg',
   description: 'Negate x.',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'negated', type: 'number' }],
   compute: (v) => [-(v as number)],
 });
 
@@ -59,7 +58,7 @@ export const floorNode = registerNode({
   label: 'Floor',
   description: 'Round x down to the nearest integer.',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'floored', type: 'number' }],
   compute: (v) => [Math.floor(v as number)],
 });
 
@@ -69,7 +68,7 @@ export const roundNode = registerNode({
   label: 'Round',
   description: 'Round x to the nearest integer.',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'rounded', type: 'number' }],
   compute: (v) => [Math.round(v as number)],
 });
 
@@ -79,7 +78,7 @@ export const sqrtNode = registerNode({
   label: 'Sqrt',
   description: 'Square root of x. Negatives yield 0.',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'root', type: 'number' }],
   compute: (v) => {
     const n = v as number;
     return [n < 0 ? 0 : Math.sqrt(n)];
@@ -92,7 +91,7 @@ export const sqNode = registerNode({
   label: 'Sq',
   description: 'Square of x (x²).',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'squared', type: 'number' }],
   compute: (v) => {
     const n = v as number;
     return [n * n];
@@ -105,7 +104,7 @@ export const ceilNode = registerNode({
   label: 'Ceil',
   description: 'Round x up to the nearest integer.',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'ceiled', type: 'number' }],
   compute: (v) => [Math.ceil(v as number)],
 });
 
@@ -115,7 +114,7 @@ export const fractNode = registerNode({
   label: 'Fract',
   description: 'Fractional part of x — always non-negative.',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'fractional', type: 'number' }],
   compute: (v) => {
     const n = v as number;
     return [n - Math.floor(n)];
@@ -128,7 +127,7 @@ export const expNode = registerNode({
   label: 'Exp',
   description: 'Exponential — eˣ.',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'exponential', type: 'number' }],
   compute: (v) => [Math.exp(v as number)],
 });
 
@@ -138,7 +137,7 @@ export const logNode = registerNode({
   label: 'Log',
   description: 'Natural logarithm. log(x ≤ 0) = 0.',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'logarithm', type: 'number' }],
   compute: (v) => {
     const n = v as number;
     return [n <= 0 ? 0 : Math.log(n)];
@@ -151,7 +150,7 @@ export const asinNode = registerNode({
   label: 'Asin',
   description: 'Arcsine in radians. Input clamped to [-1, 1].',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'arcsine', type: 'number' }],
   compute: (v) => {
     const n = v as number;
     return [Math.asin(n < -1 ? -1 : n > 1 ? 1 : n)];
@@ -164,7 +163,7 @@ export const acosNode = registerNode({
   label: 'Acos',
   description: 'Arccosine in radians. Input clamped to [-1, 1].',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'arccosine', type: 'number' }],
   compute: (v) => {
     const n = v as number;
     return [Math.acos(n < -1 ? -1 : n > 1 ? 1 : n)];
@@ -177,6 +176,6 @@ export const atanNode = registerNode({
   label: 'Atan',
   description: 'Arctangent in radians.',
   inputs: x,
-  outputs: out,
+  outputs: [{ name: 'arctangent', type: 'number' }],
   compute: (v) => [Math.atan(v as number)],
 });

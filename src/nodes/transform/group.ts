@@ -35,7 +35,7 @@ export const groupNode = registerNode({
     { name: 's1', label: '1', type: 'layer', kind: 'spread' },
     { name: 's2', label: '2', type: 'layer', kind: 'spread' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'grouped', type: 'layer' }],
   defaultParams: { slotCount: 2 },
   dynamicInputs: buildLayerSlots,
   component: GroupNode,

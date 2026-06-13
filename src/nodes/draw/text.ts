@@ -25,7 +25,7 @@ export const textNode = registerNode({
     { name: 'align', type: 'string', default: 'left', param: 'align' },
     { name: 'style', type: 'style' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'layer', type: 'layer' }],
   defaultParams: { string: 'Hello', size: 16, align: 'left' },
   paramOptions: { align: ['left', 'center', 'right'] },
   compute: (text, x, y, size, align, style) => {

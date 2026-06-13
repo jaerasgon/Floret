@@ -147,7 +147,7 @@ export const walkerClusterNode = registerNode({
     { name: 'steps', type: 'number', default: 200, integer: true },
     { name: 'seed', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'layer', type: 'layer' }],
   computeRaw: (inputs): PortValue[] => {
     const rawColors = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const palette: ReadonlyArray<Color> = rawColors.length > 0

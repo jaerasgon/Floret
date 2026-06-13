@@ -51,7 +51,7 @@ export const blendNode = registerNode({
     { name: 'mode', type: 'string', default: 'blend', param: 'mode' },
     { name: 'layer', type: 'layer' },
   ],
-  outputs: [{ name: 'out', type: 'layer' }],
+  outputs: [{ name: 'blended', type: 'layer' }],
   defaultParams: { mode: 'blend' as BlendOption },
   paramOptions: { mode: BLEND_MODES as unknown as ReadonlyArray<string> },
   compute: (mode, layer) => {

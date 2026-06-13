@@ -15,7 +15,7 @@ export function buildTutHelloRect() {
   const renderer = node('t01_renderer', 'render/renderer', { x: 420, y: 0 }, { width: 400, height: 400 });
   return {
     nodes: [c, rect, renderer],
-    edges: [edge('t01_rect', 'out', 't01_renderer', 'layers')],
+    edges: [edge('t01_rect', 'shape', 't01_renderer', 'layers')],
   };
 }
 
@@ -36,9 +36,9 @@ export function buildTutColorAndFill() {
   return {
     nodes: [c, col, fill, rect, renderer],
     edges: [
-      edge('t02_col', 'out', 't02_fill', 'color'),
+      edge('t02_col', 'color', 't02_fill', 'color'),
       edge('t02_fill', 'style', 't02_rect', 'style'),
-      edge('t02_rect', 'out', 't02_renderer', 'layers'),
+      edge('t02_rect', 'shape', 't02_renderer', 'layers'),
     ],
   };
 }
@@ -62,9 +62,9 @@ export function buildTutAnimateWithTime() {
     nodes: [c, t, sinN, amp, ell, renderer],
     edges: [
       edge('t03_t', 't', 't03_sin', 'x'),
-      edge('t03_sin', 'out', 't03_amp', 'a'),
-      edge('t03_amp', 'out', 't03_ell', 'x'),
-      edge('t03_ell', 'out', 't03_renderer', 'layers'),
+      edge('t03_sin', 'sine', 't03_amp', 'a'),
+      edge('t03_amp', 'product', 't03_ell', 'x'),
+      edge('t03_ell', 'shape', 't03_renderer', 'layers'),
     ],
   };
 }
@@ -87,7 +87,7 @@ export function buildTutMouse() {
     edges: [
       edge('t04_m', 'x', 't04_ell', 'x'),
       edge('t04_m', 'y', 't04_ell', 'y'),
-      edge('t04_ell', 'out', 't04_renderer', 'layers'),
+      edge('t04_ell', 'shape', 't04_renderer', 'layers'),
     ],
   };
 }
@@ -110,10 +110,10 @@ export function buildTutSlider() {
     nodes: [c, s, halfW, rect, renderer],
     edges: [
       // x = -w/2 keeps the rect centred as the slider changes its width
-      edge('t05_s', 'out', 't05_halfW', 'a'),
-      edge('t05_halfW', 'out', 't05_rect', 'x'),
-      edge('t05_s', 'out', 't05_rect', 'w'),
-      edge('t05_rect', 'out', 't05_renderer', 'layers'),
+      edge('t05_s', 'number', 't05_halfW', 'a'),
+      edge('t05_halfW', 'product', 't05_rect', 'x'),
+      edge('t05_s', 'number', 't05_rect', 'w'),
+      edge('t05_rect', 'shape', 't05_renderer', 'layers'),
     ],
   };
 }
@@ -156,11 +156,11 @@ export function buildTutSpreadForeach() {
   return {
     nodes: [c, range, region, spaceX, offX, rect, renderer],
     edges: [
-      edge('t06_range', 'out', RID, 'i'),
+      edge('t06_range', 'indices', RID, 'i'),
       edge(RID, 'i', 't06_spaceX', 'a'),
-      edge('t06_spaceX', 'out', 't06_offX', 'a'),
-      edge('t06_offX', 'out', 't06_rect', 'x'),
-      edge('t06_rect', 'out', RID, 'layer'),
+      edge('t06_spaceX', 'product', 't06_offX', 'a'),
+      edge('t06_offX', 'sum', 't06_rect', 'x'),
+      edge('t06_rect', 'shape', RID, 'layer'),
       edge(RID, 'layer', 't06_renderer', 'layers'),
     ],
   };
@@ -202,11 +202,11 @@ export function buildTutGrid() {
   return {
     nodes: [c, grid, region, split, ell, renderer],
     edges: [
-      edge('t07_grid', 'out', RID, 'p'),
+      edge('t07_grid', 'positions', RID, 'p'),
       edge(RID, 'p', 't07_split', 'v'),
       edge('t07_split', 'x', 't07_ell', 'x'),
       edge('t07_split', 'y', 't07_ell', 'y'),
-      edge('t07_ell', 'out', RID, 'layer'),
+      edge('t07_ell', 'shape', RID, 'layer'),
       edge(RID, 'layer', 't07_renderer', 'layers'),
     ],
   };
@@ -254,15 +254,15 @@ export function buildTutPalette() {
     nodes: [c, grid, pal, count, cyc, region, split, fill, ell, renderer],
     edges: [
       edge('t08_pal', 'colors', 't08_cyc', 'spread'),
-      edge('t08_count', 'out', 't08_cyc', 'count'),
-      edge('t08_grid', 'out', RID, 'p'),
-      edge('t08_cyc', 'out', RID, 'c'),
+      edge('t08_count', 'number', 't08_cyc', 'count'),
+      edge('t08_grid', 'positions', RID, 'p'),
+      edge('t08_cyc', 'values', RID, 'c'),
       edge(RID, 'p', 't08_split', 'v'),
       edge('t08_split', 'x', 't08_ell', 'x'),
       edge('t08_split', 'y', 't08_ell', 'y'),
       edge(RID, 'c', 't08_fill', 'color'),
       edge('t08_fill', 'style', 't08_ell', 'style'),
-      edge('t08_ell', 'out', RID, 'layer'),
+      edge('t08_ell', 'shape', RID, 'layer'),
       edge(RID, 'layer', 't08_renderer', 'layers'),
     ],
   };
@@ -292,12 +292,12 @@ export function buildTutState() {
     edges: [
       // current → +1 → next  (the feedback loop)
       edge('t09_state', 'current', 't09_step', 'a'),
-      edge('t09_step', 'out', 't09_state', 'next'),
+      edge('t09_step', 'sum', 't09_state', 'next'),
       // current → hue
       edge('t09_state', 'current', 't09_col', 'h'),
-      edge('t09_col', 'out', 't09_fill', 'color'),
+      edge('t09_col', 'color', 't09_fill', 'color'),
       edge('t09_fill', 'style', 't09_ell', 'style'),
-      edge('t09_ell', 'out', 't09_renderer', 'layers'),
+      edge('t09_ell', 'shape', 't09_renderer', 'layers'),
     ],
   };
 }
@@ -325,11 +325,11 @@ export function buildTutPolar() {
     edges: [
       edge('t11_t', 't', 't11_cos', 'x'),
       edge('t11_t', 't', 't11_sin', 'x'),
-      edge('t11_cos', 'out', 't11_rx', 'a'),
-      edge('t11_sin', 'out', 't11_ry', 'a'),
-      edge('t11_rx', 'out', 't11_line', 'x2'),
-      edge('t11_ry', 'out', 't11_line', 'y2'),
-      edge('t11_line', 'out', 't11_renderer', 'layers'),
+      edge('t11_cos', 'cosine', 't11_rx', 'a'),
+      edge('t11_sin', 'sine', 't11_ry', 'a'),
+      edge('t11_rx', 'product', 't11_line', 'x2'),
+      edge('t11_ry', 'product', 't11_line', 'y2'),
+      edge('t11_line', 'shape', 't11_renderer', 'layers'),
     ],
   };
 }
@@ -375,16 +375,16 @@ export function buildTutCircleOfShapes() {
     nodes: [c, circ, R, region, cosN, sinN, mulX, mulY, ell, renderer],
     edges: [
       edge('t12_circ', 'angles', RID, 'a'),
-      edge('t12_R', 'out', RID, 'r'),
+      edge('t12_R', 'number', RID, 'r'),
       edge(RID, 'a', 't12_cos', 'x'),
       edge(RID, 'a', 't12_sin', 'x'),
-      edge('t12_cos', 'out', 't12_mulX', 'a'),
+      edge('t12_cos', 'cosine', 't12_mulX', 'a'),
       edge(RID, 'r', 't12_mulX', 'b'),
-      edge('t12_sin', 'out', 't12_mulY', 'a'),
+      edge('t12_sin', 'sine', 't12_mulY', 'a'),
       edge(RID, 'r', 't12_mulY', 'b'),
-      edge('t12_mulX', 'out', 't12_ell', 'x'),
-      edge('t12_mulY', 'out', 't12_ell', 'y'),
-      edge('t12_ell', 'out', RID, 'l'),
+      edge('t12_mulX', 'product', 't12_ell', 'x'),
+      edge('t12_mulY', 'product', 't12_ell', 'y'),
+      edge('t12_ell', 'shape', RID, 'l'),
       edge(RID, 'l', 't12_renderer', 'layers'),
     ],
   };
@@ -410,10 +410,10 @@ export function buildTutMap() {
     nodes: [c, m, map, col, fill, ell, renderer],
     edges: [
       edge('t13_m', 'x', 't13_map', 'x'),
-      edge('t13_map', 'out', 't13_col', 'h'),
-      edge('t13_col', 'out', 't13_fill', 'color'),
+      edge('t13_map', 'mapped', 't13_col', 'h'),
+      edge('t13_col', 'color', 't13_fill', 'color'),
       edge('t13_fill', 'style', 't13_ell', 'style'),
-      edge('t13_ell', 'out', 't13_renderer', 'layers'),
+      edge('t13_ell', 'shape', 't13_renderer', 'layers'),
     ],
   };
 }
@@ -443,14 +443,14 @@ export function buildTutColorLerp() {
     nodes: [c, colA, colB, t, sinN, half, off, lerp, fill, rect, renderer],
     edges: [
       edge('t14_t', 't', 't14_sin', 'x'),
-      edge('t14_sin', 'out', 't14_half', 'a'),
-      edge('t14_half', 'out', 't14_off', 'a'),
-      edge('t14_colA', 'out', 't14_lerp', 'a'),
-      edge('t14_colB', 'out', 't14_lerp', 'b'),
-      edge('t14_off', 'out', 't14_lerp', 't'),
-      edge('t14_lerp', 'out', 't14_fill', 'color'),
+      edge('t14_sin', 'sine', 't14_half', 'a'),
+      edge('t14_half', 'product', 't14_off', 'a'),
+      edge('t14_colA', 'color', 't14_lerp', 'a'),
+      edge('t14_colB', 'color', 't14_lerp', 'b'),
+      edge('t14_off', 'sum', 't14_lerp', 't'),
+      edge('t14_lerp', 'color', 't14_fill', 'color'),
       edge('t14_fill', 'style', 't14_rect', 'style'),
-      edge('t14_rect', 'out', 't14_renderer', 'layers'),
+      edge('t14_rect', 'shape', 't14_renderer', 'layers'),
     ],
   };
 }
@@ -474,12 +474,12 @@ export function buildTutStyleChain() {
   return {
     nodes: [c, colF, colS, fill, stroke, rect, renderer],
     edges: [
-      edge('t15_colF', 'out', 't15_fill', 'color'),
-      edge('t15_colS', 'out', 't15_stroke', 'color'),
+      edge('t15_colF', 'color', 't15_fill', 'color'),
+      edge('t15_colS', 'color', 't15_stroke', 'color'),
       // Fill → Stroke.base: Stroke layers stroke ON TOP of Fill
       edge('t15_fill', 'style', 't15_stroke', 'base'),
       edge('t15_stroke', 'style', 't15_rect', 'style'),
-      edge('t15_rect', 'out', 't15_renderer', 'layers'),
+      edge('t15_rect', 'shape', 't15_renderer', 'layers'),
     ],
   };
 }
@@ -503,11 +503,11 @@ export function buildTutGroupTransform() {
   return {
     nodes: [c, r1, r2, grp, t, rot, renderer],
     edges: [
-      edge('t16_r1', 'out', 't16_grp', 's1'),
-      edge('t16_r2', 'out', 't16_grp', 's2'),
-      edge('t16_grp', 'out', 't16_rot', 'layer'),
+      edge('t16_r1', 'shape', 't16_grp', 's1'),
+      edge('t16_r2', 'shape', 't16_grp', 's2'),
+      edge('t16_grp', 'grouped', 't16_rot', 'layer'),
       edge('t16_t', 't', 't16_rot', 'angle'),
-      edge('t16_rot', 'out', 't16_renderer', 'layers'),
+      edge('t16_rot', 'rotated', 't16_renderer', 'layers'),
     ],
   };
 }
@@ -562,27 +562,27 @@ export function buildTutPerlin() {
   return {
     nodes: [c, range, t, region, stepX, offX, noiseX, noiseT, n, yScale, yOff, hue, col, fill, ell, renderer],
     edges: [
-      edge('t17_range', 'out', RID, 'i'),
+      edge('t17_range', 'indices', RID, 'i'),
       edge('t17_t', 't', RID, 'tm'),
       // x
       edge(RID, 'i', 't17_stepX', 'a'),
-      edge('t17_stepX', 'out', 't17_offX', 'a'),
-      edge('t17_offX', 'out', 't17_ell', 'x'),
+      edge('t17_stepX', 'product', 't17_offX', 'a'),
+      edge('t17_offX', 'sum', 't17_ell', 'x'),
       // noise inputs
       edge(RID, 'i', 't17_noiseX', 'a'),
       edge(RID, 'tm', 't17_noiseT', 'a'),
-      edge('t17_noiseX', 'out', 't17_n', 'x'),
-      edge('t17_noiseT', 'out', 't17_n', 'y'),
+      edge('t17_noiseX', 'product', 't17_n', 'x'),
+      edge('t17_noiseT', 'product', 't17_n', 'y'),
       // y
-      edge('t17_n', 'out', 't17_yScale', 'a'),
-      edge('t17_yScale', 'out', 't17_yOff', 'a'),
-      edge('t17_yOff', 'out', 't17_ell', 'y'),
+      edge('t17_n', 'noise', 't17_yScale', 'a'),
+      edge('t17_yScale', 'product', 't17_yOff', 'a'),
+      edge('t17_yOff', 'sum', 't17_ell', 'y'),
       // hue
-      edge('t17_n', 'out', 't17_hue', 'a'),
-      edge('t17_hue', 'out', 't17_col', 'h'),
-      edge('t17_col', 'out', 't17_fill', 'color'),
+      edge('t17_n', 'noise', 't17_hue', 'a'),
+      edge('t17_hue', 'product', 't17_col', 'h'),
+      edge('t17_col', 'color', 't17_fill', 'color'),
       edge('t17_fill', 'style', 't17_ell', 'style'),
-      edge('t17_ell', 'out', RID, 'l'),
+      edge('t17_ell', 'shape', RID, 'l'),
       edge(RID, 'l', 't17_renderer', 'layers'),
     ],
   };
@@ -631,18 +631,18 @@ export function buildTutRandomSpread() {
   return {
     nodes: [c, range, seed, region, seedX, seedYoff, seedY, ux, uy, ell, renderer],
     edges: [
-      edge('t18_range', 'out', RID, 'i'),
-      edge('t18_seed', 'out', RID, 's'),
+      edge('t18_range', 'indices', RID, 'i'),
+      edge('t18_seed', 'number', RID, 's'),
       edge(RID, 's', 't18_seedX', 'a'),
       edge(RID, 'i', 't18_seedX', 'b'),
       edge(RID, 'i', 't18_seedYoff', 'a'),
-      edge('t18_seedYoff', 'out', 't18_seedY', 'a'),
+      edge('t18_seedYoff', 'sum', 't18_seedY', 'a'),
       edge(RID, 's', 't18_seedY', 'b'),
-      edge('t18_seedX', 'out', 't18_ux', 'seed'),
-      edge('t18_seedY', 'out', 't18_uy', 'seed'),
-      edge('t18_ux', 'out', 't18_ell', 'x'),
-      edge('t18_uy', 'out', 't18_ell', 'y'),
-      edge('t18_ell', 'out', RID, 'l'),
+      edge('t18_seedX', 'sum', 't18_ux', 'seed'),
+      edge('t18_seedY', 'sum', 't18_uy', 'seed'),
+      edge('t18_ux', 'sample', 't18_ell', 'x'),
+      edge('t18_uy', 'sample', 't18_ell', 'y'),
+      edge('t18_ell', 'shape', RID, 'l'),
       edge(RID, 'l', 't18_renderer', 'layers'),
     ],
   };
@@ -686,11 +686,11 @@ export function buildTutIfRegion() {
     edges: [
       edge('t19_m', 'x', 't19_dist', 'x1'),
       edge('t19_m', 'y', 't19_dist', 'y1'),
-      edge('t19_dist', 'out', 't19_gt', 'a'),
-      edge('t19_gt', 'out', RID, 'condition'),
-      edge('t19_col', 'out', 't19_fill', 'color'),
+      edge('t19_dist', 'distance', 't19_gt', 'a'),
+      edge('t19_gt', 'result', RID, 'condition'),
+      edge('t19_col', 'color', 't19_fill', 'color'),
       edge('t19_fill', 'style', 't19_rect', 'style'),
-      edge('t19_rect', 'out', RID, 'l'),
+      edge('t19_rect', 'shape', RID, 'l'),
       edge(RID, 'l', 't19_renderer', 'layers'),
     ],
   };
@@ -749,20 +749,20 @@ export function buildTutSubpatch() {
     edges: [
       // inside the subpatch: hue → Color.h → Fill → Rect.style; x,y → Rect.x,y
       edge(SID, 'hue', 't20_col', 'h'),
-      edge('t20_col', 'out', 't20_fill', 'color'),
+      edge('t20_col', 'color', 't20_fill', 'color'),
       edge('t20_fill', 'style', 't20_rect', 'style'),
       edge(SID, 'x', 't20_rect', 'x'),
       edge(SID, 'y', 't20_rect', 'y'),
-      edge('t20_rect', 'out', SID, 'l'),
+      edge('t20_rect', 'shape', SID, 'l'),
       // outside: drive the subpatch
       edge('t20_t', 't', 't20_hueSpeed', 'a'),
-      edge('t20_hueSpeed', 'out', SID, 'hue'),
-      edge('t20_x1', 'out', SID, 'x'),
-      edge('t20_y1', 'out', SID, 'y'),
+      edge('t20_hueSpeed', 'product', SID, 'hue'),
+      edge('t20_x1', 'number', SID, 'x'),
+      edge('t20_y1', 'number', SID, 'y'),
       // Group the subpatch's output with a sibling ellipse and render
       edge(SID, 'l', 't20_grp', 's1'),
-      edge('t20_sib', 'out', 't20_grp', 's2'),
-      edge('t20_grp', 'out', 't20_renderer', 'layers'),
+      edge('t20_sib', 'shape', 't20_grp', 's2'),
+      edge('t20_grp', 'grouped', 't20_renderer', 'layers'),
     ],
   };
 }
@@ -799,13 +799,13 @@ export function buildTutTrails() {
       edge('t21_m', 'y', 't21_mkVec', 'y'),
       // prev buffer + today's vec2 → trimmed buffer
       edge('t21_read', 'current', 't21_stack', 'a'),
-      edge('t21_mkVec', 'out', 't21_stack', 'b'),
-      edge('t21_stack', 'out', 't21_take', 'spread'),
-      edge('t21_take', 'out', 't21_write', 'next'),
+      edge('t21_mkVec', 'vector', 't21_stack', 'b'),
+      edge('t21_stack', 'values', 't21_take', 'spread'),
+      edge('t21_take', 'values', 't21_write', 'next'),
       // draw the buffer
-      edge('t21_take', 'out', 't21_path', 'points'),
-      edge('t21_col', 'out', 't21_path', 'color'),
-      edge('t21_path', 'out', 't21_renderer', 'layers'),
+      edge('t21_take', 'values', 't21_path', 'points'),
+      edge('t21_col', 'color', 't21_path', 'color'),
+      edge('t21_path', 'shape', 't21_renderer', 'layers'),
     ],
   };
 }
@@ -848,13 +848,13 @@ export function buildTutCacheRegion() {
   return {
     nodes: [c, scaleS, region, fib, col, poly, fill, renderer],
     edges: [
-      edge('t22_scale', 'out', RID, 's'),
+      edge('t22_scale', 'number', RID, 's'),
       // inside: fib scale is wired so the cache invalidates with scaleS
       edge(RID, 's', 't22_fib', 'scale'),
-      edge('t22_fib', 'out', 't22_poly', 'points'),
-      edge('t22_col', 'out', 't22_fill', 'color'),
+      edge('t22_fib', 'positions', 't22_poly', 'points'),
+      edge('t22_col', 'color', 't22_fill', 'color'),
       edge('t22_fill', 'style', 't22_poly', 'style'),
-      edge('t22_poly', 'out', RID, 'l'),
+      edge('t22_poly', 'shape', RID, 'l'),
       edge(RID, 'l', 't22_renderer', 'layers'),
     ],
   };
@@ -880,12 +880,12 @@ export function buildTutPolygon() {
   return {
     nodes: [c, fib, col, colS, fill, stroke, poly, renderer],
     edges: [
-      edge('t23_fib', 'out', 't23_poly', 'points'),
-      edge('t23_col', 'out', 't23_fill', 'color'),
-      edge('t23_colS', 'out', 't23_stroke', 'color'),
+      edge('t23_fib', 'positions', 't23_poly', 'points'),
+      edge('t23_col', 'color', 't23_fill', 'color'),
+      edge('t23_colS', 'color', 't23_stroke', 'color'),
       edge('t23_fill', 'style', 't23_stroke', 'base'),
       edge('t23_stroke', 'style', 't23_poly', 'style'),
-      edge('t23_poly', 'out', 't23_renderer', 'layers'),
+      edge('t23_poly', 'shape', 't23_renderer', 'layers'),
     ],
   };
 }
@@ -939,24 +939,24 @@ export function buildTutPathTension() {
   return {
     nodes: [c, range, region, xMul, xOff, yIn, ySin, yMul, mkVec, t, tSin, tHalf, tOff, col, path, renderer],
     edges: [
-      edge('t24_range', 'out', RID, 'i'),
+      edge('t24_range', 'indices', RID, 'i'),
       edge(RID, 'i', 't24_xMul', 'a'),
-      edge('t24_xMul', 'out', 't24_xOff', 'a'),
-      edge('t24_xOff', 'out', 't24_mkVec', 'x'),
+      edge('t24_xMul', 'product', 't24_xOff', 'a'),
+      edge('t24_xOff', 'sum', 't24_mkVec', 'x'),
       edge(RID, 'i', 't24_yIn', 'a'),
-      edge('t24_yIn', 'out', 't24_ySin', 'x'),
-      edge('t24_ySin', 'out', 't24_yMul', 'a'),
-      edge('t24_yMul', 'out', 't24_mkVec', 'y'),
-      edge('t24_mkVec', 'out', RID, 'p'),
+      edge('t24_yIn', 'product', 't24_ySin', 'x'),
+      edge('t24_ySin', 'sine', 't24_yMul', 'a'),
+      edge('t24_yMul', 'product', 't24_mkVec', 'y'),
+      edge('t24_mkVec', 'vector', RID, 'p'),
       // tension oscillates
       edge('t24_t', 't', 't24_tSin', 'x'),
-      edge('t24_tSin', 'out', 't24_tHalf', 'a'),
-      edge('t24_tHalf', 'out', 't24_tOff', 'a'),
+      edge('t24_tSin', 'sine', 't24_tHalf', 'a'),
+      edge('t24_tHalf', 'product', 't24_tOff', 'a'),
       // draw
       edge(RID, 'p', 't24_path', 'points'),
-      edge('t24_tOff', 'out', 't24_path', 'tension'),
-      edge('t24_col', 'out', 't24_path', 'color'),
-      edge('t24_path', 'out', 't24_renderer', 'layers'),
+      edge('t24_tOff', 'sum', 't24_path', 'tension'),
+      edge('t24_col', 'color', 't24_path', 'color'),
+      edge('t24_path', 'shape', 't24_renderer', 'layers'),
     ],
   };
 }
@@ -1020,7 +1020,7 @@ export function buildTutSpringFollow() {
     edges: [
       edge('t25_m', 'x', 't25_mVec', 'x'),
       edge('t25_m', 'y', 't25_mVec', 'y'),
-      edge('t25_mVec', 'out', 't25_mS', 'v'),
+      edge('t25_mVec', 'vector', 't25_mS', 'v'),
       edge('t25_posR', 'current', 't25_pS', 'v'),
       edge('t25_velR', 'current', 't25_vS', 'v'),
       // accel
@@ -1028,36 +1028,36 @@ export function buildTutSpringFollow() {
       edge('t25_pS', 'x', 't25_subX', 'b'),
       edge('t25_mS', 'y', 't25_subY', 'a'),
       edge('t25_pS', 'y', 't25_subY', 'b'),
-      edge('t25_subX', 'out', 't25_accX', 'a'),
-      edge('t25_k', 'out', 't25_accX', 'b'),
-      edge('t25_subY', 'out', 't25_accY', 'a'),
-      edge('t25_k', 'out', 't25_accY', 'b'),
+      edge('t25_subX', 'difference', 't25_accX', 'a'),
+      edge('t25_k', 'number', 't25_accX', 'b'),
+      edge('t25_subY', 'difference', 't25_accY', 'a'),
+      edge('t25_k', 'number', 't25_accY', 'b'),
       // damped vel
       edge('t25_vS', 'x', 't25_dvX', 'a'),
-      edge('t25_damp', 'out', 't25_dvX', 'b'),
+      edge('t25_damp', 'number', 't25_dvX', 'b'),
       edge('t25_vS', 'y', 't25_dvY', 'a'),
-      edge('t25_damp', 'out', 't25_dvY', 'b'),
+      edge('t25_damp', 'number', 't25_dvY', 'b'),
       // new vel
-      edge('t25_dvX', 'out', 't25_nvX', 'a'),
-      edge('t25_accX', 'out', 't25_nvX', 'b'),
-      edge('t25_dvY', 'out', 't25_nvY', 'a'),
-      edge('t25_accY', 'out', 't25_nvY', 'b'),
+      edge('t25_dvX', 'product', 't25_nvX', 'a'),
+      edge('t25_accX', 'product', 't25_nvX', 'b'),
+      edge('t25_dvY', 'product', 't25_nvY', 'a'),
+      edge('t25_accY', 'product', 't25_nvY', 'b'),
       // new pos
       edge('t25_pS', 'x', 't25_npX', 'a'),
-      edge('t25_nvX', 'out', 't25_npX', 'b'),
+      edge('t25_nvX', 'sum', 't25_npX', 'b'),
       edge('t25_pS', 'y', 't25_npY', 'a'),
-      edge('t25_nvY', 'out', 't25_npY', 'b'),
+      edge('t25_nvY', 'sum', 't25_npY', 'b'),
       // writeback
-      edge('t25_npX', 'out', 't25_nP', 'x'),
-      edge('t25_npY', 'out', 't25_nP', 'y'),
-      edge('t25_nvX', 'out', 't25_nV', 'x'),
-      edge('t25_nvY', 'out', 't25_nV', 'y'),
-      edge('t25_nP', 'out', 't25_posW', 'next'),
-      edge('t25_nV', 'out', 't25_velW', 'next'),
+      edge('t25_npX', 'sum', 't25_nP', 'x'),
+      edge('t25_npY', 'sum', 't25_nP', 'y'),
+      edge('t25_nvX', 'sum', 't25_nV', 'x'),
+      edge('t25_nvY', 'sum', 't25_nV', 'y'),
+      edge('t25_nP', 'vector', 't25_posW', 'next'),
+      edge('t25_nV', 'vector', 't25_velW', 'next'),
       // render
-      edge('t25_npX', 'out', 't25_ell', 'x'),
-      edge('t25_npY', 'out', 't25_ell', 'y'),
-      edge('t25_ell', 'out', 't25_renderer', 'layers'),
+      edge('t25_npX', 'sum', 't25_ell', 'x'),
+      edge('t25_npY', 'sum', 't25_ell', 'y'),
+      edge('t25_ell', 'shape', 't25_renderer', 'layers'),
     ],
   };
 }
@@ -1084,12 +1084,12 @@ export function buildTutRasterize() {
   return {
     nodes: [c, fib, col, fill, poly, rast, drawImg, renderer],
     edges: [
-      edge('t26_fib', 'out', 't26_poly', 'points'),
-      edge('t26_col', 'out', 't26_fill', 'color'),
+      edge('t26_fib', 'positions', 't26_poly', 'points'),
+      edge('t26_col', 'color', 't26_fill', 'color'),
       edge('t26_fill', 'style', 't26_poly', 'style'),
-      edge('t26_poly', 'out', 't26_rast', 'layer'),
+      edge('t26_poly', 'shape', 't26_rast', 'layer'),
       edge('t26_rast', 'image', 't26_draw', 'image'),
-      edge('t26_draw', 'out', 't26_renderer', 'layers'),
+      edge('t26_draw', 'layer', 't26_renderer', 'layers'),
     ],
   };
 }
@@ -1150,15 +1150,15 @@ export function buildTutImageSample() {
     edges: [
       // build source
       edge('t27_t', 't', 't27_hueDrive', 'a'),
-      edge('t27_hueDrive', 'out', 't27_colA', 'h'),
-      edge('t27_colA', 'out', 't27_fillA', 'color'),
+      edge('t27_hueDrive', 'product', 't27_colA', 'h'),
+      edge('t27_colA', 'color', 't27_fillA', 'color'),
       edge('t27_fillA', 'style', 't27_rectA', 'style'),
-      edge('t27_rectA', 'out', 't27_rast', 'layer'),
+      edge('t27_rectA', 'shape', 't27_rast', 'layer'),
       // sample
       edge('t27_rast', 'image', 't27_samp', 'image'),
-      edge('t27_grid', 'out', 't27_samp', 'points'),
+      edge('t27_grid', 'positions', 't27_samp', 'points'),
       // foreach (screen-grid positions + sampled colours)
-      edge('t27_gridScreen', 'out', RID, 'p'),
+      edge('t27_gridScreen', 'positions', RID, 'p'),
       edge('t27_samp', 'colors', RID, 'col'),
       // inside
       edge(RID, 'p', 't27_split', 'v'),
@@ -1166,7 +1166,7 @@ export function buildTutImageSample() {
       edge('t27_split', 'y', 't27_rect', 'y'),
       edge(RID, 'col', 't27_fill', 'color'),
       edge('t27_fill', 'style', 't27_rect', 'style'),
-      edge('t27_rect', 'out', RID, 'l'),
+      edge('t27_rect', 'shape', RID, 'l'),
       edge(RID, 'l', 't27_renderer', 'layers'),
     ],
   };
@@ -1193,13 +1193,13 @@ export function buildTutAudioReactive() {
   return {
     nodes: [c, start, mic, amp, sz, szO, ell, renderer],
     edges: [
-      edge('t28_start', 'out', 't28_mic', 'start'),
+      edge('t28_start', 'number', 't28_mic', 'start'),
       edge('t28_mic', 'audio', 't28_amp', 'in'),
       edge('t28_amp', 'level', 't28_sz', 'a'),
-      edge('t28_sz', 'out', 't28_szO', 'a'),
-      edge('t28_szO', 'out', 't28_ell', 'w'),
-      edge('t28_szO', 'out', 't28_ell', 'h'),
-      edge('t28_ell', 'out', 't28_renderer', 'layers'),
+      edge('t28_sz', 'product', 't28_szO', 'a'),
+      edge('t28_szO', 'sum', 't28_ell', 'w'),
+      edge('t28_szO', 'sum', 't28_ell', 'h'),
+      edge('t28_ell', 'shape', 't28_renderer', 'layers'),
     ],
   };
 }
@@ -1230,15 +1230,15 @@ export function buildTutOscillator() {
     nodes: [c, m, freq, osc, out, amp, sz, szO, ell, renderer],
     edges: [
       edge('t29_m', 'y', 't29_freq', 'x'),
-      edge('t29_freq', 'out', 't29_osc', 'freq'),
+      edge('t29_freq', 'mapped', 't29_osc', 'freq'),
       edge('t29_osc', 'audio', 't29_out', 'in'),
       // visual: split audio between speakers and amplitude
       edge('t29_osc', 'audio', 't29_amp', 'in'),
       edge('t29_amp', 'level', 't29_sz', 'a'),
-      edge('t29_sz', 'out', 't29_szO', 'a'),
-      edge('t29_szO', 'out', 't29_ell', 'w'),
-      edge('t29_szO', 'out', 't29_ell', 'h'),
-      edge('t29_ell', 'out', 't29_renderer', 'layers'),
+      edge('t29_sz', 'product', 't29_szO', 'a'),
+      edge('t29_szO', 'sum', 't29_ell', 'w'),
+      edge('t29_szO', 'sum', 't29_ell', 'h'),
+      edge('t29_ell', 'shape', 't29_renderer', 'layers'),
     ],
   };
 }
@@ -1309,23 +1309,23 @@ export function buildTutKeyboardBranch() {
     ],
     edges: [
       edge('t30_kb', 'key', 't30_isR', 'a'),
-      edge('t30_rKey', 'out', 't30_isR', 'b'),
+      edge('t30_rKey', 'text', 't30_isR', 'b'),
       edge('t30_kb', 'key', 't30_isB', 'a'),
-      edge('t30_bKey', 'out', 't30_isB', 'b'),
-      edge('t30_isR', 'out', R_ID, 'condition'),
-      edge('t30_isB', 'out', B_ID, 'condition'),
+      edge('t30_bKey', 'text', 't30_isB', 'b'),
+      edge('t30_isR', 'result', R_ID, 'condition'),
+      edge('t30_isB', 'result', B_ID, 'condition'),
       // inside R
-      edge('t30_colR', 'out', 't30_fillR', 'color'),
+      edge('t30_colR', 'color', 't30_fillR', 'color'),
       edge('t30_fillR', 'style', 't30_rectR', 'style'),
-      edge('t30_rectR', 'out', R_ID, 'l'),
+      edge('t30_rectR', 'shape', R_ID, 'l'),
       // inside B
-      edge('t30_colB', 'out', 't30_fillB', 'color'),
+      edge('t30_colB', 'color', 't30_fillB', 'color'),
       edge('t30_fillB', 'style', 't30_ellB', 'style'),
-      edge('t30_ellB', 'out', B_ID, 'l'),
+      edge('t30_ellB', 'shape', B_ID, 'l'),
       // group + render
       edge(R_ID, 'l', 't30_grp', 's1'),
       edge(B_ID, 'l', 't30_grp', 's2'),
-      edge('t30_grp', 'out', 't30_renderer', 'layers'),
+      edge('t30_grp', 'grouped', 't30_renderer', 'layers'),
     ],
   };
 }
@@ -1350,13 +1350,13 @@ export function buildTutVec2Math() {
   return {
     nodes: [c, base, t, sN, sc, sp, ell, renderer],
     edges: [
-      edge('t31_base', 'out', 't31_sc', 'v'),
+      edge('t31_base', 'vector', 't31_sc', 'v'),
       edge('t31_t', 't', 't31_s', 'x'),
-      edge('t31_s', 'out', 't31_sc', 's'),
-      edge('t31_sc', 'out', 't31_sp', 'v'),
+      edge('t31_s', 'sine', 't31_sc', 's'),
+      edge('t31_sc', 'scaled', 't31_sp', 'v'),
       edge('t31_sp', 'x', 't31_ell', 'x'),
       edge('t31_sp', 'y', 't31_ell', 'y'),
-      edge('t31_ell', 'out', 't31_renderer', 'layers'),
+      edge('t31_ell', 'shape', 't31_renderer', 'layers'),
     ],
   };
 }
@@ -1384,12 +1384,12 @@ export function buildTutNormalize() {
     edges: [
       edge('t32_m', 'x', 't32_mv', 'x'),
       edge('t32_m', 'y', 't32_mv', 'y'),
-      edge('t32_mv', 'out', 't32_n', 'v'),
-      edge('t32_n', 'out', 't32_sc', 'v'),
-      edge('t32_sc', 'out', 't32_sp', 'v'),
+      edge('t32_mv', 'vector', 't32_n', 'v'),
+      edge('t32_n', 'normalized', 't32_sc', 'v'),
+      edge('t32_sc', 'scaled', 't32_sp', 'v'),
       edge('t32_sp', 'x', 't32_line', 'x2'),
       edge('t32_sp', 'y', 't32_line', 'y2'),
-      edge('t32_line', 'out', 't32_renderer', 'layers'),
+      edge('t32_line', 'shape', 't32_renderer', 'layers'),
     ],
   };
 }
@@ -1416,10 +1416,10 @@ export function buildTutGradient() {
     edges: [
       edge('t33_pal', 'colors', 't33_grad', 'colors'),
       edge('t33_m', 'x', 't33_tmap', 'x'),
-      edge('t33_tmap', 'out', 't33_grad', 't'),
-      edge('t33_grad', 'out', 't33_fill', 'color'),
+      edge('t33_tmap', 'mapped', 't33_grad', 't'),
+      edge('t33_grad', 'color', 't33_fill', 'color'),
       edge('t33_fill', 'style', 't33_rect', 'style'),
-      edge('t33_rect', 'out', 't33_renderer', 'layers'),
+      edge('t33_rect', 'shape', 't33_renderer', 'layers'),
     ],
   };
 }
@@ -1441,9 +1441,9 @@ export function buildTutText() {
   return {
     nodes: [c, colN, fill, txt, renderer],
     edges: [
-      edge('t34_col', 'out', 't34_fill', 'color'),
+      edge('t34_col', 'color', 't34_fill', 'color'),
       edge('t34_fill', 'style', 't34_text', 'style'),
-      edge('t34_text', 'out', 't34_renderer', 'layers'),
+      edge('t34_text', 'layer', 't34_renderer', 'layers'),
     ],
   };
 }
@@ -1467,10 +1467,10 @@ export function buildTutWanderer() {
     nodes: [c, t, w, sp, ell, renderer],
     edges: [
       edge('t35_t', 't', 't35_w', 't'),
-      edge('t35_w', 'out', 't35_sp', 'v'),
+      edge('t35_w', 'position', 't35_sp', 'v'),
       edge('t35_sp', 'x', 't35_ell', 'x'),
       edge('t35_sp', 'y', 't35_ell', 'y'),
-      edge('t35_ell', 'out', 't35_renderer', 'layers'),
+      edge('t35_ell', 'shape', 't35_renderer', 'layers'),
     ],
   };
 }
@@ -1512,14 +1512,14 @@ export function buildTutGaussian() {
   return {
     nodes: [c, range, region, seedX, seedY, gx, gy, ell, renderer],
     edges: [
-      edge('t36_range', 'out', RID, 'i'),
+      edge('t36_range', 'indices', RID, 'i'),
       edge(RID, 'i', 't36_sx', 'a'),
       edge(RID, 'i', 't36_sy', 'a'),
-      edge('t36_sx', 'out', 't36_gx', 'seed'),
-      edge('t36_sy', 'out', 't36_gy', 'seed'),
-      edge('t36_gx', 'out', 't36_ell', 'x'),
-      edge('t36_gy', 'out', 't36_ell', 'y'),
-      edge('t36_ell', 'out', RID, 'l'),
+      edge('t36_sx', 'sum', 't36_gx', 'seed'),
+      edge('t36_sy', 'sum', 't36_gy', 'seed'),
+      edge('t36_gx', 'sample', 't36_ell', 'x'),
+      edge('t36_gy', 'sample', 't36_ell', 'y'),
+      edge('t36_ell', 'shape', RID, 'l'),
       edge(RID, 'l', 't36_renderer', 'layers'),
     ],
   };
@@ -1541,7 +1541,7 @@ export function buildTutImageUrl() {
     nodes: [c, url, drawImg, renderer],
     edges: [
       edge('t37_url', 'image', 't37_draw', 'image'),
-      edge('t37_draw', 'out', 't37_renderer', 'layers'),
+      edge('t37_draw', 'layer', 't37_renderer', 'layers'),
     ],
   };
 }
@@ -1564,7 +1564,7 @@ export function buildTutImageAdjust() {
     edges: [
       edge('t38_url', 'image', 't38_adj', 'image'),
       edge('t38_adj', 'image', 't38_draw', 'image'),
-      edge('t38_draw', 'out', 't38_renderer', 'layers'),
+      edge('t38_draw', 'layer', 't38_renderer', 'layers'),
     ],
   };
 }
@@ -1587,9 +1587,9 @@ export function buildTutPixelate() {
     nodes: [c, url, sz, pix, drawImg, renderer],
     edges: [
       edge('t39_url', 'image', 't39_pix', 'image'),
-      edge('t39_sz', 'out', 't39_pix', 'size'),
+      edge('t39_sz', 'number', 't39_pix', 'size'),
       edge('t39_pix', 'image', 't39_draw', 'image'),
-      edge('t39_draw', 'out', 't39_renderer', 'layers'),
+      edge('t39_draw', 'layer', 't39_renderer', 'layers'),
     ],
   };
 }
@@ -1612,7 +1612,7 @@ export function buildTutPixelSort() {
     edges: [
       edge('t40_url', 'image', 't40_sort', 'image'),
       edge('t40_sort', 'image', 't40_draw', 'image'),
-      edge('t40_draw', 'out', 't40_renderer', 'layers'),
+      edge('t40_draw', 'layer', 't40_renderer', 'layers'),
     ],
   };
 }
@@ -1657,16 +1657,16 @@ export function buildTutSortShuffle() {
   return {
     nodes: [c, range, shuf, sort, region, idx, xMul, xOff, hMul, rect, renderer],
     edges: [
-      edge('t41_range', 'out', 't41_shuf', 'value'),
-      edge('t41_shuf', 'out', 't41_sort', 'spread'),
-      edge('t41_sort', 'out', RID, 'v'),
-      edge('t41_idx', 'out', RID, 'i'),
+      edge('t41_range', 'indices', 't41_shuf', 'value'),
+      edge('t41_shuf', 'values', 't41_sort', 'spread'),
+      edge('t41_sort', 'values', RID, 'v'),
+      edge('t41_idx', 'indices', RID, 'i'),
       edge(RID, 'i', 't41_xMul', 'a'),
-      edge('t41_xMul', 'out', 't41_xOff', 'a'),
-      edge('t41_xOff', 'out', 't41_rect', 'x'),
+      edge('t41_xMul', 'product', 't41_xOff', 'a'),
+      edge('t41_xOff', 'sum', 't41_rect', 'x'),
       edge(RID, 'v', 't41_hMul', 'a'),
-      edge('t41_hMul', 'out', 't41_rect', 'h'),
-      edge('t41_rect', 'out', RID, 'l'),
+      edge('t41_hMul', 'product', 't41_rect', 'h'),
+      edge('t41_rect', 'shape', RID, 'l'),
       edge(RID, 'l', 't41_renderer', 'layers'),
     ],
   };
@@ -1732,18 +1732,18 @@ export function buildTutElementaryCA() {
   return {
     nodes: [c, range, region, eqMid, rule, idx, region2, xMul, xOff, hScale, rect, renderer],
     edges: [
-      edge('t42_range', 'out', RID, 'i'),
+      edge('t42_range', 'indices', RID, 'i'),
       edge(RID, 'i', 't42_eq', 'a'),
-      edge('t42_eq', 'out', RID, 'b'),
+      edge('t42_eq', 'result', RID, 'b'),
       edge(RID, 'b', 't42_rule', 'row'),
       edge('t42_rule', 'next', RID2, 'b'),
-      edge('t42_idx', 'out', RID2, 'i'),
+      edge('t42_idx', 'indices', RID2, 'i'),
       edge(RID2, 'b', 't42_hScale', 'a'),
-      edge('t42_hScale', 'out', 't42_rect', 'h'),
+      edge('t42_hScale', 'product', 't42_rect', 'h'),
       edge(RID2, 'i', 't42_xMul', 'a'),
-      edge('t42_xMul', 'out', 't42_xOff', 'a'),
-      edge('t42_xOff', 'out', 't42_rect', 'x'),
-      edge('t42_rect', 'out', RID2, 'l'),
+      edge('t42_xMul', 'product', 't42_xOff', 'a'),
+      edge('t42_xOff', 'sum', 't42_rect', 'x'),
+      edge('t42_rect', 'shape', RID2, 'l'),
       edge(RID2, 'l', 't42_renderer', 'layers'),
     ],
   };
@@ -1833,33 +1833,33 @@ export function buildTutGoL() {
     ],
     edges: [
       // build the seed row (used as the state init via state/read-spread.init)
-      edge('t43_range', 'out', RIDseed, 'i'),
+      edge('t43_range', 'indices', RIDseed, 'i'),
       edge(RIDseed, 'i', 't43_u', 'seed'),
-      edge('t43_u', 'out', 't43_lt', 'a'),
-      edge('t43_lt', 'out', RIDseed, 'b'),
+      edge('t43_u', 'sample', 't43_lt', 'a'),
+      edge('t43_lt', 'result', RIDseed, 'b'),
       edge(RIDseed, 'b', 't43_rState', 'init'),
       // step
       edge('t43_rState', 'current', 't43_step', 'grid'),
       edge('t43_step', 'next', 't43_wState', 'next'),
       // draw the current state
-      edge('t43_idx', 'out', RID, 'i'),
+      edge('t43_idx', 'indices', RID, 'i'),
       edge('t43_rState', 'current', RID, 'b'),
       // inside draw
       edge(RID, 'i', 't43_div', 'a'),
-      edge('t43_div', 'out', 't43_fl', 'x'),
-      edge('t43_fl', 'out', 't43_rowMul', 'a'),
+      edge('t43_div', 'product', 't43_fl', 'x'),
+      edge('t43_fl', 'floored', 't43_rowMul', 'a'),
       edge(RID, 'i', 't43_colSub', 'a'),
-      edge('t43_rowMul', 'out', 't43_colSub', 'b'),
-      edge('t43_colSub', 'out', 't43_xPos', 'a'),
-      edge('t43_xPos', 'out', 't43_xOff', 'a'),
-      edge('t43_xOff', 'out', 't43_rect', 'x'),
-      edge('t43_fl', 'out', 't43_yPos', 'a'),
-      edge('t43_yPos', 'out', 't43_yOff', 'a'),
-      edge('t43_yOff', 'out', 't43_rect', 'y'),
+      edge('t43_rowMul', 'product', 't43_colSub', 'b'),
+      edge('t43_colSub', 'difference', 't43_xPos', 'a'),
+      edge('t43_xPos', 'product', 't43_xOff', 'a'),
+      edge('t43_xOff', 'sum', 't43_rect', 'x'),
+      edge('t43_fl', 'floored', 't43_yPos', 'a'),
+      edge('t43_yPos', 'product', 't43_yOff', 'a'),
+      edge('t43_yOff', 'sum', 't43_rect', 'y'),
       edge(RID, 'b', 't43_sz', 'a'),
-      edge('t43_sz', 'out', 't43_rect', 'w'),
-      edge('t43_sz', 'out', 't43_rect', 'h'),
-      edge('t43_rect', 'out', RID, 'l'),
+      edge('t43_sz', 'product', 't43_rect', 'w'),
+      edge('t43_sz', 'product', 't43_rect', 'h'),
+      edge('t43_rect', 'shape', RID, 'l'),
       edge(RID, 'l', 't43_renderer', 'layers'),
     ],
   };
@@ -1909,20 +1909,20 @@ export function buildTutAccumulator() {
   return {
     nodes: [c, range, initVal, region, read, inc, sum, write, colN, fill, txt, renderer],
     edges: [
-      edge('t44_range', 'out', RID, 'i'),
+      edge('t44_range', 'indices', RID, 'i'),
       // Init flows into Read.init (outer edge, LTR).
-      edge('t44_init', 'out', 't44_read', 'init'),
+      edge('t44_init', 'number', 't44_read', 'init'),
       // Inner: running = read + (i + 1), wired LTR.
       edge(RID, 'i', 't44_inc', 'a'),
       edge('t44_read', 'read', 't44_sum', 'a'),
-      edge('t44_inc', 'out', 't44_sum', 'b'),
-      edge('t44_sum', 'out', 't44_write', 'write'),
+      edge('t44_inc', 'sum', 't44_sum', 'b'),
+      edge('t44_sum', 'sum', 't44_write', 'write'),
       // Style chain for the displayed number (LTR).
-      edge('t44_col', 'out', 't44_fill', 'color'),
+      edge('t44_col', 'color', 't44_fill', 'color'),
       edge('t44_fill', 'style', 't44_text', 'style'),
       // Final from the pair drives the displayed number's x-position.
       edge('t44_write', 'final', 't44_text', 'x'),
-      edge('t44_text', 'out', 't44_renderer', 'layers'),
+      edge('t44_text', 'layer', 't44_renderer', 'layers'),
     ],
   };
 }
@@ -1946,13 +1946,13 @@ export function buildTutMidiCC() {
     nodes: [c, cc, sz, szO, half, rect, renderer],
     edges: [
       edge('t45_cc', 'value', 't45_sz', 'a'),
-      edge('t45_sz', 'out', 't45_szO', 'a'),
-      edge('t45_szO', 'out', 't45_rect', 'w'),
-      edge('t45_szO', 'out', 't45_rect', 'h'),
-      edge('t45_szO', 'out', 't45_half', 'a'),
-      edge('t45_half', 'out', 't45_rect', 'x'),
-      edge('t45_half', 'out', 't45_rect', 'y'),
-      edge('t45_rect', 'out', 't45_renderer', 'layers'),
+      edge('t45_sz', 'product', 't45_szO', 'a'),
+      edge('t45_szO', 'sum', 't45_rect', 'w'),
+      edge('t45_szO', 'sum', 't45_rect', 'h'),
+      edge('t45_szO', 'sum', 't45_half', 'a'),
+      edge('t45_half', 'product', 't45_rect', 'x'),
+      edge('t45_half', 'product', 't45_rect', 'y'),
+      edge('t45_rect', 'shape', 't45_renderer', 'layers'),
     ],
   };
 }
@@ -1978,9 +1978,9 @@ export function buildTutSoundFilter() {
     edges: [
       edge('t46_osc', 'audio', 't46_filt', 'in'),
       edge('t46_m', 'x', 't46_freq', 'x'),
-      edge('t46_freq', 'out', 't46_filt', 'freq'),
+      edge('t46_freq', 'mapped', 't46_filt', 'freq'),
       edge('t46_filt', 'audio', 't46_out', 'in'),
-      edge('t46_ell', 'out', 't46_renderer', 'layers'),
+      edge('t46_ell', 'shape', 't46_renderer', 'layers'),
     ],
   };
 }
@@ -2006,7 +2006,7 @@ export function buildTutEnvelope() {
       edge('t47_osc', 'audio', 't47_env', 'in'),
       edge('t47_m', 'pressed', 't47_env', 'trigger'),
       edge('t47_env', 'audio', 't47_out', 'in'),
-      edge('t47_ell', 'out', 't47_renderer', 'layers'),
+      edge('t47_ell', 'shape', 't47_renderer', 'layers'),
     ],
   };
 }
@@ -2034,15 +2034,15 @@ export function buildTutPulse() {
     nodes: [c, t, sN, half, pulse, out, amp, sz, szO, ell, renderer],
     edges: [
       edge('t48_t', 't', 't48_s', 'x'),
-      edge('t48_s', 'out', 't48_half', 'a'),
-      edge('t48_half', 'out', 't48_pulse', 'width'),
+      edge('t48_s', 'sine', 't48_half', 'a'),
+      edge('t48_half', 'product', 't48_pulse', 'width'),
       edge('t48_pulse', 'audio', 't48_out', 'in'),
       edge('t48_pulse', 'audio', 't48_amp', 'in'),
       edge('t48_amp', 'level', 't48_sz', 'a'),
-      edge('t48_sz', 'out', 't48_szO', 'a'),
-      edge('t48_szO', 'out', 't48_ell', 'w'),
-      edge('t48_szO', 'out', 't48_ell', 'h'),
-      edge('t48_ell', 'out', 't48_renderer', 'layers'),
+      edge('t48_sz', 'product', 't48_szO', 'a'),
+      edge('t48_szO', 'sum', 't48_ell', 'w'),
+      edge('t48_szO', 'sum', 't48_ell', 'h'),
+      edge('t48_ell', 'shape', 't48_renderer', 'layers'),
     ],
   };
 }
@@ -2088,16 +2088,16 @@ export function buildTutFFT() {
   return {
     nodes: [c, start, mic, fft, idx, region, xMul, xOff, hScale, rect, renderer],
     edges: [
-      edge('t49_start', 'out', 't49_mic', 'start'),
+      edge('t49_start', 'number', 't49_mic', 'start'),
       edge('t49_mic', 'audio', 't49_fft', 'in'),
       edge('t49_fft', 'spectrum', RID, 'b'),
-      edge('t49_idx', 'out', RID, 'i'),
+      edge('t49_idx', 'indices', RID, 'i'),
       edge(RID, 'b', 't49_hScale', 'a'),
-      edge('t49_hScale', 'out', 't49_rect', 'h'),
+      edge('t49_hScale', 'product', 't49_rect', 'h'),
       edge(RID, 'i', 't49_xMul', 'a'),
-      edge('t49_xMul', 'out', 't49_xOff', 'a'),
-      edge('t49_xOff', 'out', 't49_rect', 'x'),
-      edge('t49_rect', 'out', RID, 'l'),
+      edge('t49_xMul', 'product', 't49_xOff', 'a'),
+      edge('t49_xOff', 'sum', 't49_rect', 'x'),
+      edge('t49_rect', 'shape', RID, 'l'),
       edge(RID, 'l', 't49_renderer', 'layers'),
     ],
   };

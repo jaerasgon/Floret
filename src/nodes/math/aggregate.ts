@@ -15,7 +15,7 @@ export const sumNode = registerNode({
   label: 'Sum',
   description: 'Sum of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'sum', type: 'number' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     let s = 0;
@@ -30,7 +30,7 @@ export const meanNode = registerNode({
   label: 'Mean',
   description: 'Arithmetic mean of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'mean', type: 'number' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     if (src.length === 0) return [[0]];
@@ -46,7 +46,7 @@ export const minSpreadNode = registerNode({
   label: 'MinSpread',
   description: 'Minimum value of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'min', type: 'number' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     if (src.length === 0) return [[0]];
@@ -62,7 +62,7 @@ export const maxSpreadNode = registerNode({
   label: 'MaxSpread',
   description: 'Maximum value of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'max', type: 'number' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     if (src.length === 0) return [[0]];
@@ -78,7 +78,7 @@ export const medianNode = registerNode({
   label: 'Median',
   description: 'Median of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'median', type: 'number' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     if (src.length === 0) return [[0]];
@@ -95,7 +95,7 @@ export const stdDevNode = registerNode({
   label: 'StdDev',
   description: 'Population standard deviation of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'stddev', type: 'number' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     if (src.length === 0) return [[0]];
@@ -117,7 +117,7 @@ export const cumulativeNode = registerNode({
   label: 'Cumulative',
   description: 'Running sum of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'sums', type: 'number', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     const out = new Array<number>(src.length);
@@ -136,7 +136,7 @@ export const deltaNode = registerNode({
   label: 'Delta',
   description: 'Pairwise differences of a number spread (length N − 1).',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'differences', type: 'number', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     if (src.length < 2) return [[]];
@@ -157,7 +157,7 @@ export const histogramNode = registerNode({
     { name: 'min', type: 'number', default: 0 },
     { name: 'max', type: 'number', default: 1 },
   ],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'counts', type: 'number', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     const bins = Math.max(1, Math.floor(Number(inputs[1]?.[0] ?? 10)));

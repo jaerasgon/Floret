@@ -16,7 +16,7 @@ export const stringSplitNode = registerNode({
     { name: 'text', type: 'string', default: '', param: 'text' },
     { name: 'by', type: 'string', default: '', param: 'by' },
   ],
-  outputs: [{ name: 'out', type: 'string', kind: 'spread' }],
+  outputs: [{ name: 'parts', type: 'string', kind: 'spread' }],
   defaultParams: { text: '', by: '' },
   computeRaw: (inputs) => {
     const text = String(inputs[0]?.[0] ?? '');
@@ -41,7 +41,7 @@ export const stringConcatNode = registerNode({
     { name: 'parts', type: 'string', kind: 'multi', default: '' },
     { name: 'separator', type: 'string', default: '', param: 'separator' },
   ],
-  outputs: [{ name: 'out', type: 'string' }],
+  outputs: [{ name: 'text', type: 'string' }],
   defaultParams: { separator: '' },
   computeRaw: (inputs) => {
     const parts = (inputs[0] ?? []).map((v) => String(v ?? ''));
@@ -60,7 +60,7 @@ export const stringWordIndicesNode = registerNode({
     { name: 'text', type: 'string', default: '', param: 'text' },
     { name: 'by',   type: 'string', default: ' ', param: 'by' },
   ],
-  outputs: [{ name: 'out', type: 'number', kind: 'spread' }],
+  outputs: [{ name: 'indices', type: 'number', kind: 'spread' }],
   defaultParams: { text: '', by: ' ' },
   computeRaw: (inputs) => {
     const text = String(inputs[0]?.[0] ?? '');
@@ -91,6 +91,6 @@ export const stringLengthNode = registerNode({
   label: 'Length',
   description: 'Number of characters in the input string.',
   inputs: [{ name: 'text', type: 'string', default: '' }],
-  outputs: [{ name: 'out', type: 'number' }],
+  outputs: [{ name: 'length', type: 'number' }],
   compute: (text) => [Array.from(String(text ?? '')).length],
 });

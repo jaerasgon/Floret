@@ -44,7 +44,6 @@ function buildSlots(defaultValue: number) {
   };
 }
 
-const out = [{ name: 'out', type: 'number' as const }];
 
 export const addNode = registerNode({
   type: 'math/add',
@@ -55,7 +54,7 @@ export const addNode = registerNode({
     { name: 'a', type: 'number', default: 0 },
     { name: 'b', type: 'number', default: 0 },
   ],
-  outputs: out,
+  outputs: [{ name: 'sum', type: 'number' }],
   defaultParams: { slotCount: 2 },
   dynamicInputs: buildSlots(0),
   component: GroupNode,
@@ -75,7 +74,7 @@ export const subNode = registerNode({
     { name: 'a', type: 'number', default: 0 },
     { name: 'b', type: 'number', default: 0 },
   ],
-  outputs: out,
+  outputs: [{ name: 'difference', type: 'number' }],
   defaultParams: { slotCount: 2 },
   dynamicInputs: buildSlots(0),
   component: GroupNode,
@@ -96,7 +95,7 @@ export const mulNode = registerNode({
     { name: 'a', type: 'number', default: 1 },
     { name: 'b', type: 'number', default: 1 },
   ],
-  outputs: out,
+  outputs: [{ name: 'product', type: 'number' }],
   defaultParams: { slotCount: 2 },
   dynamicInputs: buildSlots(1),
   component: GroupNode,
@@ -116,7 +115,7 @@ export const divNode = registerNode({
     { name: 'a', type: 'number', default: 1 },
     { name: 'b', type: 'number', default: 1 },
   ],
-  outputs: out,
+  outputs: [{ name: 'quotient', type: 'number' }],
   defaultParams: { slotCount: 2 },
   dynamicInputs: buildSlots(1),
   component: GroupNode,
@@ -141,7 +140,7 @@ export const modNode = registerNode({
     { name: 'a', type: 'number', default: 0 },
     { name: 'b', type: 'number', default: 1 },
   ],
-  outputs: out,
+  outputs: [{ name: 'remainder', type: 'number' }],
   compute: (a, b) => {
     const bv = b as number;
     if (bv === 0) return [0];
@@ -159,7 +158,7 @@ export const powNode = registerNode({
     { name: 'a', type: 'number', default: 1 },
     { name: 'b', type: 'number', default: 1 },
   ],
-  outputs: out,
+  outputs: [{ name: 'power', type: 'number' }],
   compute: (a, b) => [Math.pow(a as number, b as number)],
 });
 
@@ -172,7 +171,7 @@ export const minNode = registerNode({
     { name: 'a', type: 'number', default: Infinity },
     { name: 'b', type: 'number', default: Infinity },
   ],
-  outputs: out,
+  outputs: [{ name: 'min', type: 'number' }],
   defaultParams: { slotCount: 2 },
   dynamicInputs: buildSlots(Infinity),
   component: GroupNode,
@@ -196,7 +195,7 @@ export const maxNode = registerNode({
     { name: 'a', type: 'number', default: -Infinity },
     { name: 'b', type: 'number', default: -Infinity },
   ],
-  outputs: out,
+  outputs: [{ name: 'max', type: 'number' }],
   defaultParams: { slotCount: 2 },
   dynamicInputs: buildSlots(-Infinity),
   component: GroupNode,
@@ -220,6 +219,6 @@ export const atan2Node = registerNode({
     { name: 'y', type: 'number', default: 0 },
     { name: 'x', type: 'number', default: 0 },
   ],
-  outputs: out,
+  outputs: [{ name: 'angle', type: 'number' }],
   compute: (y, x) => [Math.atan2(y as number, x as number)],
 });

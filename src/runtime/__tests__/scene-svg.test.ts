@@ -74,6 +74,28 @@ describe('sceneToSvg', () => {
     });
   });
 
+  describe('colour paint (rgba split)', () => {
+    // `fill="rgba(...)"` renders BLACK in strict SVG parsers; semi-transparent
+    // colours must come out as rgb(...) + a separate *-opacity attribute.
+    it('splits a semi-transparent fill into rgb + fill-opacity', () => {
+      const out = sceneToSvg(
+        [rect({ style: { ...DEFAULT_STYLE, fill: 'rgba(244,71,61,0.5)' } })],
+        { width: 100, height: 100 },
+      );
+      expect(out).toContain('fill="rgb(244,71,61)"');
+      expect(out).toContain('fill-opacity="0.5"');
+      expect(out).not.toContain('rgba(');
+    });
+    it('passes opaque rgb / hex fills through unchanged', () => {
+      const out = sceneToSvg(
+        [rect({ style: { ...DEFAULT_STYLE, fill: '#ff0000' } })],
+        { width: 100, height: 100 },
+      );
+      expect(out).toContain('fill="#ff0000"');
+      expect(out).not.toContain('fill-opacity');
+    });
+  });
+
   describe('shape emission', () => {
     it('emits <rect> with resolved x/y/w/h', () => {
       const out = sceneToSvg([rect({ x: 5, y: 10, w: 100, h: 50 })], { width: 200, height: 200 });

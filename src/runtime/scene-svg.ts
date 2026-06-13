@@ -124,16 +124,18 @@ function emitParticleBatch(s: EmitState, b: import('./scene').ParticleBatch): vo
     if (!buf.alive[i]) continue;
     const sz = buf.size[i]!;
     if (sz <= 0) continue;
-    const fill = b.useBufferColor
-      ? `rgba(${(buf.colorR[i]! * 255) | 0},${(buf.colorG[i]! * 255) | 0},${(buf.colorB[i]! * 255) | 0},${buf.colorA[i]})`
-      : b.style.fill ?? '#fff';
+    // `fill="rgba(...)"` renders black in strict SVG parsers — emit
+    // `fill="rgb(...)" fill-opacity="a"` instead (see `paint`).
+    const fillAttr = b.useBufferColor
+      ? `fill="rgb(${(buf.colorR[i]! * 255) | 0},${(buf.colorG[i]! * 255) | 0},${(buf.colorB[i]! * 255) | 0})" fill-opacity="${buf.colorA[i]}"`
+      : paint('fill', b.style.fill ?? '#fff');
     const x = buf.posX[i]!;
     const y = buf.posY[i]!;
     if (b.template.kind === 'rect') {
-      s.out.push(`<rect x="${x - sz/2}" y="${y - sz/2}" width="${sz}" height="${sz}" fill="${fill}"/>`);
+      s.out.push(`<rect x="${x - sz/2}" y="${y - sz/2}" width="${sz}" height="${sz}" ${fillAttr}/>`);
     } else {
       // circle or layer (layer falls back to circle in SVG for now)
-      s.out.push(`<circle cx="${x}" cy="${y}" r="${sz/2}" fill="${fill}"/>`);
+      s.out.push(`<circle cx="${x}" cy="${y}" r="${sz/2}" ${fillAttr}/>`);
     }
   }
 }
@@ -142,9 +144,14 @@ function emitParticleTrailBatch(s: EmitState, b: import('./scene').ParticleTrail
   const buf = b.buffer;
   const segs = b.segments;
   const head = b.headIdx;
-  const baseStroke = b.style.stroke ?? '#fff';
   const baseWidth = b.style.strokeWeight ?? 1;
   const { useBufferColor, tapered, fadeOut, tailWidth } = b;
+  // A non-buffer stroke may itself be rgba(...) — split it so the trail
+  // honours the style's alpha (and never emits rgba into a stroke attr,
+  // which strict SVG parsers render black).
+  const styleStrokeM = /^rgba\(\s*([\d.]+),\s*([\d.]+),\s*([\d.]+),\s*([\d.]+)\s*\)$/.exec(b.style.stroke ?? '');
+  const styleStroke = styleStrokeM ? `rgb(${styleStrokeM[1]},${styleStrokeM[2]},${styleStrokeM[3]})` : (b.style.stroke ?? '#fff');
+  const styleStrokeAlpha = styleStrokeM ? Number(styleStrokeM[4]) : 1;
   // Tapering / fading vary per segment, so they need one <line> per
   // segment; a plain trail collapses to a single fast <polyline>. Matches
   // the canvas renderer's per-segment width/alpha exactly.
@@ -154,8 +161,8 @@ function emitParticleTrailBatch(s: EmitState, b: import('./scene').ParticleTrail
     if (!buf.alive[slot]) continue;
     const stroke = useBufferColor
       ? `rgb(${(buf.colorR[slot]! * 255) | 0},${(buf.colorG[slot]! * 255) | 0},${(buf.colorB[slot]! * 255) | 0})`
-      : baseStroke;
-    const baseAlpha = useBufferColor ? buf.colorA[slot]! : 1;
+      : styleStroke;
+    const baseAlpha = useBufferColor ? buf.colorA[slot]! : styleStrokeAlpha;
 
     // Collect this slot's points (newest → oldest), stopping at the first
     // uninitialised (NaN) history sample.
@@ -266,7 +273,7 @@ function emitPoint(s: EmitState, p: PointShape): void {
   const colour = p.style.stroke ?? p.style.fill;
   if (!colour) return;
   const sz = Math.max(1, p.style.strokeWeight);
-  s.out.push(`<rect x="${p.x - sz / 2}" y="${p.y - sz / 2}" width="${sz}" height="${sz}" fill="${esc(colour)}"/>`);
+  s.out.push(`<rect x="${p.x - sz / 2}" y="${p.y - sz / 2}" width="${sz}" height="${sz}" ${paint('fill', colour)}/>`);
 }
 
 function emitPolygon(s: EmitState, pg: PolygonShape): void {
@@ -331,7 +338,7 @@ function emitImage(s: EmitState, im: ImageShape): void {
   if (im.tint) {
     s.out.push(
       `<rect x="${im.dst.x}" y="${im.dst.y}" width="${im.dst.w}" height="${im.dst.h}" `,
-      `fill="${esc(im.tint)}" style="mix-blend-mode:multiply"/>`,
+      `${paint('fill', im.tint)} style="mix-blend-mode:multiply"/>`,
     );
   }
 }
@@ -340,9 +347,9 @@ function emitImage(s: EmitState, im: ImageShape): void {
 
 function styleAttrs(s: ResolvedStyle): string {
   const parts: string[] = [];
-  parts.push(s.fill ? `fill="${esc(s.fill)}"` : `fill="none"`);
+  parts.push(s.fill ? paint('fill', s.fill) : `fill="none"`);
   if (s.stroke) {
-    parts.push(`stroke="${esc(s.stroke)}"`);
+    parts.push(paint('stroke', s.stroke));
     parts.push(`stroke-width="${s.strokeWeight}"`);
     if (s.strokeCap !== 'butt') parts.push(`stroke-linecap="${s.strokeCap}"`);
     if (s.strokeJoin !== 'miter') parts.push(`stroke-linejoin="${s.strokeJoin}"`);
@@ -353,7 +360,7 @@ function styleAttrs(s: ResolvedStyle): string {
 /** Stroke-only attrs — for shapes that never fill (lines). */
 function strokeAttrs(s: ResolvedStyle): string {
   const parts: string[] = [];
-  parts.push(`stroke="${esc(s.stroke!)}"`);
+  parts.push(paint('stroke', s.stroke!));
   parts.push(`stroke-width="${s.strokeWeight}"`);
   if (s.strokeCap !== 'butt') parts.push(`stroke-linecap="${s.strokeCap}"`);
   if (s.strokeJoin !== 'miter') parts.push(`stroke-linejoin="${s.strokeJoin}"`);
@@ -387,6 +394,21 @@ const SVG_BLEND_MODES = new Set<string>([
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 
+
+/**
+ * Emit a `fill`/`stroke` paint attribute plus a matching opacity attribute.
+ * Floret's colours arrive as `rgba(r,g,b,a)` whenever alpha < 1, but SVG's
+ * presentation attributes don't reliably accept `rgba()` — strict parsers
+ * (Illustrator, Figma, many standalone viewers) fail to parse it and fall
+ * back to the default paint, which is BLACK. So `rgba(...)` is split into
+ * `role="rgb(r,g,b)" role-opacity="a"`; hex / named / `rgb()` colours pass
+ * through unchanged with no opacity attr.
+ */
+function paint(role: 'fill' | 'stroke', css: string): string {
+  const m = /^rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)$/.exec(css);
+  if (m) return `${role}="rgb(${m[1]},${m[2]},${m[3]})" ${role}-opacity="${m[4]}"`;
+  return `${role}="${esc(css)}"`;
+}
 
 /** Escape for attribute values. */
 function esc(s: string): string {

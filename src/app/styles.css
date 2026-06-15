@@ -1770,7 +1770,8 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
    compact, uniform label style so sizes and spacing match exactly. */
 .region-toppin-label {
   position: absolute;
-  left: 12px;
+  /* Keep in sync with TOP_PIN_LABEL_LEFT (= PORT_TAB_INSET) in RegionNode. */
+  left: 4px;
   transform: translateY(-50%);
   box-sizing: border-box;
   /* Match the frame-port pill (.region-port-tab) exactly: same height,

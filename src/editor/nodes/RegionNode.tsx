@@ -48,7 +48,10 @@ const TOP_PIN_PITCH = 16;
 // inputs, right for loop vars) so no dot pokes past the pill bounds. The
 // per-side deltas absorb React Flow's horizontal handle-anchor offset so
 // the dot lands at the intended inset (tuned against the live canvas).
-const TOP_PIN_LABEL_LEFT = 12;
+// Match the frame-port pill's inset (PORT_TAB_INSET) so the top-pins line up
+// on the same left edge as the vec2 pill below them. Keep in sync with the
+// `left` value in `.region-toppin-label` (styles.css).
+const TOP_PIN_LABEL_LEFT = PORT_TAB_INSET;
 const TOP_PIN_LABEL_WIDTH = 72;
 /** style.left for an input handle (Position.Left) → centred on the pill's
  *  left rounded end (halfPill = height/2 = 7px inset), like the frame pill. */

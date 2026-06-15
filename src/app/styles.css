@@ -1780,25 +1780,22 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
   line-height: 1;
   color: var(--fg-1);
   background: var(--bg-1);
-  padding: 3px 10px;
+  /* Uniform padding + left-aligned text so every label's text starts at the
+     same x — the left handle (delay) and right handles (loop vars) both sit
+     in the padding without shifting the text. */
+  padding: 3px 12px;
   /* Pill shape — matches the frame-port pills for visual consistency. */
   border-radius: 999px;
   border: 1px solid var(--border);
-  text-align: center;
+  text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   pointer-events: none;
 }
-/* Loop-var labels tint toward the number port colour and leave room on the
-   right for the edge-centred circle. */
+/* Loop-var labels tint toward the number port colour. */
 .region-toppin-label-loopvar {
   color: var(--port-number);
-  padding-right: 14px;
-}
-/* Input labels leave room on the left for their edge-centred circle. */
-.region-toppin-label-in {
-  padding-left: 14px;
 }
 .region-handle-toppin {
   z-index: 5;

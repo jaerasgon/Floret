@@ -4,6 +4,7 @@ import { useEditor, type FloretNodeData, type RegionPortDescriptor } from '../ed
 import { nodeRegistry } from '../../nodes/registry';
 import { portColorVar } from '../connection-rules';
 import { getRegionStats } from '../../runtime/inspector';
+import { LOOP_VAR_NAMES, loopVarHandle } from '../../runtime/compile';
 
 /**
  * Region container — a translucent bordered rectangle that scopes a
@@ -163,6 +164,31 @@ export const RegionNode = memo(function RegionNode(props: NodeProps) {
           <span className="region-static-label">{p.label ?? p.name}</span>
         </div>
       ))}
+
+      {/* Built-in loop variables — number-typed inner sources on
+          ForEach/Cache regions. Wire them for per-item stagger / gradients. */}
+      {(def?.regionKind === 'foreach' || def?.regionKind === 'cache') &&
+        LOOP_VAR_NAMES.map((name, i) => {
+          const lvTop = 34 + i * 18;
+          return (
+            <div key={`loopvar-${name}`} className="region-loopvar-port">
+              <span
+                className="region-loopvar-label"
+                style={{ top: lvTop - 7 }}
+                title={`${name} (number) — per-iteration loop variable`}
+              >
+                {name}
+              </span>
+              <Handle
+                id={`out-${loopVarHandle(name)}`}
+                type="source"
+                position={Position.Right}
+                className="region-handle region-handle-loopvar"
+                style={{ background: 'var(--port-number)', borderColor: 'var(--port-number)', top: lvTop, left: 56 }}
+              />
+            </div>
+          );
+        })}
 
       {inputPorts.map((p, i) => (
         <RegionFramePort

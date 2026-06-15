@@ -15,7 +15,7 @@ export interface RuntimeNode {
   readFromContext?: (frame: FrameCtx) => PortValue[];
   parentId?: NodeId;
   regionKind?: 'foreach' | 'if' | 'cache';
-  splicerRole?: 'splicer-in' | 'splicer-out' | 'accumulator-read' | 'accumulator-write';
+  splicerRole?: 'splicer-in' | 'splicer-out' | 'accumulator-read' | 'accumulator-write' | 'loop-var';
   /** For accumulator-read / accumulator-write nodes: pairing slot (defaults 1). */
   accSlot?: number;
   /** Number of *static* input ports declared by the region NodeDef itself.

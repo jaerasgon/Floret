@@ -213,8 +213,14 @@ export interface NodeDef {
    * Role inside an enclosing region. Splicer / accumulator nodes use this.
    * Compile sets `RuntimeNode.splicerRole` / `accumulatorRole` from this;
    * `tick` special-cases their eval (no `compute` invocation).
+   *
+   * `loop-var` is a synthetic source — the ForEach/Cache built-in
+   * `index` / `count` / `fraction` pins. Like a splicer-in's inner pin it
+   * reads from the iteration context (no outer spread feeds it), but it is
+   * NOT counted among the region's splicer-ins, so it never affects input
+   * arity or the iteration count.
    */
-  regionRole?: 'splicer-in' | 'splicer-out' | 'accumulator-read' | 'accumulator-write';
+  regionRole?: 'splicer-in' | 'splicer-out' | 'accumulator-read' | 'accumulator-write' | 'loop-var';
 
   /**
    * Cross-frame state node. Inputs are `init` (port 0, used on the

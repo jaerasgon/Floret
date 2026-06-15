@@ -1,6 +1,7 @@
 import type { FrameCtx, Layer, PortValue } from './types';
 import type { NodeId, RuntimeGraph, RuntimeNode, RuntimeScope } from './graph';
 import { paramStore } from './param-store';
+import { loopVarSplicerId } from './compile';
 
 /**
  * Per-frame graph evaluation. Walks the root scope's topo order; when a
@@ -51,6 +52,9 @@ interface IterCtx {
   /** Zero-based iteration index — used to key per-iteration compute memo
    *  on each pure RuntimeNode's `runtimeState.memo`. Root scope uses -1. */
   iterIdx: number;
+  /** Total iteration count N for this region run. Exposed via the
+   *  built-in `count` loop variable; also handy for completeness. */
+  count: number;
 }
 
 export function tick(graph: RuntimeGraph, frame: FrameCtx): TickResult {
@@ -196,7 +200,10 @@ function evalNode(
     return;
   }
 
-  if (node.splicerRole === 'splicer-in') {
+  // Splicer-in delivers an outer spread's per-iteration slot; loop-var
+  // delivers a built-in iteration variable (index / count / fraction).
+  // Both read their value from the iteration context by node id.
+  if (node.splicerRole === 'splicer-in' || node.splicerRole === 'loop-var') {
     if (iterCtx) {
       const v = iterCtx.splicerInValues.get(node.id);
       outputs.set(node.id, [v ?? []]);
@@ -384,6 +391,15 @@ function runRegion(
   //   inputs[staticIn + splicerInCount .. +accumCount-1]             = outer init values for accumulators
   const outerInputs = gatherInputs(graph, region, outputs);
   const staticIn = region.regionStaticInArity ?? 0;
+  // ForEach `delay` (static input 0): rewinds each iteration's time source
+  // by `iter * delay` seconds so time-driven inner nodes stagger. Only the
+  // time SOURCE is shifted — stateful inner nodes keep their real-time
+  // state (see foreach.ts node description).
+  let delay = 0;
+  if (region.regionKind === 'foreach') {
+    const d = (outerInputs[0] ?? [])[0];
+    if (typeof d === 'number' && Number.isFinite(d)) delay = d;
+  }
   const nSplicersIn = innerScope.splicerInIds.length;
   const nAccums = innerScope.accumulatorIds.length;
   const nSplicersOut = innerScope.splicerOutIds.length;
@@ -498,10 +514,18 @@ function runRegion(
     for (let i = 0; i < nAccums; i++) {
       accumBuffers[i]!.push(accumValues.get(innerScope.accumulatorIds[i]!));
     }
-    const iterCtx: IterCtx = { splicerInValues, accumulatorValues: accumValues, iterIdx: iter };
+    // Built-in loop variables, keyed by deterministic synthetic id so the
+    // `region/loop-var` source nodes (if wired) resolve them here. Each is
+    // a single-kind value, so wrap as a length-1 spread (matches splicers).
+    splicerInValues.set(loopVarSplicerId(region.id, 'index'), [iter]);
+    splicerInValues.set(loopVarSplicerId(region.id, 'count'), [N]);
+    splicerInValues.set(loopVarSplicerId(region.id, 'fraction'), [N > 1 ? iter / (N - 1) : 0]);
+    const iterCtx: IterCtx = { splicerInValues, accumulatorValues: accumValues, iterIdx: iter, count: N };
 
+    // Stagger the time source per iteration when a delay is set.
+    const iterFrame: FrameCtx = delay !== 0 ? { ...frame, t: frame.t - iter * delay } : frame;
     const innerOutputs = new Map<NodeId, PortValue[]>(outputs);
-    evalScope(graph, innerScope, frame, innerOutputs, iterCtx, regionStats);
+    evalScope(graph, innerScope, iterFrame, innerOutputs, iterCtx, regionStats);
 
     for (let i = 0; i < nSplicersOut; i++) {
       const id = innerScope.splicerOutIds[i]!;

@@ -90,3 +90,26 @@ for (const [t, enabled] of Object.entries(SPLICEABLE_TYPES) as [PortType, boolea
   makeSplicerIn(t);
   makeSplicerOut(t);
 }
+
+/**
+ * Loop-variable source — the ForEach/Cache built-in `index` / `count` /
+ * `fraction` pins. Compile synthesises one of these per referenced
+ * built-in pin (id `${regionId}__loopvar_<name>`); the runtime fills its
+ * value from the iteration counter each iteration. A single def serves all
+ * three — the synthetic node id encodes which variable it carries.
+ *
+ * Modelled on splicer-in: one `inner` (single) output read from the
+ * iteration context. The distinct `loop-var` role keeps it OUT of the
+ * region's splicer-in list so it never feeds into input arity or the
+ * `N = min over splicer-ins` iteration count.
+ */
+registerNode({
+  type: 'region/loop-var',
+  category: 'Region',
+  label: 'LoopVar',
+  description: 'Per-iteration loop variable (index / count / fraction).',
+  inputs: [],
+  outputs: [{ name: 'inner', type: 'number', kind: 'single' }],
+  regionRole: 'loop-var',
+  hidden: true,
+});

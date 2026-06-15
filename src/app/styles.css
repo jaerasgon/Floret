@@ -1774,6 +1774,24 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
   border: 1px solid var(--border);
 }
 
+/* Built-in loop-variable pins (ForEach/Cache index/count/fraction). Small
+   number-typed source handles on the region's inner-left, each labelled. */
+.region-loopvar-label {
+  position: absolute;
+  left: 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--port-number);
+  background: var(--bg-1);
+  padding: 0 4px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  pointer-events: none;
+}
+.region-handle-loopvar {
+  z-index: 5;
+}
+
 /* ─── Region frame ports ──────────────────────────────────────────────────
    Each port renders three absolutely-positioned elements on the region:
    a horizontal bridge tab straddling the border, the outer handle

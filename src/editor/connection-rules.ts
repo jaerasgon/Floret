@@ -1,6 +1,7 @@
 import type { Connection, Edge, Node } from '@xyflow/react';
 import { nodeRegistry } from '../nodes/registry';
 import { getResolvedInputs } from '../nodes/types';
+import { parseLoopVarHandle } from '../runtime/compile';
 import type { PortType } from '../runtime/types';
 import type { FloretNodeData, RegionPortDescriptor } from './editor-state';
 
@@ -196,6 +197,11 @@ function resolvePort(
   if (!def) return null;
 
   if (def.regionKind) {
+    // Built-in loop variables (ForEach/Cache) — number-typed inner sources.
+    if ((def.regionKind === 'foreach' || def.regionKind === 'cache') &&
+        side === 'out' && parseLoopVarHandle(handleName)) {
+      return { type: 'number', kind: 'single' };
+    }
     const dynamic = getRegionPorts(nodeId);
     if (dynamic) {
       const dp = dynamic.find((p) => p.id === handleName);
@@ -313,6 +319,11 @@ export function getUpstreamTypes(
     const def = data ? nodeRegistry.get(data.defType) : undefined;
     // Region/subpatch nodes carry runtime-derived ports on data.ports.
     if (def?.regionKind) {
+      // Built-in loop-var pins are always number-typed.
+      if (parseLoopVarHandle(srcParsed.name)) {
+        out[targetParsed.name] = 'number';
+        continue;
+      }
       const port = data?.ports?.find((p) => p.id === srcParsed.name);
       if (port?.type) out[targetParsed.name] = port.type as PortType;
       continue;

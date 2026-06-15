@@ -496,7 +496,8 @@ export function defToRuntimeNode(
     def.regionRole === 'splicer-in' ||
     def.regionRole === 'splicer-out' ||
     def.regionRole === 'accumulator-read' ||
-    def.regionRole === 'accumulator-write'
+    def.regionRole === 'accumulator-write' ||
+    def.regionRole === 'loop-var'
   ) {
     // No compute — tick.ts evalNode handles these explicitly.
   } else if (def.stateful) {
@@ -542,6 +543,7 @@ export function defToRuntimeNode(
 
   if (def.regionRole === 'splicer-in') node.splicerRole = 'splicer-in';
   else if (def.regionRole === 'splicer-out') node.splicerRole = 'splicer-out';
+  else if (def.regionRole === 'loop-var') node.splicerRole = 'loop-var';
   else if (def.regionRole === 'accumulator-read') {
     node.splicerRole = 'accumulator-read';
     const slot = Number(ref.params?.slot ?? 1);
@@ -714,6 +716,39 @@ export function syntheticSplicerId(
   return `${regionId}__${direction === 'input' ? 'sin' : 'sout'}_${portId}`;
 }
 
+/**
+ * ForEach/Cache built-in loop variables. Rendered as inner-source pins on
+ * the region (`out-__loopvar_<name>` handles) and synthesised by
+ * `expandRegionPorts` into `region/loop-var` source nodes that the runtime
+ * populates from the iteration counter.
+ */
+export const LOOP_VAR_NAMES = ['index', 'count', 'fraction'] as const;
+export type LoopVarName = (typeof LOOP_VAR_NAMES)[number];
+
+/** Editor handle suffix (after `out-`) for a loop-variable pin. */
+export function loopVarHandle(name: LoopVarName): string {
+  return `__loopvar_${name}`;
+}
+
+/** Stable synthetic node id for a region's loop-variable source. Derived
+ *  identically by compile (when expanding) and tick (when populating). */
+export function loopVarSplicerId(regionId: string, name: LoopVarName): string {
+  return `${regionId}__loopvar_${name}`;
+}
+
+/** Parse a handle suffix back to a loop-var name, or null if not one. */
+export function parseLoopVarHandle(handle: string): LoopVarName | null {
+  const prefix = '__loopvar_';
+  if (!handle.startsWith(prefix)) return null;
+  const name = handle.slice(prefix.length);
+  return (LOOP_VAR_NAMES as readonly string[]).includes(name) ? (name as LoopVarName) : null;
+}
+
+/** True for region kinds that iterate and therefore expose loop variables. */
+function regionKindHasLoopVars(kind: string | undefined): boolean {
+  return kind === 'foreach' || kind === 'cache';
+}
+
 function expandRegionPorts(
   nodes: ReadonlyArray<EditorNodeRef>,
   edges: ReadonlyArray<EditorEdgeRef>,
@@ -724,9 +759,12 @@ function expandRegionPorts(
 
   // regionId → portId → port descriptor
   const portsByRegion = new Map<string, Map<string, RegionPortRef>>();
+  // Regions (foreach/cache) that expose built-in loop variables.
+  const loopVarRegions = new Set<string>();
   for (const n of nodes) {
     const def = registry.get(n.defType);
     if (!def?.regionKind) continue;
+    if (regionKindHasLoopVars(def.regionKind)) loopVarRegions.add(n.id);
     const ports = n.ports ?? [];
     if (ports.length === 0) continue;
     const map = new Map<string, RegionPortRef>();
@@ -745,11 +783,30 @@ function expandRegionPorts(
     portsByRegion.set(n.id, map);
   }
 
+  // regionId → set of loop-var names actually wired this compile. We
+  // synthesise a source node only for referenced pins (unwired pins cost
+  // nothing). The runtime fills these by deterministic id regardless.
+  const loopVarRefs = new Map<string, Set<LoopVarName>>();
+
   for (const e of edges) {
     let from = e.fromNode;
     let fromPort = e.fromPort;
     let to = e.toNode;
     let toPort = e.toPort;
+
+    // Loop-variable source: `region.out-__loopvar_<name>` → the synthetic
+    // `region/loop-var` node's `inner` output. Mirrors the splicer-in
+    // inner-source rewrite below.
+    if (loopVarRegions.has(from)) {
+      const lv = parseLoopVarHandle(fromPort);
+      if (lv) {
+        let set = loopVarRefs.get(from);
+        if (!set) { set = new Set(); loopVarRefs.set(from, set); }
+        set.add(lv);
+        from = loopVarSplicerId(e.fromNode, lv);
+        fromPort = 'inner';
+      }
+    }
 
     const srcPorts = portsByRegion.get(from);
     if (srcPorts) {
@@ -774,6 +831,18 @@ function expandRegionPorts(
     }
 
     outEdges.push({ fromNode: from, fromPort, toNode: to, toPort });
+  }
+
+  // Synthesise a loop-var source node per referenced (region, name) pair.
+  for (const [regionId, names] of loopVarRefs) {
+    for (const name of names) {
+      outNodes.push({
+        id: loopVarSplicerId(regionId, name),
+        defType: 'region/loop-var',
+        params: {},
+        parentId: regionId,
+      });
+    }
   }
 
   return { nodes: outNodes, edges: outEdges };

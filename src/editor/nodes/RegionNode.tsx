@@ -43,9 +43,17 @@ const PORT_TAB_INSET = 4;
 // One uniform compact column anchored near the body's top edge.
 const TOP_PIN_START = 12;
 const TOP_PIN_PITCH = 16;
-/** Fixed x of the right-facing loop-var source handle. Clears the widest
- *  loop-var label ("fraction", ~68px from the body's left edge). */
-const TOP_PIN_HANDLE_RIGHT = 78;
+// All top-pin label rectangles share one fixed width so they line up; the
+// handle circle is centred on the rectangle's near edge (left for inputs,
+// right for loop vars). The small per-side deltas absorb React Flow's
+// horizontal handle-anchor offset so the dot lands on the edge (tuned
+// against the live canvas).
+const TOP_PIN_LABEL_LEFT = 12;
+const TOP_PIN_LABEL_WIDTH = 72;
+/** style.left for an input handle (Position.Left) → centred on the rect's left edge. */
+const TOP_PIN_HANDLE_LEFT = TOP_PIN_LABEL_LEFT - 1;
+/** style.left for a loop-var handle (Position.Right) → centred on the rect's right edge. */
+const TOP_PIN_HANDLE_RIGHT = TOP_PIN_LABEL_LEFT + TOP_PIN_LABEL_WIDTH - 9;
 // (Inner pin position is computed inline from PORT_TAB_INSET +
 // PORT_TAB_WIDTH − halfPill, see RegionFramePort below.)
 
@@ -187,7 +195,7 @@ export const RegionNode = memo(function RegionNode(props: NodeProps) {
               type={isIn ? 'target' : 'source'}
               position={isIn ? Position.Left : Position.Right}
               className="region-handle region-handle-toppin"
-              style={{ top, left: isIn ? 0 : TOP_PIN_HANDLE_RIGHT, background: color, borderColor: color }}
+              style={{ top, left: isIn ? TOP_PIN_HANDLE_LEFT : TOP_PIN_HANDLE_RIGHT, background: color, borderColor: color }}
             />
           </Fragment>
         );

@@ -1765,21 +1765,30 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
   left: 12px;
   transform: translateY(-50%);
   box-sizing: border-box;
-  min-width: 44px;
+  /* Fixed width so every rectangle lines up regardless of label length. */
+  width: 72px;
   font-family: var(--font-mono);
   font-size: 9px;
   line-height: 1;
   color: var(--fg-1);
   background: var(--bg-1);
-  padding: 2px 5px;
-  border-radius: 2px;
+  padding: 3px 8px;
+  border-radius: 3px;
   border: 1px solid var(--border);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   pointer-events: none;
 }
-/* Loop-var labels tint toward the number port colour to signal their type. */
+/* Loop-var labels tint toward the number port colour and leave room on the
+   right for the edge-centred circle. */
 .region-toppin-label-loopvar {
   color: var(--port-number);
+  padding-right: 14px;
+}
+/* Input labels leave room on the left for their edge-centred circle. */
+.region-toppin-label-in {
+  padding-left: 14px;
 }
 .region-handle-toppin {
   z-index: 5;

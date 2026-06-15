@@ -17,6 +17,7 @@ import { nodeRegistry } from '../nodes/registry';
  *   - Ctrl/Cmd + V       → paste at viewport centre
  *   - Ctrl/Cmd + D       → duplicate selected nodes (single quick action)
  *   - Tab                → open node search at the cursor / viewport centre
+ *   - Q                  → open the favorites quick-menu at the cursor
  *   - F                  → fit-view to the selection (or to all nodes when
  *                          nothing is selected) with a short zoom animation
  *
@@ -63,6 +64,15 @@ export function useGlobalShortcuts(): void {
       if (e.key === 'Tab' && !editable && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
         openNodeSearchAtCursor();
+        return;
+      }
+
+      // Q → open the favorites quick-menu at the cursor (no modifier).
+      // Canvas listens for the event and projects screen → flow coords.
+      if ((e.key === 'q' || e.key === 'Q') && !editable && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        const screen = lastMouse ?? viewportCentre().screen;
+        window.dispatchEvent(new CustomEvent('floret:open-favorites', { detail: screen }));
         return;
       }
 
@@ -119,6 +129,7 @@ export function useGlobalShortcuts(): void {
         const ov = useOverlay.getState();
         if (ov.searchOpen) ov.closeSearch();
         if (ov.contextOpen) ov.closeContext();
+        if (ov.favoritesOpen) ov.closeFavorites();
         // Don't preventDefault — let inputs still blur etc.
       }
 

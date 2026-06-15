@@ -11,6 +11,7 @@ import {
 } from '../../runtime/types';
 import type { PortValue } from '../types';
 import { toVec2 } from '../_shared/coerce';
+import { anchorTopLeft, ANCHOR_OPTIONS } from '../_shared/anchor';
 import { buildOffsetPolygon, widthsAreVariable } from '../../runtime/stroke-offset';
 
 /**
@@ -26,26 +27,31 @@ export const arcNode = registerNode({
   label: 'Arc',
   description: 'Draw an arc segment from `start` to `stop` radians.',
   inputs: [
-    { name: 'x', type: 'number', default: 0 },
-    { name: 'y', type: 'number', default: 0 },
+    { name: 'pos', type: 'vec2', default: { x: 0, y: 0 } },
     { name: 'w', type: 'number', default: 100 },
     { name: 'h', type: 'number', default: 100 },
     { name: 'start', type: 'number', default: 0 },
     { name: 'stop', type: 'number', default: Math.PI },
+    { name: 'anchor', type: 'string', default: 'center', param: 'anchor' },
     { name: 'style', type: 'style' },
   ],
   outputs: [{ name: 'shape', type: 'layer' }],
-  compute: (x, y, w, h, start, stop, style) => {
+  defaultParams: { anchor: 'center' },
+  paramOptions: { anchor: [...ANCHOR_OPTIONS] },
+  compute: (pos, w, h, start, stop, anchor, style) => {
+    const ww = w as number;
+    const hh = h as number;
+    const { x, y } = anchorTopLeft(toVec2(pos), ww, hh, anchor as string);
     const resolved = resolveStyle(style as Style | null, DEFAULT_STYLE);
     const node: Layer = {
       kind: 'arc',
-      x: x as number,
-      y: y as number,
-      w: w as number,
-      h: h as number,
+      x,
+      y,
+      w: ww,
+      h: hh,
       start: start as number,
       stop: stop as number,
-      mode: resolved.ellipseMode,
+      mode: 'corner',
       style: resolved,
     };
     return [node];
@@ -58,21 +64,19 @@ export const triangleNode = registerNode({
   label: 'Triangle',
   description: 'Draw a triangle from three corner points.',
   inputs: [
-    { name: 'x1', type: 'number', default: 0 },
-    { name: 'y1', type: 'number', default: 0 },
-    { name: 'x2', type: 'number', default: 50 },
-    { name: 'y2', type: 'number', default: 100 },
-    { name: 'x3', type: 'number', default: -50 },
-    { name: 'y3', type: 'number', default: 100 },
+    { name: 'a', type: 'vec2', default: { x: 0, y: 0 } },
+    { name: 'b', type: 'vec2', default: { x: 50, y: 100 } },
+    { name: 'c', type: 'vec2', default: { x: -50, y: 100 } },
     { name: 'style', type: 'style' },
   ],
   outputs: [{ name: 'shape', type: 'layer' }],
-  compute: (x1, y1, x2, y2, x3, y3, style) => {
+  compute: (a, b, c, style) => {
+    const pa = toVec2(a), pb = toVec2(b), pc = toVec2(c);
     const node: Layer = {
       kind: 'triangle',
-      x1: x1 as number, y1: y1 as number,
-      x2: x2 as number, y2: y2 as number,
-      x3: x3 as number, y3: y3 as number,
+      x1: pa.x, y1: pa.y,
+      x2: pb.x, y2: pb.y,
+      x3: pc.x, y3: pc.y,
       style: resolveStyle(style as Style | null, DEFAULT_STYLE),
     };
     return [node];
@@ -85,24 +89,21 @@ export const quadNode = registerNode({
   label: 'Quad',
   description: 'Draw a quadrilateral from four corner points.',
   inputs: [
-    { name: 'x1', type: 'number', default: 0 },
-    { name: 'y1', type: 'number', default: 0 },
-    { name: 'x2', type: 'number', default: 100 },
-    { name: 'y2', type: 'number', default: 0 },
-    { name: 'x3', type: 'number', default: 100 },
-    { name: 'y3', type: 'number', default: 100 },
-    { name: 'x4', type: 'number', default: 0 },
-    { name: 'y4', type: 'number', default: 100 },
+    { name: 'a', type: 'vec2', default: { x: 0, y: 0 } },
+    { name: 'b', type: 'vec2', default: { x: 100, y: 0 } },
+    { name: 'c', type: 'vec2', default: { x: 100, y: 100 } },
+    { name: 'd', type: 'vec2', default: { x: 0, y: 100 } },
     { name: 'style', type: 'style' },
   ],
   outputs: [{ name: 'shape', type: 'layer' }],
-  compute: (x1, y1, x2, y2, x3, y3, x4, y4, style) => {
+  compute: (a, b, c, d, style) => {
+    const pa = toVec2(a), pb = toVec2(b), pc = toVec2(c), pd = toVec2(d);
     const node: Layer = {
       kind: 'quad',
-      x1: x1 as number, y1: y1 as number,
-      x2: x2 as number, y2: y2 as number,
-      x3: x3 as number, y3: y3 as number,
-      x4: x4 as number, y4: y4 as number,
+      x1: pa.x, y1: pa.y,
+      x2: pb.x, y2: pb.y,
+      x3: pc.x, y3: pc.y,
+      x4: pd.x, y4: pd.y,
       style: resolveStyle(style as Style | null, DEFAULT_STYLE),
     };
     return [node];
@@ -113,18 +114,18 @@ export const pointNode = registerNode({
   type: 'draw/point',
   category: 'Draw',
   label: 'Point',
-  description: 'Draw a single point at (x, y).',
+  description: 'Draw a single point at `pos`.',
   inputs: [
-    { name: 'x', type: 'number', default: 0 },
-    { name: 'y', type: 'number', default: 0 },
+    { name: 'pos', type: 'vec2', default: { x: 0, y: 0 } },
     { name: 'style', type: 'style' },
   ],
   outputs: [{ name: 'shape', type: 'layer' }],
-  compute: (x, y, style) => {
+  compute: (pos, style) => {
+    const p = toVec2(pos);
     const node: Layer = {
       kind: 'point',
-      x: x as number,
-      y: y as number,
+      x: p.x,
+      y: p.y,
       style: resolveStyle(style as Style | null, LINE_DEFAULT_STYLE),
     };
     return [node];

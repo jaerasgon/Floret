@@ -1,6 +1,7 @@
 import { registerNode } from '../registry';
 import type { Layer } from '../../runtime/types';
 import { translateMat, rotateMat, scaleMat } from '../../runtime/scene';
+import { toVec2 } from '../_shared/coerce';
 
 /**
  * Transform nodes wrap their inner Layer in a `group` SceneNode with
@@ -12,19 +13,19 @@ export const translateNode = registerNode({
   type: 'transform/translate',
   category: 'Transform',
   label: 'Translate',
-  description: 'Translate a layer by (x, y).',
+  description: 'Translate a layer by the vector `by`.',
   inputs: [
-    { name: 'x', type: 'number', default: 0 },
-    { name: 'y', type: 'number', default: 0 },
+    { name: 'by', type: 'vec2', default: { x: 0, y: 0 } },
     { name: 'layer', type: 'layer' },
   ],
   outputs: [{ name: 'translated', type: 'layer' }],
-  compute: (x, y, layer) => {
+  compute: (by, layer) => {
+    const v = toVec2(by);
     const inner = layer as Layer;
     const node: Layer = {
       kind: 'group',
       children: [inner],
-      transform: translateMat(x as number, y as number),
+      transform: translateMat(v.x, v.y),
     };
     return [node];
   },

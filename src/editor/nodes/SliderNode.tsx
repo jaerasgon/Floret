@@ -76,7 +76,7 @@ export const SliderNode = memo(function SliderNode(props: NodeProps) {
             onBlur={commitValue}
           />
           <Handle
-            id="out-number"
+            id={`out-${def.outputs[0]?.name ?? 'number'}`}
             type="source"
             position={Position.Right}
             className="iobox-slider-handle"

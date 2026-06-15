@@ -74,6 +74,13 @@ interface OverlayState {
   contextScreenPosition: { x: number; y: number };
   contextItems: ContextMenuItem[];
 
+  /** The favorites quick-menu (Q). Lists starred node types for fast
+   *  placement. Mirrors the search overlay: opened at the cursor, places the
+   *  picked node at `favoritesFlowPosition`. */
+  favoritesOpen: boolean;
+  favoritesScreenPosition: { x: number; y: number };
+  favoritesFlowPosition: { x: number; y: number };
+
   /** When set, the region-draw tool is armed: the canvas shows a crosshair
    *  and a press-drag draws a region of this kind. Cleared once drawn or
    *  cancelled. Set by clicking a region node in the palette. */
@@ -93,6 +100,12 @@ interface OverlayState {
   }) => void;
   closeContext: () => void;
 
+  openFavorites: (args: {
+    screenPosition: { x: number; y: number };
+    flowPosition: { x: number; y: number };
+  }) => void;
+  closeFavorites: () => void;
+
   armRegionDraw: (kind: 'foreach' | 'if' | 'cache') => void;
   disarmRegionDraw: () => void;
 }
@@ -108,6 +121,10 @@ export const useOverlay = create<OverlayState>((set) => ({
   contextScreenPosition: { x: 0, y: 0 },
   contextItems: [],
 
+  favoritesOpen: false,
+  favoritesScreenPosition: { x: 0, y: 0 },
+  favoritesFlowPosition: { x: 0, y: 0 },
+
   armedRegionKind: null,
 
   openSearch: ({ screenPosition, flowPosition, connection, insertion }) => {
@@ -118,6 +135,7 @@ export const useOverlay = create<OverlayState>((set) => ({
       searchConnection: connection ?? null,
       searchInsertion: insertion ?? null,
       contextOpen: false,
+      favoritesOpen: false,
     });
   },
   closeSearch: () => set({ searchOpen: false, searchConnection: null, searchInsertion: null }),
@@ -128,12 +146,25 @@ export const useOverlay = create<OverlayState>((set) => ({
       contextScreenPosition: screenPosition,
       contextItems: items,
       searchOpen: false,
+      favoritesOpen: false,
     });
   },
   closeContext: () => set({ contextOpen: false, contextItems: [] }),
 
+  openFavorites: ({ screenPosition, flowPosition }) => {
+    set({
+      favoritesOpen: true,
+      favoritesScreenPosition: screenPosition,
+      favoritesFlowPosition: flowPosition,
+      searchOpen: false,
+      contextOpen: false,
+    });
+  },
+  closeFavorites: () => set({ favoritesOpen: false }),
+
   // Arming the region tool closes any open overlay so the crosshair isn't
   // competing with a search popover / context menu.
-  armRegionDraw: (kind) => set({ armedRegionKind: kind, searchOpen: false, contextOpen: false }),
+  armRegionDraw: (kind) =>
+    set({ armedRegionKind: kind, searchOpen: false, contextOpen: false, favoritesOpen: false }),
   disarmRegionDraw: () => set({ armedRegionKind: null }),
 }));

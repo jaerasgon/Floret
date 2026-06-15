@@ -12,7 +12,7 @@ export const mapNode = registerNode({
     { name: 'outMin', type: 'number', default: 0 },
     { name: 'outMax', type: 'number', default: 1 },
   ],
-  outputs: [{ name: 'mapped', type: 'number' }],
+  outputs: [{ name: 'result', type: 'number' }],
   compute: (x, im, iM, om, oM) => {
     const xv = x as number;
     const imv = im as number;
@@ -34,7 +34,7 @@ export const lerpNode = registerNode({
     { name: 'b', type: 'number', default: 1 },
     { name: 't', type: 'number', default: 0 },
   ],
-  outputs: [{ name: 'mixed', type: 'number' }],
+  outputs: [{ name: 'result', type: 'number' }],
   compute: (a, b, t) => {
     const av = a as number;
     const bv = b as number;
@@ -53,7 +53,7 @@ export const clampNode = registerNode({
     { name: 'min', type: 'number', default: 0 },
     { name: 'max', type: 'number', default: 1 },
   ],
-  outputs: [{ name: 'clamped', type: 'number' }],
+  outputs: [{ name: 'result', type: 'number' }],
   compute: (x, mn, mx) => {
     const v = x as number;
     return [Math.max(mn as number, Math.min(mx as number, v))];
@@ -70,7 +70,7 @@ export const normNode = registerNode({
     { name: 'start', type: 'number', default: 0 },
     { name: 'stop', type: 'number', default: 1 },
   ],
-  outputs: [{ name: 'normalized', type: 'number' }],
+  outputs: [{ name: 'result', type: 'number' }],
   compute: (x, start, stop) => {
     const xv = x as number;
     const a = start as number;
@@ -89,7 +89,7 @@ export const magNode = registerNode({
     { name: 'x', type: 'number', default: 0 },
     { name: 'y', type: 'number', default: 0 },
   ],
-  outputs: [{ name: 'magnitude', type: 'number' }],
+  outputs: [{ name: 'result', type: 'number' }],
   compute: (x, y) => [Math.hypot(x as number, y as number)],
 });
 
@@ -104,6 +104,6 @@ export const distNode = registerNode({
     { name: 'x2', type: 'number', default: 0 },
     { name: 'y2', type: 'number', default: 0 },
   ],
-  outputs: [{ name: 'distance', type: 'number' }],
+  outputs: [{ name: 'result', type: 'number' }],
   compute: (x1, y1, x2, y2) => [Math.hypot((x2 as number) - (x1 as number), (y2 as number) - (y1 as number))],
 });

@@ -6,6 +6,8 @@ import {
   LINE_DEFAULT_STYLE,
   type Layer,
 } from '../../runtime/types';
+import { toVec2, ZERO_VEC2 } from '../_shared/coerce';
+import { anchorTopLeft, ANCHOR_OPTIONS } from '../_shared/anchor';
 
 /**
  * Shape nodes return SceneNodes — plain data describing what to draw.
@@ -19,26 +21,31 @@ export const rectNode = registerNode({
   type: 'draw/rect',
   category: 'Draw',
   label: 'Rect',
-  description: 'Draw a rectangle at (x, y) with size (w, h).',
+  description:
+    'Draw a rectangle anchored at `pos`. `anchor` picks which point of the ' +
+    'box `pos` is — center (default) or a corner (tl/tr/bl/br).',
   inputs: [
-    { name: 'x', type: 'number', default: 0 },
-    { name: 'y', type: 'number', default: 0 },
+    { name: 'pos', type: 'vec2', default: ZERO_VEC2 },
     { name: 'w', type: 'number', default: 50 },
     { name: 'h', type: 'number', default: 50 },
+    { name: 'anchor', type: 'string', default: 'center', param: 'anchor' },
     { name: 'style', type: 'style' },
   ],
   outputs: [{ name: 'shape', type: 'layer' }],
-  compute: (x, y, w, h, style) => {
+  defaultParams: { anchor: 'center' },
+  paramOptions: { anchor: [...ANCHOR_OPTIONS] },
+  compute: (pos, w, h, anchor, style) => {
+    const ww = w as number;
+    const hh = h as number;
+    const { x, y } = anchorTopLeft(toVec2(pos), ww, hh, anchor as string);
     const resolved = resolveStyle(style as Style | null, DEFAULT_STYLE);
     const node: Layer = {
       kind: 'rect',
-      x: x as number,
-      y: y as number,
-      w: w as number,
-      h: h as number,
-      // Read mode off the resolved style — a chained `style/rect-mode`
-      // node can override here.
-      mode: resolved.rectMode,
+      x,
+      y,
+      w: ww,
+      h: hh,
+      mode: 'corner',
       style: resolved,
     };
     return [node];
@@ -49,24 +56,31 @@ export const ellipseNode = registerNode({
   type: 'draw/ellipse',
   category: 'Draw',
   label: 'Ellipse',
-  description: 'Draw an ellipse at (x, y) with size (w, h).',
+  description:
+    'Draw an ellipse anchored at `pos`. `anchor` picks which point of the ' +
+    'bounding box `pos` is — center (default) or a corner (tl/tr/bl/br).',
   inputs: [
-    { name: 'x', type: 'number', default: 0 },
-    { name: 'y', type: 'number', default: 0 },
+    { name: 'pos', type: 'vec2', default: ZERO_VEC2 },
     { name: 'w', type: 'number', default: 50 },
     { name: 'h', type: 'number', default: 50 },
+    { name: 'anchor', type: 'string', default: 'center', param: 'anchor' },
     { name: 'style', type: 'style' },
   ],
   outputs: [{ name: 'shape', type: 'layer' }],
-  compute: (x, y, w, h, style) => {
+  defaultParams: { anchor: 'center' },
+  paramOptions: { anchor: [...ANCHOR_OPTIONS] },
+  compute: (pos, w, h, anchor, style) => {
+    const ww = w as number;
+    const hh = h as number;
+    const { x, y } = anchorTopLeft(toVec2(pos), ww, hh, anchor as string);
     const resolved = resolveStyle(style as Style | null, DEFAULT_STYLE);
     const node: Layer = {
       kind: 'ellipse',
-      x: x as number,
-      y: y as number,
-      w: w as number,
-      h: h as number,
-      mode: resolved.ellipseMode,
+      x,
+      y,
+      w: ww,
+      h: hh,
+      mode: 'corner',
       style: resolved,
     };
     return [node];
@@ -77,22 +91,21 @@ export const lineNode = registerNode({
   type: 'draw/line',
   category: 'Draw',
   label: 'Line',
-  description: 'Draw a line from (x1, y1) to (x2, y2).',
+  description: 'Draw a line from point `a` to point `b`.',
   inputs: [
-    { name: 'x1', type: 'number', default: 0 },
-    { name: 'y1', type: 'number', default: 0 },
-    { name: 'x2', type: 'number', default: 100 },
-    { name: 'y2', type: 'number', default: 100 },
+    { name: 'a', type: 'vec2', default: { x: 0, y: 0 } },
+    { name: 'b', type: 'vec2', default: { x: 100, y: 100 } },
     { name: 'style', type: 'style' },
   ],
   outputs: [{ name: 'shape', type: 'layer' }],
-  compute: (x1, y1, x2, y2, style) => {
+  compute: (a, b, style) => {
+    const pa = toVec2(a), pb = toVec2(b);
     const node: Layer = {
       kind: 'line',
-      x1: x1 as number,
-      y1: y1 as number,
-      x2: x2 as number,
-      y2: y2 as number,
+      x1: pa.x,
+      y1: pa.y,
+      x2: pb.x,
+      y2: pb.y,
       // Stroke-driven default: thin black stroke, no fill.
       style: resolveStyle(style as Style | null, LINE_DEFAULT_STYLE),
     };

@@ -1,9 +1,11 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { useEditor, type FloretNodeData } from '../editor-state';
 import { nodeRegistry } from '../../nodes/registry';
 import { getResolvedInputs } from '../../nodes/types';
-import { portColorVar } from '../connection-rules';
+import { portColorVar, parseHandle } from '../connection-rules';
+import { PortValueInlineEditor, supportsInlineEditor, formatValue, InputPin } from './GenericNode';
+import { openPortValueEditor } from '../PortValueEditor';
 
 /**
  * Group node — N regular slot pins on the left, one output on the right,
@@ -28,6 +30,35 @@ export const GroupNode = memo(function GroupNode(props: NodeProps) {
       .map((w) => w.message)
       .join('\n'),
   );
+
+  // Which slots have an incoming wire — those show their pin only; the rest
+  // get an inline editor so the user can type a constant (e.g. type 3 into
+  // a Mul slot instead of wiring a Number node).
+  const connectedInputPorts = useEditor((s) => {
+    const names: string[] = [];
+    for (const e of s.edges) {
+      if (e.target !== id) continue;
+      const parsed = parseHandle(e.targetHandle);
+      if (parsed?.kind === 'in') names.push(parsed.name);
+    }
+    return names.sort().join(',');
+  });
+  const connectedSet = useMemo(
+    () => new Set(connectedInputPorts.split(',').filter(Boolean)),
+    [connectedInputPorts],
+  );
+
+  // Per-slot editor-expanded state — labels are clickable toggles, collapsed
+  // by default, click to reveal the inline editor (matches GenericNode).
+  const [expandedPorts, setExpandedPorts] = useState<Set<string>>(() => new Set());
+  const togglePort = useCallback((portName: string) => {
+    setExpandedPorts((prev) => {
+      const next = new Set(prev);
+      if (next.has(portName)) next.delete(portName);
+      else next.add(portName);
+      return next;
+    });
+  }, []);
 
   const slotCount = Math.max(
     MIN_SLOTS,
@@ -91,24 +122,58 @@ export const GroupNode = memo(function GroupNode(props: NodeProps) {
         {Array.from({ length: rows }, (_, i) => {
           const p = inputs[i];
           const showOutput = i === 0;
+          // Inline editor mirrors GenericNode: only on unconnected editable
+          // slots, revealed by clicking the label; otherwise a value readout.
+          const editable = !!p && !connectedSet.has(p.name) && supportsInlineEditor(p.type);
+          const override = p ? nodeData.portValues?.[p.name] : undefined;
+          const expanded = !!p && expandedPorts.has(p.name);
+          const showEditor = editable && expanded;
+          const showReadout = editable && override !== undefined && !showEditor;
           return (
-            <div key={i} className="node-row">
+            <div
+              key={i}
+              className="node-row"
+              // Right-click an editable slot to open the value editor — parity
+              // with GenericNode's input rows.
+              onContextMenu={editable && p ? (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openPortValueEditor({
+                  nodeId: id,
+                  portName: p.name,
+                  portType: p.type,
+                  initialValue: override !== undefined ? override : p.default,
+                  screenPosition: { x: e.clientX, y: e.clientY },
+                });
+              } : undefined}
+            >
               {p && (
                 <>
-                  <Handle
-                    id={`in-${p.name}`}
-                    type="target"
-                    position={Position.Left}
-                    className="node-row-handle node-row-handle-left"
-                    style={{
-                      background: portColorVar(p.type),
-                      borderColor: portColorVar(p.type),
-                      color: portColorVar(p.type),
-                    }}
+                  {/* InputPin gives the hover-to-inspect tooltip (same handle
+                      styling as before). */}
+                  <InputPin
+                    nodeId={id}
+                    port={p}
+                    wired={connectedSet.has(p.name)}
+                    override={override}
                   />
-                  <span className="node-row-label node-row-label-left group-slot-label">
+                  <span
+                    className={`node-row-label node-row-label-left group-slot-label${editable ? ' clickable' : ''}${showEditor ? ' expanded' : ''}`}
+                    onClick={editable ? (e) => { e.stopPropagation(); togglePort(p.name); } : undefined}
+                  >
                     {p.label ?? p.name}
                   </span>
+                  {showEditor && (
+                    <PortValueInlineEditor
+                      nodeId={id}
+                      portName={p.name}
+                      type={p.type}
+                      defaultVal={override ?? p.default}
+                    />
+                  )}
+                  {showReadout && (
+                    <span className="port-value-readout">{formatValue(override)}</span>
+                  )}
                 </>
               )}
               <span className="node-row-spacer" />

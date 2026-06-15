@@ -1,6 +1,7 @@
 import { registerNode } from '../registry';
 import { type Color, type Layer, colorToCss } from '../../runtime/types';
-import { isReadyImageCanvas } from '../_shared/coerce';
+import { isReadyImageCanvas, toVec2 } from '../_shared/coerce';
+import { anchorTopLeft, ANCHOR_OPTIONS } from '../_shared/anchor';
 
 /**
  * Draw an `image` (HTMLCanvasElement) at (x, y) sized (w, h). If
@@ -16,27 +17,28 @@ export const drawImageNode = registerNode({
   type: 'draw/image',
   category: 'Draw',
   label: 'Image',
-  description: 'Draw an image at (x, y) with size (w, h).',
+  description: 'Draw an image at `pos` with size (w, h).',
   inputs: [
     { name: 'image', type: 'image' },
-    { name: 'x', type: 'number', default: 0 },
-    { name: 'y', type: 'number', default: 0 },
+    { name: 'pos', type: 'vec2', default: { x: 0, y: 0 } },
     { name: 'w', type: 'number', default: 0 },
     { name: 'h', type: 'number', default: 0 },
+    { name: 'anchor', type: 'string', default: 'center', param: 'anchor' },
     { name: 'tint', type: 'color', default: null },
   ],
-  outputs: [{ name: 'layer', type: 'layer' }],
-  compute: (img, x, y, w, h, tint) => {
+  outputs: [{ name: 'shape', type: 'layer' }],
+  defaultParams: { anchor: 'center' },
+  paramOptions: { anchor: [...ANCHOR_OPTIONS] },
+  compute: (img, pos, w, h, anchor, tint) => {
     if (!isReadyImageCanvas(img)) {
       return [{ kind: 'group', children: [] } as Layer];
     }
     const c = img;
-    const xv = x as number;
-    const yv = y as number;
     const wv = w as number;
     const hv = h as number;
     const dstW = wv === 0 ? c.width : wv;
     const dstH = hv === 0 ? c.height : hv;
+    const { x: xv, y: yv } = anchorTopLeft(toVec2(pos), dstW, dstH, anchor as string);
     const tc = tint as Color | null;
     const node: Layer = {
       kind: 'image',

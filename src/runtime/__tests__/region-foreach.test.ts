@@ -70,7 +70,7 @@ describe('ForEach region', () => {
         { fromNode: 'r3', fromPort: 'indices', toNode: 'inB', toPort: 'outer' },
         { fromNode: 'inA', fromPort: 'inner', toNode: 'add', toPort: 'a' },
         { fromNode: 'inB', fromPort: 'inner', toNode: 'add', toPort: 'b' },
-        { fromNode: 'add', fromPort: 'sum', toNode: 'out', toPort: 'inner' },
+        { fromNode: 'add', fromPort: 'result', toNode: 'out', toPort: 'inner' },
       ],
       {
         registry: realRegistry(),
@@ -124,7 +124,7 @@ describe('ForEach region', () => {
         { fromNode: 'range', fromPort: 'indices', toNode: 'sIn', toPort: 'outer' },
         { fromNode: 'sIn', fromPort: 'inner', toNode: 'add', toPort: 'a' },
         { fromNode: 'k100', fromPort: 'number', toNode: 'add', toPort: 'b' }, // broadcast!
-        { fromNode: 'add', fromPort: 'sum', toNode: 'sOut', toPort: 'inner' },
+        { fromNode: 'add', fromPort: 'result', toNode: 'sOut', toPort: 'inner' },
       ],
       {
         registry: realRegistry(),

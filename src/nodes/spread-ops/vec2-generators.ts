@@ -1,5 +1,6 @@
 import { registerNode } from '../registry';
 import type { Vec2 } from '../../runtime/types';
+import { toVec2 } from '../_shared/coerce';
 
 /**
  * Vec2-spread generators — Grid, Spiral, Fibonacci (phyllotaxis).
@@ -14,14 +15,13 @@ export const gridNode = registerNode({
   type: 'spread/grid',
   category: 'Spread',
   label: 'GridSpread',
-  description: 'Generate a `cols × rows` grid of points centred on (cx, cy).',
+  description: 'Generate a `cols × rows` grid of points centred on `center`.',
   inputs: [
     { name: 'cols', type: 'number', default: 8, integer: true },
     { name: 'rows', type: 'number', default: 8, integer: true },
     { name: 'w', type: 'number', default: 400 },
     { name: 'h', type: 'number', default: 400 },
-    { name: 'cx', type: 'number', default: 0 },
-    { name: 'cy', type: 'number', default: 0 },
+    { name: 'center', type: 'vec2', default: { x: 0, y: 0 } },
   ],
   outputs: [{ name: 'positions', type: 'vec2', kind: 'spread' }],
   computeRaw: (inputs) => {
@@ -29,8 +29,9 @@ export const gridNode = registerNode({
     const rows = intCount(inputs[1]?.[0]);
     const w = Number(inputs[2]?.[0] ?? 0);
     const h = Number(inputs[3]?.[0] ?? 0);
-    const cx = Number(inputs[4]?.[0] ?? 0);
-    const cy = Number(inputs[5]?.[0] ?? 0);
+    const center = toVec2(inputs[4]?.[0]);
+    const cx = center.x;
+    const cy = center.y;
     if (cols === 0 || rows === 0) return [[]];
     const dx = cols === 1 ? 0 : w / (cols - 1);
     const dy = rows === 1 ? 0 : h / (rows - 1);
@@ -58,8 +59,7 @@ export const ringNode = registerNode({
   inputs: [
     { name: 'count',  type: 'number', default: 24, integer: true },
     { name: 'radius', type: 'number', default: 100 },
-    { name: 'cx',     type: 'number', default: 0 },
-    { name: 'cy',     type: 'number', default: 0 },
+    { name: 'center', type: 'vec2', default: { x: 0, y: 0 } },
     { name: 'phase',  type: 'number', default: 0 },
   ],
   outputs: [
@@ -69,9 +69,10 @@ export const ringNode = registerNode({
   computeRaw: (inputs) => {
     const count = intCount(inputs[0]?.[0]);
     const radius = Number(inputs[1]?.[0] ?? 0);
-    const cx = Number(inputs[2]?.[0] ?? 0);
-    const cy = Number(inputs[3]?.[0] ?? 0);
-    const phase = Number(inputs[4]?.[0] ?? 0);
+    const center = toVec2(inputs[2]?.[0]);
+    const cx = center.x;
+    const cy = center.y;
+    const phase = Number(inputs[3]?.[0] ?? 0);
     if (count === 0) return [[], []];
     const positions = new Array<Vec2>(count);
     const angles = new Array<number>(count);

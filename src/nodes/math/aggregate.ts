@@ -15,7 +15,7 @@ export const sumNode = registerNode({
   label: 'Sum',
   description: 'Sum of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'sum', type: 'number' }],
+  outputs: [{ name: 'result', type: 'number' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     let s = 0;
@@ -30,7 +30,7 @@ export const meanNode = registerNode({
   label: 'Mean',
   description: 'Arithmetic mean of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'mean', type: 'number' }],
+  outputs: [{ name: 'result', type: 'number' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     if (src.length === 0) return [[0]];
@@ -46,7 +46,7 @@ export const minSpreadNode = registerNode({
   label: 'MinSpread',
   description: 'Minimum value of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'min', type: 'number' }],
+  outputs: [{ name: 'result', type: 'number' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     if (src.length === 0) return [[0]];
@@ -62,7 +62,7 @@ export const maxSpreadNode = registerNode({
   label: 'MaxSpread',
   description: 'Maximum value of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'max', type: 'number' }],
+  outputs: [{ name: 'result', type: 'number' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     if (src.length === 0) return [[0]];
@@ -78,7 +78,7 @@ export const medianNode = registerNode({
   label: 'Median',
   description: 'Median of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'median', type: 'number' }],
+  outputs: [{ name: 'result', type: 'number' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     if (src.length === 0) return [[0]];
@@ -95,7 +95,7 @@ export const stdDevNode = registerNode({
   label: 'StdDev',
   description: 'Population standard deviation of a number spread.',
   inputs: [{ name: 'spread', type: 'number', kind: 'spread' }],
-  outputs: [{ name: 'stddev', type: 'number' }],
+  outputs: [{ name: 'result', type: 'number' }],
   computeRaw: (inputs) => {
     const src = asNumbers(inputs[0]);
     if (src.length === 0) return [[0]];

@@ -21,6 +21,7 @@ import { getResolvedInputs, getResolvedOutputs } from '../nodes/types';
 import { buildNodeIndex, absolutePosition, findAncestor, isDescendantOf } from './canvas-geometry';
 import { useOverlay, type ContextMenuItem, type PendingConnection } from './overlay-store';
 import { NodeSearch } from './NodeSearch';
+import { FavoritesMenu } from './FavoritesMenu';
 import { ContextMenu } from './ContextMenu';
 import { prefsSnapshot } from '../app/prefs';
 import { paramStore } from '../runtime/param-store';
@@ -105,6 +106,7 @@ function CanvasInner() {
   const removeEdge = useEditor((s) => s.removeEdge);
 
   const openSearch = useOverlay((s) => s.openSearch);
+  const openFavorites = useOverlay((s) => s.openFavorites);
   const openContext = useOverlay((s) => s.openContext);
   const armedRegionKind = useOverlay((s) => s.armedRegionKind);
   const armRegionDraw = useOverlay((s) => s.armRegionDraw);
@@ -876,6 +878,12 @@ function CanvasInner() {
       const flow = reactFlow.screenToFlowPosition(screen);
       openSearch({ screenPosition: screen, flowPosition: flow });
     }
+    function onOpenFavorites(e: Event) {
+      const ev = e as CustomEvent<{ x: number; y: number }>;
+      const screen = ev.detail;
+      const flow = reactFlow.screenToFlowPosition(screen);
+      openFavorites({ screenPosition: screen, flowPosition: flow });
+    }
     function onPaste(e: Event) {
       const ev = e as CustomEvent<{ x: number; y: number }>;
       const flow = reactFlow.screenToFlowPosition(ev.detail);
@@ -900,16 +908,18 @@ function CanvasInner() {
       }
     }
     window.addEventListener('floret:open-search', onOpenSearch);
+    window.addEventListener('floret:open-favorites', onOpenFavorites);
     window.addEventListener('floret:paste', onPaste);
     window.addEventListener('floret:focus-node', onFocusNode);
     window.addEventListener('floret:fit-selection', onFitSelection);
     return () => {
       window.removeEventListener('floret:open-search', onOpenSearch);
+      window.removeEventListener('floret:open-favorites', onOpenFavorites);
       window.removeEventListener('floret:paste', onPaste);
       window.removeEventListener('floret:focus-node', onFocusNode);
       window.removeEventListener('floret:fit-selection', onFitSelection);
     };
-  }, [openSearch, pasteAt, reactFlow]);
+  }, [openSearch, openFavorites, pasteAt, reactFlow]);
 
   // ─── Region draw tool (armed from the palette) ──────────────────────────
   // Clicking a region in the palette arms `armedRegionKind`. The canvas then
@@ -1094,6 +1104,7 @@ function CanvasInner() {
       />
       {nodes.length === 0 && <EmptyCanvasHint />}
       <NodeSearch />
+      <FavoritesMenu />
       <ContextMenu />
     </div>
   );

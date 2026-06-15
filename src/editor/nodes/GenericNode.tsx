@@ -321,7 +321,7 @@ const NodeRow = memo(function NodeRow({
 
 // ─── Inline editors ──────────────────────────────────────────────────────
 
-function supportsInlineEditor(type: PortType): boolean {
+export function supportsInlineEditor(type: PortType): boolean {
   return type === 'number' || type === 'string' || type === 'boolean';
 }
 
@@ -677,7 +677,7 @@ function DynamicSelectEditor({
  * React state during typing; commits on blur via setNodePortValue
  * (which recompiles). Edges always override portValues.
  */
-function PortValueInlineEditor({
+export function PortValueInlineEditor({
   nodeId, portName, type, defaultVal,
 }: { nodeId: string; portName: string; type: PortType; defaultVal: unknown }) {
   const setNodePortValue = useEditor((s) => s.setNodePortValue);
@@ -727,7 +727,7 @@ function PortValueInlineEditor({
   );
 }
 
-function formatValue(v: unknown): string {
+export function formatValue(v: unknown): string {
   if (typeof v === 'number') {
     return Number.isInteger(v) ? String(v) : v.toFixed(2).replace(/\.?0+$/, '');
   }

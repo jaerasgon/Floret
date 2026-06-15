@@ -31,7 +31,7 @@ describe('ForEach accumulator (split Read/Write, LTR)', () => {
         // LTR: read.read → add.a; splicer-in.inner → add.b; add.out → write.write
         { fromNode: 'read', fromPort: 'read', toNode: 'add', toPort: 'a' },
         { fromNode: 'sIn',  fromPort: 'inner', toNode: 'add', toPort: 'b' },
-        { fromNode: 'add', fromPort: 'sum', toNode: 'write', toPort: 'write' },
+        { fromNode: 'add', fromPort: 'result', toNode: 'write', toPort: 'write' },
       ],
       {
         registry: realRegistry,
@@ -99,8 +99,8 @@ describe('ForEach accumulator (split Read/Write, LTR)', () => {
         { fromNode: 'init0', fromPort: 'number', toNode: 'read', toPort: 'init' },
         { fromNode: 'read', fromPort: 'read', toNode: 'add', toPort: 'a' },
         { fromNode: 'sIn',  fromPort: 'inner', toNode: 'add', toPort: 'b' },
-        { fromNode: 'add', fromPort: 'sum', toNode: 'write', toPort: 'write' },
-        { fromNode: 'add', fromPort: 'sum', toNode: 'sOut',  toPort: 'inner' },
+        { fromNode: 'add', fromPort: 'result', toNode: 'write', toPort: 'write' },
+        { fromNode: 'add', fromPort: 'result', toNode: 'sOut',  toPort: 'inner' },
       ],
       {
         registry: realRegistry,

@@ -31,9 +31,9 @@ export const ToggleNode = memo(function ToggleNode(props: NodeProps) {
       <div className="node-ports">
         <div className="port-col port-col-out">
           <div className="port-row right">
-            <span className="port-name">bool</span>
+            <span className="port-name">{def.outputs[0]?.name ?? 'bool'}</span>
             <Handle
-              id="out-bool"
+              id={`out-${def.outputs[0]?.name ?? 'bool'}`}
               type="source"
               position={Position.Right}
               style={{

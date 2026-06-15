@@ -26,7 +26,7 @@ export const reverseNode = registerNode({
   label: 'ReverseSpread',
   description: 'Reverse the order of elements.',
   inputs: [{ name: 'spread', type: 'any', kind: 'spread' }],
-  outputs: [{ name: 'values', label: 'spread', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const out = new Array(src.length);
@@ -108,7 +108,7 @@ export const cycleNode = registerNode({
     { name: 'spread', type: 'any', kind: 'spread' },
     { name: 'count', type: 'number', default: 8, integer: true },
   ],
-  outputs: [{ name: 'values', label: 'spread', type: 'any', kind: 'spread' }],
+  outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
   computeRaw: (inputs) => {
     const src = inputs[0] ?? [];
     const n = intCount(inputs[1]?.[0]);

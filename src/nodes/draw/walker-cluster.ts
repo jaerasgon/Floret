@@ -2,7 +2,7 @@ import { registerNode } from '../registry';
 import type { Color, Layer, PortValue } from '../../runtime/types';
 import type { SceneNode, ResolvedStyle } from '../../runtime/scene';
 import { DEFAULT_STYLE, translateMat, scaleMat } from '../../runtime/scene';
-import { toColor } from '../_shared/coerce';
+import { toColor, toVec2 } from '../_shared/coerce';
 
 /**
  * WalkerCluster — port of a generative random-walker sketch.
@@ -140,25 +140,25 @@ export const walkerClusterNode = registerNode({
     // palette builder, or a single-color wire which auto-wraps to a
     // length-1 spread). Falls back to the built-in palette when unwired.
     { name: 'colors', type: 'color', kind: 'spread' },
-    { name: 'x', type: 'number', default: 0 },
-    { name: 'y', type: 'number', default: 0 },
+    { name: 'pos', type: 'vec2', default: { x: 0, y: 0 } },
     { name: 'size', type: 'number', default: 140 },
     { name: 'density', type: 'number', default: 1 },
     { name: 'steps', type: 'number', default: 200, integer: true },
     { name: 'seed', type: 'number', default: 0, integer: true },
   ],
-  outputs: [{ name: 'layer', type: 'layer' }],
+  outputs: [{ name: 'shape', type: 'layer' }],
   computeRaw: (inputs): PortValue[] => {
     const rawColors = (inputs[0] ?? []) as ReadonlyArray<unknown>;
     const palette: ReadonlyArray<Color> = rawColors.length > 0
       ? rawColors.map((c) => toColor(c))
       : DEFAULT_PALETTE;
-    const x = num(inputs[1], 0);
-    const y = num(inputs[2], 0);
-    const size = Math.max(1, num(inputs[3], 140));
-    const density = Math.max(0, Math.min(2, num(inputs[4], 1)));
-    const steps = Math.max(1, Math.floor(num(inputs[5], 200)));
-    const seed = Math.floor(num(inputs[6], 0)) >>> 0;
+    const pos = toVec2(inputs[1]?.[0]);
+    const x = pos.x;
+    const y = pos.y;
+    const size = Math.max(1, num(inputs[2], 140));
+    const density = Math.max(0, Math.min(2, num(inputs[3], 1)));
+    const steps = Math.max(1, Math.floor(num(inputs[4], 200)));
+    const seed = Math.floor(num(inputs[5], 0)) >>> 0;
 
     const rng = mulberry32(seed);
     const spawnProb = BASE_SPAWN_PROB * density;

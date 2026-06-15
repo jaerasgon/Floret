@@ -85,9 +85,12 @@ function SplitView({ node }: { node: DockSplit }) {
 
 function GroupView({ node }: { node: DockGroup }) {
   const setActive = useDock((s) => s.setActive);
+  // A group with a single panel reads as a plain header that fills the width;
+  // tabs only appear once a second panel is docked onto it.
+  const single = node.panels.length === 1;
   return (
     <div className="dock-group" data-group-id={node.id}>
-      <div className="dock-tabbar">
+      <div className={`dock-tabbar${single ? ' dock-tabbar-single' : ''}`}>
         {node.panels.map((pid, i) => {
           const m = getDockMeta(pid);
           const active = i === node.active;

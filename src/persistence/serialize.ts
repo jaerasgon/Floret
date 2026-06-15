@@ -1,5 +1,8 @@
 import type { FloretEdge, FloretNode } from '../editor/editor-state';
 import { CURRENT_PATCH_VERSION, type PatchFile, type SerializedEdge, type SerializedNode } from './schema';
+import { nodeRegistry } from '../nodes/registry';
+import { getResolvedInputs } from '../nodes/types';
+import { parseHandle } from '../editor/connection-rules';
 
 /**
  * Editor state → PatchFile (JSON-friendly).
@@ -105,7 +108,50 @@ export function deserializePatch(patch: PatchFile): { nodes: FloretNode[]; edges
     sourceHandle: e.sourceHandle,
     targetHandle: e.targetHandle,
   }));
-  return { nodes, edges: migrateLegacyEdges(nodes, edges) };
+  return { nodes, edges: pruneDeadEdges(nodes, migrateLegacyEdges(nodes, edges)) };
+}
+
+/**
+ * Drop edges whose handle no longer resolves to a real port — the
+ * invisible-dead-wire case. After a port rename (e.g. a node's output
+ * `out` → `grouped`, or an input `x`/`y` → `pos`), old saved patches keep
+ * the stale edge. React Flow won't render it (so the user can't select or
+ * delete it), but the runtime still tries to compile it and surfaces an
+ * "Unknown port" warning as an error chip. Pruning on load clears those.
+ *
+ * Conservative on purpose: only drops when we're CERTAIN the port is gone.
+ * Region nodes (dynamic ports) and nodes with `dynamicOutputs` are left
+ * untouched, since their port set can't be resolved from static defs here.
+ */
+export function pruneDeadEdges(
+  nodes: ReadonlyArray<FloretNode>,
+  edges: ReadonlyArray<FloretEdge>,
+): FloretEdge[] {
+  const byId = new Map(nodes.map((n) => [n.id, n]));
+
+  const portExists = (
+    nodeId: string,
+    handle: string | null | undefined,
+    side: 'out' | 'in',
+  ): boolean => {
+    const n = byId.get(nodeId);
+    if (!n) return true; // missing node — compile reports it separately
+    const def = nodeRegistry.get(n.data.defType);
+    if (!def) return true; // unknown def — don't touch
+    if (def.regionKind) return true; // regions carry dynamic ports
+    const parsed = parseHandle(handle);
+    if (!parsed) return true;
+    if (side === 'out') {
+      if (def.dynamicOutputs) return true; // can't resolve statically
+      return def.outputs.some((p) => p.name === parsed.name);
+    }
+    // `getResolvedInputs` already expands dynamic inputs (e.g. group slots).
+    return getResolvedInputs(def, n.data.params ?? {}).some((p) => p.name === parsed.name);
+  };
+
+  return edges.filter(
+    (e) => portExists(e.source, e.sourceHandle, 'out') && portExists(e.target, e.targetHandle, 'in'),
+  );
 }
 
 /**

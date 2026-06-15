@@ -77,7 +77,7 @@ describe('Region frame ports', () => {
         { fromNode: 'range', fromPort: 'indices', toNode: 'reg', toPort: 'in1' },
         { fromNode: 'reg', fromPort: 'in1', toNode: 'add', toPort: 'a' },
         { fromNode: 'k', fromPort: 'number', toNode: 'add', toPort: 'b' },
-        { fromNode: 'add', fromPort: 'sum', toNode: 'reg', toPort: 'out1' },
+        { fromNode: 'add', fromPort: 'result', toNode: 'reg', toPort: 'out1' },
       ],
       {
         registry: realRegistry(),

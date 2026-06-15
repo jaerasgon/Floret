@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useEditor } from '../../editor/editor-state';
 import { paramStore } from '../../runtime/param-store';
-import { autosave, clearAutosave, loadAutosave, loadPatch, savePatch } from '../../persistence/fs';
+import {
+  autosave, clearAutosave, loadAutosave, loadPatch, savePatch,
+  persistFileHandle, loadFileHandle, clearFileHandle,
+} from '../../persistence/fs';
 import { deserializePatch, serializePatch } from '../../persistence/serialize';
 import { starterPatch } from '../../persistence/starter';
 import { buildShareUrl, consumeSharedPatch, hasSharedPatch } from '../../persistence/share';
@@ -77,6 +80,9 @@ export function FileMenu() {
         loadEditor(ns, es);
         if (restored.meta?.name) setFileName(restored.meta.name);
         setStatus('autosave restored');
+        // Re-attach the file handle from last session so Ctrl+S saves in
+        // place (it re-requests write permission on the first save).
+        void loadFileHandle().then((h) => { if (h) handleRef.current = h; });
       } else if (!restored) {
         const { nodes: ns, edges: es } = starterPatch();
         paramStore.replaceAll(ns.map((n) => [n.id, n.data.params] as const));
@@ -92,6 +98,7 @@ export function FileMenu() {
     // rely on undo to recover an accidental wipe instead.
     loadEditor([], []);
     handleRef.current = null;
+    void clearFileHandle();
     setFileName('untitled');
     clearAutosave();
     setStatus('new patch');
@@ -102,6 +109,7 @@ export function FileMenu() {
     try {
       const result = await savePatch(patch, handleRef.current);
       handleRef.current = result.handle;
+      void persistFileHandle(result.handle);
       setFileName(result.name.replace(/\.flora$|\.floret\.json$|\.json$/i, ''));
       setStatus(`saved ${result.name}`);
     } catch (err) {
@@ -143,6 +151,7 @@ export function FileMenu() {
       paramStore.replaceAll(ns.map((n) => [n.id, n.data.params] as const));
       loadEditor(ns, es);
       handleRef.current = result.handle;
+      void persistFileHandle(result.handle);
       setFileName(result.name.replace(/\.flora$|\.floret\.json$|\.json$/i, ''));
       setStatus(`opened ${result.name}`);
     } catch (err) {

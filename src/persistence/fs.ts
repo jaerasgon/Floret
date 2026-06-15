@@ -31,6 +31,8 @@ declare global {
     getFile(): Promise<File>;
     createWritable(): Promise<FileSystemWritableFileStream>;
     name: string;
+    queryPermission?(opts?: { mode?: 'read' | 'readwrite' }): Promise<PermissionState>;
+    requestPermission?(opts?: { mode?: 'read' | 'readwrite' }): Promise<PermissionState>;
   }
   interface FileSystemWritableFileStream extends WritableStream {
     write(data: string | BufferSource | Blob): Promise<void>;
@@ -63,12 +65,24 @@ export async function savePatch(
 
   // Path 1: File System Access API (Chromium-based browsers).
   if (typeof window.showSaveFilePicker === 'function') {
-    const handle =
-      reuseHandle ??
-      (await window.showSaveFilePicker({
+    // Reuse the current file's handle when we have one — this is what makes
+    // Ctrl+S save in place instead of re-opening the save dialog. A handle
+    // restored from a previous session may have lost write permission; ask
+    // for it back (the save keystroke is a user gesture, so this is allowed).
+    let handle = reuseHandle ?? null;
+    if (handle && handle.queryPermission) {
+      let perm = await handle.queryPermission({ mode: 'readwrite' });
+      if (perm !== 'granted' && handle.requestPermission) {
+        perm = await handle.requestPermission({ mode: 'readwrite' });
+      }
+      if (perm !== 'granted') handle = null; // fall back to the picker below
+    }
+    if (!handle) {
+      handle = await window.showSaveFilePicker({
         suggestedName: suggestedFilename(patch),
         types: PATCH_FILE_TYPES,
-      }));
+      });
+    }
     const writable = await handle.createWritable();
     await writable.write(json);
     await writable.close();
@@ -158,4 +172,64 @@ export function loadAutosave(): PatchFile | null {
 
 export function clearAutosave(): void {
   removeKey(AUTOSAVE_KEY);
+}
+
+// ─── File-handle persistence (so the open file survives a reload) ────────────
+//
+// localStorage can't hold a FileSystemFileHandle, but IndexedDB can (handles
+// are structured-cloneable). Stashing it lets Ctrl+S keep saving to the same
+// file after a reload — the runtime just re-requests write permission on the
+// next save gesture (see `savePatch`). Falls back to no-op where IndexedDB or
+// the File System Access API isn't available.
+
+const HANDLE_DB = 'floret-fs';
+const HANDLE_STORE = 'handles';
+const HANDLE_KEY = 'current';
+
+function openHandleDB(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(HANDLE_DB, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(HANDLE_STORE);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function persistFileHandle(handle: FileSystemFileHandle | null): Promise<void> {
+  if (typeof indexedDB === 'undefined') return;
+  try {
+    const db = await openHandleDB();
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(HANDLE_STORE, 'readwrite');
+      const store = tx.objectStore(HANDLE_STORE);
+      if (handle) store.put(handle, HANDLE_KEY);
+      else store.delete(HANDLE_KEY);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+  } catch {
+    // Private mode / storage disabled — persistence is a convenience.
+  }
+}
+
+export async function loadFileHandle(): Promise<FileSystemFileHandle | null> {
+  if (typeof indexedDB === 'undefined') return null;
+  try {
+    const db = await openHandleDB();
+    const handle = await new Promise<FileSystemFileHandle | null>((resolve) => {
+      const tx = db.transaction(HANDLE_STORE, 'readonly');
+      const req = tx.objectStore(HANDLE_STORE).get(HANDLE_KEY);
+      req.onsuccess = () => resolve((req.result as FileSystemFileHandle | undefined) ?? null);
+      req.onerror = () => resolve(null);
+    });
+    db.close();
+    return handle;
+  } catch {
+    return null;
+  }
+}
+
+export function clearFileHandle(): Promise<void> {
+  return persistFileHandle(null);
 }

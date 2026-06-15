@@ -2,43 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { nodeRegistry } from '../nodes/registry';
 import { getResolvedInputs, type NodeDef } from '../nodes/types';
 import { useOverlay } from './overlay-store';
-import { useEditor, type FloretNode } from './editor-state';
+import { useEditor } from './editor-state';
+import { placeNodeAtFlow } from './place-node';
+import { useFavorites } from './favorites';
 import { arePortsCompatible } from './connection-rules';
 import type { PortType } from '../runtime/types';
-
-/**
- * Locate the smallest region whose bounds contain the given flow-coord
- * point and whose parent matches the current view scope. Used to
- * auto-parent newly-created nodes into the region the user dropped them in.
- */
-function findRegionAtFlow(
-  nodes: ReadonlyArray<FloretNode>,
-  flowPoint: { x: number; y: number },
-  newNodeId: string,
-  scopeParent: string | null,
-): { id: string; pos: { x: number; y: number } } | null {
-  let best: { id: string; pos: { x: number; y: number } } | null = null;
-  let bestArea = Infinity;
-  for (const n of nodes) {
-    if (n.id === newNodeId) continue;
-    if ((n.parentId ?? null) !== scopeParent) continue;
-    const def = nodeRegistry.get(n.data.defType);
-    if (!def?.regionKind) continue;
-    const w = (n.data.params?.width as number | undefined) ?? 480;
-    const h = (n.data.params?.height as number | undefined) ?? 280;
-    if (
-      flowPoint.x >= n.position.x && flowPoint.x <= n.position.x + w &&
-      flowPoint.y >= n.position.y && flowPoint.y <= n.position.y + h
-    ) {
-      const area = w * h;
-      if (area < bestArea) {
-        best = { id: n.id, pos: n.position };
-        bestArea = area;
-      }
-    }
-  }
-  return best;
-}
 
 /**
  * Command-palette-style node picker. Opens at a screen position; when an
@@ -55,11 +23,11 @@ export function NodeSearch() {
   const insertion = useOverlay((s) => s.searchInsertion);
   const close = useOverlay((s) => s.closeSearch);
 
-  const armRegionDraw = useOverlay((s) => s.armRegionDraw);
-  const addNode = useEditor((s) => s.addNode);
   const addEdge = useEditor((s) => s.addEdge);
   const removeEdge = useEditor((s) => s.removeEdge);
-  const setNodeParent = useEditor((s) => s.setNodeParent);
+
+  const favTypes = useFavorites((s) => s.types);
+  const toggleFavorite = useFavorites((s) => s.toggleFavorite);
 
   const [query, setQuery] = useState('');
   const [highlight, setHighlight] = useState(0);
@@ -152,33 +120,13 @@ export function NodeSearch() {
   if (!open) return null;
 
   const commit = (def: NodeDef) => {
-    // Drawable regions don't drop at the click point — picking one arms the
-    // crosshair so the user sizes it with a click-drag on the canvas.
-    if (def.regionKind && def.regionKind !== 'subpatch') {
-      armRegionDraw(def.regionKind);
+    // Place the node (or arm the crosshair for a drawable region) via the
+    // shared helper — the favorites quick-menu uses the same path.
+    const id = placeNodeAtFlow(def, flowPos);
+    if (id === null) {
+      // A drawable region was armed; there's nothing to wire.
       close();
       return;
-    }
-    const id = addNode(def.type, flowPos);
-
-    // Auto-parent the new node into a containing region (if any).
-    // addNode already handles the subpatch case via viewStack; this
-    // covers regions that live at the current view's scope.
-    const st = useEditor.getState();
-    const created = st.nodes.find((n) => n.id === id);
-    const currentView = st.viewStack[st.viewStack.length - 1] ?? null;
-    const newParentScope = created?.parentId ?? null;
-    // Only auto-parent when the new node is at the current view scope
-    // (i.e. addNode didn't already parent it elsewhere, e.g. inside a
-    // subpatch — that's already handled by viewStack).
-    if (created && newParentScope === currentView) {
-      const region = findRegionAtFlow(st.nodes, flowPos, id, currentView);
-      if (region && region.id !== currentView) {
-        setNodeParent(id, region.id, {
-          x: flowPos.x - region.pos.x,
-          y: flowPos.y - region.pos.y,
-        });
-      }
     }
 
     if (insertion) {
@@ -292,6 +240,16 @@ export function NodeSearch() {
                 <span className="node-search-item-label">{def.label}</span>
               </div>
               <span className="node-search-item-type">{def.type}</span>
+              <button
+                className={`palette-item-star${favTypes.includes(def.type) ? ' on' : ''}`}
+                aria-pressed={favTypes.includes(def.type)}
+                title={favTypes.includes(def.type) ? 'Unfavorite' : 'Favorite (adds to Q menu)'}
+                // Items commit on mousedown — stop the star from committing.
+                onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(def.type); }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {favTypes.includes(def.type) ? '★' : '☆'}
+              </button>
             </div>
           ))
         )}

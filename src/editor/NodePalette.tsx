@@ -3,6 +3,7 @@ import { nodeRegistry } from '../nodes/registry';
 import type { NodeDef } from '../nodes/types';
 import { Panel } from './panel/Panel';
 import { useOverlay } from './overlay-store';
+import { useFavorites } from './favorites';
 
 /** Drawable region kinds (subpatches aren't drag-sized). */
 function drawRegionKind(def: NodeDef): 'foreach' | 'if' | 'cache' | null {
@@ -36,6 +37,8 @@ function PaletteBody() {
 
   const armRegionDraw = useOverlay((s) => s.armRegionDraw);
   const armedRegionKind = useOverlay((s) => s.armedRegionKind);
+  const favTypes = useFavorites((s) => s.types);
+  const toggleFavorite = useFavorites((s) => s.toggleFavorite);
   const [query, setQuery] = useState('');
   const q = query.trim().toLowerCase();
   /** Categories the user has manually expanded. Search overrides this. */
@@ -76,6 +79,48 @@ function PaletteBody() {
     });
   };
 
+  /** A single palette row — shared by the category tree and the pinned
+   *  Favorites section. Regions arm the draw tool; the ★ toggles favorites. */
+  const renderItem = (def: NodeDef) => {
+    const regionKind = drawRegionKind(def);
+    const armed = regionKind !== null && armedRegionKind === regionKind;
+    const fav = favTypes.includes(def.type);
+    return (
+      <div
+        key={def.type}
+        className={`palette-item${regionKind ? ' palette-item-region' : ''}${armed ? ' armed' : ''}`}
+        draggable
+        onDragStart={(e) => onDragStart(e, def)}
+        // Regions arm the draw tool — by click or by drag-out. Either gesture
+        // shows a crosshair on the canvas and a press-drag sizes the region.
+        // Other nodes are drag-only.
+        onClick={regionKind ? () => armRegionDraw(regionKind) : undefined}
+        title={regionKind
+          ? `${def.description ?? def.type}\n\nClick or drag out, then drag on the canvas to draw the region.`
+          : def.description ?? def.type}
+      >
+        <span className="palette-item-label">{def.label}</span>
+        <span className="palette-item-type">{armed ? 'draw on canvas…' : def.type}</span>
+        <button
+          className={`palette-item-star${fav ? ' on' : ''}`}
+          aria-pressed={fav}
+          title={fav ? 'Unfavorite' : 'Favorite (adds to Q menu)'}
+          // Don't start a drag or arm a region when toggling the star.
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); toggleFavorite(def.type); }}
+        >
+          {fav ? '★' : '☆'}
+        </button>
+      </div>
+    );
+  };
+
+  // Resolve favorites to defs, dropping stale + hidden types. Shown pinned at
+  // the top unless a search is active (avoids duplicating the results).
+  const favDefs = favTypes
+    .map((t) => nodeRegistry.get(t))
+    .filter((d): d is NodeDef => !!d && !d.hidden);
+
   return (
     <div className="palette-inner">
       <div className="palette-search-wrap">
@@ -88,6 +133,16 @@ function PaletteBody() {
         />
       </div>
       <div className="palette-scroll">
+        {!q && favDefs.length > 0 && (
+          <div className="palette-group" data-open={1} data-category="favorites">
+            <div className="palette-group-title palette-group-title-static">
+              <span className="palette-group-chevron">★</span>
+              <span>Favorites</span>
+              <span className="palette-group-count">{favDefs.length}</span>
+            </div>
+            {favDefs.map(renderItem)}
+          </div>
+        )}
         {filtered.length === 0 ? (
           <div className="palette-empty">no nodes match</div>
         ) : (
@@ -109,28 +164,7 @@ function PaletteBody() {
                   <span>{cat}</span>
                   <span className="palette-group-count">{defs.length}</span>
                 </button>
-                {isOpen && defs.map((def) => {
-                  const regionKind = drawRegionKind(def);
-                  const armed = regionKind !== null && armedRegionKind === regionKind;
-                  return (
-                    <div
-                      key={def.type}
-                      className={`palette-item${regionKind ? ' palette-item-region' : ''}${armed ? ' armed' : ''}`}
-                      draggable
-                      onDragStart={(e) => onDragStart(e, def)}
-                      // Regions arm the draw tool — by click or by drag-out.
-                      // Either gesture shows a crosshair on the canvas and a
-                      // press-drag sizes the region. Other nodes are drag-only.
-                      onClick={regionKind ? () => armRegionDraw(regionKind) : undefined}
-                      title={regionKind
-                        ? `${def.description ?? def.type}\n\nClick or drag out, then drag on the canvas to draw the region.`
-                        : def.description ?? def.type}
-                    >
-                      <span className="palette-item-label">{def.label}</span>
-                      <span className="palette-item-type">{armed ? 'draw on canvas…' : def.type}</span>
-                    </div>
-                  );
-                })}
+                {isOpen && defs.map(renderItem)}
               </div>
             );
           })

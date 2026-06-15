@@ -66,7 +66,7 @@ export const repeatNode = registerNode({
     // function — that lets the node tile a real spread rather than just
     // taking slot 0 (the old behaviour produced [v0, v0, v0, …] when wired
     // to e.g. an RGB palette, which was obviously wrong).
-    { name: 'value', type: 'any', kind: 'spread', default: 0 },
+    { name: 'source', type: 'any', kind: 'spread', default: 0 },
     { name: 'count', type: 'number', default: 8, integer: true },
   ],
   outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
@@ -74,7 +74,7 @@ export const repeatNode = registerNode({
   // spread, get a Color spread out; connect a Number, get Number out.
   // Falls back to 'any' when nothing's connected.
   dynamicOutputs: (_params, up) => [
-    { name: 'values', type: up.value ?? 'any', kind: 'spread' },
+    { name: 'values', type: up.source ?? 'any', kind: 'spread' },
   ],
   computeRaw: (inputs) => {
     const value = (inputs[0] ?? []) as ReadonlyArray<unknown>;
@@ -141,7 +141,7 @@ export const randomizeNode = registerNode({
     // Polymorphic spread input — palette, vec2 grid, number range,
     // whatever. The shuffle is a seeded Fisher–Yates so the same
     // (seed, input length) pair always produces the same permutation.
-    { name: 'value', type: 'any', kind: 'spread', default: 0 },
+    { name: 'source', type: 'any', kind: 'spread', default: 0 },
     { name: 'seed', type: 'number', default: 0, integer: true },
   ],
   outputs: [{ name: 'values', type: 'any', kind: 'spread' }],
@@ -149,7 +149,7 @@ export const randomizeNode = registerNode({
   // Repeat / Take / Skip / Slice. Falls back to 'any' when unwired so
   // the port colour stays neutral instead of guessing.
   dynamicOutputs: (_params, up) => [
-    { name: 'values', type: up.value ?? 'any', kind: 'spread' },
+    { name: 'values', type: up.source ?? 'any', kind: 'spread' },
   ],
   computeRaw: (inputs) => {
     const value = (inputs[0] ?? []) as ReadonlyArray<unknown>;

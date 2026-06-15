@@ -1,7 +1,8 @@
 import { registerNode } from '../registry';
 import { type Color, type Layer, colorToCss } from '../../runtime/types';
 import type { SceneNode } from '../../runtime/scene';
-import { isReadyImageCanvas } from '../_shared/coerce';
+import { isReadyImageCanvas, toVec2 } from '../_shared/coerce';
+import { anchorTopLeft, ANCHOR_OPTIONS } from '../_shared/anchor';
 
 /**
  * Tile an image `cols × rows` times across a (w × h) rect anchored at
@@ -19,24 +20,25 @@ export const drawImageTileNode = registerNode({
   description: 'Tile an image `cols × rows` times across a rect.',
   inputs: [
     { name: 'image', type: 'image' },
-    { name: 'x', type: 'number', default: 0 },
-    { name: 'y', type: 'number', default: 0 },
+    { name: 'pos', type: 'vec2', default: { x: 0, y: 0 } },
     { name: 'w', type: 'number', default: 200 },
     { name: 'h', type: 'number', default: 200 },
     { name: 'cols', type: 'number', default: 4, integer: true },
     { name: 'rows', type: 'number', default: 4, integer: true },
+    { name: 'anchor', type: 'string', default: 'center', param: 'anchor' },
     { name: 'tint', type: 'color', default: null },
   ],
-  outputs: [{ name: 'layer', type: 'layer' }],
-  compute: (image, x, y, w, h, cols, rows, tint) => {
+  outputs: [{ name: 'shape', type: 'layer' }],
+  defaultParams: { anchor: 'center' },
+  paramOptions: { anchor: [...ANCHOR_OPTIONS] },
+  compute: (image, pos, w, h, cols, rows, anchor, tint) => {
     if (!isReadyImageCanvas(image)) {
       return [{ kind: 'group', children: [] } as Layer];
     }
     const c = image;
-    const xv = x as number;
-    const yv = y as number;
     const wv = w as number;
     const hv = h as number;
+    const { x: xv, y: yv } = anchorTopLeft(toVec2(pos), wv, hv, anchor as string);
     if (wv <= 0 || hv <= 0) {
       return [{ kind: 'group', children: [] } as Layer];
     }

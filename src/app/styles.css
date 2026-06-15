@@ -1554,14 +1554,22 @@ body[data-wire-dragging='1'] .react-flow__handle[data-wire-affinity='match'] {
    rules explicitly chain both: the original centring translate first,
    then the scale. transform-origin defaults to 50% 50% (the box centre),
    so the visible pin grows around the same point. */
-.react-flow__handle-left:hover,
-.react-flow__handle-right:hover {
+.react-flow__handle-left:hover:not(.region-handle),
+.react-flow__handle-right:hover:not(.region-handle) {
   transform: translate(0, -50%) scale(1.7);
   z-index: 10;
 }
-.react-flow__handle-top:hover,
-.react-flow__handle-bottom:hover {
+.react-flow__handle-top:hover:not(.region-handle),
+.react-flow__handle-bottom:hover:not(.region-handle) {
   transform: translate(-50%, 0) scale(1.7);
+  z-index: 10;
+}
+
+/* Region pins (frame-port pills + ForEach loop-var pins) hover exactly like
+   node-row pins: a soft port-coloured glow halo, no scale or position jump.
+   They keep React Flow's default centring transform so they don't shift. */
+.region-handle:hover {
+  box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 30%, transparent);
   z-index: 10;
 }
 

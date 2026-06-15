@@ -195,7 +195,7 @@ export const RegionNode = memo(function RegionNode(props: NodeProps) {
               type={isIn ? 'target' : 'source'}
               position={isIn ? Position.Left : Position.Right}
               className="region-handle region-handle-toppin"
-              style={{ top, left: isIn ? TOP_PIN_HANDLE_LEFT : TOP_PIN_HANDLE_RIGHT, background: color, borderColor: color }}
+              style={{ top, left: isIn ? TOP_PIN_HANDLE_LEFT : TOP_PIN_HANDLE_RIGHT, background: color, borderColor: color, color }}
             />
           </Fragment>
         );
@@ -403,6 +403,7 @@ function RegionFramePort({ port, side, top, minTop = 8, regionWidth, regionHeigh
         style={{
           background: color,
           borderColor: color,
+          color,
           top,
           left: outerPinLeft,
         }}
@@ -416,6 +417,7 @@ function RegionFramePort({ port, side, top, minTop = 8, regionWidth, regionHeigh
         style={{
           background: color,
           borderColor: color,
+          color,
           top,
           left: innerPinLeft,
         }}

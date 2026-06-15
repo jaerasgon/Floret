@@ -9,9 +9,34 @@ import { CURRENT_PATCH_VERSION, type PatchFile } from './schema';
 
 type Migration = (patch: PatchFile) => PatchFile;
 
+// v1 → v2: the vec2 arithmetic nodes were folded into the adaptive math
+// nodes (one polymorphic node per op). Rewrite the vec2 ops to their math
+// equivalent with `valueType: 'vec2'`, and remap their `vector` output handle
+// to the adaptive `result` handle. Operand handles (a/b/t) already match.
+const VEC2_TO_MATH: Record<string, string> = {
+  'vec2/add': 'math/add',
+  'vec2/sub': 'math/sub',
+  'vec2/mul': 'math/mul',
+  'vec2/lerp': 'math/lerp',
+};
+
 const migrations: Migration[] = [
-  // v1 → v2 (placeholder; uncomment + adapt when needed)
-  // (patch) => ({ ...patch, version: 2, /* renames, defaults, etc. */ }),
+  // v1 → v2
+  (patch) => {
+    const migratedIds = new Set<string>();
+    const nodes = patch.nodes.map((n) => {
+      const mapped = VEC2_TO_MATH[n.defType];
+      if (!mapped) return n;
+      migratedIds.add(n.id);
+      return { ...n, defType: mapped, params: { ...n.params, valueType: 'vec2' } };
+    });
+    const edges = patch.edges.map((e) =>
+      migratedIds.has(e.source) && e.sourceHandle === 'out-vector'
+        ? { ...e, sourceHandle: 'out-result' }
+        : e,
+    );
+    return { ...patch, version: 2, nodes, edges };
+  },
 ];
 
 export interface MigrateResult {

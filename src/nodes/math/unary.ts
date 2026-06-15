@@ -1,4 +1,5 @@
 import { registerNode } from '../registry';
+import { adaptiveUnaryInputs, adaptiveOutputs, adaptiveMap } from './_adaptive';
 
 const x = [{ name: 'x', type: 'number' as const, default: 0 }];
 
@@ -36,20 +37,28 @@ export const absNode = registerNode({
   type: 'math/abs',
   category: 'Math',
   label: 'Abs',
-  description: 'Absolute value of x.',
+  description: 'Absolute value of x (component-wise for vec2 / color).',
   inputs: x,
   outputs: [{ name: 'result', type: 'number' }],
-  compute: (v) => [Math.abs(v as number)],
+  defaultParams: { valueType: 'any' },
+  adaptiveType: true,
+  dynamicInputs: adaptiveUnaryInputs('x', 0),
+  dynamicOutputs: adaptiveOutputs,
+  compute: adaptiveMap(Math.abs),
 });
 
 export const negNode = registerNode({
   type: 'math/neg',
   category: 'Math',
   label: 'Neg',
-  description: 'Negate x.',
+  description: 'Negate x (component-wise for vec2 / color).',
   inputs: x,
   outputs: [{ name: 'result', type: 'number' }],
-  compute: (v) => [-(v as number)],
+  defaultParams: { valueType: 'any' },
+  adaptiveType: true,
+  dynamicInputs: adaptiveUnaryInputs('x', 0),
+  dynamicOutputs: adaptiveOutputs,
+  compute: adaptiveMap((v) => -v),
 });
 
 export const floorNode = registerNode({

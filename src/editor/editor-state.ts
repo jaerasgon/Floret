@@ -10,7 +10,9 @@ import {
   addEdge,
 } from '@xyflow/react';
 import { nodeRegistry } from '../nodes/registry';
-import { compileGraph, type EditorEdgeRef, type EditorNodeRef } from '../runtime/compile';
+import { getResolvedInputs } from '../nodes/types';
+import { compileGraph, parseLoopVarHandle, type EditorEdgeRef, type EditorNodeRef } from '../runtime/compile';
+import type { PortType } from '../runtime/types';
 import type { RuntimeGraph } from '../runtime/graph';
 import { paramStore } from '../runtime/param-store';
 import { audioRegistry } from '../runtime/audio';
@@ -363,8 +365,73 @@ export const useEditor = create<EditorState>((set, get) => {
     }
   };
 
+  /**
+   * Concrete value type of a node's port (or null when it's `any` / unknown).
+   * Adaptive peers report their latched `valueType`; region ports report their
+   * declared type; loop-var pins are number; everything else uses its def.
+   */
+  const _portConcreteType = (nodeId: string, handle: string | null | undefined): PortType | null => {
+    const parsed = parseHandle(handle);
+    if (!parsed) return null;
+    const n = get().nodes.find((x) => x.id === nodeId);
+    const def = n ? nodeRegistry.get(n.data.defType) : undefined;
+    if (!n || !def) return null;
+    let t: PortType | undefined;
+    if (def.adaptiveType) {
+      const vt = n.data.params.valueType;
+      t = vt === 'vec2' || vt === 'color' || vt === 'number' ? vt : undefined;
+    } else if (def.regionKind) {
+      if (parseLoopVarHandle(parsed.name)) t = 'number';
+      else t = n.data.ports?.find((p) => p.id === parsed.name)?.type
+        ?? def.inputs.find((p) => p.name === parsed.name)?.type;
+    } else if (parsed.kind === 'out') {
+      t = def.outputs.find((p) => p.name === parsed.name)?.type;
+    } else {
+      t = getResolvedInputs(def, n.data.params).find((p) => p.name === parsed.name)?.type;
+    }
+    if (!t || t === 'any') return null;
+    if (t === 'boolean') return 'number'; // number↔boolean coercion
+    return t === 'number' || t === 'vec2' || t === 'color' ? t : null;
+  };
+
+  /**
+   * Maintain the `valueType` latch on adaptive arithmetic nodes. First wire
+   * wins: while a node is `any`, the first edge that yields a concrete peer
+   * type (number / vec2 / color) latches it; later wires can't change it.
+   * When the last wire is removed, it resets to `any`. Idempotent — safe to
+   * run on every compile. Returns true if anything changed.
+   */
+  const _reconcileAdaptiveTypes = (): boolean => {
+    const s = get();
+    let changed = false;
+    const nextNodes = s.nodes.map((n) => {
+      const def = nodeRegistry.get(n.data.defType);
+      if (!def?.adaptiveType) return n;
+      const cur = (n.data.params.valueType as string | undefined) ?? 'any';
+      const touching = s.edges.filter((e) => e.source === n.id || e.target === n.id);
+      let next = cur;
+      if (touching.length === 0) {
+        next = 'any';
+      } else if (cur === 'any') {
+        for (const e of touching) {
+          const peer = e.source === n.id
+            ? _portConcreteType(e.target, e.targetHandle)   // our result → their input
+            : _portConcreteType(e.source, e.sourceHandle);  // their output → our operand
+          if (peer) { next = peer; break; }
+        }
+      }
+      if (next === cur) return n;
+      changed = true;
+      paramStore.setKey(n.id, 'valueType', next);
+      return { ...n, data: { ...n.data, params: { ...n.data.params, valueType: next } } };
+    });
+    if (changed) set({ nodes: nextNodes });
+    return changed;
+  };
+
   const _compile = () => {
     _pruneOrphanEdges();
+    _reconcileAdaptiveTypes();
     const { nodes, edges } = toEditorRefs(get());
     // Audio + image registry sync — drop entries for any node that no longer exists.
     const liveIds = new Set(nodes.map((n) => n.id));

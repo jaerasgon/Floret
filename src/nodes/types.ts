@@ -202,6 +202,15 @@ export interface NodeDef {
   hidden?: boolean;
 
   /**
+   * Adaptive (polymorphic) arithmetic node — its `valueType` param
+   * ('any' | 'number' | 'vec2' | 'color') latches to the type of the first
+   * wire attached (operand OR result) and resets to 'any' when the last wire
+   * is removed. The editor maintains the latch (see editor-state.ts); pins
+   * and compute follow `valueType`. See nodes/math/_adaptive.ts.
+   */
+  adaptiveType?: boolean;
+
+  /**
    * Region marker. Present on `region/foreach` (and later If/Cache).
    * Compile treats these as orchestrator nodes — they have dynamic
    * in/out arity (one port per splicer child) and `tick` dispatches into

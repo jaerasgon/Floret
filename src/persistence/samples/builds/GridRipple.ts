@@ -51,7 +51,9 @@ export function buildGridRipple() {
   const sin = node('gr_sin', 'math/sin', { x: 672, y: 344 }, {}, RID);
   const amp = node('gr_amp', 'math/mul', { x: 822, y: 342 }, { slotCount: 2, b: 22.62 }, RID);
   const offset = node('gr_offset', 'vec2/make', { x: 1041, y: 228 }, {}, RID);
-  const pos = node('gr_pos', 'vec2/add', { x: 1246, y: 76 }, {}, RID);
+  // Adaptive add, latched to vec2 (position + offset). Sample compiles bypass
+  // the editor's type-latch, so set valueType explicitly.
+  const pos = node('gr_pos', 'math/add', { x: 1246, y: 76 }, { valueType: 'vec2' }, RID);
   const stroke = node('gr_stroke', 'style/stroke', { x: 1196, y: 470 }, {}, RID);
   const rect = node('gr_rect', 'draw/rect', { x: 1481, y: 76 }, {}, RID);
 
@@ -74,7 +76,7 @@ export function buildGridRipple() {
       edge('gr_sin', 'result', 'gr_amp', 'a'),
       edge('gr_amp', 'result', 'gr_offset', 'y'),
       edge('gr_offset', 'vector', 'gr_pos', 'b'),
-      edge('gr_pos', 'vector', 'gr_rect', 'pos'),
+      edge('gr_pos', 'result', 'gr_rect', 'pos'),
       // Per-cell stroke colour: palette cycled to grid length, then shuffled
       edge('gr_palette', 'colors', 'gr_cycle', 'spread'),
       edge('gr_grid', 'positions', 'gr_count', 'spread'),

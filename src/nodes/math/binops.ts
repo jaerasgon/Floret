@@ -1,6 +1,9 @@
 import { registerNode } from '../registry';
 import { GroupNode } from '../../editor/nodes/GroupNode';
-import type { PortSpec } from '../types';
+import {
+  adaptiveSlots, adaptiveOutputs, adaptiveReduce,
+  reduceAdd, reduceSub, reduceMul, reduceDiv, reduceMin, reduceMax,
+} from './_adaptive';
 
 /**
  * Binary math ops, generalised to N inputs.
@@ -10,125 +13,86 @@ import type { PortSpec } from '../types';
  * uses. Default slotCount is 2, so existing patches behave identically
  * to the old strictly-binary form.
  *
- * Slot labels are alphabetic (a, b, c, …) so a 4-input Add reads as
- * `a + b + c + d`. Slots beyond `z` (slotCount > 26) are unlikely but
- * fall back to numeric labels.
+ * These six are also ADAPTIVE (polymorphic): a `valueType` param latches to
+ * the type of the first wire — number, vec2, or color — and every pin +
+ * the result follow it (component-wise arithmetic). 'any' until wired; the
+ * editor maintains the latch. See `_adaptive.ts`. Slot labels are alphabetic
+ * (a, b, c, …) so a 4-input Add reads as `a + b + c + d`.
  *
- * Non-associative ops (pow, mod, atan2) stay strictly binary — there's
- * no single sensible reading of `pow(a, b, c)`.
+ * Non-associative ops (pow, mod, atan2) stay strictly binary and number-only —
+ * there's no single sensible reading of `pow(a, b, c)` or `pow(vec2, vec2)`.
  */
-
-// Slot ports are named (and labelled) a, b, c, …, capping at 26 to keep
-// the naming letter-based. Existing patches that reference `a`/`b` on
-// the old strictly-binary form continue to work — slot 0 = `a`, slot 1 = `b`.
-const MAX_SLOTS = 26;
-
-function slotName(i: number): string {
-  return String.fromCharCode(97 + i);
-}
-
-function buildSlots(defaultValue: number) {
-  return (params: Record<string, unknown>): ReadonlyArray<PortSpec> => {
-    const n = Math.max(1, Math.min(MAX_SLOTS, Math.floor(Number(params.slotCount) || 2)));
-    const slots: PortSpec[] = [];
-    for (let i = 0; i < n; i++) {
-      const name = slotName(i);
-      slots.push({
-        name,
-        label: name,
-        type: 'number',
-        default: defaultValue,
-      });
-    }
-    return slots;
-  };
-}
-
 
 export const addNode = registerNode({
   type: 'math/add',
   category: 'Math',
   label: 'Add',
-  description: 'Sum all wired inputs.',
+  description: 'Sum all wired inputs (number, vec2, or color — adapts to what you plug in).',
   inputs: [
     { name: 'a', type: 'number', default: 0 },
     { name: 'b', type: 'number', default: 0 },
   ],
   outputs: [{ name: 'result', type: 'number' }],
-  defaultParams: { slotCount: 2 },
-  dynamicInputs: buildSlots(0),
+  defaultParams: { slotCount: 2, valueType: 'any' },
+  adaptiveType: true,
+  dynamicInputs: adaptiveSlots(0),
+  dynamicOutputs: adaptiveOutputs,
   component: GroupNode,
-  compute: (...vals) => {
-    let s = 0;
-    for (const v of vals) s += (v as number);
-    return [s];
-  },
+  compute: adaptiveReduce(reduceAdd),
 });
 
 export const subNode = registerNode({
   type: 'math/sub',
   category: 'Math',
   label: 'Sub',
-  description: 'Subtract subsequent inputs from the first.',
+  description: 'Subtract subsequent inputs from the first (number, vec2, or color).',
   inputs: [
     { name: 'a', type: 'number', default: 0 },
     { name: 'b', type: 'number', default: 0 },
   ],
   outputs: [{ name: 'result', type: 'number' }],
-  defaultParams: { slotCount: 2 },
-  dynamicInputs: buildSlots(0),
+  defaultParams: { slotCount: 2, valueType: 'any' },
+  adaptiveType: true,
+  dynamicInputs: adaptiveSlots(0),
+  dynamicOutputs: adaptiveOutputs,
   component: GroupNode,
-  compute: (...vals) => {
-    if (vals.length === 0) return [0];
-    let r = vals[0] as number;
-    for (let i = 1; i < vals.length; i++) r -= vals[i] as number;
-    return [r];
-  },
+  compute: adaptiveReduce(reduceSub),
 });
 
 export const mulNode = registerNode({
   type: 'math/mul',
   category: 'Math',
   label: 'Mul',
-  description: 'Multiply all wired inputs.',
+  description: 'Multiply all wired inputs (number, vec2, or color — component-wise).',
   inputs: [
     { name: 'a', type: 'number', default: 1 },
     { name: 'b', type: 'number', default: 1 },
   ],
   outputs: [{ name: 'result', type: 'number' }],
-  defaultParams: { slotCount: 2 },
-  dynamicInputs: buildSlots(1),
+  defaultParams: { slotCount: 2, valueType: 'any' },
+  adaptiveType: true,
+  dynamicInputs: adaptiveSlots(1),
+  dynamicOutputs: adaptiveOutputs,
   component: GroupNode,
-  compute: (...vals) => {
-    let p = 1;
-    for (const v of vals) p *= (v as number);
-    return [p];
-  },
+  compute: adaptiveReduce(reduceMul),
 });
 
 export const divNode = registerNode({
   type: 'math/div',
   category: 'Math',
   label: 'Div',
-  description: 'Divide the first input by subsequent ones. Division by zero yields 0.',
+  description: 'Divide the first input by subsequent ones (component-wise). Division by zero yields 0.',
   inputs: [
     { name: 'a', type: 'number', default: 1 },
     { name: 'b', type: 'number', default: 1 },
   ],
   outputs: [{ name: 'result', type: 'number' }],
-  defaultParams: { slotCount: 2 },
-  dynamicInputs: buildSlots(1),
+  defaultParams: { slotCount: 2, valueType: 'any' },
+  adaptiveType: true,
+  dynamicInputs: adaptiveSlots(1),
+  dynamicOutputs: adaptiveOutputs,
   component: GroupNode,
-  compute: (...vals) => {
-    if (vals.length === 0) return [0];
-    let r = vals[0] as number;
-    for (let i = 1; i < vals.length; i++) {
-      const d = vals[i] as number;
-      if (d === 0) return [0];
-      r /= d;
-    }
-    return [r];
-  },
+  compute: adaptiveReduce(reduceDiv),
 });
 
 export const modNode = registerNode({
@@ -166,48 +130,36 @@ export const minNode = registerNode({
   type: 'math/min',
   category: 'Math',
   label: 'Min',
-  description: 'Smallest of all wired inputs.',
+  description: 'Smallest of all wired inputs (component-wise for vec2 / color).',
   inputs: [
     { name: 'a', type: 'number', default: Infinity },
     { name: 'b', type: 'number', default: Infinity },
   ],
   outputs: [{ name: 'result', type: 'number' }],
-  defaultParams: { slotCount: 2 },
-  dynamicInputs: buildSlots(Infinity),
+  defaultParams: { slotCount: 2, valueType: 'any' },
+  adaptiveType: true,
+  dynamicInputs: adaptiveSlots(Infinity),
+  dynamicOutputs: adaptiveOutputs,
   component: GroupNode,
-  compute: (...vals) => {
-    if (vals.length === 0) return [0];
-    let m = vals[0] as number;
-    for (let i = 1; i < vals.length; i++) {
-      const v = vals[i] as number;
-      if (v < m) m = v;
-    }
-    return [m];
-  },
+  compute: adaptiveReduce(reduceMin),
 });
 
 export const maxNode = registerNode({
   type: 'math/max',
   category: 'Math',
   label: 'Max',
-  description: 'Largest of all wired inputs.',
+  description: 'Largest of all wired inputs (component-wise for vec2 / color).',
   inputs: [
     { name: 'a', type: 'number', default: -Infinity },
     { name: 'b', type: 'number', default: -Infinity },
   ],
   outputs: [{ name: 'result', type: 'number' }],
-  defaultParams: { slotCount: 2 },
-  dynamicInputs: buildSlots(-Infinity),
+  defaultParams: { slotCount: 2, valueType: 'any' },
+  adaptiveType: true,
+  dynamicInputs: adaptiveSlots(-Infinity),
+  dynamicOutputs: adaptiveOutputs,
   component: GroupNode,
-  compute: (...vals) => {
-    if (vals.length === 0) return [0];
-    let m = vals[0] as number;
-    for (let i = 1; i < vals.length; i++) {
-      const v = vals[i] as number;
-      if (v > m) m = v;
-    }
-    return [m];
-  },
+  compute: adaptiveReduce(reduceMax),
 });
 
 export const atan2Node = registerNode({

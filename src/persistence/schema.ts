@@ -8,7 +8,7 @@
  *   - Never repurpose a field; add a new one and migrate.
  */
 
-export const CURRENT_PATCH_VERSION = 1;
+export const CURRENT_PATCH_VERSION = 2;
 
 export interface SerializedNode {
   id: string;

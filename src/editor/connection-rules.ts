@@ -1,6 +1,6 @@
 import type { Connection, Edge, Node } from '@xyflow/react';
 import { nodeRegistry } from '../nodes/registry';
-import { getResolvedInputs } from '../nodes/types';
+import { getResolvedInputs, getResolvedOutputs } from '../nodes/types';
 import { parseLoopVarHandle } from '../runtime/compile';
 import type { PortType } from '../runtime/types';
 import type { FloretNodeData, RegionPortDescriptor } from './editor-state';
@@ -216,9 +216,14 @@ function resolvePort(
     // Fall through to static inputs (e.g. If.condition).
   }
 
+  const params = getParams(nodeId) ?? {};
   const portList = side === 'in'
-    ? getResolvedInputs(def, getParams(nodeId) ?? {})
-    : def.outputs;
+    ? getResolvedInputs(def, params)
+    // Outputs may be polymorphic (adaptive math, Repeat/Sort) — resolve them
+    // so an adaptive node's `result` reports its latched type, not the static
+    // fallback. dynamicOutputs that read upstreamTypes get an empty map here
+    // (good enough for connect-time validation).
+    : getResolvedOutputs(def, params, {});
   const found = portList.find((p) => p.name === handleName);
   if (!found) return null;
   return { type: found.type, kind: found.kind ?? 'single' };
@@ -326,6 +331,13 @@ export function getUpstreamTypes(
       }
       const port = data?.ports?.find((p) => p.id === srcParsed.name);
       if (port?.type) out[targetParsed.name] = port.type as PortType;
+      continue;
+    }
+    // Adaptive math nodes report their latched valueType as the output type
+    // so a downstream dynamicOutputs consumer echoes the right type.
+    if (def?.adaptiveType) {
+      const vt = (data?.params as Record<string, unknown> | undefined)?.valueType;
+      if (vt === 'vec2' || vt === 'color' || vt === 'number') out[targetParsed.name] = vt;
       continue;
     }
     const port = def?.outputs.find((p) => p.name === srcParsed.name);

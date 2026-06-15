@@ -66,6 +66,9 @@ export const addNode = registerNode({
   category: 'Vec2',
   label: 'Add',
   description: 'Add two vec2s component-wise.',
+  // Deprecated: folded into the adaptive math/add (valueType=vec2). Hidden
+  // from the palette; kept registered so pre-migration patches still load.
+  hidden: true,
   inputs: ab,
   outputs: [{ name: 'vector', type: 'vec2' }],
   compute: (a, b) => {
@@ -80,6 +83,7 @@ export const subNode = registerNode({
   category: 'Vec2',
   label: 'Sub',
   description: 'Subtract b from a component-wise.',
+  hidden: true, // Deprecated: folded into adaptive math/sub (valueType=vec2).
   inputs: ab,
   outputs: [{ name: 'vector', type: 'vec2' }],
   compute: (a, b) => {
@@ -94,6 +98,7 @@ export const mulNode = registerNode({
   category: 'Vec2',
   label: 'Mul',
   description: 'Component-wise multiply.',
+  hidden: true, // Deprecated: folded into adaptive math/mul (valueType=vec2).
   inputs: ab,
   outputs: [{ name: 'vector', type: 'vec2' }],
   compute: (a, b) => {
@@ -125,6 +130,7 @@ export const lerpNode = registerNode({
   category: 'Vec2',
   label: 'Lerp',
   description: 'Linear interpolate between a and b at t ∈ [0, 1] (component-wise).',
+  hidden: true, // Deprecated: folded into adaptive math/lerp (valueType=vec2).
   inputs: [
     { name: 'a', type: 'vec2', default: ZERO },
     { name: 'b', type: 'vec2', default: ZERO },

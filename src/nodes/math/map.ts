@@ -1,4 +1,5 @@
 import { registerNode } from '../registry';
+import { adaptiveLerpInputs, adaptiveLerpCompute, adaptiveOutputs } from './_adaptive';
 
 export const mapNode = registerNode({
   type: 'math/map',
@@ -28,19 +29,18 @@ export const lerpNode = registerNode({
   type: 'math/lerp',
   category: 'Math',
   label: 'Lerp',
-  description: 'Linear interpolate between a and b at t ∈ [0, 1].',
+  description: 'Linear interpolate between a and b at t ∈ [0, 1]. Adapts a/b to number, vec2, or color; t is always a number.',
   inputs: [
     { name: 'a', type: 'number', default: 0 },
     { name: 'b', type: 'number', default: 1 },
     { name: 't', type: 'number', default: 0 },
   ],
   outputs: [{ name: 'result', type: 'number' }],
-  compute: (a, b, t) => {
-    const av = a as number;
-    const bv = b as number;
-    const tv = t as number;
-    return [av + (bv - av) * tv];
-  },
+  defaultParams: { valueType: 'any' },
+  adaptiveType: true,
+  dynamicInputs: adaptiveLerpInputs,
+  dynamicOutputs: adaptiveOutputs,
+  compute: adaptiveLerpCompute,
 });
 
 export const clampNode = registerNode({

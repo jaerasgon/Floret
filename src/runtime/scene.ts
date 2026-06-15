@@ -102,6 +102,20 @@ export const LINE_DEFAULT_STYLE: ResolvedStyle = Object.freeze({
 });
 
 /**
+ * Neutral base a WIRED style chain resolves against — no paint at all, but
+ * keeps the structural defaults (stroke weight, caps, font, modes). A wired
+ * style fully defines the look: only what the chain sets gets painted, so a
+ * lone Stroke yields an outline with no fill, and a lone Fill yields a fill
+ * with no stroke. The shape's own default (white fill, line stroke, …) only
+ * applies when NOTHING is wired. See `resolveStyle`.
+ */
+export const NEUTRAL_STYLE: ResolvedStyle = Object.freeze({
+  ...DEFAULT_STYLE,
+  fill: null,
+  stroke: null,
+});
+
+/**
  * A 2D affine transform `[a, b, c, d, e, f]` matching the Canvas2D
  * `setTransform` convention:
  *   x' = a·x + c·y + e
@@ -328,15 +342,19 @@ export type Style = (base: ResolvedStyle) => ResolvedStyle;
 export const IDENTITY_STYLE: Style = (s) => s;
 
 /**
- * Resolve a Style (possibly null/undefined) against a base default.
- * Used by every draw node when materialising the shape.
+ * Resolve a Style for a shape. A WIRED style replaces the shape's default
+ * rather than layering on top of it: the chain resolves against
+ * `NEUTRAL_STYLE` (no paint), so it fully defines what gets drawn — a lone
+ * Stroke is outline-only, a lone Fill is fill-only. The `fallback` (the
+ * shape's own default, e.g. white fill / line stroke) is used ONLY when no
+ * style is wired.
  */
 export function resolveStyle(
   style: Style | null | undefined,
-  base: ResolvedStyle = DEFAULT_STYLE,
+  fallback: ResolvedStyle = DEFAULT_STYLE,
 ): ResolvedStyle {
-  if (!style) return base;
-  return style(base);
+  if (!style) return fallback;
+  return style(NEUTRAL_STYLE);
 }
 
 /** Compose two styles: applying `outer` after `inner`. */

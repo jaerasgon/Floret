@@ -1757,38 +1757,31 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
   opacity: 1;
 }
 
-.region-static-port {
+/* Top-left pin stack — static inputs (If.condition, ForEach.delay) and the
+   built-in loop variables (ForEach/Cache index/count/fraction) share one
+   compact, uniform label style so sizes and spacing match exactly. */
+.region-toppin-label {
   position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--fg-1);
-  padding-left: 6px;
-}
-.region-static-label {
-  background: var(--bg-1);
-  padding: 1px 5px;
-  border-radius: 2px;
-  border: 1px solid var(--border);
-}
-
-/* Built-in loop-variable pins (ForEach/Cache index/count/fraction). Small
-   number-typed source handles on the region's inner-left, each labelled. */
-.region-loopvar-label {
-  position: absolute;
-  left: 8px;
+  left: 12px;
+  transform: translateY(-50%);
+  box-sizing: border-box;
+  min-width: 44px;
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--port-number);
+  line-height: 1;
+  color: var(--fg-1);
   background: var(--bg-1);
-  padding: 0 4px;
+  padding: 2px 5px;
   border-radius: 2px;
   border: 1px solid var(--border);
+  white-space: nowrap;
   pointer-events: none;
 }
-.region-handle-loopvar {
+/* Loop-var labels tint toward the number port colour to signal their type. */
+.region-toppin-label-loopvar {
+  color: var(--port-number);
+}
+.region-handle-toppin {
   z-index: 5;
 }
 

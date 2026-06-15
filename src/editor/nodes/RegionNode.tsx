@@ -1,10 +1,11 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Handle, NodeResizer, Position, useUpdateNodeInternals, type NodeProps } from '@xyflow/react';
 import { useEditor, type FloretNodeData, type RegionPortDescriptor } from '../editor-state';
 import { nodeRegistry } from '../../nodes/registry';
 import { portColorVar } from '../connection-rules';
 import { getRegionStats } from '../../runtime/inspector';
-import { LOOP_VAR_NAMES, loopVarHandle } from '../../runtime/compile';
+import { LOOP_VAR_NAMES, loopVarHandle, type LoopVarName } from '../../runtime/compile';
+import type { PortType } from '../../runtime/types';
 
 /**
  * Region container — a translucent bordered rectangle that scopes a
@@ -38,6 +39,13 @@ const PORT_ROW_PITCH = 20;
 const PORT_TOP_OFFSET = 14;
 /** Where the tab itself begins, inset from the border. */
 const PORT_TAB_INSET = 4;
+// Top-left pin stack (static inputs like `delay` + built-in loop variables).
+// One uniform compact column anchored near the body's top edge.
+const TOP_PIN_START = 12;
+const TOP_PIN_PITCH = 16;
+/** Fixed x of the right-facing loop-var source handle. Clears the widest
+ *  loop-var label ("fraction", ~68px from the body's left edge). */
+const TOP_PIN_HANDLE_RIGHT = 78;
 // (Inner pin position is computed inline from PORT_TAB_INSET +
 // PORT_TAB_WIDTH − halfPill, see RegionFramePort below.)
 
@@ -88,6 +96,17 @@ export const RegionNode = memo(function RegionNode(props: NodeProps) {
   const ports: RegionPortDescriptor[] = nodeData.ports ?? [];
   const inputPorts = ports.filter((p) => p.direction === 'input');
   const outputPorts = ports.filter((p) => p.direction === 'output');
+
+  // Top-left pin stack: static NodeDef inputs (If.condition, ForEach.delay)
+  // followed by the built-in loop variables (ForEach/Cache). Rendered as one
+  // uniform compact column so labels share a size and spacing.
+  const hasLoopVars = def?.regionKind === 'foreach' || def?.regionKind === 'cache';
+  const topPins: Array<{ kind: 'in' | 'loopvar'; name: string; label: string; type: PortType }> = [
+    ...(def?.inputs ?? []).map((p) => ({ kind: 'in' as const, name: p.name, label: p.label ?? p.name, type: p.type })),
+    ...(hasLoopVars ? LOOP_VAR_NAMES.map((n) => ({ kind: 'loopvar' as const, name: n, label: n, type: 'number' as PortType })) : []),
+  ];
+  // Input frame ports must clear the top-pin block so they can't overlap it.
+  const minInputTop = topPins.length ? TOP_PIN_START + topPins.length * TOP_PIN_PITCH : PORT_TOP_OFFSET;
 
   // React Flow caches each handle's position on mount; dynamic ports
   // need an explicit re-measure or wires render at stale coordinates.
@@ -147,55 +166,40 @@ export const RegionNode = memo(function RegionNode(props: NodeProps) {
         <span className="region-type">{def?.type ?? ''}</span>
       </div>
 
-      {/* Static NodeDef inputs (e.g. If.condition). */}
-      {def?.inputs.map((p, i) => (
-        <div
-          key={`region-static-in-${p.name}`}
-          className="region-static-port"
-          style={{ left: 0, top: 12 + i * 20 }}
-          title={`${p.label ?? p.name} (${p.type})`}
-        >
-          <Handle
-            id={`in-${p.name}`}
-            type="target"
-            position={Position.Left}
-            style={{ background: portColorVar(p.type), borderColor: portColorVar(p.type) }}
-          />
-          <span className="region-static-label">{p.label ?? p.name}</span>
-        </div>
-      ))}
-
-      {/* Built-in loop variables — number-typed inner sources on
-          ForEach/Cache regions. Wire them for per-item stagger / gradients. */}
-      {(def?.regionKind === 'foreach' || def?.regionKind === 'cache') &&
-        LOOP_VAR_NAMES.map((name, i) => {
-          const lvTop = 34 + i * 18;
-          return (
-            <div key={`loopvar-${name}`} className="region-loopvar-port">
-              <span
-                className="region-loopvar-label"
-                style={{ top: lvTop - 7 }}
-                title={`${name} (number) — per-iteration loop variable`}
-              >
-                {name}
-              </span>
-              <Handle
-                id={`out-${loopVarHandle(name)}`}
-                type="source"
-                position={Position.Right}
-                className="region-handle region-handle-loopvar"
-                style={{ background: 'var(--port-number)', borderColor: 'var(--port-number)', top: lvTop, left: 56 }}
-              />
-            </div>
-          );
-        })}
+      {/* Top-left pin stack — static inputs (If.condition / ForEach.delay)
+          then the built-in loop variables (index / count / fraction). One
+          uniform compact column; loop vars are number-typed inner sources. */}
+      {topPins.map((pin, i) => {
+        const top = TOP_PIN_START + i * TOP_PIN_PITCH;
+        const isIn = pin.kind === 'in';
+        const color = isIn ? portColorVar(pin.type) : 'var(--port-number)';
+        return (
+          <Fragment key={`toppin-${pin.kind}-${pin.name}`}>
+            <span
+              className={`region-toppin-label region-toppin-label-${pin.kind}`}
+              style={{ top }}
+              title={isIn ? `${pin.label} (${pin.type})` : `${pin.label} (number) — per-iteration loop variable`}
+            >
+              {pin.label}
+            </span>
+            <Handle
+              id={isIn ? `in-${pin.name}` : `out-${loopVarHandle(pin.name as LoopVarName)}`}
+              type={isIn ? 'target' : 'source'}
+              position={isIn ? Position.Left : Position.Right}
+              className="region-handle region-handle-toppin"
+              style={{ top, left: isIn ? 0 : TOP_PIN_HANDLE_RIGHT, background: color, borderColor: color }}
+            />
+          </Fragment>
+        );
+      })}
 
       {inputPorts.map((p, i) => (
         <RegionFramePort
           key={p.id}
           port={p}
           side="left"
-          top={p.y ?? PORT_TOP_OFFSET + i * PORT_ROW_PITCH}
+          top={Math.max(p.y ?? minInputTop + i * PORT_ROW_PITCH, minInputTop)}
+          minTop={minInputTop}
           regionWidth={w}
           regionHeight={h}
           selected={selectedKeys.has(`${id}#${p.id}`)}
@@ -228,6 +232,9 @@ interface RegionFramePortProps {
   port: RegionPortDescriptor;
   side: 'left' | 'right';
   top: number;
+  /** Lowest y (px) this port may be dragged to — keeps input ports below
+   *  the top-pin block so they can't overlap it. Defaults to 8. */
+  minTop?: number;
   regionWidth: number;
   regionHeight: number;
   /** True when this Port Pill is in the editor's port-selection set. */
@@ -240,7 +247,7 @@ interface RegionFramePortProps {
   onSelect: (additive: boolean) => void;
 }
 
-function RegionFramePort({ port, side, top, regionWidth, regionHeight, selected, onRemove, onRename, onDragY, onSelect }: RegionFramePortProps) {
+function RegionFramePort({ port, side, top, minTop = 8, regionWidth, regionHeight, selected, onRemove, onRename, onDragY, onSelect }: RegionFramePortProps) {
   const color = portColorVar(port.type);
   const isInput = port.direction === 'input';
 
@@ -320,7 +327,7 @@ function RegionFramePort({ port, side, top, regionWidth, regionHeight, selected,
       }
       if (!crossed) return;
       const dy = rawDy / zoom;
-      const next = Math.max(8, Math.min(regionHeight - 8, startTop + dy));
+      const next = Math.max(minTop, Math.min(regionHeight - 8, startTop + dy));
       onDragY(next);
     };
     const onMouseUp = () => {

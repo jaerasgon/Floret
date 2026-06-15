@@ -50,9 +50,11 @@ const TOP_PIN_PITCH = 16;
 // the dot lands at the intended inset (tuned against the live canvas).
 const TOP_PIN_LABEL_LEFT = 12;
 const TOP_PIN_LABEL_WIDTH = 72;
-/** style.left for an input handle (Position.Left) → inside the pill's left end. */
-const TOP_PIN_HANDLE_LEFT = TOP_PIN_LABEL_LEFT + 5;
-/** style.left for a loop-var handle (Position.Right) → inside the pill's right end. */
+/** style.left for an input handle (Position.Left) → centred on the pill's
+ *  left rounded end (halfPill = height/2 = 7px inset), like the frame pill. */
+const TOP_PIN_HANDLE_LEFT = TOP_PIN_LABEL_LEFT + 7;
+/** style.left for a loop-var handle (Position.Right) → centred on the pill's
+ *  right rounded end (7px inset). */
 const TOP_PIN_HANDLE_RIGHT = TOP_PIN_LABEL_LEFT + TOP_PIN_LABEL_WIDTH - 15;
 // (Inner pin position is computed inline from PORT_TAB_INSET +
 // PORT_TAB_WIDTH − halfPill, see RegionFramePort below.)

@@ -1773,18 +1773,18 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
   left: 12px;
   transform: translateY(-50%);
   box-sizing: border-box;
-  /* Fixed width so every pill lines up regardless of label length. */
+  /* Match the frame-port pill (.region-port-tab) exactly: same height,
+     background, border, and radius — so the top-pins read as the same
+     component. Fixed width keeps them lined up; left-aligned text starts
+     at the same x for all. */
   width: 72px;
+  height: 14px;
   font-family: var(--font-mono);
   font-size: 9px;
-  line-height: 1;
+  line-height: 12px;
   color: var(--fg-1);
-  background: var(--bg-1);
-  /* Uniform padding + left-aligned text so every label's text starts at the
-     same x — the left handle (delay) and right handles (loop vars) both sit
-     in the padding without shifting the text. */
-  padding: 3px 12px;
-  /* Pill shape — matches the frame-port pills for visual consistency. */
+  background: var(--bg-2);
+  padding: 0 12px;
   border-radius: 999px;
   border: 1px solid var(--border);
   text-align: left;

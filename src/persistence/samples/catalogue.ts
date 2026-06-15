@@ -3,6 +3,7 @@ import { serializePatch } from '../serialize';
 import { spaced, type Sample } from './helpers';
 import { buildGridArt, buildIslamicPattern, buildKaleidoscope, buildLissajous } from './builds/Curves';
 import { buildForceField, buildNoiseWave, buildRippleField } from './builds/Fields';
+import { buildGridRipple } from './builds/GridRipple';
 import { buildFFTBloom, buildToneSurface } from './builds/Sound';
 import { buildPaintTrail, buildRandomWalkTrail } from './builds/Feedback';
 import { buildDatamosh, buildPhotoMosaic } from './builds/Image';
@@ -482,6 +483,14 @@ export const SAMPLES: Sample[] = [
   },
 
   // ── Fields ─────────────────────────────────────────────
+  {
+    id: 'grid-ripple',
+    name: 'Grid Ripple',
+    category: 'Fields',
+    description: 'A grid of stroked squares offset by a radial sin ripple, driven through a ForEach with per-iteration delay. Stroke colours cycle a palette across the cells.',
+    // Authored from real editor coordinates — no spaced() rescale.
+    build: () => buildGridRipple(),
+  },
   {
     id: 'ripple-field',
     name: 'Ripple Field',

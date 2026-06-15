@@ -23,6 +23,10 @@ import { Tooltip } from '../app/shell/Tooltip';
 export function HelpPanel() {
   const autoJump = usePrefs((s) => s.autoJumpHelp);
   const setPref = usePrefs((s) => s.set);
+  // Toggled from the toolbar; when off the panel doesn't mount at all
+  // (App drops it from the dock layout — see the visibility effects there).
+  const visible = usePrefs((s) => s.helpVisible);
+  if (!visible) return null;
   return (
     <Panel
       id="help"

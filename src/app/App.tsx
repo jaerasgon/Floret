@@ -15,6 +15,7 @@ import { useDock } from '../editor/dock/dockStore';
 import { useGlobalShortcuts } from './shortcuts';
 import { useEditor } from '../editor/editor-state';
 import { useLibraryUI } from './libraryUI';
+import { usePrefs } from './prefs';
 
 export function App() {
   useGlobalShortcuts();
@@ -49,6 +50,17 @@ export function App() {
   useEffect(() => {
     if (!libraryVisible) useDock.getState().removePanel('library');
   }, [libraryVisible]);
+
+  // Same treatment for the Nodes palette and Help panel — both toggle from
+  // the toolbar and drop out of the dock layout when hidden.
+  const paletteVisible = usePrefs((s) => s.paletteVisible);
+  useEffect(() => {
+    if (!paletteVisible) useDock.getState().removePanel('palette');
+  }, [paletteVisible]);
+  const helpVisible = usePrefs((s) => s.helpVisible);
+  useEffect(() => {
+    if (!helpVisible) useDock.getState().removePanel('help');
+  }, [helpVisible]);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 880px)');

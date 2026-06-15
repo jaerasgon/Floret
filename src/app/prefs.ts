@@ -24,6 +24,11 @@ export interface Prefs {
   /** Help panel auto-tracks the currently selected node. When off, the
    *  panel is "pinned" to whatever was last picked via the search box. */
   autoJumpHelp: boolean;
+  /** Nodes (palette) panel visible. Toggled from the toolbar; when off the
+   *  panel is dropped from the dock layout (re-docks on show). */
+  paletteVisible: boolean;
+  /** Help panel visible. Same toolbar-toggle treatment as the palette. */
+  helpVisible: boolean;
 }
 
 const LS_KEY = 'floret.prefs.v1';
@@ -33,6 +38,8 @@ const DEFAULTS: Prefs = {
   autoGrowRegions: true,
   proMode: false,
   autoJumpHelp: true,
+  paletteVisible: true,
+  helpVisible: true,
 };
 
 function loadFromStorage(): Prefs {
@@ -64,6 +71,8 @@ usePrefs.subscribe((s) => {
   prefsSnapshot.autoGrowRegions = s.autoGrowRegions;
   prefsSnapshot.proMode = s.proMode;
   prefsSnapshot.autoJumpHelp = s.autoJumpHelp;
+  prefsSnapshot.paletteVisible = s.paletteVisible;
+  prefsSnapshot.helpVisible = s.helpVisible;
   // Persist whole shape on every change. Small payload, infrequent
   // writes — no batching required.
   saveJSON(LS_KEY, {
@@ -71,5 +80,7 @@ usePrefs.subscribe((s) => {
     autoGrowRegions: s.autoGrowRegions,
     proMode: s.proMode,
     autoJumpHelp: s.autoJumpHelp,
+    paletteVisible: s.paletteVisible,
+    helpVisible: s.helpVisible,
   });
 });

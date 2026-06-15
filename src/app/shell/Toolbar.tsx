@@ -6,6 +6,8 @@ import {
   Waves,
   Sparkles,
   Library as LibraryIcon,
+  Boxes as NodesIcon,
+  HelpCircle as HelpIcon,
 } from 'lucide-react';
 import { useAppStore } from '../store';
 import { usePrefs } from '../prefs';
@@ -28,6 +30,8 @@ export function Toolbar() {
   const setNodes = useEditor((s) => s.setNodes);
   const libraryVisible = useLibraryUI((s) => s.visible);
   const toggleLibrary = useLibraryUI((s) => s.toggleVisible);
+  const paletteVisible = usePrefs((s) => s.paletteVisible);
+  const helpVisible = usePrefs((s) => s.helpVisible);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const tidy = () => {
@@ -64,6 +68,26 @@ export function Toolbar() {
           aria-label="Toggle library"
         >
           <LibraryIcon size={14} strokeWidth={1.6} />
+        </button>
+      </Tooltip>
+      <Tooltip label={paletteVisible ? 'Hide nodes' : 'Show nodes'}>
+        <button
+          className={`tb-icon-btn tb-toggle${paletteVisible ? ' active' : ''}`}
+          onClick={() => setPref('paletteVisible', !paletteVisible)}
+          aria-pressed={paletteVisible}
+          aria-label="Toggle nodes panel"
+        >
+          <NodesIcon size={14} strokeWidth={1.6} />
+        </button>
+      </Tooltip>
+      <Tooltip label={helpVisible ? 'Hide help' : 'Show help'}>
+        <button
+          className={`tb-icon-btn tb-toggle${helpVisible ? ' active' : ''}`}
+          onClick={() => setPref('helpVisible', !helpVisible)}
+          aria-pressed={helpVisible}
+          aria-label="Toggle help panel"
+        >
+          <HelpIcon size={14} strokeWidth={1.6} />
         </button>
       </Tooltip>
       <div className="spacer" />

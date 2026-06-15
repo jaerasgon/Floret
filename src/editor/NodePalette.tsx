@@ -4,6 +4,7 @@ import type { NodeDef } from '../nodes/types';
 import { Panel } from './panel/Panel';
 import { useOverlay } from './overlay-store';
 import { useFavorites } from './favorites';
+import { usePrefs } from '../app/prefs';
 
 /** Drawable region kinds (subpatches aren't drag-sized). */
 function drawRegionKind(def: NodeDef): 'foreach' | 'if' | 'cache' | null {
@@ -17,6 +18,10 @@ function drawRegionKind(def: NodeDef): 'foreach' | 'if' | 'cache' | null {
  * collapse it from a single uniform chrome.
  */
 export function NodePalette() {
+  // Toggled from the toolbar; when off the panel doesn't mount at all
+  // (App drops it from the dock layout — see the visibility effects there).
+  const visible = usePrefs((s) => s.paletteVisible);
+  if (!visible) return null;
   return (
     <Panel
       id="palette"

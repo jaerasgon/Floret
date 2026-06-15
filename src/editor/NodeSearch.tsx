@@ -81,15 +81,16 @@ export function NodeSearch() {
       );
     };
     const q = query.trim().toLowerCase();
+    // Match each whitespace-separated token against the node's combined
+    // searchable text, so a multi-word query like "repeat until" finds a
+    // node whose description reads "Repeat a spread … until …" — not just
+    // single-word or contiguous-phrase queries.
+    const tokens = q.split(/\s+/).filter(Boolean);
     const matches = all.filter((d) => {
       if (!compat(d)) return false;
-      if (!q) return true;
-      return (
-        d.label.toLowerCase().includes(q) ||
-        d.type.toLowerCase().includes(q) ||
-        d.category.toLowerCase().includes(q) ||
-        (d.description?.toLowerCase().includes(q) ?? false)
-      );
+      if (!tokens.length) return true;
+      const hay = `${d.label} ${d.type} ${d.category} ${d.description ?? ''}`.toLowerCase();
+      return tokens.every((t) => hay.includes(t));
     });
     // Sort: prefix matches first, then includes, then alphabetic.
     matches.sort((a, b) => {

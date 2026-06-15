@@ -1,5 +1,5 @@
 import type { FloretEdge, FloretNode } from '../../editor/editor-state';
-import { migrateLegacyEdges } from '../serialize';
+import { migrateLegacyEdges, migrateLegacyDrawCoords } from '../serialize';
 
 export interface Sample {
   id: string;
@@ -105,11 +105,15 @@ export function spaced(result: { nodes: FloretNode[]; edges: FloretEdge[] }) {
       }
     }
   }
-  // Samples were authored before the style-node output rename
-  // (`out` → `style`). Funnel them through the same handle migration
-  // the save loader uses so legacy `edge(fill, 'out', shape, 'style')`
-  // calls keep wiring up correctly without touching every sample.
+  // Samples were authored against pre-rename port names and the old draw
+  // x/y coordinate inputs. Funnel them through the same migrations the save
+  // loader uses: handle renames first (out→semantic, etc.), then the
+  // structural x/y → pos (vec2) fix that synthesises a vec2/make. Keeps the
+  // sample sources terse instead of rewriting every legacy edge by hand.
   result.edges = migrateLegacyEdges(result.nodes, result.edges);
+  const coords = migrateLegacyDrawCoords(result.nodes, result.edges);
+  result.nodes = coords.nodes;
+  result.edges = coords.edges;
   return result;
 }
 

@@ -108,7 +108,11 @@ export function deserializePatch(patch: PatchFile): { nodes: FloretNode[]; edges
     sourceHandle: e.sourceHandle,
     targetHandle: e.targetHandle,
   }));
-  return { nodes, edges: pruneDeadEdges(nodes, migrateLegacyEdges(nodes, edges)) };
+  // Handle renames first, then the structural draw x/y → pos (vec2) fix
+  // (which adds vec2/make nodes), then prune anything still dangling.
+  const renamed = migrateLegacyEdges(nodes, edges);
+  const coords = migrateLegacyDrawCoords(nodes, renamed);
+  return { nodes: coords.nodes, edges: pruneDeadEdges(coords.nodes, coords.edges) };
 }
 
 /**
@@ -154,33 +158,148 @@ export function pruneDeadEdges(
   );
 }
 
+/** Explicit input-port renames, keyed by defType: `{ oldName: newName }`.
+ *  For pure renames only (same shape) — structural changes (e.g. draw nodes'
+ *  x/y numbers → a single `pos` vec2) can't be auto-migrated and live in the
+ *  sample/build sources instead. */
+const INPUT_RENAMES: Record<string, Record<string, string>> = {
+  'spread/randomize': { value: 'source' },
+  'spread/repeat': { value: 'source' },
+};
+
 /**
- * Per-load handle migration. Today only one rule is in flight:
- *   `out-out` → `out-style` when the source node is a style node.
+ * Per-load handle migration for legacy port names. Saved patches and samples
+ * authored before the great pin-rename reference outdated handles; React Flow
+ * silently drops edges with unknown handles, so we remap them here. Covers:
  *
- * Background: style nodes (Fill / Stroke / NoFill / RectMode / …) used
- * to expose their single output as `name: 'out'`. The user-facing
- * convention now is that the output matches the consumer's input name
- * — and shapes take `style` — so every style node's output was renamed
- * to `style`. Any saved patch or sample that wired `out-out` against
- * one of those nodes would silently disconnect on load without this
- * fixup, since React Flow drops edges that reference unknown handles.
+ *   - **Outputs** — the `out → semantic name` sweep (math `sum`/`product`/… →
+ *     `result`, draw `layer` → `shape`, style `out` → `style`, etc.). Any
+ *     source handle that doesn't match a CURRENT output AND whose node has
+ *     exactly one output is remapped to that output. (Every renamed output is
+ *     on a single-output node.)
+ *   - **Inputs** — explicit per-type renames (see INPUT_RENAMES).
  *
- * Pure — returns a new edge list. Safe to call multiple times.
+ * Pure — returns a new edge list. Safe to call multiple times (idempotent:
+ * once a handle matches the current port it's left alone).
  */
 export function migrateLegacyEdges(
   nodes: ReadonlyArray<FloretNode>,
   edges: ReadonlyArray<FloretEdge>,
 ): FloretEdge[] {
-  const styleSources = new Set<string>();
+  const defTypeById = new Map<string, string>();
   for (const n of nodes) {
     const t = (n.data as { defType?: string } | undefined)?.defType;
-    if (t && t.startsWith('style/')) styleSources.add(n.id);
+    if (t) defTypeById.set(n.id, t);
   }
+  const defFor = (id: string) => {
+    const t = defTypeById.get(id);
+    return t ? nodeRegistry.get(t) : undefined;
+  };
+
   return edges.map((e) => {
-    if (e.sourceHandle === 'out-out' && styleSources.has(e.source)) {
-      return { ...e, sourceHandle: 'out-style' };
+    let sourceHandle = e.sourceHandle;
+    let targetHandle = e.targetHandle;
+
+    // ── Output remap ──
+    const src = parseHandle(sourceHandle);
+    if (src && src.kind === 'out') {
+      const def = defFor(e.source);
+      // Region outputs are dynamic (frame ports) — never remap those.
+      if (def && !def.regionKind && def.outputs.length > 0) {
+        const known = def.outputs.some((p) => p.name === src.name);
+        if (!known && def.outputs.length === 1) {
+          sourceHandle = `out-${def.outputs[0]!.name}`;
+        }
+      }
     }
-    return e;
+
+    // ── Input remap (explicit renames) ──
+    const dst = parseHandle(targetHandle);
+    if (dst && dst.kind === 'in') {
+      const t = defTypeById.get(e.target);
+      const rename = t ? INPUT_RENAMES[t]?.[dst.name] : undefined;
+      if (rename) targetHandle = `in-${rename}`;
+    }
+
+    return sourceHandle === e.sourceHandle && targetHandle === e.targetHandle
+      ? e
+      : { ...e, sourceHandle, targetHandle };
   });
+}
+
+/**
+ * Legacy draw-coordinate migration. Draw nodes used to take separate number
+ * `x`/`y` inputs; they now take a single `pos` vec2 (and Line takes `a`/`b`
+ * vec2 instead of `x1,y1`/`x2,y2`). This can't be a handle rename — two number
+ * inputs collapse into one vec2 — so for any node still wired (or carrying
+ * constant portValues) on the legacy coord inputs we synthesise a `vec2/make`
+ * that feeds the new vec2 input.
+ *
+ * Returns a new {nodes, edges}; safe to run multiple times (a node already on
+ * the vec2 input with no legacy coord signal is left alone).
+ */
+const LEGACY_COORD_GROUPS: Record<string, ReadonlyArray<{ out: string; x: string; y: string }>> = {
+  'draw/rect': [{ out: 'pos', x: 'x', y: 'y' }],
+  'draw/ellipse': [{ out: 'pos', x: 'x', y: 'y' }],
+  'draw/image': [{ out: 'pos', x: 'x', y: 'y' }],
+  'draw/text': [{ out: 'pos', x: 'x', y: 'y' }],
+  'draw/walker-cluster': [{ out: 'pos', x: 'x', y: 'y' }],
+  'draw/line': [{ out: 'a', x: 'x1', y: 'y1' }, { out: 'b', x: 'x2', y: 'y2' }],
+};
+
+export function migrateLegacyDrawCoords(
+  nodes: ReadonlyArray<FloretNode>,
+  edges: ReadonlyArray<FloretEdge>,
+): { nodes: FloretNode[]; edges: FloretEdge[] } {
+  const outNodes: FloretNode[] = [...nodes];
+  const outEdges: FloretEdge[] = edges.map((e) => ({ ...e }));
+  let seq = 0;
+
+  const constCoord = (n: FloretNode, key: string): number | undefined => {
+    const pv = (n.data as { portValues?: Record<string, unknown> }).portValues;
+    if (pv && typeof pv[key] === 'number') return pv[key] as number;
+    const p = n.data.params as Record<string, unknown> | undefined;
+    if (p && typeof p[key] === 'number') return p[key] as number;
+    return undefined;
+  };
+
+  for (const n of nodes) {
+    const groups = LEGACY_COORD_GROUPS[(n.data as { defType?: string }).defType ?? ''];
+    if (!groups) continue;
+    for (const g of groups) {
+      const posWired = outEdges.some((e) => e.target === n.id && e.targetHandle === `in-${g.out}`);
+      const xi = outEdges.findIndex((e) => e.target === n.id && e.targetHandle === `in-${g.x}`);
+      const yi = outEdges.findIndex((e) => e.target === n.id && e.targetHandle === `in-${g.y}`);
+      const cx = constCoord(n, g.x);
+      const cy = constCoord(n, g.y);
+      // Nothing legacy to migrate, or the new vec2 input is already wired.
+      if (posWired || (xi < 0 && yi < 0 && cx === undefined && cy === undefined)) continue;
+
+      const makeId = `${n.id}-xy${seq++}`;
+      const cxv = cx ?? 0;
+      const cyv = cy ?? 0;
+      outNodes.push({
+        id: makeId,
+        type: 'floret',
+        position: { x: (n.position?.x ?? 0) - 60, y: n.position?.y ?? 0 },
+        data: {
+          defType: 'vec2/make',
+          params: { x: cxv, y: cyv },
+          portValues: { x: cxv, y: cyv },
+        },
+        ...(n.parentId ? { parentId: n.parentId, extent: 'parent' as const } : {}),
+      } as FloretNode);
+
+      if (xi >= 0) outEdges[xi] = { ...outEdges[xi]!, target: makeId, targetHandle: 'in-x' };
+      if (yi >= 0) outEdges[yi] = { ...outEdges[yi]!, target: makeId, targetHandle: 'in-y' };
+      outEdges.push({
+        id: `e_xy_${makeId}`,
+        source: makeId,
+        sourceHandle: 'out-vector',
+        target: n.id,
+        targetHandle: `in-${g.out}`,
+      });
+    }
+  }
+  return { nodes: outNodes, edges: outEdges };
 }

@@ -1069,6 +1069,15 @@ function CanvasInner() {
         selectionOnDrag
         selectionMode={SelectionMode.Full}
         panActivationKeyCode="Alt"
+        // Trackpad navigation (design-tool feel):
+        //   - two-finger move → pan (panOnScroll)
+        //   - pinch          → zoom (zoomOnPinch, RF default)
+        //   - ⌘/Ctrl + scroll → zoom (zoomActivationKeyCode)
+        // zoomOnScroll is turned off so a plain two-finger scroll pans
+        // instead of zooming.
+        panOnScroll
+        zoomOnScroll={false}
+        zoomActivationKeyCode={['Meta', 'Control']}
         // React Flow's default minZoom is 0.5; halve it so the user can
         // pull back far enough to see large patches (sprawling sample
         // graphs, subpatch expansions) in their entirety.

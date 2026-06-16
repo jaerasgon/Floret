@@ -408,7 +408,22 @@ export const useEditor = create<EditorState>((set, get) => {
       const def = nodeRegistry.get(n.data.defType);
       if (!def?.adaptiveType) return n;
       const cur = (n.data.params.valueType as string | undefined) ?? 'any';
-      const touching = s.edges.filter((e) => e.source === n.id || e.target === n.id);
+      // Only the ADAPTIVE ports drive the latch — fixed-number controls
+      // (lerp's `t`, motion's `rate`/`stiffness`/`damping`) must not. Detect
+      // them by diffing the resolved inputs across two value-types: an input
+      // that changes type is adaptive. The single `result` output is adaptive.
+      const insA = getResolvedInputs(def, { ...n.data.params, valueType: 'number' });
+      const insB = getResolvedInputs(def, { ...n.data.params, valueType: 'vec2' });
+      const adaptiveIns = new Set<string>();
+      insA.forEach((p, i) => { if (insB[i] && insB[i]!.type !== p.type) adaptiveIns.add(p.name); });
+      const touching = s.edges.filter((e) => {
+        if (e.source === n.id) return true; // result output follows valueType
+        if (e.target === n.id) {
+          const p = parseHandle(e.targetHandle);
+          return !!p && adaptiveIns.has(p.name);
+        }
+        return false;
+      });
       let next = cur;
       if (touching.length === 0) {
         next = 'any';

@@ -1,7 +1,23 @@
 import { registerNode } from '../registry';
-import type { NodeParamContext, PortValue } from '../types';
+import type { NodeParamContext, PortSpec, PortValue } from '../types';
 import { frameCtxStore } from '../../runtime/frame-ctx';
 import { applyEase, expSmooth, integrateSpring, EASING_NAMES } from './_shared';
+import {
+  adaptiveOutputs, portTypeForValueType, kindForValueType, identityValue,
+  kindOf, componentsOf, fromComponents,
+} from '../math/_adaptive';
+
+/** dynamicInputs for a motion node: one adaptive `value` operand (follows
+ *  valueType) followed by fixed number control inputs. */
+function motionInputs(controls: ReadonlyArray<{ name: string; default: number }>) {
+  return (params: Record<string, unknown>): ReadonlyArray<PortSpec> => {
+    const kind = kindForValueType(params.valueType);
+    return [
+      { name: 'value', type: portTypeForValueType(params.valueType), default: identityValue(kind, 0) },
+      ...controls.map((c) => ({ name: c.name, type: 'number' as const, default: c.default })),
+    ];
+  };
+}
 
 /**
  * Motion category — easing, springs, smoothing, and edge triggers. The
@@ -17,25 +33,31 @@ export const smoothNode = registerNode({
   type: 'motion/smooth',
   category: 'Motion',
   label: 'Smooth',
-  description: 'Exponentially ease toward `value`. Higher `rate` = snappier. Frame-rate independent.',
+  description: 'Exponentially ease toward `value` (number, vec2, or color). Higher `rate` = snappier; frame-rate independent.',
   inputs: [
     { name: 'value', type: 'number', default: 0 },
     { name: 'rate', type: 'number', default: 8 },
   ],
   outputs: [{ name: 'result', type: 'number' }],
+  defaultParams: { valueType: 'any' },
+  adaptiveType: true,
+  dynamicInputs: motionInputs([{ name: 'rate', default: 8 }]),
+  dynamicOutputs: adaptiveOutputs,
   effectful: true,
   computeRaw: (inputs: PortValue[], params: NodeParamContext): PortValue[] => {
-    const bag = params as unknown as { __smooth?: { current: number } };
-    const target = Number(inputs[0]?.[0] ?? 0);
+    const bag = params as unknown as { __smooth?: { current: number[] } };
+    const target = inputs[0]?.[0];
     const rate = Number(inputs[1]?.[0] ?? 8);
     const dt = frameCtxStore.snapshot().dt;
-    if (!bag.__smooth || !Number.isFinite(bag.__smooth.current)) {
-      bag.__smooth = { current: target };
-      return [[target]];
+    const kind = kindOf(target) ?? 'number';
+    const tc = componentsOf(target, kind);
+    if (!bag.__smooth || bag.__smooth.current.length !== tc.length) {
+      bag.__smooth = { current: tc.slice() };
+      return [[fromComponents(tc, kind)]];
     }
-    const next = expSmooth(bag.__smooth.current, target, dt, rate);
+    const next = bag.__smooth.current.map((c, i) => expSmooth(c, tc[i] ?? 0, dt, rate));
     bag.__smooth.current = next;
-    return [[next]];
+    return [[fromComponents(next, kind)]];
   },
 });
 
@@ -43,27 +65,39 @@ export const springNode = registerNode({
   type: 'motion/spring',
   category: 'Motion',
   label: 'Spring',
-  description: 'Spring-follow `value` with stiffness + damping — overshoots and settles.',
+  description: 'Spring-follow `value` (number, vec2, or color) with stiffness + damping — overshoots and settles.',
   inputs: [
     { name: 'value', type: 'number', default: 0 },
     { name: 'stiffness', type: 'number', default: 120 },
     { name: 'damping', type: 'number', default: 14 },
   ],
   outputs: [{ name: 'result', type: 'number' }],
+  defaultParams: { valueType: 'any' },
+  adaptiveType: true,
+  dynamicInputs: motionInputs([{ name: 'stiffness', default: 120 }, { name: 'damping', default: 14 }]),
+  dynamicOutputs: adaptiveOutputs,
   effectful: true,
   computeRaw: (inputs: PortValue[], params: NodeParamContext): PortValue[] => {
-    const bag = params as unknown as { __spring?: { value: number; vel: number } };
-    const target = Number(inputs[0]?.[0] ?? 0);
+    const bag = params as unknown as { __spring?: { value: number[]; vel: number[] } };
+    const target = inputs[0]?.[0];
     const k = Number(inputs[1]?.[0] ?? 120);
     const damp = Number(inputs[2]?.[0] ?? 14);
     const dt = frameCtxStore.snapshot().dt;
-    if (!bag.__spring || !Number.isFinite(bag.__spring.value)) {
-      bag.__spring = { value: target, vel: 0 };
-      return [[target]];
+    const kind = kindOf(target) ?? 'number';
+    const tc = componentsOf(target, kind);
+    if (!bag.__spring || bag.__spring.value.length !== tc.length) {
+      bag.__spring = { value: tc.slice(), vel: new Array(tc.length).fill(0) };
+      return [[fromComponents(tc, kind)]];
     }
-    const next = integrateSpring(bag.__spring.value, target, bag.__spring.vel, dt, k, damp);
-    bag.__spring = next;
-    return [[next.value]];
+    const value = new Array<number>(tc.length);
+    const vel = new Array<number>(tc.length);
+    for (let i = 0; i < tc.length; i++) {
+      const step = integrateSpring(bag.__spring.value[i]!, tc[i] ?? 0, bag.__spring.vel[i]!, dt, k, damp);
+      value[i] = step.value;
+      vel[i] = step.vel;
+    }
+    bag.__spring = { value, vel };
+    return [[fromComponents(value, kind)]];
   },
 });
 

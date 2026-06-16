@@ -105,6 +105,39 @@ describe('motion nodes compile + tick', () => {
   });
 });
 
+describe('adaptive motion (vec2 / color)', () => {
+  function runTyped(defType: string, params: Record<string, unknown>, target: unknown, frames: number) {
+    const result = compileGraph([{ id: 'm', defType, params }], [], {
+      registry: nodeRegistry,
+      paramReader: () => params,
+      portValueReader: (_id, port) => (port === 'value' ? target : undefined),
+    });
+    expect(result.warnings).toEqual([]);
+    let out: unknown;
+    for (let i = 0; i < frames; i++) out = tick(result.graph, frame({ frameCount: i })).outputs.get('m')?.[0]?.[0];
+    return out;
+  }
+
+  it('motion/smooth eases a vec2 component-wise toward the target', () => {
+    const out = runTyped('motion/smooth', { valueType: 'vec2', rate: 8 }, { x: 100, y: -40 }, 400) as { x: number; y: number };
+    expect(out.x).toBeCloseTo(100, 0);
+    expect(out.y).toBeCloseTo(-40, 0);
+  });
+
+  it('motion/spring settles a vec2 at the target', () => {
+    const out = runTyped('motion/spring', { valueType: 'vec2', stiffness: 120, damping: 16 }, { x: 30, y: 70 }, 1200) as { x: number; y: number };
+    expect(out.x).toBeCloseTo(30, 0);
+    expect(out.y).toBeCloseTo(70, 0);
+  });
+
+  it('motion/smooth eases a color (RGBA) toward the target', () => {
+    const out = runTyped('motion/smooth', { valueType: 'color', rate: 10 }, { r: 1, g: 0.5, b: 0, a: 1 }, 400) as { r: number; g: number; b: number; a: number };
+    expect(out.r).toBeCloseTo(1, 1);
+    expect(out.g).toBeCloseTo(0.5, 1);
+    expect(out.b).toBeCloseTo(0, 1);
+  });
+});
+
 describe('motion/trigger edge detection', () => {
   it('rising mode pulses once when crossing 0.5 upward', () => {
     const result = compileGraph([{ id: 't', defType: 'motion/trigger', params: { mode: 'rising' } }], [], {

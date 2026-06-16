@@ -28,7 +28,7 @@ export function kindForValueType(valueType: unknown): ValueKind {
 }
 
 /** The PortType to render pins with — `any` stays neutral until latched. */
-function portTypeForValueType(valueType: unknown): PortType {
+export function portTypeForValueType(valueType: unknown): PortType {
   return valueType === 'vec2' || valueType === 'color' || valueType === 'number'
     ? (valueType as PortType)
     : 'any';

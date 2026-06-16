@@ -401,6 +401,12 @@ export function compileGraph(
   const ALWAYS_LIVE_TYPES = new Set<string>([
     'time/seconds',
     'time/frame',
+    'time/delta',
+    // Motion integrators advance toward their target every frame, so the
+    // patch must keep ticking even with no other live source.
+    'motion/smooth',
+    'motion/spring',
+    'motion/trigger',
     'state/value',
     'state/spread',
     'state/read',

@@ -19,3 +19,13 @@ export const timeFrameNode = registerNode({
   outputs: [{ name: 'frame', type: 'number' }],
   readFromContext: (frame) => [[frame.frameCount]],
 });
+
+export const timeDeltaNode = registerNode({
+  type: 'time/delta',
+  category: 'Time',
+  label: 'Delta',
+  description: 'Seconds elapsed since the previous frame (dt) — for frame-rate-independent motion.',
+  inputs: [],
+  outputs: [{ name: 'dt', type: 'number' }],
+  readFromContext: (frame) => [[frame.dt]],
+});

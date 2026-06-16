@@ -19,6 +19,9 @@ import './math/unary';
 import './math/map';
 import './math/aggregate';
 
+// Motion (easing / spring / smooth / trigger)
+import './motion/motion';
+
 // Logic
 import './logic/compare';
 import './logic/bool';

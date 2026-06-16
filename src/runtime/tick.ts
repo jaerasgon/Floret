@@ -2,6 +2,7 @@ import type { FrameCtx, Layer, PortValue } from './types';
 import type { NodeId, RuntimeGraph, RuntimeNode, RuntimeScope } from './graph';
 import { paramStore } from './param-store';
 import { loopVarSplicerId } from './compile';
+import { frameCtxStore } from './frame-ctx';
 
 /**
  * Per-frame graph evaluation. Walks the root scope's topo order; when a
@@ -58,6 +59,9 @@ interface IterCtx {
 }
 
 export function tick(graph: RuntimeGraph, frame: FrameCtx): TickResult {
+  // Publish this frame to the ambient store so effectful nodes (motion/*)
+  // can read dt/t without an input wire — computeRaw doesn't receive `frame`.
+  frameCtxStore.update(frame);
   const outputs = new Map<NodeId, PortValue[]>();
   const regionStats = new Map<NodeId, RegionTickStats>();
   // Refresh the slot → state/write lookup so state/read can resolve its

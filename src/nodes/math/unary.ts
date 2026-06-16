@@ -61,6 +61,16 @@ export const negNode = registerNode({
   compute: adaptiveMap((v) => -v),
 });
 
+export const signNode = registerNode({
+  type: 'math/sign',
+  category: 'Math',
+  label: 'Sign',
+  description: 'Sign of x: -1, 0, or +1.',
+  inputs: x,
+  outputs: [{ name: 'result', type: 'number' }],
+  compute: (v) => [Math.sign(v as number)],
+});
+
 export const floorNode = registerNode({
   type: 'math/floor',
   category: 'Math',

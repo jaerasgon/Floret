@@ -41,7 +41,7 @@ export const fromAngleNode = registerNode({
   type: 'vec2/from-angle',
   category: 'Vec2',
   label: 'FromAngle',
-  description: 'Unit vector at `angle` radians, scaled by `mag`.',
+  description: 'Polar → cartesian: unit vector at `angle` radians, scaled by `mag` (radius).',
   inputs: [
     { name: 'angle', type: 'number', default: 0 },
     { name: 'mag', type: 'number', default: 1 },
@@ -51,6 +51,22 @@ export const fromAngleNode = registerNode({
     const a = angle as number;
     const m = mag as number;
     return [{ x: Math.cos(a) * m, y: Math.sin(a) * m }];
+  },
+});
+
+export const toPolarNode = registerNode({
+  type: 'vec2/to-polar',
+  category: 'Vec2',
+  label: 'ToPolar',
+  description: 'Cartesian → polar: decompose a vec2 into `angle` (radians) and `radius`.',
+  inputs: [{ name: 'v', type: 'vec2', default: ZERO }],
+  outputs: [
+    { name: 'angle', type: 'number' },
+    { name: 'radius', type: 'number' },
+  ],
+  compute: (v) => {
+    const p = toVec2(v);
+    return [Math.atan2(p.y, p.x), Math.hypot(p.x, p.y)];
   },
 });
 
@@ -288,5 +304,43 @@ export const rotateNode = registerNode({
     const c = Math.cos(a);
     const s = Math.sin(a);
     return [{ x: p.x * c - p.y * s, y: p.x * s + p.y * c }];
+  },
+});
+
+export const reflectNode = registerNode({
+  type: 'vec2/reflect',
+  category: 'Vec2',
+  label: 'Reflect',
+  description: 'Reflect `v` across the surface with `normal` (normal is normalised internally).',
+  inputs: [
+    { name: 'v', type: 'vec2', default: ZERO },
+    { name: 'normal', type: 'vec2', default: { x: 0, y: 1 } },
+  ],
+  outputs: [{ name: 'reflected', type: 'vec2' }],
+  compute: (v, normal) => {
+    const i = toVec2(v);
+    const n0 = toVec2(normal);
+    const len = Math.hypot(n0.x, n0.y);
+    if (len === 0) return [i];
+    const n = { x: n0.x / len, y: n0.y / len };
+    const d = i.x * n.x + i.y * n.y;
+    return [{ x: i.x - 2 * d * n.x, y: i.y - 2 * d * n.y }];
+  },
+});
+
+export const projectNode = registerNode({
+  type: 'vec2/project',
+  category: 'Vec2',
+  label: 'Project',
+  description: 'Vector projection of `a` onto `b`.',
+  inputs: ab,
+  outputs: [{ name: 'projected', type: 'vec2' }],
+  compute: (a, b) => {
+    const p = toVec2(a);
+    const q = toVec2(b);
+    const denom = q.x * q.x + q.y * q.y;
+    if (denom === 0) return [ZERO];
+    const k = (p.x * q.x + p.y * q.y) / denom;
+    return [{ x: q.x * k, y: q.y * k }];
   },
 });

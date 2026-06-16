@@ -107,3 +107,59 @@ export const distNode = registerNode({
   outputs: [{ name: 'result', type: 'number' }],
   compute: (x1, y1, x2, y2) => [Math.hypot((x2 as number) - (x1 as number), (y2 as number) - (y1 as number))],
 });
+
+export const wrapNode = registerNode({
+  type: 'math/wrap',
+  category: 'Math',
+  label: 'Wrap',
+  description: 'Wrap x into the half-open range [min, max) (modulo that keeps wrapping seamless).',
+  inputs: [
+    { name: 'x', type: 'number', default: 0 },
+    { name: 'min', type: 'number', default: 0 },
+    { name: 'max', type: 'number', default: 1 },
+  ],
+  outputs: [{ name: 'result', type: 'number' }],
+  compute: (x, min, max) => {
+    const lo = min as number;
+    const hi = max as number;
+    const range = hi - lo;
+    if (range <= 0) return [lo];
+    let r = ((x as number) - lo) % range;
+    if (r < 0) r += range;
+    return [lo + r];
+  },
+});
+
+export const smoothstepNode = registerNode({
+  type: 'math/smoothstep',
+  category: 'Math',
+  label: 'Smoothstep',
+  description: 'Smooth Hermite 0→1 ramp as x moves across [edge0, edge1]; flat outside.',
+  inputs: [
+    { name: 'edge0', type: 'number', default: 0 },
+    { name: 'edge1', type: 'number', default: 1 },
+    { name: 'x', type: 'number', default: 0 },
+  ],
+  outputs: [{ name: 'result', type: 'number' }],
+  compute: (edge0, edge1, x) => {
+    const e0 = edge0 as number;
+    const e1 = edge1 as number;
+    if (e0 === e1) return [(x as number) < e0 ? 0 : 1];
+    let t = ((x as number) - e0) / (e1 - e0);
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    return [t * t * (3 - 2 * t)];
+  },
+});
+
+export const stepNode = registerNode({
+  type: 'math/step',
+  category: 'Math',
+  label: 'Step',
+  description: 'Returns 0 when x < edge, else 1 — a hard threshold.',
+  inputs: [
+    { name: 'edge', type: 'number', default: 0 },
+    { name: 'x', type: 'number', default: 0 },
+  ],
+  outputs: [{ name: 'result', type: 'number' }],
+  compute: (edge, x) => [(x as number) < (edge as number) ? 0 : 1],
+});

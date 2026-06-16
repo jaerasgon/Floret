@@ -407,6 +407,7 @@ export function compileGraph(
     'motion/smooth',
     'motion/spring',
     'motion/trigger',
+    'motion/delay-line',
     'state/value',
     'state/spread',
     'state/read',

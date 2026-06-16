@@ -172,6 +172,43 @@ export const atNode = registerNode({
   },
 });
 
+export const neighborNode = registerNode({
+  type: 'spread/neighbor',
+  category: 'Spread',
+  label: 'Neighbor',
+  description:
+    'Read a neighbouring element by relative `offset` (e.g. -1 / +1). Inside a ' +
+    'ForEach: broadcast the iterated spread into `spread` and wire the region\'s ' +
+    '`index` pin. `edges` sets out-of-range behaviour: clamp (repeat ends), ' +
+    'wrap (toroidal), or zero (empty).',
+  inputs: [
+    { name: 'spread', type: 'any', kind: 'spread' },
+    { name: 'index', type: 'number', default: 0, integer: true },
+    { name: 'offset', type: 'number', default: 1, integer: true },
+  ],
+  outputs: [{ name: 'value', type: 'any', kind: 'single' }],
+  dynamicOutputs: (_p, up) => [{ name: 'value', type: up.spread ?? 'any', kind: 'single' }],
+  defaultParams: { edges: 'clamp' },
+  paramOptions: { edges: ['clamp', 'wrap', 'zero'] },
+  computeRaw: (inputs, params): PortValue[] => {
+    const src = inputs[0] ?? [];
+    const n = src.length;
+    if (n === 0) return [[null]];
+    const idx = Math.floor(Number(inputs[1]?.[0] ?? 0));
+    const off = Math.floor(Number(inputs[2]?.[0] ?? 0));
+    let i = idx + off;
+    const mode = params.param<string>('edges', 'clamp');
+    if (mode === 'wrap') {
+      i = ((i % n) + n) % n;
+    } else if (mode === 'zero') {
+      if (i < 0 || i >= n) return [[null]];
+    } else {
+      i = i < 0 ? 0 : i >= n ? n - 1 : i; // clamp
+    }
+    return [[src[i]]];
+  },
+});
+
 export const resampleNode = registerNode({
   type: 'spread/resample',
   category: 'Spread',

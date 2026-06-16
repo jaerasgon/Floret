@@ -22,7 +22,8 @@ describe('noise/curl', () => {
   it('is divergence-free: ∂flowx/∂x + ∂flowy/∂y ≈ 0', () => {
     const h = 0.02; // independent of the node's internal eps, so this is a real test
     let worst = 0;
-    for (const [x, y] of [[0.3, 0.7], [5.1, -2.2], [-8.4, 3.9], [21.0, 17.5]]) {
+    const pts: Array<[number, number]> = [[0.3, 0.7], [5.1, -2.2], [-8.4, 3.9], [21.0, 17.5]];
+    for (const [x, y] of pts) {
       const div =
         (flow(x + h, y).x - flow(x - h, y).x) / (2 * h) +
         (flow(x, y + h).y - flow(x, y - h).y) / (2 * h);

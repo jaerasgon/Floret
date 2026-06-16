@@ -4,6 +4,8 @@ import { spaced, type Sample } from './helpers';
 import { buildGridArt, buildIslamicPattern, buildKaleidoscope, buildLissajous } from './builds/Curves';
 import { buildForceField, buildNoiseWave, buildRippleField } from './builds/Fields';
 import { buildGridRipple } from './builds/GridRipple';
+import { buildCurlFlow } from './builds/CurlFlow';
+import { buildMotionFollow } from './builds/MotionFollow';
 import { buildFFTBloom, buildToneSurface } from './builds/Sound';
 import { buildPaintTrail, buildRandomWalkTrail } from './builds/Feedback';
 import { buildDatamosh, buildPhotoMosaic } from './builds/Image';
@@ -22,6 +24,7 @@ export const SAMPLE_CATEGORIES = [
   'Tutorial',
   'Type',
   'Particles',
+  'Motion',
   'Curves',
   'Fields',
   'Nature',
@@ -482,6 +485,15 @@ export const SAMPLES: Sample[] = [
     build: () => spaced(buildGridArt()),
   },
 
+  // ── Motion ─────────────────────────────────────────────
+  {
+    id: 'motion-follow',
+    name: 'Motion Follow',
+    category: 'Motion',
+    description: 'A target orbits while three followers chase it — Smooth (lag), Spring (overshoot), and DelayLine (echo). The adaptive motion nodes running on vec2.',
+    build: () => buildMotionFollow(),
+  },
+
   // ── Fields ─────────────────────────────────────────────
   {
     id: 'grid-ripple',
@@ -490,6 +502,13 @@ export const SAMPLES: Sample[] = [
     description: 'A grid of stroked squares offset by a radial sin ripple, driven through a ForEach with per-iteration delay. Stroke colours cycle a palette across the cells.',
     // Authored from real editor coordinates — no spaced() rescale.
     build: () => buildGridRipple(),
+  },
+  {
+    id: 'curl-flow',
+    name: 'Curl Flow',
+    category: 'Fields',
+    description: 'A grid of streaks aligned to a divergence-free curl-noise field that drifts with time — the classic swirling flow-field look.',
+    build: () => buildCurlFlow(),
   },
   {
     id: 'ripple-field',

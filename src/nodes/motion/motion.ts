@@ -105,21 +105,29 @@ export const delayLineNode = registerNode({
   type: 'motion/delay-line',
   category: 'Motion',
   label: 'DelayLine',
-  description: 'Echo `value` as it was `delay` seconds ago (linearly interpolated). The history clears on recompile.',
+  description: 'Echo `value` (number, vec2, or color) as it was `delay` seconds ago (linearly interpolated). History clears on recompile.',
   inputs: [
     { name: 'value', type: 'number', default: 0 },
     { name: 'delay', type: 'number', default: 0.5 },
   ],
   outputs: [{ name: 'result', type: 'number' }],
+  defaultParams: { valueType: 'any' },
+  adaptiveType: true,
+  dynamicInputs: motionInputs([{ name: 'delay', default: 0.5 }]),
+  dynamicOutputs: adaptiveOutputs,
   effectful: true,
   computeRaw: (inputs: PortValue[], params: NodeParamContext): PortValue[] => {
-    const bag = params as unknown as { __delay?: { hist: Array<{ t: number; v: number }> } };
-    const value = Number(inputs[0]?.[0] ?? 0);
+    const bag = params as unknown as { __delay?: { hist: Array<{ t: number; v: number[] }> } };
+    const target0 = inputs[0]?.[0];
     const delay = Math.max(0, Number(inputs[1]?.[0] ?? 0.5));
+    const kind = kindOf(target0) ?? 'number';
+    const v = componentsOf(target0, kind);
     const t = frameCtxStore.snapshot().t;
-    if (!bag.__delay) bag.__delay = { hist: [] };
+    if (!bag.__delay || (bag.__delay.hist[0] && bag.__delay.hist[0].v.length !== v.length)) {
+      bag.__delay = { hist: [] };
+    }
     const hist = bag.__delay.hist;
-    hist.push({ t, v: value });
+    hist.push({ t, v });
     // Drop samples older than we could ever need, but keep the one bracketing
     // sample just before the cutoff so interpolation stays continuous. Hard
     // cap guards against unbounded growth when delay is large.
@@ -128,17 +136,18 @@ export const delayLineNode = registerNode({
     if (hist.length > 4096) hist.shift();
 
     const target = t - delay;
-    if (target <= hist[0]!.t) return [[hist[0]!.v]];
+    const at = (s: { v: number[] }) => fromComponents(s.v, kind);
+    if (target <= hist[0]!.t) return [[at(hist[0]!)]];
     for (let i = hist.length - 1; i >= 0; i--) {
       if (hist[i]!.t <= target) {
         const a = hist[i]!;
         const b = hist[i + 1] ?? a;
         const span = b.t - a.t;
         const f = span > 0 ? (target - a.t) / span : 0;
-        return [[a.v + (b.v - a.v) * f]];
+        return [[fromComponents(a.v.map((c, j) => c + ((b.v[j] ?? 0) - c) * f), kind)]];
       }
     }
-    return [[hist[0]!.v]];
+    return [[at(hist[0]!)]];
   },
 });
 

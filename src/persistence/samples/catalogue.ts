@@ -488,9 +488,9 @@ export const SAMPLES: Sample[] = [
   // ── Motion ─────────────────────────────────────────────
   {
     id: 'motion-follow',
-    name: 'Motion Follow',
+    name: 'Motion Lab',
     category: 'Motion',
-    description: 'A target orbits while three followers chase it — Smooth (lag), Spring (overshoot), and DelayLine (echo). The adaptive motion nodes running on vec2.',
+    description: 'A swaying target tracked by Smooth (lags), Spring (overshoots/resonates), and DelayLine (phase-shifted) in separate lanes against a shared guide — the difference is visible at a glance.',
     build: () => buildMotionFollow(),
   },
 

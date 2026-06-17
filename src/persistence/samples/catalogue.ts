@@ -6,6 +6,9 @@ import { buildForceField, buildNoiseWave, buildRippleField } from './builds/Fiel
 import { buildGridRipple } from './builds/GridRipple';
 import { buildCurlFlow } from './builds/CurlFlow';
 import { buildMotionFollow } from './builds/MotionFollow';
+import { buildPhyllotaxis } from './builds/Phyllotaxis';
+import { buildEasedStagger } from './builds/EasedStagger';
+import { buildSmoothedPath } from './builds/SmoothedPath';
 import { buildFFTBloom, buildToneSurface } from './builds/Sound';
 import { buildPaintTrail, buildRandomWalkTrail } from './builds/Feedback';
 import { buildDatamosh, buildPhotoMosaic } from './builds/Image';
@@ -492,6 +495,29 @@ export const SAMPLES: Sample[] = [
     category: 'Motion',
     description: 'A swaying target tracked by Smooth (lags), Spring (overshoots/resonates), and DelayLine (phase-shifted) in separate lanes against a shared guide — the difference is visible at a glance.',
     build: () => buildMotionFollow(),
+  },
+  {
+    id: 'eased-stagger',
+    name: 'Eased Stagger',
+    category: 'Motion',
+    description: 'A row of dots bobbing in a travelling wave — the travel comes from the ForEach delay pin (per-item clock offset), the bob from a Motion ease curve, and hue from the fraction loop var.',
+    build: () => buildEasedStagger(),
+  },
+
+  // ── Curves ─────────────────────────────────────────────
+  {
+    id: 'phyllotaxis',
+    name: 'Phyllotaxis',
+    category: 'Curves',
+    description: 'A sunflower spiral placed by the golden angle, driven entirely by the ForEach index / fraction loop vars + polar vec2/from-angle. Hue sweeps with fraction.',
+    build: () => buildPhyllotaxis(),
+  },
+  {
+    id: 'smoothed-path',
+    name: 'Smoothed Path',
+    category: 'Curves',
+    description: 'A jagged noise polyline with a smoothed overlay — a 3-point box blur using spread/neighbor (broadcast the spread, read left/right via the index pin) inside a ForEach.',
+    build: () => buildSmoothedPath(),
   },
 
   // ── Fields ─────────────────────────────────────────────

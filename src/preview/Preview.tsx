@@ -1,5 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Plus, Minus, Maximize, Lock, Unlock } from 'lucide-react';
 import { createCanvasDriver, getActiveDriver, type ActiveDriver } from '../runtime/canvas-driver';
+import { Tooltip } from '../app/shell/Tooltip';
 import { useAppStore } from '../app/store';
 import { useEditor } from '../editor/editor-state';
 import type { RuntimeGraph, NodeId } from '../runtime/graph';
@@ -79,6 +81,12 @@ export interface PreviewProps {
 
 export function Preview({ rendererId = null, onDriver }: PreviewProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const driverRef = useRef<ActiveDriver | null>(null);
+  // Lock freezes the view: trackpad pinch/pan are ignored (no accidental
+  // zoom), but the +/−/fit buttons still work. Ref mirrors state so the
+  // long-lived wheel handler reads the current value.
+  const [locked, setLocked] = useState(false);
+  const lockedRef = useRef(false);
   const runningRef = useRef<boolean>(useAppStore.getState().running);
   const graphRef = useRef<RuntimeGraph | null>(useEditor.getState().runtime);
   const refreshKey = useAppStore((s) => s.refreshKey);
@@ -111,9 +119,25 @@ export function Preview({ rendererId = null, onDriver }: PreviewProps) {
         setFrame(frame);
       },
     });
+    driverRef.current = driver;
     onDriver?.(driver);
 
+    // Pinch (ctrl+wheel) zooms the preview toward the cursor; two-finger
+    // scroll pans. preventDefault stops the page from zooming/scrolling —
+    // the zoom stays contained to this panel. Attached to the panel area
+    // (host) so the letterbox margins respond too.
+    const host = (el.parentElement ?? el) as HTMLElement;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault(); // stop browser zoom/scroll even when locked
+      if (lockedRef.current) return;
+      if (e.ctrlKey) driver.zoomAt(e.deltaY, e.clientX, e.clientY);
+      else driver.panBy(-e.deltaX, -e.deltaY);
+    };
+    host.addEventListener('wheel', onWheel, { passive: false });
+
     return () => {
+      host.removeEventListener('wheel', onWheel);
+      driverRef.current = null;
       onDriver?.(null);
       driver.stop();
     };
@@ -123,6 +147,55 @@ export function Preview({ rendererId = null, onDriver }: PreviewProps) {
     <div className="preview-host">
       <div ref={containerRef} className="preview-canvas" />
       <PreviewOverlay rendererId={rendererId} />
+      <PreviewControls
+        driverRef={driverRef}
+        locked={locked}
+        onToggleLock={() => { const v = !lockedRef.current; lockedRef.current = v; setLocked(v); }}
+      />
+    </div>
+  );
+}
+
+/**
+ * Zoom controls — a vertical button stack mirroring the node canvas's
+ * React Flow `<Controls>` (same chrome) for consistency: zoom in, zoom
+ * out, and fit-in-view (which also resets pan).
+ */
+function PreviewControls({ driverRef, locked, onToggleLock }: {
+  driverRef: React.MutableRefObject<ActiveDriver | null>;
+  locked: boolean;
+  onToggleLock: () => void;
+}) {
+  return (
+    <div className="preview-controls">
+      <Tooltip label="Zoom in">
+        <button className="preview-controls-btn" aria-label="Zoom in"
+          onClick={() => driverRef.current?.zoomBy(1.2)}>
+          <Plus size={14} strokeWidth={1.8} />
+        </button>
+      </Tooltip>
+      <Tooltip label="Zoom out">
+        <button className="preview-controls-btn" aria-label="Zoom out"
+          onClick={() => driverRef.current?.zoomBy(1 / 1.2)}>
+          <Minus size={14} strokeWidth={1.8} />
+        </button>
+      </Tooltip>
+      <Tooltip label="Fit in view">
+        <button className="preview-controls-btn" aria-label="Fit in view"
+          onClick={() => driverRef.current?.fitInView()}>
+          <Maximize size={13} strokeWidth={1.8} />
+        </button>
+      </Tooltip>
+      <Tooltip label={locked ? 'Unlock view (allow pinch / pan)' : 'Lock view (ignore pinch / pan)'}>
+        <button
+          className={`preview-controls-btn${locked ? ' active' : ''}`}
+          aria-label={locked ? 'Unlock view' : 'Lock view'}
+          aria-pressed={locked}
+          onClick={onToggleLock}
+        >
+          {locked ? <Lock size={13} strokeWidth={1.8} /> : <Unlock size={13} strokeWidth={1.8} />}
+        </button>
+      </Tooltip>
     </div>
   );
 }

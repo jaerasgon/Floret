@@ -70,7 +70,6 @@ function PreviewHeaderControls({ driverRef, name }: {
   const toggleRunning = useAppStore((s) => s.toggleRunning);
   return (
     <>
-      <ExportMenu driverRef={driverRef} name={name} />
       <Tooltip label={running ? 'Pause runtime' : 'Resume runtime'} shortcut="Space">
         <button
           className={`toolbar-run-btn${running ? ' running' : ''}`}
@@ -81,6 +80,7 @@ function PreviewHeaderControls({ driverRef, name }: {
           <span>{running ? 'Pause' : 'Play'}</span>
         </button>
       </Tooltip>
+      <ExportMenu driverRef={driverRef} name={name} />
     </>
   );
 }

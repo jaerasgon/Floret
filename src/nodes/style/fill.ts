@@ -92,24 +92,29 @@ export const strokeNode = registerNode({
   type: 'style/stroke',
   category: 'Style',
   label: 'Stroke',
-  description: 'Set the stroke colour and width.',
+  description: 'Set the stroke colour, width, and alignment (center / inside / outside the outline). Alignment applies to closed shapes.',
   inputs: [
     { name: 'color', type: 'color', default: null },
     { name: 'width', type: 'number', default: 1 },
+    { name: 'align', type: 'string', default: 'center', param: 'align' },
     { name: 'base', type: 'style' },
   ],
   outputs: [{ name: 'style', type: 'style' }],
-  compute: (color, width, base) => {
+  defaultParams: { align: 'center' },
+  paramOptions: { align: ['center', 'inside', 'outside'] },
+  compute: (color, width, align, base) => {
     const c = (color as Color | null) ?? { r: 0, g: 0, b: 0, a: 1 };
     const w = width as number;
     const baseStyle = base as Style | null;
     const strokeCss = colorToCss(c);
+    const al = align === 'inside' || align === 'outside' ? align : 'center';
     const style: Style = (s) => {
       const inherited = applyBase(baseStyle, s);
       return {
         ...inherited,
         stroke: strokeCss,
         strokeWeight: w > 0 ? w : inherited.strokeWeight,
+        strokeAlign: al,
       };
     };
     return [style];

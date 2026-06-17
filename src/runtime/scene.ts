@@ -32,6 +32,10 @@ export type RectMode = 'corner' | 'center' | 'corners' | 'radius';
 export type EllipseMode = 'corner' | 'center' | 'corners' | 'radius';
 export type StrokeCap = 'butt' | 'round' | 'square';
 export type StrokeJoin = 'miter' | 'bevel' | 'round';
+/** Where a stroke sits relative to the shape's outline. Canvas2D only
+ *  strokes centred; `inside` / `outside` are emulated by the renderer via
+ *  clipping (closed shapes only — open paths have no interior). */
+export type StrokeAlign = 'center' | 'inside' | 'outside';
 export type TextAlign = 'left' | 'center' | 'right';
 export type TextBaseline = 'alphabetic' | 'top' | 'middle' | 'bottom';
 export type BlendMode = GlobalCompositeOperation;
@@ -48,6 +52,8 @@ export interface ResolvedStyle {
   strokeWeight: number;
   strokeCap: StrokeCap;
   strokeJoin: StrokeJoin;
+  /** Where the stroke sits relative to the outline (closed shapes only). */
+  strokeAlign: StrokeAlign;
   /** Font size in pixels. Composed into the CSS `font` shorthand at render
    *  time by `composeFontCss(style)`. */
   fontSize: number;
@@ -82,6 +88,7 @@ export const DEFAULT_STYLE: ResolvedStyle = Object.freeze({
   strokeWeight: 1,
   strokeCap: 'butt',
   strokeJoin: 'miter',
+  strokeAlign: 'center',
   fontSize: 14,
   fontFamily: 'sans-serif',
   fontWeight: 'normal',

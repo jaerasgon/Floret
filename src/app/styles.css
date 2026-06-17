@@ -710,7 +710,41 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Clip user pinch-zoom / pan to the panel instead of bleeding into
+     neighbouring panels. */
+  overflow: hidden;
 }
+
+/* Preview zoom controls — mirror the node canvas's React Flow controls. */
+.preview-controls {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 4;
+}
+.preview-controls-btn {
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-1);
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg-1);
+  cursor: pointer;
+  padding: 0;
+}
+.preview-controls-btn:last-child { border-bottom: none; }
+.preview-controls-btn:hover { background: var(--bg-2); color: var(--fg-0); }
+.preview-controls-btn.active { color: var(--accent); background: var(--bg-2); }
 
 .preview-overlay {
   position: absolute;
@@ -1306,6 +1340,15 @@ body[data-wire-flow='1'] .react-flow__edge-path {
 .node-inline-input:focus {
   outline: 1px solid var(--accent);
   outline-offset: -1px;
+}
+
+/* Two-field vec2 editor — x / y scrub inputs side by side. */
+.node-inline-vec2 {
+  display: inline-flex;
+  gap: 4px;
+}
+.node-inline-vec2 .node-inline-vec2-field {
+  width: 38px;
 }
 
 /* Scrub-input — number field that doubles as a horizontal drag handle.
@@ -2846,6 +2889,39 @@ body[data-pro-mode='1'] .node[data-math='1'] {
 .file-node-drop-hint {
   color: rgba(244, 197, 66, 0.95);
   text-align: center;
+}
+
+/* ─── SVG loader node ──────────────────────────────────────────────────── */
+.svg-node-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 8px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
+}
+.svg-node-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.svg-node-mode {
+  width: 100%;
+  box-sizing: border-box;
+}
+.svg-node-url {
+  width: 100%;
+  box-sizing: border-box;
+}
+.svg-node-paste {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 64px;
+  resize: vertical;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.35;
 }
 
 /* ─── Group node +/− slot controls ─────────────────────────────────────── */

@@ -70,6 +70,37 @@ function applyStyle(ctx: RenderingContext2D, s: ResolvedStyle): void {
   }
 }
 
+/**
+ * Stroke a closed shape honouring `strokeAlign`. Canvas2D only strokes
+ * centred on the path; `inside` / `outside` are emulated by clipping to
+ * (or away from) the shape and stroking at 2× width so only the desired
+ * half of the doubled stroke survives. `buildPath` must begin its own
+ * path (`beginPath`) and trace the closed outline.
+ */
+function strokeShape(ctx: RenderingContext2D, s: ResolvedStyle, buildPath: () => void): void {
+  if (!s.stroke) return;
+  const align = s.strokeAlign ?? 'center';
+  if (align === 'center') {
+    buildPath();
+    ctx.stroke();
+    return;
+  }
+  ctx.save();
+  buildPath();
+  if (align === 'inside') {
+    ctx.clip();
+  } else {
+    // outside: even-odd clip of a huge rect XOR the shape → exterior only,
+    // so the inner half of the doubled stroke is cut away.
+    ctx.rect(-1e6, -1e6, 2e6, 2e6);
+    ctx.clip('evenodd');
+  }
+  ctx.lineWidth = s.strokeWeight * 2;
+  buildPath();
+  ctx.stroke();
+  ctx.restore();
+}
+
 function applyTextStyle(ctx: RenderingContext2D, s: ResolvedStyle): void {
   ctx.font = composeFontCss(s);
   ctx.textAlign = s.textAlign;
@@ -112,8 +143,9 @@ function applyTransform(ctx: RenderingContext2D, m: Affine): void {
 function renderRect(ctx: RenderingContext2D, r: RectShape): void {
   applyStyle(ctx, r.style);
   const [x, y, w, h] = resolveBox(r.x, r.y, r.w, r.h, r.mode);
-  if (r.style.fill) ctx.fillRect(x, y, w, h);
-  if (r.style.stroke) ctx.strokeRect(x, y, w, h);
+  const build = () => { ctx.beginPath(); ctx.rect(x, y, w, h); };
+  if (r.style.fill) { build(); ctx.fill(); }
+  strokeShape(ctx, r.style, build);
 }
 
 function renderEllipse(ctx: RenderingContext2D, e: EllipseShape): void {
@@ -125,10 +157,9 @@ function renderEllipse(ctx: RenderingContext2D, e: EllipseShape): void {
   const cy = y + h / 2;
   const rx = w / 2;
   const ry = h / 2;
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, Math.abs(rx), Math.abs(ry), 0, 0, Math.PI * 2);
-  if (e.style.fill) ctx.fill();
-  if (e.style.stroke) ctx.stroke();
+  const build = () => { ctx.beginPath(); ctx.ellipse(cx, cy, Math.abs(rx), Math.abs(ry), 0, 0, Math.PI * 2); };
+  if (e.style.fill) { build(); ctx.fill(); }
+  strokeShape(ctx, e.style, build);
 }
 
 function renderLine(ctx: RenderingContext2D, l: LineShape): void {
@@ -147,33 +178,36 @@ function renderArc(ctx: RenderingContext2D, a: import('./scene').ArcShape): void
   const cy = y + h / 2;
   const rx = w / 2;
   const ry = h / 2;
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, Math.abs(rx), Math.abs(ry), 0, a.start, a.stop);
-  if (a.style.fill) ctx.fill();
-  if (a.style.stroke) ctx.stroke();
+  const build = () => { ctx.beginPath(); ctx.ellipse(cx, cy, Math.abs(rx), Math.abs(ry), 0, a.start, a.stop); };
+  if (a.style.fill) { build(); ctx.fill(); }
+  strokeShape(ctx, a.style, build);
 }
 
 function renderTriangle(ctx: RenderingContext2D, t: import('./scene').TriangleShape): void {
   applyStyle(ctx, t.style);
-  ctx.beginPath();
-  ctx.moveTo(t.x1, t.y1);
-  ctx.lineTo(t.x2, t.y2);
-  ctx.lineTo(t.x3, t.y3);
-  ctx.closePath();
-  if (t.style.fill) ctx.fill();
-  if (t.style.stroke) ctx.stroke();
+  const build = () => {
+    ctx.beginPath();
+    ctx.moveTo(t.x1, t.y1);
+    ctx.lineTo(t.x2, t.y2);
+    ctx.lineTo(t.x3, t.y3);
+    ctx.closePath();
+  };
+  if (t.style.fill) { build(); ctx.fill(); }
+  strokeShape(ctx, t.style, build);
 }
 
 function renderQuad(ctx: RenderingContext2D, q: import('./scene').QuadShape): void {
   applyStyle(ctx, q.style);
-  ctx.beginPath();
-  ctx.moveTo(q.x1, q.y1);
-  ctx.lineTo(q.x2, q.y2);
-  ctx.lineTo(q.x3, q.y3);
-  ctx.lineTo(q.x4, q.y4);
-  ctx.closePath();
-  if (q.style.fill) ctx.fill();
-  if (q.style.stroke) ctx.stroke();
+  const build = () => {
+    ctx.beginPath();
+    ctx.moveTo(q.x1, q.y1);
+    ctx.lineTo(q.x2, q.y2);
+    ctx.lineTo(q.x3, q.y3);
+    ctx.lineTo(q.x4, q.y4);
+    ctx.closePath();
+  };
+  if (q.style.fill) { build(); ctx.fill(); }
+  strokeShape(ctx, q.style, build);
 }
 
 function renderPoint(ctx: RenderingContext2D, p: import('./scene').PointShape): void {
@@ -193,6 +227,21 @@ function renderPolygon(ctx: RenderingContext2D, pg: PolygonShape): void {
   const n = pg.points.length;
   if (n === 0) return;
   applyStyle(ctx, pg.style);
+  const build = () => { tracePolygon(ctx, pg); };
+  if (pg.closed) {
+    if (pg.style.fill) { build(); ctx.fill(); }
+    // strokeAlign (inside/outside) only makes sense for a closed region.
+    strokeShape(ctx, pg.style, build);
+  } else if (pg.style.stroke) {
+    build();
+    ctx.stroke();
+  }
+}
+
+/** Trace a polygon's outline into the current path (begins a fresh path).
+ *  Straight polyline by default; Catmull–Rom Béziers when `tension > 0`. */
+function tracePolygon(ctx: RenderingContext2D, pg: PolygonShape): void {
+  const n = pg.points.length;
   ctx.beginPath();
   const tension = pg.tension ?? 0;
   if (tension <= 0 || n < 3) {
@@ -218,11 +267,7 @@ function renderPolygon(ctx: RenderingContext2D, pg: PolygonShape): void {
       ctx.bezierCurveTo(seg.c1x, seg.c1y, seg.c2x, seg.c2y, seg.ex, seg.ey);
     }
   }
-  if (pg.closed) {
-    ctx.closePath();
-    if (pg.style.fill) ctx.fill();
-  }
-  if (pg.style.stroke) ctx.stroke();
+  if (pg.closed) ctx.closePath();
 }
 
 function renderText(ctx: RenderingContext2D, t: TextShape): void {

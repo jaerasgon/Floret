@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { useShallow } from 'zustand/react/shallow';
 import { nodeRegistry } from '../../nodes/registry';
@@ -322,7 +322,7 @@ const NodeRow = memo(function NodeRow({
 // ─── Inline editors ──────────────────────────────────────────────────────
 
 export function supportsInlineEditor(type: PortType): boolean {
-  return type === 'number' || type === 'string' || type === 'boolean';
+  return type === 'number' || type === 'string' || type === 'boolean' || type === 'vec2';
 }
 
 function inferTypeFromValue(v: unknown): PortType {
@@ -680,6 +680,64 @@ function DynamicSelectEditor({
 export function PortValueInlineEditor({
   nodeId, portName, type, defaultVal,
 }: { nodeId: string; portName: string; type: PortType; defaultVal: unknown }) {
+  if (type === 'vec2') {
+    return <Vec2PortEditor nodeId={nodeId} portName={portName} defaultVal={defaultVal} />;
+  }
+  return <ScalarPortEditor nodeId={nodeId} portName={portName} type={type} defaultVal={defaultVal} />;
+}
+
+function coerceVec2(val: unknown): { x: number; y: number } {
+  const o = (val && typeof val === 'object') ? (val as Record<string, unknown>) : {};
+  return { x: Number(o.x ?? 0) || 0, y: Number(o.y ?? 0) || 0 };
+}
+
+/** Two scrub fields (x, y) for an unwired vec2 input — click to type,
+ *  drag to scrub, same as the scalar number editor. */
+function Vec2PortEditor({
+  nodeId, portName, defaultVal,
+}: { nodeId: string; portName: string; defaultVal: unknown }) {
+  const setNodePortValue = useEditor((s) => s.setNodePortValue);
+  const init = coerceVec2(defaultVal);
+  const [v, setV] = useState(init);
+  // `vRef` mirrors the live value so onCommit always reads the latest x/y
+  // even when a keystroke and blur land in the same tick (no stale closure).
+  const vRef = useRef(v);
+  // Re-sync when the stored value changes from elsewhere (paste, undo, wire).
+  // Depend on a primitive key so a fresh {x,y} object each render doesn't
+  // clobber an in-progress edit.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { const nv = coerceVec2(defaultVal); vRef.current = nv; setV(nv); }, [init.x, init.y]);
+
+  const setAxis = (axis: 'x' | 'y', n: number) => {
+    const nv = { ...vRef.current, [axis]: n };
+    vRef.current = nv;
+    setV(nv);
+  };
+  const commit = () => setNodePortValue(nodeId, portName, vRef.current);
+
+  return (
+    <span className="node-inline-vec2 nodrag">
+      <ScrubInput
+        value={v.x}
+        step={1}
+        className="node-inline-input node-inline-vec2-field nodrag"
+        onLive={(nx) => setAxis('x', nx)}
+        onCommit={commit}
+      />
+      <ScrubInput
+        value={v.y}
+        step={1}
+        className="node-inline-input node-inline-vec2-field nodrag"
+        onLive={(ny) => setAxis('y', ny)}
+        onCommit={commit}
+      />
+    </span>
+  );
+}
+
+function ScalarPortEditor({
+  nodeId, portName, type, defaultVal,
+}: { nodeId: string; portName: string; type: PortType; defaultVal: unknown }) {
   const setNodePortValue = useEditor((s) => s.setNodePortValue);
   const initial =
     type === 'number' ? Number(defaultVal ?? 0)
@@ -733,6 +791,10 @@ export function formatValue(v: unknown): string {
   }
   if (typeof v === 'boolean') return v ? 'true' : 'false';
   if (v === null || v === undefined) return '—';
+  if (typeof v === 'object' && 'x' in v && 'y' in v) {
+    const o = v as { x: unknown; y: unknown };
+    return `${formatValue(o.x)}, ${formatValue(o.y)}`;
+  }
   const s = String(v);
   return s.length > 10 ? s.slice(0, 9) + '…' : s;
 }

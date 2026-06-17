@@ -71,6 +71,24 @@ export function App() {
   }, []);
   void narrowViewport;
 
+  // Stop the BROWSER from page-zooming on trackpad pinch / ⌘-scroll anywhere
+  // in the app. Pinch = `ctrl+wheel` (Chrome/Electron) or the WebKit
+  // `gesture*` events (Safari). Components that want their own zoom (the node
+  // canvas, the preview) read the same events and handle it themselves —
+  // this only cancels the browser's default whole-page zoom.
+  useEffect(() => {
+    const onWheel = (e: WheelEvent) => { if (e.ctrlKey) e.preventDefault(); };
+    const onGesture = (e: Event) => e.preventDefault();
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('gesturestart', onGesture, { passive: false });
+    window.addEventListener('gesturechange', onGesture, { passive: false });
+    return () => {
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('gesturestart', onGesture);
+      window.removeEventListener('gesturechange', onGesture);
+    };
+  }, []);
+
   return (
     <div className="app-shell">
       <Toolbar />

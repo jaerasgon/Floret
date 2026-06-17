@@ -46,6 +46,16 @@ export interface ActiveDriver {
   /** Snapshot the most recent frame's flattened scene — used by SVG
    *  export, which needs the retained SceneNodes (not pixels). */
   captureScene: () => { layers: SceneNode[]; background: string; width: number; height: number };
+  /** Scale the canvas to fit (contain) the panel, aspect-preserved, and
+   *  keep it fitted as the panel resizes / resolution changes. Also resets
+   *  any user pinch-zoom / pan. */
+  fitInView: () => void;
+  /** Pinch-zoom the preview toward a screen point (keeps it under cursor). */
+  zoomAt: (deltaY: number, clientX: number, clientY: number) => void;
+  /** Step-zoom by a factor toward the panel centre (for +/− buttons). */
+  zoomBy: (factor: number) => void;
+  /** Pan the preview by a screen-space delta. */
+  panBy: (dx: number, dy: number) => void;
 }
 
 /** Currently-mounted drivers, keyed by their container element. Used by
@@ -88,6 +98,78 @@ export function createCanvasDriver(container: HTMLElement, opts: DriverOptions):
 
   let canvasW = DEFAULT_W;
   let canvasH = DEFAULT_H;
+
+  // Fit-in-view: scale the canvas to CONTAIN the panel (aspect-preserved,
+  // up or down). Sticky — a ResizeObserver re-fits on panel resize, and the
+  // resize block below re-fits on resolution change. Off until requested.
+  let fitMode = false;
+  let resizeObs: ResizeObserver | null = null;
+  // User zoom/pan ON TOP of the fitted layout size — a CSS transform, so it
+  // doesn't affect layout (the fit width/height stay the base). Pinch zooms
+  // toward the cursor; two-finger scroll pans. Reset by fitInView().
+  let userZoom = 1;
+  let userPanX = 0;
+  let userPanY = 0;
+  const applyUserTransform = () => {
+    canvas.style.transformOrigin = 'center center';
+    canvas.style.transform =
+      userZoom === 1 && userPanX === 0 && userPanY === 0
+        ? ''
+        : `translate(${userPanX}px, ${userPanY}px) scale(${userZoom})`;
+  };
+  // Measure the panel area, not `container` — `.preview-canvas` shrinks to
+  // the canvas (content-sized flex child), so measuring it is circular.
+  const fitTarget = (): HTMLElement => container.parentElement ?? container;
+  const applyFit = () => {
+    const host = fitTarget();
+    const cw = host.clientWidth;
+    const ch = host.clientHeight;
+    if (cw <= 0 || ch <= 0) return;
+    const scale = Math.min(cw / canvasW, ch / canvasH);
+    canvas.style.width = `${Math.max(1, Math.round(canvasW * scale))}px`;
+    canvas.style.height = `${Math.max(1, Math.round(canvasH * scale))}px`;
+    canvas.style.maxWidth = 'none';
+    canvas.style.maxHeight = 'none';
+  };
+  const fitInView = () => {
+    fitMode = true;
+    // Fit also resets any user zoom/pan — "fit in view" means show it all.
+    userZoom = 1; userPanX = 0; userPanY = 0;
+    applyUserTransform();
+    if (!resizeObs && typeof ResizeObserver !== 'undefined') {
+      resizeObs = new ResizeObserver(() => { if (fitMode) applyFit(); });
+      resizeObs.observe(fitTarget());
+    }
+    applyFit();
+  };
+
+  // Zoom to an absolute factor, keeping the screen point (clientX/Y) fixed.
+  const zoomTo = (next: number, clientX: number, clientY: number) => {
+    next = Math.min(20, Math.max(0.1, next));
+    const r = fitTarget().getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const dx = clientX - cx - userPanX;
+    const dy = clientY - cy - userPanY;
+    const k = 1 - next / userZoom;
+    userPanX += dx * k;
+    userPanY += dy * k;
+    userZoom = next;
+    applyUserTransform();
+  };
+  /** Pinch-zoom toward a screen point (clientX/Y), keeping that point fixed. */
+  const zoomAt = (deltaY: number, clientX: number, clientY: number) =>
+    zoomTo(userZoom * Math.exp(-deltaY * 0.0015), clientX, clientY);
+  /** Step-zoom by a multiplicative factor toward the panel centre (buttons). */
+  const zoomBy = (factor: number) => {
+    const r = fitTarget().getBoundingClientRect();
+    zoomTo(userZoom * factor, r.left + r.width / 2, r.top + r.height / 2);
+  };
+  const panBy = (dx: number, dy: number) => {
+    userPanX += dx; userPanY += dy;
+    applyUserTransform();
+  };
+
   const bridge = new RenderBridge(canvas);
   const ctx = null as unknown as CanvasRenderingContext2D;
 
@@ -173,8 +255,12 @@ export function createCanvasDriver(container: HTMLElement, opts: DriverOptions):
       if (cw !== canvasW || ch !== canvasH) {
         canvasW = cw; canvasH = ch;
         bridge.resize(cw, ch);
-        canvas.style.maxWidth = `${cw}px`;
-        canvas.style.maxHeight = `${ch}px`;
+        if (fitMode) {
+          applyFit();
+        } else {
+          canvas.style.maxWidth = `${cw}px`;
+          canvas.style.maxHeight = `${ch}px`;
+        }
       }
     }
 
@@ -256,6 +342,7 @@ export function createCanvasDriver(container: HTMLElement, opts: DriverOptions):
     window.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('keyup', onKeyUp);
     bridge.dispose();
+    resizeObs?.disconnect();
     if (canvas.parentNode === container) container.removeChild(canvas);
     drivers.delete(driver);
   };
@@ -267,7 +354,7 @@ export function createCanvasDriver(container: HTMLElement, opts: DriverOptions):
     height: canvas.height,
   });
 
-  const driver: ActiveDriver = { canvas, ctx, container, stop, captureScene };
+  const driver: ActiveDriver = { canvas, ctx, container, stop, captureScene, fitInView, zoomAt, zoomBy, panBy };
   drivers.add(driver);
   return driver;
 }

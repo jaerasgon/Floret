@@ -122,6 +122,7 @@ import './io/color-picker';
 import './io/xy-pad';
 import './io/image-url';
 import './io/file';
+import './io/svg';
 import './io/save-svg';
 
 // Regions

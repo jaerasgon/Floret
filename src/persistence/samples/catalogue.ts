@@ -9,6 +9,7 @@ import { buildMotionFollow } from './builds/MotionFollow';
 import { buildPhyllotaxis } from './builds/Phyllotaxis';
 import { buildEasedStagger } from './builds/EasedStagger';
 import { buildSmoothedPath } from './builds/SmoothedPath';
+import { buildLocalPeaks } from './builds/LocalPeaks';
 import { buildFFTBloom, buildToneSurface } from './builds/Sound';
 import { buildPaintTrail, buildRandomWalkTrail } from './builds/Feedback';
 import { buildDatamosh, buildPhotoMosaic } from './builds/Image';
@@ -680,6 +681,13 @@ export const SAMPLES: Sample[] = [
     category: 'Data',
     description: 'Inline CSV → number spread → 16 colored bars. Edit the `data` param on the CSVInline node to load a new series.',
     build: () => spaced(buildCSVBarChart()),
+  },
+  {
+    id: 'local-peaks',
+    name: 'Local Peaks',
+    category: 'Data',
+    description: 'Noise bars where each lights green only if it is taller than BOTH neighbours — local-maximum detection with spread/neighbor inside a ForEach.',
+    build: () => buildLocalPeaks(),
   },
 ];
 

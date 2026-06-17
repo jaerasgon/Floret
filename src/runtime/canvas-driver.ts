@@ -159,6 +159,12 @@ export function createCanvasDriver(container: HTMLElement, opts: DriverOptions):
 
     // Resize → message the worker. Style sizing is ours to set so the
     // visible HTMLCanvasElement reflects the new dims.
+    //
+    // Dims always come from paramStore. For an unwired width/height pin
+    // that's the inline value directly; when the pin is wired, the
+    // renderer's compute writes the RESOLVED (wired) value back into
+    // paramStore each tick, so a wire drives the resolution here too
+    // (one-frame settle). Either way this single read covers both.
     if (rendererId) {
       const w = paramStore.getKey<number>(rendererId, 'width');
       const h = paramStore.getKey<number>(rendererId, 'height');

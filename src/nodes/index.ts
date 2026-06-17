@@ -109,6 +109,7 @@ import './input/mouse';
 import './input/keyboard';
 import './input/midi-cc';
 import './input/midi-note';
+import './input/camera';
 
 // Meta
 import './meta/comment';

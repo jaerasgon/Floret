@@ -12,7 +12,7 @@ import { buildSmoothedPath } from './builds/SmoothedPath';
 import { buildLocalPeaks } from './builds/LocalPeaks';
 import { buildFFTBloom, buildToneSurface } from './builds/Sound';
 import { buildPaintTrail, buildRandomWalkTrail } from './builds/Feedback';
-import { buildDatamosh, buildPhotoMosaic } from './builds/Image';
+import { buildDatamosh, buildPhotoMosaic, buildWebcamMosaic } from './builds/Image';
 import { buildCSVBarChart } from './builds/Data';
 import { buildPixelSort } from './builds/Pixel';
 import { buildNocAttraction, buildNocDrag, buildNocFlowField, buildNocFractalTree, buildNocSeek, buildNocSpring, buildNocWindGravity, buildPendulum } from './builds/Nature';
@@ -631,6 +631,13 @@ export const SAMPLES: Sample[] = [
     category: 'Image',
     description: 'Samples a 32×32 grid of pixels from a loaded image and draws each as a dot sized by luminance. Pointillist / Warhol effect that breathes with time.',
     build: () => spaced(buildPhotoMosaic()),
+  },
+  {
+    id: 'webcam-mosaic',
+    name: 'Webcam Mosaic',
+    category: 'Image',
+    description: 'A live, mirrored pointillist portrait. Flip the Toggle into the camera\'s `start` pin, grant permission, and your webcam feed becomes a 36×36 grid of dots sized by brightness and tinted by colour.',
+    build: () => spaced(buildWebcamMosaic()),
   },
 
   // ── Pixel ──────────────────────────────────────────────

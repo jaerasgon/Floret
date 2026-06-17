@@ -18,6 +18,7 @@ import { paramStore } from '../runtime/param-store';
 import { audioRegistry } from '../runtime/audio';
 import { imageRegistry } from '../runtime/image-registry';
 import { derivedImageRegistry } from '../runtime/derived-image-registry';
+import { cameraRegistry } from '../runtime/camera-registry';
 import { parseHandle, wouldCreateCycle, isMultiTargetPort } from './connection-rules';
 import {
   copySelectionToClipboard,
@@ -453,6 +454,7 @@ export const useEditor = create<EditorState>((set, get) => {
     audioRegistry.retain(liveIds);
     imageRegistry.retain(liveIds);
     derivedImageRegistry.retain(liveIds);
+    cameraRegistry.retain(liveIds);
     try {
       const result = compileGraph(nodes, edges, {
         registry: nodeRegistry,
@@ -953,6 +955,7 @@ export const useEditor = create<EditorState>((set, get) => {
       audioRegistry.reset();
       imageRegistry.reset();
       derivedImageRegistry.reset();
+      cameraRegistry.reset();
       paramStore.replaceAll(nodes.map((n) => [n.id, n.data.params] as const));
       // React Flow v12 requires parents to appear before their children
       // in the nodes array; samples & save files may not respect that.

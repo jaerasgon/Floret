@@ -221,3 +221,100 @@ export function buildPhotoMosaic() {
     ],
   };
 }
+
+
+// ─── Sample: Webcam Mosaic ─────────────────────────────────────────────────
+// A live, mirrored pointillist portrait of you. The camera feed is squared
+// off with image/resize, sampled on a 36×36 grid, and each cell drawn as a
+// dot sized by its brightness and tinted by its colour. Flip the Toggle wired
+// into `start` to open the camera (grant permission when the browser asks).
+//
+// PERFORMANCE: all sampling happens ONCE per frame with image/sample-spread —
+// a single getImageData(0,0,w,h) read indexed N times — NOT N separate
+// getImageData(x,y,1,1) calls inside the loop (each of those forces a
+// synchronous GPU→CPU readback; 1296/frame is what kills the frame rate).
+// The ForEach therefore only does cheap per-dot draw work: the colour for
+// each cell arrives pre-sampled as a spread.
+//
+// Two grids, identical layout, different origin:
+//   • drawGrid   — centre (0,0), range −250…250 → where each dot is drawn
+//   • sampleGrid — centre (250,250), range 0…500 → pixel coords to sample
+// so there's zero per-cell coordinate math.
+export function buildWebcamMosaic() {
+  // ── Live source ──
+  const cam   = node('wm_cam',   'input/camera', { x: -620, y: 40 },  { device: '', mirror: true });
+  const start = node('wm_start', 'io/toggle',    { x: -620, y: 180 }, { value: true });   // flip to open camera
+  // Square the feed: smaller, fixed read surface + grid coords line up with pixels.
+  const resize = node('wm_resize', 'image/resize', { x: -420, y: 40 }, { w: 500, h: 500 });
+
+  // Draw grid (centred) and sample grid (pixel-space) — same 36×36 layout.
+  const drawGrid   = node('wm_drawGrid',   'spread/grid', { x: -420, y: 200 }, { cols: 36, rows: 36, w: 500, h: 500 });
+  const sampleGrid = node('wm_sampleGrid', 'spread/grid', { x: -420, y: 340 }, { cols: 36, rows: 36, w: 500, h: 500, center: { x: 250, y: 250 } });
+
+  // ONE full-frame read → spread of colours (the whole performance fix).
+  const colors = node('wm_colors', 'image/sample-spread', { x: -200, y: 120 });
+
+  const bg   = node('wm_bg',   'color/rgb', { x: -620, y: 320 }, { r: 6, g: 7, b: 12, a: 255 });
+  const renderer = node('wm_renderer', 'render/renderer', { x: 1140, y: 20 }, { width: 500, height: 500 });
+
+  const RID = 'wm_region';
+  const region: FloretNode = {
+    id: RID,
+    type: 'floret',
+    position: { x: 0, y: 20 },
+    data: {
+      defType: 'region/foreach',
+      params: { width: 1020, height: 560, label: 'ForEach' },
+      ports: [
+        { id: 'p',   name: 'p',   type: 'vec2',  direction: 'input' },
+        { id: 'col', name: 'col', type: 'color', direction: 'input' },
+        { id: 'dot', name: 'dot', type: 'layer', direction: 'output' },
+      ],
+    },
+    style: { width: 1020, height: 560 },
+  };
+
+  // ── Inside: pre-sampled colour → luminance → dot (no image reads here) ──
+  const split = node('wm_split', 'vec2/split',      { x: 40,  y: 60 },  {},                                              RID);
+  const srgb  = node('wm_srgb',  'color/split-rgb', { x: 220, y: 200 }, {},                                              RID);
+  const rg    = node('wm_rg',    'math/add',        { x: 380, y: 180 }, {},                                              RID);
+  const rgb   = node('wm_rgb',   'math/add',        { x: 380, y: 240 }, {},                                              RID);
+  const lum   = node('wm_lum',   'math/mul',        { x: 500, y: 210 }, { b: 0.333 },                                    RID);
+  const size  = node('wm_size',  'math/map',        { x: 620, y: 210 }, { inMin: 0, inMax: 255, outMin: 1.5, outMax: 15 }, RID);
+  const fill  = node('wm_fill',  'style/fill',      { x: 620, y: 320 }, { mode: 'color' },                               RID);
+  const dot   = node('wm_dot',   'draw/ellipse',    { x: 800, y: 120 }, {},                                              RID);
+
+  return {
+    nodes: [cam, start, resize, drawGrid, sampleGrid, colors, bg, renderer, region, split, srgb, rg, rgb, lum, size, fill, dot],
+    edges: [
+      // Camera → resize → ONE sample-spread → colour spread
+      edge('wm_start',      'bool',      'wm_cam',     'start'),
+      edge('wm_cam',        'image',     'wm_resize',  'image'),
+      edge('wm_resize',     'image',     'wm_colors',  'image'),
+      edge('wm_sampleGrid', 'positions', 'wm_colors',  'points'),
+      edge('wm_bg',         'color',     'wm_renderer','background'),
+      // Drive the loop: one dot position + one pre-sampled colour per iteration
+      edge('wm_drawGrid',   'positions', RID,          'p'),
+      edge('wm_colors',     'colors',    RID,          'col'),
+      // Per cell — pure math, no image reads
+      edge(RID,        'p',     'wm_split', 'v'),
+      edge(RID,        'col',   'wm_srgb',  'color'),
+      edge('wm_srgb',  'r',     'wm_rg',    'a'),
+      edge('wm_srgb',  'g',     'wm_rg',    'b'),
+      edge('wm_rg',    'sum',   'wm_rgb',   'a'),
+      edge('wm_srgb',  'b',     'wm_rgb',   'b'),
+      edge('wm_rgb',   'sum',   'wm_lum',   'a'),
+      edge('wm_lum',   'product', 'wm_size','x'),
+      // Colour the dot with its sampled pixel
+      edge(RID,        'col',   'wm_fill',  'color'),
+      edge('wm_fill',  'style', 'wm_dot',   'style'),
+      // Draw at the centred coords; size by brightness
+      edge('wm_split', 'x',     'wm_dot',   'x'),
+      edge('wm_split', 'y',     'wm_dot',   'y'),
+      edge('wm_size',  'mapped', 'wm_dot',  'w'),
+      edge('wm_size',  'mapped', 'wm_dot',  'h'),
+      edge('wm_dot',   'shape', RID,        'dot'),
+      edge(RID,        'dot',   'wm_renderer', 'layers'),
+    ],
+  };
+}

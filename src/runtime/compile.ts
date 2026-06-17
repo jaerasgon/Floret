@@ -418,6 +418,8 @@ export function compileGraph(
     'input/keyboard',
     'input/midi-cc',
     'input/midi-note',
+    // Camera draws the live video frame into its canvas every tick.
+    'input/camera',
   ]);
   graph.alwaysAnimate = nodes.some((n) => {
     if (ALWAYS_LIVE_TYPES.has(n.defType)) return true;

@@ -127,6 +127,7 @@ import './io/image-url';
 import './io/file';
 import './io/svg';
 import './io/save-svg';
+import './io/eink';
 
 // Regions
 import './region/foreach';

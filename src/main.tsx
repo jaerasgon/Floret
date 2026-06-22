@@ -31,10 +31,6 @@ registerBuiltInLibraries(buildBuiltInSampleLibraries());
 import { seedDefaultLayout } from './editor/dock/dockStore';
 seedDefaultLayout();
 
-// Side-effect import: registers `window.__floretEink` (start/stop) so the
-// render frame can be published to the e-ink relay. See tools/eink/.
-import './preview/eink-publisher';
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />

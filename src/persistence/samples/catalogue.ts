@@ -19,6 +19,7 @@ import { buildNocAttraction, buildNocDrag, buildNocFlowField, buildNocFractalTre
 import { buildTutAccumulator, buildTutAnimateWithTime, buildTutAudioReactive, buildTutCacheRegion, buildTutCircleOfShapes, buildTutColorAndFill, buildTutColorLerp, buildTutElementaryCA, buildTutEnvelope, buildTutFFT, buildTutGaussian, buildTutGoL, buildTutGradient, buildTutGrid, buildTutGroupTransform, buildTutHelloRect, buildTutIfRegion, buildTutImageAdjust, buildTutImageSample, buildTutImageUrl, buildTutKeyboardBranch, buildTutMap, buildTutMidiCC, buildTutMouse, buildTutNormalize, buildTutOscillator, buildTutPalette, buildTutPathTension, buildTutPerlin, buildTutPixelSort, buildTutPixelate, buildTutPolar, buildTutPolygon, buildTutPulse, buildTutRandomSpread, buildTutRasterize, buildTutSlider, buildTutSortShuffle, buildTutSoundFilter, buildTutSpreadForeach, buildTutSpringFollow, buildTutState, buildTutStyleChain, buildTutSubpatch, buildTutText, buildTutTrails, buildTutVec2Math, buildTutWanderer } from './builds/Tutorial';
 import { buildKineticType, buildTypeDrift, buildTypeHalo, buildTypeRain, buildTypeRaven } from './builds/Type';
 import { buildParticlesAttractor, buildParticlesFountain, buildParticlesPinball, buildParticlesSpiral, buildParticlesTextDust } from './builds/Particles';
+import { buildEinkClock } from './builds/Eink';
 
 /**
  * Sample categories — order here is the order the tabs appear in the
@@ -483,6 +484,13 @@ export const SAMPLES: Sample[] = [
   },
 
   // ── Motion ─────────────────────────────────────────────
+  {
+    id: 'eink-clock',
+    name: 'E-ink Clock',
+    category: 'Motion',
+    description: 'A bold sweeping clock hand fanned to the Renderer AND an io/eink node that POSTs the frame to a networked Waveshare e-paper panel every 25s (the toggle forces a send now). Set the node’s url to your panel.',
+    build: () => spaced(buildEinkClock()),
+  },
   {
     id: 'motion-follow',
     name: 'Motion Lab',

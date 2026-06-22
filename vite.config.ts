@@ -21,8 +21,7 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: false,
-    // Bind to all interfaces so a Raspberry Pi on the LAN can pull
-    // /__floret/frame.png from the e-ink relay above.
+    // Bind to all interfaces so the Pi can pull frames from the e-ink relay.
     host: true,
     watch: {
       // Heavy / unrelated trees in the project root that Vite shouldn't watch.

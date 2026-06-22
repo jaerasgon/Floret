@@ -28,7 +28,7 @@ export const probeNode = registerNode({
   category: 'Meta',
   label: 'Probe',
   description: 'Inspect the data on a wire — a persistent, scrollable readout that also reroutes the wire. Drag a wire out and Alt-click empty space to drop one.',
-  inputs: [{ name: 'in', type: 'any', kind: 'multi' }],
+  inputs: [{ name: 'in', type: 'any', kind: 'spread' }],
   outputs: [{ name: 'out', type: 'any', kind: 'single' }],
   dynamicOutputs: (_params, up) => [{ name: 'out', type: up.in ?? 'any', kind: 'single' }],
   computeRaw: (inputs) => [inputs[0] ?? []],

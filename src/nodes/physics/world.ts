@@ -23,8 +23,8 @@ export const physicsWorldNode = registerNode({
     { name: 'drag',       type: 'number',   default: 0.05 },
     { name: 'timeScale',  type: 'number',   default: 1 },
     { name: 'bounds',     type: 'vec2',     default: null },
-    { name: 'forces',     type: 'force',    kind: 'multi' },
-    { name: 'colliders',  type: 'collider', kind: 'multi' },
+    { name: 'forces',     type: 'force',    kind: 'spread' },
+    { name: 'colliders',  type: 'collider', kind: 'spread' },
     {
       name: 'integrator', type: 'string',
       default: 'euler', param: 'integrator', constant: true,

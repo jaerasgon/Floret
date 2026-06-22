@@ -262,6 +262,17 @@ export function buildIsValidConnection(
     if (!arePortsCompatible(srcPort.type, dstPort.type)) return false;
     if (!areKindsCompatible(srcPort.kind, dstPort.kind)) return false;
 
+    // One wire per input — unless the input is `multi` (the only kind that
+    // gathers many wires). A single/spread input that's already wired refuses
+    // a second connection outright (no silent replace). To combine multiple
+    // sources into one input, use a Group node (its pin is `multi`).
+    if (dstPort.kind !== 'multi') {
+      const occupied = getEdges().some(
+        (e) => e.target === conn.target && e.targetHandle === conn.targetHandle,
+      );
+      if (occupied) return false;
+    }
+
     // No cycles. Strictly left-to-right dataflow, regions included.
     if (wouldCreateCycle(conn.source, conn.target, conn.targetHandle, getEdges(), getDefType, conn.sourceHandle)) return false;
 

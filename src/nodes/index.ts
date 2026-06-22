@@ -51,6 +51,7 @@ import './spread-ops/combine';
 import './spread-ops/filter';
 import './spread-ops/reorder';
 import './spread-ops/partition';
+import './spread-ops/merge';
 import './spread-ops/gol-step';
 import './spread-ops/walk-step';
 import './spread-ops/elementary-ca';

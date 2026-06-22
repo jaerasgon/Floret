@@ -35,10 +35,10 @@ export const stringConcatNode = registerNode({
   description:
     'Concatenate any number of strings into one. Wire multiple strings into `parts` (the pin gathers them); `separator` goes between each.',
   inputs: [
-    // `multi` gathers every wired source into a single Spread<string> —
-    // the same gather semantics used by Group/Combine. Lets the user
-    // plug 2, 5, or N strings into one pin without N input ports.
-    { name: 'parts', type: 'string', kind: 'multi', default: '' },
+    // One wire: a Spread<string> (the elements get joined). To join several
+    // separate string sources, route them through spread/merge first — every
+    // pin takes exactly one wire.
+    { name: 'parts', type: 'string', kind: 'spread', default: '' },
     { name: 'separator', type: 'string', default: '', param: 'separator' },
   ],
   outputs: [{ name: 'text', type: 'string' }],

@@ -78,7 +78,7 @@ export const particlesEmitterNode = registerNode({
     { name: 'maxCount',    type: 'number', default: 1000, integer: true, param: 'maxCount', constant: true },
     { name: 'overflowMode',type: 'string', default: 'drop', param: 'overflowMode', constant: true },
     { name: 'seed',        type: 'number', default: 1, integer: true, param: 'seed', constant: true },
-    { name: 'localForces', type: 'force',  kind: 'multi' },
+    { name: 'localForces', type: 'force',  kind: 'spread' },
     // Wire `time/seconds` here so the integrator gets real dt. Without
     // it the Emitter falls back to 1/60 — fine for static FPS but
     // wrong if the user's frame rate drifts.

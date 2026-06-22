@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Canvas } from '../editor/Canvas';
 import { NodePalette } from '../editor/NodePalette';
 import { HelpPanel } from '../editor/HelpPanel';
@@ -19,9 +19,6 @@ import { usePrefs } from './prefs';
 
 export function App() {
   useGlobalShortcuts();
-  const [narrowViewport, setNarrowViewport] = useState<boolean>(
-    typeof window !== 'undefined' ? window.innerWidth <= 880 : false,
-  );
   // Preview panels are derived 1:1 from `render/renderer` nodes in the
   // patch — add a renderer node → its preview appears; delete the node →
   // the preview vanishes. The dock panel id IS the node id, so its
@@ -61,15 +58,6 @@ export function App() {
   useEffect(() => {
     if (!helpVisible) useDock.getState().removePanel('help');
   }, [helpVisible]);
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 880px)');
-    const update = () => setNarrowViewport(mq.matches);
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
-  }, []);
-  void narrowViewport;
 
   // Stop the BROWSER from page-zooming on trackpad pinch / ⌘-scroll anywhere
   // in the app. Pinch = `ctrl+wheel` (Chrome/Electron) or the WebKit

@@ -15,60 +15,29 @@ import {
 import { FloretNode } from './nodes/FloretNode';
 import { SpreadEdge } from './SpreadEdge';
 import { useEditor, getDefTypeFor, getRegionPortsFor, getParamsFor, getEdgesSnapshot } from './editor-state';
-import { arePortsCompatible, buildIsValidConnection, categoryColor, getUpstreamTypes, isMultiTargetPort, parseHandle } from './connection-rules';
+import { buildIsValidConnection, categoryColor, parseHandle } from './connection-rules';
 import { nodeRegistry } from '../nodes/registry';
-import { getResolvedInputs, getResolvedOutputs } from '../nodes/types';
-import { buildNodeIndex, absolutePosition, findAncestor, isDescendantOf } from './canvas-geometry';
-import { useOverlay, type ContextMenuItem, type PendingConnection } from './overlay-store';
+import { type PendingConnection } from './overlay-store';
+import { useOverlay } from './overlay-store';
 import { NodeSearch } from './NodeSearch';
 import { FavoritesMenu } from './FavoritesMenu';
 import { ContextMenu } from './ContextMenu';
 import { prefsSnapshot } from '../app/prefs';
 import { paramStore } from '../runtime/param-store';
 
-interface NodeBox {
-  position: { x: number; y: number };
-  size: { w: number; h: number };
-}
-
-/** Bbox of a React-Flow rendered node. Prefers `measured` (set after
- *  first render); falls back to `style.width/height` (region frames),
- *  then a constant default. Used by the auto-grow-regions logic in
- *  onNodeDrag. */
-const RF_FALLBACK_SIZE = { w: 200, h: 100 };
-function rfNodeBox(n: RFNode): NodeBox {
-  const m = n.measured;
-  if (m?.width != null && m?.height != null) {
-    return { position: n.position, size: { w: m.width, h: m.height } };
-  }
-  const s = n.style as { width?: number; height?: number } | undefined;
-  if (s?.width != null && s?.height != null) {
-    return { position: n.position, size: { w: s.width, h: s.height } };
-  }
-  return { position: n.position, size: RF_FALLBACK_SIZE };
-}
-
-/** Region size used when no `style.width/height` is set. Matches the
- *  NodeResizer's minWidth/minHeight in RegionNode.tsx. */
-const REGION_FALLBACK_W = 200;
-const REGION_FALLBACK_H = 140;
-
-/** When a child is dragged within this many px of the region's right or
- *  bottom edge, the region starts growing in that direction. Trigger
- *  larger than the padding so growth feels anticipatory, not reactive. */
-const REGION_GROW_TRIGGER = 24;
-/** Padding maintained between a child and the region's edge after growth. */
-const REGION_GROW_PADDING = 32;
-
-/** Read a region's current width/height from its style/params. */
-function regionSize(region: RFNode): { w: number; h: number } {
-  const s = region.style as { width?: number; height?: number } | undefined;
-  const d = region.data as { params?: { width?: number; height?: number } } | undefined;
-  return {
-    w: s?.width ?? d?.params?.width ?? REGION_FALLBACK_W,
-    h: s?.height ?? d?.params?.height ?? REGION_FALLBACK_H,
-  };
-}
+import {
+  rfNodeBox,
+  regionSize,
+  REGION_GROW_TRIGGER,
+  REGION_GROW_PADDING,
+  findRegionContaining,
+  findRegionEdgeAtFlow,
+} from './canvas/region-hit';
+import { resolveDraggedPortType, paintWireAffinity, clearWireAffinity } from './canvas/wire-affinity';
+import { SubpatchBreadcrumb, EmptyCanvasHint, RegionDrawPreview } from './canvas/parts';
+import { useProjectedGraph } from './canvas/use-projected-graph';
+import { buildPaneMenu, buildEdgeMenu, buildNodeMenu } from './canvas/context-menus';
+import { useCanvasEventBus, useRegionDrawTool, useSpacebarReparent } from './canvas/use-canvas-effects';
 
 function CanvasInner() {
   const nodes = useEditor((s) => s.nodes);
@@ -158,87 +127,10 @@ function CanvasInner() {
   const nodeTypes = useMemo(() => ({ floret: FloretNode }), []);
   const edgeTypes = useMemo(() => ({ default: SpreadEdge }), []);
 
-  // While reparent mode is on, strip `extent: 'parent'` from every
-  // parented node so the user can drag them outside their region.
-  // The store itself isn't mutated — we re-add extent on drop via
-  // setNodeParent. This re-renders the React Flow node list only when
-  // reparent mode toggles.
-  //
-  // Also handles subpatch view filtering: when the user has entered a
-  // subpatch, only that subpatch + its direct children are visible.
-  // Regions remain inline (children always rendered with their region),
-  // so the filter only cuts at the subpatch boundary.
-  const projectedNodes = useMemo(() => {
-    let projected = nodes;
-    if (currentViewId) {
-      // Build the set of subpatch ancestors that should be HIDDEN: any
-      // subpatch *not* in the current view stack is treated as a closed
-      // box — its children stay hidden so we only see one level deep.
-      const subpatchIds = new Set<string>();
-      for (const n of nodes) {
-        const d = nodeRegistry.get(n.data.defType);
-        if (d?.regionKind === 'subpatch') subpatchIds.add(n.id);
-      }
-      const viewSet = new Set(viewStack);
-      // Determine nearestEnteredSubpatch for each node by walking up
-      // parentId chain. A node is visible when its nearest subpatch
-      // ancestor === currentViewId; root nodes (nearest = none) are
-      // visible only when currentViewId === null.
-      const byId = buildNodeIndex(nodes);
-      const nearestSubpatchAncestor = (id: string): string | null =>
-        findAncestor(id, byId, (a) => subpatchIds.has(a.id))?.id ?? null;
-      projected = nodes
-        .filter((n) => {
-          // The entered subpatch itself is visible.
-          if (n.id === currentViewId) return true;
-          // Other subpatches in the view stack (ancestors of current view)
-          // are NOT shown — they're the layers we've drilled past.
-          if (viewSet.has(n.id)) return false;
-          return nearestSubpatchAncestor(n.id) === currentViewId;
-        })
-        .map((n) => {
-          // Float the entered subpatch free: its real parent (a region or
-          // an outer subpatch) is no longer in the projected list, so
-          // React Flow can't anchor it. Reset position to (0, 0) too so
-          // fitView lands cleanly on the frame and its children.
-          if (n.id === currentViewId && n.parentId) {
-            return { ...n, parentId: undefined, extent: undefined, position: { x: 0, y: 0 } };
-          }
-          return n;
-        });
-    } else {
-      // Root view: hide anything inside a subpatch.
-      const subpatchIds = new Set<string>();
-      for (const n of nodes) {
-        const d = nodeRegistry.get(n.data.defType);
-        if (d?.regionKind === 'subpatch') subpatchIds.add(n.id);
-      }
-      const byId = buildNodeIndex(nodes);
-      const insideSubpatch = (id: string): boolean =>
-        findAncestor(id, byId, (a) => subpatchIds.has(a.id)) !== null;
-      projected = nodes.filter((n) => !insideSubpatch(n.id));
-    }
-    if (reparentMode) {
-      projected = projected.map((n) => (n.parentId ? { ...n, extent: undefined } : n));
-    }
-    // Region frames (foreach / if / cache) are large containers — clicking
-    // anywhere in their body shouldn't drag the whole frame. Restrict
-    // drag-initiation to `.region-header`. Subpatches are excluded:
-    // collapsed they're regular-sized nodes (drag from anywhere is fine),
-    // expanded they're the floated current-view frame (not draggable).
-    projected = projected.map((n) => {
-      const def = nodeRegistry.get(n.data.defType);
-      if (def?.regionKind && def.regionKind !== 'subpatch') {
-        return { ...n, dragHandle: '.region-header' };
-      }
-      return n;
-    });
-    return projected;
-  }, [nodes, reparentMode, currentViewId, viewStack]);
-  const projectedEdges = useMemo(() => {
-    const visible = new Set(projectedNodes.map((n) => n.id));
-    return edges.filter((e) => visible.has(e.source) && visible.has(e.target));
-  }, [projectedNodes, edges]);
+  // Subpatch view filtering + reparent extent-stripping + region drag-handles.
+  const { projectedNodes, projectedEdges } = useProjectedGraph(
+    nodes, edges, currentViewId, viewStack, reparentMode,
+  );
 
   const isValidConnectionFn = useMemo(
     () => buildIsValidConnection(getDefTypeFor, getRegionPortsFor, getParamsFor, getEdgesSnapshot),
@@ -342,53 +234,7 @@ function CanvasInner() {
     (e: React.MouseEvent, edge: Edge) => {
       e.preventDefault();
       e.stopPropagation();
-      const isMulti =
-        edge.target && edge.targetHandle
-          ? isMultiTargetPort(
-              edge.target, edge.targetHandle,
-              getDefTypeFor, getRegionPortsFor, getParamsFor,
-            )
-          : false;
-      const items: ContextMenuItem[] = [];
-      if (isMulti) {
-        // Compute this edge's current slot among siblings sharing the
-        // target multi pin — so the menu can show "(1/N)" and disable
-        // moves that would no-op.
-        const s = useEditor.getState();
-        const subset = s.edges.filter(
-          (x) => x.target === edge.target && x.targetHandle === edge.targetHandle,
-        );
-        const idx = subset.findIndex((x) => x.id === edge.id);
-        items.push({
-          label: `Move up · (${idx + 1}/${subset.length})`,
-          disabled: idx <= 0,
-          shortcut: '[',
-          onSelect: () => reorderMultiEdge(edge.id, -1),
-        });
-        items.push({
-          label: 'Move down',
-          disabled: idx >= subset.length - 1,
-          shortcut: ']',
-          onSelect: () => reorderMultiEdge(edge.id, +1),
-        });
-        items.push({
-          label: 'Move to top',
-          disabled: idx <= 0,
-          onSelect: () => reorderMultiEdge(edge.id, -subset.length),
-        });
-        items.push({
-          label: 'Move to bottom',
-          disabled: idx >= subset.length - 1,
-          onSelect: () => reorderMultiEdge(edge.id, +subset.length),
-        });
-        items.push({ separator: true, label: '', onSelect: () => {} });
-      }
-      items.push({
-        label: 'Delete wire',
-        shortcut: 'Del',
-        danger: true,
-        onSelect: () => removeEdge(edge.id),
-      });
+      const items = buildEdgeMenu(edge, { reorderMultiEdge, removeEdge });
       openContext({ screenPosition: { x: e.clientX, y: e.clientY }, items });
     },
     [openContext, reorderMultiEdge, removeEdge],
@@ -492,6 +338,20 @@ function CanvasInner() {
 
       const flowPosition = reactFlow.screenToFlowPosition({ x: clientX, y: clientY });
 
+      // ─── Alt-drop on empty pane → drop a Probe (inspect + reroute) ────
+      // Instead of the node-search popover, wire a Probe to the dragged pin
+      // so you immediately see the data and can keep routing from it.
+      const alt = 'altKey' in e && e.altKey;
+      if (alt) {
+        const probeId = addNode('meta/probe', flowPosition);
+        if (pending.handleType === 'source') {
+          addEditorEdge(pending.nodeId, pending.handleId, probeId, 'in-in');
+        } else {
+          addEditorEdge(probeId, 'out-out', pending.nodeId, pending.handleId);
+        }
+        return;
+      }
+
       const connection: PendingConnection = {
         nodeId: pending.nodeId,
         handleName: parsed.name,
@@ -505,7 +365,7 @@ function CanvasInner() {
         connection,
       });
     },
-    [openSearch, reactFlow, addRegionPort, addEditorEdge],
+    [openSearch, reactFlow, addRegionPort, addEditorEdge, addNode],
   );
 
   // ─── Spacebar+drag node into / out of a region: re-parent on drop ─────────
@@ -736,28 +596,11 @@ function CanvasInner() {
     (e: React.MouseEvent | MouseEvent) => {
       e.preventDefault();
       const flowPos = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
-      const items: ContextMenuItem[] = [
-        {
-          label: 'Add node…',
-          onSelect: () =>
-            openSearch({
-              screenPosition: { x: e.clientX, y: e.clientY },
-              flowPosition: flowPos,
-            }),
-          shortcut: 'Dbl-click',
-        },
-        {
-          label: 'Add comment',
-          onSelect: () => addNode('meta/comment', flowPos),
-        },
-        { separator: true, label: '', onSelect: () => {} },
-        {
-          label: 'Paste',
-          shortcut: 'Ctrl+V',
-          disabled: !hasClipboard(),
-          onSelect: () => pasteAt(flowPos),
-        },
-      ];
+      const items = buildPaneMenu(
+        flowPos,
+        { x: e.clientX, y: e.clientY },
+        { openSearch, addNode, hasClipboard, pasteAt },
+      );
       openContext({ screenPosition: { x: e.clientX, y: e.clientY }, items });
     },
     [addNode, openContext, openSearch, hasClipboard, pasteAt, reactFlow],
@@ -777,88 +620,15 @@ function CanvasInner() {
         x: e.clientX + 24,
         y: e.clientY + 24,
       });
-
-      const items: ContextMenuItem[] = [
-        {
-          label: 'Duplicate',
-          shortcut: 'Ctrl+D',
-          onSelect: () => duplicateNode(node.id),
-        },
-        {
-          label: 'Copy',
-          shortcut: 'Ctrl+C',
-          onSelect: () => copySelected(),
-        },
-        {
-          label: 'Cut',
-          shortcut: 'Ctrl+X',
-          onSelect: () => {
-            copySelected();
-            deleteNode(node.id);
-          },
-        },
-        {
-          label: 'Paste',
-          shortcut: 'Ctrl+V',
-          disabled: !hasClipboard(),
-          onSelect: () => pasteAt(flowPos),
-        },
-      ];
-
-      // Region-membership items (skip on region nodes themselves — they
-      // can't sit inside other regions in the current model).
       const allNodes = reactFlow.getNodes();
-      const nodeDefType = (node.data as { defType?: string } | undefined)?.defType;
-      const isRegion = nodeDefType ? !!nodeRegistry.get(nodeDefType)?.regionKind : false;
-      if (!isRegion) {
-        items.push({ separator: true, label: '', onSelect: () => {} });
-        if (node.parentId) {
-          items.push({
-            label: 'Move out of region',
-            shortcut: 'Space+drag',
-            onSelect: () => moveNodeToParent(node, null, allNodes, setNodeParent),
-          });
-        }
-        // List all regions that could receive this node.
-        const targets = allNodes.filter((n) => {
-          const t = (n.data as { defType?: string } | undefined)?.defType;
-          return t && !!nodeRegistry.get(t)?.regionKind && n.id !== node.parentId && n.id !== node.id;
-        });
-        for (const region of targets) {
-          const regionLabel =
-            ((region.data as { params?: Record<string, unknown> } | undefined)
-              ?.params?.label as string | undefined) ?? 'Region';
-          items.push({
-            label: `Move into ${regionLabel}`,
-            onSelect: () => moveNodeToParent(node, region.id, allNodes, setNodeParent),
-          });
-        }
-      }
-
-      // Group-into-subpatch — only if there's a selection (>= 1 selected).
-      const selectedCount = reactFlow.getNodes().filter((n) => n.selected).length;
-      if (selectedCount >= 1) {
-        items.push({ separator: true, label: '', onSelect: () => {} });
-        items.push({
-          label: selectedCount === 1
-            ? 'Wrap in subpatch'
-            : `Group ${selectedCount} into subpatch`,
-          shortcut: 'Ctrl+G',
-          onSelect: () => groupSelectionIntoSubpatch(),
-        });
-      }
-
-      items.push({ separator: true, label: '', onSelect: () => {} });
-      items.push({
-        label: 'Delete',
-        shortcut: 'Del',
-        danger: true,
-        onSelect: () => deleteNode(node.id),
+      const selectedCount = allNodes.filter((n) => n.selected).length;
+      const items = buildNodeMenu(node, flowPos, allNodes, selectedCount, {
+        duplicateNode, copySelected, deleteNode, hasClipboard, pasteAt,
+        setNodeParent, groupSelectionIntoSubpatch,
       });
-
       openContext({ screenPosition: { x: e.clientX, y: e.clientY }, items });
     },
-    [copySelected, deleteNode, duplicateNode, hasClipboard, openContext, pasteAt, reactFlow, setNodeParent],
+    [copySelected, deleteNode, duplicateNode, groupSelectionIntoSubpatch, hasClipboard, openContext, pasteAt, reactFlow, setNodeParent],
   );
 
   // Block the browser context menu anywhere inside the editor — React Flow's
@@ -868,153 +638,10 @@ function CanvasInner() {
     e.preventDefault();
   }, []);
 
-  // Bridge window-level keyboard events (Tab opens search, Ctrl+V pastes)
-  // into React Flow's coordinate projector. The listeners live here because
-  // `useReactFlow` only works inside the provider.
-  useEffect(() => {
-    function onOpenSearch(e: Event) {
-      const ev = e as CustomEvent<{ x: number; y: number }>;
-      const screen = ev.detail;
-      const flow = reactFlow.screenToFlowPosition(screen);
-      openSearch({ screenPosition: screen, flowPosition: flow });
-    }
-    function onOpenFavorites(e: Event) {
-      const ev = e as CustomEvent<{ x: number; y: number }>;
-      const screen = ev.detail;
-      const flow = reactFlow.screenToFlowPosition(screen);
-      openFavorites({ screenPosition: screen, flowPosition: flow });
-    }
-    function onPaste(e: Event) {
-      const ev = e as CustomEvent<{ x: number; y: number }>;
-      const flow = reactFlow.screenToFlowPosition(ev.detail);
-      pasteAt(flow);
-    }
-    function onFocusNode(e: Event) {
-      const ev = e as CustomEvent<string>;
-      const id = ev.detail;
-      if (!id) return;
-      // Pan + zoom to the node. fitView accepts node ids via `nodes` filter.
-      reactFlow.fitView({ nodes: [{ id }], duration: 300, padding: 0.4 });
-    }
-    function onFitSelection() {
-      // Fit-view to the current selection (or to every node if nothing
-      // is selected). Triggered by the global F shortcut.
-      const s = useEditor.getState();
-      const ids = s.nodes.filter((n) => n.selected).map((n) => ({ id: n.id }));
-      if (ids.length > 0) {
-        reactFlow.fitView({ nodes: ids, duration: 300, padding: 0.4 });
-      } else {
-        reactFlow.fitView({ duration: 300, padding: 0.2 });
-      }
-    }
-    window.addEventListener('floret:open-search', onOpenSearch);
-    window.addEventListener('floret:open-favorites', onOpenFavorites);
-    window.addEventListener('floret:paste', onPaste);
-    window.addEventListener('floret:focus-node', onFocusNode);
-    window.addEventListener('floret:fit-selection', onFitSelection);
-    return () => {
-      window.removeEventListener('floret:open-search', onOpenSearch);
-      window.removeEventListener('floret:open-favorites', onOpenFavorites);
-      window.removeEventListener('floret:paste', onPaste);
-      window.removeEventListener('floret:focus-node', onFocusNode);
-      window.removeEventListener('floret:fit-selection', onFitSelection);
-    };
-  }, [openSearch, openFavorites, pasteAt, reactFlow]);
-
-  // ─── Region draw tool (armed from the palette) ──────────────────────────
-  // Clicking a region in the palette arms `armedRegionKind`. The canvas then
-  // shows a crosshair; a left press-drag on the empty pane draws the region
-  // rectangle (press = first corner, release = opposite corner). Escape, a
-  // right-click, or completing the draw disarms.
-  useEffect(() => {
-    if (!armedRegionKind) return;
-    let startFlow: { x: number; y: number } | null = null;
-
-    function onDown(e: MouseEvent) {
-      if (e.button !== 0) return;
-      // Only begin on the empty canvas pane — not on a node, edge, panel,
-      // or control — so the tool never hijacks other interactions.
-      if (!(e.target as HTMLElement).closest?.('.react-flow__pane')) return;
-      e.preventDefault();
-      e.stopPropagation();
-      startFlow = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
-      setDrawingRegion({ kind: armedRegionKind!, startFlow, currentFlow: startFlow });
-    }
-    function onMove(e: MouseEvent) {
-      if (!startFlow) return;
-      const flow = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
-      setDrawingRegion((prev) => (prev ? { ...prev, currentFlow: flow } : prev));
-    }
-    function onUp(e: MouseEvent) {
-      if (!startFlow) return;
-      const begin = startFlow;
-      startFlow = null;
-      const flow = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
-      const x = Math.min(begin.x, flow.x);
-      const y = Math.min(begin.y, flow.y);
-      const w = Math.max(60, Math.abs(flow.x - begin.x));
-      const h = Math.max(60, Math.abs(flow.y - begin.y));
-      addRegion(armedRegionKind!, { x, y }, { width: w, height: h, autoReparent: true });
-      setDrawingRegion(null);
-      disarmRegionDraw();
-    }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') { startFlow = null; setDrawingRegion(null); disarmRegionDraw(); }
-    }
-    // Capture-phase down/up so we beat React Flow's pane handlers (box-
-    // select / pan) before they start.
-    window.addEventListener('mousedown', onDown, true);
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp, true);
-    window.addEventListener('keydown', onKey);
-    return () => {
-      window.removeEventListener('mousedown', onDown, true);
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp, true);
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [armedRegionKind, reactFlow, addRegion, disarmRegionDraw]);
-
-  // Spacebar tracking — flips the reparent-on-drop modifier. We listen
-  // at window level so it works regardless of focus, but skip when
-  // typing in an input/textarea.
-  useEffect(() => {
-    function isEditing(target: EventTarget | null): boolean {
-      const el = target as HTMLElement | null;
-      if (!el) return false;
-      const tag = el.tagName;
-      return tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable;
-    }
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.code !== 'Space' || isEditing(e.target)) return;
-      // Prevent page scroll on space.
-      e.preventDefault();
-      if (spaceDownRef.current) return;
-      spaceDownRef.current = true;
-      setReparentMode(true);
-      document.body.setAttribute('data-reparent-mode', '1');
-    }
-    function onKeyUp(e: KeyboardEvent) {
-      if (e.code !== 'Space') return;
-      if (!spaceDownRef.current) return;
-      spaceDownRef.current = false;
-      setReparentMode(false);
-      document.body.removeAttribute('data-reparent-mode');
-    }
-    function onBlur() {
-      spaceDownRef.current = false;
-      setReparentMode(false);
-      document.body.removeAttribute('data-reparent-mode');
-    }
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
-    window.addEventListener('blur', onBlur);
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('keyup', onKeyUp);
-      window.removeEventListener('blur', onBlur);
-    };
-  }, []);
+  // Window-level keyboard/event bridges that need React Flow's projector.
+  useCanvasEventBus({ openSearch, openFavorites, pasteAt });
+  useRegionDrawTool(armedRegionKind, setDrawingRegion, { addRegion, disarmRegionDraw });
+  useSpacebarReparent(spaceDownRef, setReparentMode);
 
   // Type assertion for nodes since React Flow's generic Node type narrows
   // strictly on `data`; our editor store holds a stricter `FloretNodeData`.
@@ -1119,327 +746,10 @@ function CanvasInner() {
   );
 }
 
-/**
- * Top-left breadcrumb. Visible at root view too — there it just shows
- * the label "Project" as a non-clickable header. Each subpatch segment
- * is clickable: clicking depth N navigates back to that level.
- */
-function SubpatchBreadcrumb({
-  viewStack, nodes, onNavigate, onExit,
-}: {
-  viewStack: string[];
-  nodes: ReadonlyArray<{ id: string; data: { params?: Record<string, unknown>; defType?: string } }>;
-  onNavigate: (depth: number) => void;
-  onExit: () => void;
-}) {
-  const segments: { label: string; depth: number }[] = [{ label: 'Project', depth: 0 }];
-  for (let i = 0; i < viewStack.length; i++) {
-    const id = viewStack[i]!;
-    const n = nodes.find((x) => x.id === id);
-    const label = (n?.data.params?.label as string | undefined) ?? 'Subpatch';
-    segments.push({ label, depth: i + 1 });
-  }
-  return (
-    <div className="subpatch-breadcrumb" data-empty={viewStack.length === 0 ? 1 : 0}>
-      {segments.map((s, i) => (
-        <span key={i} className="subpatch-crumb-row">
-          {i > 0 && <span className="subpatch-crumb-sep">/</span>}
-          <button
-            className="subpatch-crumb"
-            data-current={i === segments.length - 1 ? 1 : 0}
-            onClick={() => onNavigate(s.depth)}
-            title={i === segments.length - 1 ? 'Current view' : `Go to ${s.label}`}
-          >
-            {s.label}
-          </button>
-        </span>
-      ))}
-      {viewStack.length > 0 && (
-        <button
-          className="subpatch-crumb-exit"
-          onClick={onExit}
-          title="Exit one level (O)"
-        >
-          ↑ O
-        </button>
-      )}
-    </div>
-  );
-}
-
-/**
- * Muted hint shown when the canvas is empty — the first thing a new
- * user sees, so it has to point at the three main ways to populate
- * the canvas without being noisy.
- */
-function EmptyCanvasHint() {
-  return (
-    <div className="empty-canvas-hint">
-      <div className="empty-canvas-line">
-        <kbd>Tab</kbd> to search nodes
-      </div>
-      <div className="empty-canvas-line">
-        Drag from the left panel
-      </div>
-      <div className="empty-canvas-line">
-        Or load a <em>Sample</em>
-      </div>
-    </div>
-  );
-}
-
-/**
- * Translucent preview rectangle drawn while the user is rubber-banding
- * a new region. Positioned in screen coords by projecting the two
- * flow-coord corners back through `flowToScreenPosition`.
- */
-function RegionDrawPreview({
-  startFlow, currentFlow, kind,
-}: { startFlow: { x: number; y: number }; currentFlow: { x: number; y: number }; kind: 'foreach' | 'if' | 'cache' }) {
-  const reactFlow = useReactFlow();
-  const a = reactFlow.flowToScreenPosition(startFlow);
-  const b = reactFlow.flowToScreenPosition(currentFlow);
-  const left = Math.min(a.x, b.x);
-  const top = Math.min(a.y, b.y);
-  const width = Math.abs(b.x - a.x);
-  const height = Math.abs(b.y - a.y);
-  return (
-    <div
-      className={`region-draw-preview region-draw-preview-${kind}`}
-      style={{ left, top, width, height }}
-    >
-      <span className="region-draw-preview-label">{kind}</span>
-    </div>
-  );
-}
-
 export function Canvas() {
   return (
     <ReactFlowProvider>
       <CanvasInner />
     </ReactFlowProvider>
   );
-}
-
-/**
- * Find the dragged pin's port type. For region nodes the port type lives
- * on `data.ports`; for normal nodes it lives on the NodeDef.
- */
-function resolveDraggedPortType(
-  nodeId: string,
-  handleName: string,
-  handleType: 'source' | 'target',
-): import('../runtime/types').PortType | null {
-  const defType = getDefTypeFor(nodeId);
-  if (!defType) return null;
-  const def = nodeRegistry.get(defType);
-  if (!def) return null;
-
-  if (def.regionKind) {
-    const ports = getRegionPortsFor(nodeId);
-    const port = ports?.find((p) => p.id === handleName);
-    if (port) return port.type;
-    // Fall through to NodeDef static ports (e.g. If.condition).
-  }
-
-  if (handleType === 'source') {
-    // Source-side type lookup must honour dynamicOutputs so that wires
-    // dragged from a polymorphic node (Repeat with a Color upstream, …)
-    // carry the resolved type into wire validation and into any region
-    // port that gets created on drop. Without this, a Repeat→ForEach
-    // drop creates a port typed `any` instead of `color`.
-    const params = getParamsFor(nodeId) ?? {};
-    const outputs = def.dynamicOutputs
-      ? getResolvedOutputs(def, params, getUpstreamTypesFor(nodeId))
-      : def.outputs;
-    return outputs.find((p) => p.name === handleName)?.type ?? null;
-  }
-
-  const port = getResolvedInputs(def, getParamsFor(nodeId) ?? {})
-    .find((p) => p.name === handleName);
-  return port?.type ?? null;
-}
-
-/**
- * Module-local helper: build the upstreamTypes map for a node by reading
- * the editor store's current edge/node lists. Used by
- * `resolveDraggedPortType` (which can't call useEditor() since it's not
- * a hook) so dynamicOutputs sees the same upstream picture the visual
- * layer does.
- */
-function getUpstreamTypesFor(nodeId: string) {
-  const state = useEditor.getState();
-  return getUpstreamTypes(nodeId, state.edges, state.nodes);
-}
-
-/**
- * Move a node to a new parent (or detach to root), preserving its
- * visual position. Used by both the shift+drag handler and the
- * right-click "Move into / out of region" menu items.
- */
-function moveNodeToParent(
-  node: RFNode,
-  newParentId: string | null,
-  allNodes: ReadonlyArray<RFNode>,
-  setNodeParent: (id: string, parentId: string | null, position?: { x: number; y: number }) => void,
-): void {
-  const currentParent = node.parentId ?? null;
-  if (currentParent === newParentId) return;
-
-  let absPos = { ...node.position };
-  if (currentParent) {
-    const parent = allNodes.find((n) => n.id === currentParent);
-    if (parent) {
-      absPos = { x: absPos.x + parent.position.x, y: absPos.y + parent.position.y };
-    }
-  }
-  let newPos = absPos;
-  if (newParentId) {
-    const target = allNodes.find((n) => n.id === newParentId);
-    if (target) {
-      newPos = { x: absPos.x - target.position.x, y: absPos.y - target.position.y };
-    }
-  }
-  setNodeParent(node.id, newParentId, newPos);
-}
-
-/**
- * Walk every handle in the DOM and mark it as compatible / incompatible
- * with the dragged pin. CSS uses the `data-wire-affinity` attribute to
- * brighten the matches and dim the rest, so the user can see at a
- * glance which ports will accept the wire.
- */
-function paintWireAffinity(pending: OnConnectStartParams): void {
-  if (!pending.nodeId || !pending.handleId || !pending.handleType) return;
-  const parsed = parseHandle(pending.handleId);
-  if (!parsed) return;
-  const draggedType = resolveDraggedPortType(pending.nodeId, parsed.name, pending.handleType);
-  if (!draggedType) return;
-
-  // Dragging a source pin → match against TARGET handles. Vice-versa.
-  const lookFor: 'source' | 'target' = pending.handleType === 'source' ? 'target' : 'source';
-
-  document.querySelectorAll('.react-flow__handle').forEach((el) => {
-    const h = el as HTMLElement;
-    const nodeEl = h.closest('.react-flow__node') as HTMLElement | null;
-    const nodeId = nodeEl?.dataset.id;
-    if (!nodeId) return;
-    const handleId = h.dataset.handleid ?? '';
-    const role: 'source' | 'target' = h.classList.contains('source') ? 'source' : 'target';
-    if (role !== lookFor) return;
-    // No self-pin matching.
-    if (nodeId === pending.nodeId && handleId === pending.handleId) return;
-
-    const p = parseHandle(handleId);
-    if (!p) return;
-    const otherType = resolveDraggedPortType(nodeId, p.name, role);
-    if (!otherType) return;
-    const compat = arePortsCompatible(draggedType, otherType);
-    h.setAttribute('data-wire-affinity', compat ? 'match' : 'miss');
-  });
-  document.body.setAttribute('data-wire-dragging', '1');
-}
-
-function clearWireAffinity(): void {
-  document.body.removeAttribute('data-wire-dragging');
-  document.querySelectorAll('[data-wire-affinity]').forEach((el) => {
-    (el as HTMLElement).removeAttribute('data-wire-affinity');
-  });
-}
-
-/**
- * Find a region whose bounds contain the given flow-coord point.
- * Used for shift+drag reparenting. Skips the node being dragged (you
- * can't parent a node to itself) and any descendant of it.
- */
-function findRegionContaining(
-  nodes: ReadonlyArray<RFNode>,
-  flowPoint: { x: number; y: number },
-  draggedId: string,
-): RFNode | null {
-  const byId = buildNodeIndex(nodes);
-
-  // Iterate in reverse so deeper / later-added regions win when stacked.
-  let best: RFNode | null = null;
-  let bestArea = Infinity;
-  for (const n of nodes) {
-    const defType = (n.data as { defType?: string } | undefined)?.defType;
-    if (!defType) continue;
-    const def = nodeRegistry.get(defType);
-    if (!def?.regionKind) continue;
-    if (n.id === draggedId) continue;
-    if (isDescendantOf(n.id, draggedId, byId)) continue;
-
-    const w = (n.width ?? (n.style?.width as number | undefined)) ?? 480;
-    const h = (n.height ?? (n.style?.height as number | undefined)) ?? 280;
-    const pos = absolutePosition(n.id, byId);
-    if (
-      flowPoint.x >= pos.x && flowPoint.x <= pos.x + w &&
-      flowPoint.y >= pos.y && flowPoint.y <= pos.y + h
-    ) {
-      const area = w * h;
-      if (area < bestArea) {
-        best = n;
-        bestArea = area;
-      }
-    }
-  }
-  return best;
-}
-
-/**
- * Hit-test a flow-coord point against every region's left/right edge
- * band. Returns the region id and which edge (input = left band,
- * output = right band) was hit, or null if none. Picks the smallest
- * region when multiple are stacked.
- *
- * The "band" extends `EDGE_BAND_PX` outside the region as well as just
- * inside, so the user can drop on either side of the border.
- */
-const EDGE_BAND_PX = 24;
-function findRegionEdgeAtFlow(
-  nodes: ReadonlyArray<RFNode>,
-  flowPoint: { x: number; y: number },
-): { regionId: string; edge: 'input' | 'output'; localY: number } | null {
-  const byId = buildNodeIndex(nodes);
-
-  let best: { regionId: string; edge: 'input' | 'output'; localY: number } | null = null;
-  let bestArea = Infinity;
-  for (const n of nodes) {
-    const defType = (n.data as { defType?: string } | undefined)?.defType;
-    if (!defType) continue;
-    const def = nodeRegistry.get(defType);
-    if (!def?.regionKind) continue;
-
-    const w = (n.width ?? (n.style?.width as number | undefined)) ?? 480;
-    const h = (n.height ?? (n.style?.height as number | undefined)) ?? 280;
-    const pos = absolutePosition(n.id, byId);
-
-    // Within vertical band of the region?
-    if (flowPoint.y < pos.y - EDGE_BAND_PX || flowPoint.y > pos.y + h + EDGE_BAND_PX) continue;
-
-    let hit: 'input' | 'output' | null = null;
-    if (
-      flowPoint.x >= pos.x - EDGE_BAND_PX &&
-      flowPoint.x <= pos.x + EDGE_BAND_PX
-    ) {
-      hit = 'input';
-    } else if (
-      flowPoint.x >= pos.x + w - EDGE_BAND_PX &&
-      flowPoint.x <= pos.x + w + EDGE_BAND_PX
-    ) {
-      hit = 'output';
-    }
-    if (!hit) continue;
-
-    const area = w * h;
-    if (area < bestArea) {
-      // Clamp local y inside the region body so the pill renders on-frame
-      // regardless of how close to the band edge the drop was.
-      const localY = Math.max(8, Math.min(h - 8, flowPoint.y - pos.y));
-      best = { regionId: n.id, edge: hit, localY };
-      bestArea = area;
-    }
-  }
-  return best;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useDock, type DefaultPlacement } from './dockStore';
 import { registerDockMeta, updateDockMeta } from './dockMeta';
@@ -118,11 +118,4 @@ function FloatingPanel({
     </div>,
     document.body,
   );
-}
-
-/** Subscribe helper kept for parity with the old API surface; unused now
- *  but exported so call sites that imported a panel-state hook don't break
- *  during migration. */
-export function useDockClientReady(): boolean {
-  return useSyncExternalStore(() => () => {}, () => true, () => true);
 }

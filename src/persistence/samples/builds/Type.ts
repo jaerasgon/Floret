@@ -204,99 +204,146 @@ export function buildKineticType() {
 // chromatic chase. One ForEach iteration per character — angle = i · (TAU /
 // N) + time · SPIN; (cos, sin) · RADIUS gives (x, y).
 export function buildTypeHalo() {
+  const RINGS = 3;
   const c = note('th_c', { x: -560, y: 0 },
-    'Type halo\n\nThe phrase is split into characters, then a ForEach lays them around a circle. angle = i · (2π / N) + time · SPIN; (x, y) = (cos, sin) · RADIUS. Hue cycles per character + per time for a chromatic chase.',
-    { w: 500, h: 240 });
+    'Type halo\n\nThe phrase is tiled into 3 concentric RINGS. A ForEach lays each character around its ring: posInRing = i mod N, angle = posInRing·(2π/N) + spin (inner rings spin faster). Each letter’s size wiggles with sin(time + i), and hue cycles per character + time.',
+    { w: 500, h: 260 });
 
-  const str   = node('th_str',   'value/string',  { x: -560, y: 200 }, { value: 'GENERATIVE FLORET TYPE STUDIO ' });
-  const split = node('th_split', 'string/split',  { x: -360, y: 160 });
-  const len   = node('th_len',   'string/length', { x: -360, y: 260 });
-  const range = node('th_range', 'spread/range',  { x: -160, y: 260 });
-  const time  = node('th_time',  'time/seconds',  { x: -560, y: 320 });
-  const bg    = node('th_bg',    'color/color',   { x: -360, y: 340 },
+  const str   = node('th_str',   'value/string',  { x: -560, y: 220 }, { value: 'GENERATIVE FLORET TYPE STUDIO ' });
+  const split = node('th_split', 'string/split',  { x: -360, y: 180 });
+  const len   = node('th_len',   'string/length', { x: -360, y: 280 });
+  const total = node('th_total', 'math/mul',      { x: -180, y: 280 }, { b: RINGS }); // N · RINGS
+  const range = node('th_range', 'spread/range',  { x:  -20, y: 280 });
+  const tiled = node('th_tiled', 'spread/repeat', { x: -180, y: 180 }, { count: RINGS });
+  const time  = node('th_time',  'time/seconds',  { x: -560, y: 360 });
+  const bg    = node('th_bg',    'color/color',   { x: -360, y: 380 },
                      { mode: 'rgb', r: 12, g: 14, b: 24, a: 255 });
 
   const RID = 'th_region';
   const region: FloretNode = {
-    id: RID, type: 'floret', position: { x: 80, y: 0 },
+    id: RID, type: 'floret', position: { x: 120, y: 0 },
     data: {
       defType: 'region/foreach',
-      params: { width: 920, height: 540, label: 'ForEach char' },
+      params: { width: 1480, height: 780, label: 'ForEach char' },
       ports: [
         { id: 'ch', name: 'ch', type: 'string', direction: 'input' },
         { id: 'i',  name: 'i',  type: 'number', direction: 'input' },
         { id: 'layer', name: 'layer', type: 'layer', direction: 'output' },
       ],
     },
-    style: { width: 920, height: 540 },
+    style: { width: 1480, height: 780 },
   };
 
   const TAU = Math.PI * 2;
-  const stepDiv = node('th_step',    'math/div', { x:  40, y:  40 }, { a: TAU }, RID); // TAU / N
-  const angBase = node('th_angBase', 'math/mul', { x: 200, y:  40 }, {},          RID);
-  const tSpin   = node('th_tSpin',   'math/mul', { x: 200, y: 120 }, { b: 0.35 }, RID);
-  const angle   = node('th_angle',   'math/add', { x: 360, y:  40 }, {},          RID);
-  const cosA    = node('th_cos',     'math/cos', { x: 520, y:  40 }, {},          RID);
-  const sinA    = node('th_sin',     'math/sin', { x: 520, y: 120 }, {},          RID);
-  const xOut    = node('th_x',       'math/mul', { x: 680, y:  40 }, { b: 150 }, RID);
-  const yOut    = node('th_y',       'math/mul', { x: 680, y: 120 }, { b: 150 }, RID);
-  // hue = i · 24 + time · 32
-  const hueI    = node('th_hueI',    'math/mul', { x:  40, y: 240 }, { b: 24 }, RID);
-  const hueT    = node('th_hueT',    'math/mul', { x:  40, y: 320 }, { b: 32 }, RID);
-  const hue     = node('th_hue',     'math/add', { x: 200, y: 240 }, {},        RID);
-  const hsl     = node('th_hsl',     'color/color', { x: 360, y: 240 },
-                       { mode: 'hsl', h: 0, s: 90, l: 65, a: 255 }, RID);
-  const fill    = node('th_fill',    'style/fill', { x: 520, y: 240 }, {}, RID);
-  const tp      = node('th_tp',      'style/text-params', { x: 680, y: 240 },
-                       { font: 'monospace', bold: true, italic: false,
-                         align: 'center', baseline: 'middle' }, RID);
-  const text    = node('th_text',    'draw/text', { x: 840, y:  40 },
-                       { string: '?', size: 30, align: 'center' }, RID);
+  // ring index + position within the ring (i / N, floor, i − ring·N)
+  const step  = node('th_step',  'math/div',  { x:  40, y: 360 }, { a: TAU }, RID); // TAU / N
+  const ringF = node('th_ringF', 'math/div',  { x:  40, y:  40 }, {},        RID); // i / N
+  const ring  = node('th_ring',  'math/floor',{ x: 200, y:  40 }, {},        RID);
+  const ringN = node('th_ringN', 'math/mul',  { x: 360, y:  40 }, {},        RID); // ring · N
+  const posIn = node('th_posIn', 'math/sub',  { x: 520, y:  40 }, {},        RID); // i − ring·N
+  const angB  = node('th_angB',  'math/mul',  { x: 680, y:  40 }, {},        RID); // posIn · step
+  // differential spin — inner rings turn faster: spin = time·0.3 / (ring+1)
+  const tBase = node('th_tBase', 'math/mul',  { x:  40, y: 200 }, { b: 0.3 }, RID);
+  const r1    = node('th_r1',    'math/add',  { x: 360, y: 140 }, { b: 1 },   RID);
+  const spin  = node('th_spin',  'math/div',  { x: 520, y: 160 }, {},         RID);
+  const angle = node('th_angle', 'math/add',  { x: 840, y:  40 }, {},         RID);
+  const cosN  = node('th_cos',   'math/cos',  { x:1000, y:  40 }, {},         RID);
+  const sinN  = node('th_sin',   'math/sin',  { x:1000, y: 120 }, {},         RID);
+  // radius = ring·70 + 90  → rings at 90 / 160 / 230
+  const ringG = node('th_ringG', 'math/mul',  { x: 680, y: 200 }, { b: 70 }, RID);
+  const radius= node('th_radius','math/add',  { x: 840, y: 200 }, { b: 90 }, RID);
+  const xOut  = node('th_x',     'math/mul',  { x:1160, y:  40 }, {},        RID);
+  const yOut  = node('th_y',     'math/mul',  { x:1160, y: 120 }, {},        RID);
+  const pos   = node('th_pos',   'vec2/make', { x:1300, y:  60 }, {},        RID);
+  // size wiggle: 26 + 7·sin(time·2.5 + i·0.7)
+  const wT    = node('th_wT',    'math/mul',  { x:  40, y: 460 }, { b: 2.5 }, RID);
+  const wI    = node('th_wI',    'math/mul',  { x:  40, y: 540 }, { b: 0.7 }, RID);
+  const wPh   = node('th_wPh',   'math/add',  { x: 200, y: 500 }, {},        RID);
+  const wSin  = node('th_wSin',  'math/sin',  { x: 360, y: 500 }, {},        RID);
+  const wAmp  = node('th_wAmp',  'math/mul',  { x: 520, y: 500 }, { b: 7 },  RID);
+  const size  = node('th_size',  'math/add',  { x: 680, y: 500 }, { b: 26 }, RID);
+  // hue = i·16 + time·30
+  const hueI  = node('th_hueI',  'math/mul',  { x:  40, y: 640 }, { b: 16 }, RID);
+  const hueT  = node('th_hueT',  'math/mul',  { x:  40, y: 700 }, { b: 30 }, RID);
+  const hue   = node('th_hue',   'math/add',  { x: 200, y: 660 }, {},       RID);
+  const hsl   = node('th_hsl',   'color/color',{ x: 360, y: 640 },
+                     { mode: 'hsl', h: 0, s: 90, l: 65, a: 255 }, RID);
+  const fill  = node('th_fill',  'style/fill', { x: 520, y: 640 }, {}, RID);
+  const tp    = node('th_tp',    'style/text-params', { x: 680, y: 640 },
+                     { font: 'monospace', bold: true, italic: false,
+                       align: 'center', baseline: 'middle' }, RID);
+  const text  = node('th_text',  'draw/text', { x:1300, y: 320 },
+                     { string: '?', size: 30, align: 'center' }, RID);
 
-  const renderer = node('th_renderer', 'render/renderer', { x: 1080, y: 0 },
-                        { width: 540, height: 540 });
+  const renderer = node('th_renderer', 'render/renderer', { x: 1680, y: 0 },
+                        { width: 560, height: 560 });
 
   return {
-    nodes: [c, str, split, len, range, time, bg, region,
-            stepDiv, angBase, tSpin, angle, cosA, sinA, xOut, yOut,
+    nodes: [c, str, split, len, total, range, tiled, time, bg, region,
+            step, ringF, ring, ringN, posIn, angB, tBase, r1, spin, angle, cosN, sinN,
+            ringG, radius, xOut, yOut, pos, wT, wI, wPh, wSin, wAmp, size,
             hueI, hueT, hue, hsl, fill, tp, text, renderer],
     edges: [
       edge('th_str', 'text', 'th_split', 'text'),
       edge('th_str', 'text', 'th_len',   'text'),
-      edge('th_len', 'length', 'th_range', 'count'),
-      edge('th_split', 'parts', RID, 'ch'),
+      edge('th_len', 'length', 'th_total', 'a'),
+      edge('th_total', 'result', 'th_range', 'count'),
+      edge('th_split', 'parts', 'th_tiled', 'source'),
+      edge('th_tiled', 'values', RID, 'ch'),
       edge('th_range', 'indices', RID, 'i'),
 
-      // angle
-      edge('th_len', 'length', 'th_step',    'b'),
-      edge(RID, 'i',          'th_angBase', 'a'),
-      edge('th_step', 'quotient', 'th_angBase', 'b'),
-      edge('th_time',   't',   'th_tSpin',   'a'),
-      edge('th_angBase', 'product', 'th_angle',   'a'),
-      edge('th_tSpin', 'product', 'th_angle',   'b'),
-
+      // N (= phrase length) broadcasts into the inner math
+      edge('th_len', 'length', 'th_step',  'b'),
+      edge('th_len', 'length', 'th_ringF', 'b'),
+      edge('th_len', 'length', 'th_ringN', 'b'),
+      // ring + position-in-ring → base angle
+      edge(RID, 'i', 'th_ringF', 'a'),
+      edge('th_ringF', 'result', 'th_ring', 'x'),
+      edge('th_ring', 'result', 'th_ringN', 'a'),
+      edge(RID, 'i', 'th_posIn', 'a'),
+      edge('th_ringN', 'result', 'th_posIn', 'b'),
+      edge('th_posIn', 'result', 'th_angB', 'a'),
+      edge('th_step', 'result', 'th_angB', 'b'),
+      // differential spin
+      edge('th_time', 't', 'th_tBase', 'a'),
+      edge('th_ring', 'result', 'th_r1', 'a'),
+      edge('th_tBase', 'result', 'th_spin', 'a'),
+      edge('th_r1', 'result', 'th_spin', 'b'),
+      edge('th_angB', 'result', 'th_angle', 'a'),
+      edge('th_spin', 'result', 'th_angle', 'b'),
       // (x, y) on the ring
-      edge('th_angle', 'sum', 'th_cos', 'x'),
-      edge('th_angle', 'sum', 'th_sin', 'x'),
-      edge('th_cos', 'cosine', 'th_x',   'a'),
-      edge('th_sin', 'sine', 'th_y',   'a'),
-      edge('th_x', 'product', 'th_text', 'x'),
-      edge('th_y', 'product', 'th_text', 'y'),
-
+      edge('th_angle', 'result', 'th_cos', 'x'),
+      edge('th_angle', 'result', 'th_sin', 'x'),
+      edge('th_ring', 'result', 'th_ringG', 'a'),
+      edge('th_ringG', 'result', 'th_radius', 'a'),
+      edge('th_cos', 'result', 'th_x', 'a'),
+      edge('th_radius', 'result', 'th_x', 'b'),
+      edge('th_sin', 'result', 'th_y', 'a'),
+      edge('th_radius', 'result', 'th_y', 'b'),
+      edge('th_x', 'result', 'th_pos', 'x'),
+      edge('th_y', 'result', 'th_pos', 'y'),
+      edge('th_pos', 'vector', 'th_text', 'pos'),
+      // size wiggle
+      edge('th_time', 't', 'th_wT', 'a'),
+      edge(RID, 'i', 'th_wI', 'a'),
+      edge('th_wT', 'result', 'th_wPh', 'a'),
+      edge('th_wI', 'result', 'th_wPh', 'b'),
+      edge('th_wPh', 'result', 'th_wSin', 'x'),
+      edge('th_wSin', 'result', 'th_wAmp', 'a'),
+      edge('th_wAmp', 'result', 'th_size', 'a'),
+      edge('th_size', 'result', 'th_text', 'size'),
       // hue
-      edge(RID, 'i',          'th_hueI', 'a'),
-      edge('th_time', 't',    'th_hueT', 'a'),
-      edge('th_hueI', 'product',  'th_hue',  'a'),
-      edge('th_hueT', 'product',  'th_hue',  'b'),
-      edge('th_hue', 'sum',  'th_hsl',  'h'),
-
+      edge(RID, 'i', 'th_hueI', 'a'),
+      edge('th_time', 't', 'th_hueT', 'a'),
+      edge('th_hueI', 'result', 'th_hue', 'a'),
+      edge('th_hueT', 'result', 'th_hue', 'b'),
+      edge('th_hue', 'result', 'th_hsl', 'h'),
       // style + draw
-      edge('th_hsl', 'color',   'th_fill', 'color'),
-      edge('th_fill', 'style', 'th_tp',  'base'),
-      edge('th_tp',   'style', 'th_text','style'),
+      edge('th_hsl', 'color', 'th_fill', 'color'),
+      edge('th_fill', 'style', 'th_tp', 'base'),
+      edge('th_tp', 'style', 'th_text', 'style'),
       edge(RID, 'ch', 'th_text', 'string'),
-
-      edge('th_text', 'layer', RID, 'layer'),
+      edge('th_text', 'shape', RID, 'layer'),
       edge(RID, 'layer', 'th_renderer', 'layers'),
       edge('th_bg', 'color', 'th_renderer', 'background'),
     ],
@@ -304,264 +351,307 @@ export function buildTypeHalo() {
 }
 
 
-// ─── Type / Spiral ────────────────────────────────────────────────────────
-// Phrase tiled K times → laid out on a logarithmic spiral. Each character's
-// radius grows with i; angle steps a small amount per character + drifts in
-// time. The spiral as a whole rotates slowly while individual characters
-// trace outward.
-export function buildTypeSpiral() {
-  const TILE = 6;
-  const c = note('tsp_c', { x: -560, y: 0 },
-    'Type spiral\n\nThe phrase is RepeatSpread-tiled so we have plenty of characters. They march outward: r = R0 + i · dR, angle = i · dAngle − time · SPIN. (cos, sin) · r places them on a logarithmic spiral that rotates as a whole.',
+
+
+// ─── Type / The Raven ──────────────────────────────────────────────────────
+// A passage from Poe's "The Raven" (public domain) laid out as a serif grid.
+// Each letter's brightness is its own slow Perlin walk — letters fade in and
+// out independently in black & white — and the dimmer a letter gets, the more
+// it blurs (alpha → blur via the new style/blur). An eerie breathing manuscript.
+export function buildTypeRaven() {
+  const LINES = [
+    'Once upon a midnight dreary,',
+    'while I pondered, weak and weary,',
+    'over many a quaint and curious',
+    'volume of forgotten lore —',
+    'while I nodded, nearly napping,',
+    'suddenly there came a tapping,',
+  ];
+  const COLS = Math.max(...LINES.map((l) => l.length)); // pad width
+  const ROWS = LINES.length;
+  const TOTAL = COLS * ROWS;
+  const CHARW = 13;
+  const LINEH = 38;
+  // Pad every line to COLS so the flat char list is a clean ROWS×COLS grid;
+  // padding spaces draw nothing, preserving the layout.
+  const passage = LINES.map((l) => l.padEnd(COLS)).join('');
+
+  const c = note('rv_c', { x: -560, y: 0 },
+    'The Raven\n\nA passage laid out as a serif grid. Each letter\'s opacity is its own slow Perlin walk — noise(i, time) — so letters fade in and out independently in black & white, and the dimmer a letter gets, the more it blurs.',
     { w: 500, h: 240 });
 
-  const str   = node('tsp_str',   'value/string',  { x: -560, y: 200 }, { value: 'FLORET TYPE ' });
-  const split = node('tsp_split', 'string/split',  { x: -360, y: 160 });
-  const tile  = node('tsp_tile',  'spread/repeat', { x: -180, y: 160 }, { count: TILE });
-  const len   = node('tsp_len',   'string/length', { x: -360, y: 260 });
-  const total = node('tsp_total', 'math/mul',      { x: -180, y: 260 }, { b: TILE });
-  const range = node('tsp_range', 'spread/range',  { x:    0, y: 260 });
-  const time  = node('tsp_time',  'time/seconds',  { x: -560, y: 320 });
-  const bg    = node('tsp_bg',    'color/color',   { x: -360, y: 340 },
-                     { mode: 'rgb', r: 8, g: 8, b: 16, a: 255 });
+  const str   = node('rv_str',   'value/string', { x: -560, y: 220 }, { value: passage });
+  const split = node('rv_split', 'string/split', { x: -360, y: 200 });
+  const range = node('rv_range', 'spread/range', { x: -360, y: 300 }, { count: TOTAL });
+  const time  = node('rv_time',  'time/seconds', { x: -560, y: 360 });
+  const bg    = node('rv_bg',    'color/color',  { x: -360, y: 380 }, { mode: 'rgb', r: 8, g: 8, b: 10, a: 255 });
 
-  const RID = 'tsp_region';
+  const RID = 'rv_region';
   const region: FloretNode = {
     id: RID, type: 'floret', position: { x: 120, y: 0 },
     data: {
       defType: 'region/foreach',
-      params: { width: 920, height: 540, label: 'ForEach char' },
+      params: { width: 1480, height: 700, label: 'ForEach letter' },
       ports: [
         { id: 'ch', name: 'ch', type: 'string', direction: 'input' },
         { id: 'i',  name: 'i',  type: 'number', direction: 'input' },
         { id: 'layer', name: 'layer', type: 'layer', direction: 'output' },
       ],
     },
-    style: { width: 920, height: 540 },
+    style: { width: 1480, height: 700 },
   };
 
-  // angle = i · dAngle − time · SPIN
-  const iAng    = node('tsp_iAng',  'math/mul', { x:  40, y:  40 }, { b: 0.42 }, RID);
-  const tSpin   = node('tsp_tSpin', 'math/mul', { x:  40, y: 100 }, { b: 0.25 }, RID);
-  const angle   = node('tsp_angle', 'math/sub', { x: 200, y:  40 }, {}, RID);
-  // r = R0 + i · dR
-  const rDelta  = node('tsp_rDelta','math/mul', { x:  40, y: 180 }, { b: 4 },   RID);
-  const radius  = node('tsp_r',     'math/add', { x: 200, y: 180 }, { b: 28 }, RID);
+  // grid position: row = floor(i / COLS), col = i − row·COLS
+  const rowF  = node('rv_rowF',  'math/div',  { x:  40, y:  40 }, { b: COLS }, RID);
+  const row   = node('rv_row',   'math/floor',{ x: 200, y:  40 }, {},         RID);
+  const rowC  = node('rv_rowCol','math/mul',  { x: 360, y:  40 }, { b: COLS }, RID);
+  const col   = node('rv_col',   'math/sub',  { x: 520, y:  40 }, {},         RID);
+  const colCen= node('rv_colCen','math/sub',  { x: 680, y:  40 }, { b: (COLS - 1) / 2 }, RID);
+  const xOut  = node('rv_x',     'math/mul',  { x: 840, y:  40 }, { b: CHARW }, RID);
+  const rowCen= node('rv_rowCen','math/sub',  { x: 360, y: 140 }, { b: (ROWS - 1) / 2 }, RID);
+  const yOut  = node('rv_y',     'math/mul',  { x: 520, y: 140 }, { b: LINEH }, RID);
+  const pos   = node('rv_pos',   'vec2/make', { x:1000, y:  80 }, {},          RID);
 
-  const cosA    = node('tsp_cos',   'math/cos', { x: 360, y:  40 }, {}, RID);
-  const sinA    = node('tsp_sin',   'math/sin', { x: 360, y: 120 }, {}, RID);
-  const xOut    = node('tsp_x',     'math/mul', { x: 520, y:  40 }, {}, RID);
-  const yOut    = node('tsp_y',     'math/mul', { x: 520, y: 120 }, {}, RID);
+  // per-letter opacity: a slow Perlin walk, mapped to the full 0..1 range
+  const ni    = node('rv_ni',    'math/mul',  { x:  40, y: 260 }, { b: 9.1 },  RID); // i · 9.1 (decorrelate)
+  const ts    = node('rv_ts',    'math/mul',  { x:  40, y: 340 }, { b: 0.16 }, RID); // time · 0.16 (slow drift)
+  const n     = node('rv_noise', 'noise/perlin', { x: 200, y: 280 }, {},       RID);
+  // Narrow low window → only the bottom tail of the noise dips below full
+  // opacity, so just a few letters fade at once and the verse stays readable.
+  const alpha = node('rv_alpha', 'math/map',  { x: 360, y: 280 }, { inMin: 0.22, inMax: 0.37, outMin: 0, outMax: 1 }, RID);
+  const a255  = node('rv_a255',  'math/mul',  { x: 520, y: 280 }, { b: 255 },  RID);
+  // blur grows as the letter fades: (1 − alpha) · 7
+  const inv   = node('rv_inv',   'math/sub',  { x: 360, y: 380 }, { a: 1 },    RID);
+  const blurA = node('rv_blurA', 'math/mul',  { x: 520, y: 380 }, { b: 7 },    RID);
 
-  // hue = i · 16 + time · 40
-  const hueI    = node('tsp_hueI',  'math/mul', { x:  40, y: 260 }, { b: 16 }, RID);
-  const hueT    = node('tsp_hueT',  'math/mul', { x:  40, y: 320 }, { b: 40 }, RID);
-  const hue     = node('tsp_hue',   'math/add', { x: 200, y: 260 }, {}, RID);
-  const hsl     = node('tsp_hsl',   'color/color', { x: 360, y: 260 },
-                       { mode: 'hsl', h: 0, s: 90, l: 65, a: 255 }, RID);
-  const fill    = node('tsp_fill',  'style/fill', { x: 520, y: 260 }, {}, RID);
-  const tp      = node('tsp_tp',    'style/text-params', { x: 680, y: 260 },
-                       { font: 'monospace', bold: true, italic: false,
-                         align: 'center', baseline: 'middle' }, RID);
-  const text    = node('tsp_text',  'draw/text', { x: 700, y:  40 },
-                       { string: '?', size: 20, align: 'center' }, RID);
+  const white = node('rv_white', 'color/color', { x: 680, y: 280 }, { mode: 'rgb', r: 245, g: 245, b: 245, a: 255 }, RID);
+  const fill  = node('rv_fill',  'style/fill', { x: 840, y: 280 }, {}, RID);
+  const tp    = node('rv_tp',    'style/text-params', { x: 1000, y: 280 },
+                     { font: 'Georgia, "Times New Roman", serif', bold: false, italic: false,
+                       align: 'center', baseline: 'middle' }, RID);
+  const blur  = node('rv_blur',  'style/blur', { x: 1160, y: 280 }, {}, RID);
+  const text  = node('rv_text',  'draw/text',  { x: 1180, y:  80 }, { string: '?', size: 22, align: 'center' }, RID);
 
-  const renderer = node('tsp_renderer', 'render/renderer', { x: 940, y: 0 },
-                        { width: 540, height: 540 });
+  const renderer = node('rv_renderer', 'render/renderer', { x: 1680, y: 0 }, { width: 560, height: 360 });
 
   return {
-    nodes: [c, str, split, tile, len, total, range, time, bg, region,
-            iAng, tSpin, angle, rDelta, radius,
-            cosA, sinA, xOut, yOut,
-            hueI, hueT, hue, hsl, fill, tp, text, renderer],
+    nodes: [c, str, split, range, time, bg, region,
+            rowF, row, rowC, col, colCen, xOut, rowCen, yOut, pos,
+            ni, ts, n, alpha, a255, inv, blurA, white, fill, tp, blur, text, renderer],
     edges: [
-      edge('tsp_str', 'text', 'tsp_split', 'text'),
-      edge('tsp_str', 'text', 'tsp_len',   'text'),
-      edge('tsp_split', 'parts', 'tsp_tile',  'value'),
-      edge('tsp_len', 'length', 'tsp_total', 'a'),
-      edge('tsp_total', 'product', 'tsp_range', 'count'),
-      edge('tsp_tile', 'values', RID, 'ch'),
-      edge('tsp_range', 'indices', RID, 'i'),
+      edge('rv_str', 'text', 'rv_split', 'text'),
+      edge('rv_split', 'parts', RID, 'ch'),
+      edge('rv_range', 'indices', RID, 'i'),
+      edge('rv_bg', 'color', 'rv_renderer', 'background'),
 
-      // angle
-      edge(RID, 'i',           'tsp_iAng',  'a'),
-      edge('tsp_time', 't',    'tsp_tSpin', 'a'),
-      edge('tsp_iAng', 'product',  'tsp_angle', 'a'),
-      edge('tsp_tSpin', 'product',  'tsp_angle', 'b'),
-      // r
-      edge(RID, 'i',           'tsp_rDelta','a'),
-      edge('tsp_rDelta', 'product', 'tsp_r',     'a'),
+      // grid position
+      edge(RID, 'i', 'rv_rowF', 'a'),
+      edge('rv_rowF', 'result', 'rv_row', 'x'),
+      edge('rv_row', 'result', 'rv_rowCol', 'a'),
+      edge(RID, 'i', 'rv_col', 'a'),
+      edge('rv_rowCol', 'result', 'rv_col', 'b'),
+      edge('rv_col', 'result', 'rv_colCen', 'a'),
+      edge('rv_colCen', 'result', 'rv_x', 'a'),
+      edge('rv_row', 'result', 'rv_rowCen', 'a'),
+      edge('rv_rowCen', 'result', 'rv_y', 'a'),
+      edge('rv_x', 'result', 'rv_pos', 'x'),
+      edge('rv_y', 'result', 'rv_pos', 'y'),
+      edge('rv_pos', 'vector', 'rv_text', 'pos'),
 
-      edge('tsp_angle', 'difference', 'tsp_cos', 'x'),
-      edge('tsp_angle', 'difference', 'tsp_sin', 'x'),
-      edge('tsp_cos', 'cosine', 'tsp_x',   'a'),
-      edge('tsp_r', 'sum', 'tsp_x',   'b'),
-      edge('tsp_sin', 'sine', 'tsp_y',   'a'),
-      edge('tsp_r', 'sum', 'tsp_y',   'b'),
-      edge('tsp_x', 'product', 'tsp_text','x'),
-      edge('tsp_y', 'product', 'tsp_text','y'),
+      // opacity walk
+      edge(RID, 'i', 'rv_ni', 'a'),
+      edge('rv_time', 't', 'rv_ts', 'a'),
+      edge('rv_ni', 'result', 'rv_noise', 'x'),
+      edge('rv_ts', 'result', 'rv_noise', 'y'),
+      edge('rv_noise', 'noise', 'rv_alpha', 'x'),
+      edge('rv_alpha', 'result', 'rv_a255', 'a'),
+      edge('rv_a255', 'result', 'rv_white', 'a'),
+      // blur from fade
+      edge('rv_alpha', 'result', 'rv_inv', 'b'),
+      edge('rv_inv', 'result', 'rv_blurA', 'a'),
+      edge('rv_blurA', 'result', 'rv_blur', 'amount'),
 
-      // hue
-      edge(RID, 'i',           'tsp_hueI', 'a'),
-      edge('tsp_time', 't',    'tsp_hueT', 'a'),
-      edge('tsp_hueI', 'product',  'tsp_hue',  'a'),
-      edge('tsp_hueT', 'product',  'tsp_hue',  'b'),
-      edge('tsp_hue', 'sum',  'tsp_hsl',  'h'),
-
-      // style + draw
-      edge('tsp_hsl', 'color',   'tsp_fill', 'color'),
-      edge('tsp_fill', 'style', 'tsp_tp',   'base'),
-      edge('tsp_tp',   'style', 'tsp_text', 'style'),
-      edge(RID, 'ch', 'tsp_text', 'string'),
-
-      edge('tsp_text', 'layer', RID, 'layer'),
-      edge(RID, 'layer', 'tsp_renderer', 'layers'),
-      edge('tsp_bg', 'color', 'tsp_renderer', 'background'),
+      // style chain + draw
+      edge('rv_white', 'color', 'rv_fill', 'color'),
+      edge('rv_fill', 'style', 'rv_tp', 'base'),
+      edge('rv_tp', 'style', 'rv_blur', 'base'),
+      edge('rv_blur', 'style', 'rv_text', 'style'),
+      edge(RID, 'ch', 'rv_text', 'string'),
+      edge('rv_text', 'shape', RID, 'layer'),
+      edge(RID, 'layer', 'rv_renderer', 'layers'),
     ],
   };
 }
 
 
-// ─── Type / Drift ─────────────────────────────────────────────────────────
-// A grid of repeated characters, each cell displaced by 2D Perlin noise.
-// Two seeds for x and y → cells drift independently; the field flows over
-// time. Classic noise-field-meets-text composition.
+
+// ─── Type / Noise Drift ─────────────────────────────────────────────────────
+// One long passage laid out as a monospace grid. A slow, drifting Perlin
+// "mask" field selects CLUSTERS of letters (smoothstep threshold); inside a
+// cluster the letters are shoved around by a second noise displacement field
+// and tinted, while everywhere else the text sits still and readable. The
+// clusters wander over time, so the disturbance roams across the passage.
 export function buildTypeDrift() {
-  const COLS = 10, ROWS = 14, CELLS = COLS * ROWS;
+  const LINES = [
+    'It was the best of times,',
+    'it was the worst of times,',
+    'it was the age of wisdom,',
+    'it was the age of foolishness,',
+    'it was the epoch of belief,',
+    'it was the epoch of incredulity,',
+    'it was the season of Light,',
+    'it was the season of Darkness.',
+  ];
+  const COLS = Math.max(...LINES.map((l) => l.length));
+  const ROWS = LINES.length;
+  const TOTAL = COLS * ROWS;
+  const CHARW = 12;
+  const LINEH = 30;
+  const AMP = 26; // max cluster displacement (px)
+  const passage = LINES.map((l) => l.padEnd(COLS)).join('');
+
   const c = note('tdr_c', { x: -560, y: 0 },
-    'Type drift\n\nA grid of repeated characters (10 × 14) drifts through a 2D Perlin field. Per cell: (baseX, baseY) from row/col; noise samples at (baseX·s, baseY·s + time·v) for two seeds give independent x/y jitter. The field flows.',
+    'Noise drift\n\nThe passage sits as a monospace grid. A slow Perlin “mask” (smoothstep threshold) picks drifting CLUSTERS; inside them a second noise field shoves the letters around and tints them, while the rest stays still and readable. The clusters wander over time.',
     { w: 500, h: 240 });
 
-  const str   = node('tdr_str',   'value/string',  { x: -560, y: 200 }, { value: 'FLORET ' });
-  const split = node('tdr_split', 'string/split',  { x: -360, y: 160 });
-  // Tile by CELLS so the spread is long enough to feed every cell.
-  const tile  = node('tdr_tile',  'spread/repeat', { x: -180, y: 160 }, { count: CELLS });
-  const range = node('tdr_range', 'spread/range',  { x: -180, y: 260 }, { count: CELLS });
-  const time  = node('tdr_time',  'time/seconds',  { x: -560, y: 320 });
-  const bg    = node('tdr_bg',    'color/color',   { x: -360, y: 340 },
-                     { mode: 'rgb', r: 18, g: 22, b: 30, a: 255 });
+  const str   = node('tdr_str',   'value/string', { x: -560, y: 220 }, { value: passage });
+  const split = node('tdr_split', 'string/split', { x: -360, y: 200 });
+  const range = node('tdr_range', 'spread/range', { x: -360, y: 300 }, { count: TOTAL });
+  const time  = node('tdr_time',  'time/seconds', { x: -560, y: 360 });
+  const bg    = node('tdr_bg',    'color/color',  { x: -360, y: 380 }, { mode: 'rgb', r: 10, g: 11, b: 16, a: 255 });
 
   const RID = 'tdr_region';
   const region: FloretNode = {
     id: RID, type: 'floret', position: { x: 120, y: 0 },
     data: {
       defType: 'region/foreach',
-      params: { width: 1000, height: 580, label: 'ForEach cell' },
+      params: { width: 1560, height: 760, label: 'ForEach letter' },
       ports: [
         { id: 'ch', name: 'ch', type: 'string', direction: 'input' },
         { id: 'i',  name: 'i',  type: 'number', direction: 'input' },
         { id: 'layer', name: 'layer', type: 'layer', direction: 'output' },
       ],
     },
-    style: { width: 1000, height: 580 },
+    style: { width: 1560, height: 760 },
   };
 
-  // colIdx = i mod COLS; rowIdx = floor(i / COLS)
-  const colIdx = node('tdr_colIdx', 'math/mod',   { x:  40, y:  40 }, { b: COLS }, RID);
-  const rowDiv = node('tdr_rowDiv', 'math/div',   { x:  40, y: 100 }, { b: COLS }, RID);
-  const rowIdx = node('tdr_rowIdx', 'math/floor', { x: 200, y: 100 }, {}, RID);
+  // grid position
+  const rowF  = node('tdr_rowF',  'math/div',  { x:  40, y:  40 }, { b: COLS }, RID);
+  const row   = node('tdr_row',   'math/floor',{ x: 200, y:  40 }, {},         RID);
+  const rowCol= node('tdr_rowCol','math/mul',  { x: 360, y:  40 }, { b: COLS }, RID);
+  const col   = node('tdr_col',   'math/sub',  { x: 520, y:  40 }, {},         RID);
+  const colCen= node('tdr_colCen','math/sub',  { x: 680, y:  40 }, { b: (COLS - 1) / 2 }, RID);
+  const gx    = node('tdr_gx',    'math/mul',  { x: 840, y:  40 }, { b: CHARW }, RID);
+  const rowCen= node('tdr_rowCen','math/sub',  { x: 360, y: 140 }, { b: (ROWS - 1) / 2 }, RID);
+  const gy    = node('tdr_gy',    'math/mul',  { x: 520, y: 140 }, { b: LINEH }, RID);
 
-  // baseX = (colIdx − (COLS-1)/2) · COL_W
-  const COL_W = 38, ROW_H = 30;
-  const colOff = node('tdr_colOff', 'math/sub', { x: 200, y:  40 }, { b: (COLS - 1) / 2 }, RID);
-  const baseX  = node('tdr_baseX',  'math/mul', { x: 360, y:  40 }, { b: COL_W }, RID);
-  const rowOff = node('tdr_rowOff', 'math/sub', { x: 360, y: 100 }, { b: (ROWS - 1) / 2 }, RID);
-  const baseY  = node('tdr_baseY',  'math/mul', { x: 520, y: 100 }, { b: ROW_H }, RID);
+  // scaled noise coordinates (+ slow time drift on one axis)
+  const gsx   = node('tdr_gsx',   'math/mul',  { x:  40, y: 240 }, { b: 0.012 }, RID);
+  const gsy   = node('tdr_gsy',   'math/mul',  { x:  40, y: 300 }, { b: 0.012 }, RID);
+  const tDisp = node('tdr_tDisp', 'math/mul',  { x:  40, y: 360 }, { b: 0.30 }, RID);
+  const gsyT  = node('tdr_gsyT',  'math/add',  { x: 200, y: 320 }, {},          RID);
+  const msx   = node('tdr_msx',   'math/mul',  { x:  40, y: 440 }, { b: 0.022 }, RID);
+  const msy   = node('tdr_msy',   'math/mul',  { x:  40, y: 500 }, { b: 0.022 }, RID);
+  const tMask = node('tdr_tMask', 'math/mul',  { x:  40, y: 560 }, { b: 0.15 }, RID);
+  const msyT  = node('tdr_msyT',  'math/add',  { x: 200, y: 520 }, {},          RID);
 
-  // Noise inputs: scale baseX, baseY for noise space; add time·SPEED to baseY.
-  const nxS    = node('tdr_nxS',    'math/mul', { x:  40, y: 180 }, { b: 0.012 }, RID);
-  const nyS    = node('tdr_nyS',    'math/mul', { x:  40, y: 240 }, { b: 0.012 }, RID);
-  const tDrift = node('tdr_tDrift', 'math/mul', { x:  40, y: 300 }, { b: 0.6 },   RID);
-  const nyT    = node('tdr_nyT',    'math/add', { x: 200, y: 240 }, {},           RID);
+  // noise fields: displacement (x, y — different seeds) + cluster mask
+  const nX    = node('tdr_nX',    'noise/perlin', { x: 360, y: 240 }, { seed: 7 },  RID);
+  const nY    = node('tdr_nY',    'noise/perlin', { x: 360, y: 320 }, { seed: 23 }, RID);
+  const mN    = node('tdr_mN',    'noise/perlin', { x: 360, y: 480 }, { seed: 99 }, RID);
+  const mask  = node('tdr_mask',  'math/smoothstep', { x: 540, y: 480 }, { edge0: 0.55, edge1: 0.78 }, RID);
 
-  const nx = node('tdr_nx', 'noise/perlin', { x: 360, y: 180 }, { seed: 1, octaves: 2, falloff: 0.5 }, RID);
-  const ny = node('tdr_ny', 'noise/perlin', { x: 360, y: 280 }, { seed: 7, octaves: 2, falloff: 0.5 }, RID);
-  // jitter = (noise − 0.5) · AMP
-  const nxSub  = node('tdr_nxSub', 'math/sub', { x: 520, y: 180 }, { b: 0.5 }, RID);
-  const nySub  = node('tdr_nySub', 'math/sub', { x: 520, y: 280 }, { b: 0.5 }, RID);
-  const xJit   = node('tdr_xJit',  'math/mul', { x: 680, y: 180 }, { b: 80 }, RID);
-  const yJit   = node('tdr_yJit',  'math/mul', { x: 680, y: 280 }, { b: 80 }, RID);
-  const xOut   = node('tdr_x',     'math/add', { x: 840, y:  60 }, {}, RID);
-  const yOut   = node('tdr_y',     'math/add', { x: 840, y: 140 }, {}, RID);
+  // displacement = map(noise → ±AMP) · mask
+  const dxM   = node('tdr_dxM',   'math/map',  { x: 540, y: 240 }, { inMin: 0.3, inMax: 0.7, outMin: -AMP, outMax: AMP }, RID);
+  const dyM   = node('tdr_dyM',   'math/map',  { x: 540, y: 320 }, { inMin: 0.3, inMax: 0.7, outMin: -AMP, outMax: AMP }, RID);
+  const dxg   = node('tdr_dxg',   'math/mul',  { x: 720, y: 240 }, {}, RID);
+  const dyg   = node('tdr_dyg',   'math/mul',  { x: 720, y: 320 }, {}, RID);
+  const fx    = node('tdr_fx',    'math/add',  { x: 900, y: 120 }, {}, RID);
+  const fy    = node('tdr_fy',    'math/add',  { x: 900, y: 200 }, {}, RID);
+  const pos   = node('tdr_pos',   'vec2/make', { x:1060, y: 160 }, {}, RID);
 
-  // hue from the noise itself — gives the field a colour wash.
-  const hueScale = node('tdr_hueScale', 'math/mul', { x: 520, y: 380 }, { b: 220 }, RID);
-  const hueBase  = node('tdr_hueBase',  'math/add', { x: 680, y: 380 }, { b: 200 }, RID);
-  const hsl   = node('tdr_hsl', 'color/color', { x: 840, y: 380 },
-                     { mode: 'hsl', h: 0, s: 70, l: 70, a: 255 }, RID);
-  const fill  = node('tdr_fill','style/fill',  { x: 1000, y: 380 }, {}, RID);
-  const tp    = node('tdr_tp',  'style/text-params', { x: 1160, y: 380 },
-                     { font: 'monospace', bold: true, italic: false,
+  // colour: clusters tint (hue + sat rise with the mask); rest stays near-white
+  const hueM  = node('tdr_hueM',  'math/mul',  { x: 720, y: 480 }, { b: 220 }, RID);
+  const satM  = node('tdr_satM',  'math/mul',  { x: 720, y: 540 }, { b: 90 },  RID);
+  const hsl   = node('tdr_hsl',   'color/color', { x: 900, y: 480 }, { mode: 'hsl', h: 0, s: 0, l: 82, a: 255 }, RID);
+  const fill  = node('tdr_fill',  'style/fill', { x:1060, y: 480 }, {}, RID);
+  const tp    = node('tdr_tp',    'style/text-params', { x:1220, y: 480 },
+                     { font: 'Menlo, Consolas, monospace', bold: false, italic: false,
                        align: 'center', baseline: 'middle' }, RID);
-  const text  = node('tdr_text','draw/text',   { x: 1000, y:  80 },
-                     { string: '?', size: 20, align: 'center' }, RID);
+  const text  = node('tdr_text',  'draw/text', { x:1240, y: 160 }, { string: '?', size: 18, align: 'center' }, RID);
 
-  const renderer = node('tdr_renderer', 'render/renderer', { x: 1380, y: 0 },
-                        { width: 600, height: 540 });
+  const renderer = node('tdr_renderer', 'render/renderer', { x: 1760, y: 0 }, { width: 560, height: 340 });
 
   return {
-    nodes: [c, str, split, tile, range, time, bg, region,
-            colIdx, rowDiv, rowIdx, colOff, baseX, rowOff, baseY,
-            nxS, nyS, tDrift, nyT, nx, ny, nxSub, nySub, xJit, yJit, xOut, yOut,
-            hueScale, hueBase, hsl, fill, tp, text, renderer],
+    nodes: [c, str, split, range, time, bg, region,
+            rowF, row, rowCol, col, colCen, gx, rowCen, gy,
+            gsx, gsy, tDisp, gsyT, msx, msy, tMask, msyT,
+            nX, nY, mN, mask, dxM, dyM, dxg, dyg, fx, fy, pos,
+            hueM, satM, hsl, fill, tp, text, renderer],
     edges: [
       edge('tdr_str', 'text', 'tdr_split', 'text'),
-      edge('tdr_split', 'parts', 'tdr_tile',  'value'),
-      edge('tdr_tile', 'values', RID, 'ch'),
+      edge('tdr_split', 'parts', RID, 'ch'),
       edge('tdr_range', 'indices', RID, 'i'),
-
-      // colIdx, rowIdx
-      edge(RID, 'i',          'tdr_colIdx', 'a'),
-      edge(RID, 'i',          'tdr_rowDiv', 'a'),
-      edge('tdr_rowDiv', 'quotient','tdr_rowIdx', 'x'),
-
-      // baseX, baseY
-      edge('tdr_colIdx', 'remainder','tdr_colOff', 'a'),
-      edge('tdr_colOff', 'difference','tdr_baseX',  'a'),
-      edge('tdr_rowIdx', 'floored','tdr_rowOff', 'a'),
-      edge('tdr_rowOff', 'difference','tdr_baseY',  'a'),
-
-      // noise inputs
-      edge('tdr_baseX', 'product', 'tdr_nxS', 'a'),
-      edge('tdr_baseY', 'product', 'tdr_nyS', 'a'),
-      edge('tdr_time',  't',   'tdr_tDrift', 'a'),
-      edge('tdr_nyS', 'product', 'tdr_nyT', 'a'),
-      edge('tdr_tDrift', 'product', 'tdr_nyT', 'b'),
-
-      // noise sample
-      edge('tdr_nxS', 'product', 'tdr_nx', 'x'),
-      edge('tdr_nyT', 'sum', 'tdr_nx', 'y'),
-      edge('tdr_nxS', 'product', 'tdr_ny', 'x'),
-      edge('tdr_nyT', 'sum', 'tdr_ny', 'y'),
-
-      // jitter
-      edge('tdr_nx', 'noise', 'tdr_nxSub', 'a'),
-      edge('tdr_ny', 'noise', 'tdr_nySub', 'a'),
-      edge('tdr_nxSub', 'difference', 'tdr_xJit',  'a'),
-      edge('tdr_nySub', 'difference', 'tdr_yJit',  'a'),
-
-      // x, y
-      edge('tdr_baseX', 'product', 'tdr_x', 'a'),
-      edge('tdr_xJit', 'product', 'tdr_x', 'b'),
-      edge('tdr_baseY', 'product', 'tdr_y', 'a'),
-      edge('tdr_yJit', 'product', 'tdr_y', 'b'),
-      edge('tdr_x', 'sum', 'tdr_text', 'x'),
-      edge('tdr_y', 'sum', 'tdr_text', 'y'),
-
-      // hue
-      edge('tdr_nx', 'noise', 'tdr_hueScale', 'a'),
-      edge('tdr_hueScale', 'product', 'tdr_hueBase',  'a'),
-      edge('tdr_hueBase', 'sum', 'tdr_hsl',      'h'),
-
-      // style + draw
-      edge('tdr_hsl', 'color',   'tdr_fill', 'color'),
-      edge('tdr_fill','style', 'tdr_tp',   'base'),
-      edge('tdr_tp',  'style', 'tdr_text', 'style'),
-      edge(RID, 'ch', 'tdr_text', 'string'),
-
-      edge('tdr_text', 'layer', RID, 'layer'),
-      edge(RID, 'layer', 'tdr_renderer', 'layers'),
       edge('tdr_bg', 'color', 'tdr_renderer', 'background'),
+
+      // grid position
+      edge(RID, 'i', 'tdr_rowF', 'a'),
+      edge('tdr_rowF', 'result', 'tdr_row', 'x'),
+      edge('tdr_row', 'result', 'tdr_rowCol', 'a'),
+      edge(RID, 'i', 'tdr_col', 'a'),
+      edge('tdr_rowCol', 'result', 'tdr_col', 'b'),
+      edge('tdr_col', 'result', 'tdr_colCen', 'a'),
+      edge('tdr_colCen', 'result', 'tdr_gx', 'a'),
+      edge('tdr_row', 'result', 'tdr_rowCen', 'a'),
+      edge('tdr_rowCen', 'result', 'tdr_gy', 'a'),
+
+      // scaled coords + time drift
+      edge('tdr_gx', 'result', 'tdr_gsx', 'a'),
+      edge('tdr_gy', 'result', 'tdr_gsy', 'a'),
+      edge('tdr_time', 't', 'tdr_tDisp', 'a'),
+      edge('tdr_gsy', 'result', 'tdr_gsyT', 'a'),
+      edge('tdr_tDisp', 'result', 'tdr_gsyT', 'b'),
+      edge('tdr_gx', 'result', 'tdr_msx', 'a'),
+      edge('tdr_gy', 'result', 'tdr_msy', 'a'),
+      edge('tdr_time', 't', 'tdr_tMask', 'a'),
+      edge('tdr_msy', 'result', 'tdr_msyT', 'a'),
+      edge('tdr_tMask', 'result', 'tdr_msyT', 'b'),
+
+      // noise fields
+      edge('tdr_gsx', 'result', 'tdr_nX', 'x'),
+      edge('tdr_gsyT', 'result', 'tdr_nX', 'y'),
+      edge('tdr_gsx', 'result', 'tdr_nY', 'x'),
+      edge('tdr_gsyT', 'result', 'tdr_nY', 'y'),
+      edge('tdr_msx', 'result', 'tdr_mN', 'x'),
+      edge('tdr_msyT', 'result', 'tdr_mN', 'y'),
+      edge('tdr_mN', 'noise', 'tdr_mask', 'x'),
+
+      // displacement gated by mask, added to grid position
+      edge('tdr_nX', 'noise', 'tdr_dxM', 'x'),
+      edge('tdr_nY', 'noise', 'tdr_dyM', 'x'),
+      edge('tdr_dxM', 'result', 'tdr_dxg', 'a'),
+      edge('tdr_mask', 'result', 'tdr_dxg', 'b'),
+      edge('tdr_dyM', 'result', 'tdr_dyg', 'a'),
+      edge('tdr_mask', 'result', 'tdr_dyg', 'b'),
+      edge('tdr_gx', 'result', 'tdr_fx', 'a'),
+      edge('tdr_dxg', 'result', 'tdr_fx', 'b'),
+      edge('tdr_gy', 'result', 'tdr_fy', 'a'),
+      edge('tdr_dyg', 'result', 'tdr_fy', 'b'),
+      edge('tdr_fx', 'result', 'tdr_pos', 'x'),
+      edge('tdr_fy', 'result', 'tdr_pos', 'y'),
+      edge('tdr_pos', 'vector', 'tdr_text', 'pos'),
+
+      // colour tint from mask
+      edge('tdr_mask', 'result', 'tdr_hueM', 'a'),
+      edge('tdr_mask', 'result', 'tdr_satM', 'a'),
+      edge('tdr_hueM', 'result', 'tdr_hsl', 'h'),
+      edge('tdr_satM', 'result', 'tdr_hsl', 's'),
+      edge('tdr_hsl', 'color', 'tdr_fill', 'color'),
+      edge('tdr_fill', 'style', 'tdr_tp', 'base'),
+      edge('tdr_tp', 'style', 'tdr_text', 'style'),
+      edge(RID, 'ch', 'tdr_text', 'string'),
+      edge('tdr_text', 'shape', RID, 'layer'),
+      edge(RID, 'layer', 'tdr_renderer', 'layers'),
     ],
   };
 }

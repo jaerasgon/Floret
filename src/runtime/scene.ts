@@ -54,6 +54,9 @@ export interface ResolvedStyle {
   strokeJoin: StrokeJoin;
   /** Where the stroke sits relative to the outline (closed shapes only). */
   strokeAlign: StrokeAlign;
+  /** Gaussian blur radius in pixels (0 = sharp). Applied via the canvas
+   *  filter to the whole shape — fill + stroke + text alike. */
+  blur: number;
   /** Font size in pixels. Composed into the CSS `font` shorthand at render
    *  time by `composeFontCss(style)`. */
   fontSize: number;
@@ -89,6 +92,7 @@ export const DEFAULT_STYLE: ResolvedStyle = Object.freeze({
   strokeCap: 'butt',
   strokeJoin: 'miter',
   strokeAlign: 'center',
+  blur: 0,
   fontSize: 14,
   fontFamily: 'sans-serif',
   fontWeight: 'normal',

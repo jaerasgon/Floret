@@ -1,7 +1,7 @@
 import type { LibraryEntry, PatchLibrary } from '../library';
 import { serializePatch } from '../serialize';
 import { spaced, type Sample } from './helpers';
-import { buildGridArt, buildIslamicPattern, buildKaleidoscope, buildLissajous } from './builds/Curves';
+import { buildGridArt, buildKaleidoscope, buildLissajous } from './builds/Curves';
 import { buildForceField, buildNoiseWave, buildRippleField } from './builds/Fields';
 import { buildGridRipple } from './builds/GridRipple';
 import { buildCurlFlow } from './builds/CurlFlow';
@@ -12,12 +12,12 @@ import { buildSmoothedPath } from './builds/SmoothedPath';
 import { buildLocalPeaks } from './builds/LocalPeaks';
 import { buildFFTBloom, buildToneSurface } from './builds/Sound';
 import { buildPaintTrail, buildRandomWalkTrail } from './builds/Feedback';
-import { buildDatamosh, buildPhotoMosaic, buildWebcamMosaic } from './builds/Image';
+import { buildDatamosh, buildPhotoMosaic, buildWebcamMosaic, buildBodyTracking } from './builds/Image';
 import { buildCSVBarChart } from './builds/Data';
 import { buildPixelSort } from './builds/Pixel';
 import { buildNocAttraction, buildNocDrag, buildNocFlowField, buildNocFractalTree, buildNocSeek, buildNocSpring, buildNocWindGravity, buildPendulum } from './builds/Nature';
 import { buildTutAccumulator, buildTutAnimateWithTime, buildTutAudioReactive, buildTutCacheRegion, buildTutCircleOfShapes, buildTutColorAndFill, buildTutColorLerp, buildTutElementaryCA, buildTutEnvelope, buildTutFFT, buildTutGaussian, buildTutGoL, buildTutGradient, buildTutGrid, buildTutGroupTransform, buildTutHelloRect, buildTutIfRegion, buildTutImageAdjust, buildTutImageSample, buildTutImageUrl, buildTutKeyboardBranch, buildTutMap, buildTutMidiCC, buildTutMouse, buildTutNormalize, buildTutOscillator, buildTutPalette, buildTutPathTension, buildTutPerlin, buildTutPixelSort, buildTutPixelate, buildTutPolar, buildTutPolygon, buildTutPulse, buildTutRandomSpread, buildTutRasterize, buildTutSlider, buildTutSortShuffle, buildTutSoundFilter, buildTutSpreadForeach, buildTutSpringFollow, buildTutState, buildTutStyleChain, buildTutSubpatch, buildTutText, buildTutTrails, buildTutVec2Math, buildTutWanderer } from './builds/Tutorial';
-import { buildKineticType, buildTypeDrift, buildTypeHalo, buildTypeRain, buildTypeSpiral } from './builds/Type';
+import { buildKineticType, buildTypeDrift, buildTypeHalo, buildTypeRain, buildTypeRaven } from './builds/Type';
 import { buildParticlesAttractor, buildParticlesFountain, buildParticlesPinball, buildParticlesSpiral, buildParticlesTextDust } from './builds/Particles';
 
 /**
@@ -394,19 +394,19 @@ export const SAMPLES: Sample[] = [
     build: () => spaced(buildTypeHalo()),
   },
   {
-    id: 'type-spiral',
-    name: 'Spiral',
+    id: 'type-raven',
+    name: 'The Raven',
     category: 'Type',
     description:
-      'Logarithmic spiral of repeated characters — r grows with i, angle steps each char + drifts in time. Hue follows the spiral.',
-    build: () => spaced(buildTypeSpiral()),
+      'A passage from Poe’s “The Raven” as a serif grid. Each letter fades in and out on its own Perlin walk in black & white, blurring as it dims.',
+    build: () => spaced(buildTypeRaven()),
   },
   {
     id: 'type-drift',
     name: 'Noise Drift',
     category: 'Type',
     description:
-      'Grid of repeated characters displaced by 2D Perlin noise. Two seeds drive x and y independently; hue follows the field.',
+      'A passage as a monospace grid. A slow Perlin mask picks drifting clusters of letters; inside them a noise field shoves and tints the type while the rest stays readable.',
     build: () => spaced(buildTypeDrift()),
   },
   {
@@ -473,13 +473,6 @@ export const SAMPLES: Sample[] = [
     category: 'Curves',
     description: 'A mouse-controlled triangle mirrored 12 times around the centre. Hue cycles with time.',
     build: () => spaced(buildKaleidoscope()),
-  },
-  {
-    id: 'islamic-pattern',
-    name: 'Islamic Pattern',
-    category: 'Curves',
-    description: '8-fold rotational symmetry. A 3-ellipse petal rotated around the centre 8 times; the petal radius breathes with sin(time).',
-    build: () => spaced(buildIslamicPattern()),
   },
   {
     id: 'grid-art',
@@ -636,8 +629,15 @@ export const SAMPLES: Sample[] = [
     id: 'webcam-mosaic',
     name: 'Webcam Mosaic',
     category: 'Image',
-    description: 'A live, mirrored pointillist portrait. Flip the Toggle into the camera\'s `start` pin, grant permission, and your webcam feed becomes a 36×36 grid of dots sized by brightness and tinted by colour.',
+    description: 'A live, mirrored webcam halftone. Flip the Toggle into the camera\'s `start` pin and grant permission; each cell becomes a yellow circle where the image is light or a blue square where it is dark (luminance threshold via logic/select).',
     build: () => spaced(buildWebcamMosaic()),
+  },
+  {
+    id: 'body-tracking',
+    name: 'Body Tracking',
+    category: 'Image',
+    description: 'Live MediaPipe skeleton from the webcam. One Toggle starts the camera + the input/landmarks tracker; cyan lines draw the connection edges and yellow dots the points. Switch hands / face / pose on the Landmarks node.',
+    build: () => spaced(buildBodyTracking()),
   },
 
   // ── Pixel ──────────────────────────────────────────────

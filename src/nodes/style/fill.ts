@@ -166,3 +166,21 @@ export const noStrokeNode = registerNode({
     return [style];
   },
 });
+
+export const blurNode = registerNode({
+  type: 'style/blur',
+  category: 'Style',
+  label: 'Blur',
+  description: 'Gaussian-blur downstream shapes by N pixels (fill, stroke, and text alike). 0 = sharp.',
+  inputs: [
+    { name: 'amount', type: 'number', default: 0 },
+    { name: 'base', type: 'style' },
+  ],
+  outputs: [{ name: 'style', type: 'style' }],
+  compute: (amount, base) => {
+    const a = Math.max(0, amount as number);
+    const baseStyle = base as Style | null;
+    const style: Style = (s) => ({ ...applyBase(baseStyle, s), blur: a });
+    return [style];
+  },
+});

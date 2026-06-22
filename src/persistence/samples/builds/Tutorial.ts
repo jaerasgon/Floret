@@ -655,13 +655,14 @@ export function buildTutIfRegion() {
   const c = note(
     't19_c',
     { x: -440, y: 0 },
-    'Conditional execution\n\n`region/if` only runs its body when `condition` is true. Outputs become empty when false.\n\nMouse distance from origin → compare with 80 → boolean. The red rectangle only appears when the cursor is MORE than 80 pixels from the centre.',
+    'Conditional execution\n\n`region/if` only runs its body when `condition` is true — its outputs become empty when false.\n\nHere `sin(time) > 0` toggles the condition, so the red rectangle blinks on and off. Swap the time source for a mouse, slider, or key to drive it yourself.',
     { w: 420, h: 240 },
   );
-  const m = node('t19_m', 'input/mouse', { x: 60, y: 0 });
-  // dist from origin
-  const dist = node('t19_dist', 'math/dist', { x: 240, y: 0 }, { x2: 0, y2: 0 });
-  const gt = node('t19_gt', 'logic/gt', { x: 420, y: 0 }, { b: 80 });
+  // sin(time) > 0 → a condition that auto-toggles, so the demo blinks on
+  // load instead of needing mouse interaction.
+  const t = node('t19_time', 'time/seconds', { x: 60, y: 0 });
+  const sin = node('t19_sin', 'math/sin', { x: 240, y: 0 });
+  const gt = node('t19_gt', 'logic/gt', { x: 420, y: 0 }, { b: 0 });
 
   const RID = 't19_region';
   const region: FloretNode = {
@@ -682,11 +683,10 @@ export function buildTutIfRegion() {
   const rect = node('t19_rect', 'draw/rect', { x: 240, y: 120 }, { x: -50, y: -50, w: 100, h: 100 }, RID);
   const renderer = node('t19_renderer', 'render/renderer', { x: 1140, y: 0 }, { width: 400, height: 400 });
   return {
-    nodes: [c, m, dist, gt, region, col, fill, rect, renderer],
+    nodes: [c, t, sin, gt, region, col, fill, rect, renderer],
     edges: [
-      edge('t19_m', 'x', 't19_dist', 'x1'),
-      edge('t19_m', 'y', 't19_dist', 'y1'),
-      edge('t19_dist', 'distance', 't19_gt', 'a'),
+      edge('t19_time', 't', 't19_sin', 'x'),
+      edge('t19_sin', 'sine', 't19_gt', 'a'),
       edge('t19_gt', 'result', RID, 'condition'),
       edge('t19_col', 'color', 't19_fill', 'color'),
       edge('t19_fill', 'style', 't19_rect', 'style'),

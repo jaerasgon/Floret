@@ -1,5 +1,5 @@
 import type { FloretNode } from '../../../editor/editor-state';
-import { node, edge } from '../helpers';
+import { node, edge, note } from '../helpers';
 
 
 // ─── Sample: Datamosh (image manipulation) ─────────────────────────────────
@@ -241,51 +241,93 @@ export function buildPhotoMosaic() {
 //   • sampleGrid — centre (250,250), range 0…500 → pixel coords to sample
 // so there's zero per-cell coordinate math.
 export function buildWebcamMosaic() {
-  // ── Live source ──
-  const cam   = node('wm_cam',   'input/camera', { x: -620, y: 40 },  { device: '', mirror: true });
-  const start = node('wm_start', 'io/toggle',    { x: -620, y: 180 }, { value: true });   // flip to open camera
-  // Square the feed: smaller, fixed read surface + grid coords line up with pixels.
-  const resize = node('wm_resize', 'image/resize', { x: -420, y: 40 }, { w: 500, h: 500 });
+  // ─────────── Annotations (meta/comment) frame each block ───────────
+  const overview = note('wm_doc', { x: -940, y: -260 },
+    'WEBCAM MOSAIC — how it works\n\n' +
+    'A live halftone of the camera. The frame is read once, sampled on a grid, ' +
+    'and each cell becomes a YELLOW CIRCLE (where the image is light) or a ' +
+    'BLUE SQUARE (where it is dark).\n\n' +
+    '①→② Read the feed · ③ Lay out a grid · ④ Per cell decide a shape · ⑤ Render',
+    { w: 560, h: 200 });
 
-  // Draw grid (centred) and sample grid (pixel-space) — same 36×36 layout.
-  const drawGrid   = node('wm_drawGrid',   'spread/grid', { x: -420, y: 200 }, { cols: 36, rows: 36, w: 500, h: 500 });
-  const sampleGrid = node('wm_sampleGrid', 'spread/grid', { x: -420, y: 340 }, { cols: 36, rows: 36, w: 500, h: 500, center: { x: 250, y: 250 } });
+  // ① Live source
+  const nSrc = note('wm_n_src', { x: -640, y: -120 },
+    '① LIVE SOURCE\nThe Toggle opens the camera (start). image/resize squares the ' +
+    'feed to 500×500 so grid coords line up with pixels 1:1.', { w: 420, h: 120 });
+  const cam   = node('wm_cam',   'input/camera', { x: -640, y: 40 },  { device: '', mirror: true });
+  const start = node('wm_start', 'io/toggle',    { x: -640, y: 180 }, { value: true });   // flip to open camera
+  const resize = node('wm_resize', 'image/resize', { x: -440, y: 40 }, { w: 500, h: 500 });
 
-  // ONE full-frame read → spread of colours (the whole performance fix).
-  const colors = node('wm_colors', 'image/sample-spread', { x: -200, y: 120 });
+  // ② Grids + single read
+  const nGrid = note('wm_n_grid', { x: -260, y: -120 },
+    '② GRID + ONE READ\nTwo matching 36×36 grids: the DRAW grid (centred — where ' +
+    'shapes go) and the SAMPLE grid (pixel space — where to read). image/sample-' +
+    'spread reads the whole frame ONCE → one colour per cell (fast).', { w: 440, h: 140 });
+  const drawGrid   = node('wm_drawGrid',   'spread/grid', { x: -440, y: 200 }, { cols: 36, rows: 36, w: 500, h: 500 });
+  const sampleGrid = node('wm_sampleGrid', 'spread/grid', { x: -440, y: 340 }, { cols: 36, rows: 36, w: 500, h: 500, center: { x: 250, y: 250 } });
+  const colors = node('wm_colors', 'image/sample-spread', { x: -240, y: 120 });
 
-  const bg   = node('wm_bg',   'color/rgb', { x: -620, y: 320 }, { r: 6, g: 7, b: 12, a: 255 });
-  const renderer = node('wm_renderer', 'render/renderer', { x: 1140, y: 20 }, { width: 500, height: 500 });
+  const bg   = node('wm_bg',   'color/rgb', { x: -640, y: 320 }, { r: 6, g: 7, b: 12, a: 255 });
+
+  // ⑤ Render
+  const nRender = note('wm_n_render', { x: 1340, y: -120 },
+    '⑤ RENDER\nThe ForEach hands back one chosen shape per cell; the Renderer ' +
+    'draws them all into the live mosaic.', { w: 360, h: 120 });
+  const renderer = node('wm_renderer', 'render/renderer', { x: 1340, y: 40 }, { width: 500, height: 500 });
 
   const RID = 'wm_region';
   const region: FloretNode = {
     id: RID,
     type: 'floret',
-    position: { x: 0, y: 20 },
+    position: { x: 0, y: 40 },
     data: {
       defType: 'region/foreach',
-      params: { width: 1020, height: 560, label: 'ForEach' },
+      params: { width: 1260, height: 760, label: '④ ForEach cell' },
       ports: [
         { id: 'p',   name: 'p',   type: 'vec2',  direction: 'input' },
         { id: 'col', name: 'col', type: 'color', direction: 'input' },
         { id: 'dot', name: 'dot', type: 'layer', direction: 'output' },
       ],
     },
-    style: { width: 1020, height: 560 },
+    style: { width: 1260, height: 760 },
   };
 
-  // ── Inside: pre-sampled colour → luminance → dot (no image reads here) ──
-  const split = node('wm_split', 'vec2/split',      { x: 40,  y: 60 },  {},                                              RID);
-  const srgb  = node('wm_srgb',  'color/split-rgb', { x: 220, y: 200 }, {},                                              RID);
-  const rg    = node('wm_rg',    'math/add',        { x: 380, y: 180 }, {},                                              RID);
-  const rgb   = node('wm_rgb',   'math/add',        { x: 380, y: 240 }, {},                                              RID);
-  const lum   = node('wm_lum',   'math/mul',        { x: 500, y: 210 }, { b: 0.333 },                                    RID);
-  const size  = node('wm_size',  'math/map',        { x: 620, y: 210 }, { inMin: 0, inMax: 255, outMin: 1.5, outMax: 15 }, RID);
-  const fill  = node('wm_fill',  'style/fill',      { x: 620, y: 320 }, { mode: 'color' },                               RID);
-  const dot   = node('wm_dot',   'draw/ellipse',    { x: 800, y: 120 }, {},                                              RID);
+  // ── Inside the loop (runs once per grid cell) ──
+  // a · Cell position (shared by both shapes)
+  const nPos = note('wm_n_pos', { x: 40, y: 30 },
+    'a · POSITION\nWhere this cell sits on the centred canvas — fed to both shapes.', { w: 320, h: 70 }, RID);
+  const split = node('wm_split', 'vec2/split', { x: 60, y: 120 }, {}, RID);
+  const pos   = node('wm_pos',   'vec2/make',  { x: 220, y: 120 }, {}, RID);
+
+  // b · Brightness → light/dark decision
+  const nLum = note('wm_n_lum', { x: 40, y: 210 },
+    'b · BRIGHTNESS\nAverage the pixel\'s R, G, B (0–255). Greater than 128 (mid-grey) → "light".', { w: 420, h: 70 }, RID);
+  const srgb  = node('wm_srgb',  'color/split-rgb', { x: 60, y: 300 }, {}, RID);
+  const rg    = node('wm_rg',    'math/add',        { x: 240, y: 280 }, {}, RID);
+  const rgb   = node('wm_rgb',   'math/add',        { x: 240, y: 340 }, {}, RID);
+  const lum   = node('wm_lum',   'math/mul',        { x: 400, y: 310 }, { b: 0.333 }, RID); // 0..255
+  const isLight = node('wm_isLight', 'logic/gt',    { x: 560, y: 310 }, { b: 128 }, RID);   // light if > mid-grey
+
+  // c · Two candidate shapes
+  const nShapes = note('wm_n_shapes', { x: 40, y: 430 },
+    'c · TWO SHAPES\nBoth are built every cell: a yellow circle and a blue square.', { w: 360, h: 70 }, RID);
+  const yCol  = node('wm_yCol',  'color/rgb',   { x: 60, y: 520 }, { r: 250, g: 210, b: 40, a: 255 }, RID);
+  const yFill = node('wm_yFill', 'style/fill',  { x: 230, y: 520 }, { mode: 'color' }, RID);
+  const circle= node('wm_circle','draw/ellipse',{ x: 560, y: 500 }, { w: 13, h: 13 }, RID);
+  const bCol  = node('wm_bCol',  'color/rgb',   { x: 60, y: 640 }, { r: 40, g: 90, b: 225, a: 255 }, RID);
+  const bFill = node('wm_bFill', 'style/fill',  { x: 230, y: 640 }, { mode: 'color' }, RID);
+  const square= node('wm_square','draw/rect',   { x: 560, y: 620 }, { w: 12, h: 12 }, RID);
+
+  // d · Pick one
+  const nPick = note('wm_n_pick', { x: 820, y: 400 },
+    'd · SELECT\nlight → yellow circle\ndark → blue square\nOnly the picked shape is emitted.', { w: 300, h: 130 }, RID);
+  const pick  = node('wm_pick',  'logic/select',{ x: 860, y: 560 }, {}, RID);
 
   return {
-    nodes: [cam, start, resize, drawGrid, sampleGrid, colors, bg, renderer, region, split, srgb, rg, rgb, lum, size, fill, dot],
+    nodes: [overview, nSrc, nGrid, nRender,
+            cam, start, resize, drawGrid, sampleGrid, colors, bg, renderer, region,
+            nPos, split, pos, nLum, srgb, rg, rgb, lum, isLight,
+            nShapes, yCol, yFill, circle, bCol, bFill, square, nPick, pick],
     edges: [
       // Camera → resize → ONE sample-spread → colour spread
       edge('wm_start',      'bool',      'wm_cam',     'start'),
@@ -293,28 +335,128 @@ export function buildWebcamMosaic() {
       edge('wm_resize',     'image',     'wm_colors',  'image'),
       edge('wm_sampleGrid', 'positions', 'wm_colors',  'points'),
       edge('wm_bg',         'color',     'wm_renderer','background'),
-      // Drive the loop: one dot position + one pre-sampled colour per iteration
+      // Drive the loop: one cell position + one pre-sampled colour per iteration
       edge('wm_drawGrid',   'positions', RID,          'p'),
       edge('wm_colors',     'colors',    RID,          'col'),
-      // Per cell — pure math, no image reads
-      edge(RID,        'p',     'wm_split', 'v'),
-      edge(RID,        'col',   'wm_srgb',  'color'),
-      edge('wm_srgb',  'r',     'wm_rg',    'a'),
-      edge('wm_srgb',  'g',     'wm_rg',    'b'),
-      edge('wm_rg',    'sum',   'wm_rgb',   'a'),
-      edge('wm_srgb',  'b',     'wm_rgb',   'b'),
-      edge('wm_rgb',   'sum',   'wm_lum',   'a'),
-      edge('wm_lum',   'product', 'wm_size','x'),
-      // Colour the dot with its sampled pixel
-      edge(RID,        'col',   'wm_fill',  'color'),
-      edge('wm_fill',  'style', 'wm_dot',   'style'),
-      // Draw at the centred coords; size by brightness
-      edge('wm_split', 'x',     'wm_dot',   'x'),
-      edge('wm_split', 'y',     'wm_dot',   'y'),
-      edge('wm_size',  'mapped', 'wm_dot',  'w'),
-      edge('wm_size',  'mapped', 'wm_dot',  'h'),
-      edge('wm_dot',   'shape', RID,        'dot'),
-      edge(RID,        'dot',   'wm_renderer', 'layers'),
+
+      // cell position (shared by both shapes)
+      edge(RID,        'p',   'wm_split', 'v'),
+      edge('wm_split', 'x',   'wm_pos',   'x'),
+      edge('wm_split', 'y',   'wm_pos',   'y'),
+      edge('wm_pos',   'vector', 'wm_circle', 'pos'),
+      edge('wm_pos',   'vector', 'wm_square', 'pos'),
+
+      // luminance = (r + g + b) / 3, then threshold
+      edge(RID,        'col', 'wm_srgb', 'color'),
+      edge('wm_srgb',  'r',   'wm_rg',   'a'),
+      edge('wm_srgb',  'g',   'wm_rg',   'b'),
+      edge('wm_rg',    'result', 'wm_rgb', 'a'),
+      edge('wm_srgb',  'b',   'wm_rgb',  'b'),
+      edge('wm_rgb',   'result', 'wm_lum', 'a'),
+      edge('wm_lum',   'result', 'wm_isLight', 'a'),
+
+      // build both shapes
+      edge('wm_yCol',  'color', 'wm_yFill', 'color'),
+      edge('wm_yFill', 'style', 'wm_circle', 'style'),
+      edge('wm_bCol',  'color', 'wm_bFill', 'color'),
+      edge('wm_bFill', 'style', 'wm_square', 'style'),
+
+      // pick: light → circle, dark → square
+      edge('wm_isLight', 'result', 'wm_pick', 'cond'),
+      edge('wm_circle',  'shape',  'wm_pick', 'a'),
+      edge('wm_square',  'shape',  'wm_pick', 'b'),
+      edge('wm_pick',    'selected', RID,     'dot'),
+      edge(RID,          'dot',   'wm_renderer', 'layers'),
+    ],
+  };
+}
+
+
+// ─── Sample: Body Tracking ─────────────────────────────────────────────────
+// Live skeleton from the webcam via the input/landmarks (MediaPipe) node.
+// One Toggle starts the camera + the tracker; the tracker emits landmark
+// `points` plus parallel `connA`/`connB` segment-endpoint spreads. Two
+// ForEach loops draw it: one a cyan LINE per connection pair, the other a
+// yellow DOT per point. Switch the tracker dropdown (hands / face / pose) on
+// the Landmarks node to track something else. Flip `start`, grant permission.
+export function buildBodyTracking() {
+  const doc = note('bt_doc', { x: -640, y: -200 },
+    'BODY TRACKING (MediaPipe)\n\nToggle → starts the Camera AND the Landmarks tracker. Each detection gets a STABLE auto colour (the node\'s `color` / `connColor` outputs), so every person/hand entering the view is a different colour. One ForEach draws a coloured line per edge, another a coloured dot per point.\n\nSwitch the tracker dropdown (hands / face / pose / all) and raise `count` to track more people. Set `person` to 1/2/3 to isolate one.',
+    { w: 560, h: 230 });
+
+  const cam = node('bt_cam', 'input/camera', { x: -640, y: 60 }, { device: '', mirror: true });
+  const tog = node('bt_tog', 'io/toggle', { x: -640, y: 220 }, { value: true });
+  const lm  = node('bt_lm', 'input/landmarks', { x: -400, y: 60 }, { tracker: 'hands', mirror: true, count: 2, person: 0 });
+  const bg  = node('bt_bg', 'color/rgb', { x: -640, y: 340 }, { r: 8, g: 10, b: 16, a: 255 });
+  const renderer = node('bt_renderer', 'render/renderer', { x: 1180, y: 20 }, { width: 520, height: 520 });
+
+  // ── Lines: one coloured draw/line per connection pair (connA[i]→connB[i]) ──
+  const LRID = 'bt_lines';
+  const lines: FloretNode = {
+    id: LRID, type: 'floret', position: { x: 0, y: -120 },
+    data: {
+      defType: 'region/foreach',
+      params: { width: 900, height: 320, label: 'ForEach edge' },
+      ports: [
+        { id: 'a', name: 'a', type: 'vec2', direction: 'input' },
+        { id: 'b', name: 'b', type: 'vec2', direction: 'input' },
+        { id: 'col', name: 'col', type: 'color', direction: 'input' },
+        { id: 'layer', name: 'layer', type: 'layer', direction: 'output' },
+      ],
+    },
+    style: { width: 900, height: 320 },
+  };
+  const lstroke = node('bt_lstroke', 'style/stroke', { x: 220, y: 60 }, { width: 2 }, LRID);
+  const line = node('bt_line', 'draw/line', { x: 460, y: 40 }, {}, LRID);
+
+  // ── Points: one coloured dot per landmark ──
+  const PRID = 'bt_points';
+  const points: FloretNode = {
+    id: PRID, type: 'floret', position: { x: 0, y: 280 },
+    data: {
+      defType: 'region/foreach',
+      params: { width: 760, height: 300, label: 'ForEach point' },
+      ports: [
+        { id: 'p', name: 'p', type: 'vec2', direction: 'input' },
+        { id: 'col', name: 'col', type: 'color', direction: 'input' },
+        { id: 'layer', name: 'layer', type: 'layer', direction: 'output' },
+      ],
+    },
+    style: { width: 760, height: 300 },
+  };
+  const pfill = node('bt_pfill', 'style/fill', { x: 220, y: 60 }, { mode: 'color' }, PRID);
+  const dot = node('bt_dot', 'draw/ellipse', { x: 460, y: 40 }, { w: 8, h: 8 }, PRID);
+
+  return {
+    nodes: [doc, cam, tog, lm, bg, renderer, lines, lstroke, line, points, pfill, dot],
+    edges: [
+      // one toggle starts both the camera and the tracker
+      edge('bt_tog', 'bool', 'bt_cam', 'start'),
+      edge('bt_tog', 'bool', 'bt_lm', 'start'),
+      edge('bt_cam', 'image', 'bt_lm', 'image'),
+      edge('bt_bg', 'color', 'bt_renderer', 'background'),
+
+      // lines region — coloured by the per-segment connColor (per person)
+      edge('bt_lm', 'connA', LRID, 'a'),
+      edge('bt_lm', 'connB', LRID, 'b'),
+      edge('bt_lm', 'connColor', LRID, 'col'),
+      edge(LRID, 'a', 'bt_line', 'a'),
+      edge(LRID, 'b', 'bt_line', 'b'),
+      edge(LRID, 'col', 'bt_lstroke', 'color'),
+      edge('bt_lstroke', 'style', 'bt_line', 'style'),
+      edge('bt_line', 'shape', LRID, 'layer'),
+
+      // points region — coloured by the per-point color (per person)
+      edge('bt_lm', 'points', PRID, 'p'),
+      edge('bt_lm', 'color', PRID, 'col'),
+      edge(PRID, 'p', 'bt_dot', 'pos'),
+      edge(PRID, 'col', 'bt_pfill', 'color'),
+      edge('bt_pfill', 'style', 'bt_dot', 'style'),
+      edge('bt_dot', 'shape', PRID, 'layer'),
+
+      // lines under points
+      edge(LRID, 'layer', 'bt_renderer', 'layers'),
+      edge(PRID, 'layer', 'bt_renderer', 'layers'),
     ],
   };
 }

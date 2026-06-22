@@ -119,3 +119,48 @@ export const windowsNode = registerNode({
     return [flat, sizes];
   },
 });
+
+/**
+ * Ungroup — split a spread-of-spreads into one output pin per sub-spread.
+ *
+ * The complement of grouping: where `spread/partition` flattens groups into
+ * one spread, Ungroup takes a spread WHOSE ELEMENTS ARE SPREADS (e.g. the
+ * Landmarks node's `people` output — one point-spread per person) and fans
+ * each sub-spread out to its own pin: out 1, out 2, … out N.
+ *
+ * `count` sets the number of pins (like Group's slots). A pin with no
+ * matching sub-spread emits an empty spread, so the wiring stays stable as
+ * people/groups come and go.
+ */
+const UNGROUP_MAX = 12;
+const ungroupCount = (v: unknown): number => Math.max(1, Math.min(UNGROUP_MAX, Math.floor(Number(v ?? 1)) || 1));
+
+export const ungroupNode = registerNode({
+  type: 'spread/ungroup',
+  category: 'Spread',
+  label: 'Ungroup',
+  description: 'Split a spread-of-spreads into one output pin per sub-spread (out 1…N). `count` sets the pins; missing groups emit empty spreads.',
+  inputs: [{ name: 'groups', type: 'any', kind: 'spread' }],
+  outputs: [
+    { name: 'out1', label: '1', type: 'any', kind: 'spread' },
+    { name: 'out2', label: '2', type: 'any', kind: 'spread' },
+    { name: 'out3', label: '3', type: 'any', kind: 'spread' },
+  ],
+  defaultParams: { count: 3 },
+  dynamicOutputs: (params) => {
+    const n = ungroupCount(params.count);
+    const outs = [];
+    for (let i = 0; i < n; i++) outs.push({ name: `out${i + 1}`, label: `${i + 1}`, type: 'any' as const, kind: 'spread' as const });
+    return outs;
+  },
+  computeRaw: (inputs, ctx) => {
+    const groups = (inputs[0] ?? []) as ReadonlyArray<unknown>;
+    const n = ungroupCount(ctx.param<number>('count', 3));
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const g = groups[i];
+      out.push(Array.isArray(g) ? (g as unknown[]) : g === undefined ? [] : [g]);
+    }
+    return out;
+  },
+});

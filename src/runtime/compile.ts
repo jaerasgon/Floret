@@ -420,6 +420,8 @@ export function compileGraph(
     'input/midi-note',
     // Camera draws the live video frame into its canvas every tick.
     'input/camera',
+    // Landmarks runs MediaPipe inference on the feed every tick.
+    'input/landmarks',
   ]);
   graph.alwaysAnimate = nodes.some((n) => {
     if (ALWAYS_LIVE_TYPES.has(n.defType)) return true;

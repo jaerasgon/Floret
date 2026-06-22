@@ -110,10 +110,12 @@ import './input/keyboard';
 import './input/midi-cc';
 import './input/midi-note';
 import './input/camera';
+import './input/landmarks';
 
 // Meta
 import './meta/comment';
 import './meta/subpatch';
+import './meta/probe';
 
 // IO Boxes
 import './io/slider';

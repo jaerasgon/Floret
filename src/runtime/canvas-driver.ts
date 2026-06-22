@@ -77,14 +77,6 @@ export function createOffscreen(w: number, h: number): {
   return { canvas, ctx };
 }
 
-/** Read-only accessor for any active driver. When multiple Previews
- *  are mounted this returns the first registered one — callers should
- *  retain their own reference if they need a specific driver. */
-export function getActiveDriver(): ActiveDriver | null {
-  for (const d of drivers) return d;
-  return null;
-}
-
 export function createCanvasDriver(container: HTMLElement, opts: DriverOptions): ActiveDriver {
   const canvas = document.createElement('canvas');
   canvas.width = DEFAULT_W;
@@ -359,25 +351,6 @@ export function createCanvasDriver(container: HTMLElement, opts: DriverOptions):
   return driver;
 }
 
-/** Legacy single-driver API for callers that haven't migrated yet.
- *  Wraps `createCanvasDriver`; tearing down via `unmountCanvas` only
- *  affects the most-recently mounted driver. */
-let legacy: ActiveDriver | null = null;
-export function mountCanvas(container: HTMLElement, opts: DriverOptions): ActiveDriver {
-  if (legacy) {
-    legacy.stop();
-    legacy = null;
-  }
-  legacy = createCanvasDriver(container, opts);
-  return legacy;
-}
-export function unmountCanvas(): void {
-  if (legacy) {
-    legacy.stop();
-    legacy = null;
-  }
-}
-
 function clamp(v: number): number {
   return Math.max(MIN_CANVAS, Math.min(MAX_CANVAS, Math.floor(v)));
 }
@@ -385,6 +358,5 @@ function clamp(v: number): number {
 if (typeof import.meta.hot !== 'undefined' && import.meta.hot) {
   import.meta.hot.dispose(() => {
     for (const d of [...drivers]) d.stop();
-    legacy = null;
   });
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Plus, Minus, Maximize, Lock, Unlock } from 'lucide-react';
-import { createCanvasDriver, getActiveDriver, type ActiveDriver } from '../runtime/canvas-driver';
+import { createCanvasDriver, type ActiveDriver } from '../runtime/canvas-driver';
 import { Tooltip } from '../app/shell/Tooltip';
 import { useAppStore } from '../app/store';
 import { useEditor } from '../editor/editor-state';
@@ -199,6 +199,3 @@ function PreviewControls({ driverRef, locked, onToggleLock }: {
     </div>
   );
 }
-
-// Re-export for any callers that still grab the active instance.
-export { getActiveDriver };

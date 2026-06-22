@@ -1,10 +1,12 @@
 import { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Handle, NodeResizer, Position, useUpdateNodeInternals, type NodeProps } from '@xyflow/react';
 import { useEditor, type FloretNodeData, type RegionPortDescriptor } from '../editor-state';
 import { nodeRegistry } from '../../nodes/registry';
 import { portColorVar } from '../connection-rules';
 import { getRegionStats } from '../../runtime/inspector';
-import { LOOP_VAR_NAMES, loopVarHandle, type LoopVarName } from '../../runtime/compile';
+import { LOOP_VAR_NAMES, loopVarHandle, syntheticSplicerId, type LoopVarName } from '../../runtime/compile';
+import { ValueTooltip } from '../ValueTooltip';
 import type { PortType } from '../../runtime/types';
 
 /**
@@ -209,6 +211,7 @@ export const RegionNode = memo(function RegionNode(props: NodeProps) {
       {inputPorts.map((p, i) => (
         <RegionFramePort
           key={p.id}
+          regionId={id}
           port={p}
           side="left"
           top={Math.max(p.y ?? minInputTop + i * PORT_ROW_PITCH, minInputTop)}
@@ -225,6 +228,7 @@ export const RegionNode = memo(function RegionNode(props: NodeProps) {
       {outputPorts.map((p, i) => (
         <RegionFramePort
           key={p.id}
+          regionId={id}
           port={p}
           side="right"
           top={p.y ?? PORT_TOP_OFFSET + i * PORT_ROW_PITCH}
@@ -242,6 +246,7 @@ export const RegionNode = memo(function RegionNode(props: NodeProps) {
 });
 
 interface RegionFramePortProps {
+  regionId: string;
   port: RegionPortDescriptor;
   side: 'left' | 'right';
   top: number;
@@ -260,9 +265,20 @@ interface RegionFramePortProps {
   onSelect: (additive: boolean) => void;
 }
 
-function RegionFramePort({ port, side, top, minTop = 8, regionWidth, regionHeight, selected, onRemove, onRename, onDragY, onSelect }: RegionFramePortProps) {
+function RegionFramePort({ regionId, port, side, top, minTop = 8, regionWidth, regionHeight, selected, onRemove, onRename, onDragY, onSelect }: RegionFramePortProps) {
   const color = portColorVar(port.type);
   const isInput = port.direction === 'input';
+
+  // Hover-to-inspect, same as node pins. The port's live value is published
+  // under its synthetic splicer id (per-iteration trace for inputs, gathered
+  // output for outputs) — see runRegion in tick.ts.
+  const splicerId = syntheticSplicerId(regionId, port.id, port.direction);
+  const [hoverPos, setHoverPos] = useState<{ x: number; y: number } | null>(null);
+  const onPinEnter = (e: React.MouseEvent) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    setHoverPos({ x: r.right + 10, y: r.top - 6 });
+  };
+  const onPinLeave = () => setHoverPos(null);
 
   // Pin roles:
   //   input  port: outer = target(in-),  inner = source(out-)
@@ -413,6 +429,8 @@ function RegionFramePort({ port, side, top, minTop = 8, regionWidth, regionHeigh
           left: outerPinLeft,
         }}
         onContextMenu={handleContextMenu}
+        onMouseEnter={onPinEnter}
+        onMouseLeave={onPinLeave}
       />
       <Handle
         id={innerHandleId}
@@ -427,7 +445,21 @@ function RegionFramePort({ port, side, top, minTop = 8, regionWidth, regionHeigh
           left: innerPinLeft,
         }}
         onContextMenu={handleContextMenu}
+        onMouseEnter={onPinEnter}
+        onMouseLeave={onPinLeave}
       />
+      {hoverPos && createPortal(
+        <ValueTooltip
+          nodeId={splicerId}
+          portIdx={0}
+          portName={port.name}
+          portType={port.type}
+          isSpread
+          anchor={hoverPos}
+          onClose={onPinLeave}
+        />,
+        document.body,
+      )}
     </>
   );
 }

@@ -1,0 +1,33 @@
+MediaPipe assets vendored into Floret
+======================================
+
+This directory redistributes unmodified Google MediaPipe assets so that
+Floret's `input/landmarks` node can run hand / face / pose tracking
+offline, without a CDN dependency.
+
+Copyright 2023 The MediaPipe Authors.
+
+Licensed under the Apache License, Version 2.0 (see the LICENSE file in
+this directory). You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Contents
+--------
+wasm/
+    The MediaPipe Tasks-Vision WebAssembly runtime, copied verbatim from
+    the `@mediapipe/tasks-vision` npm package (Apache-2.0):
+      vision_wasm_internal.js / .wasm          (SIMD build)
+      vision_wasm_nosimd_internal.js / .wasm   (no-SIMD fallback)
+
+models/
+    Pre-trained landmarker model bundles, downloaded unmodified from
+    Google's model storage (https://storage.googleapis.com/mediapipe-models/),
+    Apache-2.0:
+      hand_landmarker.task        (Hand Landmarker)
+      face_landmarker.task        (Face Landmarker)
+      pose_landmarker_lite.task   (Pose Landmarker, lite)
+
+No changes have been made to these files. They are provided on an "AS IS"
+basis, without warranties or conditions of any kind. See LICENSE for the
+full terms.

@@ -2,9 +2,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
+// @ts-expect-error — plain .mjs plugin, no types needed
+import { einkRelay } from './eink-relay.vite.mjs';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), einkRelay()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -19,6 +21,9 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: false,
+    // Bind to all interfaces so a Raspberry Pi on the LAN can pull
+    // /__floret/frame.png from the e-ink relay above.
+    host: true,
     watch: {
       // Heavy / unrelated trees in the project root that Vite shouldn't watch.
       // Saves ~hundreds of thousands of file handles and avoids EBUSY on

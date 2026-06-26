@@ -35,11 +35,12 @@ ROTATE = 90                  # 0/90/180/270 — orient the image to the frame
 INVERT = False               # flip black/white if the panel reads inverted
 # (Inky auto-detects resolution + colour; it only uses ROTATE.)
 
-POLL_SECONDS = 1.0           # how often to check the relay for changes
+CHANNEL = "eink"             # which Send-node channel to display
+POLL_SECONDS = 1.0           # how often to check the bus for changes
 IDLE_SLEEP_S = 30            # sleep the panel after this long with no changes
 
-POLL_URL = HOST + "/__floret/eink/poll"
-FRAME_URL = HOST + "/__floret/eink/frame.png"
+POLL_URL = f"{HOST}/__floret/bus/{CHANNEL}/poll"
+FRAME_URL = f"{HOST}/__floret/bus/{CHANNEL}"
 
 
 # ─── Image helpers ───────────────────────────────────────────────────────
@@ -167,8 +168,8 @@ def make_display():
 # ─── Poll loop ───────────────────────────────────────────────────────────
 def main() -> None:
     disp = make_display()
-    print(f"[floret-eink] poller · {disp.label()} · rot {ROTATE} · {HOST}", flush=True)
-    last_frame = last_clear = None
+    print(f"[floret-eink] poller · {disp.label()} · rot {ROTATE} · {HOST} · #{CHANNEL}", flush=True)
+    last_version = None
     last_activity = time.monotonic()
     while True:
         try:
@@ -176,23 +177,18 @@ def main() -> None:
         except Exception:  # noqa: BLE001
             time.sleep(POLL_SECONDS); continue
 
-        # First poll: sync baselines, don't act on pre-existing state.
-        if last_frame is None:
-            last_frame, last_clear = st["frameId"], st["clearId"]
+        # First poll: sync baseline, don't repaint pre-existing state.
+        if last_version is None:
+            last_version = st["version"]
             time.sleep(POLL_SECONDS); continue
 
         acted = False
         try:
-            if st["clearId"] != last_clear:
-                last_clear = st["clearId"]
-                disp.clear()
-                print("[floret-eink] cleared", flush=True)
-                acted = True
-            if st["has"] and st["frameId"] != last_frame:
-                last_frame = st["frameId"]
+            if st["has"] and st["version"] != last_version:
+                last_version = st["version"]
                 png = requests.get(FRAME_URL, timeout=10).content
                 disp.show(Image.open(io.BytesIO(png)))
-                print(f"[floret-eink] painted #{last_frame}", flush=True)
+                print(f"[floret-eink] painted v{last_version}", flush=True)
                 acted = True
         except Exception as e:  # noqa: BLE001
             print(f"[floret-eink] error: {e}", flush=True)

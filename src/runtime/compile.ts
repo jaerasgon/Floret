@@ -422,6 +422,10 @@ export function compileGraph(
     'input/camera',
     // Landmarks runs MediaPipe inference on the feed every tick.
     'input/landmarks',
+    // Metro fires on a wall-clock interval, so the patch must keep ticking.
+    'io/metro',
+    // Receive polls the bus for new data, so the patch must keep ticking.
+    'io/receive',
   ]);
   graph.alwaysAnimate = nodes.some((n) => {
     if (ALWAYS_LIVE_TYPES.has(n.defType)) return true;

@@ -127,7 +127,8 @@ import './io/image-url';
 import './io/file';
 import './io/svg';
 import './io/save-svg';
-import './io/eink';
+import './io/net';
+import './io/control';
 
 // Regions
 import './region/foreach';

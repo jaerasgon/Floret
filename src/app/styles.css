@@ -1238,8 +1238,17 @@ body[data-wire-flow='1'] .react-flow__edge-path {
    right side carries an output label + pin. The editor sits right
    next to its label; a flex spacer pushes the output side to the
    right edge. */
+/* Every node sizes to its content (down from the old 150/160px floor) so a
+ * label + a couple of pins doesn't leave a wide gap in the middle. Nodes with
+ * real content (inline editors, long labels, the e-ink node) still grow past
+ * this floor automatically. `data-compact` is the explicit opt-in for the
+ * tightest chips; math nodes go tighter still via `data-math`. */
 .node-grid {
-  min-width: 150px;
+  min-width: 84px;
+}
+.node[data-compact='1'],
+.node[data-compact='1'].node-grid {
+  min-width: 76px;
 }
 .node-rows {
   display: flex;
@@ -1415,10 +1424,11 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   letter-spacing: 0.3px;
 }
 
+/* The node-type subtitle (e.g. "io/bang") is redundant with the label and
+ * forces extra header width — hidden so every node reads compact. The type
+ * still shows in the search / palette / favourites lists (different class). */
 .node-type {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--fg-2);
+  display: none;
 }
 
 /* ─── Compact math nodes ────────────────────────────────────────────────
@@ -2504,6 +2514,63 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   background: var(--bg-1);
   color: var(--fg-1);
 }
+
+/* Compact control widgets (bang / button / stepper / select) — sit inside a
+ * math-node-style pin row; the node name lives in the header, so the control
+ * is just a shape. */
+.io-shape {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--cat-accent, var(--fg-2));
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-std), transform var(--dur-fast) var(--ease-std), box-shadow var(--dur-fast) var(--ease-std);
+}
+.io-shape:active { transform: scale(0.86); }
+.io-bang { background: var(--cat-accent, var(--accent)); border-color: var(--cat-accent, var(--accent)); }
+.io-bang:hover { box-shadow: 0 0 0 4px color-mix(in srgb, var(--cat-accent, var(--accent)) 28%, transparent); }
+.io-momentary[data-on="1"] { background: var(--cat-accent, var(--accent)); border-color: var(--cat-accent, var(--accent)); }
+
+.io-stepper { display: inline-flex; align-items: center; gap: 4px; }
+.io-step-btn {
+  width: 16px;
+  height: 16px;
+  line-height: 13px;
+  padding: 0;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg-1);
+  color: var(--fg-1);
+  font-size: 12px;
+  cursor: pointer;
+}
+.io-step-btn:hover { color: var(--fg-0); border-color: var(--cat-accent, var(--accent)); }
+.io-step-val { min-width: 22px; text-align: center; font-family: var(--font-mono); font-size: 11px; color: var(--fg-0); }
+
+.io-select {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--bg-1);
+  color: var(--fg-0);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 3px;
+  max-width: 100px;
+  cursor: pointer;
+}
+.io-select-opts {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--fg-2);
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--border);
+  width: 100px;
+  padding: 0 2px;
+}
+.io-select-opts:focus { color: var(--fg-0); outline: none; border-bottom-color: var(--cat-accent, var(--accent)); }
 
 /* Color picker */
 .iobox-color {

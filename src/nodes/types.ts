@@ -202,6 +202,14 @@ export interface NodeDef {
   hidden?: boolean;
 
   /**
+   * Render at the compact (chip) min-width instead of the default node
+   * width — for small "glue" nodes (IO controls, triggers) whose content
+   * is a single control + an output, so they don't waste horizontal space.
+   * Surfaced to the DOM as `data-compact='1'`.
+   */
+  compact?: boolean;
+
+  /**
    * Adaptive (polymorphic) arithmetic node — its `valueType` param
    * ('any' | 'number' | 'vec2' | 'color') latches to the type of the first
    * wire attached (operand OR result) and resets to 'any' when the last wire

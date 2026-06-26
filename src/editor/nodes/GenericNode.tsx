@@ -152,6 +152,7 @@ export const GenericNode = memo(function GenericNode(props: NodeProps) {
       data-category={def.category.toLowerCase()}
       data-warning={warningText ? 1 : 0}
       data-math={isMath ? 1 : 0}
+      data-compact={def.compact ? 1 : 0}
     >
       <div className="node-header" title={def.description ?? def.type}>
         <span className="node-label">{mathSymbol ?? def.label}</span>

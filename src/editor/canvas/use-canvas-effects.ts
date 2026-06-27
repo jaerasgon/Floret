@@ -54,17 +54,34 @@ export function useCanvasEventBus(deps: {
         reactFlow.fitView({ duration: 300, padding: 0.2 });
       }
     }
+    function onFitGraph() {
+      // Frame the whole graph once React Flow has measured node sizes —
+      // fitView is a no-op against unmeasured (0-size) nodes, and on a cold
+      // load measurement can lag the patch by several hundred ms. Poll the
+      // node store until every node has a measured width, then fit (bounded
+      // so a stuck measure can't loop forever).
+      let tries = 0;
+      const tick = () => {
+        const ns = reactFlow.getNodes();
+        const ready = ns.length > 0 && ns.every((n) => (n.measured?.width ?? n.width ?? 0) > 0);
+        if (ready || tries++ > 60) reactFlow.fitView({ duration: 300, padding: 0.2 });
+        else setTimeout(tick, 40);
+      };
+      tick();
+    }
     window.addEventListener('floret:open-search', onOpenSearch);
     window.addEventListener('floret:open-favorites', onOpenFavorites);
     window.addEventListener('floret:paste', onPaste);
     window.addEventListener('floret:focus-node', onFocusNode);
     window.addEventListener('floret:fit-selection', onFitSelection);
+    window.addEventListener('floret:fit-graph', onFitGraph);
     return () => {
       window.removeEventListener('floret:open-search', onOpenSearch);
       window.removeEventListener('floret:open-favorites', onOpenFavorites);
       window.removeEventListener('floret:paste', onPaste);
       window.removeEventListener('floret:focus-node', onFocusNode);
       window.removeEventListener('floret:fit-selection', onFitSelection);
+      window.removeEventListener('floret:fit-graph', onFitGraph);
     };
   }, [openSearch, openFavorites, pasteAt, reactFlow]);
 }

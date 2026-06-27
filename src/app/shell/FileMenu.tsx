@@ -88,6 +88,10 @@ export function FileMenu() {
         paramStore.replaceAll(ns.map((n) => [n.id, n.data.params] as const));
         loadEditor(ns, es);
         setStatus('starter patch');
+        // The showcase starter is wider than the default viewport; frame the
+        // whole graph. The canvas waits for node measurement before fitting
+        // (fitView no-ops on unmeasured 0-size nodes).
+        requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('floret:fit-graph')));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

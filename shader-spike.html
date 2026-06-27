@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Floret · Shader Render Spike</title>
+  <style>
+    :root { color-scheme: dark; }
+    html, body { margin: 0; height: 100%; background: #0b0a10; color: #cfc9d9;
+      font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    body { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 20px; box-sizing: border-box; }
+    h1 { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #8a83a0; margin: 0; }
+    #gl { border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,.5); background: #000; }
+    #hud { font-variant-numeric: tabular-nums; color: #b7f0c4; }
+    nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    a { color: #9fb0ff; text-decoration: none; padding: 2px 8px; border: 1px solid #2a2740; border-radius: 5px; }
+    a:hover { background: #16142099; }
+    .hint { color: #6a6480; }
+  </style>
+</head>
+<body>
+  <h1>Floret — full-shader render spike (WebGL2 · SDF)</h1>
+  <nav>
+    <a href="?sample=grid-ripple">grid ripple</a>
+    <a href="?sample=phyllotaxis">phyllotaxis</a>
+    <a href="?sample=smoothed-path">smoothed path</a>
+    <a href="?sample=tut-23-polygon">polygon</a>
+    <a href="?sample=tut-24-path-tension">path tension</a>
+    <a href="?sample=curl-flow">curl flow</a>
+    <a href="?sample=particles-fountain">particles</a>
+    <a href="?sample=particles-spiral">particles spiral</a>
+    <a href="?sample=type-drift">type drift</a>
+    <a href="?sample=type-kinetic-wave">kinetic type</a>
+    <a href="?sample=grid-art">grid art</a>
+    <a href="?sample=kaleidoscope">kaleidoscope</a>
+  </nav>
+  <canvas id="gl"></canvas>
+  <div id="hud">booting…</div>
+  <div class="hint">press <b>]</b> / <b>[</b> to raise / lower the density stress multiplier</div>
+  <script type="module" src="/src/spike/shader-spike.ts"></script>
+</body>
+</html>

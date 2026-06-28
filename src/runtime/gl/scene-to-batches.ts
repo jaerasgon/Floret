@@ -88,9 +88,18 @@ function makeCanvas(w: number, h: number): AnyCanvas {
   if (typeof document !== 'undefined') { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
   return new OffscreenCanvas(w, h);
 }
-const textCanvasCache = new Map<string, { canvas: AnyCanvas; w: number; h: number; asc: number }>();
-function rasterizeText(text: string, style: ResolvedStyle) {
-  const key = `${text}|${composeFontCss(style)}|${style.fill}|${style.stroke}|${style.strokeWeight}|${style.lineHeight}`;
+interface GlyphRec { canvas: AnyCanvas; w: number; h: number; asc: number; neutral: boolean }
+const textCanvasCache = new Map<string, GlyphRec>();
+// Rasterise a text run to a glyph canvas. Fill-only text (no stroke) is drawn
+// in neutral WHITE and keyed by text+font alone — its colour and opacity are
+// applied as a per-quad tint at draw time, so a letter animating its opacity
+// (or many same-letter cells) reuses ONE cached glyph instead of re-rasterising
+// every frame. Text with a stroke needs both colours baked, so it keeps the
+// colour in its key.
+function rasterizeText(text: string, style: ResolvedStyle): GlyphRec {
+  const neutral = !style.stroke;
+  const colourKey = neutral ? 'N' : `${style.fill}|${style.stroke}|${style.strokeWeight}`;
+  const key = `${text}|${composeFontCss(style)}|${style.lineHeight}|${colourKey}`;
   const hit = textCanvasCache.get(key); if (hit) return hit;
   const s = 2;
   const lines = text.includes('\n') ? text.split('\n') : [text];
@@ -104,10 +113,13 @@ function rasterizeText(text: string, style: ResolvedStyle) {
   ctx.font = composeFontCss(style); ctx.textAlign = 'left'; ctx.textBaseline = 'top';
   ctx.lineWidth = style.strokeWeight;
   for (let i = 0; i < lines.length; i++) {
-    if (style.fill) { ctx.fillStyle = style.fill; ctx.fillText(lines[i]!, 1, i * dy + 1); }
-    if (style.stroke) { ctx.strokeStyle = style.stroke; ctx.strokeText(lines[i]!, 1, i * dy + 1); }
+    if (neutral) { ctx.fillStyle = '#fff'; ctx.fillText(lines[i]!, 1, i * dy + 1); }
+    else {
+      if (style.fill) { ctx.fillStyle = style.fill; ctx.fillText(lines[i]!, 1, i * dy + 1); }
+      if (style.stroke) { ctx.strokeStyle = style.stroke; ctx.strokeText(lines[i]!, 1, i * dy + 1); }
+    }
   }
-  const rec = { canvas, w: W, h: H, asc: style.fontSize * 0.8 };
+  const rec: GlyphRec = { canvas, w: W, h: H, asc: style.fontSize * 0.8, neutral };
   textCanvasCache.set(key, rec); return rec;
 }
 
@@ -208,14 +220,19 @@ function emitInner(fb: FrameBuilder, renderer: VectorRenderer, node: SceneNode, 
     case 'text': {
       if (!node.text) return;
       const r = rasterizeText(node.text, node.style);
-      const tex = renderer.texture(r.canvas, r.canvas);
+      // Glyph canvases never change once rasterised → immutable: upload once,
+      // skip the per-frame re-upload. Neutral (white) glyphs carry their colour
+      // and opacity as the quad tint; baked glyphs draw at full white tint.
+      const tint = r.neutral ? parseColor(node.style.fill) : [1, 1, 1, 1] as [number, number, number, number];
+      if (tint[3] <= 0) return;   // fully transparent → nothing to draw
+      const tex = renderer.texture(r.canvas, r.canvas, true);
       const W = r.w, H = r.h;
       const ax = node.style.textAlign === 'center' ? -W / 2 : node.style.textAlign === 'right' ? -W : 0;
       const ay = node.style.textBaseline === 'top' ? 0 : node.style.textBaseline === 'middle' ? -H / 2
         : node.style.textBaseline === 'bottom' ? -H : -r.asc;
       const lx = node.x + ax, ly = node.y + ay;
       const tl = apply(m, lx, ly), tr = apply(m, lx + W, ly), bl = apply(m, lx, ly + H), br = apply(m, lx + W, ly + H);
-      fb.pushTexQuad({ c: [tl[0], tl[1], tr[0], tr[1], bl[0], bl[1], br[0], br[1]], u0: 0, v0: 0, u1: 1, v1: 1, tint: [1, 1, 1, 1], tex });
+      fb.pushTexQuad({ c: [tl[0], tl[1], tr[0], tr[1], bl[0], bl[1], br[0], br[1]], u0: 0, v0: 0, u1: 1, v1: 1, tint, tex });
       return;
     }
     case 'image': {

@@ -506,6 +506,14 @@ function runRegion(
   }
   const bodyBuffers = new Map<NodeId, unknown[][]>();
 
+  // One inner-scope outputs map reused across all iterations, seeded with the
+  // root-scope outputs (stable for the whole region run). Safe to reuse rather
+  // than clone-per-iteration: `innerScope.order` is topological, so every inner
+  // node is overwritten before any downstream node reads it — a prior
+  // iteration's value can never leak forward. Saves N full Map clones/frame,
+  // which on a region with hundreds of iterations is the bulk of its overhead.
+  const innerOutputs = new Map<NodeId, PortValue[]>(outputs);
+
   for (let iter = 0; iter < N; iter++) {
     const splicerInValues = new Map<NodeId, PortValue>();
     for (let i = 0; i < nSplicersIn; i++) {
@@ -529,7 +537,6 @@ function runRegion(
 
     // Stagger the time source per iteration when a delay is set.
     const iterFrame: FrameCtx = delay !== 0 ? { ...frame, t: frame.t - iter * delay } : frame;
-    const innerOutputs = new Map<NodeId, PortValue[]>(outputs);
     evalScope(graph, innerScope, iterFrame, innerOutputs, iterCtx, regionStats);
 
     for (let i = 0; i < nSplicersOut; i++) {

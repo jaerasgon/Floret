@@ -255,6 +255,7 @@ export class VectorRenderer {
   private vaoFill: WebGLVertexArrayObject; private fillBuf: WebGLBuffer; private fillCap = 0;
   private vaoTex: WebGLVertexArrayObject; private texVBuf: WebGLBuffer;
   private texCache = new WeakMap<object, WebGLTexture>();
+  private uploadedTex = new WeakSet<object>();   // immutable sources already on the GPU
   // blend-group FBO pool (full-viewport layer textures), used as a LIFO stack
   private pBlit: WebGLProgram; private pGauss: WebGLProgram; private vaoBlit: WebGLVertexArrayObject;
   private layerPool: { fbo: WebGLFramebuffer; tex: WebGLTexture; rb: WebGLRenderbuffer }[] = [];
@@ -364,10 +365,14 @@ export class VectorRenderer {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
-  /** Upload (or reuse) a texture for a CanvasImageSource keyed by object identity. */
-  texture(key: object, source: TexImageSource): WebGLTexture {
+  /** Upload (or reuse) a texture for a CanvasImageSource keyed by object identity.
+   *  `immutable` sources (rasterised glyph canvases — never change once made) are
+   *  uploaded once and skip the per-frame re-upload; live sources (images, camera
+   *  frames) leave it false so each frame's pixels reach the GPU. */
+  texture(key: object, source: TexImageSource, immutable = false): WebGLTexture {
     const gl = this.gl;
     let t = this.texCache.get(key);
+    if (t && immutable && this.uploadedTex.has(key)) return t;   // already on the GPU, unchanged
     if (!t) { t = gl.createTexture()!; this.texCache.set(key, t); }
     gl.bindTexture(gl.TEXTURE_2D, t);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
@@ -377,6 +382,7 @@ export class VectorRenderer {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    if (immutable) this.uploadedTex.add(key);
     return t;
   }
 

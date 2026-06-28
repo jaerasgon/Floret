@@ -89,6 +89,10 @@ function makeCanvas(w: number, h: number): AnyCanvas {
   return new OffscreenCanvas(w, h);
 }
 interface GlyphRec { canvas: AnyCanvas; w: number; h: number; asc: number; neutral: boolean }
+// Bounded insertion-ordered cache: tint-keyed glyphs (fill-only text) stay tiny,
+// but ever-changing CONTENT (a frame counter, a clock) would otherwise mint a new
+// key every frame and leak a glyph canvas forever. Evict oldest past the cap.
+const GLYPH_CACHE_CAP = 1024;
 const textCanvasCache = new Map<string, GlyphRec>();
 // Rasterise a text run to a glyph canvas. Fill-only text (no stroke) is drawn
 // in neutral WHITE and keyed by text+font alone — its colour and opacity are
@@ -120,6 +124,11 @@ function rasterizeText(text: string, style: ResolvedStyle): GlyphRec {
     }
   }
   const rec: GlyphRec = { canvas, w: W, h: H, asc: style.fontSize * 0.8, neutral };
+  if (textCanvasCache.size >= GLYPH_CACHE_CAP) {
+    // Drop the oldest entry; its GPU texture is keyed by the canvas in a
+    // WeakMap, so it's reclaimable once this last strong ref goes.
+    textCanvasCache.delete(textCanvasCache.keys().next().value!);
+  }
   textCanvasCache.set(key, rec); return rec;
 }
 

@@ -4,10 +4,10 @@ import type { ParticleBuffer, ParticleTemplate } from './particles';
 /**
  * Retained-mode scene description.
  *
- * Drawing nodes no longer return a `(p: p5) => void` thunk that mutates
- * the canvas. They return a `SceneNode` — a plain data description of
- * what to draw. The scene renderer (`scene-renderer.ts`) walks the tree
- * and emits Canvas2D calls; a future SVG/PDF exporter walks the same
+ * Drawing nodes don't mutate a canvas directly. They return a `SceneNode`
+ * — a plain data description of what to draw. The GPU renderer
+ * (`gl/scene-to-batches.ts` → `gl/gl-vector-renderer.ts`) walks the tree
+ * into WebGL2 batches; the SVG exporter (`scene-svg.ts`) walks the same
  * tree to emit vector output; the editor can introspect the tree for
  * hit-testing, bounds, selection, and "click a shape to edit" UX.
  *

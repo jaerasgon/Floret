@@ -1,6 +1,10 @@
-// ─── Spike v2 harness: live preview of a sample through the GL vector renderer ──
-// The scene→batches walk now lives in scene-to-batches.ts (shared with the A/B
-// diff harness). This file is just the canvas + RAF loop + HUD.
+// ─── GL renderer dev harness: live preview of a sample in isolation ──────────
+// Dev-only tool (served at /shader-spike.html, not in the production build).
+// Loads any sample through the real scene→batches walk + GL vector renderer
+// outside the full editor, with a live SDF / fill / tex / fps HUD — handy for
+// debugging the renderer on its own. The scene→batches walk lives in
+// scene-to-batches.ts (shared with the worker); this file is just the canvas +
+// RAF loop + HUD.
 
 import { tick } from '../runtime/tick';
 import type { SceneNode } from '../runtime/scene';

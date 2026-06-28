@@ -10,8 +10,9 @@
 //                        clipping; flat per-vertex colour; MSAA for edges.
 //   B. Textured quad    — text (rasterised glyph canvas) and images.
 //
-// The harness (shader-spike.ts) walks SceneNodes and routes each shape to a
-// pipeline via FrameBuilder; the renderer replays the command list.
+// `scene-to-batches.ts` walks SceneNodes and routes each shape to a pipeline
+// via FrameBuilder; the renderer replays the command list. Used by the render
+// worker, the shared main-thread context, and the dev harness alike.
 
 // ── instance / vertex layouts ──
 export const SDF_FLOATS = 20;          // 5 vec4 per SDF instance

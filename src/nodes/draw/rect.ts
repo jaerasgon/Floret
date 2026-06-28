@@ -11,8 +11,8 @@ import { anchorTopLeft, ANCHOR_OPTIONS } from '../_shared/anchor';
 
 /**
  * Shape nodes return SceneNodes — plain data describing what to draw.
- * The scene renderer (`runtime/scene-renderer.ts`) walks the tree and
- * emits Canvas2D calls. When no `style` wire is plugged in, shapes fall
+ * The GPU renderer (`runtime/gl/scene-to-batches.ts`) walks the tree into
+ * WebGL2 batches. When no `style` wire is plugged in, shapes fall
  * back to a default (white fill / no stroke for filled shapes; thin
  * black stroke / no fill for stroke-driven shapes like Line).
  */

@@ -18,9 +18,9 @@ import { resolveBox, catmullRomBeziers } from './scene';
 /**
  * Walk a SceneNode tree, emit an SVG document.
  *
- * The companion to `scene-renderer.ts`: same visitor shape, same shape
- * vocabulary, different output. Where the renderer assigns `ctx.fillStyle`
- * and calls `ctx.fillRect`, this visitor writes `fill="..."` and `<rect/>`.
+ * The companion to the GPU renderer (`gl/scene-to-batches.ts`): same visitor
+ * shape, same shape vocabulary, different output. Where the GPU path emits an
+ * SDF/fill batch, this visitor writes `fill="..."` and `<rect/>`.
  *
  * Design notes:
  *

@@ -451,7 +451,11 @@ export class VectorRenderer {
       this.applyClip(cmd.clip, viewW, viewH);
       if (cmd.kind === 'sdf') {
         gl.useProgram(this.pSdf); gl.uniform2f(this.uViewSdf, viewW, viewH);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        // SDF frag is premultiplied (over() outputs rgb*a) — blend like fill/tex.
+        // Using SRC_ALPHA here double-multiplied edges by alpha, darkening every
+        // soft edge; harmless on opaque output but compounds into dark rings
+        // through the transparent from-layer feedback loop (paint-trail).
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
         gl.bindVertexArray(this.vaoSdf);
         // draw a contiguous instance slice via base-instance emulation: re-point attrs
         gl.bindBuffer(gl.ARRAY_BUFFER, this.instBuf);

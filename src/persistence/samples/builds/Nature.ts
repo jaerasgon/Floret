@@ -799,3 +799,150 @@ export function buildFractalTreeSpread() {
     ],
   };
 }
+
+
+// ─── NOC Ch 8 — Fractal Tree (generative) ──────────────────────────────────
+// The recursion lives IN THE GRAPH — no branch coordinates baked anywhere.
+// A single ForEach walks 32 steps (8 leaf-paths × 4 segments). Three scalar
+// accumulators (angle, x, y) carry the turtle's state; at the start of each
+// leaf (seg 0) a lerp-gate resets it to the trunk base, then each step turns by
+// ±ANGLE (decoded from the leaf index's bits), advances by len·(sin,−cos), and
+// draws one line. Change ANGLE / SCALE / LEVELS and the whole tree reshapes —
+// the price of that is node count (Floret has no vectorised math, so every
+// trig/accumulate step is its own node: ~45 here vs 14 for the spread version).
+export function buildFractalTreeGenerative() {
+  const LEVELS = 4;          // trunk + 3 turning tiers
+  const SEG = LEVELS;        // segments per leaf path
+  const LEAVES = 2 ** (LEVELS - 1);
+  const STEPS = LEAVES * SEG; // 32
+  const ANGLE = 0.5, SCALE = 0.7, TRUNK = 140, ROOT_Y = 220;
+  const RID = 'gt_region';
+  const I = (id: string, t: string, x: number, y: number, p: Record<string, unknown> = {}) =>
+    node(id, t, { x, y }, p, RID);   // inner-scope node helper
+
+  // ── outer scope ──
+  const nN     = node('gt_n', 'value/number', { x: -720, y: 20 }, { value: STEPS });
+  const range  = node('gt_range', 'spread/range', { x: -560, y: 20 }, { count: STEPS });
+  const strokeC= node('gt_strokeC', 'color/rgb', { x: -720, y: -80 }, { r: 230, g: 160, b: 80, a: 255 });
+  const stroke = node('gt_stroke', 'style/stroke', { x: -560, y: -80 });
+  const bg     = node('gt_bg', 'color/rgb', { x: -720, y: 120 }, { r: 16, g: 22, b: 16, a: 255 });
+  const renderer = node('gt_renderer', 'render/renderer', { x: 1700, y: 0 }, { width: 500, height: 500 });
+
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: -320, y: -40 },
+    data: { defType: 'region/foreach', params: { width: 1960, height: 620, label: 'ForEach step' }, ports: [] },
+    style: { width: 1960, height: 620 },
+  };
+
+  // ── inner scope: turtle walk ──
+  const kin   = I('gt_kin', 'region/splicer-in/number', 40, 40);        // inner = k (0..31)
+  const seg   = I('gt_seg', 'math/mod', 200, 40, { b: SEG });           // k mod 4
+  const leafd = I('gt_leafd', 'math/div', 200, 120, { b: SEG });
+  const leaf  = I('gt_leaf', 'math/floor', 360, 120);                   // floor(k/4)
+  const stepG = I('gt_stepG', 'math/step', 360, 40, { edge: 0.5 });     // seg>=1 ? 1 : 0
+  const gate0 = I('gt_gate0', 'math/sub', 520, 40, { a: 1 });           // 1 at seg 0
+  // bit-decode the turn: bit_{seg-1} of leaf
+  const expN  = I('gt_exp', 'math/sub', 520, 160, { b: 1 });            // seg-1
+  const powB  = I('gt_powB', 'math/pow', 680, 160, { a: 2 });           // 2^(seg-1)
+  const div2  = I('gt_div2', 'math/div', 840, 160);                     // leaf / 2^(seg-1)
+  const flr2  = I('gt_flr2', 'math/floor', 1000, 160);
+  const bit   = I('gt_bit', 'math/mod', 1160, 160, { b: 2 });           // 0 or 1
+  const sgn1  = I('gt_sgn1', 'math/mul', 1160, 240, { b: 2 });
+  const sgn   = I('gt_sgn', 'math/sub', 1320, 240, { b: 1 });           // -1 or +1
+  const trnR  = I('gt_trnR', 'math/mul', 1320, 320, { b: ANGLE });
+  const turn  = I('gt_turn', 'math/mul', 1480, 320);                    // × segGate → 0 at trunk
+  // accumulators (slot 1 angle, 2 x, 3 y) + per-leaf reset
+  const ra    = I('gt_ra', 'region/accumulator-read/number', 680, 380, { slot: 1 });
+  const rx    = I('gt_rx', 'region/accumulator-read/number', 680, 460, { slot: 2 });
+  const ry    = I('gt_ry', 'region/accumulator-read/number', 680, 540, { slot: 3 });
+  const pAng  = I('gt_pAng', 'math/lerp', 900, 380, { b: 0 });          // reset angle→0 at seg0
+  const pX    = I('gt_pX', 'math/lerp', 900, 460, { b: 0 });            // reset x→0
+  const pY    = I('gt_pY', 'math/lerp', 900, 540, { b: ROOT_Y });       // reset y→ROOT_Y
+  const nAng  = I('gt_nAng', 'math/add', 1640, 380);                    // prevAngle + turn
+  const lpow  = I('gt_lpow', 'math/pow', 1060, 620, { a: SCALE });      // SCALE^seg
+  const len   = I('gt_len', 'math/mul', 1220, 620, { a: TRUNK });
+  const sinA  = I('gt_sin', 'math/sin', 1800, 360);
+  const cosA  = I('gt_cos', 'math/cos', 1800, 440);
+  const dX    = I('gt_dx', 'math/mul', 1960, 360);                      // len·sin
+  const ncos  = I('gt_ncos', 'math/neg', 1960, 480);
+  const dY    = I('gt_dy', 'math/mul', 2120, 480);                      // len·(−cos)
+  const nX    = I('gt_nX', 'math/add', 2280, 440);                      // prevX + dX
+  const nY    = I('gt_nY', 'math/add', 2280, 540);                      // prevY + dY
+  const wa    = I('gt_wa', 'region/accumulator-write/number', 1820, 300, { slot: 1 });
+  const wx    = I('gt_wx', 'region/accumulator-write/number', 2440, 440, { slot: 2 });
+  const wy    = I('gt_wy', 'region/accumulator-write/number', 2440, 540, { slot: 3 });
+  const wsub  = I('gt_wsub', 'math/sub', 1640, 660, { a: LEVELS });     // taper: thick trunk
+  const wmax  = I('gt_wmax', 'math/max', 1800, 660, { b: 1 });
+  const swt   = I('gt_swt', 'style/stroke-weight', 2000, 660);
+  const aMk   = I('gt_a', 'vec2/make', 2440, 360);                      // prev point
+  const bMk   = I('gt_b', 'vec2/make', 2600, 480);                      // new point
+  const line  = I('gt_line', 'draw/line', 2760, 420);
+  const out   = I('gt_out', 'region/splicer-out/layer', 2920, 420);
+
+  return {
+    nodes: [nN, range, strokeC, stroke, bg, renderer, region,
+      kin, seg, leafd, leaf, stepG, gate0, expN, powB, div2, flr2, bit, sgn1, sgn, trnR, turn,
+      ra, rx, ry, pAng, pX, pY, nAng, lpow, len, sinA, cosA, dX, ncos, dY, nX, nY,
+      wa, wx, wy, wsub, wmax, swt, aMk, bMk, line, out],
+    edges: [
+      edge('gt_n', 'number', 'gt_range', 'count'),
+      edge('gt_strokeC', 'color', 'gt_stroke', 'color'),
+      edge('gt_bg', 'color', 'gt_renderer', 'background'),
+      edge('gt_range', 'indices', 'gt_kin', 'outer'),
+      // index → seg / leaf
+      edge('gt_kin', 'inner', 'gt_seg', 'a'),
+      edge('gt_kin', 'inner', 'gt_leafd', 'a'),
+      edge('gt_leafd', 'result', 'gt_leaf', 'x'),
+      edge('gt_seg', 'result', 'gt_stepG', 'x'),
+      edge('gt_stepG', 'result', 'gt_gate0', 'b'),
+      // bit decode → turn
+      edge('gt_seg', 'result', 'gt_exp', 'a'),
+      edge('gt_exp', 'result', 'gt_powB', 'b'),
+      edge('gt_leaf', 'result', 'gt_div2', 'a'),
+      edge('gt_powB', 'result', 'gt_div2', 'b'),
+      edge('gt_div2', 'result', 'gt_flr2', 'x'),
+      edge('gt_flr2', 'result', 'gt_bit', 'a'),
+      edge('gt_bit', 'result', 'gt_sgn1', 'a'),
+      edge('gt_sgn1', 'result', 'gt_sgn', 'a'),
+      edge('gt_sgn', 'result', 'gt_trnR', 'a'),
+      edge('gt_trnR', 'result', 'gt_turn', 'a'),
+      edge('gt_stepG', 'result', 'gt_turn', 'b'),
+      // reset gate on the three accumulators
+      edge('gt_ra', 'read', 'gt_pAng', 'a'), edge('gt_gate0', 'result', 'gt_pAng', 't'),
+      edge('gt_rx', 'read', 'gt_pX', 'a'),   edge('gt_gate0', 'result', 'gt_pX', 't'),
+      edge('gt_ry', 'read', 'gt_pY', 'a'),   edge('gt_gate0', 'result', 'gt_pY', 't'),
+      // new angle = prevAngle + turn
+      edge('gt_pAng', 'result', 'gt_nAng', 'a'),
+      edge('gt_turn', 'result', 'gt_nAng', 'b'),
+      // length = TRUNK · SCALE^seg
+      edge('gt_seg', 'result', 'gt_lpow', 'b'),
+      edge('gt_lpow', 'result', 'gt_len', 'b'),
+      // displacement
+      edge('gt_nAng', 'result', 'gt_sin', 'x'),
+      edge('gt_nAng', 'result', 'gt_cos', 'x'),
+      edge('gt_len', 'result', 'gt_dx', 'a'), edge('gt_sin', 'result', 'gt_dx', 'b'),
+      edge('gt_cos', 'result', 'gt_ncos', 'x'),
+      edge('gt_len', 'result', 'gt_dy', 'a'), edge('gt_ncos', 'result', 'gt_dy', 'b'),
+      // advance
+      edge('gt_pX', 'result', 'gt_nX', 'a'), edge('gt_dx', 'result', 'gt_nX', 'b'),
+      edge('gt_pY', 'result', 'gt_nY', 'a'), edge('gt_dy', 'result', 'gt_nY', 'b'),
+      // thread accumulators forward
+      edge('gt_nAng', 'result', 'gt_wa', 'write'),
+      edge('gt_nX', 'result', 'gt_wx', 'write'),
+      edge('gt_nY', 'result', 'gt_wy', 'write'),
+      // taper width = max(1, LEVELS - seg)
+      edge('gt_seg', 'result', 'gt_wsub', 'b'),
+      edge('gt_wsub', 'result', 'gt_wmax', 'a'),
+      edge('gt_stroke', 'style', 'gt_swt', 'base'),
+      edge('gt_wmax', 'result', 'gt_swt', 'w'),
+      // draw line prev → new
+      edge('gt_pX', 'result', 'gt_a', 'x'), edge('gt_pY', 'result', 'gt_a', 'y'),
+      edge('gt_nX', 'result', 'gt_b', 'x'), edge('gt_nY', 'result', 'gt_b', 'y'),
+      edge('gt_a', 'vector', 'gt_line', 'a'),
+      edge('gt_b', 'vector', 'gt_line', 'b'),
+      edge('gt_swt', 'style', 'gt_line', 'style'),
+      edge('gt_line', 'shape', 'gt_out', 'inner'),
+      edge('gt_out', 'outer', 'gt_renderer', 'layers'),
+    ],
+  };
+}

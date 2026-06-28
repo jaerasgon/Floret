@@ -15,7 +15,7 @@ import { buildPaintTrail, buildRandomWalkTrail } from './builds/Feedback';
 import { buildDatamosh, buildPhotoMosaic, buildWebcamMosaic, buildBodyTracking } from './builds/Image';
 import { buildCSVBarChart } from './builds/Data';
 import { buildPixelSort } from './builds/Pixel';
-import { buildNocAttraction, buildNocDrag, buildNocFlowField, buildNocFractalTree, buildFractalTreeSpread, buildNocSeek, buildNocSpring, buildNocWindGravity, buildPendulum } from './builds/Nature';
+import { buildNocAttraction, buildNocDrag, buildNocFlowField, buildNocFractalTree, buildFractalTreeSpread, buildFractalTreeGenerative, buildNocSeek, buildNocSpring, buildNocWindGravity, buildPendulum } from './builds/Nature';
 import { buildTutAccumulator, buildTutAnimateWithTime, buildTutAudioReactive, buildTutCacheRegion, buildTutCircleOfShapes, buildTutColorAndFill, buildTutColorLerp, buildTutElementaryCA, buildTutEnvelope, buildTutFFT, buildTutGaussian, buildTutGoL, buildTutGradient, buildTutGrid, buildTutGroupTransform, buildTutHelloRect, buildTutIfRegion, buildTutImageAdjust, buildTutImageSample, buildTutImageUrl, buildTutKeyboardBranch, buildTutMap, buildTutMidiCC, buildTutMouse, buildTutNormalize, buildTutOscillator, buildTutPalette, buildTutPathTension, buildTutPerlin, buildTutPixelSort, buildTutPixelate, buildTutPolar, buildTutPolygon, buildTutPulse, buildTutRandomSpread, buildTutRasterize, buildTutSlider, buildTutSortShuffle, buildTutSoundFilter, buildTutSpreadForeach, buildTutSpringFollow, buildTutState, buildTutStyleChain, buildTutSubpatch, buildTutText, buildTutTrails, buildTutVec2Math, buildTutWanderer } from './builds/Tutorial';
 import { buildKineticType, buildTypeDrift, buildTypeHalo, buildTypeRain, buildTypeRaven } from './builds/Type';
 import { buildParticlesAttractor, buildParticlesFountain, buildParticlesPinball, buildParticlesSpiral, buildParticlesTextDust } from './builds/Particles';
@@ -623,6 +623,13 @@ export const SAMPLES: Sample[] = [
     category: 'Nature',
     description: 'The same fractal tree with zero node duplication: the recursion bakes its branch geometry into five data/csv-inline number spreads, zipped through ONE ForEach → one draw/line. 30 nodes → 14, per-branch stroke weight preserved.',
     build: () => spaced(buildFractalTreeSpread()),
+  },
+  {
+    id: 'fractal-tree-generative',
+    name: 'Fractal Tree (generative)',
+    category: 'Nature',
+    description: 'The recursion lives IN the graph — no baked coordinates. A single ForEach walks 32 steps with three scalar accumulators (angle, x, y) as a turtle, resetting per leaf-path and turning ±ANGLE decoded from the leaf bits. Fully parametric: change ANGLE / SCALE / LEVELS and the tree reshapes.',
+    build: () => spaced(buildFractalTreeGenerative()),
   },
 
   // ── Image ──────────────────────────────────────────────

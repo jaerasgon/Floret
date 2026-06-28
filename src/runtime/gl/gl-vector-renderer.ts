@@ -259,8 +259,9 @@ export class VectorRenderer {
   private layerPool: { fbo: WebGLFramebuffer; tex: WebGLTexture; rb: WebGLRenderbuffer }[] = [];
   private layerInUse = 0; private poolW = 0; private poolH = 0;
 
-  constructor(canvas: HTMLCanvasElement | OffscreenCanvas) {
-    const gl = canvas.getContext('webgl2', { alpha: false, antialias: true, premultipliedAlpha: false, stencil: true }) as WebGL2RenderingContext | null;
+  constructor(canvas: HTMLCanvasElement | OffscreenCanvas, opts: { alpha?: boolean; preserveDrawingBuffer?: boolean } = {}) {
+    const alpha = opts.alpha ?? false;
+    const gl = canvas.getContext('webgl2', { alpha, antialias: true, premultipliedAlpha: alpha, stencil: true, preserveDrawingBuffer: opts.preserveDrawingBuffer ?? false }) as WebGL2RenderingContext | null;
     if (!gl) throw new Error('WebGL2 unavailable');
     this.gl = gl;
     gl.clearStencil(0);
@@ -391,12 +392,13 @@ export class VectorRenderer {
     gl.scissor(left, bot, Math.max(0, right - left), Math.max(0, top - bot));
   }
 
-  render(fb: FrameBuilder, viewW: number, viewH: number, bg: [number, number, number]) {
+  render(fb: FrameBuilder, viewW: number, viewH: number, bg: [number, number, number] | null) {
     const gl = this.gl;
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     gl.disable(gl.SCISSOR_TEST);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.clearColor(bg[0], bg[1], bg[2], 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+    if (bg) gl.clearColor(bg[0], bg[1], bg[2], 1); else gl.clearColor(0, 0, 0, 0);  // null = transparent
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
     gl.enable(gl.BLEND);
     // FBO target stack: base = default framebuffer (null). Blend groups push a
     // layer FBO; popLayer composites it back. layerInUse resets each frame.

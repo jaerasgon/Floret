@@ -1,7 +1,7 @@
 import type { FloretEdge, FloretNode } from '../editor/editor-state';
 import { compileGraph } from '../runtime/compile';
 import { tick } from '../runtime/tick';
-import { renderScene } from '../runtime/scene-renderer';
+import { renderLayersToCanvas } from '../runtime/gl-shared-context';
 import { colorToCss, type SceneNode } from '../runtime/scene';
 import type { Color } from '../runtime/types';
 import { nodeRegistry } from '../nodes/registry';
@@ -117,19 +117,11 @@ export async function renderPatchThumbnail(
       layers = flatten((result.layersByRenderer.get(rendererId) ?? result.layers) as ReadonlyArray<SceneNode | SceneNode[]>);
     }
 
-    // Render at full size, then downscale to the thumbnail for antialiasing.
+    // Render at full size (via the shared GL context), then downscale to the
+    // thumbnail for antialiasing.
     const full = document.createElement('canvas');
     full.width = RENDER_SIZE; full.height = RENDER_SIZE;
-    const fctx = full.getContext('2d');
-    if (!fctx) return null;
-    fctx.fillStyle = bg;
-    fctx.fillRect(0, 0, RENDER_SIZE, RENDER_SIZE);
-    fctx.translate(RENDER_SIZE / 2, RENDER_SIZE / 2);
-    for (const layer of layers) {
-      fctx.save();
-      try { renderScene(fctx, layer); } catch { /* one bad layer shouldn't kill the thumb */ }
-      fctx.restore();
-    }
+    renderLayersToCanvas(layers, RENDER_SIZE, RENDER_SIZE, bg, true, full);
 
     const thumb = document.createElement('canvas');
     thumb.width = thumbW; thumb.height = thumbH;

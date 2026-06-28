@@ -3,7 +3,7 @@ import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { type FloretNodeData } from '../editor-state';
 import { nodeRegistry } from '../../nodes/registry';
 import { getLatestOutputs } from '../../runtime/inspector';
-import { renderScene } from '../../runtime/scene-renderer';
+import { renderLayersToCanvas } from '../../runtime/gl-shared-context';
 import { isReadyImageCanvas } from '../../nodes/_shared/coerce';
 import type { SceneNode } from '../../runtime/scene';
 
@@ -145,16 +145,11 @@ function drawImageThumb(canvas: HTMLCanvasElement | null, src: CanvasImageSource
 
 function drawLayerThumb(canvas: HTMLCanvasElement | null, items: ReadonlyArray<SceneNode>): void {
   if (!canvas) return;
-  const ctx = clearThumb(canvas);
-  if (!ctx) return;
   const s = Math.min(canvas.width, canvas.height) / LAYER_BASE;
-  ctx.save();
-  ctx.translate(canvas.width / 2, canvas.height / 2);
-  ctx.scale(s, s);
+  // Render the layers (scaled to fit) via the shared GL context, opaque bg.
   try {
-    for (const item of items) if (isSceneNode(item)) renderScene(ctx, item);
+    renderLayersToCanvas(items.filter(isSceneNode), canvas.width, canvas.height, '#0d0f14', true, canvas, s);
   } catch { /* ignore malformed scene */ }
-  ctx.restore();
 }
 
 // ─── text snapshot + formatting ───────────────────────────────────────────

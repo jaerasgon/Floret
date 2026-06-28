@@ -1,5 +1,5 @@
 import { registerNode } from '../registry';
-import { renderScene } from '../../runtime/scene-renderer';
+import { renderLayersToCanvas } from '../../runtime/gl-shared-context';
 import { colorToCss, type Color, type PortValue } from '../../runtime/types';
 import { isReadyImageCanvas } from '../_shared/coerce';
 import { markDirty } from '../../runtime/dirty';
@@ -102,8 +102,8 @@ export const sendNode = registerNode({
         const scale = Math.min(w / sw, h / sh);
         try { ctx.drawImage(firstImage, (w - sw * scale) / 2, (h - sh * scale) / 2, sw * scale, sh * scale); } catch { /* tainted */ }
       } else {
-        ctx.translate(w / 2, h / 2);
-        for (const layer of layers) { ctx.save(); try { renderScene(ctx, layer); } finally { ctx.restore(); } }
+        // Render the scene layers via the shared GL context (opaque bg).
+        renderLayersToCanvas(layers as ReadonlyArray<SceneNode>, w, h, colorToCss(bg), true, canvas);
       }
       canvas.toBlob((blob) => { if (blob) post(blob, 'image/png'); else { st!.busy = false; } }, 'image/png');
     } else {

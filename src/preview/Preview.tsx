@@ -130,7 +130,7 @@ export function Preview({ rendererId = null, onDriver }: PreviewProps) {
     const onWheel = (e: WheelEvent) => {
       e.preventDefault(); // stop browser zoom/scroll even when locked
       if (lockedRef.current) return;
-      if (e.ctrlKey) driver.zoomAt(e.deltaY, e.clientX, e.clientY);
+      if (e.ctrlKey) driver.zoomAt(e.deltaY, e.deltaMode, e.clientX, e.clientY);
       else driver.panBy(-e.deltaX, -e.deltaY);
     };
     host.addEventListener('wheel', onWheel, { passive: false });

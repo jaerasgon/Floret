@@ -4,8 +4,9 @@
 
 import { tick } from '../runtime/tick';
 import type { SceneNode } from '../runtime/scene';
-import { VectorRenderer, FrameBuilder } from './gl-vector-renderer';
-import { buildSample, emit, ID } from './scene-to-batches';
+import { VectorRenderer, FrameBuilder } from '../runtime/gl/gl-vector-renderer';
+import { emit, ID } from '../runtime/gl/scene-to-batches';
+import { buildSample } from './scene-samples';
 
 const canvas = document.getElementById('gl') as HTMLCanvasElement;
 const hud = document.getElementById('hud') as HTMLDivElement;

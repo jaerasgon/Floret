@@ -2,7 +2,7 @@ import { registerNode } from '../registry';
 import { derivedImageRegistry } from '../../runtime/derived-image-registry';
 import type { Layer } from '../../runtime/types';
 import type { NodeParamContext, PortValue } from '../types';
-import { renderScene } from '../../runtime/scene-renderer';
+import { renderLayersToCanvas } from '../../runtime/gl-shared-context';
 
 /**
  * Rasterise a Layer (or spread of Layers) into an offscreen canvas
@@ -36,21 +36,9 @@ export const imageFromLayerNode = registerNode({
     const w = Math.max(1, Math.floor(wIn));
     const h = Math.max(1, Math.floor(hIn));
 
-    const { canvas, ctx } = derivedImageRegistry.ensureGraphics(params.nodeId, w, h);
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.translate(w / 2, h / 2);
-    for (const layer of layers) {
-      if (!layer) continue;
-      ctx.save();
-      try {
-        renderScene(ctx, layer);
-      } finally {
-        ctx.restore();
-      }
-    }
-    ctx.restore();
+    const { canvas } = derivedImageRegistry.ensureGraphics(params.nodeId, w, h);
+    // Transparent background (null) — the rasterised layer composites downstream.
+    renderLayersToCanvas(layers, w, h, null, true, canvas);
     return [[canvas]];
   },
 });

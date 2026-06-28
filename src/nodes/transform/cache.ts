@@ -1,7 +1,7 @@
 import { registerNode } from '../registry';
 import { derivedImageRegistry } from '../../runtime/derived-image-registry';
 import type { Layer } from '../../runtime/types';
-import { renderScene } from '../../runtime/scene-renderer';
+import { renderLayersToCanvas } from '../../runtime/gl-shared-context';
 import type { SceneNode } from '../../runtime/scene';
 import type { NodeParamContext, PortValue } from '../types';
 
@@ -44,26 +44,12 @@ export const cacheLayerNode = registerNode({
     const w = Math.max(1, Math.floor(wIn > 0 ? wIn : DEFAULT_CACHE_SIZE));
     const h = Math.max(1, Math.floor(hIn > 0 ? hIn : DEFAULT_CACHE_SIZE));
 
-    const { canvas, ctx } = derivedImageRegistry.ensureGraphics(
-      params.nodeId, w, h,
-    );
+    const { canvas } = derivedImageRegistry.ensureGraphics(params.nodeId, w, h);
 
-    // Rasterise the scene tree into the offscreen surface NOW (this
-    // tick). Centre origin to match the main renderer.
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.translate(w / 2, h / 2);
-    for (const layer of layers) {
-      if (!layer) continue;
-      ctx.save();
-      try {
-        renderScene(ctx, layer);
-      } finally {
-        ctx.restore();
-      }
-    }
-    ctx.restore();
+    // Rasterise the scene tree into the offscreen surface NOW (this tick), via
+    // the shared GL context. Transparent bg + centre origin to match the main
+    // renderer.
+    renderLayersToCanvas(layers, w, h, null, true, canvas);
 
     // Emit an `image` SceneNode. The main renderer's translate has
     // already centred its origin on the canvas, so blit at (-w/2, -h/2)

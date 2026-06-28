@@ -50,8 +50,10 @@ export interface ActiveDriver {
    *  keep it fitted as the panel resizes / resolution changes. Also resets
    *  any user pinch-zoom / pan. */
   fitInView: () => void;
-  /** Pinch-zoom the preview toward a screen point (keeps it under cursor). */
-  zoomAt: (deltaY: number, clientX: number, clientY: number) => void;
+  /** Pinch-zoom the preview toward a screen point (keeps it under cursor).
+   *  `deltaMode` is the wheel event's deltaMode so the sensitivity matches
+   *  the node canvas (React Flow / d3-zoom). */
+  zoomAt: (deltaY: number, deltaMode: number, clientX: number, clientY: number) => void;
   /** Step-zoom by a factor toward the panel centre (for +/− buttons). */
   zoomBy: (factor: number) => void;
   /** Pan the preview by a screen-space delta. */
@@ -150,8 +152,14 @@ export function createCanvasDriver(container: HTMLElement, opts: DriverOptions):
     applyUserTransform();
   };
   /** Pinch-zoom toward a screen point (clientX/Y), keeping that point fixed. */
-  const zoomAt = (deltaY: number, clientX: number, clientY: number) =>
-    zoomTo(userZoom * Math.exp(-deltaY * 0.0015), clientX, clientY);
+  const zoomAt = (deltaY: number, deltaMode: number, clientX: number, clientY: number) => {
+    // Match the node canvas (React Flow / d3-zoom) wheel sensitivity: it scales
+    // by deltaMode (line-mode mouse wheels zoom ~25x more per tick than pixels),
+    // then k *= 2^(-deltaY * unit). The preview previously used a flat factor
+    // that ignored deltaMode, making mouse-wheel zoom feel much slower.
+    const unit = deltaMode === 1 ? 0.05 : deltaMode === 2 ? 1 : 0.002;
+    zoomTo(userZoom * Math.pow(2, -deltaY * unit), clientX, clientY);
+  };
   /** Step-zoom by a multiplicative factor toward the panel centre (buttons). */
   const zoomBy = (factor: number) => {
     const r = fitTarget().getBoundingClientRect();

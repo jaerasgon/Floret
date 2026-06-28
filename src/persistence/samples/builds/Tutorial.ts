@@ -1078,7 +1078,7 @@ export function buildTutRasterize() {
   const poly = node('t26_poly', 'draw/polygon', { x: 260, y: 0 }, { closed: false });
 
   const rast = node('t26_rast', 'image/from-layer', { x: 460, y: 60 }, { w: 256, h: 256 });
-  const drawImg = node('t26_draw', 'draw/image', { x: 640, y: 60 }, { x: -100, y: -100, w: 200, h: 200 });
+  const drawImg = node('t26_draw', 'draw/image', { x: 640, y: 60 }, { x: 0, y: 0, w: 200, h: 200 });
   const renderer = node('t26_renderer', 'render/renderer', { x: 860, y: 0 }, { width: 400, height: 400 });
 
   return {
@@ -1535,7 +1535,7 @@ export function buildTutImageUrl() {
     { w: 420, h: 200 },
   );
   const url = node('t37_url', 'io/image-url', { x: 60, y: 0 });
-  const drawImg = node('t37_draw', 'draw/image', { x: 280, y: 40 }, { x: -160, y: -160, w: 320, h: 320 });
+  const drawImg = node('t37_draw', 'draw/image', { x: 280, y: 40 }, { x: 0, y: 0, w: 320, h: 320 });
   const renderer = node('t37_renderer', 'render/renderer', { x: 540, y: 0 }, { width: 400, height: 400 });
   return {
     nodes: [c, url, drawImg, renderer],
@@ -1557,7 +1557,7 @@ export function buildTutImageAdjust() {
   );
   const url = node('t38_url', 'io/image-url', { x: 60, y: 0 });
   const adj = node('t38_adj', 'image/adjust', { x: 280, y: 0 }, { brightness: 1.2, contrast: 1.3, saturate: 1.5, hue: 30 });
-  const drawImg = node('t38_draw', 'draw/image', { x: 520, y: 40 }, { x: -160, y: -160, w: 320, h: 320 });
+  const drawImg = node('t38_draw', 'draw/image', { x: 520, y: 40 }, { x: 0, y: 0, w: 320, h: 320 });
   const renderer = node('t38_renderer', 'render/renderer', { x: 780, y: 0 }, { width: 400, height: 400 });
   return {
     nodes: [c, url, adj, drawImg, renderer],
@@ -1581,7 +1581,7 @@ export function buildTutPixelate() {
   const url = node('t39_url', 'io/image-url', { x: 60, y: 0 });
   const sz = node('t39_sz', 'io/slider', { x: 60, y: 200 }, { value: 8, min: 1, max: 32 });
   const pix = node('t39_pix', 'image/pixelate', { x: 320, y: 0 });
-  const drawImg = node('t39_draw', 'draw/image', { x: 540, y: 40 }, { x: -160, y: -160, w: 320, h: 320 });
+  const drawImg = node('t39_draw', 'draw/image', { x: 540, y: 40 }, { x: 0, y: 0, w: 320, h: 320 });
   const renderer = node('t39_renderer', 'render/renderer', { x: 780, y: 0 }, { width: 400, height: 400 });
   return {
     nodes: [c, url, sz, pix, drawImg, renderer],
@@ -1605,7 +1605,7 @@ export function buildTutPixelSort() {
   );
   const url = node('t40_url', 'io/image-url', { x: 60, y: 0 });
   const sort = node('t40_sort', 'pixel/sort', { x: 280, y: 0 }, { axis: 'rows', criterion: 'brightness', order: 'ascending' });
-  const drawImg = node('t40_draw', 'draw/image', { x: 520, y: 40 }, { x: -160, y: -160, w: 320, h: 320 });
+  const drawImg = node('t40_draw', 'draw/image', { x: 520, y: 40 }, { x: 0, y: 0, w: 320, h: 320 });
   const renderer = node('t40_renderer', 'render/renderer', { x: 780, y: 0 }, { width: 400, height: 400 });
   return {
     nodes: [c, url, sort, drawImg, renderer],

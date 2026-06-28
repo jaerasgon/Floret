@@ -110,8 +110,9 @@ export function buildPaintTrail() {
   const stateRead= node('pt_read',     'state/read',       { x: -280, y:  20 }, { slot: 1 });
   // Copy previous frame before from-layer clears its surface.
   const prevCopy = node('pt_prevCopy', 'image/crop',       { x:  -60, y:  20 }, { sx: 0, sy: 0, sw: 0, sh: 0 });
-  // Layer 1: render previous accumulated canvas.
-  const drawPrev = node('pt_drawPrev', 'draw/image',       { x:  220, y:  20 }, { x: -250, y: -250, w: 500, h: 500 });
+  // Layer 1: render previous accumulated canvas. draw/image anchors at the
+  // centre, so pos (0,0) fills the centre-origin canvas.
+  const drawPrev = node('pt_drawPrev', 'draw/image',       { x:  220, y:  20 }, { x: 0, y: 0, w: 500, h: 500 });
   // Brush color: hue cycles with time.
   const hueMul   = node('pt_hueMul',   'math/mul',         { x: -500, y: 240 }, { b: 50 });
   const hsl      = node('pt_hsl',      'color/hsl',        { x: -300, y: 240 }, { s: 90, l: 60, a: 255 });
@@ -127,7 +128,7 @@ export function buildPaintTrail() {
   // Write on the right (slot 1) — completes the L→R flow.
   const stateWrite=node('pt_write',    'state/write',      { x:  880, y:  80 }, { slot: 1 });
   // Display on screen.
-  const display  = node('pt_display',  'draw/image',       { x: 1080, y:  80 }, { x: -250, y: -250, w: 500, h: 500 });
+  const display  = node('pt_display',  'draw/image',       { x: 1080, y:  80 }, { x: 0, y: 0, w: 500, h: 500 });
   const renderer = node('pt_renderer', 'render/renderer',  { x: 1280, y:  80 }, { width: 500, height: 500 });
 
   return {

@@ -6,10 +6,10 @@
  * first call and reuses it across frames; `dispose()` drops it; URL
  * changes trigger a recreate.
  *
- * We use plain `<img>` elements rather than `p5.Image` so the
- * compute-time loader has no p5 dependency. p5's `image()` accepts
- * both shapes, so drawing the resulting element works inside any
- * Layer with no extra glue.
+ * We load into a plain `<img>` and copy it into a `<canvas>`, which is
+ * what flows down the "image" wire. The GL renderer uploads that canvas
+ * straight to a texture (`texImage2D` accepts any `CanvasImageSource`),
+ * so no wrapper object is needed.
  *
  * CORS: `crossOrigin = 'anonymous'` is set so a cooperating server's
  * image is non-tainted (pixel reads work later if we add a filter
@@ -22,12 +22,8 @@ interface Entry {
   img: HTMLImageElement;
   /**
    * Once the image loads we copy it into a real `<canvas>` and hand
-   * *that* out as the "image" wire value. p5's `image()` expects a
-   * p5.Image-shaped object with `.elt`, and probes `.elt.width` —
-   * which HTMLImageElement doesn't have, but a canvas-wrapped copy
-   * (via `p.createGraphics`-style usage) does. The simplest robust
-   * shim is to materialise a canvas ourselves; p5 accepts
-   * HTMLCanvasElement directly through `image()`.
+   * *that* out as the "image" wire value — a uniform `CanvasImageSource`
+   * the GL renderer can texture directly, regardless of the original URL.
    */
   canvas: HTMLCanvasElement;
   loaded: boolean;
@@ -53,13 +49,6 @@ class ImageRegistry {
     const canvas = document.createElement('canvas');
     canvas.width = 1;
     canvas.height = 1;
-    // p5's Renderer2D.image() resolves the source element via
-    //   `cnv = img.canvas || img.elt`
-    // — a bare HTMLCanvasElement has neither, so the call throws
-    // "reading 'width' of undefined". Set `.elt` to ourselves so p5's
-    // lookup picks up this canvas as the drawable. Non-standard
-    // property name but harmless on native canvases.
-    (canvas as unknown as { elt: HTMLCanvasElement }).elt = canvas;
     const entry: Entry = { url, img, canvas, loaded: false, failed: false };
     this.entries.set(nodeId, entry);
     img.onload = () => {

@@ -6,8 +6,8 @@ import type { NodeParamContext } from '../types';
 /**
  * PeakDetect — boolean true while a frequency-band peak exceeds a
  * normalised threshold. Uses an AnalyserNode for spectrum data and a
- * simple "above threshold + minimum frame gap" heuristic — matches the
- * original p5.PeakDetect's basic algorithm closely enough for typical
+ * simple "above threshold + minimum frame gap" heuristic — a standard
+ * running-threshold peak detector, good enough for typical
  * beat-detection use.
  *
  * `freq1` / `freq2` bound the listening band (Hz). `threshold` (0..1)

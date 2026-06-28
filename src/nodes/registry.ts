@@ -8,7 +8,7 @@ import type { NodeDef } from './types';
  * (compile-on-registry-change for hot reload, palette UI) watch this
  * to know when to refresh. In M3 we use it just for the palette; in
  * a future milestone it lets us hot-reload a single node definition
- * without restarting the p5 instance.
+ * without restarting the runtime.
  */
 
 class NodeRegistry {

@@ -3,7 +3,7 @@ import type { PortValue } from './types';
 import type { RegionTickStats } from './tick';
 
 /**
- * A snapshot of the most recent tick's outputs. Written by the p5
+ * A snapshot of the most recent tick's outputs. Written by the render
  * driver every frame; read on-demand by hover tooltips that want to
  * show live values. Module-level state on purpose — we don't want
  * Zustand re-renders firing for every node, every frame.

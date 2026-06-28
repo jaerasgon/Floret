@@ -2,8 +2,8 @@
  * Cook-on-change dirty bit.
  *
  * The frame loop (canvas-driver) skips the entire runtime tick AND layer
- * playback on an idle frame — the Canvas2D surface keeps last frame's
- * pixels, so the user sees a frozen-but-correct frame at ~zero CPU cost.
+ * playback on an idle frame — the canvas keeps last frame's pixels, so the
+ * user sees a frozen-but-correct frame at ~zero CPU cost.
  *
  * The dirty bit is flipped true by any event that *could* change a node's
  * output: editor mutations (via `_compile`), paramStore writes (via

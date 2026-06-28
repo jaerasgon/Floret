@@ -30,9 +30,8 @@
 
 import type { Vec2 } from './types';
 
-/** Maximum miter ratio before the join collapses. Same default as p5 /
- *  Canvas2D. Without this clamp, near-180° corners produce arbitrarily
- *  long spikes. */
+/** Maximum miter ratio before the join collapses (SVG `stroke-miterlimit`).
+ *  Without this clamp, near-180° corners produce arbitrarily long spikes. */
 const MITER_LIMIT = 4;
 
 /**
@@ -158,7 +157,7 @@ export function buildOffsetPolygon(
  * Convenience — does the widths spread carry meaningful variation worth
  * building an offset polygon for? Returns false for empty or
  * effectively-uniform widths, in which case the caller should use the
- * cheaper Canvas2D stroke path.
+ * cheaper uniform-stroke path instead of an offset polygon.
  */
 export function widthsAreVariable(widths: ReadonlyArray<number>): boolean {
   if (widths.length < 2) return false;

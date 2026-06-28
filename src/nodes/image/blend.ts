@@ -20,7 +20,7 @@ import type { NodeParamContext, PortValue } from '../types';
  * 1×1 placeholder; if only B is loading, A passes through unmodified.
  *
  * Blend modes map straight onto canvas `globalCompositeOperation`
- * values, so they behave identically to p5's `blendMode()`.
+ * values (the CSS/SVG blend-mode set).
  */
 
 type BlendMode =

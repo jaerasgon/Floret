@@ -6,7 +6,7 @@ import type { NodeParamContext } from '../types';
 /**
  * FFT — frequency + waveform analyser via Web Audio's AnalyserNode.
  *
- *   - `spectrum`  bin magnitudes 0..255 (matches p5's byte-domain scale)
+ *   - `spectrum`  bin magnitudes 0..255 (Web Audio's byte-frequency domain)
  *   - `waveform`  time-domain samples -1..1
  *
  * `bins` (param) sets FFT size; `smoothing` is the analyser's built-in

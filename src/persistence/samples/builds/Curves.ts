@@ -265,8 +265,8 @@ export function buildGridArt() {
   };
 
   // ── Inside region ────────────────────────────────────────────────────
-  // Grid points are already centred on origin (−300..+300). The p5 driver
-  // applies `translate(width/2, height/2)` before invoking each layer, so
+  // Grid points are already centred on origin (−300..+300). The render driver
+  // applies `translate(width/2, height/2)` before drawing each layer, so
   // coordinates pass through as-is — no manual canvas-centre offset.
   const split = node('ga_split', 'vec2/split', { x: 40, y: 60 }, {}, RID);
   const seedSum = node('ga_seedSum', 'math/add', { x: 220, y: 140 }, {}, RID);

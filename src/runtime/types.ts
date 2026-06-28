@@ -24,8 +24,8 @@ export type PortType =
    *  swap) happen at compile / first-tick. */
   | 'audio'
   /** A loaded raster image. Wires carry an `HTMLImageElement` (or
-   *  null while loading). Drawn via `p.image(...)` which accepts both
-   *  HTMLImageElement and p5.Image. */
+   *  null while loading), drawn as an image SceneNode that the renderer
+   *  uploads as a texture. */
   | 'image'
   /** Physics world handle — gravity, drag, time-scale, and the registry
    *  of registered global forces / colliders. One World can feed many
@@ -74,9 +74,9 @@ export type Mat3 = readonly [number, number, number, number, number, number, num
 
 /**
  * A Layer is the unit of drawing. Drawing nodes return Layers, which
- * are now plain data — `SceneNode`s describing what to draw. The
- * scene renderer walks the tree and emits Canvas2D calls; a future
- * SVG/PDF exporter walks the same tree to emit vector output.
+ * are plain data — `SceneNode`s describing what to draw. `gl/scene-to-batches.ts`
+ * walks the tree into batches that `gl/gl-vector-renderer.ts` rasterizes via
+ * WebGL2; `scene-svg.ts` walks the same tree to emit vector output.
  */
 import type { SceneNode as _SceneNode } from './scene';
 export type Layer = _SceneNode;

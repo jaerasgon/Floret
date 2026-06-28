@@ -10,7 +10,7 @@ interface AppState {
   fps: number;
   frameCount: number;
   nodeCount: number;
-  /** Incremented by `refresh()` — Preview watches this to remount p5. */
+  /** Incremented by `refresh()` — Preview watches this to remount the renderer. */
   refreshKey: number;
   toggleRunning: () => void;
   refresh: () => void;
@@ -35,7 +35,7 @@ export const useAppStore = create<AppState>((set) => ({
    *
    * 1. `useEditor.recompile()` swaps in a fresh RuntimeNode set, so all
    *    of those hidden Float32Arrays / Maps come back empty.
-   * 2. `refreshKey` ticks so every Preview remounts its p5 driver, which
+   * 2. `refreshKey` ticks so every Preview remounts its render driver, which
    *    resets `time` to 0 and clears the canvas.
    * 3. Counters reset so the status bar reflects the new run.
    * 4. `running: true` un-pauses if the user was paused.

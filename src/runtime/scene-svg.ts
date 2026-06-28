@@ -29,17 +29,17 @@ import { resolveBox, catmullRomBeziers } from './scene';
  *    path. The cost we care about is the FIRST export — users won't be
  *    running this 60fps — but tidy is tidy.
  *
- *  - **Transforms align with SVG by construction.** Canvas2D's affine
- *    `[a b c d e f]` IS SVG's `matrix(a b c d e f)`. No conversion. A
+ *  - **Transforms align with SVG by construction.** The scene model's
+ *    affine `[a b c d e f]` IS SVG's `matrix(a b c d e f)`. No conversion. A
  *    group with `transform` becomes `<g transform="matrix(a b c d e f)">`.
  *
  *  - **Style as inline attributes.** Every shape carries its own
  *    ResolvedStyle so there's no benefit to <defs>+class indirection
  *    today. Inline keeps the output legible and editable in a vector tool.
  *
- *  - **Blend modes.** Canvas2D's globalCompositeOperation overlaps with
+ *  - **Blend modes.** The scene model's blend-mode keywords overlap with
  *    CSS `mix-blend-mode` for the actual *blend* keywords (multiply,
- *    screen, overlay, …) but also includes compositing operators
+ *    screen, overlay, …) but also include compositing operators
  *    (source-over, destination-in, …) that have no SVG analog. We pass
  *    the known blend keywords through and silently drop the rest — the
  *    visual difference is minor for the export use-case and over-
@@ -54,7 +54,7 @@ import { resolveBox, catmullRomBeziers } from './scene';
  *
  *  - **Modes resolved at emit.** `rectMode` / `ellipseMode` are baked
  *    into a uniform top-left + w/h via `resolveBox`, identical to the
- *    Canvas2D renderer. No SVG-side mode tracking.
+ *    GPU path. No SVG-side mode tracking.
  */
 
 /** Top-level entry point. Returns a complete, self-contained SVG document. */
@@ -117,7 +117,7 @@ function emitNode(s: EmitState, n: SceneNode): void {
 
 function emitParticleBatch(s: EmitState, b: import('./scene').ParticleBatch): void {
   // SVG export: one element per alive particle. Sized for fidelity, not
-  // speed (SVG isn't the hot path — Canvas2D is).
+  // speed (SVG isn't the hot path — the GPU renderer is).
   const buf = b.buffer;
   const cap = buf.capacity;
   for (let i = 0; i < cap; i++) {
@@ -246,7 +246,7 @@ function emitArc(s: EmitState, a: ArcShape): void {
   const rx = Math.abs(w / 2);
   const ry = Math.abs(h / 2);
   // Build an arc path. SVG arcs need start/end points on the ellipse plus
-  // the large-arc and sweep flags. Canvas2D's ellipse(start, stop) sweeps
+  // the large-arc and sweep flags. The scene model's arc(start, stop) sweeps
   // from start to stop counterclockwise-positive (in y-down screen space
   // that's clockwise visually). We mirror that by emitting sweep-flag=1.
   const sx = cx + rx * Math.cos(a.start);
@@ -388,7 +388,7 @@ function dominantBaseline(b: string): string {
 }
 
 /**
- * Canvas2D `globalCompositeOperation` keywords that map 1:1 to CSS
+ * Scene blend-mode keywords (the CSS/SVG blend-mode set) that map 1:1 to CSS
  * `mix-blend-mode`. Anything else (source-over, destination-in, …) we
  * silently drop — those are compositing operators, not blend modes, and
  * SVG has no portable equivalent.
@@ -424,10 +424,10 @@ function paint(role: 'fill' | 'stroke', css: string): string {
  *     (e.g. `1.347e-14`) that bloats the file and trips stricter parsers;
  *     sub-pixel precision is irrelevant for vector output anyway.
  *   - Collapse non-finite values to 0. A diverged sim (physics blow-up,
- *     normalise-of-zero, /0 position) can emit NaN/Infinity — Canvas2D
- *     silently skips those, but `cx="NaN"` breaks the element (and, in
- *     strict parsers, the whole document). Degrading to a harmless point
- *     at the origin matches the canvas "drew nothing" outcome closely.
+ *     normalise-of-zero, /0 position) can emit NaN/Infinity — the GPU
+ *     renderer silently skips those, but `cx="NaN"` breaks the element (and,
+ *     in strict parsers, the whole document). Degrading to a harmless point
+ *     at the origin matches the renderer's "drew nothing" outcome closely.
  */
 function n(v: number): string {
   if (!Number.isFinite(v)) return '0';

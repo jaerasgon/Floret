@@ -14,8 +14,8 @@
 
 interface CameraChain {
   video: HTMLVideoElement;
-  /** Capture surface handed out as the `image` value. 1×1 until the first
-   *  frame; `.elt` shim added so p5's image() accepts it (see image-registry). */
+  /** Capture surface handed out as the `image` value — a `CanvasImageSource`
+   *  the GL renderer textures directly. 1×1 until the first frame arrives. */
   canvas: HTMLCanvasElement;
   stream: MediaStream | null;
   deviceId: string;
@@ -129,7 +129,6 @@ class CameraRegistry {
     const canvas = document.createElement('canvas');
     canvas.width = 1;
     canvas.height = 1;
-    (canvas as unknown as { elt: HTMLCanvasElement }).elt = canvas;
     return { video, canvas, stream: null, deviceId: '', starting: false, started: false, error: null };
   }
 

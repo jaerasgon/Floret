@@ -17,8 +17,8 @@
  *
  * Downstream consumers (draw/image, image/filter, render-bridge) accept
  * either an HTMLCanvasElement (from io/image-url) or an OffscreenCanvas
- * (from us) via the standard `CanvasImageSource` union — Canvas2D's
- * `drawImage` and `createImageBitmap` work uniformly on both.
+ * (from us) via the standard `CanvasImageSource` union — `drawImage`
+ * and `createImageBitmap` work uniformly on both.
  *
  * Lifecycle mirrors `image-registry` and `audio-registry`:
  *   - `ensure(nodeId)`            — get (or create) a 1×1 placeholder.
@@ -160,7 +160,7 @@ class DerivedImageRegistry {
 
   private disposeEntry(_e: Entry): void {
     // OffscreenCanvases get GC'd once the reference drops. No explicit
-    // teardown needed (unlike p5.Graphics in the old world).
+    // teardown needed.
   }
 }
 

@@ -259,7 +259,7 @@ export function buildForceField() {
   const hsl = node('ff_hsl', 'color/hsl', { x: 240, y: 340 }, { s: 75, l: 60, a: 255 }, RID);
   const fill = node('ff_fill', 'style/fill', { x: 420, y: 340 }, { mode: 'color' }, RID);
   // Stroke style chain: NoFill → StrokeWeight → Stroke(hsl-color) → line.
-  // p5 lines are stroke-driven; without a stroke colour they'd be invisible
+  // Lines are stroke-driven; without a stroke colour they'd be invisible
   // against the dark backdrop.
   const noFill = node('ff_noFill', 'style/no-fill', { x: 600, y: 340 }, {}, RID);
   const strokeC = node('ff_strokeC', 'style/stroke', { x: 780, y: 340 }, {}, RID);

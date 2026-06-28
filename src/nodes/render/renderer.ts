@@ -4,13 +4,13 @@ import { paramStore } from '../../runtime/param-store';
 /**
  * The sink. Takes a Spread<Layer> on its single pinned input (consumed as
  * one bin — see liftCyclic pinned semantics). Passes the spread through
- * as its output, where tick() picks it up and the p5 driver invokes
+ * as its output, where tick() picks it up and the render driver draws
  * each Layer in array order (= wire order = z-order).
  *
  * The Renderer also owns the **canvas dimensions**: `width` and `height`
  * are `param`-linked input pins — editable inline on the node (the value
  * lives in `paramStore`), OR wired from upstream to drive the resolution
- * from the graph (a slider, a constant, computed dims, …). The p5 driver
+ * from the graph (a slider, a constant, computed dims, …). The render driver
  * reads the dims from `paramStore` each frame and calls `resizeCanvas`
  * when they change — no recompile, no remount. When a pin is wired,
  * compute writes the resolved value back into `paramStore` so the driver
@@ -42,18 +42,18 @@ export const rendererNode = registerNode({
   ],
   outputs: [
     { name: 'layers', type: 'layer', kind: 'spread' },
-    // The background colour is surfaced as an output so the p5 driver
+    // The background colour is surfaced as an output so the render driver
     // can read it via the renderer's outputs map each frame.
     { name: 'background', type: 'color' },
   ],
   defaultParams: { width: 500, height: 500 },
   // computeRaw because the Layer spread is pinned — passes through verbatim.
-  // The background passes through too so the p5 driver can read it.
+  // The background passes through too so the render driver can read it.
   //
   // Sync the resolved width/height back into paramStore: for an unwired
   // pin inputs[2]/[3] already came FROM paramStore (the `param` linkage),
   // so this is a no-op; for a wired pin it pushes the upstream value into
-  // paramStore where the p5 driver reads canvas dims. setKey no-ops when
+  // paramStore where the render driver reads canvas dims. setKey no-ops when
   // unchanged, so this never spins the dirty bit.
   computeRaw: (inputs, ctx) => {
     const w = inputs[2]?.[0];

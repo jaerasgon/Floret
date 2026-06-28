@@ -276,8 +276,8 @@ export const walkerClusterNode = registerNode({
     };
     // Compose translate then scale. We use a Group nesting (outer
     // translate, inner scale) since SceneNode `transform` is a single
-    // affine per group — easy to read, matches the original push/pop
-    // ordering of the p5 version.
+    // affine per group — easy to read, and applies translate-then-scale
+    // in that order.
     const node: Layer = {
       kind: 'group',
       children: [

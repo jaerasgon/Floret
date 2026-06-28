@@ -5,8 +5,9 @@ import { toVec2 } from '../_shared/coerce';
 
 /**
  * Transform nodes wrap their inner Layer in a `group` SceneNode with
- * the appropriate affine. The scene renderer applies the transform
- * under `save()/restore()` so siblings are unaffected.
+ * the appropriate affine. The renderer composes that affine onto each
+ * child as it walks the group — the matrix is scoped to the subtree, so
+ * siblings outside the group are unaffected.
  */
 
 export const translateNode = registerNode({

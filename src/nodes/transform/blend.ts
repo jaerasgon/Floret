@@ -3,11 +3,11 @@ import type { Layer } from '../../runtime/types';
 import type { BlendMode as SceneBlendMode } from '../../runtime/scene';
 
 /**
- * Blend — wrap an inner Layer in a `group` that sets a Canvas2D
- * `globalCompositeOperation` for its children, then restores it.
+ * Blend — wrap an inner Layer in a `group` that sets a blend mode for
+ * its children, then restores it.
  *
- * Modes mirror Canvas2D's standard set (source-over is the default;
- * the option names are p5-shaped for continuity with existing patches).
+ * Modes are the CSS/SVG blend-mode set (source-over is the default;
+ * the option names are the patch-facing aliases kept for continuity).
  */
 
 type BlendOption =
@@ -36,7 +36,7 @@ function toCanvasBlend(m: BlendOption): SceneBlendMode {
     case 'soft-light': return 'soft-light';
     case 'dodge': return 'color-dodge';
     case 'burn': return 'color-burn';
-    case 'subtract': return 'difference'; // closest Canvas2D approximation
+    case 'subtract': return 'difference'; // closest blend-mode-set approximation
     case 'blend':
     default: return 'source-over';
   }

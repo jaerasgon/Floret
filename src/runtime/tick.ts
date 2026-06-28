@@ -302,7 +302,8 @@ function evalNode(
   // 35; the root scope uses -1.
   //
   // The leverage: static or rarely-updated chains become free across
-  // ticks. p5.js can't do this — it has no graph. We do.
+  // ticks — the node graph lets us memoise where an imperative draw loop
+  // would recompute every frame.
   if (node.memoisable && node.runtimeState) {
     const iterIdx = iterCtx ? iterCtx.iterIdx : -1;
     let memo = node.runtimeState.memo;
@@ -338,7 +339,7 @@ function evalNode(
  *
  * Reference equality on elements is the right call for our value
  * lattice: primitives (number/string/boolean) compare by value;
- * objects (Color, Vec2, Layer closures, p5.Graphics) preserve identity
+ * objects (Color, Vec2, Layer/SceneNode, image surfaces) preserve identity
  * when the upstream is also memoised. The first tick after a graph
  * change has no memo → recompute → fresh outputs stored → subsequent
  * ticks hit the memo chain all the way down.

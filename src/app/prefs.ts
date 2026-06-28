@@ -6,7 +6,7 @@ import { loadJSON, saveJSON } from '../persistence/local-store';
  * across reloads, and exposed both via Zustand selectors (for UI that
  * needs to re-render on change) and a plain module-level snapshot
  * (`prefsSnapshot`) for code paths that must read the value without a
- * hook — e.g. the p5 driver's per-frame hook and the Mouse node's
+ * hook — e.g. the render driver's per-frame hook and the Mouse node's
  * `readFromContext`. The snapshot stays in sync via a subscription set
  * up below.
  *

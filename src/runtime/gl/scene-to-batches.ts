@@ -113,7 +113,7 @@ function rasterizeText(text: string, style: ResolvedStyle) {
 
 // ── walk one SceneNode ──
 // Wrapper: a shape with style.blur renders into its own layer, gets a separable
-// Gaussian, then composites — matching Canvas2D's per-shape `filter: blur()`.
+// Gaussian, then composites — a CSS-style per-shape `filter: blur()`.
 export function emit(fb: FrameBuilder, renderer: VectorRenderer, node: SceneNode, m: Affine): void {
   const st = (node as { style?: ResolvedStyle }).style;
   const blur = st && node.kind !== 'group' ? st.blur : 0;

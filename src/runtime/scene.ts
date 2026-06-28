@@ -32,9 +32,10 @@ export type RectMode = 'corner' | 'center' | 'corners' | 'radius';
 export type EllipseMode = 'corner' | 'center' | 'corners' | 'radius';
 export type StrokeCap = 'butt' | 'round' | 'square';
 export type StrokeJoin = 'miter' | 'bevel' | 'round';
-/** Where a stroke sits relative to the shape's outline. Canvas2D only
- *  strokes centred; `inside` / `outside` are emulated by the renderer via
- *  clipping (closed shapes only — open paths have no interior). */
+/** Where a stroke sits relative to the shape's outline. CSS/Canvas paint
+ *  centred strokes only; this renderer also supports `inside` / `outside`
+ *  (as SVG does) via clipping (closed shapes only — open paths have no
+ *  interior). */
 export type StrokeAlign = 'center' | 'inside' | 'outside';
 export type TextAlign = 'left' | 'center' | 'right';
 export type TextBaseline = 'alphabetic' | 'top' | 'middle' | 'bottom';
@@ -66,7 +67,7 @@ export interface ResolvedStyle {
   fontWeight: string;
   /** CSS font-style ("normal" | "italic" | "oblique"). */
   fontStyle: string;
-  /** Letter-spacing in pixels (Canvas2D `letterSpacing`, SVG `letter-spacing`). */
+  /** Letter-spacing in pixels (CSS `letter-spacing` / SVG `letter-spacing`). */
   letterSpacing: number;
   /** Multiplier on fontSize for line spacing in multi-line text. */
   lineHeight: number;
@@ -81,7 +82,7 @@ export interface ResolvedStyle {
 
 /**
  * Sensible defaults — what an unstyled shape uses. White fill, no
- * stroke matches p5's typical "give me this colour" expectation.
+ * stroke matches the common "give me this colour" expectation.
  * Lines override `fill: null` because lines are stroke-driven; see
  * `LINE_DEFAULT_STYLE` below.
  */
@@ -127,8 +128,8 @@ export const NEUTRAL_STYLE: ResolvedStyle = Object.freeze({
 });
 
 /**
- * A 2D affine transform `[a, b, c, d, e, f]` matching the Canvas2D
- * `setTransform` convention:
+ * A 2D affine transform `[a, b, c, d, e, f]` following the CSS/SVG
+ * `matrix(a,b,c,d,e,f)` convention:
  *   x' = a·x + c·y + e
  *   y' = b·x + d·y + f
  * Identity = `[1, 0, 0, 1, 0, 0]`.
@@ -140,8 +141,8 @@ export const IDENTITY: Affine = Object.freeze([1, 0, 0, 1, 0, 0]) as Affine;
 /**
  * Drawing context — accepts either main-thread Canvas2D or the
  * OffscreenCanvas variant (worker + derived-image-registry both use the
- * latter). The two have an almost identical surface; the scene renderer
- * uses only methods present on both.
+ * latter). The two have an almost identical surface; callers use only
+ * methods present on both.
  */
 export type RenderingContext2D =
   | CanvasRenderingContext2D
@@ -426,8 +427,9 @@ export function groupOf(children: ReadonlyArray<SceneNode>): GroupNode {
 
 /**
  * Build a CSS `font` shorthand from the structured fields on a
- * ResolvedStyle. Used by the Canvas2D renderer (assigns to `ctx.font`)
- * and the SVG emitter (writes it into `style="font:..."`). Order matters
+ * ResolvedStyle. Used by the batch builder for text measurement (assigns
+ * to `ctx.font`) and the SVG emitter (writes it into `style="font:..."`).
+ * Order matters
  * — CSS expects `style weight size family`.
  */
 export function composeFontCss(s: ResolvedStyle): string {
@@ -440,7 +442,7 @@ export function composeFontCss(s: ResolvedStyle): string {
 }
 
 /**
- * Shared draw geometry — used by BOTH the Canvas2D renderer and the SVG
+ * Shared draw geometry — used by BOTH the GL batch builder and the SVG
  * emitter so raster and vector output frame identically. Keeping these
  * here (rather than duplicated per backend) means the mode math and the
  * spline control points can't silently drift apart.

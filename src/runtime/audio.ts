@@ -1,7 +1,7 @@
 import type { AudioHandle, AudioNodeKind } from './types';
 
 /**
- * Audio registry — native Web Audio, no p5 dependency.
+ * Audio registry — native Web Audio.
  *
  * Web Audio nodes (OscillatorNode, BiquadFilterNode, GainNode, …) are
  * persistent objects that run continuously on the audio thread.

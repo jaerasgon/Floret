@@ -15,7 +15,7 @@ import { buildPaintTrail, buildRandomWalkTrail } from './builds/Feedback';
 import { buildDatamosh, buildPhotoMosaic, buildWebcamMosaic, buildBodyTracking } from './builds/Image';
 import { buildCSVBarChart } from './builds/Data';
 import { buildPixelSort } from './builds/Pixel';
-import { buildNocAttraction, buildNocDrag, buildNocFlowField, buildNocFractalTree, buildNocSeek, buildNocSpring, buildNocWindGravity, buildPendulum } from './builds/Nature';
+import { buildNocAttraction, buildNocDrag, buildNocFlowField, buildNocFractalTree, buildFractalTreeSpread, buildNocSeek, buildNocSpring, buildNocWindGravity, buildPendulum } from './builds/Nature';
 import { buildTutAccumulator, buildTutAnimateWithTime, buildTutAudioReactive, buildTutCacheRegion, buildTutCircleOfShapes, buildTutColorAndFill, buildTutColorLerp, buildTutElementaryCA, buildTutEnvelope, buildTutFFT, buildTutGaussian, buildTutGoL, buildTutGradient, buildTutGrid, buildTutGroupTransform, buildTutHelloRect, buildTutIfRegion, buildTutImageAdjust, buildTutImageSample, buildTutImageUrl, buildTutKeyboardBranch, buildTutMap, buildTutMidiCC, buildTutMouse, buildTutNormalize, buildTutOscillator, buildTutPalette, buildTutPathTension, buildTutPerlin, buildTutPixelSort, buildTutPixelate, buildTutPolar, buildTutPolygon, buildTutPulse, buildTutRandomSpread, buildTutRasterize, buildTutSlider, buildTutSortShuffle, buildTutSoundFilter, buildTutSpreadForeach, buildTutSpringFollow, buildTutState, buildTutStyleChain, buildTutSubpatch, buildTutText, buildTutTrails, buildTutVec2Math, buildTutWanderer } from './builds/Tutorial';
 import { buildKineticType, buildTypeDrift, buildTypeHalo, buildTypeRain, buildTypeRaven } from './builds/Type';
 import { buildParticlesAttractor, buildParticlesFountain, buildParticlesPinball, buildParticlesSpiral, buildParticlesTextDust } from './builds/Particles';
@@ -616,6 +616,13 @@ export const SAMPLES: Sample[] = [
     category: 'Nature',
     description: 'A 2-level Pythagoras-style tree built from three lines (trunk + 2 branches), with the trunk rotated by sin(time) to give a gentle sway. NOC §8.',
     build: () => spaced(buildNocFractalTree()),
+  },
+  {
+    id: 'fractal-tree-spread',
+    name: 'Fractal Tree (spread)',
+    category: 'Nature',
+    description: 'The same fractal tree with zero node duplication: the recursion bakes its branch geometry into five data/csv-inline number spreads, zipped through ONE ForEach → one draw/line. 30 nodes → 14, per-branch stroke weight preserved.',
+    build: () => spaced(buildFractalTreeSpread()),
   },
 
   // ── Image ──────────────────────────────────────────────

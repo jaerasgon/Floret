@@ -717,3 +717,85 @@ export function buildNocFractalTree() {
 
   return { nodes, edges };
 }
+
+
+// ─── NOC Ch 8 — Fractal Tree (spread-driven) ───────────────────────────────
+// Same tree, no node duplication. The recursion still runs at build time, but
+// instead of emitting one draw/line per branch it bakes the branch geometry
+// into five `data/csv-inline` number spreads (x1, y1, x2, y2, weight) and zips
+// them through a SINGLE ForEach → one draw/line. 30 nodes → 14, and per-branch
+// stroke weight survives (the trunk stays thick, tips thin). This is the
+// idiomatic Floret answer to "stop duplicating nodes": compute the data once,
+// stream it as a spread.
+export function buildFractalTreeSpread() {
+  const LEVELS = 4, ANGLE = 0.5, SCALE = 0.7, TRUNK_LEN = 140, ROOT_Y = 220;
+  interface Branch { x1: number; y1: number; x2: number; y2: number; level: number }
+  const branches: Branch[] = [];
+  function grow(x: number, y: number, angle: number, len: number, level: number): void {
+    if (level <= 0) return;
+    const x2 = x + Math.sin(angle) * len;
+    const y2 = y - Math.cos(angle) * len;
+    branches.push({ x1: x, y1: y, x2, y2, level });
+    grow(x2, y2, angle - ANGLE, len * SCALE, level - 1);
+    grow(x2, y2, angle + ANGLE, len * SCALE, level - 1);
+  }
+  grow(0, ROOT_Y, 0, TRUNK_LEN, LEVELS);
+  const csv = (sel: (b: Branch) => number): string =>
+    branches.map(sel).map((n) => Math.round(n * 100) / 100).join(', ');
+
+  const x1 = node('fts_x1', 'data/csv-inline', { x: -560, y: -40 }, { data: csv((b) => b.x1) });
+  const y1 = node('fts_y1', 'data/csv-inline', { x: -560, y:  40 }, { data: csv((b) => b.y1) });
+  const x2 = node('fts_x2', 'data/csv-inline', { x: -560, y: 120 }, { data: csv((b) => b.x2) });
+  const y2 = node('fts_y2', 'data/csv-inline', { x: -560, y: 200 }, { data: csv((b) => b.y2) });
+  const wv = node('fts_w',  'data/csv-inline', { x: -560, y: 280 }, { data: csv((b) => Math.max(1, b.level)) });
+  const strokeC = node('fts_strokeC', 'color/rgb',   { x: -560, y: -140 }, { r: 230, g: 160, b: 80, a: 255 });
+  const stroke  = node('fts_stroke',  'style/stroke', { x: -360, y: -140 });
+  const bg       = node('fts_bg', 'color/rgb', { x: -560, y: 360 }, { r: 16, g: 22, b: 16, a: 255 });
+  const renderer = node('fts_renderer', 'render/renderer', { x: 760, y: 0 }, { width: 500, height: 500 });
+
+  const RID = 'fts_region';
+  const region: FloretNode = {
+    id: RID, type: 'floret', position: { x: -120, y: -20 },
+    data: {
+      defType: 'region/foreach',
+      params: { width: 780, height: 360, label: 'ForEach branch' },
+      ports: [
+        { id: 'x1', name: 'x1', type: 'number', direction: 'input' },
+        { id: 'y1', name: 'y1', type: 'number', direction: 'input' },
+        { id: 'x2', name: 'x2', type: 'number', direction: 'input' },
+        { id: 'y2', name: 'y2', type: 'number', direction: 'input' },
+        { id: 'w',  name: 'w',  type: 'number', direction: 'input' },
+        { id: 'layer', name: 'layer', type: 'layer', direction: 'output' },
+      ],
+    },
+    style: { width: 780, height: 360 },
+  };
+  const aMake = node('fts_a',  'vec2/make', { x: 60, y: 40 }, {}, RID);
+  const bMake = node('fts_b',  'vec2/make', { x: 60, y: 160 }, {}, RID);
+  const sw    = node('fts_sw', 'style/stroke-weight', { x: 280, y: 120 }, {}, RID);
+  const line  = node('fts_line', 'draw/line', { x: 500, y: 70 }, {}, RID);
+
+  return {
+    nodes: [x1, y1, x2, y2, wv, strokeC, stroke, bg, renderer, region, aMake, bMake, sw, line],
+    edges: [
+      edge('fts_bg', 'color', 'fts_renderer', 'background'),
+      edge('fts_strokeC', 'color', 'fts_stroke', 'color'),
+      edge('fts_x1', 'values', RID, 'x1'),
+      edge('fts_y1', 'values', RID, 'y1'),
+      edge('fts_x2', 'values', RID, 'x2'),
+      edge('fts_y2', 'values', RID, 'y2'),
+      edge('fts_w',  'values', RID, 'w'),
+      edge(RID, 'x1', 'fts_a', 'x'),
+      edge(RID, 'y1', 'fts_a', 'y'),
+      edge(RID, 'x2', 'fts_b', 'x'),
+      edge(RID, 'y2', 'fts_b', 'y'),
+      edge('fts_stroke', 'style', 'fts_sw', 'base'),
+      edge(RID, 'w', 'fts_sw', 'w'),
+      edge('fts_a', 'vector', 'fts_line', 'a'),
+      edge('fts_b', 'vector', 'fts_line', 'b'),
+      edge('fts_sw', 'style', 'fts_line', 'style'),
+      edge('fts_line', 'shape', RID, 'layer'),
+      edge(RID, 'layer', 'fts_renderer', 'layers'),
+    ],
+  };
+}

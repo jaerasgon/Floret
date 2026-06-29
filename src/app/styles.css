@@ -4601,3 +4601,131 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   color: var(--fg-2);
   font-style: italic;
 }
+
+/* ── Shader panel (gpu/shader GLSL editor) ── */
+.shader-float-panel {
+  position: fixed;
+  top: 52px;
+  right: 12px;
+  width: 420px;
+  max-height: calc(100vh - 92px);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  overflow: hidden;
+}
+.shader-float-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-2);
+}
+.shader-float-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--fg-1);
+}
+.shader-float-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.shader-float-close:hover { background: var(--bg-3); color: var(--fg-0); }
+.shader-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  gap: 8px;
+  min-height: 0;
+  padding: 10px;
+}
+.shader-panel-code {
+  flex: 1 1 auto;
+  min-height: 180px;
+  resize: none;
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  tab-size: 2;
+  padding: 8px;
+  border-radius: 4px;
+  background: var(--bg-0);
+  color: var(--fg-0);
+  border: 1px solid var(--border);
+  white-space: pre;
+  overflow: auto;
+}
+.shader-panel-code:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+.shader-panel-errors {
+  flex: 0 0 auto;
+  max-height: 120px;
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--danger) 40%, var(--border));
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--danger) 8%, var(--bg-1));
+}
+.shader-panel-error {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--danger);
+  padding: 2px 8px;
+}
+.shader-panel-error-line {
+  display: inline-block;
+  min-width: 26px;
+  margin-right: 6px;
+  color: color-mix(in srgb, var(--danger) 70%, var(--fg-2));
+  font-weight: 600;
+}
+.shader-panel-meta { flex: 0 0 auto; display: flex; flex-direction: column; gap: 8px; }
+.shader-panel-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--fg-1);
+  cursor: pointer;
+}
+.shader-panel-uniforms {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  background: var(--bg-1);
+}
+.shader-panel-uniforms-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg-2);
+  margin-bottom: 4px;
+}
+.shader-panel-uniform {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 1px 0;
+}
+.shader-panel-uniform-name { color: var(--accent); }
+.shader-panel-dim { color: var(--fg-2); }
+.shader-panel-dim code { font-family: var(--font-mono); color: var(--fg-1); }
+.shader-panel-builtins { font-size: 10px; line-height: 1.5; }

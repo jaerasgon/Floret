@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { Canvas } from '../editor/Canvas';
 import { NodePalette } from '../editor/NodePalette';
 import { HelpPanel } from '../editor/HelpPanel';
+import { ShaderPanel } from '../editor/ShaderPanel';
 import { LibraryPanel } from '../editor/LibraryPanel';
 import { PreviewPanel } from '../preview/PreviewPanel';
 import { PortValueEditor } from '../editor/PortValueEditor';
@@ -94,6 +95,7 @@ export function App() {
           </DockClient>
           <NodePalette />
           <HelpPanel />
+          <ShaderPanel />
           <LibraryPanel />
           {renderers.map((node, idx) => {
             const label =

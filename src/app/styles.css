@@ -4603,55 +4603,12 @@ body[data-pro-mode='1'] .node[data-math='1'] {
 }
 
 /* ── Shader panel (gpu/shader GLSL editor) ── */
-.shader-float-panel {
-  position: fixed;
-  top: 52px;
-  right: 12px;
-  width: 420px;
-  max-height: calc(100vh - 92px);
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-1);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.5);
-  z-index: 40;
-  overflow: hidden;
-}
-.shader-float-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 7px 10px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-2);
-}
-.shader-float-title {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--fg-1);
-}
-.shader-float-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border: none;
-  border-radius: 4px;
-  background: transparent;
-  color: var(--fg-2);
-  cursor: pointer;
-}
-.shader-float-close:hover { background: var(--bg-3); color: var(--fg-0); }
 .shader-panel {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
+  height: 100%;
   gap: 8px;
   min-height: 0;
-  padding: 10px;
 }
 .shader-panel-code {
   flex: 1 1 auto;

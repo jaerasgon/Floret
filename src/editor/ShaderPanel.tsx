@@ -1,37 +1,30 @@
 import { useEffect, useMemo, useState } from 'react';
-import { X } from 'lucide-react';
 import { useEditor } from './editor-state';
+import { Panel } from './panel/Panel';
 import { parseUniforms, uniformPortType } from '../runtime/gl/glsl-shader';
 import { checkShaderCompile, type ShaderError } from '../runtime/gl/shader-compile-check';
 
 /**
  * Shader panel — a GLSL editor for the currently-selected `gpu/shader` node.
  *
- * Appears as a fixed right-side panel while a shader node is selected. Edits the
- * node's `source` param (debounced), compile-checks on the main thread to surface
- * line-mapped errors, lists the auto-detected uniforms (each becomes a wired input
- * port), and toggles self-feedback. Self-contained (not part of the dock) so it
- * mounts reliably on selection.
+ * A full dock panel (draggable / dockable / resizable like Help / Preview).
+ * Mounts on selection and floats by default; App keeps `'shader'` in the dock
+ * reconcile keep-set while a shader node is selected so it isn't evicted. Edits
+ * the node's `source` param (debounced), compile-checks on the main thread for
+ * line-mapped errors, lists the auto-detected uniforms, and toggles self-feedback.
  */
 export function ShaderPanel() {
   const selected = useEditor((s) => s.nodes.find((n) => n.selected && n.data.defType === 'gpu/shader'));
-  const [dismissedId, setDismissedId] = useState<string | null>(null);
-  if (!selected || selected.id === dismissedId) return null;
+  if (!selected) return null;
   return (
-    <div className="shader-float-panel">
-      <header className="shader-float-header">
-        <span className="shader-float-title">Shader · GLSL</span>
-        <button className="shader-float-close" title="Close" onClick={() => setDismissedId(selected.id)}>
-          <X size={13} strokeWidth={2} />
-        </button>
-      </header>
+    <Panel id="shader" title="Shader · GLSL" defaults={{ dock: 'float', width: 420, height: 560, floatX: 360, floatY: 90 }}>
       <ShaderEditor
         key={selected.id}
         nodeId={selected.id}
         initialSource={String(selected.data.params?.source ?? '')}
         initialFeedback={Boolean(selected.data.params?.feedback)}
       />
-    </div>
+    </Panel>
   );
 }
 

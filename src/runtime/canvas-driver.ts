@@ -320,7 +320,10 @@ export function createCanvasDriver(container: HTMLElement, opts: DriverOptions):
         flat.push(layer);
       }
     }
-    void bridge.frame(flat, bgCss, true);
+    void bridge.frame(flat, bgCss, true, {
+      time: frame.t, timeDelta: frame.dt, frame: frame.frameCount,
+      mouseX: frame.mouseX, mouseY: frame.mouseY,
+    });
     lastFlat = flat;
     lastBg = bgCss;
 

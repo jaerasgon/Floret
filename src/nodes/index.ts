@@ -180,6 +180,7 @@ import './force/vortex';
 import './collider/circle';
 import './collider/rect';
 import './collider/from-layer';
+import './gpu/shader';
 
 export { nodeRegistry, registerNode } from './registry';
 export type { NodeDef, PortSpec, NodeParamContext } from './types';

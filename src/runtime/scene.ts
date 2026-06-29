@@ -304,6 +304,34 @@ export interface ImageShape {
   tint: string | null;
 }
 
+/** A uniform value resolved from the graph and pushed to the shader. */
+export type ShaderUniformValue =
+  | { t: 'number'; v: number }
+  | { t: 'vec2'; v: [number, number] }
+  | { t: 'color'; v: [number, number, number, number] };
+
+/**
+ * A GPU fragment-shader layer (the `gpu/shader` node). Rendered by the GL
+ * renderer, NOT the tick: it runs every frame with time + feedback. `input`
+ * is the optional iChannel0 subtree (rasterised to a texture first); `nodeId`
+ * keys the renderer's persistent ping-pong feedback buffers. v1 is single-pass
+ * (`source` = the Image pass); multi-buffer passes arrive in Phase 2.
+ */
+export interface ShaderShape {
+  kind: 'shader';
+  nodeId: string;
+  source: string;
+  /** Detected user uniforms (name + glsl type) so the renderer knows what to set. */
+  uniformDecls: ReadonlyArray<{ name: string; glslType: string }>;
+  uniforms: Record<string, ShaderUniformValue>;
+  /** Extra texture channels (sampler2D uniforms) wired to layer subtrees. */
+  channels: ReadonlyArray<{ name: string; layer: SceneNode | null }>;
+  /** Primary input → iChannel0. Null = generative (1×1 transparent). */
+  input: SceneNode | null;
+  /** Expose the previous Image-pass output as iChannel1 for self-feedback. */
+  feedback: boolean;
+}
+
 /**
  * A Group composites N children with an optional transform and blend
  * mode. The transform multiplies into the current matrix; the blend
@@ -333,6 +361,7 @@ export type ShapeNode =
   | PolygonShape
   | TextShape
   | ImageShape
+  | ShaderShape
   | ParticleBatch
   | ParticleTrailBatch;
 

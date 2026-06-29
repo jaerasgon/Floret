@@ -18,6 +18,7 @@
  */
 
 import { VectorRenderer, FrameBuilder } from './gl/gl-vector-renderer';
+import type { RenderClock } from './gl/gl-vector-renderer';
 import { emit, parseColor, ID } from './gl/scene-to-batches';
 import type { SceneNode, Affine } from './scene';
 
@@ -32,6 +33,7 @@ interface FrameMsg {
   layers: ReadonlyArray<SceneNode>;
   bg: string;
   centreOrigin: boolean;
+  clock?: RenderClock;
 }
 interface DisposeMsg { type: 'dispose' }
 type Msg = InitMsg | ResizeMsg | FrameMsg | DisposeMsg;
@@ -59,7 +61,7 @@ self.onmessage = (e: MessageEvent<Msg>) => {
       fb.reset();
       for (const layer of m.layers) { if (layer) emit(fb, renderer, layer, m0); }
       const c = parseColor(m.bg);
-      renderer.render(fb, w, h, [c[0], c[1], c[2]]);
+      renderer.render(fb, w, h, [c[0], c[1], c[2]], m.clock);
       break;
     }
     case 'dispose': {

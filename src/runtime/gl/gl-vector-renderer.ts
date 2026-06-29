@@ -14,6 +14,12 @@
 // via FrameBuilder; the renderer replays the command list. Used by the render
 // worker, the shared main-thread context, and the dev harness alike.
 
+import { wrapFragmentShader, parseUniforms, FALLBACK_FRAGMENT, FULLSCREEN_VERTEX } from './glsl-shader';
+
+/** Per-frame built-ins the renderer feeds to shader nodes (iTime/iFrame/iMouse). */
+export interface RenderClock { time: number; timeDelta: number; frame: number; mouseX: number; mouseY: number }
+const ZERO_CLOCK: RenderClock = { time: 0, timeDelta: 1 / 60, frame: 0, mouseX: 0, mouseY: 0 };
+
 // ── instance / vertex layouts ──
 export const SDF_FLOATS = 20;          // 5 vec4 per SDF instance
 export const FILL_FLOATS = 6;          // x,y, r,g,b,a per fill vertex
@@ -28,9 +34,29 @@ type Cmd =
   | { kind: 'tex'; quad: number; clip: Clip }
   | { kind: 'pushLayer' }
   | { kind: 'popLayer'; blend: number }
-  | { kind: 'popLayerBlur'; sigma: number };
+  | { kind: 'popLayerBlur'; sigma: number }
+  | { kind: 'shader'; payload: ShaderCmd; clip: Clip };
+
+/** A resolved fragment-shader draw. `hasInput` means the immediately-preceding
+ *  commands rendered the iChannel0 source into a pushed layer FBO. */
+export interface ShaderCmd {
+  nodeId: string;
+  source: string;
+  /** `glslType` (float / int / vec2 / vec3 / vec4) selects the uniform setter. */
+  uniforms: ReadonlyArray<{ name: string; glslType: string; value: ReadonlyArray<number> }>;
+  hasInput: boolean;
+  feedback: boolean;
+}
 
 export interface TexSource { tex: WebGLTexture; }
+
+interface ShaderProgram {
+  prog: WebGLProgram;
+  builtins: { time: WebGLUniformLocation | null; timeDelta: WebGLUniformLocation | null; frame: WebGLUniformLocation | null; res: WebGLUniformLocation | null; mouse: WebGLUniformLocation | null; ch0: WebGLUniformLocation | null; ch1: WebGLUniformLocation | null };
+  user: Map<string, WebGLUniformLocation | null>;
+}
+interface FBO { fbo: WebGLFramebuffer; tex: WebGLTexture }
+interface FeedbackPair { read: FBO; write: FBO; w: number; h: number }
 
 // ── FrameBuilder: the harness fills this each frame ──
 export class FrameBuilder {
@@ -51,6 +77,7 @@ export class FrameBuilder {
   pushLayer() { this.cmds.push({ kind: 'pushLayer' }); }
   popLayer(blend: number) { this.cmds.push({ kind: 'popLayer', blend }); }
   popLayerBlur(sigma: number) { this.cmds.push({ kind: 'popLayerBlur', sigma }); }
+  pushShader(payload: ShaderCmd) { this.cmds.push({ kind: 'shader', payload, clip: this.curClip() }); }
 
   reset() { this.sdfCount = 0; this.fillVerts = 0; this.texQuads.length = 0; this.cmds.length = 0; this.skipped = 0; this.clipStack.length = 0; }
 
@@ -217,6 +244,12 @@ const BLIT_FRAG = `#version 300 es
 precision highp float; in vec2 v_uv; out vec4 frag;
 uniform sampler2D u_tex;
 void main(){ frag = texture(u_tex, v_uv); }`;
+// Premultiplying blit: composites a STRAIGHT-alpha source (a shader pass output)
+// into the premultiplied scene.
+const BLIT_PREMUL_FRAG = `#version 300 es
+precision highp float; in vec2 v_uv; out vec4 frag;
+uniform sampler2D u_tex;
+void main(){ vec4 c = texture(u_tex, v_uv); frag = vec4(c.rgb * c.a, c.a); }`;
 
 // Separable Gaussian (one axis per pass) for style.blur.
 const GAUSS_FRAG = `#version 300 es
@@ -260,6 +293,14 @@ export class VectorRenderer {
   private pBlit: WebGLProgram; private pGauss: WebGLProgram; private vaoBlit: WebGLVertexArrayObject;
   private layerPool: { fbo: WebGLFramebuffer; tex: WebGLTexture; rb: WebGLRenderbuffer }[] = [];
   private layerInUse = 0; private poolW = 0; private poolH = 0;
+  // ── gpu/shader node state ──
+  private shaderCache = new Map<string, ShaderProgram | null>();   // by source; null = compile failed
+  private feedbackBufs = new Map<string, FeedbackPair>();          // persistent ping-pong, by nodeId
+  private liveFeedbackIds = new Set<string>();                     // nodeIds seen this frame (GC the rest)
+  private transparentTex?: WebGLTexture;
+  private pBlitPremul?: WebGLProgram;                              // composite straight-alpha shader output
+  private vaoEmpty?: WebGLVertexArrayObject;                       // attribute-less fullscreen triangle
+  private clock: RenderClock = ZERO_CLOCK;
 
   constructor(canvas: HTMLCanvasElement | OffscreenCanvas, opts: { alpha?: boolean; preserveDrawingBuffer?: boolean } = {}) {
     const alpha = opts.alpha ?? false;
@@ -399,8 +440,10 @@ export class VectorRenderer {
     gl.scissor(left, bot, Math.max(0, right - left), Math.max(0, top - bot));
   }
 
-  render(fb: FrameBuilder, viewW: number, viewH: number, bg: [number, number, number] | null) {
+  render(fb: FrameBuilder, viewW: number, viewH: number, bg: [number, number, number] | null, clock: RenderClock = ZERO_CLOCK) {
     const gl = this.gl;
+    this.clock = clock;
+    this.liveFeedbackIds.clear();
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     gl.disable(gl.SCISSOR_TEST);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -455,6 +498,33 @@ export class VectorRenderer {
         this.layerInUse -= 2;                          // release temp + child
         continue;
       }
+      if (cmd.kind === 'shader') {
+        const p = cmd.payload;
+        // iChannel0 = the input layer FBO rendered just before us (or transparent).
+        let inputLayer: { fbo: WebGLFramebuffer; tex: WebGLTexture } | null = null;
+        if (p.hasInput) inputLayer = targets.pop() ?? null;
+        const parent = targets[targets.length - 1] ?? null;
+        const ch0 = inputLayer ? inputLayer.tex : this.transparent();
+        // Output target: persistent ping-pong when feedback, else a transient layer.
+        let outFbo: FBO, prevTex: WebGLTexture;
+        let pair: FeedbackPair | null = null;
+        if (p.feedback) {
+          this.liveFeedbackIds.add(p.nodeId);
+          pair = this.feedbackFor(p.nodeId);
+          outFbo = pair.write; prevTex = pair.read.tex;
+        } else {
+          outFbo = this.acquireLayer(); prevTex = this.transparent();
+        }
+        this.runShaderPass(p, outFbo.fbo, viewW, viewH, ch0, prevTex);
+        // Composite the straight-alpha shader output into the parent, premultiplying.
+        gl.bindFramebuffer(gl.FRAMEBUFFER, parent ? parent.fbo : null);
+        gl.disable(gl.SCISSOR_TEST);
+        this.compositePremul(outFbo.tex);
+        if (pair) { const t = pair.read; pair.read = pair.write; pair.write = t; }  // swap
+        else this.layerInUse--;                        // release transient out
+        if (inputLayer) this.layerInUse--;             // release input layer
+        continue;
+      }
       this.applyClip(cmd.clip, viewW, viewH);
       if (cmd.kind === 'sdf') {
         gl.useProgram(this.pSdf); gl.uniform2f(this.uViewSdf, viewW, viewH);
@@ -502,6 +572,150 @@ export class VectorRenderer {
       }
     }
     gl.bindVertexArray(null);
+    // Drop feedback buffers whose node no longer rendered (deleted / unwired).
+    if (this.feedbackBufs.size > this.liveFeedbackIds.size) {
+      for (const [id, pair] of this.feedbackBufs) {
+        if (this.liveFeedbackIds.has(id)) continue;
+        gl.deleteFramebuffer(pair.read.fbo); gl.deleteTexture(pair.read.tex);
+        gl.deleteFramebuffer(pair.write.fbo); gl.deleteTexture(pair.write.tex);
+        this.feedbackBufs.delete(id);
+      }
+    }
+  }
+
+  // ── gpu/shader helpers ──
+
+  /** Lazily-created 1×1 transparent texture for unwired channels. */
+  private transparent(): WebGLTexture {
+    const gl = this.gl;
+    if (!this.transparentTex) {
+      this.transparentTex = gl.createTexture()!;
+      gl.bindTexture(gl.TEXTURE_2D, this.transparentTex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    }
+    return this.transparentTex;
+  }
+
+  private makeColorFBO(w: number, h: number): FBO {
+    const gl = this.gl;
+    const tex = gl.createTexture()!; gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    const fbo = gl.createFramebuffer()!; gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+    return { fbo, tex };
+  }
+
+  /** Persistent ping-pong feedback buffers for one shader node. Reallocated on
+   *  resize; both halves cleared on first allocation so frame 0 reads black. */
+  private feedbackFor(nodeId: string): FeedbackPair {
+    const gl = this.gl, w = gl.drawingBufferWidth, h = gl.drawingBufferHeight;
+    let pair = this.feedbackBufs.get(nodeId);
+    if (pair && (pair.w !== w || pair.h !== h)) {
+      gl.deleteFramebuffer(pair.read.fbo); gl.deleteTexture(pair.read.tex);
+      gl.deleteFramebuffer(pair.write.fbo); gl.deleteTexture(pair.write.tex);
+      pair = undefined;
+    }
+    if (!pair) {
+      const read = this.makeColorFBO(w, h), write = this.makeColorFBO(w, h);
+      for (const f of [read, write]) { gl.bindFramebuffer(gl.FRAMEBUFFER, f.fbo); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); }
+      pair = { read, write, w, h };
+      this.feedbackBufs.set(nodeId, pair);
+    }
+    return pair;
+  }
+
+  /** Compile (or fetch cached) a shader program for `source`. null = compile failed. */
+  private shaderProgram(source: string): ShaderProgram | null {
+    if (this.shaderCache.has(source)) return this.shaderCache.get(source)!;
+    const gl = this.gl;
+    const decls = parseUniforms(source);
+    let program: WebGLProgram | null = null;
+    try { program = prog(gl, FULLSCREEN_VERTEX, wrapFragmentShader(source)); }
+    catch { program = null; }
+    let entry: ShaderProgram | null = null;
+    if (program) {
+      const u = (n: string) => gl.getUniformLocation(program!, n);
+      entry = {
+        prog: program,
+        builtins: { time: u('iTime'), timeDelta: u('iTimeDelta'), frame: u('iFrame'), res: u('iResolution'), mouse: u('iMouse'), ch0: u('iChannel0'), ch1: u('iChannel1') },
+        user: new Map(decls.filter((d) => d.glslType !== 'sampler2D').map((d) => [d.name, u(d.name)])),
+      };
+    }
+    this.shaderCache.set(source, entry);  // cache the failure too (don't recompile every frame)
+    return entry;
+  }
+
+  /** Lazily-compiled passthrough/error fallback used when a user shader won't compile. */
+  private fallbackProgram(): ShaderProgram | null {
+    if (this._fallback !== undefined) return this._fallback;
+    const gl = this.gl;
+    let program: WebGLProgram | null = null;
+    try { program = prog(gl, FULLSCREEN_VERTEX, FALLBACK_FRAGMENT); } catch { program = null; }
+    const u = (n: string) => program ? gl.getUniformLocation(program, n) : null;
+    this._fallback = program
+      ? { prog: program, builtins: { time: u('iTime'), timeDelta: u('iTimeDelta'), frame: u('iFrame'), res: u('iResolution'), mouse: u('iMouse'), ch0: u('iChannel0'), ch1: u('iChannel1') }, user: new Map() }
+      : null;
+    return this._fallback;
+  }
+  private _fallback?: ShaderProgram | null;
+
+  private runShaderPass(p: ShaderCmd, fbo: WebGLFramebuffer, viewW: number, viewH: number, ch0: WebGLTexture, prevTex: WebGLTexture) {
+    const gl = this.gl;
+    const sp = this.shaderProgram(p.source) ?? this.fallbackProgram();
+    if (!sp) return;
+    if (!this.vaoEmpty) this.vaoEmpty = gl.createVertexArray()!;
+    const bw = gl.drawingBufferWidth, bh = gl.drawingBufferHeight;
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    gl.viewport(0, 0, bw, bh);
+    gl.disable(gl.SCISSOR_TEST); gl.disable(gl.STENCIL_TEST);
+    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.disable(gl.BLEND);                          // the pass writes, it doesn't blend
+    gl.useProgram(sp.prog);
+    const c = this.clock;
+    if (sp.builtins.time) gl.uniform1f(sp.builtins.time, c.time);
+    if (sp.builtins.timeDelta) gl.uniform1f(sp.builtins.timeDelta, c.timeDelta);
+    if (sp.builtins.frame) gl.uniform1i(sp.builtins.frame, c.frame | 0);
+    if (sp.builtins.res) gl.uniform3f(sp.builtins.res, bw, bh, 1);
+    // ShaderToy iMouse is pixel coords, origin bottom-left. Floret mouse is centre-origin.
+    if (sp.builtins.mouse) gl.uniform4f(sp.builtins.mouse, c.mouseX + viewW / 2, viewH / 2 - c.mouseY, 0, 0);
+    for (const u of p.uniforms) {
+      const loc = sp.user.get(u.name); if (!loc) continue;
+      const v = u.value;
+      switch (u.glslType) {
+        case 'int': gl.uniform1i(loc, (v[0] ?? 0) | 0); break;
+        case 'vec2': gl.uniform2f(loc, v[0] ?? 0, v[1] ?? 0); break;
+        case 'vec3': gl.uniform3f(loc, v[0] ?? 0, v[1] ?? 0, v[2] ?? 0); break;
+        case 'vec4': gl.uniform4f(loc, v[0] ?? 0, v[1] ?? 0, v[2] ?? 0, v[3] ?? 1); break;
+        default: gl.uniform1f(loc, v[0] ?? 0); break;   // float
+      }
+    }
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, ch0);
+    if (sp.builtins.ch0) gl.uniform1i(sp.builtins.ch0, 0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, prevTex);
+    if (sp.builtins.ch1) gl.uniform1i(sp.builtins.ch1, 1);
+    gl.bindVertexArray(this.vaoEmpty);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.enable(gl.BLEND);
+  }
+
+  /** Composite a straight-alpha texture (shader output) onto the bound target,
+   *  premultiplying on the way (so it blends like the rest of the scene). */
+  private compositePremul(tex: WebGLTexture) {
+    const gl = this.gl;
+    if (!this.pBlitPremul) this.pBlitPremul = prog(gl, BLIT_VERT, BLIT_PREMUL_FRAG);
+    gl.blendEquation(gl.FUNC_ADD);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.useProgram(this.pBlitPremul);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.uniform1i(gl.getUniformLocation(this.pBlitPremul, 'u_tex'), 0);
+    gl.bindVertexArray(this.vaoBlit);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 }
 

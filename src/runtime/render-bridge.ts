@@ -1,4 +1,5 @@
 import type { SceneNode, ImageShape } from './scene';
+import type { RenderClock } from './gl/gl-vector-renderer';
 
 /**
  * Render bridge — main-thread side of the worker offload.
@@ -41,12 +42,13 @@ export class RenderBridge {
     layers: ReadonlyArray<SceneNode>,
     bg: string,
     centreOrigin: boolean,
+    clock?: RenderClock,
   ): Promise<void> {
     if (!this.worker || !this.mounted) return;
     const sources = new Map<ConvertibleSource, Promise<ImageBitmap>>();
     collectImageSources(layers, sources);
     if (sources.size === 0) {
-      this.worker.postMessage({ type: 'frame', layers, bg, centreOrigin });
+      this.worker.postMessage({ type: 'frame', layers, bg, centreOrigin, clock });
       return;
     }
     const entries = await Promise.all(
@@ -56,7 +58,7 @@ export class RenderBridge {
     const transferList: Transferable[] = [];
     const seenForTransfer = new Set<ImageBitmap>();
     const swapped = swapImageSources(layers, bitmapMap, transferList, seenForTransfer);
-    this.worker.postMessage({ type: 'frame', layers: swapped, bg, centreOrigin }, transferList);
+    this.worker.postMessage({ type: 'frame', layers: swapped, bg, centreOrigin, clock }, transferList);
   }
 
   dispose(): void {

@@ -20,6 +20,7 @@ import { buildTutAccumulator, buildTutAnimateWithTime, buildTutAudioReactive, bu
 import { buildKineticType, buildTypeDrift, buildTypeHalo, buildTypeRain, buildTypeRaven } from './builds/Type';
 import { buildParticlesAttractor, buildParticlesFountain, buildParticlesPinball, buildParticlesSpiral, buildParticlesTextDust } from './builds/Particles';
 import { buildEinkClock } from './builds/Eink';
+import { buildShaderPlasma, buildShaderFeedback } from './builds/Shader';
 
 /**
  * Sample categories — order here is the order the tabs appear in the
@@ -623,6 +624,20 @@ export const SAMPLES: Sample[] = [
     category: 'Nature',
     description: 'The same fractal tree with zero node duplication: the recursion bakes its branch geometry into five data/csv-inline number spreads, zipped through ONE ForEach → one draw/line. 30 nodes → 14, per-branch stroke weight preserved.',
     build: () => spaced(buildFractalTreeSpread()),
+  },
+  {
+    id: 'shader-plasma',
+    name: 'Shader · Plasma',
+    category: 'Nature',
+    description: 'A generative GPU fragment shader (gpu/shader) — a classic animated plasma driven by iTime, with a `scale` uniform steered by a slider. Select the node and edit the GLSL in the side panel.',
+    build: () => spaced(buildShaderPlasma()),
+  },
+  {
+    id: 'shader-feedback',
+    name: 'Shader · Feedback Ripples',
+    category: 'Nature',
+    description: 'A self-feedback fragment shader: each frame diffuses + fades its previous output (iChannel1) and injects a moving source — reaction-diffusion-style ripples that accumulate. Shows the GPU feedback buffer.',
+    build: () => spaced(buildShaderFeedback()),
   },
   {
     id: 'fractal-tree-generative',

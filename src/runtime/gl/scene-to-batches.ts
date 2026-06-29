@@ -258,6 +258,20 @@ function emitInner(fb: FrameBuilder, renderer: VectorRenderer, node: SceneNode, 
       fb.pushTexQuad({ c: [tl[0], tl[1], tr[0], tr[1], bl[0], bl[1], br[0], br[1]], u0, v0, u1, v1, tint, tex });
       return;
     }
+    case 'shader': {
+      const uniforms = node.uniformDecls
+        .filter((d) => d.glslType !== 'sampler2D')
+        .map((d) => {
+          const uv = node.uniforms[d.name];
+          const value = !uv ? [0] : uv.t === 'number' ? [uv.v] : uv.v;
+          return { name: d.name, glslType: d.glslType, value };
+        });
+      const payload = { nodeId: node.nodeId, source: node.source, uniforms, hasInput: !!node.input, feedback: node.feedback };
+      // The input subtree renders into a pushed FBO first → becomes iChannel0.
+      if (node.input) { fb.pushLayer(); emit(fb, renderer, node.input, m); fb.pushShader(payload); }
+      else fb.pushShader(payload);
+      return;
+    }
     case 'particle-batch': {
       try {
         const buf = node.buffer, cap = buf.capacity, alive = buf.alive, sc = scaleOf(m);

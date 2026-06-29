@@ -4,6 +4,7 @@ import { useEditor } from './editor-state';
 import { Panel } from './panel/Panel';
 import { parseUniforms, uniformPortType } from '../runtime/gl/glsl-shader';
 import { checkShaderCompile, type ShaderError } from '../runtime/gl/shader-compile-check';
+import { GlslEditor } from './GlslEditor';
 import type { ShaderBufferId } from '../runtime/scene';
 
 /**
@@ -114,21 +115,7 @@ function ShaderEditor({ nodeId }: { nodeId: string }) {
         )}
       </div>
 
-      <textarea
-        className="shader-panel-code nodrag"
-        spellCheck={false}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Tab') {
-            e.preventDefault();
-            const t = e.currentTarget, a = t.selectionStart, b = t.selectionEnd;
-            const next = text.slice(0, a) + '  ' + text.slice(b);
-            setText(next);
-            requestAnimationFrame(() => { t.selectionStart = t.selectionEnd = a + 2; });
-          }
-        }}
-      />
+      <GlslEditor value={text} onChange={setText} />
 
       {errors.length > 0 && (
         <div className="shader-panel-errors">

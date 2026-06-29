@@ -4664,27 +4664,32 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   border: 1px solid var(--border);
   min-width: 96px;
 }
-.shader-panel-code {
-  flex: 1 1 auto;
-  min-height: 180px;
-  resize: none;
-  width: 100%;
+/* Highlighted GLSL editor: transparent textarea over a coloured <pre>. */
+.glsl-editor { position: relative; flex: 1 1 auto; min-height: 180px; display: flex; }
+.glsl-editor-pre, .glsl-editor-ta {
+  position: absolute; inset: 0; margin: 0;
+  padding: 8px;
   font-family: var(--font-mono);
   font-size: 11px;
   line-height: 1.5;
   tab-size: 2;
-  padding: 8px;
-  border-radius: 4px;
-  background: var(--bg-0);
-  color: var(--fg-0);
-  border: 1px solid var(--border);
   white-space: pre;
   overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-sizing: border-box;
 }
-.shader-panel-code:focus {
-  outline: none;
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+.glsl-editor-pre { color: var(--fg-0); background: var(--bg-0); pointer-events: none; z-index: 0; }
+.glsl-editor-ta {
+  color: transparent; background: transparent; caret-color: var(--fg-0);
+  resize: none; z-index: 1;
 }
+.glsl-editor-ta:focus { outline: none; border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
+.glsl-editor-pre .tk-comment { color: var(--fg-2); font-style: italic; }
+.glsl-editor-pre .tk-num { color: #d6a35c; }
+.glsl-editor-pre .tk-kw { color: #c98fd8; }
+.glsl-editor-pre .tk-type { color: #5fb3c4; }
+.glsl-editor-pre .tk-builtin { color: var(--accent); }
 .shader-panel-errors {
   flex: 0 0 auto;
   max-height: 120px;

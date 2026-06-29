@@ -266,8 +266,8 @@ function emitInner(fb: FrameBuilder, renderer: VectorRenderer, node: SceneNode, 
           const value = !uv ? [0] : uv.t === 'number' ? [uv.v] : uv.v;
           return { name: d.name, glslType: d.glslType, value };
         });
-      const payload = { nodeId: node.nodeId, source: node.source, uniforms, hasInput: !!node.input, feedback: node.feedback };
-      // The input subtree renders into a pushed FBO first → becomes iChannel0.
+      const payload = { nodeId: node.nodeId, passes: node.passes, uniforms, hasInput: !!node.input };
+      // The input subtree renders into a pushed FBO first → becomes the 'input' channel.
       if (node.input) { fb.pushLayer(); emit(fb, renderer, node.input, m); fb.pushShader(payload); }
       else fb.pushShader(payload);
       return;

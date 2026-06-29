@@ -310,26 +310,35 @@ export type ShaderUniformValue =
   | { t: 'vec2'; v: [number, number] }
   | { t: 'color'; v: [number, number, number, number] };
 
+/** Which offscreen buffer a pass writes to. 'image' is the final, composited pass. */
+export type ShaderBufferId = 'A' | 'B' | 'C' | 'D' | 'image';
+/** What an iChannel samples: the wired input layer, or another buffer's output. */
+export type ShaderChannel = { kind: 'input' } | { kind: 'buffer'; buf: ShaderBufferId } | null;
+/** One fragment-shader pass: its source + how its four iChannels are routed. */
+export interface ShaderPass {
+  buf: ShaderBufferId;
+  source: string;
+  channels: readonly [ShaderChannel, ShaderChannel, ShaderChannel, ShaderChannel];
+}
+
 /**
  * A GPU fragment-shader layer (the `gpu/shader` node). Rendered by the GL
- * renderer, NOT the tick: it runs every frame with time + feedback. `input`
- * is the optional iChannel0 subtree (rasterised to a texture first); `nodeId`
- * keys the renderer's persistent ping-pong feedback buffers. v1 is single-pass
- * (`source` = the Image pass); multi-buffer passes arrive in Phase 2.
+ * renderer, NOT the tick: it runs every frame with time + feedback. `passes`
+ * run in order (present buffers A..D, then the Image pass); each writes its
+ * buffer and samples its routed iChannels (the wired `input` layer, sibling
+ * buffers' outputs, or its own previous frame via ping-pong). `nodeId` keys the
+ * renderer's persistent per-buffer feedback FBOs. Single-pass shaders are just
+ * one Image pass.
  */
 export interface ShaderShape {
   kind: 'shader';
   nodeId: string;
-  source: string;
+  passes: ReadonlyArray<ShaderPass>;
   /** Detected user uniforms (name + glsl type) so the renderer knows what to set. */
   uniformDecls: ReadonlyArray<{ name: string; glslType: string }>;
   uniforms: Record<string, ShaderUniformValue>;
-  /** Extra texture channels (sampler2D uniforms) wired to layer subtrees. */
-  channels: ReadonlyArray<{ name: string; layer: SceneNode | null }>;
-  /** Primary input → iChannel0. Null = generative (1×1 transparent). */
+  /** Primary input subtree → the 'input' channel (rasterised to a texture). */
   input: SceneNode | null;
-  /** Expose the previous Image-pass output as iChannel1 for self-feedback. */
-  feedback: boolean;
 }
 
 /**

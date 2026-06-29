@@ -20,7 +20,7 @@ import { buildTutAccumulator, buildTutAnimateWithTime, buildTutAudioReactive, bu
 import { buildKineticType, buildTypeDrift, buildTypeHalo, buildTypeRain, buildTypeRaven } from './builds/Type';
 import { buildParticlesAttractor, buildParticlesFountain, buildParticlesPinball, buildParticlesSpiral, buildParticlesTextDust } from './builds/Particles';
 import { buildEinkClock } from './builds/Eink';
-import { buildShaderPlasma, buildShaderFeedback } from './builds/Shader';
+import { buildShaderPlasma, buildShaderFeedback, buildShaderReactionDiffusion } from './builds/Shader';
 
 /**
  * Sample categories — order here is the order the tabs appear in the
@@ -638,6 +638,13 @@ export const SAMPLES: Sample[] = [
     category: 'Nature',
     description: 'A self-feedback fragment shader: each frame diffuses + fades its previous output (iChannel1) and injects a moving source — reaction-diffusion-style ripples that accumulate. Shows the GPU feedback buffer.',
     build: () => spaced(buildShaderFeedback()),
+  },
+  {
+    id: 'shader-reaction-diffusion',
+    name: 'Shader · Reaction-Diffusion',
+    category: 'Nature',
+    description: 'Gray-Scott reaction-diffusion on a multi-buffer shader: Buffer A holds the chemical field (reads its own previous frame), the Image pass colour-maps it. The canonical multi-pass GPU case — give it a few seconds to bloom.',
+    build: () => spaced(buildShaderReactionDiffusion()),
   },
   {
     id: 'fractal-tree-generative',

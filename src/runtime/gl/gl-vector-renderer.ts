@@ -15,6 +15,7 @@
 // worker, the shared main-thread context, and the dev harness alike.
 
 import { wrapFragmentShader, parseUniforms, FALLBACK_FRAGMENT, FULLSCREEN_VERTEX } from './glsl-shader';
+import type { ShaderPass, ShaderBufferId } from '../scene';
 
 /** Per-frame built-ins the renderer feeds to shader nodes (iTime/iFrame/iMouse). */
 export interface RenderClock { time: number; timeDelta: number; frame: number; mouseX: number; mouseY: number }
@@ -37,22 +38,21 @@ type Cmd =
   | { kind: 'popLayerBlur'; sigma: number }
   | { kind: 'shader'; payload: ShaderCmd; clip: Clip };
 
-/** A resolved fragment-shader draw. `hasInput` means the immediately-preceding
- *  commands rendered the iChannel0 source into a pushed layer FBO. */
+/** A resolved fragment-shader draw (one or more passes). `hasInput` means the
+ *  immediately-preceding commands rendered the 'input' channel into a pushed FBO. */
 export interface ShaderCmd {
   nodeId: string;
-  source: string;
+  passes: ReadonlyArray<ShaderPass>;
   /** `glslType` (float / int / vec2 / vec3 / vec4) selects the uniform setter. */
   uniforms: ReadonlyArray<{ name: string; glslType: string; value: ReadonlyArray<number> }>;
   hasInput: boolean;
-  feedback: boolean;
 }
 
 export interface TexSource { tex: WebGLTexture; }
 
 interface ShaderProgram {
   prog: WebGLProgram;
-  builtins: { time: WebGLUniformLocation | null; timeDelta: WebGLUniformLocation | null; frame: WebGLUniformLocation | null; res: WebGLUniformLocation | null; mouse: WebGLUniformLocation | null; ch0: WebGLUniformLocation | null; ch1: WebGLUniformLocation | null };
+  builtins: { time: WebGLUniformLocation | null; timeDelta: WebGLUniformLocation | null; frame: WebGLUniformLocation | null; res: WebGLUniformLocation | null; mouse: WebGLUniformLocation | null; ch: (WebGLUniformLocation | null)[] };
   user: Map<string, WebGLUniformLocation | null>;
 }
 interface FBO { fbo: WebGLFramebuffer; tex: WebGLTexture }
@@ -500,28 +500,12 @@ export class VectorRenderer {
       }
       if (cmd.kind === 'shader') {
         const p = cmd.payload;
-        // iChannel0 = the input layer FBO rendered just before us (or transparent).
+        // The 'input' channel = the layer FBO rendered just before us (or transparent).
         let inputLayer: { fbo: WebGLFramebuffer; tex: WebGLTexture } | null = null;
         if (p.hasInput) inputLayer = targets.pop() ?? null;
         const parent = targets[targets.length - 1] ?? null;
-        const ch0 = inputLayer ? inputLayer.tex : this.transparent();
-        // Output target: persistent ping-pong when feedback, else a transient layer.
-        let outFbo: FBO, prevTex: WebGLTexture;
-        let pair: FeedbackPair | null = null;
-        if (p.feedback) {
-          this.liveFeedbackIds.add(p.nodeId);
-          pair = this.feedbackFor(p.nodeId);
-          outFbo = pair.write; prevTex = pair.read.tex;
-        } else {
-          outFbo = this.acquireLayer(); prevTex = this.transparent();
-        }
-        this.runShaderPass(p, outFbo.fbo, viewW, viewH, ch0, prevTex);
-        // Composite the straight-alpha shader output into the parent, premultiplying.
-        gl.bindFramebuffer(gl.FRAMEBUFFER, parent ? parent.fbo : null);
-        gl.disable(gl.SCISSOR_TEST);
-        this.compositePremul(outFbo.tex);
-        if (pair) { const t = pair.read; pair.read = pair.write; pair.write = t; }  // swap
-        else this.layerInUse--;                        // release transient out
+        const inputTex = inputLayer ? inputLayer.tex : this.transparent();
+        this.runShaderNode(p, viewW, viewH, inputTex, parent ? parent.fbo : null);
         if (inputLayer) this.layerInUse--;             // release input layer
         continue;
       }
@@ -643,7 +627,7 @@ export class VectorRenderer {
       const u = (n: string) => gl.getUniformLocation(program!, n);
       entry = {
         prog: program,
-        builtins: { time: u('iTime'), timeDelta: u('iTimeDelta'), frame: u('iFrame'), res: u('iResolution'), mouse: u('iMouse'), ch0: u('iChannel0'), ch1: u('iChannel1') },
+        builtins: { time: u('iTime'), timeDelta: u('iTimeDelta'), frame: u('iFrame'), res: u('iResolution'), mouse: u('iMouse'), ch: [u('iChannel0'), u('iChannel1'), u('iChannel2'), u('iChannel3')] },
         user: new Map(decls.filter((d) => d.glslType !== 'sampler2D').map((d) => [d.name, u(d.name)])),
       };
     }
@@ -659,15 +643,64 @@ export class VectorRenderer {
     try { program = prog(gl, FULLSCREEN_VERTEX, FALLBACK_FRAGMENT); } catch { program = null; }
     const u = (n: string) => program ? gl.getUniformLocation(program, n) : null;
     this._fallback = program
-      ? { prog: program, builtins: { time: u('iTime'), timeDelta: u('iTimeDelta'), frame: u('iFrame'), res: u('iResolution'), mouse: u('iMouse'), ch0: u('iChannel0'), ch1: u('iChannel1') }, user: new Map() }
+      ? { prog: program, builtins: { time: u('iTime'), timeDelta: u('iTimeDelta'), frame: u('iFrame'), res: u('iResolution'), mouse: u('iMouse'), ch: [u('iChannel0'), u('iChannel1'), u('iChannel2'), u('iChannel3')] }, user: new Map() }
       : null;
     return this._fallback;
   }
   private _fallback?: ShaderProgram | null;
 
-  private runShaderPass(p: ShaderCmd, fbo: WebGLFramebuffer, viewW: number, viewH: number, ch0: WebGLTexture, prevTex: WebGLTexture) {
+  /**
+   * Run all passes of a shader node, then composite the Image output.
+   *
+   * Buffers referenced by any channel get a persistent ping-pong pair (feedback);
+   * unreferenced ones use transient pool FBOs. Channel reads resolve sequentially:
+   * a buffer already rendered THIS frame → its fresh output; a self / not-yet-run
+   * buffer → its previous frame (ping-pong read). All ping-pong pairs swap at the
+   * end so next frame sees this frame's output.
+   */
+  private runShaderNode(p: ShaderCmd, viewW: number, viewH: number, inputTex: WebGLTexture, parentFbo: WebGLFramebuffer | null) {
     const gl = this.gl;
-    const sp = this.shaderProgram(p.source) ?? this.fallbackProgram();
+    const referenced = new Set<ShaderBufferId>();
+    for (const pass of p.passes) for (const ch of pass.channels) if (ch && ch.kind === 'buffer') referenced.add(ch.buf);
+
+    const pairs = new Map<ShaderBufferId, FeedbackPair>();
+    for (const buf of referenced) { this.liveFeedbackIds.add(`${p.nodeId}:${buf}`); pairs.set(buf, this.feedbackFor(`${p.nodeId}:${buf}`)); }
+    const transient = new Map<ShaderBufferId, FBO>();
+    const writeOf = (buf: ShaderBufferId): FBO => {
+      const pair = pairs.get(buf); if (pair) return pair.write;
+      let t = transient.get(buf); if (!t) { t = this.acquireLayer(); transient.set(buf, t); } return t;
+    };
+    const rendered = new Set<ShaderBufferId>();
+    const texOf = (ch: ShaderPass['channels'][number]): WebGLTexture => {
+      if (!ch) return this.transparent();
+      if (ch.kind === 'input') return inputTex;
+      if (rendered.has(ch.buf)) return writeOf(ch.buf).tex;        // produced earlier this frame
+      const pair = pairs.get(ch.buf); if (pair) return pair.read.tex; // self / forward ref → previous frame
+      return this.transparent();
+    };
+
+    let imageOut: FBO | null = null;
+    for (const pass of p.passes) {
+      const out = writeOf(pass.buf);
+      this.runShaderPass(pass.source, p.uniforms, out.fbo, viewW, viewH,
+        [texOf(pass.channels[0]), texOf(pass.channels[1]), texOf(pass.channels[2]), texOf(pass.channels[3])]);
+      rendered.add(pass.buf);
+      if (pass.buf === 'image') imageOut = out;
+    }
+
+    if (imageOut) {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, parentFbo);
+      gl.disable(gl.SCISSOR_TEST);
+      this.compositePremul(imageOut.tex);
+    }
+    for (const pair of pairs.values()) { const t = pair.read; pair.read = pair.write; pair.write = t; }
+    this.layerInUse -= transient.size;
+  }
+
+  /** One fragment-shader pass → `fbo`, sampling the four resolved channel textures. */
+  private runShaderPass(source: string, uniforms: ShaderCmd['uniforms'], fbo: WebGLFramebuffer, viewW: number, viewH: number, channels: WebGLTexture[]) {
+    const gl = this.gl;
+    const sp = this.shaderProgram(source) ?? this.fallbackProgram();
     if (!sp) return;
     if (!this.vaoEmpty) this.vaoEmpty = gl.createVertexArray()!;
     const bw = gl.drawingBufferWidth, bh = gl.drawingBufferHeight;
@@ -684,7 +717,7 @@ export class VectorRenderer {
     if (sp.builtins.res) gl.uniform3f(sp.builtins.res, bw, bh, 1);
     // ShaderToy iMouse is pixel coords, origin bottom-left. Floret mouse is centre-origin.
     if (sp.builtins.mouse) gl.uniform4f(sp.builtins.mouse, c.mouseX + viewW / 2, viewH / 2 - c.mouseY, 0, 0);
-    for (const u of p.uniforms) {
+    for (const u of uniforms) {
       const loc = sp.user.get(u.name); if (!loc) continue;
       const v = u.value;
       switch (u.glslType) {
@@ -695,10 +728,11 @@ export class VectorRenderer {
         default: gl.uniform1f(loc, v[0] ?? 0); break;   // float
       }
     }
-    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, ch0);
-    if (sp.builtins.ch0) gl.uniform1i(sp.builtins.ch0, 0);
-    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, prevTex);
-    if (sp.builtins.ch1) gl.uniform1i(sp.builtins.ch1, 1);
+    for (let i = 0; i < 4; i++) {
+      gl.activeTexture(gl.TEXTURE0 + i);
+      gl.bindTexture(gl.TEXTURE_2D, channels[i] ?? this.transparent());
+      if (sp.builtins.ch[i]) gl.uniform1i(sp.builtins.ch[i]!, i);
+    }
     gl.bindVertexArray(this.vaoEmpty);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.enable(gl.BLEND);

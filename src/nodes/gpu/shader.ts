@@ -1,19 +1,22 @@
 import { registerNode } from '../registry';
 import type { PortSpec, NodeParamContext } from '../types';
 import type { PortValue } from '../../runtime/types';
-import type { SceneNode, ShaderShape, ShaderUniformValue } from '../../runtime/scene';
+import type { SceneNode, ShaderShape, ShaderUniformValue, ShaderPass, ShaderBufferId, ShaderChannel } from '../../runtime/scene';
 import { parseUniforms, uniformPortType } from '../../runtime/gl/glsl-shader';
 
 /**
  * gpu/shader — a ShaderToy-style fragment shader as a layer.
  *
- * Wire a layer into `input` for post-FX (it becomes iChannel0), or leave it
- * unwired for a generative shader. Every `uniform` you declare in the source
- * grows a matching input port (a slider → `uniform float`, a Color → `vec3/4`,
- * a Vec2 → `vec2`, another layer → an `sampler2D` channel). ShaderToy built-ins
+ * Wire a layer into `input` for post-FX (it becomes the 'input' channel), or
+ * leave it unwired for a generative shader. Every non-sampler `uniform` you
+ * declare (in any pass) grows a matching input port. ShaderToy built-ins
  * (iTime / iResolution / iMouse / iFrame / iChannelN) are supplied automatically.
- * The GL renderer executes it each frame; `feedback` exposes the previous output
- * as iChannel1 for reaction-diffusion / trails.
+ *
+ * Multi-buffer (Phase 2): optional Buffer A–D passes (params `bufferA`..`bufferD`)
+ * run before the Image pass; each pass routes its four iChannels (params
+ * `channels`: { [pass]: [c0,c1,c2,c3] } with codes 'input' | 'self' | 'A'..'D' |
+ * 'image' | '') so a buffer can read the input, sibling buffers, or its own
+ * previous frame (feedback). The GL renderer executes every pass each frame.
  */
 
 const DEFAULT_SOURCE = `// iTime, iResolution, iMouse, iChannel0 are provided.
@@ -24,14 +27,59 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   fragColor = vec4(col, 1.0);
 }`;
 
-/** Port list: the primary input layer, then one port per user uniform. */
-function shaderInputs(params: Record<string, unknown>): ReadonlyArray<PortSpec> {
-  const source = typeof params.source === 'string' ? params.source : DEFAULT_SOURCE;
-  const ports: PortSpec[] = [{ name: 'input', label: 'input', type: 'layer', kind: 'spread' }];
-  for (const u of parseUniforms(source)) {
-    ports.push({ name: u.name, label: u.name, type: uniformPortType(u.glslType) });
+const BUFS: ShaderBufferId[] = ['A', 'B', 'C', 'D'];
+
+/** Sources of every present pass (Buffer A–D that have source, then Image). */
+function passSources(params: Record<string, unknown>): { buf: ShaderBufferId; source: string }[] {
+  const out: { buf: ShaderBufferId; source: string }[] = [];
+  for (const b of BUFS) {
+    const src = params['buffer' + b];
+    if (typeof src === 'string' && src.trim()) out.push({ buf: b, source: src });
   }
+  out.push({ buf: 'image', source: typeof params.source === 'string' ? params.source : DEFAULT_SOURCE });
+  return out;
+}
+
+/** Union of user uniforms across all passes, in first-seen order. */
+function allUniforms(params: Record<string, unknown>) {
+  const seen = new Set<string>();
+  const out: { name: string; glslType: string }[] = [];
+  for (const { source } of passSources(params)) {
+    for (const u of parseUniforms(source)) {
+      if (u.glslType === 'sampler2D' || seen.has(u.name)) continue;   // samplers are iChannels, not ports
+      seen.add(u.name);
+      out.push(u);
+    }
+  }
+  return out;
+}
+
+/** Port list: the primary input layer, then one port per (non-sampler) uniform. */
+function shaderInputs(params: Record<string, unknown>): ReadonlyArray<PortSpec> {
+  const ports: PortSpec[] = [{ name: 'input', label: 'input', type: 'layer', kind: 'spread' }];
+  for (const u of allUniforms(params)) ports.push({ name: u.name, label: u.name, type: uniformPortType(u.glslType) });
   return ports;
+}
+
+function resolveChannel(code: unknown, selfBuf: ShaderBufferId): ShaderChannel {
+  if (code === 'input') return { kind: 'input' };
+  if (code === 'self') return { kind: 'buffer', buf: selfBuf };
+  if (code === 'A' || code === 'B' || code === 'C' || code === 'D' || code === 'image') return { kind: 'buffer', buf: code };
+  return null;
+}
+
+/** Resolve a pass's 4 channels: explicit config wins, else sensible defaults. */
+function channelsFor(buf: ShaderBufferId, params: Record<string, unknown>, feedback: boolean): ShaderPass['channels'] {
+  const cfg = (params.channels && typeof params.channels === 'object' ? params.channels : {}) as Record<string, unknown>;
+  const conf = cfg[buf];
+  if (Array.isArray(conf)) {
+    const c = [0, 1, 2, 3].map((i) => resolveChannel(conf[i], buf));
+    return [c[0]!, c[1]!, c[2]!, c[3]!];
+  }
+  // Defaults: Image reads input (+ own previous frame when `feedback`); a Buffer
+  // reads its own previous frame on 0 and the input on 1.
+  if (buf === 'image') return [{ kind: 'input' }, feedback ? { kind: 'buffer', buf: 'image' } : null, null, null];
+  return [{ kind: 'buffer', buf }, { kind: 'input' }, null, null];
 }
 
 /** Collapse a spread of layers into a single SceneNode (null / passthrough / group). */
@@ -56,35 +104,38 @@ registerNode({
   type: 'gpu/shader',
   category: 'Render',
   label: 'Shader',
-  description: 'Fragment shader (ShaderToy-style). Wire a layer for post-FX, or leave it for generative. Edit the code in the side panel.',
+  description: 'Fragment shader (ShaderToy-style) with optional Buffer A–D passes. Wire a layer for post-FX, or leave it for generative. Edit in the side panel.',
   inputs: shaderInputs({}),
   outputs: [{ name: 'out', type: 'layer' }],
   defaultParams: { source: DEFAULT_SOURCE, feedback: false },
   dynamicInputs: shaderInputs,
   computeRaw: (inputs: PortValue[], params: NodeParamContext): PortValue[] => {
-    const source = params.param<string>('source', DEFAULT_SOURCE);
-    const feedback = Boolean(params.param('feedback', false));
-    const decls = parseUniforms(source);
+    const raw = (key: string, fallback?: unknown) => params.param(key, fallback);
+    const pp: Record<string, unknown> = {
+      source: raw('source', DEFAULT_SOURCE),
+      bufferA: raw('bufferA'), bufferB: raw('bufferB'), bufferC: raw('bufferC'), bufferD: raw('bufferD'),
+      channels: raw('channels'),
+    };
+    const feedback = Boolean(raw('feedback', false));
+    const decls = allUniforms(pp);
     const uniforms: Record<string, ShaderUniformValue> = {};
-    const channels: { name: string; layer: SceneNode | null }[] = [];
-    // inputs[0] = primary layer; inputs[i+1] = the i-th declared uniform.
     decls.forEach((u, i) => {
-      const raw = inputs[i + 1];
+      const r = inputs[i + 1];
       const pt = uniformPortType(u.glslType);
-      if (pt === 'layer') channels.push({ name: u.name, layer: asLayer(raw) });
-      else if (pt === 'vec2') uniforms[u.name] = { t: 'vec2', v: toVec2(raw?.[0]) };
-      else if (pt === 'color') uniforms[u.name] = { t: 'color', v: toColor(raw?.[0]) };
-      else uniforms[u.name] = { t: 'number', v: Number(raw?.[0] ?? 0) };
+      if (pt === 'vec2') uniforms[u.name] = { t: 'vec2', v: toVec2(r?.[0]) };
+      else if (pt === 'color') uniforms[u.name] = { t: 'color', v: toColor(r?.[0]) };
+      else uniforms[u.name] = { t: 'number', v: Number(r?.[0] ?? 0) };
     });
+    const passes: ShaderPass[] = passSources(pp).map(({ buf, source }) => ({
+      buf, source, channels: channelsFor(buf, pp, feedback),
+    }));
     const shape: ShaderShape = {
       kind: 'shader',
       nodeId: params.nodeId,
-      source,
+      passes,
       uniformDecls: decls,
       uniforms,
-      channels,
       input: asLayer(inputs[0]),
-      feedback,
     };
     return [[shape]];
   },

@@ -1,71 +1,131 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Plus, Trash2 } from 'lucide-react';
 import { useEditor } from './editor-state';
 import { Panel } from './panel/Panel';
 import { parseUniforms, uniformPortType } from '../runtime/gl/glsl-shader';
 import { checkShaderCompile, type ShaderError } from '../runtime/gl/shader-compile-check';
+import type { ShaderBufferId } from '../runtime/scene';
 
 /**
- * Shader panel — a GLSL editor for the currently-selected `gpu/shader` node.
+ * Shader panel — a GLSL editor for the selected `gpu/shader` node.
  *
- * A full dock panel (draggable / dockable / resizable like Help / Preview).
- * Mounts on selection and floats by default; App keeps `'shader'` in the dock
- * reconcile keep-set while a shader node is selected so it isn't evicted. Edits
- * the node's `source` param (debounced), compile-checks on the main thread for
- * line-mapped errors, lists the auto-detected uniforms, and toggles self-feedback.
+ * A full dock panel (draggable / dockable / resizable). Tabs switch between the
+ * Image pass and Buffer A–D passes; each pass has its own source + four iChannel
+ * routings (input / self / another buffer). Edits debounce into the node's
+ * params (which re-derive the uniform ports + recompile), with main-thread
+ * line-mapped compile errors and the detected uniform list.
  */
 export function ShaderPanel() {
-  const selected = useEditor((s) => s.nodes.find((n) => n.selected && n.data.defType === 'gpu/shader'));
-  if (!selected) return null;
+  const selectedId = useEditor((s) => s.nodes.find((n) => n.selected && n.data.defType === 'gpu/shader')?.id ?? null);
+  if (!selectedId) return null;
   return (
-    <Panel id="shader" title="Shader · GLSL" defaults={{ dock: 'float', width: 420, height: 560, floatX: 360, floatY: 90 }}>
-      <ShaderEditor
-        key={selected.id}
-        nodeId={selected.id}
-        initialSource={String(selected.data.params?.source ?? '')}
-        initialFeedback={Boolean(selected.data.params?.feedback)}
-      />
+    <Panel id="shader" title="Shader · GLSL" defaults={{ dock: 'float', width: 440, height: 600, floatX: 360, floatY: 80 }}>
+      <ShaderEditor key={selectedId} nodeId={selectedId} />
     </Panel>
   );
 }
 
-function ShaderEditor({ nodeId, initialSource, initialFeedback }: {
-  nodeId: string; initialSource: string; initialFeedback: boolean;
-}) {
-  const setNodeParam = useEditor((s) => s.setNodeParam);
-  const [text, setText] = useState(initialSource);
-  const [errors, setErrors] = useState<ShaderError[]>([]);
-  const [feedback, setFeedback] = useState(initialFeedback);
+const ALL_BUFS: ShaderBufferId[] = ['A', 'B', 'C', 'D'];
+const DEFAULT_BUFFER = `// Buffer pass. iChannel0 is this buffer's previous frame (self).
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+  vec2 uv = fragCoord / iResolution.xy;
+  fragColor = texture(iChannel0, uv);
+}`;
+const paramKey = (tab: ShaderBufferId) => (tab === 'image' ? 'source' : 'buffer' + tab);
 
-  // Debounce: commit the source + recompile-check 300ms after the last keystroke.
+function ShaderEditor({ nodeId }: { nodeId: string }) {
+  const params = useEditor((s) => s.nodes.find((n) => n.id === nodeId)?.data.params ?? {}) as Record<string, unknown>;
+  const setNodeParam = useEditor((s) => s.setNodeParam);
+
+  const present = ALL_BUFS.filter((b) => typeof params['buffer' + b] === 'string' && (params['buffer' + b] as string).trim());
+  const tabs: ShaderBufferId[] = ['image', ...present];
+  const [activeTab, setActiveTab] = useState<ShaderBufferId>('image');
+  const tab = tabs.includes(activeTab) ? activeTab : 'image';
+
+  const srcKey = paramKey(tab);
+  const committed = String(params[srcKey] ?? '');
+  const [text, setText] = useState(committed);
+  const [errors, setErrors] = useState<ShaderError[]>([]);
+
+  // Load the active pass's source when the tab (or node) changes.
+  useEffect(() => { setText(String(params[paramKey(tab)] ?? '')); setErrors([]); /* eslint-disable-next-line */ }, [tab, nodeId]);
+
+  // Debounced commit + compile-check 300ms after the last keystroke.
   useEffect(() => {
     const h = setTimeout(() => {
-      setNodeParam(nodeId, 'source', text);
+      setNodeParam(nodeId, srcKey, text);
       setErrors(checkShaderCompile(text).errors);
     }, 300);
     return () => clearTimeout(h);
-  }, [text, nodeId, setNodeParam]);
+  }, [text, srcKey, nodeId, setNodeParam]);
 
-  // Initial compile-check on mount / node switch.
-  useEffect(() => { setErrors(checkShaderCompile(initialSource).errors); }, [initialSource]);
+  const uniforms = useMemo(() => parseUniforms(text).filter((u) => u.glslType !== 'sampler2D'), [text]);
 
-  const uniforms = useMemo(() => parseUniforms(text), [text]);
+  // Channel routing for the active pass.
+  const channelCfg = (params.channels && typeof params.channels === 'object' ? params.channels : {}) as Record<string, unknown>;
+  const tabChannels = Array.isArray(channelCfg[tab])
+    ? (channelCfg[tab] as unknown[])
+    : tab === 'image' ? ['input', params.feedback ? 'image' : '', '', ''] : [tab, 'input', '', ''];
+  const channelOptions: { value: string; label: string }[] = [
+    { value: '', label: 'none' },
+    { value: 'input', label: 'input' },
+    ...tabs.filter((t) => t !== tab).map((t) => ({ value: t, label: t === 'image' ? 'Image' : 'Buffer ' + t })),
+    { value: tab, label: 'self' },
+  ];
+  const setChannel = (i: number, code: string) => {
+    const next = { ...channelCfg };
+    const arr = (Array.isArray(next[tab]) ? [...(next[tab] as unknown[])] : [...tabChannels]);
+    arr[i] = code;
+    next[tab] = arr;
+    setNodeParam(nodeId, 'channels', next);
+  };
+
+  const addBuffer = () => {
+    const free = ALL_BUFS.find((b) => !present.includes(b));
+    if (!free) return;
+    setNodeParam(nodeId, 'buffer' + free, DEFAULT_BUFFER);
+    setActiveTab(free);
+  };
+  const removeBuffer = (b: ShaderBufferId) => {
+    setNodeParam(nodeId, 'buffer' + b, '');
+    const next = { ...channelCfg }; delete next[b]; setNodeParam(nodeId, 'channels', next);
+    setActiveTab('image');
+  };
 
   return (
     <div className="shader-panel">
+      <div className="shader-tabs">
+        {tabs.map((t) => (
+          <button
+            key={t}
+            className={`shader-tab${t === tab ? ' active' : ''}`}
+            onClick={() => setActiveTab(t)}
+          >{t === 'image' ? 'Image' : 'Buf ' + t}</button>
+        ))}
+        {present.length < 4 && (
+          <button className="shader-tab shader-tab-add" title="Add a buffer pass" onClick={addBuffer}>
+            <Plus size={12} strokeWidth={2} />
+          </button>
+        )}
+        {tab !== 'image' && (
+          <button className="shader-tab shader-tab-del" title={`Remove Buffer ${tab}`} onClick={() => removeBuffer(tab)}>
+            <Trash2 size={12} strokeWidth={1.8} />
+          </button>
+        )}
+      </div>
+
       <textarea
         className="shader-panel-code nodrag"
         spellCheck={false}
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
-          // Tab inserts two spaces instead of leaving the field.
           if (e.key === 'Tab') {
             e.preventDefault();
-            const t = e.currentTarget;
-            const s = t.selectionStart, en = t.selectionEnd;
-            const next = text.slice(0, s) + '  ' + text.slice(en);
+            const t = e.currentTarget, a = t.selectionStart, b = t.selectionEnd;
+            const next = text.slice(0, a) + '  ' + text.slice(b);
             setText(next);
-            requestAnimationFrame(() => { t.selectionStart = t.selectionEnd = s + 2; });
+            requestAnimationFrame(() => { t.selectionStart = t.selectionEnd = a + 2; });
           }
         }}
       />
@@ -81,14 +141,21 @@ function ShaderEditor({ nodeId, initialSource, initialFeedback }: {
       )}
 
       <div className="shader-panel-meta">
-        <label className="shader-panel-toggle">
-          <input
-            type="checkbox"
-            checked={feedback}
-            onChange={(e) => { setFeedback(e.target.checked); setNodeParam(nodeId, 'feedback', e.target.checked); }}
-          />
-          Feedback <span className="shader-panel-dim">(previous frame → iChannel1)</span>
-        </label>
+        <div className="shader-channels">
+          <div className="shader-channels-title">iChannels (this pass)</div>
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="shader-channel-row">
+              <span className="shader-channel-label">iChannel{i}</span>
+              <select
+                className="shader-channel-select nodrag"
+                value={String(tabChannels[i] ?? '')}
+                onChange={(e) => setChannel(i, e.target.value)}
+              >
+                {channelOptions.map((o) => <option key={o.value || 'none'} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+          ))}
+        </div>
 
         <div className="shader-panel-uniforms">
           <div className="shader-panel-uniforms-title">Uniforms → ports</div>
@@ -102,7 +169,7 @@ function ShaderEditor({ nodeId, initialSource, initialFeedback }: {
               ))}
         </div>
         <div className="shader-panel-dim shader-panel-builtins">
-          built-in: iTime · iResolution · iMouse · iFrame · iChannel0 (input)
+          built-in: iTime · iResolution · iMouse · iFrame
         </div>
       </div>
     </div>

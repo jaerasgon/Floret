@@ -33,17 +33,15 @@ export function App() {
   // Prune preview panels whose renderer node is gone (e.g. after a reload
   // where the saved layout outlived the node).
   const reconcile = useDock((s) => s.reconcile);
-  // The Shader editor panel mounts on selection; keep it while a shader node is
-  // selected so reconcile doesn't evict it the moment it registers.
-  const shaderSelected = useEditor((s) => s.nodes.some((n) => n.selected && n.data.defType === 'gpu/shader'));
   useEffect(() => {
-    // Keep the four fixed panels + every live renderer's preview (+ the shader
-    // editor while active); evict any other panel (e.g. a preview whose node
-    // was deleted, or one left over from a previously-loaded patch).
-    const keep = new Set(['canvas', 'palette', 'help', 'library', ...renderers.map((n) => n.id)]);
-    if (shaderSelected) keep.add('shader');
+    // Keep the four fixed panels + every live renderer's preview; evict any other
+    // panel (e.g. a preview whose node was deleted, or one left over from a
+    // previously-loaded patch). 'shader' is always kept: the editor panel mounts
+    // on selection, and keeping its (harmless when unused) dock entry avoids a
+    // race where reconcile evicts it the instant it registers.
+    const keep = new Set(['canvas', 'palette', 'help', 'library', 'shader', ...renderers.map((n) => n.id)]);
     reconcile(keep);
-  }, [renderers, reconcile, shaderSelected]);
+  }, [renderers, reconcile]);
 
   // The Library is toggled from the toolbar; drop it from the dock layout
   // when hidden so it doesn't leave a dangling slot (it re-docks on show).

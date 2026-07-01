@@ -705,10 +705,10 @@ function CanvasInner() {
         panOnScroll
         zoomOnScroll={false}
         zoomActivationKeyCode={['Meta', 'Control']}
-        // React Flow's default minZoom is 0.5; halve it so the user can
-        // pull back far enough to see large patches (sprawling sample
-        // graphs, subpatch expansions) in their entirety.
-        minZoom={0.25}
+        // React Flow's default minZoom is 0.5. Pull it way back so even large,
+        // wide patches (long region chains, subpatch expansions, an auto-arranged
+        // sprawl) fit entirely in view.
+        minZoom={0.08}
       >
         <Background color="#2a2f38" gap={16} />
         <Controls />

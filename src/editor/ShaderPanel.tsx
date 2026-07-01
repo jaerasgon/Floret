@@ -66,12 +66,14 @@ function ShaderEditor({ nodeId }: { nodeId: string }) {
   const channelCfg = (params.channels && typeof params.channels === 'object' ? params.channels : {}) as Record<string, unknown>;
   const tabChannels = Array.isArray(channelCfg[tab])
     ? (channelCfg[tab] as unknown[])
-    : tab === 'image' ? ['input', params.feedback ? 'image' : '', '', ''] : [tab, 'input', '', ''];
+    : tab === 'image' ? ['input', params.feedback ? 'self' : '', '', ''] : ['self', 'input', '', ''];
+  // Normalise a stored code for the dropdown: this pass's own buffer id == 'self'.
+  const shown = (i: number) => { const v = String(tabChannels[i] ?? ''); return v === tab ? 'self' : v; };
   const channelOptions: { value: string; label: string }[] = [
     { value: '', label: 'none' },
     { value: 'input', label: 'input' },
+    { value: 'self', label: 'self' },
     ...tabs.filter((t) => t !== tab).map((t) => ({ value: t, label: t === 'image' ? 'Image' : 'Buffer ' + t })),
-    { value: tab, label: 'self' },
   ];
   const setChannel = (i: number, code: string) => {
     const next = { ...channelCfg };
@@ -135,7 +137,7 @@ function ShaderEditor({ nodeId }: { nodeId: string }) {
               <span className="shader-channel-label">iChannel{i}</span>
               <select
                 className="shader-channel-select nodrag"
-                value={String(tabChannels[i] ?? '')}
+                value={shown(i)}
                 onChange={(e) => setChannel(i, e.target.value)}
               >
                 {channelOptions.map((o) => <option key={o.value || 'none'} value={o.value}>{o.label}</option>)}

@@ -18,10 +18,10 @@ import { rfNodeBox } from './canvas/region-hit';
  * siblings. Comment nodes are parked in a far-right column.
  */
 
-const H_GAP = 70;   // horizontal space between columns
-const V_GAP = 30;   // vertical space between stacked nodes
-const REGION_PAD_X = 24;
-const REGION_PAD_Y = 44;
+const H_GAP = 40;   // horizontal space between columns (tighter → less horizontal spread)
+const V_GAP = 58;   // vertical space between stacked nodes (roomier → more vertical spread)
+const REGION_PAD = 30;   // padding on the sides / bottom inside a region
+const REGION_TOP = 50;   // top clearance for the region header + padding
 const FALLBACK = { w: 200, h: 100 };
 
 export function autoLayoutPatch(
@@ -137,8 +137,8 @@ export function autoLayoutPatch(
       }
     }
 
-    const ox = parentId ? REGION_PAD_X : 0;
-    const oy = parentId ? REGION_PAD_Y : 0;
+    const ox = parentId ? REGION_PAD : 0;
+    const oy = parentId ? REGION_TOP : 0;
     // normalise so the topmost node sits at the scope origin
     let minTop = Infinity;
     for (const id of ids) minTop = Math.min(minTop, centerY.get(id)! - sizeOf(id).h / 2);
@@ -164,7 +164,7 @@ export function autoLayoutPatch(
     for (const n of byParent.get(parentId) ?? []) {
       if (byParent.has(n.id)) {
         const ext = process(n.id);
-        regionSize.set(n.id, { w: ext.right + REGION_PAD_X, h: ext.bottom + REGION_PAD_Y });
+        regionSize.set(n.id, { w: ext.right + REGION_PAD, h: ext.bottom + REGION_PAD });
       }
     }
     return layoutScope(parentId);

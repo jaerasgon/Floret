@@ -22,7 +22,7 @@ import { useOverlay } from './overlay-store';
 import { NodeSearch } from './NodeSearch';
 import { FavoritesMenu } from './FavoritesMenu';
 import { ContextMenu } from './ContextMenu';
-import { prefsSnapshot } from '../app/prefs';
+import { prefsSnapshot, usePrefs } from '../app/prefs';
 import { paramStore } from '../runtime/param-store';
 
 import {
@@ -643,6 +643,9 @@ function CanvasInner() {
   useRegionDrawTool(armedRegionKind, setDrawingRegion, { addRegion, disarmRegionDraw });
   useSpacebarReparent(spaceDownRef, setReparentMode);
 
+  // React Flow's colorMode drives its own control/minimap/handle theming.
+  const theme = usePrefs((s) => s.theme);
+
   // Type assertion for nodes since React Flow's generic Node type narrows
   // strictly on `data`; our editor store holds a stricter `FloretNodeData`.
   return (
@@ -683,7 +686,7 @@ function CanvasInner() {
         isValidConnection={isValidConnection}
         proOptions={{ hideAttribution: true }}
         zoomOnDoubleClick={false}
-        colorMode="dark"
+        colorMode={theme}
         deleteKeyCode={null /* handled in onKeyDown to skip during input focus */}
         // Selection-first navigation:
         //   - left-drag on empty pane  → box-select (contain semantics)
@@ -710,7 +713,8 @@ function CanvasInner() {
         // sprawl) fit entirely in view.
         minZoom={0.08}
       >
-        <Background color="#2a2f38" gap={16} />
+        {/* grid colour comes from --grid-line (themable) via a CSS override below */}
+        <Background gap={16} />
         <Controls />
         <MiniMap
           pannable

@@ -49,8 +49,55 @@
   --radius-md: 6px;
   --radius-lg: 10px;
 
+  --grid-line: #2a2f38;   /* node-canvas dot grid */
   color-scheme: dark;
 }
+
+/* ── Light theme (Weave-inspired: airy gray-lavender, lime accent) ──
+   Applied by setting data-theme="light" on <html>. Only the colour tokens
+   are overridden; every component reads them via var(), so the whole app
+   re-skins from here. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg-0: #e7e8ee;   /* canvas — soft cool gray-lavender */
+  --bg-1: #f3f4f7;   /* panels */
+  --bg-2: #ffffff;   /* nodes / inputs / raised surfaces */
+  --bg-3: #e0e2e9;   /* hover / pressed */
+  --border: #d6d9e1;
+  --fg-0: #1b1d24;   /* primary text */
+  --fg-1: #565b66;   /* secondary */
+  --fg-2: #9096a2;   /* tertiary / dim */
+  --accent: #b4cc00;      /* deep lime */
+  --accent-dim: #7f9000;  /* olive — readable accent text / borders */
+  --danger: #d64545;
+
+  /* ports re-tuned darker so the near-white dark-theme tints stay legible on white */
+  --port-number: #7a7568;
+  --port-vec2: #c1962c;
+  --port-color: #d24f9e;
+  --port-layer: #3d82d6;
+  --port-bool: #949430;
+  --port-style: #9a5fd6;
+  --port-audio: #d24fae;
+  --port-image: #cf8a3a;
+  --port-any: #6b6f78;
+  --port-world: #2ea87a;
+  --port-force: #d9663a;
+  --port-collider: #8a8a8a;
+  --port-particle: #8a5fd6;
+
+  /* softer, cooler shadows on a light ground */
+  --shadow-1: 0 1px 2px rgba(20, 22, 30, 0.08);
+  --shadow-2: 0 2px 6px rgba(20, 22, 30, 0.10);
+  --shadow-3: 0 6px 18px rgba(20, 22, 30, 0.13);
+  --shadow-4: 0 14px 36px rgba(20, 22, 30, 0.16);
+
+  --grid-line: #d5d8e0;
+}
+
+/* Node-canvas dot grid follows the theme (React Flow renders the dots inline). */
+.react-flow__background circle,
+.react-flow__background path { fill: var(--grid-line); stroke: var(--grid-line); }
 
 @keyframes pop-in {
   from { opacity: 0; transform: translateY(4px) scale(0.97); }
@@ -930,7 +977,9 @@ input:focus, select:focus, textarea:focus {
 
 /* React Flow overrides */
 .react-flow {
-  background: var(--bg-0);
+  /* !important: @xyflow's own stylesheet loads after ours and sets a default
+     dark background-color that would otherwise win. */
+  background-color: var(--bg-0) !important;
 }
 /* Pane cursor: RF sets `cursor: pointer` (finger) whenever selection-on-drag
  * is enabled, which feels wrong for an editor canvas. Force the default arrow

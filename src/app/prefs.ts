@@ -29,6 +29,8 @@ export interface Prefs {
   paletteVisible: boolean;
   /** Help panel visible. Same toolbar-toggle treatment as the palette. */
   helpVisible: boolean;
+  /** UI colour theme. Applied as data-theme on <html>. */
+  theme: 'dark' | 'light';
 }
 
 const LS_KEY = 'floret.prefs.v1';
@@ -40,6 +42,7 @@ const DEFAULTS: Prefs = {
   autoJumpHelp: true,
   paletteVisible: true,
   helpVisible: true,
+  theme: 'dark',
 };
 
 function loadFromStorage(): Prefs {

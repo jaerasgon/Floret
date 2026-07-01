@@ -8,6 +8,8 @@ import {
   Library as LibraryIcon,
   Boxes as NodesIcon,
   HelpCircle as HelpIcon,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { useAppStore } from '../store';
 import { usePrefs } from '../prefs';
@@ -26,6 +28,7 @@ export function Toolbar() {
   const refresh = useAppStore((s) => s.refresh);
   const wireFlow = usePrefs((s) => s.wireFlowAnimation);
   const proMode = usePrefs((s) => s.proMode);
+  const theme = usePrefs((s) => s.theme);
   const setPref = usePrefs((s) => s.set);
   const setNodes = useEditor((s) => s.setNodes);
   const libraryVisible = useLibraryUI((s) => s.visible);
@@ -53,6 +56,12 @@ export function Toolbar() {
     if (proMode) document.body.setAttribute('data-pro-mode', '1');
     else document.body.removeAttribute('data-pro-mode');
   }, [proMode]);
+
+  // Apply the colour theme on <html> so every var() re-skins (and body-portaled
+  // panels inherit it too).
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   return (
     <div className="toolbar">
@@ -88,6 +97,15 @@ export function Toolbar() {
           aria-label="Toggle help panel"
         >
           <HelpIcon size={14} strokeWidth={1.6} />
+        </button>
+      </Tooltip>
+      <Tooltip label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}>
+        <button
+          className="tb-icon-btn"
+          onClick={() => setPref('theme', theme === 'light' ? 'dark' : 'light')}
+          aria-label="Toggle colour theme"
+        >
+          {theme === 'light' ? <Moon size={14} strokeWidth={1.6} /> : <Sun size={14} strokeWidth={1.6} />}
         </button>
       </Tooltip>
       <div className="spacer" />

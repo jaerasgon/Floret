@@ -31,6 +31,14 @@ registerBuiltInLibraries(buildBuiltInSampleLibraries());
 import { seedDefaultLayout } from './editor/dock/dockStore';
 seedDefaultLayout();
 
+// Apply the persisted colour theme before first paint so light-theme users
+// don't get a flash of dark. The Toolbar keeps data-theme in sync afterwards.
+try {
+  if (JSON.parse(localStorage.getItem('floret.prefs.v1') || '{}').theme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+} catch { /* default dark */ }
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />

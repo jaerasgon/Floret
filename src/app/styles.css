@@ -2048,27 +2048,41 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
 }
 
 /* ─── Category accent colours ────────────────────────────────────────────
- * Each category defines a `--cat-accent` token. Rules below use it
- * uniformly for: a 3px left-edge color bar on the node, a brighter
- * header gradient, a subtler hover/select glow, and the mini-map dot.
- * Bumping the colors here updates everything downstream at once. */
-[data-category='math']      { --cat-accent: #c4a85f; }
-[data-category='time']      { --cat-accent: #d5a566; }
-[data-category='draw']      { --cat-accent: #5fa6ff; }
-[data-category='style']     { --cat-accent: #c97bd5; }
-[data-category='transform'] { --cat-accent: #a880ff; }
-[data-category='value']     { --cat-accent: #6cb6ff; }
-[data-category='render']    { --cat-accent: #ff9a4a; }
-[data-category='io']        { --cat-accent: #d4a574; }
-[data-category='input']     { --cat-accent: #ff8a6c; }
-[data-category='spread']    { --cat-accent: #e5d05f; }
-[data-category='region']    { --cat-accent: #5fd5c4; }
-[data-category='logic']     { --cat-accent: #ff7fb5; }
-[data-category='random']    { --cat-accent: #7d92ff; }
-[data-category='vec2']      { --cat-accent: #4ed8d8; }
-[data-category='color']     { --cat-accent: #ff6b6b; }
-[data-category='convert']   { --cat-accent: #9aa4b8; }
-[data-category='meta']      { --cat-accent: #f0d896; }
+ * Each category defines a `--cat-accent` token, used uniformly for: the
+ * node's edge bar + header gradient, the hover/select glow, the palette
+ * label, and the mini-map dot. Bumping a value updates everything at once.
+ *
+ * Colours are a single harmonised hue SWEEP: categories are listed in the
+ * alphabetical order the palette shows them, and the hue steps ~14° around
+ * the wheel at constant saturation/lightness. So the palette reads as a
+ * smooth spectrum, and every category is distinct from its neighbour —
+ * rather than an ad-hoc assortment. Retune by editing the hues below. */
+[data-category='collider']  { --cat-accent: hsl(20, 58%, 63%); }
+[data-category='color']     { --cat-accent: hsl(34, 58%, 63%); }
+[data-category='convert']   { --cat-accent: hsl(48, 58%, 63%); }
+[data-category='data']      { --cat-accent: hsl(62, 58%, 63%); }
+[data-category='draw']      { --cat-accent: hsl(76, 58%, 63%); }
+[data-category='force']     { --cat-accent: hsl(90, 58%, 63%); }
+[data-category='image']     { --cat-accent: hsl(104, 58%, 63%); }
+[data-category='input']     { --cat-accent: hsl(118, 58%, 63%); }
+[data-category='io']        { --cat-accent: hsl(132, 58%, 63%); }
+[data-category='logic']     { --cat-accent: hsl(146, 58%, 63%); }
+[data-category='math']      { --cat-accent: hsl(160, 58%, 63%); }
+[data-category='meta']      { --cat-accent: hsl(174, 58%, 63%); }
+[data-category='motion']    { --cat-accent: hsl(188, 58%, 63%); }
+[data-category='particles'] { --cat-accent: hsl(202, 58%, 63%); }
+[data-category='pixel']     { --cat-accent: hsl(216, 58%, 63%); }
+[data-category='random']    { --cat-accent: hsl(230, 58%, 63%); }
+[data-category='region']    { --cat-accent: hsl(244, 58%, 63%); }
+[data-category='render']    { --cat-accent: hsl(258, 58%, 63%); }
+[data-category='sound']     { --cat-accent: hsl(272, 58%, 63%); }
+[data-category='spread']    { --cat-accent: hsl(286, 58%, 63%); }
+[data-category='state']     { --cat-accent: hsl(300, 58%, 63%); }
+[data-category='style']     { --cat-accent: hsl(314, 58%, 63%); }
+[data-category='time']      { --cat-accent: hsl(328, 58%, 63%); }
+[data-category='transform'] { --cat-accent: hsl(342, 58%, 63%); }
+[data-category='value']     { --cat-accent: hsl(349, 58%, 63%); }
+[data-category='vec2']      { --cat-accent: hsl(356, 58%, 63%); }
 
 .node[data-category] .node-header {
   background:

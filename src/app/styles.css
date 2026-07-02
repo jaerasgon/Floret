@@ -44,10 +44,10 @@
   /* Focus */
   --focus-ring: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent);
 
-  /* Radius */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
+  /* Radius — softer, larger corners read more modern than the old 4/6/10. */
+  --radius-sm: 6px;
+  --radius-md: 9px;
+  --radius-lg: 14px;
 
   --grid-line: #2a2f38;   /* node-canvas dot grid */
   color-scheme: dark;
@@ -200,8 +200,8 @@ input, select, textarea {
   color: var(--fg-0);
   background: var(--bg-1);
   border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  padding: 3px 7px;
   transition:
     border-color var(--dur-fast) var(--ease-std),
     box-shadow var(--dur-fast) var(--ease-std),
@@ -232,8 +232,9 @@ input:focus, select:focus, textarea:focus {
 }
 
 .toolbar .title {
-  font-weight: 600;
-  letter-spacing: 0.4px;
+  font-weight: 700;
+  font-size: 12.5px;
+  letter-spacing: 1.6px;
   color: var(--fg-0);
 }
 
@@ -1111,8 +1112,8 @@ body[data-wire-flow='1'] .react-flow__edge-path {
 .palette-search {
   width: 100%;
   font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 3px;
+  padding: 5px 9px;
+  border-radius: var(--radius-sm);
 }
 
 .palette-empty {
@@ -1138,9 +1139,10 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   align-items: center;
   gap: 6px;
   width: 100%;
-  font-family: var(--font-mono);
+  font-family: var(--font-ui);
   font-size: 10px;
-  letter-spacing: 0.4px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
   text-transform: uppercase;
   color: var(--cat-accent, var(--accent-dim));
   background: transparent;
@@ -1257,7 +1259,7 @@ body[data-wire-flow='1'] .react-flow__edge-path {
 .node {
   background: var(--bg-2);
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: 10px;
   min-width: 160px;
   font-size: 10px;
   color: var(--fg-0);
@@ -1302,19 +1304,20 @@ body[data-wire-flow='1'] .react-flow__edge-path {
 .node-rows {
   display: flex;
   flex-direction: column;
-  padding: 4px 0;
+  padding: 5px 0;
 }
 .node-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0 10px;
-  height: 18px;
+  padding: 0 11px;
+  height: 20px;
   position: relative;
 }
 .node-row-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  letter-spacing: 0.1px;
   color: var(--fg-1);
   white-space: nowrap;
   overflow: hidden;
@@ -1461,16 +1464,17 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 4px 8px;
-  border-bottom: 1px solid var(--border);
+  padding: 5px 11px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
   background: var(--bg-3);
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  border-top-left-radius: 9px;
+  border-top-right-radius: 9px;
 }
 
 .node-label {
   font-weight: 600;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
+  font-size: 10.5px;
 }
 
 /* The node-type subtitle (e.g. "io/bang") is redundant with the label and
@@ -2087,8 +2091,8 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
 .node[data-category] .node-header {
   background:
     linear-gradient(to right,
-      color-mix(in srgb, var(--cat-accent) 22%, var(--bg-3)),
-      var(--bg-3) 70%);
+      color-mix(in srgb, var(--cat-accent) 16%, var(--bg-3)),
+      var(--bg-3) 62%);
 }
 
 /* ─── Pro mode ──────────────────────────────────────────────────────────
@@ -4569,7 +4573,7 @@ body[data-pro-mode='1'] .node[data-math='1'] {
 .panel-action {
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   color: var(--fg-2);
   font-size: 11px;
   width: 20px;

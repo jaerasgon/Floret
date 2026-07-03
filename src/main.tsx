@@ -1,6 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './app/App';
+// Bundled type system (self-hosted woff2 via fontsource — no CDN, works offline):
+// Space Grotesk for display/brand, Hanken Grotesk for UI body, JetBrains Mono for
+// values. Imported before styles.css so the --font-* stacks resolve to these.
+import '@fontsource-variable/space-grotesk';
+import '@fontsource-variable/hanken-grotesk';
+import '@fontsource-variable/jetbrains-mono';
 import './app/styles.css';
 import '@xyflow/react/dist/style.css';
 

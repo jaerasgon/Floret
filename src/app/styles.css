@@ -25,8 +25,11 @@
   --port-force:    #ff9966; /* warm coral — force */
   --port-collider: #e0e0e0; /* near-white — collider */
   --port-particle: #b890ff; /* lavender — particle buffer */
-  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-ui: 'Hanken Grotesk Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Display face for brand, panel/node titles, section headers — a distinctive
+     grotesque that carries the editorial feel where type gets large. */
+  --font-display: 'Space Grotesk Variable', 'Hanken Grotesk Variable', -apple-system, sans-serif;
 
   /* Motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -49,7 +52,7 @@
   --radius-md: 9px;
   --radius-lg: 14px;
 
-  --grid-line: #2a2f38;   /* node-canvas dot grid */
+  --grid-line: #201d19;   /* node-canvas dot grid — warm + faint, less "template" */
   color-scheme: dark;
 }
 
@@ -232,9 +235,10 @@ input:focus, select:focus, textarea:focus {
 }
 
 .toolbar .title {
+  font-family: var(--font-display);
   font-weight: 700;
-  font-size: 12.5px;
-  letter-spacing: 1.6px;
+  font-size: 13px;
+  letter-spacing: 2px;
   color: var(--fg-0);
 }
 
@@ -1000,9 +1004,9 @@ input:focus, select:focus, textarea:focus {
  * colour; we mix it with `--fg-2` so the canvas doesn't look like a
  * Christmas tree when many wires run. */
 .react-flow__edge-path {
-  --xy-edge-stroke: color-mix(in srgb, var(--edge-stroke, var(--fg-1)) 55%, var(--fg-2));
-  stroke-width: 1.4px;
-  stroke-opacity: 0.85;
+  --xy-edge-stroke: color-mix(in srgb, var(--edge-stroke, var(--fg-1)) 45%, var(--fg-2));
+  stroke-width: 1.3px;
+  stroke-opacity: 0.8;
   transition: stroke-width var(--dur-fast) var(--ease-std), stroke-opacity var(--dur-fast) var(--ease-std), opacity var(--dur-fast) var(--ease-std);
 }
 .react-flow__edge:hover .react-flow__edge-path {
@@ -1025,11 +1029,12 @@ input:focus, select:focus, textarea:focus {
  * from the Toolbar's Flow button. Animates a dashed segment along each
  * edge from source to target. Subtle by design. */
 @keyframes floret-wire-flow {
-  to { stroke-dashoffset: -16; }
+  to { stroke-dashoffset: -22; }
 }
 body[data-wire-flow='1'] .react-flow__edge-path {
-  stroke-dasharray: 4 4;
-  animation: floret-wire-flow 0.8s linear infinite;
+  stroke-dasharray: 2 9;
+  stroke-linecap: round;
+  animation: floret-wire-flow 1.1s linear infinite;
 }
 
 /* In-progress connection (while user is dragging a new wire). React
@@ -1096,9 +1101,10 @@ body[data-wire-flow='1'] .react-flow__edge-path {
 
 .palette-header {
   padding: 4px 8px 4px 12px;
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: 11px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   color: var(--fg-2);
   border-bottom: 1px solid var(--border);
@@ -1139,10 +1145,10 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   align-items: center;
   gap: 6px;
   width: 100%;
-  font-family: var(--font-ui);
+  font-family: var(--font-display);
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.7px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   color: var(--cat-accent, var(--accent-dim));
   background: transparent;
@@ -1472,6 +1478,7 @@ body[data-wire-flow='1'] .react-flow__edge-path {
 }
 
 .node-label {
+  font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: 0.2px;
   font-size: 10.5px;
@@ -4544,9 +4551,10 @@ body[data-pro-mode='1'] .node[data-math='1'] {
 .panel-header[data-dragging-hint='1'] { cursor: grab; }
 .panel-header:active { cursor: grabbing; }
 .panel-title {
+  font-family: var(--font-display);
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   color: var(--fg-0);
   display: inline-flex;

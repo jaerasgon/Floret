@@ -714,7 +714,7 @@ function CanvasInner() {
         minZoom={0.08}
       >
         {/* grid colour comes from --grid-line (themable) via a CSS override below */}
-        <Background gap={16} />
+        <Background gap={22} size={1} />
         <Controls />
         <MiniMap
           pannable

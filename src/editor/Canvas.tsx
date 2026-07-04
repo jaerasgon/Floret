@@ -19,6 +19,7 @@ import { buildIsValidConnection, categoryColor, parseHandle } from './connection
 import { nodeRegistry } from '../nodes/registry';
 import { type PendingConnection } from './overlay-store';
 import { useOverlay } from './overlay-store';
+import { AmbientFlow } from './AmbientFlow';
 import { NodeSearch } from './NodeSearch';
 import { FavoritesMenu } from './FavoritesMenu';
 import { ContextMenu } from './ContextMenu';
@@ -659,6 +660,7 @@ function CanvasInner() {
       onDoubleClick={onWrapperDoubleClick}
       tabIndex={0}
     >
+      <AmbientFlow />
       <ReactFlow
         nodes={projectedNodes as never}
         edges={projectedEdges}

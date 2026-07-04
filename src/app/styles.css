@@ -899,6 +899,8 @@ input:focus, select:focus, textarea:focus {
   height: 100%;
   outline: none;
   order: 0;
+  /* Fallback ground under the AmbientFlow canvas (which is itself opaque bg-0). */
+  background: var(--bg-0);
 }
 
 .value-tooltip {
@@ -990,9 +992,26 @@ input:focus, select:focus, textarea:focus {
 
 /* React Flow overrides */
 .react-flow {
-  /* !important: @xyflow's own stylesheet loads after ours and sets a default
-     dark background-color that would otherwise win. */
-  background-color: var(--bg-0) !important;
+  /* Transparent so the AmbientFlow layer painted behind it shows through.
+     !important beats @xyflow's own stylesheet (loaded after ours), which sets
+     a default opaque background. z-index/position lift RF above the ambient
+     canvas (which sits at z-index 0 in the wrapper). */
+  background-color: transparent !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ambient "living canvas" — generative flow-field backdrop (AmbientFlow.tsx).
+   Opaque bg-0 with faint drifting ink; sits behind RF, fades in/out by
+   node-count via inline opacity. */
+.ambient-flow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-slower) var(--ease-std);
 }
 /* Pane cursor: RF sets `cursor: pointer` (finger) whenever selection-on-drag
  * is enabled, which feels wrong for an editor canvas. Force the default arrow

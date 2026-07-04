@@ -57,6 +57,8 @@
   --radius-lg: 14px;
 
   --grid-line: #201d19;   /* node-canvas dot grid — warm + faint, less "template" */
+  --minimap-mask: rgba(0, 0, 0, 0.5);       /* dimmed surround outside viewport */
+  --minimap-node-stroke: rgba(0, 0, 0, 0.45);
   color-scheme: dark;
 }
 
@@ -100,6 +102,8 @@
   --shadow-4: 0 14px 36px rgba(20, 22, 30, 0.16);
 
   --grid-line: #d5d8e0;
+  --minimap-mask: rgba(20, 22, 30, 0.13);   /* subtle darken, not a light wash */
+  --minimap-node-stroke: rgba(255, 255, 255, 0.6);
 }
 
 /* Node-canvas dot grid follows the theme (React Flow renders the dots inline). */
@@ -1052,19 +1056,52 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   opacity: 0.85;
   filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 60%, transparent));
 }
-.react-flow__controls,
-.react-flow__minimap {
-  background: var(--bg-1);
+/* ─── Zoom controls — themed rounded button group ──────────────────────── */
+.react-flow__controls {
+  background: color-mix(in srgb, var(--bg-1) 88%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+  gap: 0;
 }
 .react-flow__controls-button {
-  background: var(--bg-1);
-  border-bottom: 1px solid var(--border);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
   color: var(--fg-1);
   fill: var(--fg-1);
+  width: 24px;
+  height: 24px;
+  transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std);
 }
+.react-flow__controls-button:last-child { border-bottom: none; }
 .react-flow__controls-button:hover {
-  background: var(--bg-2);
+  background: color-mix(in srgb, var(--accent) 14%, var(--bg-2));
+  color: var(--fg-0);
+  fill: var(--fg-0);
+}
+.react-flow__controls-button svg { fill: currentColor; }
+
+/* ─── Minimap — soft themed panel with theme-aware mask ─────────────────── */
+.react-flow__minimap {
+  background: color-mix(in srgb, var(--bg-1) 88%, transparent) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+}
+.react-flow__minimap-mask {
+  fill: var(--minimap-mask) !important;
+}
+.react-flow__minimap-node {
+  stroke: var(--minimap-node-stroke) !important;
+  rx: 2;
+  ry: 2;
 }
 
 /* ─── Palette ────────────────────────────────────────────────────────────── */

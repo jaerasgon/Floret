@@ -4,6 +4,7 @@ import {
   Settings as SettingsIcon,
   LayoutGrid,
   Waves,
+  Maximize2,
   Library as LibraryIcon,
   Boxes as NodesIcon,
   HelpCircle as HelpIcon,
@@ -13,6 +14,7 @@ import {
 import { useAppStore } from '../store';
 import { usePrefs } from '../prefs';
 import { useEditor } from '../../editor/editor-state';
+import { useFocusMode } from '../../editor/focus-store';
 import { autoLayoutPatch } from '../../editor/autoLayout';
 import { useLibraryUI } from '../libraryUI';
 import { FileMenu } from './FileMenu';
@@ -29,6 +31,10 @@ export function Toolbar() {
   const theme = usePrefs((s) => s.theme);
   const setPref = usePrefs((s) => s.set);
   const setNodes = useEditor((s) => s.setNodes);
+  // Focus mode features the first renderer's preview full-screen. Disabled when
+  // the patch has no renderer (nothing to present).
+  const firstRenderer = useEditor((s) => s.nodes.find((n) => n.data.defType === 'render/renderer'));
+  const enterFocus = useFocusMode((s) => s.enter);
   const libraryVisible = useLibraryUI((s) => s.visible);
   const toggleLibrary = useLibraryUI((s) => s.toggleVisible);
   const paletteVisible = usePrefs((s) => s.paletteVisible);
@@ -123,6 +129,16 @@ export function Toolbar() {
           aria-label="Refresh"
         >
           <RotateCcw size={13} strokeWidth={1.8} />
+        </button>
+      </Tooltip>
+      <Tooltip label={firstRenderer ? 'Focus mode — present the art full-screen' : 'Add a Renderer node to use focus mode'}>
+        <button
+          className="tb-icon-btn"
+          onClick={() => firstRenderer && enterFocus(firstRenderer.id)}
+          disabled={!firstRenderer}
+          aria-label="Enter focus mode"
+        >
+          <Maximize2 size={14} strokeWidth={1.6} />
         </button>
       </Tooltip>
       <Tooltip label="Settings">

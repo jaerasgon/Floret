@@ -17,6 +17,8 @@ import { useGlobalShortcuts } from './shortcuts';
 import { useEditor } from '../editor/editor-state';
 import { useLibraryUI } from './libraryUI';
 import { usePrefs } from './prefs';
+import { useFocusMode } from '../editor/focus-store';
+import { Minimize2 } from 'lucide-react';
 
 export function App() {
   useGlobalShortcuts();
@@ -61,6 +63,40 @@ export function App() {
   useEffect(() => {
     if (!helpVisible) useDock.getState().removePanel('help');
   }, [helpVisible]);
+
+  // ── Focus (Presentation) mode ──────────────────────────────────────────
+  // Promotes one preview to full-screen art + fades the chrome. Driven by CSS:
+  // set body[data-focus] and tag the featured preview's dock body so the
+  // .focus-featured rule fixes it to the viewport. Esc exits. If the featured
+  // renderer disappears (node deleted), drop out of focus.
+  const focusOn = useFocusMode((s) => s.on);
+  const focusFeatured = useFocusMode((s) => s.featured);
+  const exitFocus = useFocusMode((s) => s.exit);
+  useEffect(() => {
+    const stillExists = focusFeatured && renderers.some((n) => n.id === focusFeatured);
+    if (!focusOn || !stillExists) {
+      document.body.removeAttribute('data-focus');
+      document.querySelectorAll('.focus-featured').forEach((el) => el.classList.remove('focus-featured'));
+      if (focusOn && !stillExists) exitFocus();
+      return;
+    }
+    document.body.setAttribute('data-focus', '1');
+    // Re-tag on layout changes (the portal body may be re-created).
+    const tag = () => {
+      document.querySelectorAll('.focus-featured').forEach((el) => el.classList.remove('focus-featured'));
+      document
+        .querySelector(`.dock-panel-body[data-panel-id="${CSS.escape(focusFeatured!)}"]`)
+        ?.classList.add('focus-featured');
+    };
+    tag();
+    const raf = requestAnimationFrame(tag); // catch a just-mounted body
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') exitFocus(); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [focusOn, focusFeatured, renderers, exitFocus]);
 
   // Stop the BROWSER from page-zooming on trackpad pinch / ⌘-scroll anywhere
   // in the app. Pinch = `ctrl+wheel` (Chrome/Electron) or the WebKit
@@ -120,6 +156,17 @@ export function App() {
       <StatusBar />
       <PortValueEditor />
       <WelcomeModal />
+      {focusOn && (
+        <button
+          className="focus-exit-btn"
+          onClick={exitFocus}
+          title="Exit focus mode (Esc)"
+          aria-label="Exit focus mode"
+        >
+          <Minimize2 size={15} strokeWidth={1.7} />
+          <span>Exit focus</span>
+        </button>
+      )}
     </div>
   );
 }

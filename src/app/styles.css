@@ -1075,6 +1075,51 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   opacity: 0.85;
   filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 60%, transparent));
 }
+/* ─── Focus (Presentation) mode ────────────────────────────────────────────
+   The featured preview's dock body is fixed to the viewport (overlaying all
+   other chrome); its panel header is hidden so the frame is pure art. The
+   toolbar/statusbar fade under it. Esc or the floating button exits. */
+.dock-panel-body.focus-featured {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 500 !important;
+  border-radius: 0 !important;
+  background: var(--bg-0);
+  animation: fade-in var(--dur-slow) var(--ease-out);
+}
+.dock-panel-body.focus-featured .panel-header { display: none; }
+.dock-panel-body.focus-featured .panel-resize-grip { display: none; }
+body[data-focus='1'] .toolbar,
+body[data-focus='1'] .statusbar {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-std);
+}
+.focus-exit-btn {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 12px;
+  color: var(--fg-1);
+  background: color-mix(in srgb, var(--bg-1) 82%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-3);
+  opacity: 0.25;
+  transition: opacity var(--dur-base) var(--ease-std), color var(--dur-fast) var(--ease-std);
+}
+.focus-exit-btn:hover {
+  opacity: 1;
+  color: var(--fg-0);
+}
+
 /* ─── Zoom controls — themed rounded button group ──────────────────────── */
 .react-flow__controls {
   background: color-mix(in srgb, var(--bg-1) 88%, transparent);

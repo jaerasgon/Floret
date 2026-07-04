@@ -58,7 +58,9 @@ function DockedSlot({ id, children }: { id: string; children: ReactNode }) {
     setSlot(document.querySelector<HTMLElement>(`[data-dock-slot="${CSS.escape(id)}"]`));
   }, [id, root]);
   if (!slot) return null;
-  return createPortal(<div className="dock-panel-body">{children}</div>, slot);
+  // data-panel-id lets Focus mode find and promote a specific preview's body
+  // to full-screen (see focus-store + the .focus-featured CSS).
+  return createPortal(<div className="dock-panel-body" data-panel-id={id}>{children}</div>, slot);
 }
 
 /** A detached, draggable, resizable card for a floating panel. */

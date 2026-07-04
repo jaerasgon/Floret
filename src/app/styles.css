@@ -1314,14 +1314,14 @@ body[data-wire-flow='1'] .react-flow__edge-path {
 .node-rows {
   display: flex;
   flex-direction: column;
-  padding: 5px 0;
+  padding: 4px 0;
 }
 .node-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0 11px;
-  height: 20px;
+  padding: 0 10px;
+  height: 18px;
   position: relative;
 }
 .node-row-label {
@@ -1399,18 +1399,27 @@ body[data-wire-flow='1'] .react-flow__edge-path {
 .node-inline-input {
   font-family: var(--font-mono);
   font-size: 10px;
-  padding: 1px 5px;
-  height: 14px;
+  padding: 1px 6px;
+  height: 15px;
   background: var(--bg-1);
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: 5px;
   color: var(--fg-0);
   width: 60px;
   min-width: 0;
+  transition:
+    border-color var(--dur-fast) var(--ease-std),
+    box-shadow var(--dur-fast) var(--ease-std),
+    background var(--dur-fast) var(--ease-std);
+}
+.node-inline-input:hover {
+  border-color: color-mix(in srgb, var(--border) 45%, var(--fg-2));
 }
 .node-inline-input:focus {
-  outline: 1px solid var(--accent);
-  outline-offset: -1px;
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 70%, var(--border));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 28%, transparent);
+  background: var(--bg-0);
 }
 
 /* Two-field vec2 editor — x / y scrub inputs side by side. */
@@ -1441,6 +1450,9 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   padding: 0;
   cursor: pointer;
   width: 28px;
+  height: 15px;
+  border-radius: 5px;
+  overflow: hidden;
 }
 /* `hex` text input — wide enough for `#rrggbb` (7 chars in mono) with
  * a tiny bit of breathing room, and uppercase so typed `ff0000` reads
@@ -1450,15 +1462,78 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   width: 70px;
   text-transform: lowercase;
 }
+/* Custom-styled select — native chevron removed, replaced with a themed
+   caret so dropdowns match the other inline controls instead of falling
+   back to the OS widget. */
 .node-inline-select {
-  padding: 0 4px;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  height: 15px;
+  padding: 0 15px 0 6px;
   cursor: pointer;
+  background-color: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--fg-0);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath d='M1 2.5L4 5.5L7 2.5' stroke='%238a857b' stroke-width='1.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  transition:
+    border-color var(--dur-fast) var(--ease-std),
+    box-shadow var(--dur-fast) var(--ease-std);
 }
+.node-inline-select:hover {
+  border-color: color-mix(in srgb, var(--border) 45%, var(--fg-2));
+}
+.node-inline-select:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 70%, var(--border));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+/* Custom checkbox — the native control never matched the theme. Draw a
+   rounded box that fills with the accent + a drawn tick when checked. */
 .node-inline-checkbox {
-  width: 14px;
-  height: 14px;
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  width: 15px;
+  height: 15px;
   margin: 0;
   cursor: pointer;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  transition:
+    background var(--dur-fast) var(--ease-std),
+    border-color var(--dur-fast) var(--ease-std),
+    box-shadow var(--dur-fast) var(--ease-std);
+}
+.node-inline-checkbox:hover {
+  border-color: color-mix(in srgb, var(--border) 45%, var(--fg-2));
+}
+.node-inline-checkbox:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.node-inline-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 4.5px;
+  top: 1.5px;
+  width: 3px;
+  height: 7px;
+  /* Fixed dark tick — reads on both the amber (dark theme) and lime (light
+     theme) accent fills; a theme var would invert wrong on one of them. */
+  border: solid #14120f;
+  border-width: 0 1.6px 1.6px 0;
+  transform: rotate(45deg);
+}
+.node-inline-checkbox:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 32%, transparent);
 }
 
 .node[data-selected='1'] {
@@ -1474,7 +1549,7 @@ body[data-wire-flow='1'] .react-flow__edge-path {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 5px 11px;
+  padding: 4px 10px;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
   background: var(--bg-3);
   border-top-left-radius: 9px;
@@ -2975,15 +3050,19 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
   align-items: center;
   gap: 6px;
 }
+/* Arity stepper (− N +) — segmented pill with divider seams between the
+   buttons and the count. Shared by group/palette slots and variadic math. */
 .group-slot-controls {
   display: inline-flex;
-  align-items: center;
-  gap: 2px;
+  align-items: stretch;
+  gap: 0;
   margin-left: 4px;
-  background: rgba(255, 255, 255, 0.04);
+  height: 16px;
+  background: var(--bg-1);
   border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 1px 2px;
+  border-radius: var(--radius-sm);
+  padding: 0;
+  overflow: hidden;
 }
 .group-slot-btn {
   appearance: none;
@@ -2993,15 +3072,20 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
   font: inherit;
   font-size: 12px;
   line-height: 1;
-  width: 16px;
-  height: 16px;
-  border-radius: 2px;
+  width: 15px;
+  height: 100%;
   cursor: pointer;
   padding: 0;
+  transition:
+    background var(--dur-fast) var(--ease-std),
+    color var(--dur-fast) var(--ease-std);
 }
 .group-slot-btn:hover:not(:disabled) {
-  background: rgba(124, 182, 255, 0.25);
-  color: #fff;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--fg-0);
+}
+.group-slot-btn:active:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 34%, transparent);
 }
 .group-slot-btn:disabled {
   color: var(--fg-2);
@@ -3011,9 +3095,13 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
 .group-slot-count {
   font-family: var(--font-mono);
   font-size: 10px;
-  color: var(--fg-1);
-  min-width: 14px;
+  color: var(--fg-0);
+  min-width: 16px;
   text-align: center;
+  align-self: center;
+  line-height: 14px;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
 }
 .group-slot-label {
   font-family: var(--font-mono);

@@ -4,7 +4,6 @@ import {
   Settings as SettingsIcon,
   LayoutGrid,
   Waves,
-  Sparkles,
   Library as LibraryIcon,
   Boxes as NodesIcon,
   HelpCircle as HelpIcon,
@@ -27,7 +26,6 @@ export function Toolbar() {
   // stateful values, memo caches). The patch itself isn't reloaded.
   const refresh = useAppStore((s) => s.refresh);
   const wireFlow = usePrefs((s) => s.wireFlowAnimation);
-  const proMode = usePrefs((s) => s.proMode);
   const theme = usePrefs((s) => s.theme);
   const setPref = usePrefs((s) => s.set);
   const setNodes = useEditor((s) => s.setNodes);
@@ -48,14 +46,6 @@ export function Toolbar() {
     if (wireFlow) document.body.setAttribute('data-wire-flow', '1');
     else document.body.removeAttribute('data-wire-flow');
   }, [wireFlow]);
-
-  // Same pattern for Pro mode — collapses every node down to title +
-  // pins (no row contents, no type subtitle), and lets the category
-  // gradient fill the whole node.
-  useEffect(() => {
-    if (proMode) document.body.setAttribute('data-pro-mode', '1');
-    else document.body.removeAttribute('data-pro-mode');
-  }, [proMode]);
 
   // Apply the colour theme on <html> so every var() re-skins (and body-portaled
   // panels inherit it too).
@@ -133,19 +123,6 @@ export function Toolbar() {
           aria-label="Refresh"
         >
           <RotateCcw size={13} strokeWidth={1.8} />
-        </button>
-      </Tooltip>
-      <Tooltip
-        label={proMode ? 'Exit Pro mode' : 'Enter Pro mode'}
-      >
-        <button
-          className={`toolbar-pro-btn tb-pill${proMode ? ' active' : ''}`}
-          onClick={() => setPref('proMode', !proMode)}
-          aria-pressed={proMode}
-          aria-label="Toggle Pro mode"
-        >
-          <Sparkles size={12} strokeWidth={1.6} />
-          <span>Pro</span>
         </button>
       </Tooltip>
       <Tooltip label="Settings">

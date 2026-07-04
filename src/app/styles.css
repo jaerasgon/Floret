@@ -34,9 +34,13 @@
   /* Motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-std: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Gentle overshoot for "settle" moments — node drop, panel mount, pop-ins.
+     A little life without feeling springy/toy-like. */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
   --dur-fast: 120ms;
   --dur-base: 180ms;
   --dur-slow: 260ms;
+  --dur-slower: 380ms;
 
   /* Elevation */
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
@@ -2102,167 +2106,6 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
       var(--bg-3) 62%);
 }
 
-/* ─── Pro mode ──────────────────────────────────────────────────────────
-   `body[data-pro-mode='1']` collapses every node down to its title +
-   pins. Rationale: advanced users who already know their patches by
-   shape don't need to read row labels or scrub inline editors —
-   they want the smallest possible footprint on the canvas.
-
-   What stays visible:
-     - The header (title + slot badge + warning chip)
-     - Every Handle (pins on left/right edges)
-
-   What hides:
-     - All row content except handles (labels, inline editors, value chips)
-     - The `node-type` subtitle in the header
-     - The header's separator line
-
-   And the category gradient extends to the bottom of the node, so the
-   whole card reads as a single coloured pill.
-
-   Active-state styling on the Pro button itself lives at the bottom.
-*/
-
-body[data-pro-mode='1'] .node {
-  position: relative;
-}
-body[data-pro-mode='1'] .node-rows {
-  /* Tighten vertical rhythm — rows just need to fit the pin glyph.
-   * The label sits as an absolute overlay (see below), so the body
-   * height is the only thing setting node height. */
-  padding: 4px 0;
-}
-body[data-pro-mode='1'] .node-row {
-  height: 14px;
-  padding: 0;
-  gap: 0;
-}
-/* Hide everything inside a row EXCEPT the React Flow handles, which
- * are what render the visible pins. The handles position absolutely
- * on the row's left/right edge so they stay put. */
-body[data-pro-mode='1'] .node-row > :not(.react-flow__handle) {
-  display: none !important;
-}
-/* Type subtitle ("spread/grid") — gone in pro mode. */
-body[data-pro-mode='1'] .node-type {
-  display: none;
-}
-/* Header → centred overlay. The header lifts out of normal flow so the
- * node's height is dictated by the (already-compact) rows. The label
- * sits vertically centred between the pins, with any slot controls
- * (group/palette +/−) stacked underneath it.
- *
- * z-index keeps the header above the body so clicks on the +/− buttons
- * don't get eaten by node-rows below. The header itself stays
- * pointer-events: none (so dragging the node still works from the
- * label area); only its concrete children re-enable events. */
-body[data-pro-mode='1'] .node-header {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding: 0 14px;
-  border: none !important;
-  background: transparent !important;
-  pointer-events: none;
-  z-index: 2;
-}
-body[data-pro-mode='1'] .node-header > * {
-  pointer-events: auto;
-}
-/* +/− slot controls float as an inline cluster directly under the label,
- * not stretched across the header width. */
-body[data-pro-mode='1'] .group-slot-controls {
-  pointer-events: auto;
-}
-body[data-pro-mode='1'] .group-slot-controls,
-body[data-pro-mode='1'] .group-slot-btn {
-  /* Bigger, easier-to-hit buttons in Pro mode since the rest of the
-   * header chrome is gone. */
-  font-size: 13px;
-}
-body[data-pro-mode='1'] .group-slot-btn {
-  padding: 0 6px;
-}
-/* GroupNode-style nodes in Pro mode get a 3-band layout: label on top,
- * pin rows in the middle, slot chrome on the bottom. Without this,
- * the header overlay centres both label and chrome together and the
- * chrome ends up at the same Y as a pin row — wires into that pin
- * visually cross the +/− buttons. */
-body[data-pro-mode='1'] .node.node-group .node-header {
-  justify-content: space-between;
-  padding: 2px 14px;
-}
-body[data-pro-mode='1'] .node.node-group .node-rows {
-  /* Minimum clearance above (label) and below (chrome) — pin row
-   * centres sit ~1px outside the label/chrome boxes. */
-  padding: 18px 0 13px;
-}
-body[data-pro-mode='1'] .node-label {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.4px;
-  line-height: 1.1;
-}
-
-/* For input-less GenericNode-based nodes (Number, String, …), replace
- * the title with the editable value in Pro mode. Read: a constant
- * node should display its constant, not its type name — the category
- * tint behind it is identification enough.
- *
- * Selector: a `.node` with no left-side input handles AND with an
- * editable inline input somewhere — without the second clause, source
- * nodes that have neither (Time, Now, etc.) would render blank because
- * we'd hide their label with nothing to put in its place. */
-body[data-pro-mode='1'] .node:not(:has(.node-row-handle-left)):has(.node-inline-input) .node-header .node-label {
-  display: none;
-}
-body[data-pro-mode='1'] .node:not(:has(.node-row-handle-left)) .node-row {
-  height: 18px;
-  padding: 2px 10px;
-  gap: 6px;
-  justify-content: center;
-}
-body[data-pro-mode='1'] .node:not(:has(.node-row-handle-left)) .node-row > .node-inline-input {
-  display: inline-block !important;
-  flex: 0 1 auto;
-  font-size: 12px;
-  height: 16px;
-  min-width: 48px;
-  text-align: center;
-}
-/* Math nodes override the label size at higher specificity, so Pro mode
- * needs to bump theirs explicitly. Same selector shape (data-math +
- * data-category) so we beat the existing math rule. Sized to match
- * other Pro-mode labels — single-glyph math symbols get a touch more
- * weight so they read at the same visual size as alpha labels. */
-body[data-pro-mode='1'] .node[data-math='1'] .node-label,
-body[data-pro-mode='1'] .node[data-math='1'][data-category] .node-label {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0;
-}
-/* Extend the category gradient over the whole node body. */
-body[data-pro-mode='1'] .node[data-category] {
-  background:
-    linear-gradient(to right,
-      color-mix(in srgb, var(--cat-accent) 22%, var(--bg-3)),
-      var(--bg-3) 70%);
-}
-/* Math nodes already had a neutral header — keep them as-is in Pro
- * mode (no gradient flood) so they stay readable as utility chips. */
-body[data-pro-mode='1'] .node[data-math='1'] {
-  background: var(--bg-3);
-}
-
-/* Pro button — visually distinguish the active state. */
-.toolbar-pro-btn.active {
-  color: var(--accent);
-  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
-}
 
 /* ─── Spread length badge on wires ──────────────────────────────────────── */
 
@@ -3933,9 +3776,8 @@ body[data-pro-mode='1'] .node[data-math='1'] {
 }
 
 /* ─── Toolbar icon buttons ────────────────────────────────────────────────
- * Three flavors:
+ * Two flavors:
  *   .tb-icon-btn  → square icon-only button
- *   .tb-pill      → icon + label (Pro mode)
  *   .toolbar-run-btn → primary action with icon + label (Play/Pause) */
 
 .toolbar .tb-icon-btn {
@@ -3956,15 +3798,13 @@ body[data-pro-mode='1'] .node[data-math='1'] {
   background: color-mix(in srgb, var(--accent) 8%, var(--bg-2));
 }
 
-.toolbar .toolbar-run-btn,
-.toolbar .tb-pill {
+.toolbar .toolbar-run-btn {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   padding: 3px 9px;
 }
-.toolbar .toolbar-run-btn svg,
-.toolbar .tb-pill svg {
+.toolbar .toolbar-run-btn svg {
   flex-shrink: 0;
 }
 .toolbar .toolbar-run-btn.running {

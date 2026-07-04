@@ -19,8 +19,6 @@ export interface Prefs {
   wireFlowAnimation: boolean;
   /** Region frames auto-grow when a child is dragged near the edge. */
   autoGrowRegions: boolean;
-  /** Pro mode — collapses nodes to title + pins only. */
-  proMode: boolean;
   /** Help panel auto-tracks the currently selected node. When off, the
    *  panel is "pinned" to whatever was last picked via the search box. */
   autoJumpHelp: boolean;
@@ -38,7 +36,6 @@ const LS_KEY = 'floret.prefs.v1';
 const DEFAULTS: Prefs = {
   wireFlowAnimation: true,
   autoGrowRegions: true,
-  proMode: false,
   autoJumpHelp: true,
   paletteVisible: true,
   helpVisible: true,
@@ -72,7 +69,6 @@ export const prefsSnapshot: Prefs = { ...usePrefs.getState() };
 usePrefs.subscribe((s) => {
   prefsSnapshot.wireFlowAnimation = s.wireFlowAnimation;
   prefsSnapshot.autoGrowRegions = s.autoGrowRegions;
-  prefsSnapshot.proMode = s.proMode;
   prefsSnapshot.autoJumpHelp = s.autoJumpHelp;
   prefsSnapshot.paletteVisible = s.paletteVisible;
   prefsSnapshot.helpVisible = s.helpVisible;
@@ -81,7 +77,6 @@ usePrefs.subscribe((s) => {
   saveJSON(LS_KEY, {
     wireFlowAnimation: s.wireFlowAnimation,
     autoGrowRegions: s.autoGrowRegions,
-    proMode: s.proMode,
     autoJumpHelp: s.autoJumpHelp,
     paletteVisible: s.paletteVisible,
     helpVisible: s.helpVisible,

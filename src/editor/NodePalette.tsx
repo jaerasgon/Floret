@@ -1,4 +1,5 @@
 import { useMemo, useState, useSyncExternalStore } from 'react';
+import { SearchX } from 'lucide-react';
 import { nodeRegistry } from '../nodes/registry';
 import type { NodeDef } from '../nodes/types';
 import { Panel } from './panel/Panel';
@@ -149,7 +150,10 @@ function PaletteBody() {
           </div>
         )}
         {filtered.length === 0 ? (
-          <div className="palette-empty">no nodes match</div>
+          <div className="palette-empty">
+            <SearchX className="palette-empty-icon" size={22} strokeWidth={1.4} />
+            <span>No nodes match</span>
+          </div>
         ) : (
           filtered.map(([cat, defs]) => {
             const isOpen = q ? true : openCats.has(cat);

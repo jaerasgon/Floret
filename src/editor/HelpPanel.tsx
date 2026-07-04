@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link2, Link2Off } from 'lucide-react';
+import { Link2, Link2Off, MousePointerClick } from 'lucide-react';
 import { useEditor } from './editor-state';
 import { nodeRegistry } from '../nodes/registry';
 import { getResolvedInputs } from '../nodes/types';
@@ -172,9 +172,11 @@ function HelpContent({ defType }: { defType: string | null }) {
   if (!data) {
     return (
       <div className="help-panel-empty">
-        <p>Select a node on the canvas, or search above to look one up.</p>
+        <MousePointerClick className="help-panel-empty-icon" size={26} strokeWidth={1.4} />
+        <p className="help-panel-empty-lede">Select a node to read its docs</p>
         <p className="help-panel-hint">
-          Tip: toggle the link icon in the header to pin help to a specific node.
+          Pick any node on the canvas — or search above — and its inputs,
+          outputs, and description show up here.
         </p>
       </div>
     );

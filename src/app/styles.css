@@ -3905,6 +3905,24 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
  *   .tb-icon-btn  → square icon-only button
  *   .toolbar-run-btn → primary action with icon + label (Play/Pause) */
 
+/* File actions (New / Open / Save …) — quiet ghost buttons so they read as a
+   menu group under the brand, not five competing bordered boxes. */
+.toolbar .tb-text-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--fg-1);
+  padding: 3px 8px;
+  font-size: 12px;
+}
+.toolbar .tb-text-btn:hover:not(:disabled) {
+  background: var(--bg-2);
+  border-color: transparent;
+  color: var(--fg-0);
+}
+.toolbar .tb-text-btn:active:not(:disabled) {
+  background: var(--bg-3);
+}
+
 .toolbar .tb-icon-btn {
   display: inline-flex;
   align-items: center;

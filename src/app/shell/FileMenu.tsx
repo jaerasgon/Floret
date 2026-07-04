@@ -167,11 +167,11 @@ export function FileMenu() {
 
   return (
     <>
-      <button onClick={onNew} title="New empty patch">New</button>
-      <button onClick={onOpen} title="Open a .flora file">Open</button>
-      <button onClick={onSave} title="Save (Ctrl+S)">Save</button>
-      <button onClick={onSaveAs} title="Save under a new name">Save As</button>
-      <button onClick={onShare} title="Copy a shareable link to this patch">Share</button>
+      <button className="tb-text-btn" onClick={onNew} title="New empty patch">New</button>
+      <button className="tb-text-btn" onClick={onOpen} title="Open a .flora file">Open</button>
+      <button className="tb-text-btn" onClick={onSave} title="Save (Ctrl+S)">Save</button>
+      <button className="tb-text-btn" onClick={onSaveAs} title="Save under a new name">Save As</button>
+      <button className="tb-text-btn" onClick={onShare} title="Copy a shareable link to this patch">Share</button>
       <span style={{ color: 'var(--fg-2)', fontFamily: 'var(--font-mono)', marginLeft: 8 }}>
         {fileName}
       </span>

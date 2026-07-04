@@ -1645,13 +1645,18 @@ body[data-focus='1'] .statusbar {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 32%, transparent);
 }
 
+/* Selection = the node's own 1px border recoloured to accent + a soft glow.
+   No extra hard ring (that read as a ~2px double stroke). RF's own default
+   selection box-shadow is suppressed below so it doesn't stack on top. */
 .node[data-selected='1'] {
   border-color: var(--accent);
   box-shadow:
-    0 0 0 1px var(--accent),
-    0 0 12px color-mix(in srgb, var(--cat-accent, var(--accent)) 35%, transparent),
+    0 0 10px color-mix(in srgb, var(--cat-accent, var(--accent)) 30%, transparent),
     0 2px 6px rgba(0, 0, 0, 0.4);
 }
+/* Kill React Flow's built-in selection outline on the node wrapper — our
+   per-node-type [data-selected] rules own the selected look entirely. */
+.react-flow__node.selected { box-shadow: none !important; }
 
 .node-header {
   display: flex;

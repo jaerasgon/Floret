@@ -197,13 +197,14 @@ export const useDock = create<DockState>((set, get) => {
 export function seedDefaultLayout(): void {
   const s = useDock.getState();
   if (s.root || s.floating.length) return;
-  // row[ palette(.18) | canvas(.57) | help(.25) ]. Previews and the
-  // library dock themselves dynamically when they mount.
+  // row[ palette(.14) | canvas(.86) ]. The canvas is the star — Help starts
+  // hidden (prefs default) and previews/library dock themselves dynamically
+  // when they mount, so the canvas keeps a clear majority even after a
+  // preview splits off the right edge.
   const root = split('row', [
     group(['palette']),
     group(['canvas']),
-    group(['help']),
-  ], [0.18, 0.57, 0.25]);
+  ], [0.14, 0.86]);
   useDock.setState({ root });
   saveJSON(LS_KEY, { root, floating: [], hidden: [] });
 }

@@ -104,7 +104,7 @@ export function StatusBar() {
             )}
           </>
         ) : (
-          <span className="status-clean">all clear</span>
+          <span className="status-clean"><span className="status-clean-dot" aria-hidden="true" />clear</span>
         )}
       </div>
     </div>

@@ -65,36 +65,40 @@ export function Toolbar() {
       <span className="toolbar-divider" />
       <FileMenu />
       <span className="toolbar-divider" />
-      <Tooltip label={libraryVisible ? 'Hide library' : 'Show library'}>
-        <button
-          className={`tb-icon-btn tb-toggle${libraryVisible ? ' active' : ''}`}
-          onClick={toggleLibrary}
-          aria-pressed={libraryVisible}
-          aria-label="Toggle library"
-        >
-          <LibraryIcon size={14} strokeWidth={1.6} />
-        </button>
-      </Tooltip>
-      <Tooltip label={paletteVisible ? 'Hide nodes' : 'Show nodes'}>
-        <button
-          className={`tb-icon-btn tb-toggle${paletteVisible ? ' active' : ''}`}
-          onClick={() => setPref('paletteVisible', !paletteVisible)}
-          aria-pressed={paletteVisible}
-          aria-label="Toggle nodes panel"
-        >
-          <NodesIcon size={14} strokeWidth={1.6} />
-        </button>
-      </Tooltip>
-      <Tooltip label={helpVisible ? 'Hide help' : 'Show help'}>
-        <button
-          className={`tb-icon-btn tb-toggle${helpVisible ? ' active' : ''}`}
-          onClick={() => setPref('helpVisible', !helpVisible)}
-          aria-pressed={helpVisible}
-          aria-label="Toggle help panel"
-        >
-          <HelpIcon size={14} strokeWidth={1.6} />
-        </button>
-      </Tooltip>
+      {/* View toggles grouped as one segmented cluster — they're a family
+          (which panels are open), not three unrelated buttons. */}
+      <div className="tb-seg" role="group" aria-label="Panels">
+        <Tooltip label={libraryVisible ? 'Hide library' : 'Show library'}>
+          <button
+            className={`tb-seg-btn${libraryVisible ? ' active' : ''}`}
+            onClick={toggleLibrary}
+            aria-pressed={libraryVisible}
+            aria-label="Toggle library"
+          >
+            <LibraryIcon size={14} strokeWidth={1.6} />
+          </button>
+        </Tooltip>
+        <Tooltip label={paletteVisible ? 'Hide nodes' : 'Show nodes'}>
+          <button
+            className={`tb-seg-btn${paletteVisible ? ' active' : ''}`}
+            onClick={() => setPref('paletteVisible', !paletteVisible)}
+            aria-pressed={paletteVisible}
+            aria-label="Toggle nodes panel"
+          >
+            <NodesIcon size={14} strokeWidth={1.6} />
+          </button>
+        </Tooltip>
+        <Tooltip label={helpVisible ? 'Hide help' : 'Show help'}>
+          <button
+            className={`tb-seg-btn${helpVisible ? ' active' : ''}`}
+            onClick={() => setPref('helpVisible', !helpVisible)}
+            aria-pressed={helpVisible}
+            aria-label="Toggle help panel"
+          >
+            <HelpIcon size={14} strokeWidth={1.6} />
+          </button>
+        </Tooltip>
+      </div>
       <Tooltip label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}>
         <button
           className="tb-icon-btn"

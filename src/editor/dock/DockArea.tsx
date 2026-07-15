@@ -88,9 +88,14 @@ function GroupView({ node }: { node: DockGroup }) {
   // A group with a single panel reads as a plain header that fills the width;
   // tabs only appear once a second panel is docked onto it.
   const single = node.panels.length === 1;
+  // The canvas alone in its group gets NO tab bar at all — it's the work
+  // surface, not a sibling panel, and it's pinned (never dragged/closed) so
+  // the bar was pure chrome. If another panel is dropped into the group the
+  // bar reappears automatically (single flips false).
+  const chromeless = single && node.panels[0] === 'canvas';
   return (
     <div className="dock-group" data-group-id={node.id}>
-      <div className={`dock-tabbar${single ? ' dock-tabbar-single' : ''}`}>
+      {!chromeless && <div className={`dock-tabbar${single ? ' dock-tabbar-single' : ''}`}>
         {node.panels.map((pid, i) => {
           const m = getDockMeta(pid);
           const active = i === node.active;
@@ -123,7 +128,7 @@ function GroupView({ node }: { node: DockGroup }) {
             </div>
           );
         })}
-      </div>
+      </div>}
       <div className="dock-group-body">
         {node.panels.map((pid, i) => (
           <div

@@ -633,11 +633,13 @@ input:focus, select:focus, textarea:focus {
   border-radius: 6px;
   overflow: hidden;
 }
+/* Panel tab bars are furniture, not siblings of the canvas — small, dim,
+   hairline-bordered. (The canvas group renders no bar at all.) */
 .dock-tabbar {
   display: flex;
   flex-shrink: 0;
   background: var(--bg-0);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -650,18 +652,18 @@ input:focus, select:focus, textarea:focus {
   flex-shrink: 0;
   background: transparent;
   border: 0;
-  border-right: 1px solid var(--border);
+  border-right: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
   color: var(--fg-2);
   font: inherit;
-  font-size: 11px;
-  padding: 5px 10px;
+  font-size: 10.5px;
+  padding: 4px 10px;
   cursor: pointer;
   user-select: none;
   transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std);
 }
 .dock-tab:hover { color: var(--fg-1); background: var(--bg-2); }
 .dock-tab.active {
-  color: var(--fg-0);
+  color: var(--fg-1);
   background: var(--bg-1);
   /* A top accent bar marks the active tab clearly — the bg shift alone is
      easy to miss against neighbouring tabs. */
@@ -1158,6 +1160,14 @@ body[data-focus='1'] .statusbar {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-2);
   overflow: hidden;
+  /* Smaller + recessive at rest — it's a reference, not a second canvas. */
+  width: 140px;
+  height: 95px;
+  opacity: 0.75;
+  transition: opacity var(--dur-fast) var(--ease-std);
+}
+.react-flow__minimap:hover {
+  opacity: 1;
 }
 .react-flow__minimap-mask {
   fill: var(--minimap-mask) !important;
@@ -1253,17 +1263,20 @@ body[data-focus='1'] .statusbar {
   margin-bottom: 2px;
 }
 
+/* Category titles are neutral text — the category colour lives in a small
+   dot (`.palette-group-dot`), not the label. A 25-colour rainbow of category
+   text made the whole list scream; a quiet dot says the same thing. */
 .palette-group-title {
   display: flex;
   align-items: center;
   gap: 6px;
   width: 100%;
   font-family: var(--font-display);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: var(--cat-accent, var(--accent-dim));
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  text-transform: capitalize;
+  color: var(--fg-1);
   background: transparent;
   border: 0;
   border-radius: 0;
@@ -1271,15 +1284,21 @@ body[data-focus='1'] .statusbar {
   cursor: pointer;
   user-select: none;
   text-align: left;
+  transition: color var(--dur-fast) var(--ease-std), background var(--dur-fast) var(--ease-std);
 }
 .palette-group-title:hover {
-  color: var(--cat-accent, var(--accent));
+  color: var(--fg-0);
   background: var(--bg-2);
-  filter: brightness(1.15);
 }
 .palette-group[data-open='1'] .palette-group-title {
-  color: var(--cat-accent, var(--accent));
-  filter: brightness(1.1);
+  color: var(--fg-0);
+}
+.palette-group-dot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cat-accent, var(--accent-dim));
 }
 .palette-group-chevron {
   font-size: 9px;
@@ -1292,6 +1311,12 @@ body[data-focus='1'] .statusbar {
   font-size: 9px;
   color: var(--fg-2);
   font-weight: normal;
+  /* Counts are noise until you're looking for them. */
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-std);
+}
+.palette-group:hover .palette-group-count {
+  opacity: 1;
 }
 
 .palette-item {
@@ -4000,6 +4025,41 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
   background: var(--bg-3);
 }
 
+/* Segmented cluster for the panel view-toggles — one pill, seam dividers,
+   the active segment lifts to bg-2 with an accent icon. */
+.toolbar .tb-seg {
+  display: inline-flex;
+  align-items: stretch;
+  height: 22px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.toolbar .tb-seg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  border-right: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  color: var(--fg-2);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std);
+}
+.toolbar .tb-seg-btn:last-child { border-right: 0; }
+.toolbar .tb-seg-btn:hover:not(:disabled) {
+  color: var(--fg-0);
+  background: var(--bg-3);
+}
+.toolbar .tb-seg-btn.active {
+  color: var(--accent-dim);
+  background: var(--bg-3);
+}
+
 .toolbar .tb-icon-btn {
   display: inline-flex;
   align-items: center;
@@ -4114,6 +4174,7 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
   font-weight: 600;
   letter-spacing: 0.6px;
   color: var(--fg-2);
+  opacity: 0.8;
 }
 .status-pill-value {
   font-family: var(--font-mono);
@@ -4163,12 +4224,23 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
 .status-warnings-label {
   letter-spacing: 0.3px;
 }
+/* Quiet status, not a headline — a small green dot + lowercase mono word. */
 .status-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.4px;
   color: var(--fg-2);
+  opacity: 0.8;
+}
+.status-clean-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6ddc8f;
 }
 
 /* ─── Help panel ───────────────────────────────────────────────────────── */

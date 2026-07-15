@@ -38,7 +38,9 @@ const DEFAULTS: Prefs = {
   autoGrowRegions: true,
   autoJumpHelp: true,
   paletteVisible: true,
-  helpVisible: true,
+  // Hidden by default — the canvas is the star of a fresh layout. The toolbar
+  // toggle brings Help back, and it auto-tracks selection exactly as before.
+  helpVisible: false,
   theme: 'dark',
 };
 

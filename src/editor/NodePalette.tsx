@@ -143,6 +143,7 @@ function PaletteBody() {
           <div className="palette-group" data-open={1} data-category="favorites">
             <div className="palette-group-title palette-group-title-static">
               <span className="palette-group-chevron">★</span>
+              <span className="palette-group-dot" aria-hidden="true" />
               <span>Favorites</span>
               <span className="palette-group-count">{favDefs.length}</span>
             </div>
@@ -170,6 +171,7 @@ function PaletteBody() {
                   aria-expanded={isOpen}
                 >
                   <span className="palette-group-chevron">{isOpen ? '▾' : '▸'}</span>
+                  <span className="palette-group-dot" aria-hidden="true" />
                   <span>{cat}</span>
                   <span className="palette-group-count">{defs.length}</span>
                 </button>

@@ -106,6 +106,11 @@ function ExportMenu({ driverRef, name }: {
   const open = menuPos !== null;
 
   const toggle = () => {
+    // Export only captures a frozen frame, so it's inert while running.
+    // We keep the button enabled (rather than `disabled`) so its tooltip —
+    // which explains *why* it's inert — still shows on hover; disabled
+    // elements don't emit hover events in most browsers.
+    if (running) return;
     if (open) { setMenuPos(null); return; }
     const r = btnRef.current?.getBoundingClientRect();
     if (!r) return;
@@ -145,10 +150,10 @@ function ExportMenu({ driverRef, name }: {
       <Tooltip label={running ? 'Pause to export the current frame' : 'Export the paused frame as PNG / SVG'}>
         <button
           ref={btnRef}
-          className={`toolbar-run-btn${saved ? ' running' : ''}`}
+          className={`toolbar-run-btn${saved ? ' running' : ''}${running ? ' is-inert' : ''}`}
           onClick={toggle}
           aria-label="Export"
-          disabled={running}
+          aria-disabled={running}
           onBlur={() => setTimeout(() => setMenuPos(null), 150)}
         >
           {saved ? <Check size={13} strokeWidth={2} /> : <Download size={13} strokeWidth={1.8} />}

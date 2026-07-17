@@ -16,6 +16,7 @@ import { nodeRegistry } from '../nodes/registry';
  *   - Ctrl/Cmd + X       → cut selected nodes
  *   - Ctrl/Cmd + V       → paste at viewport centre
  *   - Ctrl/Cmd + D       → duplicate selected nodes (single quick action)
+ *   - ?                  → open the keyboard-shortcuts reference modal
  *   - Tab                → open node search at the cursor / viewport centre
  *   - Q                  → open the favorites quick-menu at the cursor
  *   - F                  → fit-view to the selection (or to all nodes when
@@ -64,6 +65,14 @@ export function useGlobalShortcuts(): void {
       if (e.key === 'Tab' && !editable && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
         openNodeSearchAtCursor();
+        return;
+      }
+
+      // ? → open the keyboard-shortcuts reference (Shift+/ on most layouts).
+      // Toolbar owns the modal and listens for this event.
+      if (e.key === '?' && !editable && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('floret:show-shortcuts'));
         return;
       }
 

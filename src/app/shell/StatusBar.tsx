@@ -104,7 +104,9 @@ export function StatusBar() {
             )}
           </>
         ) : (
-          <span className="status-clean"><span className="status-clean-dot" aria-hidden="true" />clear</span>
+          <Tooltip label="No warnings — the patch is running clean" side="top">
+            <span className="status-clean"><span className="status-clean-dot" aria-hidden="true" />clear</span>
+          </Tooltip>
         )}
       </div>
     </div>

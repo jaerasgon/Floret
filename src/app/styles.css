@@ -8,7 +8,13 @@
   --border: #292724;
   --fg-0: #ece8e2;
   --fg-1: #a8a39a;
-  --fg-2: #6e6960;
+  /* Tertiary/dim text. Nudged up from #6e6960 so small secondary labels
+     clear WCAG AA (~4.5:1) on --bg-0 instead of reading as disabled. */
+  --fg-2: #837d72;
+  /* Quaternary — the dimmest tier, for disabled/inert glyphs. Was referenced
+     in several rules but never defined, so those declarations silently
+     inherited a brighter colour; define it a step below --fg-2. */
+  --fg-3: #5b564e;
   --accent: #f4c542;
   --accent-dim: #a8842a;
   --danger: #ff7a7a;
@@ -56,7 +62,7 @@
   --radius-md: 9px;
   --radius-lg: 14px;
 
-  --grid-line: #201d19;   /* node-canvas dot grid — warm + faint, less "template" */
+  --grid-line: #2b2823;   /* node-canvas dot grid — warm, faint but discernible */
   --minimap-mask: rgba(0, 0, 0, 0.5);       /* dimmed surround outside viewport */
   --minimap-node-stroke: rgba(0, 0, 0, 0.45);
   color-scheme: dark;
@@ -75,7 +81,8 @@
   --border: #d6d9e1;
   --fg-0: #1b1d24;   /* primary text */
   --fg-1: #565b66;   /* secondary */
-  --fg-2: #9096a2;   /* tertiary / dim */
+  --fg-2: #767c88;   /* tertiary / dim — darkened for AA contrast on light panels */
+  --fg-3: #a2a8b3;   /* quaternary — dimmest tier for disabled/inert glyphs */
   --accent: #b4cc00;      /* deep lime */
   --accent-dim: #7f9000;  /* olive — readable accent text / borders */
   --danger: #d64545;
@@ -101,7 +108,7 @@
   --shadow-3: 0 6px 18px rgba(20, 22, 30, 0.13);
   --shadow-4: 0 14px 36px rgba(20, 22, 30, 0.16);
 
-  --grid-line: #d5d8e0;
+  --grid-line: #c6cad4;
   --minimap-mask: rgba(20, 22, 30, 0.13);   /* subtle darken, not a light wash */
   --minimap-node-stroke: rgba(255, 255, 255, 0.6);
 }
@@ -287,13 +294,17 @@ input:focus, select:focus, textarea:focus {
 .toolbar-run-btn:hover {
   filter: brightness(1.15);
 }
-.toolbar-run-btn:disabled {
+/* `.is-inert` mirrors :disabled but keeps the element hoverable so its
+   explanatory tooltip still appears (disabled elements swallow hover). */
+.toolbar-run-btn:disabled,
+.toolbar-run-btn.is-inert {
   opacity: 0.4;
   color: var(--fg-3);
   border-color: var(--border);
   cursor: not-allowed;
 }
-.toolbar-run-btn:disabled:hover {
+.toolbar-run-btn:disabled:hover,
+.toolbar-run-btn.is-inert:hover {
   filter: none;
 }
 .toolbar-refresh-btn {
@@ -1030,12 +1041,12 @@ input:focus, select:focus, textarea:focus {
  * custom property (their default CSS rule for `.react-flow__edge-path`
  * loads after ours and would otherwise overwrite a plain `stroke:`).
  * SpreadEdge.tsx sets `--edge-stroke` on each path to the raw port
- * colour; we mix it with `--fg-2` so the canvas doesn't look like a
- * Christmas tree when many wires run. */
+ * colour; we blend it toward `--fg-1` so the canvas stays readable
+ * (not a Christmas tree) while keeping wires clearly visible. */
 .react-flow__edge-path {
-  --xy-edge-stroke: color-mix(in srgb, var(--edge-stroke, var(--fg-1)) 45%, var(--fg-2));
-  stroke-width: 1.3px;
-  stroke-opacity: 0.8;
+  --xy-edge-stroke: color-mix(in srgb, var(--edge-stroke, var(--fg-1)) 62%, var(--fg-1));
+  stroke-width: 1.6px;
+  stroke-opacity: 0.92;
   transition: stroke-width var(--dur-fast) var(--ease-std), stroke-opacity var(--dur-fast) var(--ease-std), opacity var(--dur-fast) var(--ease-std);
 }
 .react-flow__edge:hover .react-flow__edge-path {
@@ -1699,7 +1710,7 @@ body[data-focus='1'] .statusbar {
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: 0.2px;
-  font-size: 10.5px;
+  font-size: 11px;
 }
 
 /* The node-type subtitle (e.g. "io/bang") is redundant with the label and
@@ -1837,7 +1848,7 @@ body[data-focus='1'] .statusbar {
 
 .port-name {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 10.5px;
   color: var(--fg-1);
 }
 
@@ -3368,6 +3379,47 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
 .settings-toggle-row:hover .settings-toggle-label { color: #fff; }
 .settings-toggle-label {
   color: var(--fg-1);
+}
+/* Keyboard-shortcut reference — reuses the settings modal shell but is a
+   touch wider to fit two-column key/label rows. */
+.shortcuts-modal {
+  width: min(460px, calc(100vw - 32px));
+}
+.shortcuts-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.shortcuts-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 4px 0;
+}
+.shortcuts-keys {
+  flex: 0 0 auto;
+  min-width: 118px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+}
+.shortcuts-keys kbd {
+  font-family: var(--font-mono);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 11px;
+  color: var(--fg-0);
+  line-height: 1.5;
+}
+.shortcuts-label {
+  margin: 0;
+  color: var(--fg-1);
+  font-size: 12px;
+  line-height: 1.5;
 }
 .settings-reset {
   appearance: none;

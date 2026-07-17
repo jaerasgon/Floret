@@ -8,6 +8,7 @@ import {
   Library as LibraryIcon,
   Boxes as NodesIcon,
   HelpCircle as HelpIcon,
+  Keyboard as KeyboardIcon,
   Sun,
   Moon,
 } from 'lucide-react';
@@ -19,6 +20,7 @@ import { autoLayoutPatch } from '../../editor/autoLayout';
 import { useLibraryUI } from '../libraryUI';
 import { FileMenu } from './FileMenu';
 import { SettingsModal } from './SettingsModal';
+import { ShortcutsModal } from './ShortcutsModal';
 import { Tooltip } from './Tooltip';
 
 export function Toolbar() {
@@ -40,6 +42,15 @@ export function Toolbar() {
   const paletteVisible = usePrefs((s) => s.paletteVisible);
   const helpVisible = usePrefs((s) => s.helpVisible);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+
+  // `?` opens the shortcuts reference from anywhere (shortcuts.ts dispatches
+  // the event so it stays out of editable fields).
+  useEffect(() => {
+    const open = () => setShortcutsOpen(true);
+    window.addEventListener('floret:show-shortcuts', open);
+    return () => window.removeEventListener('floret:show-shortcuts', open);
+  }, []);
 
   const tidy = () => {
     const s = useEditor.getState();
@@ -99,16 +110,8 @@ export function Toolbar() {
           </button>
         </Tooltip>
       </div>
-      <Tooltip label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}>
-        <button
-          className="tb-icon-btn"
-          onClick={() => setPref('theme', theme === 'light' ? 'dark' : 'light')}
-          aria-label="Toggle colour theme"
-        >
-          {theme === 'light' ? <Moon size={14} strokeWidth={1.6} /> : <Sun size={14} strokeWidth={1.6} />}
-        </button>
-      </Tooltip>
       <div className="spacer" />
+      {/* Canvas view actions — arrange the graph, animate wires. */}
       <Tooltip label="Auto-arrange nodes" shortcut="⇧T">
         <button className="tb-icon-btn" onClick={tidy} aria-label="Tidy">
           <LayoutGrid size={14} strokeWidth={1.6} />
@@ -126,6 +129,8 @@ export function Toolbar() {
           <Waves size={14} strokeWidth={1.6} />
         </button>
       </Tooltip>
+      <span className="toolbar-divider" />
+      {/* Scene actions — restart the running scene, present full-screen. */}
       <Tooltip label="Restart scene — reboot runtime state (particles respawn, trails clear)">
         <button
           className="toolbar-refresh-btn tb-icon-btn"
@@ -145,6 +150,26 @@ export function Toolbar() {
           <Maximize2 size={14} strokeWidth={1.6} />
         </button>
       </Tooltip>
+      <span className="toolbar-divider" />
+      {/* Appearance & app — theme, shortcuts, settings. */}
+      <Tooltip label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}>
+        <button
+          className="tb-icon-btn"
+          onClick={() => setPref('theme', theme === 'light' ? 'dark' : 'light')}
+          aria-label="Toggle colour theme"
+        >
+          {theme === 'light' ? <Moon size={14} strokeWidth={1.6} /> : <Sun size={14} strokeWidth={1.6} />}
+        </button>
+      </Tooltip>
+      <Tooltip label="Keyboard shortcuts" shortcut="?">
+        <button
+          className="tb-icon-btn"
+          onClick={() => setShortcutsOpen(true)}
+          aria-label="Keyboard shortcuts"
+        >
+          <KeyboardIcon size={14} strokeWidth={1.6} />
+        </button>
+      </Tooltip>
       <Tooltip label="Settings">
         <button
           className="toolbar-settings-btn tb-icon-btn"
@@ -155,6 +180,7 @@ export function Toolbar() {
         </button>
       </Tooltip>
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
+      {shortcutsOpen && <ShortcutsModal onClose={() => setShortcutsOpen(false)} />}
     </div>
   );
 }

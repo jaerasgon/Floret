@@ -147,7 +147,7 @@ function ExportMenu({ driverRef, name }: {
 
   return (
     <>
-      <Tooltip label={running ? 'Pause to export the current frame' : 'Export the paused frame as PNG / SVG'}>
+      <Tooltip label={running ? 'Pause to export the current frame' : 'Export the paused frame as PNG / SVG'} side="top">
         <button
           ref={btnRef}
           className={`toolbar-run-btn${saved ? ' running' : ''}${running ? ' is-inert' : ''}`}

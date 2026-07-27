@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { List, LayoutGrid, Columns3, ChevronLeft, Folder, FolderOpen, BookOpen, Download } from 'lucide-react';
+import { ToggleButton, ToggleButtonGroup } from '@astryxdesign/core/ToggleButton';
+import { Button } from '@astryxdesign/core/Button';
+import { TextInput } from '@astryxdesign/core/TextInput';
 import { Panel } from './panel/Panel';
 import { useEditor } from './editor-state';
 import { paramStore } from '../runtime/param-store';
 import { history } from './history';
 import { useLibraryUI } from '../app/libraryUI';
-import { Tooltip } from '../app/shell/Tooltip';
 import {
   downloadLibrary,
   importLibrary,
@@ -75,41 +77,17 @@ function LibraryPanelInner() {
       defaults={{ dock: 'left', width: 320, height: 560, floatX: 80, floatY: 80 }}
       hideClose
       headerActions={
-        <div className="library-view-toggle">
-          <Tooltip label="List view">
-            <button
-              type="button"
-              className={`library-view-btn${viewMode === 'list' ? ' active' : ''}`}
-              onClick={() => setViewMode('list')}
-              aria-label="List view"
-              aria-pressed={viewMode === 'list'}
-            >
-              <List size={12} strokeWidth={1.7} />
-            </button>
-          </Tooltip>
-          <Tooltip label="Icon view">
-            <button
-              type="button"
-              className={`library-view-btn${viewMode === 'grid' ? ' active' : ''}`}
-              onClick={() => setViewMode('grid')}
-              aria-label="Icon view"
-              aria-pressed={viewMode === 'grid'}
-            >
-              <LayoutGrid size={12} strokeWidth={1.7} />
-            </button>
-          </Tooltip>
-          <Tooltip label="Column view">
-            <button
-              type="button"
-              className={`library-view-btn${viewMode === 'column' ? ' active' : ''}`}
-              onClick={() => setViewMode('column')}
-              aria-label="Column view"
-              aria-pressed={viewMode === 'column'}
-            >
-              <Columns3 size={12} strokeWidth={1.7} />
-            </button>
-          </Tooltip>
-        </div>
+        <ToggleButtonGroup
+          type="single"
+          size="sm"
+          label="Library view"
+          value={viewMode}
+          onChange={(v) => { if (v) setViewMode(v as typeof viewMode); }}
+        >
+          <ToggleButton value="list" isIconOnly size="sm" label="List view" icon={<List size={12} strokeWidth={1.7} />} />
+          <ToggleButton value="grid" isIconOnly size="sm" label="Icon view" icon={<LayoutGrid size={12} strokeWidth={1.7} />} />
+          <ToggleButton value="column" isIconOnly size="sm" label="Column view" icon={<Columns3 size={12} strokeWidth={1.7} />} />
+        </ToggleButtonGroup>
       }
     >
       <LibraryBody />
@@ -200,21 +178,21 @@ function LibraryBody() {
   return (
     <div className="library-panel-body">
       <div className="library-actions">
-        <button
-          className="library-action-btn"
+        <Button
+          variant="secondary"
+          size="sm"
+          label="＋ Import…"
+          tooltip="Import a floret.library JSON file"
           onClick={() => fileInputRef.current?.click()}
-          title="Import a floret.library JSON file"
-        >
-          ＋ Import…
-        </button>
-        <button
-          className="library-action-btn"
+        />
+        <Button
+          variant="secondary"
+          size="sm"
+          label="↓ Save patch…"
+          isDisabled={nodes.length === 0}
+          tooltip={nodes.length === 0 ? 'Add nodes to the canvas first' : 'Save the current patch as a library entry'}
           onClick={() => setSaveOpen(true)}
-          disabled={nodes.length === 0}
-          title={nodes.length === 0 ? 'Add nodes to the canvas first' : 'Save the current patch as a library entry'}
-        >
-          ↓ Save patch…
-        </button>
+        />
         <input
           ref={fileInputRef}
           type="file"
@@ -225,16 +203,14 @@ function LibraryBody() {
       </div>
       {libraries.length > 0 && (
         <div className="library-search">
-          <input
-            className="library-search-input"
-            type="search"
+          <TextInput
+            label="Search all patches"
+            isLabelHidden
+            size="sm"
             placeholder="Search all patches…"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(v) => setQuery(v)}
           />
-          {query && (
-            <button className="library-search-clear" onClick={() => setQuery('')} title="Clear search">✕</button>
-          )}
         </div>
       )}
       {error && <div className="library-error">{error}</div>}

@@ -1,13 +1,11 @@
-import { cloneElement, isValidElement } from 'react';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { Tooltip as AstryxTooltip } from '@astryxdesign/core/Tooltip';
 
 /**
- * Lightweight wrapper that attaches a `data-tooltip` attribute to its child.
- * Rendering happens entirely in CSS via the `[data-tooltip]:hover::after`
- * rules in styles.css — no JS state, no portals, no measurement.
- *
- * Use side="bottom" for toolbar buttons (tooltip flips down so it doesn't
- * clip behind the toolbar's bottom border).
+ * Thin adapter that keeps Floret's original Tooltip API (`label` / `side` /
+ * `shortcut`) while delegating rendering to the Astryx design-system Tooltip.
+ * Existing call sites don't change; they just get Astryx's accessible,
+ * portal-positioned tooltip instead of the old CSS-attribute hover hint.
  */
 export function Tooltip({
   label,
@@ -20,10 +18,10 @@ export function Tooltip({
   shortcut?: string;
   children: ReactNode;
 }) {
-  if (!isValidElement(children)) return <>{children}</>;
   const text = shortcut ? `${label}  ${shortcut}` : label;
-  return cloneElement(children as ReactElement<Record<string, unknown>>, {
-    'data-tooltip': text,
-    'data-tooltip-side': side,
-  });
+  return (
+    <AstryxTooltip content={text} placement={side === 'top' ? 'above' : 'below'}>
+      {children}
+    </AstryxTooltip>
+  );
 }

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Pause, Play, Download, Check } from 'lucide-react';
+import { Button } from '@astryxdesign/core/Button';
 import { Preview } from './Preview';
 import { Panel } from '../editor/panel/Panel';
 import { useAppStore } from '../app/store';
@@ -71,14 +72,13 @@ function PreviewHeaderControls({ driverRef, name }: {
   return (
     <>
       <Tooltip label={running ? 'Pause runtime' : 'Resume runtime'} shortcut="Space">
-        <button
-          className={`toolbar-run-btn${running ? ' running' : ''}`}
+        <Button
+          variant={running ? 'secondary' : 'primary'}
+          size="sm"
+          label={running ? 'Pause' : 'Play'}
+          icon={running ? <Pause size={13} strokeWidth={1.8} /> : <Play size={13} strokeWidth={1.8} />}
           onClick={toggleRunning}
-          aria-label={running ? 'Pause' : 'Play'}
-        >
-          {running ? <Pause size={13} strokeWidth={1.8} /> : <Play size={13} strokeWidth={1.8} />}
-          <span>{running ? 'Pause' : 'Play'}</span>
-        </button>
+        />
       </Tooltip>
       <ExportMenu driverRef={driverRef} name={name} />
     </>
@@ -143,17 +143,16 @@ function ExportMenu({ driverRef, name }: {
   return (
     <>
       <Tooltip label={running ? 'Pause to export the current frame' : 'Export the paused frame as PNG / SVG'}>
-        <button
+        <Button
           ref={btnRef}
-          className={`toolbar-run-btn${saved ? ' running' : ''}`}
+          variant="secondary"
+          size="sm"
+          label={saved ? 'Saved' : 'Export'}
+          icon={saved ? <Check size={13} strokeWidth={2} /> : <Download size={13} strokeWidth={1.8} />}
           onClick={toggle}
-          aria-label="Export"
-          disabled={running}
+          isDisabled={running}
           onBlur={() => setTimeout(() => setMenuPos(null), 150)}
-        >
-          {saved ? <Check size={13} strokeWidth={2} /> : <Download size={13} strokeWidth={1.8} />}
-          <span>{saved ? 'Saved' : 'Export'}</span>
-        </button>
+        />
       </Tooltip>
       {/* Portal to <body> so the dock tab bar's `overflow:hidden` can't
           clip the dropdown to a sliver. Positioned at the button's rect. */}

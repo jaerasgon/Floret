@@ -1,4 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog';
+import { Selector } from '@astryxdesign/core/Selector';
+import { TextInput } from '@astryxdesign/core/TextInput';
+import { TextArea } from '@astryxdesign/core/TextArea';
+import { Button } from '@astryxdesign/core/Button';
 import { useEditor } from '../../editor/editor-state';
 import { serializePatch } from '../../persistence/serialize';
 import {
@@ -42,14 +47,6 @@ export function SaveToLibraryModal({ onClose, onSaved }: Props) {
   const [entryDesc, setEntryDesc] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
   const isNew = targetSlug === null;
   const canSave =
     entryName.trim().length > 0 &&
@@ -89,77 +86,67 @@ export function SaveToLibraryModal({ onClose, onSaved }: Props) {
   };
 
   return (
-    <div className="settings-backdrop" onMouseDown={onClose}>
-      <div className="settings-modal" onMouseDown={(e) => e.stopPropagation()}>
-        <div className="settings-header">
-          <h2 className="settings-title">Save to library</h2>
-          <button className="settings-close" onClick={onClose} title="Close (Esc)">✕</button>
-        </div>
-        <div className="settings-body">
-          <div className="settings-section">
-            <div className="settings-section-title">Library</div>
-            {libraries.length > 0 && (
-              <select
-                className="library-select"
-                value={isNew ? '__new__' : targetSlug ?? ''}
-                onChange={(e) => {
-                  setTargetSlug(e.target.value === '__new__' ? null : e.target.value);
-                }}
-              >
-                {libraries.map((l) => (
-                  <option key={l.slug} value={l.slug}>
-                    {l.library.name} ({l.library.patches.length})
-                  </option>
-                ))}
-                <option value="__new__">＋ New library…</option>
-              </select>
-            )}
-            {(isNew || libraries.length === 0) && (
-              <input
-                className="library-input"
-                placeholder="New library name"
-                value={newLibName}
-                onChange={(e) => setNewLibName(e.target.value)}
-                autoFocus={libraries.length === 0}
-              />
-            )}
-          </div>
-
-          <div className="settings-section">
-            <div className="settings-section-title">Patch entry</div>
-            <input
-              className="library-input"
-              placeholder="Patch name (shown in the menu)"
-              value={entryName}
-              onChange={(e) => setEntryName(e.target.value)}
-              autoFocus={libraries.length > 0}
+    <Dialog
+      isOpen
+      onOpenChange={(open) => { if (!open) onClose(); }}
+      purpose="form"
+      width={440}
+    >
+      <DialogHeader title="Save to library" onOpenChange={(open) => { if (!open) onClose(); }} />
+      <div className="settings-body">
+        <div className="settings-section">
+          {libraries.length > 0 && (
+            <Selector
+              label="Library"
+              value={isNew ? '__new__' : targetSlug ?? ''}
+              onChange={(v) => setTargetSlug(v === '__new__' ? null : v)}
+              options={[
+                ...libraries.map((l) => ({
+                  value: l.slug,
+                  label: `${l.library.name} (${l.library.patches.length})`,
+                })),
+                { type: 'divider' as const },
+                { value: '__new__', label: '＋ New library…' },
+              ]}
             />
-            <textarea
-              className="library-input library-textarea"
-              placeholder="Description (optional)"
-              value={entryDesc}
-              onChange={(e) => setEntryDesc(e.target.value)}
-              rows={3}
-            />
-          </div>
-
-          {error && <div className="library-error">{error}</div>}
-          {nodes.length === 0 && (
-            <div className="library-empty">Current patch is empty — nothing to save.</div>
           )}
+          {(isNew || libraries.length === 0) && (
+            <TextInput
+              label="New library name"
+              placeholder="New library name"
+              value={newLibName}
+              onChange={(v) => setNewLibName(v)}
+            />
+          )}
+        </div>
 
-          <div className="settings-section library-save-actions">
-            <button className="settings-reset" onClick={onClose}>Cancel</button>
-            <button
-              className="library-save-btn"
-              onClick={onSave}
-              disabled={!canSave}
-            >
-              Save
-            </button>
-          </div>
+        <div className="settings-section">
+          <TextInput
+            label="Patch name"
+            placeholder="Patch name (shown in the menu)"
+            value={entryName}
+            onChange={(v) => setEntryName(v)}
+          />
+          <TextArea
+            label="Description"
+            isOptional
+            placeholder="Description (optional)"
+            value={entryDesc}
+            onChange={(v) => setEntryDesc(v)}
+            rows={3}
+          />
+        </div>
+
+        {error && <div className="library-error">{error}</div>}
+        {nodes.length === 0 && (
+          <div className="library-empty">Current patch is empty — nothing to save.</div>
+        )}
+
+        <div className="settings-section library-save-actions">
+          <Button variant="ghost" size="sm" label="Cancel" onClick={onClose} />
+          <Button variant="primary" size="sm" label="Save" isDisabled={!canSave} onClick={onSave} />
         </div>
       </div>
-    </div>
+    </Dialog>
   );
 }

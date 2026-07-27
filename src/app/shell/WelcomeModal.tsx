@@ -1,4 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog';
+import { ClickableCard } from '@astryxdesign/core/ClickableCard';
+import { Button } from '@astryxdesign/core/Button';
+import { Kbd } from '@astryxdesign/core/Kbd';
 import { useEditor } from '../../editor/editor-state';
 import { paramStore } from '../../runtime/param-store';
 import { history } from '../../editor/history';
@@ -78,20 +82,18 @@ export function WelcomeModal() {
     .filter(<T,>(s: T | undefined): s is T => Boolean(s));
 
   return (
-    <div className="welcome-overlay" onClick={(e) => { if (e.target === e.currentTarget) dismissPermanent(); }}>
-      <div className="welcome-card" role="dialog" aria-labelledby="welcome-title">
-        <button
-          className="welcome-close"
-          title="Skip — don't show again"
-          onClick={dismissPermanent}
-        >
-          ×
-        </button>
-        <h2 id="welcome-title" className="welcome-title">Welcome to Floret</h2>
-        <p className="welcome-lede">
-          A node-based creative tool — wire shapes, sounds, and data
-          together to make visual sketches.
-        </p>
+    <Dialog
+      isOpen
+      onOpenChange={(open) => { if (!open) dismissPermanent(); }}
+      purpose="info"
+      width={560}
+    >
+      <DialogHeader
+        title="Welcome to Floret"
+        subtitle="A node-based creative tool — wire shapes, sounds, and data together to make visual sketches."
+        onOpenChange={(open) => { if (!open) dismissPermanent(); }}
+      />
+      <div className="welcome-body">
         <h3 className="welcome-section-title">Start here</h3>
         <p className="welcome-section-lede">
           The Tutorial tab in the Samples menu has 50 lessons that build
@@ -99,22 +101,23 @@ export function WelcomeModal() {
         </p>
         <div className="welcome-featured">
           {featured.map((s) => (
-            <button
+            <ClickableCard
               key={s.id}
-              type="button"
-              className="welcome-sample"
+              label={s.name}
+              variant="muted"
+              padding={2}
               onClick={() => loadSample(s.id)}
             >
               <span className="welcome-sample-name">{s.name}</span>
               <span className="welcome-sample-desc">{s.description}</span>
-            </button>
+            </ClickableCard>
           ))}
         </div>
         <div className="welcome-tips">
           <p>
             <strong>Editor basics</strong> — drag from output pins (right) to
             input pins (left). Double-click empty space to open the node
-            search. Press <kbd>Tab</kbd> anywhere to do the same.
+            search. Press <Kbd keys="tab" /> anywhere to do the same.
           </p>
           <p>
             <strong>See what's happening</strong> — hover any pin for its
@@ -123,11 +126,14 @@ export function WelcomeModal() {
           </p>
         </div>
         <div className="welcome-actions">
-          <button type="button" className="welcome-skip" onClick={dismissPermanent}>
-            Skip — I'll explore on my own
-          </button>
+          <Button
+            variant="ghost"
+            size="sm"
+            label="Skip — I'll explore on my own"
+            onClick={dismissPermanent}
+          />
         </div>
       </div>
-    </div>
+    </Dialog>
   );
 }

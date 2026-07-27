@@ -54,10 +54,14 @@ seedDefaultLayout();
 let initialMode: 'light' | 'dark' = 'dark';
 try {
   if (JSON.parse(localStorage.getItem('floret.prefs.v1') || '{}').theme === 'light') {
-    document.documentElement.setAttribute('data-theme', 'light');
     initialMode = 'light';
   }
 } catch { /* default dark */ }
+// Set data-theme for BOTH modes before first paint. This drives `color-scheme`
+// (via Astryx's reset.css), so Astryx's `light-dark()` tokens resolve correctly
+// from the very first frame — including in the top-layer <dialog> — with no
+// flash of the wrong mode while React mounts and the Theme provider syncs.
+document.documentElement.setAttribute('data-theme', initialMode);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

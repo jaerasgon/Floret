@@ -4612,14 +4612,19 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
   background: var(--bg-3);
   border-color: var(--accent-dim);
 }
+/* Names + descriptions now live inside an Astryx ClickableCard, which is not a
+   flex column, so the spans must stack themselves. */
 .welcome-sample-name {
+  display: block;
   font-size: 12px;
   font-weight: 700;
-  color: var(--fg-0);
+  color: var(--color-text-primary, var(--fg-0));
+  margin-bottom: 3px;
 }
 .welcome-sample-desc {
+  display: block;
   font-size: 11px;
-  color: var(--fg-2);
+  color: var(--color-text-secondary, var(--fg-2));
   line-height: 1.4;
 }
 .welcome-tips {

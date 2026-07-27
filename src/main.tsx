@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Theme } from '@astryxdesign/core/theme';
 import { butterTheme } from '@astryxdesign/theme-butter/built';
 import { App } from './app/App';
+import { usePrefs } from './app/prefs';
 // Bundled type system (self-hosted woff2 via fontsource — no CDN, works offline):
 // Space Grotesk for display/brand, Hanken Grotesk for UI body, JetBrains Mono for
 // values. Imported before styles.css so the --font-* stacks resolve to these.
@@ -63,10 +64,25 @@ try {
 // flash of the wrong mode while React mounts and the Theme provider syncs.
 document.documentElement.setAttribute('data-theme', initialMode);
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <Theme theme={butterTheme} mode={initialMode}>
+/**
+ * Bridges Floret's persisted light/dark preference into Astryx's Theme
+ * `mode`. Astryx drives `color-scheme` from `mode`, and Floret's node/app
+ * colours now resolve through Astryx's `light-dark()` tokens — so `mode`
+ * MUST track the pref reactively, otherwise toggling the theme flips
+ * `data-theme` but leaves `color-scheme` (and every bridged token) stuck at
+ * the mode captured on load. Subscribing here keeps the two in lock-step.
+ */
+function Root() {
+  const theme = usePrefs((s) => s.theme);
+  return (
+    <Theme theme={butterTheme} mode={theme}>
       <App />
     </Theme>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <Root />
   </React.StrictMode>,
 );

@@ -106,6 +106,30 @@
   --minimap-node-stroke: rgba(255, 255, 255, 0.6);
 }
 
+/* ── Astryx design-token bridge ──────────────────────────────────────────
+   Floret funnels every surface / text / border / accent through the handful
+   of vars below, so redefining them in terms of Astryx butter tokens re-skins
+   the whole app — the node graph included — onto the design system in one
+   place, with no changes to the 15 node components or their 147 CSS rules.
+   Astryx's tokens are `light-dark()`-aware and driven by `color-scheme`, so a
+   single definition covers both modes; the list targets `:root` AND
+   `:root[data-theme='light']` so it wins over both palette blocks above
+   regardless of the active mode. Node geometry, the type-coded --port-* pin
+   colours, fonts, motion and shadows stay Floret's own. */
+:root,
+:root[data-theme='light'] {
+  --bg-0: var(--color-background-body);                                                     /* canvas base */
+  --bg-1: var(--color-background-surface);                                                  /* panels + node bodies */
+  --bg-2: var(--color-background-card);                                                      /* raised / inputs */
+  --bg-3: color-mix(in srgb, var(--color-background-card) 88%, var(--color-text-primary));   /* hover / pressed */
+  --border: color-mix(in srgb, var(--color-border-emphasized) 42%, var(--color-background-surface));
+  --fg-0: var(--color-text-primary);
+  --fg-1: var(--color-text-secondary);
+  --fg-2: color-mix(in srgb, var(--color-text-secondary) 62%, var(--color-background-surface));
+  --accent: var(--color-accent);
+  --accent-dim: color-mix(in srgb, var(--color-accent) 62%, var(--color-background-surface));
+}
+
 /* Node-canvas dot grid follows the theme (React Flow renders the dots inline). */
 .react-flow__background circle,
 .react-flow__background path { fill: var(--grid-line); stroke: var(--grid-line); }

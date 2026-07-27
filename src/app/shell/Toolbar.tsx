@@ -11,6 +11,8 @@ import {
   Sun,
   Moon,
 } from 'lucide-react';
+import { IconButton } from '@astryxdesign/core/IconButton';
+import { ToggleButton, ToggleButtonGroup } from '@astryxdesign/core/ToggleButton';
 import { useAppStore } from '../store';
 import { usePrefs } from '../prefs';
 import { useEditor } from '../../editor/editor-state';
@@ -19,7 +21,8 @@ import { autoLayoutPatch } from '../../editor/autoLayout';
 import { useLibraryUI } from '../libraryUI';
 import { FileMenu } from './FileMenu';
 import { SettingsModal } from './SettingsModal';
-import { Tooltip } from './Tooltip';
+
+const ICON = 15;
 
 export function Toolbar() {
   // Pause lives on the Preview panel header. Refresh is global here —
@@ -59,101 +62,108 @@ export function Toolbar() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  // The three panel toggles are one connected family (which panels are open),
+  // so they render as a single multi-select ToggleButtonGroup. onChange hands
+  // back the full active set; diff it against each store flag and flip only the
+  // one that actually changed.
+  const panelValue = [
+    libraryVisible ? 'library' : null,
+    paletteVisible ? 'nodes' : null,
+    helpVisible ? 'help' : null,
+  ].filter(Boolean) as string[];
+
+  const onPanelChange = (value: string | null | string[]) => {
+    const next = new Set(Array.isArray(value) ? value : value ? [value] : []);
+    if (next.has('library') !== libraryVisible) toggleLibrary();
+    if (next.has('nodes') !== paletteVisible) setPref('paletteVisible', next.has('nodes'));
+    if (next.has('help') !== helpVisible) setPref('helpVisible', next.has('help'));
+  };
+
   return (
     <div className="toolbar">
       <span className="title">FLORET</span>
       <span className="toolbar-divider" />
       <FileMenu />
       <span className="toolbar-divider" />
-      {/* View toggles grouped as one segmented cluster — they're a family
-          (which panels are open), not three unrelated buttons. */}
-      <div className="tb-seg" role="group" aria-label="Panels">
-        <Tooltip label={libraryVisible ? 'Hide library' : 'Show library'}>
-          <button
-            className={`tb-seg-btn${libraryVisible ? ' active' : ''}`}
-            onClick={toggleLibrary}
-            aria-pressed={libraryVisible}
-            aria-label="Toggle library"
-          >
-            <LibraryIcon size={14} strokeWidth={1.6} />
-          </button>
-        </Tooltip>
-        <Tooltip label={paletteVisible ? 'Hide nodes' : 'Show nodes'}>
-          <button
-            className={`tb-seg-btn${paletteVisible ? ' active' : ''}`}
-            onClick={() => setPref('paletteVisible', !paletteVisible)}
-            aria-pressed={paletteVisible}
-            aria-label="Toggle nodes panel"
-          >
-            <NodesIcon size={14} strokeWidth={1.6} />
-          </button>
-        </Tooltip>
-        <Tooltip label={helpVisible ? 'Hide help' : 'Show help'}>
-          <button
-            className={`tb-seg-btn${helpVisible ? ' active' : ''}`}
-            onClick={() => setPref('helpVisible', !helpVisible)}
-            aria-pressed={helpVisible}
-            aria-label="Toggle help panel"
-          >
-            <HelpIcon size={14} strokeWidth={1.6} />
-          </button>
-        </Tooltip>
-      </div>
-      <Tooltip label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}>
-        <button
-          className="tb-icon-btn"
-          onClick={() => setPref('theme', theme === 'light' ? 'dark' : 'light')}
-          aria-label="Toggle colour theme"
-        >
-          {theme === 'light' ? <Moon size={14} strokeWidth={1.6} /> : <Sun size={14} strokeWidth={1.6} />}
-        </button>
-      </Tooltip>
-      <div className="spacer" />
-      <Tooltip label="Auto-arrange nodes" shortcut="⇧T">
-        <button className="tb-icon-btn" onClick={tidy} aria-label="Tidy">
-          <LayoutGrid size={14} strokeWidth={1.6} />
-        </button>
-      </Tooltip>
-      <Tooltip
-        label={wireFlow ? 'Hide wire flow' : 'Animate wires'}
+      <ToggleButtonGroup
+        type="multiple"
+        size="sm"
+        label="Panels"
+        value={panelValue}
+        onChange={onPanelChange}
       >
-        <button
-          className={`tb-icon-btn tb-toggle${wireFlow ? ' active' : ''}`}
-          onClick={() => setPref('wireFlowAnimation', !wireFlow)}
-          aria-pressed={wireFlow}
-          aria-label="Toggle wire flow"
-        >
-          <Waves size={14} strokeWidth={1.6} />
-        </button>
-      </Tooltip>
-      <Tooltip label="Restart scene — reboot runtime state (particles respawn, trails clear)">
-        <button
-          className="toolbar-refresh-btn tb-icon-btn"
-          onClick={refresh}
-          aria-label="Refresh"
-        >
-          <RotateCcw size={13} strokeWidth={1.8} />
-        </button>
-      </Tooltip>
-      <Tooltip label={firstRenderer ? 'Focus mode — present the art full-screen' : 'Add a Renderer node to use focus mode'}>
-        <button
-          className="tb-icon-btn"
-          onClick={() => firstRenderer && enterFocus(firstRenderer.id)}
-          disabled={!firstRenderer}
-          aria-label="Enter focus mode"
-        >
-          <Maximize2 size={14} strokeWidth={1.6} />
-        </button>
-      </Tooltip>
-      <Tooltip label="Settings">
-        <button
-          className="toolbar-settings-btn tb-icon-btn"
-          onClick={() => setSettingsOpen(true)}
-          aria-label="Settings"
-        >
-          <SettingsIcon size={14} strokeWidth={1.6} />
-        </button>
-      </Tooltip>
+        <ToggleButton
+          value="library"
+          isIconOnly
+          size="sm"
+          label={libraryVisible ? 'Hide library' : 'Show library'}
+          icon={<LibraryIcon size={ICON} strokeWidth={1.6} />}
+        />
+        <ToggleButton
+          value="nodes"
+          isIconOnly
+          size="sm"
+          label={paletteVisible ? 'Hide nodes' : 'Show nodes'}
+          icon={<NodesIcon size={ICON} strokeWidth={1.6} />}
+        />
+        <ToggleButton
+          value="help"
+          isIconOnly
+          size="sm"
+          label={helpVisible ? 'Hide help' : 'Show help'}
+          icon={<HelpIcon size={ICON} strokeWidth={1.6} />}
+        />
+      </ToggleButtonGroup>
+      <IconButton
+        variant="ghost"
+        size="sm"
+        label="Toggle colour theme"
+        tooltip={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
+        onClick={() => setPref('theme', theme === 'light' ? 'dark' : 'light')}
+        icon={theme === 'light' ? <Moon size={ICON} strokeWidth={1.6} /> : <Sun size={ICON} strokeWidth={1.6} />}
+      />
+      <div className="spacer" />
+      <IconButton
+        variant="ghost"
+        size="sm"
+        label="Auto-arrange nodes"
+        tooltip="Auto-arrange nodes  ⇧T"
+        onClick={tidy}
+        icon={<LayoutGrid size={ICON} strokeWidth={1.6} />}
+      />
+      <ToggleButton
+        isIconOnly
+        size="sm"
+        label={wireFlow ? 'Hide wire flow' : 'Animate wires'}
+        isPressed={wireFlow}
+        onPressedChange={(pressed) => setPref('wireFlowAnimation', pressed)}
+        icon={<Waves size={ICON} strokeWidth={1.6} />}
+      />
+      <IconButton
+        variant="ghost"
+        size="sm"
+        label="Restart scene"
+        tooltip="Restart scene — reboot runtime state (particles respawn, trails clear)"
+        onClick={refresh}
+        icon={<RotateCcw size={ICON - 1} strokeWidth={1.8} />}
+      />
+      <IconButton
+        variant="ghost"
+        size="sm"
+        label="Enter focus mode"
+        tooltip={firstRenderer ? 'Focus mode — present the art full-screen' : 'Add a Renderer node to use focus mode'}
+        isDisabled={!firstRenderer}
+        onClick={() => firstRenderer && enterFocus(firstRenderer.id)}
+        icon={<Maximize2 size={ICON} strokeWidth={1.6} />}
+      />
+      <IconButton
+        variant="ghost"
+        size="sm"
+        label="Settings"
+        tooltip="Settings"
+        onClick={() => setSettingsOpen(true)}
+        icon={<SettingsIcon size={ICON} strokeWidth={1.6} />}
+      />
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
     </div>
   );

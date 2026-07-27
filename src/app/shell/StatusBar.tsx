@@ -1,8 +1,20 @@
 import { useState } from 'react';
 import { AlertTriangle, Activity } from 'lucide-react';
+import { StatusDot } from '@astryxdesign/core/StatusDot';
+import { Badge } from '@astryxdesign/core/Badge';
+import { Tooltip } from '@astryxdesign/core/Tooltip';
 import { useAppStore } from '../store';
 import { useEditor } from '../../editor/editor-state';
-import { Tooltip } from './Tooltip';
+
+// Runtime state → Astryx StatusDot semantic variant. The dot is the strongest
+// signal in the whole status bar: green = running clean, yellow = running with
+// warnings, red = halted/error, grey = paused.
+const DOT_VARIANT = {
+  running: 'success',
+  warning: 'warning',
+  error: 'error',
+  paused: 'neutral',
+} as const;
 
 export function StatusBar() {
   const running = useAppStore((s) => s.running);
@@ -22,9 +34,6 @@ export function StatusBar() {
     setOpen(false);
   };
 
-  // State dot color tells the story at a glance:
-  // green = running clean, yellow = running with warnings, red = halted/error,
-  // grey = paused. The dot is the strongest signal in the whole status bar.
   const state: 'running' | 'warning' | 'paused' | 'error' =
     warnings.length > 0 && running ? 'warning'
       : !running ? 'paused'
@@ -33,29 +42,30 @@ export function StatusBar() {
   return (
     <div className="statusbar">
       <div className="statusbar-left">
-        <Tooltip label={running ? 'Runtime active' : 'Runtime paused'} side="top">
-          <span className={`status-state status-state-${state}`} role="status">
-            <span className="status-dot" />
-            <span className="status-state-label">
-              {running ? 'live' : 'paused'}
-            </span>
-          </span>
-        </Tooltip>
+        <span className="status-state" role="status">
+          <StatusDot
+            variant={DOT_VARIANT[state]}
+            isPulsing={running}
+            label={running ? 'Runtime active' : 'Runtime paused'}
+            tooltip={running ? 'Runtime active' : 'Runtime paused'}
+          />
+          <span className="status-state-label">{running ? 'live' : 'paused'}</span>
+        </span>
         <span className="status-sep" />
-        <Tooltip label="Frames per second" side="top">
+        <Tooltip content="Frames per second">
           <span className="status-pill">
             <Activity size={10} strokeWidth={1.8} />
             <span className="status-pill-label">FPS</span>
             <span className="status-pill-value">{fps.toFixed(1)}</span>
           </span>
         </Tooltip>
-        <Tooltip label="Frame count" side="top">
+        <Tooltip content="Frame count">
           <span className="status-pill">
             <span className="status-pill-label">FRAME</span>
             <span className="status-pill-value">{frameCount}</span>
           </span>
         </Tooltip>
-        <Tooltip label="Number of nodes in the patch" side="top">
+        <Tooltip content="Number of nodes in the patch">
           <span className="status-pill">
             <span className="status-pill-label">NODES</span>
             <span className="status-pill-value">{nodeCount}</span>
@@ -68,20 +78,19 @@ export function StatusBar() {
       <div className="statusbar-right">
         {warnings.length > 0 ? (
           <>
-            <Tooltip label="Show warnings" side="top">
-              <button
-                className="status-warnings"
-                type="button"
-                onClick={() => setOpen((v) => !v)}
-                aria-expanded={open}
-              >
-                <AlertTriangle size={11} strokeWidth={1.8} />
-                <span className="status-warnings-badge">{warnings.length}</span>
-                <span className="status-warnings-label">
-                  warning{warnings.length === 1 ? '' : 's'}
-                </span>
-              </button>
-            </Tooltip>
+            <button
+              className="status-warnings"
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              aria-expanded={open}
+              aria-label="Show warnings"
+            >
+              <Badge
+                variant="warning"
+                icon={<AlertTriangle size={11} strokeWidth={1.8} />}
+                label={`${warnings.length} warning${warnings.length === 1 ? '' : 's'}`}
+              />
+            </button>
             {open && (
               <div className="warnings-popover" role="dialog" onMouseLeave={() => setOpen(false)}>
                 {warnings.map((w, i) => {

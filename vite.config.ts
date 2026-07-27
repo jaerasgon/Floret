@@ -11,6 +11,11 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
+    // Astryx (@astryxdesign/*) is a peer-dep consumer of React. Force a single
+    // React/react-dom instance so its hooks share our dispatcher — without this,
+    // Vite's dev pre-bundler can hand Astryx a second copy and every Astryx
+    // component that calls a hook throws "Invalid hook call".
+    dedupe: ['react', 'react-dom'],
   },
   test: {
     // Polyfill OffscreenCanvas (and createImageBitmap) so rasterising

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog';
-import { Selector } from '@astryxdesign/core/Selector';
-import { TextInput } from '@astryxdesign/core/TextInput';
-import { TextArea } from '@astryxdesign/core/TextArea';
-import { Button } from '@astryxdesign/core/Button';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import { useEditor } from '../../editor/editor-state';
 import { serializePatch } from '../../persistence/serialize';
 import {
@@ -11,6 +11,7 @@ import {
   listLibraries,
   upsertLibraryEntry,
 } from '../../persistence/library';
+import { ModalShell } from './ModalShell';
 
 /**
  * Modal for saving the current patch as an entry in a library.
@@ -86,54 +87,61 @@ export function SaveToLibraryModal({ onClose, onSaved }: Props) {
   };
 
   return (
-    <Dialog
-      isOpen
-      onOpenChange={(open) => { if (!open) onClose(); }}
-      purpose="form"
-      width={440}
-    >
-      <DialogHeader title="Save to library" onOpenChange={(open) => { if (!open) onClose(); }} />
+    <ModalShell title="Save to library" width={440} onClose={onClose}>
       <div className="settings-body">
         <div className="settings-section">
           {libraries.length > 0 && (
-            <Selector
+            <TextField
+              select
               label="Library"
+              size="small"
+              fullWidth
+              margin="dense"
               value={isNew ? '__new__' : targetSlug ?? ''}
-              onChange={(v) => setTargetSlug(v === '__new__' ? null : v)}
-              options={[
-                ...libraries.map((l) => ({
-                  value: l.slug,
-                  label: `${l.library.name} (${l.library.patches.length})`,
-                })),
-                { type: 'divider' as const },
-                { value: '__new__', label: '＋ New library…' },
-              ]}
-            />
+              onChange={(e) => setTargetSlug(e.target.value === '__new__' ? null : e.target.value)}
+            >
+              {libraries.map((l) => (
+                <MenuItem key={l.slug} value={l.slug}>
+                  {`${l.library.name} (${l.library.patches.length})`}
+                </MenuItem>
+              ))}
+              <Divider />
+              <MenuItem value="__new__">＋ New library…</MenuItem>
+            </TextField>
           )}
           {(isNew || libraries.length === 0) && (
-            <TextInput
+            <TextField
               label="New library name"
               placeholder="New library name"
+              size="small"
+              fullWidth
+              margin="dense"
               value={newLibName}
-              onChange={(v) => setNewLibName(v)}
+              onChange={(e) => setNewLibName(e.target.value)}
             />
           )}
         </div>
 
         <div className="settings-section">
-          <TextInput
+          <TextField
             label="Patch name"
             placeholder="Patch name (shown in the menu)"
+            size="small"
+            fullWidth
+            margin="dense"
             value={entryName}
-            onChange={(v) => setEntryName(v)}
+            onChange={(e) => setEntryName(e.target.value)}
           />
-          <TextArea
+          <TextField
             label="Description"
-            isOptional
             placeholder="Description (optional)"
+            size="small"
+            fullWidth
+            margin="dense"
+            multiline
+            minRows={3}
             value={entryDesc}
-            onChange={(v) => setEntryDesc(v)}
-            rows={3}
+            onChange={(e) => setEntryDesc(e.target.value)}
           />
         </div>
 
@@ -142,11 +150,11 @@ export function SaveToLibraryModal({ onClose, onSaved }: Props) {
           <div className="library-empty">Current patch is empty — nothing to save.</div>
         )}
 
-        <div className="settings-section library-save-actions">
-          <Button variant="ghost" size="sm" label="Cancel" onClick={onClose} />
-          <Button variant="primary" size="sm" label="Save" isDisabled={!canSave} onClick={onSave} />
-        </div>
+        <Box className="settings-section library-save-actions" sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+          <Button variant="text" size="small" color="inherit" onClick={onClose}>Cancel</Button>
+          <Button variant="contained" size="small" disabled={!canSave} onClick={onSave}>Save</Button>
+        </Box>
       </div>
-    </Dialog>
+    </ModalShell>
   );
 }

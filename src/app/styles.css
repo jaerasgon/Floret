@@ -26,10 +26,10 @@
   --port-collider: #e0e0e0; /* near-white — collider */
   --port-particle: #b890ff; /* lavender — particle buffer */
   --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-ui: 'Hanken Grotesk Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  /* Display face for brand, panel/node titles, section headers — a distinctive
-     grotesque that carries the editorial feel where type gets large. */
-  --font-display: 'Space Grotesk Variable', 'Hanken Grotesk Variable', -apple-system, sans-serif;
+  /* Roboto — Material 3's type family — for UI body and display, so the whole
+     app (chrome + node graph) reads as one Material system. */
+  --font-ui: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* Motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -106,28 +106,31 @@
   --minimap-node-stroke: rgba(255, 255, 255, 0.6);
 }
 
-/* ── Astryx design-token bridge ──────────────────────────────────────────
+/* ── Material 3 design-token bridge ───────────────────────────────────────
    Floret funnels every surface / text / border / accent through the handful
-   of vars below, so redefining them in terms of Astryx design tokens re-skins
-   the whole app — the node graph included — onto the design system in one
-   place, with no changes to the 15 node components or their 147 CSS rules.
-   Astryx's tokens are `light-dark()`-aware and driven by `color-scheme`, so a
-   single definition covers both modes; the list targets `:root` AND
-   `:root[data-theme='light']` so it wins over both palette blocks above
-   regardless of the active mode. Node geometry, the type-coded --port-* pin
-   colours, fonts, motion and shadows stay Floret's own. */
+   of vars below, so redefining them in terms of Material 3 colour roles
+   re-skins the whole app — the node graph included — onto the Material system
+   in one place, with no changes to the 15 node components or their 147 CSS
+   rules. The --md-sys-color-* vars are emitted per scheme (see main.tsx's
+   GlobalStyles) and switch on `data-theme`, so one definition covers both
+   modes; the list targets `:root` AND `:root[data-theme='light']` so it wins
+   over both Floret palette blocks above regardless of the active mode.
+   Surfaces climb the M3 surface-container elevation ramp (base → hover). Node
+   geometry, the type-coded --port-* pin colours, motion and shadows stay
+   Floret's own. */
 :root,
 :root[data-theme='light'] {
-  --bg-0: var(--color-background-body);                                                     /* canvas base */
-  --bg-1: var(--color-background-surface);                                                  /* panels + node bodies */
-  --bg-2: var(--color-background-card);                                                      /* raised / inputs */
-  --bg-3: color-mix(in srgb, var(--color-background-card) 88%, var(--color-text-primary));   /* hover / pressed */
-  --border: color-mix(in srgb, var(--color-border-emphasized) 42%, var(--color-background-surface));
-  --fg-0: var(--color-text-primary);
-  --fg-1: var(--color-text-secondary);
-  --fg-2: color-mix(in srgb, var(--color-text-secondary) 62%, var(--color-background-surface));
-  --accent: var(--color-accent);
-  --accent-dim: color-mix(in srgb, var(--color-accent) 62%, var(--color-background-surface));
+  --bg-0: var(--md-sys-color-surface-container-lowest);   /* canvas base — darkest */
+  --bg-1: var(--md-sys-color-surface-container-low);       /* panels + node bodies */
+  --bg-2: var(--md-sys-color-surface-container-high);      /* raised / inputs */
+  --bg-3: var(--md-sys-color-surface-container-highest);   /* hover / pressed */
+  --border: var(--md-sys-color-outline-variant);
+  --fg-0: var(--md-sys-color-on-surface);
+  --fg-1: var(--md-sys-color-on-surface-variant);
+  --fg-2: var(--md-sys-color-outline);
+  --accent: var(--md-sys-color-primary);
+  --accent-dim: color-mix(in srgb, var(--md-sys-color-primary) 62%, var(--md-sys-color-surface-container-low));
+  --danger: var(--md-sys-color-error);
 }
 
 /* Node-canvas dot grid follows the theme (React Flow renders the dots inline). */

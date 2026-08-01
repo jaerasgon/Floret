@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog';
-import { ClickableCard } from '@astryxdesign/core/ClickableCard';
-import { Button } from '@astryxdesign/core/Button';
-import { Kbd } from '@astryxdesign/core/Kbd';
+import Card from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import { useEditor } from '../../editor/editor-state';
 import { paramStore } from '../../runtime/param-store';
 import { history } from '../../editor/history';
 import { SAMPLES } from '../../persistence/samples';
+import { ModalShell } from './ModalShell';
 
 /**
  * Welcome card shown on first launch. Points new users at the Tutorial
@@ -27,6 +28,29 @@ const FEATURED_IDS = [
   'tut-07-grid',
   'tut-50-showcase',
 ];
+
+/** Small keycap (replaces Astryx's Kbd). */
+function Kbd({ keys }: { keys: string }) {
+  return (
+    <Box
+      component="kbd"
+      sx={{
+        display: 'inline-block',
+        px: 0.75,
+        py: 0.125,
+        fontFamily: 'var(--font-mono)',
+        fontSize: 11,
+        lineHeight: 1.5,
+        color: 'text.secondary',
+        border: '1px solid var(--md-sys-color-outline-variant)',
+        borderRadius: 1,
+        backgroundColor: 'var(--md-sys-color-surface-container-high)',
+      }}
+    >
+      {keys}
+    </Box>
+  );
+}
 
 export function WelcomeModal() {
   const loadPatch = useEditor((s) => s.loadPatch);
@@ -82,17 +106,12 @@ export function WelcomeModal() {
     .filter(<T,>(s: T | undefined): s is T => Boolean(s));
 
   return (
-    <Dialog
-      isOpen
-      onOpenChange={(open) => { if (!open) dismissPermanent(); }}
-      purpose="info"
+    <ModalShell
+      title="Welcome to Floret"
+      subtitle="A node-based creative tool — wire shapes, sounds, and data together to make visual sketches."
       width={560}
+      onClose={dismissPermanent}
     >
-      <DialogHeader
-        title="Welcome to Floret"
-        subtitle="A node-based creative tool — wire shapes, sounds, and data together to make visual sketches."
-        onOpenChange={(open) => { if (!open) dismissPermanent(); }}
-      />
       <div className="welcome-body">
         <h3 className="welcome-section-title">Start here</h3>
         <p className="welcome-section-lede">
@@ -101,16 +120,12 @@ export function WelcomeModal() {
         </p>
         <div className="welcome-featured">
           {featured.map((s) => (
-            <ClickableCard
-              key={s.id}
-              label={s.name}
-              variant="muted"
-              padding={2}
-              onClick={() => loadSample(s.id)}
-            >
-              <span className="welcome-sample-name">{s.name}</span>
-              <span className="welcome-sample-desc">{s.description}</span>
-            </ClickableCard>
+            <Card key={s.id} variant="outlined" sx={{ backgroundColor: 'var(--md-sys-color-surface-container-highest)' }}>
+              <CardActionArea onClick={() => loadSample(s.id)} sx={{ p: 1.5, display: 'block', height: '100%' }}>
+                <span className="welcome-sample-name">{s.name}</span>
+                <span className="welcome-sample-desc">{s.description}</span>
+              </CardActionArea>
+            </Card>
           ))}
         </div>
         <div className="welcome-tips">
@@ -126,14 +141,11 @@ export function WelcomeModal() {
           </p>
         </div>
         <div className="welcome-actions">
-          <Button
-            variant="ghost"
-            size="sm"
-            label="Skip — I'll explore on my own"
-            onClick={dismissPermanent}
-          />
+          <Button variant="text" size="small" color="inherit" onClick={dismissPermanent}>
+            Skip — I'll explore on my own
+          </Button>
         </div>
       </div>
-    </Dialog>
+    </ModalShell>
   );
 }

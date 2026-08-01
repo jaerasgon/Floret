@@ -1,22 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Theme } from '@astryxdesign/core/theme';
-import { neutralTheme } from '@astryxdesign/theme-neutral/built';
+import { ThemeProvider } from '@mui/material/styles';
+import GlobalStyles from '@mui/material/GlobalStyles';
 import { App } from './app/App';
 import { usePrefs } from './app/prefs';
-// Bundled type system (self-hosted woff2 via fontsource — no CDN, works offline):
-// Space Grotesk for display/brand, Hanken Grotesk for UI body, JetBrains Mono for
-// values. Imported before styles.css so the --font-* stacks resolve to these.
-import '@fontsource-variable/space-grotesk';
-import '@fontsource-variable/hanken-grotesk';
+import { makeM3Theme } from './app/theme/muiTheme';
+import { m3Light, m3Dark, mdVars } from './app/theme/m3Tokens';
+// Roboto — Material 3's type family — self-hosted via fontsource (no CDN).
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+// JetBrains Mono is still used for node/value monospace (--font-mono).
 import '@fontsource-variable/jetbrains-mono';
-// Astryx design-system stylesheets. The @layer cascade is
-// reset → astryx-base → astryx-theme, so import order matters. These are
-// layered; Floret's own (unlayered) styles.css below still wins during the
-// migration, and cedes ground surface-by-surface as chrome moves to Astryx.
-import '@astryxdesign/core/reset.css';
-import '@astryxdesign/core/astryx.css';
-import '@astryxdesign/theme-neutral/theme.css';
 import './app/styles.css';
 import '@xyflow/react/dist/style.css';
 
@@ -49,35 +45,41 @@ seedDefaultLayout();
 
 // Apply the persisted colour theme before first paint so light-theme users
 // don't get a flash of dark. The Toolbar keeps data-theme in sync afterwards.
-// Floret and Astryx share the same `data-theme` attribute on <html>, so the
-// two theme systems stay in lock-step — we seed Astryx's mode from the same
-// persisted pref below.
+// `data-theme` on <html> selects which set of --md-sys-color-* vars applies
+// (see the GlobalStyles below), so seeding it here avoids a first-frame flash.
 let initialMode: 'light' | 'dark' = 'dark';
 try {
   if (JSON.parse(localStorage.getItem('floret.prefs.v1') || '{}').theme === 'light') {
     initialMode = 'light';
   }
 } catch { /* default dark */ }
-// Set data-theme for BOTH modes before first paint. This drives `color-scheme`
-// (via Astryx's reset.css), so Astryx's `light-dark()` tokens resolve correctly
-// from the very first frame — including in the top-layer <dialog> — with no
-// flash of the wrong mode while React mounts and the Theme provider syncs.
 document.documentElement.setAttribute('data-theme', initialMode);
 
 /**
- * Bridges Floret's persisted light/dark preference into Astryx's Theme
- * `mode`. Astryx drives `color-scheme` from `mode`, and Floret's node/app
- * colours now resolve through Astryx's `light-dark()` tokens — so `mode`
- * MUST track the pref reactively, otherwise toggling the theme flips
- * `data-theme` but leaves `color-scheme` (and every bridged token) stuck at
- * the mode captured on load. Subscribing here keeps the two in lock-step.
+ * Emits the Material 3 colour roles as `--md-sys-color-*` CSS variables for
+ * both schemes. `data-theme` (owned by Floret's prefs) selects which set is
+ * live, and Floret's node token bridge in styles.css consumes these vars — so
+ * the node graph tracks the same Material palette as the MUI chrome. The MUI
+ * theme is built from the very same m3Tokens, keeping a single source of truth.
+ */
+const MD_VAR_STYLES = {
+  ':root': { colorScheme: 'light', ...mdVars(m3Light) },
+  ":root[data-theme='dark']": { colorScheme: 'dark', ...mdVars(m3Dark) },
+} as const;
+
+/**
+ * Floret owns the light/dark preference (persisted in its prefs store, mirrored
+ * onto <html data-theme>). The MUI theme is recomputed from that pref so its
+ * components resolve to the matching Material 3 role values.
  */
 function Root() {
-  const theme = usePrefs((s) => s.theme);
+  const mode = usePrefs((s) => s.theme);
+  const theme = React.useMemo(() => makeM3Theme(mode), [mode]);
   return (
-    <Theme theme={neutralTheme} mode={theme}>
+    <ThemeProvider theme={theme}>
+      <GlobalStyles styles={MD_VAR_STYLES} />
       <App />
-    </Theme>
+    </ThemeProvider>
   );
 }
 

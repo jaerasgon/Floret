@@ -1,11 +1,11 @@
-import type { ReactNode } from 'react';
-import { Tooltip as AstryxTooltip } from '@astryxdesign/core/Tooltip';
+import type { ReactElement } from 'react';
+import MuiTooltip from '@mui/material/Tooltip';
 
 /**
  * Thin adapter that keeps Floret's original Tooltip API (`label` / `side` /
- * `shortcut`) while delegating rendering to the Astryx design-system Tooltip.
- * Existing call sites don't change; they just get Astryx's accessible,
- * portal-positioned tooltip instead of the old CSS-attribute hover hint.
+ * `shortcut`) while delegating rendering to the MUI (Material 3) Tooltip.
+ * Existing call sites don't change; they just get MUI's accessible,
+ * portal-positioned tooltip.
  */
 export function Tooltip({
   label,
@@ -16,12 +16,12 @@ export function Tooltip({
   label: string;
   side?: 'top' | 'bottom';
   shortcut?: string;
-  children: ReactNode;
+  children: ReactElement;
 }) {
   const text = shortcut ? `${label}  ${shortcut}` : label;
   return (
-    <AstryxTooltip content={text} placement={side === 'top' ? 'above' : 'below'}>
+    <MuiTooltip title={text} placement={side === 'top' ? 'top' : 'bottom'} arrow>
       {children}
-    </AstryxTooltip>
+    </MuiTooltip>
   );
 }

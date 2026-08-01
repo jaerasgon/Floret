@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button } from '@astryxdesign/core/Button';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import { useEditor } from '../../editor/editor-state';
 import { paramStore } from '../../runtime/param-store';
 import {
@@ -168,11 +169,11 @@ export function FileMenu() {
 
   return (
     <>
-      <Button variant="ghost" size="sm" label="New" tooltip="New empty patch" onClick={onNew} />
-      <Button variant="ghost" size="sm" label="Open" tooltip="Open a .flora file" onClick={() => void onOpen()} />
-      <Button variant="ghost" size="sm" label="Save" tooltip="Save (Ctrl+S)" onClick={() => void onSave()} />
-      <Button variant="ghost" size="sm" label="Save As" tooltip="Save under a new name" onClick={() => void onSaveAs()} />
-      <Button variant="ghost" size="sm" label="Share" tooltip="Copy a shareable link to this patch" onClick={() => void onShare()} />
+      <Tooltip title="New empty patch"><Button variant="text" size="small" color="inherit" onClick={onNew}>New</Button></Tooltip>
+      <Tooltip title="Open a .flora file"><Button variant="text" size="small" color="inherit" onClick={() => void onOpen()}>Open</Button></Tooltip>
+      <Tooltip title="Save (Ctrl+S)"><Button variant="text" size="small" color="inherit" onClick={() => void onSave()}>Save</Button></Tooltip>
+      <Tooltip title="Save under a new name"><Button variant="text" size="small" color="inherit" onClick={() => void onSaveAs()}>Save As</Button></Tooltip>
+      <Tooltip title="Copy a shareable link to this patch"><Button variant="text" size="small" color="inherit" onClick={() => void onShare()}>Share</Button></Tooltip>
       <span style={{ color: 'var(--fg-2)', fontFamily: 'var(--font-mono)', marginLeft: 8 }}>
         {fileName}
       </span>

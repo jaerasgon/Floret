@@ -1,6 +1,6 @@
 import { useMemo, useState, useSyncExternalStore } from 'react';
 import { SearchX } from 'lucide-react';
-import { TextInput } from '@astryxdesign/core/TextInput';
+import TextField from '@mui/material/TextField';
 import { nodeRegistry } from '../nodes/registry';
 import type { NodeDef } from '../nodes/types';
 import { Panel } from './panel/Panel';
@@ -131,13 +131,13 @@ function PaletteBody() {
   return (
     <div className="palette-inner">
       <div className="palette-search-wrap">
-        <TextInput
-          label="Search nodes"
-          isLabelHidden
-          size="sm"
+        <TextField
+          aria-label="Search nodes"
+          size="small"
+          fullWidth
           placeholder="Search…"
           value={query}
-          onChange={(v) => setQuery(v)}
+          onChange={(e) => setQuery(e.target.value)}
         />
       </div>
       <div className="palette-scroll">

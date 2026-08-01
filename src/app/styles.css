@@ -270,13 +270,15 @@ input:focus, select:focus, textarea:focus {
   font-size: 12px;
 }
 
-/* Material-3 chrome density. MUI's default control metrics are tuned for
-   comfortable page layouts; the toolbar is a dense utility strip, so tighten
-   the file-menu buttons and icon/toggle controls to sit on one compact row. */
-.toolbar .MuiButton-root { padding-block: 3px; padding-inline: 7px; font-size: 13px; }
-.toolbar .MuiIconButton-root { padding: 5px; }
-.toolbar .MuiToggleButton-root { padding: 5px 7px; }
-.toolbar .MuiToggleButtonGroup-root { height: 30px; }
+/* Dense-chrome control metrics. MUI's defaults are tuned for comfortable page
+   layouts; the toolbar is a utility strip, so every control is pinned to a
+   single 28px height and made non-shrinking, so buttons, icon buttons and the
+   toggle group all sit on one perfectly-aligned row and never jump size. */
+.toolbar .MuiButtonBase-root { flex: none; box-sizing: border-box; }
+.toolbar .MuiButton-root { height: 28px; padding: 0 10px; font-size: 13px; }
+.toolbar .MuiIconButton-root { width: 28px; height: 28px; padding: 0; }
+.toolbar .MuiToggleButtonGroup-root { height: 28px; }
+.toolbar .MuiToggleButton-root { height: 28px; padding: 0 8px; }
 
 .toolbar .title {
   font-family: var(--font-display);

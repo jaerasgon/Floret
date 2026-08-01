@@ -73,11 +73,23 @@ function PreviewHeaderControls({ driverRef, name }: {
     <>
       <Tooltip label={running ? 'Pause runtime' : 'Resume runtime'} shortcut="Space">
         <Button
-          variant={running ? 'outlined' : 'contained'}
+          variant="contained"
           size="small"
-          color={running ? 'inherit' : 'primary'}
+          color="primary"
           startIcon={running ? <Pause size={13} strokeWidth={1.8} /> : <Play size={13} strokeWidth={1.8} />}
           onClick={toggleRunning}
+          // Fixed width + one variant so the button never resizes when the
+          // label swaps Play↔Pause. Running state uses a muted tonal fill;
+          // paused uses the amber primary to invite "start".
+          sx={{
+            minWidth: 92,
+            justifyContent: 'flex-start',
+            ...(running && {
+              backgroundColor: 'var(--md-sys-color-secondary-container)',
+              color: 'var(--md-sys-color-on-secondary-container)',
+              '&:hover': { backgroundColor: 'var(--md-sys-color-secondary-container)' },
+            }),
+          }}
         >
           {running ? 'Pause' : 'Play'}
         </Button>
@@ -154,6 +166,8 @@ function ExportMenu({ driverRef, name }: {
           onClick={toggle}
           disabled={running}
           onBlur={() => setTimeout(() => setMenuPos(null), 150)}
+          // Fixed width so swapping Export↔Saved doesn't resize the button.
+          sx={{ minWidth: 96, justifyContent: 'flex-start' }}
         >
           {saved ? 'Saved' : 'Export'}
         </Button>

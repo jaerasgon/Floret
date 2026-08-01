@@ -48,6 +48,12 @@ export function makeM3Theme(mode: 'light' | 'dark'): Theme {
       button: { textTransform: 'none', fontWeight: 500, letterSpacing: 0 },
     },
     components: {
+      // Drop the Material ripple everywhere for a snappier, less "stock MUI"
+      // feel that suits a dense creative tool; hover/selected states still give
+      // feedback. Also removes the touch-ripple's brief layout work on click.
+      MuiButtonBase: {
+        defaultProps: { disableRipple: true },
+      },
       // Kill MUI's dark-mode elevation overlay so surfaces stay flat M3 tones.
       MuiPaper: {
         styleOverrides: {

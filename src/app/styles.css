@@ -2337,6 +2337,14 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
 [data-category='value']     { --cat-accent: hsl(349, 58%, 63%); }
 [data-category='vec2']      { --cat-accent: hsl(356, 58%, 63%); }
 
+/* Neutral theme reaches the node graph too: on nodes, the per-category rainbow
+   is replaced by the theme's own accent, so headers + hover/select glow read
+   monochrome like the rest of the neutral UI. Scoped to `.node` (higher
+   specificity than the `[data-category='…']` rules above), so the palette's
+   category dots keep the rainbow for navigation and the pin dots keep their
+   per-type colours for wiring legibility. */
+.node[data-category] { --cat-accent: var(--accent); }
+
 .node[data-category] .node-header {
   background:
     linear-gradient(to right,

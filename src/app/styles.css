@@ -11,6 +11,10 @@
   --fg-2: #6e6960;
   --accent: #f4c542;
   --accent-dim: #a8842a;
+  /* Fixed sunflower-gold brand accent (matches the logo + the ForEach region
+     border). Used for "active/selected" states so the neutral UI has one
+     cohesive brand pop, independent of the neutral theme's grey accent. */
+  --brand-gold: #f4c542;
   --danger: #ff7a7a;
   --port-number: #d8d4cc;
   --port-vec2: #ffd47c;
@@ -1698,7 +1702,7 @@ body[data-focus='1'] .statusbar {
    No extra hard ring (that read as a ~2px double stroke). RF's own default
    selection box-shadow is suppressed below so it doesn't stack on top. */
 .node[data-selected='1'] {
-  border-color: var(--accent);
+  border-color: var(--brand-gold);
   box-shadow:
     0 0 10px color-mix(in srgb, var(--cat-accent, var(--accent)) 30%, transparent),
     0 2px 6px rgba(0, 0, 0, 0.4);
@@ -2344,6 +2348,10 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
    category dots keep the rainbow for navigation and the pin dots keep their
    per-type colours for wiring legibility. */
 .node[data-category] { --cat-accent: var(--accent); }
+/* …except a selected node lights up gold (brand accent): its header tint and
+   glow pick up --brand-gold. Placed after the neutral rule above so it wins
+   (equal specificity, later in source). */
+.node[data-selected='1'] { --cat-accent: var(--brand-gold); }
 
 .node[data-category] .node-header {
   background:

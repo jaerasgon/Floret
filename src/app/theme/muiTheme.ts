@@ -70,6 +70,18 @@ export function makeM3Theme(mode: 'light' | 'dark'): Theme {
           root: { borderRadius: 9999, minWidth: 0 },
           sizeSmall: { padding: '3px 12px', fontSize: 13, lineHeight: 1.6 },
           sizeMedium: { padding: '6px 22px' },
+          // Soft, low-contrast outline with a faint tonal hover fill — reads
+          // as a quiet secondary action, not a hard-bordered box.
+          outlined: {
+            borderColor: c.outlineVariant,
+            '&:hover': {
+              borderColor: c.outline,
+              backgroundColor: withAlpha(c.onSurface, 0.06),
+            },
+          },
+          text: {
+            '&:hover': { backgroundColor: withAlpha(c.onSurface, 0.06) },
+          },
         },
       },
       MuiIconButton: {
@@ -96,7 +108,17 @@ export function makeM3Theme(mode: 'light' | 'dark'): Theme {
       },
       MuiDialog: {
         styleOverrides: {
-          paper: { backgroundColor: c.surfaceContainerHigh, borderRadius: 28, backgroundImage: 'none' },
+          paper: {
+            backgroundColor: c.surfaceContainerHigh,
+            borderRadius: 16,
+            backgroundImage: 'none',
+            border: `1px solid ${c.outlineVariant}`,
+          },
+        },
+      },
+      MuiBackdrop: {
+        styleOverrides: {
+          root: { backgroundColor: withAlpha(c.scrim, 0.5) },
         },
       },
       MuiMenu: {

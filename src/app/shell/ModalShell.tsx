@@ -27,18 +27,26 @@ export function ModalShell({
 }) {
   return (
     <Dialog open onClose={onClose} slotProps={{ paper: { sx: { width, maxWidth: '92vw' } } }}>
-      <DialogTitle component="div" sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, pr: 1.5 }}>
+      <DialogTitle
+        component="div"
+        sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, px: 3, pt: 2.5, pb: subtitle ? 1.5 : 1 }}
+      >
         <div style={{ flex: 1, minWidth: 0 }}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 500, lineHeight: 1.3 }}>
+          <Typography variant="subtitle1" component="h2" sx={{ fontWeight: 600, lineHeight: 1.35 }}>
             {title}
           </Typography>
           {subtitle && (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, lineHeight: 1.45 }}>
               {subtitle}
             </Typography>
           )}
         </div>
-        <IconButton size="small" aria-label="Close" onClick={onClose} edge="end">
+        <IconButton
+          size="small"
+          aria-label="Close"
+          onClick={onClose}
+          sx={{ mt: -0.5, mr: -0.5, color: 'text.secondary' }}
+        >
           <X size={16} strokeWidth={1.8} />
         </IconButton>
       </DialogTitle>

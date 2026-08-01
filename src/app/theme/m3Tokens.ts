@@ -1,12 +1,11 @@
 /**
- * Material 3 colour roles, generated once from the seed colour #F4C542
- * (Floret amber) with @material/material-color-utilities' `themeFromSourceColor`.
- * Surface-container tones are taken from the neutral tonal palette per the M3
- * spec. Baked as constants so there is no runtime dependency on the generator
- * (the roles are deterministic for a fixed seed).
- *
- * To regenerate for a different seed, feed the seed through
- * material-color-utilities and replace both maps.
+ * Material 3 colour roles for Floret. The chromatic roles (primary / secondary
+ * / tertiary / error and their containers) were generated from the seed colour
+ * #F4C542 (Floret amber) with @material/material-color-utilities. The surface,
+ * background, outline and inverse roles have been hand-neutralised to a clean
+ * warm-grey ramp: a chromatic seed otherwise tints every surface brown, which
+ * reads muddy — neutral surfaces + an amber accent are crisper. Baked as
+ * constants (deterministic, no runtime generator dependency).
  */
 export type M3Roles = {
   primary: string; onPrimary: string; primaryContainer: string; onPrimaryContainer: string;
@@ -30,14 +29,14 @@ export const m3Light: M3Roles = {
   secondary: '#6a5d3f', onSecondary: '#ffffff', secondaryContainer: '#f3e1bb', onSecondaryContainer: '#231a04',
   tertiary: '#486549', onTertiary: '#ffffff', tertiaryContainer: '#caebc7', onTertiaryContainer: '#05210a',
   error: '#ba1a1a', onError: '#ffffff', errorContainer: '#ffdad6', onErrorContainer: '#410002',
-  background: '#fffbff', onBackground: '#1e1b16',
-  surface: '#fffbff', onSurface: '#1e1b16', surfaceVariant: '#ece1cf', onSurfaceVariant: '#4c4639',
-  outline: '#7e7667', outlineVariant: '#cfc5b4',
-  inverseSurface: '#33302a', inverseOnSurface: '#f7f0e7', inversePrimary: '#efc13e',
+  background: '#fbfbfa', onBackground: '#1c1b1a',
+  surface: '#fbfbfa', onSurface: '#1c1b1a', surfaceVariant: '#e4e2dd', onSurfaceVariant: '#47463f',
+  outline: '#7a7871', outlineVariant: '#cbc9c3',
+  inverseSurface: '#313030', inverseOnSurface: '#f3f1ee', inversePrimary: '#efc13e',
   shadow: '#000000', scrim: '#000000',
-  surfaceDim: '#e0d9d0', surfaceBright: '#fff8f1',
-  surfaceContainerLowest: '#ffffff', surfaceContainerLow: '#faf2e9', surfaceContainer: '#f4ede4',
-  surfaceContainerHigh: '#eee7de', surfaceContainerHighest: '#e9e1d9',
+  surfaceDim: '#dcdad6', surfaceBright: '#fbfbfa',
+  surfaceContainerLowest: '#ffffff', surfaceContainerLow: '#f5f4f2', surfaceContainer: '#efeeeb',
+  surfaceContainerHigh: '#e9e8e5', surfaceContainerHighest: '#e3e2df',
 };
 
 export const m3Dark: M3Roles = {
@@ -45,14 +44,14 @@ export const m3Dark: M3Roles = {
   secondary: '#d6c5a0', onSecondary: '#392f15', secondaryContainer: '#51462a', onSecondaryContainer: '#f3e1bb',
   tertiary: '#aecfac', onTertiary: '#1b361e', tertiaryContainer: '#314d33', onTertiaryContainer: '#caebc7',
   error: '#ffb4ab', onError: '#690005', errorContainer: '#93000a', onErrorContainer: '#ffb4ab',
-  background: '#1e1b16', onBackground: '#e9e1d9',
-  surface: '#1e1b16', onSurface: '#e9e1d9', surfaceVariant: '#4c4639', onSurfaceVariant: '#cfc5b4',
-  outline: '#989080', outlineVariant: '#4c4639',
-  inverseSurface: '#e9e1d9', inverseOnSurface: '#33302a', inversePrimary: '#765b00',
+  background: '#131312', onBackground: '#e7e5e1',
+  surface: '#131312', onSurface: '#e9e7e3', surfaceVariant: '#454440', onSurfaceVariant: '#c9c6c0',
+  outline: '#928f88', outlineVariant: '#403f3c',
+  inverseSurface: '#e9e7e3', inverseOnSurface: '#313030', inversePrimary: '#765b00',
   shadow: '#000000', scrim: '#000000',
-  surfaceDim: '#16130e', surfaceBright: '#3c3933',
-  surfaceContainerLowest: '#100e09', surfaceContainerLow: '#1e1b16', surfaceContainer: '#221f1a',
-  surfaceContainerHigh: '#2d2a24', surfaceContainerHighest: '#38342e',
+  surfaceDim: '#131312', surfaceBright: '#3a3936',
+  surfaceContainerLowest: '#0e0e0d', surfaceContainerLow: '#1b1b19', surfaceContainer: '#1f1f1d',
+  surfaceContainerHigh: '#2a2926', surfaceContainerHighest: '#353431',
 };
 
 /** `--md-sys-color-<role>` CSS custom-property name for an M3 role key. */

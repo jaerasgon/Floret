@@ -11,10 +11,8 @@ import {
   Sun,
   Moon,
 } from 'lucide-react';
-import IconButton from '@mui/material/IconButton';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Tooltip from '@mui/material/Tooltip';
+import { IconButton } from '@astryxdesign/core/IconButton';
+import { ToggleButton, ToggleButtonGroup } from '@astryxdesign/core/ToggleButton';
 import { useAppStore } from '../store';
 import { usePrefs } from '../prefs';
 import { useEditor } from '../../editor/editor-state';
@@ -23,7 +21,6 @@ import { autoLayoutPatch } from '../../editor/autoLayout';
 import { useLibraryUI } from '../libraryUI';
 import { FileMenu } from './FileMenu';
 import { SettingsModal } from './SettingsModal';
-import { FloretLogo } from './FloretLogo';
 
 const ICON = 15;
 
@@ -75,8 +72,8 @@ export function Toolbar() {
     helpVisible ? 'help' : null,
   ].filter(Boolean) as string[];
 
-  const onPanelChange = (_e: React.MouseEvent<HTMLElement>, value: string[]) => {
-    const next = new Set(value);
+  const onPanelChange = (value: string | null | string[]) => {
+    const next = new Set(Array.isArray(value) ? value : value ? [value] : []);
     if (next.has('library') !== libraryVisible) toggleLibrary();
     if (next.has('nodes') !== paletteVisible) setPref('paletteVisible', next.has('nodes'));
     if (next.has('help') !== helpVisible) setPref('helpVisible', next.has('help'));
@@ -84,78 +81,89 @@ export function Toolbar() {
 
   return (
     <div className="toolbar">
-      <span className="title" aria-label="Floret" title="Floret">
-        <FloretLogo size={22} />
-      </span>
+      <span className="title">FLORET</span>
       <span className="toolbar-divider" />
       <FileMenu />
       <span className="toolbar-divider" />
-      <ToggleButtonGroup size="small" value={panelValue} onChange={onPanelChange} aria-label="Panels">
-        <ToggleButton value="library" aria-label={libraryVisible ? 'Hide library' : 'Show library'}>
-          <Tooltip title={libraryVisible ? 'Hide library' : 'Show library'}>
-            <LibraryIcon size={ICON} strokeWidth={1.6} />
-          </Tooltip>
-        </ToggleButton>
-        <ToggleButton value="nodes" aria-label={paletteVisible ? 'Hide nodes' : 'Show nodes'}>
-          <Tooltip title={paletteVisible ? 'Hide nodes' : 'Show nodes'}>
-            <NodesIcon size={ICON} strokeWidth={1.6} />
-          </Tooltip>
-        </ToggleButton>
-        <ToggleButton value="help" aria-label={helpVisible ? 'Hide help' : 'Show help'}>
-          <Tooltip title={helpVisible ? 'Hide help' : 'Show help'}>
-            <HelpIcon size={ICON} strokeWidth={1.6} />
-          </Tooltip>
-        </ToggleButton>
-      </ToggleButtonGroup>
-      <Tooltip title={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}>
-        <IconButton
-          size="small"
-          aria-label="Toggle colour theme"
-          onClick={() => setPref('theme', theme === 'light' ? 'dark' : 'light')}
-        >
-          {theme === 'light' ? <Moon size={ICON} strokeWidth={1.6} /> : <Sun size={ICON} strokeWidth={1.6} />}
-        </IconButton>
-      </Tooltip>
-      <div className="spacer" />
-      <Tooltip title="Auto-arrange nodes  ⇧T">
-        <IconButton size="small" aria-label="Auto-arrange nodes" onClick={tidy}>
-          <LayoutGrid size={ICON} strokeWidth={1.6} />
-        </IconButton>
-      </Tooltip>
-      <Tooltip title={wireFlow ? 'Hide wire flow' : 'Animate wires'}>
+      <ToggleButtonGroup
+        type="multiple"
+        size="sm"
+        label="Panels"
+        value={panelValue}
+        onChange={onPanelChange}
+      >
         <ToggleButton
-          size="small"
-          value="wire-flow"
-          selected={wireFlow}
-          aria-label={wireFlow ? 'Hide wire flow' : 'Animate wires'}
-          onChange={() => setPref('wireFlowAnimation', !wireFlow)}
-        >
-          <Waves size={ICON} strokeWidth={1.6} />
-        </ToggleButton>
-      </Tooltip>
-      <Tooltip title="Restart scene — reboot runtime state (particles respawn, trails clear)">
-        <IconButton size="small" aria-label="Restart scene" onClick={refresh}>
-          <RotateCcw size={ICON - 1} strokeWidth={1.8} />
-        </IconButton>
-      </Tooltip>
-      <Tooltip title={firstRenderer ? 'Focus mode — present the art full-screen' : 'Add a Renderer node to use focus mode'}>
-        {/* span keeps the Tooltip working while the button is disabled */}
-        <span>
-          <IconButton
-            size="small"
-            aria-label="Enter focus mode"
-            disabled={!firstRenderer}
-            onClick={() => firstRenderer && enterFocus(firstRenderer.id)}
-          >
-            <Maximize2 size={ICON} strokeWidth={1.6} />
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Tooltip title="Settings">
-        <IconButton size="small" aria-label="Settings" onClick={() => setSettingsOpen(true)}>
-          <SettingsIcon size={ICON} strokeWidth={1.6} />
-        </IconButton>
-      </Tooltip>
+          value="library"
+          isIconOnly
+          size="sm"
+          label={libraryVisible ? 'Hide library' : 'Show library'}
+          icon={<LibraryIcon size={ICON} strokeWidth={1.6} />}
+        />
+        <ToggleButton
+          value="nodes"
+          isIconOnly
+          size="sm"
+          label={paletteVisible ? 'Hide nodes' : 'Show nodes'}
+          icon={<NodesIcon size={ICON} strokeWidth={1.6} />}
+        />
+        <ToggleButton
+          value="help"
+          isIconOnly
+          size="sm"
+          label={helpVisible ? 'Hide help' : 'Show help'}
+          icon={<HelpIcon size={ICON} strokeWidth={1.6} />}
+        />
+      </ToggleButtonGroup>
+      <IconButton
+        variant="ghost"
+        size="sm"
+        label="Toggle colour theme"
+        tooltip={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
+        onClick={() => setPref('theme', theme === 'light' ? 'dark' : 'light')}
+        icon={theme === 'light' ? <Moon size={ICON} strokeWidth={1.6} /> : <Sun size={ICON} strokeWidth={1.6} />}
+      />
+      <div className="spacer" />
+      <IconButton
+        variant="ghost"
+        size="sm"
+        label="Auto-arrange nodes"
+        tooltip="Auto-arrange nodes  ⇧T"
+        onClick={tidy}
+        icon={<LayoutGrid size={ICON} strokeWidth={1.6} />}
+      />
+      <ToggleButton
+        isIconOnly
+        size="sm"
+        label={wireFlow ? 'Hide wire flow' : 'Animate wires'}
+        isPressed={wireFlow}
+        onPressedChange={(pressed) => setPref('wireFlowAnimation', pressed)}
+        icon={<Waves size={ICON} strokeWidth={1.6} />}
+      />
+      <IconButton
+        variant="ghost"
+        size="sm"
+        label="Restart scene"
+        tooltip="Restart scene — reboot runtime state (particles respawn, trails clear)"
+        onClick={refresh}
+        icon={<RotateCcw size={ICON - 1} strokeWidth={1.8} />}
+      />
+      <IconButton
+        variant="ghost"
+        size="sm"
+        label="Enter focus mode"
+        tooltip={firstRenderer ? 'Focus mode — present the art full-screen' : 'Add a Renderer node to use focus mode'}
+        isDisabled={!firstRenderer}
+        onClick={() => firstRenderer && enterFocus(firstRenderer.id)}
+        icon={<Maximize2 size={ICON} strokeWidth={1.6} />}
+      />
+      <IconButton
+        variant="ghost"
+        size="sm"
+        label="Settings"
+        tooltip="Settings"
+        onClick={() => setSettingsOpen(true)}
+        icon={<SettingsIcon size={ICON} strokeWidth={1.6} />}
+      />
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
     </div>
   );

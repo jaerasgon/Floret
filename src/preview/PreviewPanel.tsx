@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Pause, Play, Download, Check } from 'lucide-react';
-import Button from '@mui/material/Button';
+import { Button } from '@astryxdesign/core/Button';
 import { Preview } from './Preview';
 import { Panel } from '../editor/panel/Panel';
 import { useAppStore } from '../app/store';
@@ -73,26 +73,12 @@ function PreviewHeaderControls({ driverRef, name }: {
     <>
       <Tooltip label={running ? 'Pause runtime' : 'Resume runtime'} shortcut="Space">
         <Button
-          variant="contained"
-          size="small"
-          color="primary"
-          startIcon={running ? <Pause size={13} strokeWidth={1.8} /> : <Play size={13} strokeWidth={1.8} />}
+          variant={running ? 'secondary' : 'primary'}
+          size="sm"
+          label={running ? 'Pause' : 'Play'}
+          icon={running ? <Pause size={13} strokeWidth={1.8} /> : <Play size={13} strokeWidth={1.8} />}
           onClick={toggleRunning}
-          // Fixed width + one variant so the button never resizes when the
-          // label swaps Play↔Pause. Running state uses a muted tonal fill;
-          // paused uses the amber primary to invite "start".
-          sx={{
-            minWidth: 92,
-            justifyContent: 'flex-start',
-            ...(running && {
-              backgroundColor: 'var(--md-sys-color-secondary-container)',
-              color: 'var(--md-sys-color-on-secondary-container)',
-              '&:hover': { backgroundColor: 'var(--md-sys-color-secondary-container)' },
-            }),
-          }}
-        >
-          {running ? 'Pause' : 'Play'}
-        </Button>
+        />
       </Tooltip>
       <ExportMenu driverRef={driverRef} name={name} />
     </>
@@ -159,18 +145,14 @@ function ExportMenu({ driverRef, name }: {
       <Tooltip label={running ? 'Pause to export the current frame' : 'Export the paused frame as PNG / SVG'}>
         <Button
           ref={btnRef}
-          variant="outlined"
-          size="small"
-          color="inherit"
-          startIcon={saved ? <Check size={13} strokeWidth={2} /> : <Download size={13} strokeWidth={1.8} />}
+          variant="secondary"
+          size="sm"
+          label={saved ? 'Saved' : 'Export'}
+          icon={saved ? <Check size={13} strokeWidth={2} /> : <Download size={13} strokeWidth={1.8} />}
           onClick={toggle}
-          disabled={running}
+          isDisabled={running}
           onBlur={() => setTimeout(() => setMenuPos(null), 150)}
-          // Fixed width so swapping Export↔Saved doesn't resize the button.
-          sx={{ minWidth: 96, justifyContent: 'flex-start' }}
-        >
-          {saved ? 'Saved' : 'Export'}
-        </Button>
+        />
       </Tooltip>
       {/* Portal to <body> so the dock tab bar's `overflow:hidden` can't
           clip the dropdown to a sliver. Positioned at the button's rect. */}

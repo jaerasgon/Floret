@@ -1,49 +1,20 @@
 import { useState } from 'react';
 import { AlertTriangle, Activity } from 'lucide-react';
-import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
-import Tooltip from '@mui/material/Tooltip';
+import { StatusDot } from '@astryxdesign/core/StatusDot';
+import { Badge } from '@astryxdesign/core/Badge';
+import { Tooltip } from '@astryxdesign/core/Tooltip';
 import { useAppStore } from '../store';
 import { useEditor } from '../../editor/editor-state';
 
-// Runtime state → status-dot colour. The dot is the strongest signal in the
-// whole status bar: green = running clean, amber = running with warnings,
-// red = halted/error, grey = paused.
-const DOT_COLOR = {
-  running: '#7bd88f',
-  warning: 'var(--md-sys-color-primary)',
-  error: 'var(--md-sys-color-error)',
-  paused: 'var(--md-sys-color-outline)',
+// Runtime state → Astryx StatusDot semantic variant. The dot is the strongest
+// signal in the whole status bar: green = running clean, yellow = running with
+// warnings, red = halted/error, grey = paused.
+const DOT_VARIANT = {
+  running: 'success',
+  warning: 'warning',
+  error: 'error',
+  paused: 'neutral',
 } as const;
-
-/** Small semantic status dot (replaces Astryx's StatusDot). */
-function StatusDot({ state, pulsing, title }: {
-  state: keyof typeof DOT_COLOR; pulsing: boolean; title: string;
-}) {
-  return (
-    <Tooltip title={title} arrow>
-      <Box
-        component="span"
-        role="img"
-        aria-label={title}
-        sx={{
-          display: 'inline-block',
-          width: 9,
-          height: 9,
-          borderRadius: '50%',
-          backgroundColor: DOT_COLOR[state],
-          boxShadow: pulsing ? `0 0 0 0 ${DOT_COLOR[state]}` : 'none',
-          animation: pulsing ? 'floret-dot-pulse 1.8s ease-out infinite' : 'none',
-          '@keyframes floret-dot-pulse': {
-            '0%': { boxShadow: `0 0 0 0 color-mix(in srgb, ${DOT_COLOR[state]} 70%, transparent)` },
-            '70%': { boxShadow: `0 0 0 5px color-mix(in srgb, ${DOT_COLOR[state]} 0%, transparent)` },
-            '100%': { boxShadow: `0 0 0 0 color-mix(in srgb, ${DOT_COLOR[state]} 0%, transparent)` },
-          },
-        }}
-      />
-    </Tooltip>
-  );
-}
 
 export function StatusBar() {
   const running = useAppStore((s) => s.running);
@@ -73,27 +44,28 @@ export function StatusBar() {
       <div className="statusbar-left">
         <span className="status-state" role="status">
           <StatusDot
-            state={state}
-            pulsing={running}
-            title={running ? 'Runtime active' : 'Runtime paused'}
+            variant={DOT_VARIANT[state]}
+            isPulsing={running}
+            label={running ? 'Runtime active' : 'Runtime paused'}
+            tooltip={running ? 'Runtime active' : 'Runtime paused'}
           />
           <span className="status-state-label">{running ? 'live' : 'paused'}</span>
         </span>
         <span className="status-sep" />
-        <Tooltip title="Frames per second" arrow>
+        <Tooltip content="Frames per second">
           <span className="status-pill">
             <Activity size={10} strokeWidth={1.8} />
             <span className="status-pill-label">FPS</span>
             <span className="status-pill-value">{fps.toFixed(1)}</span>
           </span>
         </Tooltip>
-        <Tooltip title="Frame count" arrow>
+        <Tooltip content="Frame count">
           <span className="status-pill">
             <span className="status-pill-label">FRAME</span>
             <span className="status-pill-value">{frameCount}</span>
           </span>
         </Tooltip>
-        <Tooltip title="Number of nodes in the patch" arrow>
+        <Tooltip content="Number of nodes in the patch">
           <span className="status-pill">
             <span className="status-pill-label">NODES</span>
             <span className="status-pill-value">{nodeCount}</span>
@@ -113,10 +85,8 @@ export function StatusBar() {
               aria-expanded={open}
               aria-label="Show warnings"
             >
-              <Chip
-                size="small"
-                color="warning"
-                variant="outlined"
+              <Badge
+                variant="warning"
                 icon={<AlertTriangle size={11} strokeWidth={1.8} />}
                 label={`${warnings.length} warning${warnings.length === 1 ? '' : 's'}`}
               />

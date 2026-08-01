@@ -26,10 +26,10 @@
   --port-collider: #e0e0e0; /* near-white — collider */
   --port-particle: #b890ff; /* lavender — particle buffer */
   --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  /* Roboto — Material 3's type family — for UI body and display, so the whole
-     app (chrome + node graph) reads as one Material system. */
-  --font-ui: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-display: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-ui: 'Hanken Grotesk Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Display face for brand, panel/node titles, section headers — a distinctive
+     grotesque that carries the editorial feel where type gets large. */
+  --font-display: 'Space Grotesk Variable', 'Hanken Grotesk Variable', -apple-system, sans-serif;
 
   /* Motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -106,31 +106,28 @@
   --minimap-node-stroke: rgba(255, 255, 255, 0.6);
 }
 
-/* ── Material 3 design-token bridge ───────────────────────────────────────
+/* ── Astryx design-token bridge ──────────────────────────────────────────
    Floret funnels every surface / text / border / accent through the handful
-   of vars below, so redefining them in terms of Material 3 colour roles
-   re-skins the whole app — the node graph included — onto the Material system
-   in one place, with no changes to the 15 node components or their 147 CSS
-   rules. The --md-sys-color-* vars are emitted per scheme (see main.tsx's
-   GlobalStyles) and switch on `data-theme`, so one definition covers both
-   modes; the list targets `:root` AND `:root[data-theme='light']` so it wins
-   over both Floret palette blocks above regardless of the active mode.
-   Surfaces climb the M3 surface-container elevation ramp (base → hover). Node
-   geometry, the type-coded --port-* pin colours, motion and shadows stay
-   Floret's own. */
+   of vars below, so redefining them in terms of Astryx design tokens re-skins
+   the whole app — the node graph included — onto the design system in one
+   place, with no changes to the 15 node components or their 147 CSS rules.
+   Astryx's tokens are `light-dark()`-aware and driven by `color-scheme`, so a
+   single definition covers both modes; the list targets `:root` AND
+   `:root[data-theme='light']` so it wins over both palette blocks above
+   regardless of the active mode. Node geometry, the type-coded --port-* pin
+   colours, fonts, motion and shadows stay Floret's own. */
 :root,
 :root[data-theme='light'] {
-  --bg-0: var(--md-sys-color-surface-container-lowest);   /* canvas base — darkest */
-  --bg-1: var(--md-sys-color-surface-container-low);       /* panels + node bodies */
-  --bg-2: var(--md-sys-color-surface-container-high);      /* raised / inputs */
-  --bg-3: var(--md-sys-color-surface-container-highest);   /* hover / pressed */
-  --border: var(--md-sys-color-outline-variant);
-  --fg-0: var(--md-sys-color-on-surface);
-  --fg-1: var(--md-sys-color-on-surface-variant);
-  --fg-2: var(--md-sys-color-outline);
-  --accent: var(--md-sys-color-primary);
-  --accent-dim: color-mix(in srgb, var(--md-sys-color-primary) 62%, var(--md-sys-color-surface-container-low));
-  --danger: var(--md-sys-color-error);
+  --bg-0: var(--color-background-body);                                                     /* canvas base */
+  --bg-1: var(--color-background-surface);                                                  /* panels + node bodies */
+  --bg-2: var(--color-background-card);                                                      /* raised / inputs */
+  --bg-3: color-mix(in srgb, var(--color-background-card) 88%, var(--color-text-primary));   /* hover / pressed */
+  --border: color-mix(in srgb, var(--color-border-emphasized) 42%, var(--color-background-surface));
+  --fg-0: var(--color-text-primary);
+  --fg-1: var(--color-text-secondary);
+  --fg-2: color-mix(in srgb, var(--color-text-secondary) 62%, var(--color-background-surface));
+  --accent: var(--color-accent);
+  --accent-dim: color-mix(in srgb, var(--color-accent) 62%, var(--color-background-surface));
 }
 
 /* Node-canvas dot grid follows the theme (React Flow renders the dots inline). */
@@ -262,29 +259,18 @@ input:focus, select:focus, textarea:focus {
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 0 10px;
-  min-height: 40px;
   background: var(--bg-1);
   border-bottom: 1px solid var(--border);
   font-size: 12px;
 }
 
-/* Dense-chrome control metrics. MUI's defaults are tuned for comfortable page
-   layouts; the toolbar is a utility strip, so every control is pinned to a
-   single 28px height and made non-shrinking, so buttons, icon buttons and the
-   toggle group all sit on one perfectly-aligned row and never jump size. */
-.toolbar .MuiButtonBase-root { flex: none; box-sizing: border-box; }
-.toolbar .MuiButton-root { height: 28px; padding: 0 10px; font-size: 13px; }
-.toolbar .MuiIconButton-root { width: 28px; height: 28px; padding: 0; }
-.toolbar .MuiToggleButtonGroup-root { height: 28px; }
-.toolbar .MuiToggleButton-root { height: 28px; padding: 0 8px; }
-
 .toolbar .title {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px;
-  line-height: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 2px;
   color: var(--fg-0);
 }
 
@@ -1410,7 +1396,6 @@ body[data-focus='1'] .statusbar {
   font-size: 9px;
   color: var(--fg-2);
   margin-left: auto;
-  padding-left: 8px;
 }
 
 /* ★ favorite toggle — dim, revealed on row hover; accent when on. Shared by

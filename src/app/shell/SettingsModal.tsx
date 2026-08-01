@@ -1,71 +1,63 @@
-import Switch from '@mui/material/Switch';
-import Button from '@mui/material/Button';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog';
+import { Switch } from '@astryxdesign/core/Switch';
+import { Button } from '@astryxdesign/core/Button';
 import { usePrefs } from '../prefs';
-import { ModalShell } from './ModalShell';
 
 /**
  * Settings modal — toggles backed by the prefs store. Flipping a switch
  * persists to localStorage immediately; there's no apply / cancel step.
- * Esc or a backdrop click closes.
+ * Esc or a backdrop click closes (handled by Astryx Dialog).
  *
  * Resist the urge to add per-section explanatory paragraphs here — each
- * switch's description carries enough context; verbose body text gets
+ * switch's `description` carries enough context; verbose body text gets
  * stale and bloats the modal.
  */
 interface Props {
   onClose: () => void;
 }
 
-/** A labelled switch with a secondary description line, label on the left. */
-function SettingRow({ label, description, checked, onChange }: {
-  label: string; description: string; checked: boolean; onChange: (v: boolean) => void;
-}) {
-  return (
-    <FormControlLabel
-      labelPlacement="start"
-      sx={{ ml: 0, mr: 0, display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'flex-start' }}
-      control={<Switch checked={checked} onChange={(e) => onChange(e.target.checked)} />}
-      label={
-        <Box sx={{ textAlign: 'left' }}>
-          <Typography variant="body2" sx={{ fontWeight: 500 }}>{label}</Typography>
-          <Typography variant="caption" color="text.secondary">{description}</Typography>
-        </Box>
-      }
-    />
-  );
-}
-
 export function SettingsModal({ onClose }: Props) {
   const prefs = usePrefs();
 
   return (
-    <ModalShell title="Settings" width={420} onClose={onClose}>
+    <Dialog
+      isOpen
+      onOpenChange={(open) => { if (!open) onClose(); }}
+      purpose="info"
+      width={420}
+    >
+      <DialogHeader title="Settings" onOpenChange={(open) => { if (!open) onClose(); }} />
       <div className="settings-body">
         <div className="settings-section">
           <div className="settings-section-title">Editor behavior</div>
-          <SettingRow
+          <Switch
             label="Wire flow animation"
             description="Marching dashes along spread-kind wires."
-            checked={prefs.wireFlowAnimation}
+            value={prefs.wireFlowAnimation}
             onChange={(v) => prefs.set('wireFlowAnimation', v)}
+            labelPosition="start"
+            labelSpacing="spread"
           />
-          <SettingRow
+          <Switch
             label="Auto-grow regions"
             description="Region frames expand when a child is dragged near the edge."
-            checked={prefs.autoGrowRegions}
+            value={prefs.autoGrowRegions}
             onChange={(v) => prefs.set('autoGrowRegions', v)}
+            labelPosition="start"
+            labelSpacing="spread"
           />
         </div>
 
         <div className="settings-section">
-          <Button variant="text" size="small" color="inherit" onClick={prefs.reset}>
-            Reset to defaults
-          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            label="Reset to defaults"
+            tooltip="Restore all settings to their defaults"
+            onClick={prefs.reset}
+          />
         </div>
       </div>
-    </ModalShell>
+    </Dialog>
   );
 }

@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { List, LayoutGrid, Columns3, ChevronLeft, Folder, FolderOpen, BookOpen, Download } from 'lucide-react';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
+import { ToggleButton, ToggleButtonGroup } from '@astryxdesign/core/ToggleButton';
+import { Button } from '@astryxdesign/core/Button';
+import { TextInput } from '@astryxdesign/core/TextInput';
 import { Panel } from './panel/Panel';
 import { useEditor } from './editor-state';
 import { paramStore } from '../runtime/param-store';
@@ -80,21 +78,15 @@ function LibraryPanelInner() {
       hideClose
       headerActions={
         <ToggleButtonGroup
-          exclusive
-          size="small"
-          aria-label="Library view"
+          type="single"
+          size="sm"
+          label="Library view"
           value={viewMode}
-          onChange={(_e, v) => { if (v) setViewMode(v as typeof viewMode); }}
+          onChange={(v) => { if (v) setViewMode(v as typeof viewMode); }}
         >
-          <ToggleButton value="list" aria-label="List view">
-            <Tooltip title="List view"><List size={12} strokeWidth={1.7} /></Tooltip>
-          </ToggleButton>
-          <ToggleButton value="grid" aria-label="Icon view">
-            <Tooltip title="Icon view"><LayoutGrid size={12} strokeWidth={1.7} /></Tooltip>
-          </ToggleButton>
-          <ToggleButton value="column" aria-label="Column view">
-            <Tooltip title="Column view"><Columns3 size={12} strokeWidth={1.7} /></Tooltip>
-          </ToggleButton>
+          <ToggleButton value="list" isIconOnly size="sm" label="List view" icon={<List size={12} strokeWidth={1.7} />} />
+          <ToggleButton value="grid" isIconOnly size="sm" label="Icon view" icon={<LayoutGrid size={12} strokeWidth={1.7} />} />
+          <ToggleButton value="column" isIconOnly size="sm" label="Column view" icon={<Columns3 size={12} strokeWidth={1.7} />} />
         </ToggleButtonGroup>
       }
     >
@@ -186,29 +178,21 @@ function LibraryBody() {
   return (
     <div className="library-panel-body">
       <div className="library-actions">
-        <Tooltip title="Import a floret.library JSON file">
-          <Button
-            variant="outlined"
-            size="small"
-            color="inherit"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            ＋ Import…
-          </Button>
-        </Tooltip>
-        <Tooltip title={nodes.length === 0 ? 'Add nodes to the canvas first' : 'Save the current patch as a library entry'}>
-          <span>
-            <Button
-              variant="outlined"
-              size="small"
-              color="inherit"
-              disabled={nodes.length === 0}
-              onClick={() => setSaveOpen(true)}
-            >
-              ↓ Save patch…
-            </Button>
-          </span>
-        </Tooltip>
+        <Button
+          variant="secondary"
+          size="sm"
+          label="＋ Import…"
+          tooltip="Import a floret.library JSON file"
+          onClick={() => fileInputRef.current?.click()}
+        />
+        <Button
+          variant="secondary"
+          size="sm"
+          label="↓ Save patch…"
+          isDisabled={nodes.length === 0}
+          tooltip={nodes.length === 0 ? 'Add nodes to the canvas first' : 'Save the current patch as a library entry'}
+          onClick={() => setSaveOpen(true)}
+        />
         <input
           ref={fileInputRef}
           type="file"
@@ -219,13 +203,13 @@ function LibraryBody() {
       </div>
       {libraries.length > 0 && (
         <div className="library-search">
-          <TextField
-            aria-label="Search all patches"
-            size="small"
-            fullWidth
+          <TextInput
+            label="Search all patches"
+            isLabelHidden
+            size="sm"
             placeholder="Search all patches…"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(v) => setQuery(v)}
           />
         </div>
       )}

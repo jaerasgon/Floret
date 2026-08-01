@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Theme } from '@astryxdesign/core/theme';
-import { butterTheme } from '@astryxdesign/theme-butter/built';
+import { neutralTheme } from '@astryxdesign/theme-neutral/built';
 import { App } from './app/App';
 import { usePrefs } from './app/prefs';
 // Bundled type system (self-hosted woff2 via fontsource — no CDN, works offline):
@@ -16,7 +16,7 @@ import '@fontsource-variable/jetbrains-mono';
 // migration, and cedes ground surface-by-surface as chrome moves to Astryx.
 import '@astryxdesign/core/reset.css';
 import '@astryxdesign/core/astryx.css';
-import '@astryxdesign/theme-butter/theme.css';
+import '@astryxdesign/theme-neutral/theme.css';
 import './app/styles.css';
 import '@xyflow/react/dist/style.css';
 
@@ -75,7 +75,7 @@ document.documentElement.setAttribute('data-theme', initialMode);
 function Root() {
   const theme = usePrefs((s) => s.theme);
   return (
-    <Theme theme={butterTheme} mode={theme}>
+    <Theme theme={neutralTheme} mode={theme}>
       <App />
     </Theme>
   );

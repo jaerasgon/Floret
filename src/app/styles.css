@@ -108,7 +108,7 @@
 
 /* ── Astryx design-token bridge ──────────────────────────────────────────
    Floret funnels every surface / text / border / accent through the handful
-   of vars below, so redefining them in terms of Astryx butter tokens re-skins
+   of vars below, so redefining them in terms of Astryx design tokens re-skins
    the whole app — the node graph included — onto the design system in one
    place, with no changes to the 15 node components or their 147 CSS rules.
    Astryx's tokens are `light-dark()`-aware and driven by `color-scheme`, so a
@@ -128,59 +128,6 @@
   --fg-2: color-mix(in srgb, var(--color-text-secondary) 62%, var(--color-background-surface));
   --accent: var(--color-accent);
   --accent-dim: color-mix(in srgb, var(--color-accent) 62%, var(--color-background-surface));
-}
-
-/* ── Neutral dark theme ───────────────────────────────────────────────────
-   Dark mode uses a neutral grey palette instead of Astryx butter's warm
-   brown/cream/yellow. Astryx emits its tokens as `light-dark(L, D)` inside
-   `@layer astryx-theme`; this block is unlayered, so it wins over the layered
-   defaults regardless of specificity, and re-defining the core tokens flatly
-   here overrides only their dark values. Because the whole app — chrome and
-   the node graph (via the token bridge above) — resolves colour through these
-   Astryx tokens, this single block re-skins everything to neutral. Light mode
-   still resolves the butter values. Categorical + status palettes (blue/green/
-   error/…) and the type-coded --port-* pins stay as-is: they carry meaning,
-   not warmth. */
-:root[data-theme='dark'] {
-  color-scheme: dark;
-
-  /* Surfaces — cool neutral greys */
-  --color-background-body: #0e0e10;      /* darkest — canvas base */
-  --color-background-surface: #171719;   /* panels + node bodies */
-  --color-background-card: #202023;      /* raised / inputs / popovers */
-  --color-background-popover: #202023;
-  --color-background-muted: #202023;
-  --color-background-inverted: #f5f5f6;
-  --color-overlay: #0e0e10cc;
-  --color-overlay-hover: #ececee0d;
-  --color-overlay-pressed: #ececee1a;
-  --color-neutral: #ececee1a;
-
-  /* Text + icons */
-  --color-text-primary: #ececee;
-  --color-text-secondary: #9a9aa1;
-  --color-text-disabled: #5c5c63;
-  --color-icon-primary: #ececee;
-  --color-icon-secondary: #9a9aa1;
-  --color-icon-disabled: #5c5c63;
-
-  /* Borders */
-  --color-border: #ececee1a;
-  --color-border-emphasized: #86868d;
-
-  /* Accent — monochrome (near-white on dark), with dark ink on accent fills */
-  --color-accent: #e4e4e7;
-  --color-accent-muted: #e4e4e733;
-  --color-text-accent: #e4e4e7;
-  --color-icon-accent: #e4e4e7;
-  --color-on-accent: #18181b;
-
-  /* Effects */
-  --color-skeleton: #35353a;
-  --color-shadow: #0000004d;
-
-  /* Floret node-canvas dot grid — neutral to match */
-  --grid-line: #202024;
 }
 
 /* Node-canvas dot grid follows the theme (React Flow renders the dots inline). */

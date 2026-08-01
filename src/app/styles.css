@@ -281,10 +281,10 @@ input:focus, select:focus, textarea:focus {
 .toolbar .MuiToggleButton-root { height: 28px; padding: 0 8px; }
 
 .toolbar .title {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 2px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  line-height: 0;
   color: var(--fg-0);
 }
 

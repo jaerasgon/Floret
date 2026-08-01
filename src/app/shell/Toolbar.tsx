@@ -23,6 +23,7 @@ import { autoLayoutPatch } from '../../editor/autoLayout';
 import { useLibraryUI } from '../libraryUI';
 import { FileMenu } from './FileMenu';
 import { SettingsModal } from './SettingsModal';
+import { FloretLogo } from './FloretLogo';
 
 const ICON = 15;
 
@@ -83,7 +84,9 @@ export function Toolbar() {
 
   return (
     <div className="toolbar">
-      <span className="title">FLORET</span>
+      <span className="title" aria-label="Floret" title="Floret">
+        <FloretLogo size={22} />
+      </span>
       <span className="toolbar-divider" />
       <FileMenu />
       <span className="toolbar-divider" />

@@ -45,7 +45,7 @@ export function makeM3Theme(mode: 'light' | 'dark'): Theme {
     shape: { borderRadius: 12 }, // M3 "medium" corner
     typography: {
       fontFamily: ROBOTO,
-      button: { textTransform: 'none', fontWeight: 500, letterSpacing: '0.02em' },
+      button: { textTransform: 'none', fontWeight: 500, letterSpacing: 0 },
     },
     components: {
       // Kill MUI's dark-mode elevation overlay so surfaces stay flat M3 tones.
@@ -55,20 +55,29 @@ export function makeM3Theme(mode: 'light' | 'dark'): Theme {
         },
       },
       MuiButton: {
-        defaultProps: { disableElevation: false },
+        defaultProps: { disableElevation: true },
         styleOverrides: {
-          root: { borderRadius: 9999, paddingInline: 20, paddingBlock: 8 }, // M3 pill
+          // Pill shape, but no blanket padding — let the size variants below
+          // set density so compact chrome (toolbar / panel headers) doesn't
+          // inherit dialog-sized buttons. minWidth:0 stops MUI's 64px default
+          // from spreading toolbar buttons apart.
+          root: { borderRadius: 9999, minWidth: 0 },
+          sizeSmall: { padding: '3px 12px', fontSize: 13, lineHeight: 1.6 },
+          sizeMedium: { padding: '6px 22px' },
         },
       },
       MuiIconButton: {
-        styleOverrides: { root: { borderRadius: 9999 } },
+        styleOverrides: {
+          root: { borderRadius: 9999 },
+          sizeSmall: { padding: 5 },
+        },
       },
       MuiToggleButton: {
         styleOverrides: {
           root: {
             borderRadius: 9999,
             textTransform: 'none',
-            borderColor: c.outline,
+            borderColor: c.outlineVariant,
             color: c.onSurfaceVariant,
             '&.Mui-selected': {
               backgroundColor: c.secondaryContainer,
@@ -76,6 +85,7 @@ export function makeM3Theme(mode: 'light' | 'dark'): Theme {
               '&:hover': { backgroundColor: c.secondaryContainer },
             },
           },
+          sizeSmall: { padding: '5px 8px' },
         },
       },
       MuiDialog: {
@@ -114,9 +124,10 @@ export function makeM3Theme(mode: 'light' | 'dark'): Theme {
         styleOverrides: {
           root: {
             borderRadius: 8,
-            '& .MuiOutlinedInput-notchedOutline': { borderColor: c.outline },
+            '& .MuiOutlinedInput-notchedOutline': { borderColor: c.outlineVariant },
             '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: c.onSurface },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: c.primary, borderWidth: 2 },
+            '& .MuiInputBase-inputSizeSmall': { paddingTop: 7, paddingBottom: 7 },
           },
         },
       },

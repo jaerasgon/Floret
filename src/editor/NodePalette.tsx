@@ -1,6 +1,5 @@
 import { useMemo, useState, useSyncExternalStore } from 'react';
-import { SearchX } from 'lucide-react';
-import { TextInput } from '@astryxdesign/core/TextInput';
+import { Search, SearchX, X } from 'lucide-react';
 import { nodeRegistry } from '../nodes/registry';
 import type { NodeDef } from '../nodes/types';
 import { Panel } from './panel/Panel';
@@ -131,14 +130,29 @@ function PaletteBody() {
   return (
     <div className="palette-inner">
       <div className="palette-search-wrap">
-        <TextInput
-          label="Search nodes"
-          isLabelHidden
-          size="sm"
-          placeholder="Search…"
+        <Search className="palette-search-icon" size={13} strokeWidth={1.7} aria-hidden />
+        <input
+          type="text"
+          className="palette-search"
+          aria-label="Search nodes"
+          placeholder="Search nodes…"
+          spellCheck={false}
+          autoCorrect="off"
+          autoCapitalize="off"
           value={query}
-          onChange={(v) => setQuery(v)}
+          onChange={(e) => setQuery(e.target.value)}
         />
+        {query && (
+          <button
+            type="button"
+            className="palette-search-clear"
+            aria-label="Clear search"
+            title="Clear"
+            onClick={() => setQuery('')}
+          >
+            <X size={12} strokeWidth={2} />
+          </button>
+        )}
       </div>
       <div className="palette-scroll">
         {!q && favDefs.length > 0 && (

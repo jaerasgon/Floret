@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button } from '@astryxdesign/core/Button';
 import { useEditor } from '../../editor/editor-state';
 import { paramStore } from '../../runtime/param-store';
 import {
@@ -168,19 +167,13 @@ export function FileMenu() {
 
   return (
     <>
-      <Button variant="ghost" size="sm" label="New" tooltip="New empty patch" onClick={onNew} />
-      <Button variant="ghost" size="sm" label="Open" tooltip="Open a .flora file" onClick={() => void onOpen()} />
-      <Button variant="ghost" size="sm" label="Save" tooltip="Save (Ctrl+S)" onClick={() => void onSave()} />
-      <Button variant="ghost" size="sm" label="Save As" tooltip="Save under a new name" onClick={() => void onSaveAs()} />
-      <Button variant="ghost" size="sm" label="Share" tooltip="Copy a shareable link to this patch" onClick={() => void onShare()} />
-      <span style={{ color: 'var(--fg-2)', fontFamily: 'var(--font-mono)', marginLeft: 8 }}>
-        {fileName}
-      </span>
-      {status && (
-        <span style={{ color: 'var(--accent-dim)', fontFamily: 'var(--font-mono)', marginLeft: 8 }}>
-          · {status}
-        </span>
-      )}
+      <button type="button" className="tb-text-btn" title="New empty patch" onClick={onNew}>New</button>
+      <button type="button" className="tb-text-btn" title="Open a .flora file" onClick={() => void onOpen()}>Open</button>
+      <button type="button" className="tb-text-btn" title="Save (Ctrl+S)" onClick={() => void onSave()}>Save</button>
+      <button type="button" className="tb-text-btn" title="Save under a new name" onClick={() => void onSaveAs()}>Save As</button>
+      <button type="button" className="tb-text-btn" title="Copy a shareable link to this patch" onClick={() => void onShare()}>Share</button>
+      <span className="tb-filename">{fileName}</span>
+      {status && <span className="tb-status">· {status}</span>}
     </>
   );
 }

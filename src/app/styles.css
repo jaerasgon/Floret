@@ -373,13 +373,30 @@ input:focus, select:focus, textarea:focus {
 .toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  padding: 0 var(--space-5);
+  /* Tight, even rhythm so buttons cluster into groups (dividers do the
+     separating). Was 8px, which spread the file buttons too far apart. */
+  gap: 3px;
+  height: 44px;
+  padding: 0 10px;
   background: var(--bg-1);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--hairline-top);   /* milled top lip on the frame */
   font-size: var(--text-sm);
   letter-spacing: var(--tracking-tight);
+}
+/* File name + autosave status sit as quiet inline text, offset from the
+   file-button cluster. */
+.toolbar .tb-filename {
+  color: var(--fg-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin-left: 8px;
+}
+.toolbar .tb-status {
+  color: var(--accent-dim);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin-left: 8px;
 }
 
 .toolbar .title {
@@ -396,9 +413,9 @@ input:focus, select:focus, textarea:focus {
 
 .toolbar-divider {
   width: 1px;
-  height: 18px;
-  background: var(--border);
-  margin: 0 4px;
+  height: 20px;
+  background: color-mix(in srgb, var(--border) 80%, transparent);
+  margin: 0 5px;
 }
 
 /* Distinct primary/secondary styling for the run-state buttons.
@@ -815,17 +832,27 @@ input:focus, select:focus, textarea:focus {
   box-shadow: inset 0 2px 0 var(--accent-dim);
 }
 
-/* Single-panel group: the lone tab is really just the panel's header, so it
-   fills the full width and drops the tab chrome (divider, active accent).
-   Tabs reappear automatically once a second panel is docked onto the group. */
+/* Single-panel group: the panel needs no name — a Nodes list and a Preview
+   are self-evident — so the lone "tab" collapses to a slim drag rail. The
+   label is dropped (its text still tooltips on hover for discoverability),
+   leaving just the grip affordance and any header actions, which reclaims
+   the vertical space the title bar used to spend. Tabs + labels reappear
+   automatically once a second panel is docked onto the group. */
 .dock-tabbar-single .dock-tab {
   flex: 1 1 auto;
   border-right: 0;
   cursor: grab;
+  padding: 2px 8px;
 }
 .dock-tabbar-single .dock-tab.active {
   box-shadow: none;
 }
+.dock-tabbar-single .dock-tab-label { display: none; }
+/* Grip is the only remaining affordance, so keep it faintly visible. */
+.dock-tabbar-single .dock-tab-grip { opacity: 0.4; }
+.dock-tabbar-single .dock-tab:hover .dock-tab-grip { opacity: 0.85; }
+/* Push header actions (Preview's controls) to the right edge of the rail. */
+.dock-tabbar-single .dock-tab-actions { margin-left: auto; }
 /* The whole tab is draggable; the grip is just an affordance hint, so keep
    it out of the way until the tab is hovered. */
 .dock-tab-grip {
@@ -1378,16 +1405,61 @@ body[data-focus='1'] .statusbar {
 }
 
 .palette-search-wrap {
-  padding: 6px 8px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 8px;
   border-bottom: 1px solid var(--border);
+}
+.palette-search-icon {
+  position: absolute;
+  left: 17px;
+  color: var(--fg-2);
+  pointer-events: none;
 }
 
 .palette-search {
   width: 100%;
-  font-size: 11px;
-  padding: 5px 9px;
-  border-radius: var(--radius-sm);
+  height: 28px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  /* Room for the leading search glyph and the trailing clear button. */
+  padding: 0 26px 0 27px;
+  background: var(--bg-0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--fg-0);
+  /* Recessed well, consistent with the node value fields. */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.28);
+  transition:
+    border-color var(--dur-fast) var(--ease-std),
+    box-shadow var(--dur-fast) var(--ease-std);
 }
+.palette-search::placeholder { color: var(--fg-3); }
+.palette-search:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.28),
+    0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+.palette-search-clear {
+  position: absolute;
+  right: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--fg-2);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-std), background var(--dur-fast) var(--ease-std);
+}
+.palette-search-clear:hover { color: var(--fg-0); background: var(--bg-2); }
 
 .palette-empty {
   display: flex;
@@ -1475,6 +1547,9 @@ body[data-focus='1'] .statusbar {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  /* Gap guarantees a gutter between the label and the type path so long
+     names never collide with the type (e.g. "CurlNoise" + "noise/curl"). */
+  gap: 8px;
   padding: 3px 10px 3px 24px;
   border-radius: 0;
   cursor: grab;
@@ -1517,12 +1592,25 @@ body[data-focus='1'] .statusbar {
 .palette-item-label {
   font-family: var(--font-mono);
   color: var(--fg-0);
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .palette-item-type {
   font-family: var(--font-mono);
   font-size: 9px;
   color: var(--fg-2);
+  /* Secondary: right-aligned, capped, and first to truncate when space is
+     tight so the node's name always wins the row. */
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 46%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   margin-left: auto;
 }
 
@@ -4277,38 +4365,47 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
 
 /* File actions (New / Open / Save …) — quiet ghost buttons so they read as a
    menu group under the brand, not five competing bordered boxes. */
+/* Shared control metrics — one height / radius across every toolbar control so
+   the row reads as a single system (Claude-desktop-tight: 28px targets, soft
+   fills, no heavy borders). */
 .toolbar .tb-text-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 9px;
   background: transparent;
   border: 1px solid transparent;
+  border-radius: var(--radius-md);
   color: var(--fg-1);
-  padding: 3px 8px;
+  font-family: var(--font-ui);
   font-size: 12px;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std);
 }
 .toolbar .tb-text-btn:hover:not(:disabled) {
-  background: var(--bg-2);
-  border-color: transparent;
+  background: color-mix(in srgb, var(--fg-1) 12%, transparent);
   color: var(--fg-0);
 }
 .toolbar .tb-text-btn:active:not(:disabled) {
-  background: var(--bg-3);
+  background: color-mix(in srgb, var(--fg-1) 18%, transparent);
 }
 
-/* Segmented cluster for the panel view-toggles — one pill, seam dividers,
-   the active segment lifts to bg-2 with an accent icon. */
+/* Segmented cluster for the panel view-toggles — one pill with seam dividers;
+   the active segment lifts and its icon takes the accent. */
 .toolbar .tb-seg {
   display: inline-flex;
   align-items: stretch;
-  height: 22px;
+  height: 28px;
   background: var(--bg-2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 .toolbar .tb-seg-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
+  width: 32px;
   padding: 0;
   background: transparent;
   border: 0;
@@ -4324,26 +4421,36 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
   background: var(--bg-3);
 }
 .toolbar .tb-seg-btn.active {
-  color: var(--accent-dim);
-  background: var(--bg-3);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-3));
 }
 
 .toolbar .tb-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   color: var(--fg-1);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std);
 }
 .toolbar .tb-icon-btn:hover:not(:disabled) {
   color: var(--fg-0);
+  background: color-mix(in srgb, var(--fg-1) 12%, transparent);
+}
+.toolbar .tb-icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 .toolbar .tb-icon-btn.tb-toggle.active {
   color: var(--accent);
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-  background: color-mix(in srgb, var(--accent) 8%, var(--bg-2));
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-2));
 }
 
 .toolbar .toolbar-run-btn {

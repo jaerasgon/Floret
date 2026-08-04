@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useEditor } from '../../editor/editor-state';
+import { usePrefs } from '../prefs';
 import { paramStore } from '../../runtime/param-store';
 import {
   autosave, clearAutosave, loadAutosave, loadPatch, savePatch,
@@ -23,16 +24,20 @@ export function FileMenu() {
   const [status, setStatus] = useState<string>('');
   const debounceRef = useRef<number | null>(null);
 
-  // Autosave: debounce 400ms after the last graph mutation.
+  const autosaveEnabled = usePrefs((s) => s.autosaveEnabled);
+
+  // Autosave: debounce 400ms after the last graph mutation. Skipped entirely
+  // when the user has turned autosave off (Preferences → Files).
   useEffect(() => {
     if (debounceRef.current != null) window.clearTimeout(debounceRef.current);
+    if (!autosaveEnabled) return;
     debounceRef.current = window.setTimeout(() => {
       autosave(serializePatch({ nodes, edges, name: fileName }));
     }, 400);
     return () => {
       if (debounceRef.current != null) window.clearTimeout(debounceRef.current);
     };
-  }, [nodes, edges, fileName]);
+  }, [nodes, edges, fileName, autosaveEnabled]);
 
   // Ctrl+S keyboard shortcut → dispatched via window event from shortcuts.ts
   useEffect(() => {
@@ -72,6 +77,20 @@ export function FileMenu() {
     restoreAutosaveOrStarter();
 
     function restoreAutosaveOrStarter() {
+      // Preferences → Files → "On startup, open".
+      const startup = usePrefs.getState().startupPatch;
+      if (startup === 'blank') {
+        setStatus('blank canvas');
+        return;
+      }
+      if (startup === 'starter') {
+        const { nodes: ns, edges: es } = starterPatch();
+        paramStore.replaceAll(ns.map((n) => [n.id, n.data.params] as const));
+        loadEditor(ns, es);
+        setStatus('starter patch');
+        requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('floret:fit-graph')));
+        return;
+      }
       const restored = loadAutosave();
       if (restored && restored.nodes.length > 0) {
         const { nodes: ns, edges: es } = deserializePatch(restored);

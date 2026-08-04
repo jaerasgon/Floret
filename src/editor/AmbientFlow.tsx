@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useEditor } from './editor-state';
+import { usePrefs } from '../app/prefs';
 
 /**
  * Ambient "living canvas" — a faint generative flow-field painted behind the
@@ -19,6 +20,8 @@ import { useEditor } from './editor-state';
 export function AmbientFlow() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const nodeCount = useEditor((s) => s.nodes.length);
+  // Preferences → Appearance → "Ambient canvas motion". Off = plain --bg-0.
+  const ambient = usePrefs((s) => s.ambientMotion);
 
   // Busy patch → quieter backdrop. Empty → full presence.
   useEffect(() => {
@@ -29,6 +32,7 @@ export function AmbientFlow() {
   }, [nodeCount]);
 
   useEffect(() => {
+    if (!ambient) return;
     const canvas = canvasRef.current;
     const parent = canvas?.parentElement;
     const ctx = canvas?.getContext('2d');
@@ -120,7 +124,8 @@ export function AmbientFlow() {
       ro.disconnect();
       themeObs.disconnect();
     };
-  }, []);
+  }, [ambient]);
 
+  if (!ambient) return null;
   return <canvas ref={canvasRef} className="ambient-flow" aria-hidden="true" />;
 }

@@ -63,7 +63,31 @@ export function Modal({
   );
 }
 
-/** Native toggle switch, styled by `.modal-switch`. */
+/** Bare native toggle switch, styled by `.modal-switch`. */
+export function Switch({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      className={`modal-switch${checked ? ' on' : ''}`}
+      onClick={() => onChange(!checked)}
+    >
+      <span className="modal-switch-thumb" />
+    </button>
+  );
+}
+
+/** Labelled switch row (label + description on the left, switch on the right). */
 export function Toggle({
   checked,
   onChange,
@@ -81,16 +105,7 @@ export function Toggle({
         <span className="modal-switch-label">{label}</span>
         {description && <span className="modal-switch-desc">{description}</span>}
       </span>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        aria-label={label}
-        className={`modal-switch${checked ? ' on' : ''}`}
-        onClick={() => onChange(!checked)}
-      >
-        <span className="modal-switch-thumb" />
-      </button>
+      <Switch checked={checked} onChange={onChange} label={label} />
     </label>
   );
 }

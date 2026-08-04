@@ -27,8 +27,25 @@ export interface Prefs {
   paletteVisible: boolean;
   /** Help panel visible. Same toolbar-toggle treatment as the palette. */
   helpVisible: boolean;
-  /** UI colour theme. Applied as data-theme on <html>. */
-  theme: 'dark' | 'light';
+  /** UI colour theme. 'system' follows the OS. Resolved to data-theme on <html>. */
+  theme: 'dark' | 'light' | 'system';
+  /** Generative "living canvas" backdrop behind the graph. */
+  ambientMotion: boolean;
+  /** Show the minimap in the canvas corner. */
+  showMinimap: boolean;
+  /** Show the dotted background grid. */
+  showGrid: boolean;
+  /** Snap node positions to a grid while dragging. */
+  snapToGrid: boolean;
+  /** Grid step (px) used when snapToGrid is on. */
+  gridSize: number;
+  /** What loads on launch: blank canvas, the starter showcase, or last session. */
+  startupPatch: 'blank' | 'starter' | 'last';
+  /** Debounced autosave of the working patch to localStorage. */
+  autosaveEnabled: boolean;
+  /** Resolution seeded into a newly-created Renderer node. */
+  defaultRenderWidth: number;
+  defaultRenderHeight: number;
 }
 
 const LS_KEY = 'floret.prefs.v1';
@@ -42,7 +59,27 @@ const DEFAULTS: Prefs = {
   // toggle brings Help back, and it auto-tracks selection exactly as before.
   helpVisible: false,
   theme: 'dark',
+  ambientMotion: true,
+  showMinimap: true,
+  showGrid: true,
+  snapToGrid: false,
+  gridSize: 16,
+  startupPatch: 'last',
+  autosaveEnabled: true,
+  defaultRenderWidth: 1080,
+  defaultRenderHeight: 1920,
 };
+
+/** Resolve the theme pref to a concrete mode, following the OS for 'system'. */
+export function resolveTheme(t: Prefs['theme']): 'dark' | 'light' {
+  if (t === 'system') {
+    return typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-color-scheme: light)').matches
+      ? 'light'
+      : 'dark';
+  }
+  return t;
+}
 
 function loadFromStorage(): Prefs {
   // Spread DEFAULTS first so missing keys in older payloads fall back to
@@ -68,19 +105,22 @@ export const usePrefs = create<PrefsState>((set) => ({
  */
 export const prefsSnapshot: Prefs = { ...usePrefs.getState() };
 
+const PREF_KEYS: (keyof Prefs)[] = [
+  'wireFlowAnimation', 'autoGrowRegions', 'autoJumpHelp', 'paletteVisible',
+  'helpVisible', 'theme', 'ambientMotion', 'showMinimap', 'showGrid',
+  'snapToGrid', 'gridSize', 'startupPatch', 'autosaveEnabled',
+  'defaultRenderWidth', 'defaultRenderHeight',
+];
+
 usePrefs.subscribe((s) => {
-  prefsSnapshot.wireFlowAnimation = s.wireFlowAnimation;
-  prefsSnapshot.autoGrowRegions = s.autoGrowRegions;
-  prefsSnapshot.autoJumpHelp = s.autoJumpHelp;
-  prefsSnapshot.paletteVisible = s.paletteVisible;
-  prefsSnapshot.helpVisible = s.helpVisible;
-  // Persist whole shape on every change. Small payload, infrequent
-  // writes — no batching required.
-  saveJSON(LS_KEY, {
-    wireFlowAnimation: s.wireFlowAnimation,
-    autoGrowRegions: s.autoGrowRegions,
-    autoJumpHelp: s.autoJumpHelp,
-    paletteVisible: s.paletteVisible,
-    helpVisible: s.helpVisible,
-  });
+  const snap = prefsSnapshot as unknown as Record<string, unknown>;
+  const payload: Record<string, unknown> = {};
+  for (const k of PREF_KEYS) {
+    // Sync the module-level snapshot and build the persisted payload in one
+    // pass so non-React readers (frame hook, addNode) and localStorage stay
+    // in lock-step with the store.
+    snap[k] = s[k];
+    payload[k] = s[k];
+  }
+  saveJSON(LS_KEY, payload);
 });

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { addEdge, applyEdgeChanges, applyNodeChanges } from '@xyflow/react';
 import { nodeRegistry } from '../nodes/registry';
 import { paramStore } from '../runtime/param-store';
+import { prefsSnapshot } from '../app/prefs';
 import { parseHandle, wouldCreateCycle, isMultiTargetPort } from './connection-rules';
 
 import type { EditorState, FloretEdge, FloretNode, RegionPortDescriptor } from './editor-state/types';
@@ -105,6 +106,12 @@ export const useEditor = create<EditorState>((set, get) => {
       const def = nodeRegistry.require(defType);
       const id = newId(defType.replace('/', '_'));
       const initialParams = { ...(def.defaultParams ?? {}) };
+      // A freshly-dropped Renderer inherits the user's default resolution
+      // (Preferences → Canvas) rather than the static NodeDef fallback.
+      if (defType === 'render/renderer') {
+        initialParams.width = prefsSnapshot.defaultRenderWidth;
+        initialParams.height = prefsSnapshot.defaultRenderHeight;
+      }
       // Auto-pick the smallest unused integer slot for the four
       // Read/Write/Read*/Write* nodes. Scoped per-type: dropping Read,
       // Write gives both slot 1; dropping another Read takes slot 2.

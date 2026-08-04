@@ -12,7 +12,7 @@ import {
   Moon,
 } from 'lucide-react';
 import { useAppStore } from '../store';
-import { usePrefs } from '../prefs';
+import { usePrefs, resolveTheme } from '../prefs';
 import { useEditor } from '../../editor/editor-state';
 import { useFocusMode } from '../../editor/focus-store';
 import { autoLayoutPatch } from '../../editor/autoLayout';
@@ -61,10 +61,16 @@ export function Toolbar() {
     else document.body.removeAttribute('data-wire-flow');
   }, [wireFlow]);
 
-  // Apply the colour theme on <html> so every var() re-skins (and body-portaled
-  // panels inherit it too).
+  // Apply the resolved colour theme on <html> so every var() re-skins (and
+  // body-portaled panels inherit it too). When 'system', follow the OS and
+  // live-update as it flips.
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    const apply = () => document.documentElement.setAttribute('data-theme', resolveTheme(theme));
+    apply();
+    if (theme !== 'system') return;
+    const mq = window.matchMedia('(prefers-color-scheme: light)');
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
   }, [theme]);
 
   // The three panel toggles are one connected family (which panels are open),
@@ -126,10 +132,10 @@ export function Toolbar() {
         type="button"
         className="tb-icon-btn"
         aria-label="Toggle colour theme"
-        title={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
-        onClick={() => setPref('theme', theme === 'light' ? 'dark' : 'light')}
+        title={resolveTheme(theme) === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
+        onClick={() => setPref('theme', resolveTheme(theme) === 'light' ? 'dark' : 'light')}
       >
-        {theme === 'light' ? <Moon size={ICON} strokeWidth={1.6} /> : <Sun size={ICON} strokeWidth={1.6} />}
+        {resolveTheme(theme) === 'light' ? <Moon size={ICON} strokeWidth={1.6} /> : <Sun size={ICON} strokeWidth={1.6} />}
       </button>
       <div className="spacer" />
       <button

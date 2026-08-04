@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Theme } from '@astryxdesign/core/theme';
 import { neutralTheme } from '@astryxdesign/theme-neutral/built';
 import { App } from './app/App';
-import { usePrefs } from './app/prefs';
+import { usePrefs, resolveTheme } from './app/prefs';
 // The instrument's single voice: Commit Mono — a neutral, engineered monospace
 // used across the whole app (chrome, nodes, numerics). Self-hosted woff2 via
 // fontsource (no CDN, works offline), imported before styles.css so the
@@ -57,10 +57,11 @@ seedDefaultLayout();
 // two theme systems stay in lock-step — we seed Astryx's mode from the same
 // persisted pref below.
 let initialMode: 'light' | 'dark' = 'dark';
+const prefersLight = () => window.matchMedia('(prefers-color-scheme: light)').matches;
 try {
-  if (JSON.parse(localStorage.getItem('floret.prefs.v1') || '{}').theme === 'light') {
-    initialMode = 'light';
-  }
+  const t = JSON.parse(localStorage.getItem('floret.prefs.v1') || '{}').theme;
+  if (t === 'light') initialMode = 'light';
+  else if (t === 'system') initialMode = prefersLight() ? 'light' : 'dark';
 } catch { /* default dark */ }
 // Set data-theme for BOTH modes before first paint. This drives `color-scheme`
 // (via Astryx's reset.css), so Astryx's `light-dark()` tokens resolve correctly
@@ -79,7 +80,7 @@ document.documentElement.setAttribute('data-theme', initialMode);
 function Root() {
   const theme = usePrefs((s) => s.theme);
   return (
-    <Theme theme={neutralTheme} mode={theme}>
+    <Theme theme={neutralTheme} mode={resolveTheme(theme)}>
       <App />
     </Theme>
   );

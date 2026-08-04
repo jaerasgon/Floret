@@ -646,6 +646,11 @@ function CanvasInner() {
 
   // React Flow's colorMode drives its own control/minimap/handle theming.
   const theme = usePrefs((s) => s.theme);
+  // Canvas display prefs (Preferences → Canvas).
+  const showMinimap = usePrefs((s) => s.showMinimap);
+  const showGrid = usePrefs((s) => s.showGrid);
+  const snapToGrid = usePrefs((s) => s.snapToGrid);
+  const gridSize = usePrefs((s) => s.gridSize);
 
   // Type assertion for nodes since React Flow's generic Node type narrows
   // strictly on `data`; our editor store holds a stricter `FloretNodeData`.
@@ -689,6 +694,8 @@ function CanvasInner() {
         proOptions={{ hideAttribution: true }}
         zoomOnDoubleClick={false}
         colorMode={theme}
+        snapToGrid={snapToGrid}
+        snapGrid={[gridSize, gridSize]}
         deleteKeyCode={null /* handled in onKeyDown to skip during input focus */}
         // Selection-first navigation:
         //   - left-drag on empty pane  → box-select (contain semantics)
@@ -716,20 +723,22 @@ function CanvasInner() {
         minZoom={0.08}
       >
         {/* grid colour comes from --grid-line (themable) via a CSS override below */}
-        <Background gap={22} size={1} />
+        {showGrid && <Background gap={22} size={1} />}
         <Controls />
-        <MiniMap
-          pannable
-          zoomable
-          maskColor="rgba(0,0,0,0.6)"
-          nodeColor={(n) => {
-            const defType = (n.data as { defType?: string } | undefined)?.defType;
-            if (!defType) return 'var(--fg-2)';
-            return categoryColor(nodeRegistry.get(defType)?.category);
-          }}
-          nodeStrokeColor="rgba(0,0,0,0.6)"
-          nodeStrokeWidth={1}
-        />
+        {showMinimap && (
+          <MiniMap
+            pannable
+            zoomable
+            maskColor="rgba(0,0,0,0.6)"
+            nodeColor={(n) => {
+              const defType = (n.data as { defType?: string } | undefined)?.defType;
+              if (!defType) return 'var(--fg-2)';
+              return categoryColor(nodeRegistry.get(defType)?.category);
+            }}
+            nodeStrokeColor="rgba(0,0,0,0.6)"
+            nodeStrokeWidth={1}
+          />
+        )}
       </ReactFlow>
       {drawingRegion && (
         <RegionDrawPreview

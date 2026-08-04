@@ -820,6 +820,71 @@ input:focus, select:focus, textarea:focus {
 .hdr-btn-primary:hover:not(:disabled) { filter: brightness(1.06); }
 .hdr-btn-primary svg { color: #1b1b1b; }
 
+/* ─── Preferences (sectioned modal with a left rail) ────────────────────── */
+.prefs-layout {
+  display: flex;
+  /* Bleed under the modal header to the card edges, Notion-style. */
+  margin: 6px -20px -20px;
+  min-height: 430px;
+  max-height: min(70vh, 620px);
+}
+.prefs-nav {
+  flex: 0 0 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 10px;
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+.prefs-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  color: var(--fg-1);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--dur-fast) var(--ease-std), color var(--dur-fast) var(--ease-std);
+}
+.prefs-nav-item svg { color: var(--fg-2); flex: 0 0 auto; }
+.prefs-nav-item:hover { background: color-mix(in srgb, var(--fg-1) 9%, transparent); color: var(--fg-0); }
+.prefs-nav-item.active { background: color-mix(in srgb, var(--fg-1) 13%, transparent); color: var(--fg-0); }
+.prefs-nav-item.active svg { color: var(--fg-0); }
+.prefs-nav-spacer { flex: 1 1 auto; }
+.prefs-nav-reset { color: var(--fg-2); font-size: 12.5px; }
+.prefs-nav-reset:hover { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
+.prefs-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 14px 22px 22px;
+  overflow-y: auto;
+  border-top: 1px solid var(--border);
+}
+.prefs-section { display: flex; flex-direction: column; }
+.prefs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+.prefs-row:last-child { border-bottom: 0; }
+.prefs-row-text { min-width: 0; }
+.prefs-row-label { font-size: 13.5px; color: var(--fg-0); }
+.prefs-row-desc { font-size: 12.5px; color: var(--fg-1); line-height: 1.45; margin-top: 2px; }
+.prefs-row-control { flex: 0 0 auto; }
+.prefs-select { width: auto; min-width: 132px; cursor: pointer; }
+.prefs-dims { display: inline-flex; align-items: center; gap: 8px; }
+.prefs-num { width: 78px; text-align: right; }
+.prefs-dims-x { color: var(--fg-2); }
+
 /* Library patch row — a clickable name/description button. (Formerly
    `.sample-menu-item`, from the dropdown era; the dropdown container and
    its tab chrome are gone, this row style is all that survived into the

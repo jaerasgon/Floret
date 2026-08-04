@@ -1,8 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog';
-import { ClickableCard } from '@astryxdesign/core/ClickableCard';
-import { Button } from '@astryxdesign/core/Button';
-import { Kbd } from '@astryxdesign/core/Kbd';
+import { Modal } from './Modal';
 import { useEditor } from '../../editor/editor-state';
 import { paramStore } from '../../runtime/param-store';
 import { history } from '../../editor/history';
@@ -82,17 +79,12 @@ export function WelcomeModal() {
     .filter(<T,>(s: T | undefined): s is T => Boolean(s));
 
   return (
-    <Dialog
-      isOpen
-      onOpenChange={(open) => { if (!open) dismissPermanent(); }}
-      purpose="info"
+    <Modal
+      onClose={dismissPermanent}
+      title="Welcome to Floret"
+      subtitle="A node-based creative tool — wire shapes, sounds, and data together to make visual sketches."
       width={560}
     >
-      <DialogHeader
-        title="Welcome to Floret"
-        subtitle="A node-based creative tool — wire shapes, sounds, and data together to make visual sketches."
-        onOpenChange={(open) => { if (!open) dismissPermanent(); }}
-      />
       <div className="welcome-body">
         <h3 className="welcome-section-title">Start here</h3>
         <p className="welcome-section-lede">
@@ -101,23 +93,22 @@ export function WelcomeModal() {
         </p>
         <div className="welcome-featured">
           {featured.map((s) => (
-            <ClickableCard
+            <button
               key={s.id}
-              label={s.name}
-              variant="muted"
-              padding={2}
+              type="button"
+              className="welcome-sample"
               onClick={() => loadSample(s.id)}
             >
               <span className="welcome-sample-name">{s.name}</span>
               <span className="welcome-sample-desc">{s.description}</span>
-            </ClickableCard>
+            </button>
           ))}
         </div>
         <div className="welcome-tips">
           <p>
             <strong>Editor basics</strong> — drag from output pins (right) to
             input pins (left). Double-click empty space to open the node
-            search. Press <Kbd keys="tab" /> anywhere to do the same.
+            search. Press <kbd className="modal-kbd">Tab</kbd> anywhere to do the same.
           </p>
           <p>
             <strong>See what's happening</strong> — hover any pin for its
@@ -125,15 +116,12 @@ export function WelcomeModal() {
             on the right.
           </p>
         </div>
-        <div className="welcome-actions">
-          <Button
-            variant="ghost"
-            size="sm"
-            label="Skip — I'll explore on my own"
-            onClick={dismissPermanent}
-          />
+        <div className="modal-actions">
+          <button type="button" className="modal-btn modal-btn-ghost" onClick={dismissPermanent}>
+            Skip — I'll explore on my own
+          </button>
         </div>
       </div>
-    </Dialog>
+    </Modal>
   );
 }

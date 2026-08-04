@@ -1,9 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogHeader } from '@astryxdesign/core/Dialog';
-import { Selector } from '@astryxdesign/core/Selector';
-import { TextInput } from '@astryxdesign/core/TextInput';
-import { TextArea } from '@astryxdesign/core/TextArea';
-import { Button } from '@astryxdesign/core/Button';
+import { Modal } from './Modal';
 import { useEditor } from '../../editor/editor-state';
 import { serializePatch } from '../../persistence/serialize';
 import {
@@ -86,67 +82,69 @@ export function SaveToLibraryModal({ onClose, onSaved }: Props) {
   };
 
   return (
-    <Dialog
-      isOpen
-      onOpenChange={(open) => { if (!open) onClose(); }}
-      purpose="form"
-      width={440}
-    >
-      <DialogHeader title="Save to library" onOpenChange={(open) => { if (!open) onClose(); }} />
-      <div className="settings-body">
-        <div className="settings-section">
-          {libraries.length > 0 && (
-            <Selector
-              label="Library"
+    <Modal onClose={onClose} title="Save to library" width={440}>
+      <div className="modal-section">
+        {libraries.length > 0 && (
+          <label className="modal-field">
+            <span className="modal-field-label">Library</span>
+            <select
+              className="modal-select"
               value={isNew ? '__new__' : targetSlug ?? ''}
-              onChange={(v) => setTargetSlug(v === '__new__' ? null : v)}
-              options={[
-                ...libraries.map((l) => ({
-                  value: l.slug,
-                  label: `${l.library.name} (${l.library.patches.length})`,
-                })),
-                { type: 'divider' as const },
-                { value: '__new__', label: '＋ New library…' },
-              ]}
-            />
-          )}
-          {(isNew || libraries.length === 0) && (
-            <TextInput
-              label="New library name"
+              onChange={(e) => setTargetSlug(e.target.value === '__new__' ? null : e.target.value)}
+            >
+              {libraries.map((l) => (
+                <option key={l.slug} value={l.slug}>
+                  {l.library.name} ({l.library.patches.length})
+                </option>
+              ))}
+              <option value="__new__">＋ New library…</option>
+            </select>
+          </label>
+        )}
+        {(isNew || libraries.length === 0) && (
+          <label className="modal-field">
+            <span className="modal-field-label">New library name</span>
+            <input
+              className="modal-input"
               placeholder="New library name"
               value={newLibName}
-              onChange={(v) => setNewLibName(v)}
+              onChange={(e) => setNewLibName(e.target.value)}
             />
-          )}
-        </div>
+          </label>
+        )}
+      </div>
 
-        <div className="settings-section">
-          <TextInput
-            label="Patch name"
+      <div className="modal-section">
+        <label className="modal-field">
+          <span className="modal-field-label">Patch name</span>
+          <input
+            className="modal-input"
             placeholder="Patch name (shown in the menu)"
             value={entryName}
-            onChange={(v) => setEntryName(v)}
+            onChange={(e) => setEntryName(e.target.value)}
           />
-          <TextArea
-            label="Description"
-            isOptional
+        </label>
+        <label className="modal-field">
+          <span className="modal-field-label">Description <span className="modal-field-optional">(optional)</span></span>
+          <textarea
+            className="modal-textarea"
             placeholder="Description (optional)"
             value={entryDesc}
-            onChange={(v) => setEntryDesc(v)}
+            onChange={(e) => setEntryDesc(e.target.value)}
             rows={3}
           />
-        </div>
-
-        {error && <div className="library-error">{error}</div>}
-        {nodes.length === 0 && (
-          <div className="library-empty">Current patch is empty — nothing to save.</div>
-        )}
-
-        <div className="settings-section library-save-actions">
-          <Button variant="ghost" size="sm" label="Cancel" onClick={onClose} />
-          <Button variant="primary" size="sm" label="Save" isDisabled={!canSave} onClick={onSave} />
-        </div>
+        </label>
       </div>
-    </Dialog>
+
+      {error && <div className="library-error">{error}</div>}
+      {nodes.length === 0 && (
+        <div className="library-empty">Current patch is empty — nothing to save.</div>
+      )}
+
+      <div className="modal-actions">
+        <button type="button" className="modal-btn modal-btn-ghost" onClick={onClose}>Cancel</button>
+        <button type="button" className="modal-btn modal-btn-primary" disabled={!canSave} onClick={onSave}>Save</button>
+      </div>
+    </Modal>
   );
 }

@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { List, LayoutGrid, Columns3, ChevronLeft, Folder, FolderOpen, BookOpen, Download } from 'lucide-react';
-import { ToggleButton, ToggleButtonGroup } from '@astryxdesign/core/ToggleButton';
-import { Button } from '@astryxdesign/core/Button';
-import { TextInput } from '@astryxdesign/core/TextInput';
 import { Panel } from './panel/Panel';
 import { useEditor } from './editor-state';
 import { paramStore } from '../runtime/param-store';
@@ -77,17 +74,35 @@ function LibraryPanelInner() {
       defaults={{ dock: 'left', width: 320, height: 560, floatX: 80, floatY: 80 }}
       hideClose
       headerActions={
-        <ToggleButtonGroup
-          type="single"
-          size="sm"
-          label="Library view"
-          value={viewMode}
-          onChange={(v) => { if (v) setViewMode(v as typeof viewMode); }}
-        >
-          <ToggleButton value="list" isIconOnly size="sm" label="List view" icon={<List size={12} strokeWidth={1.7} />} />
-          <ToggleButton value="grid" isIconOnly size="sm" label="Icon view" icon={<LayoutGrid size={12} strokeWidth={1.7} />} />
-          <ToggleButton value="column" isIconOnly size="sm" label="Column view" icon={<Columns3 size={12} strokeWidth={1.7} />} />
-        </ToggleButtonGroup>
+        <div className="library-view-toggle" role="group" aria-label="Library view">
+          <button
+            type="button"
+            className={`library-view-btn${viewMode === 'list' ? ' active' : ''}`}
+            title="List view"
+            aria-pressed={viewMode === 'list'}
+            onClick={() => setViewMode('list')}
+          >
+            <List size={13} strokeWidth={1.7} />
+          </button>
+          <button
+            type="button"
+            className={`library-view-btn${viewMode === 'grid' ? ' active' : ''}`}
+            title="Icon view"
+            aria-pressed={viewMode === 'grid'}
+            onClick={() => setViewMode('grid')}
+          >
+            <LayoutGrid size={13} strokeWidth={1.7} />
+          </button>
+          <button
+            type="button"
+            className={`library-view-btn${viewMode === 'column' ? ' active' : ''}`}
+            title="Column view"
+            aria-pressed={viewMode === 'column'}
+            onClick={() => setViewMode('column')}
+          >
+            <Columns3 size={13} strokeWidth={1.7} />
+          </button>
+        </div>
       }
     >
       <LibraryBody />
@@ -178,21 +193,23 @@ function LibraryBody() {
   return (
     <div className="library-panel-body">
       <div className="library-actions">
-        <Button
-          variant="secondary"
-          size="sm"
-          label="＋ Import…"
-          tooltip="Import a floret.library JSON file"
+        <button
+          type="button"
+          className="library-action-btn"
+          title="Import a floret.library JSON file"
           onClick={() => fileInputRef.current?.click()}
-        />
-        <Button
-          variant="secondary"
-          size="sm"
-          label="↓ Save patch…"
-          isDisabled={nodes.length === 0}
-          tooltip={nodes.length === 0 ? 'Add nodes to the canvas first' : 'Save the current patch as a library entry'}
+        >
+          ＋ Import…
+        </button>
+        <button
+          type="button"
+          className="library-action-btn"
+          disabled={nodes.length === 0}
+          title={nodes.length === 0 ? 'Add nodes to the canvas first' : 'Save the current patch as a library entry'}
           onClick={() => setSaveOpen(true)}
-        />
+        >
+          ↓ Save patch…
+        </button>
         <input
           ref={fileInputRef}
           type="file"
@@ -203,13 +220,14 @@ function LibraryBody() {
       </div>
       {libraries.length > 0 && (
         <div className="library-search">
-          <TextInput
-            label="Search all patches"
-            isLabelHidden
-            size="sm"
+          <input
+            type="text"
+            className="library-search-input"
+            aria-label="Search all patches"
             placeholder="Search all patches…"
+            spellCheck={false}
             value={query}
-            onChange={(v) => setQuery(v)}
+            onChange={(e) => setQuery(e.target.value)}
           />
         </div>
       )}

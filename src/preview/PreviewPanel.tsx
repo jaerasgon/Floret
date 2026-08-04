@@ -48,7 +48,7 @@ export function PreviewPanel({
     <Panel
       id={panelId}
       title={title}
-      defaults={{ dock: 'right', width: 460, height: 460, floatX: 360, floatY: 80 }}
+      defaults={{ dock: 'right', width: 320, height: 568, floatX: 360, floatY: 80 }}
       hideClose
       headerActions={<PreviewHeaderControls driverRef={driverRef} name={title} />}
     >

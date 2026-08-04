@@ -21,8 +21,8 @@ import { RenderBridge } from './render-bridge';
  *   - `driver.stop()` — stop loop, detach listeners, remove DOM node.
  */
 
-const DEFAULT_W = 500;
-const DEFAULT_H = 500;
+const DEFAULT_W = 1080;
+const DEFAULT_H = 1920;
 const MIN_CANVAS = 32;
 const MAX_CANVAS = 4096;
 

@@ -67,7 +67,7 @@ export function buildShowcase() {
   const rect = node('sh_rect', 'draw/rect', { x: 1010, y: 320 }, {}, RID);
 
   // ── Output (right of the region) ──
-  const renderer = node('sh_renderer', 'render/renderer', { x: 1060, y: -40 }, { width: 500, height: 500 });
+  const renderer = node('sh_renderer', 'render/renderer', { x: 1060, y: -40 }, { width: 1080, height: 1920 });
   const bg = node('sh_bg', 'color/rgb', { x: 1060, y: 160 }, { r: 16, g: 14, b: 22, a: 255 });
 
   return {

@@ -37,8 +37,8 @@ export const rendererNode = registerNode({
     // Canvas resolution. `param`-linked so an unwired pin falls back to the
     // inline-editable paramStore value (no recompile on edit); wiring the
     // pin overrides it and drives the resolution from the graph.
-    { name: 'width', type: 'number', param: 'width', default: 500 },
-    { name: 'height', type: 'number', param: 'height', default: 500 },
+    { name: 'width', type: 'number', param: 'width', default: 1080 },
+    { name: 'height', type: 'number', param: 'height', default: 1920 },
   ],
   outputs: [
     { name: 'layers', type: 'layer', kind: 'spread' },
@@ -46,7 +46,7 @@ export const rendererNode = registerNode({
     // can read it via the renderer's outputs map each frame.
     { name: 'background', type: 'color' },
   ],
-  defaultParams: { width: 500, height: 500 },
+  defaultParams: { width: 1080, height: 1920 },
   // computeRaw because the Layer spread is pinned — passes through verbatim.
   // The background passes through too so the render driver can read it.
   //

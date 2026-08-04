@@ -1,17 +1,16 @@
 :root {
-  --bg-0: #100f0d;
-  --bg-1: #181715;
-  --bg-2: #211f1c;
-  --bg-3: #2c2926;
-  /* Kept close to the surface colours so outlines read as a subtle seam
-     rather than a visible frame. Was #36322d. */
-  --border: #292724;
-  --fg-0: #ece8e2;
-  --fg-1: #a8a39a;
-  --fg-2: #6e6960;
-  --fg-3: #4b473f;   /* faintest text — disabled labels, grips, hairline glyphs */
-  --accent: #f4c542;
-  --accent-dim: #a8842a;
+  /* Notion-style neutral dark greys — chrome AND node surfaces read these. */
+  --bg-0: #191919;   /* app / canvas base */
+  --bg-1: #202020;   /* panels · sidebar · toolbar */
+  --bg-2: #262626;   /* cards · inputs · node faceplates */
+  --bg-3: #2f2f2f;   /* hover / pressed */
+  --border: #343434;
+  --fg-0: #e6e6e4;   /* primary text */
+  --fg-1: #9b9b98;   /* secondary */
+  --fg-2: #6f6f6c;   /* tertiary / dim */
+  --fg-3: #4a4a48;   /* faintest text — disabled labels, grips, hairline glyphs */
+  --accent: var(--brand-gold);
+  --accent-dim: #c9a227;
   /* Fixed sunflower-gold brand accent (matches the logo + the ForEach region
      border). Used for "active/selected" states so the neutral UI has one
      cohesive brand pop, independent of the neutral theme's grey accent. */
@@ -35,13 +34,17 @@
      Hierarchy comes from weight (400/500/600/700), tracking, case and colour,
      not from multiple faces. All three legacy roles now resolve to it, so the
      ~150 existing rules that reference --font-mono/-ui/-display keep working. */
-  --font-mono: 'Commit Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
-  --font-ui: var(--font-mono);
-  --font-display: var(--font-mono);
-  /* Longer help/modal copy: same face, but allow a humanist fallback so a wall
-     of mono never becomes a chore to read. */
-  --font-prose: 'Commit Mono', ui-monospace, system-ui, sans-serif;
-  --font-sans: var(--font-prose);
+  /* Notion uses the platform UI sans throughout; Floret now follows suit for
+     chrome AND nodes. Every legacy role resolves to the system sans, so the
+     ~150 rules referencing --font-mono/-ui/-display re-skin in one place.
+     Commit Mono is retained only for genuine code (--font-code). */
+  --font-sans: ui-sans-serif, -apple-system, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-sans);
+  --font-ui: var(--font-sans);
+  --font-display: var(--font-sans);
+  --font-prose: var(--font-sans);
+  /* Real monospace — reserved for the GLSL / shader code editor. */
+  --font-code: 'Commit Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
   /* Type scale — a tight, dense modular set for an instrument (px). */
   --text-2xs: 9.5px;
@@ -111,16 +114,19 @@
    re-skins from here. */
 :root[data-theme='light'] {
   color-scheme: light;
-  --bg-0: #e7e8ee;   /* canvas — soft cool gray-lavender */
-  --bg-1: #f3f4f7;   /* panels */
-  --bg-2: #ffffff;   /* nodes / inputs / raised surfaces */
-  --bg-3: #e0e2e9;   /* hover / pressed */
-  --border: #d6d9e1;
-  --fg-0: #1b1d24;   /* primary text */
-  --fg-1: #565b66;   /* secondary */
-  --fg-2: #9096a2;   /* tertiary / dim */
-  --accent: #b4cc00;      /* deep lime */
-  --accent-dim: #7f9000;  /* olive — readable accent text / borders */
+  /* Notion warm off-white: a warm near-white main, a warm-grey sidebar/panels,
+     white cards, warm near-black text — never a cool pure-white glare. */
+  --bg-0: #fcfbf9;   /* app / canvas base — warm off-white */
+  --bg-1: #f6f5f2;   /* panels · sidebar · toolbar — warm grey */
+  --bg-2: #ffffff;   /* cards · inputs · node faceplates */
+  --bg-3: #ecebe6;   /* hover / pressed */
+  --border: #e8e7e1;
+  --fg-0: #37352f;   /* primary text — warm near-black */
+  --fg-1: #73716b;   /* secondary */
+  --fg-2: #9b9a93;   /* tertiary / dim */
+  --fg-3: #c4c2ba;   /* faintest text */
+  --accent: var(--brand-gold);
+  --accent-dim: #b8860b;  /* deeper gold — legible on white */
   --danger: #d64545;
 
   /* ports re-tuned darker so the near-white dark-theme tints stay legible on white */
@@ -149,37 +155,18 @@
   --minimap-node-stroke: rgba(255, 255, 255, 0.6);
 }
 
-/* ── Astryx design-token bridge ──────────────────────────────────────────
-   Floret funnels every surface / text / border / accent through the handful
-   of vars below, so redefining them in terms of Astryx design tokens re-skins
-   the whole app — the node graph included — onto the design system in one
-   place, with no changes to the 15 node components or their 147 CSS rules.
-   Astryx's tokens are `light-dark()`-aware and driven by `color-scheme`, so a
-   single definition covers both modes; the list targets `:root` AND
-   `:root[data-theme='light']` so it wins over both palette blocks above
-   regardless of the active mode. Node geometry, the type-coded --port-* pin
-   colours, fonts, motion and shadows stay Floret's own. */
+/* ── Astryx component bridge (colours removed) ────────────────────────────
+   Floret now drives its OWN Notion-style colour palette from the two blocks
+   above, so the old surface/text/accent mappings onto Astryx's greyscale
+   design tokens are gone (they were what forced the neutral, too-white look).
+   Only the font + radius tokens that surviving Astryx components read remain,
+   pointed at the system-sans stack. These fall away entirely once the last
+   Astryx call sites are rewritten native. */
 :root,
 :root[data-theme='light'] {
-  --bg-0: var(--color-background-body);                                                     /* canvas base */
-  --bg-1: var(--color-background-surface);                                                  /* panels + node bodies */
-  --bg-2: var(--color-background-card);                                                      /* raised / inputs */
-  --bg-3: color-mix(in srgb, var(--color-background-card) 88%, var(--color-text-primary));   /* hover / pressed */
-  --border: color-mix(in srgb, var(--color-border-emphasized) 42%, var(--color-background-surface));
-  --fg-0: var(--color-text-primary);
-  --fg-1: var(--color-text-secondary);
-  --fg-2: color-mix(in srgb, var(--color-text-secondary) 62%, var(--color-background-surface));
-  --fg-3: color-mix(in srgb, var(--color-text-secondary) 34%, var(--color-background-surface));
-  --accent: var(--color-accent);
-  --accent-dim: color-mix(in srgb, var(--color-accent) 62%, var(--color-background-surface));
-
-  /* Re-skin the Astryx chrome to the instrument identity: its components read
-     these tokens for their own type + geometry, so overriding them here makes
-     the toolbar / dialogs / status widgets speak Commit Mono at instrument-
-     tight radii — no per-component CSS needed. */
-  --font-family-body: var(--font-mono);
-  --font-family-heading: var(--font-mono);
-  --font-family-code: var(--font-mono);
+  --font-family-body: var(--font-sans);
+  --font-family-heading: var(--font-sans);
+  --font-family-code: var(--font-sans);
   --radius-inner: 4px;
   --radius-element: 6px;
   --radius-container: 9px;
@@ -5271,7 +5258,8 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
 .glsl-editor-pre, .glsl-editor-ta {
   position: absolute; inset: 0; margin: 0;
   padding: 8px;
-  font-family: var(--font-mono);
+  /* Code stays monospace even though the rest of the app is sans. */
+  font-family: var(--font-code);
   font-size: 11px;
   line-height: 1.5;
   tab-size: 2;

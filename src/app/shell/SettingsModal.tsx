@@ -124,39 +124,41 @@ export function SettingsModal({ onClose }: Props) {
 
           {cat === 'canvas' && (
             <Section>
-              <SelectRow
-                label="Default render size"
-                desc="Resolution seeded into a newly-created Renderer node."
-                value={
-                  RENDER_PRESETS.find((p) => p.w === prefs.defaultRenderWidth && p.h === prefs.defaultRenderHeight)
-                    ?.label ?? '__custom__'
-                }
-                onChange={(v) => {
-                  const p = RENDER_PRESETS.find((pr) => pr.label === v);
-                  if (p) { prefs.set('defaultRenderWidth', p.w); prefs.set('defaultRenderHeight', p.h); }
-                }}
-                options={[
-                  ...RENDER_PRESETS.map((p) => ({ value: p.label, label: p.label })),
-                  { value: '__custom__', label: 'Custom' },
-                ]}
-              />
               <div className="prefs-row">
                 <div className="prefs-row-text">
-                  <div className="prefs-row-label">Custom resolution</div>
-                  <div className="prefs-row-desc">Exact width and height in pixels.</div>
+                  <div className="prefs-row-label">Default render size</div>
+                  <div className="prefs-row-desc">Resolution seeded into a newly-created Renderer node. Pick a preset or type an exact size.</div>
                 </div>
-                <div className="prefs-row-control prefs-dims">
-                  <input
-                    type="number" min={32} max={4096} className="modal-input prefs-num"
-                    value={prefs.defaultRenderWidth}
-                    onChange={(e) => prefs.set('defaultRenderWidth', clampDim(e.target.value))}
-                  />
-                  <span className="prefs-dims-x">×</span>
-                  <input
-                    type="number" min={32} max={4096} className="modal-input prefs-num"
-                    value={prefs.defaultRenderHeight}
-                    onChange={(e) => prefs.set('defaultRenderHeight', clampDim(e.target.value))}
-                  />
+                <div className="prefs-row-control prefs-render">
+                  <select
+                    className="modal-select prefs-select"
+                    value={
+                      RENDER_PRESETS.find((p) => p.w === prefs.defaultRenderWidth && p.h === prefs.defaultRenderHeight)
+                        ?.label ?? '__custom__'
+                    }
+                    onChange={(e) => {
+                      const p = RENDER_PRESETS.find((pr) => pr.label === e.target.value);
+                      if (p) { prefs.set('defaultRenderWidth', p.w); prefs.set('defaultRenderHeight', p.h); }
+                    }}
+                  >
+                    {RENDER_PRESETS.map((p) => (
+                      <option key={p.label} value={p.label}>{p.label}</option>
+                    ))}
+                    <option value="__custom__">Custom…</option>
+                  </select>
+                  <div className="prefs-dims">
+                    <input
+                      type="number" min={32} max={4096} className="modal-input prefs-num" aria-label="Width"
+                      value={prefs.defaultRenderWidth}
+                      onChange={(e) => prefs.set('defaultRenderWidth', clampDim(e.target.value))}
+                    />
+                    <span className="prefs-dims-x">×</span>
+                    <input
+                      type="number" min={32} max={4096} className="modal-input prefs-num" aria-label="Height"
+                      value={prefs.defaultRenderHeight}
+                      onChange={(e) => prefs.set('defaultRenderHeight', clampDim(e.target.value))}
+                    />
+                  </div>
                 </div>
               </div>
               <SelectRow

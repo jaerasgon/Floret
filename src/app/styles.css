@@ -9,6 +9,7 @@
   --fg-0: #ece8e2;
   --fg-1: #a8a39a;
   --fg-2: #6e6960;
+  --fg-3: #4b473f;   /* faintest text — disabled labels, grips, hairline glyphs */
   --accent: #f4c542;
   --accent-dim: #a8842a;
   /* Fixed sunflower-gold brand accent (matches the logo + the ForEach region
@@ -29,16 +30,46 @@
   --port-force:    #ff9966; /* warm coral — force */
   --port-collider: #e0e0e0; /* near-white — collider */
   --port-particle: #b890ff; /* lavender — particle buffer */
-  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-ui: 'Hanken Grotesk Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  /* Display face for brand, panel/node titles, section headers — a distinctive
-     grotesque that carries the editorial feel where type gets large. */
-  --font-display: 'Space Grotesk Variable', 'Hanken Grotesk Variable', -apple-system, sans-serif;
+  /* ── Type: one voice ──────────────────────────────────────────────────────
+     Commit Mono is the whole instrument's typeface — chrome, nodes, numerics.
+     Hierarchy comes from weight (400/500/600/700), tracking, case and colour,
+     not from multiple faces. All three legacy roles now resolve to it, so the
+     ~150 existing rules that reference --font-mono/-ui/-display keep working. */
+  --font-mono: 'Commit Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-ui: var(--font-mono);
+  --font-display: var(--font-mono);
+  /* Longer help/modal copy: same face, but allow a humanist fallback so a wall
+     of mono never becomes a chore to read. */
+  --font-prose: 'Commit Mono', ui-monospace, system-ui, sans-serif;
+  --font-sans: var(--font-prose);
+
+  /* Type scale — a tight, dense modular set for an instrument (px). */
+  --text-2xs: 9.5px;
+  --text-xs: 10.5px;
+  --text-sm: 11.5px;
+  --text-md: 12.5px;
+  --text-lg: 14px;
+  --text-xl: 18px;
+  --text-2xl: 24px;
+  /* Tracking — mono runs slightly loose for labels, tighter for values. */
+  --tracking-tight: -0.01em;
+  --tracking-label: 0.02em;
+  --tracking-caps: 0.08em;   /* uppercase eyebrows / section labels */
+
+  /* Spacing scale (px) — replaces ad-hoc gaps/paddings on touched surfaces. */
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 20px;
+  --space-8: 24px;
 
   /* Motion */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-std: cubic-bezier(0.4, 0, 0.2, 1);
-  /* Gentle overshoot for "settle" moments — node drop, panel mount, pop-ins.
+  /* Gentle overshoot for "settle" moments — node drop, panel/overlay mount.
      A little life without feeling springy/toy-like. */
   --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
   --dur-fast: 120ms;
@@ -46,19 +77,27 @@
   --dur-slow: 260ms;
   --dur-slower: 380ms;
 
-  /* Elevation */
-  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.40);
-  --shadow-3: 0 6px 16px rgba(0, 0, 0, 0.50);
-  --shadow-4: 0 12px 32px rgba(0, 0, 0, 0.55);
+  /* Elevation — tight, layered (a close ambient + a soft key), less "blurry
+     drop". Tactile surfaces read as milled panels, not floating cards. */
+  --shadow-1: 0 1px 1px rgba(0, 0, 0, 0.30), 0 1px 2px rgba(0, 0, 0, 0.22);
+  --shadow-2: 0 1px 1px rgba(0, 0, 0, 0.32), 0 2px 5px rgba(0, 0, 0, 0.30);
+  --shadow-3: 0 1px 1px rgba(0, 0, 0, 0.34), 0 6px 16px rgba(0, 0, 0, 0.42);
+  --shadow-4: 0 2px 2px rgba(0, 0, 0, 0.36), 0 16px 40px rgba(0, 0, 0, 0.50);
+  /* Milled-edge hairlines: a faint top highlight + bottom shade give raised
+     surfaces a machined lip. Tuned for dark; softened in light below. */
+  --hairline-top: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --hairline-inset: inset 0 1px 0 rgba(255, 255, 255, 0.05), inset 0 -1px 0 rgba(0, 0, 0, 0.25);
 
   /* Focus */
   --focus-ring: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent);
+  /* Consistent gold glow for selected / active / running moments. */
+  --glow-gold: 0 0 0 1px color-mix(in srgb, var(--brand-gold) 60%, transparent),
+               0 0 14px color-mix(in srgb, var(--brand-gold) 22%, transparent);
 
-  /* Radius — softer, larger corners read more modern than the old 4/6/10. */
-  --radius-sm: 6px;
-  --radius-md: 9px;
-  --radius-lg: 14px;
+  /* Radius — instrument-tight geometry (was 6/9/14). */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
 
   --grid-line: #201d19;   /* node-canvas dot grid — warm + faint, less "template" */
   --minimap-mask: rgba(0, 0, 0, 0.5);       /* dimmed surround outside viewport */
@@ -130,8 +169,27 @@
   --fg-0: var(--color-text-primary);
   --fg-1: var(--color-text-secondary);
   --fg-2: color-mix(in srgb, var(--color-text-secondary) 62%, var(--color-background-surface));
+  --fg-3: color-mix(in srgb, var(--color-text-secondary) 34%, var(--color-background-surface));
   --accent: var(--color-accent);
   --accent-dim: color-mix(in srgb, var(--color-accent) 62%, var(--color-background-surface));
+
+  /* Re-skin the Astryx chrome to the instrument identity: its components read
+     these tokens for their own type + geometry, so overriding them here makes
+     the toolbar / dialogs / status widgets speak Commit Mono at instrument-
+     tight radii — no per-component CSS needed. */
+  --font-family-body: var(--font-mono);
+  --font-family-heading: var(--font-mono);
+  --font-family-code: var(--font-mono);
+  --radius-inner: 4px;
+  --radius-element: 6px;
+  --radius-container: 9px;
+}
+
+/* Milled hairlines read differently on a light ground — a brighter top lip and
+   a softer bottom shade. */
+:root[data-theme='light'] {
+  --hairline-top: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  --hairline-inset: inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
 /* Node-canvas dot grid follows the theme (React Flow renders the dots inline). */
@@ -258,7 +316,28 @@ input:focus, select:focus, textarea:focus {
   grid-template-rows: 32px 1fr 22px;
   height: 100%;
   width: 100%;
+  position: relative;
+  /* Base UI type: Commit Mono, sized/tracked as an instrument. */
+  font-family: var(--font-ui);
+  letter-spacing: var(--tracking-tight);
+  font-variant-numeric: tabular-nums;   /* every readout aligns */
 }
+
+/* Faint machined grain over the whole instrument — a fixed, non-interactive
+   fractal-noise film at ~2.5% that gives surfaces a tactile tooth instead of
+   flat fills. Sits above chrome but below top-layer <dialog> modals. Static,
+   so it costs nothing at runtime and needs no reduced-motion handling. */
+.app-shell::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+:root[data-theme='light'] .app-shell::after { opacity: 0.04; mix-blend-mode: multiply; }
 
 .toolbar {
   display: flex;
@@ -1431,11 +1510,14 @@ body[data-focus='1'] .statusbar {
 .node {
   background: var(--bg-2);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   min-width: 160px;
-  font-size: 10px;
+  font-size: var(--text-2xs);
   color: var(--fg-0);
-  box-shadow: var(--shadow-2);
+  font-variant-numeric: tabular-nums;
+  /* Milled block: soft key shadow + a faint top lip so the node reads as a
+     machined part, not a flat card. */
+  box-shadow: var(--shadow-2), var(--hairline-top);
   transition:
     box-shadow var(--dur-base) var(--ease-out),
     border-color var(--dur-base) var(--ease-out),
@@ -1445,7 +1527,7 @@ body[data-focus='1'] .statusbar {
   transform: translateY(-1px);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--cat-accent, var(--accent)) 55%, transparent),
-    var(--shadow-3);
+    var(--shadow-3), var(--hairline-top);
 }
 .node.dragging,
 .react-flow__node.dragging .node {
@@ -1454,6 +1536,16 @@ body[data-focus='1'] .statusbar {
     0 0 0 1px color-mix(in srgb, var(--accent) 60%, transparent),
     var(--shadow-4);
 }
+
+/* Entrance: a node settles into place when added (and on patch load). Applied
+   to .node — NOT .react-flow__node, which carries RF's positioning transform —
+   and with no fill-mode so the finished animation reverts to base and the
+   hover/drag transforms keep working. Spring easing gives a tiny tactile pop. */
+@keyframes node-appear {
+  from { opacity: 0; transform: translateY(5px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.node { animation: node-appear var(--dur-slow) var(--ease-spring); }
 
 /* ─── Unified node row layout ────────────────────────────────────────────
    Used by GenericNode for every node by default. Rows are PAIRED:
@@ -1560,15 +1652,19 @@ body[data-focus='1'] .statusbar {
 
 .node-inline-input {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--text-2xs);
+  font-variant-numeric: tabular-nums;
   padding: 1px 6px;
   height: 15px;
   background: var(--bg-1);
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   color: var(--fg-0);
   width: 60px;
   min-width: 0;
+  /* Milled well: recessed track with an inner top shade so values sit down
+     inside the node like an engraved readout. */
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.28);
   transition:
     border-color var(--dur-fast) var(--ease-std),
     box-shadow var(--dur-fast) var(--ease-std),
@@ -1580,7 +1676,9 @@ body[data-focus='1'] .statusbar {
 .node-inline-input:focus {
   outline: none;
   border-color: color-mix(in srgb, var(--accent) 70%, var(--border));
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 28%, transparent);
+  box-shadow:
+    inset 0 1px 1px rgba(0, 0, 0, 0.28),
+    0 0 0 2px color-mix(in srgb, var(--accent) 28%, transparent);
   background: var(--bg-0);
 }
 
@@ -1703,9 +1801,19 @@ body[data-focus='1'] .statusbar {
    selection box-shadow is suppressed below so it doesn't stack on top. */
 .node[data-selected='1'] {
   border-color: var(--brand-gold);
-  box-shadow:
-    0 0 10px color-mix(in srgb, var(--cat-accent, var(--accent)) 30%, transparent),
-    0 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--glow-gold), var(--hairline-top), 0 2px 6px rgba(0, 0, 0, 0.4);
+  /* Slow gold breath — the selected node feels alive without moving. Honoured
+     off under prefers-reduced-motion by the global kill switch. */
+  animation: node-breathe 3.6s var(--ease-std) infinite;
+}
+@keyframes node-breathe {
+  0%, 100% { box-shadow: var(--glow-gold), var(--hairline-top), 0 2px 6px rgba(0, 0, 0, 0.4); }
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--brand-gold) 72%, transparent),
+      0 0 20px color-mix(in srgb, var(--brand-gold) 30%, transparent),
+      var(--hairline-top), 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
 }
 /* Kill React Flow's built-in selection outline on the node wrapper — our
    per-node-type [data-selected] rules own the selected look entirely. */
@@ -1715,19 +1823,20 @@ body[data-focus='1'] .statusbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 4px 10px;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-5);
   border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
   background: var(--bg-3);
-  border-top-left-radius: 7px;
-  border-top-right-radius: 7px;
+  box-shadow: var(--hairline-top);   /* proud, machined lip */
+  border-top-left-radius: calc(var(--radius-md) - 1px);
+  border-top-right-radius: calc(var(--radius-md) - 1px);
 }
 
 .node-label {
   font-family: var(--font-display);
   font-weight: 600;
-  letter-spacing: 0.2px;
-  font-size: 10.5px;
+  letter-spacing: var(--tracking-label);
+  font-size: var(--text-xs);
 }
 
 /* The node-type subtitle (e.g. "io/bang") is redundant with the label and

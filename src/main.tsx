@@ -4,12 +4,16 @@ import { Theme } from '@astryxdesign/core/theme';
 import { neutralTheme } from '@astryxdesign/theme-neutral/built';
 import { App } from './app/App';
 import { usePrefs } from './app/prefs';
-// Bundled type system (self-hosted woff2 via fontsource — no CDN, works offline):
-// Space Grotesk for display/brand, Hanken Grotesk for UI body, JetBrains Mono for
-// values. Imported before styles.css so the --font-* stacks resolve to these.
-import '@fontsource-variable/space-grotesk';
-import '@fontsource-variable/hanken-grotesk';
-import '@fontsource-variable/jetbrains-mono';
+// The instrument's single voice: Commit Mono — a neutral, engineered monospace
+// used across the whole app (chrome, nodes, numerics). Self-hosted woff2 via
+// fontsource (no CDN, works offline), imported before styles.css so the
+// --font-* stacks and the Astryx --font-family-* overrides resolve to it.
+// Weights: 400 body · 500 emphasis · 600 headers · 700 strong; italic for hints.
+import '@fontsource/commit-mono/400.css';
+import '@fontsource/commit-mono/500.css';
+import '@fontsource/commit-mono/600.css';
+import '@fontsource/commit-mono/700.css';
+import '@fontsource/commit-mono/400-italic.css';
 // Astryx design-system stylesheets. The @layer cascade is
 // reset → astryx-base → astryx-theme, so import order matters. These are
 // layered; Floret's own (unlayered) styles.css below still wins during the

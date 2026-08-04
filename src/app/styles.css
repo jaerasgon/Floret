@@ -1547,16 +1547,22 @@ body[data-focus='1'] .statusbar {
 /* ─── Node visual ────────────────────────────────────────────────────────── */
 
 .node {
-  background: var(--bg-2);
+  /* Lit-from-above module face: a faint top sheen fading into the body so the
+     node reads as a physical part catching light, not a flat fill. */
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-2), #fff 4%) 0%, var(--bg-2) 34%);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   min-width: 160px;
   font-size: var(--text-2xs);
   color: var(--fg-0);
   font-variant-numeric: tabular-nums;
-  /* Milled block: soft key shadow + a faint top lip so the node reads as a
-     machined part, not a flat card. */
-  box-shadow: var(--shadow-2), var(--hairline-top);
+  /* Milled block: soft key shadow, a top lip, and a hairline inner base so the
+     node sits proud of the canvas like a machined module. */
+  box-shadow:
+    var(--shadow-2),
+    var(--hairline-top),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.28);
   transition:
     box-shadow var(--dur-base) var(--ease-out),
     border-color var(--dur-base) var(--ease-out),
@@ -1861,21 +1867,44 @@ body[data-focus='1'] .statusbar {
 .node-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  padding: var(--space-2) var(--space-5);
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
-  background: var(--bg-3);
-  box-shadow: var(--hairline-top);   /* proud, machined lip */
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  /* Engraved name-plate: a darker milled strip with a top lip and a crisp
+     inset seam at the base, so the label sits on a machined bar. */
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg-3), #fff 3%), var(--bg-3));
+  box-shadow: var(--hairline-top), inset 0 -1px 0 rgba(0, 0, 0, 0.34);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   border-top-left-radius: calc(var(--radius-md) - 1px);
   border-top-right-radius: calc(var(--radius-md) - 1px);
 }
 
+/* Category tick — a small square status lamp on the name-plate, coloured by
+   node category (gold when the node is selected). Instantly distinguishes node
+   families without repainting the whole header. */
+.node-header::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background: var(--cat-accent, var(--accent));
+  box-shadow: 0 0 5px color-mix(in srgb, var(--cat-accent, var(--accent)) 55%, transparent);
+}
+/* Math chips are symbol-only utility nodes — no lamp, no plate. */
+.node[data-math='1'] .node-header::before { display: none; }
+
 .node-label {
+  flex: 1;
+  min-width: 0;
   font-family: var(--font-display);
   font-weight: 600;
-  letter-spacing: var(--tracking-label);
-  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-caps);
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  color: var(--fg-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* The node-type subtitle (e.g. "io/bang") is redundant with the label and
@@ -2023,7 +2052,14 @@ body[data-focus='1'] .statusbar {
   height: 9px;
   border-radius: 50%;
   border: 1.5px solid var(--border);
-  transition: transform 0.1s ease;
+  /* Beveled jack: a top highlight domes the pin and a dark outer ring seats it
+     into the node edge, so pins read as physical patch-bay sockets. The inline
+     per-type colour still fills the dot. */
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.45),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(0, 0, 0, 0.35);
+  transition: transform var(--dur-fast) var(--ease-out);
 }
 
 /* Invisible expanded hit area so the pin is easier to target with the cursor.
@@ -2489,24 +2525,14 @@ body[data-reparent-mode='1'] .region-node:not([data-drop-target='1']) {
 [data-category='value']     { --cat-accent: hsl(349, 58%, 63%); }
 [data-category='vec2']      { --cat-accent: hsl(356, 58%, 63%); }
 
-/* Neutral theme reaches the node graph too: on nodes, the per-category rainbow
-   is replaced by the theme's own accent, so headers + hover/select glow read
-   monochrome like the rest of the neutral UI. Scoped to `.node` (higher
-   specificity than the `[data-category='…']` rules above), so the palette's
-   category dots keep the rainbow for navigation and the pin dots keep their
-   per-type colours for wiring legibility. */
-.node[data-category] { --cat-accent: var(--accent); }
-/* …except a selected node lights up gold (brand accent): its header tint and
-   glow pick up --brand-gold. Placed after the neutral rule above so it wins
-   (equal specificity, later in source). */
+/* Nodes keep their per-category hue only as a *restrained accent* — the header
+   name-plate fill stays neutral (see .node-header), but the small category tick
+   lamp and the hover ring use --cat-accent so node families read apart at a
+   glance, without the old full-header rainbow the neutral theme removed. A
+   selected node overrides the hue to brand gold. The palette dots + minimap
+   keep the rainbow via the [data-category='…'] rules above; pin dots keep their
+   per-type wiring colours. */
 .node[data-selected='1'] { --cat-accent: var(--brand-gold); }
-
-.node[data-category] .node-header {
-  background:
-    linear-gradient(to right,
-      color-mix(in srgb, var(--cat-accent) 16%, var(--bg-3)),
-      var(--bg-3) 62%);
-}
 
 
 /* ─── Spread length badge on wires ──────────────────────────────────────── */

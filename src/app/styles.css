@@ -1179,14 +1179,20 @@ input:focus, select:focus, textarea:focus {
  * Christmas tree when many wires run. */
 .react-flow__edge-path {
   --xy-edge-stroke: color-mix(in srgb, var(--edge-stroke, var(--fg-1)) 45%, var(--fg-2));
-  stroke-width: 1.3px;
-  stroke-opacity: 0.8;
+  /* Patch cable: heftier than a hairline, rounded ends where it meets the jack,
+     and a thin dark casing (0-offset drop-shadow) so the wire reads as a
+     physical lead lying on the rack rather than a drawn line. */
+  stroke-width: 1.6px;
+  stroke-opacity: 0.85;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0.5px 0.5px rgba(0, 0, 0, 0.55));
   transition: stroke-width var(--dur-fast) var(--ease-std), stroke-opacity var(--dur-fast) var(--ease-std), opacity var(--dur-fast) var(--ease-std);
 }
 .react-flow__edge:hover .react-flow__edge-path {
   /* Hover brightens to the full port colour — confirms which wire you're over. */
   --xy-edge-stroke: var(--edge-stroke, var(--fg-1));
-  stroke-width: 2px;
+  stroke-width: 2.4px;
   stroke-opacity: 1;
 }
 .react-flow__edge.selected .react-flow__edge-path,
@@ -1547,10 +1553,14 @@ body[data-focus='1'] .statusbar {
 /* ─── Node visual ────────────────────────────────────────────────────────── */
 
 .node {
-  /* Lit-from-above module face: a faint top sheen fading into the body so the
-     node reads as a physical part catching light, not a flat fill. */
+  /* Anodised module face: a faint top sheen fades into the body and settles
+     into a slightly darker base, so the node reads as a milled aluminium
+     faceplate catching light from above — a Eurorack module, not a flat card. */
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-2), #fff 4%) 0%, var(--bg-2) 34%);
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--bg-2), #fff 5%) 0%,
+      var(--bg-2) 42%,
+      color-mix(in srgb, var(--bg-2), #000 10%) 100%);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   min-width: 160px;
@@ -1695,21 +1705,36 @@ body[data-focus='1'] .statusbar {
  * (number / color / layer / …) moves to the tooltip on hover. */
 :root { --pin-spread: #f0d800; }
 
+/* Machined fastener used for the name-plate corner screws. Derived from the
+   surface tokens so it seats as dark metal on the dark rack and as a brushed
+   stud on the light theme without a per-theme override. */
+:root {
+  --rack-screw: radial-gradient(circle at 42% 36%,
+    color-mix(in srgb, var(--fg-1) 58%, var(--bg-3)) 0%,
+    color-mix(in srgb, var(--bg-0), #000 18%) 82%);
+}
+
 .node-inline-input {
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   font-variant-numeric: tabular-nums;
   padding: 1px 6px;
   height: 15px;
-  background: var(--bg-1);
-  border: 1px solid var(--border);
+  /* LCD readout: a recessed near-black well with the value floating on a faint
+     backlight, like the segment display on a rack module. Derived from --bg-0
+     so it stays a dark screen on the rack and a pale calculator LCD in light. */
+  background: color-mix(in srgb, var(--bg-0) 82%, #000);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, #000);
   border-radius: var(--radius-sm);
   color: var(--fg-0);
+  text-shadow: 0 0 5px color-mix(in srgb, var(--fg-0) 24%, transparent);
   width: 60px;
   min-width: 0;
-  /* Milled well: recessed track with an inner top shade so values sit down
-     inside the node like an engraved readout. */
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.28);
+  /* Recessed track: a deeper inner top shade so values sit down inside the
+     faceplate like an engraved, back-lit readout. */
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
   transition:
     border-color var(--dur-fast) var(--ease-std),
     box-shadow var(--dur-fast) var(--ease-std),
@@ -1778,10 +1803,13 @@ body[data-focus='1'] .statusbar {
   height: 15px;
   padding: 0 15px 0 6px;
   cursor: pointer;
-  background-color: var(--bg-1);
-  border: 1px solid var(--border);
+  /* Match the LCD readout wells so a dropdown reads as a back-lit selector. */
+  background-color: color-mix(in srgb, var(--bg-0) 82%, #000);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, #000);
   border-radius: 5px;
   color: var(--fg-0);
+  text-shadow: 0 0 5px color-mix(in srgb, var(--fg-0) 24%, transparent);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath d='M1 2.5L4 5.5L7 2.5' stroke='%238a857b' stroke-width='1.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 4px center;
@@ -1867,41 +1895,57 @@ body[data-focus='1'] .statusbar {
 .node-header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-3);
-  padding: var(--space-2) var(--space-4);
+  /* Extra horizontal room so the centred title clears the corner screws. */
+  padding: var(--space-2) 14px;
+  position: relative;
   /* Engraved name-plate: a darker milled strip with a top lip and a crisp
-     inset seam at the base, so the label sits on a machined bar. */
-  background: linear-gradient(180deg, color-mix(in srgb, var(--bg-3), #fff 3%), var(--bg-3));
+     inset seam at the base, so the centred label sits on a machined bar
+     fastened at both ends. */
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--bg-3), #fff 4%),
+    color-mix(in srgb, var(--bg-3), #000 6%));
   box-shadow: var(--hairline-top), inset 0 -1px 0 rgba(0, 0, 0, 0.34);
   border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   border-top-left-radius: calc(var(--radius-md) - 1px);
   border-top-right-radius: calc(var(--radius-md) - 1px);
 }
 
-/* Category tick — a small square status lamp on the name-plate, coloured by
-   node category (gold when the node is selected). Instantly distinguishes node
-   families without repainting the whole header. */
-.node-header::before {
+/* Corner fasteners — two machined screws seat the name-plate onto the module
+   faceplate. Neutral by design: node-family identity lives in the pin/wire
+   colours and the hover ring, not in painted chrome. */
+.node-header::before,
+.node-header::after {
   content: '';
-  flex: 0 0 auto;
-  width: 5px;
-  height: 5px;
-  border-radius: 1px;
-  background: var(--cat-accent, var(--accent));
-  box-shadow: 0 0 5px color-mix(in srgb, var(--cat-accent, var(--accent)) 55%, transparent);
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--rack-screw);
+  box-shadow:
+    inset 0 0.5px 0.5px rgba(255, 255, 255, 0.30),
+    0 1px 1px rgba(0, 0, 0, 0.45);
+  transform: translateY(-50%);
 }
-/* Math chips are symbol-only utility nodes — no lamp, no plate. */
-.node[data-math='1'] .node-header::before { display: none; }
+.node-header::before { left: 6px; }
+.node-header::after { right: 6px; }
+/* Math chips are symbol-only utility nodes — no plate, no screws. */
+.node[data-math='1'] .node-header::before,
+.node[data-math='1'] .node-header::after { display: none; }
 
 .node-label {
   flex: 1;
   min-width: 0;
+  text-align: center;
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: var(--tracking-caps);
   font-size: var(--text-2xs);
   text-transform: uppercase;
   color: var(--fg-1);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2052,14 +2096,19 @@ body[data-focus='1'] .statusbar {
   height: 9px;
   border-radius: 50%;
   border: 1.5px solid var(--border);
-  /* Beveled jack: a top highlight domes the pin and a dark outer ring seats it
-     into the node edge, so pins read as physical patch-bay sockets. The inline
-     per-type colour still fills the dot. */
+  /* Patch-bay jack: the inline per-type colour fills the tip; a brushed-metal
+     collar ring seats it into the faceplate, a domed top highlight catches the
+     light, and a faint halo in the tip's own colour reads as a signal-lit
+     socket. Kept subtle so a dense rack doesn't glow like a Christmas tree. */
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.45),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(0, 0, 0, 0.35);
-  transition: transform var(--dur-fast) var(--ease-out);
+    inset 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 -1px 1.5px rgba(0, 0, 0, 0.45),
+    0 0 0 1.5px color-mix(in srgb, var(--fg-2) 34%, var(--bg-0)),
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 0 4px color-mix(in srgb, currentColor 32%, transparent);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
 /* Invisible expanded hit area so the pin is easier to target with the cursor.
@@ -2128,10 +2177,15 @@ body[data-wire-dragging='1'] .react-flow__handle[data-wire-affinity='match'] {
   padding: 0 4px;
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--accent);
-  background: var(--bg-1);
-  border: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+  /* Same back-lit LCD chip as the inline editors, so a static override value
+     reads as a live segment display rather than a dimmed label. */
+  color: var(--fg-0);
+  text-shadow: 0 0 5px color-mix(in srgb, var(--fg-0) 24%, transparent);
+  background: color-mix(in srgb, var(--bg-0) 82%, #000);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, #000);
   border-radius: 3px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
   white-space: nowrap;
   max-width: 60px;
   overflow: hidden;

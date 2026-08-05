@@ -115,7 +115,10 @@ export const GenericNode = memo(function GenericNode(props: NodeProps) {
     return Object.keys(up).sort().map((k) => `${k}:${up[k]}`).join(',');
   });
   const resolvedOutputs = useMemo(() => {
-    if (!def.dynamicOutputs) return def.outputs;
+    // Route through getResolvedOutputs even for static nodes so the canonical
+    // display labels (e.g. layer outputs → "layer", generic scalar → "value")
+    // are applied uniformly — not just for dynamic-output nodes.
+    if (!def.dynamicOutputs) return getResolvedOutputs(def, nodeData.params, {});
     const up: Record<string, PortType | undefined> = {};
     for (const pair of upstreamTypesKey.split(',').filter(Boolean)) {
       const [k, v] = pair.split(':');

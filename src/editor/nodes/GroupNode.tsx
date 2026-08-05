@@ -2,7 +2,7 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { useEditor, type FloretNodeData } from '../editor-state';
 import { nodeRegistry } from '../../nodes/registry';
-import { getResolvedInputs } from '../../nodes/types';
+import { getResolvedInputs, getResolvedOutputs } from '../../nodes/types';
 import { portColorVar, parseHandle } from '../connection-rules';
 import { PortValueInlineEditor, supportsInlineEditor, formatValue, InputPin } from './GenericNode';
 import { openPortValueEditor } from '../PortValueEditor';
@@ -78,7 +78,10 @@ export const GroupNode = memo(function GroupNode(props: NodeProps) {
   if (!def) return null;
 
   const inputs = getResolvedInputs(def, nodeData.params);
-  const output = def.outputs[0]!;
+  // Through the resolver so the canonical display label (e.g. scalar → "value")
+  // is applied here too — this component (used by the adaptive math ops) renders
+  // the output pin itself rather than via GenericNode's OutputPin.
+  const output = getResolvedOutputs(def, nodeData.params, {})[0]!;
   const rows = Math.max(inputs.length, 1);
 
   return (

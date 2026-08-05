@@ -281,6 +281,47 @@ export interface NodeDef {
 }
 
 /**
+ * Display-label canonicalisation ─────────────────────────────────────────────
+ * The visible pin name is `label ?? name`. To keep the SAME semantic role named
+ * consistently across every node — without renaming handle ids (`in-<name>` /
+ * `out-<name>`), which are baked into every saved edge — we fill in a canonical
+ * `label` where the port doesn't already set one:
+ *
+ *   • a scalar `number` OUTPUT named `result`/`number`        → "value"
+ *   • any `audio` INPUT                                       → "audio"
+ *   • the primary `layer` OUTPUT (single, not an aux overlay) → "layer"
+ *
+ * An explicit `label` on the port always wins. This is display-only: `name`,
+ * `type` and `kind` are untouched, so compile / connection logic is unaffected.
+ */
+const NUMBER_OUT_GENERIC = new Set(['result', 'number']);
+const LAYER_OUT_KEEP = new Set(['viz', 'guides', 'inner', 'outer']);
+
+function canonicalLabel(p: PortSpec, side: 'in' | 'out'): string | undefined {
+  if (p.label) return undefined; // explicit label wins
+  // Generic computed/emitted output → "value". Covers polymorphic math ops
+  // (which resolve to `any` when unwired) too, so a node reads the same whether
+  // or not it's connected. Booleans keep "result" — a comparison's output is
+  // already consistently named and "value" would read oddly there.
+  if (side === 'out' && NUMBER_OUT_GENERIC.has(p.name) && p.type !== 'boolean') return 'value';
+  if (side === 'in' && p.type === 'audio') return 'audio';
+  if (side === 'out' && p.type === 'layer' && p.kind !== 'spread' && !LAYER_OUT_KEEP.has(p.name)) return 'layer';
+  return undefined;
+}
+
+function withCanonicalLabels(
+  ports: ReadonlyArray<PortSpec>,
+  side: 'in' | 'out',
+): ReadonlyArray<PortSpec> {
+  let out: PortSpec[] | null = null;
+  for (let i = 0; i < ports.length; i++) {
+    const lbl = canonicalLabel(ports[i]!, side);
+    if (lbl) (out ??= [...ports])[i] = { ...ports[i]!, label: lbl };
+  }
+  return out ?? ports; // stable identity when nothing changed
+}
+
+/**
  * Resolve a node's active input ports — uses `dynamicInputs(params)`
  * when present, falling back to the static `inputs` array. Called from
  * compile.ts, connection-rules.ts, and node components so they all see
@@ -290,7 +331,7 @@ export function getResolvedInputs(
   def: NodeDef,
   params: Record<string, unknown>,
 ): ReadonlyArray<PortSpec> {
-  return def.dynamicInputs ? def.dynamicInputs(params) : def.inputs;
+  return withCanonicalLabels(def.dynamicInputs ? def.dynamicInputs(params) : def.inputs, 'in');
 }
 
 /**
@@ -307,9 +348,10 @@ export function getResolvedOutputs(
   params: Record<string, unknown>,
   upstreamTypes: Record<string, PortType | undefined>,
 ): ReadonlyArray<PortSpec> {
-  return def.dynamicOutputs
-    ? def.dynamicOutputs(params, upstreamTypes)
-    : def.outputs;
+  return withCanonicalLabels(
+    def.dynamicOutputs ? def.dynamicOutputs(params, upstreamTypes) : def.outputs,
+    'out',
+  );
 }
 
 /** Re-export common types so node files only need to import from './types'. */

@@ -116,7 +116,7 @@
   color-scheme: light;
   /* Notion warm off-white: a warm near-white main, a warm-grey sidebar/panels,
      white cards, warm near-black text — never a cool pure-white glare. */
-  --bg-0: #fcfbf9;   /* app / canvas base — warm off-white */
+  --bg-0: #eae8e1;   /* app / canvas base — warm grey, darker than panels so white nodes pop */
   --bg-1: #f6f5f2;   /* panels · sidebar · toolbar — warm grey */
   --bg-2: #ffffff;   /* cards · inputs · node faceplates */
   --bg-3: #ecebe6;   /* hover / pressed */
@@ -331,7 +331,9 @@ input:focus, select:focus, textarea:focus {
 
 .app-shell {
   display: grid;
-  grid-template-rows: 32px 1fr 22px;
+  /* Row 1 must match the toolbar's own height (44px) — a shorter track let the
+     bar overflow into the canvas, whose opaque backdrop clipped the buttons. */
+  grid-template-rows: 44px 1fr 22px;
   height: 100%;
   width: 100%;
   position: relative;
@@ -2277,7 +2279,6 @@ body[data-focus='1'] .statusbar {
   font-size: var(--text-2xs);
   text-transform: uppercase;
   color: var(--fg-1);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2320,7 +2321,8 @@ body[data-focus='1'] .statusbar {
 }
 .node[data-math='1'] .node-label {
   font-family: var(--font-mono);
-  font-size: 12px;
+  /* Match every other node's name-plate size (was 12px, which read oversized). */
+  font-size: var(--text-2xs);
   font-weight: 500;
   letter-spacing: 0;
   color: var(--fg-0);
@@ -2337,7 +2339,7 @@ body[data-focus='1'] .statusbar {
   gap: 4px;
 }
 .node[data-math='1'] .node-row-label {
-  font-size: 9px;
+  font-size: 10.5px;
   color: var(--fg-2);
 }
 /* Wired labels still light up to the accent, just at the compact size. */

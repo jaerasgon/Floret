@@ -7,6 +7,7 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod audio;
 mod bus;
 mod canvas;
 mod crash;
@@ -122,6 +123,7 @@ impl App {
             }
         }
         self.view.on_load(&mut self.patch);
+        audio::clear();
         self.recompile();
         self.start = Instant::now();
         self.frame = 0;
@@ -131,12 +133,14 @@ impl App {
         match Engine::from_patch(&self.patch) {
             Ok((mut engine, warnings)) => {
                 engine.set_host(Some(host::shared()));
+                audio::attach(&mut engine);
                 self.engine = Some(engine);
                 self.warnings = warnings;
             }
             Err(e) => {
                 self.engine = None;
                 self.error = Some(e);
+                audio::clear();
             }
         }
         self.outputs.clear();
@@ -313,6 +317,7 @@ impl eframe::App for App {
                     }
                     ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                         self.bus.status(ui);
+                        audio::status(ui);
                         ui.label(
                             RichText::new("native spike · engine + renderer in Rust")
                                 .color(theme::FG_3)

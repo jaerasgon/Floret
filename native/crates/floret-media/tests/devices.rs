@@ -9,7 +9,7 @@ use std::time::{Duration, Instant};
 #[test]
 fn runs_the_graph_whatever_the_devices() {
     let sys = AudioSystem::start();
-    let nodes = vec![
+    let nodes = [
         (
             "o",
             AudioNode::Oscillator {

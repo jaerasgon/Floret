@@ -33,6 +33,7 @@ pub(crate) fn js_string(v: &Value) -> String {
         // JS prints a function's source; there's no equivalent for a style chain.
         Value::Style(_) => "function".into(),
         Value::Handle(h) => h.js_string(),
+        Value::Image(_) => "[object OffscreenCanvas]".into(),
     }
 }
 
@@ -140,6 +141,7 @@ fn write_json(v: &Value, out: &mut String) -> bool {
         // JSON.stringify drops functions like undefined.
         Value::Undefined | Value::Style(_) => return false,
         Value::Scene(n) => return write_json(&n.to_value(), out),
+        Value::Image(_) => out.push_str("{}"),
         Value::Handle(h) => {
             return match h.to_value() {
                 Some(obj) => write_json(&obj, out),
@@ -198,6 +200,7 @@ pub(crate) fn value_to_string(v: &Value) -> String {
     match v {
         Value::Undefined | Value::Null => String::new(),
         Value::Scene(n) => value_to_string(&n.to_value()),
+        Value::Image(_) => value_to_string(&Value::Object(Default::default())),
         Value::Style(_) => "function".into(),
         Value::Handle(h) => match h.to_value() {
             Some(obj) => value_to_string(&obj),

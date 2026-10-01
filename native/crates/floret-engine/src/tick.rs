@@ -51,6 +51,7 @@ pub struct Engine {
     pub params: ParamStore,
     /// Wired constant pins whose value has been captured (first tick).
     constants_wired: bool,
+    host: Option<Arc<dyn crate::host::Host>>,
 }
 
 impl Engine {
@@ -59,10 +60,17 @@ impl Engine {
             graph,
             params,
             constants_wired: false,
+            host: None,
         }
     }
 
+    /// Lend the engine the app's rasteriser / fetcher (see `crate::host`).
+    pub fn set_host(&mut self, host: Option<Arc<dyn crate::host::Host>>) {
+        self.host = host;
+    }
+
     pub fn tick(&mut self, frame: &FrameCtx) -> TickResult {
+        let _host = crate::host::install(self.host.clone());
         let mut t = Ticker {
             graph: &mut self.graph,
             params: &mut self.params,
@@ -626,6 +634,11 @@ fn write_hash(v: &Value, s: &mut String) {
         // TS's replacer hashes every function (style) as "function".
         Value::Style(_) => s.push_str("\"function\""),
         Value::Scene(n) => write_hash(&n.to_value(), s),
+        // TS stringifies a canvas as `{}`, so a cache never saw new pixels.
+        // Hash the image's generation id instead.
+        Value::Image(i) => {
+            let _ = write!(s, "{{\"$image\":{}}}", i.id());
+        }
         Value::Handle(h) => match h.to_value() {
             Some(obj) => write_hash(&obj, s),
             None => s.push_str("\"function\""),

@@ -17,6 +17,7 @@ pub mod convert;
 pub mod data;
 pub mod draw;
 pub mod force;
+pub mod image;
 pub mod input;
 pub mod io;
 pub mod logic;
@@ -64,6 +65,7 @@ fn registry() -> &'static Registrar {
         data::register(&mut r);
         draw::register(&mut r);
         force::register(&mut r);
+        image::register(&mut r);
         input::register(&mut r);
         io::register(&mut r);
         logic::register(&mut r);

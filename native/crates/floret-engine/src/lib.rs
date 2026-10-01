@@ -13,6 +13,8 @@
 
 pub mod compile;
 pub mod graph;
+pub mod host;
+pub mod image;
 pub mod js;
 pub mod legacy;
 pub mod node;

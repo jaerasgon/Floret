@@ -394,6 +394,16 @@ pub enum SceneNode {
         tapered: bool,
         tail_width: f64,
     },
+    /// `draw/image*`, `transform/cache`: an image drawn as a textured quad.
+    /// `src` is a source rect in image pixels (`None` = the whole image),
+    /// `dst` the destination rect in scene units (corner mode). `tint`
+    /// multiplies the texture (RGB × tint, then × tint alpha).
+    Image {
+        image: Arc<crate::image::Image>,
+        src: Option<RectF>,
+        dst: RectF,
+        tint: Option<Paint>,
+    },
 }
 
 impl SceneNode {
@@ -420,6 +430,7 @@ impl SceneNode {
             SceneNode::Group { .. } => "group",
             SceneNode::ParticleBatch { .. } => "particle-batch",
             SceneNode::ParticleTrailBatch { .. } => "particle-trail-batch",
+            SceneNode::Image { .. } => "image",
         }
     }
 
@@ -609,9 +620,34 @@ impl SceneNode {
                 put(&mut m, "tapered", Value::Bool(*tapered));
                 put(&mut m, "tailWidth", n(*tail_width));
             }
+            SceneNode::Image {
+                image,
+                src,
+                dst,
+                tint,
+            } => {
+                put(&mut m, "source", Value::Image(image.clone()));
+                put(&mut m, "src", src.map_or(Value::Null, rect_value));
+                put(&mut m, "dst", rect_value(*dst));
+                put(
+                    &mut m,
+                    "tint",
+                    tint.as_ref()
+                        .map_or(Value::Null, |p| Value::Str(p.css.clone())),
+                );
+            }
         }
         Value::Object(Arc::new(m))
     }
+}
+
+/// `{x, y, w, h}`.
+fn rect_value(r: RectF) -> Value {
+    let mut m = IndexMap::new();
+    for (k, v) in [("x", r.x), ("y", r.y), ("w", r.w), ("h", r.h)] {
+        m.insert(k.to_string(), Value::Num(v));
+    }
+    Value::Object(Arc::new(m))
 }
 
 /// `ResolvedStyle` as the TS object (camelCase keys, CSS colour strings).

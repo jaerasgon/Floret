@@ -76,6 +76,8 @@ pub enum Value {
     /// An opaque JS object: a physics world, force, collider, particle
     /// buffer or typed array (see `crate::particles`).
     Handle(crate::particles::Handle),
+    /// Pixels on an `image` wire (a canvas in TS; see `crate::image`).
+    Image(Arc<crate::image::Image>),
 }
 
 impl Value {
@@ -109,6 +111,8 @@ impl Value {
             (Value::List(items), "length") => Value::Num(items.len() as f64),
             (Value::Str(s), "length") => Value::Num(s.encode_utf16().count() as f64),
             (Value::Handle(h), k) => h.to_value().map_or(Value::Undefined, |v| v.get(k)),
+            (Value::Image(i), "width") => Value::Num(f64::from(i.width())),
+            (Value::Image(i), "height") => Value::Num(f64::from(i.height())),
             _ => Value::Undefined,
         }
     }
@@ -120,7 +124,8 @@ impl Value {
             | Value::Color(_)
             | Value::List(_)
             | Value::Object(_)
-            | Value::Scene(_) => true,
+            | Value::Scene(_)
+            | Value::Image(_) => true,
             Value::Handle(h) => !h.is_function(),
             _ => false,
         }
@@ -203,6 +208,7 @@ impl Value {
             (Value::Scene(a), Value::Scene(b)) => Arc::ptr_eq(a, b),
             (Value::Style(a), Value::Style(b)) => Arc::ptr_eq(&a.0, &b.0),
             (Value::Handle(a), Value::Handle(b)) => a.ptr_eq(b),
+            (Value::Image(a), Value::Image(b)) => Arc::ptr_eq(a, b),
             _ => false,
         }
     }
@@ -304,6 +310,7 @@ impl fmt::Debug for Value {
             Value::Scene(n) => write!(f, "<{}>", n.kind()),
             Value::Style(st) => write!(f, "<style ×{}>", st.0.len()),
             Value::Handle(h) => write!(f, "<{}>", h.type_name()),
+            Value::Image(i) => write!(f, "<{i:?}>"),
         }
     }
 }

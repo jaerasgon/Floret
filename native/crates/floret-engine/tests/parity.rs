@@ -227,6 +227,13 @@ impl Cmp {
                 self.temp -= 1;
                 r
             }
+            // A canvas is recorded opaque; with no real canvas in Node its
+            // pixels were blank (a no-op mock), so only the type is compared.
+            (Value::Image(_), Fx::Tag(tag, inner))
+                if tag == "$opaque" && inner.as_str().is_some_and(|s| s.contains("Canvas")) =>
+            {
+                Ok(())
+            }
             (_, Fx::Tag(tag, inner)) if tag == "$summary" => {
                 let got = self.summ.visit(v);
                 check_summary(inner, &got, path)
@@ -631,21 +638,13 @@ fn short_fx(f: &Fx) -> String {
 
 // ─── Running a sample ────────────────────────────────────────────────────────
 
-/// Node types whose output depends on browser media (audio, images, camera).
+/// Node types whose output depends on browser media (audio, camera).
 /// Neither side can produce real output in tests; they're not compared.
+/// Image nodes are: the exporter's canvases were blank mocks, which is what
+/// the Rust engine produces without a rasteriser, and URL loads either had
+/// no URL or stopped the trace (`tickError`).
 fn is_media(ty: &str) -> bool {
-    ["sound/", "image/", "pixel/"]
-        .iter()
-        .any(|p| ty.starts_with(p))
-        || matches!(
-            ty,
-            "input/camera"
-                | "input/landmarks"
-                | "io/image-url"
-                | "io/file"
-                | "io/svg"
-                | "draw/image"
-        )
+    ty.starts_with("sound/") || matches!(ty, "input/camera" | "input/landmarks")
 }
 
 fn native_dir() -> PathBuf {

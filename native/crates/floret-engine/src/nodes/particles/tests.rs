@@ -194,6 +194,7 @@ fn to_json(v: &Value) -> Option<J> {
         ),
         Value::Scene(n) => return to_json(&n.to_value()),
         Value::Handle(h) => return h.to_value().and_then(|o| to_json(&o)),
+        Value::Image(_) => json!({}),
     })
 }
 

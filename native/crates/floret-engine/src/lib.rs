@@ -13,6 +13,7 @@
 
 pub mod compile;
 pub mod graph;
+pub mod js;
 pub mod node;
 pub mod nodes;
 pub mod patch;

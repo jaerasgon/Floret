@@ -88,6 +88,31 @@ impl Value {
         matches!(self, Value::Undefined | Value::Null)
     }
 
+    /// JS property read `v[key]` on the runtime's object shapes
+    /// (`Undefined` when absent).
+    pub fn get(&self, key: &str) -> Value {
+        match (self, key) {
+            (Value::Vec2(p), "x") => Value::Num(p.x),
+            (Value::Vec2(p), "y") => Value::Num(p.y),
+            (Value::Color(c), "r") => Value::Num(c.r),
+            (Value::Color(c), "g") => Value::Num(c.g),
+            (Value::Color(c), "b") => Value::Num(c.b),
+            (Value::Color(c), "a") => Value::Num(c.a),
+            (Value::Object(m), k) => m.get(k).cloned().unwrap_or(Value::Undefined),
+            (Value::List(items), "length") => Value::Num(items.len() as f64),
+            (Value::Str(s), "length") => Value::Num(s.encode_utf16().count() as f64),
+            _ => Value::Undefined,
+        }
+    }
+
+    /// JS `v && typeof v === 'object'` (arrays included).
+    pub fn is_object(&self) -> bool {
+        matches!(
+            self,
+            Value::Vec2(_) | Value::Color(_) | Value::List(_) | Value::Object(_)
+        )
+    }
+
     /// JS `typeof v === 'number'`.
     pub fn as_f64(&self) -> Option<f64> {
         match self {

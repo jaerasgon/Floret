@@ -22,6 +22,7 @@ pub mod motion;
 pub mod noise;
 pub mod random;
 pub mod render;
+pub mod shared;
 pub mod spread;
 pub mod string;
 pub mod time;

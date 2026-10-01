@@ -231,6 +231,7 @@ impl App {
         audio::clear();
         self.doc = doc(self.view.revision());
         recovery::set_current(self.doc.path(), &self.doc.name);
+        host::set_document(self.doc.path());
         self.recompile();
         self.restart();
     }
@@ -287,6 +288,7 @@ impl App {
                 self.recent.push(&path);
                 self.doc.saved_as(path, self.rev());
                 recovery::set_current(self.doc.path(), &self.doc.name);
+                host::set_document(self.doc.path());
                 self.notify(format!("Saved {name}"), false);
                 true
             }

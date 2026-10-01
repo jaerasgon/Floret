@@ -4,9 +4,9 @@
 //! into a lock-free [`Tap`]. When a tick starts, [`Analyser`] reads the
 //! most recent `fftSize` samples and does what Chromium's
 //! `RealtimeAnalyser` does on `getByteFrequencyData`: Blackman window,
-//! FFT, `|X| / N` magnitudes (with Chromium's ×2 FFT scaling, kept to
-//! match vDSP), smoothing over time, then dB mapped from −100…−30 to
-//! 0…255. Like Chromium it only advances the smoothing when new audio has
+//! FFT, `|X| / N` magnitudes, smoothing over time, then dB mapped from
+//! −100…−30 to 0…255. (Older Chromium FFTs returned 2·X to match vDSP;
+//! since the switch to RustFFT it is the spec's plain DFT, as here.) Like Chromium it only advances the smoothing when new audio has
 //! arrived since the last call.
 
 use crate::dsp::{Bus, QUANTUM};
@@ -115,7 +115,7 @@ impl Analyser {
         let mut spec = vec![Complex::<f32>::default(); fft_size / 2 + 1];
         let _ = fft.process(&mut windowed, &mut spec);
         let k = smoothing.clamp(0.0, 1.0);
-        let scale = 2.0 / fft_size as f64;
+        let scale = 1.0 / fft_size as f64;
         let bytes: Vec<u8> = self
             .smoothed
             .iter_mut()
@@ -169,8 +169,8 @@ mod tests {
         assert_eq!(a.bytes.len(), 128);
         let peak = (0..128).max_by_key(|&i| a.bytes[i]).unwrap();
         assert_eq!(peak, 8);
-        // 0.01 × Blackman gain 0.42 × Chromium's ×2 → −47.5 dB.
-        assert_eq!(a.bytes[8], 191);
+        // A 0.01 sine: 0.01 / 2 × Blackman gain 0.42 → −53.6 dB.
+        assert_eq!(a.bytes[8], 169);
         assert_eq!(a.bytes[60], 0);
     }
 

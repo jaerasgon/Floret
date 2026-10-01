@@ -12,18 +12,11 @@ pub struct OneEuroParams {
     pub derivate_cutoff: f64,
 }
 
-/// MediaPipe's pose landmark filter: ~0.01 alpha when still, ~0.94 when
-/// moving fast.
+/// MediaPipe's pose and face landmark filter (the Tasks graphs configure
+/// both alike): ~0.01 alpha when still, ~0.94 when moving fast.
 pub const LANDMARKS: OneEuroParams = OneEuroParams {
     min_cutoff: 0.05,
     beta: 80.0,
-    derivate_cutoff: 1.0,
-};
-
-/// Pose's auxiliary (ROI) landmarks: ~0.002 alpha still, ~0.68 moving.
-pub const AUX_LANDMARKS: OneEuroParams = OneEuroParams {
-    min_cutoff: 0.01,
-    beta: 10.0,
     derivate_cutoff: 1.0,
 };
 

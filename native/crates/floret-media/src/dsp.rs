@@ -1,5 +1,5 @@
 //! DSP building blocks shared by the nodes: render-quantum buses, parameter
-//! ramps, band-limited waveforms, the Web Audio biquad and ADSR segments.
+//! ramps, the Web Audio biquad and ADSR segments.
 
 /// Samples per render quantum (Web Audio's block size).
 pub const QUANTUM: usize = 128;
@@ -113,19 +113,6 @@ impl Ramp {
     }
 }
 
-/// PolyBLEP residual for a unit step at phase 0, `dt` = phase increment.
-pub fn poly_blep(t: f64, dt: f64) -> f64 {
-    if t < dt {
-        let t = t / dt;
-        t + t - t * t - 1.0
-    } else if t > 1.0 - dt {
-        let t = (t - 1.0) / dt;
-        t * t + t + t + 1.0
-    } else {
-        0.0
-    }
-}
-
 /// `x mod 1` into [0, 1).
 pub fn wrap01(x: f64) -> f64 {
     let w = x - x.floor();
@@ -134,24 +121,6 @@ pub fn wrap01(x: f64) -> f64 {
     } else {
         w
     }
-}
-
-/// Web Audio's sawtooth at phase `p` (0 at p = 0, rising, falls from +1 to
-/// −1 at p = ½), band-limited with PolyBLEP.
-pub fn saw(p: f64, dt: f64) -> f64 {
-    let q = wrap01(p + 0.5);
-    2.0 * q - 1.0 - poly_blep(q, dt)
-}
-
-/// Web Audio's square: +1 for the first half period.
-pub fn square(p: f64, dt: f64) -> f64 {
-    let naive = if p < 0.5 { 1.0 } else { -1.0 };
-    naive + poly_blep(p, dt) - poly_blep(wrap01(p + 0.5), dt)
-}
-
-/// Web Audio's triangle: 0 at p = 0, +1 at ¼, −1 at ¾.
-pub fn triangle(p: f64) -> f64 {
-    1.0 - 4.0 * (wrap01(p + 0.25) - 0.5).abs()
 }
 
 /// A `BiquadFilterNode` with Web Audio's coefficient formulas (Audio EQ

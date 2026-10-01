@@ -84,17 +84,26 @@ fn close(a: f64, b: f64, tol: f64) -> bool {
     (a - b).abs() <= tol
 }
 
+/// Chromium normalises its square and saw tables by their Gibbs overshoot
+/// (1.179), so their plateaus sit at ±0.848 (−1.43 dB).
+const GIBBS: f64 = 0.8482;
+
 #[test]
 fn oscillators_hit_frequency_amplitude_and_harmonics() {
     // (wave, RMS of a unit wave, 2nd and 3rd harmonic amplitudes)
     let cases = [
         (Wave::Sine, 1.0 / 2f64.sqrt(), 0.0, 0.0),
-        (Wave::Square, 1.0, 0.0, 4.0 / (3.0 * std::f64::consts::PI)),
+        (
+            Wave::Square,
+            GIBBS,
+            0.0,
+            GIBBS * 4.0 / (3.0 * std::f64::consts::PI),
+        ),
         (
             Wave::Sawtooth,
-            1.0 / 3f64.sqrt(),
-            2.0 / (2.0 * std::f64::consts::PI),
-            2.0 / (3.0 * std::f64::consts::PI),
+            GIBBS / 3f64.sqrt(),
+            GIBBS * 2.0 / (2.0 * std::f64::consts::PI),
+            GIBBS * 2.0 / (3.0 * std::f64::consts::PI),
         ),
         (
             Wave::Triangle,
@@ -162,7 +171,8 @@ fn envelope(gate: bool) -> AudioNode {
 #[test]
 fn envelope_follows_attack_decay_sustain_release() {
     let sys = AudioSystem::offline(SR);
-    // A 1 Hz square is +1 for half a second: a DC probe for the gain.
+    // A 1 Hz square is flat (at Chrome's 0.848) for half a second: a DC
+    // probe for the gain.
     let nodes = |gate| {
         graph(vec![
             ("o", osc(Wave::Square, 1.0, 1.0)),
@@ -177,12 +187,12 @@ fn envelope_follows_attack_decay_sustain_release() {
     let held = left(&sys.render(QUANTUM * 113)); // ~0.3 s
     sys.submit(nodes(false));
     let released = left(&sys.render(secs(0.15)));
-    let at = |x: &[f32], t: f64| f64::from(x[secs(t)]);
+    let at = |x: &[f32], t: f64| f64::from(x[secs(t)]) / GIBBS;
     assert!(close(at(&held, 0.05), 0.5, 0.01), "mid attack");
     assert!(close(at(&held, 0.1), 1.0, 0.01), "peak");
     assert!(close(at(&held, 0.15), 0.75, 0.01), "mid decay");
     assert!(close(at(&held, 0.25), 0.5, 0.01), "sustain");
-    let s = f64::from(held[held.len() - 1]);
+    let s = f64::from(held[held.len() - 1]) / GIBBS;
     assert!(close(at(&released, 0.05), s * 0.5, 0.01), "mid release");
     assert!(at(&released, 0.11).abs() < 1e-6, "released");
 }
@@ -278,7 +288,9 @@ fn delay_echoes_with_feedback() {
 
 #[test]
 fn pulse_width_sets_the_duty_cycle() {
-    for (width, duty) in [(0.0, 0.998), (0.5, 0.498), (0.75, 0.248)] {
+    // Chrome's saw only spans ±0.848 (plus Gibbs ripple), so widths map to
+    // narrower pulses than the curve's threshold suggests.
+    for (width, duty) in [(0.0, 0.998), (0.5, 0.498), (0.75, 0.203)] {
         let sys = AudioSystem::offline(SR);
         sys.submit(graph(vec![
             (
@@ -497,9 +509,17 @@ fn sound_file_loads_plays_and_reports_its_playhead() {
     assert!(frames.iter().all(|f| (f[0] - f[1]).abs() < 1e-6));
     let head = sys.feedback().playheads.get("sf").copied().unwrap();
     assert!(close(head, 0.1, 0.005), "playhead {head}");
-    // Past the end it stops.
+    // Past the end it stops; while `play` is held the position keeps
+    // wrapping (0.3 s mod 0.25 s), as in TS.
     let rest = left(&sys.render(secs(0.2)));
     assert!(rest[secs(0.17)..].iter().all(|&v| v == 0.0));
+    let head = sys.feedback().playheads.get("sf").copied().unwrap();
+    assert!(
+        close(head, 0.3 - 5512.0 / 22050.0, 0.005),
+        "playhead {head}"
+    );
+    sys.submit(g(false));
+    sys.render(256);
     assert!(!sys.feedback().playheads.contains_key("sf"));
     let _ = std::fs::remove_file(&*url);
 }
@@ -661,7 +681,11 @@ fn mono_synth_plays_its_note() {
     let x = left(&sys.render(secs(0.3)));
     assert!(close(zero_cross_freq(&x[secs(0.1)..]), 440.0, 0.5));
     // Sustained at velocity × sustain: a saw of amplitude 0.35.
-    assert!(close(rms(&x[secs(0.1)..]), 0.35 / 3f64.sqrt(), 0.01));
+    assert!(close(
+        rms(&x[secs(0.1)..]),
+        0.35 * GIBBS / 3f64.sqrt(),
+        0.01
+    ));
     sys.submit(graph(vec![("s", synth(false)), ("out", out("s"))]));
     let x = left(&sys.render(secs(0.1)));
     assert!(x[secs(0.06)..].iter().all(|&v| v == 0.0));

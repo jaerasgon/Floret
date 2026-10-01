@@ -3,10 +3,14 @@
 //! A detector finds palms / faces / bodies on the letterboxed frame; each
 //! detection becomes a rotated ROI that the landmark model reads. The
 //! landmarks then give next frame's ROI, so the detector only runs while
-//! fewer than `max` objects are tracked (MediaPipe's VIDEO mode). A
+//! fewer than `max` objects are tracked (MediaPipe's VIDEO mode); for face
+//! and pose its detections then replace the tracked ROIs they overlap,
+//! for hands they only add new ones (as MediaPipe associates them). A
 //! tracked object is dropped when the landmark model's presence score
-//! falls below 0.5. Pose and face landmarks are smoothed with MediaPipe's
-//! one-euro filter; hands aren't (nor are they in MediaPipe's VIDEO mode).
+//! falls below 0.5. As in MediaPipe's Tasks graphs (what the web app ran),
+//! a single tracked pose or face is smoothed with the one-euro filter
+//! (same settings for both); several aren't, nor are hands, nor pose's
+//! auxiliary (ROI) landmarks.
 //!
 //! Check against real photos with the `track_image` example.
 
@@ -98,8 +102,7 @@ const SAME_OBJECT_IOU: f32 = 0.5;
 struct Track {
     /// ROI for the next frame.
     rect: Rect,
-    /// Output landmarks, auxiliary (ROI) landmarks.
-    smoothers: (Smoother, Smoother),
+    smoother: Smoother,
 }
 
 pub struct Landmarker {
@@ -162,42 +165,45 @@ impl Landmarker {
     /// `t` the frame time in seconds.
     pub fn process(&mut self, frame: &Frame, t: f64) -> Vec<Vec<Point>> {
         let img = (frame.width as f32, frame.height as f32);
-        let mut rois: Vec<(Rect, Option<(Smoother, Smoother)>)> = std::mem::take(&mut self.tracked)
+        let mut rois: Vec<(Rect, Option<Smoother>)> = std::mem::take(&mut self.tracked)
             .into_iter()
-            .map(|tr| (tr.rect, Some(tr.smoothers)))
+            .map(|tr| (tr.rect, Some(tr.smoother)))
             .collect();
         if rois.len() < self.max {
             for d in self.detect(frame) {
-                if rois.len() >= self.max {
-                    break;
-                }
                 let r = self.detection_rect(&d, img);
                 let b = geom::bounds(&r, img);
-                if !rois
-                    .iter()
-                    .any(|(t, _)| geom::iou(geom::bounds(t, img), b) > SAME_OBJECT_IOU)
-                {
-                    rois.push((r, None));
+                let same = |t: &Rect| geom::iou(geom::bounds(t, img), b) > SAME_OBJECT_IOU;
+                if self.kind == Tracker::Hands {
+                    // `HandAssociationCalculator`: tracked hands stay, new
+                    // ones are added.
+                    if rois.len() < self.max && !rois.iter().any(|(t, _)| same(t)) {
+                        rois.push((r, None));
+                    }
+                } else {
+                    // `AssociationNormRectCalculator`: the fresh detection
+                    // replaces the tracked ROI it overlaps.
+                    let mut smoother = None;
+                    rois.retain_mut(|(t, s)| {
+                        let keep = !same(t);
+                        if !keep && smoother.is_none() {
+                            smoother = s.take();
+                        }
+                        keep
+                    });
+                    rois.push((r, smoother));
                 }
             }
+            rois.truncate(self.max);
         }
 
         let mut out = Vec::new();
-        for (rect, smoothers) in rois {
+        for (rect, smoother) in rois {
             let Some(mut pts) = self.landmarks(frame, &rect) else {
                 continue;
             };
-            let mut aux = pts.split_off(self.kind.group());
-            let (mut smoother, mut aux_smoother) = smoothers.unwrap_or_else(|| {
-                (
-                    Smoother::new(smooth::LANDMARKS),
-                    Smoother::new(smooth::AUX_LANDMARKS),
-                )
-            });
-            // Pose's ROI follows its auxiliary landmarks, smoothed with a
-            // stronger filter and sized by this frame's ROI.
-            let roi_scale = ((rect.w * img.0) + (rect.h * img.1)) / 2.0;
-            aux_smoother.apply_scaled(t, img, &mut aux, Some(roi_scale));
+            let aux = pts.split_off(self.kind.group());
+            let mut smoother = smoother.unwrap_or_else(|| Smoother::new(smooth::LANDMARKS));
             let next = self.next_rect(&pts, &aux, img);
             let nb = geom::bounds(&next, img);
             if self
@@ -208,13 +214,16 @@ impl Landmarker {
                 // Two ROIs converged on one object.
                 continue;
             }
-            if self.spec.smooth {
-                let scale = (self.kind == Tracker::Pose).then_some(roi_scale);
+            // MediaPipe only smooths a single face / pose; pose's filter is
+            // scaled by next frame's ROI, face's by the landmarks' bounds.
+            if self.spec.smooth && self.max == 1 {
+                let scale = (self.kind == Tracker::Pose)
+                    .then(|| ((next.w * img.0) + (next.h * img.1)) / 2.0);
                 smoother.apply_scaled(t, img, &mut pts, scale);
             }
             self.tracked.push(Track {
                 rect: next,
-                smoothers: (smoother, aux_smoother),
+                smoother,
             });
             out.push(pts);
         }
@@ -222,7 +231,7 @@ impl Landmarker {
     }
 
     /// Next frame's ROI from this frame's (unsmoothed) landmarks, or for
-    /// pose its smoothed auxiliary landmarks.
+    /// pose its auxiliary landmarks.
     fn next_rect(&self, pts: &[Point], aux: &[Point], img: (f32, f32)) -> Rect {
         let xy = |p: &Point| (p[0], p[1]);
         match self.kind {

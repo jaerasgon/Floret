@@ -11,9 +11,10 @@ rust-version.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 indexmap.workspace = true
-# Image file decoding and SVG rasterisation (pure CPU, see `image.rs`).
+# Image file decoding and SVG rasterisation (pure CPU, see `image.rs`); SVG
+# text uses the system fonts, embedded raster images are decoded by resvg.
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp", "bmp"] }
-resvg = { version = "0.48", default-features = false }
+resvg = { version = "0.48", default-features = false, features = ["text", "system-fonts", "raster-images"] }
 
 [dev-dependencies]
 flate2.workspace = true

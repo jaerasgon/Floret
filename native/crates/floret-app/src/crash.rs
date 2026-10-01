@@ -8,18 +8,22 @@
 //!
 //! A panic hook records the message, location and backtrace of each panic
 //! on its own thread (the default hook still prints it), so whoever catches
-//! it with [`Guard::run`] can show where it came from.
+//! it with [`Guard::run`] can show where it came from. A panic on the UI
+//! thread outside a guard will most likely end the app, so the hook also
+//! makes an emergency autosave ([`crate::recovery::emergency_save`]).
 
 use crate::theme;
 use eframe::egui::{self, RichText};
 use floret_engine::PatchFile;
 use std::backtrace::Backtrace;
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::panic::{self, AssertUnwindSafe};
 use std::path::PathBuf;
 
 thread_local! {
     static LAST_PANIC: RefCell<Option<(String, String)>> = const { RefCell::new(None) };
+    /// Inside [`Guard::run`]: the panic will be caught.
+    static GUARDED: Cell<bool> = const { Cell::new(false) };
 }
 
 /// Record every panic's location and backtrace (then run the default hook).
@@ -32,6 +36,9 @@ pub fn install_hook() {
         let bt = Backtrace::force_capture().to_string();
         LAST_PANIC.with(|p| *p.borrow_mut() = Some((location, bt)));
         default(info);
+        if !GUARDED.with(Cell::get) && std::thread::current().name() == Some("main") {
+            crate::recovery::emergency_save();
+        }
     }));
 }
 
@@ -286,11 +293,14 @@ pub struct Caught {
 /// Run `f`, catching a panic. For code that holds the patch mutably: the
 /// caller rolls back, then hands the panic to [`Guard::report`].
 pub fn catch<R>(stage: Stage, f: impl FnOnce() -> R) -> Result<R, Caught> {
-    panic::catch_unwind(AssertUnwindSafe(|| {
+    // Tell the panic hook this panic is handled (no emergency save).
+    let was = GUARDED.with(|g| g.replace(true));
+    let result = panic::catch_unwind(AssertUnwindSafe(|| {
         test_panic(stage);
         f()
-    }))
-    .map_err(|payload| {
+    }));
+    GUARDED.with(|g| g.set(was));
+    result.map_err(|payload| {
         let message = payload
             .downcast_ref::<&str>()
             .map(|s| (*s).to_owned())

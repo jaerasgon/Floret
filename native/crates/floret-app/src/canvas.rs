@@ -157,6 +157,8 @@ enum Action {
     Exit,
     ViewDepth(usize),
     Focus(String),
+    /// Edit a region's / subpatch's label in place.
+    Rename(String),
     SetValue {
         node: String,
         key: EditKey,
@@ -1137,9 +1139,16 @@ pub fn show(
                     });
                 }
             } else if let Some(id) = hits.node(p) {
-                if boxes[id.as_str()].look == Look::Collapsed {
-                    actions.push(Action::Enter(id));
+                match boxes[id.as_str()].look {
+                    Look::Collapsed => actions.push(Action::Enter(id)),
+                    Look::Region => actions.push(Action::Rename(id)),
+                    _ => {}
                 }
+            } else if let Some((id, _)) = boxes
+                .iter()
+                .find(|(_, b)| b.look == Look::Frame && b.header.contains(p))
+            {
+                actions.push(Action::Rename(id.clone()));
             } else if let Some(w) = hits.wire(p) {
                 if let Some(s) = insertion_search(patch, cat, &w.id, p, at) {
                     view.search = Some(s);
@@ -2014,6 +2023,12 @@ fn menu_items(
                 items.push(MenuItem::separator());
                 items.push(MenuItem::new("Enter subpatch", Action::Enter(id.clone())).key("I"));
             }
+            if node
+                .and_then(|n| cat.get(&n.def_type))
+                .is_some_and(|s| s.region_kind.is_some())
+            {
+                items.push(MenuItem::new("Rename…", Action::Rename(id.clone())).key("Dbl-click"));
+            }
             if !regions::is_drawable_node(patch, cat, id) {
                 let parent = node.and_then(|n| n.parent_id.clone());
                 let scope = view.scope().map(str::to_owned);
@@ -2409,6 +2424,47 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 view.select_only(&exited);
                 view.fit_pending = true;
             }
+        }
+        Action::Rename(id) => {
+            let Some(n) = ports::find_node(patch, &id) else {
+                return;
+            };
+            let look = geom::look_of(n, cat, view.scope());
+            let p = ops::absolute_pos(patch, &id);
+            let (w, _) = geom::box_size(n, cat, look);
+            let rect = if look.is_frame() {
+                let h = regions::HEADER_H as f32;
+                Rect::from_min_size(
+                    pos2(p.x as f32 + 4.0, p.y as f32 - h + 2.0),
+                    vec2((w as f32 * 0.5).clamp(120.0, 240.0), h - 4.0),
+                )
+            } else {
+                Rect::from_min_size(
+                    pos2(p.x as f32 + 18.0, p.y as f32 + 4.0),
+                    vec2(NODE_W - 36.0, geom::HEADER_H - 8.0),
+                )
+            };
+            let label = n
+                .params
+                .get("label")
+                .and_then(|v| v.as_str())
+                .map(str::to_owned)
+                .or_else(|| cat.get(&n.def_type).map(|s| s.label.clone()))
+                .unwrap_or_default();
+            view.close_overlays();
+            view.editing = Some(TextEditing {
+                target: EditTarget::Field(Field {
+                    rect: Rect::NOTHING,
+                    node: id,
+                    key: EditKey::Param("label".into()),
+                    kind: FieldKind::Text,
+                    value: Json::String(label.clone()),
+                    axis: None,
+                }),
+                text: label,
+                rect,
+                first: true,
+            });
         }
         Action::Focus(id) => {
             view.select_only(&id);

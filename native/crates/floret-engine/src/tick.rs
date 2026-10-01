@@ -43,7 +43,7 @@ struct IterCtx<'a> {
     /// Zero-based iteration, which keys the memo of nodes in the body.
     index: usize,
     /// Splicer-in / loop-var node → this iteration's value (a spread).
-    splicer_in: Vec<(NodeIdx, Spread)>,
+    splicer_in: &'a [(NodeIdx, Spread)],
     /// Accumulator anchor → current value.
     acc: &'a HashMap<NodeIdx, Value>,
 }
@@ -152,6 +152,7 @@ impl Engine {
             param_versions: &self.param_versions,
             profile: &mut self.profile,
             child_time: Duration::ZERO,
+            scratch: Vec::new(),
         };
         t.slot_writers = t.build_slot_writers();
         let mut outputs: Outputs = vec![None; n];
@@ -198,6 +199,8 @@ struct Ticker<'a> {
     profile: &'a mut Profile,
     /// Profiling: time spent in nodes evaluated inside the current one.
     child_time: Duration,
+    /// Spare inputs buffer for memoised nodes.
+    scratch: Vec<Spread>,
 }
 
 fn slot_key(v: Option<&serde_json::Value>) -> Option<String> {
@@ -289,6 +292,19 @@ impl Ticker<'_> {
         outputs[i] = Some(Arc::new(v));
     }
 
+    /// `set(outputs, i, vec![v])`, reusing the node's previous outputs when
+    /// nothing else holds them (a loop body's splicers, every iteration).
+    fn set_one(outputs: &mut Outputs, i: NodeIdx, v: Spread) {
+        if let Some(Some(prev)) = outputs.get_mut(i) {
+            if let Some(prev) = Arc::get_mut(prev) {
+                prev.clear();
+                prev.push(v);
+                return;
+            }
+        }
+        outputs[i] = Some(Arc::new(vec![v]));
+    }
+
     /// Run a node's compute. `false` with the empty fallback when it
     /// failed (TS `safeCompute`; such a result isn't memoised).
     fn run_compute(
@@ -329,27 +345,46 @@ impl Ticker<'_> {
         outputs: &mut Outputs,
         iter: Option<&IterCtx>,
     ) {
-        let inputs = self.gather(i, outputs);
+        // Inputs go into a reused buffer; a hit allocates nothing.
+        let mut inputs = std::mem::take(&mut self.scratch);
+        self.gather_into(i, outputs, &mut inputs);
         let slot = iter.map_or(0, |c| c.index + 1);
         if let Some(Some(prev)) = self.memo[i].slots.get(slot) {
             if self.param_versions[i] <= prev.params && same_inputs(&prev.inputs, &inputs) {
                 outputs[i] = Some(prev.outputs.clone());
                 self.profile.nodes[i].hits += 1;
+                inputs.clear();
+                self.scratch = inputs;
                 return;
             }
         }
         let (out, ok) = self.run_compute(i, &inputs, frame);
         let out = Arc::new(out);
         if ok {
+            let params = self.params.version();
             let slots = &mut self.memo[i].slots;
             if slots.len() <= slot {
                 slots.resize_with(slot + 1, || None);
             }
-            slots[slot] = Some(MemoEntry {
-                inputs,
-                outputs: out.clone(),
-                params: self.params.version(),
-            });
+            match &mut slots[slot] {
+                Some(prev) => {
+                    let mut old = std::mem::replace(&mut prev.inputs, inputs);
+                    prev.outputs = out.clone();
+                    prev.params = params;
+                    old.clear();
+                    self.scratch = old;
+                }
+                empty => {
+                    *empty = Some(MemoEntry {
+                        inputs,
+                        outputs: out.clone(),
+                        params,
+                    });
+                }
+            }
+        } else {
+            inputs.clear();
+            self.scratch = inputs;
         }
         outputs[i] = Some(out);
     }
@@ -374,27 +409,27 @@ impl Ticker<'_> {
                 let v = iter
                     .and_then(|c| c.splicer_in.iter().find(|(k, _)| *k == i))
                     .map_or_else(empty, |(_, v)| v.clone());
-                Self::set(outputs, i, vec![v]);
+                Self::set_one(outputs, i, v);
                 return;
             }
             Some(RegionRole::SplicerOut) => {
-                let inputs = self.gather(i, outputs);
-                Self::set(
-                    outputs,
-                    i,
-                    vec![inputs.first().cloned().unwrap_or_else(empty)],
-                );
+                let mut inputs = std::mem::take(&mut self.scratch);
+                self.gather_into(i, outputs, &mut inputs);
+                let v = inputs.first().cloned().unwrap_or_else(empty);
+                Self::set_one(outputs, i, v);
+                inputs.clear();
+                self.scratch = inputs;
                 return;
             }
             Some(RegionRole::AccumulatorRead) => {
                 let cur = iter
                     .and_then(|c| c.acc.get(&i).cloned())
                     .unwrap_or(Value::Undefined);
-                Self::set(outputs, i, vec![one(cur)]);
+                Self::set_one(outputs, i, one(cur));
                 return;
             }
             Some(RegionRole::AccumulatorWrite) => {
-                Self::set(outputs, i, vec![one(Value::Undefined)]);
+                Self::set_one(outputs, i, one(Value::Undefined));
                 return;
             }
             None => {}
@@ -588,8 +623,9 @@ impl Ticker<'_> {
         let mut body: Vec<Option<Vec<Vec<Value>>>> = vec![None; inner.order.len()];
 
         let mut inner_out: Outputs = outputs.clone();
+        let mut splicer_in = Vec::with_capacity(n_in + 3);
         for it in 0..n {
-            let mut splicer_in = Vec::with_capacity(n_in + 3);
+            splicer_in.clear();
             for (k, spread) in in_spreads.iter().enumerate() {
                 let slot = spread.get(it).cloned().unwrap_or(Value::Undefined);
                 splicer_in.push((inner.splicer_in[k], one(slot)));
@@ -614,7 +650,7 @@ impl Ticker<'_> {
             }
             let ctx = IterCtx {
                 index: it,
-                splicer_in,
+                splicer_in: &splicer_in,
                 acc: &acc_values,
             };
             let iter_frame;
@@ -628,7 +664,6 @@ impl Ticker<'_> {
                 frame
             };
             self.eval_scope(&inner, f, &mut inner_out, Some(&ctx));
-            drop(ctx);
 
             for (k, &id) in inner.splicer_out.iter().enumerate() {
                 let v = inner_out[id]
@@ -731,9 +766,16 @@ impl Ticker<'_> {
 
     /// `gatherInputs`: defaults / overrides / constants, then wires.
     fn gather(&mut self, i: NodeIdx, outputs: &Outputs) -> Vec<Spread> {
+        let mut result = Vec::with_capacity(self.graph.nodes[i].in_arity);
+        self.gather_into(i, outputs, &mut result);
+        result
+    }
+
+    /// [`Ticker::gather`] into an empty `result`.
+    fn gather_into(&mut self, i: NodeIdx, outputs: &Outputs, result: &mut Vec<Spread>) {
         let node: &RuntimeNode = &self.graph.nodes[i];
         let n = node.in_arity;
-        let mut result: Vec<Spread> = Vec::with_capacity(n);
+        result.reserve(n);
         for k in 0..n {
             result.push(if node.constant[k] {
                 node.constants[k]
@@ -814,7 +856,6 @@ impl Ticker<'_> {
             self.graph.nodes[i].constants[port] = Some(v.clone());
             result[port] = v;
         }
-        result
     }
 }
 

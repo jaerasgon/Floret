@@ -82,6 +82,10 @@ pub fn to_int32(x: f64) -> i32 {
     if !x.is_finite() {
         return 0;
     }
+    // Truncating to i64 is exact below 2^63; its low 32 bits are the result.
+    if x.abs() < 9_223_372_036_854_775_808.0 {
+        return x as i64 as i32;
+    }
     let m = x.trunc() % 4_294_967_296.0;
     let m = if m < 0.0 { m + 4_294_967_296.0 } else { m };
     (m as u64 as u32) as i32
@@ -349,6 +353,14 @@ mod tests {
     fn int_conversions() {
         assert_eq!(to_int32(4_294_967_297.0), 1);
         assert_eq!(to_int32(-1.0), -1);
+        assert_eq!(to_int32(-1.9), -1);
+        assert_eq!(to_int32(2_147_483_648.0), -2_147_483_648);
+        assert_eq!(to_int32(-2_147_483_649.0), 2_147_483_647);
+        assert_eq!(to_int32(2f64.powi(53) + 2.0), 2);
+        assert_eq!(to_int32(-(2f64.powi(40)) - 3.5), -3);
+        // Past 2^63 (the modulo path): 2^64 + 2^12 and -(2^70) - 2^20.
+        assert_eq!(to_int32(2f64.powi(64) + 4096.0), 4096);
+        assert_eq!(to_int32(-(2f64.powi(70)) - 2f64.powi(20)), -1_048_576);
         assert_eq!(to_uint32(-1.0), 4_294_967_295);
         assert_eq!(imul(3.0, 4.0), 12.0);
     }

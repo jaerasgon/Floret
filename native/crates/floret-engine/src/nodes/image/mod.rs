@@ -296,6 +296,24 @@ fn crop(_: &NodeInit) -> Box<dyn NodeImpl> {
         }
         let (w, h) = (dim(sw), dim(sh));
         let out = memo.get(vec![kid(img), kn(sx), kn(sy), kn(sw), kn(sh)], || {
+            let inside = sx >= 0.0
+                && sy >= 0.0
+                && sx + sw <= f64::from(img.width())
+                && sy + sh <= f64::from(img.height());
+            if inside
+                && [sx, sy].iter().all(|v| v.fract() == 0.0)
+                && (sw, sh) == (w.into(), h.into())
+            {
+                // A 1:1 copy round-trips exactly through the canvas, except
+                // that fully transparent pixels come back as 0,0,0,0.
+                let mut out = crop_exact(img, sx as u32, sy as u32, w, h).into_rgba();
+                for p in out.chunks_exact_mut(4) {
+                    if p[3] == 0 {
+                        p.copy_from_slice(&[0; 4]);
+                    }
+                }
+                return Ok(Arc::new(Image::new(w, h, out)));
+            }
             let mut c = Surface::new(w, h);
             c.draw(
                 &Surface::from_image(img),

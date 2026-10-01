@@ -17,6 +17,15 @@ This replaces issue #30 ("Native kiosk shell (Electron / Tauri)", closed).
 | Phase | State |
 |---|---|
 | 0 · Fixtures | ✅ `npm run fixtures:export` → 95 `.flora` samples + traces in `native/` |
+| 1 · Engine core | ✅ compile / tick / regions / state / constants ported; 184 node types ported (math, vec2, spread, color, motion, logic, convert, string, value, data, meta, time, input, random, noise, io controls), each checked against the TS code; ~1,500 node outputs across the samples match the reference; parity test runs in CI on macOS / Windows / Linux |
+| UI spike | ✅ `native/crates/floret-app` (egui + wgpu): node canvas, palette, inspector, live engine values, GPU preview via egui's render pass. Downloadable builds from CI. **Waiting on your feel check.** |
+| 2 · Scene + renderer | next: typed scene IR, styles as data, draw / style / transform nodes, wgpu renderer |
+| 3–9 | not started |
+
+![UI spike running Lissajous Threads](images/native-spike-lissajous.png)
+
+---|---|
+| 0 · Fixtures | ✅ `npm run fixtures:export` → 95 `.flora` samples + traces in `native/` |
 | 1 · Engine core | 🟡 compile / tick / regions / state ported; parity harness in CI on all 3 OSes; node categories being ported |
 | 2–9 | not started |
 

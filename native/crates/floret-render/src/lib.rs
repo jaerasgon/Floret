@@ -83,6 +83,13 @@ pub fn canvas_size(
     (dim(width, DEFAULT_CANVAS.0), dim(height, DEFAULT_CANVAS.1))
 }
 
+/// The renderer can live in shared state (e.g. egui callback resources).
+const _: () = {
+    const fn check<T: Send + Sync>() {}
+    check::<Renderer>();
+    check::<Headless>();
+};
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -136,12 +143,4 @@ mod tests {
         );
         assert_eq!(canvas_size(None, Some(&json!("x"))), DEFAULT_CANVAS);
     }
-}
-
-/// The renderer can live in shared state (e.g. egui callback resources).
-#[allow(dead_code)]
-fn assert_send_sync() {
-    fn check<T: Send + Sync>() {}
-    check::<Renderer>();
-    check::<Headless>();
 }

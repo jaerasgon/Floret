@@ -250,10 +250,11 @@ pub fn read_png(path: &Path) -> Option<(u32, u32, Vec<u8>)> {
 fn flatten(v: &Fx, out: &mut Vec<Arc<SceneNode>>, unsupported: &mut Vec<String>) {
     match v {
         Fx::Arr(items) => items.iter().for_each(|i| flatten(i, out, unsupported)),
-        Fx::Obj(_) => match node(v, unsupported) {
-            Some(n) => out.push(Arc::new(n)),
-            None => {}
-        },
+        Fx::Obj(_) => {
+            if let Some(n) = node(v, unsupported) {
+                out.push(Arc::new(n));
+            }
+        }
         _ => {}
     }
 }

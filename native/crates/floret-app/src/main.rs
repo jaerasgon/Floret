@@ -66,10 +66,9 @@ impl App {
         if let Some(rs) = cc.wgpu_render_state.as_ref() {
             preview::init(rs);
         }
-        let start = SAMPLES
-            .iter()
-            .position(|s| s.id == "tut-03-animate")
-            .unwrap_or(0);
+        // FLORET_SAMPLE=<id> picks the startup sample (handy for screenshots).
+        let want = std::env::var("FLORET_SAMPLE").unwrap_or_else(|_| "tut-03-animate".into());
+        let start = SAMPLES.iter().position(|s| s.id == want).unwrap_or(0);
         let mut app = App {
             sample: start,
             patch: empty_patch(),

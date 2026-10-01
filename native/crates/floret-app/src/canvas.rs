@@ -75,7 +75,7 @@ impl View {
         let margin = 60.0;
         self.zoom = ((area.width() - margin) / bb.width())
             .min((area.height() - margin) / bb.height())
-            .clamp(0.2, 1.4);
+            .clamp(0.4, 1.25);
         let content = bb.size() * self.zoom;
         let offset = (area.size() - content) * 0.5;
         self.pan = offset / self.zoom - bb.min.to_vec2();
@@ -385,7 +385,7 @@ pub fn show(
         );
         let accent = theme::category_color(&b.category);
         painter.circle_filled(header.left_center() + vec2(12.0 * z, 0.0), 3.2 * z, accent);
-        if z > 0.35 {
+        if z > 0.25 {
             painter.text(
                 header.left_center() + vec2(22.0 * z, 0.0),
                 Align2::LEFT_CENTER,
@@ -412,7 +412,7 @@ pub fn show(
                 theme::port_color(&p.ty),
                 Stroke::new(1.5, BG_2),
             );
-            if z > 0.45 {
+            if z > 0.3 {
                 painter.text(
                     pos2(b.rect.left() + 10.0 * z, y),
                     Align2::LEFT_CENTER,
@@ -430,7 +430,7 @@ pub fn show(
                 theme::port_color(&p.ty),
                 Stroke::new(1.5, BG_2),
             );
-            if z > 0.45 {
+            if z > 0.3 {
                 let text = match vals.as_ref().and_then(|v| v.get(i)) {
                     Some(v) if !v.is_empty() => v.clone(),
                     _ => p.label.as_str().to_owned(),

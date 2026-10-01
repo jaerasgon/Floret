@@ -169,7 +169,7 @@ impl Autosaver {
         }
         self.last = now;
         self.written = Some(rev);
-        let text = files::to_flora(patch, None, &files::now_iso());
+        let patch = patch.clone();
         let meta = Meta {
             session: self.session.clone(),
             kind: Kind::Autosave,
@@ -179,6 +179,7 @@ impl Autosaver {
         };
         let (dir, path) = (self.dir.clone(), self.path());
         self.pending = Some(std::thread::spawn(move || {
+            let text = files::to_flora(&patch, None, &files::now_iso());
             if let Err(e) = write_pair(&dir, &path, &text, &meta) {
                 eprintln!("floret: autosave failed: {e}");
             }

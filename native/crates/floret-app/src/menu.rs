@@ -501,7 +501,12 @@ pub mod native {
             #[cfg(target_os = "macos")]
             {
                 let app = Submenu::new("Floret", true);
-                app.append(&PredefinedMenuItem::about(None, None))?;
+                let about = muda::AboutMetadata {
+                    name: Some("Floret".into()),
+                    version: Some(env!("CARGO_PKG_VERSION").into()),
+                    ..Default::default()
+                };
+                app.append(&PredefinedMenuItem::about(None, Some(about)))?;
                 app.append(&PredefinedMenuItem::separator())?;
                 let prefs = self.item(&Command::Preferences);
                 app.append(&prefs)?;

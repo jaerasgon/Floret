@@ -9,6 +9,7 @@
 
 mod canvas;
 mod editor;
+mod host;
 mod preview;
 mod theme;
 
@@ -109,7 +110,8 @@ impl App {
 
     fn recompile(&mut self) {
         match Engine::from_patch(&self.patch) {
-            Ok((engine, warnings)) => {
+            Ok((mut engine, warnings)) => {
+                engine.set_host(Some(host::shared()));
                 self.engine = Some(engine);
                 self.warnings = warnings.into_iter().map(|w| w.message).collect();
             }

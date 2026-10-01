@@ -1741,5 +1741,6 @@ fn format_value(v: &Value) -> String {
         Value::Scene(n) => n.kind().to_owned(),
         Value::Style(_) => "style".into(),
         Value::Handle(h) => h.type_name().to_owned(),
+        Value::Image(i) => format!("{}×{}", i.width(), i.height()),
     }
 }

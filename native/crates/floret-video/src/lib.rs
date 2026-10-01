@@ -7,9 +7,11 @@
 //! - **Everywhere**: MP4 / MOV demuxed by `re_mp4` (pure Rust), H.264
 //!   decoded by OpenH264, compiled from the source the `openh264` crate
 //!   bundles (BSD; cargo feature `openh264`, on by default).
-//! - **macOS**: AVFoundation first (VideoToolbox; H.264, HEVC, ProRes and
-//!   anything else QuickTime plays), falling back to OpenH264 when it
-//!   can't open a file. `FLORET_VIDEO=openh264` skips AVFoundation.
+//! - **macOS**: H.264 MP4s go to OpenH264 (frame-exact everywhere);
+//!   everything else (HEVC, ProRes, anything QuickTime plays) to
+//!   AVFoundation / VideoToolbox, which also catches files the MP4 reader
+//!   can't. `FLORET_VIDEO=openh264` never uses AVFoundation;
+//!   `FLORET_VIDEO=avfoundation` tries it first for every file.
 //!
 //! Audio tracks are ignored. Each playing node gets a [`session`]: a
 //! decoder thread with a small frame cache around the playhead.
@@ -128,23 +130,23 @@ fn reader(src: &Source) -> Result<Box<dyn ReadSeek>, String> {
 /// Which decoders [`open_with`] may use.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Backend {
-    /// The platform's own first (AVFoundation on macOS), then OpenH264.
+    /// OpenH264 for H.264 MP4s, else the platform's own (AVFoundation on
+    /// macOS).
     Auto,
+    /// The platform's own first for every file, then OpenH264.
+    Native,
     /// MP4 demux + OpenH264 only.
     Portable,
 }
 
 /// Open a video: a file path, `file://` URL or `data:` URL.
 pub fn open(source: &str) -> Result<Media, String> {
-    let portable = std::env::var("FLORET_VIDEO").as_deref() == Ok("openh264");
-    open_with(
-        source,
-        if portable {
-            Backend::Portable
-        } else {
-            Backend::Auto
-        },
-    )
+    let backend = match std::env::var("FLORET_VIDEO").as_deref() {
+        Ok("openh264") => Backend::Portable,
+        Ok("avfoundation") => Backend::Native,
+        _ => Backend::Auto,
+    };
+    open_with(source, backend)
 }
 
 pub fn open_with(source: &str, backend: Backend) -> Result<Media, String> {
@@ -154,7 +156,21 @@ pub fn open_with(source: &str, backend: Backend) -> Result<Media, String> {
     #[cfg(target_os = "macos")]
     let mut native_err = None;
     #[cfg(target_os = "macos")]
-    if backend == Backend::Auto {
+    let native_first = match backend {
+        Backend::Native => true,
+        Backend::Portable => false,
+        // H.264 MP4s decode frame-exactly with OpenH264; AVFoundation takes
+        // the rest.
+        Backend::Auto => {
+            !cfg!(feature = "openh264")
+                || !matches!(
+                    demux::probe(&mut *reader(&src)?).map(|t| t.codec),
+                    Ok(demux::Codec::H264(_))
+                )
+        }
+    };
+    #[cfg(target_os = "macos")]
+    if native_first {
         let path = match &src {
             Source::Path(p) => Some(p.clone()),
             Source::Memory(_) => None,

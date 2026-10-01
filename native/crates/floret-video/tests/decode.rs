@@ -63,7 +63,7 @@ fn clip_path() -> &'static PathBuf {
 
 fn backends() -> Vec<Backend> {
     if cfg!(target_os = "macos") {
-        vec![Backend::Portable, Backend::Auto]
+        vec![Backend::Portable, Backend::Native]
     } else {
         vec![Backend::Portable]
     }

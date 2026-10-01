@@ -202,8 +202,11 @@ impl Decoder for Avf {
     fn seek(&mut self, target: usize) -> Result<(), String> {
         let at = self.pts.get(target).copied().unwrap_or(0.0);
         self.last = None;
-        // A hair early so the target frame itself is inside the range.
-        self.start_reading(at - 1e-4)
+        // A reader whose range starts inside a frame's display interval
+        // returns that frame (retimed to the range start), so start a
+        // quarter frame *into* the target: starting a hair early handed back
+        // the previous frame labelled as the target.
+        self.start_reading(at + 0.5 * self.half_frame())
     }
 
     fn next(

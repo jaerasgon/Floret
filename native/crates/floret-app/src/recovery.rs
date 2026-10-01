@@ -573,9 +573,9 @@ mod tests {
     #[test]
     fn crash_copies_name_and_source() {
         set_current(Some(Path::new("/tmp/x.flora")), "x");
-        let p = write_crash_copy(&patch("My Sketch")).unwrap();
+        let p = write_crash_copy(&patch("Recovery Sketch")).unwrap();
         let name = p.file_name().unwrap().to_str().unwrap();
-        assert!(name.starts_with("my-sketch-"), "{name}");
+        assert!(name.starts_with("recovery-sketch-"), "{name}");
         let meta: Meta =
             serde_json::from_str(&std::fs::read_to_string(sidecar(&p)).unwrap()).unwrap();
         assert_eq!(meta.kind, Kind::Crash);

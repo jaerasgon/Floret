@@ -403,7 +403,13 @@ mod tests {
     fn an_editor_panic_keeps_evaluation_running() {
         install_hook();
         let mut g = Guard::default();
-        let r: Option<()> = g.run(Stage::Editor, &patch(), || panic!("canvas bug"));
+        // Its own name: both tests write crash copies at the same moment, and
+        // Windows refuses a second writer on the same file.
+        let p = PatchFile::load(
+            r#"{"kind":"floret.patch","version":2,"meta":{"name":"Editor Sketch"},"nodes":[],"edges":[]}"#,
+        )
+        .unwrap();
+        let r: Option<()> = g.run(Stage::Editor, &p, || panic!("canvas bug"));
         assert!(r.is_none());
         assert!(!g.paused() && g.render_ok() && g.dialog_open);
         let rep = g.report.as_ref().unwrap();

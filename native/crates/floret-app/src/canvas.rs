@@ -2055,7 +2055,7 @@ fn overlays(
                 rect,
                 &mut ed.text,
                 first,
-                (11.0 * view.zoom).clamp(9.0, 16.0),
+                (12.0 * view.zoom).clamp(9.0, 24.0),
             )
         } else {
             popups::inline_text(ctx, rect, &mut ed.text, first)

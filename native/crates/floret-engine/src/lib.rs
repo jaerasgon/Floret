@@ -11,6 +11,7 @@
 //! let result = engine.tick(&FrameCtx::default());
 //! ```
 
+pub mod bus;
 pub mod compile;
 pub mod graph;
 pub mod host;
@@ -22,6 +23,7 @@ pub mod nodes;
 pub mod particles;
 pub mod patch;
 pub mod scene;
+pub mod shader;
 pub mod spec;
 pub mod tick;
 pub mod value;

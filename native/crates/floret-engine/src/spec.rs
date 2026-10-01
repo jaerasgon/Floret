@@ -351,7 +351,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "enable once all 17 dynamic-input node types are ported"]
     fn every_dynamic_node_has_an_implementation() {
         let cat = Catalogue::builtin();
         let missing: Vec<_> = cat

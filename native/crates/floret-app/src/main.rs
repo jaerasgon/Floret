@@ -7,6 +7,7 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod bus;
 mod canvas;
 mod crash;
 mod editor;
@@ -14,6 +15,7 @@ mod export;
 mod gpu_support;
 mod host;
 mod preview;
+mod shader_panel;
 mod theme;
 
 use eframe::egui::{self, Align, Layout, RichText};
@@ -70,6 +72,8 @@ struct App {
     query: String,
     show_palette: bool,
     crash: crash::Guard,
+    shader_panel: shader_panel::ShaderPanel,
+    bus: bus::BusHost,
 }
 
 impl App {
@@ -96,6 +100,8 @@ impl App {
             query: String::new(),
             show_palette: true,
             crash: crash::Guard::default(),
+            shader_panel: shader_panel::ShaderPanel::default(),
+            bus: bus::BusHost::new(),
         };
         app.load_sample(start);
         app
@@ -307,6 +313,13 @@ impl eframe::App for App {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
         self.tick(ui.ctx());
         ui.ctx().request_repaint();
+        self.bus
+            .process(frame.wgpu_render_state(), self.preview.clock);
+        let mut warnings = self.warnings.clone();
+        warnings.extend(
+            self.shader_panel
+                .warnings(&self.patch, self.preview.shader_errors()),
+        );
 
         egui::Panel::top("toolbar")
             .exact_size(38.0)
@@ -344,15 +357,16 @@ impl eframe::App for App {
                             .color(theme::FG_2)
                             .small(),
                     );
-                    if !self.warnings.is_empty() {
+                    if !warnings.is_empty() {
                         ui.label(
-                            RichText::new(format!("⚠ {} warnings", self.warnings.len()))
+                            RichText::new(format!("⚠ {} warnings", warnings.len()))
                                 .color(theme::DANGER)
                                 .small(),
                         )
-                        .on_hover_text(self.warnings.join("\n"));
+                        .on_hover_text(warnings.join("\n"));
                     }
                     ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                        self.bus.status(ui);
                         ui.label(
                             RichText::new("native spike · engine + renderer in Rust")
                                 .color(theme::FG_3)
@@ -421,6 +435,15 @@ impl eframe::App for App {
                     cat,
                     &mut self.view,
                 );
+            }
+            let selected = self.view.primary().cloned();
+            if self.shader_panel.show(
+                ui.ctx(),
+                &mut self.patch,
+                selected.as_deref(),
+                self.preview.shader_errors(),
+            ) {
+                self.view.commit(&mut self.patch);
             }
             // Structural edits (wires, nodes, undo) rebuild the engine.
             if self.view.take_recompile() {

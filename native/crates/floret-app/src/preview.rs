@@ -16,7 +16,7 @@ use eframe::egui_wgpu::{self, wgpu};
 use floret_engine::scene::SceneNode;
 use floret_engine::tick::Outputs;
 use floret_engine::{Engine, FrameCtx};
-use floret_render::{RenderStats, Renderer};
+use floret_render::{RenderClock, RenderStats, Renderer};
 use std::sync::Arc;
 use std::time::Instant;
 
@@ -35,6 +35,8 @@ pub struct PreviewPanel {
     /// What exports are named after: the renderer's label, else this
     /// (the patch name).
     pub doc_name: String,
+    /// Shader built-ins for the next render (from the last frame context).
+    pub clock: RenderClock,
 }
 
 impl PreviewPanel {
@@ -48,7 +50,15 @@ impl PreviewPanel {
             key_pressed: false,
             export: crate::export::Export::default(),
             doc_name: String::new(),
+            clock: RenderClock::default(),
         }
+    }
+
+    /// Shader compile errors from the last preview frame.
+    pub fn shader_errors(&self) -> &crate::shader_panel::RuntimeErrors {
+        self.gpu
+            .as_ref()
+            .map_or(&[], |p| p.renderer.shader_errors())
     }
 
     /// The engine's frame context for this tick. Reads the canvas size from
@@ -72,6 +82,13 @@ impl PreviewPanel {
             }
         }
         self.read_keys(ctx);
+        self.clock = RenderClock {
+            time: t,
+            time_delta: dt,
+            frame: frame_count as f64,
+            mouse_x: self.mouse.0,
+            mouse_y: self.mouse.1,
+        };
         FrameCtx {
             t,
             dt,
@@ -161,6 +178,7 @@ impl PreviewPanel {
         let image = fit(area, self.canvas);
         match (rs, self.gpu.as_mut()) {
             (Some(rs), Some(p)) => {
+                p.renderer.set_clock(self.clock);
                 let id = p.render(rs, &layers, bg, self.canvas);
                 ui.painter().image(
                     id,

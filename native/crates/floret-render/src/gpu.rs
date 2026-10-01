@@ -11,6 +11,7 @@
 //!   popping a layer ends the pass and starts one on the new target.
 
 use crate::batch::{Blend, Cmd, Emitter, FillVertex, FrameBuilder, SdfInstance, TexVertex};
+use crate::shader::{RenderClock, ShaderRunner};
 use crate::text::{TextKey, TextRasterizer};
 use floret_engine::scene::{SceneNode, IDENTITY};
 use std::collections::HashMap;
@@ -150,6 +151,8 @@ struct PendingComposite {
     first_vertex: u32,
     /// World AABB worth compositing.
     bounds: [f32; 4],
+    /// Composite shader draw `n`'s output instead of `layer`.
+    shader: Option<usize>,
 }
 
 pub struct Renderer {
@@ -183,6 +186,8 @@ pub struct Renderer {
     text: TextRasterizer,
     frame: u64,
     stats: RenderStats,
+    shaders: ShaderRunner,
+    clock: RenderClock,
 }
 
 impl Renderer {
@@ -498,6 +503,15 @@ impl Renderer {
             1,
         );
 
+        let shaders = ShaderRunner::new(
+            device,
+            _queue,
+            &view_layout,
+            &tex_layout,
+            tex_vb.clone(),
+            format,
+            sample_count,
+        );
         use wgpu::BufferUsages as U;
         Renderer {
             format,
@@ -528,7 +542,27 @@ impl Renderer {
             text: TextRasterizer::new(),
             frame: 0,
             stats: RenderStats::default(),
+            shaders,
+            clock: RenderClock::default(),
         }
+    }
+
+    /// The built-ins `gpu/shader` draws see next frame (iTime, iFrame,
+    /// iMouse, …). Set it from the engine frame before [`Renderer::render`].
+    pub fn set_clock(&mut self, clock: RenderClock) {
+        self.clock = clock;
+    }
+
+    /// Compile errors of the shader draws in the last frame, per node id
+    /// and pass (failed passes draw with the fallback shader).
+    pub fn shader_errors(
+        &self,
+    ) -> &[(
+        Arc<str>,
+        floret_engine::shader::ShaderBuffer,
+        Vec<crate::ShaderError>,
+    )] {
+        self.shaders.errors()
     }
 
     pub fn format(&self) -> wgpu::TextureFormat {
@@ -675,6 +709,8 @@ impl Renderer {
         }
         self.upload_text(device, queue);
         self.upload_images(device, queue);
+        self.shaders
+            .prepare(device, queue, &self.fb.shaders, size, &self.clock);
 
         // 3. Replay.
         self.execute(encoder, target, background, size);
@@ -982,11 +1018,8 @@ impl Renderer {
             // pass needs to resolve its MSAA samples; only a suspended one
             // needs to keep them.
             let finishes = !matches!(
-                cmds[i..].iter().find(|c| matches!(
-                    c,
-                    Cmd::PushLayer | Cmd::PopLayer { .. } | Cmd::PopLayerBlur { .. }
-                )),
-                Some(Cmd::PushLayer)
+                cmds[i..].iter().find(|c| is_boundary(c)),
+                Some(Cmd::PushLayer | Cmd::Shader { input: false, .. })
             );
             {
                 let (view, resolve) = match level {
@@ -1031,21 +1064,26 @@ impl Renderer {
                 });
                 pass.set_bind_group(0, &self.view_bg, &[]);
                 if let Some(c) = pending.take() {
-                    if let (true, Some(s)) = (
+                    let source = match c.shader {
+                        Some(n) => self.shaders.output(n),
+                        None => Some((
+                            &self.composite_pipes[c.blend as usize],
+                            &t.layers[c.layer].bind,
+                        )),
+                    };
+                    if let (true, Some(s), Some((pipe, bind))) = (
                         self.scissor(&mut pass, &Some(c.bounds), size),
                         self.comp_buf.slice(),
+                        source,
                     ) {
-                        pass.set_pipeline(&self.composite_pipes[c.blend as usize]);
-                        pass.set_bind_group(1, &t.layers[c.layer].bind, &[]);
+                        pass.set_pipeline(pipe);
+                        pass.set_bind_group(1, bind, &[]);
                         pass.set_vertex_buffer(0, s);
                         pass.draw(c.first_vertex..c.first_vertex + 6, 0..1);
                     }
                 }
                 while let Some(cmd) = cmds.get(i) {
-                    if matches!(
-                        cmd,
-                        Cmd::PushLayer | Cmd::PopLayer { .. } | Cmd::PopLayerBlur { .. }
-                    ) {
+                    if is_boundary(cmd) {
                         break;
                     }
                     self.draw(&mut pass, cmd, size);
@@ -1076,6 +1114,7 @@ impl Renderer {
                         blend: *blend,
                         first_vertex: mask.map_or(0, |m| (m + 1) * 6),
                         bounds: *bounds,
+                        shader: None,
                     });
                 }
                 Cmd::PopLayerBlur { bounds, .. } => {
@@ -1122,6 +1161,32 @@ impl Renderer {
                         blend: Blend::SourceOver,
                         first_vertex: 0,
                         bounds: *bounds,
+                        shader: None,
+                    });
+                }
+                Cmd::Shader { index, input } => {
+                    let input = if *input {
+                        let Some(Level::Layer(k)) = stack.pop() else {
+                            stack.push(Level::Base);
+                            continue;
+                        };
+                        Some(&t.layers[k].bind)
+                    } else {
+                        None
+                    };
+                    self.shaders.encode(encoder, *index as usize, input);
+                    load = wgpu::LoadOp::Load;
+                    pending = Some(PendingComposite {
+                        layer: 0,
+                        blend: Blend::SourceOver,
+                        first_vertex: 0,
+                        bounds: [
+                            f32::NEG_INFINITY,
+                            f32::NEG_INFINITY,
+                            f32::INFINITY,
+                            f32::INFINITY,
+                        ],
+                        shader: Some(*index as usize),
                     });
                 }
                 _ => {}
@@ -1234,6 +1299,14 @@ impl Renderer {
             _ => {}
         }
     }
+}
+
+/// Commands that end the current render pass.
+fn is_boundary(c: &Cmd) -> bool {
+    matches!(
+        c,
+        Cmd::PushLayer | Cmd::PopLayer { .. } | Cmd::PopLayerBlur { .. } | Cmd::Shader { .. }
+    )
 }
 
 fn finite01(v: f64) -> f64 {

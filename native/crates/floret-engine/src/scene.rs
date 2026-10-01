@@ -405,6 +405,9 @@ pub enum SceneNode {
         dst: RectF,
         tint: Option<Paint>,
     },
+    /// `gpu/shader`: a GLSL fragment shader (plus optional buffer passes)
+    /// drawn over the whole canvas. See [`crate::shader`].
+    Shader(Arc<crate::shader::ShaderShape>),
 }
 
 impl SceneNode {
@@ -432,6 +435,7 @@ impl SceneNode {
             SceneNode::ParticleBatch { .. } => "particle-batch",
             SceneNode::ParticleTrailBatch { .. } => "particle-trail-batch",
             SceneNode::Image { .. } => "image",
+            SceneNode::Shader(_) => "shader",
         }
     }
 
@@ -637,6 +641,7 @@ impl SceneNode {
                         .map_or(Value::Null, |p| Value::Str(p.css.clone())),
                 );
             }
+            SceneNode::Shader(sh) => sh.fields(&mut m),
         }
         Value::Object(Arc::new(m))
     }

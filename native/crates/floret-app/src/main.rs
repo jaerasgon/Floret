@@ -1,9 +1,9 @@
 //! Floret desktop app — UI spike.
 //!
 //! Loads the built-in samples, runs them on the Rust engine every frame, and
-//! shows them on a native node canvas next to a live GPU preview. Nodes not
-//! yet ported to Rust are marked "not ported"; the preview draws a
-//! placeholder until the scene renderer lands (phase 2).
+//! shows them on a native node canvas next to a live GPU preview of the
+//! first renderer node's scene (drawn by `floret-render`). Nodes not yet
+//! ported to Rust are marked "not ported".
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
@@ -13,9 +13,11 @@ mod theme;
 
 use eframe::egui::{self, vec2, Align, Layout, RichText};
 use floret_engine::patch::{PatchFile, PatchNode, Position};
+use floret_engine::scene::SceneNode;
 use floret_engine::spec::Catalogue;
 use floret_engine::tick::Outputs;
 use floret_engine::{Engine, FrameCtx};
+use std::sync::Arc;
 use std::time::Instant;
 
 pub struct Sample {
@@ -50,7 +52,15 @@ struct App {
     view: canvas::View,
     fit_pending: bool,
     canvas_rect: egui::Rect,
-    preview_rect: egui::Rect,
+    /// GPU scene preview (`None` without a wgpu render state).
+    preview: Option<preview::Preview>,
+    /// Canvas size (renderer node's width × height).
+    canvas: (u32, u32),
+    /// Pointer over the preview, canvas pixels, centre origin.
+    mouse: (f64, f64),
+    mouse_pressed: bool,
+    key: String,
+    key_pressed: bool,
     start: Instant,
     last: Instant,
     frame: u64,
@@ -63,9 +73,7 @@ struct App {
 impl App {
     fn new(cc: &eframe::CreationContext<'_>) -> App {
         theme::apply(&cc.egui_ctx);
-        if let Some(rs) = cc.wgpu_render_state.as_ref() {
-            preview::init(rs);
-        }
+        let preview = cc.wgpu_render_state.as_ref().map(preview::Preview::new);
         // FLORET_SAMPLE=<id> picks the startup sample (handy for screenshots).
         let want = std::env::var("FLORET_SAMPLE").unwrap_or_else(|_| "tut-03-animate".into());
         let start = SAMPLES.iter().position(|s| s.id == want).unwrap_or(0);
@@ -79,7 +87,12 @@ impl App {
             view: canvas::View::default(),
             fit_pending: true,
             canvas_rect: egui::Rect::ZERO,
-            preview_rect: egui::Rect::ZERO,
+            preview,
+            canvas: floret_render::DEFAULT_CANVAS,
+            mouse: (0.0, 0.0),
+            mouse_pressed: false,
+            key: String::new(),
+            key_pressed: false,
             start: Instant::now(),
             last: Instant::now(),
             frame: 0,
@@ -156,20 +169,130 @@ impl App {
         let dt = now.duration_since(self.last).as_secs_f64();
         self.last = now;
         self.fps = self.fps * 0.9 + (1.0 / dt.max(1e-6)) as f32 * 0.1;
+        // Canvas size comes from the renderer's params, read before the tick
+        // like the web driver (a wired size settles one frame later).
+        self.canvas = self.canvas_size();
         let Some(engine) = self.engine.as_mut() else {
             return;
         };
-        let r = self.preview_rect;
         let frame = FrameCtx {
             t: now.duration_since(self.start).as_secs_f64(),
             dt,
             frame_count: self.frame as f64,
-            width: f64::from(r.width().max(1.0)),
-            height: f64::from(r.height().max(1.0)),
-            ..Default::default()
+            width: f64::from(self.canvas.0),
+            height: f64::from(self.canvas.1),
+            mouse_x: self.mouse.0,
+            mouse_y: self.mouse.1,
+            mouse_is_pressed: self.mouse_pressed,
+            key: self.key.clone(),
+            key_is_pressed: self.key_pressed,
         };
         self.outputs = engine.tick(&frame).outputs;
         self.frame += 1;
+    }
+
+    /// The first renderer's canvas size (TS driver rules), or the default.
+    fn canvas_size(&self) -> (u32, u32) {
+        let Some(engine) = &self.engine else {
+            return self.canvas;
+        };
+        match engine.graph.renderer() {
+            Some(r) => {
+                let id = &engine.graph.nodes[r].id;
+                floret_render::canvas_size(
+                    engine.params.get(id, "width"),
+                    engine.params.get(id, "height"),
+                )
+            }
+            None => self.canvas,
+        }
+    }
+
+    /// The first renderer's scene: its layers (flattened) and background.
+    fn scene(&self) -> (Vec<Arc<SceneNode>>, [f64; 4]) {
+        let out = self.engine.as_ref().and_then(|e| {
+            let r = e.graph.renderer()?;
+            self.outputs.get(r)?.clone()
+        });
+        match out {
+            Some(out) => (
+                out.first()
+                    .map(|s| floret_render::flatten_layers(s))
+                    .unwrap_or_default(),
+                out.get(1)
+                    .map(|s| floret_render::background(s))
+                    .unwrap_or([0.0, 0.0, 0.0, 1.0]),
+            ),
+            None => (Vec::new(), [0.0, 0.0, 0.0, 1.0]),
+        }
+    }
+
+    /// Keyboard state for the patch (`key` / `keyIsPressed`), unless a
+    /// text field has focus. Names follow DOM `KeyboardEvent.key`.
+    fn read_keys(&mut self, ctx: &egui::Context) {
+        if ctx.egui_wants_keyboard_input() {
+            self.key_pressed = false;
+            return;
+        }
+        ctx.input(|i| {
+            for e in &i.events {
+                if let egui::Event::Key {
+                    key, pressed: true, ..
+                } = e
+                {
+                    self.key = match key.name() {
+                        "Space" => " ".to_owned(),
+                        n if n.chars().count() == 1 => n.to_lowercase(),
+                        n => n.to_owned(),
+                    };
+                }
+            }
+            self.key_pressed = !i.keys_down.is_empty();
+        });
+    }
+
+    fn preview_panel(&mut self, ui: &mut egui::Ui, rs: Option<&eframe::egui_wgpu::RenderState>) {
+        let w = ui.available_width();
+        let aspect = self.canvas.1 as f32 / self.canvas.0.max(1) as f32;
+        let h = (w * aspect).clamp(120.0, (ui.available_height() * 0.62).max(120.0));
+        let (area, response) = ui.allocate_exact_size(vec2(w, h), egui::Sense::click_and_drag());
+        ui.painter()
+            .rect_filled(area, egui::CornerRadius::same(6), theme::BG_0);
+        let image = preview::fit(area, self.canvas);
+        let (layers, bg) = self.scene();
+        match (rs, self.preview.as_mut()) {
+            (Some(rs), Some(p)) => {
+                let id = p.render(rs, &layers, bg, self.canvas);
+                ui.painter().image(
+                    id,
+                    image,
+                    egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)),
+                    egui::Color32::WHITE,
+                );
+            }
+            _ => {
+                ui.painter().text(
+                    area.center(),
+                    egui::Align2::CENTER_CENTER,
+                    "No GPU renderer available",
+                    egui::FontId::proportional(12.0),
+                    theme::FG_2,
+                );
+            }
+        }
+        // Mouse in canvas pixels, centre origin; pressed while held on it.
+        if let Some(pos) = response.hover_pos() {
+            if let Some(m) = preview::canvas_mouse(image, self.canvas, pos) {
+                self.mouse = m;
+            }
+        }
+        self.mouse_pressed = response.is_pointer_button_down_on();
+        ui.painter().rect_stroke(
+            area,
+            egui::CornerRadius::same(6),
+            egui::Stroke::new(1.0, theme::BORDER),
+            egui::StrokeKind::Outside,
+        );
     }
 
     fn toolbar(&mut self, ui: &mut egui::Ui) {
@@ -302,8 +425,10 @@ impl App {
 }
 
 impl eframe::App for App {
-    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+    fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
+        self.read_keys(ui.ctx());
         self.tick();
+        let rs = frame.wgpu_render_state().cloned();
         ui.ctx().request_repaint();
 
         egui::Panel::top("toolbar")
@@ -352,7 +477,7 @@ impl eframe::App for App {
                     }
                     ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                         ui.label(
-                            RichText::new("native spike · engine in Rust · renderer: phase 2")
+                            RichText::new("native spike · engine + renderer in Rust")
                                 .color(theme::FG_3)
                                 .small(),
                         );
@@ -383,32 +508,22 @@ impl eframe::App for App {
                     .inner_margin(egui::Margin::same(10)),
             )
             .show(ui, |ui| {
-                ui.label(RichText::new("Preview").color(theme::FG_1).small());
-                let w = ui.available_width();
-                let (rect, _) = ui.allocate_exact_size(vec2(w, w), egui::Sense::hover());
-                self.preview_rect = rect;
-                let t = self.start.elapsed().as_secs_f32();
-                preview::paint(ui, rect, t, egui::Vec2::ZERO);
-                // Until the scene renderer lands (#60) this is not the patch.
-                let tag = egui::Rect::from_min_size(
-                    rect.left_bottom() + vec2(8.0, -30.0),
-                    vec2(rect.width() - 16.0, 22.0),
-                );
-                ui.painter()
-                    .rect_filled(tag, 6.0, theme::BG_0.gamma_multiply(0.85));
-                ui.painter().text(
-                    tag.center(),
-                    egui::Align2::CENTER_CENTER,
-                    "Placeholder — the patch's scene isn't rendered yet",
-                    egui::FontId::proportional(11.0),
-                    theme::FG_1,
-                );
-                ui.painter().rect_stroke(
-                    rect,
-                    egui::CornerRadius::same(6),
-                    egui::Stroke::new(1.0, theme::BORDER),
-                    egui::StrokeKind::Outside,
-                );
+                ui.horizontal(|ui| {
+                    ui.label(RichText::new("Preview").color(theme::FG_1).small());
+                    ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                        let mut info = format!("{} × {}", self.canvas.0, self.canvas.1);
+                        if let Some(p) = &self.preview {
+                            let s = p.stats;
+                            info.push_str(&format!(
+                                " · {} shapes · {:.1} ms",
+                                s.sdf_instances + s.poly_fills + s.text_quads,
+                                p.encode_ms
+                            ));
+                        }
+                        ui.label(RichText::new(info).color(theme::FG_2).small().monospace());
+                    });
+                });
+                self.preview_panel(ui, rs.as_ref());
                 ui.add_space(10.0);
                 ui.separator();
                 ui.label(RichText::new("Inspector").color(theme::FG_1).small());

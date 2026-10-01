@@ -7,7 +7,7 @@ engine must reproduce them. Don't edit by hand; re-export instead.
 | File | Contents |
 |---|---|
 | `registry.json` | Every node type: ports (name, type, kind, default, `param`, `constant`), eval kind, flags |
-| `traces/<sample>.json.gz` | For each sample in `../samples/`: compile result (warnings, scope order, runtime nodes, edges) and every node's outputs at frames 0, 1, 2, 10, 30, 60 |
+| `traces/<sample>.json.gz` | For each sample in `../samples/`: compile result (warnings, scope order, runtime nodes, edges), the frame input for every tick (`inputs`), and every node's outputs at frames 0, 1, 2, 10, 30, 60 |
 
 ## Run conditions
 

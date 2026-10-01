@@ -1,0 +1,520 @@
+//! Parity against the TypeScript reference.
+//!
+//! For every sample in `native/samples`, compile the `.flora` with the Rust
+//! engine, replay the recorded frame inputs, and compare every node's
+//! outputs at the recorded frames with `native/fixtures/traces/<id>.json.gz`.
+//!
+//! The test prints a per-sample report and fails if any sample listed in
+//! `tests/parity-passing.txt` no longer matches (a ratchet: once a sample
+//! passes, it has to keep passing). Run with `-- --nocapture` to see the
+//! report; set `PARITY_ONLY=<id,...>` to check specific samples and
+//! `PARITY_VERBOSE=1` to print every mismatch.
+
+use floret_engine::{tick::Outputs, Engine, FrameCtx, Value};
+use serde_json::Value as J;
+use std::collections::{BTreeMap, HashSet};
+use std::io::Read;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+
+// ─── Fixture values ──────────────────────────────────────────────────────────
+
+/// A decoded fixture value. Shared (`$id`/`$ref`) values decode to shared
+/// `Arc`s, so huge DAGs stay linear in memory.
+#[derive(Clone, Debug)]
+enum Fx {
+    Undef,
+    Null,
+    Bool(bool),
+    Num(f64),
+    Str(String),
+    Arr(Arc<Vec<Fx>>),
+    Obj(Arc<Vec<(String, Fx)>>),
+    /// A tagged value (`$style`, `$fn`, `$ta`, `$opaque`, `$summary`, …).
+    Tag(String, Arc<J>),
+    Cycle,
+}
+
+fn decode(j: &J, refs: &mut Vec<Fx>) -> Fx {
+    match j {
+        J::Null => Fx::Null,
+        J::Bool(b) => Fx::Bool(*b),
+        J::Number(n) => Fx::Num(n.as_f64().unwrap_or(f64::NAN)),
+        J::String(s) => Fx::Str(s.clone()),
+        J::Array(items) => Fx::Arr(Arc::new(items.iter().map(|x| decode(x, refs)).collect())),
+        J::Object(map) => {
+            if let Some(r) = map.get("$ref").and_then(J::as_u64) {
+                return refs.get(r as usize).cloned().unwrap_or(Fx::Cycle);
+            }
+            if map.contains_key("$cycle") {
+                return Fx::Cycle;
+            }
+            if map.len() == 1 && map.contains_key("$u") {
+                return Fx::Undef;
+            }
+            if let Some(t) = map.get("$num").and_then(J::as_str) {
+                return Fx::Num(match t {
+                    "Infinity" => f64::INFINITY,
+                    "-Infinity" => f64::NEG_INFINITY,
+                    _ => f64::NAN,
+                });
+            }
+            let id = map.get("$id").and_then(J::as_u64).map(|i| i as usize);
+            // Reserve the slot so nested back-references resolve to Cycle.
+            if let Some(i) = id {
+                if refs.len() <= i {
+                    refs.resize(i + 1, Fx::Cycle);
+                }
+            }
+            let out = if let Some(arr) = map.get("$arr").and_then(J::as_array) {
+                Fx::Arr(Arc::new(arr.iter().map(|x| decode(x, refs)).collect()))
+            } else if let Some((tag, inner)) = map
+                .iter()
+                .find(|(k, _)| k.starts_with('$') && *k != "$id" && *k != "$class")
+            {
+                Fx::Tag(
+                    tag.clone(),
+                    Arc::new(if tag == "$ta" {
+                        j.clone()
+                    } else {
+                        inner.clone()
+                    }),
+                )
+            } else {
+                Fx::Obj(Arc::new(
+                    map.iter()
+                        .filter(|(k, _)| *k != "$id")
+                        .map(|(k, v)| (k.clone(), decode(v, refs)))
+                        .collect(),
+                ))
+            };
+            if let Some(i) = id {
+                refs[i] = out.clone();
+            }
+            out
+        }
+    }
+}
+
+// ─── Comparison ──────────────────────────────────────────────────────────────
+
+fn num_eq(a: f64, b: f64) -> bool {
+    if a.is_nan() || b.is_nan() {
+        return a.is_nan() && b.is_nan();
+    }
+    if a.is_infinite() || b.is_infinite() {
+        return a == b;
+    }
+    let diff = (a - b).abs();
+    diff <= 1e-9 || diff <= 1e-6 * a.abs().max(b.abs())
+}
+
+struct Cmp {
+    seen: HashSet<(usize, usize)>,
+}
+
+impl Cmp {
+    fn value(&mut self, v: &Value, f: &Fx, path: &str) -> Result<(), String> {
+        let mismatch = || Err(format!("{path}: rust {} vs ts {}", short(v), short_fx(f)));
+        match (v, f) {
+            (Value::Undefined, Fx::Undef) | (Value::Null, Fx::Null) => Ok(()),
+            (Value::Bool(a), Fx::Bool(b)) if a == b => Ok(()),
+            (Value::Num(a), Fx::Num(b)) if num_eq(*a, *b) => Ok(()),
+            (Value::Str(a), Fx::Str(b)) if **a == **b => Ok(()),
+            (Value::Vec2(p), Fx::Obj(o)) => self
+                .fields(&[("x", p.x), ("y", p.y)], o, path)
+                .or_else(|_| mismatch()),
+            (Value::Color(c), Fx::Obj(o)) => self
+                .fields(&[("r", c.r), ("g", c.g), ("b", c.b), ("a", c.a)], o, path)
+                .or_else(|_| mismatch()),
+            (Value::List(a), Fx::Arr(b)) => {
+                let key = (
+                    Arc::as_ptr(a) as *const () as usize,
+                    Arc::as_ptr(b) as usize,
+                );
+                if !self.seen.insert(key) {
+                    return Ok(());
+                }
+                if a.len() != b.len() {
+                    return Err(format!("{path}: length rust {} vs ts {}", a.len(), b.len()));
+                }
+                for (i, (x, y)) in a.iter().zip(b.iter()).enumerate() {
+                    self.value(x, y, &format!("{path}[{i}]"))?;
+                }
+                Ok(())
+            }
+            (Value::Object(a), Fx::Obj(b)) => {
+                let key = (Arc::as_ptr(a) as usize, Arc::as_ptr(b) as usize);
+                if !self.seen.insert(key) {
+                    return Ok(());
+                }
+                if a.len() != b.len() {
+                    let ak: Vec<_> = a.keys().collect();
+                    let bk: Vec<_> = b.iter().map(|(k, _)| k).collect();
+                    return Err(format!("{path}: keys rust {ak:?} vs ts {bk:?}"));
+                }
+                for (k, y) in b.iter() {
+                    let Some(x) = a.get(k) else {
+                        return Err(format!("{path}: rust missing key {k}"));
+                    };
+                    self.value(x, y, &format!("{path}.{k}"))?;
+                }
+                Ok(())
+            }
+            _ => mismatch(),
+        }
+    }
+
+    fn fields(
+        &mut self,
+        want: &[(&str, f64)],
+        o: &[(String, Fx)],
+        path: &str,
+    ) -> Result<(), String> {
+        if o.len() != want.len() {
+            return Err(path.into());
+        }
+        for (k, n) in want {
+            match o.iter().find(|(key, _)| key == k) {
+                Some((_, Fx::Num(m))) if num_eq(*n, *m) => {}
+                _ => return Err(path.into()),
+            }
+        }
+        Ok(())
+    }
+}
+
+fn short(v: &Value) -> String {
+    let s = format!("{v:?}");
+    if s.len() > 120 {
+        format!("{}…", &s[..120])
+    } else {
+        s
+    }
+}
+
+fn short_fx(f: &Fx) -> String {
+    let s = match f {
+        Fx::Tag(t, j) => format!("{t}:{j}"),
+        other => format!("{other:?}"),
+    };
+    if s.len() > 120 {
+        format!("{}…", &s[..120])
+    } else {
+        s
+    }
+}
+
+// ─── Running a sample ────────────────────────────────────────────────────────
+
+/// Node types whose output depends on browser media (audio, images, camera).
+/// Neither side can produce real output in tests; they're not compared.
+fn is_media(ty: &str) -> bool {
+    ["sound/", "image/", "pixel/"]
+        .iter()
+        .any(|p| ty.starts_with(p))
+        || matches!(
+            ty,
+            "input/camera"
+                | "input/landmarks"
+                | "io/image-url"
+                | "io/file"
+                | "io/svg"
+                | "draw/image"
+        )
+}
+
+fn native_dir() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
+}
+
+fn read_trace(id: &str) -> J {
+    let path = native_dir().join(format!("fixtures/traces/{id}.json.gz"));
+    let file = std::fs::File::open(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
+    let mut text = String::new();
+    flate2::read::GzDecoder::new(file)
+        .read_to_string(&mut text)
+        .expect("gzip");
+    serde_json::from_str(&text).expect("trace json")
+}
+
+fn frame_from(j: &J) -> FrameCtx {
+    let n = |k: &str| j.get(k).and_then(J::as_f64).unwrap_or(0.0);
+    FrameCtx {
+        t: n("t"),
+        dt: n("dt"),
+        frame_count: n("frameCount"),
+        width: n("width"),
+        height: n("height"),
+        mouse_x: n("mouseX"),
+        mouse_y: n("mouseY"),
+        mouse_is_pressed: j
+            .get("mouseIsPressed")
+            .and_then(J::as_bool)
+            .unwrap_or(false),
+        key: j.get("key").and_then(J::as_str).unwrap_or("").to_owned(),
+        key_is_pressed: j.get("keyIsPressed").and_then(J::as_bool).unwrap_or(false),
+    }
+}
+
+#[derive(Default)]
+struct SampleReport {
+    compile_error: Option<String>,
+    compile_diffs: Vec<String>,
+    unimplemented: Vec<String>,
+    /// Node ids that matched on every recorded frame.
+    matched: usize,
+    mismatched: BTreeMap<String, String>,
+    skipped_media: usize,
+}
+
+impl SampleReport {
+    fn passes(&self) -> bool {
+        self.compile_error.is_none()
+            && self.compile_diffs.is_empty()
+            && self.unimplemented.is_empty()
+            && self.mismatched.is_empty()
+    }
+}
+
+fn run_sample(id: &str) -> SampleReport {
+    let mut rep = SampleReport::default();
+    let trace = read_trace(id);
+    let text =
+        std::fs::read_to_string(native_dir().join(format!("samples/{id}.flora"))).expect("flora");
+
+    let (mut engine, warnings) = match Engine::load_with_warnings(&text) {
+        Ok(x) => x,
+        Err(e) => {
+            if trace.get("compileError").is_none() {
+                rep.compile_error = Some(e);
+            }
+            return rep;
+        }
+    };
+    let Some(compile) = trace.get("compile") else {
+        rep.compile_error = Some("rust compiled but ts failed".into());
+        return rep;
+    };
+
+    // Compile parity: warnings and per-scope evaluation order.
+    let ts_warn: Vec<&str> = compile["warnings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter_map(J::as_str)
+        .collect();
+    let rs_warn: Vec<&str> = warnings.iter().map(|w| w.message.as_str()).collect();
+    if ts_warn != rs_warn {
+        rep.compile_diffs
+            .push(format!("warnings: rust {rs_warn:?} vs ts {ts_warn:?}"));
+    }
+    let g = &engine.graph;
+    for s in compile["scopes"].as_array().unwrap() {
+        let key = s["parent"].as_str().map(|p| g.idx(p));
+        let ts_order: Vec<&str> = s["order"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(J::as_str)
+            .collect();
+        let rs_order: Vec<&str> = match key {
+            None => g.scopes.get(&None),
+            Some(k) => g.scopes.get(&k),
+        }
+        .map(|sc| sc.order.iter().map(|&i| g.nodes[i].id.as_str()).collect())
+        .unwrap_or_default();
+        if ts_order != rs_order {
+            rep.compile_diffs
+                .push(format!("scope {:?} order differs", s["parent"]));
+        }
+    }
+    for n in &g.nodes {
+        if n.unimplemented && !is_media(&n.ty) && !rep.unimplemented.contains(&n.ty) {
+            rep.unimplemented.push(n.ty.clone());
+        }
+    }
+
+    // Replay ticks.
+    let inputs = trace["inputs"].as_array().cloned().unwrap_or_default();
+    let tick_error_frame = trace.get("tickError").and_then(|t| t["frame"].as_u64());
+    let recorded: Vec<&J> = trace["frames"]
+        .as_array()
+        .map(|a| a.iter().collect())
+        .unwrap_or_default();
+    let mut rec_iter = recorded.into_iter().peekable();
+    let mut node_ok: BTreeMap<String, bool> = BTreeMap::new();
+
+    for (i, input) in inputs.iter().enumerate() {
+        if tick_error_frame.is_some_and(|f| f as usize <= i) {
+            break;
+        }
+        let frame = frame_from(input);
+        let result = engine.tick(&frame);
+        let Some(rec) = rec_iter.peek() else { continue };
+        if rec["frame"]["frameCount"].as_f64() != Some(i as f64) {
+            continue;
+        }
+        let rec = rec_iter.next().unwrap();
+        compare_frame(&engine, &result.outputs, rec, i, &mut rep, &mut node_ok);
+    }
+    rep.matched = node_ok.values().filter(|ok| **ok).count();
+    rep
+}
+
+fn compare_frame(
+    engine: &Engine,
+    outputs: &Outputs,
+    rec: &J,
+    frame: usize,
+    rep: &mut SampleReport,
+    node_ok: &mut BTreeMap<String, bool>,
+) {
+    let mut refs = Vec::new();
+    let Fx::Obj(ts_outputs) = decode(&rec["outputs"], &mut refs) else {
+        return;
+    };
+    let g = &engine.graph;
+    let mut cmp = Cmp {
+        seen: HashSet::new(),
+    };
+    for (id, ts_ports) in ts_outputs.iter() {
+        let Some(idx) = g.idx(id) else {
+            rep.mismatched
+                .entry(id.clone())
+                .or_insert_with(|| "node missing in rust graph".into());
+            continue;
+        };
+        let node = &g.nodes[idx];
+        if is_media(&node.ty) {
+            rep.skipped_media += usize::from(frame == 0);
+            continue;
+        }
+        if node.unimplemented {
+            continue;
+        }
+        let res = match (&outputs[idx], ts_ports) {
+            (None, _) => Err("rust produced no output".to_owned()),
+            (Some(rs), Fx::Arr(ts)) if rs.len() == ts.len() => {
+                let mut r = Ok(());
+                for (p, (rv, tv)) in rs.iter().zip(ts.iter()).enumerate() {
+                    if let Err(e) = cmp.value(&Value::List(rv.clone()), tv, &format!("out[{p}]")) {
+                        r = Err(e);
+                        break;
+                    }
+                }
+                r
+            }
+            (Some(rs), Fx::Arr(ts)) => {
+                Err(format!("port count rust {} vs ts {}", rs.len(), ts.len()))
+            }
+            (Some(_), other) => Err(format!("unexpected ts shape {}", short_fx(other))),
+        };
+        let ok = res.is_ok();
+        let entry = node_ok.entry(id.clone()).or_insert(true);
+        *entry &= ok;
+        if let Err(e) = res {
+            rep.mismatched
+                .entry(format!("{id} ({})", node.ty))
+                .or_insert_with(|| format!("frame {frame}: {e}"));
+        }
+    }
+}
+
+// ─── Test entry ──────────────────────────────────────────────────────────────
+
+fn sample_ids() -> Vec<String> {
+    let mut ids: Vec<String> = std::fs::read_dir(native_dir().join("samples"))
+        .expect("samples dir")
+        .filter_map(|e| e.ok())
+        .filter_map(|e| {
+            e.file_name()
+                .to_str()?
+                .strip_suffix(".flora")
+                .map(str::to_owned)
+        })
+        .collect();
+    ids.sort();
+    if let Ok(only) = std::env::var("PARITY_ONLY") {
+        let want: HashSet<&str> = only.split(',').collect();
+        ids.retain(|i| want.contains(i.as_str()));
+    }
+    ids
+}
+
+fn expected_passing() -> Vec<String> {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/parity-passing.txt");
+    std::fs::read_to_string(path)
+        .unwrap_or_default()
+        .lines()
+        .map(str::trim)
+        .filter(|l| !l.is_empty() && !l.starts_with('#'))
+        .map(str::to_owned)
+        .collect()
+}
+
+#[test]
+fn samples_match_typescript_reference() {
+    let verbose = std::env::var("PARITY_VERBOSE").is_ok();
+    let expected = expected_passing();
+    let mut passing = Vec::new();
+    let mut regressions = Vec::new();
+    let mut missing_types: BTreeMap<String, usize> = BTreeMap::new();
+    let mut lines = Vec::new();
+
+    for id in sample_ids() {
+        let rep = run_sample(&id);
+        for t in &rep.unimplemented {
+            *missing_types.entry(t.clone()).or_default() += 1;
+        }
+        let status = if rep.passes() {
+            passing.push(id.clone());
+            "PASS".to_owned()
+        } else if let Some(e) = &rep.compile_error {
+            format!("COMPILE ERROR {e}")
+        } else {
+            format!(
+                "{} matched, {} mismatched, {} unimplemented types{}",
+                rep.matched,
+                rep.mismatched.len(),
+                rep.unimplemented.len(),
+                if rep.compile_diffs.is_empty() {
+                    String::new()
+                } else {
+                    format!(", compile: {:?}", rep.compile_diffs)
+                }
+            )
+        };
+        lines.push(format!("{id:32} {status}"));
+        if verbose {
+            for (node, why) in &rep.mismatched {
+                lines.push(format!("    ✗ {node}: {why}"));
+            }
+        }
+        if expected.contains(&id) && !rep.passes() {
+            regressions.push(id.clone());
+        }
+    }
+
+    println!(
+        "\n── Parity report ({} / {} samples pass) ──",
+        passing.len(),
+        lines.len()
+    );
+    for l in &lines {
+        println!("{l}");
+    }
+    if !missing_types.is_empty() {
+        let mut by_count: Vec<_> = missing_types.into_iter().collect();
+        by_count.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
+        println!("\nUnimplemented node types (samples blocked):");
+        for (t, n) in by_count {
+            println!("  {n:3}  {t}");
+        }
+    }
+    let newly: Vec<_> = passing.iter().filter(|p| !expected.contains(p)).collect();
+    if !newly.is_empty() {
+        println!("\nNewly passing (add to tests/parity-passing.txt): {newly:?}");
+    }
+    assert!(regressions.is_empty(), "samples regressed: {regressions:?}");
+}

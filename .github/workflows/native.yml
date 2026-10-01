@@ -1,0 +1,39 @@
+name: native
+
+on:
+  push:
+    branches: [main]
+    paths: ['native/**', '.github/workflows/native.yml']
+  pull_request:
+    paths: ['native/**', '.github/workflows/native.yml']
+
+concurrency:
+  group: native-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: native
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: native
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Test (includes parity against the TypeScript reference)
+        run: cargo test --workspace -- --nocapture

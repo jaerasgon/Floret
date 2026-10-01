@@ -41,7 +41,7 @@ const FIXTURES_DIR = path.join(ROOT, 'native/fixtures');
 const TRACES_DIR = path.join(FIXTURES_DIR, 'traces');
 
 /** Format version of the trace files. Bump when the shape changes. */
-const TRACE_FORMAT = 1;
+const TRACE_FORMAT = 2;
 /** Ticks run per sample (frame 0 .. TICKS-1). */
 const TICKS = 61;
 /** Frames whose outputs are written to the trace. */
@@ -512,9 +512,12 @@ it('exports samples, registry and traces', () => {
       };
 
       const frames: unknown[] = [];
+      const inputs: unknown[] = [];
+      trace.inputs = inputs;
       for (let i = 0; i < TICKS; i++) {
         const { width, height } = canvasSize(g.rendererId);
         const frame = frameFor(i, width, height);
+        inputs.push(canon(frame));
         clockMs = frame.t * 1000;
         let out;
         try {

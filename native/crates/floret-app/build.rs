@@ -27,4 +27,14 @@ fn main() {
     out.push_str("];\n");
     let dest = Path::new(&std::env::var("OUT_DIR").unwrap()).join("samples.rs");
     std::fs::write(dest, out).unwrap();
+
+    // macOS: embed Info.plist (the microphone usage string) in the binary.
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("macos") {
+        let plist = Path::new(env!("CARGO_MANIFEST_DIR")).join("macos/Info.plist");
+        println!("cargo:rerun-if-changed={}", plist.display());
+        println!(
+            "cargo:rustc-link-arg-bins=-Wl,-sectcreate,__TEXT,__info_plist,{}",
+            plist.display()
+        );
+    }
 }

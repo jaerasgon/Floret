@@ -11,7 +11,7 @@ use crate::files::{self, Document, Origin};
 use crate::menu::{self, Command, MenuState};
 use crate::prefs::{Prefs, PrefsWindow, Startup};
 use crate::{
-    bus, canvas, crash, editor, help, host, palette, preview, recovery, shader_panel, theme,
+    audio, bus, canvas, crash, editor, help, host, palette, preview, recovery, shader_panel, theme,
     welcome, workspace, SAMPLES,
 };
 use eframe::egui::{self, Align, Layout, RichText};
@@ -222,6 +222,7 @@ impl App {
         self.patch = patch;
         self.error = None;
         self.view.on_load(&mut self.patch);
+        audio::clear();
         self.doc = doc(self.view.revision());
         recovery::set_current(self.doc.path(), &self.doc.name);
         self.recompile();
@@ -346,12 +347,14 @@ impl App {
         match Engine::from_patch(&self.patch) {
             Ok((mut engine, warnings)) => {
                 engine.set_host(Some(host::shared()));
+                audio::attach(&mut engine);
                 self.engine = Some(engine);
                 self.warnings = warnings;
             }
             Err(e) => {
                 self.engine = None;
                 self.error = Some(e);
+                audio::clear();
             }
         }
         self.outputs.clear();
@@ -590,6 +593,7 @@ impl App {
                         .small(),
                 );
                 self.bus.status(ui);
+                audio::status(ui);
             });
         });
     }

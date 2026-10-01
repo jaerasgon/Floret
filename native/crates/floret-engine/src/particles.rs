@@ -1286,6 +1286,8 @@ pub enum Handle {
     /// A bare JS function with this `.name` (a collider's `apply` in the
     /// object view; never on a wire by itself).
     Function(&'static str),
+    /// An `audio` wire (`crate::audio`).
+    Audio(crate::audio::AudioRef),
 }
 
 impl Handle {
@@ -1298,6 +1300,7 @@ impl Handle {
             Handle::Particles(_) => "particles",
             Handle::TypedArray(t) => t.name(),
             Handle::Function(_) => "function",
+            Handle::Audio(_) => "audio",
         }
     }
 
@@ -1337,6 +1340,13 @@ impl Handle {
                     .collect();
                 Some(Value::Object(Arc::new(m)))
             }
+            Handle::Audio(a) => {
+                let mut m = IndexMap::new();
+                m.insert("nodeId".to_owned(), Value::str(&a.node));
+                m.insert("slot".to_owned(), Value::str("main"));
+                m.insert("kind".to_owned(), Value::str(a.kind));
+                Some(Value::Object(Arc::new(m)))
+            }
             Handle::Force(_) | Handle::Function(_) => None,
         }
     }
@@ -1369,6 +1379,7 @@ impl Handle {
                 _ => false,
             },
             (Handle::Function(a), Handle::Function(b)) => a == b,
+            (Handle::Audio(a), Handle::Audio(b)) => a == b,
             _ => false,
         }
     }

@@ -1,0 +1,16 @@
+[package]
+name = "floret-media"
+description = "Floret media I/O: the real-time audio engine (cpal) behind the sound nodes."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+floret-engine = { path = "../floret-engine" }
+indexmap.workspace = true
+cpal = "0.18"
+rtrb = "0.4"
+realfft = "3.5"
+symphonia = { version = "0.6", default-features = false, features = ["wav", "pcm", "flac", "ogg", "vorbis", "mp3", "adpcm"] }

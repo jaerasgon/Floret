@@ -19,3 +19,7 @@ flate2 = "1"
 opt-level = 2
 # Dependencies' debug info is most of the build size; our crates keep theirs.
 debug = false
+
+# The audio thread's DSP has to keep up in debug builds too.
+[profile.dev.package.floret-media]
+opt-level = 3

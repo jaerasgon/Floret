@@ -4,6 +4,7 @@
 
 #![allow(dead_code)]
 
+use floret_engine::particles::{ParticleBuffer, ParticleHandle, ParticleTemplate};
 use floret_engine::scene::{Paint, RectF, ResolvedStyle, SceneNode};
 use floret_engine::{Color, Vec2};
 use serde_json::Value as J;
@@ -406,11 +407,66 @@ fn node(o: &Fx, unsupported: &mut Vec<String>) -> Option<SceneNode> {
                 clip,
             }
         }
+        "particle-batch" => SceneNode::ParticleBatch {
+            buffer: particle_buffer(o.get("buffer")?)?,
+            count: num(o, "count"),
+            template: match o.get("template").and_then(|t| t.get("kind")?.str()) {
+                Some("rect") => ParticleTemplate::Rect,
+                _ => ParticleTemplate::Circle,
+            },
+            style: style(o),
+            use_buffer_color: matches!(o.get("useBufferColor"), Some(Fx::Bool(true))),
+        },
+        "particle-trail-batch" => SceneNode::ParticleTrailBatch {
+            buffer: particle_buffer(o.get("buffer")?)?,
+            history: Arc::new(f32s(o.get("history")?)?),
+            segments: num(o, "segments") as usize,
+            head_idx: num(o, "headIdx") as usize,
+            style: style(o),
+            fade_out: matches!(o.get("fadeOut"), Some(Fx::Bool(true))),
+            use_buffer_color: matches!(o.get("useBufferColor"), Some(Fx::Bool(true))),
+            tapered: matches!(o.get("tapered"), Some(Fx::Bool(true))),
+            tail_width: num(o, "tailWidth"),
+        },
         other => {
             unsupported.push(other.to_owned());
             return None;
         }
     })
+}
+
+/// A plain-array number list (`null` → NaN, as JSON writes it).
+fn f32s(v: &Fx) -> Option<Vec<f32>> {
+    Some(
+        v.arr()?
+            .iter()
+            .map(|x| x.num().map_or(f32::NAN, |n| n as f32))
+            .collect(),
+    )
+}
+
+/// A synthetic scene's particle buffer: `{ capacity, alive: [0|1…],
+/// posX, posY, size, colorR, colorG, colorB, colorA }` as plain arrays
+/// (recorded traces only keep typed-array digests, so they can't be drawn).
+fn particle_buffer(o: &Fx) -> Option<ParticleHandle> {
+    let mut b = ParticleBuffer::new(num(o, "capacity"));
+    let cap = b.capacity;
+    let field = |k: &str| -> Option<Vec<f32>> {
+        let mut v = f32s(o.get(k)?)?;
+        v.resize(cap, 0.0);
+        Some(v)
+    };
+    let alive = field("alive")?;
+    b.alive = alive.iter().map(|&a| u8::from(a != 0.0)).collect();
+    b.count = b.alive.iter().map(|&a| i64::from(a)).sum();
+    b.pos_x = field("posX")?;
+    b.pos_y = field("posY")?;
+    b.size = field("size")?;
+    b.color_r = field("colorR")?;
+    b.color_g = field("colorG")?;
+    b.color_b = field("colorB")?;
+    b.color_a = field("colorA")?;
+    Some(ParticleHandle::new(b))
 }
 
 /// Write RGBA8 as a PNG (for eyeballing renders).

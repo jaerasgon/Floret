@@ -6,7 +6,7 @@
 //   png/<name>.png       the TS renderer's output for each synthetic scene
 //   png/<sample>-f<i>.png  …and for recorded trace scenes (fixtures/traces)
 //
-// Usage (from the repo root, after `npm install`):
+// Usage (from the repo root, after `npm install`; `ONLY=name,…` limits it):
 //   PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers \
 //   PLAYWRIGHT_MODULE=/path/to/node_modules/playwright/index.mjs \
 //   node native/crates/floret-render/reference/generate.mjs
@@ -47,7 +47,66 @@ const star = (cx, cy, r1, r2, n) => Array.from({ length: n * 2 }, (_, i) => {
   return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
 });
 
+// A particle buffer as plain arrays (the TS renderer only indexes them).
+// `at(i)` → { x, y, size, rgba } or null for a dead slot.
+function particleBuffer(capacity, at) {
+  const b = { capacity, count: 0, alive: [], posX: [], posY: [], size: [], colorR: [], colorG: [], colorB: [], colorA: [] };
+  for (let i = 0; i < capacity; i++) {
+    const p = at(i);
+    b.alive.push(p ? 1 : 0);
+    b.posX.push(p?.x ?? 0); b.posY.push(p?.y ?? 0); b.size.push(p?.size ?? 0);
+    const [r, g, bl, a] = p?.rgba ?? [0, 0, 0, 0];
+    b.colorR.push(r); b.colorG.push(g); b.colorB.push(bl); b.colorA.push(a);
+    if (p) b.count++;
+  }
+  return b;
+}
+const particleBatch = (buffer, s, useBufferColor = true, template = 'circle') =>
+  ({ kind: 'particle-batch', buffer, count: buffer.count, template: { kind: template }, style: st(s), useBufferColor });
+// Trails as TS's GL path draws them: flat (no fade / taper), no gaps.
+function trailBatch(buffer, segments, headIdx, path, s, useBufferColor) {
+  const history = [];
+  for (let slot = 0; slot < buffer.capacity; slot++) {
+    for (let seg = 0; seg < segments; seg++) {
+      const age = (headIdx - seg + segments) % segments; // 0 = newest
+      const [x, y] = path(slot, age);
+      history.push(x, y);
+    }
+  }
+  return { kind: 'particle-trail-batch', buffer, history, segments, headIdx, style: st(s), fadeOut: false, useBufferColor, tapered: false, tailWidth: 0.1 };
+}
+const spiral = particleBuffer(240, (i) => {
+  if (i % 7 === 3) return null;
+  const a = i * 0.21, r = 8 + i * 0.58;
+  return {
+    x: Math.cos(a) * r, y: Math.sin(a) * r, size: i % 23 === 0 ? 0 : 1 + (i % 5),
+    rgba: [0.5 + 0.5 * Math.sin(i * 0.1), 0.5 + 0.5 * Math.sin(i * 0.1 + 2), 0.5 + 0.5 * Math.sin(i * 0.1 + 4), 0.35 + (i % 3) * 0.3],
+  };
+});
+const grid = particleBuffer(36, (i) => ({ x: (i % 6) * 12 - 30, y: Math.floor(i / 6) * 12 - 30, size: 3, rgba: [1, 0, 0, 1] }));
+const glow = particleBuffer(12, (i) => ({ x: Math.cos(i * 0.52) * 40, y: Math.sin(i * 0.52) * 40, size: 14, rgba: [0.2, 0.4, 1, 0.5] }));
+const movers = particleBuffer(24, (i) => (i === 5 ? null : {
+  x: 0, y: 0, size: 2, rgba: [1, 0.3 + (i % 4) * 0.2, 0.2, i % 2 ? 1 : 0.6],
+}));
+const wave = (slot, age) => [-140 + age * 9 + (slot % 4) * 4, -130 + slot * 11 + Math.sin(age * 0.6 + slot) * 6];
+
 const SYNTHETIC = {
+  particles: {
+    width: 320, height: 320, background: [0.04, 0.04, 0.06],
+    layers: [
+      particleBatch(spiral, {}),
+      group([particleBatch(grid, { fill: 'rgba(255,200,80,0.8)' }, false)], { transform: [1.5, 0, 0, 1.5, 100, -100] }),
+      group([particleBatch(glow, {})], { blendMode: 'lighter', transform: [1, 0, 0, 1, -90, 100] }),
+    ],
+  },
+  'particle-trails': {
+    width: 320, height: 320, background: [0.04, 0.04, 0.06],
+    layers: [
+      trailBatch(movers, 12, 5, wave, { stroke: '#40c0ff', strokeWeight: 3 }, false),
+      group([trailBatch(movers, 8, 2, wave, { stroke: '#ffffff', strokeWeight: 2 }, true)], { transform: [1, 0, 0, 1, 150, 20] }),
+    ],
+  },
+
   shapes: {
     width: 320, height: 320, background: [0.08, 0.08, 0.1],
     layers: [
@@ -233,13 +292,18 @@ const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--ena
 const page = await browser.newPage();
 await page.setContent(html);
 
+// ONLY=a,b re-renders just those names (leaves the other PNGs untouched).
+const only = process.env.ONLY ? new Set(process.env.ONLY.split(',')) : null;
+
 async function renderTo(name, scene) {
+  if (only && !only.has(name)) return;
   const url = await page.evaluate((s) => window.renderScene(s), scene);
   writeFileSync(join(here, 'png', `${name}.png`), Buffer.from(url.split(',')[1], 'base64'));
   console.log('rendered', name);
 }
 
 for (const [name, scene] of Object.entries(SYNTHETIC)) {
+  if (only && !only.has(name)) continue;
   writeFileSync(join(here, 'scenes', `${name}.json`), JSON.stringify(scene, null, 1) + '\n');
   await renderTo(name, scene);
 }

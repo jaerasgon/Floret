@@ -49,6 +49,7 @@ fn encode(v: &Value) -> J {
             Some(obj) => encode(&obj),
             None => json!({"$fn": h.fn_name()}),
         },
+        Value::Image(_) => json!({"$opaque": "OffscreenCanvas"}),
     }
 }
 

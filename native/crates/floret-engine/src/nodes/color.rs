@@ -49,6 +49,7 @@ fn js_to_string(v: &Value) -> String {
         // JS prints a function's source; there's no equivalent for a style chain.
         Value::Style(_) => "function".into(),
         Value::Handle(h) => h.js_string(),
+        Value::Image(_) => "[object OffscreenCanvas]".into(),
         // Array.prototype.join: nullish elements become "".
         Value::List(items) => items
             .iter()

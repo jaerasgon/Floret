@@ -63,6 +63,7 @@ fn encode(v: &Value) -> J {
         Value::Scene(n) => encode(&n.to_value()),
         Value::Style(st) => json!({"$style": encode(&style_value(&st.apply(neutral_style())))}),
         Value::Handle(h) => json!({"$fn": h.fn_name()}),
+        Value::Image(_) => json!({"$opaque": "OffscreenCanvas"}),
     }
 }
 

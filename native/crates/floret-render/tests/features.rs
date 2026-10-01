@@ -310,3 +310,95 @@ fn bad_geometry_is_skipped_not_fatal() {
     assert_eq!(stats.skipped, 2);
     assert_px(&px, 0, 0, [255, 255, 255]);
 }
+
+// ─── Images ──────────────────────────────────────────────────────────────────
+
+use floret_engine::image::Image;
+
+/// 2×2: red, green / blue, half-transparent white.
+fn quad_image() -> Arc<Image> {
+    Arc::new(Image::new(
+        2,
+        2,
+        vec![
+            255, 0, 0, 255, 0, 255, 0, 255, //
+            0, 0, 255, 255, 255, 255, 255, 128,
+        ],
+    ))
+}
+
+fn image(img: &Arc<Image>, src: Option<RectF>, dst: RectF, tint: Option<&str>) -> Arc<SceneNode> {
+    Arc::new(SceneNode::Image {
+        image: img.clone(),
+        src,
+        dst,
+        tint: tint.map(Paint::css),
+    })
+}
+
+const BOX: RectF = RectF {
+    x: -50.0,
+    y: -50.0,
+    w: 100.0,
+    h: 100.0,
+};
+
+#[test]
+fn images_draw_as_textured_quads() {
+    let Some(mut g) = gpu() else { return };
+    let img = quad_image();
+    let (px, stats) = g.render_with_stats(&[image(&img, None, BOX, None)], W, H, BG);
+    assert_eq!(stats.image_quads, 1);
+    // Near the corners the linear sampler clamps to one texel.
+    assert_px(&px, -40, -40, [255, 0, 0]);
+    assert_px(&px, 40, -40, [0, 255, 0]);
+    assert_px(&px, -40, 40, [0, 0, 255]);
+    // Straight alpha 128 over black (premultiplied on upload).
+    assert_px(&px, 40, 40, [128, 128, 128]);
+    assert_px(&px, 70, 0, [0, 0, 0]);
+    // A source rect picks the green texel; a tint multiplies.
+    let src = Some(RectF {
+        x: 1.0,
+        y: 0.0,
+        w: 1.0,
+        h: 1.0,
+    });
+    let px = g.render(
+        &[image(&img, src, BOX, Some("rgba(255,255,255,0.5)"))],
+        W,
+        H,
+        BG,
+    );
+    assert_px(&px, 0, 0, [0, 128, 0]);
+    // Group transforms apply; the cached texture is reused.
+    let g2 = Arc::new(SceneNode::Group {
+        children: Arc::from(vec![image(&img, None, BOX, None)]),
+        transform: Some([0.5, 0.0, 0.0, 0.5, 40.0, 0.0]),
+        blend_mode: None,
+        clip: None,
+    });
+    let px = g.render(&[g2], W, H, BG);
+    assert_px(&px, 18, -22, [255, 0, 0]);
+    assert_px(&px, -25, -25, [0, 0, 0]);
+}
+
+#[test]
+fn changing_images_reupload() {
+    let Some(mut g) = gpu() else { return };
+    for c in [[255u8, 0, 0, 255], [0, 0, 255, 255], [0, 255, 0, 255]] {
+        let img = Arc::new(Image::new(4, 4, c.repeat(16)));
+        let px = g.render(&[image(&img, None, BOX, None)], W, H, BG);
+        assert_px(&px, 0, 0, [c[0], c[1], c[2]]);
+    }
+}
+
+#[test]
+fn layer_rasterizer_renders_transparent_images() {
+    let r = floret_render::LayerRasterizer::new();
+    let Some(img) = r.rasterize(&[rect(0.0, 0.0, 10.0, 10.0, fill("#ff0000"))], 20, 20) else {
+        return;
+    };
+    assert_eq!((img.width(), img.height()), (20, 20));
+    assert_eq!(img.pixel(10, 10), [255, 0, 0, 255]);
+    assert_eq!(img.pixel(1, 1)[3], 0);
+}

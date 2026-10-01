@@ -6,8 +6,8 @@
 //! stroke for lines / points / open polygons); a wired chain resolves
 //! against NEUTRAL (see `scene::resolve_style`).
 //!
-//! Not ported yet (they need image values): `draw/image`,
-//! `draw/image-region`, `draw/image-tile`.
+//! The image draw nodes (`draw/image`, `draw/image-region`,
+//! `draw/image-tile`) live with the other image nodes in `nodes::image`.
 
 mod stroke_offset;
 mod walker_cluster;
@@ -45,7 +45,7 @@ fn scene(node: SceneNode) -> Value {
 
 /// `anchorTopLeft`: the box's top-left corner for an anchor name
 /// (`center` when unset; unknown names behave as `tl`).
-fn anchor_top_left(pos: Vec2, w: f64, h: f64, anchor: &Value) -> (f64, f64) {
+pub(crate) fn anchor_top_left(pos: Vec2, w: f64, h: f64, anchor: &Value) -> (f64, f64) {
     let a = match anchor {
         Value::Undefined | Value::Null => "center",
         Value::Str(s) => s,

@@ -81,6 +81,12 @@ impl EvalCtx<'_> {
             .map(Value::from_json)
             .unwrap_or(Value::Undefined)
     }
+
+    /// The app's services for this tick (rasterising, fetching), if any.
+    /// See `crate::host`.
+    pub fn host(&self) -> Option<std::sync::Arc<dyn crate::host::Host>> {
+        crate::host::current()
+    }
 }
 
 pub type NodeResult = Result<Vec<Spread>, String>;

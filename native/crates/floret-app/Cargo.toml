@@ -23,3 +23,5 @@ indexmap.workspace = true
 rfd = "0.17"
 png = "0.18"
 pollster = "1"
+# io/image-url over http(s) (the engine's host fetcher, see src/host.rs).
+ureq = { version = "3", default-features = false, features = ["rustls"] }

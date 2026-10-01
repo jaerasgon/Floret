@@ -188,6 +188,7 @@ fn write_json(v: &Value, out: &mut String) {
         // Functions serialise like undefined (null inside arrays).
         Value::Undefined | Value::Null | Value::Style(_) => out.push_str("null"),
         Value::Scene(n) => write_json(&n.to_value(), out),
+        Value::Image(_) => out.push_str("{}"),
         Value::Handle(h) => match h.to_value() {
             Some(obj) => write_json(&obj, out),
             None => out.push_str("null"),

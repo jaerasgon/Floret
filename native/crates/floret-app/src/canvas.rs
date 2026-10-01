@@ -2743,6 +2743,21 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             }
         }
         Action::PickFile(node) => {
+            // Fonts are referenced by path (they can be large), not embedded.
+            if ports::find_node(patch, &node).is_some_and(|n| n.def_type == "text/font") {
+                let picked = rfd::FileDialog::new()
+                    .add_filter("Fonts", widgets::FONT_EXTENSIONS)
+                    .pick_file();
+                if let Some(path) = picked {
+                    let a = Action::SetValue {
+                        node,
+                        key: EditKey::Param("file".into()),
+                        value: Json::String(path.to_string_lossy().into_owned()),
+                    };
+                    apply(a, patch, cat, view);
+                }
+                return;
+            }
             let svg = ports::find_node(patch, &node).is_some_and(|n| n.def_type == "io/svg");
             let mut dialog = rfd::FileDialog::new();
             if svg {

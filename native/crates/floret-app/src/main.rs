@@ -19,6 +19,7 @@ mod devices;
 mod editor;
 mod export;
 mod files;
+mod fonts;
 mod gpu_support;
 mod help;
 mod host;

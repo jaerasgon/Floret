@@ -138,6 +138,13 @@ pub fn input_editor(spec: &NodeSpec, port: &PortSpec, wired: bool) -> Option<(Ed
     if let Some(opts) = port.param.as_ref().and_then(|p| spec.param_options.get(p)) {
         return Some((key, FieldKind::Select(opts.clone())));
     }
+    if let Some(opts) = port
+        .param
+        .as_ref()
+        .and_then(|p| crate::fonts::options(&spec.ty, p))
+    {
+        return Some((key, FieldKind::Select(opts)));
+    }
     let kind = match port.ty {
         PortType::Number => FieldKind::Number {
             integer: port.integer,
@@ -614,6 +621,23 @@ mod tests {
         assert_eq!(kind("cc"), Some(FieldKind::Number { integer: true }));
         assert_eq!(option_label(""), "Default");
         assert_eq!(option_label("Keys"), "Keys");
+    }
+
+    #[test]
+    fn font_fields_get_a_family_dropdown() {
+        let cat = Catalogue::builtin();
+        for (ty, port) in [("text/font", "family"), ("style/text-params", "font")] {
+            let spec = cat.get(ty).unwrap();
+            let p = spec.inputs.iter().find(|p| p.name == port).unwrap();
+            let (_, kind) = input_editor(spec, p, false).unwrap();
+            assert!(
+                matches!(kind, FieldKind::Select(o) if o[0] == "sans-serif"),
+                "{ty}"
+            );
+        }
+        let spec = cat.get("text/font").unwrap();
+        let (_, kind) = input_editor(spec, &spec.inputs[1], false).unwrap();
+        assert_eq!(kind, FieldKind::Text);
     }
 
     #[test]

@@ -25,6 +25,8 @@ pub enum Custom {
     Probe,
     File,
     Svg,
+    /// `text/font`: a font-file picker (stores the path).
+    Font,
 }
 
 /// An arity stepper: which param it drives and its bounds.
@@ -66,6 +68,7 @@ pub fn custom_of(def_type: &str) -> Option<Custom> {
         "meta/probe" => Custom::Probe,
         "io/file" => Custom::File,
         "io/svg" => Custom::Svg,
+        "text/font" => Custom::Font,
         "math/add" | "math/sub" | "math/mul" | "math/div" | "math/min" | "math/max"
         | "spread/merge" | "transform/group" => Custom::Slots(GROUP_SLOTS),
         _ => return None,
@@ -464,8 +467,14 @@ pub fn file_params(def_type: &str, name: &str, bytes: &[u8]) -> Option<Vec<(Stri
     Some(out)
 }
 
+/// What the font picker offers.
+pub const FONT_EXTENSIONS: &[&str] = &["ttf", "otf", "ttc", "otc", "woff", "woff2"];
+
 /// Params that clear a picked file.
 pub fn clear_file_params(def_type: &str) -> Vec<(String, Json)> {
+    if def_type == "text/font" {
+        return vec![("file".to_owned(), json!(""))];
+    }
     let mut keys = vec!["dataUrl", "filename"];
     if def_type != "io/svg" {
         keys.push("mimeType");

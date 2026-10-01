@@ -345,6 +345,9 @@ mod tests {
         let fill = cat.get("style/fill").unwrap();
         assert!(matches!(fill.inputs[0].default, Some(Value::Null)));
         assert!(fill.inputs[1].default.is_none());
+        let w = cat.get("physics/world").unwrap();
+        assert!(matches!(w.inputs[3].default, Some(Value::Null)));
+        assert!(w.inputs[4].default.is_none());
     }
 
     #[test]

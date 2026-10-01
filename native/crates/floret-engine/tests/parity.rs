@@ -10,6 +10,7 @@
 //! report; set `PARITY_ONLY=<id,...>` to check specific samples and
 //! `PARITY_VERBOSE=1` to print every mismatch.
 
+use floret_engine::particles::{Handle, TypedArray};
 use floret_engine::{scene, tick::Outputs, Engine, FrameCtx, Value};
 use serde_json::Value as J;
 use std::collections::{BTreeMap, HashMap, HashSet};
@@ -191,6 +192,41 @@ impl Cmp {
                 self.temp -= 1;
                 r
             }
+            // Opaque JS objects (worlds, forces, colliders, particle
+            // buffers, typed arrays) — see `floret_engine::particles`.
+            (Value::Handle(h), Fx::Tag(tag, inner)) if tag == "$fn" => {
+                if h.fn_name() == inner.as_str() {
+                    Ok(())
+                } else {
+                    mismatch()
+                }
+            }
+            (Value::Handle(Handle::TypedArray(t)), Fx::Tag(tag, j)) if tag == "$ta" => {
+                typed_array(t, j).map_err(|e| format!("{path}: {e}"))
+            }
+            (Value::Handle(h), Fx::Obj(o)) => {
+                let key = (handle_ptr(h), Arc::as_ptr(o) as usize);
+                if !self.seen.insert(key) {
+                    return Ok(());
+                }
+                // A class instance is recorded as {"$class": name, ...fields}.
+                let class = o.iter().find(|(k, _)| k == "$class").map(|(_, v)| v);
+                match (h.class_name(), class) {
+                    (None, None) => {}
+                    (Some(want), Some(Fx::Str(got))) if want == got => {}
+                    _ => return mismatch(),
+                }
+                let Some(view) = h.to_value() else {
+                    return mismatch();
+                };
+                let fields = Fx::Obj(Arc::new(
+                    o.iter().filter(|(k, _)| k != "$class").cloned().collect(),
+                ));
+                self.temp += 1;
+                let r = self.value(&view, &fields, path);
+                self.temp -= 1;
+                r
+            }
             (_, Fx::Tag(tag, inner)) if tag == "$summary" => {
                 let got = self.summ.visit(v);
                 check_summary(inner, &got, path)
@@ -225,6 +261,41 @@ fn check_summary(want: &J, got: &Stats, path: &str) -> Result<(), String> {
     } else {
         Err(format!("{path}: summary rust {got:?} vs ts {want:?}"))
     }
+}
+
+/// Identity of a handle's shared allocation (for the `seen` set).
+fn handle_ptr(h: &Handle) -> usize {
+    match h {
+        Handle::World(w) => Arc::as_ptr(w) as usize,
+        Handle::Force(f) => Arc::as_ptr(f) as usize,
+        Handle::Collider(c) => Arc::as_ptr(c) as usize,
+        Handle::Particles(p) => Arc::as_ptr(&p.0) as *const () as usize,
+        _ => 0,
+    }
+}
+
+/// A typed array against `{"$ta": name, "len", "fnv", "head"}`: the FNV-1a
+/// of the raw little-endian bytes must match exactly.
+fn typed_array(t: &TypedArray, j: &J) -> Result<(), String> {
+    let name = j["$ta"].as_str().unwrap_or("");
+    let len = j["len"].as_u64().unwrap_or(u64::MAX);
+    let fnv = j["fnv"].as_str().unwrap_or("");
+    if t.name() != name || t.len() as u64 != len {
+        return Err(format!(
+            "typed array rust {}[{}] vs ts {name}[{len}]",
+            t.name(),
+            t.len()
+        ));
+    }
+    let got = t.fnv1a();
+    if got != fnv {
+        let head: Vec<f64> = (0..t.len().min(8)).map(|i| t.get(i)).collect();
+        return Err(format!(
+            "{name} fnv rust {got} vs ts {fnv}; head rust {head:?} vs ts {}",
+            j["head"]
+        ));
+    }
+    Ok(())
 }
 
 /// Sharing-independent stats over a value as a JS tree (see the exporter's
@@ -336,6 +407,14 @@ impl Summarizer {
                 }
             }
             Value::Scene(n) => s = self.scene(n),
+            // Typed arrays are childless objects; other handles are walked
+            // as their (temporary) JS objects.
+            Value::Handle(Handle::TypedArray(_)) => s.objects = 1.0,
+            Value::Handle(h) => {
+                if let Some(o) = h.to_value() {
+                    s = self.visit_in(&o, true);
+                }
+            }
             // Functions are leaves; undefined / null / booleans carry nothing.
             _ => {}
         }
@@ -702,6 +781,7 @@ fn run_sample(id: &str) -> SampleReport {
         }
         let rec = rec_iter.next().unwrap();
         compare_frame(&engine, &result.outputs, rec, i, &mut rep, &mut node_ok);
+        probe_functions_like_exporter(&result.outputs);
     }
     rep.matched = node_ok.values().filter(|ok| **ok).count();
     rep
@@ -775,6 +855,47 @@ fn compare_frame(
             rep.mismatched
                 .entry(format!("{id} ({})", node.ty))
                 .or_insert_with(|| format!("frame {frame}: {e}"));
+        }
+    }
+}
+
+/// The exporter's `canon()` calls every function it encodes as
+/// `fn(NEUTRAL_STYLE)` to detect style closures (`styleOf`). For a force
+/// closure that is a call with `dt = undefined`: turbulence / wind advance
+/// their private clock by NaN, so every frame after the first recorded one
+/// sees a NaN clock (particles-attractor goes all-NaN at frame 1). Replay
+/// that side effect: apply each force on the recorded outputs once with
+/// `dt = NaN` to a buffer with no live particles.
+fn probe_functions_like_exporter(outputs: &Outputs) {
+    use floret_engine::particles::{ParticleBuffer, World};
+    fn walk(v: &Value, seen: &mut HashSet<usize>, world: &World) {
+        match v {
+            Value::Handle(Handle::Force(f)) => {
+                f.apply(&mut ParticleBuffer::new(1.0), f64::NAN, world);
+            }
+            Value::Handle(Handle::World(w)) if seen.insert(Arc::as_ptr(w) as usize) => {
+                for x in w.forces.iter().chain(w.colliders.iter()) {
+                    walk(x, seen, world);
+                }
+            }
+            Value::List(items) if seen.insert(Arc::as_ptr(items) as *const () as usize) => {
+                for x in items.iter() {
+                    walk(x, seen, world);
+                }
+            }
+            Value::Object(m) if seen.insert(Arc::as_ptr(m) as usize) => {
+                for x in m.values() {
+                    walk(x, seen, world);
+                }
+            }
+            _ => {}
+        }
+    }
+    let world = World::default_world();
+    let mut seen = HashSet::new();
+    for ports in outputs.iter().flatten() {
+        for spread in ports.iter() {
+            walk(&Value::List(spread.clone()), &mut seen, &world);
         }
     }
 }

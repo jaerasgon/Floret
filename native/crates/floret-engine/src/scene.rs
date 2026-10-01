@@ -347,6 +347,53 @@ pub enum SceneNode {
         blend_mode: Option<Arc<str>>,
         clip: Option<RectF>,
     },
+    /// `particles/render-as`: draw every live particle of a buffer with one
+    /// template (CPU instancing). Layout for renderers:
+    ///
+    /// - Read-lock `buffer` (`buffer.read()`) and walk `0..capacity`; draw
+    ///   slot `i` only when `alive[i] != 0` (dead slots hold stale data).
+    /// - Position `(pos_x[i], pos_y[i])`, size `size[i]` (circle diameter /
+    ///   square side; the TS renderers skip `size <= 0` and non-finite
+    ///   positions). Colour `(color_r, color_g, color_b, color_a)[i]` in
+    ///   0..1 when `use_buffer_color`, else `style.fill`.
+    /// - `template`: [`ParticleTemplate::Circle`] / `Rect` centred on the
+    ///   particle, or `Layer(node)` translated to it.
+    /// - `count` is the alive count when the batch was BUILT (TS memoises
+    ///   render-as, so it can be stale); the buffer itself is live — use
+    ///   `alive`, not `count`, to decide what to draw.
+    ///
+    /// [`ParticleTemplate::Circle`]: crate::particles::ParticleTemplate::Circle
+    ParticleBatch {
+        buffer: crate::particles::ParticleHandle,
+        count: f64,
+        template: crate::particles::ParticleTemplate,
+        style: Arc<ResolvedStyle>,
+        use_buffer_color: bool,
+    },
+    /// `particles/trail`: a polyline behind every live particle.
+    ///
+    /// - `history` is a ring buffer of past positions, `segments` per slot:
+    ///   `history[(slot * segments + seg) * 2 + {0, 1}]` = (x, y). NaN marks
+    ///   "no sample" (dead slot / not yet written): stop the line there.
+    /// - `head_idx` is the newest sample; walk `seg = 0..segments` with
+    ///   `idx = (head_idx + segments - seg) % segments` (newest → oldest).
+    /// - Draw only slots with `buffer.alive[slot] != 0`. Stroke colour is
+    ///   the particle's buffer colour (rgb + alpha) when `use_buffer_color`,
+    ///   else `style.stroke`; width `style.stroke_weight`.
+    /// - `fade_out`: per segment k (1-based, between samples k-1 and k),
+    ///   alpha × (1 − (k − 0.5)/segments). `tapered`: width ×
+    ///   (1 − (k − 0.5)/segments × (1 − tail_width)), min 0.001.
+    ParticleTrailBatch {
+        buffer: crate::particles::ParticleHandle,
+        history: Arc<Vec<f32>>,
+        segments: usize,
+        head_idx: usize,
+        style: Arc<ResolvedStyle>,
+        fade_out: bool,
+        use_buffer_color: bool,
+        tapered: bool,
+        tail_width: f64,
+    },
 }
 
 impl SceneNode {
@@ -371,6 +418,8 @@ impl SceneNode {
             SceneNode::Polygon { .. } => "polygon",
             SceneNode::Text { .. } => "text",
             SceneNode::Group { .. } => "group",
+            SceneNode::ParticleBatch { .. } => "particle-batch",
+            SceneNode::ParticleTrailBatch { .. } => "particle-trail-batch",
         }
     }
 
@@ -511,6 +560,54 @@ impl SceneNode {
                     }
                     put(&mut m, "clip", Value::Object(Arc::new(r)));
                 }
+            }
+            SceneNode::ParticleBatch {
+                buffer,
+                count,
+                template,
+                style,
+                use_buffer_color,
+            } => {
+                use crate::particles::Handle;
+                put(
+                    &mut m,
+                    "buffer",
+                    Value::Handle(Handle::Particles(buffer.clone())),
+                );
+                put(&mut m, "count", n(*count));
+                put(&mut m, "template", template.to_value());
+                put(&mut m, "style", style_value(style));
+                put(&mut m, "useBufferColor", Value::Bool(*use_buffer_color));
+            }
+            SceneNode::ParticleTrailBatch {
+                buffer,
+                history,
+                segments,
+                head_idx,
+                style,
+                fade_out,
+                use_buffer_color,
+                tapered,
+                tail_width,
+            } => {
+                use crate::particles::{Handle, TypedArray};
+                put(
+                    &mut m,
+                    "buffer",
+                    Value::Handle(Handle::Particles(buffer.clone())),
+                );
+                put(
+                    &mut m,
+                    "history",
+                    Value::Handle(Handle::TypedArray(TypedArray::F32(history.clone()))),
+                );
+                put(&mut m, "segments", n(*segments as f64));
+                put(&mut m, "headIdx", n(*head_idx as f64));
+                put(&mut m, "style", style_value(style));
+                put(&mut m, "fadeOut", Value::Bool(*fade_out));
+                put(&mut m, "useBufferColor", Value::Bool(*use_buffer_color));
+                put(&mut m, "tapered", Value::Bool(*tapered));
+                put(&mut m, "tailWidth", n(*tail_width));
             }
         }
         Value::Object(Arc::new(m))

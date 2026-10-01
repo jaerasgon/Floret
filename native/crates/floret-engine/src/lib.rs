@@ -17,6 +17,7 @@ pub mod js;
 pub mod legacy;
 pub mod node;
 pub mod nodes;
+pub mod particles;
 pub mod patch;
 pub mod scene;
 pub mod spec;

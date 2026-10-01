@@ -11,10 +11,12 @@ use crate::spec::DynamicInputsFn;
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
+pub mod collider;
 pub mod color;
 pub mod convert;
 pub mod data;
 pub mod draw;
+pub mod force;
 pub mod input;
 pub mod io;
 pub mod logic;
@@ -22,6 +24,8 @@ pub mod math;
 pub mod meta;
 pub mod motion;
 pub mod noise;
+pub mod particles;
+pub mod physics;
 pub mod random;
 pub mod render;
 pub mod shared;
@@ -54,10 +58,12 @@ fn registry() -> &'static Registrar {
     static REG: OnceLock<Registrar> = OnceLock::new();
     REG.get_or_init(|| {
         let mut r = Registrar::default();
+        collider::register(&mut r);
         color::register(&mut r);
         convert::register(&mut r);
         data::register(&mut r);
         draw::register(&mut r);
+        force::register(&mut r);
         input::register(&mut r);
         io::register(&mut r);
         logic::register(&mut r);
@@ -65,6 +71,8 @@ fn registry() -> &'static Registrar {
         meta::register(&mut r);
         motion::register(&mut r);
         noise::register(&mut r);
+        particles::register(&mut r);
+        physics::register(&mut r);
         random::register(&mut r);
         render::register(&mut r);
         spread::register(&mut r);

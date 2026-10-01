@@ -6,21 +6,29 @@
 //!   off the UI thread).
 //! - The crash screen ([`crate::crash`]) writes its copies there too.
 //!
+//! - A panic nothing catches (in the editor, say) writes the latest unsaved
+//!   state there from the panic hook ([`emergency_save`], at most a second
+//!   old), and the exit that follows keeps it.
+//!
 //! Each `.flora` has a `.json` sidecar: which session wrote it, the file it
 //! was editing, and when. A clean exit removes the session's autosave and
 //! sidecars, so on the next launch whatever is left came from a session
-//! that didn't exit cleanly; those newer than their saved file are offered
-//! for restore.
+//! that didn't exit cleanly (killed, crashed, power lost); those newer than
+//! their saved file are offered for restore.
 
 use crate::files;
 use floret_engine::PatchFile;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
-use std::sync::{Mutex, OnceLock};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, Mutex, OnceLock};
 use std::time::{Duration, Instant};
 
 /// Recovery files older than this are deleted on launch.
 const MAX_AGE: Duration = Duration::from_secs(30 * 24 * 3600);
+/// How stale the state an emergency save writes may be.
+const SNAPSHOT_EVERY: Duration = Duration::from_secs(1);
+const NO_REV: u64 = u64::MAX;
 
 pub fn dir() -> PathBuf {
     if cfg!(test) {
@@ -111,6 +119,54 @@ pub fn write_crash_copy(patch: &PatchFile) -> Result<PathBuf, String> {
     Ok(path)
 }
 
+/// What an emergency save writes: a recent copy of the unsaved document.
+struct Snapshot {
+    rev: u64,
+    patch: PatchFile,
+    meta: Meta,
+}
+
+/// An [`Autosaver`]'s state as the panic hook sees it.
+struct Emergency {
+    dir: PathBuf,
+    path: PathBuf,
+    snapshot: Mutex<Option<Snapshot>>,
+    /// Revision an emergency save wrote, until the app shows it survived.
+    written: AtomicU64,
+}
+
+impl Emergency {
+    fn save(&self) {
+        // The panic may have struck while the snapshot was being replaced.
+        let Ok(guard) = self.snapshot.try_lock() else {
+            return;
+        };
+        let Some(s) = guard.as_ref() else {
+            return;
+        };
+        let text = files::to_flora(&s.patch, None, &files::now_iso());
+        match write_pair(&self.dir, &self.path, &text, &s.meta) {
+            Ok(()) => {
+                self.written.store(s.rev, Ordering::SeqCst);
+                eprintln!("floret: unsaved changes written to {}", self.path.display());
+            }
+            Err(e) => eprintln!("floret: emergency save failed: {e}"),
+        }
+    }
+}
+
+/// The app's autosaver, for the panic hook.
+static APP_EMERGENCY: OnceLock<Arc<Emergency>> = OnceLock::new();
+
+/// Write the open document's unsaved state now (from the panic hook, for a
+/// panic nothing will catch). Its autosave stays on disk through the exit
+/// that follows, so the next launch offers it.
+pub fn emergency_save() {
+    if let Some(e) = APP_EMERGENCY.get() {
+        e.save();
+    }
+}
+
 /// Periodic autosave of the open document while it has unsaved changes.
 pub struct Autosaver {
     dir: PathBuf,
@@ -119,22 +175,51 @@ pub struct Autosaver {
     written: Option<u64>,
     last: Instant,
     pending: Option<std::thread::JoinHandle<()>>,
+    emergency: Arc<Emergency>,
+    /// When the snapshot was last taken, and of which revision.
+    snapshot: Option<(Instant, u64)>,
 }
 
 impl Default for Autosaver {
     fn default() -> Self {
-        Self::new(dir(), session())
+        let a = Self::new(dir(), session());
+        let _ = APP_EMERGENCY.set(a.emergency.clone());
+        a
     }
 }
 
 impl Autosaver {
     pub fn new(dir: PathBuf, session: &str) -> Autosaver {
+        let path = dir.join(format!("autosave-{session}.flora"));
         Autosaver {
+            emergency: Arc::new(Emergency {
+                dir: dir.clone(),
+                path,
+                snapshot: Mutex::new(None),
+                written: AtomicU64::new(NO_REV),
+            }),
             dir,
             session: session.to_owned(),
             written: None,
             last: Instant::now(),
             pending: None,
+            snapshot: None,
+        }
+    }
+
+    fn meta(&self, doc: &files::Document) -> Meta {
+        Meta {
+            session: self.session.clone(),
+            kind: Kind::Autosave,
+            source: doc.path().map(Path::to_owned),
+            name: doc.name.clone(),
+            saved_at: files::unix_now(),
+        }
+    }
+
+    fn set_snapshot(&self, s: Option<Snapshot>) {
+        if let Ok(mut g) = self.emergency.snapshot.lock() {
+            *g = s;
         }
     }
 
@@ -153,9 +238,18 @@ impl Autosaver {
         rev: u64,
         patch: &PatchFile,
     ) {
+        // Still running after an emergency save: that panic was survived,
+        // and the copy is an ordinary autosave now.
+        let e = self.emergency.written.swap(NO_REV, Ordering::SeqCst);
+        if e != NO_REV {
+            self.written = Some(e);
+        }
         if !doc.is_dirty(rev) {
             if self.written.is_some() {
                 self.clear();
+            }
+            if self.snapshot.take().is_some() {
+                self.set_snapshot(None);
             }
             self.last = now;
             return;
@@ -163,6 +257,17 @@ impl Autosaver {
         let Some(interval) = interval else {
             return;
         };
+        let due = self
+            .snapshot
+            .is_none_or(|(at, r)| r != rev && now.duration_since(at) >= SNAPSHOT_EVERY);
+        if due {
+            self.snapshot = Some((now, rev));
+            self.set_snapshot(Some(Snapshot {
+                rev,
+                patch: patch.clone(),
+                meta: self.meta(doc),
+            }));
+        }
         let busy = self.pending.as_ref().is_some_and(|h| !h.is_finished());
         if busy || self.written == Some(rev) || now.duration_since(self.last) < interval {
             return;
@@ -170,13 +275,7 @@ impl Autosaver {
         self.last = now;
         self.written = Some(rev);
         let patch = patch.clone();
-        let meta = Meta {
-            session: self.session.clone(),
-            kind: Kind::Autosave,
-            source: doc.path().map(Path::to_owned),
-            name: doc.name.clone(),
-            saved_at: files::unix_now(),
-        };
+        let meta = self.meta(doc);
         let (dir, path) = (self.dir.clone(), self.path());
         self.pending = Some(std::thread::spawn(move || {
             let text = files::to_flora(&patch, None, &files::now_iso());
@@ -212,8 +311,13 @@ impl Autosaver {
 
     /// A clean exit: drop the autosave, and the sidecars of this session's
     /// crash copies (the copies stay where the crash screen said they are,
-    /// but are no longer offered).
+    /// but are no longer offered). Not after an emergency save: the exit is
+    /// the panic's.
     pub fn clean_exit(&mut self) {
+        if self.emergency.written.load(Ordering::SeqCst) != NO_REV {
+            self.wait();
+            return;
+        }
         self.clear();
         for (flora, meta) in entries(&self.dir) {
             if meta.session == self.session {
@@ -435,6 +539,34 @@ mod tests {
         let found = scan_dir(&dir, "c");
         assert_eq!(found.len(), 1);
         assert!(dir.join("a-crash.flora").exists());
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn emergency_save_survives_the_exit_after_a_panic() {
+        let dir = tmp("emergency");
+        let mut a = Autosaver::new(dir.clone(), "e1");
+        let doc = files::Document::untitled(1);
+        let t0 = Instant::now();
+        let every = Some(Duration::from_secs(30));
+        // Nothing to save while clean.
+        a.tick(t0, every, &doc, 1, &patch("x"));
+        a.emergency.save();
+        assert!(!a.path().exists());
+        // Dirty: no autosave is due yet, but a panic writes the snapshot.
+        a.tick(t0 + Duration::from_millis(10), every, &doc, 2, &patch("x"));
+        a.emergency.save();
+        assert!(a.path().exists());
+        // The exit that follows the panic keeps it for the next launch.
+        a.clean_exit();
+        let found = scan_dir(&dir, "e2");
+        assert_eq!(found.len(), 1);
+        assert_eq!(found[0].meta.kind, Kind::Autosave);
+        // Had the app survived, the next tick adopts it as its autosave and
+        // a save removes it.
+        a.tick(t0 + Duration::from_secs(1), every, &doc, 1, &patch("x"));
+        assert!(!a.path().exists());
+        a.clean_exit();
         let _ = std::fs::remove_dir_all(dir);
     }
 

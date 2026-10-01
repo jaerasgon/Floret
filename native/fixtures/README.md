@@ -8,6 +8,7 @@ engine must reproduce them. Don't edit by hand; re-export instead.
 |---|---|
 | `registry.json` | Every node type: ports (name, type, kind, default, `param`, `constant`), eval kind, flags |
 | `traces/<sample>.json.gz` | For each sample in `../samples/`: compile result (warnings, scope order, runtime nodes, edges), the frame input for every tick (`inputs`), and every node's outputs at frames 0, 1, 2, 10, 30, 60 |
+| `svg/samples/<sample>.json.gz`, `svg/edge-cases.json.gz` | SVG export goldens (`npm run fixtures:svg`, `tools/fixtures/svg.fixture.ts`): `{format, cases: [{name, width, height, background, layers, svg}]}`. `layers` is the scene the TS exporter was given; `svg` is what it returned. Sample cases are each renderer's flattened layers from the traces at frames 0 and 60 (so re-run after `fixtures:export`), minus kinds the Rust scene model lacks (`image`, `particle-*`, `shader`; counted in `dropped`). Same value tags as the traces (`$num` also covers `-0`, `$id`/`$ref`/`$arr` for shared objects). Checked by `floret-engine/tests/svg.rs`. |
 
 ## Run conditions
 

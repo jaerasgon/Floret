@@ -213,7 +213,8 @@ impl Value {
                 if map.len() == 1 && map.contains_key("$u") {
                     return Value::Undefined;
                 }
-                let num = |k: &str| map.get(k).and_then(J::as_f64);
+                // Decode fields first so tagged numbers ({"$num":"NaN"}) count.
+                let num = |k: &str| map.get(k).map(Value::from_json).and_then(|v| v.as_f64());
                 if map.len() == 2 {
                     if let (Some(x), Some(y)) = (num("x"), num("y")) {
                         return Value::Vec2(Vec2 { x, y });
@@ -239,7 +240,8 @@ impl Value {
 /// JS `Number(string)`: trims whitespace; empty → 0; decimal, hex/octal/
 /// binary literals and `Infinity`; anything else → NaN.
 pub fn js_string_to_number(s: &str) -> f64 {
-    let t = s.trim_matches(|c: char| c.is_whitespace() || c == '\u{feff}');
+    // JS StrWhiteSpaceChar: Unicode White_Space minus U+0085 (NEL), plus BOM.
+    let t = s.trim_matches(|c: char| (c.is_whitespace() && c != '\u{85}') || c == '\u{feff}');
     if t.is_empty() {
         return 0.0;
     }
@@ -324,6 +326,8 @@ mod tests {
         assert!(js_string_to_number("inf").is_nan());
         assert_eq!(js_string_to_number("-Infinity"), f64::NEG_INFINITY);
         assert_eq!(js_string_to_number("1e3"), 1000.0);
+        assert!(js_string_to_number("\u{85}1").is_nan());
+        assert_eq!(js_string_to_number("\u{feff}\u{a0}2\n"), 2.0);
     }
 
     #[test]
@@ -340,6 +344,8 @@ mod tests {
         assert!(matches!(v, Value::Vec2(Vec2 { x, y }) if x == 1.0 && y == 2.0));
         let c = Value::from_json(&serde_json::json!({"r": 1, "g": 0, "b": 0, "a": 1}));
         assert!(matches!(c, Value::Color(_)));
+        let n = Value::from_json(&serde_json::json!({"x": {"$num": "NaN"}, "y": 1}));
+        assert!(matches!(n, Value::Vec2(Vec2 { x, .. }) if x.is_nan()));
         let o = Value::from_json(&serde_json::json!({"x": 1}));
         assert!(matches!(o, Value::Object(_)));
     }

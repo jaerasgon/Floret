@@ -37,9 +37,15 @@ impl Engine {
 
     pub fn load_with_warnings(text: &str) -> Result<(Engine, Vec<CompileWarning>), String> {
         let patch = PatchFile::load(text).map_err(|e| e.to_string())?;
+        Self::from_patch(&patch)
+    }
+
+    /// Compile an already-loaded patch. The param store is seeded from the
+    /// patch's node params (what the editor's store holds after a load).
+    pub fn from_patch(patch: &PatchFile) -> Result<(Engine, Vec<CompileWarning>), String> {
         let mut params = ParamStore::default();
         params.replace_all(patch.nodes.iter().map(|n| (n.id.as_str(), &n.params)));
-        let result = compile(&patch, Catalogue::builtin(), &params)?;
+        let result = compile(patch, Catalogue::builtin(), &params)?;
         Ok((Engine::new(result.graph, params), result.warnings))
     }
 }

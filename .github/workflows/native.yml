@@ -37,3 +37,34 @@ jobs:
         run: cargo clippy --workspace --all-targets -- -D warnings
       - name: Test (includes parity against the TypeScript reference)
         run: cargo test --workspace -- --nocapture
+
+  app:
+    name: app build (${{ matrix.os }})
+    needs: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            artifact: floret-macos-arm64
+            bin: target/release/floret
+          - os: windows-latest
+            artifact: floret-windows-x64
+            bin: target/release/floret.exe
+          - os: ubuntu-latest
+            artifact: floret-linux-x64
+            bin: target/release/floret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: native
+      - name: Build release
+        run: cargo build --release -p floret-app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: native/${{ matrix.bin }}
+          retention-days: 30

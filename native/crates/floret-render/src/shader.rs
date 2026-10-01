@@ -6,7 +6,8 @@
 //! desktop GLSL 450 with Vulkan resource rules, so [`wrap`] builds a 450
 //! preamble: the built-ins and every loose user `uniform` move into one
 //! std140 block (the user's declarations are blanked in place, keeping line
-//! numbers), and `iChannel0..3` become `sampler2D(texture, sampler)`
+//! numbers; `uniform float a, b;` and arrays included, though like TS only
+//! single declarations become ports), and `iChannel0..3` become `sampler2D(texture, sampler)`
 //! macros. A user `uniform sampler2D` reads iChannel0, like an unset GL
 //! sampler.
 //!
@@ -136,6 +137,34 @@ pub fn wrap(source: &str) -> Wrapped {
         }
         seen.push(name);
     }
+    // Forms the port parser skips but GLSL ES accepts (`uniform float a, b;`,
+    // arrays) move into the block too; like TS they get no ports and read 0.
+    for u in other_uniforms(source) {
+        if u.glsl_type == "sampler2D" && u.declarators.iter().any(|(_, d)| !d.is_empty()) {
+            // Sampler arrays have no equivalent; naga reports them in place.
+            continue;
+        }
+        for c in &mut body[u.span.clone()] {
+            if *c != b'\n' {
+                *c = b' ';
+            }
+        }
+        for (name, dims) in u.declarators {
+            if floret_engine::shader::BUILTIN_UNIFORMS.contains(&name.as_str())
+                || seen.contains(&name)
+            {
+                continue;
+            }
+            if u.glsl_type == "sampler2D" && dims.is_empty() {
+                samplers.push_str(&format!(
+                    "#define {name} sampler2D(floret_channel0, floret_sampler)\n"
+                ));
+            } else {
+                members.push_str(&format!("    {} {name}{dims};\n", u.glsl_type));
+            }
+            seen.push(name);
+        }
+    }
     let preamble = format!(
         "#version 450 core\nlayout(set = 0, binding = 0, std140) uniform {UNIFORM_BLOCK} {{\n{BUILTIN_MEMBERS}{members}}};\n{RESOURCES}{samplers}"
     );
@@ -147,6 +176,91 @@ pub fn wrap(source: &str) -> Wrapped {
         preamble_lines,
         user_lines: source.matches('\n').count() as u32 + 1,
     }
+}
+
+/// A loose `uniform` statement [`uniform_declarations`] doesn't match:
+/// several declarators and/or array dimensions.
+struct OtherUniform {
+    span: std::ops::Range<usize>,
+    glsl_type: String,
+    /// (name, array suffix such as `[4]`)
+    declarators: Vec<(String, String)>,
+}
+
+fn other_uniforms(source: &str) -> Vec<OtherUniform> {
+    let text = floret_engine::shader::strip_comments(source);
+    let simple: Vec<usize> = uniform_declarations(source)
+        .iter()
+        .map(|d| d.span.start)
+        .collect();
+    let mut out = Vec::new();
+    let mut start = 0;
+    while let Some(len) = text[start..].find(';') {
+        let end = start + len;
+        if let Some(u) = parse_other_uniform(&text[start..end]) {
+            let span = start + u.0..end + 1;
+            if !simple.contains(&span.start) {
+                out.push(OtherUniform {
+                    span,
+                    glsl_type: u.1,
+                    declarators: u.2,
+                });
+            }
+        }
+        start = end + 1;
+    }
+    out
+}
+
+type Declarators = Vec<(String, String)>;
+
+/// `uniform [precision] TYPE name[dims]?, name[dims]?…` at the end of
+/// `stmt` (the text between two `;`), starting a statement. Returns the
+/// offset of `uniform`, the type and the declarators.
+fn parse_other_uniform(stmt: &str) -> Option<(usize, String, Declarators)> {
+    let word = |c: char| c.is_ascii_alphanumeric() || c == '_';
+    let at = stmt.match_indices("uniform").map(|(i, _)| i).find(|&i| {
+        let before = stmt[..i].trim_end();
+        let starts_statement = before.is_empty()
+            || before.ends_with('}')
+            || before
+                .lines()
+                .last()
+                .is_some_and(|l| l.trim_start().starts_with('#'));
+        let bounded = !stmt[i + 7..].starts_with(word);
+        starts_statement && bounded
+    })?;
+    let rest = &stmt[at + 7..];
+    if rest.contains(['{', '=', '(']) {
+        return None;
+    }
+    let mut words = rest.split_whitespace().peekable();
+    let mut glsl_type = words.next()?;
+    if matches!(glsl_type, "lowp" | "mediump" | "highp") {
+        glsl_type = words.next()?;
+    }
+    if !glsl_type.chars().all(word) {
+        return None;
+    }
+    let decls: String = words.collect::<Vec<_>>().join(" ");
+    let mut declarators = Vec::new();
+    for d in decls.split(',') {
+        let d = d.trim();
+        let name_end = d.find(|c: char| !word(c)).unwrap_or(d.len());
+        let (name, dims) = d.split_at(name_end);
+        let dims: String = dims.chars().filter(|c| !c.is_whitespace()).collect();
+        let valid_dims = dims.is_empty()
+            || (dims.starts_with('[')
+                && dims.ends_with(']')
+                && dims
+                    .chars()
+                    .all(|c| word(c) || matches!(c, '[' | ']' | '+' | '-' | '*' | '/')));
+        if name.is_empty() || name.starts_with(|c: char| c.is_ascii_digit()) || !valid_dims {
+            return None;
+        }
+        declarators.push((name.to_owned(), dims));
+    }
+    Some((at, glsl_type.to_owned(), declarators))
 }
 
 // ─── Compiling ───────────────────────────────────────────────────────────────
@@ -1075,6 +1189,33 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         assert_eq!(
             w.text.lines().nth(w.preamble_lines as usize + 1).unwrap(),
             "void mainImage(out vec4 fragColor, in vec2 fragCoord) {"
+        );
+    }
+
+    #[test]
+    fn lifts_multi_declarator_and_array_uniforms() {
+        let src = "uniform float a, b;
+uniform highp vec3 cols[2];
+uniform float k;
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+  fragColor = vec4(cols[0] + cols[1] + a + b + k, 1.0);
+}";
+        let c = compile(src).unwrap_or_else(|e| panic!("{e:?}"));
+        let m = &c.layout.members;
+        assert!(m.contains_key("a") && m.contains_key("b") && m.contains_key("k"));
+        let w = wrap(src);
+        assert!(w.text.contains("    vec3 cols[2];\n"), "{}", w.text);
+        // Not lifted: the user's own block, and an initialiser (an error in
+        // GLSL ES too).
+        assert!(parse_other_uniform("uniform Foo { float x; }").is_none());
+        assert!(parse_other_uniform("uniform float x = 1.0").is_none());
+        assert!(parse_other_uniform("vec3 c = vec3(1.0)").is_none());
+        assert_eq!(
+            parse_other_uniform("}\n uniform float a , b[N * 2]").map(|u| u.2),
+            Some(vec![
+                ("a".to_owned(), String::new()),
+                ("b".to_owned(), "[N*2]".to_owned())
+            ])
         );
     }
 

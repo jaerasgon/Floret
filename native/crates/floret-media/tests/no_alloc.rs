@@ -253,6 +253,10 @@ fn rendering_never_touches_the_heap() {
     let mut buf = vec![0f32; 2 * 300];
     let mut fed = 0u32;
     let mut peak = 0f32;
+    // Warm up unarmed: the first render can touch lazily initialised
+    // thread-locals, which macOS sets up on the heap once per thread (a real
+    // audio thread pays that on its first callback, not per buffer).
+    sys.render_into(&mut buf);
     for step in 0..120 {
         // Control side (allowed to allocate): new params, gates, rewiring.
         sys.submit(graph(step, &url, step % 10 >= 5));

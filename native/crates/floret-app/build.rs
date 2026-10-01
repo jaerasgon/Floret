@@ -27,4 +27,16 @@ fn main() {
     out.push_str("];\n");
     let dest = Path::new(&std::env::var("OUT_DIR").unwrap()).join("samples.rs");
     std::fs::write(dest, out).unwrap();
+
+    // macOS reads an unbundled binary's Info.plist from this section; the
+    // camera permission prompt needs its NSCameraUsageDescription (an .app
+    // bundle would carry the same file as Contents/Info.plist).
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("macos") {
+        let plist = Path::new(env!("CARGO_MANIFEST_DIR")).join("macos/Info.plist");
+        println!("cargo:rerun-if-changed={}", plist.display());
+        println!(
+            "cargo:rustc-link-arg-bins=-Wl,-sectcreate,__TEXT,__info_plist,{}",
+            plist.display()
+        );
+    }
 }

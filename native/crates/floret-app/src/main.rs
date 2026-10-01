@@ -10,6 +10,7 @@
 mod bus;
 mod canvas;
 mod crash;
+mod devices;
 mod editor;
 mod export;
 mod gpu_support;
@@ -81,6 +82,7 @@ struct App {
 impl App {
     fn new(cc: &eframe::CreationContext<'_>) -> App {
         theme::apply(&cc.egui_ctx);
+        devices::install();
         // FLORET_SAMPLE=<id> picks the startup sample (handy for screenshots).
         let want = std::env::var("FLORET_SAMPLE").unwrap_or_else(|_| "tut-03-animate".into());
         let start = SAMPLES.iter().position(|s| s.id == want).unwrap_or(0);
@@ -232,6 +234,9 @@ impl App {
         ui.label(RichText::new(&n.def_type).color(theme::FG_2).monospace());
         if let Some(d) = spec.and_then(|s| s.description.as_ref()) {
             ui.label(RichText::new(d).color(theme::FG_1));
+        }
+        if let Some(s) = devices::status(&n.def_type) {
+            ui.label(RichText::new(s).color(theme::FG_2));
         }
         if let (Some(engine), Some(spec)) = (&self.engine, spec) {
             if let Some(out) = engine

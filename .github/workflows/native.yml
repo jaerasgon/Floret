@@ -3,9 +3,9 @@ name: native
 on:
   push:
     branches: [main]
-    paths: ['native/**', '.github/workflows/native.yml']
+    paths: ['native/**', 'public/mediapipe/models/**', '.github/workflows/native.yml']
   pull_request:
-    paths: ['native/**', '.github/workflows/native.yml']
+    paths: ['native/**', 'public/mediapipe/models/**', '.github/workflows/native.yml']
 
 concurrency:
   group: native-${{ github.ref }}
@@ -31,6 +31,11 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: native
+      # midir links ALSA on Linux (nokhwa's V4L2 bindings only need the
+      # kernel headers and libclang, both preinstalled).
+      - name: Linux system deps
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev
       - name: Format
         run: cargo fmt --all --check
       - name: Clippy
@@ -60,6 +65,9 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: native
+      - name: Linux system deps
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev
       - name: Build release
         run: cargo build --release -p floret-app
       - uses: actions/upload-artifact@v7

@@ -2133,10 +2133,11 @@ fn menu_items(
         } => options
             .iter()
             .map(|o| {
+                let shown = values::option_label(o);
                 let label = if o == current {
-                    format!("•  {o}")
+                    format!("•  {shown}")
                 } else {
-                    format!("    {o}")
+                    format!("    {shown}")
                 };
                 // Keep numbers numeric (e.g. FFT bins) when the stored value is.
                 let value = match ports::find_node(patch, node).and_then(|n| match key {

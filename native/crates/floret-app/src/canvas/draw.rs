@@ -489,7 +489,7 @@ pub fn field(p: &Painter, f: &Field, z: f32) {
             p.with_clip_rect(r.shrink(2.0)).text(
                 r.left_center() + vec2(4.0 * z, 0.0),
                 Align2::LEFT_CENTER,
-                values::as_text(&f.value),
+                values::option_label(&values::as_text(&f.value)),
                 mono,
                 FG_0,
             );

@@ -11,7 +11,8 @@
 //!   allocation or locking.
 //! * `nodes`, `dsp`, `reverb`, `compressor` implement the Web Audio nodes
 //!   the TS app used (oscillators, biquads, delay, convolver, waveshaper,
-//!   dynamics compressor, AudioParam ramps and schedules).
+//!   dynamics compressor, AudioParam ramps and schedules); `wavetable` is
+//!   Chromium's band-limited oscillator.
 //! * `analysis` is the `AnalyserNode`, computed on the control thread from
 //!   lock-free taps when a tick starts.
 //! * `device` owns the cpal streams (output, microphone) on its own thread
@@ -28,5 +29,6 @@ pub mod nodes;
 pub mod render;
 pub mod reverb;
 mod system;
+pub mod wavetable;
 
 pub use system::{AudioSystem, DeviceInfo, Status, DEFAULT_SAMPLE_RATE};

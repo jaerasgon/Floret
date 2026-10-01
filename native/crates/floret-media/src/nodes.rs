@@ -6,11 +6,11 @@ use crate::analysis::Tap;
 use crate::compressor::Compressor;
 use crate::decode::SampleData;
 use crate::dsp::{
-    samples, saw, square, triangle, wrap01, Adsr, Biquad, BiquadKind, Bus, Lowpass4, Ramp, QUANTUM,
-    RAMP_SECONDS, SILENCE,
+    samples, wrap01, Adsr, Biquad, BiquadKind, Bus, Lowpass4, Ramp, QUANTUM, RAMP_SECONDS, SILENCE,
 };
 use crate::graph::Params;
 use crate::reverb::Reverb;
+use crate::wavetable::{PeriodicWave, Shape, WaveOsc};
 use floret_engine::audio::{AudioNode, NoiseColor, Wave};
 use std::f32::consts::FRAC_PI_2;
 use std::sync::Arc;
@@ -24,7 +24,7 @@ pub struct Ctx<'a> {
 
 pub enum Dsp {
     Osc(Osc),
-    Pulse(Pulse),
+    Pulse(Box<Pulse>),
     Noise(Noise),
     Synth(Synth),
     Player(Box<Player>),
@@ -60,24 +60,30 @@ impl Dsp {
         let ramp = |v: f64| Ramp::new(v as f32, RAMP_SECONDS, sr);
         match node {
             AudioNode::Oscillator { wave, freq, .. } => Dsp::Osc(Osc {
-                wave: *wave,
+                table: match wave {
+                    Wave::Sine => None,
+                    Wave::Square => Some(table(Shape::Square, sr)),
+                    Wave::Sawtooth => Some(table(Shape::Sawtooth, sr)),
+                    Wave::Triangle => Some(table(Shape::Triangle, sr)),
+                },
                 phase: 0.0,
                 freq: ramp(*freq),
                 amp: ramp(0.0),
             }),
-            AudioNode::Pulse { freq, width, .. } => Dsp::Pulse(Pulse {
-                phase: 0.0,
+            AudioNode::Pulse { freq, .. } => Dsp::Pulse(Box::new(Pulse {
+                saw: table(Shape::Sawtooth, sr),
                 freq: ramp(*freq),
                 amp: ramp(0.0),
-                duty: duty_of(*width as f32),
-            }),
+                width: f32::NAN,
+                curve: [0.0; PULSE_CURVE],
+            })),
             AudioNode::Noise { color, seed, .. } => Dsp::Noise(Noise {
                 buffer: noise_buffer(*color, *seed, sr),
                 pos: 0,
                 amp: ramp(0.0),
             }),
             AudioNode::MonoSynth { freq, .. } => Dsp::Synth(Synth {
-                phase: 0.0,
+                saw: table(Shape::Sawtooth, sr),
                 freq: Ramp::new(*freq as f32, 0.01, sr),
                 env: Adsr::default(),
                 gate: Gate::default(),
@@ -86,6 +92,7 @@ impl Dsp {
                 sample,
                 pos: 0.0,
                 playing: false,
+                ended: false,
                 gate: Gate::default(),
                 pan: ramp(*pan),
                 amp: ramp(*amp),
@@ -180,8 +187,13 @@ fn apply_gain(g: &mut Ramp, input: &Bus, out: &mut Bus) {
 
 // ─── Sources ─────────────────────────────────────────────────────────────────
 
+fn table(shape: Shape, sample_rate: f32) -> WaveOsc {
+    WaveOsc::new(PeriodicWave::basic(shape, sample_rate))
+}
+
 pub struct Osc {
-    wave: Wave,
+    /// Chromium's band-limited table; `None` for a sine.
+    table: Option<WaveOsc>,
     phase: f64,
     freq: Ramp,
     amp: Ramp,
@@ -191,64 +203,72 @@ impl Osc {
     fn process(&mut self, p: &Params, out: &mut Bus, sr: f32) {
         self.freq.set(p.get(slot::FREQ));
         self.amp.set(p.get(slot::AMP));
-        let nyquist = f64::from(sr) / 2.0;
+        let nyquist = sr / 2.0;
         out.channels = 1;
         for y in out.ch[0].iter_mut() {
-            let f = f64::from(self.freq.tick()).clamp(-nyquist, nyquist);
-            let dt = f / f64::from(sr);
-            let ph = self.phase;
-            let adt = dt.abs().max(1e-9);
-            let s = match self.wave {
-                Wave::Sine => (std::f64::consts::TAU * ph).sin(),
-                Wave::Sawtooth => saw(ph, adt),
-                Wave::Square => square(ph, adt),
-                Wave::Triangle => triangle(ph),
+            let f = self.freq.tick().clamp(-nyquist, nyquist);
+            let s = match &mut self.table {
+                Some(t) => t.next(f),
+                None => {
+                    let ph = self.phase;
+                    self.phase = wrap01(ph + f64::from(f) / f64::from(sr));
+                    (std::f64::consts::TAU * ph).sin() as f32
+                }
             };
-            *y = s as f32 * self.amp.tick();
-            self.phase = wrap01(ph + dt);
+            *y = s * self.amp.tick();
         }
     }
 }
 
-/// The TS Pulse: a sawtooth through a 257-point step curve that is +1
-/// where the saw exceeds `2·width − 1`. The curve's linear interpolation
-/// puts the edge half a curve step above the last −1 point; the result is
-/// a pulse high for `duty` of each period (width 0 → almost always high).
-fn duty_of(width: f32) -> f64 {
-    let thresh = 2.0 * f64::from(width) - 1.0;
-    let last_low = ((thresh + 1.0) * 128.0).floor().clamp(0.0, 256.0) / 128.0 - 1.0;
-    ((1.0 - (last_low + 1.0 / 256.0)) / 2.0).clamp(0.0, 1.0)
-}
+/// Points in the TS Pulse's waveshaper curve.
+const PULSE_CURVE: usize = 257;
 
+/// The TS Pulse: a sawtooth through a 257-point step curve that is +1
+/// where the input exceeds `2·width − 1`, applied like a `WaveShaperNode`
+/// (linear interpolation between curve points, no oversampling).
 pub struct Pulse {
-    phase: f64,
+    saw: WaveOsc,
     freq: Ramp,
     amp: Ramp,
-    duty: f64,
+    width: f32,
+    curve: [f32; PULSE_CURVE],
 }
 
 impl Pulse {
     fn process(&mut self, p: &Params, out: &mut Bus, sr: f32) {
         self.freq.set(p.get(slot::FREQ));
         self.amp.set(p.get(slot::AMP));
-        self.duty = duty_of(p.get(slot::WIDTH));
-        let nyquist = f64::from(sr) / 2.0;
-        // The saw crosses the threshold at phase −duty + ½ (mod 1).
-        let edge = 0.5 - self.duty;
+        let width = p.get(slot::WIDTH);
+        if width.to_bits() != self.width.to_bits() {
+            self.width = width;
+            let thresh = 2.0 * width - 1.0;
+            for (i, c) in self.curve.iter_mut().enumerate() {
+                let x = (i as f32 / (PULSE_CURVE - 1) as f32) * 2.0 - 1.0;
+                *c = if x > thresh { 1.0 } else { -1.0 };
+            }
+        }
+        let nyquist = sr / 2.0;
         out.channels = 1;
         for y in out.ch[0].iter_mut() {
-            let f = f64::from(self.freq.tick()).clamp(-nyquist, nyquist);
-            let dt = f / f64::from(sr);
-            let adt = dt.abs().max(1e-9);
-            let q = wrap01(self.phase - edge);
-            let mut s = if q < self.duty { 1.0 } else { -1.0 };
-            if self.duty > 0.0 && self.duty < 1.0 {
-                s += crate::dsp::poly_blep(q, adt)
-                    - crate::dsp::poly_blep(wrap01(q - self.duty), adt);
-            }
-            *y = s as f32 * self.amp.tick();
-            self.phase = wrap01(self.phase + dt);
+            let f = self.freq.tick().clamp(-nyquist, nyquist);
+            let x = self.saw.next(f);
+            *y = shape(&self.curve, x) * self.amp.tick();
         }
+    }
+}
+
+/// `WaveShaperNode`'s curve lookup.
+fn shape(curve: &[f32], x: f32) -> f32 {
+    let last = curve.len() - 1;
+    let v = last as f32 * 0.5 * (x + 1.0);
+    if v.is_nan() || v <= 0.0 {
+        curve[0]
+    } else if v >= last as f32 {
+        curve[last]
+    } else {
+        let k = v as usize;
+        let f = v - k as f32;
+        (1.0 - f) * curve[k] + f * curve[k + 1]
     }
 }
 
@@ -325,7 +345,7 @@ impl Gate {
 }
 
 pub struct Synth {
-    phase: f64,
+    saw: WaveOsc,
     freq: Ramp,
     env: Adsr,
     gate: Gate,
@@ -347,12 +367,11 @@ impl Synth {
             Edge::Fall => self.env.release(samples(r, sr)),
             Edge::None => {}
         }
-        let nyquist = f64::from(sr) / 2.0;
+        let nyquist = sr / 2.0;
         out.channels = 1;
         for y in out.ch[0].iter_mut() {
-            let dt = f64::from(self.freq.tick()).clamp(0.0, nyquist) / f64::from(sr);
-            *y = saw(self.phase, dt.max(1e-9)) as f32 * self.env.tick();
-            self.phase = wrap01(self.phase + dt);
+            let f = self.freq.tick().clamp(0.0, nyquist);
+            *y = self.saw.next(f) * self.env.tick();
         }
     }
 }
@@ -394,6 +413,10 @@ pub struct Player {
     /// Read position in source frames.
     pos: f64,
     playing: bool,
+    /// A one-shot reached its end while `play` is still held: silent, but
+    /// the reported position keeps wrapping, as the TS node's
+    /// `elapsed % duration` did until `play` fell.
+    ended: bool,
     gate: Gate,
     pan: Ramp,
     amp: Ramp,
@@ -409,8 +432,12 @@ impl Player {
             Edge::Rise => {
                 self.pos = 0.0;
                 self.playing = open;
+                self.ended = false;
             }
-            Edge::Fall => self.playing = false,
+            Edge::Fall => {
+                self.playing = false;
+                self.ended = false;
+            }
             Edge::None => {}
         }
         out.channels = 2;
@@ -432,8 +459,11 @@ impl Player {
                         self.pos = self.pos.rem_euclid(frames);
                     } else {
                         self.playing = false;
+                        self.ended = true;
                     }
                 }
+            } else if self.ended {
+                self.pos = (self.pos + step).rem_euclid(frames);
             }
             let pan = self.pan.tick();
             let (ol, or) = if stereo {
@@ -452,7 +482,8 @@ impl Player {
             out.ch[0][i] = ol * g;
             out.ch[1][i] = or * g;
         }
-        p.set_playhead(self.playing.then(|| self.pos / f64::from(data.sample_rate)));
+        let reported = self.playing || self.ended;
+        p.set_playhead(reported.then(|| self.pos / f64::from(data.sample_rate)));
     }
 }
 

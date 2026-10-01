@@ -19,3 +19,7 @@ flate2 = "1"
 opt-level = 2
 # Dependencies' debug info is most of the build size; our crates keep theirs.
 debug = false
+
+# Landmark tracking runs neural nets; unoptimised it's far too slow to use.
+[profile.dev.package.floret-input]
+opt-level = 3

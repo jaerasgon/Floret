@@ -144,9 +144,26 @@ impl App {
 
     fn tick(&mut self, ctx: &egui::Context) {
         let now = Instant::now();
-        let dt = now.duration_since(self.last).as_secs_f64();
+        let mut dt = now.duration_since(self.last).as_secs_f64();
         self.last = now;
         self.fps = self.fps * 0.9 + (1.0 / dt.max(1e-6)) as f32 * 0.1;
+        // Preview transport: restart, and pause / step (time holds while paused).
+        if self.preview.transport.take_restart() {
+            self.recompile();
+            self.start = now;
+            self.frame = 0;
+        }
+        match self.preview.transport.advance() {
+            preview::Advance::Run => {}
+            preview::Advance::Hold => {
+                self.start += std::time::Duration::from_secs_f64(dt);
+                return;
+            }
+            preview::Advance::Step(step) => {
+                self.start += std::time::Duration::from_secs_f64((dt - step).max(0.0));
+                dt = step;
+            }
+        }
         let t = now.duration_since(self.start).as_secs_f64();
         let frame = self
             .preview
@@ -261,6 +278,18 @@ impl eframe::App for App {
         ui.ctx().request_repaint();
         self.bus
             .process(frame.wgpu_render_state(), self.preview.clock);
+        if self.preview.focused() {
+            // Focus mode: the featured preview alone.
+            let rs = frame.wgpu_render_state();
+            let (preview, engine, outputs) =
+                (&mut self.preview, self.engine.as_ref(), &self.outputs);
+            egui::CentralPanel::no_frame().show(ui, |ui| {
+                self.crash.run(crash::Stage::Render, &self.patch, || {
+                    preview.show_focus(ui, rs, engine, outputs);
+                });
+            });
+            return;
+        }
         let mut warnings: Vec<String> = self.warnings.iter().map(|w| w.message.clone()).collect();
         warnings.extend(
             self.shader_panel
@@ -367,6 +396,13 @@ impl eframe::App for App {
 
         egui::CentralPanel::no_frame().show(ui, |ui| {
             let cat = Catalogue::builtin();
+            self.view.thumbs = self.preview.probe_thumbs(
+                ui.ctx(),
+                frame.wgpu_render_state(),
+                self.engine.as_ref(),
+                &self.outputs,
+                &self.patch,
+            );
             if let Some(engine) = &self.engine {
                 let live = canvas::Live {
                     engine,

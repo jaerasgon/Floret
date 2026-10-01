@@ -40,7 +40,6 @@ jobs:
 
   app:
     name: app build (${{ matrix.os }})
-    needs: test
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

@@ -201,7 +201,10 @@ impl Ticker<'_> {
             params: self.params,
             saved_params: &node.saved_params,
         };
-        match imp.eval(inputs, &mut cx) {
+        let result = imp.eval(inputs, &mut cx);
+        self.errors
+            .extend(crate::node::take_warnings().into_iter().map(|m| (i, m)));
+        match result {
             Ok(out) => out,
             Err(msg) => {
                 self.errors.push((i, msg));

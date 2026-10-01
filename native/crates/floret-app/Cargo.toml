@@ -25,8 +25,9 @@ indexmap.workspace = true
 rfd = "0.17"
 png = "0.18"
 pollster = "1"
-# io/image-url over http(s) (the engine's host fetcher, see src/host.rs).
-ureq = { version = "3", default-features = false, features = ["rustls"] }
+# io/image-url over http(s) (the engine's host fetcher, see src/host.rs), checking
+# certificates with the OS (so proxies with their own CA work, as in a browser).
+ureq = { version = "3", default-features = false, features = ["rustls", "platform-verifier"] }
 # Dockable side panels (workspace.rs) and their saved layout.
 egui_dock = { version = "0.21", features = ["serde"] }
 serde.workspace = true

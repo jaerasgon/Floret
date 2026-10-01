@@ -14,7 +14,8 @@
 
 use super::{param_str, Key, Memo};
 use crate::image::{
-    decode_data_url, parse_image, parse_text, rasterize_svg, Image, LoadSlot, LoadState,
+    decode_data_url, parse_image, parse_text, rasterize_svg, resource_dir, Image, LoadSlot,
+    LoadState,
 };
 use crate::js;
 use crate::node::{raw, EvalCtx, NodeImpl, NodeInit};
@@ -56,12 +57,17 @@ pub fn image_url(_: &NodeInit) -> Box<dyn NodeImpl> {
                 let (w, h) = (f64::from(img.width()), f64::from(img.height()));
                 vec![one(Value::Image(img)), one(true.into()), num(w), num(h)]
             }
-            _ => vec![
-                one(Value::Image(Image::placeholder())),
-                one(false.into()),
-                num(0.0),
-                num(0.0),
-            ],
+            state => {
+                if let LoadState::Failed(e) = state {
+                    cx.warn(format!("Couldn't load the image: {e}"));
+                }
+                vec![
+                    one(Value::Image(Image::placeholder())),
+                    one(false.into()),
+                    num(0.0),
+                    num(0.0),
+                ]
+            }
         })
     })
 }
@@ -102,7 +108,11 @@ pub fn file(_: &NodeInit) -> Box<dyn NodeImpl> {
         }
         let (img, loaded) = match slot.ensure(&data_url, cx.host(), parse_image).state() {
             LoadState::Ready(img) => (img, true),
-            _ => (Image::placeholder(), false),
+            LoadState::Failed(e) => {
+                cx.warn(format!("Couldn't load the image: {e}"));
+                (Image::placeholder(), false)
+            }
+            LoadState::Loading => (Image::placeholder(), false),
         };
         Ok(vec![
             url,
@@ -142,10 +152,13 @@ fn raster_scale(scale: f64) -> f64 {
     s.log2().ceil().exp2()
 }
 
+/// A rasterised SVG and its viewBox size, or why it couldn't be read.
+type Raster = Result<(Arc<Image>, f64, f64), String>;
+
 pub fn svg(_: &NodeInit) -> Box<dyn NodeImpl> {
     let mut remote: LoadSlot<Arc<str>> = LoadSlot::default();
     let mut inline: Option<(String, Option<Arc<str>>)> = None;
-    let mut raster: Memo<Option<(Arc<Image>, f64, f64)>> = Memo::default();
+    let mut raster: Memo<Raster> = Memo::default();
     raw(move |inputs, cx| {
         let none = || {
             Ok(vec![
@@ -164,15 +177,25 @@ pub fn svg(_: &NodeInit) -> Box<dyn NodeImpl> {
         if key.is_empty() {
             return none();
         }
+        let host = cx.host();
+        let dir = if is_url {
+            resource_dir(&key, host.as_deref())
+        } else {
+            host.as_ref().and_then(|h| h.base_dir())
+        };
         let text = if is_url {
-            match remote.ensure(&key, cx.host(), parse_text).state() {
+            match remote.ensure(&key, host, parse_text).state() {
                 LoadState::Ready(t) => Some(t),
-                _ => None,
+                LoadState::Failed(e) => {
+                    cx.warn(format!("Couldn't load the SVG: {e}"));
+                    None
+                }
+                LoadState::Loading => None,
             }
         } else {
             if inline.as_ref().is_none_or(|(k, _)| *k != key) {
                 let text = if key.starts_with("data:") {
-                    decode_data_url(&key).and_then(parse_text).ok()
+                    decode_data_url(&key).and_then(|b| parse_text(b, None)).ok()
                 } else {
                     Some(Arc::from(key.as_str()))
                 };
@@ -196,18 +219,23 @@ pub fn svg(_: &NodeInit) -> Box<dyn NodeImpl> {
         };
         let css = style_arg(&first(inputs, 2)).map(|st| style_css(&st.apply(neutral_style())));
         let rs = raster_scale(scale);
+        let dir_key = dir.as_deref().map(|d| d.to_string_lossy().into_owned());
         let mem_key = vec![
             Key::Str(key.clone()),
             Key::Str(css.clone().unwrap_or_default()),
             super::kn(rs),
+            Key::Str(dir_key.unwrap_or_default()),
         ];
         let svg = raster.get(mem_key, || {
-            Ok(rasterize_svg(&text, css, rs)
-                .ok()
+            Ok(rasterize_svg(&text, css, rs, dir.as_deref())
                 .map(|s| (Arc::new(s.image), s.width, s.height)))
         })?;
-        let Some((image, w, h)) = svg else {
-            return none();
+        let (image, w, h) = match svg {
+            Ok(svg) => svg,
+            Err(e) => {
+                cx.warn(format!("Couldn't read the SVG: {e}"));
+                return none();
+            }
         };
         let mut layer = SceneNode::Image {
             image,

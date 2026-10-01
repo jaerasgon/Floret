@@ -34,6 +34,13 @@ pub trait Host: Send + Sync {
     fn fetch(&self, url: &str) -> Result<Vec<u8>, String> {
         Err(format!("no network access to load {url}"))
     }
+
+    /// The folder relative file paths resolve against: the open patch's.
+    /// `None` (an unsaved patch) leaves them relative to the working
+    /// directory.
+    fn base_dir(&self) -> Option<std::path::PathBuf> {
+        None
+    }
 }
 
 thread_local! {

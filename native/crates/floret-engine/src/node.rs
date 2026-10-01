@@ -87,6 +87,21 @@ impl EvalCtx<'_> {
     pub fn host(&self) -> Option<std::sync::Arc<dyn crate::host::Host>> {
         crate::host::current()
     }
+
+    /// Report a problem on the node (shown like an error) while still
+    /// returning normal outputs, e.g. a failed load.
+    pub fn warn(&self, msg: impl Into<String>) {
+        WARNINGS.with(|w| w.borrow_mut().push(msg.into()));
+    }
+}
+
+thread_local! {
+    static WARNINGS: std::cell::RefCell<Vec<String>> = const { std::cell::RefCell::new(Vec::new()) };
+}
+
+/// Warnings reported since the last call (see [`EvalCtx::warn`]).
+pub(crate) fn take_warnings() -> Vec<String> {
+    WARNINGS.with(|w| std::mem::take(&mut *w.borrow_mut()))
 }
 
 pub type NodeResult = Result<Vec<Spread>, String>;

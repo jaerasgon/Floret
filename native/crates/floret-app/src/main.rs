@@ -28,6 +28,7 @@ mod node_help;
 mod palette;
 mod prefs;
 mod preview;
+mod profiler;
 mod recovery;
 mod shader_panel;
 mod theme;

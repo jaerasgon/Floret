@@ -1,6 +1,6 @@
 //! The app shell's side dock (`src/editor/dock/*`): panels as tabs that
 //! split, stack, float as windows and hide — one Preview per renderer,
-//! Inspector, Help, Library and Shader. The node canvas stays pinned in
+//! Inspector, Help, Library, Shader and Profiler. The node canvas stays pinned in
 //! the centre. A closed panel comes back from the tab bar's `+` menu; the
 //! layout is saved to the app data dir.
 
@@ -28,10 +28,17 @@ pub enum Tab {
     Help,
     Library,
     Shader,
+    Profiler,
 }
 
 /// Panels that can be closed and reopened.
-const PANELS: [Tab; 4] = [Tab::Inspector, Tab::Help, Tab::Library, Tab::Shader];
+const PANELS: [Tab; 5] = [
+    Tab::Inspector,
+    Tab::Help,
+    Tab::Library,
+    Tab::Shader,
+    Tab::Profiler,
+];
 
 fn title(tab: &Tab) -> &'static str {
     match tab {
@@ -40,6 +47,7 @@ fn title(tab: &Tab) -> &'static str {
         Tab::Help => "Help",
         Tab::Library => "Library",
         Tab::Shader => "Shader",
+        Tab::Profiler => "Profiler",
     }
 }
 
@@ -49,7 +57,13 @@ pub fn default_dock() -> DockState<Tab> {
     dock.main_surface_mut().split_below(
         NodeIndex::root(),
         0.56,
-        vec![Tab::Inspector, Tab::Help, Tab::Library, Tab::Shader],
+        vec![
+            Tab::Inspector,
+            Tab::Help,
+            Tab::Library,
+            Tab::Shader,
+            Tab::Profiler,
+        ],
     );
     dock
 }
@@ -129,6 +143,8 @@ pub struct Workspace {
     /// Selected node last frame (a newly selected shader node brings the
     /// Shader tab forward).
     last_selected: Option<String>,
+    /// The Profiler was on screen last frame.
+    profiling: bool,
 }
 
 impl Workspace {
@@ -145,7 +161,13 @@ impl Workspace {
             library: Library::default(),
             saved,
             last_selected: None,
+            profiling: false,
         }
+    }
+
+    /// Whether the engine should time its nodes (the Profiler is showing).
+    pub fn profiling(&self) -> bool {
+        self.profiling
     }
 
     /// Bring the Library (samples and saved patches) forward.
@@ -188,6 +210,7 @@ impl Workspace {
                 .cloned()
                 .collect(),
             reset: false,
+            profiling: false,
         };
         DockArea::new(&mut self.dock)
             .id(egui::Id::new("floret-dock"))
@@ -200,6 +223,7 @@ impl Workspace {
             .window_bounds(ui.ctx().content_rect())
             .show_inside(ui, &mut viewer);
         let (action, add, reset) = (viewer.action.take(), viewer.add.take(), viewer.reset);
+        self.profiling = viewer.profiling;
         shell
             .preview
             .output_window(ui.ctx(), shell.rs, shell.engine, shell.outputs);
@@ -300,6 +324,7 @@ struct Viewer<'s, 'a> {
     /// Panels currently in the dock.
     open: Vec<Tab>,
     reset: bool,
+    profiling: bool,
 }
 
 impl TabViewer for Viewer<'_, '_> {
@@ -327,7 +352,7 @@ impl TabViewer for Viewer<'_, '_> {
 
     fn scroll_bars(&self, tab: &Tab) -> [bool; 2] {
         match tab {
-            Tab::Inspector | Tab::Shader => [false, true],
+            Tab::Inspector | Tab::Shader | Tab::Profiler => [false, true],
             _ => [false, false],
         }
     }
@@ -382,6 +407,11 @@ impl TabViewer for Viewer<'_, '_> {
                 Some(library::Pick::Patch(p)) => self.action = Some(ShellAction::LoadPatch(p)),
                 None => {}
             },
+            Tab::Profiler => {
+                self.profiling = true;
+                let render_ms = sh.preview.render_ms();
+                crate::profiler::ui(ui, sh.engine, sh.patch, sh.view, render_ms);
+            }
             Tab::Shader => {
                 let runtime = sh.preview.shader_errors();
                 if sh

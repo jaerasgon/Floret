@@ -229,6 +229,9 @@ struct RawPort {
     #[serde(default)]
     kind: PortKind,
     label: Option<String>,
+    /// Missing → `None`; an explicit `null` → `Some(Null)` (TS
+    /// `defaultForPort` tells them apart; plain `Option` would merge them).
+    #[serde(default, deserialize_with = "explicit_default")]
     default: Option<serde_json::Value>,
     param: Option<String>,
     #[serde(default)]
@@ -265,6 +268,13 @@ struct RawNode {
     compact: bool,
     #[serde(default)]
     adaptive_type: bool,
+}
+
+fn explicit_default<'de, D>(d: D) -> Result<Option<serde_json::Value>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    serde_json::Value::deserialize(d).map(Some)
 }
 
 impl RawPort {
@@ -325,6 +335,10 @@ mod tests {
         let r = cat.get("render/renderer").unwrap();
         assert_eq!(r.inputs[0].kind, PortKind::Spread);
         assert_eq!(r.inputs[2].param.as_deref(), Some("width"));
+        // An explicit `default: null` is kept (not the type's fallback).
+        let fill = cat.get("style/fill").unwrap();
+        assert!(matches!(fill.inputs[0].default, Some(Value::Null)));
+        assert!(fill.inputs[1].default.is_none());
     }
 
     #[test]

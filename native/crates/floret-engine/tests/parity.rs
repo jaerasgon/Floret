@@ -111,6 +111,13 @@ fn num_eq(a: f64, b: f64) -> bool {
 
 struct Cmp {
     seen: HashSet<(usize, usize)>,
+    /// Non-zero while comparing a `SceneNode::to_value()` result: its lists and
+    /// objects are temporaries whose addresses get reused once freed, so
+    /// they must not be remembered in `seen`.
+    temp: usize,
+    /// Shared by every `$summary` in a frame (memoised values stay alive
+    /// for the whole frame).
+    summ: Summarizer,
 }
 
 impl Cmp {
@@ -132,7 +139,7 @@ impl Cmp {
                     Arc::as_ptr(a) as *const () as usize,
                     Arc::as_ptr(b) as usize,
                 );
-                if !self.seen.insert(key) {
+                if self.temp == 0 && !self.seen.insert(key) {
                     return Ok(());
                 }
                 if a.len() != b.len() {
@@ -145,7 +152,7 @@ impl Cmp {
             }
             (Value::Object(a), Fx::Obj(b)) => {
                 let key = (Arc::as_ptr(a) as usize, Arc::as_ptr(b) as usize);
-                if !self.seen.insert(key) {
+                if self.temp == 0 && !self.seen.insert(key) {
                     return Ok(());
                 }
                 if a.len() != b.len() {
@@ -166,27 +173,27 @@ impl Cmp {
                 if !self.seen.insert(key) {
                     return Ok(());
                 }
-                self.value(&a.to_value(), f, path)
+                self.temp += 1;
+                let r = self.value(&a.to_value(), f, path);
+                self.temp -= 1;
+                r
             }
             // A TS style closure is recorded as its result on NEUTRAL_STYLE.
             (Value::Style(st), Fx::Tag(tag, inner)) if tag == "$style" => {
                 let resolved = scene::style_value(&st.apply(scene::neutral_style()));
                 let mut refs = Vec::new();
-                self.value(
+                self.temp += 1;
+                let r = self.value(
                     &resolved,
                     &decode(inner, &mut refs),
                     &format!("{path}<style>"),
-                )
+                );
+                self.temp -= 1;
+                r
             }
             (_, Fx::Tag(tag, inner)) if tag == "$summary" => {
-                let want: Stats =
-                    serde_json::from_value((**inner).clone()).map_err(|e| e.to_string())?;
-                let got = Summarizer::default().visit(v);
-                if want.matches(&got) {
-                    Ok(())
-                } else {
-                    Err(format!("{path}: summary rust {got:?} vs ts {want:?}"))
-                }
+                let got = self.summ.visit(v);
+                check_summary(inner, &got, path)
             }
             _ => mismatch(),
         }
@@ -208,6 +215,15 @@ impl Cmp {
             }
         }
         Ok(())
+    }
+}
+
+fn check_summary(want: &J, got: &Stats, path: &str) -> Result<(), String> {
+    let want: Stats = serde_json::from_value(want.clone()).map_err(|e| e.to_string())?;
+    if want.matches(got) {
+        Ok(())
+    } else {
+        Err(format!("{path}: summary rust {got:?} vs ts {want:?}"))
     }
 }
 
@@ -249,6 +265,9 @@ impl Stats {
 #[derive(Default)]
 struct Summarizer {
     memo: HashMap<usize, Stats>,
+    /// Scene nodes per kind already cross-checked against `to_value()`.
+    checked: HashMap<&'static str, usize>,
+    styles_checked: usize,
 }
 
 impl Summarizer {
@@ -265,9 +284,16 @@ impl Summarizer {
     }
 
     fn visit(&mut self, v: &Value) -> Stats {
+        self.visit_in(v, false)
+    }
+
+    /// `temp`: `v` is inside a `SceneNode::to_value()` result, whose lists
+    /// and objects are freed (and their addresses reused) right after, so
+    /// only scene nodes are memoised there.
+    fn visit_in(&mut self, v: &Value, temp: bool) -> Stats {
         let key = match v {
-            Value::List(a) => Some(Arc::as_ptr(a) as *const () as usize),
-            Value::Object(a) => Some(Arc::as_ptr(a) as usize),
+            Value::List(a) if !temp => Some(Arc::as_ptr(a) as *const () as usize),
+            Value::Object(a) if !temp => Some(Arc::as_ptr(a) as usize),
             Value::Scene(a) => Some(Arc::as_ptr(a) as usize),
             _ => None,
         };
@@ -297,7 +323,7 @@ impl Summarizer {
             Value::List(items) => {
                 s.objects = 1.0;
                 for x in items.iter() {
-                    s.add(&self.visit(x));
+                    s.add(&self.visit_in(x, temp));
                 }
             }
             Value::Object(m) => {
@@ -306,10 +332,10 @@ impl Summarizer {
                     s.kinds.insert(k.to_string(), 1.0);
                 }
                 for x in m.values() {
-                    s.add(&self.visit(x));
+                    s.add(&self.visit_in(x, temp));
                 }
             }
-            Value::Scene(n) => s = self.visit(&n.to_value()),
+            Value::Scene(n) => s = self.scene(n),
             // Functions are leaves; undefined / null / booleans carry nothing.
             _ => {}
         }
@@ -317,6 +343,189 @@ impl Summarizer {
             self.memo.insert(k, s.clone());
         }
         s
+    }
+
+    /// Stats of `n.to_value()`, computed without building it (a walker
+    /// cluster is ~10⁶ shapes per frame). The first few nodes of each kind,
+    /// and the first few styles, are cross-checked against the generic walk
+    /// of `to_value()` / `style_value()`.
+    fn scene(&mut self, n: &scene::SceneNode) -> Stats {
+        let mut s = Stats::default();
+        self.scene_into(n, &mut s);
+        let checked = self.checked.entry(n.kind()).or_default();
+        if *checked < 8 {
+            *checked += 1;
+            let generic = self.visit_in(&n.to_value(), true);
+            assert!(
+                generic.matches(&s) && generic.objects == s.objects,
+                "summary of {} drifted from to_value(): {s:?} vs {generic:?}",
+                n.kind()
+            );
+        }
+        s
+    }
+
+    /// Adds `n`'s stats to `acc`. Leaf shapes accumulate in place (no
+    /// per-shape `Stats`); groups go through `visit`, so shared subtrees
+    /// are memoised.
+    fn scene_into(&mut self, n: &scene::SceneNode, acc: &mut Stats) {
+        use scene::SceneNode as S;
+        fn nums(acc: &mut Stats, xs: &[f64]) {
+            for &x in xs {
+                acc.numbers += 1.0;
+                if x.is_finite() {
+                    acc.sum += x;
+                    acc.abs += x.abs();
+                }
+            }
+        }
+        acc.objects += 1.0;
+        acc.strings += 1.0; // kind
+        match acc.kinds.get_mut(n.kind()) {
+            Some(k) => *k += 1.0,
+            None => {
+                acc.kinds.insert(n.kind().to_owned(), 1.0);
+            }
+        }
+        let style = match n {
+            S::Rect {
+                x, y, w, h, style, ..
+            }
+            | S::Ellipse {
+                x, y, w, h, style, ..
+            } => {
+                nums(acc, &[*x, *y, *w, *h]);
+                acc.strings += 1.0; // mode
+                style
+            }
+            S::Line {
+                x1,
+                y1,
+                x2,
+                y2,
+                style,
+            } => {
+                nums(acc, &[*x1, *y1, *x2, *y2]);
+                style
+            }
+            S::Arc {
+                x,
+                y,
+                w,
+                h,
+                start,
+                stop,
+                style,
+                ..
+            } => {
+                nums(acc, &[*x, *y, *w, *h, *start, *stop]);
+                acc.strings += 1.0; // mode
+                style
+            }
+            S::Triangle { pts, style } => {
+                nums(acc, pts);
+                style
+            }
+            S::Quad { pts, style } => {
+                nums(acc, pts);
+                style
+            }
+            S::Point { x, y, style } => {
+                nums(acc, &[*x, *y]);
+                style
+            }
+            S::Polygon {
+                points,
+                style,
+                tension,
+                ..
+            } => {
+                acc.objects += 1.0 + points.len() as f64;
+                for p in points.iter() {
+                    nums(acc, &[p.x, p.y]);
+                }
+                if let Some(t) = tension {
+                    nums(acc, &[*t]);
+                }
+                style
+            }
+            S::Text { x, y, style, .. } => {
+                nums(acc, &[*x, *y]);
+                acc.strings += 1.0; // text
+                style
+            }
+            S::Group {
+                children,
+                transform,
+                blend_mode,
+                clip,
+            } => {
+                acc.objects += 1.0; // children array
+                for c in children.iter() {
+                    if matches!(**c, S::Group { .. }) {
+                        let cs = self.visit(&Value::Scene(c.clone()));
+                        acc.add(&cs);
+                    } else {
+                        self.scene_into(c, acc);
+                    }
+                }
+                if let Some(t) = transform {
+                    acc.objects += 1.0;
+                    nums(acc, t);
+                }
+                if blend_mode.is_some() {
+                    acc.strings += 1.0;
+                }
+                if let Some(c) = clip {
+                    acc.objects += 1.0;
+                    nums(acc, &[c.x, c.y, c.w, c.h]);
+                }
+                return;
+            }
+            // A variant this summary doesn't know: walk its JS shape.
+            _ => {
+                // Undo the header counted above; the generic walk counts it.
+                acc.objects -= 1.0;
+                acc.strings -= 1.0;
+                *acc.kinds.get_mut(n.kind()).unwrap() -= 1.0;
+                acc.kinds.retain(|_, v| *v != 0.0);
+                let g = self.visit_in(&n.to_value(), true);
+                acc.add(&g);
+                return;
+            }
+        };
+        // `style_value(style)`: one object, 5 numbers, 10 strings + paints.
+        let before = (acc.objects, acc.numbers, acc.sum, acc.abs, acc.strings);
+        acc.objects += 1.0;
+        acc.strings += 10.0
+            + f64::from(u8::from(style.fill.is_some()))
+            + f64::from(u8::from(style.stroke.is_some()));
+        nums(
+            acc,
+            &[
+                style.stroke_weight,
+                style.blur,
+                style.font_size,
+                style.letter_spacing,
+                style.line_height,
+            ],
+        );
+        if self.styles_checked < 8 {
+            self.styles_checked += 1;
+            let g = self.visit_in(&scene::style_value(style), true);
+            let mine = Stats {
+                objects: acc.objects - before.0,
+                numbers: acc.numbers - before.1,
+                sum: acc.sum - before.2,
+                abs: acc.abs - before.3,
+                strings: acc.strings - before.4,
+                ..Default::default()
+            };
+            assert!(
+                g.matches(&mine) && g.objects == mine.objects,
+                "style summary drifted from style_value(): {mine:?} vs {g:?}"
+            );
+        }
     }
 }
 
@@ -513,6 +722,8 @@ fn compare_frame(
     let g = &engine.graph;
     let mut cmp = Cmp {
         seen: HashSet::new(),
+        temp: 0,
+        summ: Summarizer::default(),
     };
     for (id, ts_ports) in ts_outputs.iter() {
         let Some(idx) = g.idx(id) else {
@@ -543,6 +754,17 @@ fn compare_frame(
             }
             (Some(rs), Fx::Arr(ts)) => {
                 Err(format!("port count rust {} vs ts {}", rs.len(), ts.len()))
+            }
+            // A huge output is summarised as a whole (all ports together).
+            (Some(rs), Fx::Tag(tag, want)) if tag == "$summary" => {
+                let mut got = Stats {
+                    objects: 1.0,
+                    ..Default::default()
+                };
+                for port in rs.iter() {
+                    got.add(&cmp.summ.visit(&Value::List(port.clone())));
+                }
+                check_summary(want, &got, "out")
             }
             (Some(_), other) => Err(format!("unexpected ts shape {}", short_fx(other))),
         };

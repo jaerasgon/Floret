@@ -24,7 +24,7 @@ use std::sync::Arc;
 /// A spread element: the fixture encoding plus the two input tags.
 fn decode(j: &J) -> Value {
     if let Some(c) = j.get("$fill") {
-        let paint = super::super::style::paint_of(&Value::from_json(c));
+        let paint = super::super::style::paint_of(&Value::from_json(c)).unwrap();
         return Value::Style(Style::chain(None, [StyleOp::Fill(Some(paint))]));
     }
     if let Some(p) = j.get("$point") {
@@ -83,6 +83,10 @@ fn same(a: &J, b: &J) -> bool {
 }
 
 fn run(ty: &str, params: &Params, inputs: &[Spread]) -> Vec<Spread> {
+    try_run(ty, params, inputs).unwrap_or_else(|e| panic!("{ty}: {e}"))
+}
+
+fn try_run(ty: &str, params: &Params, inputs: &[Spread]) -> Result<Vec<Spread>, String> {
     let cat = Catalogue::builtin();
     let spec = cat.get(ty).unwrap_or_else(|| panic!("{ty} in catalogue"));
     let resolved = cat.resolved_inputs(spec, params);
@@ -104,7 +108,6 @@ fn run(ty: &str, params: &Params, inputs: &[Spread]) -> Vec<Spread> {
         saved_params: params,
     };
     node.eval(inputs, &mut cx)
-        .unwrap_or_else(|e| panic!("{ty}: {e}"))
 }
 
 #[test]
@@ -145,5 +148,79 @@ fn matches_typescript_cases() {
         "{} mismatches:\n{}",
         failures.len(),
         failures.join("\n")
+    );
+}
+
+/// Where TS throws (and so emits nothing), the Rust node errors. Expected
+/// values recorded from the TS nodes.
+#[test]
+fn colour_and_font_edge_cases_match_typescript() {
+    let eval = |ty: &str, inputs: Vec<Vec<J>>| {
+        let inputs: Vec<Spread> = inputs
+            .iter()
+            .map(|s| Arc::from(s.iter().map(decode).collect::<Vec<_>>()))
+            .collect();
+        try_run(ty, &Params::default(), &inputs)
+    };
+    let pts = vec![json!({"x": 0, "y": 0}), json!({"x": 1, "y": 1})];
+    let path_stroke = |color: J| -> Result<J, String> {
+        let out = eval(
+            "draw/path",
+            vec![
+                pts.clone(),
+                vec![color],
+                vec![json!(2)],
+                vec![json!(0)],
+                vec![],
+            ],
+        )?;
+        Ok(encode(&out[0][0])["style"]["stroke"].clone())
+    };
+    // `a` missing / not a number → `a.toFixed` throws.
+    assert!(path_stroke(json!({"r": 1, "g": 0, "b": 0})).is_err());
+    assert!(path_stroke(json!(5)).is_err());
+    // `a >= 1` coerces; `clamp01` returns 0 for anything < 0.
+    for (a, want) in [
+        (json!("1"), "rgb(255,0,0)"),
+        (json!(true), "rgb(255,0,0)"),
+        (json!("-2"), "rgba(255,0,0,0.000)"),
+    ] {
+        let c = json!({"r": 1, "g": 0, "b": 0, "a": a});
+        assert_eq!(path_stroke(c), Ok(json!(want)), "a = {a}");
+    }
+    assert!(eval("style/fill", vec![vec![json!(5)], vec![]]).is_err());
+    let stroke = |c: J| {
+        eval(
+            "style/stroke",
+            vec![vec![c], vec![json!(2)], vec![json!("center")], vec![J::Null]],
+        )
+    };
+    let out = stroke(json!({"r": "0.5", "g": null, "b": 0, "a": "5"})).unwrap();
+    assert_eq!(
+        encode(&out[0][0])["$style"]["stroke"],
+        json!("rgb(128,0,0)")
+    );
+    assert!(stroke(json!("red")).is_err());
+    let text_params = |font: J| {
+        let mut inputs = vec![vec![font]];
+        for v in [
+            json!(false),
+            json!(false),
+            json!("left"),
+            json!("alphabetic"),
+            json!(0),
+            json!(1.2),
+            J::Null,
+        ] {
+            inputs.push(vec![v]);
+        }
+        eval("style/text-params", inputs)
+    };
+    assert!(text_params(json!(5)).is_err());
+    // JS `trim` strips the BOM but not U+0085.
+    let out = text_params(json!("\u{feff} Inter \u{85}")).unwrap();
+    assert_eq!(
+        encode(&out[0][0])["$style"]["fontFamily"],
+        json!("Inter \u{85}")
     );
 }

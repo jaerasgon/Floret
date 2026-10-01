@@ -251,7 +251,7 @@ fn path(_: &NodeInit) -> Box<dyn NodeImpl> {
         let tension = num_or(3, 0.0).clamp(0.0, 1.0);
         let widths = numbers_of(inputs, 4);
         let stroke = if color_in.truthy() {
-            paint_of(&color_in)
+            paint_of(&color_in)?
         } else {
             Paint::css("#000000")
         };

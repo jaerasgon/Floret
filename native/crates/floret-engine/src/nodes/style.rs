@@ -40,20 +40,42 @@ pub(crate) fn style_arg(v: &Value) -> Option<&Style> {
 }
 
 /// `colorToCss(c)` on whatever arrived on a colour wire. Non-`Color`
-/// objects read their `r/g/b/a` fields like JS would (missing → NaN).
-pub(crate) fn paint_of(v: &Value) -> Paint {
-    match v {
-        Value::Color(c) => Paint::from_color(*c),
+/// values read their `r/g/b/a` fields like JS would (missing → NaN).
+///
+/// Errors where TS throws: reading a field of `null` / `undefined`, and
+/// `a.toFixed(3)` when the clamped alpha is not a number (`clamp01` passes
+/// a non-number through unless it compares < 0 or > 1; `a >= 1` coerces).
+pub(crate) fn paint_of(v: &Value) -> Result<Paint, String> {
+    let c = match v {
+        Value::Color(c) => *c,
+        Value::Undefined | Value::Null => {
+            return Err(format!("Cannot read properties of {v:?} (reading 'r')"));
+        }
         other => {
             let ch = |k: &str| other.get(k).to_number();
-            Paint::from_color(Color {
+            let a = match other.get("a") {
+                Value::Num(a) => a,
+                a => {
+                    let n = a.to_number();
+                    if n < 0.0 {
+                        0.0
+                    } else if n >= 1.0 {
+                        // `> 1` clamps to 1; `== 1` stays raw but `>= 1` holds.
+                        1.0
+                    } else {
+                        return Err("a.toFixed is not a function".into());
+                    }
+                }
+            };
+            Color {
                 r: ch("r"),
                 g: ch("g"),
                 b: ch("b"),
-                a: ch("a"),
-            })
+                a,
+            }
         }
-    }
+    };
+    Ok(Paint::from_color(c))
 }
 
 /// `(v as string) ?? fallback` for the string-valued style fields.
@@ -107,7 +129,7 @@ fn fill(_: &NodeInit) -> Box<dyn NodeImpl> {
         let wired = first(inputs, 0);
         let base = first(inputs, 1);
         let paint = if wired.truthy() {
-            paint_of(&wired)
+            paint_of(&wired)?
         } else {
             // A legacy multi-mode Fill (params.mode set) replays its colour.
             let mode = cx.param("mode").map(Value::from_json);
@@ -134,7 +156,7 @@ fn stroke(init: &NodeInit) -> Box<dyn NodeImpl> {
         let paint = if args[0].is_nullish() {
             Paint::from_color(Color::BLACK)
         } else {
-            paint_of(&args[0])
+            paint_of(&args[0])?
         };
         let w = args[1].to_number();
         let align = match &args[2] {
@@ -212,6 +234,12 @@ fn stroke_join(init: &NodeInit) -> Box<dyn NodeImpl> {
 
 // ─── style/text-params ───────────────────────────────────────────────────────
 
+/// `String.prototype.trim`: JS whitespace is Unicode White_Space minus
+/// U+0085, plus the BOM.
+fn js_trim(s: &str) -> &str {
+    s.trim_matches(|c: char| (c.is_whitespace() && c != '\u{85}') || c == '\u{feff}')
+}
+
 /// `Number(v) || fallback`.
 fn number_or(v: &Value, fallback: f64) -> f64 {
     let n = v.to_number();
@@ -225,10 +253,11 @@ fn number_or(v: &Value, fallback: f64) -> f64 {
 fn text_params(init: &NodeInit) -> Box<dyn NodeImpl> {
     scalar(init, |args| {
         // `((font as string) || 'sans-serif').trim() || 'sans-serif'`
+        // A truthy non-string has no `.trim` (TS throws).
         let family = match &args[0] {
             v if !v.truthy() => "sans-serif".to_owned(),
-            Value::Str(s) => s.trim().to_owned(),
-            other => js_string(other).trim().to_owned(),
+            Value::Str(s) => js_trim(s).to_owned(),
+            _ => return Err("font.trim is not a function".into()),
         };
         let family = if family.is_empty() {
             "sans-serif".to_owned()

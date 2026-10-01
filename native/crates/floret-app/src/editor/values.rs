@@ -48,7 +48,31 @@ fn param_row_kind(spec: &NodeSpec, key: &str, default: &Json) -> Option<FieldKin
     if let Some(opts) = spec.param_options.get(key) {
         return Some(FieldKind::Select(opts.clone()));
     }
+    // Device nodes: a live device dropdown and their numeric settings.
+    if let Some(opts) = crate::devices::options(&spec.ty, key) {
+        return Some(FieldKind::Select(opts));
+    }
+    if DEVICE_NUMBERS.contains(&(spec.ty.as_str(), key)) {
+        return Some(FieldKind::Number { integer: true });
+    }
     (key == "slot" && default.is_number()).then_some(FieldKind::Number { integer: true })
+}
+
+const DEVICE_NUMBERS: &[(&str, &str)] = &[
+    ("input/midi-cc", "channel"),
+    ("input/midi-cc", "cc"),
+    ("input/midi-note", "channel"),
+    ("input/landmarks", "count"),
+    ("input/landmarks", "person"),
+];
+
+/// How a dropdown shows an option (`""` is a device node's default).
+pub fn option_label(o: &str) -> &str {
+    if o.is_empty() {
+        "Default"
+    } else {
+        o
+    }
 }
 
 /// Left column of a generic node: pure-param rows, then inputs.
@@ -530,6 +554,25 @@ mod tests {
         assert!(left_items(cat, add, &node("a", "math/add"))
             .iter()
             .all(|i| matches!(i, LeftItem::Input(_))));
+    }
+
+    #[test]
+    fn device_nodes_get_device_and_number_rows() {
+        let cat = Catalogue::builtin();
+        let spec = cat.get("input/midi-cc").unwrap();
+        let rows: Vec<(String, FieldKind)> = left_items(cat, spec, &node("m", "input/midi-cc"))
+            .into_iter()
+            .filter_map(|i| match i {
+                LeftItem::Param { key, kind } => Some((key, kind)),
+                LeftItem::Input(_) => None,
+            })
+            .collect();
+        let kind = |k: &str| rows.iter().find(|r| r.0 == k).map(|r| r.1.clone());
+        // The default ("" = any device) always heads the device list.
+        assert!(matches!(kind("device"), Some(FieldKind::Select(o)) if o[0].is_empty()));
+        assert_eq!(kind("cc"), Some(FieldKind::Number { integer: true }));
+        assert_eq!(option_label(""), "Default");
+        assert_eq!(option_label("Keys"), "Keys");
     }
 
     #[test]

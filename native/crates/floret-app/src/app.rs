@@ -11,8 +11,8 @@ use crate::files::{self, Document, Origin};
 use crate::menu::{self, Command, MenuState};
 use crate::prefs::{Prefs, PrefsWindow, Startup};
 use crate::{
-    audio, bus, canvas, crash, editor, help, host, palette, preview, recovery, shader_panel, theme,
-    welcome, workspace, SAMPLES,
+    audio, bus, canvas, crash, devices, editor, help, host, palette, preview, recovery,
+    shader_panel, theme, welcome, workspace, SAMPLES,
 };
 use eframe::egui::{self, Align, Layout, RichText};
 use floret_engine::patch::PatchFile;
@@ -102,6 +102,7 @@ impl App {
     pub fn new(cc: &eframe::CreationContext<'_>, launch: Launch) -> App {
         let prefs = Prefs::load();
         theme::apply(&cc.egui_ctx, prefs.theme.egui());
+        devices::install();
         cc.egui_ctx.options_mut(|o| o.zoom_with_keyboard = false);
         cc.egui_ctx.set_zoom_factor(prefs.ui_scale);
         let gpu_name = cc.wgpu_render_state.as_ref().map_or_else(

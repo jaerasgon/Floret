@@ -3,9 +3,9 @@ name: native
 on:
   push:
     branches: [main]
-    paths: ['native/**', '.github/workflows/native.yml']
+    paths: ['native/**', 'public/mediapipe/models/**', '.github/workflows/native.yml']
   pull_request:
-    paths: ['native/**', '.github/workflows/native.yml']
+    paths: ['native/**', 'public/mediapipe/models/**', '.github/workflows/native.yml']
 
 concurrency:
   group: native-${{ github.ref }}
@@ -31,7 +31,9 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: native
-      - name: Install ALSA headers (cpal)
+      # ALSA for cpal (audio) and midir (MIDI); nokhwa's V4L2 bindings only
+      # need the kernel headers and libclang, both preinstalled.
+      - name: Linux system deps
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libasound2-dev
       - name: Format
@@ -63,7 +65,9 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: native
-      - name: Install ALSA headers (cpal)
+      # ALSA for cpal (audio) and midir (MIDI); nokhwa's V4L2 bindings only
+      # need the kernel headers and libclang, both preinstalled.
+      - name: Linux system deps
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libasound2-dev
       - name: Build release

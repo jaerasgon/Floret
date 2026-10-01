@@ -5,11 +5,19 @@
      as the bundle's Info.plist once the app ships as a .app. -->
 <plist version="1.0">
 <dict>
+	<key>CFBundleIdentifier</key>
+	<string>app.floret.Floret</string>
 	<key>CFBundleName</key>
 	<string>Floret</string>
 	<key>CFBundleExecutable</key>
 	<string>floret</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Floret uses the microphone when a patch's AudioIn node is started.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Floret uses the camera for the Camera and Landmarks nodes in your patches. Video stays on this computer.</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
 </dict>
 </plist>

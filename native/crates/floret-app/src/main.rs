@@ -16,6 +16,7 @@ mod audio;
 mod bus;
 mod canvas;
 mod crash;
+mod devices;
 mod editor;
 mod export;
 mod files;

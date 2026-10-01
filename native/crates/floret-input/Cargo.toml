@@ -1,0 +1,22 @@
+[package]
+name = "floret-input"
+description = "Floret device input: MIDI (midir), camera capture (nokhwa) and hand / face / pose tracking (MediaPipe models on a built-in TFLite interpreter)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+floret-engine = { path = "../floret-engine" }
+indexmap.workspace = true
+matrixmultiply = "0.3"
+midir = "0.11"
+# Native backends only (AVFoundation / Media Foundation / V4L2); frames are
+# decoded here (`camera.rs`), so no C JPEG library is pulled in.
+nokhwa = { version = "0.10", default-features = false, features = ["input-native"] }
+# MJPEG camera frames (already in the tree through floret-engine).
+image = { version = "0.25", default-features = false, features = ["jpeg"] }
+
+[dev-dependencies]
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }

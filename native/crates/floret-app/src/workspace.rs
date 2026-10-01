@@ -405,6 +405,9 @@ fn inspector(ui: &mut egui::Ui, sh: &mut Shell) {
     if let Some(d) = spec.and_then(|s| s.description.as_ref()) {
         ui.label(RichText::new(d).color(theme::FG_1));
     }
+    if let Some(s) = crate::devices::status(&n.def_type) {
+        ui.label(RichText::new(s).color(*theme::FG_2));
+    }
     if let (Some(engine), Some(spec)) = (sh.engine, spec) {
         if let Some(out) = engine
             .graph

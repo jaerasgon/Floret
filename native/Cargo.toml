@@ -23,3 +23,7 @@ debug = false
 # The audio thread's DSP has to keep up in debug builds too.
 [profile.dev.package.floret-media]
 opt-level = 3
+
+# Landmark tracking runs neural nets; unoptimised it's far too slow to use.
+[profile.dev.package.floret-input]
+opt-level = 3

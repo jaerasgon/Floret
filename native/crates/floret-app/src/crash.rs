@@ -1,6 +1,7 @@
 //! Crash screen (#48): a panic in the engine tick or the preview render
 //! doesn't close the app. The frame is abandoned, evaluation pauses, the
-//! patch is written to a recovery file, and a dialog shows the error with
+//! patch is written to a recovery file (offered again on the next launch
+//! if the app then dies, see `recovery.rs`), and a dialog shows the error with
 //! Copy details / Save patch as… / Reload patch / Continue.
 //!
 //! A panic hook records the message, location and backtrace of each panic
@@ -169,7 +170,7 @@ impl Guard {
             );
             ui.add_space(8.0);
             egui::Frame::new()
-                .fill(theme::BG_0)
+                .fill(*theme::BG_0)
                 .corner_radius(4)
                 .inner_margin(8)
                 .show(ui, |ui| {
@@ -278,44 +279,29 @@ fn test_panic(stage: Stage) {
 }
 
 fn patch_name(patch: &PatchFile) -> String {
-    let name = patch
-        .meta
-        .as_ref()
-        .and_then(|m| m.name.as_deref())
-        .unwrap_or("untitled");
-    let mut slug = String::new();
-    for c in name.chars() {
-        if c.is_ascii_alphanumeric() || "._-".contains(c) {
-            slug.push(c.to_ascii_lowercase());
-        } else if !slug.ends_with('-') {
-            slug.push('-');
-        }
-    }
-    slug
+    crate::files::slug(
+        patch
+            .meta
+            .as_ref()
+            .and_then(|m| m.name.as_deref())
+            .unwrap_or("untitled"),
+    )
 }
 
-/// Write the patch to `<temp>/floret-recovery/<name>-<unix time>.flora`.
+/// Write a recovery copy next to the autosaves (see [`crate::recovery`]);
+/// it's offered on the next launch if the app doesn't exit cleanly.
 fn save_recovery(patch: &PatchFile) -> Result<PathBuf, String> {
-    let dir = std::env::temp_dir().join("floret-recovery");
-    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    let secs = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map_or(0, |d| d.as_secs());
-    let path = dir.join(format!("{}-{secs}.flora", patch_name(patch)));
-    let json = panic::catch_unwind(AssertUnwindSafe(|| patch.to_json()))
-        .map_err(|_| "the patch couldn't be serialised".to_owned())?;
-    std::fs::write(&path, json).map_err(|e| e.to_string())?;
-    Ok(path)
+    crate::recovery::write_crash_copy(patch)
 }
 
 /// Native Save dialog for the patch (TS `suggestedFilename`). Returns a note.
 fn save_as(patch: &PatchFile) -> Option<String> {
     let path = rfd::FileDialog::new()
         .set_title("Save patch as")
-        .add_filter("Floret patch", &["flora"])
+        .add_filter("Floret patch", &[crate::files::EXTENSION])
         .set_file_name(format!("{}.flora", patch_name(patch)))
         .save_file()?;
-    Some(match std::fs::write(&path, patch.to_json()) {
+    Some(match crate::files::save(patch, &path) {
         Ok(()) => format!("Saved to {}", path.display()),
         Err(e) => format!("Couldn't save: {e}"),
     })
@@ -350,6 +336,7 @@ mod tests {
             .unwrap()
             .starts_with("my-sketch-"));
         assert!(PatchFile::load(&std::fs::read_to_string(saved).unwrap()).is_ok());
+        let _ = std::fs::remove_file(saved.with_extension("json"));
         let _ = std::fs::remove_file(saved);
     }
 }

@@ -25,3 +25,12 @@ png = "0.18"
 pollster = "1"
 # io/image-url over http(s) (the engine's host fetcher, see src/host.rs).
 ureq = { version = "3", default-features = false, features = ["rustls"] }
+serde.workspace = true
+# Paste from the Edit menu (already in the tree through egui-winit).
+arboard = { version = "3", default-features = false }
+
+# Native menu bar (macOS, Windows). Linux uses an egui menu bar: muda needs
+# a GTK window there and winit doesn't create one.
+[target.'cfg(any(target_os = "macos", target_os = "windows"))'.dependencies]
+muda = { version = "0.21", default-features = false }
+raw-window-handle = "0.6"

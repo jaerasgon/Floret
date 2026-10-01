@@ -193,7 +193,7 @@ impl PreviewPanel {
                     egui::Align2::CENTER_CENTER,
                     "No GPU renderer available",
                     egui::FontId::proportional(12.0),
-                    theme::FG_2,
+                    *theme::FG_2,
                 );
             }
         }

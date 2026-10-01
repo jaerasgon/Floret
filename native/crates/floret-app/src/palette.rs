@@ -114,7 +114,7 @@ fn item(
         Align2::LEFT_CENTER,
         &s.label,
         FontId::proportional(13.0),
-        if armed { GOLD } else { FG_0 },
+        if armed { *GOLD } else { *FG_0 },
     );
     if resp.hovered() || armed {
         p.text(
@@ -122,7 +122,7 @@ fn item(
             Align2::RIGHT_CENTER,
             if armed { "draw on canvas…" } else { &s.ty },
             FontId::monospace(10.0),
-            FG_2,
+            *FG_2,
         );
     }
     if fav || star_resp.hovered() || resp.hovered() {
@@ -131,7 +131,7 @@ fn item(
             Align2::CENTER_CENTER,
             if fav { "★" } else { "☆" },
             FontId::proportional(13.0),
-            if fav { GOLD } else { FG_1 },
+            if fav { *GOLD } else { *FG_1 },
         );
     }
     if star_resp.clicked() {

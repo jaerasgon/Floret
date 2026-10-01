@@ -563,21 +563,21 @@
     {
       "id": "shader-plasma",
       "name": "Shader · Plasma",
-      "category": "Nature",
+      "category": "Shaders",
       "description": "A generative GPU fragment shader (gpu/shader) — a classic animated plasma driven by iTime, with a `scale` uniform steered by a slider. Select the node and edit the GLSL in the side panel.",
       "file": "shader-plasma.flora"
     },
     {
       "id": "shader-feedback",
       "name": "Shader · Feedback Ripples",
-      "category": "Nature",
+      "category": "Shaders",
       "description": "A self-feedback fragment shader: each frame diffuses + fades its previous output (iChannel1) and injects a moving source — reaction-diffusion-style ripples that accumulate. Shows the GPU feedback buffer.",
       "file": "shader-feedback.flora"
     },
     {
       "id": "shader-reaction-diffusion",
       "name": "Shader · Reaction-Diffusion",
-      "category": "Nature",
+      "category": "Shaders",
       "description": "Gray-Scott reaction-diffusion on a multi-buffer shader: Buffer A holds the chemical field (reads its own previous frame), the Image pass colour-maps it. The canonical multi-pass GPU case — give it a few seconds to bloom.",
       "file": "shader-reaction-diffusion.flora"
     },

@@ -50,8 +50,9 @@ enum Gesture {
         duplicated: bool,
         moved: bool,
     },
-    /// Dragging a new wire out of a pin.
-    Wire { from: PinRef },
+    /// Dragging a new wire out of a pin; `alt` = Alt held while dragging
+    /// (drop → probe).
+    Wire { from: PinRef, alt: bool },
     /// Box-select from `origin`; `base` is the selection kept (shift).
     Marquee { origin: Pos2, base: Vec<String> },
     Pan,
@@ -643,7 +644,10 @@ pub fn show(
         if let Some(start) = start {
             if let Some(pin) = hits.pin(start, PIN_HIT, None) {
                 view.selected_edge = None;
-                view.gesture = Gesture::Wire { from: pin };
+                view.gesture = Gesture::Wire {
+                    from: pin,
+                    alt: mods.alt,
+                };
             } else if let Some(id) = hits.node(start) {
                 if !view.is_selected(&id) {
                     if mods.shift {
@@ -736,13 +740,14 @@ pub fn show(
                     view.selection = sel;
                 }
             }
-            Gesture::Wire { .. } | Gesture::None => {}
+            Gesture::Wire { alt, .. } => *alt = mods.alt,
+            Gesture::None => {}
         }
     }
 
     // Wire-drag affinity: which pins would accept the dragged wire.
     let affinity: Option<(PinRef, Vec<(PinRef, Pos2, bool)>)> = match &view.gesture {
-        Gesture::Wire { from } => Some((
+        Gesture::Wire { from, .. } => Some((
             from.clone(),
             hits.all_pins()
                 .into_iter()
@@ -776,7 +781,7 @@ pub fn show(
                     view.history.push(patch, None);
                 }
             }
-            Gesture::Wire { from } => {
+            Gesture::Wire { from, alt } => {
                 if let Some(p) = pointer {
                     if let Some(to) = drop_target(p) {
                         if let Some(c) = conn_between(&from, &to) {
@@ -784,7 +789,7 @@ pub fn show(
                         }
                     } else if hits.node(p).is_none() && hits.pin(p, PIN_HIT, None).is_none() {
                         let at = view.to_canvas(p);
-                        if mods.alt {
+                        if alt || mods.alt {
                             actions.push(Action::Probe { from, at });
                         } else {
                             view.search = Some(SearchState::new(
@@ -1390,7 +1395,7 @@ fn menu_items(
 /// "⌘V" on macOS, "Ctrl+V" elsewhere.
 fn shortcut(k: &str) -> &'static str {
     let mac = cfg!(target_os = "macos");
-    let s = match (mac, k) {
+    match (mac, k) {
         (true, "V") => "⌘V",
         (true, "A") => "⌘A",
         (true, "Z") => "⌘Z",
@@ -1406,8 +1411,7 @@ fn shortcut(k: &str) -> &'static str {
         (false, "C") => "Ctrl+C",
         (false, "X") => "Ctrl+X",
         _ => "",
-    };
-    s
+    }
 }
 
 fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View) {
@@ -1487,9 +1491,8 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             }
         }
         Action::Connect(c) => {
-            if let Some(id) = connect::connect(patch, cat, &c) {
+            if connect::connect(patch, cat, &c).is_some() {
                 view.selected_edge = None;
-                let _ = id;
                 view.commit(patch);
             }
         }

@@ -99,12 +99,10 @@ impl History {
         patch.edges = e.edges.clone();
     }
 
-    pub fn len(&self) -> usize {
+    /// Number of undo states held (including the current one).
+    #[cfg(test)]
+    pub fn depth(&self) -> usize {
         self.past.len()
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.past.is_empty()
     }
 }
 
@@ -146,18 +144,18 @@ mod tests {
         h.push_at(&p, Some("a.value"), t0);
         set_value(&mut p, 2.0);
         h.push_at(&p, Some("a.value"), t0 + Duration::from_millis(100));
-        assert_eq!(h.len(), 2, "rapid edits on one key merge");
+        assert_eq!(h.depth(), 2, "rapid edits on one key merge");
         // A different key, or a pause, makes a new step.
         set_value(&mut p, 3.0);
         h.push_at(&p, Some("a.value"), t0 + Duration::from_millis(500));
-        assert_eq!(h.len(), 3);
+        assert_eq!(h.depth(), 3);
         set_value(&mut p, 4.0);
         h.push_at(&p, Some("a.other"), t0 + Duration::from_millis(520));
-        assert_eq!(h.len(), 4);
+        assert_eq!(h.depth(), 4);
         // Structural pushes never merge.
         h.push_at(&p, None, t0 + Duration::from_millis(530));
         h.push_at(&p, None, t0 + Duration::from_millis(531));
-        assert_eq!(h.len(), 6);
+        assert_eq!(h.depth(), 6);
         h.undo(&mut p);
         h.undo(&mut p);
         h.undo(&mut p);
@@ -189,6 +187,6 @@ mod tests {
             p.nodes.push(node(&format!("n{i}"), "value/number"));
             h.push(&p, None);
         }
-        assert_eq!(h.len(), MAX_HISTORY);
+        assert_eq!(h.depth(), MAX_HISTORY);
     }
 }

@@ -111,7 +111,7 @@ mod tests {
         assert!(layers.iter().all(|s| s.ty != "time/seconds"));
         // Multi-token match + prefix-first ordering.
         let r = search(cat, "add", &Fit::Any);
-        assert_eq!(r[0].label.to_lowercase().starts_with("add"), true);
+        assert!(r[0].label.to_lowercase().starts_with("add"));
         assert!(search(cat, "zzzz-nothing", &Fit::Any).is_empty());
     }
 
@@ -129,6 +129,24 @@ mod tests {
         for s in &r {
             assert!(insertion_ports(cat, s, PortType::Number, PortType::Vec2).is_some());
         }
-        assert!(r.iter().any(|s| s.ty == "vec2/make"));
+        let make = search(
+            cat,
+            "vec2/make",
+            &Fit::Insert {
+                src: PortType::Number,
+                dst: PortType::Vec2,
+            },
+        );
+        assert_eq!(make.len(), 1);
+        // Nothing turns a layer into a number.
+        let none = search(
+            cat,
+            "",
+            &Fit::Insert {
+                src: PortType::Layer,
+                dst: PortType::Number,
+            },
+        );
+        assert!(none.iter().all(|s| insertion_ports(cat, s, PortType::Layer, PortType::Number).is_some()));
     }
 }

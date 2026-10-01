@@ -129,7 +129,7 @@ pub fn search_popup(
                             egui::TextEdit::singleline(&mut st.query)
                                 .hint_text(hint)
                                 .desired_width(SEARCH_W - 40.0)
-                                .frame(false),
+                                .frame(egui::Frame::NONE),
                         );
                         edit.request_focus();
                         if edit.changed() {

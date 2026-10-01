@@ -412,7 +412,7 @@ mod tests {
             vec![node("g", "g"), node("a", "v"), node("b", "v"), node("c", "v")],
             vec![],
         );
-        let ids: Vec<String> = ["a", "b", "c"]
+        let ids: Vec<std::string::String> = ["a", "b", "c"]
             .iter()
             .map(|s| connect(&mut p, &cat, &Conn::new(s, "out-out", "g", "in-items")).unwrap())
             .collect();

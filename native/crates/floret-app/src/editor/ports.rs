@@ -21,13 +21,6 @@ impl Side {
         }
     }
 
-    pub fn opposite(self) -> Side {
-        match self {
-            Side::In => Side::Out,
-            Side::Out => Side::In,
-        }
-    }
-
     /// The handle id for a port name on this side.
     pub fn handle(self, name: &str) -> String {
         format!("{}{name}", self.prefix())

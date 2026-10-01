@@ -6,7 +6,9 @@
 //! fewer than `max` objects are tracked (MediaPipe's VIDEO mode). A
 //! tracked object is dropped when the landmark model's presence score
 //! falls below 0.5. Pose and face landmarks are smoothed with MediaPipe's
-//! one-euro filter.
+//! one-euro filter; hands aren't (nor are they in MediaPipe's VIDEO mode).
+//!
+//! Check against real photos with the `track_image` example.
 
 use super::bundle::{self, Models};
 use super::detect::{self, AnchorSpec, Detection};

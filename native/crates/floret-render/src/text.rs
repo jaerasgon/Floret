@@ -16,7 +16,9 @@
 //! `letterSpacing` is ignored (TS's GL path ignores it too).
 
 use cosmic_text::fontdb;
-use cosmic_text::{Attrs, Buffer, Family, FontSystem, Metrics, Shaping, Style, SwashCache, Weight};
+use cosmic_text::{
+    Attrs, Buffer, CacheKeyFlags, Family, FontSystem, Metrics, Shaping, Style, SwashCache, Weight,
+};
 use floret_engine::scene::{compose_font_css, ResolvedStyle};
 use std::collections::{HashMap, VecDeque};
 use std::fmt;
@@ -162,7 +164,11 @@ impl TextRasterizer {
             "sans-serif" => Family::SansSerif,
             name => Family::Name(name),
         };
+        // The text is drawn at 2× and scaled; hinting buys nothing there
+        // and re-running a font's hinting program for every new size is
+        // most of the cost of animated text.
         let attrs = Attrs::new()
+            .cache_key_flags(CacheKeyFlags::DISABLE_HINTING)
             .family(family)
             .weight(parse_weight(&st.font_weight))
             .style(match &*st.font_style {
@@ -345,7 +351,9 @@ impl Canvas {
         let mut out = Vec::with_capacity(self.px.len() * 4);
         for p in self.px {
             for c in p {
-                out.push((c.clamp(0.0, 1.0) * 255.0).round() as u8);
+                // `+ 0.5` then truncate: rounds like `round()` on 0..=255
+                // without a libm call per channel.
+                out.push((c.clamp(0.0, 1.0) * 255.0 + 0.5) as u8);
             }
         }
         out

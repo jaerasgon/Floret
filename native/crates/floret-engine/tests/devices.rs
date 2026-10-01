@@ -15,11 +15,14 @@ use floret_engine::{Engine, FrameCtx, Spread, Value};
 use std::path::Path;
 use std::sync::{Arc, Mutex, OnceLock};
 
+/// A landmarks request as recorded: node, image id, start, trackers, count.
+type LandmarkCall = (String, Option<u64>, bool, Vec<Tracker>, usize);
+
 #[derive(Default)]
 struct Fake {
     frame: OnceLock<Arc<Image>>,
     camera_calls: Mutex<Vec<(String, bool, bool)>>,
-    landmark_calls: Mutex<Vec<(String, Option<u64>, bool, Vec<Tracker>, usize)>>,
+    landmark_calls: Mutex<Vec<LandmarkCall>>,
 }
 
 impl Fake {

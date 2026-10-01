@@ -213,12 +213,21 @@ impl Midi {
 
 const CLIENT: &str = "Floret";
 
+/// Without the ALSA sequencer device libasound fails, printing to stderr
+/// on every retry; check for it first.
+fn sequencer_present() -> bool {
+    !cfg!(target_os = "linux") || std::path::Path::new("/dev/snd/seq").exists()
+}
+
 /// Rescan ports forever, keeping one connection per port.
 fn watch(shared: &Arc<Shared>) {
     let mut conns: IndexMap<String, midir::MidiInputConnection<()>> = IndexMap::new();
     let mut scanner: Option<midir::MidiInput> = None;
     loop {
-        if scanner.is_none() {
+        if scanner.is_none() && !sequencer_present() {
+            *shared.error.lock().unwrap_or_else(|e| e.into_inner()) =
+                Some("MIDI unavailable: no ALSA sequencer (/dev/snd/seq)".into());
+        } else if scanner.is_none() {
             scanner = midir::MidiInput::new(CLIENT)
                 .map_err(|e| {
                     *shared.error.lock().unwrap_or_else(|e| e.into_inner()) =

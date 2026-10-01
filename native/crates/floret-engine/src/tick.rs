@@ -626,6 +626,10 @@ fn write_hash(v: &Value, s: &mut String) {
         // TS's replacer hashes every function (style) as "function".
         Value::Style(_) => s.push_str("\"function\""),
         Value::Scene(n) => write_hash(&n.to_value(), s),
+        Value::Handle(h) => match h.to_value() {
+            Some(obj) => write_hash(&obj, s),
+            None => s.push_str("\"function\""),
+        },
         Value::Bool(b) => {
             let _ = write!(s, "{b}");
         }

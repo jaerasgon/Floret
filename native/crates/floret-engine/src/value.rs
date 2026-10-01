@@ -73,6 +73,9 @@ pub enum Value {
     Scene(Arc<crate::scene::SceneNode>),
     /// A style chain (a JS closure in TS).
     Style(crate::scene::Style),
+    /// An opaque JS object: a physics world, force, collider, particle
+    /// buffer or typed array (see `crate::particles`).
+    Handle(crate::particles::Handle),
 }
 
 impl Value {
@@ -105,16 +108,20 @@ impl Value {
             (Value::Object(m), k) => m.get(k).cloned().unwrap_or(Value::Undefined),
             (Value::List(items), "length") => Value::Num(items.len() as f64),
             (Value::Str(s), "length") => Value::Num(s.encode_utf16().count() as f64),
+            (Value::Handle(h), k) => h.to_value().map_or(Value::Undefined, |v| v.get(k)),
             _ => Value::Undefined,
         }
     }
 
     /// JS `v && typeof v === 'object'` (arrays included).
     pub fn is_object(&self) -> bool {
-        matches!(
-            self,
-            Value::Vec2(_) | Value::Color(_) | Value::List(_) | Value::Object(_) | Value::Scene(_)
-        )
+        match self {
+            Value::Vec2(_) | Value::Color(_) | Value::List(_) | Value::Object(_) | Value::Scene(_) => {
+                true
+            }
+            Value::Handle(h) => !h.is_function(),
+            _ => false,
+        }
     }
 
     /// JS `typeof v === 'number'`.
@@ -193,6 +200,7 @@ impl Value {
             (Value::Object(a), Value::Object(b)) => Arc::ptr_eq(a, b),
             (Value::Scene(a), Value::Scene(b)) => Arc::ptr_eq(a, b),
             (Value::Style(a), Value::Style(b)) => Arc::ptr_eq(&a.0, &b.0),
+            (Value::Handle(a), Value::Handle(b)) => a.ptr_eq(b),
             _ => false,
         }
     }
@@ -293,6 +301,7 @@ impl fmt::Debug for Value {
             Value::Object(map) => f.debug_map().entries(map.iter()).finish(),
             Value::Scene(n) => write!(f, "<{}>", n.kind()),
             Value::Style(st) => write!(f, "<style ×{}>", st.0.len()),
+            Value::Handle(h) => write!(f, "<{}>", h.type_name()),
         }
     }
 }

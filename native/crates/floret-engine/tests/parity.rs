@@ -10,6 +10,7 @@
 //! report; set `PARITY_ONLY=<id,...>` to check specific samples and
 //! `PARITY_VERBOSE=1` to print every mismatch.
 
+use floret_engine::particles::{Handle, TypedArray};
 use floret_engine::{scene, tick::Outputs, Engine, FrameCtx, Value};
 use serde_json::Value as J;
 use std::collections::{BTreeMap, HashMap, HashSet};
@@ -178,6 +179,38 @@ impl Cmp {
                     &format!("{path}<style>"),
                 )
             }
+            // Opaque JS objects (worlds, forces, colliders, particle
+            // buffers, typed arrays) — see `floret_engine::particles`.
+            (Value::Handle(h), Fx::Tag(tag, inner)) if tag == "$fn" => {
+                if h.fn_name() == inner.as_str() {
+                    Ok(())
+                } else {
+                    mismatch()
+                }
+            }
+            (Value::Handle(Handle::TypedArray(t)), Fx::Tag(tag, j)) if tag == "$ta" => {
+                typed_array(t, j).map_err(|e| format!("{path}: {e}"))
+            }
+            (Value::Handle(h), Fx::Obj(o)) => {
+                let key = (handle_ptr(h), Arc::as_ptr(o) as usize);
+                if !self.seen.insert(key) {
+                    return Ok(());
+                }
+                // A class instance is recorded as {"$class": name, ...fields}.
+                let class = o.iter().find(|(k, _)| k == "$class").map(|(_, v)| v);
+                match (h.class_name(), class) {
+                    (None, None) => {}
+                    (Some(want), Some(Fx::Str(got))) if want == got => {}
+                    _ => return mismatch(),
+                }
+                let Some(view) = h.to_value() else {
+                    return mismatch();
+                };
+                let fields = Fx::Obj(Arc::new(
+                    o.iter().filter(|(k, _)| k != "$class").cloned().collect(),
+                ));
+                self.value(&view, &fields, path)
+            }
             (_, Fx::Tag(tag, inner)) if tag == "$summary" => {
                 let want: Stats =
                     serde_json::from_value((**inner).clone()).map_err(|e| e.to_string())?;
@@ -209,6 +242,41 @@ impl Cmp {
         }
         Ok(())
     }
+}
+
+/// Identity of a handle's shared allocation (for the `seen` set).
+fn handle_ptr(h: &Handle) -> usize {
+    match h {
+        Handle::World(w) => Arc::as_ptr(w) as usize,
+        Handle::Force(f) => Arc::as_ptr(f) as usize,
+        Handle::Collider(c) => Arc::as_ptr(c) as usize,
+        Handle::Particles(p) => Arc::as_ptr(&p.0) as *const () as usize,
+        _ => 0,
+    }
+}
+
+/// A typed array against `{"$ta": name, "len", "fnv", "head"}`: the FNV-1a
+/// of the raw little-endian bytes must match exactly.
+fn typed_array(t: &TypedArray, j: &J) -> Result<(), String> {
+    let name = j["$ta"].as_str().unwrap_or("");
+    let len = j["len"].as_u64().unwrap_or(u64::MAX);
+    let fnv = j["fnv"].as_str().unwrap_or("");
+    if t.name() != name || t.len() as u64 != len {
+        return Err(format!(
+            "typed array rust {}[{}] vs ts {name}[{len}]",
+            t.name(),
+            t.len()
+        ));
+    }
+    let got = t.fnv1a();
+    if got != fnv {
+        let head: Vec<f64> = (0..t.len().min(8)).map(|i| t.get(i)).collect();
+        return Err(format!(
+            "{name} fnv rust {got} vs ts {fnv}; head rust {head:?} vs ts {}",
+            j["head"]
+        ));
+    }
+    Ok(())
 }
 
 /// Sharing-independent stats over a value as a JS tree (see the exporter's
@@ -310,6 +378,14 @@ impl Summarizer {
                 }
             }
             Value::Scene(n) => s = self.visit(&n.to_value()),
+            // Typed arrays are childless objects; other handles are walked
+            // as their JS objects.
+            Value::Handle(Handle::TypedArray(_)) => s.objects = 1.0,
+            Value::Handle(h) => {
+                if let Some(o) = h.to_value() {
+                    s = self.visit(&o);
+                }
+            }
             // Functions are leaves; undefined / null / booleans carry nothing.
             _ => {}
         }

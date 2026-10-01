@@ -560,7 +560,7 @@ impl PreviewPanel {
                     let s = p.stats;
                     info.push_str(&format!(
                         " · {} shapes · {:.1}ms",
-                        s.sdf_instances + s.poly_fills + s.text_quads,
+                        s.sdf_instances + s.poly_fills + s.text_quads + s.image_quads,
                         p.encode_ms
                     ));
                 }

@@ -11,8 +11,8 @@ use crate::files::{self, Document, Origin};
 use crate::menu::{self, Command, MenuState};
 use crate::prefs::{Prefs, PrefsWindow, Startup};
 use crate::{
-    audio, bus, canvas, crash, devices, editor, help, host, palette, preview, recovery,
-    shader_panel, theme, welcome, workspace, SAMPLES,
+    audio, canvas, crash, devices, editor, help, host, palette, preview, recovery, shader_panel,
+    theme, welcome, workspace, SAMPLES,
 };
 use eframe::egui::{self, Align, Layout, RichText};
 use floret_engine::patch::PatchFile;
@@ -81,7 +81,6 @@ pub struct App {
     query: String,
     crash: crash::Guard,
     shader_panel: shader_panel::ShaderPanel,
-    bus: bus::BusHost,
     workspace: workspace::Workspace,
     // ── Shell
     prefs: Prefs,
@@ -144,7 +143,6 @@ impl App {
             query: String::new(),
             crash: crash::Guard::default(),
             shader_panel: shader_panel::ShaderPanel::default(),
-            bus: bus::BusHost::new(),
             workspace: workspace::Workspace::load(),
             prefs,
             prefs_window: PrefsWindow::default(),
@@ -428,7 +426,7 @@ impl App {
             Command::SaveAs => {
                 self.save_as();
             }
-            Command::BrowseSamples => self.welcome.show_samples(),
+            Command::BrowseSamples => self.workspace.show_library(),
             Command::Quit => self.request(ctx, After::Quit),
             Command::ToggleNodes => self.prefs.palette_visible ^= true,
             Command::ZoomIn => self.prefs.step_scale(1),
@@ -494,13 +492,6 @@ impl App {
                 dot(ui, *theme::FG_2).on_hover_text("Unsaved changes");
             }
             ui.separator();
-            if ui
-                .button("Samples")
-                .on_hover_text("Browse the built-in samples")
-                .clicked()
-            {
-                self.commands.push(Command::BrowseSamples);
-            }
             ui.toggle_value(&mut self.prefs.palette_visible, "Nodes")
                 .on_hover_text(shortcut_hint(&Command::ToggleNodes));
             if ui
@@ -593,7 +584,6 @@ impl App {
                         .color(theme::FG_3)
                         .small(),
                 );
-                self.bus.status(ui);
                 audio::status(ui);
             });
         });
@@ -854,8 +844,6 @@ impl eframe::App for App {
 
         self.tick(&ctx);
         ctx.request_repaint();
-        self.bus
-            .process(frame.wgpu_render_state(), self.preview.clock);
         let rev = self.rev();
         self.autosave.tick(
             Instant::now(),
@@ -931,10 +919,9 @@ impl eframe::App for App {
             .show(ui, |ui| self.side_panel(ui, frame));
 
         egui::CentralPanel::no_frame().show(ui, |ui| self.canvas(ui, frame));
-        // The canvas has its own Snap / Flow / Grow toggles.
+        // The canvas has its own Snap / Flow toggles.
         self.prefs.snap_to_grid = self.view.snap;
-        self.prefs.wire_flow_animation = self.view.wire_flow;
-        self.prefs.auto_grow_regions = self.view.auto_grow;
+        self.prefs.flow_animation = self.view.wire_flow;
 
         match self.crash.show(&ctx, &self.patch) {
             Some(crash::Action::Reload) => {
@@ -957,6 +944,7 @@ impl eframe::App for App {
                 welcome::Action::Open => self.request(&ctx, After::Open(None)),
                 welcome::Action::OpenRecent(p) => self.request(&ctx, After::Open(Some(p))),
                 welcome::Action::Sample(i) => self.request(&ctx, After::Sample(i)),
+                welcome::Action::Library => self.workspace.show_library(),
             }
         }
         self.prefs.show_welcome = show_welcome;
@@ -984,8 +972,7 @@ impl eframe::App for App {
 
 fn apply_editor_prefs(view: &mut canvas::View, p: &Prefs) {
     view.snap = p.snap_to_grid;
-    view.wire_flow = p.wire_flow_animation;
-    view.auto_grow = p.auto_grow_regions;
+    view.wire_flow = p.flow_animation;
     editor::ops::set_default_render_size(p.default_render_width, p.default_render_height);
 }
 

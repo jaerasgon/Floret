@@ -3155,43 +3155,6 @@
    "compact": true
   },
   {
-   "type": "io/receive",
-   "category": "IO",
-   "label": "Receive",
-   "description": "Receive data from a named channel — polls the in-app bus and outputs the latest value. JSON arrives as a value/spread; a PNG arrives as an image. Set `channel` to match a Send.",
-   "inputs": [
-    {
-     "name": "channel",
-     "type": "string",
-     "kind": "single",
-     "default": "main",
-     "param": "channel"
-    },
-    {
-     "name": "interval",
-     "type": "number",
-     "kind": "single",
-     "default": 0.5,
-     "param": "interval"
-    }
-   ],
-   "outputs": [
-    {
-     "name": "data",
-     "type": "any",
-     "kind": "single"
-    }
-   ],
-   "eval": "raw",
-   "dynamicInputs": false,
-   "defaultParams": {
-    "channel": "main",
-    "interval": 0.5
-   },
-   "paramOptions": null,
-   "effectful": true
-  },
-  {
    "type": "io/save-svg",
    "category": "IO",
    "label": "SaveSVG",
@@ -3251,81 +3214,6 @@
    },
    "paramOptions": null,
    "compact": true
-  },
-  {
-   "type": "io/send",
-   "category": "IO",
-   "label": "Send",
-   "description": "Transmit data on a named channel — POSTs to the in-app bus on the `send` edge (and every `interval`s). Values go as JSON; layers/images as a PNG. Set `channel`; the receiver (another Floret, a Pi, …) pulls it.",
-   "inputs": [
-    {
-     "name": "data",
-     "type": "any",
-     "kind": "spread"
-    },
-    {
-     "name": "channel",
-     "type": "string",
-     "kind": "single",
-     "default": "main",
-     "param": "channel"
-    },
-    {
-     "name": "send",
-     "type": "boolean",
-     "kind": "single",
-     "default": false
-    },
-    {
-     "name": "interval",
-     "type": "number",
-     "kind": "single",
-     "default": 0,
-     "param": "interval"
-    },
-    {
-     "name": "width",
-     "type": "number",
-     "kind": "single",
-     "default": 540,
-     "param": "width"
-    },
-    {
-     "name": "height",
-     "type": "number",
-     "kind": "single",
-     "default": 540,
-     "param": "height"
-    },
-    {
-     "name": "background",
-     "type": "color",
-     "kind": "single",
-     "default": {
-      "r": 1,
-      "g": 1,
-      "b": 1,
-      "a": 1
-     }
-    }
-   ],
-   "outputs": [
-    {
-     "name": "ok",
-     "type": "boolean",
-     "kind": "single"
-    }
-   ],
-   "eval": "raw",
-   "dynamicInputs": false,
-   "defaultParams": {
-    "channel": "main",
-    "interval": 0,
-    "width": 540,
-    "height": 540
-   },
-   "paramOptions": null,
-   "effectful": true
   },
   {
    "type": "io/slider",

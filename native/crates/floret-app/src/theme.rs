@@ -99,40 +99,31 @@ pub fn port_color(ty: &str) -> Color32 {
     *Token::new(dark, light)
 }
 
-/// Category accent: hues step 14° around the wheel (hsl(h, 58%, 63%);
-/// darker on the light theme so it reads on white).
+/// Category accent: a few muted families of related categories rather
+/// than a rainbow (low saturation; darker on the light theme so it reads
+/// on white).
 pub fn category_color(category: &str) -> Color32 {
-    let hue = match category.to_ascii_lowercase().as_str() {
-        "collider" => 20.0,
-        "color" => 34.0,
-        "convert" => 48.0,
-        "data" => 62.0,
-        "draw" => 76.0,
-        "force" => 90.0,
-        "image" => 104.0,
-        "input" => 118.0,
-        "io" => 132.0,
-        "logic" => 146.0,
-        "math" => 160.0,
-        "meta" => 174.0,
-        "motion" => 188.0,
-        "particles" => 202.0,
-        "pixel" => 216.0,
-        "random" => 230.0,
-        "region" => 244.0,
-        "render" => 258.0,
-        "sound" => 272.0,
-        "spread" => 286.0,
-        "state" => 300.0,
-        "style" => 314.0,
-        "time" => 328.0,
-        "transform" => 342.0,
-        _ => 349.0,
+    // (hue, saturation)
+    let (hue, sat) = match category.to_ascii_lowercase().as_str() {
+        // Drawing and output: warm sand.
+        "draw" | "style" | "color" | "transform" | "render" => (38.0, 0.30),
+        // Numbers and lists: slate blue.
+        "math" | "vec2" | "logic" | "convert" | "data" | "spread" | "string" | "random" => {
+            (215.0, 0.22)
+        }
+        // Time and change: sage.
+        "time" | "motion" | "state" | "noise" => (140.0, 0.20),
+        // Media and devices: dusty rose.
+        "image" | "pixel" | "sound" | "input" | "io" | "gpu" => (345.0, 0.24),
+        // Simulation: muted teal.
+        "particles" | "force" | "collider" | "physics" => (180.0, 0.22),
+        // Structure (regions, comments, probes): neutral.
+        _ => (0.0, 0.0),
     };
     if is_light() {
-        hsl(hue, 0.5, 0.45)
+        hsl(hue, sat, 0.42)
     } else {
-        hsl(hue, 0.58, 0.63)
+        hsl(hue, sat, 0.66)
     }
 }
 

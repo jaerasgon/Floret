@@ -133,6 +133,8 @@ pub struct Library {
     dir: Option<PathBuf>,
     entries: Vec<Entry>,
     status: Option<String>,
+    /// Sample thumbnails (rendered in the background, cached).
+    thumbs: crate::thumbs::Thumbnails,
 }
 
 impl Default for Library {
@@ -140,7 +142,8 @@ impl Default for Library {
         let dir = crate::editor::favorites::config_dir().map(|d| d.join("library"));
         let entries = dir.as_deref().map(load_index).unwrap_or_default();
         Library {
-            mode: Mode::List,
+            mode: Mode::Grid,
+            thumbs: crate::thumbs::Thumbnails::default(),
             query: String::new(),
             save: None,
             dir,
@@ -157,8 +160,12 @@ impl Library {
         samples: &[crate::Sample],
         current: Option<usize>,
         patch: &PatchFile,
+        rs: Option<&eframe::egui_wgpu::RenderState>,
     ) -> Option<Pick> {
         let mut pick = None;
+        if self.mode == Mode::Grid {
+            self.thumbs.update(ui.ctx(), rs);
+        }
         ui.add(
             egui::TextEdit::singleline(&mut self.query)
                 .hint_text("Search all libraries…")
@@ -274,7 +281,8 @@ impl Library {
             Mode::Grid => {
                 ui.horizontal_wrapped(|ui| {
                     for (i, s) in items {
-                        if tile(ui, s.name, cat, current == Some(*i))
+                        let thumb = self.thumbs.get(s.id).map(|t| t.id());
+                        if tile(ui, s.name, cat, current == Some(*i), thumb)
                             .on_hover_text(s.description)
                             .clicked()
                         {
@@ -331,7 +339,7 @@ impl Library {
                 Mode::Grid => {
                     ui.horizontal_wrapped(|ui| {
                         for e in &shown {
-                            if tile(ui, &e.name, &e.name, false)
+                            if tile(ui, &e.name, &e.name, false, None)
                                 .on_hover_text(&e.description)
                                 .clicked()
                             {
@@ -403,13 +411,34 @@ impl Library {
     }
 }
 
-/// An icon tile: a hue swatch from the group name, the title below.
-fn tile(ui: &mut egui::Ui, title: &str, group: &str, on: bool) -> egui::Response {
-    let (rect, resp) = ui.allocate_exact_size(vec2(96.0, 74.0), egui::Sense::click());
+/// A tile: the sample's thumbnail (else a muted swatch from the group
+/// name), the title below.
+fn tile(
+    ui: &mut egui::Ui,
+    title: &str,
+    group: &str,
+    on: bool,
+    thumb: Option<egui::TextureId>,
+) -> egui::Response {
+    let (rect, resp) = ui.allocate_exact_size(vec2(96.0, 92.0), egui::Sense::click());
     let p = ui.painter();
-    let swatch = egui::Rect::from_min_size(rect.min, vec2(rect.width(), 48.0));
-    let accent = egui::ecolor::Hsva::new(hue_for(group) / 360.0, 0.45, 0.55, 1.0);
-    p.rect_filled(swatch, 5.0, Color32::from(accent).gamma_multiply(0.55));
+    let swatch = egui::Rect::from_min_size(rect.min, vec2(rect.width(), rect.width() * 0.66));
+    match thumb {
+        Some(id) => {
+            // Centre-crop the square-ish thumbnail into the swatch.
+            let a = swatch.height() / swatch.width();
+            let uv = egui::Rect::from_min_max(
+                egui::pos2(0.0, 0.5 - a / 2.0),
+                egui::pos2(1.0, 0.5 + a / 2.0),
+            );
+            p.with_clip_rect(swatch)
+                .image(id, swatch, uv, Color32::WHITE);
+        }
+        None => {
+            let accent = egui::ecolor::Hsva::new(hue_for(group) / 360.0, 0.18, 0.5, 1.0);
+            p.rect_filled(swatch, 5.0, Color32::from(accent).gamma_multiply(0.55));
+        }
+    }
     let stroke = if on {
         egui::Stroke::new(1.5, theme::GOLD)
     } else if resp.hovered() {

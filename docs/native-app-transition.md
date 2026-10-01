@@ -14,20 +14,14 @@ This replaces issue #30 ("Native kiosk shell (Electron / Tauri)", closed).
 
 ## Progress
 
-| Phase | State |
+| Area | State |
 |---|---|
-| 0 · Fixtures | ✅ `npm run fixtures:export` → 95 `.flora` samples + traces in `native/` |
-| 1 · Engine core | ✅ compile / tick / regions / state / constants ported; 184 node types ported (math, vec2, spread, color, motion, logic, convert, string, value, data, meta, time, input, random, noise, io controls), each checked against the TS code; ~1,500 node outputs across the samples match the reference; parity test runs in CI on macOS / Windows / Linux |
-| UI spike | ✅ `native/crates/floret-app` (egui + wgpu): node canvas, palette, inspector, live engine values, GPU preview via egui's render pass. Downloadable builds from CI. **Waiting on your feel check.** |
-| 2 · Scene + renderer | next: typed scene IR, styles as data, draw / style / transform nodes, wgpu renderer |
-| 3–9 | not started |
-
-![UI spike running Lissajous Threads](images/native-spike-lissajous.png)
-
----|---|
-| 0 · Fixtures | ✅ `npm run fixtures:export` → 95 `.flora` samples + traces in `native/` |
-| 1 · Engine core | 🟡 compile / tick / regions / state ported; parity harness in CI on all 3 OSes; node categories being ported |
-| 2–9 | not started |
+| Engine | ✅ every node type ported; all 94 samples match the TypeScript reference output (parity test in CI) |
+| Renderer | ✅ wgpu scene renderer: shapes, text, images, particles, blur, blend, clips, GLSL shaders; PNG export |
+| Editor | ✅ wiring, selection, undo, regions and subpatches, inline editing, custom node UIs, docking panels |
+| App shell | ✅ files, autosave + crash recovery, menus, preferences, light theme, welcome screen, library |
+| Media | ✅ sound (cpal), MIDI, camera, body tracking (MediaPipe models in a pure-Rust TFLite interpreter); needs testing on real devices |
+| Release | ⏳ performance pass, port-name freeze, README, packaging, QA |
 
 ---
 
@@ -71,7 +65,7 @@ browser calls.
 | Camera | `getUserMedia` | **`nokhwa`** (AVFoundation / Media Foundation / V4L2) |
 | Tracking | MediaPipe JS/WASM | **Built-in TFLite interpreter** (`floret-input`, pure Rust + `matrixmultiply`) running the *same* `.task` model files the web app vendors in `public/mediapipe/models/`, embedded in the binary — identical hand/face/pose point sets, no conversion, no native runtime to ship. MediaPipe's detect → crop → track glue (ROI tracking, one-euro smoothing) re-implemented; within ~1 px of MediaPipe on test photos. (Chosen over `ort`: needs a TFLite→ONNX conversion and ships a native library; `tract-tflite` lacks ops these models use) |
 | MIDI | Web MIDI | **`midir`** |
-| Send/Receive bus | Vite dev-server relay | small **in-app HTTP server** — the Raspberry Pi e-ink poller keeps working unchanged |
+| Send/Receive bus | Vite dev-server relay | **dropped** (it existed for the e-ink relay, which is out of scope) |
 | Settings / library | localStorage | files in the per-OS app data dir (`directories` crate) |
 | Updates & installers | — | **`cargo-dist`** or **Velopack**: `.dmg` / `.msi` / AppImage + auto-update |
 
@@ -161,7 +155,7 @@ metrics (cosmic-text vs Canvas2D), image filters, and resampling.
 | 4 | **Motion & simulation** | time, motion, random, particles, forces, colliders, physics | M |
 | 5 | **Image, text, shaders** | compute-shader image / pixel nodes, cosmic-text, GLSL shader node + shader panel | L |
 | 6 | **Media in/out** | audio nodes on cpal, microphone, MIDI, camera, ONNX tracking | L |
-| 7 | **IO** | Send/Receive bus server, e-ink, file / image / CSV nodes, SVG files loaded as textures | M |
+| 7 | **IO** | file / image / CSV nodes, SVG files loaded as textures | M |
 | 8 | **Parity polish** | Docking panels, library, help, welcome, preferences, light/dark, focus mode / fullscreen output, PNG export, all 95 samples green | L |
 | 9 | **Release** | Icons, signed installers for all 3 OSes, auto-update, 1.0 | S |
 
@@ -200,6 +194,11 @@ fixture generator until phase 8 is green, then gets archived.
   but nothing walks it to emit vectors.
 - Share links removed; body tracking fully ported; download page deferred
   (see #49).
+- **E-ink removed** (decided 2026-10-01): too niche. The e-ink clock sample,
+  the Send / Receive bus nodes and the LAN relay that existed for it, and
+  the Raspberry Pi poller are gone.
+- **macOS first** (decided 2026-10-01): Windows and Linux builds stay in CI
+  but are tested later.
 
 ### Earlier open questions
 

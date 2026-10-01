@@ -73,7 +73,7 @@ impl Command {
             ClearRecent => "Clear Recent",
             Save => "Save",
             SaveAs => "Save As…",
-            BrowseSamples => "Browse Samples…",
+            BrowseSamples => "Samples Library",
             ExportPng => "Export PNG…",
             Quit => {
                 if cfg!(target_os = "windows") {

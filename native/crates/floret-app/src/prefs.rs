@@ -44,8 +44,9 @@ pub struct Prefs {
     pub theme: ThemePref,
     /// Interface zoom (egui's zoom factor).
     pub ui_scale: f32,
-    pub wire_flow_animation: bool,
-    pub auto_grow_regions: bool,
+    /// Off by default. (A new key, so the old default-on setting doesn't
+    /// carry over.)
+    pub flow_animation: bool,
     pub snap_to_grid: bool,
     pub palette_visible: bool,
     pub default_render_width: u32,
@@ -62,8 +63,7 @@ impl Default for Prefs {
         Prefs {
             theme: ThemePref::Dark,
             ui_scale: 1.0,
-            wire_flow_animation: true,
-            auto_grow_regions: true,
+            flow_animation: false,
             snap_to_grid: false,
             palette_visible: true,
             default_render_width: 1080,
@@ -285,15 +285,7 @@ impl PrefsWindow {
                     "Wire flow animation",
                     "Marching dashes along wires.",
                     |ui| {
-                        ui.checkbox(&mut p.wire_flow_animation, "");
-                    },
-                );
-                row(
-                    ui,
-                    "Auto-grow regions",
-                    "Region frames expand when a child is dragged near the edge.",
-                    |ui| {
-                        ui.checkbox(&mut p.auto_grow_regions, "");
+                        ui.checkbox(&mut p.flow_animation, "");
                     },
                 );
                 row(

@@ -12,7 +12,6 @@
 //! ```
 
 pub mod audio;
-pub mod bus;
 pub mod compile;
 pub mod devices;
 pub mod graph;

@@ -1,6 +1,8 @@
 //! Tracker and camera sessions as the nodes drive them.
 
-use floret_engine::devices::{CameraRequest, Devices, LandmarksRequest};
+#[cfg(target_os = "linux")]
+use floret_engine::devices::CameraRequest;
+use floret_engine::devices::{Devices, LandmarksRequest};
 use floret_engine::image::Image;
 use floret_engine::landmarks::Tracker;
 use floret_input::InputDevices;

@@ -41,10 +41,10 @@ pub enum LeftItem {
     Input(PortSpec),
 }
 
-/// Pure params worth a row on the node: dropdowns and Read / Write slots.
-/// (The web app also lists bookkeeping params like `valueType`; those stay
-/// in the inspector here.)
-fn param_row_kind(spec: &NodeSpec, key: &str, default: &Json) -> Option<FieldKind> {
+/// Pure params (no pin) get a row with an editor, as in the web app, e.g.
+/// Number's `value`. Bookkeeping params with their own controls (slot
+/// counts, palette stops, comment text …) don't.
+fn param_row_kind(spec: &NodeSpec, key: &str, default: &Json, custom: bool) -> Option<FieldKind> {
     if let Some(opts) = spec.param_options.get(key) {
         return Some(FieldKind::Select(opts.clone()));
     }
@@ -55,8 +55,34 @@ fn param_row_kind(spec: &NodeSpec, key: &str, default: &Json) -> Option<FieldKin
     if DEVICE_NUMBERS.contains(&(spec.ty.as_str(), key)) {
         return Some(FieldKind::Number { integer: true });
     }
-    (key == "slot" && default.is_number()).then_some(FieldKind::Number { integer: true })
+    if custom || HIDDEN_PARAMS.contains(&key) || key.starts_with("__") {
+        return None;
+    }
+    match default {
+        Json::Number(n) => Some(FieldKind::Number {
+            integer: key == "slot" || (n.is_i64() && spec.ty != "value/number"),
+        }),
+        Json::Bool(_) => Some(FieldKind::Bool),
+        Json::String(_) => Some(FieldKind::Text),
+        Json::Object(o) if o.contains_key("x") && o.contains_key("y") => Some(FieldKind::Vec2),
+        _ => None,
+    }
 }
+
+/// Params edited elsewhere (± slot buttons, custom bodies, panels) or
+/// internal to the node.
+const HIDDEN_PARAMS: &[&str] = &[
+    "valueType",
+    "slotCount",
+    "stopCount",
+    "label",
+    "dataUrl",
+    "mimeType",
+    "filename",
+    "source",
+    "markup",
+    "text",
+];
 
 const DEVICE_NUMBERS: &[(&str, &str)] = &[
     ("input/midi-cc", "channel"),
@@ -78,6 +104,8 @@ pub fn option_label(o: &str) -> &str {
 /// Left column of a generic node: pure-param rows, then inputs.
 pub fn left_items(cat: &Catalogue, spec: &NodeSpec, n: &PatchNode) -> Vec<LeftItem> {
     let inputs = cat.resolved_inputs(spec, &n.params);
+    // Custom bodies (slider, XY pad, stepper …) edit their own params.
+    let custom = super::widgets::custom_of(&spec.ty).is_some();
     let mut items: Vec<LeftItem> = spec
         .default_params
         .iter()
@@ -87,7 +115,7 @@ pub fn left_items(cat: &Catalogue, spec: &NodeSpec, n: &PatchNode) -> Vec<LeftIt
                 .any(|p| p.param.as_deref() == Some(k.as_str()))
         })
         .filter_map(|(k, d)| {
-            param_row_kind(spec, k, d).map(|kind| LeftItem::Param {
+            param_row_kind(spec, k, d, custom).map(|kind| LeftItem::Param {
                 key: k.clone(),
                 kind,
             })
@@ -155,6 +183,14 @@ pub fn set(patch: &mut PatchFile, node: &str, key: &EditKey, v: Json) -> bool {
     let Some(n) = find_node_mut(patch, node) else {
         return false;
     };
+    // Saved files often mirror a param-backed pin in `portValues` too (the
+    // Renderer's width / height); keep the copy in step so they never
+    // disagree.
+    if let EditKey::Param(k) = key {
+        if let Some(mirror) = n.port_values.as_mut().and_then(|pv| pv.get_mut(k)) {
+            *mirror = v.clone();
+        }
+    }
     let slot = match key {
         EditKey::Param(k) => n.params.entry(k.clone()),
         EditKey::Port(p) => n
@@ -549,11 +585,16 @@ mod tests {
             .iter()
             .skip(1)
             .all(|i| matches!(i, LeftItem::Input(_))));
-        // Bookkeeping params get no row.
+        // Bookkeeping params get no row; plain ones (Number's value) do.
         let add = cat.get("math/add").unwrap();
         assert!(left_items(cat, add, &node("a", "math/add"))
             .iter()
             .all(|i| matches!(i, LeftItem::Input(_))));
+        let num = cat.get("value/number").unwrap();
+        assert!(matches!(
+            &left_items(cat, num, &node("n", "value/number"))[..],
+            [LeftItem::Param { key, kind: FieldKind::Number { integer: false } }] if key == "value"
+        ));
     }
 
     #[test]

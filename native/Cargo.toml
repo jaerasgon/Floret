@@ -27,3 +27,10 @@ opt-level = 3
 # Landmark tracking runs neural nets; unoptimised it's far too slow to use.
 [profile.dev.package.floret-input]
 opt-level = 3
+
+# `./floret.sh` builds with this: optimised like release, but incremental so
+# a rebuild after a pull only recompiles what changed.
+[profile.fast]
+inherits = "release"
+incremental = true
+codegen-units = 256

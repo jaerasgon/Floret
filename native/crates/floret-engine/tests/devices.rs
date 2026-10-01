@@ -155,7 +155,17 @@ fn body_tracking_draws_the_providers_landmarks() {
     assert!(r.errors.is_empty(), "{:?}", r.errors);
 
     // The camera ran with the sample's settings and output our frame.
-    let (node, start, mirror) = fake.camera_calls.lock().unwrap().last().cloned().unwrap();
+    // The fake is shared with the other tests (running in parallel), so pick
+    // this sample's camera out of the calls.
+    let (node, start, mirror) = fake
+        .camera_calls
+        .lock()
+        .unwrap()
+        .iter()
+        .rev()
+        .find(|c| c.0 == "bt_cam")
+        .cloned()
+        .unwrap();
     assert_eq!((node.as_str(), start, mirror), ("bt_cam", true, true));
     let out = &r.outputs;
     assert!(

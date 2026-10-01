@@ -27,74 +27,19 @@ pub enum Action {
     OpenRecent(PathBuf),
     /// Load `SAMPLES[i]`.
     Sample(usize),
+    /// Show the Library panel (all samples and saved patches).
+    Library,
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-enum Page {
-    Home,
-    Samples,
-}
-
+#[derive(Default)]
 pub struct Welcome {
     pub open: bool,
-    page: Page,
-    category: &'static str,
-    query: String,
     pub thumbs: Thumbnails,
-}
-
-impl Default for Welcome {
-    fn default() -> Self {
-        Welcome {
-            open: false,
-            page: Page::Home,
-            category: "Tutorial",
-            query: String::new(),
-            thumbs: Thumbnails::default(),
-        }
-    }
-}
-
-/// Sample categories in catalogue order (Tutorial first).
-pub fn categories() -> Vec<&'static str> {
-    let mut out: Vec<&'static str> = Vec::new();
-    for s in SAMPLES {
-        if !out.contains(&s.category) {
-            out.push(s.category);
-        }
-    }
-    out
-}
-
-/// Samples whose name, description or category contains `query`
-/// (case-insensitive), else those in `category`.
-pub fn filter(category: &str, query: &str) -> Vec<usize> {
-    let q = query.trim().to_lowercase();
-    SAMPLES
-        .iter()
-        .enumerate()
-        .filter(|(_, s)| {
-            if q.is_empty() {
-                s.category == category
-            } else {
-                [s.name, s.description, s.category]
-                    .iter()
-                    .any(|t| t.to_lowercase().contains(&q))
-            }
-        })
-        .map(|(i, _)| i)
-        .collect()
 }
 
 impl Welcome {
     pub fn show_home(&mut self) {
         self.open = true;
-        self.page = Page::Home;
-    }
-
-    pub fn show_samples(&mut self) {
-        self.open = true;
-        self.page = Page::Samples;
     }
 
     /// Draw (when open). `show_on_start` is the preference checkbox.
@@ -123,10 +68,7 @@ impl Welcome {
             )
             .show(ctx, |ui| {
                 let (rect, _) = ui.allocate_exact_size(size, Sense::hover());
-                action = match self.page {
-                    Page::Home => self.home(ui, rect, recent, show_on_start),
-                    Page::Samples => self.samples(ui, rect),
-                };
+                action = self.home(ui, rect, recent, show_on_start);
             });
         if modal.should_close() || action.is_some() {
             self.open = false;
@@ -171,7 +113,7 @@ impl Welcome {
             action = Some(Action::Open);
         }
         if ui.add(wide("Browse samples")).clicked() {
-            self.page = Page::Samples;
+            action = Some(Action::Library);
         }
         ui.add_space(16.0);
         ui.label(RichText::new("RECENT").color(FG_2).small());
@@ -255,85 +197,9 @@ impl Welcome {
                 self.open = false;
             }
             if ui.button("All samples").clicked() {
-                self.page = Page::Samples;
+                action = Some(Action::Library);
             }
         });
-        action
-    }
-
-    fn samples(&mut self, ui: &mut egui::Ui, rect: Rect) -> Option<Action> {
-        let mut action = None;
-        let header = Rect::from_min_size(rect.min, vec2(rect.width(), 52.0));
-        let side = Rect::from_min_max(
-            egui::pos2(rect.min.x, header.max.y),
-            egui::pos2(rect.min.x + 190.0, rect.max.y),
-        );
-        let grid = Rect::from_min_max(egui::pos2(side.max.x, header.max.y), rect.max);
-        let p = ui.painter();
-        p.hline(rect.x_range(), header.max.y, egui::Stroke::new(1.0, BORDER));
-        p.vline(side.max.x, side.y_range(), egui::Stroke::new(1.0, BORDER));
-
-        let mut ui_head = ui.new_child(
-            UiBuilder::new()
-                .max_rect(header.shrink2(vec2(18.0, 10.0)))
-                .layout(Layout::left_to_right(Align::Center)),
-        );
-        if ui_head.button("‹ Welcome").clicked() {
-            self.page = Page::Home;
-        }
-        ui_head.label(RichText::new("Samples").strong().size(16.0));
-        ui_head.label(RichText::new(format!("{} patches", SAMPLES.len())).color(FG_2));
-        ui_head.with_layout(Layout::right_to_left(Align::Center), |ui| {
-            if ui.button("Close").clicked() {
-                self.open = false;
-            }
-            ui.add(
-                egui::TextEdit::singleline(&mut self.query)
-                    .hint_text("Search samples")
-                    .desired_width(220.0),
-            );
-        });
-
-        let mut ui_side = ui.new_child(UiBuilder::new().max_rect(side.shrink2(vec2(10.0, 10.0))));
-        for c in categories() {
-            let n = SAMPLES.iter().filter(|s| s.category == c).count();
-            let on = self.query.trim().is_empty() && self.category == c;
-            let b = egui::Button::new(RichText::new(c).color(if on { FG_0 } else { FG_1 }))
-                .right_text(RichText::new(n.to_string()).color(FG_3).small())
-                .fill(if on {
-                    BG_3.get()
-                } else {
-                    egui::Color32::TRANSPARENT
-                })
-                .frame_when_inactive(on)
-                .min_size(vec2(side.width() - 20.0, 26.0));
-            if ui_side.add(b).clicked() {
-                self.category = c;
-                self.query.clear();
-            }
-        }
-
-        let grid = Rect::from_min_max(grid.min + vec2(14.0, 0.0), grid.max);
-        let mut ui_grid = ui.new_child(UiBuilder::new().max_rect(grid));
-        egui::ScrollArea::vertical()
-            .id_salt("sample-grid")
-            .auto_shrink(false)
-            .show(&mut ui_grid, |ui| {
-                ui.add_space(14.0);
-                let list = filter(self.category, &self.query);
-                if list.is_empty() {
-                    ui.label(RichText::new("No samples match.").color(FG_2));
-                }
-                ui.horizontal_wrapped(|ui| {
-                    ui.spacing_mut().item_spacing = vec2(12.0, 12.0);
-                    for i in list {
-                        if card(ui, &self.thumbs, &SAMPLES[i], 156.0) {
-                            action = Some(Action::Sample(i));
-                        }
-                    }
-                });
-                ui.add_space(14.0);
-            });
         action
     }
 }
@@ -423,24 +289,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn categories_and_filters() {
-        let cats = categories();
-        assert_eq!(cats[0], "Tutorial");
-        assert!(
-            cats.contains(&"Shaders"),
-            "shader samples have their own category"
-        );
-        let shaders = filter("Shaders", "");
-        assert!(shaders
-            .iter()
-            .all(|i| SAMPLES[*i].id.starts_with("shader-")));
-        assert_eq!(shaders.len(), 3);
-        assert!(filter("Nature", "")
-            .iter()
-            .all(|i| !SAMPLES[*i].id.starts_with("shader-")));
-        // A query searches every category.
-        let hits = filter("Tutorial", "lissajous");
-        assert!(hits.iter().any(|i| SAMPLES[*i].id == "lissajous"));
+    fn featured_samples_exist() {
         for id in FEATURED {
             assert!(SAMPLES.iter().any(|s| s.id == id), "featured {id} exists");
         }

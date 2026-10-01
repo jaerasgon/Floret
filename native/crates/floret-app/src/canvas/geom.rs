@@ -579,10 +579,11 @@ pub fn row_box(
                     let v = values::current(n, spec, &key, Some(port));
                     if row.expanded {
                         editor = Some((key, kind, v));
-                    } else if let Some(pv) =
-                        n.port_values.as_ref().and_then(|pv| pv.get(&port.name))
-                    {
-                        row.readout = Some(values::short(pv));
+                    } else if !v.is_null() {
+                        // The live value: the param for param-backed pins
+                        // (Renderer width / height), else portValues or the
+                        // declared default.
+                        row.readout = Some(values::short(&v));
                     }
                 }
             }

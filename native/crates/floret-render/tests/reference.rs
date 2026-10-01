@@ -52,7 +52,6 @@ fn tolerance(name: &str) -> (f64, f64) {
         || name.starts_with("type-")
         || name.starts_with("tut-34")
         || name.starts_with("tut-44")
-        || name.starts_with("eink-clock")
     {
         (6.0, 0.03)
     } else {

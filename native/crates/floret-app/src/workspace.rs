@@ -148,6 +148,11 @@ impl Workspace {
         }
     }
 
+    /// Bring the Library (samples and saved patches) forward.
+    pub fn show_library(&mut self) {
+        reveal(&mut self.dock, Tab::Library);
+    }
+
     /// Put every panel back where it started.
     pub fn reset(&mut self) {
         self.dock = default_dock();
@@ -372,7 +377,7 @@ impl TabViewer for Viewer<'_, '_> {
                     .map(|n| n.def_type.clone());
                 self.help.ui(ui, cat, ty.as_deref());
             }
-            Tab::Library => match self.library.ui(ui, sh.samples, sh.sample, sh.patch) {
+            Tab::Library => match self.library.ui(ui, sh.samples, sh.sample, sh.patch, sh.rs) {
                 Some(library::Pick::Sample(i)) => self.action = Some(ShellAction::LoadSample(i)),
                 Some(library::Pick::Patch(p)) => self.action = Some(ShellAction::LoadPatch(p)),
                 None => {}

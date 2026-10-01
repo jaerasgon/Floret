@@ -29,8 +29,8 @@ use crate::theme::{self, BG_0, FG_2, FG_3, GOLD};
 use custom::WidgetKind;
 use draw::PinLook;
 use eframe::egui::{
-    self, pos2, vec2, CursorIcon, Key, Modifiers, PointerButton, Pos2, Rect, Sense, Shape, Stroke,
-    Vec2,
+    self, pos2, vec2, Color32, CursorIcon, Key, Modifiers, PointerButton, Pos2, Rect, Sense, Shape,
+    Stroke, Vec2,
 };
 use floret_engine::patch::{PatchFile, Position};
 use floret_engine::spec::Catalogue;
@@ -300,7 +300,7 @@ impl Default for View {
             raised: Vec::new(),
             gesture: Gesture::None,
             snap: false,
-            wire_flow: true,
+            wire_flow: false,
             auto_grow: true,
             stack: Vec::new(),
             expanded: HashSet::new(),
@@ -1538,7 +1538,9 @@ pub fn show(
         }
         _ => None,
     };
-    let width = (1.8 * z).clamp(1.0, 3.0);
+    // Thinner as you zoom in, so close-ups stay clean; a touch heavier when
+    // zoomed out so wires stay visible.
+    let width = (1.8 / z.sqrt()).clamp(0.9, 2.6);
     for w in &wire_list {
         let base = theme::port_color(type_name(w.ty));
         let selected = view.selected_edge.as_ref() == Some(&w.id);
@@ -1558,13 +1560,19 @@ pub fn show(
         };
         painter.add(bezier(w.pts, Stroke::new(wdt, color)));
         if view.wire_flow && z > 0.3 {
-            // Marching ants: small bright dashes flowing source → target.
+            // Marching ants: bright dashes flowing source → target, a bit
+            // wider than the wire so they read at any zoom.
+            let ant = if selected {
+                *GOLD
+            } else {
+                base.lerp_to_gamma(Color32::WHITE, 0.45)
+            };
             let ants = Shape::dashed_line_with_offset(
                 &w.flat,
-                Stroke::new(wdt, if selected { *GOLD } else { base }),
-                &[2.0 * z],
-                &[9.0 * z],
-                (flow_t * 20.0 * z).rem_euclid(11.0 * z),
+                Stroke::new(wdt + 1.2, ant),
+                &[5.0 * z],
+                &[11.0 * z],
+                (flow_t * 30.0 * z).rem_euclid(16.0 * z),
             );
             painter.extend(ants);
         }
@@ -1989,16 +1997,6 @@ fn toolbar(
     .clicked()
     {
         view.wire_flow = !view.wire_flow;
-    }
-    if popups::chip(
-        &mut tb,
-        "Grow",
-        view.auto_grow,
-        "Grow a region while a child is dragged against its edge",
-    )
-    .clicked()
-    {
-        view.auto_grow = !view.auto_grow;
     }
     tb.add_space(4.0);
     let hint = match view.armed.as_deref().and_then(|t| Catalogue::builtin().get(t)) {

@@ -176,6 +176,10 @@ pub enum Cmd {
     /// Gaussian-blur the top layer (`sigma` in pixels), then composite it
     /// source-over. `bounds` covers the content plus the kernel radius.
     PopLayerBlur { sigma: f32, bounds: [f32; 4] },
+    /// Run `shaders[index]` and composite its Image pass over the whole
+    /// view. With `input`, the top layer holds the rendered input subtree
+    /// and is consumed (popped) as the `input` channel.
+    Shader { index: u32, input: bool },
 }
 
 /// One frame's worth of batched geometry + the ordered command list.
@@ -189,6 +193,8 @@ pub struct FrameBuilder {
     pub cmds: Vec<Cmd>,
     /// Shapes the renderer can't draw (kept for diagnostics).
     pub skipped: usize,
+    /// `gpu/shader` draws, referenced by [`Cmd::Shader`].
+    pub shaders: Vec<Arc<floret_engine::shader::ShaderShape>>,
     clip_stack: Vec<Clip>,
     /// Content bounds of each open layer.
     bounds_stack: Vec<[f32; 4]>,
@@ -206,6 +212,7 @@ impl FrameBuilder {
         self.composite.clear();
         self.cmds.clear();
         self.skipped = 0;
+        self.shaders.clear();
         self.clip_stack.clear();
         self.bounds_stack.clear();
     }
@@ -251,6 +258,27 @@ impl FrameBuilder {
         self.grow(bounds);
     }
 
+    /// A shader draw (see [`Cmd::Shader`]). It covers the whole view and
+    /// ignores clips, like TS.
+    pub fn push_shader(&mut self, shape: Arc<floret_engine::shader::ShaderShape>, input: bool) {
+        if input {
+            self.bounds_stack.pop();
+        }
+        self.shaders.push(shape);
+        self.cmds.push(Cmd::Shader {
+            index: self.shaders.len() as u32 - 1,
+            input,
+        });
+        if let Some(top) = self.bounds_stack.last_mut() {
+            *top = [
+                f32::NEG_INFINITY,
+                f32::NEG_INFINITY,
+                f32::INFINITY,
+                f32::INFINITY,
+            ];
+        }
+    }
+
     pub fn cur_clip(&self) -> Clip {
         self.clip_stack.last().copied().flatten()
     }
@@ -273,7 +301,9 @@ impl FrameBuilder {
                     d += 1;
                     max = max.max(d);
                 }
-                Cmd::PopLayer { .. } | Cmd::PopLayerBlur { .. } => d = d.saturating_sub(1),
+                Cmd::PopLayer { .. }
+                | Cmd::PopLayerBlur { .. }
+                | Cmd::Shader { input: true, .. } => d = d.saturating_sub(1),
                 _ => {}
             }
         }
@@ -793,6 +823,13 @@ impl Emitter<'_> {
                 }
                 self.fb
                     .push_tex_quad(c, [0.0, 0.0, 1.0, 1.0], tint, run.clone());
+            }
+            SceneNode::Shader(sh) => {
+                if let Some(input) = &sh.input {
+                    fb.push_layer();
+                    self.emit(input, m);
+                }
+                self.fb.push_shader(sh.clone(), sh.input.is_some());
             }
             #[allow(unreachable_patterns)]
             _ => fb.skipped += 1,

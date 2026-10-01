@@ -10,7 +10,9 @@ rust-version = "1.95"
 [dependencies]
 floret-engine = { path = "../floret-engine" }
 # Same major as egui-wgpu 0.36 so the app can share its device / queue.
-wgpu = "30"
+wgpu = { version = "30", features = ["naga-ir"] }
+# The naga wgpu 30 uses; its GLSL frontend compiles `gpu/shader` sources.
+naga = { version = "30.0.1", features = ["glsl-in"] }
 bytemuck = { version = "1", features = ["derive"] }
 pollster = "1"
 serde_json.workspace = true

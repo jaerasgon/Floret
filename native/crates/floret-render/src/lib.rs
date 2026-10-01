@@ -19,11 +19,13 @@
 mod batch;
 mod gpu;
 mod headless;
+pub mod shader;
 mod text;
 
 pub use batch::{Blend, Cmd, Emitter, FrameBuilder};
 pub use gpu::{RenderStats, Renderer, STENCIL_FORMAT};
 pub use headless::{render_and_read, render_to_rgba, Headless, FORMAT as OFFSCREEN_FORMAT};
+pub use shader::{RenderClock, ShaderError};
 pub use text::{TextRasterizer, TextRun};
 
 use floret_engine::scene::{Paint, SceneNode};

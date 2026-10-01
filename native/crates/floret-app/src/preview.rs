@@ -1,175 +1,329 @@
-//! Live GPU preview. Draws directly into egui's wgpu render pass through a
-//! paint callback — the integration path the real scene renderer will use.
-//! Until that renderer lands (phase 2), it draws an animated placeholder
-//! shader driven by the engine's clock.
+//! Live preview: the first renderer node's scene, drawn by `floret-render`
+//! into an offscreen texture at the renderer's resolution, then shown fitted
+//! (aspect-correct) in the preview panel as an egui image.
+//!
+//! The renderer, the offscreen texture and its egui registration are kept
+//! across frames; the texture is only reallocated when the canvas size
+//! changes.
+//!
+//! [`PreviewPanel`] is everything the app needs: it owns the GPU preview,
+//! the canvas size (from the renderer node, like the web canvas driver) and
+//! the patch's mouse / keyboard input, and draws the panel.
 
-use eframe::egui;
+use crate::theme;
+use eframe::egui::{self, vec2, Align, Layout, RichText};
 use eframe::egui_wgpu::{self, wgpu};
+use floret_engine::scene::SceneNode;
+use floret_engine::tick::Outputs;
+use floret_engine::{Engine, FrameCtx};
+use floret_render::{RenderStats, Renderer};
+use std::sync::Arc;
+use std::time::Instant;
 
-#[repr(C)]
-#[derive(Clone, Copy, bytemuck::Pod, bytemuck::Zeroable)]
-struct Uniforms {
-    resolution: [f32; 2],
-    mouse: [f32; 2],
-    time: f32,
-    _pad: [f32; 3],
+/// The preview panel: GPU preview + canvas size + the patch's input state.
+pub struct PreviewPanel {
+    /// `None` without a wgpu render state.
+    gpu: Option<Preview>,
+    /// Canvas size (the renderer node's width × height).
+    pub canvas: (u32, u32),
+    /// Pointer over the preview, canvas pixels, centre origin.
+    mouse: (f64, f64),
+    mouse_pressed: bool,
+    key: String,
+    key_pressed: bool,
 }
 
-struct Resources {
-    pipeline: wgpu::RenderPipeline,
-    bind_group: wgpu::BindGroup,
-    uniforms: wgpu::Buffer,
-}
-
-const SHADER: &str = r#"
-struct U { resolution: vec2<f32>, mouse: vec2<f32>, time: f32 };
-@group(0) @binding(0) var<uniform> u: U;
-
-struct VOut { @builtin(position) pos: vec4<f32>, @location(0) uv: vec2<f32> };
-
-@vertex
-fn vs(@builtin(vertex_index) i: u32) -> VOut {
-    // One triangle covering the viewport.
-    let p = vec2<f32>(f32((i << 1u) & 2u), f32(i & 2u));
-    var o: VOut;
-    o.pos = vec4<f32>(p * 2.0 - 1.0, 0.0, 1.0);
-    o.uv = vec2<f32>(p.x, 1.0 - p.y);
-    return o;
-}
-
-@fragment
-fn fs(in: VOut) -> @location(0) vec4<f32> {
-    let aspect = u.resolution.x / max(u.resolution.y, 1.0);
-    var q = (in.uv - 0.5) * vec2<f32>(aspect, 1.0) * 2.0;
-    let r = length(q);
-    let a = atan2(q.y, q.x);
-    let t = u.time;
-    // A slowly turning floret: 8 petals, breathing.
-    let petals = 0.55 + 0.12 * sin(t * 0.8) + 0.18 * cos(8.0 * a + t * 0.6);
-    let edge = smoothstep(petals + 0.012, petals - 0.012, r);
-    let rings = 0.5 + 0.5 * cos(r * 28.0 - t * 2.0);
-    let gold = vec3<f32>(0.957, 0.773, 0.259);
-    let ink = vec3<f32>(0.078, 0.075, 0.102);
-    var col = mix(ink, gold * (0.55 + 0.45 * rings), edge);
-    let core = smoothstep(0.14, 0.0, r);
-    col = mix(col, vec3<f32>(1.0, 0.93, 0.7), core);
-    let vignette = smoothstep(1.6, 0.4, r);
-    return vec4<f32>(col * vignette, 1.0);
-}
-"#;
-
-/// Create GPU resources once, at startup.
-pub fn init(rs: &egui_wgpu::RenderState) {
-    let device = &rs.device;
-    let module = device.create_shader_module(wgpu::ShaderModuleDescriptor {
-        label: Some("floret-preview"),
-        source: wgpu::ShaderSource::Wgsl(SHADER.into()),
-    });
-    let uniforms = device.create_buffer(&wgpu::BufferDescriptor {
-        label: Some("floret-preview-uniforms"),
-        size: std::mem::size_of::<Uniforms>() as u64,
-        usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
-        mapped_at_creation: false,
-    });
-    let layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-        label: Some("floret-preview"),
-        entries: &[wgpu::BindGroupLayoutEntry {
-            binding: 0,
-            visibility: wgpu::ShaderStages::FRAGMENT,
-            ty: wgpu::BindingType::Buffer {
-                ty: wgpu::BufferBindingType::Uniform,
-                has_dynamic_offset: false,
-                min_binding_size: None,
-            },
-            count: None,
-        }],
-    });
-    let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-        label: Some("floret-preview"),
-        layout: &layout,
-        entries: &[wgpu::BindGroupEntry {
-            binding: 0,
-            resource: uniforms.as_entire_binding(),
-        }],
-    });
-    let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-        label: Some("floret-preview"),
-        bind_group_layouts: &[Some(&layout)],
-        immediate_size: 0,
-    });
-    let pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
-        label: Some("floret-preview"),
-        layout: Some(&pipeline_layout),
-        vertex: wgpu::VertexState {
-            module: &module,
-            entry_point: Some("vs"),
-            compilation_options: Default::default(),
-            buffers: &[],
-        },
-        primitive: wgpu::PrimitiveState::default(),
-        depth_stencil: None,
-        multisample: wgpu::MultisampleState::default(),
-        fragment: Some(wgpu::FragmentState {
-            module: &module,
-            entry_point: Some("fs"),
-            compilation_options: Default::default(),
-            targets: &[Some(rs.target_format.into())],
-        }),
-        multiview_mask: None,
-        cache: None,
-    });
-    rs.renderer.write().callback_resources.insert(Resources {
-        pipeline,
-        bind_group,
-        uniforms,
-    });
-}
-
-struct Callback {
-    uniforms: Uniforms,
-}
-
-impl egui_wgpu::CallbackTrait for Callback {
-    fn prepare(
-        &self,
-        _device: &wgpu::Device,
-        queue: &wgpu::Queue,
-        _screen: &egui_wgpu::ScreenDescriptor,
-        _encoder: &mut wgpu::CommandEncoder,
-        resources: &mut egui_wgpu::CallbackResources,
-    ) -> Vec<wgpu::CommandBuffer> {
-        if let Some(r) = resources.get::<Resources>() {
-            queue.write_buffer(&r.uniforms, 0, bytemuck::bytes_of(&self.uniforms));
+impl PreviewPanel {
+    pub fn new(rs: Option<&egui_wgpu::RenderState>) -> PreviewPanel {
+        PreviewPanel {
+            gpu: rs.map(Preview::new),
+            canvas: floret_render::DEFAULT_CANVAS,
+            mouse: (0.0, 0.0),
+            mouse_pressed: false,
+            key: String::new(),
+            key_pressed: false,
         }
-        Vec::new()
     }
 
-    fn paint(
-        &self,
-        _info: egui::PaintCallbackInfo,
-        pass: &mut wgpu::RenderPass<'static>,
-        resources: &egui_wgpu::CallbackResources,
-    ) {
-        let Some(r) = resources.get::<Resources>() else {
+    /// The engine's frame context for this tick. Reads the canvas size from
+    /// the first renderer's params before the tick, like the web driver (a
+    /// wired size settles one frame later), and the keyboard.
+    pub fn frame_ctx(
+        &mut self,
+        ctx: &egui::Context,
+        engine: Option<&Engine>,
+        t: f64,
+        dt: f64,
+        frame_count: u64,
+    ) -> FrameCtx {
+        if let Some(e) = engine {
+            if let Some(r) = e.graph.renderer() {
+                let id = &e.graph.nodes[r].id;
+                self.canvas = floret_render::canvas_size(
+                    e.params.get(id, "width"),
+                    e.params.get(id, "height"),
+                );
+            }
+        }
+        self.read_keys(ctx);
+        FrameCtx {
+            t,
+            dt,
+            frame_count: frame_count as f64,
+            width: f64::from(self.canvas.0),
+            height: f64::from(self.canvas.1),
+            mouse_x: self.mouse.0,
+            mouse_y: self.mouse.1,
+            mouse_is_pressed: self.mouse_pressed,
+            key: self.key.clone(),
+            key_is_pressed: self.key_pressed,
+        }
+    }
+
+    /// Keyboard state for the patch (`key` / `keyIsPressed`), unless a
+    /// text field has focus. Names follow DOM `KeyboardEvent.key`.
+    fn read_keys(&mut self, ctx: &egui::Context) {
+        if ctx.egui_wants_keyboard_input() {
+            self.key_pressed = false;
             return;
-        };
-        pass.set_pipeline(&r.pipeline);
-        pass.set_bind_group(0, &r.bind_group, &[]);
-        pass.draw(0..3, 0..1);
+        }
+        ctx.input(|i| {
+            for e in &i.events {
+                if let egui::Event::Key {
+                    key, pressed: true, ..
+                } = e
+                {
+                    self.key = match key.name() {
+                        "Space" => " ".to_owned(),
+                        n if n.chars().count() == 1 => n.to_lowercase(),
+                        n => n.to_owned(),
+                    };
+                }
+            }
+            self.key_pressed = !i.keys_down.is_empty();
+        });
+    }
+
+    /// The panel: a header (size, shape count, encode time) and the first
+    /// renderer's scene, aspect-fitted.
+    pub fn show(
+        &mut self,
+        ui: &mut egui::Ui,
+        rs: Option<&egui_wgpu::RenderState>,
+        engine: Option<&Engine>,
+        outputs: &Outputs,
+    ) {
+        ui.horizontal(|ui| {
+            ui.label(RichText::new("Preview").color(theme::FG_1).small());
+            ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                let mut info = format!("{} × {}", self.canvas.0, self.canvas.1);
+                if let Some(p) = &self.gpu {
+                    let s = p.stats;
+                    info.push_str(&format!(
+                        " · {} shapes · {:.1} ms",
+                        s.sdf_instances + s.poly_fills + s.text_quads,
+                        p.encode_ms
+                    ));
+                }
+                ui.label(RichText::new(info).color(theme::FG_2).small().monospace());
+            });
+        });
+
+        let w = ui.available_width();
+        let aspect = self.canvas.1 as f32 / self.canvas.0.max(1) as f32;
+        let h = (w * aspect).clamp(120.0, (ui.available_height() * 0.62).max(120.0));
+        let (area, response) = ui.allocate_exact_size(vec2(w, h), egui::Sense::click_and_drag());
+        ui.painter()
+            .rect_filled(area, egui::CornerRadius::same(6), theme::BG_0);
+        let image = fit(area, self.canvas);
+        match (rs, self.gpu.as_mut()) {
+            (Some(rs), Some(p)) => {
+                let (layers, bg) = scene(engine, outputs);
+                let id = p.render(rs, &layers, bg, self.canvas);
+                ui.painter().image(
+                    id,
+                    image,
+                    egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)),
+                    egui::Color32::WHITE,
+                );
+            }
+            _ => {
+                ui.painter().text(
+                    area.center(),
+                    egui::Align2::CENTER_CENTER,
+                    "No GPU renderer available",
+                    egui::FontId::proportional(12.0),
+                    theme::FG_2,
+                );
+            }
+        }
+        // Mouse in canvas pixels, centre origin; pressed while held on it.
+        if let Some(pos) = response.hover_pos() {
+            if let Some(m) = canvas_mouse(image, self.canvas, pos) {
+                self.mouse = m;
+            }
+        }
+        self.mouse_pressed = response.is_pointer_button_down_on();
+        ui.painter().rect_stroke(
+            area,
+            egui::CornerRadius::same(6),
+            egui::Stroke::new(1.0, theme::BORDER),
+            egui::StrokeKind::Outside,
+        );
     }
 }
 
-/// Draw the preview into `rect`, animated by `time` (seconds).
-pub fn paint(ui: &egui::Ui, rect: egui::Rect, time: f32, mouse: egui::Vec2) {
-    let ppp = ui.ctx().pixels_per_point();
-    let cb = Callback {
-        uniforms: Uniforms {
-            resolution: [rect.width() * ppp, rect.height() * ppp],
-            mouse: [mouse.x, mouse.y],
-            time,
-            _pad: [0.0; 3],
-        },
-    };
-    ui.painter()
-        .add(egui_wgpu::Callback::new_paint_callback(rect, cb));
+/// The first renderer's scene: its layers (first output, flattened) and
+/// background (second output), like the web canvas driver.
+fn scene(engine: Option<&Engine>, outputs: &Outputs) -> (Vec<Arc<SceneNode>>, [f64; 4]) {
+    const BLACK: [f64; 4] = [0.0, 0.0, 0.0, 1.0];
+    let out = engine
+        .and_then(|e| e.graph.renderer())
+        .and_then(|r| outputs.get(r)?.as_ref());
+    match out {
+        Some(out) => (
+            out.first()
+                .map(|s| floret_render::flatten_layers(s))
+                .unwrap_or_default(),
+            out.get(1).map_or(BLACK, |s| floret_render::background(s)),
+        ),
+        None => (Vec::new(), BLACK),
+    }
+}
+
+/// Offscreen colour format: non-sRGB, premultiplied, gamma-space values —
+/// what egui expects from a native texture, and how WebGL blends.
+const FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Rgba8Unorm;
+const MSAA: u32 = 4;
+
+struct Target {
+    size: (u32, u32),
+    _texture: wgpu::Texture,
+    view: wgpu::TextureView,
+}
+
+struct Preview {
+    renderer: Renderer,
+    target: Option<Target>,
+    texture_id: Option<egui::TextureId>,
+    stats: RenderStats,
+    /// Smoothed CPU time spent batching + encoding a frame (ms).
+    encode_ms: f32,
+}
+
+impl Preview {
+    fn new(rs: &egui_wgpu::RenderState) -> Preview {
+        let samples = if rs
+            .adapter
+            .get_texture_format_features(FORMAT)
+            .flags
+            .sample_count_supported(MSAA)
+            && rs
+                .adapter
+                .get_texture_format_features(floret_render::STENCIL_FORMAT)
+                .flags
+                .sample_count_supported(MSAA)
+        {
+            MSAA
+        } else {
+            1
+        };
+        Preview {
+            renderer: Renderer::new(&rs.device, &rs.queue, FORMAT, samples),
+            target: None,
+            texture_id: None,
+            stats: RenderStats::default(),
+            encode_ms: 0.0,
+        }
+    }
+
+    /// Render one frame of the scene at `size` and return its egui texture.
+    fn render(
+        &mut self,
+        rs: &egui_wgpu::RenderState,
+        layers: &[Arc<SceneNode>],
+        background: [f64; 4],
+        size: (u32, u32),
+    ) -> egui::TextureId {
+        let t0 = Instant::now();
+        let device = &rs.device;
+        if self.target.as_ref().is_none_or(|t| t.size != size) {
+            let texture = device.create_texture(&wgpu::TextureDescriptor {
+                label: Some("floret preview"),
+                size: wgpu::Extent3d {
+                    width: size.0,
+                    height: size.1,
+                    depth_or_array_layers: 1,
+                },
+                mip_level_count: 1,
+                sample_count: 1,
+                dimension: wgpu::TextureDimension::D2,
+                format: FORMAT,
+                usage: wgpu::TextureUsages::RENDER_ATTACHMENT
+                    | wgpu::TextureUsages::TEXTURE_BINDING,
+                view_formats: &[],
+            });
+            let view = texture.create_view(&Default::default());
+            let mut egui_renderer = rs.renderer.write();
+            match self.texture_id {
+                Some(id) => egui_renderer.update_egui_texture_from_wgpu_texture(
+                    device,
+                    &view,
+                    wgpu::FilterMode::Linear,
+                    id,
+                ),
+                None => {
+                    self.texture_id = Some(egui_renderer.register_native_texture(
+                        device,
+                        &view,
+                        wgpu::FilterMode::Linear,
+                    ));
+                }
+            }
+            self.target = Some(Target {
+                size,
+                _texture: texture,
+                view,
+            });
+        }
+        let target = self.target.as_ref().expect("target");
+        let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+            label: Some("floret preview"),
+        });
+        self.stats = self.renderer.render(
+            device,
+            &rs.queue,
+            &mut encoder,
+            &target.view,
+            layers,
+            background,
+            size,
+        );
+        rs.queue.submit([encoder.finish()]);
+        let ms = t0.elapsed().as_secs_f32() * 1000.0;
+        self.encode_ms = if self.encode_ms == 0.0 {
+            ms
+        } else {
+            self.encode_ms * 0.9 + ms * 0.1
+        };
+        self.texture_id.expect("registered")
+    }
+}
+
+/// The largest `size`-shaped rect centred in `area`.
+fn fit(area: egui::Rect, size: (u32, u32)) -> egui::Rect {
+    let (w, h) = (size.0.max(1) as f32, size.1.max(1) as f32);
+    let scale = (area.width() / w).min(area.height() / h);
+    egui::Rect::from_center_size(area.center(), egui::vec2(w * scale, h * scale))
+}
+
+/// Pointer position in canvas pixels, centre origin (the engine's mouse
+/// convention), if it's over the fitted image.
+fn canvas_mouse(image: egui::Rect, size: (u32, u32), pos: egui::Pos2) -> Option<(f64, f64)> {
+    if !image.contains(pos) || image.width() <= 0.0 || image.height() <= 0.0 {
+        return None;
+    }
+    let u = f64::from((pos.x - image.min.x) / image.width());
+    let v = f64::from((pos.y - image.min.y) / image.height());
+    Some(((u - 0.5) * f64::from(size.0), (v - 0.5) * f64::from(size.1)))
 }

@@ -1,0 +1,23 @@
+[package]
+name = "floret-render"
+description = "Floret GPU scene renderer (wgpu): turns the engine's SceneNode tree into pixels."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+rust-version = "1.95"
+
+[dependencies]
+floret-engine = { path = "../floret-engine" }
+# Same major as egui-wgpu 0.36 so the app can share its device / queue.
+wgpu = "30"
+bytemuck = { version = "1", features = ["derive"] }
+pollster = "1"
+serde_json.workspace = true
+swash = "0.2"
+epaint_default_fonts = "0.36"
+cosmic-text = { version = "0.19", default-features = false, features = ["std", "swash", "fontconfig"] }
+
+[dev-dependencies]
+flate2.workspace = true
+png = "0.18"

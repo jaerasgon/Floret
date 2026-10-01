@@ -1,9 +1,9 @@
 //! Floret desktop app — UI spike.
 //!
 //! Loads the built-in samples, runs them on the Rust engine every frame, and
-//! shows them on a native node canvas next to a live GPU preview. Nodes not
-//! yet ported to Rust are marked "not ported"; the preview draws a
-//! placeholder until the scene renderer lands (phase 2).
+//! shows them on a native node canvas next to a live GPU preview of the
+//! first renderer node's scene (drawn by `floret-render`). Nodes not yet
+//! ported to Rust are marked "not ported".
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
@@ -12,11 +12,11 @@ mod editor;
 mod preview;
 mod theme;
 
-use eframe::egui::{self, vec2, Align, Layout, RichText};
+use eframe::egui::{self, Align, Layout, RichText};
 use floret_engine::patch::{PatchFile, Position};
 use floret_engine::spec::Catalogue;
 use floret_engine::tick::Outputs;
-use floret_engine::{Engine, FrameCtx};
+use floret_engine::Engine;
 use std::time::Instant;
 
 pub struct Sample {
@@ -51,7 +51,7 @@ struct App {
     view: canvas::View,
     fit_pending: bool,
     canvas_rect: egui::Rect,
-    preview_rect: egui::Rect,
+    preview: preview::PreviewPanel,
     start: Instant,
     last: Instant,
     frame: u64,
@@ -63,9 +63,6 @@ struct App {
 impl App {
     fn new(cc: &eframe::CreationContext<'_>) -> App {
         theme::apply(&cc.egui_ctx);
-        if let Some(rs) = cc.wgpu_render_state.as_ref() {
-            preview::init(rs);
-        }
         // FLORET_SAMPLE=<id> picks the startup sample (handy for screenshots).
         let want = std::env::var("FLORET_SAMPLE").unwrap_or_else(|_| "tut-03-animate".into());
         let start = SAMPLES.iter().position(|s| s.id == want).unwrap_or(0);
@@ -79,7 +76,7 @@ impl App {
             view: canvas::View::default(),
             fit_pending: true,
             canvas_rect: egui::Rect::ZERO,
-            preview_rect: egui::Rect::ZERO,
+            preview: preview::PreviewPanel::new(cc.wgpu_render_state.as_ref()),
             start: Instant::now(),
             last: Instant::now(),
             frame: 0,
@@ -139,22 +136,17 @@ impl App {
         }
     }
 
-    fn tick(&mut self) {
+    fn tick(&mut self, ctx: &egui::Context) {
         let now = Instant::now();
         let dt = now.duration_since(self.last).as_secs_f64();
         self.last = now;
         self.fps = self.fps * 0.9 + (1.0 / dt.max(1e-6)) as f32 * 0.1;
+        let t = now.duration_since(self.start).as_secs_f64();
+        let frame = self
+            .preview
+            .frame_ctx(ctx, self.engine.as_ref(), t, dt, self.frame);
         let Some(engine) = self.engine.as_mut() else {
             return;
-        };
-        let r = self.preview_rect;
-        let frame = FrameCtx {
-            t: now.duration_since(self.start).as_secs_f64(),
-            dt,
-            frame_count: self.frame as f64,
-            width: f64::from(r.width().max(1.0)),
-            height: f64::from(r.height().max(1.0)),
-            ..Default::default()
         };
         self.outputs = engine.tick(&frame).outputs;
         self.frame += 1;
@@ -290,8 +282,8 @@ impl App {
 }
 
 impl eframe::App for App {
-    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
-        self.tick();
+    fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
+        self.tick(ui.ctx());
         ui.ctx().request_repaint();
 
         egui::Panel::top("toolbar")
@@ -340,7 +332,7 @@ impl eframe::App for App {
                     }
                     ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                         ui.label(
-                            RichText::new("native spike · engine in Rust · renderer: phase 2")
+                            RichText::new("native spike · engine + renderer in Rust")
                                 .color(theme::FG_3)
                                 .small(),
                         );
@@ -371,32 +363,9 @@ impl eframe::App for App {
                     .inner_margin(egui::Margin::same(10)),
             )
             .show(ui, |ui| {
-                ui.label(RichText::new("Preview").color(theme::FG_1).small());
-                let w = ui.available_width();
-                let (rect, _) = ui.allocate_exact_size(vec2(w, w), egui::Sense::hover());
-                self.preview_rect = rect;
-                let t = self.start.elapsed().as_secs_f32();
-                preview::paint(ui, rect, t, egui::Vec2::ZERO);
-                // Until the scene renderer lands (#60) this is not the patch.
-                let tag = egui::Rect::from_min_size(
-                    rect.left_bottom() + vec2(8.0, -30.0),
-                    vec2(rect.width() - 16.0, 22.0),
-                );
-                ui.painter()
-                    .rect_filled(tag, 6.0, theme::BG_0.gamma_multiply(0.85));
-                ui.painter().text(
-                    tag.center(),
-                    egui::Align2::CENTER_CENTER,
-                    "Placeholder — the patch's scene isn't rendered yet",
-                    egui::FontId::proportional(11.0),
-                    theme::FG_1,
-                );
-                ui.painter().rect_stroke(
-                    rect,
-                    egui::CornerRadius::same(6),
-                    egui::Stroke::new(1.0, theme::BORDER),
-                    egui::StrokeKind::Outside,
-                );
+                let rs = frame.wgpu_render_state();
+                self.preview
+                    .show(ui, rs, self.engine.as_ref(), &self.outputs);
                 ui.add_space(10.0);
                 ui.separator();
                 ui.label(RichText::new("Inspector").color(theme::FG_1).small());

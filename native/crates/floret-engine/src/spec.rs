@@ -136,6 +136,9 @@ pub struct NodeSpec {
     pub outputs: Vec<PortSpec>,
     pub eval: EvalKind,
     pub has_dynamic_inputs: bool,
+    /// Output ports depend on params / upstream types (editor display only;
+    /// compile indexes the static outputs).
+    pub has_dynamic_outputs: bool,
     pub default_params: Params,
     pub param_options: HashMap<String, Vec<String>>,
     pub stateful: bool,
@@ -250,6 +253,8 @@ struct RawNode {
     eval: EvalKind,
     #[serde(default)]
     dynamic_inputs: bool,
+    #[serde(default)]
+    dynamic_outputs: bool,
     default_params: Option<Params>,
     param_options: Option<HashMap<String, Vec<String>>>,
     #[serde(default)]
@@ -300,6 +305,7 @@ impl RawNode {
             outputs: ports(self.outputs)?,
             eval: self.eval,
             has_dynamic_inputs: self.dynamic_inputs,
+            has_dynamic_outputs: self.dynamic_outputs,
             default_params: self.default_params.unwrap_or_default(),
             param_options: self.param_options.unwrap_or_default(),
             stateful: self.stateful,

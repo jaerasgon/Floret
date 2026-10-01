@@ -14,6 +14,7 @@
 pub mod compile;
 pub mod graph;
 pub mod js;
+pub mod legacy;
 pub mod node;
 pub mod nodes;
 pub mod patch;
@@ -29,6 +30,15 @@ pub use spec::Catalogue;
 pub use tick::{Engine, TickResult};
 pub use value::{Color, Spread, Value, Vec2};
 
+/// Parse a `.flora` file the way the app opens one: version migrations,
+/// then the web app's legacy fix-ups (old port names, draw x/y → vec2,
+/// dead wires). Use this, not `PatchFile::load`, for user files.
+pub fn load_patch(text: &str) -> Result<PatchFile, patch::LoadError> {
+    let mut patch = PatchFile::load(text)?;
+    legacy::normalize(&mut patch, Catalogue::builtin());
+    Ok(patch)
+}
+
 impl Engine {
     /// Parse, migrate and compile a patch with the built-in catalogue.
     /// Returns the engine plus any compile warnings.
@@ -37,7 +47,7 @@ impl Engine {
     }
 
     pub fn load_with_warnings(text: &str) -> Result<(Engine, Vec<CompileWarning>), String> {
-        let patch = PatchFile::load(text).map_err(|e| e.to_string())?;
+        let patch = load_patch(text).map_err(|e| e.to_string())?;
         Self::from_patch(&patch)
     }
 

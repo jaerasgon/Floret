@@ -537,7 +537,8 @@
      "rgb",
      "hsl"
     ]
-   }
+   },
+   "dynamicOutputs": true
   },
   {
    "type": "color/split-hsl",
@@ -3079,7 +3080,8 @@
    "defaultParams": null,
    "paramOptions": null,
    "effectful": true,
-   "compact": true
+   "compact": true,
+   "dynamicOutputs": true
   },
   {
    "type": "io/image-url",
@@ -3817,7 +3819,8 @@
     "valueType": "any"
    },
    "paramOptions": null,
-   "adaptiveType": true
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "math/acos",
@@ -3877,7 +3880,8 @@
     "valueType": "any"
    },
    "paramOptions": null,
-   "adaptiveType": true
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "math/asin",
@@ -4171,7 +4175,8 @@
     "valueType": "any"
    },
    "paramOptions": null,
-   "adaptiveType": true
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "math/exp",
@@ -4329,7 +4334,8 @@
     "valueType": "any"
    },
    "paramOptions": null,
-   "adaptiveType": true
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "math/log",
@@ -4473,7 +4479,8 @@
     "valueType": "any"
    },
    "paramOptions": null,
-   "adaptiveType": true
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "math/max-spread",
@@ -4584,7 +4591,8 @@
     "valueType": "any"
    },
    "paramOptions": null,
-   "adaptiveType": true
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "math/min-spread",
@@ -4674,7 +4682,8 @@
     "valueType": "any"
    },
    "paramOptions": null,
-   "adaptiveType": true
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "math/neg",
@@ -4702,7 +4711,8 @@
     "valueType": "any"
    },
    "paramOptions": null,
-   "adaptiveType": true
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "math/norm",
@@ -5022,7 +5032,8 @@
     "valueType": "any"
    },
    "paramOptions": null,
-   "adaptiveType": true
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "math/sum",
@@ -5148,7 +5159,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "meta/subpatch",
@@ -5200,7 +5212,8 @@
    },
    "paramOptions": null,
    "effectful": true,
-   "adaptiveType": true
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "motion/ease",
@@ -5275,7 +5288,8 @@
    },
    "paramOptions": null,
    "effectful": true,
-   "adaptiveType": true
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "motion/spring",
@@ -5316,7 +5330,8 @@
    },
    "paramOptions": null,
    "effectful": true,
-   "adaptiveType": true
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "motion/trigger",
@@ -7920,7 +7935,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/at",
@@ -7951,7 +7967,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/at-group",
@@ -7987,7 +8004,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/ca-grid-seed",
@@ -8090,7 +8108,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/count",
@@ -8174,7 +8193,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/cycle",
@@ -8547,7 +8567,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/insert-slice",
@@ -8583,7 +8604,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/interleave",
@@ -8612,7 +8634,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/last-row",
@@ -8760,7 +8783,8 @@
      "wrap",
      "zero"
     ]
-   }
+   },
+   "dynamicOutputs": true
   },
   {
    "type": "spread/noise",
@@ -8834,7 +8858,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/partition",
@@ -8870,7 +8895,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/permute",
@@ -8899,7 +8925,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/pick",
@@ -8928,7 +8955,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/randomize",
@@ -8960,7 +8988,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/range",
@@ -9024,7 +9053,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/repeat",
@@ -9056,7 +9086,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/resample",
@@ -9194,7 +9225,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/scroll-up",
@@ -9266,7 +9298,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/shuffle",
@@ -9326,7 +9359,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/sine",
@@ -9407,7 +9441,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/slice",
@@ -9445,7 +9480,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/sort",
@@ -9510,7 +9546,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/spiral",
@@ -9583,7 +9620,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/swap",
@@ -9621,7 +9659,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/take",
@@ -9652,7 +9691,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/ungroup",
@@ -9691,7 +9731,8 @@
    "defaultParams": {
     "count": 3
    },
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/uninterleave",
@@ -9720,7 +9761,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/unique",
@@ -9744,7 +9786,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "spread/walk-step",
@@ -9829,7 +9872,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "dynamicOutputs": true
   },
   {
    "type": "state/read",

@@ -394,6 +394,9 @@ pub enum SceneNode {
         tapered: bool,
         tail_width: f64,
     },
+    /// `gpu/shader`: a GLSL fragment shader (plus optional buffer passes)
+    /// drawn over the whole canvas. See [`crate::shader`].
+    Shader(Arc<crate::shader::ShaderShape>),
 }
 
 impl SceneNode {
@@ -420,6 +423,7 @@ impl SceneNode {
             SceneNode::Group { .. } => "group",
             SceneNode::ParticleBatch { .. } => "particle-batch",
             SceneNode::ParticleTrailBatch { .. } => "particle-trail-batch",
+            SceneNode::Shader(_) => "shader",
         }
     }
 
@@ -609,6 +613,7 @@ impl SceneNode {
                 put(&mut m, "tapered", Value::Bool(*tapered));
                 put(&mut m, "tailWidth", n(*tail_width));
             }
+            SceneNode::Shader(sh) => sh.fields(&mut m),
         }
         Value::Object(Arc::new(m))
     }

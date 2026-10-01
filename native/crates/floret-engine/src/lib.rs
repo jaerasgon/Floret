@@ -20,6 +20,7 @@ pub mod nodes;
 pub mod particles;
 pub mod patch;
 pub mod scene;
+pub mod shader;
 pub mod spec;
 pub mod tick;
 pub mod value;

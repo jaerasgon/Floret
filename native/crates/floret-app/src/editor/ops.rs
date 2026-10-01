@@ -5,6 +5,19 @@ use super::ports::find_node;
 use floret_engine::patch::{PatchEdge, PatchFile, PatchNode, Position};
 use floret_engine::spec::Catalogue;
 use std::collections::{HashMap, HashSet};
+use std::sync::atomic::{AtomicU64, Ordering};
+
+/// Width × height seeded into a new Renderer (Preferences → Canvas).
+static DEFAULT_RENDER_SIZE: AtomicU64 = AtomicU64::new((1080 << 32) | 1920);
+
+pub fn set_default_render_size(w: u32, h: u32) {
+    DEFAULT_RENDER_SIZE.store((u64::from(w) << 32) | u64::from(h), Ordering::Relaxed);
+}
+
+pub fn default_render_size() -> (u32, u32) {
+    let v = DEFAULT_RENDER_SIZE.load(Ordering::Relaxed);
+    ((v >> 32) as u32, v as u32)
+}
 
 /// Grid step for "snap to grid" (matches the canvas dot grid).
 pub const GRID: f64 = 24.0;
@@ -77,6 +90,11 @@ pub fn add_node(
     let spec = cat.get(def_type)?;
     let id = fresh_node_id(patch, def_type);
     let mut params = spec.default_params.clone();
+    if def_type == "render/renderer" {
+        let (w, h) = default_render_size();
+        params.insert("width".into(), w.into());
+        params.insert("height".into(), h.into());
+    }
     // Read / Write slots: the smallest integer unused by this type.
     if matches!(
         def_type,

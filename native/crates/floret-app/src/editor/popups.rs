@@ -95,7 +95,7 @@ fn star(ui: &egui::Ui, row: Rect, on: bool) -> bool {
         Align2::CENTER_CENTER,
         if on { "★" } else { "☆" },
         FontId::proportional(13.0),
-        color,
+        *color,
     );
     resp.on_hover_text(if on {
         "Unfavorite"
@@ -148,7 +148,7 @@ pub fn search_popup(
         .fixed_pos(pos)
         .show(ctx, |ui| {
             egui::Frame::popup(ui.style())
-                .fill(theme::BG_1)
+                .fill(*theme::BG_1)
                 .stroke(Stroke::new(1.0, BORDER))
                 .corner_radius(CornerRadius::same(9))
                 .inner_margin(egui::Margin::same(6))
@@ -215,14 +215,14 @@ pub fn search_popup(
                                     Align2::LEFT_CENTER,
                                     &s.label,
                                     FontId::proportional(13.0),
-                                    if on { GOLD } else { FG_0 },
+                                    if on { *GOLD } else { *FG_0 },
                                 );
                                 p.text(
                                     rect.right_center() - vec2(28.0, 0.0),
                                     Align2::RIGHT_CENTER,
                                     &s.ty,
                                     FontId::monospace(10.5),
-                                    FG_2,
+                                    *FG_2,
                                 );
                                 if star(ui, rect, favs.contains(&s.ty)) {
                                     favs.toggle(&s.ty);
@@ -321,7 +321,7 @@ pub fn favorites_popup(
         .fixed_pos(pos)
         .show(ctx, |ui| {
             egui::Frame::popup(ui.style())
-                .fill(theme::BG_1)
+                .fill(*theme::BG_1)
                 .stroke(Stroke::new(1.0, BORDER))
                 .corner_radius(CornerRadius::same(9))
                 .inner_margin(egui::Margin::same(6))
@@ -362,7 +362,7 @@ pub fn favorites_popup(
                                 Align2::CENTER_CENTER,
                                 (i + 1).to_string(),
                                 FontId::monospace(11.0),
-                                FG_2,
+                                *FG_2,
                             );
                         }
                         p.circle_filled(
@@ -375,14 +375,14 @@ pub fn favorites_popup(
                             Align2::LEFT_CENTER,
                             &s.label,
                             FontId::proportional(13.0),
-                            if on { GOLD } else { FG_0 },
+                            if on { *GOLD } else { *FG_0 },
                         );
                         p.text(
                             rect.right_center() - vec2(8.0, 0.0),
                             Align2::RIGHT_CENTER,
                             &s.ty,
                             FontId::monospace(10.5),
-                            FG_2,
+                            *FG_2,
                         );
                         if resp.clicked() {
                             picked = Some(s.ty.clone());
@@ -414,7 +414,7 @@ pub fn inline_text(ctx: &egui::Context, rect: Rect, text: &mut String, first: bo
                 .font(FontId::monospace((rect.height() * 0.7).clamp(9.0, 16.0)))
                 .desired_width(rect.width().max(40.0))
                 .margin(egui::Margin::symmetric(3, 1))
-                .background_color(theme::BG_0);
+                .background_color(*theme::BG_0);
             let resp = ui.add(edit);
             if first {
                 resp.request_focus();
@@ -459,7 +459,7 @@ pub fn port_editor(ctx: &egui::Context, bounds: Rect, st: &mut PortEditorState) 
         .fixed_pos(pos)
         .show(ctx, |ui| {
             egui::Frame::popup(ui.style())
-                .fill(theme::BG_1)
+                .fill(*theme::BG_1)
                 .stroke(Stroke::new(1.0, BORDER))
                 .corner_radius(CornerRadius::same(8))
                 .inner_margin(egui::Margin::same(8))
@@ -523,7 +523,7 @@ pub fn color_popup(ctx: &egui::Context, bounds: Rect, st: &mut ColorState) -> (b
         .fixed_pos(pos)
         .show(ctx, |ui| {
             egui::Frame::popup(ui.style())
-                .fill(theme::BG_1)
+                .fill(*theme::BG_1)
                 .stroke(Stroke::new(1.0, BORDER))
                 .corner_radius(CornerRadius::same(8))
                 .inner_margin(egui::Margin::same(8))
@@ -634,7 +634,7 @@ pub fn menu_popup<A: Clone>(
         .fixed_pos(pos)
         .show(ctx, |ui| {
             egui::Frame::menu(ui.style())
-                .fill(theme::BG_1)
+                .fill(*theme::BG_1)
                 .stroke(Stroke::new(1.0, BORDER))
                 .corner_radius(CornerRadius::same(8))
                 .inner_margin(egui::Margin::same(5))
@@ -669,7 +669,7 @@ pub fn menu_popup<A: Clone>(
                             Align2::LEFT_CENTER,
                             &item.label,
                             FontId::proportional(13.0),
-                            color,
+                            *color,
                         );
                         if let Some(k) = item.shortcut {
                             ui.painter().text(
@@ -677,7 +677,7 @@ pub fn menu_popup<A: Clone>(
                                 Align2::RIGHT_CENTER,
                                 k,
                                 FontId::proportional(11.0),
-                                FG_1,
+                                *FG_1,
                             );
                         }
                         if resp.clicked() {
@@ -698,7 +698,7 @@ pub fn menu_popup<A: Clone>(
 /// Small pill-shaped toggle / button for the canvas corner toolbar.
 pub fn chip(ui: &mut egui::Ui, label: &str, on: bool, tip: &str) -> egui::Response {
     let font = FontId::proportional(12.0);
-    let galley = ui.painter().layout_no_wrap(label.to_owned(), font, FG_0);
+    let galley = ui.painter().layout_no_wrap(label.to_owned(), font, *FG_0);
     let size = vec2(galley.size().x + 18.0, 24.0);
     let (rect, resp) = ui.allocate_exact_size(size, Sense::click());
     let fill = if resp.hovered() { BG_3 } else { BG_2 };
@@ -712,7 +712,7 @@ pub fn chip(ui: &mut egui::Ui, label: &str, on: bool, tip: &str) -> egui::Respon
     ui.painter().galley(
         rect.center() - galley.size() / 2.0,
         galley,
-        if on { GOLD } else { FG_1 },
+        if on { *GOLD } else { *FG_1 },
     );
     if resp.clicked() {
         // Don't keep keyboard focus: canvas shortcuts (Tab, F, …) stay live.

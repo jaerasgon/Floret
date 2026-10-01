@@ -362,6 +362,12 @@ impl View {
         self.recompile = true;
     }
 
+    /// The patch's undo revision: changes with every committed edit, undo
+    /// and redo (the app's dirty tracking).
+    pub fn revision(&self) -> u64 {
+        self.history.revision()
+    }
+
     /// Whether the patch changed structurally since the last call.
     pub fn take_recompile(&mut self) -> bool {
         std::mem::take(&mut self.recompile)
@@ -1378,7 +1384,7 @@ pub fn show(
             ));
         }
         let (color, wdt) = if selected {
-            (GOLD, width + 0.6)
+            (*GOLD, width + 0.6)
         } else if hovered {
             (base, width + 0.8)
         } else {
@@ -1389,7 +1395,7 @@ pub fn show(
             // Marching ants: small bright dashes flowing source → target.
             let ants = Shape::dashed_line_with_offset(
                 &w.flat,
-                Stroke::new(wdt, if selected { GOLD } else { base }),
+                Stroke::new(wdt, if selected { *GOLD } else { base }),
                 &[2.0 * z],
                 &[9.0 * z],
                 (flow_t * 20.0 * z).rem_euclid(11.0 * z),
@@ -1416,7 +1422,7 @@ pub fn show(
             };
             let flat = bezier(pts, Stroke::NONE).flatten(Some(0.5));
             let color = if target.is_some() || pending_edge.is_some() {
-                GOLD
+                *GOLD
             } else {
                 GOLD.gamma_multiply(0.85)
             };

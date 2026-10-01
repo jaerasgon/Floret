@@ -5,6 +5,9 @@
 //! scrubs don't push at all; a param commit on the same `(node, key)`
 //! within 250 ms of the previous one replaces that entry instead of
 //! stacking, so typing collapses into one step.
+//!
+//! Every entry has a unique id; the current entry's id is the patch's
+//! revision, which the app compares with the saved one for dirty tracking.
 
 use floret_engine::patch::{PatchEdge, PatchFile, PatchNode};
 use std::time::{Duration, Instant};
@@ -19,27 +22,36 @@ struct Entry {
     at: Instant,
     /// `"<node>.<key>"` for param commits (coalescing key).
     param_key: Option<String>,
+    id: u64,
 }
 
 #[derive(Default)]
 pub struct History {
     past: Vec<Entry>,
     future: Vec<Entry>,
+    next_id: u64,
 }
 
 impl History {
-    fn entry(patch: &PatchFile, at: Instant, param_key: Option<String>) -> Entry {
+    fn entry(&mut self, patch: &PatchFile, at: Instant, param_key: Option<String>) -> Entry {
+        self.next_id += 1;
         Entry {
             nodes: patch.nodes.clone(),
             edges: patch.edges.clone(),
             at,
             param_key,
+            id: self.next_id,
         }
+    }
+
+    /// Id of the current state; changes with every edit, undo and redo.
+    pub fn revision(&self) -> u64 {
+        self.past.last().map_or(0, |e| e.id)
     }
 
     /// Seed with a freshly loaded patch: the first undo can't go past it.
     pub fn reset(&mut self, patch: &PatchFile) {
-        self.past = vec![Self::entry(patch, Instant::now(), None)];
+        self.past = vec![self.entry(patch, Instant::now(), None)];
         self.future.clear();
     }
 
@@ -48,7 +60,7 @@ impl History {
     }
 
     pub fn push_at(&mut self, patch: &PatchFile, param_key: Option<&str>, now: Instant) {
-        let next = Self::entry(patch, now, param_key.map(str::to_owned));
+        let next = self.entry(patch, now, param_key.map(str::to_owned));
         let coalesce = match (self.past.last(), param_key) {
             (Some(last), Some(k)) => {
                 last.param_key.as_deref() == Some(k) && now.duration_since(last.at) < COALESCE
@@ -176,6 +188,30 @@ mod tests {
         p.nodes.push(node("b", "value/number"));
         h.push(&p, None);
         assert!(!h.can_redo());
+    }
+
+    #[test]
+    fn revision_tracks_the_current_state() {
+        let mut p = patch(vec![], vec![]);
+        let mut h = History::default();
+        h.reset(&p);
+        let saved = h.revision();
+        p.nodes.push(node("a", "value/number"));
+        h.push(&p, None);
+        let edited = h.revision();
+        assert_ne!(edited, saved);
+        h.undo(&mut p);
+        assert_eq!(h.revision(), saved, "undo back to the saved state");
+        h.redo(&mut p);
+        assert_eq!(h.revision(), edited);
+        // A coalesced param edit is still a change.
+        let t0 = Instant::now();
+        h.push_at(&p, Some("a.value"), t0);
+        let r1 = h.revision();
+        h.push_at(&p, Some("a.value"), t0 + Duration::from_millis(10));
+        assert_ne!(h.revision(), r1);
+        h.reset(&p);
+        assert_ne!(h.revision(), saved, "a reload is a new revision");
     }
 
     #[test]

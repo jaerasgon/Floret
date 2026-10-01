@@ -27,7 +27,7 @@ pub fn frame_color(kind: Option<RegionKind>) -> Color32 {
         Some(RegionKind::If) => Color32::from_rgb(255, 200, 100),
         Some(RegionKind::Cache) => Color32::from_rgb(124, 182, 255),
         Some(RegionKind::Subpatch) => Color32::from_rgb(190, 160, 255),
-        _ => GOLD,
+        _ => *GOLD,
     }
 }
 
@@ -130,7 +130,7 @@ pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
             st.def_type
         },
         FontId::monospace(9.5 * z),
-        FG_2,
+        *FG_2,
     );
     if let Some((r, text, _, capped)) = &b.badge {
         p.rect(
@@ -145,7 +145,7 @@ pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
             Align2::LEFT_CENTER,
             text,
             FontId::monospace(10.0 * z),
-            FG_0,
+            *FG_0,
         );
         if *capped {
             p.text(
@@ -153,7 +153,7 @@ pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
                 Align2::RIGHT_CENTER,
                 "⚠",
                 FontId::proportional(9.0 * z),
-                DANGER,
+                *DANGER,
             );
         }
     }
@@ -172,7 +172,7 @@ pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
         let color = if t.loop_var {
             theme::port_color("number")
         } else {
-            FG_1
+            *FG_1
         };
         p.text(
             t.rect.center(),
@@ -188,8 +188,8 @@ pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
         p.rect(
             pl.rect,
             pl.rect.height() / 2.0,
-            if on { GOLD.gamma_multiply(0.25) } else { BG_2 },
-            Stroke::new(if on { 1.5 } else { 1.0 }, if on { GOLD } else { color }),
+            if on { GOLD.gamma_multiply(0.25) } else { *BG_2 },
+            Stroke::new(if on { 1.5 } else { 1.0 }, if on { *GOLD } else { color }),
             StrokeKind::Inside,
         );
         p.text(
@@ -197,7 +197,7 @@ pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
             Align2::CENTER_CENTER,
             &pl.name,
             FontId::proportional(9.0 * z),
-            FG_0,
+            *FG_0,
         );
     }
     // Resize grip.
@@ -236,7 +236,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     } else if b.warning.is_some() {
         DANGER.gamma_multiply(0.6)
     } else {
-        BORDER
+        *BORDER
     };
     p.rect(
         b.rect,
@@ -268,7 +268,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
         } else {
             FontId::proportional(12.5 * z)
         };
-        let galley = p.layout_no_wrap(title, font, FG_0);
+        let galley = p.layout_no_wrap(title, font, *FG_0);
         let mut x = header.left() + 22.0 * z + galley.size().x + 6.0 * z;
         p.galley(
             pos2(
@@ -276,16 +276,16 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                 header.center().y - galley.size().y / 2.0,
             ),
             galley,
-            FG_0,
+            *FG_0,
         );
         if let Some(slot) = &b.slot {
-            let g = p.layout_no_wrap(slot.clone(), FontId::monospace(10.0 * z), GOLD);
+            let g = p.layout_no_wrap(slot.clone(), FontId::monospace(10.0 * z), *GOLD);
             let rr = Rect::from_min_size(
                 pos2(x, header.center().y - 7.0 * z),
                 vec2(g.size().x + 8.0 * z, 14.0 * z),
             );
             p.rect(rr, 7.0 * z, BG_3, Stroke::NONE, StrokeKind::Inside);
-            p.galley(rr.center() - g.size() / 2.0, g, GOLD);
+            p.galley(rr.center() - g.size() / 2.0, g, *GOLD);
             x = rr.right() + 4.0 * z;
         }
         let right = if let Some((r, _)) = &b.warning {
@@ -306,7 +306,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                     Align2::RIGHT_CENTER,
                     tag,
                     FontId::proportional(9.5 * z),
-                    FG_2,
+                    *FG_2,
                 );
             }
         }
@@ -316,14 +316,14 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
         let galley = p.layout(
             text.clone(),
             FontId::proportional(11.5 * z),
-            FG_1,
+            *FG_1,
             body.width(),
         );
         let clip = Rect::from_min_max(
             pos2(body.left(), header.bottom() + 6.0 * z),
             pos2(body.right(), b.rect.bottom() - 6.0 * z),
         );
-        p.with_clip_rect(clip).galley(clip.min, galley, FG_1);
+        p.with_clip_rect(clip).galley(clip.min, galley, *FG_1);
     }
     if z <= 0.3 {
         return;
@@ -332,11 +332,11 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     for row in &b.rows {
         if let Some(label) = &row.label {
             let color = if row.expanded {
-                GOLD
+                *GOLD
             } else if row.toggle.is_some() {
-                FG_1
+                *FG_1
             } else {
-                mix(FG_1, FG_2, 0.6)
+                mix(*FG_1, *FG_2, 0.6)
             };
             let g = p.layout_no_wrap(label.clone(), font.clone(), color);
             let mut x = b.rect.left() + 10.0 * z;
@@ -349,7 +349,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                     Align2::LEFT_CENTER,
                     "C",
                     FontId::proportional(8.5 * z),
-                    FG_2,
+                    *FG_2,
                 );
                 x += 9.0 * z;
             }
@@ -359,7 +359,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                     Align2::LEFT_CENTER,
                     "⌊⌋",
                     FontId::monospace(9.0 * z),
-                    FG_2,
+                    *FG_2,
                 );
             }
             if let Some(ro) = &row.readout {
@@ -386,10 +386,14 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                 .filter(|f| (f.rect.center().y - row.y).abs() < 1.0)
                 .map(|f| f.rect.right() + 4.0 * z)
                 .fold(b.rect.left(), f32::max);
-            let g = p.layout_no_wrap(text, FontId::monospace(10.5 * z), color);
+            let g = p.layout_no_wrap(text, FontId::monospace(10.5 * z), *color);
             let right = b.rect.right() - 10.0 * z;
             if right - g.size().x >= left {
-                p.galley(pos2(right - g.size().x, row.y - g.size().y / 2.0), g, color);
+                p.galley(
+                    pos2(right - g.size().x, row.y - g.size().y / 2.0),
+                    g,
+                    *color,
+                );
             }
         }
     }
@@ -447,7 +451,7 @@ pub fn field(p: &Painter, f: &Field, z: f32) {
                 Align2::CENTER_CENTER,
                 values::num(v, 3),
                 mono,
-                FG_0,
+                *FG_0,
             );
         }
         FieldKind::Text => {
@@ -457,7 +461,7 @@ pub fn field(p: &Painter, f: &Field, z: f32) {
                 Align2::LEFT_CENTER,
                 values::as_text(&f.value),
                 mono,
-                FG_0,
+                *FG_0,
             );
         }
         FieldKind::Color => {
@@ -481,7 +485,7 @@ pub fn field(p: &Painter, f: &Field, z: f32) {
                 Align2::LEFT_CENTER,
                 values::hex(rgba),
                 mono,
-                FG_0,
+                *FG_0,
             );
         }
         FieldKind::Select(_) => {
@@ -491,14 +495,14 @@ pub fn field(p: &Painter, f: &Field, z: f32) {
                 Align2::LEFT_CENTER,
                 values::as_text(&f.value),
                 mono,
-                FG_0,
+                *FG_0,
             );
             p.text(
                 r.right_center() - vec2(4.0 * z, 0.0),
                 Align2::RIGHT_CENTER,
                 "▾",
                 FontId::monospace(9.0 * z),
-                FG_1,
+                *FG_1,
             );
         }
     }
@@ -507,9 +511,9 @@ pub fn field(p: &Painter, f: &Field, z: f32) {
 /// A small value / warning tooltip on the tooltip layer.
 pub fn tooltip(ctx: &egui::Context, at: Pos2, title: &str, kind: &str, body: &str) {
     let p = ctx.layer_painter(LayerId::new(Order::Tooltip, Id::new("floret-canvas-tip")));
-    let title_g = p.layout_no_wrap(title.to_owned(), FontId::proportional(11.5), FG_0);
-    let kind_g = p.layout_no_wrap(kind.to_owned(), FontId::monospace(10.0), FG_2);
-    let body_g = p.layout(body.to_owned(), FontId::monospace(11.0), GOLD, 360.0);
+    let title_g = p.layout_no_wrap(title.to_owned(), FontId::proportional(11.5), *FG_0);
+    let kind_g = p.layout_no_wrap(kind.to_owned(), FontId::monospace(10.0), *FG_2);
+    let body_g = p.layout(body.to_owned(), FontId::monospace(11.0), *GOLD, 360.0);
     let w = (title_g.size().x + kind_g.size().x + 14.0)
         .max(body_g.size().x)
         .max(80.0)
@@ -530,14 +534,14 @@ pub fn tooltip(ctx: &egui::Context, at: Pos2, title: &str, kind: &str, body: &st
         StrokeKind::Inside,
     );
     let kind_w = kind_g.size().x;
-    p.galley(r.min + vec2(8.0, 6.0), title_g, FG_0);
-    p.galley(pos2(r.right() - 8.0 - kind_w, r.top() + 7.0), kind_g, FG_2);
+    p.galley(r.min + vec2(8.0, 6.0), title_g, *FG_0);
+    p.galley(pos2(r.right() - 8.0 - kind_w, r.top() + 7.0), kind_g, *FG_2);
     let line_y = r.top() + 6.0 + 15.0;
     p.line_segment(
         [pos2(r.left() + 6.0, line_y), pos2(r.right() - 6.0, line_y)],
         Stroke::new(1.0, BORDER),
     );
-    p.galley(pos2(r.left() + 8.0, line_y + 4.0), body_g, GOLD);
+    p.galley(pos2(r.left() + 8.0, line_y + 4.0), body_g, *GOLD);
 }
 
 /// Translucent rectangle while drawing a new region.
@@ -579,10 +583,10 @@ pub fn drop_ghost(p: &Painter, at: Pos2, label: &str, category: &str, z: f32) {
         Align2::LEFT_CENTER,
         label,
         FontId::proportional(12.5 * z),
-        FG_0,
+        *FG_0,
     );
 }
 
 pub fn mix_wire(base: Color32) -> Color32 {
-    mix(base, FG_2, 0.75)
+    mix(base, *FG_2, 0.75)
 }

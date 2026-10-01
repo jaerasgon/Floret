@@ -338,7 +338,7 @@ impl ShaderPanel {
                 gutter.append(
                     &format!("{i:>3}{sep}"),
                     0.0,
-                    TextFormat::simple(font.clone(), color),
+                    TextFormat::simple(font.clone(), *color),
                 );
             }
             // Match the TextEdit's inner margin so lines align.
@@ -508,10 +508,10 @@ fn highlight(text: &str, font: &FontId) -> LayoutJob {
         let start = i;
         let color = if text[i..].starts_with("//") {
             i = text[i..].find('\n').map_or(b.len(), |n| i + n);
-            theme::FG_2
+            *theme::FG_2
         } else if text[i..].starts_with("/*") {
             i = text[i + 2..].find("*/").map_or(b.len(), |n| i + n + 4);
-            theme::FG_2
+            *theme::FG_2
         } else if b[i].is_ascii_alphabetic() || b[i] == b'_' {
             while i < b.len() && (b[i].is_ascii_alphanumeric() || b[i] == b'_') {
                 i += 1;
@@ -524,9 +524,9 @@ fn highlight(text: &str, font: &FontId) -> LayoutJob {
             } else if w.starts_with('i') && floret_engine::shader::BUILTIN_UNIFORMS.contains(&w)
                 || w == "mainImage"
             {
-                theme::GOLD
+                *theme::GOLD
             } else {
-                theme::FG_0
+                *theme::FG_0
             }
         } else if b[i].is_ascii_digit()
             || (b[i] == b'.' && b.get(i + 1).is_some_and(u8::is_ascii_digit))
@@ -538,7 +538,7 @@ fn highlight(text: &str, font: &FontId) -> LayoutJob {
         } else {
             // One char (UTF-8 aware).
             i += text[i..].chars().next().map_or(1, char::len_utf8);
-            theme::FG_1
+            *theme::FG_1
         };
         job.append(&text[start..i], 0.0, fmt(color));
     }

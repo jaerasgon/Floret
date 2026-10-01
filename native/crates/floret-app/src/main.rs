@@ -8,7 +8,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod canvas;
+mod crash;
 mod editor;
+mod export;
+mod gpu_support;
 mod preview;
 mod theme;
 
@@ -30,15 +33,22 @@ pub struct Sample {
 include!(concat!(env!("OUT_DIR"), "/samples.rs"));
 
 fn main() -> eframe::Result {
+    crash::install_hook();
     let options = eframe::NativeOptions {
         renderer: eframe::Renderer::Wgpu,
+        wgpu_options: gpu_support::options(),
+        run_and_return: true,
         viewport: egui::ViewportBuilder::default()
             .with_title("Floret")
             .with_inner_size([1440.0, 900.0])
             .with_min_inner_size([960.0, 600.0]),
         ..Default::default()
     };
-    eframe::run_native("Floret", options, Box::new(|cc| Ok(Box::new(App::new(cc)))))
+    let result = eframe::run_native("Floret", options, Box::new(|cc| Ok(Box::new(App::new(cc)))));
+    if let Err(e) = &result {
+        gpu_support::report_startup_failure(e);
+    }
+    result
 }
 
 struct App {
@@ -58,6 +68,7 @@ struct App {
     fps: f32,
     query: String,
     show_palette: bool,
+    crash: crash::Guard,
 }
 
 impl App {
@@ -83,6 +94,7 @@ impl App {
             fps: 0.0,
             query: String::new(),
             show_palette: true,
+            crash: crash::Guard::default(),
         };
         app.load_sample(start);
         app
@@ -148,8 +160,16 @@ impl App {
         let Some(engine) = self.engine.as_mut() else {
             return;
         };
-        self.outputs = engine.tick(&frame).outputs;
-        self.frame += 1;
+        if self.crash.paused() {
+            return;
+        }
+        if let Some(r) = self
+            .crash
+            .run(crash::Stage::Tick, &self.patch, || engine.tick(&frame))
+        {
+            self.outputs = r.outputs;
+            self.frame += 1;
+        }
     }
 
     fn toolbar(&mut self, ui: &mut egui::Ui) {
@@ -364,8 +384,19 @@ impl eframe::App for App {
             )
             .show(ui, |ui| {
                 let rs = frame.wgpu_render_state();
-                self.preview
-                    .show(ui, rs, self.engine.as_ref(), &self.outputs);
+                if self.crash.render_ok() {
+                    let (preview, engine, outputs) =
+                        (&mut self.preview, self.engine.as_ref(), &self.outputs);
+                    preview.doc_name = self
+                        .patch
+                        .meta
+                        .as_ref()
+                        .and_then(|m| m.name.clone())
+                        .unwrap_or_default();
+                    self.crash.run(crash::Stage::Render, &self.patch, || {
+                        preview.show(ui, rs, engine, outputs);
+                    });
+                }
                 ui.add_space(10.0);
                 ui.separator();
                 ui.label(RichText::new("Inspector").color(theme::FG_1).small());
@@ -394,6 +425,16 @@ impl eframe::App for App {
                 self.recompile();
             }
         });
+
+        match self.crash.show(ui.ctx(), &self.patch) {
+            Some(crash::Action::Reload) => {
+                self.recompile();
+                self.start = Instant::now();
+                self.frame = 0;
+            }
+            Some(crash::Action::ClearOutputs) => self.outputs.clear(),
+            None => {}
+        }
     }
 }
 

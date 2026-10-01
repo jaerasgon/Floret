@@ -76,6 +76,9 @@ pub struct RegionPort {
     #[serde(rename = "type")]
     pub ty: String,
     pub direction: PortDirection,
+    /// Editor-only: where the port's pill sits on the frame.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub y: Option<f64>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

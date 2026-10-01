@@ -1,0 +1,535 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Glyph Particles",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "modifiedAt": "2026-10-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "gp_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -900,
+        "y": -120
+      },
+      "params": {
+        "text": "Particles from glyph outlines\n\ntext/outline samples points every few units along the letterforms’ contours. They seed a particle emitter, drift on turbulence and fade. The font’s weight breathes with time (style/font-variations), so the outlines — and the particles born on them — thicken and thin.",
+        "width": 460,
+        "height": 230
+      },
+      "portValues": {
+        "text": "Particles from glyph outlines\n\ntext/outline samples points every few units along the letterforms’ contours. They seed a particle emitter, drift on turbulence and fade. The font’s weight breathes with time (style/font-variations), so the outlines — and the particles born on them — thicken and thin.",
+        "width": 460,
+        "height": 230
+      }
+    },
+    {
+      "id": "gp_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": -900,
+        "y": 200
+      },
+      "params": {}
+    },
+    {
+      "id": "gp_ws",
+      "defType": "math/sin",
+      "position": {
+        "x": -680,
+        "y": 200
+      },
+      "params": {}
+    },
+    {
+      "id": "gp_wa",
+      "defType": "math/mul",
+      "position": {
+        "x": -480,
+        "y": 200
+      },
+      "params": {
+        "valueType": "number",
+        "b": 380
+      },
+      "portValues": {
+        "b": 380
+      }
+    },
+    {
+      "id": "gp_w",
+      "defType": "math/add",
+      "position": {
+        "x": -280,
+        "y": 200
+      },
+      "params": {
+        "valueType": "number",
+        "b": 520
+      },
+      "portValues": {
+        "b": 520
+      }
+    },
+    {
+      "id": "gp_tp",
+      "defType": "style/text-params",
+      "position": {
+        "x": -480,
+        "y": 420
+      },
+      "params": {
+        "font": "Roboto Flex",
+        "bold": false,
+        "italic": false,
+        "align": "center",
+        "baseline": "alphabetic",
+        "kerning": 0,
+        "lineSpacing": 1.2
+      },
+      "portValues": {
+        "font": "Roboto Flex",
+        "bold": false,
+        "italic": false,
+        "align": "center",
+        "baseline": "alphabetic",
+        "kerning": 0,
+        "lineSpacing": 1.2
+      }
+    },
+    {
+      "id": "gp_fv",
+      "defType": "style/font-variations",
+      "position": {
+        "x": -200,
+        "y": 420
+      },
+      "params": {
+        "axis": ""
+      },
+      "portValues": {
+        "width": 0,
+        "slant": 0,
+        "opticalSize": 0,
+        "value": 0
+      }
+    },
+    {
+      "id": "gp_pos",
+      "defType": "vec2/make",
+      "position": {
+        "x": -200,
+        "y": 640
+      },
+      "params": {},
+      "portValues": {
+        "x": 0,
+        "y": 52
+      }
+    },
+    {
+      "id": "gp_ol",
+      "defType": "text/outline",
+      "position": {
+        "x": 60,
+        "y": 300
+      },
+      "params": {
+        "string": "Floret",
+        "size": 170,
+        "align": "center",
+        "mode": "outline"
+      },
+      "portValues": {
+        "string": "Floret",
+        "size": 170,
+        "align": "center",
+        "mode": "outline",
+        "spacing": 3
+      }
+    },
+    {
+      "id": "gp_turb",
+      "defType": "force/turbulence",
+      "position": {
+        "x": -200,
+        "y": 900
+      },
+      "params": {
+        "scale": 0.012,
+        "speed": 0.4,
+        "strength": 28,
+        "seed": 5
+      },
+      "portValues": {
+        "scale": 0.012,
+        "speed": 0.4,
+        "strength": 28,
+        "seed": 5
+      }
+    },
+    {
+      "id": "gp_world",
+      "defType": "physics/world",
+      "position": {
+        "x": 60,
+        "y": 900
+      },
+      "params": {
+        "gravity": {
+          "x": 0,
+          "y": -10
+        },
+        "drag": 0.6,
+        "integrator": "euler"
+      },
+      "portValues": {
+        "gravity": {
+          "x": 0,
+          "y": -10
+        },
+        "drag": 0.6,
+        "integrator": "euler"
+      }
+    },
+    {
+      "id": "gp_em",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 360,
+        "y": 300
+      },
+      "params": {
+        "rate": 900,
+        "lifetime": 1.8,
+        "initialVel": {
+          "x": 0,
+          "y": 0
+        },
+        "velSpread": 0.05,
+        "color": {
+          "r": 1,
+          "g": 0.78,
+          "b": 0.55,
+          "a": 0.85
+        },
+        "size": 1.6,
+        "maxCount": 3000,
+        "overflowMode": "drop",
+        "seed": 7
+      },
+      "portValues": {
+        "rate": 900,
+        "lifetime": 1.8,
+        "initialVel": {
+          "x": 0,
+          "y": 0
+        },
+        "velSpread": 0.05,
+        "color": {
+          "r": 1,
+          "g": 0.78,
+          "b": 0.55,
+          "a": 0.85
+        },
+        "size": 1.6,
+        "maxCount": 3000,
+        "overflowMode": "drop",
+        "seed": 7
+      }
+    },
+    {
+      "id": "gp_ra",
+      "defType": "particles/render-as",
+      "position": {
+        "x": 640,
+        "y": 300
+      },
+      "params": {
+        "template": "circle",
+        "useBufferColor": true
+      },
+      "portValues": {
+        "template": "circle",
+        "useBufferColor": true
+      }
+    },
+    {
+      "id": "gp_gc",
+      "defType": "color/color",
+      "position": {
+        "x": 360,
+        "y": 600
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 120,
+        "g": 150,
+        "b": 255,
+        "a": 110
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 120,
+        "g": 150,
+        "b": 255,
+        "a": 110
+      }
+    },
+    {
+      "id": "gp_gf",
+      "defType": "style/stroke",
+      "position": {
+        "x": 540,
+        "y": 600
+      },
+      "params": {
+        "align": "center"
+      },
+      "portValues": {
+        "width": 2,
+        "align": "center"
+      }
+    },
+    {
+      "id": "gp_dots",
+      "defType": "region/foreach",
+      "position": {
+        "x": 360,
+        "y": 720
+      },
+      "params": {
+        "width": 520,
+        "height": 220,
+        "label": "ForEach point"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input"
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 520,
+      "height": 220
+    },
+    {
+      "id": "gp_pt",
+      "defType": "draw/point",
+      "position": {
+        "x": 600,
+        "y": 800
+      },
+      "params": {},
+      "parentId": "gp_dots"
+    },
+    {
+      "id": "gp_g",
+      "defType": "transform/group",
+      "position": {
+        "x": 940,
+        "y": 400
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "gp_bg",
+      "defType": "color/color",
+      "position": {
+        "x": 940,
+        "y": 640
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 9,
+        "g": 8,
+        "b": 16,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 9,
+        "g": 8,
+        "b": 16,
+        "a": 255
+      }
+    },
+    {
+      "id": "gp_out",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1180,
+        "y": 400
+      },
+      "params": {
+        "width": 640,
+        "height": 400
+      },
+      "portValues": {
+        "width": 640,
+        "height": 400
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_gp_0",
+      "source": "gp_t",
+      "target": "gp_ws",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_gp_1",
+      "source": "gp_ws",
+      "target": "gp_wa",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_gp_2",
+      "source": "gp_wa",
+      "target": "gp_w",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_gp_3",
+      "source": "gp_tp",
+      "target": "gp_fv",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_gp_4",
+      "source": "gp_w",
+      "target": "gp_fv",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-weight"
+    },
+    {
+      "id": "e_gp_5",
+      "source": "gp_fv",
+      "target": "gp_ol",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_gp_6",
+      "source": "gp_pos",
+      "target": "gp_ol",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_gp_7",
+      "source": "gp_turb",
+      "target": "gp_world",
+      "sourceHandle": "out-force",
+      "targetHandle": "in-forces"
+    },
+    {
+      "id": "e_gp_8",
+      "source": "gp_ol",
+      "target": "gp_em",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_gp_9",
+      "source": "gp_world",
+      "target": "gp_em",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_gp_10",
+      "source": "gp_t",
+      "target": "gp_em",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_gp_11",
+      "source": "gp_em",
+      "target": "gp_ra",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_gp_12",
+      "source": "gp_gc",
+      "target": "gp_gf",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_gp_13",
+      "source": "gp_ol",
+      "target": "gp_dots",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_gp_14",
+      "source": "gp_dots",
+      "target": "gp_pt",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_gp_15",
+      "source": "gp_gf",
+      "target": "gp_pt",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_gp_16",
+      "source": "gp_pt",
+      "target": "gp_dots",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_gp_17",
+      "source": "gp_dots",
+      "target": "gp_g",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_gp_18",
+      "source": "gp_ra",
+      "target": "gp_g",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_gp_19",
+      "source": "gp_g",
+      "target": "gp_out",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_gp_20",
+      "source": "gp_bg",
+      "target": "gp_out",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    }
+  ]
+}

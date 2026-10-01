@@ -1,0 +1,504 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Spiral Type",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "modifiedAt": "2026-10-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "sp_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -900,
+        "y": -120
+      },
+      "params": {
+        "text": "Text on a path\n\ntext/on-path lays a line of type along a point spread: here a spiral (spread/spiral) and a ring (spread/ring, closed). Every glyph turns to the path’s tangent. The offset input slides the text along the path over time; glyphs that run off the open spiral’s ends are hidden, the ring wraps around.",
+        "width": 460,
+        "height": 230
+      },
+      "portValues": {
+        "text": "Text on a path\n\ntext/on-path lays a line of type along a point spread: here a spiral (spread/spiral) and a ring (spread/ring, closed). Every glyph turns to the path’s tangent. The offset input slides the text along the path over time; glyphs that run off the open spiral’s ends are hidden, the ring wraps around.",
+        "width": 460,
+        "height": 230
+      }
+    },
+    {
+      "id": "sp_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": -900,
+        "y": 200
+      },
+      "params": {}
+    },
+    {
+      "id": "sp_spiral",
+      "defType": "spread/spiral",
+      "position": {
+        "x": -900,
+        "y": 360
+      },
+      "params": {},
+      "portValues": {
+        "count": 600,
+        "turns": 3.4,
+        "radius": 215,
+        "phase": 0
+      }
+    },
+    {
+      "id": "sp_ring",
+      "defType": "spread/ring",
+      "position": {
+        "x": -900,
+        "y": 620
+      },
+      "params": {},
+      "portValues": {
+        "count": 240,
+        "radius": 248,
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "phase": 0
+      }
+    },
+    {
+      "id": "sp_bg",
+      "defType": "color/color",
+      "position": {
+        "x": -900,
+        "y": 880
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 10,
+        "g": 12,
+        "b": 20,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 10,
+        "g": 12,
+        "b": 20,
+        "a": 255
+      }
+    },
+    {
+      "id": "sp_off",
+      "defType": "math/mul",
+      "position": {
+        "x": -620,
+        "y": 200
+      },
+      "params": {
+        "valueType": "number",
+        "b": -46
+      },
+      "portValues": {
+        "b": -46
+      }
+    },
+    {
+      "id": "sp_roff",
+      "defType": "math/mul",
+      "position": {
+        "x": -620,
+        "y": 760
+      },
+      "params": {
+        "valueType": "number",
+        "b": 30
+      },
+      "portValues": {
+        "b": 30
+      }
+    },
+    {
+      "id": "sp_pathc",
+      "defType": "color/color",
+      "position": {
+        "x": -620,
+        "y": 420
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 70,
+        "g": 90,
+        "b": 130,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 70,
+        "g": 90,
+        "b": 130,
+        "a": 255
+      }
+    },
+    {
+      "id": "sp_path",
+      "defType": "draw/path",
+      "position": {
+        "x": -360,
+        "y": 420
+      },
+      "params": {},
+      "portValues": {
+        "strokeWidth": 1,
+        "tension": 0
+      }
+    },
+    {
+      "id": "sp_c1",
+      "defType": "color/color",
+      "position": {
+        "x": -620,
+        "y": 0
+      },
+      "params": {
+        "mode": "hsl",
+        "h": 38,
+        "s": 90,
+        "l": 72,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "h": 38,
+        "s": 90,
+        "l": 72,
+        "a": 255
+      }
+    },
+    {
+      "id": "sp_f1",
+      "defType": "style/fill",
+      "position": {
+        "x": -400,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "sp_tp1",
+      "defType": "style/text-params",
+      "position": {
+        "x": -200,
+        "y": -60
+      },
+      "params": {
+        "font": "Roboto Flex",
+        "bold": false,
+        "italic": false,
+        "align": "left",
+        "baseline": "alphabetic",
+        "kerning": 0,
+        "lineSpacing": 1.2
+      },
+      "portValues": {
+        "font": "Roboto Flex",
+        "bold": false,
+        "italic": false,
+        "align": "left",
+        "baseline": "alphabetic",
+        "kerning": 0,
+        "lineSpacing": 1.2
+      }
+    },
+    {
+      "id": "sp_fv1",
+      "defType": "style/font-variations",
+      "position": {
+        "x": 40,
+        "y": -60
+      },
+      "params": {
+        "axis": ""
+      },
+      "portValues": {
+        "weight": 640,
+        "width": 85,
+        "slant": 0,
+        "opticalSize": 0,
+        "value": 0
+      }
+    },
+    {
+      "id": "sp_s1",
+      "defType": "text/on-path",
+      "position": {
+        "x": 280,
+        "y": 160
+      },
+      "params": {
+        "string": "TYPE SPIRALS INWARD · EVERY GLYPH TURNS TO THE TANGENT · LETTERS RIDE THE CURVE · FLORET · GENERATIVE TYPOGRAPHY · TYPE SPIRALS INWARD · EVERY GLYPH TURNS TO THE TANGENT · LETTERS RIDE THE CURVE · FLORET · GENERATIVE TYPOGRAPHY · ",
+        "closed": false,
+        "size": 19,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "TYPE SPIRALS INWARD · EVERY GLYPH TURNS TO THE TANGENT · LETTERS RIDE THE CURVE · FLORET · GENERATIVE TYPOGRAPHY · TYPE SPIRALS INWARD · EVERY GLYPH TURNS TO THE TANGENT · LETTERS RIDE THE CURVE · FLORET · GENERATIVE TYPOGRAPHY · ",
+        "closed": false,
+        "size": 19,
+        "align": "left",
+        "spacing": 1,
+        "shift": 0
+      }
+    },
+    {
+      "id": "sp_c2",
+      "defType": "color/color",
+      "position": {
+        "x": -620,
+        "y": 1000
+      },
+      "params": {
+        "mode": "hsl",
+        "h": 190,
+        "s": 80,
+        "l": 66,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "h": 190,
+        "s": 80,
+        "l": 66,
+        "a": 255
+      }
+    },
+    {
+      "id": "sp_f2",
+      "defType": "style/fill",
+      "position": {
+        "x": -400,
+        "y": 1000
+      },
+      "params": {}
+    },
+    {
+      "id": "sp_tp2",
+      "defType": "style/text-params",
+      "position": {
+        "x": -200,
+        "y": 1000
+      },
+      "params": {
+        "font": "Roboto Flex",
+        "bold": true,
+        "italic": false,
+        "align": "left",
+        "baseline": "alphabetic",
+        "kerning": 0,
+        "lineSpacing": 1.2
+      },
+      "portValues": {
+        "font": "Roboto Flex",
+        "bold": true,
+        "italic": false,
+        "align": "left",
+        "baseline": "alphabetic",
+        "kerning": 0,
+        "lineSpacing": 1.2
+      }
+    },
+    {
+      "id": "sp_s2",
+      "defType": "text/on-path",
+      "position": {
+        "x": 280,
+        "y": 700
+      },
+      "params": {
+        "string": "AROUND AND AROUND — TEXT ON A CLOSED RING — ",
+        "closed": true,
+        "size": 24,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "AROUND AND AROUND — TEXT ON A CLOSED RING — ",
+        "closed": true,
+        "size": 24,
+        "align": "left",
+        "spacing": 3,
+        "shift": 6
+      }
+    },
+    {
+      "id": "sp_g",
+      "defType": "transform/group",
+      "position": {
+        "x": 600,
+        "y": 300
+      },
+      "params": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "sp_out",
+      "defType": "render/renderer",
+      "position": {
+        "x": 860,
+        "y": 300
+      },
+      "params": {
+        "width": 600,
+        "height": 600
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_sp_0",
+      "source": "sp_t",
+      "target": "sp_off",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_sp_1",
+      "source": "sp_t",
+      "target": "sp_roff",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_sp_2",
+      "source": "sp_spiral",
+      "target": "sp_path",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_sp_3",
+      "source": "sp_pathc",
+      "target": "sp_path",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_sp_4",
+      "source": "sp_c1",
+      "target": "sp_f1",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_sp_5",
+      "source": "sp_f1",
+      "target": "sp_tp1",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_sp_6",
+      "source": "sp_tp1",
+      "target": "sp_fv1",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_sp_7",
+      "source": "sp_spiral",
+      "target": "sp_s1",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_sp_8",
+      "source": "sp_off",
+      "target": "sp_s1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-offset"
+    },
+    {
+      "id": "e_sp_9",
+      "source": "sp_fv1",
+      "target": "sp_s1",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_sp_10",
+      "source": "sp_c2",
+      "target": "sp_f2",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_sp_11",
+      "source": "sp_f2",
+      "target": "sp_tp2",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_sp_12",
+      "source": "sp_ring",
+      "target": "sp_s2",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_sp_13",
+      "source": "sp_roff",
+      "target": "sp_s2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-offset"
+    },
+    {
+      "id": "e_sp_14",
+      "source": "sp_tp2",
+      "target": "sp_s2",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_sp_15",
+      "source": "sp_path",
+      "target": "sp_g",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_sp_16",
+      "source": "sp_s1",
+      "target": "sp_g",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_sp_17",
+      "source": "sp_s2",
+      "target": "sp_g",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_sp_18",
+      "source": "sp_g",
+      "target": "sp_out",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_sp_19",
+      "source": "sp_bg",
+      "target": "sp_out",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    }
+  ]
+}

@@ -408,65 +408,37 @@ fn parse_weight(w: &str) -> Weight {
     }
 }
 
-/// System fonts plus egui's embedded faces (so text renders even on a
-/// machine with no fonts installed, e.g. CI), with generic families mapped
-/// to whatever is installed — roughly what a browser on the same machine
-/// would pick.
+/// The faces behind the generic families, bundled so `sans-serif`, `serif`
+/// and `monospace` draw the same on every OS. They are what Chrome on Linux
+/// picks (the reference images), metric-compatible with Arial / Times.
+const BUNDLED: &[&[u8]] = &[
+    include_bytes!("../fonts/LiberationSans-Regular.ttf"),
+    include_bytes!("../fonts/LiberationSans-Bold.ttf"),
+    include_bytes!("../fonts/LiberationSans-Italic.ttf"),
+    include_bytes!("../fonts/LiberationSans-BoldItalic.ttf"),
+    include_bytes!("../fonts/LiberationSerif-Regular.ttf"),
+    include_bytes!("../fonts/LiberationSerif-Bold.ttf"),
+    include_bytes!("../fonts/LiberationSerif-Italic.ttf"),
+    include_bytes!("../fonts/LiberationSerif-BoldItalic.ttf"),
+    include_bytes!("../fonts/DejaVuSansMono.ttf"),
+    include_bytes!("../fonts/DejaVuSansMono-Bold.ttf"),
+    include_bytes!("../fonts/DejaVuSansMono-Oblique.ttf"),
+    include_bytes!("../fonts/DejaVuSansMono-BoldOblique.ttf"),
+];
+
+/// System fonts (for named families) plus the bundled faces, which back
+/// every generic family.
 fn font_system() -> FontSystem {
     let mut db = fontdb::Database::new();
     db.load_system_fonts();
-    db.load_font_data(epaint_default_fonts::UBUNTU_LIGHT.to_vec());
-    db.load_font_data(epaint_default_fonts::HACK_REGULAR.to_vec());
-    let has = |db: &fontdb::Database, name: &str| {
-        db.faces()
-            .any(|f| f.families.iter().any(|(n, _)| n.eq_ignore_ascii_case(name)))
-    };
-    let pick =
-        |db: &fontdb::Database, names: &[&'static str]| names.iter().copied().find(|n| has(db, n));
-    // Browsers map the generics to Arial / Times metrics (Chrome on Linux:
-    // Liberation Sans / Serif, on macOS: Helvetica / Times), so prefer those.
-    const SANS: &[&str] = &[
-        "Arial",
-        "Helvetica",
-        "Liberation Sans",
-        "Arimo",
-        "DejaVu Sans",
-        "Noto Sans",
-        "FreeSans",
-        "Ubuntu Light",
-        "Ubuntu",
-    ];
-    const SERIF: &[&str] = &[
-        "Times New Roman",
-        "Times",
-        "Liberation Serif",
-        "Tinos",
-        "DejaVu Serif",
-        "Noto Serif",
-        "FreeSerif",
-    ];
-    const MONO: &[&str] = &[
-        "DejaVu Sans Mono",
-        "Menlo",
-        "Consolas",
-        "Liberation Mono",
-        "Courier New",
-        "Noto Sans Mono",
-        "FreeMono",
-        "Hack",
-    ];
-    let sans = pick(&db, SANS);
-    if let Some(n) = sans {
-        db.set_sans_serif_family(n);
-        db.set_cursive_family(n);
-        db.set_fantasy_family(n);
+    for face in BUNDLED {
+        db.load_font_data(face.to_vec());
     }
-    if let Some(n) = pick(&db, SERIF).or(sans) {
-        db.set_serif_family(n);
-    }
-    if let Some(n) = pick(&db, MONO).or(sans) {
-        db.set_monospace_family(n);
-    }
+    db.set_sans_serif_family("Liberation Sans");
+    db.set_cursive_family("Liberation Sans");
+    db.set_fantasy_family("Liberation Sans");
+    db.set_serif_family("Liberation Serif");
+    db.set_monospace_family("DejaVu Sans Mono");
     FontSystem::new_with_locale_and_db("en-US".into(), db)
 }
 

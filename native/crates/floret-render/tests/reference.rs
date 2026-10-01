@@ -56,7 +56,10 @@ fn tolerance(name: &str) -> (f64, f64) {
     {
         (6.0, 0.03)
     } else {
-        (2.0, 0.005)
+        // Mean headroom for anti-aliasing differences between GPU drivers
+        // (thousands of small shapes, e.g. webcam-mosaic on Windows WARP);
+        // the bad-pixel limit is the real guard.
+        (2.5, 0.005)
     }
 }
 

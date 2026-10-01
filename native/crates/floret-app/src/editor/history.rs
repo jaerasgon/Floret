@@ -1,0 +1,192 @@
+//! Undo / redo. Port of `src/editor/history.ts`.
+//!
+//! An entry is a snapshot of the patch (nodes, edges, params — params live
+//! on the nodes here). Every committed mutation pushes one entry; live
+//! scrubs don't push at all; a param commit on the same `(node, key)`
+//! within 250 ms of the previous one replaces that entry instead of
+//! stacking, so typing collapses into one step.
+
+use floret_engine::patch::{PatchEdge, PatchFile, PatchNode};
+use std::time::{Duration, Instant};
+
+pub const MAX_HISTORY: usize = 100;
+pub const COALESCE: Duration = Duration::from_millis(250);
+
+#[derive(Clone)]
+struct Entry {
+    nodes: Vec<PatchNode>,
+    edges: Vec<PatchEdge>,
+    at: Instant,
+    /// `"<node>.<key>"` for param commits (coalescing key).
+    param_key: Option<String>,
+}
+
+#[derive(Default)]
+pub struct History {
+    past: Vec<Entry>,
+    future: Vec<Entry>,
+}
+
+impl History {
+    fn entry(patch: &PatchFile, at: Instant, param_key: Option<String>) -> Entry {
+        Entry {
+            nodes: patch.nodes.clone(),
+            edges: patch.edges.clone(),
+            at,
+            param_key,
+        }
+    }
+
+    /// Seed with a freshly loaded patch: the first undo can't go past it.
+    pub fn reset(&mut self, patch: &PatchFile) {
+        self.past = vec![Self::entry(patch, Instant::now(), None)];
+        self.future.clear();
+    }
+
+    pub fn push(&mut self, patch: &PatchFile, param_key: Option<&str>) {
+        self.push_at(patch, param_key, Instant::now());
+    }
+
+    pub fn push_at(&mut self, patch: &PatchFile, param_key: Option<&str>, now: Instant) {
+        let next = Self::entry(patch, now, param_key.map(str::to_owned));
+        let coalesce = match (self.past.last(), param_key) {
+            (Some(last), Some(k)) => {
+                last.param_key.as_deref() == Some(k) && now.duration_since(last.at) < COALESCE
+            }
+            _ => false,
+        };
+        if coalesce {
+            *self.past.last_mut().expect("checked") = next;
+        } else {
+            self.past.push(next);
+            if self.past.len() > MAX_HISTORY {
+                self.past.remove(0);
+            }
+        }
+        self.future.clear();
+    }
+
+    pub fn can_undo(&self) -> bool {
+        self.past.len() > 1
+    }
+
+    pub fn can_redo(&self) -> bool {
+        !self.future.is_empty()
+    }
+
+    /// Step back; writes the restored state into `patch`.
+    pub fn undo(&mut self, patch: &mut PatchFile) -> bool {
+        if !self.can_undo() {
+            return false;
+        }
+        let current = self.past.pop().expect("checked");
+        self.future.push(current);
+        Self::apply(self.past.last().expect("checked"), patch);
+        true
+    }
+
+    pub fn redo(&mut self, patch: &mut PatchFile) -> bool {
+        let Some(target) = self.future.pop() else {
+            return false;
+        };
+        Self::apply(&target, patch);
+        self.past.push(target);
+        true
+    }
+
+    fn apply(e: &Entry, patch: &mut PatchFile) {
+        patch.nodes = e.nodes.clone();
+        patch.edges = e.edges.clone();
+    }
+
+    /// Number of undo states held (including the current one).
+    #[cfg(test)]
+    pub fn depth(&self) -> usize {
+        self.past.len()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::editor::test_util::{node, patch};
+
+    fn set_value(p: &mut PatchFile, v: f64) {
+        p.nodes[0].params.insert("value".into(), v.into());
+    }
+
+    fn value(p: &PatchFile) -> f64 {
+        p.nodes[0].params["value"].as_f64().unwrap()
+    }
+
+    #[test]
+    fn undo_reverts_add_and_redo_replays() {
+        let mut p = patch(vec![], vec![]);
+        let mut h = History::default();
+        h.reset(&p);
+        assert!(!h.can_undo());
+        p.nodes.push(node("a", "value/number"));
+        h.push(&p, None);
+        assert!(h.undo(&mut p));
+        assert!(p.nodes.is_empty());
+        assert!(h.redo(&mut p));
+        assert_eq!(p.nodes[0].id, "a");
+        assert!(!h.redo(&mut p));
+    }
+
+    #[test]
+    fn same_param_within_250ms_coalesces() {
+        let mut p = patch(vec![node("a", "value/number")], vec![]);
+        let mut h = History::default();
+        h.reset(&p);
+        let t0 = Instant::now();
+        set_value(&mut p, 1.0);
+        h.push_at(&p, Some("a.value"), t0);
+        set_value(&mut p, 2.0);
+        h.push_at(&p, Some("a.value"), t0 + Duration::from_millis(100));
+        assert_eq!(h.depth(), 2, "rapid edits on one key merge");
+        // A different key, or a pause, makes a new step.
+        set_value(&mut p, 3.0);
+        h.push_at(&p, Some("a.value"), t0 + Duration::from_millis(500));
+        assert_eq!(h.depth(), 3);
+        set_value(&mut p, 4.0);
+        h.push_at(&p, Some("a.other"), t0 + Duration::from_millis(520));
+        assert_eq!(h.depth(), 4);
+        // Structural pushes never merge.
+        h.push_at(&p, None, t0 + Duration::from_millis(530));
+        h.push_at(&p, None, t0 + Duration::from_millis(531));
+        assert_eq!(h.depth(), 6);
+        h.undo(&mut p);
+        h.undo(&mut p);
+        h.undo(&mut p);
+        assert_eq!(value(&p), 3.0);
+        h.undo(&mut p);
+        assert_eq!(value(&p), 2.0, "merged step lands on the last value");
+    }
+
+    #[test]
+    fn new_mutation_clears_redo() {
+        let mut p = patch(vec![], vec![]);
+        let mut h = History::default();
+        h.reset(&p);
+        p.nodes.push(node("a", "value/number"));
+        h.push(&p, None);
+        h.undo(&mut p);
+        assert!(h.can_redo());
+        p.nodes.push(node("b", "value/number"));
+        h.push(&p, None);
+        assert!(!h.can_redo());
+    }
+
+    #[test]
+    fn capped_at_max() {
+        let mut p = patch(vec![], vec![]);
+        let mut h = History::default();
+        h.reset(&p);
+        for i in 0..150 {
+            p.nodes.push(node(&format!("n{i}"), "value/number"));
+            h.push(&p, None);
+        }
+        assert_eq!(h.depth(), MAX_HISTORY);
+    }
+}

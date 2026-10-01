@@ -1,11 +1,21 @@
 name: native
 
+# Manual only (Actions tab → native → Run workflow), to stay inside the
+# free Actions minutes. macOS minutes count 10× and Windows 2× on private
+# repos, so those only run when picked. Day to day, test locally with
+# ./floret.sh and `cargo test --workspace`.
 on:
-  push:
-    branches: [main]
-    paths: ['native/**', 'public/mediapipe/models/**', '.github/workflows/native.yml']
-  pull_request:
-    paths: ['native/**', 'public/mediapipe/models/**', '.github/workflows/native.yml']
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: 'Where to run'
+        type: choice
+        default: linux
+        options: [linux, linux+macos, all]
+      app_builds:
+        description: 'Also build downloadable apps'
+        type: boolean
+        default: false
 
 concurrency:
   group: native-${{ github.ref }}
@@ -22,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: ${{ fromJSON(inputs.platforms == 'all' && '["ubuntu-latest","macos-latest","windows-latest"]' || inputs.platforms == 'linux+macos' && '["ubuntu-latest","macos-latest"]' || '["ubuntu-latest"]') }}
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
@@ -45,20 +55,12 @@ jobs:
 
   app:
     name: app build (${{ matrix.os }})
+    if: inputs.app_builds
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: macos-latest
-            artifact: floret-macos-arm64
-            bin: target/release/floret
-          - os: windows-latest
-            artifact: floret-windows-x64
-            bin: target/release/floret.exe
-          - os: ubuntu-latest
-            artifact: floret-linux-x64
-            bin: target/release/floret
+        os: ${{ fromJSON(inputs.platforms == 'all' && '["ubuntu-latest","macos-latest","windows-latest"]' || inputs.platforms == 'linux+macos' && '["ubuntu-latest","macos-latest"]' || '["ubuntu-latest"]') }}
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
@@ -74,6 +76,8 @@ jobs:
         run: cargo build --release -p floret-app
       - uses: actions/upload-artifact@v7
         with:
-          name: ${{ matrix.artifact }}
-          path: native/${{ matrix.bin }}
+          # (No matrix `include` here: an include for an OS not picked would
+          # add that OS back as a job.)
+          name: ${{ matrix.os == 'macos-latest' && 'floret-macos-arm64' || matrix.os == 'windows-latest' && 'floret-windows-x64' || 'floret-linux-x64' }}
+          path: native/target/release/${{ matrix.os == 'windows-latest' && 'floret.exe' || 'floret' }}
           retention-days: 30

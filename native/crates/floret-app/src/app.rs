@@ -2,15 +2,17 @@
 //! around the editor (menus, toolbar, status bar, side panels, dialogs).
 //!
 //! Layout, top to bottom: toolbar ([`App::toolbar`]), status bar
-//! ([`App::status_bar`]), the node palette (left), preview + inspector
-//! (right, [`App::side_panel`]) and the node canvas (centre).
+//! ([`App::status_bar`]), the node palette (left), the docked previews,
+//! inspector, help, library and shader panels (right,
+//! [`App::side_panel`], see [`crate::workspace`]) and the node canvas
+//! (centre).
 
 use crate::files::{self, Document, Origin};
 use crate::menu::{self, Command, MenuState};
 use crate::prefs::{Prefs, PrefsWindow, Startup};
 use crate::{
     bus, canvas, crash, editor, help, host, palette, preview, recovery, shader_panel, theme,
-    welcome, SAMPLES,
+    welcome, workspace, SAMPLES,
 };
 use eframe::egui::{self, Align, Layout, RichText};
 use floret_engine::patch::PatchFile;
@@ -42,6 +44,8 @@ enum After {
     /// Open a file (`None`: ask which).
     Open(Option<PathBuf>),
     Sample(usize),
+    /// A patch from the library panel.
+    Patch(Box<PatchFile>, String),
     Recover(recovery::Candidate),
     Quit,
 }
@@ -78,6 +82,7 @@ pub struct App {
     crash: crash::Guard,
     shader_panel: shader_panel::ShaderPanel,
     bus: bus::BusHost,
+    workspace: workspace::Workspace,
     // ── Shell
     prefs: Prefs,
     prefs_window: PrefsWindow,
@@ -139,6 +144,7 @@ impl App {
             crash: crash::Guard::default(),
             shader_panel: shader_panel::ShaderPanel::default(),
             bus: bus::BusHost::new(),
+            workspace: workspace::Workspace::load(),
             prefs,
             prefs_window: PrefsWindow::default(),
             welcome: welcome::Welcome::default(),
@@ -303,6 +309,11 @@ impl App {
                 }
             }
             After::Sample(i) => self.load_sample(i),
+            After::Patch(p, name) => self.set_patch(*p, |rev| {
+                let mut d = Document::untitled(rev);
+                d.name = name;
+                d
+            }),
             After::Recover(c) => self.recover(&c),
             After::Quit => {
                 self.allow_close = true;
@@ -354,9 +365,25 @@ impl App {
 
     fn tick(&mut self, ctx: &egui::Context) {
         let now = Instant::now();
-        let dt = now.duration_since(self.last).as_secs_f64();
+        let mut dt = now.duration_since(self.last).as_secs_f64();
         self.last = now;
         self.fps = self.fps * 0.9 + (1.0 / dt.max(1e-6)) as f32 * 0.1;
+        // Preview transport: restart, and pause / step (time holds while paused).
+        if self.preview.transport.take_restart() {
+            self.recompile();
+            self.restart();
+        }
+        match self.preview.transport.advance() {
+            preview::Advance::Run => {}
+            preview::Advance::Hold => {
+                self.start += Duration::from_secs_f64(dt);
+                return;
+            }
+            preview::Advance::Step(step) => {
+                self.start += Duration::from_secs_f64((dt - step).max(0.0));
+                dt = step;
+            }
+        }
         let t = now.duration_since(self.start).as_secs_f64();
         let frame = self
             .preview
@@ -567,59 +594,51 @@ impl App {
         });
     }
 
+    /// The side dock: previews, inspector, help, library, shader.
     fn side_panel(&mut self, ui: &mut egui::Ui, frame: &eframe::Frame) {
-        let rs = frame.wgpu_render_state();
-        if self.crash.render_ok() {
-            let (preview, engine, outputs) =
-                (&mut self.preview, self.engine.as_ref(), &self.outputs);
-            preview.doc_name = self.doc.name.clone();
-            self.crash.run(crash::Stage::Render, &self.patch, || {
-                preview.show(ui, rs, engine, outputs);
-            });
-        }
-        ui.add_space(10.0);
-        ui.separator();
-        ui.label(RichText::new("Inspector").color(theme::FG_1).small());
-        egui::ScrollArea::vertical().show(ui, |ui| self.inspector(ui));
-    }
-
-    fn inspector(&self, ui: &mut egui::Ui) {
-        let Some(id) = self.view.primary() else {
-            ui.label(RichText::new("Select a node to inspect it.").color(theme::FG_2));
-            return;
+        self.preview.doc_name = self.doc.name.clone();
+        let sample = match &self.doc.origin {
+            Origin::Sample(id) => SAMPLES.iter().position(|s| s.id == *id),
+            _ => None,
         };
-        let Some(n) = self.patch.nodes.iter().find(|n| &n.id == id) else {
-            return;
-        };
-        let spec = Catalogue::builtin().get(&n.def_type);
-        ui.label(RichText::new(spec.map_or(n.def_type.as_str(), |s| s.label.as_str())).strong());
-        ui.label(RichText::new(&n.def_type).color(theme::FG_2).monospace());
-        if let Some(d) = spec.and_then(|s| s.description.as_ref()) {
-            ui.label(RichText::new(d).color(theme::FG_1));
-        }
-        if let (Some(engine), Some(spec)) = (&self.engine, spec) {
-            if let Some(out) = engine
-                .graph
-                .idx(id)
-                .and_then(|i| self.outputs.get(i))
-                .and_then(|o| o.as_ref())
-            {
-                ui.add_space(6.0);
-                for (p, v) in spec.outputs.iter().zip(out.iter()) {
-                    ui.horizontal_wrapped(|ui| {
-                        ui.label(
-                            RichText::new(p.label.as_deref().unwrap_or(&p.name)).color(theme::FG_1),
-                        );
-                        let text = format!("{:?}", v.iter().take(8).collect::<Vec<_>>());
-                        ui.label(RichText::new(text).monospace().size(11.0));
-                    });
-                }
+        let action = self.workspace.show(
+            ui,
+            &mut workspace::Shell {
+                patch: &mut self.patch,
+                view: &mut self.view,
+                preview: &mut self.preview,
+                shader: &mut self.shader_panel,
+                crash: &mut self.crash,
+                engine: self.engine.as_ref(),
+                outputs: &self.outputs,
+                rs: frame.wgpu_render_state(),
+                samples: SAMPLES,
+                sample,
+            },
+        );
+        match action {
+            Some(workspace::ShellAction::LoadSample(i)) => self.request(ui.ctx(), After::Sample(i)),
+            Some(workspace::ShellAction::LoadPatch(p)) => {
+                let name = p
+                    .meta
+                    .as_ref()
+                    .and_then(|m| m.name.clone())
+                    .unwrap_or_else(|| "Untitled".into());
+                self.request(ui.ctx(), After::Patch(Box::new(p), name));
             }
+            None => {}
         }
     }
 
-    fn canvas(&mut self, ui: &mut egui::Ui) {
+    fn canvas(&mut self, ui: &mut egui::Ui, frame: &eframe::Frame) {
         let cat = Catalogue::builtin();
+        self.view.thumbs = self.preview.probe_thumbs(
+            ui.ctx(),
+            frame.wgpu_render_state(),
+            self.engine.as_ref(),
+            &self.outputs,
+            &self.patch,
+        );
         if let Some(engine) = &self.engine {
             let live = canvas::Live {
                 engine,
@@ -634,15 +653,6 @@ impl App {
         let edits = self.view.take_live_edits();
         if let Some(engine) = self.engine.as_mut() {
             editor::values::apply_live(engine, cat, &self.patch, edits);
-        }
-        let selected = self.view.primary().cloned();
-        if self.shader_panel.show(
-            ui.ctx(),
-            &mut self.patch,
-            selected.as_deref(),
-            self.preview.shader_errors(),
-        ) {
-            self.view.commit(&mut self.patch);
         }
         // Structural edits (wires, nodes, undo) rebuild the engine.
         if self.view.take_recompile() {
@@ -665,6 +675,7 @@ impl App {
             After::New => "starting a new patch",
             After::Open(_) => "opening another file",
             After::Sample(_) => "opening the sample",
+            After::Patch(..) => "opening the patch",
             After::Recover(_) => "restoring",
         };
         enum Choice {
@@ -853,6 +864,18 @@ impl eframe::App for App {
             ctx.send_viewport_cmd(egui::ViewportCommand::Title(title.clone()));
             self.title = title;
         }
+        if self.preview.focused() {
+            // Focus mode: the featured preview alone.
+            let rs = frame.wgpu_render_state();
+            let (preview, engine, outputs) =
+                (&mut self.preview, self.engine.as_ref(), &self.outputs);
+            egui::CentralPanel::no_frame().show(ui, |ui| {
+                self.crash.run(crash::Stage::Render, &self.patch, || {
+                    preview.show_focus(ui, rs, engine, outputs);
+                });
+            });
+            return;
+        }
 
         let mut warnings: Vec<(String, Vec<String>)> = self
             .warnings
@@ -898,15 +921,11 @@ impl eframe::App for App {
         egui::Panel::right("side")
             .resizable(true)
             .default_size(400.0)
-            .size_range(260.0..=720.0)
-            .frame(
-                egui::Frame::new()
-                    .fill(*theme::BG_1)
-                    .inner_margin(egui::Margin::same(10)),
-            )
+            .size_range(260.0..=900.0)
+            .frame(egui::Frame::new().fill(*theme::BG_1))
             .show(ui, |ui| self.side_panel(ui, frame));
 
-        egui::CentralPanel::no_frame().show(ui, |ui| self.canvas(ui));
+        egui::CentralPanel::no_frame().show(ui, |ui| self.canvas(ui, frame));
         // The canvas has its own Snap / Flow / Grow toggles.
         self.prefs.snap_to_grid = self.view.snap;
         self.prefs.wire_flow_animation = self.view.wire_flow;

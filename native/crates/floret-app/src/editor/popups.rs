@@ -433,6 +433,46 @@ pub fn inline_text(ctx: &egui::Context, rect: Rect, text: &mut String, first: bo
     out
 }
 
+/// A multi-line text box over the canvas (comments, SVG markup): `Pick`
+/// on ⌘/Ctrl+Enter or focus loss, `Close` (discard) on Esc.
+pub fn multiline_text(
+    ctx: &egui::Context,
+    rect: Rect,
+    text: &mut String,
+    first: bool,
+    font: f32,
+) -> Outcome<()> {
+    if ctx.input_mut(|i| i.consume_key(egui::Modifiers::NONE, Key::Escape)) {
+        return Outcome::Close;
+    }
+    if ctx.input_mut(|i| i.consume_key(egui::Modifiers::COMMAND, Key::Enter)) {
+        return Outcome::Pick(());
+    }
+    let mut out = Outcome::Open;
+    egui::Area::new(Id::new("floret-multiline-text"))
+        .order(egui::Order::Foreground)
+        .fixed_pos(rect.min)
+        .show(ctx, |ui| {
+            let rows = ((rect.height() / (font * 1.35)).floor() as usize).max(2);
+            let edit = egui::TextEdit::multiline(text)
+                .font(FontId::proportional(font))
+                .desired_width(rect.width().max(80.0))
+                .desired_rows(rows)
+                .margin(egui::Margin::symmetric(4, 3))
+                .background_color(*theme::BG_0);
+            let resp = egui::ScrollArea::vertical()
+                .max_height(rect.height().max(48.0))
+                .show(ui, |ui| ui.add(edit))
+                .inner;
+            if first {
+                resp.request_focus();
+            } else if resp.lost_focus() {
+                out = Outcome::Pick(());
+            }
+        });
+    out
+}
+
 pub struct PortEditorState {
     pub node: String,
     pub port: String,

@@ -6,6 +6,7 @@
 //! Layout and hit-testing live in `canvas/geom.rs`, painting in
 //! `canvas/draw.rs`, engine read-outs in `canvas/live.rs`.
 
+mod custom;
 mod draw;
 mod geom;
 mod live;
@@ -22,8 +23,10 @@ use crate::editor::popups::{
 use crate::editor::ports::{self, type_name, Side};
 use crate::editor::search::{self, Fit};
 use crate::editor::values::{self, EditKey, FieldKind, LiveEdit};
+use crate::editor::widgets::{self, Pad, SliderState};
 use crate::editor::{clipboard, layout, ops, regions, subpatch};
 use crate::theme::{self, BG_0, FG_2, FG_3, GOLD};
+use custom::WidgetKind;
 use draw::PinLook;
 use eframe::egui::{
     self, pos2, vec2, CursorIcon, Key, Modifiers, PointerButton, Pos2, Rect, Sense, Shape, Stroke,
@@ -34,7 +37,7 @@ use floret_engine::spec::Catalogue;
 use geom::{bezier, wire_points, Field, Hits, Look, NodeBox, PinRef, NODE_W, PIN_DROP, PIN_HIT};
 use indexmap::IndexMap;
 use serde_json::Value as Json;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 /// A palette node type being dragged onto the canvas.
 pub struct PaletteDrag(pub String);
@@ -92,6 +95,24 @@ enum Gesture {
     DrawRegion {
         origin: Pos2,
     },
+    /// Pressing / dragging a custom-body control.
+    Widget {
+        node: String,
+        rect: Rect,
+        drag: WidgetDrag,
+        origin: Pos2,
+    },
+}
+
+/// What a control drag edits, with its value at press time.
+#[derive(Clone, Debug)]
+enum WidgetDrag {
+    Slider(SliderState),
+    Pad(Pad),
+    /// A momentary button, held.
+    Hold,
+    /// A comment's corner, from its size at press time.
+    Grip((f64, f64)),
 }
 
 #[derive(Clone, Debug)]
@@ -174,6 +195,17 @@ enum Action {
         port: String,
         name: String,
     },
+    /// Several params of one node in one undo step (file pickers).
+    SetParams {
+        node: String,
+        values: Vec<(String, Json)>,
+    },
+    /// Open the OS file picker for an `io/file` / `io/svg` node.
+    PickFile(String),
+    /// Fire a bang (live param only: nothing to save or undo).
+    Bang(String),
+    /// Edit a comment's text in place.
+    EditComment(String),
     Undo,
     Redo,
     Arrange,
@@ -245,6 +277,16 @@ pub struct View {
     /// window settles over the first frames after a load).
     keep_fitted: bool,
     fitted_area: Rect,
+    /// Bangs fired recently (node → time), for the flash.
+    flashes: HashMap<String, f64>,
+    /// Probe list scroll offsets (canvas units).
+    probe_scroll: HashMap<String, f32>,
+    /// Last frame's scrollable probe bodies: (node, rect, max scroll).
+    probe_areas: Vec<(String, Rect, f32)>,
+    /// Probe pictures by node id, set by the app each frame.
+    pub thumbs: HashMap<String, egui::TextureId>,
+    /// `ui.input().time` this frame.
+    time: f64,
 }
 
 impl Default for View {
@@ -281,6 +323,11 @@ impl Default for View {
             fit_pending: true,
             keep_fitted: true,
             fitted_area: Rect::NOTHING,
+            flashes: HashMap::new(),
+            probe_scroll: HashMap::new(),
+            probe_areas: Vec::new(),
+            thumbs: HashMap::new(),
+            time: 0.0,
         }
     }
 }
@@ -601,6 +648,7 @@ pub fn show(
     let (resp, painter) = ui.allocate_painter(ui.available_size(), Sense::click_and_drag());
     let area = resp.rect;
     view.area = area;
+    view.time = ui.input(|i| i.time);
     let origin = area.min;
     let ctx = ui.ctx().clone();
     painter.rect_filled(area, 0.0, BG_0);
@@ -624,8 +672,23 @@ pub fn show(
                 view.keep_fitted = false;
             }
         } else if scroll != Vec2::ZERO {
-            view.pan += scroll / view.zoom;
-            view.keep_fitted = false;
+            let probe = pointer.and_then(|p| {
+                view.probe_areas
+                    .iter()
+                    .find(|(_, r, _)| r.contains(p))
+                    .cloned()
+            });
+            match probe {
+                // Over a scrollable probe list: scroll it, not the canvas.
+                Some((id, _, max)) => {
+                    let off = view.probe_scroll.entry(id).or_insert(0.0);
+                    *off = (*off - scroll.y / view.zoom).clamp(0.0, max);
+                }
+                None => {
+                    view.pan += scroll / view.zoom;
+                    view.keep_fitted = false;
+                }
+            }
         }
     }
 
@@ -702,8 +765,73 @@ pub fn show(
         }
     }
 
+    // ── Custom-body controls: they act on press, not after a drag threshold.
+    let primary_pressed = ui.input(|i| i.pointer.primary_pressed());
+    if primary_pressed
+        && resp.hovered()
+        && view.armed.is_none()
+        && matches!(view.gesture, Gesture::None)
+    {
+        if let Some(w) = pointer
+            .and_then(|p| hits.widget(p))
+            .filter(|w| w.kind.drags())
+        {
+            let drag = match &w.kind {
+                WidgetKind::Slider(st) => Some(WidgetDrag::Slider(*st)),
+                WidgetKind::Pad(pad) => Some(WidgetDrag::Pad(*pad)),
+                WidgetKind::Hold => Some(WidgetDrag::Hold),
+                WidgetKind::Grip => ports::find_node(patch, &w.node).map(|n| {
+                    let size = geom::box_size(n, cat, Look::Comment);
+                    WidgetDrag::Grip(size)
+                }),
+                _ => None,
+            };
+            if let (Some(drag), Some(p)) = (drag, pointer) {
+                if matches!(drag, WidgetDrag::Hold) {
+                    view.live(&w.node, &EditKey::Param("value".into()), Json::Bool(true));
+                }
+                view.gesture = Gesture::Widget {
+                    node: w.node.clone(),
+                    rect: w.rect,
+                    drag,
+                    origin: p,
+                };
+            }
+        }
+    }
+    if let Gesture::Widget {
+        node,
+        rect,
+        drag,
+        origin,
+    } = &view.gesture
+    {
+        let (node, rect, drag, origin) = (node.clone(), *rect, drag.clone(), *origin);
+        if ui.input(|i| i.pointer.primary_down()) {
+            if let Some(p) = pointer {
+                widget_drag(view, patch, &node, rect, &drag, origin, p, mods.shift);
+            }
+        } else {
+            view.gesture = Gesture::None;
+            match drag {
+                WidgetDrag::Slider(_) => {
+                    view.commit_value(patch, cat, &node, &EditKey::Param("value".into()));
+                }
+                WidgetDrag::Pad(_) => {
+                    view.commit_value(patch, cat, &node, &EditKey::Param("x".into()));
+                }
+                WidgetDrag::Hold => {
+                    view.live(&node, &EditKey::Param("value".into()), Json::Bool(false));
+                }
+                WidgetDrag::Grip(_) => view.history.push(patch, None),
+            }
+        }
+    }
+
     // ── Gestures.
-    if resp.drag_started_by(PointerButton::Primary) {
+    if resp.drag_started_by(PointerButton::Primary)
+        && !matches!(view.gesture, Gesture::Widget { .. })
+    {
         let start = ui.input(|i| i.pointer.press_origin()).or(pointer);
         if let Some(start) = start {
             view.selected_edge = None;
@@ -926,13 +1054,24 @@ pub fn show(
             } => {
                 if let Some(p) = pointer {
                     let integer = matches!(field.kind, FieldKind::Number { integer: true });
-                    let v = values::scrub(
-                        *start,
-                        f64::from(p.x - *origin_x),
-                        mods.shift,
-                        mods.alt,
-                        integer,
-                    );
+                    let v = if field.step == 1.0 {
+                        values::scrub(
+                            *start,
+                            f64::from(p.x - *origin_x),
+                            mods.shift,
+                            mods.alt,
+                            integer,
+                        )
+                    } else {
+                        let d = values::scrub(
+                            0.0,
+                            f64::from(p.x - *origin_x),
+                            mods.shift,
+                            mods.alt,
+                            false,
+                        );
+                        ((*start + d * field.step) * 1e6).round() / 1e6
+                    };
                     let value = match field.axis {
                         Some(a) => {
                             let (x, y) = values::as_vec2(&field.value);
@@ -947,7 +1086,7 @@ pub fn show(
                     }
                 }
             }
-            Gesture::DrawRegion { .. } | Gesture::None => {}
+            Gesture::DrawRegion { .. } | Gesture::Widget { .. } | Gesture::None => {}
         }
     }
 
@@ -1058,7 +1197,10 @@ pub fn show(
                 }
             }
             Gesture::Resize { .. } | Gesture::PortDrag { .. } => view.history.push(patch, None),
-            Gesture::Scrub { field, .. } => view.commit_value(patch, cat, &field.node, &field.key),
+            Gesture::Scrub { field, .. } => {
+                clamp_slider(view, patch, &field.node);
+                view.commit_value(patch, cat, &field.node, &field.key);
+            }
             Gesture::DrawRegion { origin: o } => {
                 if let (Some(ty), Some(p)) = (view.armed.take(), pointer) {
                     let (a, b) = (view.to_canvas(o), view.to_canvas(p));
@@ -1072,7 +1214,7 @@ pub fn show(
                     });
                 }
             }
-            Gesture::Marquee { .. } | Gesture::Pan | Gesture::None => {}
+            Gesture::Marquee { .. } | Gesture::Pan | Gesture::Widget { .. } | Gesture::None => {}
         }
     }
 
@@ -1081,6 +1223,10 @@ pub fn show(
         if let Some(p) = pointer {
             if view.armed.is_some() {
                 // The draw tool needs a drag.
+            } else if let Some(w) = hits.widget(p) {
+                if let Some(a) = widget_click(patch, &w.node, &w.kind) {
+                    actions.push(a);
+                }
             } else if let Some((id, _)) = hits.chip(p) {
                 actions.push(Action::Focus(id.clone()));
             } else if let Some(f) = hits.field(p) {
@@ -1131,7 +1277,12 @@ pub fn show(
     if resp.double_clicked() && view.armed.is_none() {
         if let Some(p) = pointer {
             let at = view.to_canvas(p);
-            if let Some((region, port)) = hits.pill(p) {
+            if let Some(w) = hits.widget(p) {
+                // Double-click a slider / pad to reset it.
+                if let Some(a) = widget_reset(patch, cat, &w.node, &w.kind) {
+                    actions.push(a);
+                }
+            } else if let Some((region, port)) = hits.pill(p) {
                 let name = ports::find_node(patch, &region)
                     .and_then(|n| n.ports.iter().flatten().find(|x| x.id == port).cloned())
                     .map(|x| x.name)
@@ -1148,6 +1299,7 @@ pub fn show(
                 match boxes[id.as_str()].look {
                     Look::Collapsed => actions.push(Action::Enter(id)),
                     Look::Region => actions.push(Action::Rename(id)),
+                    Look::Comment => actions.push(Action::EditComment(id)),
                     _ => {}
                 }
             } else if let Some((id, _)) = boxes
@@ -1283,9 +1435,23 @@ pub fn show(
         if let Some(p) = pointer {
             let icon = if view.armed.is_some() {
                 Some(CursorIcon::Crosshair)
+            } else if let Gesture::Widget { drag, .. } = &view.gesture {
+                Some(match drag {
+                    WidgetDrag::Slider(_) => CursorIcon::ResizeHorizontal,
+                    WidgetDrag::Pad(_) => CursorIcon::Crosshair,
+                    WidgetDrag::Grip(_) => CursorIcon::ResizeNwSe,
+                    WidgetDrag::Hold => CursorIcon::PointingHand,
+                })
             } else if matches!(view.gesture, Gesture::None) {
                 if hits.pin(p, PIN_HIT, None).is_some() {
                     None
+                } else if let Some(w) = hits.widget(p) {
+                    Some(match w.kind {
+                        WidgetKind::Slider(_) => CursorIcon::ResizeHorizontal,
+                        WidgetKind::Pad(_) => CursorIcon::Crosshair,
+                        WidgetKind::Grip => CursorIcon::ResizeNwSe,
+                        _ => CursorIcon::PointingHand,
+                    })
                 } else if hits
                     .field(p)
                     .is_some_and(|f| matches!(f.kind, FieldKind::Number { .. } | FieldKind::Vec2))
@@ -1465,10 +1631,38 @@ pub fn show(
         }) => Some(f.clone()),
         _ => None,
     };
+    let now = ui.input(|i| i.time);
+    view.flashes.retain(|_, t| now - *t < 0.15);
+    let dropping = ui.input(|i| !i.raw.hovered_files.is_empty());
+    let drop_node = dropping
+        .then(|| {
+            pointer
+                .or(view.last_pointer)
+                .and_then(|p| hits.body(p).cloned())
+        })
+        .flatten()
+        .filter(|id| is_picker(patch, id));
+    view.probe_areas.clear();
     for id in &order {
         let b = &boxes[id.as_str()];
+        if b.look == Look::Probe {
+            let max = custom::probe_max_scroll(b, z);
+            let off = view.probe_scroll.entry(id.clone()).or_insert(0.0);
+            *off = off.clamp(0.0, max);
+            if max > 0.0 {
+                view.probe_areas
+                    .push((id.clone(), custom::probe_body(b, z), max));
+            }
+        }
         let out_text = |port: &str| live.output(patch, cat, id, port).map(|s| format_spread(&s));
         let subtitle = (b.look == Look::Collapsed).then_some("subpatch");
+        let active = view.flashes.contains_key(id)
+            || matches!(&view.gesture, Gesture::Widget { node, .. } if node == id);
+        let editing_comment = matches!(
+            &view.editing,
+            Some(TextEditing { target: EditTarget::Field(f), .. })
+                if &f.node == id && b.look == Look::Comment
+        );
         draw::node(
             &painter,
             b,
@@ -1477,6 +1671,15 @@ pub fn show(
                 subtitle,
                 out_text: &out_text,
                 editing: editing_field.as_ref().filter(|f| &f.node == id),
+                body: custom::BodyState {
+                    hover: pointer.filter(|_| resp.hovered()),
+                    selected: view.is_selected(id),
+                    active,
+                    scroll: view.probe_scroll.get(id).copied().unwrap_or(0.0),
+                    editing: editing_comment,
+                    drop: drop_node.as_ref() == Some(id),
+                    thumb: view.thumbs.get(id).copied(),
+                },
             },
             z,
         );
@@ -1526,6 +1729,21 @@ pub fn show(
                 if let Some(w) = hits.wire(p) {
                     pin_tooltip(&ctx, patch, cat, live, &boxes, &w.source, p);
                 }
+            }
+        }
+    }
+
+    // ── Files dropped from the OS onto a File / SVG node.
+    let dropped = ui.input(|i| i.raw.dropped_files.clone());
+    if let Some(f) = dropped.first() {
+        let target = pointer
+            .or(view.last_pointer)
+            .and_then(|p| hits.body(p).cloned())
+            .filter(|id| is_picker(patch, id));
+        if let Some(id) = target {
+            let bytes = f.bytes().ok();
+            if let Some(a) = ingest_file(patch, &id, Some(f.path()), bytes.as_deref(), "") {
+                actions.push(a);
             }
         }
     }
@@ -1836,7 +2054,19 @@ fn overlays(
             ed.rect.size() * view.zoom,
         );
         let first = std::mem::take(&mut ed.first);
-        match popups::inline_text(ctx, rect, &mut ed.text, first) {
+        let multiline = matches!(&ed.target, EditTarget::Field(f) if f.multiline);
+        let outcome = if multiline {
+            popups::multiline_text(
+                ctx,
+                rect,
+                &mut ed.text,
+                first,
+                (12.0 * view.zoom).clamp(9.0, 24.0),
+            )
+        } else {
+            popups::inline_text(ctx, rect, &mut ed.text, first)
+        };
+        match outcome {
             Outcome::Open => {}
             Outcome::Close => view.editing = None,
             Outcome::Pick(()) => {
@@ -1849,7 +2079,12 @@ fn overlays(
     if let Some(st) = view.color.as_mut() {
         let (changed, out) = popups::color_popup(ctx, area, st);
         let (node, key) = (st.node.clone(), st.key.clone());
-        let value = values::rgba_json(popups::rgba_of(st.color));
+        // Palette stops keep their colours as hex strings.
+        let value = if st.before.is_string() {
+            Json::String(values::hex(popups::rgba_of(st.color)))
+        } else {
+            values::rgba_json(popups::rgba_of(st.color))
+        };
         if changed && values::set(patch, &node, &key, value.clone()) {
             view.live(&node, &key, value);
         }
@@ -1906,6 +2141,10 @@ fn finish_edit(ed: TextEditing) -> Option<Action> {
                     let (x, y) = values::as_vec2(&f.value);
                     let (x, y) = if a == 0 { (v, y) } else { (x, v) };
                     serde_json::json!({ "x": x, "y": y })
+                }
+                None if f.kind == FieldKind::Color && f.value.is_string() => {
+                    let rgba = values::parse_hex(&ed.text)?;
+                    Json::String(values::hex(rgba))
                 }
                 None => values::parse_field(&f.kind, &ed.text)?,
             };
@@ -2459,14 +2698,13 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 .unwrap_or_default();
             view.close_overlays();
             view.editing = Some(TextEditing {
-                target: EditTarget::Field(Field {
-                    rect: Rect::NOTHING,
-                    node: id,
-                    key: EditKey::Param("label".into()),
-                    kind: FieldKind::Text,
-                    value: Json::String(label.clone()),
-                    axis: None,
-                }),
+                target: EditTarget::Field(Field::new(
+                    Rect::NOTHING,
+                    &id,
+                    EditKey::Param("label".into()),
+                    FieldKind::Text,
+                    Json::String(label.clone()),
+                )),
                 text: label,
                 rect,
                 first: true,
@@ -2488,8 +2726,80 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
         Action::SetValue { node, key, value } => {
             if values::set(patch, &node, &key, value.clone()) {
                 view.live(&node, &key, value);
+                clamp_slider(view, patch, &node);
                 view.commit_value(patch, cat, &node, &key);
             }
+        }
+        Action::SetParams { node, values: list } => {
+            let mut changed = None;
+            for (k, v) in list {
+                let key = EditKey::Param(k);
+                if values::set(patch, &node, &key, v.clone()) {
+                    view.live(&node, &key, v);
+                    changed = Some(key);
+                }
+            }
+            if let Some(key) = changed {
+                view.commit_value(patch, cat, &node, &key);
+            }
+        }
+        Action::PickFile(node) => {
+            let svg = ports::find_node(patch, &node).is_some_and(|n| n.def_type == "io/svg");
+            let mut dialog = rfd::FileDialog::new();
+            if svg {
+                dialog = dialog.add_filter("SVG", &["svg"]);
+            }
+            if let Some(path) = dialog.pick_file() {
+                let name = path
+                    .file_name()
+                    .map(|n| n.to_string_lossy().into_owned())
+                    .unwrap_or_default();
+                if let Some(a) = ingest_file(patch, &node, Some(&path), None, &name) {
+                    apply(a, patch, cat, view);
+                }
+            }
+        }
+        Action::Bang(node) => {
+            view.live(
+                &node,
+                &EditKey::Param(floret_engine::nodes::io::BANG_PARAM.into()),
+                Json::Bool(true),
+            );
+            view.flashes.insert(node, view.time);
+        }
+        Action::EditComment(id) => {
+            let Some(n) = ports::find_node(patch, &id) else {
+                return;
+            };
+            let p = ops::absolute_pos(patch, &id);
+            let (w, h) = geom::box_size(n, cat, Look::Comment);
+            let text = n
+                .params
+                .get("text")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_owned();
+            let rect = Rect::from_min_size(
+                pos2(p.x as f32 + 6.0, p.y as f32 + 4.0),
+                vec2(w as f32 - 12.0, h as f32 - 8.0),
+            );
+            view.close_overlays();
+            view.select_only(&id);
+            view.editing = Some(TextEditing {
+                target: EditTarget::Field(Field {
+                    multiline: true,
+                    ..Field::new(
+                        rect,
+                        &id,
+                        EditKey::Param("text".into()),
+                        FieldKind::Text,
+                        Json::String(text.clone()),
+                    )
+                }),
+                text,
+                rect,
+                first: true,
+            });
         }
         Action::Undo => {
             if view.history.undo(patch) {
@@ -2647,6 +2957,8 @@ fn format_value(v: &floret_engine::Value) -> String {
             }
         }
         Value::Bool(b) => b.to_string(),
+        // An empty string reads as nothing: the pin's label shows instead.
+        Value::Str(s) if s.is_empty() => String::new(),
         Value::Str(s) => {
             let s: String = s.chars().take(14).collect();
             format!("\"{s}\"")
@@ -2661,4 +2973,160 @@ fn format_value(v: &floret_engine::Value) -> String {
         Value::Handle(h) => h.type_name().to_owned(),
         Value::Image(i) => format!("{}×{}", i.width(), i.height()),
     }
+}
+
+/// One frame of a control drag at pointer `p`.
+#[allow(clippy::too_many_arguments)]
+fn widget_drag(
+    view: &mut View,
+    patch: &mut PatchFile,
+    node: &str,
+    rect: Rect,
+    drag: &WidgetDrag,
+    origin: Pos2,
+    p: Pos2,
+    fine: bool,
+) {
+    let z = view.zoom;
+    let mut set = |view: &mut View, key: &str, v: Json| {
+        let key = EditKey::Param(key.into());
+        if values::set(patch, node, &key, v.clone()) {
+            view.live(node, &key, v);
+        }
+    };
+    match drag {
+        WidgetDrag::Slider(s) => {
+            // The thumb travels inside the track's end caps.
+            let inner = rect.shrink2(vec2(7.0 * z, 0.0));
+            let v = if fine {
+                s.fine(s.value, f64::from((p.x - origin.x) / inner.width()))
+            } else {
+                s.at(f64::from((p.x - inner.left()) / inner.width()))
+            };
+            set(view, "value", serde_json::json!(v));
+        }
+        WidgetDrag::Pad(pad) => {
+            let (u, v) = if fine {
+                let (u0, v0) = pad.uv();
+                (
+                    u0 + 0.1 * f64::from((p.x - origin.x) / rect.width()),
+                    v0 + 0.1 * f64::from((p.y - origin.y) / rect.height()),
+                )
+            } else {
+                (
+                    f64::from((p.x - rect.left()) / rect.width()),
+                    f64::from((p.y - rect.top()) / rect.height()),
+                )
+            };
+            let (x, y) = pad.at(u, v);
+            set(view, "x", serde_json::json!(x));
+            set(view, "y", serde_json::json!(y));
+        }
+        WidgetDrag::Grip(start) => {
+            let d = (p - origin) / z;
+            let (w, h) = widgets::comment_size(*start, f64::from(d.x), f64::from(d.y));
+            set(view, "width", serde_json::json!(w));
+            set(view, "height", serde_json::json!(h));
+        }
+        WidgetDrag::Hold => {}
+    }
+}
+
+/// The action a click on a (non-drag) control raises.
+fn widget_click(patch: &PatchFile, node: &str, kind: &WidgetKind) -> Option<Action> {
+    let n = ports::find_node(patch, node)?;
+    let set = |key: &str, value: Json| Action::SetValue {
+        node: node.to_owned(),
+        key: EditKey::Param(key.into()),
+        value,
+    };
+    match kind {
+        WidgetKind::Toggle(on) => Some(set("value", Json::Bool(!on))),
+        WidgetKind::Bang => Some(Action::Bang(node.to_owned())),
+        WidgetKind::Step(d) => Some(set("value", serde_json::json!(widgets::nudge(n, *d)))),
+        WidgetKind::Slots { param, to, .. } => to.map(|v| set(param, serde_json::json!(v))),
+        WidgetKind::Pick { .. } => Some(Action::PickFile(node.to_owned())),
+        WidgetKind::Clear => Some(Action::SetParams {
+            node: node.to_owned(),
+            values: widgets::clear_file_params(&n.def_type),
+        }),
+        WidgetKind::Slider(_) | WidgetKind::Pad(_) | WidgetKind::Hold | WidgetKind::Grip => None,
+    }
+}
+
+/// Double-click: a slider / pad back to its default value.
+fn widget_reset(
+    patch: &PatchFile,
+    cat: &Catalogue,
+    node: &str,
+    kind: &WidgetKind,
+) -> Option<Action> {
+    let n = ports::find_node(patch, node)?;
+    let spec = cat.get(&n.def_type)?;
+    let keys: &[&str] = match kind {
+        WidgetKind::Slider(_) => &["value"],
+        WidgetKind::Pad(_) => &["x", "y"],
+        _ => return None,
+    };
+    let values = keys
+        .iter()
+        .filter_map(|k| Some(((*k).to_owned(), spec.default_params.get(*k)?.clone())))
+        .collect();
+    Some(Action::SetParams {
+        node: node.to_owned(),
+        values,
+    })
+}
+
+/// After a slider's min / max changed, pull its value back into range.
+fn clamp_slider(view: &mut View, patch: &mut PatchFile, node: &str) {
+    let Some(n) = ports::find_node(patch, node).filter(|n| n.def_type == "io/slider") else {
+        return;
+    };
+    if let Some(v) = widgets::slider(n).clamped() {
+        let key = EditKey::Param("value".into());
+        values::set(patch, node, &key, serde_json::json!(v));
+        view.live(node, &key, serde_json::json!(v));
+    }
+}
+
+/// Nodes that take a picked / dropped file.
+fn is_picker(patch: &PatchFile, id: &str) -> bool {
+    ports::find_node(patch, id).is_some_and(|n| {
+        n.def_type == "io/file"
+            || (n.def_type == "io/svg"
+                && n.params
+                    .get("mode")
+                    .and_then(|m| m.as_str())
+                    .unwrap_or("file")
+                    == "file")
+    })
+}
+
+/// Read a picked / dropped file into a node's params.
+fn ingest_file(
+    patch: &PatchFile,
+    node: &str,
+    path: Option<&std::path::Path>,
+    bytes: Option<&[u8]>,
+    name: &str,
+) -> Option<Action> {
+    let n = ports::find_node(patch, node)?;
+    let data = match (bytes, path) {
+        (Some(b), _) => b.to_vec(),
+        (None, Some(p)) => std::fs::read(p).ok()?,
+        (None, None) => return None,
+    };
+    let name = if name.is_empty() {
+        path.and_then(|p| p.file_name())
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default()
+    } else {
+        name.to_owned()
+    };
+    let values = widgets::file_params(&n.def_type, &name, &data)?;
+    Some(Action::SetParams {
+        node: node.to_owned(),
+        values,
+    })
 }

@@ -3,7 +3,7 @@
 
 use super::geom::{Decor, PinRef};
 use crate::editor::ports::{self, find_node, Side};
-use crate::editor::{regions, subpatch, values};
+use crate::editor::{regions, subpatch, values, widgets};
 use floret_engine::compile::{loop_var_id, synthetic_splicer_id};
 use floret_engine::patch::{PatchFile, PortDirection};
 use floret_engine::spec::{Catalogue, RegionKind};
@@ -197,9 +197,19 @@ impl Live<'_> {
             };
             badges.insert(id.clone(), (format!("×{}", stats.iterations), hint, capped));
         }
+        let probes = patch
+            .nodes
+            .iter()
+            .filter(|n| n.def_type == "meta/probe" && visible.contains(&n.id))
+            .map(|n| {
+                let port = self.by_id(&n.id, 0);
+                (n.id.clone(), widgets::probe_view(port.as_ref()))
+            })
+            .collect();
         Decor {
             warnings: warn.into_iter().map(|(k, v)| (k, v.join("\n"))).collect(),
             badges,
+            probes,
         }
     }
 }

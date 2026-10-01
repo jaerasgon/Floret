@@ -217,10 +217,19 @@ pub struct NodeState<'a> {
     pub out_text: &'a dyn Fn(&str) -> Option<String>,
     /// The field being typed into (drawn by the text editor instead).
     pub editing: Option<&'a Field>,
+    /// Custom-body state (pointer, active control, probe scroll …).
+    pub body: super::custom::BodyState,
 }
 
 pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
+    match b.look {
+        Look::Probe => return super::custom::draw_probe(p, b, &st.body, z),
+        Look::Comment => return super::custom::draw_comment(p, b, &st.body, z),
+        _ => {}
+    }
     let r = CornerRadius::same((6.0 * z).min(255.0) as u8);
+    let hovered = st.body.hover.is_some_and(|h| b.rect.contains(h));
+    super::custom::lift(p, b.rect, hovered, z);
     if st.selected {
         // Soft gold glow (the web app's --glow-gold), not a second ring.
         let glow = egui::Shadow {
@@ -235,6 +244,8 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
         GOLD.gamma_multiply(0.85)
     } else if b.warning.is_some() {
         DANGER.gamma_multiply(0.6)
+    } else if hovered {
+        mix(*BORDER, *FG_2, 0.55)
     } else {
         *BORDER
     };
@@ -297,7 +308,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
         let tag = if b.unimplemented {
             Some("not ported")
         } else {
-            st.subtitle
+            b.header_value.as_deref().or(st.subtitle)
         };
         if let Some(tag) = tag {
             if right - x > 30.0 * z {
@@ -311,21 +322,11 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
             }
         }
     }
-    if let (Some(text), true) = (&b.comment, z > 0.3) {
-        let body = b.rect.shrink2(vec2(10.0, 0.0) * z);
-        let galley = p.layout(
-            text.clone(),
-            FontId::proportional(11.5 * z),
-            *FG_1,
-            body.width(),
-        );
-        let clip = Rect::from_min_max(
-            pos2(body.left(), header.bottom() + 6.0 * z),
-            pos2(body.right(), b.rect.bottom() - 6.0 * z),
-        );
-        p.with_clip_rect(clip).galley(clip.min, galley, *FG_1);
-    }
+    super::custom::draw_body(p, b, &st.body, z);
     if z <= 0.3 {
+        for f in &b.fields {
+            field(p, f, z, None);
+        }
         return;
     }
     let font = FontId::proportional(LABEL_FONT * z);
@@ -401,13 +402,64 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
         if st.editing.is_some_and(|e| e.rect == f.rect) {
             continue;
         }
-        field(p, f, z);
+        field(p, f, z, st.body.hover);
     }
 }
 
-pub fn field(p: &Painter, f: &Field, z: f32) {
+pub fn field(p: &Painter, f: &Field, z: f32, hover: Option<Pos2>) {
     let r = f.rect;
     let mono = FontId::monospace(10.0 * z);
+    if f.bare && !super::custom::bare_hot(hover, r) {
+        // Plain text until hovered (`.iobox-range-input`).
+        let text = match &f.kind {
+            FieldKind::Number { .. } => values::num(values::as_f64(&f.value), 3),
+            _ => values::as_text(&f.value),
+        };
+        if z > 0.3 {
+            p.with_clip_rect(r).text(
+                r.center(),
+                Align2::CENTER_CENTER,
+                text,
+                FontId::monospace(9.0 * z),
+                *FG_2,
+            );
+        }
+        if matches!(f.kind, FieldKind::Text) {
+            p.extend(egui::Shape::dashed_line(
+                &[r.left_bottom(), r.right_bottom()],
+                Stroke::new(1.0, BORDER),
+                3.0 * z,
+                2.0 * z,
+            ));
+        }
+        return;
+    }
+    if f.multiline {
+        p.rect(
+            r,
+            3.0 * z,
+            BG_0,
+            Stroke::new(1.0, BORDER),
+            StrokeKind::Inside,
+        );
+        if z > 0.3 {
+            let text = values::as_text(&f.value);
+            let (text, color) = if text.trim().is_empty() {
+                ("<svg>…</svg>".to_owned(), FG_2)
+            } else {
+                (text, FG_0)
+            };
+            let g = p.layout(
+                text,
+                FontId::monospace(9.0 * z),
+                *color,
+                r.width() - 6.0 * z,
+            );
+            p.with_clip_rect(r.shrink(2.0))
+                .galley(r.min + vec2(3.0, 3.0) * z, g, *color);
+        }
+        return;
+    }
     let boxed = |p: &Painter| {
         p.rect(
             r,

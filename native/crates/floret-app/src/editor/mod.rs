@@ -17,6 +17,7 @@ pub mod regions;
 pub mod search;
 pub mod subpatch;
 pub mod values;
+pub mod widgets;
 
 use floret_engine::patch::PatchFile;
 use floret_engine::spec::Catalogue;

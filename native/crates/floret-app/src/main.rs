@@ -21,7 +21,9 @@ mod files;
 mod gpu_support;
 mod help;
 mod host;
+mod library;
 mod menu;
+mod node_help;
 mod palette;
 mod prefs;
 mod preview;
@@ -30,6 +32,7 @@ mod shader_panel;
 mod theme;
 mod thumbs;
 mod welcome;
+mod workspace;
 
 use eframe::egui;
 

@@ -36,8 +36,6 @@ pub struct ShaderPanel {
     text: String,
     /// Last keystroke not yet committed.
     pending: Option<Instant>,
-    /// Closed by the user for this node.
-    closed_for: Option<String>,
     checks: HashMap<String, Vec<ShaderError>>,
 }
 
@@ -120,16 +118,9 @@ impl ShaderPanel {
         out
     }
 
-    /// Show the editor window for `selected` when it's a shader node.
-    /// Returns `true` when the patch was edited (the caller commits).
-    pub fn show(
-        &mut self,
-        ctx: &egui::Context,
-        patch: &mut PatchFile,
-        selected: Option<&str>,
-        runtime: &RuntimeErrors,
-    ) -> bool {
-        let Some(id) = selected
+    /// The shader node `selected` names, if it is one.
+    fn shader_id(patch: &PatchFile, selected: Option<&str>) -> Option<String> {
+        selected
             .filter(|id| {
                 patch
                     .nodes
@@ -137,36 +128,65 @@ impl ShaderPanel {
                     .any(|n| n.id == *id && n.def_type == SHADER)
             })
             .map(str::to_owned)
-        else {
-            let edited = self.flush(patch);
-            self.editing = None;
-            self.closed_for = None;
-            return edited;
-        };
-        if self.closed_for.as_deref() == Some(&id) {
-            return self.flush(patch);
-        }
+    }
+
+    /// Whether `selected` is a shader node (the dock brings the Shader
+    /// tab forward for it).
+    pub fn is_shader(patch: &PatchFile, selected: Option<&str>) -> bool {
+        Self::shader_id(patch, selected).is_some()
+    }
+
+    /// Every frame, shown or not: commit the pending edit once the
+    /// debounce elapses or the selection moves off its node. Returns
+    /// `true` when the patch was edited (the caller commits).
+    pub fn tick(
+        &mut self,
+        ctx: &egui::Context,
+        patch: &mut PatchFile,
+        selected: Option<&str>,
+    ) -> bool {
+        let id = Self::shader_id(patch, selected);
         let mut edited = false;
-        if self.editing.as_ref().is_none_or(|(n, _)| *n != id) {
+        if self
+            .editing
+            .as_ref()
+            .is_some_and(|(n, _)| Some(n) != id.as_ref())
+        {
             edited |= self.flush(patch);
-            self.load(patch, &id, ShaderBuffer::Image);
-        }
-        let mut open = true;
-        egui::Window::new("Shader · GLSL")
-            .id(egui::Id::new("floret-shader-panel"))
-            .open(&mut open)
-            .default_size([460.0, 560.0])
-            .default_pos([360.0, 80.0])
-            .show(ctx, |ui| edited |= self.contents(ui, patch, &id, runtime));
-        if !open {
-            edited |= self.flush(patch);
-            self.closed_for = Some(id);
+            self.editing = None;
         }
         if self.pending.is_some_and(|t| t.elapsed() >= DEBOUNCE) {
             edited |= self.flush(patch);
         } else if self.pending.is_some() {
             ctx.request_repaint_after(DEBOUNCE);
         }
+        edited
+    }
+
+    /// The editor for `selected` inside a dock tab (a hint when it isn't a
+    /// shader node). Returns `true` when the patch was edited.
+    pub fn show_in(
+        &mut self,
+        ui: &mut egui::Ui,
+        patch: &mut PatchFile,
+        selected: Option<&str>,
+        runtime: &RuntimeErrors,
+    ) -> bool {
+        let Some(id) = Self::shader_id(patch, selected) else {
+            ui.add_space(16.0);
+            ui.vertical_centered(|ui| {
+                ui.label(
+                    RichText::new("Select a GPU Shader node to edit its GLSL.").color(theme::FG_2),
+                );
+            });
+            return false;
+        };
+        let mut edited = false;
+        if self.editing.as_ref().is_none_or(|(n, _)| *n != id) {
+            edited |= self.flush(patch);
+            self.load(patch, &id, ShaderBuffer::Image);
+        }
+        edited |= self.contents(ui, patch, &id, runtime);
         edited
     }
 

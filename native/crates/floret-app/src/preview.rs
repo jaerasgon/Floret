@@ -31,6 +31,10 @@ pub struct PreviewPanel {
     mouse_pressed: bool,
     key: String,
     key_pressed: bool,
+    export: crate::export::Export,
+    /// What exports are named after: the renderer's label, else this
+    /// (the patch name).
+    pub doc_name: String,
 }
 
 impl PreviewPanel {
@@ -42,6 +46,8 @@ impl PreviewPanel {
             mouse_pressed: false,
             key: String::new(),
             key_pressed: false,
+            export: crate::export::Export::default(),
+            doc_name: String::new(),
         }
     }
 
@@ -113,9 +119,26 @@ impl PreviewPanel {
         engine: Option<&Engine>,
         outputs: &Outputs,
     ) {
+        let (layers, bg) = scene(engine, outputs);
         ui.horizontal(|ui| {
             ui.label(RichText::new("Preview").color(theme::FG_1).small());
             ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                let label = engine
+                    .and_then(|e| {
+                        let r = e.graph.renderer()?;
+                        e.params.get(&e.graph.nodes[r].id, "label")?.as_str()
+                    })
+                    .filter(|l| !l.trim().is_empty());
+                self.export.ui(
+                    ui,
+                    rs,
+                    label.unwrap_or(&self.doc_name),
+                    crate::export::Frame {
+                        layers: &layers,
+                        background: bg,
+                        size: self.canvas,
+                    },
+                );
                 let mut info = format!("{} × {}", self.canvas.0, self.canvas.1);
                 if let Some(p) = &self.gpu {
                     let s = p.stats;
@@ -138,7 +161,6 @@ impl PreviewPanel {
         let image = fit(area, self.canvas);
         match (rs, self.gpu.as_mut()) {
             (Some(rs), Some(p)) => {
-                let (layers, bg) = scene(engine, outputs);
                 let id = p.render(rs, &layers, bg, self.canvas);
                 ui.painter().image(
                     id,

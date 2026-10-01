@@ -4,7 +4,8 @@
 //! Walks the `SceneNode` tree and routes every shape to a pipeline:
 //!
 //! - **SDF instances**: rect / ellipse (fill + stroke with align), capsules
-//!   for lines, polygon / arc / triangle / quad outlines, points.
+//!   for lines, polygon / arc / triangle / quad outlines, points, particle
+//!   batches (one instance per live particle) and particle trails.
 //! - **Stencil fill**: triangle / quad / polygon / arc fills — a fan into the
 //!   stencil buffer (nonzero winding) then a cover quad.
 //! - **Textured quads**: text runs (rasterised CPU-side, see `text.rs`).
@@ -20,8 +21,9 @@
 //! without a GPU.
 
 use crate::text::{TextKey, TextRasterizer};
+use floret_engine::particles::{ParticleBuffer, ParticleHandle, ParticleTemplate};
 use floret_engine::scene::{
-    catmull_rom_beziers, mul, resolve_box, Affine, Paint, ResolvedStyle, SceneNode,
+    catmull_rom_beziers, mul, resolve_box, translate_mat, Affine, Paint, ResolvedStyle, SceneNode,
 };
 use floret_engine::Vec2;
 use std::sync::Arc;
@@ -794,10 +796,201 @@ impl Emitter<'_> {
                 self.fb
                     .push_tex_quad(c, [0.0, 0.0, 1.0, 1.0], tint, run.clone());
             }
+            SceneNode::ParticleBatch {
+                buffer,
+                template,
+                style,
+                use_buffer_color,
+                ..
+            } => self.particles(buffer, template, style, *use_buffer_color, m),
+            SceneNode::ParticleTrailBatch {
+                buffer,
+                history,
+                segments,
+                head_idx,
+                style,
+                fade_out,
+                use_buffer_color,
+                tapered,
+                tail_width,
+            } => {
+                let trail = Trail {
+                    history: history.as_slice(),
+                    segments: *segments,
+                    head: *head_idx,
+                    fade_out: *fade_out,
+                    tapered: *tapered,
+                    tail_width: *tail_width,
+                };
+                particle_trails(fb, &buffer.read(), &trail, style, *use_buffer_color, m);
+            }
             #[allow(unreachable_patterns)]
             _ => fb.skipped += 1,
         }
     }
+
+    /// Every live particle of a buffer as one run of SDF instances (one
+    /// instanced draw), like TS `scene-to-batches`. As there, `size[i]` is
+    /// the half extent: a circle's radius, a square's half side, at least
+    /// 0.4. A `Layer` template (drawn as a circle by TS's GL path) is the
+    /// layer translated to each particle.
+    fn particles(
+        &mut self,
+        buffer: &ParticleHandle,
+        template: &ParticleTemplate,
+        style: &ResolvedStyle,
+        use_buffer_color: bool,
+        m: &Affine,
+    ) {
+        let buf = buffer.read();
+        let n = live_len(&buf);
+        if let ParticleTemplate::Layer(node) = template {
+            for i in (0..n).filter(|&i| buf.alive[i] != 0) {
+                let (x, y) = (f64::from(buf.pos_x[i]), f64::from(buf.pos_y[i]));
+                if !(x.is_finite() && y.is_finite()) {
+                    self.fb.skipped += 1;
+                    continue;
+                }
+                self.emit(node, &mul(m, &translate_mat(x, y)));
+            }
+            return;
+        }
+        let fb = &mut *self.fb;
+        let fill = paint_rgba(style.fill.as_ref());
+        let sc = scale_of(m);
+        // Circles stay round under any transform (TS: identity basis,
+        // radius × mean scale); squares follow the full transform.
+        let (ty, basis, unit) = match template {
+            ParticleTemplate::Rect => (SdfType::Rect, [m[0], m[2], m[1], m[3]], 1.0),
+            _ => (SdfType::Ellipse, [1.0, 0.0, 0.0, 1.0], sc),
+        };
+        fb.sdf.reserve(n);
+        for i in (0..n).filter(|&i| buf.alive[i] != 0) {
+            let col = if use_buffer_color {
+                buffer_rgba(&buf, i)
+            } else {
+                fill
+            };
+            if col[3] <= 0.0 {
+                continue;
+            }
+            let [cx, cy] = apply(m, f64::from(buf.pos_x[i]), f64::from(buf.pos_y[i]));
+            let r = f64::from(buf.size[i]).max(0.4) * unit;
+            if !(cx.is_finite() && cy.is_finite() && r.is_finite()) {
+                fb.skipped += 1;
+                continue;
+            }
+            fb.push_sdf(
+                ty,
+                cx,
+                cy,
+                basis,
+                r,
+                r,
+                0.0,
+                col,
+                TRANSPARENT,
+                SdfAlign::Center,
+            );
+        }
+    }
+}
+
+/// The history half of a `ParticleTrailBatch`.
+struct Trail<'a> {
+    history: &'a [f32],
+    segments: usize,
+    head: usize,
+    fade_out: bool,
+    tapered: bool,
+    tail_width: f64,
+}
+
+/// A capsule per trail segment of every live particle, newest → oldest,
+/// stopping at the first missing (NaN) sample. Segment k (1-based) fades
+/// to alpha × (1 − (k − ½)/segments) and tapers to width ×
+/// (1 − (k − ½)/segments × (1 − tail_width)), as the TS canvas / SVG
+/// renderers did (TS's GL path draws trails flat).
+fn particle_trails(
+    fb: &mut FrameBuilder,
+    buf: &ParticleBuffer,
+    trail: &Trail<'_>,
+    style: &ResolvedStyle,
+    use_buffer_color: bool,
+    m: &Affine,
+) {
+    let segs = trail.segments;
+    if segs < 2 {
+        return;
+    }
+    let n = live_len(buf).min(trail.history.len() / (segs * 2));
+    let stroke = paint_rgba(style.stroke.as_ref());
+    let sc = scale_of(m);
+    let head = trail.head % segs;
+    let mut pts: Vec<[f64; 2]> = Vec::with_capacity(segs);
+    for slot in (0..n).filter(|&i| buf.alive[i] != 0) {
+        let col = if use_buffer_color {
+            buffer_rgba(buf, slot)
+        } else {
+            stroke
+        };
+        if col[3] <= 0.0 {
+            continue;
+        }
+        pts.clear();
+        for s in 0..segs {
+            let base = (slot * segs + (head + segs - s) % segs) * 2;
+            let (x, y) = (
+                f64::from(trail.history[base]),
+                f64::from(trail.history[base + 1]),
+            );
+            if !(x.is_finite() && y.is_finite()) {
+                break;
+            }
+            pts.push(apply(m, x, y));
+        }
+        for k in 1..pts.len() {
+            let age = (k as f64 - 0.5) / segs as f64;
+            let mut w = style.stroke_weight;
+            if trail.tapered {
+                w *= 1.0 - age * (1.0 - trail.tail_width);
+                if w <= 0.0 {
+                    w = 0.001;
+                }
+            }
+            let mut c = col;
+            if trail.fade_out {
+                c[3] *= (1.0 - age) as f32;
+            }
+            emit_capsule(fb, pts[k - 1], pts[k], w * sc / 2.0, c);
+        }
+    }
+}
+
+/// Slots safe to index in every per-particle array.
+fn live_len(b: &ParticleBuffer) -> usize {
+    [
+        b.alive.len(),
+        b.pos_x.len(),
+        b.pos_y.len(),
+        b.size.len(),
+        b.color_r.len(),
+        b.color_g.len(),
+        b.color_b.len(),
+        b.color_a.len(),
+    ]
+    .into_iter()
+    .fold(b.capacity, usize::min)
+}
+
+fn buffer_rgba(b: &ParticleBuffer, i: usize) -> Rgba {
+    [b.color_r[i], b.color_g[i], b.color_b[i], b.color_a[i]].map(|v| {
+        if v.is_finite() {
+            v
+        } else {
+            0.0
+        }
+    })
 }
 
 fn closed_shape(fb: &mut FrameBuilder, pts: &[[f64; 2]], style: &ResolvedStyle, m: &Affine) {
@@ -829,7 +1022,9 @@ fn style_of(n: &SceneNode) -> Option<&Arc<ResolvedStyle>> {
         | SceneNode::Quad { style, .. }
         | SceneNode::Point { style, .. }
         | SceneNode::Polygon { style, .. }
-        | SceneNode::Text { style, .. } => Some(style),
+        | SceneNode::Text { style, .. }
+        | SceneNode::ParticleBatch { style, .. }
+        | SceneNode::ParticleTrailBatch { style, .. } => Some(style),
         _ => None,
     }
 }
@@ -1012,6 +1207,118 @@ mod tests {
             })
         );
         assert_eq!(fb.max_layer_depth(), 1);
+    }
+
+    /// A buffer with particles at `pts` (size 3, colour = index / 10).
+    fn particles(cap: usize, pts: &[(f32, f32)]) -> ParticleHandle {
+        let mut b = ParticleBuffer::new(cap as f64);
+        for (k, &(x, y)) in pts.iter().enumerate() {
+            let i = b.spawn().unwrap();
+            b.pos_x[i] = x;
+            b.pos_y[i] = y;
+            b.size[i] = 3.0;
+            b.color_r[i] = k as f32 / 10.0;
+            b.color_a[i] = 1.0;
+        }
+        ParticleHandle::new(b)
+    }
+
+    fn batch(buffer: &ParticleHandle, template: ParticleTemplate) -> SceneNode {
+        SceneNode::ParticleBatch {
+            buffer: buffer.clone(),
+            count: 0.0,
+            template,
+            style: default_style().clone(),
+            use_buffer_color: true,
+        }
+    }
+
+    #[test]
+    fn particle_batch_is_one_instanced_draw_of_live_slots() {
+        let buf = particles(8, &[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)]);
+        buf.write().kill(1);
+        let g = SceneNode::Group {
+            children: Arc::from(vec![Arc::new(batch(&buf, ParticleTemplate::Circle))]),
+            transform: Some([2.0, 0.0, 0.0, 2.0, 10.0, 0.0]),
+            blend_mode: None,
+            clip: None,
+        };
+        let fb = build(&[g]);
+        assert_eq!(
+            fb.cmds,
+            vec![Cmd::Sdf {
+                start: 0,
+                count: 2,
+                clip: None
+            }]
+        );
+        let s = fb.sdf[1];
+        assert_eq!(s.tcr, [SdfType::Ellipse as u32 as f32, 20.0, 12.0, 1.0]);
+        // size = radius, × the transform's scale.
+        assert_eq!(s.hcs[0..2], [6.0, 6.0]);
+        assert_eq!(s.fill, [0.2, 0.0, 0.0, 1.0]);
+        // Squares follow the transform; a layer is translated per particle.
+        let fb = build(&[batch(&buf, ParticleTemplate::Rect)]);
+        assert_eq!(fb.sdf[0].tcr[0], SdfType::Rect as u32 as f32);
+        let dot = Arc::new(rect(-1.0, -1.0, 2.0, 2.0));
+        let fb = build(&[batch(&buf, ParticleTemplate::Layer(dot))]);
+        assert_eq!(fb.sdf.len(), 2);
+        assert_eq!(fb.sdf[1].tcr[1..3], [5.0, 6.0]);
+    }
+
+    #[test]
+    fn diverged_particles_are_skipped() {
+        let buf = particles(4, &[(f32::NAN, 0.0), (1.0, 1.0)]);
+        let fb = build(&[batch(&buf, ParticleTemplate::Circle)]);
+        assert_eq!((fb.sdf.len(), fb.skipped), (1, 1));
+    }
+
+    fn trail(buf: &ParticleHandle, history: Vec<f32>, segments: usize, head: usize) -> SceneNode {
+        SceneNode::ParticleTrailBatch {
+            buffer: buf.clone(),
+            history: Arc::new(history),
+            segments,
+            head_idx: head,
+            style: Arc::new(ResolvedStyle {
+                stroke: Some(Paint::from_color(floret_engine::Color {
+                    r: 1.0,
+                    g: 1.0,
+                    b: 1.0,
+                    a: 1.0,
+                })),
+                stroke_weight: 4.0,
+                ..(**default_style()).clone()
+            }),
+            fade_out: true,
+            use_buffer_color: false,
+            tapered: true,
+            tail_width: 0.5,
+        }
+    }
+
+    #[test]
+    fn trails_walk_newest_to_oldest_with_fade_and_taper() {
+        let buf = particles(2, &[(0.0, 0.0)]);
+        // Slot 0, 4 segments, head = 1: samples at x = 10 (newest), 0,
+        // 30, 20 (oldest). Slot 1 is dead.
+        let nan = f32::NAN;
+        let hist = vec![
+            0.0, 0.0, 10.0, 0.0, 20.0, 0.0, 30.0, 0.0, nan, nan, nan, nan, nan, nan, nan, nan,
+        ];
+        let fb = build(&[trail(&buf, hist.clone(), 4, 1)]);
+        assert_eq!(fb.sdf.len(), 3);
+        let centres: Vec<f32> = fb.sdf.iter().map(|s| s.tcr[1]).collect();
+        assert_eq!(centres, [5.0, 15.0, 25.0]);
+        // k = 1: age 1/8 → alpha 7/8, width 4 × (1 − 1/16) → radius 1.875.
+        assert_eq!(fb.sdf[0].fill[3], 0.875);
+        assert_eq!(fb.sdf[0].hcs[1], 1.875);
+        // k = 3: age 5/8.
+        assert_eq!(fb.sdf[2].fill[3], 0.375);
+        // A missing sample ends the line.
+        let mut gap = hist;
+        gap[6] = nan;
+        let fb = build(&[trail(&buf, gap, 4, 1)]);
+        assert_eq!(fb.sdf.len(), 1);
     }
 
     #[test]

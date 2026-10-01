@@ -3,8 +3,9 @@
 //! Turns the engine's retained-mode scene (`floret_engine::scene::SceneNode`
 //! trees) into pixels with wgpu, matching the web app's WebGL2 renderer
 //! (`src/runtime/gl/`): SDF rects / ellipses / capsules, stencil-winding
-//! polygon fills, CPU-rasterised text quads, blend-group layers, per-shape
-//! Gaussian blur, scissor clips, MSAA, premultiplied alpha.
+//! polygon fills, CPU-rasterised text quads, particle batches and trails
+//! (instanced SDFs), blend-group layers, per-shape Gaussian blur, scissor
+//! clips, MSAA, premultiplied alpha.
 //!
 //! ```no_run
 //! # fn demo(layers: &[std::sync::Arc<floret_engine::scene::SceneNode>]) {

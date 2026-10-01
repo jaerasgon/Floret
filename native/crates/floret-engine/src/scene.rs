@@ -352,9 +352,10 @@ pub enum SceneNode {
     ///
     /// - Read-lock `buffer` (`buffer.read()`) and walk `0..capacity`; draw
     ///   slot `i` only when `alive[i] != 0` (dead slots hold stale data).
-    /// - Position `(pos_x[i], pos_y[i])`, size `size[i]` (circle diameter /
-    ///   square side; the TS renderers skip `size <= 0` and non-finite
-    ///   positions). Colour `(color_r, color_g, color_b, color_a)[i]` in
+    /// - Position `(pos_x[i], pos_y[i])`, size `size[i]`: the web app's GL
+    ///   renderer (and floret-render) draw it as the half extent — circle
+    ///   radius / half the square's side, at least 0.4; TS's SVG export used
+    ///   it as the diameter. Colour `(color_r, color_g, color_b, color_a)[i]` in
     ///   0..1 when `use_buffer_color`, else `style.fill`.
     /// - `template`: [`ParticleTemplate::Circle`] / `Rect` centred on the
     ///   particle, or `Layer(node)` translated to it.

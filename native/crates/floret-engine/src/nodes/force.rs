@@ -109,7 +109,11 @@ fn attractor(_: &NodeInit) -> Box<dyn NodeImpl> {
     memo(raw(|inputs, _cx| {
         let a = radial(inputs);
         let (cx, cy) = (a.center.x, a.center.y);
-        let color = if a.strength >= 0.0 { "#7fdfff" } else { "#ff7f7f" };
+        let color = if a.strength >= 0.0 {
+            "#7fdfff"
+        } else {
+            "#ff7f7f"
+        };
         Ok(vec![
             force_spread(ForceKind::Attractor {
                 cx,

@@ -569,7 +569,11 @@ impl SceneNode {
                 use_buffer_color,
             } => {
                 use crate::particles::Handle;
-                put(&mut m, "buffer", Value::Handle(Handle::Particles(buffer.clone())));
+                put(
+                    &mut m,
+                    "buffer",
+                    Value::Handle(Handle::Particles(buffer.clone())),
+                );
                 put(&mut m, "count", n(*count));
                 put(&mut m, "template", template.to_value());
                 put(&mut m, "style", style_value(style));
@@ -587,7 +591,11 @@ impl SceneNode {
                 tail_width,
             } => {
                 use crate::particles::{Handle, TypedArray};
-                put(&mut m, "buffer", Value::Handle(Handle::Particles(buffer.clone())));
+                put(
+                    &mut m,
+                    "buffer",
+                    Value::Handle(Handle::Particles(buffer.clone())),
+                );
                 put(
                     &mut m,
                     "history",

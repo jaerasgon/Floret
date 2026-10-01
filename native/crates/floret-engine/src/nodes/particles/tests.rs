@@ -80,9 +80,23 @@ fn scene(j: J) -> Vec<Value> {
             let (x, y, w, h) = (f("x"), f("y"), f("w"), f("h"));
             let mode: Arc<str> = Arc::from(j["mode"].as_str().unwrap());
             if j["kind"] == "rect" {
-                SceneNode::Rect { x, y, w, h, mode, style: st }
+                SceneNode::Rect {
+                    x,
+                    y,
+                    w,
+                    h,
+                    mode,
+                    style: st,
+                }
             } else {
-                SceneNode::Ellipse { x, y, w, h, mode, style: st }
+                SceneNode::Ellipse {
+                    x,
+                    y,
+                    w,
+                    h,
+                    mode,
+                    style: st,
+                }
             }
         }
         "triangle" => SceneNode::Triangle {
@@ -167,7 +181,12 @@ fn to_json(v: &Value) -> Option<J> {
         Value::Str(s) => json!(&**s),
         Value::Vec2(p) => json!({"x": jnum(p.x), "y": jnum(p.y)}),
         Value::Color(c) => json!({"r": jnum(c.r), "g": jnum(c.g), "b": jnum(c.b), "a": jnum(c.a)}),
-        Value::List(items) => J::Array(items.iter().map(|x| to_json(x).unwrap_or(J::Null)).collect()),
+        Value::List(items) => J::Array(
+            items
+                .iter()
+                .map(|x| to_json(x).unwrap_or(J::Null))
+                .collect(),
+        ),
         Value::Object(m) => J::Object(
             m.iter()
                 .filter_map(|(k, x)| to_json(x).map(|j| (k.clone(), j)))
@@ -188,7 +207,12 @@ fn num(j: &J) -> f64 {
 fn check_f32(what: &str, got: &[f32], want: &J) {
     // serde_json's default float parser can be an f64 ulp off; the expected
     // values are exact f32s, so compare after rounding to f32.
-    let want: Vec<f32> = want.as_array().unwrap().iter().map(|j| num(j) as f32).collect();
+    let want: Vec<f32> = want
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|j| num(j) as f32)
+        .collect();
     let same = got.len() == want.len()
         && got
             .iter()
@@ -206,7 +230,11 @@ fn check_buf(what: &str, buf: &ParticleBuffer, want: &J) {
     check_f32(&format!("{what}.forceY"), &buf.force_y, &want["forceY"]);
     let alive: Vec<f32> = buf.alive.iter().map(|a| f32::from(*a)).collect();
     check_f32(&format!("{what}.alive"), &alive, &want["alive"]);
-    assert_eq!(buf.count as f64, want["count"].as_f64().unwrap(), "{what}.count");
+    assert_eq!(
+        buf.count as f64,
+        want["count"].as_f64().unwrap(),
+        "{what}.count"
+    );
 }
 
 fn force_of(v: &Spread) -> Arc<Force> {
@@ -245,14 +273,27 @@ fn forces() -> Vec<(String, Arc<Force>)> {
             "vortex",
             run(
                 "force/vortex",
-                vec![v2(10.0, 5.0), n(150.0), n(40.0), n(120.0), s("smooth"), b(false)],
+                vec![
+                    v2(10.0, 5.0),
+                    n(150.0),
+                    n(40.0),
+                    n(120.0),
+                    s("smooth"),
+                    b(false),
+                ],
             ),
         ),
         (
             "repulsor",
             run(
                 "force/repulsor",
-                vec![v2(10.0, 5.0), n(90.0), n(100.0), s("inverse-square"), b(false)],
+                vec![
+                    v2(10.0, 5.0),
+                    n(90.0),
+                    n(100.0),
+                    s("inverse-square"),
+                    b(false),
+                ],
             ),
         ),
     ]
@@ -304,19 +345,31 @@ fn colliders() -> Vec<(&'static str, Spread)> {
     vec![
         (
             "circle-bounce",
-            c("collider/circle", vec![v2(0.0, 10.0), n(40.0), s("bounce"), n(0.7), b(false)]),
+            c(
+                "collider/circle",
+                vec![v2(0.0, 10.0), n(40.0), s("bounce"), n(0.7), b(false)],
+            ),
         ),
         (
             "circle-kill",
-            c("collider/circle", vec![v2(0.0, 10.0), n(40.0), s("kill"), n(0.7), b(false)]),
+            c(
+                "collider/circle",
+                vec![v2(0.0, 10.0), n(40.0), s("kill"), n(0.7), b(false)],
+            ),
         ),
         (
             "circle-absorb-inv",
-            c("collider/circle", vec![v2(0.0, 10.0), n(60.0), s("absorb"), n(0.7), b(true)]),
+            c(
+                "collider/circle",
+                vec![v2(0.0, 10.0), n(60.0), s("absorb"), n(0.7), b(true)],
+            ),
         ),
         (
             "circle-bounce-inv",
-            c("collider/circle", vec![v2(0.0, 10.0), n(60.0), s("bounce"), n(0.9), b(true)]),
+            c(
+                "collider/circle",
+                vec![v2(0.0, 10.0), n(60.0), s("bounce"), n(0.9), b(true)],
+            ),
         ),
         (
             "rect-bounce",
@@ -334,22 +387,33 @@ fn colliders() -> Vec<(&'static str, Spread)> {
         ),
         (
             "bounds-wrap",
-            c("particles/bounds", vec![v2(100.0, 80.0), v2(0.0, 0.0), s("wrap"), n(0.6)]),
+            c(
+                "particles/bounds",
+                vec![v2(100.0, 80.0), v2(0.0, 0.0), s("wrap"), n(0.6)],
+            ),
         ),
         (
             "bounds-kill",
-            c("particles/bounds", vec![v2(100.0, 80.0), v2(0.0, 0.0), s("kill"), n(0.6)]),
+            c(
+                "particles/bounds",
+                vec![v2(100.0, 80.0), v2(0.0, 0.0), s("kill"), n(0.6)],
+            ),
         ),
         (
             "bounds-bounce",
-            c("particles/bounds", vec![v2(100.0, 80.0), v2(0.0, 0.0), s("bounce"), n(0.6)]),
+            c(
+                "particles/bounds",
+                vec![v2(100.0, 80.0), v2(0.0, 0.0), s("bounce"), n(0.6)],
+            ),
         ),
         (
             "layer-rect-center",
             c(
                 "collider/from-layer",
                 vec![
-                    scene(json!({"kind": "rect", "x": 0, "y": 10, "w": 80, "h": 60, "mode": "center"})),
+                    scene(
+                        json!({"kind": "rect", "x": 0, "y": 10, "w": 80, "h": 60, "mode": "center"}),
+                    ),
                     s("bounce"),
                     n(0.8),
                     b(false),
@@ -361,7 +425,9 @@ fn colliders() -> Vec<(&'static str, Spread)> {
             c(
                 "collider/from-layer",
                 vec![
-                    scene(json!({"kind": "rect", "x": -20, "y": 0, "w": 60, "h": 50, "mode": "corners"})),
+                    scene(
+                        json!({"kind": "rect", "x": -20, "y": 0, "w": 60, "h": 50, "mode": "corners"}),
+                    ),
                     s("absorb"),
                     n(0.8),
                     b(true),
@@ -373,7 +439,9 @@ fn colliders() -> Vec<(&'static str, Spread)> {
             c(
                 "collider/from-layer",
                 vec![
-                    scene(json!({"kind": "ellipse", "x": -30, "y": -20, "w": 70, "h": 50, "mode": "corner"})),
+                    scene(
+                        json!({"kind": "ellipse", "x": -30, "y": -20, "w": 70, "h": 50, "mode": "corner"}),
+                    ),
                     s("bounce"),
                     n(0.8),
                     b(false),
@@ -382,19 +450,31 @@ fn colliders() -> Vec<(&'static str, Spread)> {
         ),
         (
             "layer-triangle",
-            c("collider/from-layer", vec![scene(tri()), s("bounce"), n(0.8), b(false)]),
+            c(
+                "collider/from-layer",
+                vec![scene(tri()), s("bounce"), n(0.8), b(false)],
+            ),
         ),
         (
             "layer-polygon",
-            c("collider/from-layer", vec![scene(poly()), s("bounce"), n(0.6), b(false)]),
+            c(
+                "collider/from-layer",
+                vec![scene(poly()), s("bounce"), n(0.6), b(false)],
+            ),
         ),
         (
             "layer-polygon-inv",
-            c("collider/from-layer", vec![scene(poly()), s("bounce"), n(0.6), b(true)]),
+            c(
+                "collider/from-layer",
+                vec![scene(poly()), s("bounce"), n(0.6), b(true)],
+            ),
         ),
         (
             "layer-polygon-kill",
-            c("collider/from-layer", vec![scene(poly()), s("kill"), n(0.6), b(false)]),
+            c(
+                "collider/from-layer",
+                vec![scene(poly()), s("kill"), n(0.6), b(false)],
+            ),
         ),
     ]
 }
@@ -491,18 +571,53 @@ fn from_layer_sampling_matches_ts() {
         }),
     ])))];
     let cases: Vec<(&str, Vec<Value>, &str, f64)> = vec![
-        ("rect-fill", scene(json!({"kind": "rect", "x": 5, "y": 6, "w": 40, "h": 20, "mode": "center"})), "fill", 5.0),
-        ("rect-outline", scene(json!({"kind": "rect", "x": 5, "y": 6, "w": 40, "h": 20, "mode": "corners"})), "outline", 7.0),
-        ("ellipse-fill", scene(json!({"kind": "ellipse", "x": 5, "y": 6, "w": 40, "h": 20, "mode": "radius"})), "fill", 4.0),
-        ("ellipse-outline", scene(json!({"kind": "ellipse", "x": 5, "y": 6, "w": 40, "h": 20, "mode": "corner"})), "outline", 5.0),
-        ("line", scene(json!({"kind": "line", "x1": 0, "y1": 0, "x2": 10, "y2": 20})), "fill", 4.0),
-        ("line-1", scene(json!({"kind": "line", "x1": 3, "y1": 4, "x2": 10, "y2": 20})), "fill", 1.0),
+        (
+            "rect-fill",
+            scene(json!({"kind": "rect", "x": 5, "y": 6, "w": 40, "h": 20, "mode": "center"})),
+            "fill",
+            5.0,
+        ),
+        (
+            "rect-outline",
+            scene(json!({"kind": "rect", "x": 5, "y": 6, "w": 40, "h": 20, "mode": "corners"})),
+            "outline",
+            7.0,
+        ),
+        (
+            "ellipse-fill",
+            scene(json!({"kind": "ellipse", "x": 5, "y": 6, "w": 40, "h": 20, "mode": "radius"})),
+            "fill",
+            4.0,
+        ),
+        (
+            "ellipse-outline",
+            scene(json!({"kind": "ellipse", "x": 5, "y": 6, "w": 40, "h": 20, "mode": "corner"})),
+            "outline",
+            5.0,
+        ),
+        (
+            "line",
+            scene(json!({"kind": "line", "x1": 0, "y1": 0, "x2": 10, "y2": 20})),
+            "fill",
+            4.0,
+        ),
+        (
+            "line-1",
+            scene(json!({"kind": "line", "x1": 3, "y1": 4, "x2": 10, "y2": 20})),
+            "fill",
+            1.0,
+        ),
         ("polygon-outline", scene(poly()), "outline", 6.0),
         ("polygon-open-fill", scene(open), "fill", 5.0),
         ("polygon-fill", scene(small_tri), "fill", 5.0),
         ("triangle-fill", scene(tri()), "fill", 4.0),
         ("triangle-outline", scene(tri()), "outline", 7.0),
-        ("point", scene(json!({"kind": "point", "x": 3, "y": 4})), "fill", 9.0),
+        (
+            "point",
+            scene(json!({"kind": "point", "x": 3, "y": 4})),
+            "fill",
+            9.0,
+        ),
         ("group", group, "fill", 4.0),
         ("text-outline", text, "outline", 6.0),
     ];
@@ -515,7 +630,10 @@ fn from_layer_sampling_matches_ts() {
             let (wx, wy) = (num(&w["x"]), num(&w["y"]));
             // cos / sin may differ from V8's in the last bit.
             let close = |a: f64, b: f64| (a - b).abs() <= 1e-12 * (1.0 + b.abs());
-            assert!(close(p.x, wx) && close(p.y, wy), "{k}[{i}]: rust {p:?} vs ts ({wx}, {wy})");
+            assert!(
+                close(p.x, wx) && close(p.y, wy),
+                "{k}[{i}]: rust {p:?} vs ts ({wx}, {wy})"
+            );
         }
     }
 }
@@ -635,7 +753,9 @@ fn render_as_memoises_like_ts() {
             vec![Value::Null],
             b(true),
         ]);
-        let Value::Scene(sn) = &out[0][0] else { panic!() };
+        let Value::Scene(sn) = &out[0][0] else {
+            panic!()
+        };
         let SceneNode::ParticleBatch { count, buffer, .. } = &**sn else {
             panic!()
         };

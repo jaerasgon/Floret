@@ -116,9 +116,11 @@ impl Value {
     /// JS `v && typeof v === 'object'` (arrays included).
     pub fn is_object(&self) -> bool {
         match self {
-            Value::Vec2(_) | Value::Color(_) | Value::List(_) | Value::Object(_) | Value::Scene(_) => {
-                true
-            }
+            Value::Vec2(_)
+            | Value::Color(_)
+            | Value::List(_)
+            | Value::Object(_)
+            | Value::Scene(_) => true,
             Value::Handle(h) => !h.is_function(),
             _ => false,
         }

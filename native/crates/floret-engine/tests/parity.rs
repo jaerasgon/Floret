@@ -648,25 +648,19 @@ fn probe_functions_like_exporter(outputs: &Outputs) {
             Value::Handle(Handle::Force(f)) => {
                 f.apply(&mut ParticleBuffer::new(1.0), f64::NAN, world);
             }
-            Value::Handle(Handle::World(w)) => {
-                if seen.insert(Arc::as_ptr(w) as usize) {
-                    for x in w.forces.iter().chain(w.colliders.iter()) {
-                        walk(x, seen, world);
-                    }
+            Value::Handle(Handle::World(w)) if seen.insert(Arc::as_ptr(w) as usize) => {
+                for x in w.forces.iter().chain(w.colliders.iter()) {
+                    walk(x, seen, world);
                 }
             }
-            Value::List(items) => {
-                if seen.insert(Arc::as_ptr(items) as *const () as usize) {
-                    for x in items.iter() {
-                        walk(x, seen, world);
-                    }
+            Value::List(items) if seen.insert(Arc::as_ptr(items) as *const () as usize) => {
+                for x in items.iter() {
+                    walk(x, seen, world);
                 }
             }
-            Value::Object(m) => {
-                if seen.insert(Arc::as_ptr(m) as usize) {
-                    for x in m.values() {
-                        walk(x, seen, world);
-                    }
+            Value::Object(m) if seen.insert(Arc::as_ptr(m) as usize) => {
+                for x in m.values() {
+                    walk(x, seen, world);
                 }
             }
             _ => {}

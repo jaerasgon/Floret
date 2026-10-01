@@ -635,11 +635,13 @@ impl Collider {
                         BoundsMode::Bounce => {
                             if out_x {
                                 buf.vel_x[i] = (-(f64::from(buf.vel_x[i]) * rest)) as f32;
-                                buf.pos_x[i] = if x < min_x { min_x + 0.1 } else { max_x - 0.1 } as f32;
+                                buf.pos_x[i] =
+                                    if x < min_x { min_x + 0.1 } else { max_x - 0.1 } as f32;
                             }
                             if out_y {
                                 buf.vel_y[i] = (-(f64::from(buf.vel_y[i]) * rest)) as f32;
-                                buf.pos_y[i] = if y < min_y { min_y + 0.1 } else { max_y - 0.1 } as f32;
+                                buf.pos_y[i] =
+                                    if y < min_y { min_y + 0.1 } else { max_y - 0.1 } as f32;
                             }
                         }
                     }
@@ -682,8 +684,10 @@ impl Collider {
                     let ny = (if inverted { -dy } else { dy }) / dist;
                     let v_dot_n = f64::from(buf.vel_x[i]) * nx + f64::from(buf.vel_y[i]) * ny;
                     if v_dot_n < 0.0 {
-                        buf.vel_x[i] = ((f64::from(buf.vel_x[i]) - 2.0 * v_dot_n * nx) * rest) as f32;
-                        buf.vel_y[i] = ((f64::from(buf.vel_y[i]) - 2.0 * v_dot_n * ny) * rest) as f32;
+                        buf.vel_x[i] =
+                            ((f64::from(buf.vel_x[i]) - 2.0 * v_dot_n * nx) * rest) as f32;
+                        buf.vel_y[i] =
+                            ((f64::from(buf.vel_y[i]) - 2.0 * v_dot_n * ny) * rest) as f32;
                     }
                     let overlap = if inverted { dist - r } else { r - dist };
                     buf.pos_x[i] = (f64::from(buf.pos_x[i]) + nx * overlap) as f32;
@@ -728,10 +732,18 @@ impl Collider {
                     let min_dy = crate::js::min(dy_t, dy_b);
                     if min_dx < min_dy {
                         buf.vel_x[i] = (-(f64::from(buf.vel_x[i]) * rest)) as f32;
-                        buf.pos_x[i] = if dx_l < dx_r { min_x - 0.1 } else { max_x + 0.1 } as f32;
+                        buf.pos_x[i] = if dx_l < dx_r {
+                            min_x - 0.1
+                        } else {
+                            max_x + 0.1
+                        } as f32;
                     } else {
                         buf.vel_y[i] = (-(f64::from(buf.vel_y[i]) * rest)) as f32;
-                        buf.pos_y[i] = if dy_t < dy_b { min_y - 0.1 } else { max_y + 0.1 } as f32;
+                        buf.pos_y[i] = if dy_t < dy_b {
+                            min_y - 0.1
+                        } else {
+                            max_y + 0.1
+                        } as f32;
                     }
                 }
             }
@@ -778,13 +790,8 @@ impl Collider {
                         let ey = f64::from(e.edge_y[k]);
                         let el = f64::from(e.edge_len[k]);
                         let t_raw = ((x - a.0) * ex + (y - a.1) * ey) / (el * el);
-                        let t = if t_raw < 0.0 {
-                            0.0
-                        } else if t_raw > 1.0 {
-                            1.0
-                        } else {
-                            t_raw
-                        };
+                        // NaN passes through, as with the TS ternary.
+                        let t = t_raw.clamp(0.0, 1.0);
                         let (cx2, cy2) = (a.0 + ex * t, a.1 + ey * t);
                         let (ddx, ddy) = (x - cx2, y - cy2);
                         let d2 = ddx * ddx + ddy * ddy;
@@ -800,8 +807,10 @@ impl Collider {
                     let ny = if inverted { -best_ny } else { best_ny };
                     let v_dot_n = f64::from(buf.vel_x[i]) * nx + f64::from(buf.vel_y[i]) * ny;
                     if v_dot_n < 0.0 {
-                        buf.vel_x[i] = ((f64::from(buf.vel_x[i]) - 2.0 * v_dot_n * nx) * rest) as f32;
-                        buf.vel_y[i] = ((f64::from(buf.vel_y[i]) - 2.0 * v_dot_n * ny) * rest) as f32;
+                        buf.vel_x[i] =
+                            ((f64::from(buf.vel_x[i]) - 2.0 * v_dot_n * nx) * rest) as f32;
+                        buf.vel_y[i] =
+                            ((f64::from(buf.vel_y[i]) - 2.0 * v_dot_n * ny) * rest) as f32;
                     }
                     buf.pos_x[i] = (best_px + nx * 0.5) as f32;
                     buf.pos_y[i] = (best_py + ny * 0.5) as f32;
@@ -822,7 +831,8 @@ pub fn point_in_polygon(x: f64, y: f64, pts: &[(f64, f64)]) -> bool {
     for i in 0..n {
         let (xi, yi) = pts[i];
         let (xj, yj) = pts[j];
-        let intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / or(yj - yi, 1e-9) + xi);
+        let intersect =
+            ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / or(yj - yi, 1e-9) + xi);
         if intersect {
             inside = !inside;
         }
@@ -993,7 +1003,8 @@ impl ParticleBuffer {
     /// The TS object's enumerable fields, in declaration order, with the
     /// typed arrays copied out. For parity checks / JSON / debugging.
     pub fn to_value(&self) -> Value {
-        let f = |v: &Vec<f32>| Value::Handle(Handle::TypedArray(TypedArray::F32(Arc::new(v.clone()))));
+        let f =
+            |v: &Vec<f32>| Value::Handle(Handle::TypedArray(TypedArray::F32(Arc::new(v.clone()))));
         let mut m: IndexMap<String, Value> = IndexMap::new();
         m.insert("capacity".into(), Value::Num(self.capacity as f64));
         m.insert("count".into(), Value::Num(self.count as f64));
@@ -1017,18 +1028,24 @@ impl ParticleBuffer {
         }
         m.insert(
             "id".into(),
-            Value::Handle(Handle::TypedArray(TypedArray::U32(Arc::new(self.id.clone())))),
+            Value::Handle(Handle::TypedArray(TypedArray::U32(Arc::new(
+                self.id.clone(),
+            )))),
         );
         m.insert(
             "alive".into(),
-            Value::Handle(Handle::TypedArray(TypedArray::U8(Arc::new(self.alive.clone())))),
+            Value::Handle(Handle::TypedArray(TypedArray::U8(Arc::new(
+                self.alive.clone(),
+            )))),
         );
         m.insert("forceX".into(), f(&self.force_x));
         m.insert("forceY".into(), f(&self.force_y));
         m.insert("freeHead".into(), Value::Num(f64::from(self.free_head)));
         m.insert(
             "freeNext".into(),
-            Value::Handle(Handle::TypedArray(TypedArray::I32(Arc::new(self.free_next.clone())))),
+            Value::Handle(Handle::TypedArray(TypedArray::I32(Arc::new(
+                self.free_next.clone(),
+            )))),
         );
         m.insert("nextId".into(), Value::Num(self.next_id as f64));
         Value::Object(Arc::new(m))
@@ -1315,8 +1332,9 @@ impl Handle {
             Handle::Collider(c) => Some(c.to_value()),
             Handle::Particles(p) => Some(p.read().to_value()),
             Handle::TypedArray(t) => {
-                let m: IndexMap<String, Value> =
-                    (0..t.len()).map(|i| (i.to_string(), Value::Num(t.get(i)))).collect();
+                let m: IndexMap<String, Value> = (0..t.len())
+                    .map(|i| (i.to_string(), Value::Num(t.get(i))))
+                    .collect();
                 Some(Value::Object(Arc::new(m)))
             }
             Handle::Force(_) | Handle::Function(_) => None,

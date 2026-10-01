@@ -25,7 +25,12 @@ fn collider(shape: ColliderShape, fn_name: &'static str) -> Spread {
 
 /// Inputs shared by every collider: `mode` (constant), `restitution`,
 /// `inverted` (constant), at the given input indices.
-fn common(inputs: &[Spread], mode: usize, rest: usize, inverted: usize) -> (ColliderMode, f64, bool) {
+fn common(
+    inputs: &[Spread],
+    mode: usize,
+    rest: usize,
+    inverted: usize,
+) -> (ColliderMode, f64, bool) {
     (
         ColliderMode::coerce(&first(inputs, mode)),
         clamp(num_or(&first(inputs, rest), 0.8), 0.0, 1.0),
@@ -166,13 +171,19 @@ fn layer_shape(n: &SceneNode, mode: ColliderMode, rest: f64, inverted: bool) -> 
             mode,
             rest,
             inverted,
-            edges: Box::new(PolygonEdges::new(vec![(p[0], p[1]), (p[2], p[3]), (p[4], p[5])])),
+            edges: Box::new(PolygonEdges::new(vec![
+                (p[0], p[1]),
+                (p[2], p[3]),
+                (p[4], p[5]),
+            ])),
         },
         SceneNode::Polygon { points, .. } => ColliderShape::Polygon {
             mode,
             rest,
             inverted,
-            edges: Box::new(PolygonEdges::new(points.iter().map(|p| (p.x, p.y)).collect())),
+            edges: Box::new(PolygonEdges::new(
+                points.iter().map(|p| (p.x, p.y)).collect(),
+            )),
         },
         _ => ColliderShape::None,
     }

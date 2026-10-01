@@ -11,8 +11,8 @@ use super::Registrar;
 use crate::js::{self, Mulberry32};
 use crate::node::{raw, NodeImpl, NodeInit, NodeResult};
 use crate::particles::{
-    age_and_cull, integrate_euler, integrate_verlet, BoundsMode, Collider, ColliderShape,
-    Handle, Integrator, ParticleBuffer, ParticleHandle, ParticleTemplate, World,
+    age_and_cull, integrate_euler, integrate_verlet, BoundsMode, Collider, ColliderShape, Handle,
+    Integrator, ParticleBuffer, ParticleHandle, ParticleTemplate, World,
 };
 use crate::scene::{self, Paint, ResolvedStyle, SceneNode, Style};
 use crate::value::{empty, one, Color, Spread, Value, Vec2};
@@ -99,7 +99,8 @@ fn color_paint(v: &Value) -> Paint {
 fn memo_eq(a: &Value, b: &Value) -> bool {
     match (a, b) {
         (Value::List(x), Value::List(y)) => {
-            Arc::ptr_eq(x, y) || (x.len() == y.len() && x.iter().zip(y.iter()).all(|(p, q)| memo_eq(p, q)))
+            Arc::ptr_eq(x, y)
+                || (x.len() == y.len() && x.iter().zip(y.iter()).all(|(p, q)| memo_eq(p, q)))
         }
         (Value::Object(x), Value::Object(y)) => {
             Arc::ptr_eq(x, y)
@@ -117,7 +118,8 @@ fn memo_eq(a: &Value, b: &Value) -> bool {
 fn inputs_eq(a: &[Spread], b: &[Spread]) -> bool {
     a.len() == b.len()
         && a.iter().zip(b).all(|(x, y)| {
-            Arc::ptr_eq(x, y) || (x.len() == y.len() && x.iter().zip(y.iter()).all(|(p, q)| memo_eq(p, q)))
+            Arc::ptr_eq(x, y)
+                || (x.len() == y.len() && x.iter().zip(y.iter()).all(|(p, q)| memo_eq(p, q)))
         })
 }
 
@@ -191,7 +193,12 @@ fn apply_force(v: &Value, buf: &mut ParticleBuffer, dt: f64, world: &World) -> R
     }
 }
 
-fn apply_collider(v: &Value, buf: &mut ParticleBuffer, dt: f64, world: &World) -> Result<(), String> {
+fn apply_collider(
+    v: &Value,
+    buf: &mut ParticleBuffer,
+    dt: f64,
+    world: &World,
+) -> Result<(), String> {
     match v {
         Value::Handle(Handle::Collider(c)) => {
             c.apply(buf, dt, world);
@@ -270,7 +277,6 @@ fn emitter(_: &NodeInit) -> Box<dyn NodeImpl> {
         // 1. Spawn.
         st.spawn_acc += rate * dt;
         let spawn_now = st.spawn_acc.floor();
-
         st.spawn_acc -= spawn_now;
         let valid: Vec<(f64, f64)> = positions.iter().filter_map(spawn_position).collect();
         let mut buf = st.buffer.write();
@@ -398,7 +404,9 @@ fn render_as(_: &NodeInit) -> Box<dyn NodeImpl> {
         };
         let template = match (&template_kind, &template_layer) {
             (Value::Str(s), _) if &**s == "rect" => ParticleTemplate::Rect,
-            (Value::Str(s), Value::Scene(n)) if &**s == "layer" => ParticleTemplate::Layer(n.clone()),
+            (Value::Str(s), Value::Scene(n)) if &**s == "layer" => {
+                ParticleTemplate::Layer(n.clone())
+            }
             _ => ParticleTemplate::Circle,
         };
         let mut style = resolved_style(&first(inputs, 3));
@@ -408,13 +416,15 @@ fn render_as(_: &NodeInit) -> Box<dyn NodeImpl> {
             style = Arc::new(st);
         }
         let count = buf.read().count as f64;
-        Ok(vec![one(Value::Scene(Arc::new(SceneNode::ParticleBatch {
-            buffer: buf,
-            count,
-            template,
-            style,
-            use_buffer_color,
-        })))])
+        Ok(vec![one(Value::Scene(Arc::new(
+            SceneNode::ParticleBatch {
+                buffer: buf,
+                count,
+                template,
+                style,
+                use_buffer_color,
+            },
+        )))])
     }))
 }
 
@@ -438,7 +448,11 @@ fn trail(_: &NodeInit) -> Box<dyn NodeImpl> {
         };
         // A NaN segment count (non-numeric constant) breaks the TS ring
         // buffer; fall back to the minimum.
-        let segs = if segments.is_nan() { 2 } else { segments as usize };
+        let segs = if segments.is_nan() {
+            2
+        } else {
+            segments as usize
+        };
         let b = buf.read();
         let cap = b.capacity;
         let stale = match &state {
@@ -490,19 +504,25 @@ fn trail(_: &NodeInit) -> Box<dyn NodeImpl> {
             style.stroke = Some(Paint::css("#ffffff"));
             style.stroke_weight = weight_or_1(style.stroke_weight);
         }
-        let style = if style == *base { base } else { Arc::new(style) };
+        let style = if style == *base {
+            base
+        } else {
+            Arc::new(style)
+        };
 
-        Ok(vec![one(Value::Scene(Arc::new(SceneNode::ParticleTrailBatch {
-            buffer: buf,
-            history: st.history.clone(),
-            segments: segs,
-            head_idx: head,
-            style,
-            fade_out,
-            use_buffer_color,
-            tapered,
-            tail_width,
-        })))])
+        Ok(vec![one(Value::Scene(Arc::new(
+            SceneNode::ParticleTrailBatch {
+                buffer: buf,
+                history: st.history.clone(),
+                segments: segs,
+                head_idx: head,
+                style,
+                fade_out,
+                use_buffer_color,
+                tapered,
+                tail_width,
+            },
+        )))])
     })
 }
 
@@ -552,14 +572,27 @@ fn from_layer(_: &NodeInit) -> Box<dyn NodeImpl> {
 
 type Random<'a> = dyn FnMut() -> f64 + 'a;
 
-fn sample_positions(node: &SceneNode, mode: Sampling, density: f64, out: &mut Vec<(f64, f64)>, random: &mut Random) {
+fn sample_positions(
+    node: &SceneNode,
+    mode: Sampling,
+    density: f64,
+    out: &mut Vec<(f64, f64)>,
+    random: &mut Random,
+) {
     match node {
         SceneNode::Group { children, .. } => {
             for c in children.iter() {
                 sample_positions(c, mode, density, out, random);
             }
         }
-        SceneNode::Rect { x, y, w, h, mode: m, .. } => {
+        SceneNode::Rect {
+            x,
+            y,
+            w,
+            h,
+            mode: m,
+            ..
+        } => {
             let (mut x, mut y, mut w, mut h) = (*x, *y, *w, *h);
             match &**m {
                 "center" => {
@@ -580,7 +613,14 @@ fn sample_positions(node: &SceneNode, mode: Sampling, density: f64, out: &mut Ve
             }
             sample_box(x, y, w, h, mode, density, out, random);
         }
-        SceneNode::Ellipse { x, y, w, h, mode: m, .. } => {
+        SceneNode::Ellipse {
+            x,
+            y,
+            w,
+            h,
+            mode: m,
+            ..
+        } => {
             let (mut cx, mut cy, mut rx, mut ry) = (*x, *y, w / 2.0, h / 2.0);
             match &**m {
                 "corner" => {
@@ -608,7 +648,11 @@ fn sample_positions(node: &SceneNode, mode: Sampling, density: f64, out: &mut Ve
             }
         }
         SceneNode::Line { x1, y1, x2, y2, .. } => {
-            let d = if density - 1.0 == 0.0 { 1.0 } else { density - 1.0 };
+            let d = if density - 1.0 == 0.0 {
+                1.0
+            } else {
+                density - 1.0
+            };
             let mut i = 0.0;
             while i < density {
                 let t = i / d;
@@ -676,7 +720,16 @@ fn sample_positions(node: &SceneNode, mode: Sampling, density: f64, out: &mut Ve
 
 /// `sampleRect` / `sampleTextBBox` body: uniform fill or perimeter walk.
 #[allow(clippy::too_many_arguments)]
-fn sample_box(x: f64, y: f64, w: f64, h: f64, mode: Sampling, density: f64, out: &mut Vec<(f64, f64)>, random: &mut Random) {
+fn sample_box(
+    x: f64,
+    y: f64,
+    w: f64,
+    h: f64,
+    mode: Sampling,
+    density: f64,
+    out: &mut Vec<(f64, f64)>,
+    random: &mut Random,
+) {
     if mode == Sampling::Fill {
         let mut i = 0.0;
         while i < density {
@@ -704,7 +757,14 @@ fn sample_box(x: f64, y: f64, w: f64, h: f64, mode: Sampling, density: f64, out:
     }
 }
 
-fn sample_polygon(pts: &[(f64, f64)], closed: bool, mode: Sampling, density: f64, out: &mut Vec<(f64, f64)>, random: &mut Random) {
+fn sample_polygon(
+    pts: &[(f64, f64)],
+    closed: bool,
+    mode: Sampling,
+    density: f64,
+    out: &mut Vec<(f64, f64)>,
+    random: &mut Random,
+) {
     if pts.len() < 2 {
         return;
     }
@@ -740,8 +800,12 @@ fn sample_polygon(pts: &[(f64, f64)], closed: bool, mode: Sampling, density: f64
         return;
     }
     // Fill: bounding-box rejection sampling.
-    let (mut min_x, mut min_y, mut max_x, mut max_y) =
-        (f64::INFINITY, f64::INFINITY, f64::NEG_INFINITY, f64::NEG_INFINITY);
+    let (mut min_x, mut min_y, mut max_x, mut max_y) = (
+        f64::INFINITY,
+        f64::INFINITY,
+        f64::NEG_INFINITY,
+        f64::NEG_INFINITY,
+    );
     for &(x, y) in pts {
         if x < min_x {
             min_x = x;

@@ -232,6 +232,9 @@ struct RawPort {
     #[serde(default)]
     kind: PortKind,
     label: Option<String>,
+    /// `Some(Null)` for an explicit `"default": null` (serde would read a
+    /// plain `Option` as `None`, i.e. "no default" → the type's default).
+    #[serde(default, deserialize_with = "present")]
     default: Option<serde_json::Value>,
     param: Option<String>,
     #[serde(default)]
@@ -270,6 +273,11 @@ struct RawNode {
     compact: bool,
     #[serde(default)]
     adaptive_type: bool,
+}
+
+/// A field that is present (even as `null`) deserialises to `Some`.
+fn present<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Option<serde_json::Value>, D::Error> {
+    serde_json::Value::deserialize(d).map(Some)
 }
 
 impl RawPort {
@@ -331,6 +339,10 @@ mod tests {
         let r = cat.get("render/renderer").unwrap();
         assert_eq!(r.inputs[0].kind, PortKind::Spread);
         assert_eq!(r.inputs[2].param.as_deref(), Some("width"));
+        // An explicit `"default": null` is kept (not the type's default).
+        let w = cat.get("physics/world").unwrap();
+        assert!(matches!(w.inputs[3].default, Some(Value::Null)));
+        assert!(w.inputs[4].default.is_none());
     }
 
     #[test]

@@ -270,6 +270,7 @@ fn emitter(_: &NodeInit) -> Box<dyn NodeImpl> {
         // 1. Spawn.
         st.spawn_acc += rate * dt;
         let spawn_now = st.spawn_acc.floor();
+
         st.spawn_acc -= spawn_now;
         let valid: Vec<(f64, f64)> = positions.iter().filter_map(spawn_position).collect();
         let mut buf = st.buffer.write();

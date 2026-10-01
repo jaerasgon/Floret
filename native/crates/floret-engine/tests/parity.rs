@@ -569,6 +569,7 @@ fn run_sample(id: &str) -> SampleReport {
         }
         let rec = rec_iter.next().unwrap();
         compare_frame(&engine, &result.outputs, rec, i, &mut rep, &mut node_ok);
+        probe_functions_like_exporter(&result.outputs);
     }
     rep.matched = node_ok.values().filter(|ok| **ok).count();
     rep
@@ -629,6 +630,53 @@ fn compare_frame(
             rep.mismatched
                 .entry(format!("{id} ({})", node.ty))
                 .or_insert_with(|| format!("frame {frame}: {e}"));
+        }
+    }
+}
+
+/// The exporter's `canon()` calls every function it encodes as
+/// `fn(NEUTRAL_STYLE)` to detect style closures (`styleOf`). For a force
+/// closure that is a call with `dt = undefined`: turbulence / wind advance
+/// their private clock by NaN, so every frame after the first recorded one
+/// sees a NaN clock (particles-attractor goes all-NaN at frame 1). Replay
+/// that side effect: apply each force on the recorded outputs once with
+/// `dt = NaN` to a buffer with no live particles.
+fn probe_functions_like_exporter(outputs: &Outputs) {
+    use floret_engine::particles::{ParticleBuffer, World};
+    fn walk(v: &Value, seen: &mut HashSet<usize>, world: &World) {
+        match v {
+            Value::Handle(Handle::Force(f)) => {
+                f.apply(&mut ParticleBuffer::new(1.0), f64::NAN, world);
+            }
+            Value::Handle(Handle::World(w)) => {
+                if seen.insert(Arc::as_ptr(w) as usize) {
+                    for x in w.forces.iter().chain(w.colliders.iter()) {
+                        walk(x, seen, world);
+                    }
+                }
+            }
+            Value::List(items) => {
+                if seen.insert(Arc::as_ptr(items) as *const () as usize) {
+                    for x in items.iter() {
+                        walk(x, seen, world);
+                    }
+                }
+            }
+            Value::Object(m) => {
+                if seen.insert(Arc::as_ptr(m) as usize) {
+                    for x in m.values() {
+                        walk(x, seen, world);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+    let world = World::default_world();
+    let mut seen = HashSet::new();
+    for ports in outputs.iter().flatten() {
+        for spread in ports.iter() {
+            walk(&Value::List(spread.clone()), &mut seen, &world);
         }
     }
 }

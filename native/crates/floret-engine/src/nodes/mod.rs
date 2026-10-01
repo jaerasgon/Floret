@@ -21,6 +21,7 @@ pub mod gpu;
 pub mod image;
 pub mod input;
 pub mod io;
+pub mod lfo;
 pub mod logic;
 pub mod math;
 pub mod meta;
@@ -72,6 +73,7 @@ fn registry() -> &'static Registrar {
         gpu::register(&mut r);
         input::register(&mut r);
         io::register(&mut r);
+        lfo::register(&mut r);
         logic::register(&mut r);
         math::register(&mut r);
         meta::register(&mut r);

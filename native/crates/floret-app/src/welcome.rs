@@ -120,7 +120,7 @@ impl Welcome {
         if recent.is_empty() {
             ui.label(
                 RichText::new("Files you open and save show up here.")
-                    .color(FG_3)
+                    .color(FG_2)
                     .small(),
             );
         }
@@ -136,7 +136,7 @@ impl Welcome {
                         .min_size(vec2(220.0, 20.0)),
                 )
                 .on_hover_text(p.display().to_string());
-            ui.label(RichText::new(short(&dir, 36)).color(FG_3).small());
+            ui.label(RichText::new(short(&dir, 36)).color(FG_2).small());
             if r.clicked() {
                 action = Some(Action::OpenRecent(p.clone()));
             }

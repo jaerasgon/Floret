@@ -1,0 +1,442 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "LFO Motion",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "modifiedAt": "2026-10-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "lfo_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -532,
+        "y": 0
+      },
+      "params": {
+        "text": "LFOs animate things\n\nAn LFO cycles a value between `min` and `max`, `rate` times a second.\n\n• Bars: one LFO with `count` 12 outputs 12 copies, each a little later in the cycle, so the heights ripple. The ForEach draws one bar per copy.\n• Colour: a slow triangle LFO sweeps the hue.\n• Dot: a smooth-random LFO wanders the position.\n\nTry other shapes, or wire a Bang into `reset`.",
+        "width": 380,
+        "height": 300
+      },
+      "portValues": {
+        "text": "LFOs animate things\n\nAn LFO cycles a value between `min` and `max`, `rate` times a second.\n\n• Bars: one LFO with `count` 12 outputs 12 copies, each a little later in the cycle, so the heights ripple. The ForEach draws one bar per copy.\n• Colour: a slow triangle LFO sweeps the hue.\n• Dot: a smooth-random LFO wanders the position.\n\nTry other shapes, or wire a Bang into `reset`.",
+        "width": 380,
+        "height": 300
+      }
+    },
+    {
+      "id": "lfo_bars",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 56,
+        "y": 0
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 0.4,
+        "min": 16,
+        "max": 200,
+        "count": 12,
+        "spread": 1
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 0.4,
+        "min": 16,
+        "max": 200,
+        "count": 12,
+        "spread": 1
+      }
+    },
+    {
+      "id": "lfo_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 56,
+        "y": 380
+      },
+      "params": {
+        "count": 12
+      },
+      "portValues": {
+        "count": 12
+      }
+    },
+    {
+      "id": "lfo_hue",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 56,
+        "y": 560
+      },
+      "params": {
+        "shape": "triangle",
+        "rate": 0.07,
+        "min": 170,
+        "max": 330
+      },
+      "portValues": {
+        "shape": "triangle",
+        "rate": 0.07,
+        "min": 170,
+        "max": 330
+      }
+    },
+    {
+      "id": "lfo_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 336,
+        "y": 560
+      },
+      "params": {
+        "s": 65,
+        "l": 62,
+        "a": 255
+      },
+      "portValues": {
+        "s": 65,
+        "l": 62,
+        "a": 255
+      }
+    },
+    {
+      "id": "lfo_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 336,
+        "y": 760
+      },
+      "params": {}
+    },
+    {
+      "id": "lfo_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 620,
+        "y": 0
+      },
+      "params": {
+        "width": 700,
+        "height": 420,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "h",
+          "name": "h",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 700,
+      "height": 420
+    },
+    {
+      "id": "lfo_space",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 150
+      },
+      "params": {
+        "b": 28,
+        "valueType": "number"
+      },
+      "parentId": "lfo_region",
+      "portValues": {
+        "b": 28,
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "lfo_off",
+      "defType": "math/add",
+      "position": {
+        "x": 252,
+        "y": 150
+      },
+      "params": {
+        "b": -154,
+        "valueType": "number"
+      },
+      "parentId": "lfo_region",
+      "portValues": {
+        "b": -154,
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "lfo_xy",
+      "defType": "vec2/make",
+      "position": {
+        "x": 420,
+        "y": 150
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "lfo_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "lfo_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 476,
+        "y": 150
+      },
+      "params": {
+        "w": 16,
+        "h": 40
+      },
+      "parentId": "lfo_region",
+      "portValues": {
+        "w": 16,
+        "h": 40
+      }
+    },
+    {
+      "id": "lfo_pos",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 620,
+        "y": 560
+      },
+      "params": {
+        "shape": "smooth-random",
+        "rate": 0.8,
+        "min": -150,
+        "max": 150,
+        "seed": 3
+      },
+      "portValues": {
+        "shape": "smooth-random",
+        "rate": 0.8,
+        "min": -150,
+        "max": 150,
+        "seed": 3
+      }
+    },
+    {
+      "id": "lfo_pos_y",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 620,
+        "y": 880
+      },
+      "params": {
+        "shape": "smooth-random",
+        "rate": 0.8,
+        "min": 150,
+        "max": 175,
+        "seed": 7
+      },
+      "portValues": {
+        "shape": "smooth-random",
+        "rate": 0.8,
+        "min": 150,
+        "max": 175,
+        "seed": 7
+      }
+    },
+    {
+      "id": "lfo_dot_xy",
+      "defType": "vec2/make",
+      "position": {
+        "x": 900,
+        "y": 560
+      },
+      "params": {
+        "x": 0,
+        "y": 160
+      },
+      "portValues": {
+        "x": 0,
+        "y": 160
+      }
+    },
+    {
+      "id": "lfo_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 960,
+        "y": 560
+      },
+      "params": {
+        "w": 18,
+        "h": 18
+      },
+      "portValues": {
+        "w": 18,
+        "h": 18
+      }
+    },
+    {
+      "id": "lfo_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 1400,
+        "y": 300
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "lfo_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1640,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_lfo_range_lfo_region_i",
+      "source": "lfo_range",
+      "target": "lfo_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_lfo_bars_lfo_region_h",
+      "source": "lfo_bars",
+      "target": "lfo_region",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_lfo_region_lfo_space_a",
+      "source": "lfo_region",
+      "target": "lfo_space",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_lfo_space_lfo_off_a",
+      "source": "lfo_space",
+      "target": "lfo_off",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_lfo_off_lfo_xy_x",
+      "source": "lfo_off",
+      "target": "lfo_xy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_lfo_xy_lfo_rect_pos",
+      "source": "lfo_xy",
+      "target": "lfo_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_lfo_region_lfo_rect_h",
+      "source": "lfo_region",
+      "target": "lfo_rect",
+      "sourceHandle": "out-h",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_lfo_hue_lfo_hsl_h",
+      "source": "lfo_hue",
+      "target": "lfo_hsl",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_lfo_hsl_lfo_fill_color",
+      "source": "lfo_hsl",
+      "target": "lfo_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_lfo_fill_lfo_rect_style",
+      "source": "lfo_fill",
+      "target": "lfo_rect",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_lfo_rect_lfo_region_layer",
+      "source": "lfo_rect",
+      "target": "lfo_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_lfo_pos_lfo_dot_xy_x",
+      "source": "lfo_pos",
+      "target": "lfo_dot_xy",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_lfo_pos_y_lfo_dot_xy_y",
+      "source": "lfo_pos_y",
+      "target": "lfo_dot_xy",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_lfo_dot_xy_lfo_dot_pos",
+      "source": "lfo_dot_xy",
+      "target": "lfo_dot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_lfo_region_lfo_group_s1",
+      "source": "lfo_region",
+      "target": "lfo_group",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_lfo_dot_lfo_group_s2",
+      "source": "lfo_dot",
+      "target": "lfo_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_lfo_group_lfo_renderer_layers",
+      "source": "lfo_group",
+      "target": "lfo_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

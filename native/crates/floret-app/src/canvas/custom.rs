@@ -4,12 +4,13 @@
 //! zoom; text is dropped when it gets too small to read. The value maths
 //! is in `editor::widgets`.
 
-use super::draw::SPREAD_PIN;
 use super::geom::{row_box, row_y, Ctx, Field, NodeBox, PinGeom, Row, HEADER_H, NODE_W};
 use crate::editor::ports::{self, Side};
 use crate::editor::values::{self, EditKey, FieldKind};
 use crate::editor::widgets::{self, Custom, Pad, ProbeView, SliderState, Slots};
-use crate::theme::{self, BG_0, BG_1, BG_3, BORDER, FG_0, FG_1, FG_2, GOLD};
+use crate::theme::{
+    self, Token, BG_0, BG_1, BG_3, BORDER, FG_0, FG_1, FG_2, GOLD, GOLD_TEXT, SPREAD_PIN,
+};
 use eframe::egui::{
     pos2, vec2, Align2, Color32, CornerRadius, FontId, Painter, Pos2, Rect, Stroke, StrokeKind,
 };
@@ -21,11 +22,11 @@ use std::collections::HashSet;
 pub const PROBE_SIZE: (f64, f64) = (150.0, 112.0);
 const PROBE_HEAD: f32 = 14.0;
 const PROBE_LINE: f32 = 12.0;
-const PICK_BLUE: Color32 = Color32::from_rgb(124, 182, 255);
-const AMBER: Color32 = Color32::from_rgb(255, 200, 100);
+const PICK_BLUE: Token = theme::BLUE;
+const AMBER: Token = theme::AMBER;
 /// `.comment-node` ink and paper.
-const COMMENT_INK: Color32 = Color32::from_rgb(0xf0, 0xd8, 0x96);
-const COMMENT: Color32 = Color32::from_rgb(255, 220, 120);
+const COMMENT_INK: Token = theme::COMMENT_INK;
+const COMMENT: Token = theme::COMMENT;
 
 /// An interactive control in a custom body.
 #[derive(Clone, Debug, PartialEq)]
@@ -635,7 +636,7 @@ pub fn draw_body(p: &Painter, b: &NodeBox, st: &BodyState, z: f32) {
                     &nt.text,
                     FontId::monospace(10.0 * z),
                     if nt.role == NoteRole::Warn {
-                        AMBER
+                        *AMBER
                     } else {
                         *FG_2
                     },
@@ -834,7 +835,7 @@ pub fn draw_body(p: &Painter, b: &NodeBox, st: &BodyState, z: f32) {
                 Align2::CENTER_CENTER,
                 "Drop to load",
                 FontId::monospace(10.0 * z),
-                *GOLD,
+                *GOLD_TEXT,
             );
         }
     }
@@ -847,9 +848,14 @@ pub fn draw_probe(p: &Painter, b: &NodeBox, st: &BodyState, z: f32) {
     let edge = if st.selected {
         *GOLD
     } else {
-        Color32::from_rgb(0x56, 0x5c, 0x66)
+        *theme::PROBE_EDGE
     };
-    p.rect_filled(r, 5.0 * z, Color32::from_rgba_unmultiplied(16, 19, 24, 184));
+    let card = if theme::is_light() {
+        Color32::from_rgba_unmultiplied(255, 255, 255, 200)
+    } else {
+        Color32::from_rgba_unmultiplied(16, 19, 24, 184)
+    };
+    p.rect_filled(r, 5.0 * z, card);
     if st.selected {
         p.rect_stroke(r, 5.0 * z, Stroke::new(1.0, edge), StrokeKind::Inside);
     } else {
@@ -871,14 +877,14 @@ pub fn draw_probe(p: &Painter, b: &NodeBox, st: &BodyState, z: f32) {
         Align2::LEFT_CENTER,
         "PROBE",
         FontId::proportional(7.0 * z),
-        FG_2.gamma_multiply(0.7),
+        *FG_2,
     );
     p.with_clip_rect(head).text(
         head.right_center() - vec2(6.0 * z, 0.0),
         Align2::RIGHT_CENTER,
         view.meta(),
         FontId::monospace(8.0 * z),
-        SPREAD_PIN,
+        *SPREAD_PIN,
     );
     let body = probe_body(b, z);
     let clip = p.with_clip_rect(body);
@@ -890,7 +896,7 @@ pub fn draw_probe(p: &Painter, b: &NodeBox, st: &BodyState, z: f32) {
             Align2::LEFT_CENTER,
             text,
             font.clone(),
-            FG_2.gamma_multiply(0.7),
+            *FG_2,
         );
     };
     match &view {
@@ -1012,9 +1018,9 @@ pub fn draw_comment(p: &Painter, b: &NodeBox, st: &BodyState, z: f32) {
     let body = r.shrink2(vec2(10.0, 8.0) * z);
     let text = b.comment.as_deref().unwrap_or("");
     let (text, color) = if text.is_empty() {
-        ("double-click to edit", COMMENT_INK.gamma_multiply(0.4))
+        ("double-click to edit", COMMENT_INK.gamma_multiply(0.6))
     } else {
-        (text, COMMENT_INK)
+        (text, *COMMENT_INK)
     };
     let mut job = eframe::egui::text::LayoutJob::single_section(
         text.to_owned(),

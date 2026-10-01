@@ -268,7 +268,7 @@ impl HelpPanel {
                             .color(theme::category_color(&s.category))
                             .small(),
                     );
-                    ui.label(RichText::new(&s.ty).color(theme::FG_3).small().monospace());
+                    ui.label(RichText::new(&s.ty).color(theme::FG_2).small().monospace());
                     r
                 })
                 .inner;
@@ -335,7 +335,7 @@ fn section(ui: &mut egui::Ui, title: &str, ports: &[PortDoc], empty: &str) {
     ui.label(RichText::new(title).color(theme::FG_2).small());
     ui.separator();
     if ports.is_empty() {
-        ui.label(RichText::new(empty).color(theme::FG_3).small());
+        ui.label(RichText::new(empty).color(theme::FG_2).small());
     }
     for p in ports {
         ui.horizontal(|ui| {
@@ -352,7 +352,7 @@ fn section(ui: &mut egui::Ui, title: &str, ports: &[PortDoc], empty: &str) {
             );
             if let Some(d) = &p.default {
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    ui.label(RichText::new(d).color(theme::GOLD).small().monospace())
+                    ui.label(RichText::new(d).color(theme::GOLD_TEXT).small().monospace())
                         .on_hover_text("default when unwired");
                 });
             }

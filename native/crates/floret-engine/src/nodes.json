@@ -5144,6 +5144,112 @@
    }
   },
   {
+   "type": "motion/lfo",
+   "category": "Motion",
+   "label": "LFO",
+   "description": "Low-frequency oscillator: a value that cycles between `min` and `max`, `rate` times a second. Shapes: sine, triangle, saw, ramp-down, square (`width` = the high part of the cycle), random (a new value each cycle) and smooth-random. `offset` shifts the phase (0..1); a rising edge on `reset` restarts the cycle. With `bpm` above 0, `rate` counts cycles per beat (0.25 = once a bar in 4/4). With `count` > 1, `value` carries that many copies, each `spread / count` of a cycle behind the last (random shapes get one sequence per copy) — wire it into a ForEach to animate many things at once. `phase` is the 0..1 position in the cycle.",
+   "inputs": [
+    {
+     "name": "shape",
+     "type": "string",
+     "kind": "single",
+     "default": "sine",
+     "param": "shape"
+    },
+    {
+     "name": "rate",
+     "type": "number",
+     "kind": "single",
+     "default": 0.5
+    },
+    {
+     "name": "offset",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "min",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "max",
+     "type": "number",
+     "kind": "single",
+     "default": 1
+    },
+    {
+     "name": "width",
+     "type": "number",
+     "kind": "single",
+     "default": 0.5
+    },
+    {
+     "name": "reset",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    },
+    {
+     "name": "count",
+     "type": "number",
+     "kind": "single",
+     "default": 1,
+     "integer": true
+    },
+    {
+     "name": "spread",
+     "type": "number",
+     "kind": "single",
+     "default": 1
+    },
+    {
+     "name": "bpm",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "seed",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "integer": true
+    }
+   ],
+   "outputs": [
+    {
+     "name": "value",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "phase",
+     "type": "number",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "shape": "sine"
+   },
+   "paramOptions": {
+    "shape": [
+     "sine",
+     "triangle",
+     "saw",
+     "ramp-down",
+     "square",
+     "random",
+     "smooth-random"
+    ]
+   },
+   "effectful": true
+  },
+  {
    "type": "motion/smooth",
    "category": "Motion",
    "label": "Smooth",

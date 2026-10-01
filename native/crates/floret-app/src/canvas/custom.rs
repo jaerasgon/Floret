@@ -113,6 +113,13 @@ pub fn body_h(c: Custom, n: &PatchNode) -> f32 {
         Custom::Toggle => 34.0,
         Custom::XyPad => 132.0,
         Custom::File => file(n),
+        Custom::Video => {
+            if widgets::video_name(n).is_some() {
+                46.0
+            } else {
+                30.0
+            }
+        }
         Custom::Svg => match n.params.get("mode").and_then(Json::as_str) {
             Some("url") => 26.0,
             Some("markup") => 66.0,
@@ -328,8 +335,38 @@ pub fn layout(
             }
             row_box(cx, n, spec, wired, b);
         }
+        Custom::Video => {
+            video_body(n, HEADER_H + 5.0, z, b);
+            row_box(cx, n, spec, wired, b);
+        }
         Custom::Probe => {}
     }
+}
+
+/// Pick / clear, and the picked video's name.
+fn video_body(n: &PatchNode, top: f32, z: f32, b: &mut NodeBox) {
+    let name = widgets::video_name(n);
+    b.widgets.push(Widget {
+        rect: at(b, z, 10.0, top, 92.0, 19.0),
+        node: n.id.clone(),
+        kind: WidgetKind::Pick {
+            svg: false,
+            replace: name.is_some(),
+        },
+    });
+    let Some(name) = name else {
+        return;
+    };
+    b.widgets.push(Widget {
+        rect: at(b, z, 106.0, top, 19.0, 19.0),
+        node: n.id.clone(),
+        kind: WidgetKind::Clear,
+    });
+    b.notes.push(Note {
+        rect: at(b, z, 10.0, top + 23.0, NODE_W - 20.0, 13.0),
+        text: name,
+        role: NoteRole::Label,
+    });
 }
 
 fn file_body(n: &PatchNode, svg: bool, top: f32, z: f32, b: &mut NodeBox) {

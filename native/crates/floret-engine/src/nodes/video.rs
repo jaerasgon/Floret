@@ -15,10 +15,11 @@ pub fn register(r: &mut Registrar) {
     r.node("video/frame-at", frame_at);
 }
 
-fn source(v: &Value) -> String {
+/// The pin's source string (shared, not copied: it can be a long data URL).
+fn source(v: &Value) -> &str {
     match v {
-        Value::Str(s) => s.trim().to_owned(),
-        _ => String::new(),
+        Value::Str(s) => s.trim(),
+        _ => "",
     }
 }
 
@@ -67,10 +68,11 @@ fn outputs(f: VideoFrame, extra: &[f64]) -> NodeResult {
 /// width, height, ready.
 fn file(_: &NodeInit) -> Box<dyn NodeImpl> {
     raw(|inputs, cx| {
-        let src = source(&first(inputs, 0));
+        let url = first(inputs, 0);
+        let src = source(&url);
         let speed = wired_num(&first(inputs, 3)).unwrap_or(1.0);
         let req = VideoRequest {
-            source: &src,
+            source: src,
             play: bool_or(&first(inputs, 1), true),
             looping: bool_or(&first(inputs, 2), true),
             speed,
@@ -89,10 +91,11 @@ fn file(_: &NodeInit) -> Box<dyn NodeImpl> {
 /// ready.
 fn frame_at(_: &NodeInit) -> Box<dyn NodeImpl> {
     raw(|inputs: &[Spread], cx| {
-        let src = source(&first(inputs, 0));
+        let url = first(inputs, 0);
+        let src = source(&url);
         let time = wired_num(&first(inputs, 1)).unwrap_or(0.0);
         let req = VideoRequest {
-            source: &src,
+            source: src,
             play: false,
             looping: false,
             speed: 1.0,

@@ -2743,10 +2743,14 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             }
         }
         Action::PickFile(node) => {
-            let svg = ports::find_node(patch, &node).is_some_and(|n| n.def_type == "io/svg");
+            let ty = ports::find_node(patch, &node).map(|n| n.def_type.clone());
             let mut dialog = rfd::FileDialog::new();
-            if svg {
-                dialog = dialog.add_filter("SVG", &["svg"]);
+            match ty.as_deref() {
+                Some("io/svg") => dialog = dialog.add_filter("SVG", &["svg"]),
+                Some(t) if widgets::is_video(t) => {
+                    dialog = dialog.add_filter("Video", widgets::VIDEO_EXTENSIONS);
+                }
+                _ => {}
             }
             if let Some(path) = dialog.pick_file() {
                 let name = path
@@ -3093,6 +3097,7 @@ fn clamp_slider(view: &mut View, patch: &mut PatchFile, node: &str) {
 fn is_picker(patch: &PatchFile, id: &str) -> bool {
     ports::find_node(patch, id).is_some_and(|n| {
         n.def_type == "io/file"
+            || widgets::is_video(&n.def_type)
             || (n.def_type == "io/svg"
                 && n.params
                     .get("mode")
@@ -3111,6 +3116,13 @@ fn ingest_file(
     name: &str,
 ) -> Option<Action> {
     let n = ports::find_node(patch, node)?;
+    if widgets::is_video(&n.def_type) {
+        // Videos are referenced by path, not copied into the patch.
+        return Some(Action::SetParams {
+            node: node.to_owned(),
+            values: widgets::video_params(path, bytes, name)?,
+        });
+    }
     let data = match (bytes, path) {
         (Some(b), _) => b.to_vec(),
         (None, Some(p)) => std::fs::read(p).ok()?,

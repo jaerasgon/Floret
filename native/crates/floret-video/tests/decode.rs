@@ -208,3 +208,48 @@ fn player_never_blocks_without_wait() {
     let err = player.video("m", &req("/no/such/video.mp4")).unwrap_err();
     assert!(err.contains("video.mp4"), "{err}");
 }
+
+/// Scrubbing without waiting: each jump lands on the exact frame after at
+/// most a GOP's decode (keyframes every 2 s here).
+#[test]
+fn scrubs_land_quickly() {
+    let bytes = clip::encode(
+        &Clip {
+            width: 320,
+            height: 176,
+            fps: 30,
+            frames: 120,
+            keyframe_every: 60,
+            max_qp: 30,
+        },
+        |i, rgb| {
+            for px in rgb.as_chunks_mut::<3>().0 {
+                *px = [(i % 10 * 25) as u8, (i / 10 * 20) as u8, 64];
+            }
+        },
+    )
+    .unwrap();
+    let path = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("floret-video-scrub.mp4");
+    std::fs::write(&path, bytes).unwrap();
+    let src = path.to_str().unwrap().to_owned();
+    let player = VideoPlayer::default();
+    let mut r = req(&src);
+    player.video("s", &r).unwrap();
+    r.wait = false;
+    let frame = |img: &Image| {
+        let [r, g, ..] = img.pixel(10, 10).map(f64::from);
+        (r / 25.0).round() as usize + 10 * (g / 20.0).round() as usize
+    };
+    let mut worst = std::time::Duration::ZERO;
+    for p in [0.9, 0.1, 0.55, 0.45, 0.99, 0.02, 0.7] {
+        r.seek = Some(Seek::Position(p));
+        let want = (p * 120.0 + 1e-6).floor() as usize;
+        let t0 = std::time::Instant::now();
+        while frame(&player.video("s", &r).unwrap().image) != want {
+            assert!(t0.elapsed().as_secs() < 5, "scrub to {p} never landed");
+            std::thread::sleep(std::time::Duration::from_millis(1));
+        }
+        worst = worst.max(t0.elapsed());
+    }
+    eprintln!("slowest scrub: {worst:?}");
+}

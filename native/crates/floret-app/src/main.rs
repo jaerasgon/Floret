@@ -13,11 +13,14 @@ mod crash;
 mod editor;
 mod export;
 mod gpu_support;
+mod help;
 mod host;
+mod library;
 mod palette;
 mod preview;
 mod shader_panel;
 mod theme;
+mod workspace;
 
 use eframe::egui::{self, Align, Layout, RichText};
 use floret_engine::patch::PatchFile;
@@ -76,6 +79,7 @@ struct App {
     crash: crash::Guard,
     shader_panel: shader_panel::ShaderPanel,
     bus: bus::BusHost,
+    workspace: workspace::Workspace,
 }
 
 impl App {
@@ -104,6 +108,7 @@ impl App {
             crash: crash::Guard::default(),
             shader_panel: shader_panel::ShaderPanel::default(),
             bus: bus::BusHost::new(),
+            workspace: workspace::Workspace::load(),
         };
         app.load_sample(start);
         app
@@ -235,41 +240,6 @@ impl App {
         palette::show(ui, &mut self.query, &mut self.view, &mut self.patch);
         // Palette clicks add nodes; recompile picks them up after the canvas.
     }
-
-    fn inspector(&self, ui: &mut egui::Ui) {
-        let Some(id) = self.view.primary() else {
-            ui.label(RichText::new("Select a node to inspect it.").color(theme::FG_2));
-            return;
-        };
-        let Some(n) = self.patch.nodes.iter().find(|n| &n.id == id) else {
-            return;
-        };
-        let spec = Catalogue::builtin().get(&n.def_type);
-        ui.label(RichText::new(spec.map_or(n.def_type.as_str(), |s| s.label.as_str())).strong());
-        ui.label(RichText::new(&n.def_type).color(theme::FG_2).monospace());
-        if let Some(d) = spec.and_then(|s| s.description.as_ref()) {
-            ui.label(RichText::new(d).color(theme::FG_1));
-        }
-        if let (Some(engine), Some(spec)) = (&self.engine, spec) {
-            if let Some(out) = engine
-                .graph
-                .idx(id)
-                .and_then(|i| self.outputs.get(i))
-                .and_then(|o| o.as_ref())
-            {
-                ui.add_space(6.0);
-                for (p, v) in spec.outputs.iter().zip(out.iter()) {
-                    ui.horizontal_wrapped(|ui| {
-                        ui.label(
-                            RichText::new(p.label.as_deref().unwrap_or(&p.name)).color(theme::FG_1),
-                        );
-                        let text = format!("{:?}", v.iter().take(8).collect::<Vec<_>>());
-                        ui.label(RichText::new(text).monospace().size(11.0));
-                    });
-                }
-            }
-        }
-    }
 }
 
 impl eframe::App for App {
@@ -364,35 +334,48 @@ impl eframe::App for App {
                 .show(ui, |ui| self.palette(ui));
         }
 
-        egui::Panel::right("side")
+        // Side dock: previews, inspector, help, library, shader.
+        let action = egui::Panel::right("side")
             .resizable(true)
             .default_size(400.0)
-            .size_range(260.0..=720.0)
-            .frame(
-                egui::Frame::new()
-                    .fill(theme::BG_1)
-                    .inner_margin(egui::Margin::same(10)),
-            )
+            .size_range(260.0..=900.0)
+            .frame(egui::Frame::new().fill(theme::BG_1))
             .show(ui, |ui| {
-                let rs = frame.wgpu_render_state();
-                if self.crash.render_ok() {
-                    let (preview, engine, outputs) =
-                        (&mut self.preview, self.engine.as_ref(), &self.outputs);
-                    preview.doc_name = self
-                        .patch
-                        .meta
-                        .as_ref()
-                        .and_then(|m| m.name.clone())
-                        .unwrap_or_default();
-                    self.crash.run(crash::Stage::Render, &self.patch, || {
-                        preview.show(ui, rs, engine, outputs);
-                    });
-                }
-                ui.add_space(10.0);
-                ui.separator();
-                ui.label(RichText::new("Inspector").color(theme::FG_1).small());
-                egui::ScrollArea::vertical().show(ui, |ui| self.inspector(ui));
-            });
+                self.preview.doc_name = self
+                    .patch
+                    .meta
+                    .as_ref()
+                    .and_then(|m| m.name.clone())
+                    .unwrap_or_default();
+                self.workspace.show(
+                    ui,
+                    &mut workspace::Shell {
+                        patch: &mut self.patch,
+                        view: &mut self.view,
+                        preview: &mut self.preview,
+                        shader: &mut self.shader_panel,
+                        crash: &mut self.crash,
+                        engine: self.engine.as_ref(),
+                        outputs: &self.outputs,
+                        rs: frame.wgpu_render_state(),
+                        samples: SAMPLES,
+                        sample: Some(self.sample),
+                    },
+                )
+            })
+            .inner;
+        match action {
+            Some(workspace::ShellAction::LoadSample(i)) => self.load_sample(i),
+            Some(workspace::ShellAction::LoadPatch(p)) => {
+                self.patch = p;
+                self.error = None;
+                self.view.on_load(&mut self.patch);
+                self.recompile();
+                self.start = Instant::now();
+                self.frame = 0;
+            }
+            None => {}
+        }
 
         egui::CentralPanel::no_frame().show(ui, |ui| {
             let cat = Catalogue::builtin();
@@ -417,15 +400,6 @@ impl eframe::App for App {
             let edits = self.view.take_live_edits();
             if let Some(engine) = self.engine.as_mut() {
                 editor::values::apply_live(engine, cat, &self.patch, edits);
-            }
-            let selected = self.view.primary().cloned();
-            if self.shader_panel.show(
-                ui.ctx(),
-                &mut self.patch,
-                selected.as_deref(),
-                self.preview.shader_errors(),
-            ) {
-                self.view.commit(&mut self.patch);
             }
             // Structural edits (wires, nodes, undo) rebuild the engine.
             if self.view.take_recompile() {

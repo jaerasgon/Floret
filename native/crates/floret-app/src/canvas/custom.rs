@@ -807,7 +807,7 @@ pub fn draw_body(p: &Painter, b: &NodeBox, st: &BodyState, z: f32) {
                     p.text(
                         r.center(),
                         Align2::CENTER_CENTER,
-                        "✕",
+                        "×",
                         FontId::proportional(10.0 * z),
                         if hot { FG_0 } else { FG_2 },
                     );

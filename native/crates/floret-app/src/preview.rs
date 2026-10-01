@@ -1,8 +1,8 @@
 //! Live preview (`PreviewPanel.tsx` / `Preview.tsx`): one view per
 //! `render/renderer` node, each drawn by `floret-render` into its own
-//! offscreen texture at the renderer's resolution. Several renderers show
-//! as tabs (or as dock tabs, see `workspace.rs`), titled from their
-//! `label`; deleting the node drops its view.
+//! offscreen texture at the renderer's resolution and shown as its own
+//! dock tab (`workspace.rs`), titled from the renderer's `label`;
+//! deleting the node drops its view.
 //!
 //! Each view has its own camera — fit, zoom toward the pointer, pan, 1:1
 //! and a pixel grid once texels are big — and a lock that ignores pinch /
@@ -204,8 +204,6 @@ struct Output {
 /// output state, the canvas size and the patch's input.
 pub struct PreviewPanel {
     views: IndexMap<String, View>,
-    /// The tab shown when there are several renderers.
-    selected: Option<String>,
     /// Canvas size the engine sees (the first renderer's width × height).
     pub canvas: (u32, u32),
     /// Pointer over a preview, canvas pixels, centre origin.
@@ -237,7 +235,6 @@ impl PreviewPanel {
         });
         PreviewPanel {
             views: IndexMap::new(),
-            selected: None,
             canvas: floret_render::DEFAULT_CANVAS,
             mouse: (0.0, 0.0),
             mouse_pressed: false,
@@ -254,25 +251,18 @@ impl PreviewPanel {
         }
     }
 
-    /// Shader compile errors from the last frame of the shown view.
+    /// Shader compile errors from the last frame (the first view that
+    /// reported any).
     pub fn shader_errors(&self) -> &crate::shader_panel::RuntimeErrors {
-        self.shown()
-            .and_then(|id| self.views.get(id))
-            .or_else(|| self.views.values().next())
-            .and_then(|v| v.gpu.as_ref())
-            .map_or(&[], |p| p.renderer.shader_errors())
-    }
-
-    /// The renderer the tabbed panel shows.
-    fn shown(&self) -> Option<&String> {
-        self.selected
-            .as_ref()
-            .filter(|s| self.views.contains_key(*s))
-            .or_else(|| self.views.keys().next())
+        self.views
+            .values()
+            .filter_map(|v| v.gpu.as_ref())
+            .map(|p| p.renderer.shader_errors())
+            .find(|e| !e.is_empty())
+            .unwrap_or(&[])
     }
 
     /// Renderer node ids with a view, in patch order, and their titles.
-    #[allow(dead_code)] // dock tabs
     pub fn renderers(&self) -> Vec<(String, String)> {
         self.views
             .iter()
@@ -404,34 +394,7 @@ impl PreviewPanel {
         self.focus.is_some()
     }
 
-    /// The panel: renderer tabs, transport and view controls, then the
-    /// shown renderer's view.
-    pub fn show(
-        &mut self,
-        ui: &mut egui::Ui,
-        rs: Option<&egui_wgpu::RenderState>,
-        engine: Option<&Engine>,
-        outputs: &Outputs,
-    ) {
-        self.sync(engine);
-        let id = self.shown().cloned();
-        self.header(ui, rs, engine, outputs, id.as_deref(), true);
-        let h = (ui.available_height() * 0.62).max(120.0);
-        match id {
-            Some(id) => {
-                let w = ui.available_width();
-                let size = self.views[&id].size;
-                let aspect = size.1 as f32 / size.0.max(1) as f32;
-                let h = (w * aspect).clamp(120.0, h);
-                self.viewport(ui, rs, engine, outputs, &id, vec2(w, h), false);
-            }
-            None => empty(ui, engine, h),
-        }
-        self.output_window(ui.ctx(), rs, engine, outputs);
-    }
-
     /// One renderer's view filling `ui` (a dock tab).
-    #[allow(dead_code)] // dock tabs
     pub fn show_renderer(
         &mut self,
         ui: &mut egui::Ui,
@@ -445,7 +408,7 @@ impl PreviewPanel {
             empty(ui, engine, ui.available_height());
             return;
         }
-        self.header(ui, rs, engine, outputs, Some(id), false);
+        self.header(ui, rs, engine, outputs, id);
         let size = ui.available_size();
         self.viewport(ui, rs, engine, outputs, id, size, false);
     }
@@ -480,35 +443,17 @@ impl PreviewPanel {
         self.output_window(ui.ctx(), rs, engine, outputs);
     }
 
-    /// Title / tabs, the transport and focus / output, Export.
+    /// Size / stats, Export, then the transport and focus / output.
     fn header(
         &mut self,
         ui: &mut egui::Ui,
         rs: Option<&egui_wgpu::RenderState>,
         engine: Option<&Engine>,
         outputs: &Outputs,
-        id: Option<&str>,
-        tabs: bool,
+        id: &str,
     ) {
+        let id = Some(id);
         ui.horizontal(|ui| {
-            if tabs && self.views.len() > 1 {
-                let shown = id.map(str::to_owned);
-                for (vid, v) in &self.views {
-                    let on = shown.as_deref() == Some(vid.as_str());
-                    if ui
-                        .selectable_label(on, RichText::new(&v.title).small())
-                        .on_hover_text(format!("Renderer {vid}"))
-                        .clicked()
-                    {
-                        self.selected = Some(vid.clone());
-                    }
-                }
-            } else {
-                let title = id
-                    .and_then(|i| self.views.get(i))
-                    .map_or("Preview", |v| v.title.as_str());
-                ui.label(RichText::new(title).color(theme::FG_1).small());
-            }
             ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                 if let Some(id) = id {
                     let (layers, bg) = scene(engine, outputs, id);
@@ -719,8 +664,9 @@ impl PreviewPanel {
         controls(ui, area, &mut view.cam, canvas, ppp, texel);
     }
 
-    /// The fullscreen output window, while one is open.
-    fn output_window(
+    /// The fullscreen output window, while one is open (call once a
+    /// frame).
+    pub fn output_window(
         &mut self,
         ctx: &egui::Context,
         rs: Option<&egui_wgpu::RenderState>,

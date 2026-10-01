@@ -19,11 +19,25 @@ pub fn default_render_size() -> (u32, u32) {
     ((v >> 32) as u32, v as u32)
 }
 
-/// Grid step for "snap to grid" (matches the canvas dot grid).
+/// Default grid step for "snap to grid" (matches the canvas dot grid).
 pub const GRID: f64 = 24.0;
+/// Grid steps offered in Preferences (`SettingsModal.tsx`).
+pub const GRID_STEPS: [u32; 4] = [8, 16, 24, 32];
 
-pub fn snap(v: f64) -> f64 {
-    (v / GRID).round() * GRID
+pub fn snap_to(v: f64, step: f64) -> f64 {
+    if step > 0.0 {
+        (v / step).round() * step
+    } else {
+        v
+    }
+}
+
+/// Snap a point to the grid of `step` anchored at `origin`.
+pub fn snap_point(p: Position, step: f64, origin: Position) -> Position {
+    Position {
+        x: origin.x + snap_to(p.x - origin.x, step),
+        y: origin.y + snap_to(p.y - origin.y, step),
+    }
 }
 
 fn id_prefix(def_type: &str) -> String {
@@ -421,8 +435,14 @@ mod tests {
 
     #[test]
     fn snapping() {
-        assert_eq!(snap(13.0), 24.0);
-        assert_eq!(snap(-13.0), -24.0);
-        assert_eq!(snap(11.0), 0.0);
+        assert_eq!(snap_to(13.0, GRID), 24.0);
+        assert_eq!(snap_to(-13.0, GRID), -24.0);
+        assert_eq!(snap_to(11.0, GRID), 0.0);
+        assert_eq!(snap_to(13.0, 8.0), 16.0);
+        let o = Position { x: 5.0, y: -3.0 };
+        assert_eq!(
+            snap_point(Position { x: 20.0, y: 10.0 }, 16.0, o),
+            Position { x: 21.0, y: 13.0 }
+        );
     }
 }

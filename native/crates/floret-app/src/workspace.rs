@@ -10,9 +10,9 @@ use crate::node_help::HelpPanel;
 use crate::preview::PreviewPanel;
 use crate::shader_panel::ShaderPanel;
 use crate::{crash, theme, Sample};
-use eframe::egui::{self, RichText};
+use eframe::egui::{self, vec2, Pos2, Rect, RichText, Vec2};
 use eframe::egui_wgpu;
-use egui_dock::{DockArea, DockState, NodeIndex, NodePath, TabViewer};
+use egui_dock::{DockArea, DockState, NodeIndex, NodePath, TabPath, TabViewer};
 use floret_engine::patch::PatchFile;
 use floret_engine::spec::Catalogue;
 use floret_engine::tick::Outputs;
@@ -129,6 +129,8 @@ pub struct Workspace {
     /// Selected node last frame (a newly selected shader node brings the
     /// Shader tab forward).
     last_selected: Option<String>,
+    /// The docked tab being dragged, and where it was.
+    dragging: Option<(Tab, TabPath)>,
 }
 
 impl Workspace {
@@ -145,6 +147,7 @@ impl Workspace {
             library: Library::default(),
             saved,
             last_selected: None,
+            dragging: None,
         }
     }
 
@@ -189,8 +192,25 @@ impl Workspace {
                 .collect(),
             reset: false,
         };
+        // A tab dragged off the dock (onto the canvas) floats as a card
+        // where it's dropped; egui_dock only handles drops on a dock.
+        let ctx = ui.ctx().clone();
+        let held = self
+            .dock
+            .iter_all_tabs()
+            .find(|(path, _)| ctx.is_being_dragged(tab_id(dock_id(), *path)))
+            .map(|(path, tab)| (tab.clone(), path));
+        let (released, pointer) =
+            ctx.input(|i| (i.pointer.primary_released(), i.pointer.latest_pos()));
+        let dock_rect = ui.max_rect();
+        let dropped = if released {
+            self.dragging.take().or(held)
+        } else {
+            self.dragging = held;
+            None
+        };
         DockArea::new(&mut self.dock)
-            .id(egui::Id::new("floret-dock"))
+            .id(dock_id())
             .style(style(ui.style()))
             .show_add_buttons(true)
             .show_add_popup(true)
@@ -200,6 +220,14 @@ impl Workspace {
             .window_bounds(ui.ctx().content_rect())
             .show_inside(ui, &mut viewer);
         let (action, add, reset) = (viewer.action.take(), viewer.add.take(), viewer.reset);
+        if let (Some((tab, from)), Some(p)) = (dropped, pointer) {
+            if float_drop(&self.dock, &tab, from, dock_rect, p) {
+                self.dock.detach_tab(
+                    from,
+                    Rect::from_min_size(p - vec2(24.0, 12.0), FLOAT_SIZE / 0.8),
+                );
+            }
+        }
         shell
             .preview
             .output_window(ui.ctx(), shell.rs, shell.engine, shell.outputs);
@@ -238,6 +266,31 @@ impl Workspace {
         }
         self.saved = json;
     }
+}
+
+fn dock_id() -> egui::Id {
+    egui::Id::new("floret-dock")
+}
+/// A tab floated by dragging it off the dock.
+const FLOAT_SIZE: Vec2 = Vec2::new(380.0, 320.0);
+
+/// egui's id for a tab's title button (as `DockArea` makes it).
+fn tab_id(dock: egui::Id, path: TabPath) -> egui::Id {
+    dock.with((path.surface, "surface"))
+        .with((path.node, "node"))
+        .with((path.tab.0, "tab"))
+}
+
+/// Whether a tab released at `p` should float: it was dragged from the
+/// docked panels and let go outside them, and egui_dock didn't move it.
+pub fn float_drop(
+    dock: &DockState<Tab>,
+    tab: &Tab,
+    from: TabPath,
+    dock_rect: Rect,
+    p: Pos2,
+) -> bool {
+    from.surface.is_main() && !dock_rect.contains(p) && dock.find_tab(tab) == Some(from)
 }
 
 /// The layout as JSON. Rects egui_dock hasn't laid out yet are infinite
@@ -460,6 +513,29 @@ mod tests {
         // Preview 0 stays even with no renderer.
         sync_previews(&mut d, 0);
         assert!(tabs(&d).contains(&Tab::Preview(0)));
+    }
+
+    #[test]
+    fn a_tab_dropped_off_the_dock_floats() {
+        let mut d = default_dock();
+        let from = d.find_tab(&Tab::Help).unwrap();
+        let dock = Rect::from_min_size(Pos2::new(1000.0, 0.0), vec2(400.0, 800.0));
+        let canvas = Pos2::new(300.0, 300.0);
+        assert!(float_drop(&d, &Tab::Help, from, dock, canvas));
+        assert!(!float_drop(
+            &d,
+            &Tab::Help,
+            from,
+            dock,
+            Pos2::new(1100.0, 300.0)
+        ));
+        let target = Rect::from_min_size(canvas, FLOAT_SIZE / 0.8);
+        d.detach_tab(from, target);
+        let now = d.find_tab(&Tab::Help).unwrap();
+        assert!(!now.surface.is_main());
+        // Already floating, or moved by the dock itself: left alone.
+        assert!(!float_drop(&d, &Tab::Help, now, dock, canvas));
+        assert!(!float_drop(&d, &Tab::Help, from, dock, canvas));
     }
 
     #[test]

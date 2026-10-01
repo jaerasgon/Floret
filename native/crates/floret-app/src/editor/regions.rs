@@ -364,6 +364,21 @@ pub fn containing<'a>(
     best.map(|(_, id)| id)
 }
 
+/// Which of the moved `ids` a press on `hit` grabbed: `hit` itself, or
+/// the moved region holding it.
+pub fn grabbed_of(patch: &PatchFile, ids: &[String], hit: &str) -> String {
+    let mut cur = Some(hit.to_owned());
+    let mut guard = 0;
+    while let Some(c) = cur {
+        if ids.contains(&c) || guard > 64 {
+            return c;
+        }
+        guard += 1;
+        cur = find_node(patch, &c).and_then(|n| n.parent_id.clone());
+    }
+    hit.to_owned()
+}
+
 /// `setNodeParent` via `moveNodeToParent`: re-home a node, keeping where
 /// it sits on screen. Refuses cycles. Returns whether anything changed.
 pub fn set_parent(patch: &mut PatchFile, id: &str, parent: Option<&str>) -> bool {
@@ -536,6 +551,23 @@ mod tests {
         n.position = Position { x, y };
         n.parent_id = parent.map(str::to_owned);
         n
+    }
+
+    #[test]
+    fn the_grabbed_node_is_the_moved_one_under_the_pointer() {
+        let p = patch(
+            vec![
+                region("r", 0.0, 0.0, 300.0, 200.0),
+                at(node("a", "math/add"), 10.0, 10.0, Some("r")),
+                node("b", "math/add"),
+            ],
+            vec![],
+        );
+        let ids = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+        assert_eq!(grabbed_of(&p, &ids(&["a", "b"]), "b"), "b");
+        // A child of a moved region: the region is what moves.
+        assert_eq!(grabbed_of(&p, &ids(&["r", "b"]), "a"), "r");
+        assert_eq!(grabbed_of(&p, &ids(&["b"]), "a"), "a");
     }
 
     #[test]

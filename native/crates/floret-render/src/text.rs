@@ -427,10 +427,13 @@ const BUNDLED: &[&[u8]] = &[
 ];
 
 /// System fonts (for named families) plus the bundled faces, which back
-/// every generic family.
+/// every generic family. `FLORET_BUNDLED_FONTS_ONLY` skips the system ones,
+/// so output doesn't depend on the machine (the reference-image tests).
 fn font_system() -> FontSystem {
     let mut db = fontdb::Database::new();
-    db.load_system_fonts();
+    if std::env::var_os("FLORET_BUNDLED_FONTS_ONLY").is_none() {
+        db.load_system_fonts();
+    }
     for face in BUNDLED {
         db.load_font_data(face.to_vec());
     }

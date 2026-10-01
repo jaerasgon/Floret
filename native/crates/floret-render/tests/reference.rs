@@ -65,6 +65,9 @@ fn tolerance(name: &str) -> (f64, f64) {
 
 #[test]
 fn matches_the_web_renderer() {
+    // The references were drawn with the bundled faces (Chrome on Linux);
+    // a machine's own fonts (Consolas on Windows) would legitimately differ.
+    std::env::set_var("FLORET_BUNDLED_FONTS_ONLY", "1");
     let samples = std::env::var("FLORET_MSAA")
         .ok()
         .and_then(|s| s.parse().ok())

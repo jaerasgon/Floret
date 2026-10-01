@@ -8,11 +8,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod canvas;
+mod editor;
 mod preview;
 mod theme;
 
 use eframe::egui::{self, vec2, Align, Layout, RichText};
-use floret_engine::patch::{PatchFile, PatchNode, Position};
+use floret_engine::patch::{PatchFile, Position};
 use floret_engine::spec::Catalogue;
 use floret_engine::tick::Outputs;
 use floret_engine::{Engine, FrameCtx};
@@ -57,7 +58,6 @@ struct App {
     fps: f32,
     query: String,
     show_palette: bool,
-    next_id: u64,
 }
 
 impl App {
@@ -86,7 +86,6 @@ impl App {
             fps: 0.0,
             query: String::new(),
             show_palette: true,
-            next_id: 1,
         };
         app.load_sample(start);
         app
@@ -104,11 +103,11 @@ impl App {
                 self.error = Some(e.to_string());
             }
         }
+        self.view.on_load(&mut self.patch);
         self.recompile();
         self.start = Instant::now();
         self.frame = 0;
         self.fit_pending = true;
-        self.view.selected = None;
     }
 
     fn recompile(&mut self) {
@@ -126,29 +125,18 @@ impl App {
     }
 
     fn add_node(&mut self, ty: &str) {
-        let Some(spec) = Catalogue::builtin().get(ty) else {
-            return;
-        };
+        let cat = Catalogue::builtin();
         let center = self.canvas_rect.center();
         let p = (center - self.canvas_rect.min) / self.view.zoom - self.view.pan;
-        let id = format!("n{}", self.next_id);
-        self.next_id += 1;
-        self.patch.nodes.push(PatchNode {
-            id: id.clone(),
-            def_type: ty.to_owned(),
-            position: Position {
-                x: f64::from(p.x - 84.0),
-                y: f64::from(p.y - 30.0),
-            },
-            params: spec.default_params.clone(),
-            parent_id: None,
-            port_values: None,
-            ports: None,
-            width: None,
-            height: None,
-        });
-        self.view.selected = Some(id);
-        self.recompile();
+        let at = Position {
+            x: f64::from(p.x - 84.0),
+            y: f64::from(p.y - 30.0),
+        };
+        if let Some(id) = editor::ops::place_node(&mut self.patch, cat, ty, at) {
+            self.view.select_only(&id);
+            self.view.commit(&mut self.patch);
+            self.recompile();
+        }
     }
 
     fn tick(&mut self) {
@@ -266,7 +254,7 @@ impl App {
     }
 
     fn inspector(&self, ui: &mut egui::Ui) {
-        let Some(id) = &self.view.selected else {
+        let Some(id) = self.view.primary() else {
             ui.label(RichText::new("Select a node to inspect it.").color(theme::FG_2));
             return;
         };
@@ -431,6 +419,10 @@ impl eframe::App for App {
                     cat,
                     &mut self.view,
                 );
+            }
+            // Structural edits (wires, nodes, undo) rebuild the engine.
+            if self.view.take_recompile() {
+                self.recompile();
             }
         });
     }

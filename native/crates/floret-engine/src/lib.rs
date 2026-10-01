@@ -29,6 +29,7 @@ pub mod shader;
 pub mod spec;
 pub mod tick;
 pub mod value;
+pub mod video;
 
 pub use compile::{compile, CompileResult, CompileWarning};
 pub use node::{FrameCtx, ParamStore};

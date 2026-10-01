@@ -192,7 +192,12 @@ fn colour_and_font_edge_cases_match_typescript() {
     let stroke = |c: J| {
         eval(
             "style/stroke",
-            vec![vec![c], vec![json!(2)], vec![json!("center")], vec![J::Null]],
+            vec![
+                vec![c],
+                vec![json!(2)],
+                vec![json!("center")],
+                vec![J::Null],
+            ],
         )
     };
     let out = stroke(json!({"r": "0.5", "g": null, "b": 0, "a": "5"})).unwrap();

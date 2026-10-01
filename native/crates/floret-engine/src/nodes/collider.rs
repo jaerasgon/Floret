@@ -4,7 +4,7 @@
 //! which the emitter runs after integration. `particles/bounds` lives with
 //! the other `particles/*` nodes.
 
-use super::particles::{clamp, handle, memo, num_or, vec2_or};
+use super::particles::{clamp, handle, num_or, vec2_or};
 use super::shared::first;
 use super::Registrar;
 use crate::node::{raw, NodeImpl, NodeInit};
@@ -40,7 +40,7 @@ fn common(
 
 /// `collider/circle`.
 fn circle(_: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(raw(|inputs, _cx| {
+    raw(|inputs, _cx| {
         let center = vec2_or(&first(inputs, 0), Vec2 { x: 0.0, y: 0.0 });
         let r = crate::js::max(0.0, num_or(&first(inputs, 1), 80.0));
         let (mode, rest, inverted) = common(inputs, 2, 3, 4);
@@ -55,12 +55,12 @@ fn circle(_: &NodeInit) -> Box<dyn NodeImpl> {
             },
             "apply",
         )])
-    }))
+    })
 }
 
 /// `collider/rect`.
 fn rect(_: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(raw(|inputs, _cx| {
+    raw(|inputs, _cx| {
         let center = vec2_or(&first(inputs, 0), Vec2 { x: 0.0, y: 0.0 });
         let size = vec2_or(&first(inputs, 1), Vec2 { x: 200.0, y: 200.0 });
         let (mode, rest, inverted) = common(inputs, 2, 3, 4);
@@ -78,14 +78,14 @@ fn rect(_: &NodeInit) -> Box<dyn NodeImpl> {
             },
             "apply",
         )])
-    }))
+    })
 }
 
 /// `collider/from-layer`: rect, ellipse (as a circle of the mean radius),
 /// triangle and polygon layers; anything else collides with nothing.
 /// Group transforms are not followed (as in TS v1).
 fn from_layer(_: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(raw(|inputs, _cx| {
+    raw(|inputs, _cx| {
         let layer = first(inputs, 0);
         let (mode, rest, inverted) = common(inputs, 1, 2, 3);
         if !layer.truthy() {
@@ -97,7 +97,7 @@ fn from_layer(_: &NodeInit) -> Box<dyn NodeImpl> {
         };
         // The TS closures built here are anonymous.
         Ok(vec![collider(shape, "")])
-    }))
+    })
 }
 
 fn layer_shape(n: &SceneNode, mode: ColliderMode, rest: f64, inverted: bool) -> ColliderShape {

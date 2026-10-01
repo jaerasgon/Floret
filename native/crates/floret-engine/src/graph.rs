@@ -5,6 +5,7 @@ use crate::spec::{Params, RegionKind, RegionRole};
 use crate::value::{Spread, Value};
 use indexmap::IndexMap;
 use std::collections::HashMap;
+use std::sync::Arc;
 
 pub type NodeIdx = usize;
 
@@ -42,6 +43,9 @@ pub struct RuntimeNode {
     pub imp: Option<Box<dyn NodeImpl>>,
     /// Source node: called with no inputs, never gathered.
     pub is_context: bool,
+    /// Pure compute: the tick may reuse its last outputs when inputs and
+    /// params are unchanged (TS `memoisable`, see `NodeImpl`).
+    pub memoise: bool,
     /// True when the node type exists but has no Rust implementation yet.
     pub unimplemented: bool,
     pub saved_params: Params,
@@ -75,13 +79,15 @@ pub struct Scope {
     pub accumulators: Vec<NodeIdx>,
     /// Anchor → (read, write).
     pub acc_pairs: HashMap<NodeIdx, (NodeIdx, NodeIdx)>,
+    /// The region's built-in `index`, `count` and `fraction` nodes.
+    pub loop_vars: [Option<NodeIdx>; 3],
 }
 
 pub struct RuntimeGraph {
     pub nodes: Vec<RuntimeNode>,
     pub index: HashMap<String, NodeIdx>,
     /// Keyed by region (None = root), in first-seen order.
-    pub scopes: IndexMap<Option<NodeIdx>, Scope>,
+    pub scopes: IndexMap<Option<NodeIdx>, Arc<Scope>>,
     /// All edges, grouped by target node, in insertion order.
     pub edges_by_target: Vec<Vec<RuntimeEdge>>,
     pub renderer_ids: Vec<NodeIdx>,
@@ -191,7 +197,12 @@ pub fn build_graph(
             order,
             ..Default::default()
         };
-        if key.is_some() {
+        if let Some(region) = *key {
+            for (slot, name) in crate::compile::LOOP_VAR_NAMES.iter().enumerate() {
+                scope.loop_vars[slot] = index
+                    .get(&crate::compile::loop_var_id(&nodes[region].id, name))
+                    .copied();
+            }
             let mut reads: IndexMap<u64, NodeIdx> = IndexMap::new();
             let mut writes: HashMap<u64, NodeIdx> = HashMap::new();
             for &i in ids {
@@ -214,7 +225,7 @@ pub fn build_graph(
                 }
             }
         }
-        scopes.insert(*key, scope);
+        scopes.insert(*key, Arc::new(scope));
     }
 
     Ok(RuntimeGraph {

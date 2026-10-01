@@ -14,9 +14,10 @@ use std::sync::Arc;
 /// length 1. Cheap to clone (reference counted).
 pub type Spread = Arc<[Value]>;
 
-/// An empty spread.
+/// An empty spread (one shared allocation).
 pub fn empty() -> Spread {
-    Arc::from([])
+    static EMPTY: std::sync::OnceLock<Spread> = std::sync::OnceLock::new();
+    EMPTY.get_or_init(|| Arc::from([])).clone()
 }
 
 /// A length-1 spread.

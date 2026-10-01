@@ -33,12 +33,33 @@ impl Paint {
         let clamp01 = |v: f64| v.clamp(0.0, 1.0);
         let ch = |v: f64| js::round(clamp01(v) * 255.0);
         let (r, g, b, a) = (ch(c.r), ch(c.g), ch(c.b), clamp01(c.a));
-        let s = js::num_to_string;
-        let css = if a >= 1.0 {
-            format!("rgb({},{},{})", s(r), s(g), s(b))
-        } else {
-            format!("rgba({},{},{},{})", s(r), s(g), s(b), js::to_fixed(a, 3))
+        // A channel is NaN or an integer in 0..=255.
+        let push = |css: &mut String, v: f64| {
+            if v.is_nan() {
+                css.push_str("NaN");
+                return;
+            }
+            let n = v as u8;
+            if n >= 100 {
+                css.push(char::from(b'0' + n / 100));
+            }
+            if n >= 10 {
+                css.push(char::from(b'0' + n / 10 % 10));
+            }
+            css.push(char::from(b'0' + n % 10));
         };
+        let mut css = String::with_capacity(24);
+        css.push_str(if a >= 1.0 { "rgb(" } else { "rgba(" });
+        push(&mut css, r);
+        css.push(',');
+        push(&mut css, g);
+        css.push(',');
+        push(&mut css, b);
+        if a < 1.0 || a.is_nan() {
+            css.push(',');
+            css.push_str(&js::to_fixed(a, 3));
+        }
+        css.push(')');
         Paint {
             css: Arc::from(css),
             rgba: [r / 255.0, g / 255.0, b / 255.0, a],

@@ -3,13 +3,17 @@
 //! (buffer, integrators, forces, colliders) is `crate::particles`.
 //!
 //! Also home to the helpers the `force/*`, `collider/*` and `physics/*`
-//! modules share: JS-style input coercion and [`memo`], which reproduces the
-//! TS runtime's pure-node memoisation for these node types (see there).
+//! modules share (JS-style input coercion).
+//!
+//! These nodes rely on the tick's pure-node memo (as in TS): an unchanged
+//! force node keeps handing out the same force, whose clock (turbulence /
+//! wind) keeps running; `render-as` keeps the `count` it was built with;
+//! `from-layer` doesn't re-draw its random samples.
 
 use super::shared::first;
 use super::Registrar;
 use crate::js::{self, Mulberry32};
-use crate::node::{raw, NodeImpl, NodeInit, NodeResult};
+use crate::node::{raw, NodeImpl, NodeInit};
 use crate::particles::{
     age_and_cull, integrate_euler, integrate_verlet, BoundsMode, Collider, ColliderShape, Handle,
     Integrator, ParticleBuffer, ParticleHandle, ParticleTemplate, World,
@@ -88,70 +92,6 @@ fn resolved_style(v: &Value) -> Arc<ResolvedStyle> {
 /// `colorToCss(c)` for a truthy colour-ish value.
 fn color_paint(v: &Value) -> Paint {
     Paint::from_color(super::shared::to_color(v))
-}
-
-/// Equality for the memo: JS `===` on the value TS would have seen. TS
-/// memoises every pure node, so an unchanged upstream hands over the SAME
-/// object; the Rust engine recomputes upstream nodes each tick, so values
-/// that are plain data (scenes, styles, lists, objects) compare by
-/// structure here, while opaque handles (worlds, forces, buffers) compare
-/// by identity, as in JS.
-fn memo_eq(a: &Value, b: &Value) -> bool {
-    match (a, b) {
-        (Value::List(x), Value::List(y)) => {
-            Arc::ptr_eq(x, y)
-                || (x.len() == y.len() && x.iter().zip(y.iter()).all(|(p, q)| memo_eq(p, q)))
-        }
-        (Value::Object(x), Value::Object(y)) => {
-            Arc::ptr_eq(x, y)
-                || (x.len() == y.len()
-                    && x.iter()
-                        .zip(y.iter())
-                        .all(|((k1, v1), (k2, v2))| k1 == k2 && memo_eq(v1, v2)))
-        }
-        (Value::Scene(x), Value::Scene(y)) => Arc::ptr_eq(x, y) || **x == **y,
-        (Value::Style(x), Value::Style(y)) => x == y,
-        _ => a.same(b),
-    }
-}
-
-fn inputs_eq(a: &[Spread], b: &[Spread]) -> bool {
-    a.len() == b.len()
-        && a.iter().zip(b).all(|(x, y)| {
-            Arc::ptr_eq(x, y)
-                || (x.len() == y.len() && x.iter().zip(y.iter()).all(|(p, q)| memo_eq(p, q)))
-        })
-}
-
-/// The TS runtime's pure-compute memo (`tick.ts`): when a node's gathered
-/// inputs equal the previous tick's, the previous OUTPUTS are reused and
-/// compute is skipped. For these node types that is observable — a force
-/// closure keeps its clock (turbulence / wind), `render-as` keeps the
-/// `count` it saw first, `from-layer` doesn't re-draw random samples — so
-/// the nodes reproduce it. Errors aren't memoised (TS retries next tick).
-///
-/// Difference: TS keys the memo per ForEach iteration; this keeps one
-/// entry per node instance.
-pub(crate) struct Memo {
-    inner: Box<dyn NodeImpl>,
-    last: Option<(Vec<Spread>, Vec<Spread>)>,
-}
-
-pub(crate) fn memo(inner: Box<dyn NodeImpl>) -> Box<dyn NodeImpl> {
-    Box::new(Memo { inner, last: None })
-}
-
-impl NodeImpl for Memo {
-    fn eval(&mut self, inputs: &[Spread], cx: &mut crate::node::EvalCtx) -> NodeResult {
-        if let Some((prev_in, prev_out)) = &self.last {
-            if inputs_eq(prev_in, inputs) {
-                return Ok(prev_out.clone());
-            }
-        }
-        let out = self.inner.eval(inputs, cx)?;
-        self.last = Some((inputs.to_vec(), out.clone()));
-        Ok(out)
-    }
 }
 
 pub(crate) fn handle(h: Handle) -> Spread {
@@ -358,7 +298,7 @@ fn emitter(_: &NodeInit) -> Box<dyn NodeImpl> {
 
 /// `particles/bounds`: wrap / kill / bounce at a rectangle's edges.
 fn bounds(_: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(raw(|inputs, _cx| {
+    raw(|inputs, _cx| {
         let size = vec2_or(&first(inputs, 0), Vec2 { x: 600.0, y: 400.0 });
         let center = vec2_or(&first(inputs, 1), Vec2 { x: 0.0, y: 0.0 });
         let mode = match first(inputs, 2) {
@@ -384,14 +324,14 @@ fn bounds(_: &NodeInit) -> Box<dyn NodeImpl> {
         Ok(vec![handle(Handle::Collider(Arc::new(Collider::new(
             shape, "apply",
         ))))])
-    }))
+    })
 }
 
 // ─── particles/render-as ─────────────────────────────────────────────────────
 
 /// `particles/render-as`: wrap a buffer in a `ParticleBatch` scene node.
 fn render_as(_: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(raw(|inputs, _cx| {
+    raw(|inputs, _cx| {
         let Value::Handle(Handle::Particles(buf)) = first(inputs, 0) else {
             return Ok(vec![one(empty_group())]);
         };
@@ -425,7 +365,7 @@ fn render_as(_: &NodeInit) -> Box<dyn NodeImpl> {
                 use_buffer_color,
             },
         )))])
-    }))
+    })
 }
 
 // ─── particles/trail ─────────────────────────────────────────────────────────
@@ -547,7 +487,7 @@ enum Sampling {
 /// itself does without `OffscreenCanvas`, and what the fixtures recorded).
 fn from_layer(_: &NodeInit) -> Box<dyn NodeImpl> {
     let mut rng = Mulberry32::new(0x5eed);
-    memo(raw(move |inputs, _cx| {
+    raw(move |inputs, _cx| {
         let layer = first(inputs, 0);
         let mode = match first(inputs, 1) {
             Value::Str(s) if &*s == "fill" => Sampling::Fill,
@@ -567,7 +507,7 @@ fn from_layer(_: &NodeInit) -> Box<dyn NodeImpl> {
                 .map(|(x, y)| Value::Vec2(Vec2 { x, y }))
                 .collect::<Vec<_>>(),
         )])
-    }))
+    })
 }
 
 type Random<'a> = dyn FnMut() -> f64 + 'a;

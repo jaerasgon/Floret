@@ -694,6 +694,7 @@ fn to_runtime_node(
         constants: vec![None; resolved.len()],
         imp: None,
         is_context: false,
+        memoise: false,
         unimplemented: false,
         saved_params: n.params.clone(),
         state_value: None,
@@ -736,6 +737,17 @@ fn to_runtime_node(
                     None => node.unimplemented = true,
                 }
                 node.is_context = spec.eval == EvalKind::Context;
+                // TS `memoisable`: a pure compute with no audio port (Web
+                // Audio handles mutate every tick) and no image port (a
+                // canvas's pixels change under the same reference).
+                let media = resolved
+                    .iter()
+                    .chain(&spec.outputs)
+                    .any(|p| matches!(p.ty, PortType::Audio | PortType::Image));
+                node.memoise = !node.is_context
+                    && !spec.effectful
+                    && !media
+                    && node.imp.as_ref().is_some_and(|imp| imp.memoise());
             }
             EvalKind::None => {
                 if !(spec.inputs.is_empty() && spec.outputs.is_empty()) {

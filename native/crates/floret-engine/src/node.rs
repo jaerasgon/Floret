@@ -26,32 +26,56 @@ pub struct FrameCtx {
 
 /// Live parameter values, keyed by node id — the editor writes here while
 /// a slider is dragged so the runtime picks values up without a recompile.
+///
+/// Every write bumps a version (per node and overall), which is how the
+/// tick's memo notices a param change on a node that reads it.
 #[derive(Clone, Debug, Default)]
 pub struct ParamStore {
-    by_node: HashMap<String, Params>,
+    by_node: HashMap<String, (Params, u64)>,
+    version: u64,
 }
 
 impl ParamStore {
     pub fn get(&self, node: &str, key: &str) -> Option<&serde_json::Value> {
-        self.by_node.get(node)?.get(key)
+        self.by_node.get(node)?.0.get(key)
     }
 
     pub fn set(&mut self, node: &str, key: &str, value: serde_json::Value) {
-        self.by_node
-            .entry(node.to_owned())
-            .or_default()
-            .insert(key.to_owned(), value);
+        self.version += 1;
+        let entry = self.by_node.entry(node.to_owned()).or_default();
+        entry.0.insert(key.to_owned(), value);
+        entry.1 = self.version;
     }
 
     pub fn set_node(&mut self, node: &str, params: Params) {
-        self.by_node.insert(node.to_owned(), params);
+        self.version += 1;
+        self.by_node.insert(node.to_owned(), (params, self.version));
     }
 
     pub fn replace_all<'a>(&mut self, entries: impl IntoIterator<Item = (&'a str, &'a Params)>) {
+        self.version += 1;
         self.by_node.clear();
         for (id, p) in entries {
-            self.by_node.insert(id.to_owned(), p.clone());
+            self.by_node
+                .insert(id.to_owned(), (p.clone(), self.version));
         }
+    }
+
+    /// Bumped by every write.
+    pub fn version(&self) -> u64 {
+        self.version
+    }
+
+    /// The store's [`version`](Self::version) when `node`'s params last
+    /// changed (0 if never set).
+    pub fn node_version(&self, node: &str) -> u64 {
+        self.by_node.get(node).map_or(0, |e| e.1)
+    }
+
+    /// True when `node`'s params haven't changed since the store was at
+    /// `version`.
+    pub fn unchanged_since(&self, node: &str, version: u64) -> bool {
+        self.version == version || self.node_version(node) <= version
     }
 }
 
@@ -93,11 +117,29 @@ pub type NodeResult = Result<Vec<Spread>, String>;
 
 /// A node instance. One is created per node at compile time, so any
 /// cross-tick state a node needs lives in its own struct.
+///
+/// # Memoisation
+///
+/// Like the TS runtime, the tick skips `eval` for a pure node whose inputs
+/// (and params) are unchanged since its last evaluation at the same loop
+/// iteration, reusing its previous outputs. Context, stateful and
+/// effectful node types (flags in `nodes.json`) and nodes with an `image`
+/// or `audio` port always run. A node that reads anything else besides its
+/// inputs and params — `cx.frame` / `cx.tick_frame`, devices, the host,
+/// a clock — or must run every tick for a side effect must either be
+/// flagged that way in its spec or return `false` from [`NodeImpl::memoise`].
 pub trait NodeImpl: Send {
     /// Compute outputs from gathered inputs. Context (source) nodes receive
     /// an empty `inputs`. An `Err` makes the runtime emit empty outputs for
     /// this tick (the node retries next tick).
     fn eval(&mut self, inputs: &[Spread], cx: &mut EvalCtx) -> NodeResult;
+
+    /// Whether the tick may skip `eval` when inputs and params are
+    /// unchanged. Only consulted for node types the spec allows to be
+    /// memoised.
+    fn memoise(&self) -> bool {
+        true
+    }
 }
 
 /// Everything a factory needs to build a node instance.
@@ -146,15 +188,22 @@ where
                 inputs.len()
             ));
         }
-        let args: Vec<Value> = inputs
-            .iter()
-            .zip(&self.in_kinds)
-            .map(|(v, k)| match k {
-                PortKind::Single => v.first().cloned().unwrap_or(Value::Undefined),
-                PortKind::Spread | PortKind::Multi => Value::List(v.clone()),
-            })
-            .collect();
-        let results = (self.f)(&args)?;
+        let arg = |(v, k): (&Spread, &PortKind)| match k {
+            PortKind::Single => v.first().cloned().unwrap_or(Value::Undefined),
+            PortKind::Spread | PortKind::Multi => Value::List(v.clone()),
+        };
+        // Arguments on the stack for the usual small arities.
+        const STACK: usize = 8;
+        let results = if inputs.len() <= STACK {
+            let mut args: [Value; STACK] = std::array::from_fn(|_| Value::Undefined);
+            for (slot, a) in args.iter_mut().zip(inputs.iter().zip(&self.in_kinds)) {
+                *slot = arg(a);
+            }
+            (self.f)(&args[..inputs.len()])?
+        } else {
+            let args: Vec<Value> = inputs.iter().zip(&self.in_kinds).map(arg).collect();
+            (self.f)(&args)?
+        };
         if results.len() != self.out_kinds.len() {
             return Err(format!(
                 "applyKinded output mismatch: expected {}, got {}",

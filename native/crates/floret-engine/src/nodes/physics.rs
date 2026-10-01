@@ -1,6 +1,6 @@
 //! `physics/world`. Ported from `src/nodes/physics/world.ts`.
 
-use super::particles::{handle, memo, num_or, vec2_or};
+use super::particles::{handle, num_or, vec2_or};
 use super::shared::first;
 use super::Registrar;
 use crate::node::{raw, NodeImpl, NodeInit};
@@ -26,7 +26,7 @@ fn has_x(v: &Value) -> bool {
 /// `physics/world`: gravity, drag, time scale, bounds and the global
 /// force / collider lists, as one `World` handle.
 fn world(_: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(raw(|inputs, _cx| {
+    raw(|inputs, _cx| {
         let gravity = vec2_or(&first(inputs, 0), Vec2 { x: 0.0, y: 200.0 });
         let bounds_in = first(inputs, 3);
         let bounds = if bounds_in.truthy() && bounds_in.is_object() && has_x(&bounds_in) {
@@ -52,5 +52,5 @@ fn world(_: &NodeInit) -> Box<dyn NodeImpl> {
             integrator,
         };
         Ok(vec![handle(Handle::World(Arc::new(w)))])
-    }))
+    })
 }

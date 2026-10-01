@@ -628,7 +628,7 @@ impl App {
         });
     }
 
-    /// The side dock: previews, inspector, help, library, shader.
+    /// The side dock: previews, inspector, help, library, shader, profiler.
     fn side_panel(&mut self, ui: &mut egui::Ui, frame: &eframe::Frame) {
         self.preview.doc_name = self.doc.name.clone();
         let sample = match &self.doc.origin {
@@ -650,6 +650,9 @@ impl App {
                 sample,
             },
         );
+        if let Some(engine) = self.engine.as_mut() {
+            engine.set_profiling(self.workspace.profiling());
+        }
         match action {
             Some(workspace::ShellAction::LoadSample(i)) => self.request(ui.ctx(), After::Sample(i)),
             Some(workspace::ShellAction::LoadPatch(p)) => {

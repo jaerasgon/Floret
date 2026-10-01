@@ -70,17 +70,28 @@ pub fn kind_of(v: &Value) -> Option<Kind> {
 
 /// `componentsOf`: break a value into numeric components of `kind`.
 pub fn components_of(v: &Value, kind: Kind) -> Vec<f64> {
-    let field = |k: &str, d: f64| v.get(k).as_f64().unwrap_or(d);
-    match kind {
+    components(v, kind)[..kind.components()].to_vec()
+}
+
+/// [`components_of`] without allocating (unused slots are 0).
+fn components(v: &Value, kind: Kind) -> [f64; 4] {
+    match (kind, v) {
         // `typeof v === 'number' ? v : Number(v) || 0`
-        Kind::Number => vec![v.as_number()],
-        Kind::Vec2 => vec![field("x", 0.0), field("y", 0.0)],
-        Kind::Color => vec![
-            field("r", 0.0),
-            field("g", 0.0),
-            field("b", 0.0),
-            field("a", 1.0),
-        ],
+        (Kind::Number, _) => [v.as_number(), 0.0, 0.0, 0.0],
+        (Kind::Vec2, Value::Vec2(p)) => [p.x, p.y, 0.0, 0.0],
+        (Kind::Color, Value::Color(c)) => [c.r, c.g, c.b, c.a],
+        _ => {
+            let field = |k: &str, d: f64| v.get(k).as_f64().unwrap_or(d);
+            match kind {
+                Kind::Vec2 => [field("x", 0.0), field("y", 0.0), 0.0, 0.0],
+                _ => [
+                    field("r", 0.0),
+                    field("g", 0.0),
+                    field("b", 0.0),
+                    field("a", 1.0),
+                ],
+            }
+        }
     }
 }
 
@@ -159,17 +170,29 @@ pub fn reduce(vals: &[Value], per_component: fn(&[f64]) -> f64) -> Value {
         return Value::Num(0.0);
     }
     let kind = vals.iter().find_map(kind_of).unwrap_or(Kind::Number);
-    let cols: Vec<Vec<f64>> = vals.iter().map(|v| components_of(v, kind)).collect();
-    let out: Vec<f64> = (0..kind.components())
-        .map(|ci| {
-            let xs: Vec<f64> = cols
-                .iter()
-                .map(|c| c.get(ci).copied().unwrap_or(0.0))
-                .collect();
-            per_component(&xs)
-        })
-        .collect();
-    from_components(&out, kind)
+    let n = vals.len();
+    let mut out = [0.0; 4];
+    // Columns on the stack for up to 26 operands (`slotCount`'s limit).
+    if n <= 26 {
+        let mut cols = [[0.0; 26]; 4];
+        for (j, v) in vals.iter().enumerate() {
+            for (ci, x) in components(v, kind).into_iter().enumerate() {
+                cols[ci][j] = x;
+            }
+        }
+        for (ci, o) in out.iter_mut().enumerate().take(kind.components()) {
+            *o = per_component(&cols[ci][..n]);
+        }
+    } else {
+        let mut xs = vec![0.0; n];
+        for (ci, o) in out.iter_mut().enumerate().take(kind.components()) {
+            for (x, v) in xs.iter_mut().zip(vals) {
+                *x = components(v, kind)[ci];
+            }
+            *o = per_component(&xs);
+        }
+    }
+    from_components(&out[..kind.components()], kind)
 }
 
 pub fn reduce_add(xs: &[f64]) -> f64 {

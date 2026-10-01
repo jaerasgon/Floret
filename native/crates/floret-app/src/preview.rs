@@ -300,6 +300,14 @@ impl PreviewPanel {
     }
 
     /// Renderer node ids with a view, in patch order, and their titles.
+    /// Smoothed CPU time spent batching + encoding the previews (ms).
+    pub fn render_ms(&self) -> f32 {
+        (self.views.values())
+            .filter_map(|v| v.gpu.as_ref())
+            .map(|g| g.encode_ms)
+            .sum()
+    }
+
     pub fn renderers(&self) -> Vec<(String, String)> {
         self.views
             .iter()

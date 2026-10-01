@@ -39,6 +39,10 @@ fn native_samples_compile_tick_and_draw() {
             continue;
         }
         let text = std::fs::read_to_string(&path).unwrap();
+        // Video needs the decoder (floret-video tests its sample end to end).
+        if text.contains("\"video/") {
+            continue;
+        }
         let (mut engine, warnings) = Engine::load_with_warnings(&text).unwrap();
         let msgs: Vec<&str> = warnings.iter().map(|w| w.message.as_str()).collect();
         assert!(msgs.is_empty(), "{id}: {msgs:?}");

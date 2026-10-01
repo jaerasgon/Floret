@@ -6,7 +6,7 @@ use super::shared::first;
 use super::value::param_or;
 use super::Registrar;
 use crate::image::{parse_text, LoadSlot, LoadState};
-use crate::node::{raw, NodeImpl, NodeInit};
+use crate::node::{always_eval, raw, NodeImpl, NodeInit};
 use crate::value::{js_string_to_number, one, Spread, Value};
 use std::sync::Arc;
 
@@ -94,7 +94,12 @@ pub(crate) fn parse_csv_column(text: &str, column: i64) -> (Vec<Value>, usize) {
 /// `data/csv-file`: inputs (url, column), outputs (values, rows, loaded).
 /// The url is a path (relative to the patch's folder), an `http(s)` URL or
 /// a `data:` URL such as `io/file`'s.
-fn csv_file(_: &NodeInit) -> Box<dyn NodeImpl> {
+/// Polls its load every tick, so it must never be memoised.
+fn csv_file(init: &NodeInit) -> Box<dyn NodeImpl> {
+    always_eval(csv_file_loader(init))
+}
+
+fn csv_file_loader(_: &NodeInit) -> Box<dyn NodeImpl> {
     let mut slot: LoadSlot<Arc<str>> = LoadSlot::default();
     let mut parsed: Option<(Arc<str>, i64, Spread, usize)> = None;
     raw(move |inputs, cx| {

@@ -1,12 +1,12 @@
 //! `force/*` nodes. Ported from `src/nodes/force/` (incl. `_shared.ts`).
 //!
 //! Each node outputs a [`Force`] handle: the TS closure's captured
-//! constants as data, applied by `Force::apply`. Nodes are memoised like
-//! the TS runtime does (see `particles::memo`), so an unchanged node keeps
+//! constants as data, applied by `Force::apply`. The tick memoises them
+//! like the TS runtime does, so an unchanged node keeps
 //! handing out the same force — which matters for turbulence / wind, whose
 //! closure clock advances every time an emitter applies them.
 
-use super::particles::{handle, memo, num_or, vec2_or};
+use super::particles::{handle, num_or, vec2_or};
 use super::shared::first;
 use super::Registrar;
 use crate::js;
@@ -83,16 +83,16 @@ fn radial(inputs: &[Spread]) -> Radial {
 
 /// `force/drag`: `f -= v · strength`.
 fn drag(init: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(scalar(init, |args| {
+    scalar(init, |args| {
         Ok(vec![force(ForceKind::Drag {
             k: args[0].to_number(),
         })])
-    }))
+    })
 }
 
 /// `force/gravity`: uniform acceleration along `direction` (× mass).
 fn gravity(init: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(scalar(init, |args| {
+    scalar(init, |args| {
         let d = vec2_or(&args[0], Vec2 { x: 0.0, y: 1.0 });
         let s = args[1].to_number();
         let len = js_hypot(d.x, d.y);
@@ -101,12 +101,12 @@ fn gravity(init: &NodeInit) -> Box<dyn NodeImpl> {
             ax: (d.x / len) * s,
             ay: (d.y / len) * s,
         })])
-    }))
+    })
 }
 
 /// `force/attractor`: radial pull toward `center` within `radius`.
 fn attractor(_: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(raw(|inputs, _cx| {
+    raw(|inputs, _cx| {
         let a = radial(inputs);
         let (cx, cy) = (a.center.x, a.center.y);
         let color = if a.strength >= 0.0 {
@@ -125,12 +125,12 @@ fn attractor(_: &NodeInit) -> Box<dyn NodeImpl> {
             }),
             viz(a.show_viz, cx, cy, a.r, color),
         ])
-    }))
+    })
 }
 
 /// `force/repulsor`: radial push away from `center` within `radius`.
 fn repulsor(_: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(raw(|inputs, _cx| {
+    raw(|inputs, _cx| {
         let a = radial(inputs);
         let (cx, cy) = (a.center.x, a.center.y);
         Ok(vec![
@@ -144,12 +144,12 @@ fn repulsor(_: &NodeInit) -> Box<dyn NodeImpl> {
             }),
             viz(a.show_viz, cx, cy, a.r, "#ff7f7f"),
         ])
-    }))
+    })
 }
 
 /// `force/vortex`: tangential push plus radial pull around `center`.
 fn vortex(_: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(raw(|inputs, _cx| {
+    raw(|inputs, _cx| {
         let center = vec2_or(&first(inputs, 0), Vec2 { x: 0.0, y: 0.0 });
         let axis = num_or(&first(inputs, 1), 200.0);
         let pull = num_or(&first(inputs, 2), 50.0);
@@ -168,24 +168,24 @@ fn vortex(_: &NodeInit) -> Box<dyn NodeImpl> {
             }),
             viz(show_viz, center.x, center.y, r, "#bf7fff"),
         ])
-    }))
+    })
 }
 
 /// `force/turbulence`: Perlin vector field drifting with the force clock.
 fn turbulence(_: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(raw(|inputs, _cx| {
+    raw(|inputs, _cx| {
         Ok(vec![force_spread(ForceKind::Turbulence {
             scale: num_or(&first(inputs, 0), 0.01),
             speed: num_or(&first(inputs, 1), 0.5),
             strength: num_or(&first(inputs, 2), 300.0),
             seed: num_or(&first(inputs, 3), 0.0).floor(),
         })])
-    }))
+    })
 }
 
 /// `force/wind`: directional force with Perlin magnitude noise.
 fn wind(_: &NodeInit) -> Box<dyn NodeImpl> {
-    memo(raw(|inputs, _cx| {
+    raw(|inputs, _cx| {
         let dir = vec2_or(&first(inputs, 0), Vec2 { x: 1.0, y: 0.0 });
         let len = js_hypot(dir.x, dir.y);
         let len = if len == 0.0 || len.is_nan() { 1.0 } else { len };
@@ -196,5 +196,5 @@ fn wind(_: &NodeInit) -> Box<dyn NodeImpl> {
             noise_amp: num_or(&first(inputs, 2), 0.2),
             seed: num_or(&first(inputs, 3), 0.0).floor(),
         })])
-    }))
+    })
 }

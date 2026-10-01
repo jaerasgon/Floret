@@ -200,6 +200,49 @@ fn unready_sources_give_placeholders() {
 }
 
 #[test]
+fn aligned_crops_match_the_canvas_path() {
+    use super::raster::{Op, Surface};
+    let (w, h) = (13u32, 7u32);
+    let mut rng = crate::js::Mulberry32::new(7);
+    let bytes: Vec<u8> = (0..w * h * 4)
+        .map(|i| {
+            let b = (rng.next_f64() * 256.0) as u8;
+            // Plenty of fully transparent pixels.
+            if i % 4 == 3 && b < 64 {
+                0
+            } else {
+                b
+            }
+        })
+        .collect();
+    let src = Arc::new(Image::new(w, h, bytes));
+    for [sx, sy, sw, sh] in [[0, 0, 13, 7], [2, 1, 5, 4], [0, 3, 13, 4]] {
+        let mut node = node("image/crop", json!({}));
+        let rect = [sx, sy, sw, sh].map(|v| n(f64::from(v)));
+        let out = node.eval1(&[
+            im(&src),
+            rect[0].clone(),
+            rect[1].clone(),
+            rect[2].clone(),
+            rect[3].clone(),
+        ]);
+        let mut c = Surface::new(sw, sh);
+        c.draw(
+            &Surface::from_image(&src),
+            [sx, sy, sw, sh].map(f64::from),
+            [0.0, 0.0, f64::from(sw), f64::from(sh)],
+            true,
+            Op::SourceOver,
+        );
+        assert_eq!(
+            img(&out[0]).rgba(),
+            c.to_image().rgba(),
+            "{sx},{sy} {sw}×{sh}"
+        );
+    }
+}
+
+#[test]
 fn adjust_identity_passes_through_and_memoises() {
     let src = solid(4, 4, [10, 20, 30, 255]);
     let mut h = node("image/adjust", json!({}));

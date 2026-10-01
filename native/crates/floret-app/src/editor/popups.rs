@@ -26,7 +26,9 @@ pub enum Purpose {
         port: String,
     },
     /// Double-clicked wire: split it with the new node.
-    Insert { edge: PatchEdge },
+    Insert {
+        edge: PatchEdge,
+    },
 }
 
 pub struct SearchState {
@@ -67,8 +69,10 @@ fn pressed_outside(ctx: &egui::Context, rect: Rect) -> bool {
 /// Clamp a popup's top-left so a `size` box stays inside `bounds`.
 fn clamp(p: Pos2, size: egui::Vec2, bounds: Rect) -> Pos2 {
     pos2(
-        p.x.min(bounds.right() - size.x - 8.0).max(bounds.left() + 4.0),
-        p.y.min(bounds.bottom() - size.y - 8.0).max(bounds.top() + 4.0),
+        p.x.min(bounds.right() - size.x - 8.0)
+            .max(bounds.left() + 4.0),
+        p.y.min(bounds.bottom() - size.y - 8.0)
+            .max(bounds.top() + 4.0),
     )
 }
 
@@ -139,10 +143,8 @@ pub fn search_popup(
                     });
                     ui.add_space(2.0);
                     let r = ui.available_rect_before_wrap();
-                    ui.painter().line_segment(
-                        [r.left_top(), r.right_top()],
-                        Stroke::new(1.0, BORDER),
-                    );
+                    ui.painter()
+                        .line_segment([r.left_top(), r.right_top()], Stroke::new(1.0, BORDER));
                     ui.add_space(4.0);
                     egui::ScrollArea::vertical()
                         .max_height(SEARCH_LIST_H)
@@ -156,7 +158,9 @@ pub fn search_popup(
                                     vec2(ui.available_width(), ROW_H),
                                     Sense::click(),
                                 );
-                                if resp.hovered() && ui.input(|i| i.pointer.delta() != egui::Vec2::ZERO) {
+                                if resp.hovered()
+                                    && ui.input(|i| i.pointer.delta() != egui::Vec2::ZERO)
+                                {
                                     st.highlight = i;
                                 }
                                 let on = i == st.highlight;
@@ -282,8 +286,7 @@ pub fn menu_popup<A: Clone>(
                     ui.spacing_mut().item_spacing.y = 0.0;
                     for item in items {
                         let Some(action) = &item.action else {
-                            let (r, _) =
-                                ui.allocate_exact_size(vec2(MENU_W, 9.0), Sense::hover());
+                            let (r, _) = ui.allocate_exact_size(vec2(MENU_W, 9.0), Sense::hover());
                             ui.painter().line_segment(
                                 [r.left_center(), r.right_center()],
                                 Stroke::new(1.0, BORDER),
@@ -354,5 +357,9 @@ pub fn chip(ui: &mut egui::Ui, label: &str, on: bool, tip: &str) -> egui::Respon
         galley,
         if on { GOLD } else { FG_1 },
     );
+    if resp.clicked() {
+        // Don't keep keyboard focus: canvas shortcuts (Tab, F, …) stay live.
+        resp.surrender_focus();
+    }
     resp.on_hover_text(tip)
 }

@@ -154,7 +154,11 @@ impl Ctx<'_> {
         // 3. Coordinates.
         let col_w: Vec<f64> = cols
             .iter()
-            .map(|c| c.iter().map(|id| self.size(id).0).fold(FALLBACK.0, f64::max))
+            .map(|c| {
+                c.iter()
+                    .map(|id| self.size(id).0)
+                    .fold(FALLBACK.0, f64::max)
+            })
             .collect();
         let mut col_x = Vec::with_capacity(cols.len());
         let mut x = 0.0;
@@ -222,7 +226,8 @@ impl Ctx<'_> {
         for id in children {
             if self.by_parent.contains_key(&Some(id.clone())) {
                 let (r, b) = self.process(Some(&id));
-                self.region_size.insert(id, (r + REGION_PAD, b + REGION_PAD));
+                self.region_size
+                    .insert(id, (r + REGION_PAD, b + REGION_PAD));
             }
         }
         self.layout_scope(parent)
@@ -284,7 +289,11 @@ mod tests {
     #[test]
     fn chain_left_to_right() {
         let mut p = patch(
-            vec![node("a", "math/add"), node("b", "math/add"), node("c", "math/add")],
+            vec![
+                node("a", "math/add"),
+                node("b", "math/add"),
+                node("c", "math/add"),
+            ],
             vec![e("a", "b"), e("b", "c")],
         );
         auto_layout(&mut p, &headless);
@@ -297,7 +306,11 @@ mod tests {
     #[test]
     fn same_layer_stacks_and_fan_in_centres() {
         let mut p = patch(
-            vec![node("a", "math/add"), node("b", "math/add"), node("c", "math/add")],
+            vec![
+                node("a", "math/add"),
+                node("b", "math/add"),
+                node("c", "math/add"),
+            ],
             vec![e("a", "c"), e("b", "c")],
         );
         auto_layout(&mut p, &headless);
@@ -335,7 +348,11 @@ mod tests {
     #[test]
     fn comments_park_far_right() {
         let mut p = patch(
-            vec![node("a", "math/add"), node("b", "math/add"), node("cm", "meta/comment")],
+            vec![
+                node("a", "math/add"),
+                node("b", "math/add"),
+                node("cm", "meta/comment"),
+            ],
             vec![e("a", "b")],
         );
         auto_layout(&mut p, &headless);

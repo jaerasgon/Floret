@@ -14,10 +14,16 @@ pub enum Fit {
     Any,
     /// A wire dragged from a pin on `side` carrying `ty`; the new node
     /// needs a pin on the opposite side.
-    Pin { side: Side, ty: PortType },
+    Pin {
+        side: Side,
+        ty: PortType,
+    },
     /// Insert into a wire: needs an input taking `src` and an output
     /// feeding `dst`.
-    Insert { src: PortType, dst: PortType },
+    Insert {
+        src: PortType,
+        dst: PortType,
+    },
 }
 
 fn inputs(cat: &Catalogue, s: &NodeSpec) -> Vec<PortSpec> {
@@ -147,6 +153,8 @@ mod tests {
                 dst: PortType::Number,
             },
         );
-        assert!(none.iter().all(|s| insertion_ports(cat, s, PortType::Layer, PortType::Number).is_some()));
+        assert!(none
+            .iter()
+            .all(|s| insertion_ports(cat, s, PortType::Layer, PortType::Number).is_some()));
     }
 }

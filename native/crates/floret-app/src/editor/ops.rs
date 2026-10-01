@@ -68,7 +68,12 @@ pub fn fresh_edge_id(patch: &PatchFile) -> String {
 
 /// `addNode`: a fresh node with the type's default params at `pos`
 /// (canvas coordinates, root scope). Returns its id.
-pub fn add_node(patch: &mut PatchFile, cat: &Catalogue, def_type: &str, pos: Position) -> Option<String> {
+pub fn add_node(
+    patch: &mut PatchFile,
+    cat: &Catalogue,
+    def_type: &str,
+    pos: Position,
+) -> Option<String> {
     let spec = cat.get(def_type)?;
     let id = fresh_node_id(patch, def_type);
     let mut params = spec.default_params.clone();
@@ -227,19 +232,27 @@ pub fn region_size(n: &PatchNode) -> (f64, f64) {
 
 /// `findRegionAtFlow`: the smallest root-scope region containing `p`
 /// (canvas coordinates), with its position.
-pub fn region_at(patch: &PatchFile, cat: &Catalogue, p: Position, exclude: &str) -> Option<(String, Position)> {
+pub fn region_at(
+    patch: &PatchFile,
+    cat: &Catalogue,
+    p: Position,
+    exclude: &str,
+) -> Option<(String, Position)> {
     patch
         .nodes
         .iter()
         .filter(|n| n.id != exclude && n.parent_id.is_none())
-        .filter(|n| cat.get(&n.def_type).is_some_and(|s| s.region_kind.is_some()))
+        .filter(|n| {
+            cat.get(&n.def_type)
+                .is_some_and(|s| s.region_kind.is_some())
+        })
         .filter_map(|n| {
             let (w, h) = region_size(n);
             let inside = p.x >= n.position.x
                 && p.x <= n.position.x + w
                 && p.y >= n.position.y
                 && p.y <= n.position.y + h;
-            inside.then(|| (w * h, n))
+            inside.then_some((w * h, n))
         })
         .min_by(|a, b| a.0.total_cmp(&b.0))
         .map(|(_, n)| (n.id.clone(), n.position))
@@ -247,7 +260,12 @@ pub fn region_at(patch: &PatchFile, cat: &Catalogue, p: Position, exclude: &str)
 
 /// Add a node at a canvas point, auto-parenting it into the region the
 /// point falls in (`placeNodeAtFlow`).
-pub fn place_node(patch: &mut PatchFile, cat: &Catalogue, def_type: &str, at: Position) -> Option<String> {
+pub fn place_node(
+    patch: &mut PatchFile,
+    cat: &Catalogue,
+    def_type: &str,
+    at: Position,
+) -> Option<String> {
     let is_region = cat.get(def_type)?.region_kind.is_some();
     let id = add_node(patch, cat, def_type, at)?;
     if !is_region {
@@ -310,7 +328,11 @@ mod tests {
     #[test]
     fn duplicate_remaps_internal_wires_only() {
         let mut p = patch(
-            vec![node("a", "math/add"), node("b", "math/add"), node("x", "math/add")],
+            vec![
+                node("a", "math/add"),
+                node("b", "math/add"),
+                node("x", "math/add"),
+            ],
             vec![
                 edge("a", "out-result", "b", "in-a"),
                 edge("x", "out-result", "b", "in-b"),

@@ -28,7 +28,11 @@ fn port_concrete_type(
     } else if spec.region_kind.is_some() {
         if is_loop_var(name) {
             PortType::Number
-        } else if let Some(p) = n.ports.as_ref().and_then(|ps| ps.iter().find(|p| p.id == name)) {
+        } else if let Some(p) = n
+            .ports
+            .as_ref()
+            .and_then(|ps| ps.iter().find(|p| p.id == name))
+        {
             PortType::parse(&p.ty)?
         } else {
             spec.inputs.iter().find(|p| p.name == name)?.ty

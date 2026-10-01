@@ -58,9 +58,7 @@ pub fn paste(patch: &mut PatchFile, clip: &PatchFile, anchor: Position) -> Vec<S
     }
     let in_clip: HashSet<&str> = clip.nodes.iter().map(|n| n.id.as_str()).collect();
     let is_top = |n: &floret_engine::patch::PatchNode| {
-        !n.parent_id
-            .as_deref()
-            .is_some_and(|p| in_clip.contains(p))
+        !n.parent_id.as_deref().is_some_and(|p| in_clip.contains(p))
     };
     let tops: Vec<_> = clip.nodes.iter().filter(|n| is_top(n)).collect();
     let k = tops.len().max(1) as f64;
@@ -141,12 +139,25 @@ mod tests {
         let clip = copy(&p, &["a".into(), "b".into()]).unwrap();
         assert_eq!(clip.edges.len(), 1, "external wire not copied");
 
-        let ids = paste(&mut p, &clip, Position { x: 1000.0, y: 1000.0 });
+        let ids = paste(
+            &mut p,
+            &clip,
+            Position {
+                x: 1000.0,
+                y: 1000.0,
+            },
+        );
         assert_eq!(ids, ["math_add_1", "math_add_2"]);
         assert_eq!(p.nodes.len(), 5);
         // Centroid of (0,0) and (200,100) lands on the anchor.
         assert_eq!(at(&p, "math_add_1"), Position { x: 900.0, y: 950.0 });
-        assert_eq!(at(&p, "math_add_2"), Position { x: 1100.0, y: 1050.0 });
+        assert_eq!(
+            at(&p, "math_add_2"),
+            Position {
+                x: 1100.0,
+                y: 1050.0
+            }
+        );
         let pasted: Vec<_> = p.edges.iter().filter(|e| ids.contains(&e.source)).collect();
         assert_eq!(pasted.len(), 1);
         assert_eq!(pasted[0].source, "math_add_1");
@@ -187,7 +198,10 @@ mod tests {
         // Copying only the child lifts it to an absolute position.
         let only_child = copy(&p, &["c".into()]).unwrap();
         assert_eq!(only_child.nodes[0].parent_id, None);
-        assert_eq!(only_child.nodes[0].position, Position { x: 110.0, y: 120.0 });
+        assert_eq!(
+            only_child.nodes[0].position,
+            Position { x: 110.0, y: 120.0 }
+        );
         // Copying the region brings the child along, still relative.
         let clip = copy(&p, &["r".into()]).unwrap();
         let ids = paste(&mut p, &clip, Position { x: 0.0, y: 0.0 });

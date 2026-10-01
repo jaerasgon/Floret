@@ -52,9 +52,15 @@ enum Gesture {
     },
     /// Dragging a new wire out of a pin; `alt` = Alt held while dragging
     /// (drop → probe).
-    Wire { from: PinRef, alt: bool },
+    Wire {
+        from: PinRef,
+        alt: bool,
+    },
     /// Box-select from `origin`; `base` is the selection kept (shift).
-    Marquee { origin: Pos2, base: Vec<String> },
+    Marquee {
+        origin: Pos2,
+        base: Vec<String>,
+    },
     Pan,
 }
 
@@ -154,6 +160,8 @@ struct NodeBox {
     outputs: Vec<Pin>,
     region: bool,
     unimplemented: bool,
+    /// `meta/comment` body text.
+    comment: Option<String>,
 }
 
 struct Wire {
@@ -318,12 +326,13 @@ pub fn node_size(n: &PatchNode, cat: &Catalogue) -> (f64, f64) {
     if spec.region_kind.is_some() {
         return ops::region_size(n);
     }
+    if n.def_type == "meta/comment" {
+        let param = |k: &str, d: f64| n.params.get(k).and_then(|v| v.as_f64()).unwrap_or(d);
+        return (param("width", 200.0), param("height", 80.0));
+    }
     let (ins, outs) = pins(n, spec, cat, false);
     let rows = ins.len().max(outs.len()) as f32;
-    (
-        f64::from(NODE_W),
-        f64::from(HEADER_H + rows * ROW_H + 8.0),
-    )
+    (f64::from(NODE_W), f64::from(HEADER_H + rows * ROW_H + 8.0))
 }
 
 fn layout_boxes(
@@ -357,6 +366,13 @@ fn layout_boxes(
                 outputs,
                 region,
                 unimplemented,
+                comment: (n.def_type == "meta/comment").then(|| {
+                    n.params
+                        .get("text")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .to_owned()
+                }),
             },
         );
     }
@@ -504,8 +520,7 @@ impl Hits<'_> {
             .rev()
             .filter(|(_, b)| b.region)
             .find(|(_, b)| {
-                Rect::from_min_size(b.rect.min, vec2(b.rect.width(), HEADER_H * self.z))
-                    .contains(p)
+                Rect::from_min_size(b.rect.min, vec2(b.rect.width(), HEADER_H * self.z)).contains(p)
             })
             .map(|(id, _)| id.clone())
     }
@@ -513,7 +528,12 @@ impl Hits<'_> {
     /// Every pin with its screen position, topmost node first.
     fn all_pins(&self) -> Vec<(PinRef, Pos2)> {
         let mut ids: Vec<&String> = self.order.iter().rev().collect();
-        ids.extend(self.boxes.iter().filter(|(_, b)| b.region).map(|(id, _)| id));
+        ids.extend(
+            self.boxes
+                .iter()
+                .filter(|(_, b)| b.region)
+                .map(|(id, _)| id),
+        );
         let mut out = Vec::new();
         for id in ids {
             let b = &self.boxes[id.as_str()];
@@ -562,10 +582,7 @@ impl Hits<'_> {
 }
 
 fn conn_between(a: &PinRef, b: &PinRef) -> Option<Conn> {
-    Conn::between(
-        (&a.node, a.side, &a.port),
-        (&b.node, b.side, &b.port),
-    )
+    Conn::between((&a.node, a.side, &a.port), (&b.node, b.side, &b.port))
 }
 
 pub fn show(
@@ -670,7 +687,11 @@ pub fn show(
                 }
                 let start_pos = ids
                     .iter()
-                    .map(|i| ports::find_node(patch, i).map(|n| n.position).unwrap_or_default())
+                    .map(|i| {
+                        ports::find_node(patch, i)
+                            .map(|n| n.position)
+                            .unwrap_or_default()
+                    })
                     .collect();
                 view.gesture = Gesture::Move {
                     ids,
@@ -746,7 +767,7 @@ pub fn show(
     }
 
     // Wire-drag affinity: which pins would accept the dragged wire.
-    let affinity: Option<(PinRef, Vec<(PinRef, Pos2, bool)>)> = match &view.gesture {
+    let affinity: Option<(PinRef, Vec<PinMatch>)> = match &view.gesture {
         Gesture::Wire { from, .. } => Some((
             from.clone(),
             hits.all_pins()
@@ -873,7 +894,7 @@ pub fn show(
     }
 
     // ── Keyboard (not while typing in a text field or the search).
-    if !ctx.egui_wants_keyboard_input() && view.search.is_none() {
+    if !ctx.text_edit_focused() && view.search.is_none() {
         let anchor = view.to_canvas(view.last_pointer.unwrap_or(area.center()));
         let cursor = view.last_pointer.unwrap_or(area.center());
         let selected_edge = view.selected_edge.clone();
@@ -1004,7 +1025,11 @@ pub fn show(
             let target = drop_target(p);
             let end = target
                 .as_ref()
-                .and_then(|t| boxes.get(&t.node).and_then(|b| pin_pos(b, side_handle(t), z)))
+                .and_then(|t| {
+                    boxes
+                        .get(&t.node)
+                        .and_then(|b| pin_pos(b, side_handle(t), z))
+                })
                 .unwrap_or(p);
             let pts = match from.side {
                 Side::Out => wire_points(a, end, z),
@@ -1020,12 +1045,7 @@ pub fn show(
                 pts,
                 Stroke::new(width + 4.0, GOLD.gamma_multiply(0.12)),
             ));
-            painter.extend(Shape::dashed_line(
-                &flat,
-                Stroke::new(1.6, color),
-                5.0,
-                4.0,
-            ));
+            painter.extend(Shape::dashed_line(&flat, Stroke::new(1.6, color), 5.0, 4.0));
         }
     }
 
@@ -1141,6 +1161,20 @@ pub fn show(
                 );
             }
         }
+        if let (Some(text), true) = (&b.comment, z > 0.3) {
+            let body = b.rect.shrink2(vec2(10.0, 0.0) * z);
+            let galley = painter.layout(
+                text.clone(),
+                FontId::proportional(11.5 * z),
+                FG_1,
+                body.width(),
+            );
+            let clip = Rect::from_min_max(
+                pos2(body.left(), header.bottom() + 6.0 * z),
+                pos2(body.right(), b.rect.bottom() - 6.0 * z),
+            );
+            painter.with_clip_rect(clip).galley(clip.min, galley, FG_1);
+        }
         let vals = values(id);
         for (i, p) in b.inputs.iter().enumerate() {
             let y = b.rect.top() + (HEADER_H + ROW_H * (i as f32 + 0.5)) * z;
@@ -1157,7 +1191,11 @@ pub fn show(
         }
         for (i, p) in b.outputs.iter().enumerate() {
             let y = b.rect.top() + (HEADER_H + ROW_H * (i as f32 + 0.5)) * z;
-            draw_pin(pos2(b.rect.right(), y), p.ty, pin_look(id, Side::Out, &p.id));
+            draw_pin(
+                pos2(b.rect.right(), y),
+                p.ty,
+                pin_look(id, Side::Out, &p.id),
+            );
             if z > 0.3 {
                 let text = match vals.as_ref().and_then(|v| v.get(i)) {
                     Some(v) if !v.is_empty() => v.clone(),
@@ -1194,13 +1232,27 @@ pub fn show(
             .layout(egui::Layout::left_to_right(egui::Align::Center)),
     );
     tb.spacing_mut().item_spacing.x = 6.0;
-    if popups::chip(&mut tb, "Arrange", false, "Auto-arrange the patch left → right").clicked() {
+    if popups::chip(
+        &mut tb,
+        "Arrange",
+        false,
+        "Auto-arrange the patch left → right",
+    )
+    .clicked()
+    {
         actions.push(Action::Arrange);
     }
     if popups::chip(&mut tb, "Snap", view.snap, "Snap nodes to the 24 px grid").clicked() {
         view.snap = !view.snap;
     }
-    if popups::chip(&mut tb, "Flow", view.wire_flow, "Animate data flow along wires").clicked() {
+    if popups::chip(
+        &mut tb,
+        "Flow",
+        view.wire_flow,
+        "Animate data flow along wires",
+    )
+    .clicked()
+    {
         view.wire_flow = !view.wire_flow;
     }
     tb.add_space(4.0);
@@ -1237,6 +1289,9 @@ pub fn show(
         ctx.copy_text(text);
     }
 }
+
+/// A pin, its screen position, and whether the dragged wire may land on it.
+type PinMatch = (PinRef, Pos2, bool);
 
 #[derive(Clone, Copy)]
 enum PinLook {
@@ -1329,9 +1384,15 @@ fn menu_items(
                 .key(shortcut("D")),
                 MenuItem::new("Copy", Action::Copy).key(shortcut("C")),
                 MenuItem::new("Cut", Action::Cut).key(shortcut("X")),
-                MenuItem::new("Paste", Action::Paste(Position { x: at.x + 24.0, y: at.y + 24.0 }))
-                    .key(shortcut("V"))
-                    .enabled(has_clip),
+                MenuItem::new(
+                    "Paste",
+                    Action::Paste(Position {
+                        x: at.x + 24.0,
+                        y: at.y + 24.0,
+                    }),
+                )
+                .key(shortcut("V"))
+                .enabled(has_clip),
             ];
             if ports::find_node(patch, id).is_some_and(|n| n.parent_id.is_some()) {
                 items.push(MenuItem::separator());
@@ -1613,7 +1674,9 @@ fn place_from_search(
         (Purpose::Wire { node, side, port }, Fit::Pin { ty: wty, .. }) => {
             if let Some(p) = search::first_compatible(cat, spec, *side, *wty) {
                 let c = match side {
-                    Side::Out => Conn::new(node, &Side::Out.handle(port), &id, &Side::In.handle(&p)),
+                    Side::Out => {
+                        Conn::new(node, &Side::Out.handle(port), &id, &Side::In.handle(&p))
+                    }
                     Side::In => Conn::new(&id, &Side::Out.handle(&p), node, &Side::In.handle(port)),
                 };
                 connect::connect(patch, cat, &c);
@@ -1623,8 +1686,16 @@ fn place_from_search(
             if let Some((i, o)) = search::insertion_ports(cat, spec, *src, *dst) {
                 connect::remove_edge(patch, &edge.id);
                 if let (Some(sh), Some(th)) = (&edge.source_handle, &edge.target_handle) {
-                    connect::connect(patch, cat, &Conn::new(&edge.source, sh, &id, &Side::In.handle(&i)));
-                    connect::connect(patch, cat, &Conn::new(&id, &Side::Out.handle(&o), &edge.target, th));
+                    connect::connect(
+                        patch,
+                        cat,
+                        &Conn::new(&edge.source, sh, &id, &Side::In.handle(&i)),
+                    );
+                    connect::connect(
+                        patch,
+                        cat,
+                        &Conn::new(&id, &Side::Out.handle(&o), &edge.target, th),
+                    );
                 }
             }
         }

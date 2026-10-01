@@ -126,7 +126,12 @@ impl Conn {
             (Side::In, Side::Out) => (b, a),
             _ => return None,
         };
-        Some(Conn::new(sn, &Side::Out.handle(sp), tn, &Side::In.handle(tp)))
+        Some(Conn::new(
+            sn,
+            &Side::Out.handle(sp),
+            tn,
+            &Side::In.handle(tp),
+        ))
     }
 
     fn occupies(&self, e: &PatchEdge) -> bool {
@@ -409,7 +414,12 @@ mod tests {
         )
         .unwrap();
         let mut p = patch(
-            vec![node("g", "g"), node("a", "v"), node("b", "v"), node("c", "v")],
+            vec![
+                node("g", "g"),
+                node("a", "v"),
+                node("b", "v"),
+                node("c", "v"),
+            ],
             vec![],
         );
         let ids: Vec<std::string::String> = ["a", "b", "c"]

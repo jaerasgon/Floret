@@ -92,7 +92,11 @@ pub fn resolve_port(
                 kind: PortKind::Single,
             });
         }
-        if let Some(p) = n.ports.as_ref().and_then(|ps| ps.iter().find(|p| p.id == name)) {
+        if let Some(p) = n
+            .ports
+            .as_ref()
+            .and_then(|ps| ps.iter().find(|p| p.id == name))
+        {
             // Input frame ports: outer `in-` gathers a spread, inner `out-`
             // emits one element. Output frame ports are the mirror image.
             let kind = match (p.direction, side) {

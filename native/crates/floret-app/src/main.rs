@@ -134,8 +134,8 @@ impl App {
         };
         if let Some(id) = editor::ops::place_node(&mut self.patch, cat, ty, at) {
             self.view.select_only(&id);
+            // Flags a recompile, picked up after the canvas this frame.
             self.view.commit(&mut self.patch);
-            self.recompile();
         }
     }
 

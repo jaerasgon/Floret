@@ -52,6 +52,7 @@ pub struct Engine {
     /// Wired constant pins whose value has been captured (first tick).
     constants_wired: bool,
     host: Option<Arc<dyn crate::host::Host>>,
+    audio: Option<Arc<dyn crate::audio::AudioBackend>>,
 }
 
 impl Engine {
@@ -61,6 +62,7 @@ impl Engine {
             params,
             constants_wired: false,
             host: None,
+            audio: None,
         }
     }
 
@@ -69,8 +71,15 @@ impl Engine {
         self.host = host;
     }
 
+    /// Connect the sound nodes to the app's audio engine (see
+    /// `crate::audio`).
+    pub fn set_audio(&mut self, audio: Option<Arc<dyn crate::audio::AudioBackend>>) {
+        self.audio = audio;
+    }
+
     pub fn tick(&mut self, frame: &FrameCtx) -> TickResult {
         let _host = crate::host::install(self.host.clone());
+        let _audio = crate::audio::begin(self.audio.clone(), self.sound_nodes());
         let mut t = Ticker {
             graph: &mut self.graph,
             params: &mut self.params,
@@ -93,6 +102,20 @@ impl Engine {
             region_stats: stats,
             errors,
         }
+    }
+}
+
+impl Engine {
+    fn sound_nodes(&self) -> Vec<Arc<str>> {
+        if self.audio.is_none() {
+            return Vec::new();
+        }
+        self.graph
+            .nodes
+            .iter()
+            .filter(|n| n.ty.starts_with("sound/"))
+            .map(|n| Arc::from(n.id.as_str()))
+            .collect()
     }
 }
 

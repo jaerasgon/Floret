@@ -34,8 +34,42 @@ const GRID_FROM: f32 = 8.0;
 /// Texel size from which the image is sampled nearest-neighbour.
 const NEAREST_FROM: f32 = 2.0;
 const MAX_TEXEL: f32 = 64.0;
-/// Displays offered for the output window (winit's monitor order).
+/// Displays offered for the output window when the monitors can't be
+/// listed (winit's monitor order).
 const DISPLAYS: usize = 4;
+
+/// A menu label for monitor `i` (winit's order, which the output window's
+/// `with_monitor` index uses).
+pub fn monitor_label(i: usize, name: Option<&str>, size: (u32, u32), primary: bool) -> String {
+    let name = name
+        .map(str::trim)
+        .filter(|n| !n.is_empty())
+        .map_or_else(|| format!("Display {}", i + 1), str::to_owned);
+    let main = if primary { " · main" } else { "" };
+    format!("{name} — {}×{}{main}", size.0, size.1)
+}
+
+/// The connected monitors, labelled, in winit's order (empty when the
+/// window system can't say).
+pub fn monitors(frame: &eframe::Frame) -> Vec<String> {
+    let Some(w) = frame.winit_window() else {
+        return Vec::new();
+    };
+    let primary = w.primary_monitor();
+    w.available_monitors()
+        .enumerate()
+        .map(|(i, m)| {
+            let size = m.size();
+            let is_primary = primary.as_ref() == Some(&m);
+            monitor_label(
+                i,
+                m.name().as_deref(),
+                (size.width, size.height),
+                is_primary,
+            )
+        })
+        .collect()
+}
 
 // ─── Transport ──────────────────────────────────────────────────────────────
 
@@ -224,6 +258,8 @@ pub struct PreviewPanel {
     thumbs: ProbeThumbs,
     /// `MSAA` sample count the adapter supports for previews.
     samples: Option<u32>,
+    /// Connected monitors for the output window (set by the app).
+    pub monitors: Vec<String>,
 }
 
 impl PreviewPanel {
@@ -248,6 +284,7 @@ impl PreviewPanel {
             output,
             thumbs: ProbeThumbs::default(),
             samples: rs.map(msaa_samples),
+            monitors: Vec::new(),
         }
     }
 
@@ -521,12 +558,16 @@ impl PreviewPanel {
                     RichText::new(if live { "● Output" } else { "Output…" }).small(),
                     |ui| {
                         ui.label(RichText::new("Fullscreen on display").small());
-                        for d in 0..DISPLAYS {
+                        let labels: Vec<String> = if self.monitors.is_empty() {
+                            (0..DISPLAYS)
+                                .map(|d| format!("Display {}", d + 1))
+                                .collect()
+                        } else {
+                            self.monitors.clone()
+                        };
+                        for (d, label) in labels.into_iter().enumerate() {
                             let on = live && self.output.as_ref().is_some_and(|o| o.display == d);
-                            if ui
-                                .selectable_label(on, format!("Display {}", d + 1))
-                                .clicked()
-                            {
+                            if ui.selectable_label(on, label).clicked() {
                                 self.output = Some(Output {
                                     renderer: id.clone(),
                                     display: d,
@@ -1204,6 +1245,22 @@ mod tests {
 
     fn area() -> Rect {
         Rect::from_min_size(pos2(0.0, 0.0), vec2(400.0, 200.0))
+    }
+
+    #[test]
+    fn monitors_are_labelled_by_name_and_size() {
+        assert_eq!(
+            monitor_label(0, Some("DELL U2720Q"), (3840, 2160), true),
+            "DELL U2720Q — 3840×2160 · main"
+        );
+        assert_eq!(
+            monitor_label(1, None, (1920, 1080), false),
+            "Display 2 — 1920×1080"
+        );
+        assert_eq!(
+            monitor_label(2, Some(" "), (800, 600), false),
+            "Display 3 — 800×600"
+        );
     }
 
     #[test]

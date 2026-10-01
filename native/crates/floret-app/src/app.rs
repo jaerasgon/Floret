@@ -78,6 +78,8 @@ pub struct App {
     // ── Editor and panels
     view: canvas::View,
     preview: preview::PreviewPanel,
+    /// When the monitor list for the output window was last read.
+    monitors_read: Option<Instant>,
     query: String,
     crash: crash::Guard,
     shader_panel: shader_panel::ShaderPanel,
@@ -140,6 +142,7 @@ impl App {
             fps: 0.0,
             view,
             preview: preview::PreviewPanel::new(cc.wgpu_render_state.as_ref()),
+            monitors_read: None,
             query: String::new(),
             crash: crash::Guard::default(),
             shader_panel: shader_panel::ShaderPanel::default(),
@@ -625,6 +628,15 @@ impl App {
         }
     }
 
+    /// Run editor / panel code so a panic in it shows the crash screen:
+    /// the half-done edit is rolled back and the app keeps running.
+    fn guarded(&mut self, f: impl FnOnce(&mut Self)) {
+        if let Err(caught) = crash::catch(crash::Stage::Editor, || f(self)) {
+            self.view.recover(&mut self.patch);
+            self.crash.report(caught, &self.patch);
+        }
+    }
+
     fn canvas(&mut self, ui: &mut egui::Ui, frame: &eframe::Frame) {
         let cat = Catalogue::builtin();
         self.view.thumbs = self.preview.probe_thumbs(
@@ -844,6 +856,13 @@ impl eframe::App for App {
 
         self.tick(&ctx);
         ctx.request_repaint();
+        if self
+            .monitors_read
+            .is_none_or(|t| t.elapsed() > Duration::from_secs(2))
+        {
+            self.preview.monitors = preview::monitors(frame);
+            self.monitors_read = Some(Instant::now());
+        }
         let rev = self.rev();
         self.autosave.tick(
             Instant::now(),
@@ -890,11 +909,11 @@ impl eframe::App for App {
         egui::Panel::top("toolbar")
             .exact_size(38.0)
             .frame(bar(theme::BG_1.get()))
-            .show(ui, |ui| self.toolbar(ui));
+            .show(ui, |ui| self.guarded(|app| app.toolbar(ui)));
         egui::Panel::bottom("status")
             .exact_size(24.0)
             .frame(bar(theme::BG_1.get()))
-            .show(ui, |ui| self.status_bar(ui, &warnings));
+            .show(ui, |ui| self.guarded(|app| app.status_bar(ui, &warnings)));
 
         if self.prefs.palette_visible {
             egui::Panel::left("palette")
@@ -907,7 +926,9 @@ impl eframe::App for App {
                         .inner_margin(egui::Margin::symmetric(10, 4)),
                 )
                 .show(ui, |ui| {
-                    palette::show(ui, &mut self.query, &mut self.view, &mut self.patch);
+                    self.guarded(|app| {
+                        palette::show(ui, &mut app.query, &mut app.view, &mut app.patch);
+                    });
                 });
         }
 
@@ -916,9 +937,9 @@ impl eframe::App for App {
             .default_size(400.0)
             .size_range(260.0..=900.0)
             .frame(egui::Frame::new().fill(*theme::BG_1))
-            .show(ui, |ui| self.side_panel(ui, frame));
+            .show(ui, |ui| self.guarded(|app| app.side_panel(ui, frame)));
 
-        egui::CentralPanel::no_frame().show(ui, |ui| self.canvas(ui, frame));
+        egui::CentralPanel::no_frame().show(ui, |ui| self.guarded(|app| app.canvas(ui, frame)));
         // The canvas has its own Snap / Flow toggles.
         self.prefs.snap_to_grid = self.view.snap;
         self.prefs.flow_animation = self.view.wire_flow;
@@ -973,6 +994,11 @@ impl eframe::App for App {
 fn apply_editor_prefs(view: &mut canvas::View, p: &Prefs) {
     view.snap = p.snap_to_grid;
     view.wire_flow = p.flow_animation;
+    view.grid = f64::from(p.grid_size);
+    view.show_grid = p.show_grid;
+    view.show_minimap = p.show_minimap;
+    view.ambient_motion = p.ambient_motion;
+    view.reduce_motion = p.reduce_motion;
     editor::ops::set_default_render_size(p.default_render_width, p.default_render_height);
 }
 

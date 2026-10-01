@@ -9,8 +9,6 @@ use floret_engine::spec::{Catalogue, RegionKind};
 use std::collections::HashSet;
 
 pub const SUBPATCH: &str = "meta/subpatch";
-/// Room around grouped nodes inside the expanded frame (pills on the sides).
-const PAD: (f64, f64) = (84.0, 48.0);
 
 pub fn is_subpatch(cat: &Catalogue, n: &PatchNode) -> bool {
     cat.get(&n.def_type).and_then(|s| s.region_kind) == Some(RegionKind::Subpatch)
@@ -50,6 +48,17 @@ pub fn visible(patch: &PatchFile, cat: &Catalogue, stack: &[String]) -> HashSet<
         .collect()
 }
 
+/// Where the entered subpatch's own coordinates start. The web app shows
+/// an entered nested subpatch at the origin, so its children's positions
+/// are what the grid (and snapping) line up with; at the root, and for a
+/// top-level subpatch, that is the canvas origin.
+pub fn view_origin(patch: &PatchFile, stack: &[String]) -> Position {
+    match stack.last().and_then(|id| find_node(patch, id)) {
+        Some(n) if n.parent_id.is_some() => super::ops::absolute_pos(patch, &n.id),
+        _ => Position::default(),
+    }
+}
+
 /// `setViewStack` validation: keep the prefix that is still a chain of
 /// nested subpatches.
 pub fn valid_stack(patch: &PatchFile, cat: &Catalogue, stack: &[String]) -> Vec<String> {
@@ -86,14 +95,11 @@ pub fn visible_stand_in(patch: &PatchFile, id: &str, visible: &HashSet<String>) 
 
 /// `buildSubpatchGrouping`: wrap sibling nodes in a new `meta/subpatch`.
 /// Wires crossing the selection become frame ports (outer wire to the
-/// outer pin, inner wire to the inner pin). Refuses an empty selection,
-/// mixed parents, or drawable regions. Returns the subpatch id.
-pub fn group(
-    patch: &mut PatchFile,
-    cat: &Catalogue,
-    ids: &[String],
-    size_of: &dyn Fn(&PatchNode) -> (f64, f64),
-) -> Option<String> {
+/// outer pin, inner wire to the inner pin). The subpatch sits at the
+/// selection's centroid and the children keep their offsets from it, as in
+/// the web app. Refuses an empty selection, mixed parents, or drawable
+/// regions. Returns the subpatch id.
+pub fn group(patch: &mut PatchFile, cat: &Catalogue, ids: &[String]) -> Option<String> {
     let sel: Vec<PatchNode> = ids
         .iter()
         .filter_map(|id| find_node(patch, id).cloned())
@@ -116,14 +122,6 @@ pub fn group(
         x: sel.iter().map(|n| n.position.x).sum::<f64>() / k,
         y: sel.iter().map(|n| n.position.y).sum::<f64>() / k,
     };
-    let (mut min_x, mut min_y, mut max_x, mut max_y) = (f64::MAX, f64::MAX, f64::MIN, f64::MIN);
-    for n in &sel {
-        let (w, h) = size_of(n);
-        min_x = min_x.min(n.position.x);
-        min_y = min_y.min(n.position.y);
-        max_x = max_x.max(n.position.x + w);
-        max_y = max_y.max(n.position.y + h);
-    }
 
     let sub_id = fresh_node_id(patch, SUBPATCH);
     let mut ports: Vec<RegionPort> = Vec::new();
@@ -197,7 +195,7 @@ pub fn group(
     params
         .entry("label".to_owned())
         .or_insert_with(|| "Subpatch".into());
-    let mut sub = PatchNode {
+    let sub = PatchNode {
         id: sub_id.clone(),
         def_type: SUBPATCH.into(),
         position: centroid,
@@ -208,11 +206,6 @@ pub fn group(
         width: None,
         height: None,
     };
-    super::regions::set_size(
-        &mut sub,
-        (max_x - min_x + 2.0 * PAD.0).max(super::regions::MIN_W),
-        (max_y - min_y + 2.0 * PAD.1).max(super::regions::MIN_H),
-    );
     for n in patch
         .nodes
         .iter_mut()
@@ -220,8 +213,8 @@ pub fn group(
     {
         n.parent_id = Some(sub_id.clone());
         n.position = Position {
-            x: n.position.x - min_x + PAD.0,
-            y: n.position.y - min_y + PAD.1,
+            x: n.position.x - centroid.x,
+            y: n.position.y - centroid.y,
         };
     }
     patch.nodes.push(sub);
@@ -261,7 +254,7 @@ mod tests {
                 edge("b", "out-result", "out", "in-x"),
             ],
         );
-        let sub = group(&mut p, cat, &["a".into(), "b".into()], &|_| (168.0, 66.0)).unwrap();
+        let sub = group(&mut p, cat, &["a".into(), "b".into()]).unwrap();
         let s = find_node(&p, &sub).unwrap();
         assert_eq!(
             s.position,
@@ -290,14 +283,36 @@ mod tests {
         assert!(pairs.contains(&(sub.clone(), "a".into())));
         assert!(pairs.contains(&("b".into(), sub.clone())));
         assert!(pairs.contains(&(sub.clone(), "out".into())));
-        // Children sit inside the expanded frame.
-        let (w, h) = crate::editor::ops::region_size(s);
-        for c in ["a", "b"] {
-            let pos = find_node(&p, c).unwrap().position;
-            assert!(pos.x > 0.0 && pos.y > 0.0 && pos.x + 168.0 < w && pos.y + 66.0 < h);
-        }
+        // Children keep their offsets from the centroid, so nothing moves
+        // on screen.
+        assert_eq!(
+            find_node(&p, "a").unwrap().position,
+            Position {
+                x: -100.0,
+                y: -50.0
+            }
+        );
+        assert_eq!(
+            crate::editor::ops::absolute_pos(&p, "b"),
+            Position { x: 400.0, y: 100.0 }
+        );
         // And the grouped patch still compiles to the same wiring.
         assert!(floret_engine::Engine::from_patch(&p).is_ok());
+    }
+
+    #[test]
+    fn a_nested_subpatch_view_starts_at_its_corner() {
+        let mut inner = at(node("inner", SUBPATCH), 30.0, 40.0);
+        inner.parent_id = Some("outer".into());
+        let p = patch(
+            vec![at(node("outer", SUBPATCH), 100.0, 200.0), inner],
+            vec![],
+        );
+        assert_eq!(view_origin(&p, &["outer".into()]), Position::default());
+        assert_eq!(
+            view_origin(&p, &["outer".into(), "inner".into()]),
+            Position { x: 130.0, y: 240.0 }
+        );
     }
 
     #[test]
@@ -309,9 +324,9 @@ mod tests {
             vec![node("a", "math/add"), node("r", "region/foreach"), child],
             vec![],
         );
-        assert!(group(&mut p, cat, &["a".into(), "c".into()], &|_| (1.0, 1.0)).is_none());
-        assert!(group(&mut p, cat, &["r".into()], &|_| (1.0, 1.0)).is_none());
-        assert!(group(&mut p, cat, &[], &|_| (1.0, 1.0)).is_none());
+        assert!(group(&mut p, cat, &["a".into(), "c".into()]).is_none());
+        assert!(group(&mut p, cat, &["r".into()]).is_none());
+        assert!(group(&mut p, cat, &[]).is_none());
     }
 
     #[test]
@@ -361,6 +376,7 @@ mod tests {
             valid_stack(&p, cat, &["outer".into(), "a".into()]),
             ["outer"]
         );
+        assert_eq!(view_origin(&p, &[]), Position::default());
         let root = visible(&p, cat, &[]);
         assert_eq!(
             visible_stand_in(&p, "deep", &root).as_deref(),

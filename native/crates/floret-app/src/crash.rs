@@ -1,5 +1,7 @@
-//! Crash screen (#48): a panic in the engine tick or the preview render
-//! doesn't close the app. The frame is abandoned, evaluation pauses, the
+//! Crash screen (#48): a panic in the engine tick, the preview render or
+//! the editor UI doesn't close the app. The frame is abandoned, evaluation
+//! pauses (for an editor panic the half-done edit is rolled back instead),
+//! the
 //! patch is written to a recovery file (offered again on the next launch
 //! if the app then dies, see `recovery.rs`), and a dialog shows the error with
 //! Copy details / Save patch as… / Reload patch / Continue.
@@ -37,6 +39,8 @@ pub fn install_hook() {
 pub enum Stage {
     Tick,
     Render,
+    /// Canvas and panel code (pointer and keyboard handling, edits).
+    Editor,
 }
 
 pub struct Report {
@@ -56,6 +60,7 @@ impl Report {
             match self.stage {
                 Stage::Tick => "evaluation",
                 Stage::Render => "rendering",
+                Stage::Editor => "editing",
             },
             self.message,
             self.location,
@@ -104,34 +109,36 @@ impl Guard {
     /// Run `f`, catching a panic: then pause, save `patch` for recovery and
     /// open the crash dialog. `None` when it panicked.
     pub fn run<R>(&mut self, stage: Stage, patch: &PatchFile, f: impl FnOnce() -> R) -> Option<R> {
-        match panic::catch_unwind(AssertUnwindSafe(|| {
-            test_panic(stage);
-            f()
-        })) {
+        match catch(stage, f) {
             Ok(r) => Some(r),
-            Err(payload) => {
-                let message = payload
-                    .downcast_ref::<&str>()
-                    .map(|s| (*s).to_owned())
-                    .or_else(|| payload.downcast_ref::<String>().cloned())
-                    .unwrap_or_else(|| "(no message)".to_owned());
-                let (location, backtrace) = LAST_PANIC
-                    .with(|p| p.borrow_mut().take())
-                    .unwrap_or_default();
-                self.report = Some(Report {
-                    stage,
-                    message,
-                    location,
-                    backtrace,
-                    recovery: save_recovery(patch),
-                });
-                self.dialog_open = true;
-                self.paused = true;
-                self.show_backtrace = false;
-                self.note = None;
+            Err(caught) => {
+                self.report(caught, patch);
                 None
             }
         }
+    }
+
+    /// Record a panic caught with [`catch`]: save `patch` for recovery,
+    /// open the crash dialog, and pause evaluation unless the editor
+    /// panicked (the engine is fine then).
+    pub fn report(&mut self, caught: Caught, patch: &PatchFile) {
+        let Caught {
+            stage,
+            message,
+            location,
+            backtrace,
+        } = caught;
+        self.report = Some(Report {
+            stage,
+            message,
+            location,
+            backtrace,
+            recovery: save_recovery(patch),
+        });
+        self.dialog_open = true;
+        self.paused |= stage != Stage::Editor;
+        self.show_backtrace = false;
+        self.note = None;
     }
 
     /// The crash dialog (while open) or the "paused" banner.
@@ -157,17 +164,21 @@ impl Guard {
                     .size(16.0),
             );
             ui.add_space(4.0);
-            let doing = match report.stage {
-                Stage::Tick => "evaluating the patch",
-                Stage::Render => "drawing the preview",
+            let text = match report.stage {
+                Stage::Tick => {
+                    "Floret hit an internal error while evaluating the patch. \
+                     Evaluation is paused; your patch is still open and nothing was lost."
+                }
+                Stage::Render => {
+                    "Floret hit an internal error while drawing the preview. \
+                     Evaluation is paused; your patch is still open and nothing was lost."
+                }
+                Stage::Editor => {
+                    "Floret hit an internal error in the editor. The edit in \
+                     progress was undone; the rest of your patch is still open."
+                }
             };
-            ui.label(
-                RichText::new(format!(
-                    "Floret hit an internal error while {doing}. Evaluation is paused; \
-                     your patch is still open and nothing was lost."
-                ))
-                .color(theme::FG_1),
-            );
+            ui.label(RichText::new(text).color(theme::FG_1));
             ui.add_space(8.0);
             egui::Frame::new()
                 .fill(*theme::BG_0)
@@ -209,11 +220,15 @@ impl Guard {
                     self.note = save_as(patch);
                 }
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    if ui
-                        .button("Continue (paused)")
-                        .on_hover_text("Close this and keep editing with evaluation paused")
-                        .clicked()
-                    {
+                    let (label, tip) = if self.paused {
+                        (
+                            "Continue (paused)",
+                            "Close this and keep editing with evaluation paused",
+                        )
+                    } else {
+                        ("Continue", "Close this and keep editing")
+                    };
+                    if ui.button(label).on_hover_text(tip).clicked() {
                         action = (report.stage == Stage::Render).then_some(Action::ClearOutputs);
                         self.dialog_open = false;
                     }
@@ -260,7 +275,40 @@ impl Guard {
     }
 }
 
-/// Debug builds: `FLORET_TEST_PANIC=tick|render` panics once in that stage
+/// A panic caught by [`catch`], not yet reported.
+pub struct Caught {
+    pub stage: Stage,
+    pub message: String,
+    location: String,
+    backtrace: String,
+}
+
+/// Run `f`, catching a panic. For code that holds the patch mutably: the
+/// caller rolls back, then hands the panic to [`Guard::report`].
+pub fn catch<R>(stage: Stage, f: impl FnOnce() -> R) -> Result<R, Caught> {
+    panic::catch_unwind(AssertUnwindSafe(|| {
+        test_panic(stage);
+        f()
+    }))
+    .map_err(|payload| {
+        let message = payload
+            .downcast_ref::<&str>()
+            .map(|s| (*s).to_owned())
+            .or_else(|| payload.downcast_ref::<String>().cloned())
+            .unwrap_or_else(|| "(no message)".to_owned());
+        let (location, backtrace) = LAST_PANIC
+            .with(|p| p.borrow_mut().take())
+            .unwrap_or_default();
+        Caught {
+            stage,
+            message,
+            location,
+            backtrace,
+        }
+    })
+}
+
+/// Debug builds: `FLORET_TEST_PANIC=tick|render|editor` panics once in that stage
 /// on the 120th call, to try the crash screen.
 fn test_panic(stage: Stage) {
     use std::sync::atomic::{AtomicU32, Ordering};
@@ -271,6 +319,7 @@ fn test_panic(stage: Stage) {
     let want = match std::env::var("FLORET_TEST_PANIC").as_deref() {
         Ok("tick") => Stage::Tick,
         Ok("render") => Stage::Render,
+        Ok("editor") => Stage::Editor,
         _ => return,
     };
     if stage == want && CALLS.fetch_add(1, Ordering::Relaxed) == 120 {
@@ -338,5 +387,20 @@ mod tests {
         assert!(PatchFile::load(&std::fs::read_to_string(saved).unwrap()).is_ok());
         let _ = std::fs::remove_file(saved.with_extension("json"));
         let _ = std::fs::remove_file(saved);
+    }
+
+    #[test]
+    fn an_editor_panic_keeps_evaluation_running() {
+        install_hook();
+        let mut g = Guard::default();
+        let r: Option<()> = g.run(Stage::Editor, &patch(), || panic!("canvas bug"));
+        assert!(r.is_none());
+        assert!(!g.paused() && g.render_ok() && g.dialog_open);
+        let rep = g.report.as_ref().unwrap();
+        assert!(rep.details().contains("panic during editing"));
+        if let Ok(saved) = &rep.recovery {
+            let _ = std::fs::remove_file(saved.with_extension("json"));
+            let _ = std::fs::remove_file(saved);
+        }
     }
 }

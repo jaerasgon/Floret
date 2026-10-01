@@ -106,6 +106,14 @@ impl History {
         true
     }
 
+    /// Write the current state back into `patch`, dropping changes made
+    /// since the last push (a half-done edit).
+    pub fn restore(&self, patch: &mut PatchFile) {
+        if let Some(e) = self.past.last() {
+            Self::apply(e, patch);
+        }
+    }
+
     fn apply(e: &Entry, patch: &mut PatchFile) {
         patch.nodes = e.nodes.clone();
         patch.edges = e.edges.clone();
@@ -144,6 +152,18 @@ mod tests {
         assert!(h.redo(&mut p));
         assert_eq!(p.nodes[0].id, "a");
         assert!(!h.redo(&mut p));
+    }
+
+    #[test]
+    fn restore_drops_uncommitted_changes() {
+        let mut p = patch(vec![node("a", "value/number")], vec![]);
+        let mut h = History::default();
+        h.reset(&p);
+        p.nodes.push(node("half", "value/number"));
+        p.edges.clear();
+        h.restore(&mut p);
+        assert_eq!(p.nodes.len(), 1);
+        assert!(!h.can_undo());
     }
 
     #[test]

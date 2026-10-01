@@ -23,6 +23,7 @@ mod gpu_support;
 mod help;
 mod host;
 mod library;
+mod library_store;
 mod menu;
 mod node_help;
 mod palette;

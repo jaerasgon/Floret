@@ -14,7 +14,13 @@ use indexmap::IndexMap;
 use serde_json::Value as Json;
 use std::collections::{HashMap, HashSet};
 
+/// Width of custom-body nodes, and the drop ghost.
 pub const NODE_W: f32 = 168.0;
+/// Content-sized nodes stay within these (`.node-grid` / `data-math`
+/// min-widths in the web app; the max keeps a long text field sane).
+pub const MIN_W: f32 = 84.0;
+pub const MATH_MIN_W: f32 = 72.0;
+pub const MAX_W: f32 = 360.0;
 pub const HEADER_H: f32 = 26.0;
 pub const ROW_H: f32 = 20.0;
 pub const PIN_R: f32 = 4.5;
@@ -82,8 +88,20 @@ fn row_count(n: &PatchNode, cat: &Catalogue, look: Look) -> usize {
     left.max(ports::resolved_outputs(spec, &n.params).len())
 }
 
-/// A node's size in canvas units as drawn with `look`.
-pub fn box_size(n: &PatchNode, cat: &Catalogue, look: Look) -> (f64, f64) {
+/// A node's size in canvas units as drawn with `look`, with no inline
+/// editors open.
+pub fn box_size(patch: &PatchFile, n: &PatchNode, cat: &Catalogue, look: Look) -> (f64, f64) {
+    box_size_with(patch, n, cat, look, &HashSet::new())
+}
+
+/// A node's size with the inline editors in `expanded` open.
+pub fn box_size_with(
+    patch: &PatchFile,
+    n: &PatchNode,
+    cat: &Catalogue,
+    look: Look,
+    expanded: &HashSet<(String, String)>,
+) -> (f64, f64) {
     match look {
         Look::Region | Look::Frame => ops::region_size(n),
         Look::Comment => {
@@ -100,7 +118,7 @@ pub fn box_size(n: &PatchNode, cat: &Catalogue, look: Look) -> (f64, f64) {
                 _ => 0.0,
             };
             (
-                f64::from(NODE_W),
+                f64::from(node_width(patch, n, cat, look, expanded)),
                 f64::from(HEADER_H + body + rows * ROW_H + 8.0),
             )
         }
@@ -108,8 +126,161 @@ pub fn box_size(n: &PatchNode, cat: &Catalogue, look: Look) -> (f64, f64) {
 }
 
 /// A node's on-canvas size from the root view (subpatches collapsed).
-pub fn node_size(n: &PatchNode, cat: &Catalogue) -> (f64, f64) {
-    box_size(n, cat, look_of(n, cat, None))
+pub fn node_size(patch: &PatchFile, n: &PatchNode, cat: &Catalogue) -> (f64, f64) {
+    box_size(patch, n, cat, look_of(n, cat, None))
+}
+
+/// The context whose fonts measure node content (set by the canvas each
+/// frame; without one, as in tests, widths are estimated).
+static MEASURE: std::sync::RwLock<Option<egui::Context>> = std::sync::RwLock::new(None);
+
+pub fn set_measure(ctx: &egui::Context) {
+    if let Ok(mut m) = MEASURE.write() {
+        if m.as_ref().is_none_or(|c| c != ctx) {
+            *m = Some(ctx.clone());
+        }
+    }
+}
+
+/// Width of `s` in `font` (canvas units at zoom 1).
+pub fn text_width(s: &str, font: FontId) -> f32 {
+    if s.is_empty() {
+        return 0.0;
+    }
+    let ctx = MEASURE.read().ok().and_then(|m| m.clone());
+    match ctx {
+        Some(ctx) => ctx.fonts_mut(|f| {
+            f.layout_no_wrap(s.to_owned(), font, Color32::WHITE)
+                .size()
+                .x
+        }),
+        None => {
+            let per = if font.family == egui::FontFamily::Monospace {
+                0.62
+            } else {
+                0.56
+            };
+            s.chars().count() as f32 * font.size * per
+        }
+    }
+}
+
+/// Room kept on the right of a row for an output's live value.
+fn out_reserve(ty: PortType) -> f32 {
+    match ty {
+        PortType::Number | PortType::Boolean => 46.0,
+        PortType::Vec2 => 70.0,
+        PortType::Color => 50.0,
+        _ => 36.0,
+    }
+}
+
+/// Inputs of `node` with a wire in.
+fn wired_inputs<'a>(patch: &'a PatchFile, node: &str) -> HashSet<&'a str> {
+    patch
+        .edges
+        .iter()
+        .filter(|e| e.target == node)
+        .filter_map(|e| match ports::split_handle(e.target_handle.as_deref()) {
+            Some((Side::In, name)) => Some(name),
+            _ => None,
+        })
+        .collect()
+}
+
+/// A plain or collapsed-subpatch node's width: its widest row or its
+/// title, like the web app's content-sized `GenericNode`.
+pub fn node_width(
+    patch: &PatchFile,
+    n: &PatchNode,
+    cat: &Catalogue,
+    look: Look,
+    expanded: &HashSet<(String, String)>,
+) -> f32 {
+    let Some(spec) = cat.get(&n.def_type) else {
+        return NODE_W;
+    };
+    if look == Look::Node && widgets::custom_of(&n.def_type).is_some() {
+        return NODE_W;
+    }
+    let label_font = FontId::proportional(LABEL_FONT);
+    let out_font = FontId::monospace(10.5);
+    let mut widest: f32 = 0.0;
+    let mut row = |left: f32, out: Option<f32>| {
+        let w = 10.0 + left + out.map_or(0.0, |o| 14.0 + o) + 10.0;
+        widest = widest.max(w);
+    };
+    let math = values::math_symbol(&n.def_type);
+    let title = if look == Look::Collapsed {
+        let label = n.params.get("label").and_then(|v| v.as_str());
+        format!("▶ {}", label.unwrap_or(&spec.label))
+    } else {
+        math.map_or_else(|| spec.label.clone(), str::to_owned)
+    };
+    let title_font = if math.is_some() {
+        FontId::monospace(13.0)
+    } else {
+        FontId::proportional(12.5)
+    };
+    let mut header = super::draw::TITLE_X + text_width(&title, title_font) + 12.0;
+    if let Some(slot) = n.params.get("slot").filter(|_| look == Look::Node) {
+        let text = format!("#{}", values::short(slot));
+        header += 6.0 + text_width(&text, FontId::monospace(10.0)) + 8.0;
+    }
+    if look == Look::Collapsed {
+        header += 8.0 + text_width("subpatch", FontId::proportional(9.5));
+        let ins: Vec<_> = subpatch_ports(n, PortDirection::Input).collect();
+        let outs: Vec<_> = subpatch_ports(n, PortDirection::Output).collect();
+        for i in 0..ins.len().max(outs.len()) {
+            let left = ins
+                .get(i)
+                .map_or(0.0, |p| text_width(&p.name, label_font.clone()));
+            let out = outs.get(i).map(|p| text_width(&p.name, out_font.clone()));
+            row(left, out);
+        }
+    } else {
+        let wired = wired_inputs(patch, &n.id);
+        let items = values::left_items(cat, spec, n);
+        let outs = ports::resolved_outputs(spec, &n.params);
+        for i in 0..items.len().max(outs.len()) {
+            let out = outs.get(i).map(|p| {
+                let label = values::display_label(p, false);
+                text_width(&label, out_font.clone()).max(out_reserve(p.ty))
+            });
+            let left = match items.get(i) {
+                None => 0.0,
+                Some(LeftItem::Param { key, kind }) => {
+                    text_width(key, label_font.clone()) + 6.0 + field_width(kind)
+                }
+                Some(LeftItem::Input(port)) => {
+                    let mut w = text_width(&values::display_label(port, true), label_font.clone());
+                    if port.constant {
+                        w += 10.0;
+                    }
+                    let open = expanded.contains(&(n.id.clone(), port.name.clone()));
+                    let wired = wired.contains(port.name.as_str());
+                    if let Some((key, kind)) = values::input_editor(spec, port, wired) {
+                        if open {
+                            w += 6.0 + field_width(&kind);
+                        } else {
+                            let v = values::current(n, spec, &key, Some(port));
+                            if !v.is_null() {
+                                w += 6.0 + text_width(&values::short(&v), FontId::monospace(10.0));
+                            }
+                        }
+                    }
+                    w
+                }
+            };
+            row(left, out);
+        }
+    }
+    let min = if n.def_type.starts_with("math/") {
+        MATH_MIN_W
+    } else {
+        MIN_W
+    };
+    widest.max(header).clamp(min, MAX_W).ceil()
 }
 
 /// A pin on a node: which node, which side, which port, what type.
@@ -310,7 +481,7 @@ pub fn layout(
             continue;
         };
         let look = look_of(n, cx.cat, cx.scope);
-        let (w, h) = box_size(n, cx.cat, look);
+        let (w, h) = box_size_with(cx.patch, n, cx.cat, look, cx.expanded);
         let p = ops::absolute_pos(cx.patch, &n.id);
         let z = cx.zoom;
         let rect = Rect::from_min_size(cx.screen(p.x, p.y), vec2(w as f32, h as f32) * z);
@@ -396,7 +567,7 @@ fn chips(cx: &Ctx, n: &PatchNode, b: &mut NodeBox) {
             b.warning = Some((r, text.clone()));
         }
     } else if let Some(text) = cx.decor.warnings.get(&n.id) {
-        let r = Rect::from_center_size(b.header.right_center() - vec2(14.0 * z, 0.0), size);
+        let r = Rect::from_center_size(b.header.right_center() - vec2(18.0 * z, 0.0), size);
         b.warning = Some((r, text.clone()));
     }
 }
@@ -600,10 +771,15 @@ pub fn row_box(
             if let Some((key, kind, value)) = editor {
                 let x0 = 10.0 + lw + 6.0;
                 // Leave room for the row's output readout.
-                let right = if row.output.is_some() {
-                    NODE_W - 48.0
-                } else {
-                    NODE_W - 10.0
+                let width = b.rect.width() / z;
+                let right = match outs.get(i) {
+                    Some(p) => {
+                        let label = values::display_label(p, false);
+                        let out =
+                            text_width(&label, FontId::monospace(10.5)).max(out_reserve(p.ty));
+                        width - 10.0 - out - 14.0
+                    }
+                    None => width - 10.0,
                 };
                 let w = field_width(&kind).min(right - x0);
                 if w >= 12.0 {

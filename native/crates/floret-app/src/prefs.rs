@@ -48,6 +48,18 @@ pub struct Prefs {
     /// carry over.)
     pub flow_animation: bool,
     pub snap_to_grid: bool,
+    /// Snap step and dot spacing, in canvas units.
+    pub grid_size: u32,
+    /// The dot grid on the canvas.
+    pub show_grid: bool,
+    /// The overview map in the canvas corner.
+    pub show_minimap: bool,
+    /// The slow generative drift behind the graph.
+    pub ambient_motion: bool,
+    /// The web app follows the OS's reduced-motion setting, which winit
+    /// doesn't expose; here it's a preference. Stops camera moves, node
+    /// entrances, the selection breath and ambient drift.
+    pub reduce_motion: bool,
     pub palette_visible: bool,
     pub default_render_width: u32,
     pub default_render_height: u32,
@@ -65,6 +77,11 @@ impl Default for Prefs {
             ui_scale: 1.0,
             flow_animation: false,
             snap_to_grid: false,
+            grid_size: crate::editor::ops::GRID as u32,
+            show_grid: true,
+            show_minimap: true,
+            ambient_motion: true,
+            reduce_motion: false,
             palette_visible: true,
             default_render_width: 1080,
             default_render_height: 1920,
@@ -123,6 +140,7 @@ impl Prefs {
             1.0
         };
         self.autosave_interval_secs = self.autosave_interval_secs.clamp(5, 3600);
+        self.grid_size = self.grid_size.clamp(4, 128);
     }
 
     /// The next / previous step of the UI scale ladder.
@@ -278,6 +296,38 @@ impl PrefsWindow {
                         ui.checkbox(&mut p.show_welcome, "");
                     },
                 );
+                row(
+                    ui,
+                    "Ambient canvas motion",
+                    "A slow generative drift behind the graph on a quiet patch.",
+                    |ui| {
+                        ui.checkbox(&mut p.ambient_motion, "");
+                    },
+                );
+                row(
+                    ui,
+                    "Show minimap",
+                    "The overview map in the canvas corner.",
+                    |ui| {
+                        ui.checkbox(&mut p.show_minimap, "");
+                    },
+                );
+                row(
+                    ui,
+                    "Show dot grid",
+                    "The dotted background grid on the canvas.",
+                    |ui| {
+                        ui.checkbox(&mut p.show_grid, "");
+                    },
+                );
+                row(
+                    ui,
+                    "Reduce motion",
+                    "No camera glides, node entrances or ambient drift.",
+                    |ui| {
+                        ui.checkbox(&mut p.reduce_motion, "");
+                    },
+                );
             }
             Category::Editor => {
                 row(
@@ -291,7 +341,7 @@ impl PrefsWindow {
                 row(
                     ui,
                     "Snap to grid",
-                    "Snap nodes to the 24 px grid while dragging.",
+                    "Snap nodes to the grid while dragging.",
                     |ui| {
                         ui.checkbox(&mut p.snap_to_grid, "");
                     },
@@ -336,6 +386,20 @@ impl PrefsWindow {
                                 ui.add(egui::DragValue::new(&mut p.default_render_height).range(range));
                             });
                         });
+                    },
+                );
+                row(
+                    ui,
+                    "Grid step",
+                    "Spacing of the dot grid, used when Snap to grid is on.",
+                    |ui| {
+                        egui::ComboBox::from_id_salt("pref-grid")
+                            .selected_text(format!("{} px", p.grid_size))
+                            .show_ui(ui, |ui| {
+                                for n in crate::editor::ops::GRID_STEPS {
+                                    ui.selectable_value(&mut p.grid_size, n, format!("{n} px"));
+                                }
+                            });
                     },
                 );
             }
@@ -454,6 +518,8 @@ mod tests {
         assert_eq!(p.default_render_height, 1920);
         assert_eq!(p.ui_scale, 2.0);
         assert!(p.autosave_enabled);
+        assert!(p.show_grid && p.show_minimap && p.ambient_motion && !p.reduce_motion);
+        assert_eq!(p.grid_size, 24);
         let mut q = p.clone();
         q.startup_patch = Startup::Blank;
         q.save_to(&path);

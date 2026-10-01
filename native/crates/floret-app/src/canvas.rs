@@ -6,10 +6,13 @@
 //! Layout and hit-testing live in `canvas/geom.rs`, painting in
 //! `canvas/draw.rs`, engine read-outs in `canvas/live.rs`.
 
+mod ambient;
+mod anim;
 mod custom;
 mod draw;
 mod geom;
 mod live;
+mod minimap;
 
 pub use geom::node_size;
 pub use live::Live;
@@ -53,9 +56,11 @@ enum Gesture {
         /// Alt-drag: the moved nodes are fresh duplicates.
         duplicated: bool,
         moved: bool,
-        /// Space was held at some point: drop re-parents into the region
-        /// under the pointer (or out of all regions).
+        /// Space was held at some point: drop re-parents the grabbed node
+        /// into the region under the pointer (or out of all regions).
         reparent: bool,
+        /// The moved node under the pointer at press time.
+        grabbed: String,
     },
     /// Dragging a new wire out of a pin; `alt` = Alt held while dragging
     /// (drop → probe).
@@ -240,8 +245,18 @@ pub struct View {
     /// dragging a node brings it to the front.
     raised: Vec<String>,
     gesture: Gesture,
-    /// Snap dragged / placed nodes to the 24 px grid.
+    /// Snap dragged / placed nodes to the grid.
     pub snap: bool,
+    /// Grid step (canvas units): the snap step and the dot spacing.
+    pub grid: f64,
+    /// Draw the dot grid.
+    pub show_grid: bool,
+    /// The overview map in the canvas corner.
+    pub show_minimap: bool,
+    /// The drifting flow-field backdrop.
+    pub ambient_motion: bool,
+    /// Skip camera moves and entrance animations; hold ambient motion still.
+    pub reduce_motion: bool,
     /// Marching-ants flow animation on wires.
     pub wire_flow: bool,
     /// Grow a region while a child is dragged against its edge.
@@ -273,6 +288,16 @@ pub struct View {
     /// Actions raised by click handlers, applied with the frame's actions.
     queued: Vec<Action>,
     fit_pending: bool,
+    /// Fit the visible patch with an animated camera move.
+    fit_animated: bool,
+    anim: Option<anim::CameraAnim>,
+    /// When each visible node appeared (the entrance animation).
+    appeared: HashMap<String, f64>,
+    /// Where the grid is anchored (canvas units): the entered nested
+    /// subpatch's corner, which the web app shows at the origin.
+    grid_origin: Position,
+    ambient: ambient::Ambient,
+    minimap: minimap::MiniMap,
     /// Re-fit when the canvas resizes, until the camera is touched (the
     /// window settles over the first frames after a load).
     keep_fitted: bool,
@@ -300,6 +325,11 @@ impl Default for View {
             raised: Vec::new(),
             gesture: Gesture::None,
             snap: false,
+            grid: 24.0,
+            show_grid: true,
+            show_minimap: true,
+            ambient_motion: true,
+            reduce_motion: false,
             wire_flow: false,
             auto_grow: true,
             stack: Vec::new(),
@@ -321,6 +351,12 @@ impl Default for View {
             live_edits: Vec::new(),
             queued: Vec::new(),
             fit_pending: true,
+            fit_animated: false,
+            anim: None,
+            appeared: HashMap::new(),
+            grid_origin: Position::default(),
+            ambient: ambient::Ambient::default(),
+            minimap: minimap::MiniMap::default(),
             keep_fitted: true,
             fitted_area: Rect::NOTHING,
             flashes: HashMap::new(),
@@ -366,6 +402,9 @@ impl View {
         self.armed = None;
         self.fit_pending = true;
         self.keep_fitted = true;
+        self.anim = None;
+        // Like a fresh mount in the web app, the whole patch settles in.
+        self.appeared.clear();
     }
 
     /// Close every popup. An open text or colour edit is committed, as if
@@ -396,9 +435,22 @@ impl View {
         self.close_overlays();
     }
 
-    /// Fit the visible patch on the next frame.
+    /// After a panic in the editor: roll the patch back to the last
+    /// committed state and drop whatever gesture or popup was in progress.
+    pub fn recover(&mut self, patch: &mut PatchFile) {
+        self.history.restore(patch);
+        self.gesture = Gesture::None;
+        self.discard_overlays();
+        self.armed = None;
+        self.anim = None;
+        self.live_edits.clear();
+        self.prune_selection(patch);
+        self.recompile = true;
+    }
+
+    /// Fit the visible patch on the next frame (an animated camera move).
     pub fn request_fit(&mut self) {
-        self.fit_pending = true;
+        self.fit_animated = true;
     }
 
     /// Record a structural edit: settle, push an undo step, and ask the
@@ -478,30 +530,63 @@ impl View {
 
     fn snapped(&self, p: Position) -> Position {
         if self.snap {
-            Position {
-                x: ops::snap(p.x),
-                y: ops::snap(p.y),
-            }
+            ops::snap_point(p, self.grid, self.grid_origin)
         } else {
             p
         }
     }
 
-    /// Fit the visible patch into `area`.
+    /// Fit the visible patch into `area`, with an animated camera move.
     pub fn fit(&mut self, patch: &PatchFile, area: Rect) {
         let cat = Catalogue::builtin();
         let visible = subpatch::visible(patch, cat, &self.stack);
-        self.fit_nodes(patch, area, |id| visible.contains(id));
+        self.fit_animated(patch, area, 1.25, |id| visible.contains(id));
     }
 
     fn fit_nodes(&mut self, patch: &PatchFile, area: Rect, keep: impl Fn(&str) -> bool) {
+        (self.pan, self.zoom) = self.fit_target(patch, area, 1.25, keep);
+        self.anim = None;
+    }
+
+    /// Move the camera to fit the kept nodes over `FIT_SECS` (at once
+    /// with reduced motion).
+    fn fit_animated(
+        &mut self,
+        patch: &PatchFile,
+        area: Rect,
+        max_zoom: f32,
+        keep: impl Fn(&str) -> bool,
+    ) {
+        let to = self.fit_target(patch, area, max_zoom, keep);
+        self.keep_fitted = false;
+        if self.reduce_motion || area.width() <= 0.0 {
+            (self.pan, self.zoom) = to;
+            self.anim = None;
+        } else {
+            self.anim = Some(anim::CameraAnim {
+                from: (self.pan, self.zoom),
+                to,
+                start: self.time,
+                size: area.size(),
+            });
+        }
+    }
+
+    /// The (pan, zoom) that fits the kept nodes into `area`.
+    fn fit_target(
+        &self,
+        patch: &PatchFile,
+        area: Rect,
+        max_zoom: f32,
+        keep: impl Fn(&str) -> bool,
+    ) -> (Vec2, f32) {
         let cat = Catalogue::builtin();
         let scope = self.scope().map(str::to_owned);
         let mut bb = Rect::NOTHING;
         for n in patch.nodes.iter().filter(|n| keep(&n.id)) {
             let p = ops::absolute_pos(patch, &n.id);
             let look = geom::look_of(n, cat, scope.as_deref());
-            let (w, h) = geom::box_size(n, cat, look);
+            let (w, h) = geom::box_size_with(patch, n, cat, look, &self.expanded);
             let top = if look.is_frame() {
                 regions::HEADER_H
             } else {
@@ -513,17 +598,15 @@ impl View {
             ));
         }
         if !bb.is_finite() || bb.width() <= 0.0 {
-            self.pan = vec2(40.0, 40.0);
-            self.zoom = 1.0;
-            return;
+            return (vec2(40.0, 40.0), 1.0);
         }
         let margin = 48.0 + 0.04 * area.width().min(area.height());
-        self.zoom = ((area.width() - 2.0 * margin) / bb.width())
+        let zoom = ((area.width() - 2.0 * margin) / bb.width())
             .min((area.height() - 2.0 * margin) / bb.height())
-            .clamp(0.1, 1.25);
-        let content = bb.size() * self.zoom;
+            .clamp(0.1, max_zoom);
+        let content = bb.size() * zoom;
         let offset = (area.size() - content) * 0.5;
-        self.pan = offset / self.zoom - bb.min.to_vec2();
+        (offset / zoom - bb.min.to_vec2(), zoom)
     }
 
     /// Selected ids without those whose region is also selected (a region
@@ -651,13 +734,25 @@ pub fn show(
     view.time = ui.input(|i| i.time);
     let origin = area.min;
     let ctx = ui.ctx().clone();
+    geom::set_measure(&ctx);
     painter.rect_filled(area, 0.0, BG_0);
 
     let visible = subpatch::visible(patch, cat, &view.stack);
+    view.grid_origin = subpatch::view_origin(patch, &view.stack);
     if view.fit_pending || (view.keep_fitted && area != view.fitted_area) {
         view.fit_nodes(patch, area, |id| visible.contains(id));
         view.fit_pending = false;
+        view.fit_animated = false;
         view.fitted_area = area;
+    } else if std::mem::take(&mut view.fit_animated) {
+        view.fit_animated(patch, area, 1.25, |id| visible.contains(id));
+    }
+    if let Some(a) = view.anim {
+        let ((pan, zoom), done) = a.at(view.time);
+        (view.pan, view.zoom) = (pan, zoom);
+        if done {
+            view.anim = None;
+        }
     }
 
     // ── Camera: two-finger scroll pans, pinch / ⌘-scroll zooms around the pointer.
@@ -670,6 +765,7 @@ pub fn show(
                 view.zoom = (view.zoom * zoom_delta).clamp(0.1, 3.0);
                 view.pan = (p - origin) / view.zoom - before;
                 view.keep_fitted = false;
+                view.anim = None;
             }
         } else if scroll != Vec2::ZERO {
             let probe = pointer.and_then(|p| {
@@ -687,18 +783,25 @@ pub fn show(
                 None => {
                     view.pan += scroll / view.zoom;
                     view.keep_fitted = false;
+                    view.anim = None;
                 }
             }
         }
     }
 
-    // ── Dot grid (24 px — the snap grid).
-    let step = 24.0 * view.zoom;
-    if step > 6.0 {
+    // ── Backdrop: the ambient flow field, then the dot grid (the snap grid).
+    if view.ambient_motion {
+        let busy = visible.len();
+        view.ambient
+            .paint(&painter, area, busy, view.time, view.reduce_motion);
+    }
+    let step = view.grid as f32 * view.zoom;
+    if view.show_grid && step > 6.0 {
+        let o = vec2(view.grid_origin.x as f32, view.grid_origin.y as f32);
         let start = origin
             + vec2(
-                (view.pan.x * view.zoom).rem_euclid(step),
-                (view.pan.y * view.zoom).rem_euclid(step),
+                ((view.pan.x + o.x) * view.zoom).rem_euclid(step),
+                ((view.pan.y + o.y) * view.zoom).rem_euclid(step),
             );
         // Subtle, and fading out as the grid gets dense when zoomed out.
         let fade = ((step - 6.0) / 10.0).clamp(0.0, 1.0);
@@ -781,7 +884,7 @@ pub fn show(
                 WidgetKind::Pad(pad) => Some(WidgetDrag::Pad(*pad)),
                 WidgetKind::Hold => Some(WidgetDrag::Hold),
                 WidgetKind::Grip => ports::find_node(patch, &w.node).map(|n| {
-                    let size = geom::box_size(n, cat, Look::Comment);
+                    let size = geom::box_size(patch, n, cat, Look::Comment);
                     WidgetDrag::Grip(size)
                 }),
                 _ => None,
@@ -882,10 +985,13 @@ pub fn show(
                 view.selected_ports.clear();
                 view.raise(&id);
                 let mut ids = view.top_level_selection(patch);
+                let mut grabbed = regions::grabbed_of(patch, &ids, &id);
                 let duplicated = mods.alt;
                 if duplicated {
                     // Alt-drag: duplicates follow the pointer, originals stay.
+                    let at = ids.iter().position(|i| *i == grabbed);
                     ids = ops::duplicate(patch, &ids, 0.0, 0.0);
+                    grabbed = at.and_then(|i| ids.get(i).cloned()).unwrap_or_default();
                     view.selection = ids.clone();
                     for i in &ids {
                         view.raise(i);
@@ -899,6 +1005,7 @@ pub fn show(
                     duplicated,
                     moved: false,
                     reparent: space,
+                    grabbed,
                 };
             } else if let Some((id, dx, dy)) = hits.resize(start) {
                 if let Some(n) = ports::find_node(patch, &id) {
@@ -931,10 +1038,13 @@ pub fn show(
     let mut hover_region: Option<String> = None;
     if resp.dragged() {
         let (snap, auto_grow) = (view.snap, view.auto_grow);
+        let (grid, grid_origin) = (view.grid, view.grid_origin);
+        let expanded = view.expanded.clone();
         match &mut view.gesture {
             Gesture::Pan => {
                 view.pan += resp.drag_delta() / z;
                 view.keep_fitted = false;
+                view.anim = None;
             }
             Gesture::Move {
                 ids,
@@ -942,6 +1052,7 @@ pub fn show(
                 origin: o,
                 moved,
                 reparent,
+                grabbed,
                 ..
             } => {
                 *reparent |= space;
@@ -954,10 +1065,7 @@ pub fn show(
                             y: s.y + f64::from(d.y),
                         };
                         if snap {
-                            t = Position {
-                                x: ops::snap(t.x),
-                                y: ops::snap(t.y),
-                            };
+                            t = ops::snap_point(t, grid, grid_origin);
                         }
                         let parent = ports::find_node(patch, id).and_then(|n| n.parent_id.clone());
                         let base = parent
@@ -975,7 +1083,7 @@ pub fn show(
                             patch,
                             drawable_ids(&boxes),
                             view_to_canvas(area, view.pan, z, p),
-                            ids,
+                            std::slice::from_ref(grabbed),
                         );
                     } else if auto_grow {
                         for id in ids.iter() {
@@ -991,7 +1099,8 @@ pub fn show(
                             }
                             let size = ports::find_node(patch, id)
                                 .map(|n| {
-                                    geom::box_size(n, cat, geom::look_of(n, cat, scope.as_deref()))
+                                    let look = geom::look_of(n, cat, scope.as_deref());
+                                    geom::box_size_with(patch, n, cat, look, &expanded)
                                 })
                                 .unwrap_or_default();
                             regions::auto_grow(patch, id, size, ids);
@@ -1136,26 +1245,24 @@ pub fn show(
     if resp.drag_stopped() {
         match std::mem::replace(&mut view.gesture, Gesture::None) {
             Gesture::Move {
-                ids,
                 duplicated,
                 moved,
                 reparent,
+                grabbed,
                 ..
             } => {
-                if reparent && moved {
+                // Like the web app, only the grabbed node changes region;
+                // the rest of the selection just moves.
+                if reparent && moved && !duplicated {
                     let target = pointer.and_then(|p| {
-                        regions::containing(patch, drawable_ids(&boxes), view.to_canvas(p), &ids)
+                        let at = view.to_canvas(p);
+                        let grabbed = std::slice::from_ref(&grabbed);
+                        regions::containing(patch, drawable_ids(&boxes), at, grabbed)
                     });
                     let target = target.or_else(|| scope.clone());
-                    let mut changed = false;
-                    let movable: Vec<&String> = ids
-                        .iter()
-                        .filter(|id| !regions::is_drawable_node(patch, cat, id))
-                        .collect();
-                    for id in movable {
-                        changed |= regions::set_parent(patch, id, target.as_deref());
-                    }
-                    if changed || duplicated {
+                    let changed = !regions::is_drawable_node(patch, cat, &grabbed)
+                        && regions::set_parent(patch, &grabbed, target.as_deref());
+                    if changed {
                         view.commit(patch);
                     } else {
                         view.history.push(patch, None);
@@ -1480,7 +1587,12 @@ pub fn show(
 
     // ── Frames (behind everything): the entered subpatch, then regions
     // outermost first.
-    let flow_t = ui.input(|i| i.time) as f32;
+    // Reduced motion holds the marching ants and pin pulses still.
+    let flow_t = if view.reduce_motion {
+        0.0
+    } else {
+        ui.input(|i| i.time) as f32
+    };
     let mut frame_ids: Vec<&String> = boxes
         .iter()
         .filter(|(_, b)| b.look.is_frame())
@@ -1651,8 +1763,29 @@ pub fn show(
         .flatten()
         .filter(|id| is_picker(patch, id));
     view.probe_areas.clear();
+    // Nodes that weren't on screen last frame settle in (`node-appear`).
+    let now_t = view.time;
+    view.appeared = order
+        .iter()
+        .map(|id| (id.clone(), view.appeared.get(id).copied().unwrap_or(now_t)))
+        .collect();
+    let breathe = if view.reduce_motion {
+        0.0
+    } else {
+        anim::breathe(now_t)
+    };
     for id in &order {
         let b = &boxes[id.as_str()];
+        let settle = if view.reduce_motion {
+            None
+        } else {
+            anim::appear(now_t - view.appeared[id])
+        };
+        let mut np = painter.clone();
+        let first = settle.map(|(opacity, ..)| {
+            np.multiply_opacity(opacity);
+            painter.add(Shape::Noop)
+        });
         if b.look == Look::Probe {
             let max = custom::probe_max_scroll(b, z);
             let off = view.probe_scroll.entry(id.clone()).or_insert(0.0);
@@ -1672,10 +1805,11 @@ pub fn show(
                 if &f.node == id && b.look == Look::Comment
         );
         draw::node(
-            &painter,
+            &np,
             b,
             &draw::NodeState {
                 selected: view.is_selected(id),
+                breathe,
                 subtitle,
                 out_text: &out_text,
                 editing: editing_field.as_ref().filter(|f| &f.node == id),
@@ -1692,7 +1826,25 @@ pub fn show(
             z,
         );
         for g in &b.pins {
-            draw::pin(&painter, g, pin_look(id, g.side, &g.port), pulse, z);
+            draw::pin(&np, g, pin_look(id, g.side, &g.port), pulse, z);
+        }
+        if let (Some(first), Some((_, dy, scale))) = (first, settle) {
+            let last = painter.add(Shape::Noop);
+            let t = egui::emath::TSTransform::new(
+                anim::settle_offset(b.rect.center(), scale, dy * z),
+                scale,
+            );
+            ctx.graphics_mut(|g| g.entry(painter.layer_id()).transform_range(first, last, t));
+        }
+    }
+
+    // ── Minimap (bottom-right).
+    if view.show_minimap {
+        let world = minimap::world_rects(&boxes, area, view.pan, z);
+        if let Some(cam) = view.minimap.show(ui, &painter, area, &world, view.pan, z) {
+            (view.pan, view.zoom) = cam;
+            view.keep_fitted = false;
+            view.anim = None;
         }
     }
 
@@ -1985,7 +2137,8 @@ fn toolbar(
     {
         actions.push(Action::Arrange);
     }
-    if popups::chip(&mut tb, "Snap", view.snap, "Snap nodes to the 24 px grid").clicked() {
+    let snap_tip = format!("Snap nodes to the {} px grid", view.grid);
+    if popups::chip(&mut tb, "Snap", view.snap, &snap_tip).clicked() {
         view.snap = !view.snap;
     }
     if popups::chip(
@@ -2429,8 +2582,23 @@ fn shortcut(k: &str) -> &'static str {
     }
 }
 
-fn size_of(cat: &Catalogue) -> impl Fn(&floret_engine::patch::PatchNode) -> (f64, f64) + '_ {
-    move |n| node_size(n, cat)
+/// Every node's root-view size, measured now (for edits that hold the
+/// patch mutably while they ask).
+fn sizes_of(
+    patch: &PatchFile,
+    cat: &Catalogue,
+) -> impl Fn(&floret_engine::patch::PatchNode) -> (f64, f64) {
+    let sizes: HashMap<String, (f64, f64)> = patch
+        .nodes
+        .iter()
+        .map(|n| (n.id.clone(), node_size(patch, n, cat)))
+        .collect();
+    move |n| {
+        sizes
+            .get(&n.id)
+            .copied()
+            .unwrap_or((f64::from(NODE_W), 60.0))
+    }
 }
 
 fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View) {
@@ -2490,7 +2658,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             }
         }
         Action::AddRegion { ty, min, size } => {
-            let size_fn = size_of(cat);
+            let size_fn = sizes_of(patch, cat);
             if let Some(id) = regions::add_region(
                 patch,
                 cat,
@@ -2636,8 +2804,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 .into_iter()
                 .filter(|id| Some(id.as_str()) != scope.as_deref())
                 .collect();
-            let size_fn = size_of(cat);
-            if let Some(id) = subpatch::group(patch, cat, &ids, &size_fn) {
+            if let Some(id) = subpatch::group(patch, cat, &ids) {
                 view.select_only(&id);
                 view.commit(patch);
             }
@@ -2650,14 +2817,14 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 view.selected_ports.clear();
                 view.selected_edge = None;
                 view.close_overlays();
-                view.fit_pending = true;
+                view.fit_animated = true;
             }
         }
         Action::Exit => {
             if let Some(id) = view.stack.pop() {
                 view.close_overlays();
                 view.select_only(&id);
-                view.fit_pending = true;
+                view.fit_animated = true;
             }
         }
         Action::ViewDepth(d) => {
@@ -2666,7 +2833,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 view.stack.truncate(d);
                 view.close_overlays();
                 view.select_only(&exited);
-                view.fit_pending = true;
+                view.fit_animated = true;
             }
         }
         Action::Rename(id) => {
@@ -2675,7 +2842,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             };
             let look = geom::look_of(n, cat, view.scope());
             let p = ops::absolute_pos(patch, &id);
-            let (w, _) = geom::box_size(n, cat, look);
+            let (w, _) = geom::box_size(patch, n, cat, look);
             let rect = if look.is_frame() {
                 let h = regions::HEADER_H as f32;
                 Rect::from_min_size(
@@ -2685,7 +2852,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             } else {
                 Rect::from_min_size(
                     pos2(p.x as f32 + 18.0, p.y as f32 + 4.0),
-                    vec2(NODE_W - 36.0, geom::HEADER_H - 8.0),
+                    vec2(w as f32 - 36.0, geom::HEADER_H - 8.0),
                 )
             };
             let label = n
@@ -2712,9 +2879,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
         Action::Focus(id) => {
             view.select_only(&id);
             let area = view.area;
-            view.fit_nodes(patch, area, |n| n == id);
-            view.zoom = view.zoom.min(1.0);
-            view.keep_fitted = false;
+            view.fit_animated(patch, area, 1.0, |n| n == id);
         }
         Action::CommitValue { node, key } => view.commit_value(patch, cat, &node, &key),
         Action::RenamePort { region, port, name } => {
@@ -2771,7 +2936,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 return;
             };
             let p = ops::absolute_pos(patch, &id);
-            let (w, h) = geom::box_size(n, cat, Look::Comment);
+            let (w, h) = geom::box_size(patch, n, cat, Look::Comment);
             let text = n
                 .params
                 .get("text")
@@ -2813,18 +2978,18 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             }
         }
         Action::Arrange => {
-            layout::auto_layout(patch, &|n| node_size(n, cat));
+            let size_fn = sizes_of(patch, cat);
+            layout::auto_layout(patch, &size_fn);
             view.commit(patch);
-            view.fit_pending = true;
+            view.fit_animated = true;
         }
         Action::Fit => {
             let area = view.area;
-            view.keep_fitted = false;
             if view.selection.is_empty() {
                 view.fit(patch, area);
             } else {
                 let sel = view.selection.clone();
-                view.fit_nodes(patch, area, |id| sel.iter().any(|s| s == id));
+                view.fit_animated(patch, area, 1.25, |id| sel.iter().any(|s| s == id));
             }
         }
     }

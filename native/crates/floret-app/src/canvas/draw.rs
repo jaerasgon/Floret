@@ -212,6 +212,8 @@ pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
 
 pub struct NodeState<'a> {
     pub selected: bool,
+    /// The selected glow's slow breath, 0–1 (0 with reduced motion).
+    pub breathe: f32,
     pub subtitle: Option<&'a str>,
     /// Live value text for an output port.
     pub out_text: &'a dyn Fn(&str) -> Option<String>,
@@ -230,13 +232,19 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     let r = CornerRadius::same((6.0 * z).min(255.0) as u8);
     let hovered = st.body.hover.is_some_and(|h| b.rect.contains(h));
     super::custom::lift(p, b.rect, hovered, z);
+    let accent = if b.look == Look::Collapsed {
+        frame_color(Some(RegionKind::Subpatch))
+    } else {
+        theme::category_color(&b.category)
+    };
     if st.selected {
-        // Soft gold glow (the web app's --glow-gold), not a second ring.
+        // Soft gold glow (the web app's --glow-gold) that slowly breathes
+        // (`node-breathe`), not a second ring.
         let glow = egui::Shadow {
             offset: [0, 0],
-            blur: 14,
+            blur: (14.0 + 6.0 * st.breathe) as u8,
             spread: 0,
-            color: GOLD.gamma_multiply(0.22),
+            color: GOLD.gamma_multiply(0.22 + 0.1 * st.breathe),
         };
         p.add(glow.as_shape(b.rect, r));
     }
@@ -245,28 +253,15 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     } else if b.warning.is_some() {
         DANGER.gamma_multiply(0.6)
     } else if hovered {
-        mix(*BORDER, *FG_2, 0.55)
+        // The hover ring takes the category accent.
+        mix(accent, *BORDER, 0.55)
     } else {
         *BORDER
     };
-    p.rect(
-        b.rect,
-        r,
-        BG_2,
-        Stroke::new(1.0, border),
-        StrokeKind::Inside,
-    );
+    faceplate(p, b, z);
+    p.rect_stroke(b.rect, r, Stroke::new(1.0, border), StrokeKind::Inside);
     let header = Rect::from_min_size(b.rect.min, vec2(b.rect.width(), HEADER_H * z));
-    p.line_segment(
-        [header.left_bottom(), header.right_bottom()],
-        Stroke::new(1.0, BORDER),
-    );
-    let accent = if b.look == Look::Collapsed {
-        frame_color(Some(RegionKind::Subpatch))
-    } else {
-        theme::category_color(&b.category)
-    };
-    p.circle_filled(header.left_center() + vec2(12.0 * z, 0.0), 3.2 * z, accent);
+    p.circle_filled(header.left_center() + vec2(14.0 * z, 0.0), 3.2 * z, accent);
     if z > 0.25 {
         let title = if b.look == Look::Collapsed {
             format!("▶ {}", b.label)
@@ -280,10 +275,10 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
             FontId::proportional(12.5 * z)
         };
         let galley = p.layout_no_wrap(title, font, *FG_0);
-        let mut x = header.left() + 22.0 * z + galley.size().x + 6.0 * z;
+        let mut x = header.left() + TITLE_X * z + galley.size().x + 6.0 * z;
         p.galley(
             pos2(
-                header.left() + 22.0 * z,
+                header.left() + TITLE_X * z,
                 header.center().y - galley.size().y / 2.0,
             ),
             galley,
@@ -303,7 +298,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
             chip(p, *r);
             r.left() - 4.0 * z
         } else {
-            header.right() - 8.0 * z
+            header.right() - 12.0 * z
         };
         let tag = if b.unimplemented {
             Some("not ported")
@@ -374,27 +369,27 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
             }
         }
         if let Some((label, port)) = &row.output {
-            let live = (st.out_text)(port).filter(|t| !t.is_empty());
-            let (text, color) = match &live {
-                Some(t) => (t.clone(), FG_0),
-                None => (label.clone(), FG_1),
-            };
-            // Keep clear of an inline field on the same row; a readout
-            // that doesn't fit is dropped (the pin tooltip still has it).
+            // Keep clear of an inline field on the same row. A live value
+            // that doesn't fit gives way to the port name (the pin tooltip
+            // still has the value).
             let left = b
                 .fields
                 .iter()
                 .filter(|f| (f.rect.center().y - row.y).abs() < 1.0)
                 .map(|f| f.rect.right() + 4.0 * z)
                 .fold(b.rect.left(), f32::max);
-            let g = p.layout_no_wrap(text, FontId::monospace(10.5 * z), *color);
             let right = b.rect.right() - 10.0 * z;
+            let font = FontId::monospace(10.5 * z);
+            let live = (st.out_text)(port)
+                .filter(|t| !t.is_empty())
+                .map(|t| p.layout_no_wrap(t, font.clone(), *FG_0))
+                .filter(|g| right - g.size().x >= left);
+            let (g, color) = match live {
+                Some(g) => (g, *FG_0),
+                None => (p.layout_no_wrap(label.clone(), font, *FG_1), *FG_1),
+            };
             if right - g.size().x >= left {
-                p.galley(
-                    pos2(right - g.size().x, row.y - g.size().y / 2.0),
-                    g,
-                    *color,
-                );
+                p.galley(pos2(right - g.size().x, row.y - g.size().y / 2.0), g, color);
             }
         }
     }
@@ -404,6 +399,102 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
         }
         field(p, f, z, st.body.hover);
     }
+}
+
+/// Where a node's title starts (after the category lamp), canvas units.
+pub const TITLE_X: f32 = 24.0;
+
+/// The "modular rack" face (`.node`, `.node-header`): an anodised plate
+/// that catches light from above, an engraved name-plate strip across
+/// the top fastened with two screws. Math chips get a plain dashed seam
+/// instead of a plate.
+fn faceplate(p: &Painter, b: &NodeBox, z: f32) {
+    let rad = 6.0 * z;
+    let base = *BG_2;
+    p.add(gradient_rrect(b.rect, [rad; 4], |t| {
+        if t < 0.42 {
+            mix(base, Color32::WHITE, 1.0 - 0.05 * (1.0 - t / 0.42))
+        } else {
+            mix(base, Color32::BLACK, 1.0 - 0.10 * (t - 0.42) / 0.58)
+        }
+    }));
+    let header = Rect::from_min_size(b.rect.min, vec2(b.rect.width(), HEADER_H * z));
+    let seam_y = header.bottom();
+    if b.math {
+        p.extend(egui::Shape::dashed_line(
+            &[pos2(header.left(), seam_y), pos2(header.right(), seam_y)],
+            Stroke::new(1.0, BORDER.gamma_multiply(0.6)),
+            3.0 * z,
+            2.0 * z,
+        ));
+        return;
+    }
+    let plate = header.shrink(1.0);
+    let (top, bottom) = (
+        mix(*BG_3, Color32::WHITE, 0.96),
+        mix(*BG_3, Color32::BLACK, 0.94),
+    );
+    p.add(gradient_rrect(
+        plate,
+        [rad - 1.0, rad - 1.0, 0.0, 0.0],
+        |t| mix(bottom, top, t),
+    ));
+    // Inset seam at the plate's base: a dark line over a faint lip.
+    p.line_segment(
+        [
+            pos2(header.left(), seam_y - 0.5),
+            pos2(header.right(), seam_y - 0.5),
+        ],
+        Stroke::new(1.0, Color32::from_black_alpha(86)),
+    );
+    p.line_segment(
+        [pos2(header.left(), seam_y), pos2(header.right(), seam_y)],
+        Stroke::new(1.0, BORDER.gamma_multiply(0.7)),
+    );
+    if z > 0.35 {
+        for x in [header.left() + 6.0 * z, header.right() - 6.0 * z] {
+            screw(p, pos2(x, header.center().y), 2.0 * z);
+        }
+    }
+}
+
+/// A machined fastener (`--rack-screw`).
+fn screw(p: &Painter, c: Pos2, r: f32) {
+    p.circle_filled(c + vec2(0.0, r * 0.5), r, Color32::from_black_alpha(110));
+    p.circle_filled(c, r, mix(*BG_0, Color32::BLACK, 0.82));
+    p.circle_filled(c - vec2(r, r) * 0.16, r * 0.7, mix(*FG_1, *BG_3, 0.58));
+}
+
+/// A rounded rect filled with a vertical gradient: `color(t)` for t from
+/// 0 (top) to 1 (bottom). Corner radii are nw, ne, se, sw.
+pub fn gradient_rrect(r: Rect, radii: [f32; 4], color: impl Fn(f32) -> Color32) -> egui::Shape {
+    let mut mesh = egui::Mesh::default();
+    if !r.is_positive() {
+        return egui::Shape::Noop;
+    }
+    let max = r.width().min(r.height()) / 2.0;
+    let rad = radii.map(|x| x.clamp(0.0, max));
+    let t_of = |y: f32| ((y - r.top()) / r.height()).clamp(0.0, 1.0);
+    mesh.colored_vertex(r.center(), color(t_of(r.center().y)));
+    // Corner centres and their start angles, clockwise from the nw corner.
+    let corners = [
+        (pos2(r.left() + rad[0], r.top() + rad[0]), rad[0], 180.0_f32),
+        (pos2(r.right() - rad[1], r.top() + rad[1]), rad[1], 270.0),
+        (pos2(r.right() - rad[2], r.bottom() - rad[2]), rad[2], 0.0),
+        (pos2(r.left() + rad[3], r.bottom() - rad[3]), rad[3], 90.0),
+    ];
+    for (c, cr, a0) in corners {
+        for i in 0..=4 {
+            let a = (a0 + 22.5 * i as f32).to_radians();
+            let p = c + vec2(a.cos(), a.sin()) * cr;
+            mesh.colored_vertex(p, color(t_of(p.y)));
+        }
+    }
+    let n = mesh.vertices.len() as u32 - 1;
+    for i in 1..=n {
+        mesh.add_triangle(0, i, if i == n { 1 } else { i + 1 });
+    }
+    egui::Shape::mesh(mesh)
 }
 
 pub fn field(p: &Painter, f: &Field, z: f32, hover: Option<Pos2>) {

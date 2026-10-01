@@ -911,6 +911,12 @@ fn sample_ids() -> Vec<String> {
                 .strip_suffix(".flora")
                 .map(str::to_owned)
         })
+        // Native-only samples have no TypeScript trace to compare with.
+        .filter(|id| {
+            native_dir()
+                .join(format!("fixtures/traces/{id}.json.gz"))
+                .exists()
+        })
         .collect();
     ids.sort();
     if let Ok(only) = std::env::var("PARITY_ONLY") {

@@ -243,3 +243,18 @@ where
 {
     Box::new(Raw(f))
 }
+
+/// Opts a node out of the tick's memo (see [`NodeImpl::memoise`]): it is
+/// evaluated every tick, e.g. because it polls a load or a device.
+pub fn always_eval(inner: Box<dyn NodeImpl>) -> Box<dyn NodeImpl> {
+    struct AlwaysEval(Box<dyn NodeImpl>);
+    impl NodeImpl for AlwaysEval {
+        fn eval(&mut self, inputs: &[Spread], cx: &mut EvalCtx) -> NodeResult {
+            self.0.eval(inputs, cx)
+        }
+        fn memoise(&self) -> bool {
+            false
+        }
+    }
+    Box::new(AlwaysEval(inner))
+}

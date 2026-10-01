@@ -17,7 +17,7 @@ use crate::image::{
     decode_data_url, parse_image, parse_text, rasterize_svg, Image, LoadSlot, LoadState,
 };
 use crate::js;
-use crate::node::{raw, EvalCtx, NodeImpl, NodeInit};
+use crate::node::{always_eval, raw, EvalCtx, NodeImpl, NodeInit};
 use crate::nodes::shared::{first, to_vec2};
 use crate::nodes::style::style_arg;
 use crate::nodes::value::param_or;
@@ -146,7 +146,8 @@ pub fn svg(_: &NodeInit) -> Box<dyn NodeImpl> {
     let mut remote: LoadSlot<Arc<str>> = LoadSlot::default();
     let mut inline: Option<(String, Option<Arc<str>>)> = None;
     let mut raster: Memo<Option<(Arc<Image>, f64, f64)>> = Memo::default();
-    raw(move |inputs, cx| {
+    // Polls its load every tick (TS memoised it, freezing a pending URL).
+    always_eval(raw(move |inputs, cx| {
         let none = || {
             Ok(vec![
                 one(Value::Null),
@@ -234,5 +235,5 @@ pub fn svg(_: &NodeInit) -> Box<dyn NodeImpl> {
             num(h),
             one(true.into()),
         ])
-    })
+    }))
 }

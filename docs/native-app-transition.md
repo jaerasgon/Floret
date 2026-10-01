@@ -94,7 +94,7 @@ native/
     floret-engine/   types, compile, graph, tick, regions, state,
                      every node's compute, scene IR, .flora load/save +
                      migrations. NO GPU / UI / OS dependencies.
-    floret-render/   wgpu renderer for the scene IR, SVG export, shaders
+    floret-render/   wgpu renderer for the scene IR, shaders, texture export
     floret-media/    audio (cpal), camera, tracking (ort), MIDI, bus server
     floret-app/      egui app: editor canvas, panels, menus, documents
   fixtures/          golden fixtures exported from the TS app (see §4)
@@ -137,7 +137,7 @@ Before writing Rust, add an exporter to the **current** TS repo that writes:
 3. **Reference PNGs** per sample at a fixed frame, for pixel-diff tests of
    the wgpu renderer (with tolerance).
 4. **Unit fixtures** from the pure tests: compile, graph, regions, adaptive
-   math, spread ops, easing, curl noise, SVG output, migrations.
+   math, spread ops, easing, curl noise, migrations.
 
 The Rust engine then has a mechanical definition of "done": load the same
 patch, produce the same scene tree (float tolerance), render the same pixels
@@ -155,13 +155,13 @@ metrics (cosmic-text vs Canvas2D), image filters, and resampling.
 |---|---|---|---|
 | 0 | **Prep (in TS repo)** | Golden-fixture exporter, samples as `.flora`, constant-pin bug fixed, web app frozen to bug fixes only | S |
 | 1 | **Engine core** | `floret-engine`: types, compile, graph, tick, regions, state; math / spread-ops / vec2 / logic / convert / value nodes. Passes compile + region fixtures. CI on all 3 OSes | L |
-| 2 | **Scene + renderer** | Scene IR, draw / style / color / transform nodes, wgpu renderer, SVG export, headless render. Passes scene + pixel fixtures | L |
+| 2 | **Scene + renderer** | Scene IR, draw / style / color / transform nodes, wgpu renderer, headless render. Passes scene + pixel fixtures | L |
 | 3 | **App MVP** | egui app, node canvas editor, palette, node search, inline port editors, preview window, undo, open/save, native menus + dialogs. First downloadable build for visual patches on Mac / Windows / Linux | XL |
 | 4 | **Motion & simulation** | time, motion, random, particles, forces, colliders, physics | M |
 | 5 | **Image, text, shaders** | compute-shader image / pixel nodes, cosmic-text, GLSL shader node + shader panel | L |
 | 6 | **Media in/out** | audio nodes on cpal, microphone, MIDI, camera, ONNX tracking | L |
-| 7 | **IO** | Send/Receive bus server, e-ink, file / image / SVG / CSV nodes, Save SVG | M |
-| 8 | **Parity polish** | Docking panels, library, help, welcome, preferences, light/dark, focus mode / fullscreen output, PNG/SVG export, all 95 samples green | L |
+| 7 | **IO** | Send/Receive bus server, e-ink, file / image / CSV nodes, SVG files loaded as textures | M |
+| 8 | **Parity polish** | Docking panels, library, help, welcome, preferences, light/dark, focus mode / fullscreen output, PNG export, all 95 samples green | L |
 | 9 | **Release** | Icons, signed installers for all 3 OSes, auto-update, 1.0 | S |
 
 Rough total: **7–10 months** of focused work to reach today's feature set
@@ -190,7 +190,17 @@ fixture generator until phase 8 is green, then gets archived.
 
 ---
 
-## 7. Decisions needed
+## 7. Decisions
+
+- **No vector output** (decided 2026-10-01). Everything renders to GPU
+  textures: no SVG export, no `io/save-svg` node, no plotter/print-vector
+  path. Export is raster (PNG). SVG *files* can still be loaded, rasterised
+  to a texture. The scene stays retained-mode (it's how the renderer batches),
+  but nothing walks it to emit vectors.
+- Share links removed; body tracking fully ported; download page deferred
+  (see #49).
+
+### Earlier open questions
 
 1. **UI framework.** Recommend **egui**: it draws with the same wgpu renderer
    as the preview (no glue between UI and canvas), is mature on all three

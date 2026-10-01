@@ -19,7 +19,6 @@ pub mod nodes;
 pub mod patch;
 pub mod scene;
 pub mod spec;
-pub mod svg;
 pub mod tick;
 pub mod value;
 

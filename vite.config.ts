@@ -1,5 +1,6 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
+import { configDefaults } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
 // @ts-expect-error — plain .mjs plugin, no types needed
@@ -22,6 +23,8 @@ export default defineConfig({
     // nodes run in the DOM-less Node test env instead of throwing. See
     // src/test/setup-canvas.ts.
     setupFiles: ['./src/test/setup-canvas.ts'],
+    // Agent worktrees and the native port contain copies / non-TS code.
+    exclude: [...configDefaults.exclude, '.claude/**', 'native/**'],
   },
   server: {
     port: 5173,

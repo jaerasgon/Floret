@@ -1,13 +1,13 @@
 //! Retained-mode scene description — a port of `src/runtime/scene.ts`.
 //!
-//! Draw nodes return `SceneNode`s (plain data); the renderer and the SVG
-//! exporter walk the tree. Every shape carries its own `ResolvedStyle`.
+//! Draw nodes return `SceneNode`s (plain data); the GPU renderer
+//! walks the tree. Every shape carries its own `ResolvedStyle`.
 //!
 //! Differences from TS, by design:
 //! - A `Style` is data (a list of [`StyleOp`]s applied in order), not a JS
 //!   closure, so it can be compared, hashed, sent across threads and saved.
 //! - Colours are [`Paint`]s: the exact CSS string TS would have produced
-//!   (for parity and SVG output) plus parsed RGBA for the renderer.
+//!   (for parity with the TS traces) plus parsed RGBA for the renderer.
 //! - Mode / font fields stay strings, like TS: nodes can pass any string
 //!   and the renderer interprets it (unknown rect modes behave as `corner`).
 
@@ -544,7 +544,7 @@ pub fn style_value(st: &ResolvedStyle) -> Value {
     Value::Object(Arc::new(m))
 }
 
-// ─── Geometry helpers shared by renderer and SVG ─────────────────────────────
+// ─── Geometry helpers ────────────────────────────────────────────────────────
 
 pub fn translate_mat(tx: f64, ty: f64) -> Affine {
     [1.0, 0.0, 0.0, 1.0, tx, ty]

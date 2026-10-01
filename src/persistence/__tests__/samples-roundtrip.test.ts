@@ -90,6 +90,11 @@ describe('sample catalogue — serialize round-trip', () => {
     const usesImage = built.nodes.some(
       (n) => n.data.defType === 'io/image-url' || n.data.defType === 'draw/image',
     );
+    // Camera / body tracking need getUserMedia + a webcam (browser-only),
+    // so they produce no layers here — same treatment as images.
+    const usesCamera = built.nodes.some(
+      (n) => n.data.defType === 'input/camera' || n.data.defType === 'input/landmarks',
+    );
 
     it(`'${sample.name}' survives serialize → deserialize → compile`, () => {
       const { nodes, edges } = sample.build();
@@ -105,7 +110,7 @@ describe('sample catalogue — serialize round-trip', () => {
       expect(result.warnings).toEqual([]);
     });
 
-    if (!isVisual || usesSound || usesImage) continue;
+    if (!isVisual || usesSound || usesImage || usesCamera) continue;
 
     it(`'${sample.name}' ticks 4 frames without throwing (post round-trip)`, () => {
       const { nodes, edges } = sample.build();

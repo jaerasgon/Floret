@@ -26,6 +26,11 @@ describe('built-in samples', () => {
     const usesImage = built.nodes.some((n) =>
       n.data.defType === 'io/image-url' || n.data.defType === 'draw/image',
     );
+    // Camera / body tracking need getUserMedia + a webcam (browser-only),
+    // so they produce no layers here — same treatment as images.
+    const usesCamera = built.nodes.some(
+      (n) => n.data.defType === 'input/camera' || n.data.defType === 'input/landmarks',
+    );
 
     it(`'${sample.name}' compiles with no warnings`, () => {
       const { nodes, edges } = sample.build();
@@ -59,7 +64,7 @@ describe('built-in samples', () => {
       expect(result.warnings).toEqual([]);
     });
 
-    if (!isVisual || usesSound || usesImage) continue;
+    if (!isVisual || usesSound || usesImage || usesCamera) continue;
 
     it(`'${sample.name}' has a Renderer and produces ≥1 layer per tick`, () => {
       const { nodes, edges } = sample.build();

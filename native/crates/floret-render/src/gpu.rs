@@ -23,6 +23,9 @@ pub const STENCIL_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Stencil8;
 const BLUR_STRIDE: u64 = 256;
 /// Drop a text texture after this many frames unused.
 const TEXT_TTL_FRAMES: u64 = 240;
+/// Image textures go sooner: a changing image makes a new id every frame.
+/// Unused ones are recycled for new images of the same size first.
+const IMAGE_TTL_FRAMES: u64 = 2;
 
 /// Counts from the last [`Renderer::render`], for diagnostics / tests.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -32,6 +35,7 @@ pub struct RenderStats {
     pub poly_fills: usize,
     pub fill_vertices: usize,
     pub text_quads: usize,
+    pub image_quads: usize,
     pub commands: usize,
     pub layers: usize,
     /// Shapes the renderer couldn't draw (unsupported / non-finite).
@@ -125,6 +129,13 @@ struct TextTexture {
     last_used: u64,
 }
 
+struct ImageTexture {
+    texture: wgpu::Texture,
+    bind: wgpu::BindGroup,
+    size: (u32, u32),
+    last_used: u64,
+}
+
 #[derive(Clone, Copy)]
 enum Level {
     Base,
@@ -164,6 +175,10 @@ pub struct Renderer {
     blur_bg: Option<(u64, wgpu::BindGroup)>,
     targets: Option<Targets>,
     text_textures: HashMap<u64, TextTexture>,
+    /// By image generation id.
+    image_textures: HashMap<u64, ImageTexture>,
+    /// Clear to transparent instead of the opaque background.
+    transparent: bool,
     fb: FrameBuilder,
     text: TextRasterizer,
     frame: u64,
@@ -507,6 +522,8 @@ impl Renderer {
             blur_bg: None,
             targets: None,
             text_textures: HashMap::new(),
+            image_textures: HashMap::new(),
+            transparent: false,
             fb: FrameBuilder::new(),
             text: TextRasterizer::new(),
             frame: 0,
@@ -525,6 +542,13 @@ impl Renderer {
     /// Counts from the last frame.
     pub fn stats(&self) -> RenderStats {
         self.stats
+    }
+
+    /// Clear frames to transparent black instead of the opaque background
+    /// (rasterising layers into an image, like the web app's
+    /// `renderLayersToCanvas(…, null)`). Off by default.
+    pub fn set_transparent_background(&mut self, on: bool) {
+        self.transparent = on;
     }
 
     /// Render `layers` (top-level scene nodes, painter's order) into
@@ -650,6 +674,7 @@ impl Renderer {
             }
         }
         self.upload_text(device, queue);
+        self.upload_images(device, queue);
 
         // 3. Replay.
         self.execute(encoder, target, background, size);
@@ -663,7 +688,18 @@ impl Renderer {
                 .filter(|c| matches!(c, Cmd::PolyFill { .. }))
                 .count(),
             fill_vertices: self.fb.fill.len(),
-            text_quads: self.fb.tex_verts.len() / 6,
+            text_quads: self
+                .fb
+                .cmds
+                .iter()
+                .filter(|c| matches!(c, Cmd::Tex { .. }))
+                .count(),
+            image_quads: self
+                .fb
+                .cmds
+                .iter()
+                .filter(|c| matches!(c, Cmd::Image { .. }))
+                .count(),
             commands: self.fb.cmds.len(),
             layers: depth,
             skipped: self.fb.skipped,
@@ -763,6 +799,96 @@ impl Renderer {
             .retain(|_, t| t.last_used + TEXT_TTL_FRAMES >= frame);
     }
 
+    /// Upload every image this frame draws that isn't on the GPU yet,
+    /// recycling an unused texture of the same size when there is one.
+    fn upload_images(&mut self, device: &wgpu::Device, queue: &wgpu::Queue) {
+        let frame = self.frame;
+        for cmd in &self.fb.cmds {
+            let Cmd::Image { image, .. } = cmd else {
+                continue;
+            };
+            if let Some(t) = self.image_textures.get_mut(&image.id()) {
+                t.last_used = frame;
+                continue;
+            }
+            let size = (image.width(), image.height());
+            if size.0 == 0 || size.1 == 0 || size.0 > self.max_texture || size.1 > self.max_texture
+            {
+                continue;
+            }
+            let stale = self
+                .image_textures
+                .iter()
+                .find(|(_, t)| t.last_used < frame && t.size == size)
+                .map(|(id, _)| *id);
+            let mut tex = match stale.and_then(|id| self.image_textures.remove(&id)) {
+                Some(t) => t,
+                None => self.create_image_texture(device, size),
+            };
+            queue.write_texture(
+                wgpu::TexelCopyTextureInfo {
+                    texture: &tex.texture,
+                    mip_level: 0,
+                    origin: wgpu::Origin3d::ZERO,
+                    aspect: wgpu::TextureAspect::All,
+                },
+                &image.premultiplied(),
+                wgpu::TexelCopyBufferLayout {
+                    offset: 0,
+                    bytes_per_row: Some(size.0 * 4),
+                    rows_per_image: Some(size.1),
+                },
+                wgpu::Extent3d {
+                    width: size.0,
+                    height: size.1,
+                    depth_or_array_layers: 1,
+                },
+            );
+            tex.last_used = frame;
+            self.image_textures.insert(image.id(), tex);
+        }
+        self.image_textures
+            .retain(|_, t| t.last_used + IMAGE_TTL_FRAMES >= frame);
+    }
+
+    fn create_image_texture(&self, device: &wgpu::Device, size: (u32, u32)) -> ImageTexture {
+        let texture = device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("floret image"),
+            size: wgpu::Extent3d {
+                width: size.0,
+                height: size.1,
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: wgpu::TextureFormat::Rgba8Unorm,
+            usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+            view_formats: &[],
+        });
+        let view = texture.create_view(&Default::default());
+        let bind = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some("floret image"),
+            layout: &self.tex_layout,
+            entries: &[
+                wgpu::BindGroupEntry {
+                    binding: 0,
+                    resource: wgpu::BindingResource::TextureView(&view),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 1,
+                    resource: wgpu::BindingResource::Sampler(&self.sampler),
+                },
+            ],
+        });
+        ImageTexture {
+            texture,
+            bind,
+            size,
+            last_used: 0,
+        }
+    }
+
     fn create_text_texture(
         &self,
         device: &wgpu::Device,
@@ -834,11 +960,15 @@ impl Renderer {
             return;
         };
         let cmds = &self.fb.cmds;
-        let bg = wgpu::Color {
-            r: finite01(background[0]),
-            g: finite01(background[1]),
-            b: finite01(background[2]),
-            a: 1.0,
+        let bg = if self.transparent {
+            wgpu::Color::TRANSPARENT
+        } else {
+            wgpu::Color {
+                r: finite01(background[0]),
+                g: finite01(background[1]),
+                b: finite01(background[2]),
+                a: 1.0,
+            }
         };
         let mut stack: Vec<Level> = vec![Level::Base];
         let mut load = wgpu::LoadOp::Clear(bg);
@@ -1076,6 +1206,20 @@ impl Renderer {
             } => {
                 let (Some(buf), Some(tex)) =
                     (self.tex_buf.slice(), self.text_textures.get(&texture.id))
+                else {
+                    return;
+                };
+                if !self.scissor(pass, clip, size) {
+                    return;
+                }
+                pass.set_pipeline(&self.tex_pipe);
+                pass.set_bind_group(1, &tex.bind, &[]);
+                pass.set_vertex_buffer(0, buf);
+                pass.draw(quad * 6..quad * 6 + 6, 0..1);
+            }
+            Cmd::Image { quad, image, clip } => {
+                let (Some(buf), Some(tex)) =
+                    (self.tex_buf.slice(), self.image_textures.get(&image.id()))
                 else {
                     return;
                 };

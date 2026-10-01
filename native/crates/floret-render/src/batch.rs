@@ -7,7 +7,8 @@
 //!   for lines, polygon / arc / triangle / quad outlines, points.
 //! - **Stencil fill**: triangle / quad / polygon / arc fills — a fan into the
 //!   stencil buffer (nonzero winding) then a cover quad.
-//! - **Textured quads**: text runs (rasterised CPU-side, see `text.rs`).
+//! - **Textured quads**: text runs (rasterised CPU-side, see `text.rs`) and
+//!   images (`SceneNode::Image`, one texture per image generation id).
 //!
 //! Group transforms are baked into world coordinates (incl. shear), blend
 //! groups and blurred shapes become layer push/pop commands, clips become
@@ -20,6 +21,7 @@
 //! without a GPU.
 
 use crate::text::{TextKey, TextRasterizer};
+use floret_engine::image::Image;
 use floret_engine::scene::{
     catmull_rom_beziers, mul, resolve_box, Affine, Paint, ResolvedStyle, SceneNode,
 };
@@ -160,6 +162,12 @@ pub enum Cmd {
     Tex {
         quad: u32,
         texture: TextKey,
+        clip: Clip,
+    },
+    /// Textured quad `tex_verts[quad * 6..quad * 6 + 6]` showing `image`.
+    Image {
+        quad: u32,
+        image: Arc<Image>,
         clip: Clip,
     },
     /// Start drawing into a fresh transparent layer.
@@ -373,6 +381,31 @@ impl FrameBuilder {
 
     /// A textured quad from its four world corners (TL, TR, BL, BR).
     pub fn push_tex_quad(&mut self, c: [[f64; 2]; 4], uv: [f32; 4], tint: Rgba, texture: TextKey) {
+        let quad = self.tex_quad_verts(c, uv, tint);
+        self.cmds.push(Cmd::Tex {
+            quad,
+            texture,
+            clip: self.cur_clip(),
+        });
+    }
+
+    /// An image quad from its four world corners (TL, TR, BL, BR).
+    pub fn push_image_quad(
+        &mut self,
+        c: [[f64; 2]; 4],
+        uv: [f32; 4],
+        tint: Rgba,
+        image: Arc<Image>,
+    ) {
+        let quad = self.tex_quad_verts(c, uv, tint);
+        self.cmds.push(Cmd::Image {
+            quad,
+            image,
+            clip: self.cur_clip(),
+        });
+    }
+
+    fn tex_quad_verts(&mut self, c: [[f64; 2]; 4], uv: [f32; 4], tint: Rgba) -> u32 {
         self.grow(aabb(c));
         let quad = (self.tex_verts.len() / 6) as u32;
         let [u0, v0, u1, v1] = uv;
@@ -384,11 +417,7 @@ impl FrameBuilder {
                 tint,
             });
         }
-        self.cmds.push(Cmd::Tex {
-            quad,
-            texture,
-            clip: self.cur_clip(),
-        });
+        quad
     }
 
     fn push_mask_quad(&mut self, c: [[f64; 2]; 4]) -> u32 {
@@ -794,6 +823,32 @@ impl Emitter<'_> {
                 self.fb
                     .push_tex_quad(c, [0.0, 0.0, 1.0, 1.0], tint, run.clone());
             }
+            SceneNode::Image {
+                image,
+                src,
+                dst,
+                tint,
+            } => {
+                // `scene-to-batches.ts`: the source rect becomes UVs (the
+                // sampler clamps outside the image), the tint multiplies.
+                let (iw, ih) = (f64::from(image.width()), f64::from(image.height()));
+                let uv = match src {
+                    Some(s) => [s.x / iw, s.y / ih, (s.x + s.w) / iw, (s.y + s.h) / ih],
+                    None => [0.0, 0.0, 1.0, 1.0],
+                };
+                let c = [
+                    apply(m, dst.x, dst.y),
+                    apply(m, dst.x + dst.w, dst.y),
+                    apply(m, dst.x, dst.y + dst.h),
+                    apply(m, dst.x + dst.w, dst.y + dst.h),
+                ];
+                if c.iter().flatten().chain(&uv).any(|v| !v.is_finite()) {
+                    fb.skipped += 1;
+                    return;
+                }
+                let tint = tint.as_ref().map_or([1.0; 4], |p| paint_rgba(Some(p)));
+                fb.push_image_quad(c, uv.map(|v| v as f32), tint, image.clone());
+            }
             #[allow(unreachable_patterns)]
             _ => fb.skipped += 1,
         }
@@ -1012,6 +1067,63 @@ mod tests {
             })
         );
         assert_eq!(fb.max_layer_depth(), 1);
+    }
+
+    #[test]
+    fn images_become_textured_quads() {
+        let image = Arc::new(Image::transparent(10, 20));
+        let node = SceneNode::Image {
+            image: image.clone(),
+            src: Some(RectF {
+                x: 5.0,
+                y: 0.0,
+                w: 5.0,
+                h: 10.0,
+            }),
+            dst: RectF {
+                x: 1.0,
+                y: 2.0,
+                w: 30.0,
+                h: 40.0,
+            },
+            tint: Some(Paint::css("rgba(255,0,0,0.5)")),
+        };
+        let g = SceneNode::Group {
+            children: Arc::from(vec![Arc::new(node)]),
+            transform: Some([2.0, 0.0, 0.0, 2.0, 100.0, 0.0]),
+            blend_mode: None,
+            clip: None,
+        };
+        let fb = build(&[g]);
+        assert_eq!(
+            fb.cmds,
+            vec![Cmd::Image {
+                quad: 0,
+                image,
+                clip: None
+            }]
+        );
+        // TL and BR corners, through the group transform.
+        assert_eq!(fb.tex_verts[0].pos, [102.0, 4.0]);
+        assert_eq!(fb.tex_verts[5].pos, [162.0, 84.0]);
+        assert_eq!(fb.tex_verts[0].uv, [0.5, 0.0]);
+        assert_eq!(fb.tex_verts[5].uv, [1.0, 0.5]);
+        assert_eq!(fb.tex_verts[0].tint, [1.0, 0.0, 0.0, 0.5]);
+        // Non-finite geometry is skipped.
+        let bad = SceneNode::Image {
+            image: Arc::new(Image::transparent(2, 2)),
+            src: None,
+            dst: RectF {
+                x: f64::NAN,
+                y: 0.0,
+                w: 1.0,
+                h: 1.0,
+            },
+            tint: None,
+        };
+        let fb = build(&[bad]);
+        assert!(fb.cmds.is_empty());
+        assert_eq!(fb.skipped, 1);
     }
 
     #[test]

@@ -4,6 +4,7 @@
 
 #![allow(dead_code)]
 
+use floret_engine::image::Image;
 use floret_engine::scene::{Paint, RectF, ResolvedStyle, SceneNode};
 use floret_engine::{Color, Vec2};
 use serde_json::Value as J;
@@ -404,6 +405,34 @@ fn node(o: &Fx, unsupported: &mut Vec<String>) -> Option<SceneNode> {
                 transform,
                 blend_mode: o.get("blendMode").and_then(Fx::str).map(Arc::from),
                 clip,
+            }
+        }
+        // Synthetic scenes carry inline pixels; recorded canvases are opaque.
+        "image" => {
+            let rect = |r: &Fx| RectF {
+                x: num(r, "x"),
+                y: num(r, "y"),
+                w: num(r, "w"),
+                h: num(r, "h"),
+            };
+            let Some((src, dst)) = o.get("source").zip(o.get("dst")) else {
+                unsupported.push(kind.to_owned());
+                return None;
+            };
+            let Some(rgba) = src.get("rgba").and_then(Fx::arr) else {
+                unsupported.push(kind.to_owned());
+                return None;
+            };
+            let bytes = rgba.iter().map(|v| v.num().unwrap_or(0.0) as u8).collect();
+            SceneNode::Image {
+                image: Arc::new(Image::new(
+                    num(src, "w") as u32,
+                    num(src, "h") as u32,
+                    bytes,
+                )),
+                src: o.get("src").filter(|s| s.get("x").is_some()).map(rect),
+                dst: rect(dst),
+                tint: paint(o.get("tint")),
             }
         }
         other => {

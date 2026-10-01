@@ -12,6 +12,7 @@
 //   node native/crates/floret-render/reference/generate.mjs
 //
 // PLAYWRIGHT_MODULE defaults to the `playwright` package resolvable from here.
+// REFERENCE_ONLY=<name,...> renders just those scenes.
 
 import { build } from 'esbuild';
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
@@ -42,6 +43,16 @@ const poly = (pts, closed, s, tension) => ({
 });
 const text = (t, x, y, s) => ({ kind: 'text', text: t, x, y, style: st(s) });
 const group = (children, extra = {}) => ({ kind: 'group', children, ...extra });
+// An image source as inline pixels (harness.ts turns it into a canvas):
+// a 16×16 gradient whose bottom-right quadrant is half transparent.
+const gradient = (() => {
+  const rgba = [];
+  for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) {
+    rgba.push(x * 16, y * 16, 255 - x * 8, x >= 8 && y >= 8 ? 128 : 255);
+  }
+  return { w: 16, h: 16, rgba };
+})();
+const image = (src, dst, tint = null) => ({ kind: 'image', source: gradient, src, dst, tint });
 const star = (cx, cy, r1, r2, n) => Array.from({ length: n * 2 }, (_, i) => {
   const a = (i / (n * 2)) * Math.PI * 2 - Math.PI / 2, r = i % 2 ? r2 : r1;
   return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
@@ -165,7 +176,21 @@ const SYNTHETIC = {
         { transform: [Math.cos(-0.6), Math.sin(-0.6), -Math.sin(-0.6), Math.cos(-0.6), 90, 120] }),
     ],
   },
+  image: {
+    width: 320, height: 320, background: [0.1, 0.1, 0.12],
+    layers: [
+      image(null, { x: -150, y: -150, w: 128, h: 128 }),
+      image({ x: 4, y: 2, w: 8, h: 10 }, { x: 10, y: -150, w: 100, h: 120 }, 'rgba(255,160,0,0.8)'),
+      group([image(null, { x: -40, y: -40, w: 80, h: 80 })],
+        { transform: [Math.cos(0.4), Math.sin(0.4), -Math.sin(0.4), Math.cos(0.4), -80, 80] }),
+      rect(20, 20, 130, 130, { fill: '#808080' }),
+      group([image(null, { x: 40, y: 40, w: 90, h: 90 })], { blendMode: 'multiply' }),
+      group([image(null, { x: 0, y: 0, w: 160, h: 160 })], { clip: { x: 30, y: 30, w: 40, h: 40 } }),
+    ],
+  },
 };
+const only = process.env.REFERENCE_ONLY?.split(',');
+const wanted = (name) => !only || only.includes(name);
 
 // ── Trace scenes ────────────────────────────────────────────────────────────
 
@@ -240,6 +265,7 @@ async function renderTo(name, scene) {
 }
 
 for (const [name, scene] of Object.entries(SYNTHETIC)) {
+  if (!wanted(name)) continue;
   writeFileSync(join(here, 'scenes', `${name}.json`), JSON.stringify(scene, null, 1) + '\n');
   await renderTo(name, scene);
 }
@@ -248,6 +274,7 @@ for (const [name, scene] of Object.entries(SYNTHETIC)) {
 const FRAME = 5; // frames 0, 1, 2, 10, 30, 60 → index 5 = frame 60
 for (const f of readdirSync(traces).filter((f) => f.endsWith('.json.gz')).sort()) {
   const sample = f.slice(0, -'.json.gz'.length);
+  if (!wanted(`${sample}-f${FRAME}`)) continue;
   const scene = traceScene(sample, FRAME);
   if (!scene || scene.layers.length === 0) continue;
   await renderTo(`${sample}-f${FRAME}`, scene);

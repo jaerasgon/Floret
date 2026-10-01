@@ -3,8 +3,9 @@
 //! Turns the engine's retained-mode scene (`floret_engine::scene::SceneNode`
 //! trees) into pixels with wgpu, matching the web app's WebGL2 renderer
 //! (`src/runtime/gl/`): SDF rects / ellipses / capsules, stencil-winding
-//! polygon fills, CPU-rasterised text quads, blend-group layers, per-shape
-//! Gaussian blur, scissor clips, MSAA, premultiplied alpha.
+//! polygon fills, CPU-rasterised text quads, image quads, blend-group
+//! layers, per-shape Gaussian blur, scissor clips, MSAA, premultiplied
+//! alpha. [`LayerRasterizer`] renders layers back into engine images.
 //!
 //! ```no_run
 //! # fn demo(layers: &[std::sync::Arc<floret_engine::scene::SceneNode>]) {
@@ -19,11 +20,13 @@
 mod batch;
 mod gpu;
 mod headless;
+mod raster;
 mod text;
 
 pub use batch::{Blend, Cmd, Emitter, FrameBuilder};
 pub use gpu::{RenderStats, Renderer, STENCIL_FORMAT};
 pub use headless::{render_and_read, render_to_rgba, Headless, FORMAT as OFFSCREEN_FORMAT};
+pub use raster::LayerRasterizer;
 pub use text::{TextRasterizer, TextRun};
 
 use floret_engine::scene::{Paint, SceneNode};
@@ -88,6 +91,7 @@ const _: () = {
     const fn check<T: Send + Sync>() {}
     check::<Renderer>();
     check::<Headless>();
+    check::<LayerRasterizer>();
 };
 
 #[cfg(test)]

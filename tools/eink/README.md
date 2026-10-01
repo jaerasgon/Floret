@@ -27,6 +27,11 @@ generative frame at a time and updates every couple of seconds — not animation
    - `width`/`height` → the sent resolution (match your panel)
 3. Find the Mac's LAN IP: `ipconfig getifaddr en0`.
 
+**Native app:** no dev server needed. Turn on **Bus** in the status bar: the
+app serves the same `/__floret/bus/<channel>` API on port 5173 and shows its
+LAN address (`http://<ip>:5173`), so `HOST` in the Pi script stays the same
+form.
+
 ## On the Raspberry Pi
 
 Enable SPI (`sudo raspi-config` → Interface Options → SPI), then install the

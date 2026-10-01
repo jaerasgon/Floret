@@ -1,14 +1,24 @@
 # Floret → Native Desktop App — Transition Plan
 
-**Status:** proposed · **Date:** 2026-10-01
-**Decision so far:** fully native desktop app — no browser layer, no
-Electron, no Tauri/web view. Must run on **macOS, Windows and Linux**.
+**Status:** in progress (approved 2026-10-01) · **Date:** 2026-10-01
+**Decisions:** fully native desktop app — no browser layer, no Electron, no
+Tauri/web view. Runs on **macOS, Windows and Linux**. The TypeScript web app
+is no longer developed; it stays in the repo only as the reference
+implementation the native port is checked against (golden fixtures).
 
 Reference point: [Caddis](https://www.caddis.app/) — a vibe-coded node-based
 motion tool that feels native and ships on all three platforms. Its engine
 is Rust + wgpu (Metal / D3D12 / Vulkan). Floret follows the same foundation.
 
-This replaces issue #30 ("Native kiosk shell (Electron / Tauri)").
+This replaces issue #30 ("Native kiosk shell (Electron / Tauri)", closed).
+
+## Progress
+
+| Phase | State |
+|---|---|
+| 0 · Fixtures | ✅ `npm run fixtures:export` → 95 `.flora` samples + traces in `native/` |
+| 1 · Engine core | 🟡 compile / tick / regions / state ported; parity harness in CI on all 3 OSes; node categories being ported |
+| 2–9 | not started |
 
 ---
 
@@ -150,8 +160,8 @@ Rough total: **7–10 months** of focused work to reach today's feature set
 testing). Phases 1–2 and the engine half of 4–7 are mechanical against
 fixtures and move fastest; phase 3 (the editor) carries the most risk.
 
-The web version stays as the reference implementation and fixture generator
-until phase 8 is green, then gets archived.
+The web version is frozen: it stays only as the reference implementation and
+fixture generator until phase 8 is green, then gets archived.
 
 ---
 
@@ -189,8 +199,8 @@ until phase 8 is green, then gets archived.
    Both run in CI.
 3. **Linux packaging.** Recommend **AppImage** first (one file, runs on most
    distros, what Caddis ships); add Flatpak later if wanted.
-4. **Web version during the rewrite.** Recommend **freeze to bug fixes** so
-   the fixtures don't move under the port.
+4. ~~Web version during the rewrite~~ — decided: no further web work; it is
+   reference-only.
 
 ---
 

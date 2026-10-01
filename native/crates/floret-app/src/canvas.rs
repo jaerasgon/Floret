@@ -483,9 +483,16 @@ impl View {
     /// Record a value edit: params coalesce in undo and stay live (unless
     /// they reshape the node's inputs); port values recompile.
     fn commit_value(&mut self, patch: &mut PatchFile, cat: &Catalogue, node: &str, key: &EditKey) {
-        let reshapes = ports::find_node(patch, node)
-            .and_then(|n| cat.get(&n.def_type))
-            .is_some_and(|s| s.has_dynamic_inputs);
+        // Dynamic inputs reshape the node; constant pins read their value
+        // at compile. Either way the engine needs a rebuild.
+        let constant = |p: &floret_engine::spec::PortSpec| {
+            p.constant && matches!(key, EditKey::Param(k) if p.param.as_ref() == Some(k))
+        };
+        let reshapes = ports::find_node(patch, node).is_some_and(|n| {
+            cat.get(&n.def_type).is_some_and(|s| {
+                s.has_dynamic_inputs || cat.resolved_inputs(s, &n.params).iter().any(constant)
+            })
+        });
         match key {
             EditKey::Param(k) if !reshapes => {
                 self.history.push(patch, Some(&format!("{node}.{k}")));
@@ -807,9 +814,13 @@ pub fn show(
                         );
                     } else if auto_grow {
                         for id in ids.iter() {
+                            // Regions, and the entered subpatch's frame.
                             let in_frame = ports::find_node(patch, id)
                                 .and_then(|n| n.parent_id.as_deref())
-                                .is_some_and(|p| regions::is_drawable_node(patch, cat, p));
+                                .is_some_and(|p| {
+                                    regions::is_drawable_node(patch, cat, p)
+                                        || scope.as_deref() == Some(p)
+                                });
                             if !in_frame {
                                 continue;
                             }

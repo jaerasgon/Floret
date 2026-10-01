@@ -63,7 +63,9 @@ pub enum Outcome<T> {
 
 fn pressed_outside(ctx: &egui::Context, rect: Rect) -> bool {
     ctx.input(|i| {
-        i.pointer.any_pressed() && i.pointer.press_origin().is_some_and(|p| !rect.contains(p))
+        // A press and release in one frame leaves no press origin.
+        let at = i.pointer.press_origin().or(i.pointer.latest_pos());
+        i.pointer.any_pressed() && at.is_some_and(|p| !rect.contains(p))
     })
 }
 

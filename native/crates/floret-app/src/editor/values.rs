@@ -396,6 +396,30 @@ pub fn tooltip(s: &Spread) -> String {
     }
 }
 
+/// A pin's display label (`withCanonicalLabels`): an explicit label wins;
+/// otherwise generic number outputs read "value", audio inputs "audio" and
+/// a node's main layer output "layer". Handle ids are untouched.
+pub fn display_label(p: &PortSpec, input: bool) -> String {
+    if let Some(l) = &p.label {
+        return l.clone();
+    }
+    let canonical =
+        if !input && matches!(p.name.as_str(), "result" | "number") && p.ty != PortType::Boolean {
+            Some("value")
+        } else if input && p.ty == PortType::Audio {
+            Some("audio")
+        } else if !input
+            && p.ty == PortType::Layer
+            && p.kind != floret_engine::spec::PortKind::Spread
+            && !matches!(p.name.as_str(), "viz" | "guides" | "inner" | "outer")
+        {
+            Some("layer")
+        } else {
+            None
+        };
+    canonical.map_or_else(|| p.name.clone(), str::to_owned)
+}
+
 /// Header symbols for math nodes (`MATH_SYMBOLS`).
 pub fn math_symbol(ty: &str) -> Option<&'static str> {
     Some(match ty {
@@ -597,6 +621,18 @@ mod tests {
         assert_eq!(tooltip(&c), "#ff0000");
         assert_eq!(tooltip(&Spread::from(Vec::new())), "[ ]");
         assert_eq!(math_symbol("math/mul"), Some("×"));
+        let cat = Catalogue::builtin();
+        let add = cat.get("math/add").unwrap();
+        assert_eq!(display_label(&add.outputs[0], false), "value");
+        let rect = cat.get("draw/rect").unwrap();
+        assert_eq!(display_label(&rect.outputs[0], false), "layer");
+        assert_eq!(
+            display_label(&rect.inputs[0], true),
+            rect.inputs[0]
+                .label
+                .clone()
+                .unwrap_or(rect.inputs[0].name.clone())
+        );
         assert_eq!(math_symbol("math/lerp"), None);
     }
 

@@ -378,24 +378,19 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                 Some(t) => (t.clone(), FG_0),
                 None => (label.clone(), FG_1),
             };
-            // Keep clear of an inline field on the same row.
+            // Keep clear of an inline field on the same row; a readout
+            // that doesn't fit is dropped (the pin tooltip still has it).
             let left = b
                 .fields
                 .iter()
                 .filter(|f| (f.rect.center().y - row.y).abs() < 1.0)
                 .map(|f| f.rect.right() + 4.0 * z)
                 .fold(b.rect.left(), f32::max);
-            let clip = Rect::from_min_max(
-                pos2(left, row.y - 10.0 * z),
-                pos2(b.rect.right() - 6.0 * z, row.y + 10.0 * z),
-            );
-            p.with_clip_rect(clip).text(
-                pos2(b.rect.right() - 10.0 * z, row.y),
-                Align2::RIGHT_CENTER,
-                text,
-                FontId::monospace(10.5 * z),
-                color,
-            );
+            let g = p.layout_no_wrap(text, FontId::monospace(10.5 * z), color);
+            let right = b.rect.right() - 10.0 * z;
+            if right - g.size().x >= left {
+                p.galley(pos2(right - g.size().x, row.y - g.size().y / 2.0), g, color);
+            }
         }
     }
     for f in &b.fields {

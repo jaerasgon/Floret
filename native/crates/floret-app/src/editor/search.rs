@@ -122,6 +122,44 @@ mod tests {
     }
 
     #[test]
+    fn ranking_matches_node_search_tsx() {
+        let cat = Catalogue::builtin();
+        // Every token must hit label, type, category or description, in
+        // any order.
+        let r = search(cat, "spread ring", &Fit::Any);
+        assert!(r.iter().any(|s| s.ty == "spread/ring"));
+        for s in &r {
+            let hay = format!(
+                "{} {} {} {}",
+                s.label,
+                s.ty,
+                s.category,
+                s.description.as_deref().unwrap_or("")
+            )
+            .to_lowercase();
+            assert!(hay.contains("spread") && hay.contains("ring"));
+        }
+        // Label-prefix matches first, then alphabetical by label.
+        let r = search(cat, "ring", &Fit::Any);
+        let first_other = r
+            .iter()
+            .position(|s| !s.label.to_lowercase().starts_with("ring"))
+            .unwrap_or(r.len());
+        assert!(first_other > 0);
+        assert!(r[first_other..]
+            .iter()
+            .all(|s| !s.label.to_lowercase().starts_with("ring")));
+        let tail: Vec<String> = r[first_other..]
+            .iter()
+            .map(|s| s.label.to_lowercase())
+            .collect();
+        let mut sorted = tail.clone();
+        sorted.sort();
+        assert_eq!(tail, sorted);
+        assert!(search(cat, "", &Fit::Any).len() <= MAX_RESULTS);
+    }
+
+    #[test]
     fn insertion_needs_both_sides() {
         let cat = Catalogue::builtin();
         let r = search(

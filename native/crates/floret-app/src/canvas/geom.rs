@@ -462,17 +462,14 @@ fn row_box(
     let outs = ports::resolved_outputs(spec, &n.params);
     for i in 0..items.len().max(outs.len()) {
         let y = row_y(b, i, z);
-        let output = outs.get(i).map(|p| {
-            (
-                p.label.clone().unwrap_or_else(|| p.name.clone()),
-                p.name.clone(),
-            )
-        });
+        let output = outs
+            .get(i)
+            .map(|p| (values::display_label(p, false), p.name.clone()));
         if let Some(p) = outs.get(i) {
             b.pins.push(PinGeom {
                 side: Side::Out,
                 port: p.name.clone(),
-                label: p.label.clone().unwrap_or_else(|| p.name.clone()),
+                label: values::display_label(p, false),
                 ty: p.ty,
                 pos: pos2(b.rect.right(), y),
                 spread: p.kind == PortKind::Spread,
@@ -505,13 +502,13 @@ fn row_box(
                 b.pins.push(PinGeom {
                     side: Side::In,
                     port: port.name.clone(),
-                    label: port.label.clone().unwrap_or_else(|| port.name.clone()),
+                    label: values::display_label(port, true),
                     ty: port.ty,
                     pos: pos2(b.rect.left(), y),
                     spread: port.kind == PortKind::Spread,
                     constant: port.constant,
                 });
-                row.label = Some(port.label.clone().unwrap_or_else(|| port.name.clone()));
+                row.label = Some(values::display_label(port, true));
                 row.constant = port.constant;
                 row.integer = port.integer && port.ty == PortType::Number;
                 if let Some((key, kind)) = values::input_editor(spec, port, is_wired) {

@@ -1,0 +1,282 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "12 · Circle of Shapes",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t12_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -560,
+        "y": 0
+      },
+      "params": {
+        "text": "Layouts on a circle\n\n`RingSpread` lays N points around a circle. Its `positions` output gives them directly — but here we use the `angles` output and build the layout by hand: inside a ForEach, take cos/sin of each angle, multiply by a radius, and draw a shape.\n\nResult: 24 dots evenly placed on a ring.",
+        "width": 380,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Layouts on a circle\n\n`RingSpread` lays N points around a circle. Its `positions` output gives them directly — but here we use the `angles` output and build the layout by hand: inside a ForEach, take cos/sin of each angle, multiply by a radius, and draw a shape.\n\nResult: 24 dots evenly placed on a ring.",
+        "width": 380,
+        "height": 220
+      }
+    },
+    {
+      "id": "t12_circ",
+      "defType": "spread/ring",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "count": 24,
+        "phase": 0
+      },
+      "portValues": {
+        "count": 24,
+        "phase": 0
+      }
+    },
+    {
+      "id": "t12_R",
+      "defType": "value/number",
+      "position": {
+        "x": 84,
+        "y": 450
+      },
+      "params": {
+        "value": 150
+      },
+      "portValues": {
+        "value": 150
+      }
+    },
+    {
+      "id": "t12_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 448,
+        "y": 0
+      },
+      "params": {
+        "width": 672,
+        "height": 700,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "a",
+          "name": "angle",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "r",
+          "name": "r",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 672,
+      "height": 700
+    },
+    {
+      "id": "t12_cos",
+      "defType": "math/cos",
+      "position": {
+        "x": 56,
+        "y": 100
+      },
+      "params": {},
+      "parentId": "t12_region"
+    },
+    {
+      "id": "t12_sin",
+      "defType": "math/sin",
+      "position": {
+        "x": 56,
+        "y": 250
+      },
+      "params": {},
+      "parentId": "t12_region"
+    },
+    {
+      "id": "t12_mulX",
+      "defType": "math/mul",
+      "position": {
+        "x": 280,
+        "y": 100
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "t12_region"
+    },
+    {
+      "id": "t12_mulY",
+      "defType": "math/mul",
+      "position": {
+        "x": 280,
+        "y": 250
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "t12_region"
+    },
+    {
+      "id": "t12_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 150
+      },
+      "params": {
+        "w": 18,
+        "h": 18
+      },
+      "parentId": "t12_region",
+      "portValues": {
+        "w": 18,
+        "h": 18
+      }
+    },
+    {
+      "id": "t12_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1204,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t12_ell-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 443.99999999999994,
+        "y": 150
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "t12_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_52",
+      "source": "t12_circ",
+      "target": "t12_region",
+      "sourceHandle": "out-angles",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_53",
+      "source": "t12_R",
+      "target": "t12_region",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_54",
+      "source": "t12_region",
+      "target": "t12_cos",
+      "sourceHandle": "out-a",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_55",
+      "source": "t12_region",
+      "target": "t12_sin",
+      "sourceHandle": "out-a",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_56",
+      "source": "t12_cos",
+      "target": "t12_mulX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_57",
+      "source": "t12_region",
+      "target": "t12_mulX",
+      "sourceHandle": "out-r",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_58",
+      "source": "t12_sin",
+      "target": "t12_mulY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_59",
+      "source": "t12_region",
+      "target": "t12_mulY",
+      "sourceHandle": "out-r",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_60",
+      "source": "t12_mulX",
+      "target": "t12_ell-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_61",
+      "source": "t12_mulY",
+      "target": "t12_ell-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_62",
+      "source": "t12_ell",
+      "target": "t12_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_63",
+      "source": "t12_region",
+      "target": "t12_renderer",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t12_ell-xy0",
+      "source": "t12_ell-xy0",
+      "target": "t12_ell",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

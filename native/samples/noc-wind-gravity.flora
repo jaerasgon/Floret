@@ -1,0 +1,718 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Wind & Gravity",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "wg_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": -616,
+        "y": 50
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_mass",
+      "defType": "io/slider",
+      "position": {
+        "x": -616,
+        "y": 250
+      },
+      "params": {
+        "value": 1,
+        "min": 0.5,
+        "max": 3
+      },
+      "portValues": {
+        "value": 1,
+        "min": 0.5,
+        "max": 3
+      }
+    },
+    {
+      "id": "wg_windMul",
+      "defType": "math/mul",
+      "position": {
+        "x": -336,
+        "y": 50
+      },
+      "params": {
+        "b": 0.003,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.003
+      }
+    },
+    {
+      "id": "wg_windVec",
+      "defType": "vec2/make",
+      "position": {
+        "x": -112,
+        "y": 50
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_gravity",
+      "defType": "vec2/make",
+      "position": {
+        "x": -336,
+        "y": 250
+      },
+      "params": {
+        "x": 0,
+        "y": 0.2
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0.2
+      }
+    },
+    {
+      "id": "wg_initPos",
+      "defType": "vec2/make",
+      "position": {
+        "x": -616,
+        "y": 450
+      },
+      "params": {
+        "x": 0,
+        "y": -150
+      },
+      "portValues": {
+        "x": 0,
+        "y": -150
+      }
+    },
+    {
+      "id": "wg_initVel",
+      "defType": "vec2/make",
+      "position": {
+        "x": -616,
+        "y": 650
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "wg_pos",
+      "defType": "state/value",
+      "position": {
+        "x": -336,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_vel",
+      "defType": "state/value",
+      "position": {
+        "x": -336,
+        "y": 700
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_wScaled",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 112,
+        "y": 50
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_invMass",
+      "defType": "math/div",
+      "position": {
+        "x": 112,
+        "y": 200
+      },
+      "params": {
+        "a": 1,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "wg_accAdd",
+      "defType": "vec2/add",
+      "position": {
+        "x": 336,
+        "y": 150
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_velAdd",
+      "defType": "vec2/add",
+      "position": {
+        "x": 560,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_posAdd",
+      "defType": "vec2/add",
+      "position": {
+        "x": 784,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_ps",
+      "defType": "vec2/split",
+      "position": {
+        "x": 1007.9999999999999,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_vs",
+      "defType": "vec2/split",
+      "position": {
+        "x": 1007.9999999999999,
+        "y": 700
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_bounds",
+      "defType": "value/number",
+      "position": {
+        "x": -616,
+        "y": 850
+      },
+      "params": {
+        "value": 230
+      },
+      "portValues": {
+        "value": 230
+      }
+    },
+    {
+      "id": "wg_absX",
+      "defType": "math/abs",
+      "position": {
+        "x": 1232,
+        "y": 400
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "wg_hitX",
+      "defType": "logic/gt",
+      "position": {
+        "x": 1456,
+        "y": 400
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_absY",
+      "defType": "math/abs",
+      "position": {
+        "x": 1232,
+        "y": 550
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "wg_hitY",
+      "defType": "logic/gt",
+      "position": {
+        "x": 1456,
+        "y": 550
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_vxNeg",
+      "defType": "math/neg",
+      "position": {
+        "x": 1232,
+        "y": 700
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "wg_vyNeg",
+      "defType": "math/neg",
+      "position": {
+        "x": 1232,
+        "y": 850
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "wg_vxOut",
+      "defType": "logic/select",
+      "position": {
+        "x": 1680,
+        "y": 700
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_vyOut",
+      "defType": "logic/select",
+      "position": {
+        "x": 1680,
+        "y": 850
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_vFinal",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1903.9999999999998,
+        "y": 700
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": -336,
+        "y": 950
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 200,
+        "g": 220,
+        "b": 90,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 200,
+        "g": 220,
+        "b": 90,
+        "a": 255
+      }
+    },
+    {
+      "id": "wg_psDraw",
+      "defType": "vec2/split",
+      "position": {
+        "x": -112,
+        "y": 950
+      },
+      "params": {}
+    },
+    {
+      "id": "wg_ball",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 112,
+        "y": 950
+      },
+      "params": {
+        "w": 36,
+        "h": 36
+      },
+      "portValues": {
+        "w": 36,
+        "h": 36
+      }
+    },
+    {
+      "id": "wg_sizeMul",
+      "defType": "math/mul",
+      "position": {
+        "x": -336,
+        "y": 1150
+      },
+      "params": {
+        "b": 24,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 24
+      }
+    },
+    {
+      "id": "wg_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": -616,
+        "y": 1050
+      },
+      "params": {
+        "r": 14,
+        "g": 14,
+        "b": 24,
+        "a": 255
+      },
+      "portValues": {
+        "r": 14,
+        "g": 14,
+        "b": 24,
+        "a": 255
+      }
+    },
+    {
+      "id": "wg_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 336,
+        "y": 950
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "wg_ball-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 52,
+        "y": 950
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1079",
+      "source": "wg_bg",
+      "target": "wg_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1080",
+      "source": "wg_initPos",
+      "target": "wg_pos",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_1081",
+      "source": "wg_initVel",
+      "target": "wg_vel",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_1082",
+      "source": "wg_mouse",
+      "target": "wg_windMul",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1083",
+      "source": "wg_windMul",
+      "target": "wg_windVec",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1084",
+      "source": "wg_windVec",
+      "target": "wg_wScaled",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1085",
+      "source": "wg_mass",
+      "target": "wg_invMass",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1086",
+      "source": "wg_invMass",
+      "target": "wg_wScaled",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_1087",
+      "source": "wg_wScaled",
+      "target": "wg_accAdd",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1088",
+      "source": "wg_gravity",
+      "target": "wg_accAdd",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1089",
+      "source": "wg_vel",
+      "target": "wg_velAdd",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1090",
+      "source": "wg_accAdd",
+      "target": "wg_velAdd",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1091",
+      "source": "wg_pos",
+      "target": "wg_posAdd",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1092",
+      "source": "wg_velAdd",
+      "target": "wg_posAdd",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1093",
+      "source": "wg_posAdd",
+      "target": "wg_ps",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1094",
+      "source": "wg_velAdd",
+      "target": "wg_vs",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1095",
+      "source": "wg_ps",
+      "target": "wg_absX",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1096",
+      "source": "wg_ps",
+      "target": "wg_absY",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1097",
+      "source": "wg_absX",
+      "target": "wg_hitX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1098",
+      "source": "wg_bounds",
+      "target": "wg_hitX",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1099",
+      "source": "wg_absY",
+      "target": "wg_hitY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1100",
+      "source": "wg_bounds",
+      "target": "wg_hitY",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1101",
+      "source": "wg_vs",
+      "target": "wg_vxNeg",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1102",
+      "source": "wg_vs",
+      "target": "wg_vyNeg",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1103",
+      "source": "wg_hitX",
+      "target": "wg_vxOut",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_1104",
+      "source": "wg_vxNeg",
+      "target": "wg_vxOut",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1105",
+      "source": "wg_vs",
+      "target": "wg_vxOut",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1106",
+      "source": "wg_hitY",
+      "target": "wg_vyOut",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_1107",
+      "source": "wg_vyNeg",
+      "target": "wg_vyOut",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1108",
+      "source": "wg_vs",
+      "target": "wg_vyOut",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1109",
+      "source": "wg_vxOut",
+      "target": "wg_vFinal",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1110",
+      "source": "wg_vyOut",
+      "target": "wg_vFinal",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1111",
+      "source": "wg_posAdd",
+      "target": "wg_pos",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_1112",
+      "source": "wg_vFinal",
+      "target": "wg_vel",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_1113",
+      "source": "wg_pos",
+      "target": "wg_psDraw",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1114",
+      "source": "wg_psDraw",
+      "target": "wg_ball-xy0",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1115",
+      "source": "wg_psDraw",
+      "target": "wg_ball-xy0",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1116",
+      "source": "wg_mass",
+      "target": "wg_sizeMul",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1117",
+      "source": "wg_sizeMul",
+      "target": "wg_ball",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_1118",
+      "source": "wg_sizeMul",
+      "target": "wg_ball",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1119",
+      "source": "wg_fill",
+      "target": "wg_ball",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1120",
+      "source": "wg_ball",
+      "target": "wg_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_wg_ball-xy0",
+      "source": "wg_ball-xy0",
+      "target": "wg_ball",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

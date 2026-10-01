@@ -1,0 +1,303 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "44 · Accumulator (Fold)",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t44_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -644,
+        "y": 0
+      },
+      "params": {
+        "text": "Accumulator: fold within a ForEach\n\nThe split Read / Write pair lets you fold a spread without ever drawing a back-edge wire. Drop **AccRead** on the left of the region (it emits the running value via `read`) and **AccWrite** on the right (its `write` input becomes the next iteration's read; its `final` output is the last value once the loop ends). The pair is matched by `slot`.\n\nHere we sum 1..10 by accumulating an integer — every wire flows left to right.",
+        "width": 460,
+        "height": 260
+      },
+      "portValues": {
+        "text": "Accumulator: fold within a ForEach\n\nThe split Read / Write pair lets you fold a spread without ever drawing a back-edge wire. Drop **AccRead** on the left of the region (it emits the running value via `read`) and **AccWrite** on the right (its `write` input becomes the next iteration's read; its `final` output is the last value once the loop ends). The pair is matched by `slot`.\n\nHere we sum 1..10 by accumulating an integer — every wire flows left to right.",
+        "width": 460,
+        "height": 260
+      }
+    },
+    {
+      "id": "t44_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "count": 10
+      },
+      "portValues": {
+        "count": 10
+      }
+    },
+    {
+      "id": "t44_init",
+      "defType": "value/number",
+      "position": {
+        "x": 84,
+        "y": 400
+      },
+      "params": {
+        "value": 0
+      },
+      "portValues": {
+        "value": 0
+      }
+    },
+    {
+      "id": "t44_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 448,
+        "y": 0
+      },
+      "params": {
+        "width": 951.9999999999999,
+        "height": 750,
+        "label": "sum"
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input"
+        }
+      ],
+      "width": 951.9999999999999,
+      "height": 750
+    },
+    {
+      "id": "t44_read",
+      "defType": "region/accumulator-read/number",
+      "position": {
+        "x": 56,
+        "y": 200
+      },
+      "params": {
+        "slot": 1
+      },
+      "parentId": "t44_region",
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "t44_inc",
+      "defType": "math/add",
+      "position": {
+        "x": 308,
+        "y": 400
+      },
+      "params": {
+        "b": 1,
+        "valueType": "number"
+      },
+      "parentId": "t44_region",
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "t44_sum",
+      "defType": "math/add",
+      "position": {
+        "x": 560,
+        "y": 200
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "t44_region"
+    },
+    {
+      "id": "t44_write",
+      "defType": "region/accumulator-write/number",
+      "position": {
+        "x": 812,
+        "y": 200
+      },
+      "params": {
+        "slot": 1
+      },
+      "parentId": "t44_region",
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "t44_col",
+      "defType": "color/color",
+      "position": {
+        "x": 84,
+        "y": 700
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 230,
+        "g": 240,
+        "b": 250,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 230,
+        "g": 240,
+        "b": 250,
+        "a": 255
+      }
+    },
+    {
+      "id": "t44_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 336,
+        "y": 700
+      },
+      "params": {}
+    },
+    {
+      "id": "t44_text",
+      "defType": "draw/text",
+      "position": {
+        "x": 1568,
+        "y": 200
+      },
+      "params": {
+        "string": "0",
+        "x": -60,
+        "y": 0,
+        "size": 48,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "0",
+        "x": -60,
+        "y": 0,
+        "size": 48,
+        "align": "left"
+      }
+    },
+    {
+      "id": "t44_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1903.9999999999998,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t44_text-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1508,
+        "y": 200
+      },
+      "params": {
+        "x": -60,
+        "y": 0
+      },
+      "portValues": {
+        "x": -60,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_363",
+      "source": "t44_range",
+      "target": "t44_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_364",
+      "source": "t44_init",
+      "target": "t44_read",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_365",
+      "source": "t44_region",
+      "target": "t44_inc",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_366",
+      "source": "t44_read",
+      "target": "t44_sum",
+      "sourceHandle": "out-read",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_367",
+      "source": "t44_inc",
+      "target": "t44_sum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_368",
+      "source": "t44_sum",
+      "target": "t44_write",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-write"
+    },
+    {
+      "id": "e_369",
+      "source": "t44_col",
+      "target": "t44_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_370",
+      "source": "t44_fill",
+      "target": "t44_text",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_371",
+      "source": "t44_write",
+      "target": "t44_text-xy0",
+      "sourceHandle": "out-final",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_372",
+      "source": "t44_text",
+      "target": "t44_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t44_text-xy0",
+      "source": "t44_text-xy0",
+      "target": "t44_text",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

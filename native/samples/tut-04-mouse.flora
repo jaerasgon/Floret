@@ -1,0 +1,117 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "04 · Follow the Mouse",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t04_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -532,
+        "y": 0
+      },
+      "params": {
+        "text": "Reading user input\n\n`input/mouse` exposes the cursor position inside the preview canvas (centred at 0,0). Wire `x` and `y` into a shape and it follows the mouse.\n\nHover the preview to drag the circle around.",
+        "width": 360,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Reading user input\n\n`input/mouse` exposes the cursor position inside the preview canvas (centred at 0,0). Wire `x` and `y` into a shape and it follows the mouse.\n\nHover the preview to drag the circle around.",
+        "width": 360,
+        "height": 200
+      }
+    },
+    {
+      "id": "t04_m",
+      "defType": "input/mouse",
+      "position": {
+        "x": 56,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t04_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 448,
+        "y": 100
+      },
+      "params": {
+        "w": 60,
+        "h": 60
+      },
+      "portValues": {
+        "w": 60,
+        "h": 60
+      }
+    },
+    {
+      "id": "t04_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 784,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t04_ell-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 388,
+        "y": 100
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_9",
+      "source": "t04_m",
+      "target": "t04_ell-xy0",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_10",
+      "source": "t04_m",
+      "target": "t04_ell-xy0",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_11",
+      "source": "t04_ell",
+      "target": "t04_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t04_ell-xy0",
+      "source": "t04_ell-xy0",
+      "target": "t04_ell",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

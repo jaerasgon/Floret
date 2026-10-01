@@ -1,0 +1,317 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "18 · Random Spread",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t18_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -560,
+        "y": 0
+      },
+      "params": {
+        "text": "Seeded randomness\n\nUse the loop index as the seed of `random/uniform` and you get a stable scatter — same patch loaded later gives the same scatter. Change the seed input to reroll.\n\n80 ellipses placed at deterministic random (x, y).",
+        "width": 380,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Seeded randomness\n\nUse the loop index as the seed of `random/uniform` and you get a stable scatter — same patch loaded later gives the same scatter. Change the seed input to reroll.\n\n80 ellipses placed at deterministic random (x, y).",
+        "width": 380,
+        "height": 240
+      }
+    },
+    {
+      "id": "t18_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "count": 80
+      },
+      "portValues": {
+        "count": 80
+      }
+    },
+    {
+      "id": "t18_seed",
+      "defType": "value/number",
+      "position": {
+        "x": 84,
+        "y": 500
+      },
+      "params": {
+        "value": 17
+      },
+      "portValues": {
+        "value": 17
+      }
+    },
+    {
+      "id": "t18_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 448,
+        "y": 0
+      },
+      "params": {
+        "width": 812,
+        "height": 800,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "s",
+          "name": "seed",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 812,
+      "height": 800
+    },
+    {
+      "id": "t18_seedX",
+      "defType": "math/add",
+      "position": {
+        "x": 56,
+        "y": 100
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "t18_region"
+    },
+    {
+      "id": "t18_seedYoff",
+      "defType": "math/add",
+      "position": {
+        "x": 56,
+        "y": 300
+      },
+      "params": {
+        "b": 1000,
+        "valueType": "number"
+      },
+      "parentId": "t18_region",
+      "portValues": {
+        "b": 1000
+      }
+    },
+    {
+      "id": "t18_seedY",
+      "defType": "math/add",
+      "position": {
+        "x": 280,
+        "y": 300
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "t18_region"
+    },
+    {
+      "id": "t18_ux",
+      "defType": "random/uniform",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 100
+      },
+      "params": {
+        "min": -180,
+        "max": 180
+      },
+      "parentId": "t18_region",
+      "portValues": {
+        "min": -180,
+        "max": 180
+      }
+    },
+    {
+      "id": "t18_uy",
+      "defType": "random/uniform",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 300
+      },
+      "params": {
+        "min": -180,
+        "max": 180
+      },
+      "parentId": "t18_region",
+      "portValues": {
+        "min": -180,
+        "max": 180
+      }
+    },
+    {
+      "id": "t18_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 728,
+        "y": 200
+      },
+      "params": {
+        "w": 14,
+        "h": 14
+      },
+      "parentId": "t18_region",
+      "portValues": {
+        "w": 14,
+        "h": 14
+      }
+    },
+    {
+      "id": "t18_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1316,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t18_ell-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 668,
+        "y": 200
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "t18_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_106",
+      "source": "t18_range",
+      "target": "t18_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_107",
+      "source": "t18_seed",
+      "target": "t18_region",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_108",
+      "source": "t18_region",
+      "target": "t18_seedX",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_109",
+      "source": "t18_region",
+      "target": "t18_seedX",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_110",
+      "source": "t18_region",
+      "target": "t18_seedYoff",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_111",
+      "source": "t18_seedYoff",
+      "target": "t18_seedY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_112",
+      "source": "t18_region",
+      "target": "t18_seedY",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_113",
+      "source": "t18_seedX",
+      "target": "t18_ux",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-seed"
+    },
+    {
+      "id": "e_114",
+      "source": "t18_seedY",
+      "target": "t18_uy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-seed"
+    },
+    {
+      "id": "e_115",
+      "source": "t18_ux",
+      "target": "t18_ell-xy0",
+      "sourceHandle": "out-sample",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_116",
+      "source": "t18_uy",
+      "target": "t18_ell-xy0",
+      "sourceHandle": "out-sample",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_117",
+      "source": "t18_ell",
+      "target": "t18_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_118",
+      "source": "t18_region",
+      "target": "t18_renderer",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t18_ell-xy0",
+      "source": "t18_ell-xy0",
+      "target": "t18_ell",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

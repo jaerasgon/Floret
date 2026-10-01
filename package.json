@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "fixtures:export": "vitest run --config vitest.fixtures.config.ts"
   },
   "dependencies": {
     "@astryxdesign/core": "^0.1.8",

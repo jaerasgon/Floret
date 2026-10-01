@@ -1,0 +1,199 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "45 · MIDI CC",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t45_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -644,
+        "y": 0
+      },
+      "params": {
+        "text": "MIDI CC → parameter\n\n`input/midi-cc` reads one Control Change knob from a connected MIDI device. The output is already mapped to [0, 1] via `value`; `raw` gives the original 0–127.\n\nPlug in a controller, pick the device + CC number; rotate the knob to scale the rectangle.",
+        "width": 440,
+        "height": 220
+      },
+      "portValues": {
+        "text": "MIDI CC → parameter\n\n`input/midi-cc` reads one Control Change knob from a connected MIDI device. The output is already mapped to [0, 1] via `value`; `raw` gives the original 0–127.\n\nPlug in a controller, pick the device + CC number; rotate the knob to scale the rectangle.",
+        "width": 440,
+        "height": 220
+      }
+    },
+    {
+      "id": "t45_cc",
+      "defType": "input/midi-cc",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "device": "",
+        "channel": 0,
+        "cc": 1
+      },
+      "portValues": {
+        "device": "",
+        "channel": 0,
+        "cc": 1
+      }
+    },
+    {
+      "id": "t45_sz",
+      "defType": "math/mul",
+      "position": {
+        "x": 364,
+        "y": 0
+      },
+      "params": {
+        "b": 300,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 300
+      }
+    },
+    {
+      "id": "t45_szO",
+      "defType": "math/add",
+      "position": {
+        "x": 588,
+        "y": 0
+      },
+      "params": {
+        "b": 30,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 30
+      }
+    },
+    {
+      "id": "t45_half",
+      "defType": "math/mul",
+      "position": {
+        "x": 588,
+        "y": 250
+      },
+      "params": {
+        "b": -0.5,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": -0.5
+      }
+    },
+    {
+      "id": "t45_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 868,
+        "y": 100
+      },
+      "params": {}
+    },
+    {
+      "id": "t45_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1204,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t45_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 808,
+        "y": 100
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_373",
+      "source": "t45_cc",
+      "target": "t45_sz",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_374",
+      "source": "t45_sz",
+      "target": "t45_szO",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_375",
+      "source": "t45_szO",
+      "target": "t45_rect",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_376",
+      "source": "t45_szO",
+      "target": "t45_rect",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_377",
+      "source": "t45_szO",
+      "target": "t45_half",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_378",
+      "source": "t45_half",
+      "target": "t45_rect-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_379",
+      "source": "t45_half",
+      "target": "t45_rect-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_380",
+      "source": "t45_rect",
+      "target": "t45_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t45_rect-xy0",
+      "source": "t45_rect-xy0",
+      "target": "t45_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

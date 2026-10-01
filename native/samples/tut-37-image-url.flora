@@ -1,0 +1,114 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "37 · Image from URL",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t37_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -616,
+        "y": 0
+      },
+      "params": {
+        "text": "Loading images\n\n`io/image-url` fetches an image asynchronously. Once it lands, the `image` output carries a canvas you can draw, sample, or filter.\n\nDouble-click the node to change the URL. Picsum returns a fresh photo per seed.",
+        "width": 420,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Loading images\n\n`io/image-url` fetches an image asynchronously. Once it lands, the `image` output carries a canvas you can draw, sample, or filter.\n\nDouble-click the node to change the URL. Picsum returns a fresh photo per seed.",
+        "width": 420,
+        "height": 200
+      }
+    },
+    {
+      "id": "t37_url",
+      "defType": "io/image-url",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t37_draw",
+      "defType": "draw/image",
+      "position": {
+        "x": 392,
+        "y": 100
+      },
+      "params": {
+        "x": 0,
+        "y": 0,
+        "w": 320,
+        "h": 320
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0,
+        "w": 320,
+        "h": 320
+      }
+    },
+    {
+      "id": "t37_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 756,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t37_draw-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 332,
+        "y": 100
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_302",
+      "source": "t37_url",
+      "target": "t37_draw",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_303",
+      "source": "t37_draw",
+      "target": "t37_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t37_draw-xy0",
+      "source": "t37_draw-xy0",
+      "target": "t37_draw",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

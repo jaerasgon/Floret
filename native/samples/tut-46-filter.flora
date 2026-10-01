@@ -1,0 +1,176 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "46 · Sound Filter Sweep",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t46_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -616,
+        "y": 0
+      },
+      "params": {
+        "text": "Filter the sound\n\n`sound/filter` is a biquad (lowpass / highpass / bandpass). Wire any audio source into it, then on into `sound/output`.\n\nMouseX → filter cutoff frequency. A saw wave through a sweeping filter — the classic synth sound.",
+        "width": 420,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Filter the sound\n\n`sound/filter` is a biquad (lowpass / highpass / bandpass). Wire any audio source into it, then on into `sound/output`.\n\nMouseX → filter cutoff frequency. A saw wave through a sweeping filter — the classic synth sound.",
+        "width": 420,
+        "height": 220
+      }
+    },
+    {
+      "id": "t46_osc",
+      "defType": "sound/oscillator",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "type": "sawtooth",
+        "freq": 80,
+        "amp": 0.3
+      },
+      "portValues": {
+        "type": "sawtooth",
+        "freq": 80,
+        "amp": 0.3
+      }
+    },
+    {
+      "id": "t46_m",
+      "defType": "input/mouse",
+      "position": {
+        "x": 84,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "t46_freq",
+      "defType": "math/map",
+      "position": {
+        "x": 336,
+        "y": 500
+      },
+      "params": {
+        "inMin": -200,
+        "inMax": 200,
+        "outMin": 80,
+        "outMax": 4000
+      },
+      "portValues": {
+        "inMin": -200,
+        "inMax": 200,
+        "outMin": 80,
+        "outMax": 4000
+      }
+    },
+    {
+      "id": "t46_filt",
+      "defType": "sound/filter",
+      "position": {
+        "x": 364,
+        "y": 0
+      },
+      "params": {
+        "type": "lowpass",
+        "res": 8
+      },
+      "portValues": {
+        "type": "lowpass",
+        "res": 8
+      }
+    },
+    {
+      "id": "t46_out",
+      "defType": "sound/output",
+      "position": {
+        "x": 644,
+        "y": 0
+      },
+      "params": {
+        "volume": 0.5
+      },
+      "portValues": {
+        "volume": 0.5
+      }
+    },
+    {
+      "id": "t46_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 644,
+        "y": 500
+      },
+      "params": {
+        "w": 100,
+        "h": 100
+      },
+      "portValues": {
+        "w": 100,
+        "h": 100
+      }
+    },
+    {
+      "id": "t46_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 951.9999999999999,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_381",
+      "source": "t46_osc",
+      "target": "t46_filt",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_382",
+      "source": "t46_m",
+      "target": "t46_freq",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_383",
+      "source": "t46_freq",
+      "target": "t46_filt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_384",
+      "source": "t46_filt",
+      "target": "t46_out",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_385",
+      "source": "t46_ell",
+      "target": "t46_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

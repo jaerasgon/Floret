@@ -1,0 +1,739 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Drag",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "dr_c",
+      "defType": "io/slider",
+      "position": {
+        "x": -616,
+        "y": 50
+      },
+      "params": {
+        "value": 0.02,
+        "min": 0,
+        "max": 0.1
+      },
+      "portValues": {
+        "value": 0.02,
+        "min": 0,
+        "max": 0.1
+      }
+    },
+    {
+      "id": "dr_gravity",
+      "defType": "vec2/make",
+      "position": {
+        "x": -616,
+        "y": 250
+      },
+      "params": {
+        "x": 0,
+        "y": 0.4
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0.4
+      }
+    },
+    {
+      "id": "dr_initPos",
+      "defType": "vec2/make",
+      "position": {
+        "x": -616,
+        "y": 450
+      },
+      "params": {
+        "x": 0,
+        "y": -220
+      },
+      "portValues": {
+        "x": 0,
+        "y": -220
+      }
+    },
+    {
+      "id": "dr_initVel",
+      "defType": "vec2/make",
+      "position": {
+        "x": -616,
+        "y": 650
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "dr_bounds",
+      "defType": "value/number",
+      "position": {
+        "x": -616,
+        "y": 850
+      },
+      "params": {
+        "value": 220
+      },
+      "portValues": {
+        "value": 220
+      }
+    },
+    {
+      "id": "dr_pos",
+      "defType": "state/value",
+      "position": {
+        "x": -336,
+        "y": 150
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_vel",
+      "defType": "state/value",
+      "position": {
+        "x": -336,
+        "y": 350
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_vMag",
+      "defType": "vec2/mag",
+      "position": {
+        "x": -112,
+        "y": 350
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_cv",
+      "defType": "math/mul",
+      "position": {
+        "x": 112,
+        "y": 350
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "dr_cvN",
+      "defType": "math/neg",
+      "position": {
+        "x": 336,
+        "y": 350
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "dr_drag",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 560,
+        "y": 350
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_acc",
+      "defType": "vec2/add",
+      "position": {
+        "x": 784,
+        "y": 250
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_velAdd",
+      "defType": "vec2/add",
+      "position": {
+        "x": 1007.9999999999999,
+        "y": 350
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_posAdd",
+      "defType": "vec2/add",
+      "position": {
+        "x": 1232,
+        "y": 150
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_psN",
+      "defType": "vec2/split",
+      "position": {
+        "x": 1456,
+        "y": 150
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_hitFloor",
+      "defType": "logic/gt",
+      "position": {
+        "x": 1680,
+        "y": 150
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_yClamp",
+      "defType": "logic/select",
+      "position": {
+        "x": 1903.9999999999998,
+        "y": 150
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_posFin",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2128,
+        "y": 150
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_vsFin",
+      "defType": "vec2/split",
+      "position": {
+        "x": 1456,
+        "y": 350
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_vyN2",
+      "defType": "math/neg",
+      "position": {
+        "x": 1680,
+        "y": 350
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "dr_vyDamp",
+      "defType": "math/mul",
+      "position": {
+        "x": 1903.9999999999998,
+        "y": 350
+      },
+      "params": {
+        "b": 0.7
+      },
+      "portValues": {
+        "b": 0.7
+      }
+    },
+    {
+      "id": "dr_vyOut2",
+      "defType": "logic/select",
+      "position": {
+        "x": 2128,
+        "y": 350
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_velFin",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2352,
+        "y": 350
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_waterFill",
+      "defType": "style/fill",
+      "position": {
+        "x": -616,
+        "y": 1000
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 40,
+        "g": 60,
+        "b": 120,
+        "a": 90
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 40,
+        "g": 60,
+        "b": 120,
+        "a": 90
+      }
+    },
+    {
+      "id": "dr_water",
+      "defType": "draw/rect",
+      "position": {
+        "x": -336,
+        "y": 1000
+      },
+      "params": {
+        "x": -250,
+        "y": -250,
+        "w": 500,
+        "h": 500
+      },
+      "portValues": {
+        "x": -250,
+        "y": -250,
+        "w": 500,
+        "h": 500
+      }
+    },
+    {
+      "id": "dr_ballFill",
+      "defType": "style/fill",
+      "position": {
+        "x": -336,
+        "y": 1150
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 240,
+        "g": 180,
+        "b": 80,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 240,
+        "g": 180,
+        "b": 80,
+        "a": 255
+      }
+    },
+    {
+      "id": "dr_psDraw",
+      "defType": "vec2/split",
+      "position": {
+        "x": -112,
+        "y": 1150
+      },
+      "params": {}
+    },
+    {
+      "id": "dr_ball",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 112,
+        "y": 1150
+      },
+      "params": {
+        "w": 28,
+        "h": 28
+      },
+      "portValues": {
+        "w": 28,
+        "h": 28
+      }
+    },
+    {
+      "id": "dr_grp",
+      "defType": "transform/group",
+      "position": {
+        "x": 448,
+        "y": 1000
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "dr_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": -616,
+        "y": 1300
+      },
+      "params": {
+        "r": 12,
+        "g": 14,
+        "b": 22,
+        "a": 255
+      },
+      "portValues": {
+        "r": 12,
+        "g": 14,
+        "b": 22,
+        "a": 255
+      }
+    },
+    {
+      "id": "dr_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 784,
+        "y": 1000
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "dr_water-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": -396,
+        "y": 1000
+      },
+      "params": {
+        "x": -250,
+        "y": -250
+      },
+      "portValues": {
+        "x": -250,
+        "y": -250
+      }
+    },
+    {
+      "id": "dr_ball-xy1",
+      "defType": "vec2/make",
+      "position": {
+        "x": 52,
+        "y": 1150
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1121",
+      "source": "dr_bg",
+      "target": "dr_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1122",
+      "source": "dr_initPos",
+      "target": "dr_pos",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_1123",
+      "source": "dr_initVel",
+      "target": "dr_vel",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_1124",
+      "source": "dr_vel",
+      "target": "dr_vMag",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1125",
+      "source": "dr_vMag",
+      "target": "dr_cv",
+      "sourceHandle": "out-length",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1126",
+      "source": "dr_c",
+      "target": "dr_cv",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1127",
+      "source": "dr_cv",
+      "target": "dr_cvN",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1128",
+      "source": "dr_vel",
+      "target": "dr_drag",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1129",
+      "source": "dr_cvN",
+      "target": "dr_drag",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_1130",
+      "source": "dr_gravity",
+      "target": "dr_acc",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1131",
+      "source": "dr_drag",
+      "target": "dr_acc",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1132",
+      "source": "dr_vel",
+      "target": "dr_velAdd",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1133",
+      "source": "dr_acc",
+      "target": "dr_velAdd",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1134",
+      "source": "dr_pos",
+      "target": "dr_posAdd",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1135",
+      "source": "dr_velAdd",
+      "target": "dr_posAdd",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1136",
+      "source": "dr_posAdd",
+      "target": "dr_psN",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1137",
+      "source": "dr_psN",
+      "target": "dr_hitFloor",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1138",
+      "source": "dr_bounds",
+      "target": "dr_hitFloor",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1139",
+      "source": "dr_hitFloor",
+      "target": "dr_yClamp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_1140",
+      "source": "dr_bounds",
+      "target": "dr_yClamp",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1141",
+      "source": "dr_psN",
+      "target": "dr_yClamp",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1142",
+      "source": "dr_psN",
+      "target": "dr_posFin",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1143",
+      "source": "dr_yClamp",
+      "target": "dr_posFin",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1144",
+      "source": "dr_velAdd",
+      "target": "dr_vsFin",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1145",
+      "source": "dr_vsFin",
+      "target": "dr_vyN2",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1146",
+      "source": "dr_vyN2",
+      "target": "dr_vyDamp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1147",
+      "source": "dr_hitFloor",
+      "target": "dr_vyOut2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_1148",
+      "source": "dr_vyDamp",
+      "target": "dr_vyOut2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1149",
+      "source": "dr_vsFin",
+      "target": "dr_vyOut2",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1150",
+      "source": "dr_vsFin",
+      "target": "dr_velFin",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1151",
+      "source": "dr_vyOut2",
+      "target": "dr_velFin",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1152",
+      "source": "dr_posFin",
+      "target": "dr_pos",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_1153",
+      "source": "dr_velFin",
+      "target": "dr_vel",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_1154",
+      "source": "dr_waterFill",
+      "target": "dr_water",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1155",
+      "source": "dr_pos",
+      "target": "dr_psDraw",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1156",
+      "source": "dr_psDraw",
+      "target": "dr_ball-xy1",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1157",
+      "source": "dr_psDraw",
+      "target": "dr_ball-xy1",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1158",
+      "source": "dr_ballFill",
+      "target": "dr_ball",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1159",
+      "source": "dr_water",
+      "target": "dr_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_1160",
+      "source": "dr_ball",
+      "target": "dr_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_1161",
+      "source": "dr_grp",
+      "target": "dr_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_dr_water-xy0",
+      "source": "dr_water-xy0",
+      "target": "dr_water",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_xy_dr_ball-xy1",
+      "source": "dr_ball-xy1",
+      "target": "dr_ball",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

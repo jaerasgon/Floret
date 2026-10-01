@@ -1,0 +1,686 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Spring",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "spr_k",
+      "defType": "io/slider",
+      "position": {
+        "x": -616,
+        "y": 50
+      },
+      "params": {
+        "value": 0.12,
+        "min": 0.02,
+        "max": 0.4
+      },
+      "portValues": {
+        "value": 0.12,
+        "min": 0.02,
+        "max": 0.4
+      }
+    },
+    {
+      "id": "spr_damp",
+      "defType": "io/slider",
+      "position": {
+        "x": -616,
+        "y": 250
+      },
+      "params": {
+        "value": 0.98,
+        "min": 0.9,
+        "max": 1
+      },
+      "portValues": {
+        "value": 0.98,
+        "min": 0.9,
+        "max": 1
+      }
+    },
+    {
+      "id": "spr_gravity",
+      "defType": "value/number",
+      "position": {
+        "x": -616,
+        "y": 450
+      },
+      "params": {
+        "value": 0.5
+      },
+      "portValues": {
+        "value": 0.5
+      }
+    },
+    {
+      "id": "spr_restY",
+      "defType": "value/number",
+      "position": {
+        "x": -616,
+        "y": 600
+      },
+      "params": {
+        "value": 0
+      },
+      "portValues": {
+        "value": 0
+      }
+    },
+    {
+      "id": "spr_initY",
+      "defType": "value/number",
+      "position": {
+        "x": -616,
+        "y": 750
+      },
+      "params": {
+        "value": -180
+      },
+      "portValues": {
+        "value": -180
+      }
+    },
+    {
+      "id": "spr_initVy",
+      "defType": "value/number",
+      "position": {
+        "x": -616,
+        "y": 900
+      },
+      "params": {
+        "value": 0
+      },
+      "portValues": {
+        "value": 0
+      }
+    },
+    {
+      "id": "spr_y",
+      "defType": "state/value",
+      "position": {
+        "x": -308,
+        "y": 250
+      },
+      "params": {}
+    },
+    {
+      "id": "spr_vy",
+      "defType": "state/value",
+      "position": {
+        "x": -308,
+        "y": 450
+      },
+      "params": {}
+    },
+    {
+      "id": "spr_stretch",
+      "defType": "math/sub",
+      "position": {
+        "x": -84,
+        "y": 150
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "spr_kx",
+      "defType": "math/mul",
+      "position": {
+        "x": 140,
+        "y": 150
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "spr_Fspring",
+      "defType": "math/neg",
+      "position": {
+        "x": 364,
+        "y": 150
+      },
+      "params": {}
+    },
+    {
+      "id": "spr_acc",
+      "defType": "math/add",
+      "position": {
+        "x": 588,
+        "y": 250
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "spr_vyAdd",
+      "defType": "math/add",
+      "position": {
+        "x": 812,
+        "y": 350
+      },
+      "params": {}
+    },
+    {
+      "id": "spr_vyDamp",
+      "defType": "math/mul",
+      "position": {
+        "x": 1036,
+        "y": 350
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "spr_yNext",
+      "defType": "math/add",
+      "position": {
+        "x": 1260,
+        "y": 250
+      },
+      "params": {}
+    },
+    {
+      "id": "spr_anchorY",
+      "defType": "value/number",
+      "position": {
+        "x": -616,
+        "y": 1100
+      },
+      "params": {
+        "value": -240
+      },
+      "portValues": {
+        "value": -240
+      }
+    },
+    {
+      "id": "spr_strokeC",
+      "defType": "color/rgb",
+      "position": {
+        "x": -616,
+        "y": 1250
+      },
+      "params": {
+        "r": 200,
+        "g": 200,
+        "b": 200,
+        "a": 200
+      },
+      "portValues": {
+        "r": 200,
+        "g": 200,
+        "b": 200,
+        "a": 200
+      }
+    },
+    {
+      "id": "spr_stroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": -364,
+        "y": 1250
+      },
+      "params": {}
+    },
+    {
+      "id": "spr_rod",
+      "defType": "draw/line",
+      "position": {
+        "x": -112,
+        "y": 1250
+      },
+      "params": {
+        "x1": 0,
+        "x2": 0
+      },
+      "portValues": {
+        "x1": 0,
+        "x2": 0
+      }
+    },
+    {
+      "id": "spr_anchorFill",
+      "defType": "style/fill",
+      "position": {
+        "x": -616,
+        "y": 1450
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 180,
+        "g": 180,
+        "b": 180,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 180,
+        "g": 180,
+        "b": 180,
+        "a": 255
+      }
+    },
+    {
+      "id": "spr_anchor",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": -364,
+        "y": 1450
+      },
+      "params": {
+        "x": 0,
+        "w": 14,
+        "h": 14
+      },
+      "portValues": {
+        "x": 0,
+        "w": 14,
+        "h": 14
+      }
+    },
+    {
+      "id": "spr_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": -616,
+        "y": 1650
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 240,
+        "g": 130,
+        "b": 60,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 240,
+        "g": 130,
+        "b": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "spr_bob",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": -364,
+        "y": 1650
+      },
+      "params": {
+        "x": 0,
+        "w": 36,
+        "h": 36
+      },
+      "portValues": {
+        "x": 0,
+        "w": 36,
+        "h": 36
+      }
+    },
+    {
+      "id": "spr_grp",
+      "defType": "transform/group",
+      "position": {
+        "x": 140,
+        "y": 1500
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "spr_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": -616,
+        "y": 1800
+      },
+      "params": {
+        "r": 10,
+        "g": 10,
+        "b": 18,
+        "a": 255
+      },
+      "portValues": {
+        "r": 10,
+        "g": 10,
+        "b": 18,
+        "a": 255
+      }
+    },
+    {
+      "id": "spr_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 616,
+        "y": 1350
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "spr_rod-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": -172,
+        "y": 1250
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "spr_rod-xy1",
+      "defType": "vec2/make",
+      "position": {
+        "x": -172,
+        "y": 1250
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "spr_anchor-xy2",
+      "defType": "vec2/make",
+      "position": {
+        "x": -424,
+        "y": 1450
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "spr_bob-xy3",
+      "defType": "vec2/make",
+      "position": {
+        "x": -424,
+        "y": 1650
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1195",
+      "source": "spr_bg",
+      "target": "spr_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1196",
+      "source": "spr_initY",
+      "target": "spr_y",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_1197",
+      "source": "spr_initVy",
+      "target": "spr_vy",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_1198",
+      "source": "spr_y",
+      "target": "spr_stretch",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1199",
+      "source": "spr_restY",
+      "target": "spr_stretch",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1200",
+      "source": "spr_stretch",
+      "target": "spr_kx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1201",
+      "source": "spr_k",
+      "target": "spr_kx",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1202",
+      "source": "spr_kx",
+      "target": "spr_Fspring",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1203",
+      "source": "spr_Fspring",
+      "target": "spr_acc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1204",
+      "source": "spr_gravity",
+      "target": "spr_acc",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1205",
+      "source": "spr_vy",
+      "target": "spr_vyAdd",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1206",
+      "source": "spr_acc",
+      "target": "spr_vyAdd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1207",
+      "source": "spr_vyAdd",
+      "target": "spr_vyDamp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1208",
+      "source": "spr_damp",
+      "target": "spr_vyDamp",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1209",
+      "source": "spr_y",
+      "target": "spr_yNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1210",
+      "source": "spr_vyDamp",
+      "target": "spr_yNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1211",
+      "source": "spr_yNext",
+      "target": "spr_y",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_1212",
+      "source": "spr_vyDamp",
+      "target": "spr_vy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_1213",
+      "source": "spr_strokeC",
+      "target": "spr_stroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1214",
+      "source": "spr_stroke",
+      "target": "spr_rod",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1215",
+      "source": "spr_anchorY",
+      "target": "spr_rod-xy0",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1216",
+      "source": "spr_y",
+      "target": "spr_rod-xy1",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1217",
+      "source": "spr_anchorFill",
+      "target": "spr_anchor",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1218",
+      "source": "spr_anchorY",
+      "target": "spr_anchor-xy2",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1219",
+      "source": "spr_y",
+      "target": "spr_bob-xy3",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1220",
+      "source": "spr_fill",
+      "target": "spr_bob",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1221",
+      "source": "spr_rod",
+      "target": "spr_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_1222",
+      "source": "spr_anchor",
+      "target": "spr_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_1223",
+      "source": "spr_bob",
+      "target": "spr_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_1224",
+      "source": "spr_grp",
+      "target": "spr_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_spr_rod-xy0",
+      "source": "spr_rod-xy0",
+      "target": "spr_rod",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_spr_rod-xy1",
+      "source": "spr_rod-xy1",
+      "target": "spr_rod",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_spr_anchor-xy2",
+      "source": "spr_anchor-xy2",
+      "target": "spr_anchor",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_xy_spr_bob-xy3",
+      "source": "spr_bob-xy3",
+      "target": "spr_bob",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

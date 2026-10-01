@@ -1,0 +1,604 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Ripple Field",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "rf_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": -588,
+        "y": 50
+      },
+      "params": {}
+    },
+    {
+      "id": "rf_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": -588,
+        "y": 250
+      },
+      "params": {
+        "cols": 25,
+        "rows": 25,
+        "w": 480,
+        "h": 480
+      },
+      "portValues": {
+        "cols": 25,
+        "rows": 25,
+        "w": 480,
+        "h": 480
+      }
+    },
+    {
+      "id": "rf_cx",
+      "defType": "value/number",
+      "position": {
+        "x": -588,
+        "y": 550
+      },
+      "params": {
+        "value": 0
+      },
+      "portValues": {
+        "value": 0
+      }
+    },
+    {
+      "id": "rf_cy",
+      "defType": "value/number",
+      "position": {
+        "x": -588,
+        "y": 700
+      },
+      "params": {
+        "value": 0
+      },
+      "portValues": {
+        "value": 0
+      }
+    },
+    {
+      "id": "rf_distScale",
+      "defType": "value/number",
+      "position": {
+        "x": -588,
+        "y": 850
+      },
+      "params": {
+        "value": 0.05
+      },
+      "portValues": {
+        "value": 0.05
+      }
+    },
+    {
+      "id": "rf_timeScale",
+      "defType": "value/number",
+      "position": {
+        "x": -588,
+        "y": 1000
+      },
+      "params": {
+        "value": 3
+      },
+      "portValues": {
+        "value": 3
+      }
+    },
+    {
+      "id": "rf_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": -196,
+        "y": 50
+      },
+      "params": {
+        "width": 1260,
+        "height": 1400,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input"
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 1260,
+      "height": 1400
+    },
+    {
+      "id": "rf_split",
+      "defType": "vec2/split",
+      "position": {
+        "x": 84,
+        "y": 150
+      },
+      "params": {},
+      "parentId": "rf_region"
+    },
+    {
+      "id": "rf_xOff",
+      "defType": "math/add",
+      "position": {
+        "x": 308,
+        "y": 75
+      },
+      "params": {
+        "b": 10,
+        "valueType": "number"
+      },
+      "parentId": "rf_region",
+      "portValues": {
+        "b": 10
+      }
+    },
+    {
+      "id": "rf_yOff",
+      "defType": "math/add",
+      "position": {
+        "x": 308,
+        "y": 225
+      },
+      "params": {
+        "b": 10,
+        "valueType": "number"
+      },
+      "parentId": "rf_region",
+      "portValues": {
+        "b": 10
+      }
+    },
+    {
+      "id": "rf_dist",
+      "defType": "math/dist",
+      "position": {
+        "x": 532,
+        "y": 150
+      },
+      "params": {},
+      "parentId": "rf_region"
+    },
+    {
+      "id": "rf_dScaled",
+      "defType": "math/mul",
+      "position": {
+        "x": 756,
+        "y": 75
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "rf_region"
+    },
+    {
+      "id": "rf_tScaled",
+      "defType": "math/mul",
+      "position": {
+        "x": 756,
+        "y": 225
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "rf_region"
+    },
+    {
+      "id": "rf_wavePhase",
+      "defType": "math/sub",
+      "position": {
+        "x": 979.9999999999999,
+        "y": 150
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "rf_region"
+    },
+    {
+      "id": "rf_ripple",
+      "defType": "math/sin",
+      "position": {
+        "x": 84,
+        "y": 500
+      },
+      "params": {},
+      "parentId": "rf_region"
+    },
+    {
+      "id": "rf_sizeBase",
+      "defType": "value/number",
+      "position": {
+        "x": 308,
+        "y": 550
+      },
+      "params": {
+        "value": 6
+      },
+      "portValues": {
+        "value": 6
+      }
+    },
+    {
+      "id": "rf_sizeMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 308,
+        "y": 400
+      },
+      "params": {
+        "b": 6,
+        "valueType": "number"
+      },
+      "parentId": "rf_region",
+      "portValues": {
+        "b": 6
+      }
+    },
+    {
+      "id": "rf_sizeAdd",
+      "defType": "math/add",
+      "position": {
+        "x": 532,
+        "y": 500
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "rf_region"
+    },
+    {
+      "id": "rf_hueMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 308,
+        "y": 750
+      },
+      "params": {
+        "b": 60,
+        "valueType": "number"
+      },
+      "parentId": "rf_region",
+      "portValues": {
+        "b": 60
+      }
+    },
+    {
+      "id": "rf_hueBase",
+      "defType": "value/number",
+      "position": {
+        "x": 308,
+        "y": 900
+      },
+      "params": {
+        "value": 200
+      },
+      "portValues": {
+        "value": 200
+      }
+    },
+    {
+      "id": "rf_hueAdd",
+      "defType": "math/add",
+      "position": {
+        "x": 532,
+        "y": 750
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "rf_region"
+    },
+    {
+      "id": "rf_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 756,
+        "y": 750
+      },
+      "params": {
+        "s": 80,
+        "l": 60,
+        "a": 255
+      },
+      "parentId": "rf_region",
+      "portValues": {
+        "s": 80,
+        "l": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "rf_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 979.9999999999999,
+        "y": 750
+      },
+      "params": {
+        "mode": "color"
+      },
+      "parentId": "rf_region",
+      "portValues": {
+        "mode": "color"
+      }
+    },
+    {
+      "id": "rf_ellipse",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1204,
+        "y": 250
+      },
+      "params": {},
+      "parentId": "rf_region"
+    },
+    {
+      "id": "rf_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1316,
+        "y": 50
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "rf_ellipse-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1144,
+        "y": 250
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "rf_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_940",
+      "source": "rf_grid",
+      "target": "rf_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_941",
+      "source": "rf_region",
+      "target": "rf_split",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_942",
+      "source": "rf_split",
+      "target": "rf_xOff",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_943",
+      "source": "rf_split",
+      "target": "rf_yOff",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_944",
+      "source": "rf_xOff",
+      "target": "rf_dist",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x1"
+    },
+    {
+      "id": "e_945",
+      "source": "rf_yOff",
+      "target": "rf_dist",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y1"
+    },
+    {
+      "id": "e_946",
+      "source": "rf_cx",
+      "target": "rf_dist",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-x2"
+    },
+    {
+      "id": "e_947",
+      "source": "rf_cy",
+      "target": "rf_dist",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-y2"
+    },
+    {
+      "id": "e_948",
+      "source": "rf_dist",
+      "target": "rf_dScaled",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_949",
+      "source": "rf_distScale",
+      "target": "rf_dScaled",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_950",
+      "source": "rf_time",
+      "target": "rf_tScaled",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_951",
+      "source": "rf_timeScale",
+      "target": "rf_tScaled",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_952",
+      "source": "rf_dScaled",
+      "target": "rf_wavePhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_953",
+      "source": "rf_tScaled",
+      "target": "rf_wavePhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_954",
+      "source": "rf_wavePhase",
+      "target": "rf_ripple",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_955",
+      "source": "rf_ripple",
+      "target": "rf_sizeMul",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_956",
+      "source": "rf_sizeBase",
+      "target": "rf_sizeAdd",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_957",
+      "source": "rf_sizeMul",
+      "target": "rf_sizeAdd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_958",
+      "source": "rf_ripple",
+      "target": "rf_hueMul",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_959",
+      "source": "rf_hueBase",
+      "target": "rf_hueAdd",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_960",
+      "source": "rf_hueMul",
+      "target": "rf_hueAdd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_961",
+      "source": "rf_hueAdd",
+      "target": "rf_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_962",
+      "source": "rf_hsl",
+      "target": "rf_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_963",
+      "source": "rf_xOff",
+      "target": "rf_ellipse-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_964",
+      "source": "rf_yOff",
+      "target": "rf_ellipse-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_965",
+      "source": "rf_sizeAdd",
+      "target": "rf_ellipse",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_966",
+      "source": "rf_sizeAdd",
+      "target": "rf_ellipse",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_967",
+      "source": "rf_fill",
+      "target": "rf_ellipse",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_968",
+      "source": "rf_ellipse",
+      "target": "rf_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_969",
+      "source": "rf_region",
+      "target": "rf_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_rf_ellipse-xy0",
+      "source": "rf_ellipse-xy0",
+      "target": "rf_ellipse",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

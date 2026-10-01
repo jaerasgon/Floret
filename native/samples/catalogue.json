@@ -1,0 +1,669 @@
+{
+  "samples": [
+    {
+      "id": "tut-01-hello-rect",
+      "name": "01 · Hello Rect",
+      "category": "Tutorial",
+      "description": "The smallest patch — one shape wired to the Renderer. Start here.",
+      "file": "tut-01-hello-rect.flora"
+    },
+    {
+      "id": "tut-02-color-fill",
+      "name": "02 · Colour & Fill",
+      "category": "Tutorial",
+      "description": "Colour a shape with the Color → Fill → Rect chain.",
+      "file": "tut-02-color-fill.flora"
+    },
+    {
+      "id": "tut-03-animate",
+      "name": "03 · Animate with Time",
+      "category": "Tutorial",
+      "description": "Drive a shape's position with time/seconds → sin → multiply.",
+      "file": "tut-03-animate.flora"
+    },
+    {
+      "id": "tut-04-mouse",
+      "name": "04 · Follow the Mouse",
+      "category": "Tutorial",
+      "description": "Wire input/mouse into an ellipse — the shape tracks the cursor.",
+      "file": "tut-04-mouse.flora"
+    },
+    {
+      "id": "tut-05-slider",
+      "name": "05 · Slider Control",
+      "category": "Tutorial",
+      "description": "A slider drives the rect's width — the basic interactive control.",
+      "file": "tut-05-slider.flora"
+    },
+    {
+      "id": "tut-06-spread-foreach",
+      "name": "06 · Spreads & ForEach",
+      "category": "Tutorial",
+      "description": "Generate a list with RangeSpread, iterate over it with a ForEach to draw N shapes.",
+      "file": "tut-06-spread-foreach.flora"
+    },
+    {
+      "id": "tut-07-grid",
+      "name": "07 · Grid of Dots",
+      "category": "Tutorial",
+      "description": "GridSpread emits one vec2 per cell — split + ellipse → 8×8 grid.",
+      "file": "tut-07-grid.flora"
+    },
+    {
+      "id": "tut-08-palette",
+      "name": "08 · Palette Colours",
+      "category": "Tutorial",
+      "description": "Palette + CycleSpread → colour a grid of dots from a 4-stop palette.",
+      "file": "tut-08-palette.flora"
+    },
+    {
+      "id": "tut-09-state",
+      "name": "09 · State (per-frame memory)",
+      "category": "Tutorial",
+      "description": "A state/value counter incremented every frame drives a rotating hue.",
+      "file": "tut-09-state.flora"
+    },
+    {
+      "id": "tut-11-polar",
+      "name": "11 · Polar Coordinates",
+      "category": "Tutorial",
+      "description": "sin/cos × radius gives any point on a circle — the foundation of radial layouts.",
+      "file": "tut-11-polar.flora"
+    },
+    {
+      "id": "tut-12-circle",
+      "name": "12 · Circle of Shapes",
+      "category": "Tutorial",
+      "description": "RingSpread + ForEach lays N evenly-spaced shapes on a ring.",
+      "file": "tut-12-circle.flora"
+    },
+    {
+      "id": "tut-13-map",
+      "name": "13 · Map: Remap Ranges",
+      "category": "Tutorial",
+      "description": "math/map converts one numeric range to another — mouseX → hue across the rainbow.",
+      "file": "tut-13-map.flora"
+    },
+    {
+      "id": "tut-14-colorlerp",
+      "name": "14 · Lerp Two Colours",
+      "category": "Tutorial",
+      "description": "color/lerp blends colour A → B by t. sin(time) gives a smooth oscillation between them.",
+      "file": "tut-14-colorlerp.flora"
+    },
+    {
+      "id": "tut-15-style-chain",
+      "name": "15 · Style Chains",
+      "category": "Tutorial",
+      "description": "Wire one style into another's `base` to layer fills + strokes on a single shape.",
+      "file": "tut-15-style-chain.flora"
+    },
+    {
+      "id": "tut-16-group-rotate",
+      "name": "16 · Group + Transform",
+      "category": "Tutorial",
+      "description": "transform/group collapses many layers into one; transform/rotate spins the whole assembly.",
+      "file": "tut-16-group-rotate.flora"
+    },
+    {
+      "id": "tut-17-perlin",
+      "name": "17 · Perlin Noise",
+      "category": "Tutorial",
+      "description": "Smooth random — neighbouring inputs give neighbouring outputs. Drives y and hue per cell.",
+      "file": "tut-17-perlin.flora"
+    },
+    {
+      "id": "tut-18-random-spread",
+      "name": "18 · Random Spread",
+      "category": "Tutorial",
+      "description": "random/uniform seeded per-index → 80 deterministically-placed ellipses. Change seed to reroll.",
+      "file": "tut-18-random-spread.flora"
+    },
+    {
+      "id": "tut-19-if",
+      "name": "19 · If Region (Conditional)",
+      "category": "Tutorial",
+      "description": "region/if runs its body only when condition is true. Move past 150px from centre to reveal a rect.",
+      "file": "tut-19-if.flora"
+    },
+    {
+      "id": "tut-20-subpatch",
+      "name": "20 · Subpatch (Reusable Box)",
+      "category": "Tutorial",
+      "description": "meta/subpatch wraps a sub-graph behind custom ports — double-click to descend, edit, climb back out.",
+      "file": "tut-20-subpatch.flora"
+    },
+    {
+      "id": "tut-21-trails",
+      "name": "21 · Trails (Write*/Read*)",
+      "category": "Tutorial",
+      "description": "Append mouse position to a running spread each frame; draw the buffer as a Path.",
+      "file": "tut-21-trails.flora"
+    },
+    {
+      "id": "tut-22-cache",
+      "name": "22 · Cache Region",
+      "category": "Tutorial",
+      "description": "A Cache region skips recompute when inputs are stable — wrap expensive work inside.",
+      "file": "tut-22-cache.flora"
+    },
+    {
+      "id": "tut-23-polygon",
+      "name": "23 · Polygon from Points",
+      "category": "Tutorial",
+      "description": "draw/polygon turns a Spread<vec2> into ONE shape — no ForEach needed.",
+      "file": "tut-23-polygon.flora"
+    },
+    {
+      "id": "tut-24-path-tension",
+      "name": "24 · Path with Tension",
+      "category": "Tutorial",
+      "description": "draw/path tension > 0 turns segments into smooth Catmull-Rom curves; sin(time) breathes between sharp and smooth.",
+      "file": "tut-24-path-tension.flora"
+    },
+    {
+      "id": "tut-25-spring",
+      "name": "25 · Spring-follow Mouse",
+      "category": "Tutorial",
+      "description": "Two state slots (pos + vel) + Hooke + damping — the dot trails the cursor with springy delay.",
+      "file": "tut-25-spring.flora"
+    },
+    {
+      "id": "tut-26-rasterize",
+      "name": "26 · Rasterize (Layer → Image)",
+      "category": "Tutorial",
+      "description": "image/from-layer converts a vector layer into a bitmap; the bitmap is then drawn back via draw/image.",
+      "file": "tut-26-rasterize.flora"
+    },
+    {
+      "id": "tut-27-imgsample",
+      "name": "27 · Image Sampling Grid",
+      "category": "Tutorial",
+      "description": "image/sample-spread reads N colours at N points — recolour a 24×24 dot grid from a rasterised source.",
+      "file": "tut-27-imgsample.flora"
+    },
+    {
+      "id": "tut-28-audio-react",
+      "name": "28 · Audio-Reactive Visual",
+      "category": "Tutorial",
+      "description": "Mic → amplitude → drives circle size. Grant the browser microphone permission.",
+      "file": "tut-28-audio-react.flora"
+    },
+    {
+      "id": "tut-29-oscillator",
+      "name": "29 · Oscillator (mouse-pitched)",
+      "category": "Tutorial",
+      "description": "sound/oscillator + sound/output; mouseY → frequency. Move the cursor to slide the tone.",
+      "file": "tut-29-oscillator.flora"
+    },
+    {
+      "id": "tut-30-keyboard",
+      "name": "30 · Keyboard Branching",
+      "category": "Tutorial",
+      "description": "Two If regions gated on input/keyboard.key — press R for red rect, B for blue ellipse.",
+      "file": "tut-30-keyboard.flora"
+    },
+    {
+      "id": "tut-31-vec2math",
+      "name": "31 · Vec2 Math",
+      "category": "Tutorial",
+      "description": "Operate on vec2 as one unit with vec2/add, vec2/scale — no splitting and recombining.",
+      "file": "tut-31-vec2math.flora"
+    },
+    {
+      "id": "tut-32-normalize",
+      "name": "32 · Normalize + Polar",
+      "category": "Tutorial",
+      "description": "vec2/normalize gives a unit-vector direction; scale it to any length.",
+      "file": "tut-32-normalize.flora"
+    },
+    {
+      "id": "tut-33-gradient",
+      "name": "33 · Gradient Sampling",
+      "category": "Tutorial",
+      "description": "color/gradient interpolates between palette stops; mouseX picks the colour.",
+      "file": "tut-33-gradient.flora"
+    },
+    {
+      "id": "tut-34-text",
+      "name": "34 · Draw Text",
+      "category": "Tutorial",
+      "description": "draw/text is just a draw node — x, y, size, style — with a string param.",
+      "file": "tut-34-text.flora"
+    },
+    {
+      "id": "tut-35-wanderer",
+      "name": "35 · Wanderer (random drift)",
+      "category": "Tutorial",
+      "description": "random/wanderer2d gives a vec2 that drifts smoothly with time — natural motion.",
+      "file": "tut-35-wanderer.flora"
+    },
+    {
+      "id": "tut-36-gaussian",
+      "name": "36 · Gaussian Scatter",
+      "category": "Tutorial",
+      "description": "random/gaussian clusters samples around a mean — bell-curve placement.",
+      "file": "tut-36-gaussian.flora"
+    },
+    {
+      "id": "tut-37-image-url",
+      "name": "37 · Image from URL",
+      "category": "Tutorial",
+      "description": "io/image-url fetches an image; draw/image displays it. Picsum returns a fresh photo per seed.",
+      "file": "tut-37-image-url.flora"
+    },
+    {
+      "id": "tut-38-image-adjust",
+      "name": "38 · Image Adjust",
+      "category": "Tutorial",
+      "description": "Image filters chain like styles — brightness, contrast, saturation, hue.",
+      "file": "tut-38-image-adjust.flora"
+    },
+    {
+      "id": "tut-39-pixelate",
+      "name": "39 · Pixelate",
+      "category": "Tutorial",
+      "description": "image/pixelate downsamples-then-upsamples for a chunky retro look.",
+      "file": "tut-39-pixelate.flora"
+    },
+    {
+      "id": "tut-40-pixel-sort",
+      "name": "40 · Pixel Sort",
+      "category": "Tutorial",
+      "description": "pixel/sort reorders pixel runs by brightness — classic datamosh / glitch-art look.",
+      "file": "tut-40-pixel-sort.flora"
+    },
+    {
+      "id": "tut-41-sort-shuffle",
+      "name": "41 · Spread Sort + Shuffle",
+      "category": "Tutorial",
+      "description": "SortSpread + ShuffleSpread reorder a Spread<number>; visualised as a bar chart.",
+      "file": "tut-41-sort-shuffle.flora"
+    },
+    {
+      "id": "tut-42-elementary-ca",
+      "name": "42 · Elementary CA",
+      "category": "Tutorial",
+      "description": "spread/elementary-ca advances a 1D boolean row by one Wolfram tick (try rule 30, 90, 110).",
+      "file": "tut-42-elementary-ca.flora"
+    },
+    {
+      "id": "tut-43-gol",
+      "name": "43 · Game of Life",
+      "category": "Tutorial",
+      "description": "spread/gol-step + Write*/Read* runs Conway across frames; classic cellular automaton.",
+      "file": "tut-43-gol.flora"
+    },
+    {
+      "id": "tut-44-accumulator",
+      "name": "44 · Accumulator (Fold)",
+      "category": "Tutorial",
+      "description": "AccRead / AccWrite split pair threads state across ForEach iterations — running sum of 1..10, all wires LTR.",
+      "file": "tut-44-accumulator.flora"
+    },
+    {
+      "id": "tut-45-midi-cc",
+      "name": "45 · MIDI CC",
+      "category": "Tutorial",
+      "description": "input/midi-cc reads a Control Change knob (already mapped 0..1). Drives rect size.",
+      "file": "tut-45-midi-cc.flora"
+    },
+    {
+      "id": "tut-46-filter",
+      "name": "46 · Sound Filter Sweep",
+      "category": "Tutorial",
+      "description": "sound/filter biquad on a saw; mouseX sweeps the cutoff frequency — classic synth tone.",
+      "file": "tut-46-filter.flora"
+    },
+    {
+      "id": "tut-47-envelope",
+      "name": "47 · ADSR Envelope",
+      "category": "Tutorial",
+      "description": "sound/envelope shapes amplitude over time (attack / decay / sustain / release). Mouse press = gate.",
+      "file": "tut-47-envelope.flora"
+    },
+    {
+      "id": "tut-48-pulse",
+      "name": "48 · Pulse Width Drone",
+      "category": "Tutorial",
+      "description": "sound/pulse with sin-driven width creates moving timbres; circle breathes with amplitude.",
+      "file": "tut-48-pulse.flora"
+    },
+    {
+      "id": "tut-49-fft",
+      "name": "49 · FFT Spectrum Bars",
+      "category": "Tutorial",
+      "description": "sound/fft outputs a spectrum spread; 128 bars track mic input. Grant microphone permission.",
+      "file": "tut-49-fft.flora"
+    },
+    {
+      "id": "type-kinetic-wave",
+      "name": "Kinetic Wave",
+      "category": "Type",
+      "description": "Cavalry-style traveling wave: rows × characters laid out with sin(time + charPhase − rowDelay). Per-word colour from a palette.",
+      "file": "type-kinetic-wave.flora"
+    },
+    {
+      "id": "type-halo",
+      "name": "Halo",
+      "category": "Type",
+      "description": "Phrase laid around a circle; the whole ring spins. Hue cycles per character and per time for a chromatic chase.",
+      "file": "type-halo.flora"
+    },
+    {
+      "id": "type-raven",
+      "name": "The Raven",
+      "category": "Type",
+      "description": "A passage from Poe’s “The Raven” as a serif grid. Each letter fades in and out on its own Perlin walk in black & white, blurring as it dims.",
+      "file": "type-raven.flora"
+    },
+    {
+      "id": "type-drift",
+      "name": "Noise Drift",
+      "category": "Type",
+      "description": "A passage as a monospace grid. A slow Perlin mask picks drifting clusters of letters; inside them a noise field shoves and tints the type while the rest stays readable.",
+      "file": "type-drift.flora"
+    },
+    {
+      "id": "type-rain",
+      "name": "Type Rain",
+      "category": "Type",
+      "description": "Matrix-style falling characters — every column scrolls at its own noise-seeded speed; brightness fades head → tail down the column.",
+      "file": "type-rain.flora"
+    },
+    {
+      "id": "particles-fountain",
+      "name": "Fountain",
+      "category": "Particles",
+      "description": "The \"hello, particles\" patch — point emitter, gravity from the world, drag for terminal velocity, wrap-bounds keep the canvas cycling.",
+      "file": "particles-fountain.flora"
+    },
+    {
+      "id": "particles-text-dust",
+      "name": "Text Dust",
+      "category": "Particles",
+      "description": "particles/from-layer rasterises the wired text shape and samples inside the glyph alpha mask — particles spawn from the actual letterforms.",
+      "file": "particles-text-dust.flora"
+    },
+    {
+      "id": "particles-attractor",
+      "name": "Attractor Field",
+      "category": "Particles",
+      "description": "Turbulence + drag + attractor wired into the world. The attractor's viz output draws its influence ring straight into the renderer.",
+      "file": "particles-attractor.flora"
+    },
+    {
+      "id": "particles-pinball",
+      "name": "Polygon Pinball",
+      "category": "Particles",
+      "description": "An octagonal arena wired into BOTH the renderer (visible) AND collider/from-layer (deflective). Edge-normal bounce, not centroid approximation.",
+      "file": "particles-pinball.flora"
+    },
+    {
+      "id": "particles-spiral",
+      "name": "Galactic Spiral",
+      "category": "Particles",
+      "description": "Verlet integrator + vortex + central pull = long stable spirals. Per-particle trails carry the buffer colour so each filament keeps its hue.",
+      "file": "particles-spiral.flora"
+    },
+    {
+      "id": "lissajous",
+      "name": "Lissajous Threads",
+      "category": "Curves",
+      "description": "A 240-dot Lissajous curve. Two sliders pick the X/Y frequency ratio; time drifts the phase.",
+      "file": "lissajous.flora"
+    },
+    {
+      "id": "kaleidoscope",
+      "name": "Kaleidoscope",
+      "category": "Curves",
+      "description": "A mouse-controlled triangle mirrored 12 times around the centre. Hue cycles with time.",
+      "file": "kaleidoscope.flora"
+    },
+    {
+      "id": "grid-art",
+      "name": "Grid Art",
+      "category": "Curves",
+      "description": "6×6 grid of stochastic walker-cluster cells, each independently seeded — 36 unique compositions sharing one palette. Slider re-rolls the whole grid. The walker algorithm (spawn, drift, tapering trails) lives inside draw/walker-cluster.",
+      "file": "grid-art.flora"
+    },
+    {
+      "id": "eink-clock",
+      "name": "E-ink Clock",
+      "category": "Motion",
+      "description": "A bold sweeping clock hand fanned to the Renderer AND an io/eink node that POSTs the frame to a networked Waveshare e-paper panel every 25s (the toggle forces a send now). Set the node’s url to your panel.",
+      "file": "eink-clock.flora"
+    },
+    {
+      "id": "motion-follow",
+      "name": "Motion Lab",
+      "category": "Motion",
+      "description": "A swaying target tracked by Smooth (lags), Spring (overshoots/resonates), and DelayLine (phase-shifted) in separate lanes against a shared guide — the difference is visible at a glance.",
+      "file": "motion-follow.flora"
+    },
+    {
+      "id": "eased-stagger",
+      "name": "Eased Stagger",
+      "category": "Motion",
+      "description": "A row of dots bobbing in a travelling wave — the travel comes from the ForEach delay pin (per-item clock offset), the bob from a Motion ease curve, and hue from the fraction loop var.",
+      "file": "eased-stagger.flora"
+    },
+    {
+      "id": "phyllotaxis",
+      "name": "Phyllotaxis",
+      "category": "Curves",
+      "description": "A sunflower spiral placed by the golden angle, driven entirely by the ForEach index / fraction loop vars + polar vec2/from-angle. Hue sweeps with fraction.",
+      "file": "phyllotaxis.flora"
+    },
+    {
+      "id": "smoothed-path",
+      "name": "Smoothed Path",
+      "category": "Curves",
+      "description": "A jagged noise polyline with a smoothed overlay — a 3-point box blur using spread/neighbor (broadcast the spread, read left/right via the index pin) inside a ForEach.",
+      "file": "smoothed-path.flora"
+    },
+    {
+      "id": "grid-ripple",
+      "name": "Grid Ripple",
+      "category": "Fields",
+      "description": "A grid of stroked squares offset by a radial sin ripple, driven through a ForEach with per-iteration delay. Stroke colours cycle a palette across the cells.",
+      "file": "grid-ripple.flora"
+    },
+    {
+      "id": "curl-flow",
+      "name": "Curl Flow",
+      "category": "Fields",
+      "description": "A grid of streaks aligned to a divergence-free curl-noise field that drifts with time — the classic swirling flow-field look.",
+      "file": "curl-flow.flora"
+    },
+    {
+      "id": "ripple-field",
+      "name": "Ripple Field",
+      "category": "Fields",
+      "description": "A 25×25 grid of dots, each pulsed by sin(dist_from_center − time). Concentric ripples.",
+      "file": "ripple-field.flora"
+    },
+    {
+      "id": "noise-wave",
+      "name": "Noise Wave",
+      "category": "Fields",
+      "description": "A 32×32 grid of cells displaced and hue-shifted by aggressive multi-octave Perlin noise. Pure function of time.",
+      "file": "noise-wave.flora"
+    },
+    {
+      "id": "force-field",
+      "name": "Force Field Arrows",
+      "category": "Fields",
+      "description": "A 14×14 grid of arrows pointing along a Perlin angle field that drifts with time. Each tip dot is hue-coded.",
+      "file": "force-field.flora"
+    },
+    {
+      "id": "pendulum",
+      "name": "Pendulum",
+      "category": "Nature",
+      "description": "Classic pendulum — angular acceleration = −(g/L)·sin(θ), velocity damped each tick. State<number> for θ and ω. NOC §3.",
+      "file": "pendulum.flora"
+    },
+    {
+      "id": "noc-wind-gravity",
+      "name": "Wind & Gravity",
+      "category": "Nature",
+      "description": "Mouse-X drives wind; gravity pulls down. F = m·a, so heavier masses respond less to wind. Slide the mass to feel the asymmetry. NOC §2 — forces.",
+      "file": "noc-wind-gravity.flora"
+    },
+    {
+      "id": "noc-drag",
+      "name": "Drag",
+      "category": "Nature",
+      "description": "Quadratic fluid drag (−c·|v|·v) opposes motion as the ball falls. The terminal-velocity hover is the punchline — gravity and drag balance at constant speed. NOC §2.",
+      "file": "noc-drag.flora"
+    },
+    {
+      "id": "noc-attraction",
+      "name": "Mouse Attraction",
+      "category": "Nature",
+      "description": "A mover is pulled toward the mouse cursor via a gravity-like inverse-square force, clamped at close distances. Damping keeps it from blowing up. NOC §2.",
+      "file": "noc-attraction.flora"
+    },
+    {
+      "id": "noc-spring",
+      "name": "Spring",
+      "category": "Nature",
+      "description": "Hooke's law: F = −k·(y − restY), plus gravity and damping. State<number> for y and v_y. A bob oscillates beneath a hanging point. NOC §3.",
+      "file": "noc-spring.flora"
+    },
+    {
+      "id": "noc-seek",
+      "name": "Seek",
+      "category": "Nature",
+      "description": "Reynolds' classic seek: desired = normalize(target - pos)·maxSpeed, steer = limit(desired − vel, maxForce), vel += steer. Two sliders tune the agent. NOC §5 — autonomous agents.",
+      "file": "noc-seek.flora"
+    },
+    {
+      "id": "noc-flow-field",
+      "name": "Flow Field",
+      "category": "Nature",
+      "description": "A 16×16 grid of arrows whose angles come from Perlin noise that drifts with time. Slider tunes noise scale. NOC §5 — fields driving motion.",
+      "file": "noc-flow-field.flora"
+    },
+    {
+      "id": "noc-fractal-tree",
+      "name": "Fractal Tree",
+      "category": "Nature",
+      "description": "A 2-level Pythagoras-style tree built from three lines (trunk + 2 branches), with the trunk rotated by sin(time) to give a gentle sway. NOC §8.",
+      "file": "noc-fractal-tree.flora"
+    },
+    {
+      "id": "fractal-tree-spread",
+      "name": "Fractal Tree (spread)",
+      "category": "Nature",
+      "description": "The same fractal tree with zero node duplication: the recursion bakes its branch geometry into five data/csv-inline number spreads, zipped through ONE ForEach → one draw/line. 30 nodes → 14, per-branch stroke weight preserved.",
+      "file": "fractal-tree-spread.flora"
+    },
+    {
+      "id": "shader-plasma",
+      "name": "Shader · Plasma",
+      "category": "Nature",
+      "description": "A generative GPU fragment shader (gpu/shader) — a classic animated plasma driven by iTime, with a `scale` uniform steered by a slider. Select the node and edit the GLSL in the side panel.",
+      "file": "shader-plasma.flora"
+    },
+    {
+      "id": "shader-feedback",
+      "name": "Shader · Feedback Ripples",
+      "category": "Nature",
+      "description": "A self-feedback fragment shader: each frame diffuses + fades its previous output (iChannel1) and injects a moving source — reaction-diffusion-style ripples that accumulate. Shows the GPU feedback buffer.",
+      "file": "shader-feedback.flora"
+    },
+    {
+      "id": "shader-reaction-diffusion",
+      "name": "Shader · Reaction-Diffusion",
+      "category": "Nature",
+      "description": "Gray-Scott reaction-diffusion on a multi-buffer shader: Buffer A holds the chemical field (reads its own previous frame), the Image pass colour-maps it. The canonical multi-pass GPU case — give it a few seconds to bloom.",
+      "file": "shader-reaction-diffusion.flora"
+    },
+    {
+      "id": "fractal-tree-generative",
+      "name": "Fractal Tree (generative)",
+      "category": "Nature",
+      "description": "The recursion lives IN the graph — no baked coordinates. A single ForEach walks 32 steps with three scalar accumulators (angle, x, y) as a turtle, resetting per leaf-path and turning ±ANGLE decoded from the leaf bits. Fully parametric: change ANGLE / SCALE / LEVELS and the tree reshapes.",
+      "file": "fractal-tree-generative.flora"
+    },
+    {
+      "id": "datamosh",
+      "name": "Datamosh",
+      "category": "Image",
+      "description": "Load an image, layer it 4× with RGB-tinted copies at time-driven offsets and blend modes (SCREEN / DIFFERENCE) for a chromatic-aberration glitch.",
+      "file": "datamosh.flora"
+    },
+    {
+      "id": "photo-mosaic",
+      "name": "Photo Mosaic",
+      "category": "Image",
+      "description": "Samples a 32×32 grid of pixels from a loaded image and draws each as a dot sized by luminance. Pointillist / Warhol effect that breathes with time.",
+      "file": "photo-mosaic.flora"
+    },
+    {
+      "id": "webcam-mosaic",
+      "name": "Webcam Mosaic",
+      "category": "Image",
+      "description": "A live, mirrored webcam halftone. Flip the Toggle into the camera's `start` pin and grant permission; each cell becomes a yellow circle where the image is light or a blue square where it is dark (luminance threshold via logic/select).",
+      "file": "webcam-mosaic.flora"
+    },
+    {
+      "id": "body-tracking",
+      "name": "Body Tracking",
+      "category": "Image",
+      "description": "Live MediaPipe skeleton from the webcam. One Toggle starts the camera + the input/landmarks tracker; cyan lines draw the connection edges and yellow dots the points. Switch hands / face / pose on the Landmarks node.",
+      "file": "body-tracking.flora"
+    },
+    {
+      "id": "pixel-sort",
+      "name": "Pixel Sort",
+      "category": "Pixel",
+      "description": "Classic glitch art: sorts maximal runs of pixels along each row by brightness, masked by a (lo, hi) range. Drag the sliders to shift the streaks.",
+      "file": "pixel-sort.flora"
+    },
+    {
+      "id": "tone-surface",
+      "name": "Tone Surface",
+      "category": "Sound",
+      "description": "Move the mouse — X picks pitch, Y picks amplitude. A 20×20 grid lights up around the cursor.",
+      "file": "tone-surface.flora"
+    },
+    {
+      "id": "fft-bloom",
+      "name": "FFT Bloom",
+      "category": "Sound",
+      "description": "An oscillator → FFT → polar plot. Each of 64 bins becomes a dot on a ring; mouse Y drives the source pitch.",
+      "file": "fft-bloom.flora"
+    },
+    {
+      "id": "random-walk",
+      "name": "Random Walk Trail",
+      "category": "Feedback",
+      "description": "A walker drifts via hashed (time, seed) angles, leaving a 200-point colored trail. Hue cycles along the trail; oldest points fade. Uses state/spread.",
+      "file": "random-walk.flora"
+    },
+    {
+      "id": "paint-trail",
+      "name": "Paint Trail",
+      "category": "Feedback",
+      "description": "Move the mouse to paint. image/from-layer + state/value accumulate each brush stroke on an offscreen canvas — infinite paint with a hue that cycles over time.",
+      "file": "paint-trail.flora"
+    },
+    {
+      "id": "csv-bar-chart",
+      "name": "CSV Bar Chart",
+      "category": "Data",
+      "description": "Inline CSV → number spread → 16 colored bars. Edit the `data` param on the CSVInline node to load a new series.",
+      "file": "csv-bar-chart.flora"
+    },
+    {
+      "id": "local-peaks",
+      "name": "Local Peaks",
+      "category": "Data",
+      "description": "Noise bars where each lights green only if it is taller than BOTH neighbours — local-maximum detection with spread/neighbor inside a ForEach.",
+      "file": "local-peaks.flora"
+    }
+  ]
+}

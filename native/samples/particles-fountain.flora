@@ -1,0 +1,250 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Fountain",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "pf_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -756,
+        "y": 0
+      },
+      "params": {
+        "text": "Particle fountain\n\nA Particles patch is four nodes at minimum: time/seconds → Emitter, an Emitter to spawn from, a World to integrate against, and a Render-As to draw the live buffer. Gravity lives on the World and applies to every Emitter wired to it.\n\nDrag tames terminal velocity; the wrap-bounds keep the canvas cycling.",
+        "width": 500,
+        "height": 260
+      },
+      "portValues": {
+        "text": "Particle fountain\n\nA Particles patch is four nodes at minimum: time/seconds → Emitter, an Emitter to spawn from, a World to integrate against, and a Render-As to draw the live buffer. Gravity lives on the World and applies to every Emitter wired to it.\n\nDrag tames terminal velocity; the wrap-bounds keep the canvas cycling.",
+        "width": 500,
+        "height": 260
+      }
+    },
+    {
+      "id": "pf_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": -756,
+        "y": 600
+      },
+      "params": {}
+    },
+    {
+      "id": "pf_drag",
+      "defType": "force/drag",
+      "position": {
+        "x": -475.99999999999994,
+        "y": 600
+      },
+      "params": {
+        "strength": 0.3
+      },
+      "portValues": {
+        "strength": 0.3
+      }
+    },
+    {
+      "id": "pf_bnds",
+      "defType": "particles/bounds",
+      "position": {
+        "x": -475.99999999999994,
+        "y": 800
+      },
+      "params": {
+        "size": {
+          "x": 520,
+          "y": 520
+        },
+        "mode": "wrap"
+      },
+      "portValues": {
+        "size": {
+          "x": 520,
+          "y": 520
+        },
+        "mode": "wrap"
+      }
+    },
+    {
+      "id": "pf_world",
+      "defType": "physics/world",
+      "position": {
+        "x": -196,
+        "y": 600
+      },
+      "params": {
+        "gravity": {
+          "x": 0,
+          "y": 380
+        },
+        "drag": 0.05,
+        "integrator": "euler"
+      },
+      "portValues": {
+        "gravity": {
+          "x": 0,
+          "y": 380
+        },
+        "drag": 0.05,
+        "integrator": "euler"
+      }
+    },
+    {
+      "id": "pf_em",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 196,
+        "y": 100
+      },
+      "params": {
+        "rate": 240,
+        "lifetime": 4,
+        "initialVel": {
+          "x": 0,
+          "y": -340
+        },
+        "velSpread": 0.35,
+        "color": {
+          "r": 1,
+          "g": 0.85,
+          "b": 0.4,
+          "a": 1
+        },
+        "size": 5,
+        "maxCount": 1500,
+        "overflowMode": "drop",
+        "seed": 7
+      },
+      "portValues": {
+        "rate": 240,
+        "lifetime": 4,
+        "initialVel": {
+          "x": 0,
+          "y": -340
+        },
+        "velSpread": 0.35,
+        "color": {
+          "r": 1,
+          "g": 0.85,
+          "b": 0.4,
+          "a": 1
+        },
+        "size": 5,
+        "maxCount": 1500,
+        "overflowMode": "drop",
+        "seed": 7
+      }
+    },
+    {
+      "id": "pf_render",
+      "defType": "particles/render-as",
+      "position": {
+        "x": 616,
+        "y": 100
+      },
+      "params": {
+        "template": "circle",
+        "useBufferColor": true
+      },
+      "portValues": {
+        "template": "circle",
+        "useBufferColor": true
+      }
+    },
+    {
+      "id": "pf_bg",
+      "defType": "color/color",
+      "position": {
+        "x": 196,
+        "y": 550
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 12,
+        "g": 12,
+        "b": 22,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 12,
+        "g": 12,
+        "b": 22,
+        "a": 255
+      }
+    },
+    {
+      "id": "pf_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1007.9999999999999,
+        "y": 0
+      },
+      "params": {
+        "width": 540,
+        "height": 540
+      },
+      "portValues": {
+        "width": 540,
+        "height": 540
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_628",
+      "source": "pf_drag",
+      "target": "pf_world",
+      "sourceHandle": "out-force",
+      "targetHandle": "in-forces"
+    },
+    {
+      "id": "e_629",
+      "source": "pf_bnds",
+      "target": "pf_world",
+      "sourceHandle": "out-collider",
+      "targetHandle": "in-colliders"
+    },
+    {
+      "id": "e_630",
+      "source": "pf_world",
+      "target": "pf_em",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_631",
+      "source": "pf_time",
+      "target": "pf_em",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_632",
+      "source": "pf_em",
+      "target": "pf_render",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_633",
+      "source": "pf_render",
+      "target": "pf_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_634",
+      "source": "pf_bg",
+      "target": "pf_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    }
+  ]
+}

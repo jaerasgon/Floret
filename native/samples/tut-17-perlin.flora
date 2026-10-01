@@ -1,0 +1,426 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "17 · Perlin Noise",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t17_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -560,
+        "y": 0
+      },
+      "params": {
+        "text": "Perlin noise\n\nUnlike random/uniform (jumpy), Perlin noise is smooth — neighbouring inputs give neighbouring outputs. Perfect for organic motion.\n\nFor each cell, sample noise at (cellX, time). Use the result to nudge y AND shift hue.",
+        "width": 380,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Perlin noise\n\nUnlike random/uniform (jumpy), Perlin noise is smooth — neighbouring inputs give neighbouring outputs. Perfect for organic motion.\n\nFor each cell, sample noise at (cellX, time). Use the result to nudge y AND shift hue.",
+        "width": 380,
+        "height": 240
+      }
+    },
+    {
+      "id": "t17_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "count": 40
+      },
+      "portValues": {
+        "count": 40
+      }
+    },
+    {
+      "id": "t17_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 84,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "t17_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 448,
+        "y": 0
+      },
+      "params": {
+        "width": 840,
+        "height": 900,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "tm",
+          "name": "t",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 840,
+      "height": 900
+    },
+    {
+      "id": "t17_stepX",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 100
+      },
+      "params": {
+        "b": 10,
+        "valueType": "number"
+      },
+      "parentId": "t17_region",
+      "portValues": {
+        "b": 10
+      }
+    },
+    {
+      "id": "t17_offX",
+      "defType": "math/add",
+      "position": {
+        "x": 280,
+        "y": 100
+      },
+      "params": {
+        "b": -200,
+        "valueType": "number"
+      },
+      "parentId": "t17_region",
+      "portValues": {
+        "b": -200
+      }
+    },
+    {
+      "id": "t17_noiseX",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 300
+      },
+      "params": {
+        "b": 0.01,
+        "valueType": "number"
+      },
+      "parentId": "t17_region",
+      "portValues": {
+        "b": 0.01
+      }
+    },
+    {
+      "id": "t17_noiseT",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 450
+      },
+      "params": {
+        "b": 0.3,
+        "valueType": "number"
+      },
+      "parentId": "t17_region",
+      "portValues": {
+        "b": 0.3
+      }
+    },
+    {
+      "id": "t17_n",
+      "defType": "noise/perlin",
+      "position": {
+        "x": 280,
+        "y": 350
+      },
+      "params": {},
+      "parentId": "t17_region"
+    },
+    {
+      "id": "t17_yScale",
+      "defType": "math/mul",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 300
+      },
+      "params": {
+        "b": 300,
+        "valueType": "number"
+      },
+      "parentId": "t17_region",
+      "portValues": {
+        "b": 300
+      }
+    },
+    {
+      "id": "t17_yOff",
+      "defType": "math/add",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 450
+      },
+      "params": {
+        "b": -150,
+        "valueType": "number"
+      },
+      "parentId": "t17_region",
+      "portValues": {
+        "b": -150
+      }
+    },
+    {
+      "id": "t17_hue",
+      "defType": "math/mul",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 600
+      },
+      "params": {
+        "b": 360,
+        "valueType": "number"
+      },
+      "parentId": "t17_region",
+      "portValues": {
+        "b": 360
+      }
+    },
+    {
+      "id": "t17_col",
+      "defType": "color/color",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 750
+      },
+      "params": {
+        "mode": "hsl",
+        "s": 80,
+        "l": 55,
+        "a": 255
+      },
+      "parentId": "t17_region",
+      "portValues": {
+        "mode": "hsl",
+        "s": 80,
+        "l": 55,
+        "a": 255
+      }
+    },
+    {
+      "id": "t17_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 728,
+        "y": 750
+      },
+      "params": {},
+      "parentId": "t17_region"
+    },
+    {
+      "id": "t17_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 728,
+        "y": 250
+      },
+      "params": {
+        "w": 12,
+        "h": 12
+      },
+      "parentId": "t17_region",
+      "portValues": {
+        "w": 12,
+        "h": 12
+      }
+    },
+    {
+      "id": "t17_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1344,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t17_ell-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 668,
+        "y": 250
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "t17_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_88",
+      "source": "t17_range",
+      "target": "t17_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_89",
+      "source": "t17_t",
+      "target": "t17_region",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-tm"
+    },
+    {
+      "id": "e_90",
+      "source": "t17_region",
+      "target": "t17_stepX",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_91",
+      "source": "t17_stepX",
+      "target": "t17_offX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_92",
+      "source": "t17_offX",
+      "target": "t17_ell-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_93",
+      "source": "t17_region",
+      "target": "t17_noiseX",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_94",
+      "source": "t17_region",
+      "target": "t17_noiseT",
+      "sourceHandle": "out-tm",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_95",
+      "source": "t17_noiseX",
+      "target": "t17_n",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_96",
+      "source": "t17_noiseT",
+      "target": "t17_n",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_97",
+      "source": "t17_n",
+      "target": "t17_yScale",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_98",
+      "source": "t17_yScale",
+      "target": "t17_yOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_99",
+      "source": "t17_yOff",
+      "target": "t17_ell-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_100",
+      "source": "t17_n",
+      "target": "t17_hue",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_101",
+      "source": "t17_hue",
+      "target": "t17_col",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_102",
+      "source": "t17_col",
+      "target": "t17_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_103",
+      "source": "t17_fill",
+      "target": "t17_ell",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_104",
+      "source": "t17_ell",
+      "target": "t17_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_105",
+      "source": "t17_region",
+      "target": "t17_renderer",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t17_ell-xy0",
+      "source": "t17_ell-xy0",
+      "target": "t17_ell",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

@@ -1,0 +1,792 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Datamosh",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "imd_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": -756,
+        "y": 50
+      },
+      "params": {}
+    },
+    {
+      "id": "imd_sinT",
+      "defType": "math/sin",
+      "position": {
+        "x": -503.99999999999994,
+        "y": 50
+      },
+      "params": {}
+    },
+    {
+      "id": "imd_tSpeed",
+      "defType": "math/mul",
+      "position": {
+        "x": -756,
+        "y": 200
+      },
+      "params": {
+        "b": 1.2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 1.2
+      }
+    },
+    {
+      "id": "imd_offsetMul",
+      "defType": "math/mul",
+      "position": {
+        "x": -251.99999999999997,
+        "y": 50
+      },
+      "params": {
+        "b": 22,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 22
+      }
+    },
+    {
+      "id": "imd_negOffset",
+      "defType": "math/mul",
+      "position": {
+        "x": -251.99999999999997,
+        "y": 200
+      },
+      "params": {
+        "b": -1
+      },
+      "portValues": {
+        "b": -1
+      }
+    },
+    {
+      "id": "imd_img",
+      "defType": "io/image-url",
+      "position": {
+        "x": -756,
+        "y": 400
+      },
+      "params": {
+        "url": "https://picsum.photos/seed/floret/500/500"
+      },
+      "portValues": {
+        "url": "https://picsum.photos/seed/floret/500/500"
+      }
+    },
+    {
+      "id": "imd_baseX",
+      "defType": "value/number",
+      "position": {
+        "x": -756,
+        "y": 700
+      },
+      "params": {
+        "value": -200
+      },
+      "portValues": {
+        "value": -200
+      }
+    },
+    {
+      "id": "imd_baseY",
+      "defType": "value/number",
+      "position": {
+        "x": -756,
+        "y": 850
+      },
+      "params": {
+        "value": -200
+      },
+      "portValues": {
+        "value": -200
+      }
+    },
+    {
+      "id": "imd_drawW",
+      "defType": "value/number",
+      "position": {
+        "x": -756,
+        "y": 1000
+      },
+      "params": {
+        "value": 400
+      },
+      "portValues": {
+        "value": 400
+      }
+    },
+    {
+      "id": "imd_drawH",
+      "defType": "value/number",
+      "position": {
+        "x": -756,
+        "y": 1150
+      },
+      "params": {
+        "value": 400
+      },
+      "portValues": {
+        "value": 400
+      }
+    },
+    {
+      "id": "imd_xShifted",
+      "defType": "math/add",
+      "position": {
+        "x": 0,
+        "y": 700
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "imd_xShiftedNeg",
+      "defType": "math/add",
+      "position": {
+        "x": 0,
+        "y": 850
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "imd_redTint",
+      "defType": "color/rgb",
+      "position": {
+        "x": -420,
+        "y": 400
+      },
+      "params": {
+        "r": 255,
+        "g": 0,
+        "b": 0,
+        "a": 200
+      },
+      "portValues": {
+        "r": 255,
+        "g": 0,
+        "b": 0,
+        "a": 200
+      }
+    },
+    {
+      "id": "imd_grnTint",
+      "defType": "color/rgb",
+      "position": {
+        "x": -420,
+        "y": 550
+      },
+      "params": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 200
+      },
+      "portValues": {
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 200
+      }
+    },
+    {
+      "id": "imd_bluTint",
+      "defType": "color/rgb",
+      "position": {
+        "x": -420,
+        "y": 700
+      },
+      "params": {
+        "r": 0,
+        "g": 0,
+        "b": 255,
+        "a": 200
+      },
+      "portValues": {
+        "r": 0,
+        "g": 0,
+        "b": 255,
+        "a": 200
+      }
+    },
+    {
+      "id": "imd_drawBase",
+      "defType": "draw/image",
+      "position": {
+        "x": 336,
+        "y": 150
+      },
+      "params": {}
+    },
+    {
+      "id": "imd_drawR",
+      "defType": "draw/image",
+      "position": {
+        "x": 336,
+        "y": 400
+      },
+      "params": {}
+    },
+    {
+      "id": "imd_drawG",
+      "defType": "draw/image",
+      "position": {
+        "x": 336,
+        "y": 650
+      },
+      "params": {}
+    },
+    {
+      "id": "imd_drawB",
+      "defType": "draw/image",
+      "position": {
+        "x": 336,
+        "y": 900
+      },
+      "params": {}
+    },
+    {
+      "id": "imd_blendBase",
+      "defType": "transform/blend",
+      "position": {
+        "x": 644,
+        "y": 150
+      },
+      "params": {
+        "mode": "blend"
+      },
+      "portValues": {
+        "mode": "blend"
+      }
+    },
+    {
+      "id": "imd_blendR",
+      "defType": "transform/blend",
+      "position": {
+        "x": 644,
+        "y": 400
+      },
+      "params": {
+        "mode": "add"
+      },
+      "portValues": {
+        "mode": "add"
+      }
+    },
+    {
+      "id": "imd_blendG",
+      "defType": "transform/blend",
+      "position": {
+        "x": 644,
+        "y": 650
+      },
+      "params": {
+        "mode": "subtract"
+      },
+      "portValues": {
+        "mode": "subtract"
+      }
+    },
+    {
+      "id": "imd_blendB",
+      "defType": "transform/blend",
+      "position": {
+        "x": 644,
+        "y": 900
+      },
+      "params": {
+        "mode": "add"
+      },
+      "portValues": {
+        "mode": "add"
+      }
+    },
+    {
+      "id": "imd_s1",
+      "defType": "spread/stack",
+      "position": {
+        "x": 923.9999999999999,
+        "y": 250
+      },
+      "params": {}
+    },
+    {
+      "id": "imd_s2",
+      "defType": "spread/stack",
+      "position": {
+        "x": 923.9999999999999,
+        "y": 450
+      },
+      "params": {}
+    },
+    {
+      "id": "imd_s3",
+      "defType": "spread/stack",
+      "position": {
+        "x": 923.9999999999999,
+        "y": 650
+      },
+      "params": {}
+    },
+    {
+      "id": "imd_finalGroup",
+      "defType": "transform/group",
+      "position": {
+        "x": 923.9999999999999,
+        "y": 850
+      },
+      "params": {}
+    },
+    {
+      "id": "imd_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": -756,
+        "y": 1300
+      },
+      "params": {
+        "r": 10,
+        "g": 8,
+        "b": 16,
+        "a": 255
+      },
+      "portValues": {
+        "r": 10,
+        "g": 8,
+        "b": 16,
+        "a": 255
+      }
+    },
+    {
+      "id": "imd_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1232,
+        "y": 50
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "imd_drawBase-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 276,
+        "y": 150
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "imd_drawR-xy1",
+      "defType": "vec2/make",
+      "position": {
+        "x": 276,
+        "y": 400
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "imd_drawG-xy2",
+      "defType": "vec2/make",
+      "position": {
+        "x": 276,
+        "y": 650
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "imd_drawB-xy3",
+      "defType": "vec2/make",
+      "position": {
+        "x": 276,
+        "y": 900
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1414",
+      "source": "imd_bg",
+      "target": "imd_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1415",
+      "source": "imd_time",
+      "target": "imd_tSpeed",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1416",
+      "source": "imd_tSpeed",
+      "target": "imd_sinT",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1417",
+      "source": "imd_sinT",
+      "target": "imd_offsetMul",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1418",
+      "source": "imd_offsetMul",
+      "target": "imd_negOffset",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1419",
+      "source": "imd_baseX",
+      "target": "imd_xShifted",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1420",
+      "source": "imd_offsetMul",
+      "target": "imd_xShifted",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1421",
+      "source": "imd_baseX",
+      "target": "imd_xShiftedNeg",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1422",
+      "source": "imd_negOffset",
+      "target": "imd_xShiftedNeg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1423",
+      "source": "imd_img",
+      "target": "imd_drawBase",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1424",
+      "source": "imd_img",
+      "target": "imd_drawR",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1425",
+      "source": "imd_img",
+      "target": "imd_drawG",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1426",
+      "source": "imd_img",
+      "target": "imd_drawB",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1427",
+      "source": "imd_baseX",
+      "target": "imd_drawBase-xy0",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1428",
+      "source": "imd_baseY",
+      "target": "imd_drawBase-xy0",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1429",
+      "source": "imd_drawW",
+      "target": "imd_drawBase",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_1430",
+      "source": "imd_drawH",
+      "target": "imd_drawBase",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1431",
+      "source": "imd_xShifted",
+      "target": "imd_drawR-xy1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1432",
+      "source": "imd_baseY",
+      "target": "imd_drawR-xy1",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1433",
+      "source": "imd_drawW",
+      "target": "imd_drawR",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_1434",
+      "source": "imd_drawH",
+      "target": "imd_drawR",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1435",
+      "source": "imd_redTint",
+      "target": "imd_drawR",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-tint"
+    },
+    {
+      "id": "e_1436",
+      "source": "imd_baseX",
+      "target": "imd_drawG-xy2",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1437",
+      "source": "imd_baseY",
+      "target": "imd_drawG-xy2",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1438",
+      "source": "imd_drawW",
+      "target": "imd_drawG",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_1439",
+      "source": "imd_drawH",
+      "target": "imd_drawG",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1440",
+      "source": "imd_grnTint",
+      "target": "imd_drawG",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-tint"
+    },
+    {
+      "id": "e_1441",
+      "source": "imd_xShiftedNeg",
+      "target": "imd_drawB-xy3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1442",
+      "source": "imd_baseY",
+      "target": "imd_drawB-xy3",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1443",
+      "source": "imd_drawW",
+      "target": "imd_drawB",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_1444",
+      "source": "imd_drawH",
+      "target": "imd_drawB",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1445",
+      "source": "imd_bluTint",
+      "target": "imd_drawB",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-tint"
+    },
+    {
+      "id": "e_1446",
+      "source": "imd_drawBase",
+      "target": "imd_blendBase",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_1447",
+      "source": "imd_drawR",
+      "target": "imd_blendR",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_1448",
+      "source": "imd_drawG",
+      "target": "imd_blendG",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_1449",
+      "source": "imd_drawB",
+      "target": "imd_blendB",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_1450",
+      "source": "imd_blendBase",
+      "target": "imd_s1",
+      "sourceHandle": "out-blended",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1451",
+      "source": "imd_blendR",
+      "target": "imd_s1",
+      "sourceHandle": "out-blended",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1452",
+      "source": "imd_s1",
+      "target": "imd_s2",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1453",
+      "source": "imd_blendG",
+      "target": "imd_s2",
+      "sourceHandle": "out-blended",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1454",
+      "source": "imd_s2",
+      "target": "imd_s3",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1455",
+      "source": "imd_blendB",
+      "target": "imd_s3",
+      "sourceHandle": "out-blended",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1456",
+      "source": "imd_s3",
+      "target": "imd_finalGroup",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_1457",
+      "source": "imd_finalGroup",
+      "target": "imd_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_imd_drawBase-xy0",
+      "source": "imd_drawBase-xy0",
+      "target": "imd_drawBase",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_xy_imd_drawR-xy1",
+      "source": "imd_drawR-xy1",
+      "target": "imd_drawR",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_xy_imd_drawG-xy2",
+      "source": "imd_drawG-xy2",
+      "target": "imd_drawG",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_xy_imd_drawB-xy3",
+      "source": "imd_drawB-xy3",
+      "target": "imd_drawB",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

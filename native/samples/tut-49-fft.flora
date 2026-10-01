@@ -1,0 +1,305 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "49 · FFT Spectrum Bars",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t49_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -644,
+        "y": 0
+      },
+      "params": {
+        "text": "FFT spectrum bars\n\n`sound/fft` analyses a live audio signal and outputs a `spectrum` spread (one number per frequency bin, 0..1). Wrap it in a ForEach with an index and you get a bar-chart visualiser.\n\nMic → 128 bins → 128 rectangles. Grant microphone permission.",
+        "width": 440,
+        "height": 240
+      },
+      "portValues": {
+        "text": "FFT spectrum bars\n\n`sound/fft` analyses a live audio signal and outputs a `spectrum` spread (one number per frequency bin, 0..1). Wrap it in a ForEach with an index and you get a bar-chart visualiser.\n\nMic → 128 bins → 128 rectangles. Grant microphone permission.",
+        "width": 440,
+        "height": 240
+      }
+    },
+    {
+      "id": "t49_start",
+      "defType": "value/number",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "value": 1
+      },
+      "portValues": {
+        "value": 1
+      }
+    },
+    {
+      "id": "t49_mic",
+      "defType": "sound/audio-in",
+      "position": {
+        "x": 336,
+        "y": 0
+      },
+      "params": {
+        "amp": 1
+      },
+      "portValues": {
+        "amp": 1
+      }
+    },
+    {
+      "id": "t49_fft",
+      "defType": "sound/fft",
+      "position": {
+        "x": 588,
+        "y": 0
+      },
+      "params": {
+        "smoothing": 0.7
+      },
+      "portValues": {
+        "smoothing": 0.7
+      }
+    },
+    {
+      "id": "t49_idx",
+      "defType": "spread/range",
+      "position": {
+        "x": 84,
+        "y": 500
+      },
+      "params": {
+        "count": 128
+      },
+      "portValues": {
+        "count": 128
+      }
+    },
+    {
+      "id": "t49_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 896,
+        "y": 0
+      },
+      "params": {
+        "width": 756,
+        "height": 800,
+        "label": "bars"
+      },
+      "ports": [
+        {
+          "id": "b",
+          "name": "bin",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 756,
+      "height": 800
+    },
+    {
+      "id": "t49_xMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 200
+      },
+      "params": {
+        "b": 4,
+        "valueType": "number"
+      },
+      "parentId": "t49_region",
+      "portValues": {
+        "b": 4
+      }
+    },
+    {
+      "id": "t49_xOff",
+      "defType": "math/add",
+      "position": {
+        "x": 280,
+        "y": 200
+      },
+      "params": {
+        "b": -250,
+        "valueType": "number"
+      },
+      "parentId": "t49_region",
+      "portValues": {
+        "b": -250
+      }
+    },
+    {
+      "id": "t49_hScale",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 100
+      },
+      "params": {
+        "b": -400,
+        "valueType": "number"
+      },
+      "parentId": "t49_region",
+      "portValues": {
+        "b": -400
+      }
+    },
+    {
+      "id": "t49_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 200
+      },
+      "params": {
+        "y": 200,
+        "w": 3
+      },
+      "parentId": "t49_region",
+      "portValues": {
+        "y": 200,
+        "w": 3
+      }
+    },
+    {
+      "id": "t49_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1680,
+        "y": 0
+      },
+      "params": {
+        "width": 500,
+        "height": 400
+      },
+      "portValues": {
+        "width": 500,
+        "height": 400
+      }
+    },
+    {
+      "id": "t49_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 443.99999999999994,
+        "y": 200
+      },
+      "params": {
+        "x": 0,
+        "y": 200
+      },
+      "parentId": "t49_region",
+      "portValues": {
+        "x": 0,
+        "y": 200
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_400",
+      "source": "t49_start",
+      "target": "t49_mic",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_401",
+      "source": "t49_mic",
+      "target": "t49_fft",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_402",
+      "source": "t49_fft",
+      "target": "t49_region",
+      "sourceHandle": "out-spectrum",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_403",
+      "source": "t49_idx",
+      "target": "t49_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_404",
+      "source": "t49_region",
+      "target": "t49_hScale",
+      "sourceHandle": "out-b",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_405",
+      "source": "t49_hScale",
+      "target": "t49_rect",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_406",
+      "source": "t49_region",
+      "target": "t49_xMul",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_407",
+      "source": "t49_xMul",
+      "target": "t49_xOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_408",
+      "source": "t49_xOff",
+      "target": "t49_rect-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_409",
+      "source": "t49_rect",
+      "target": "t49_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_410",
+      "source": "t49_region",
+      "target": "t49_renderer",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t49_rect-xy0",
+      "source": "t49_rect-xy0",
+      "target": "t49_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

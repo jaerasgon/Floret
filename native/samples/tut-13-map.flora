@@ -1,0 +1,157 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "13 · Map: Remap Ranges",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t13_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -560,
+        "y": 0
+      },
+      "params": {
+        "text": "Remapping ranges\n\n`math/map` converts a value from one range to another. Example: mouseX is in [-200, 200] but a hue needs [0, 360].\n\nMove the mouse left/right — the ellipse changes hue across the rainbow.",
+        "width": 380,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Remapping ranges\n\n`math/map` converts a value from one range to another. Example: mouseX is in [-200, 200] but a hue needs [0, 360].\n\nMove the mouse left/right — the ellipse changes hue across the rainbow.",
+        "width": 380,
+        "height": 220
+      }
+    },
+    {
+      "id": "t13_m",
+      "defType": "input/mouse",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t13_map",
+      "defType": "math/map",
+      "position": {
+        "x": 336,
+        "y": 0
+      },
+      "params": {
+        "inMin": -200,
+        "inMax": 200,
+        "outMin": 0,
+        "outMax": 360
+      },
+      "portValues": {
+        "inMin": -200,
+        "inMax": 200,
+        "outMin": 0,
+        "outMax": 360
+      }
+    },
+    {
+      "id": "t13_col",
+      "defType": "color/color",
+      "position": {
+        "x": 644,
+        "y": 0
+      },
+      "params": {
+        "mode": "hsl",
+        "s": 80,
+        "l": 55,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "s": 80,
+        "l": 55,
+        "a": 255
+      }
+    },
+    {
+      "id": "t13_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 896,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t13_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1148,
+        "y": 100
+      },
+      "params": {
+        "w": 200,
+        "h": 200
+      },
+      "portValues": {
+        "w": 200,
+        "h": 200
+      }
+    },
+    {
+      "id": "t13_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1456,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_64",
+      "source": "t13_m",
+      "target": "t13_map",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_65",
+      "source": "t13_map",
+      "target": "t13_col",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_66",
+      "source": "t13_col",
+      "target": "t13_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_67",
+      "source": "t13_fill",
+      "target": "t13_ell",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_68",
+      "source": "t13_ell",
+      "target": "t13_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "01 · Hello Rect",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t01_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -503.99999999999994,
+        "y": 0
+      },
+      "params": {
+        "text": "Welcome to Floret!\n\nEvery patch ends at a Renderer (the box on the right with the canvas preview). Output pins are on the right of each node, input pins on the left. Drag from one to the other to make a wire.\n\nThis patch wires a single Rect into the Renderer. Open the Rect — change x/y/w/h to move and resize it.",
+        "width": 360,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Welcome to Floret!\n\nEvery patch ends at a Renderer (the box on the right with the canvas preview). Output pins are on the right of each node, input pins on the left. Drag from one to the other to make a wire.\n\nThis patch wires a single Rect into the Renderer. Open the Rect — change x/y/w/h to move and resize it.",
+        "width": 360,
+        "height": 220
+      }
+    },
+    {
+      "id": "t01_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 84,
+        "y": 150
+      },
+      "params": {
+        "x": -50,
+        "y": -50,
+        "w": 100,
+        "h": 100
+      },
+      "portValues": {
+        "x": -50,
+        "y": -50,
+        "w": 100,
+        "h": 100
+      }
+    },
+    {
+      "id": "t01_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 588,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t01_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 24,
+        "y": 150
+      },
+      "params": {
+        "x": -50,
+        "y": -50
+      },
+      "portValues": {
+        "x": -50,
+        "y": -50
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "t01_rect",
+      "target": "t01_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t01_rect-xy0",
+      "source": "t01_rect-xy0",
+      "target": "t01_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

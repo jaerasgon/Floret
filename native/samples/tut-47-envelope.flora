@@ -1,0 +1,155 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "47 · ADSR Envelope",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t47_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -616,
+        "y": 0
+      },
+      "params": {
+        "text": "ADSR envelope\n\n`sound/envelope` shapes amplitude over time using Attack / Decay / Sustain / Release. Wire an audio source through it, then re-trigger the gate to hear the shape.\n\nMouseY drives a gate (pressed = mouse below origin). Click the canvas to \"tap a note\".",
+        "width": 420,
+        "height": 240
+      },
+      "portValues": {
+        "text": "ADSR envelope\n\n`sound/envelope` shapes amplitude over time using Attack / Decay / Sustain / Release. Wire an audio source through it, then re-trigger the gate to hear the shape.\n\nMouseY drives a gate (pressed = mouse below origin). Click the canvas to \"tap a note\".",
+        "width": 420,
+        "height": 240
+      }
+    },
+    {
+      "id": "t47_osc",
+      "defType": "sound/oscillator",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "type": "sine",
+        "freq": 220,
+        "amp": 0.4
+      },
+      "portValues": {
+        "type": "sine",
+        "freq": 220,
+        "amp": 0.4
+      }
+    },
+    {
+      "id": "t47_env",
+      "defType": "sound/envelope",
+      "position": {
+        "x": 364,
+        "y": 0
+      },
+      "params": {
+        "attack": 0.05,
+        "decay": 0.2,
+        "sustain": 0.4,
+        "release": 0.6,
+        "level": 1
+      },
+      "portValues": {
+        "attack": 0.05,
+        "decay": 0.2,
+        "sustain": 0.4,
+        "release": 0.6,
+        "level": 1
+      }
+    },
+    {
+      "id": "t47_m",
+      "defType": "input/mouse",
+      "position": {
+        "x": 84,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "t47_out",
+      "defType": "sound/output",
+      "position": {
+        "x": 644,
+        "y": 0
+      },
+      "params": {
+        "volume": 0.5
+      },
+      "portValues": {
+        "volume": 0.5
+      }
+    },
+    {
+      "id": "t47_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 644,
+        "y": 500
+      },
+      "params": {
+        "w": 80,
+        "h": 80
+      },
+      "portValues": {
+        "w": 80,
+        "h": 80
+      }
+    },
+    {
+      "id": "t47_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 951.9999999999999,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_386",
+      "source": "t47_osc",
+      "target": "t47_env",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_387",
+      "source": "t47_m",
+      "target": "t47_env",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-trigger"
+    },
+    {
+      "id": "e_388",
+      "source": "t47_env",
+      "target": "t47_out",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_389",
+      "source": "t47_ell",
+      "target": "t47_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

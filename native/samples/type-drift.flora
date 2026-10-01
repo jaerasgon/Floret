@@ -1,0 +1,1024 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Noise Drift",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "tdr_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -784,
+        "y": 0
+      },
+      "params": {
+        "text": "Noise drift\n\nThe passage sits as a monospace grid. A slow Perlin “mask” (smoothstep threshold) picks drifting CLUSTERS; inside them a second noise field shoves the letters around and tints them, while the rest stays still and readable. The clusters wander over time.",
+        "width": 500,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Noise drift\n\nThe passage sits as a monospace grid. A slow Perlin “mask” (smoothstep threshold) picks drifting CLUSTERS; inside them a second noise field shoves the letters around and tints them, while the rest stays still and readable. The clusters wander over time.",
+        "width": 500,
+        "height": 240
+      }
+    },
+    {
+      "id": "tdr_str",
+      "defType": "value/string",
+      "position": {
+        "x": -784,
+        "y": 550
+      },
+      "params": {
+        "value": "It was the best of times,       it was the worst of times,      it was the age of wisdom,       it was the age of foolishness,  it was the epoch of belief,     it was the epoch of incredulity,it was the season of Light,     it was the season of Darkness.  "
+      },
+      "portValues": {
+        "value": "It was the best of times,       it was the worst of times,      it was the age of wisdom,       it was the age of foolishness,  it was the epoch of belief,     it was the epoch of incredulity,it was the season of Light,     it was the season of Darkness.  "
+      }
+    },
+    {
+      "id": "tdr_split",
+      "defType": "string/split",
+      "position": {
+        "x": -503.99999999999994,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "tdr_range",
+      "defType": "spread/range",
+      "position": {
+        "x": -503.99999999999994,
+        "y": 750
+      },
+      "params": {
+        "count": 256
+      },
+      "portValues": {
+        "count": 256
+      }
+    },
+    {
+      "id": "tdr_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": -784,
+        "y": 900
+      },
+      "params": {}
+    },
+    {
+      "id": "tdr_bg",
+      "defType": "color/color",
+      "position": {
+        "x": -503.99999999999994,
+        "y": 950
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 10,
+        "g": 11,
+        "b": 16,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 10,
+        "g": 11,
+        "b": 16,
+        "a": 255
+      }
+    },
+    {
+      "id": "tdr_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 168,
+        "y": 0
+      },
+      "params": {
+        "width": 2184,
+        "height": 1900,
+        "label": "ForEach letter"
+      },
+      "ports": [
+        {
+          "id": "ch",
+          "name": "ch",
+          "type": "string",
+          "direction": "input"
+        },
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 2184,
+      "height": 1900
+    },
+    {
+      "id": "tdr_rowF",
+      "defType": "math/div",
+      "position": {
+        "x": 56,
+        "y": 100
+      },
+      "params": {
+        "b": 32,
+        "valueType": "number"
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 32
+      }
+    },
+    {
+      "id": "tdr_row",
+      "defType": "math/floor",
+      "position": {
+        "x": 280,
+        "y": 100
+      },
+      "params": {},
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_rowCol",
+      "defType": "math/mul",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 100
+      },
+      "params": {
+        "b": 32,
+        "valueType": "number"
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 32
+      }
+    },
+    {
+      "id": "tdr_col",
+      "defType": "math/sub",
+      "position": {
+        "x": 728,
+        "y": 100
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_colCen",
+      "defType": "math/sub",
+      "position": {
+        "x": 951.9999999999999,
+        "y": 100
+      },
+      "params": {
+        "b": 15.5
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 15.5
+      }
+    },
+    {
+      "id": "tdr_gx",
+      "defType": "math/mul",
+      "position": {
+        "x": 1176,
+        "y": 100
+      },
+      "params": {
+        "b": 12
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 12
+      }
+    },
+    {
+      "id": "tdr_rowCen",
+      "defType": "math/sub",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 350
+      },
+      "params": {
+        "b": 3.5,
+        "valueType": "number"
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 3.5
+      }
+    },
+    {
+      "id": "tdr_gy",
+      "defType": "math/mul",
+      "position": {
+        "x": 728,
+        "y": 350
+      },
+      "params": {
+        "b": 30
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 30
+      }
+    },
+    {
+      "id": "tdr_gsx",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 600
+      },
+      "params": {
+        "b": 0.012,
+        "valueType": "number"
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 0.012
+      }
+    },
+    {
+      "id": "tdr_gsy",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 750
+      },
+      "params": {
+        "b": 0.012
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 0.012
+      }
+    },
+    {
+      "id": "tdr_tDisp",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 900
+      },
+      "params": {
+        "b": 0.3,
+        "valueType": "number"
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 0.3
+      }
+    },
+    {
+      "id": "tdr_gsyT",
+      "defType": "math/add",
+      "position": {
+        "x": 280,
+        "y": 800
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_msx",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 1100
+      },
+      "params": {
+        "b": 0.022,
+        "valueType": "number"
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 0.022
+      }
+    },
+    {
+      "id": "tdr_msy",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 1250
+      },
+      "params": {
+        "b": 0.022
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 0.022
+      }
+    },
+    {
+      "id": "tdr_tMask",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 1400
+      },
+      "params": {
+        "b": 0.15,
+        "valueType": "number"
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 0.15
+      }
+    },
+    {
+      "id": "tdr_msyT",
+      "defType": "math/add",
+      "position": {
+        "x": 280,
+        "y": 1300
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_nX",
+      "defType": "noise/perlin",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 600
+      },
+      "params": {
+        "seed": 7
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "seed": 7
+      }
+    },
+    {
+      "id": "tdr_nY",
+      "defType": "noise/perlin",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 800
+      },
+      "params": {
+        "seed": 23
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "seed": 23
+      }
+    },
+    {
+      "id": "tdr_mN",
+      "defType": "noise/perlin",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 1200
+      },
+      "params": {
+        "seed": 99
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "seed": 99
+      }
+    },
+    {
+      "id": "tdr_mask",
+      "defType": "math/smoothstep",
+      "position": {
+        "x": 756,
+        "y": 1200
+      },
+      "params": {
+        "edge0": 0.55,
+        "edge1": 0.78
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "edge0": 0.55,
+        "edge1": 0.78
+      }
+    },
+    {
+      "id": "tdr_dxM",
+      "defType": "math/map",
+      "position": {
+        "x": 756,
+        "y": 600
+      },
+      "params": {
+        "inMin": 0.3,
+        "inMax": 0.7,
+        "outMin": -26,
+        "outMax": 26
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "inMin": 0.3,
+        "inMax": 0.7,
+        "outMin": -26,
+        "outMax": 26
+      }
+    },
+    {
+      "id": "tdr_dyM",
+      "defType": "math/map",
+      "position": {
+        "x": 756,
+        "y": 800
+      },
+      "params": {
+        "inMin": 0.3,
+        "inMax": 0.7,
+        "outMin": -26,
+        "outMax": 26
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "inMin": 0.3,
+        "inMax": 0.7,
+        "outMin": -26,
+        "outMax": 26
+      }
+    },
+    {
+      "id": "tdr_dxg",
+      "defType": "math/mul",
+      "position": {
+        "x": 1007.9999999999999,
+        "y": 600
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_dyg",
+      "defType": "math/mul",
+      "position": {
+        "x": 1007.9999999999999,
+        "y": 800
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_fx",
+      "defType": "math/add",
+      "position": {
+        "x": 1260,
+        "y": 300
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_fy",
+      "defType": "math/add",
+      "position": {
+        "x": 1260,
+        "y": 500
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_pos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1484,
+        "y": 400
+      },
+      "params": {},
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_hueM",
+      "defType": "math/mul",
+      "position": {
+        "x": 1007.9999999999999,
+        "y": 1200
+      },
+      "params": {
+        "b": 220,
+        "valueType": "number"
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 220
+      }
+    },
+    {
+      "id": "tdr_satM",
+      "defType": "math/mul",
+      "position": {
+        "x": 1007.9999999999999,
+        "y": 1350
+      },
+      "params": {
+        "b": 90,
+        "valueType": "number"
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "b": 90
+      }
+    },
+    {
+      "id": "tdr_hsl",
+      "defType": "color/color",
+      "position": {
+        "x": 1260,
+        "y": 1200
+      },
+      "params": {
+        "mode": "hsl",
+        "h": 0,
+        "s": 0,
+        "l": 82,
+        "a": 255
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "mode": "hsl",
+        "h": 0,
+        "s": 0,
+        "l": 82,
+        "a": 255
+      }
+    },
+    {
+      "id": "tdr_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1484,
+        "y": 1200
+      },
+      "params": {},
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_tp",
+      "defType": "style/text-params",
+      "position": {
+        "x": 1708,
+        "y": 1200
+      },
+      "params": {
+        "font": "Menlo, Consolas, monospace",
+        "bold": false,
+        "italic": false,
+        "align": "center",
+        "baseline": "middle"
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "font": "Menlo, Consolas, monospace",
+        "bold": false,
+        "italic": false,
+        "align": "center",
+        "baseline": "middle"
+      }
+    },
+    {
+      "id": "tdr_text",
+      "defType": "draw/text",
+      "position": {
+        "x": 1736,
+        "y": 400
+      },
+      "params": {
+        "string": "?",
+        "size": 18,
+        "align": "center"
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "string": "?",
+        "size": 18,
+        "align": "center"
+      }
+    },
+    {
+      "id": "tdr_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2464,
+        "y": 0
+      },
+      "params": {
+        "width": 560,
+        "height": 340
+      },
+      "portValues": {
+        "width": 560,
+        "height": 340
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_542",
+      "source": "tdr_str",
+      "target": "tdr_split",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-text"
+    },
+    {
+      "id": "e_543",
+      "source": "tdr_split",
+      "target": "tdr_region",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-ch"
+    },
+    {
+      "id": "e_544",
+      "source": "tdr_range",
+      "target": "tdr_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_545",
+      "source": "tdr_bg",
+      "target": "tdr_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_546",
+      "source": "tdr_region",
+      "target": "tdr_rowF",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_547",
+      "source": "tdr_rowF",
+      "target": "tdr_row",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_548",
+      "source": "tdr_row",
+      "target": "tdr_rowCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_549",
+      "source": "tdr_region",
+      "target": "tdr_col",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_550",
+      "source": "tdr_rowCol",
+      "target": "tdr_col",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_551",
+      "source": "tdr_col",
+      "target": "tdr_colCen",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_552",
+      "source": "tdr_colCen",
+      "target": "tdr_gx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_553",
+      "source": "tdr_row",
+      "target": "tdr_rowCen",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_554",
+      "source": "tdr_rowCen",
+      "target": "tdr_gy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_555",
+      "source": "tdr_gx",
+      "target": "tdr_gsx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_556",
+      "source": "tdr_gy",
+      "target": "tdr_gsy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_557",
+      "source": "tdr_time",
+      "target": "tdr_tDisp",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_558",
+      "source": "tdr_gsy",
+      "target": "tdr_gsyT",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_559",
+      "source": "tdr_tDisp",
+      "target": "tdr_gsyT",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_560",
+      "source": "tdr_gx",
+      "target": "tdr_msx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_561",
+      "source": "tdr_gy",
+      "target": "tdr_msy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_562",
+      "source": "tdr_time",
+      "target": "tdr_tMask",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_563",
+      "source": "tdr_msy",
+      "target": "tdr_msyT",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_564",
+      "source": "tdr_tMask",
+      "target": "tdr_msyT",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_565",
+      "source": "tdr_gsx",
+      "target": "tdr_nX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_566",
+      "source": "tdr_gsyT",
+      "target": "tdr_nX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_567",
+      "source": "tdr_gsx",
+      "target": "tdr_nY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_568",
+      "source": "tdr_gsyT",
+      "target": "tdr_nY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_569",
+      "source": "tdr_msx",
+      "target": "tdr_mN",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_570",
+      "source": "tdr_msyT",
+      "target": "tdr_mN",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_571",
+      "source": "tdr_mN",
+      "target": "tdr_mask",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_572",
+      "source": "tdr_nX",
+      "target": "tdr_dxM",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_573",
+      "source": "tdr_nY",
+      "target": "tdr_dyM",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_574",
+      "source": "tdr_dxM",
+      "target": "tdr_dxg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_575",
+      "source": "tdr_mask",
+      "target": "tdr_dxg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_576",
+      "source": "tdr_dyM",
+      "target": "tdr_dyg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_577",
+      "source": "tdr_mask",
+      "target": "tdr_dyg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_578",
+      "source": "tdr_gx",
+      "target": "tdr_fx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_579",
+      "source": "tdr_dxg",
+      "target": "tdr_fx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_580",
+      "source": "tdr_gy",
+      "target": "tdr_fy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_581",
+      "source": "tdr_dyg",
+      "target": "tdr_fy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_582",
+      "source": "tdr_fx",
+      "target": "tdr_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_583",
+      "source": "tdr_fy",
+      "target": "tdr_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_584",
+      "source": "tdr_pos",
+      "target": "tdr_text",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_585",
+      "source": "tdr_mask",
+      "target": "tdr_hueM",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_586",
+      "source": "tdr_mask",
+      "target": "tdr_satM",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_587",
+      "source": "tdr_hueM",
+      "target": "tdr_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_588",
+      "source": "tdr_satM",
+      "target": "tdr_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_589",
+      "source": "tdr_hsl",
+      "target": "tdr_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_590",
+      "source": "tdr_fill",
+      "target": "tdr_tp",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_591",
+      "source": "tdr_tp",
+      "target": "tdr_text",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_592",
+      "source": "tdr_region",
+      "target": "tdr_text",
+      "sourceHandle": "out-ch",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_593",
+      "source": "tdr_text",
+      "target": "tdr_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_594",
+      "source": "tdr_region",
+      "target": "tdr_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

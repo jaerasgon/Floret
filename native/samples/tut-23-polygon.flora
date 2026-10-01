@@ -1,0 +1,189 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "23 · Polygon from Points",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t23_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -560,
+        "y": 0
+      },
+      "params": {
+        "text": "Polygons from a spread\n\n`draw/polygon` consumes a Spread<vec2> as one shape (not N shapes — no ForEach needed). Use it whenever you want a single outline that connects the dots.\n\nA Fibonacci sunflower drawn as one closed polygon.",
+        "width": 380,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Polygons from a spread\n\n`draw/polygon` consumes a Spread<vec2> as one shape (not N shapes — no ForEach needed). Use it whenever you want a single outline that connects the dots.\n\nA Fibonacci sunflower drawn as one closed polygon.",
+        "width": 380,
+        "height": 220
+      }
+    },
+    {
+      "id": "t23_fib",
+      "defType": "spread/fibonacci",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "count": 120,
+        "scale": 14,
+        "phase": 0
+      },
+      "portValues": {
+        "count": 120,
+        "scale": 14,
+        "phase": 0
+      }
+    },
+    {
+      "id": "t23_col",
+      "defType": "color/color",
+      "position": {
+        "x": 84,
+        "y": 500
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 240,
+        "g": 200,
+        "b": 80,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 240,
+        "g": 200,
+        "b": 80,
+        "a": 255
+      }
+    },
+    {
+      "id": "t23_colS",
+      "defType": "color/color",
+      "position": {
+        "x": 84,
+        "y": 800
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 30,
+        "g": 30,
+        "b": 30,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 30,
+        "g": 30,
+        "b": 30,
+        "a": 255
+      }
+    },
+    {
+      "id": "t23_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 364,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "t23_stroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 644,
+        "y": 650
+      },
+      "params": {
+        "width": 1
+      },
+      "portValues": {
+        "width": 1
+      }
+    },
+    {
+      "id": "t23_poly",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 644,
+        "y": 150
+      },
+      "params": {
+        "closed": true
+      },
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "t23_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1007.9999999999999,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_155",
+      "source": "t23_fib",
+      "target": "t23_poly",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_156",
+      "source": "t23_col",
+      "target": "t23_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_157",
+      "source": "t23_colS",
+      "target": "t23_stroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_158",
+      "source": "t23_fill",
+      "target": "t23_stroke",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_159",
+      "source": "t23_stroke",
+      "target": "t23_poly",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_160",
+      "source": "t23_poly",
+      "target": "t23_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

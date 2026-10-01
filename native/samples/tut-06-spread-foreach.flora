@@ -1,0 +1,208 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "06 · Spreads & ForEach",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t06_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -532,
+        "y": 0
+      },
+      "params": {
+        "text": "Spreads = lists of values\n\nA spread is a list. `RangeSpread` produces 0,1,2,…,N-1. To use each value individually, wrap a ForEach region around the body — it runs the inside once per element.\n\nHere: 12 rects laid out across the canvas.",
+        "width": 360,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Spreads = lists of values\n\nA spread is a list. `RangeSpread` produces 0,1,2,…,N-1. To use each value individually, wrap a ForEach region around the body — it runs the inside once per element.\n\nHere: 12 rects laid out across the canvas.",
+        "width": 360,
+        "height": 220
+      }
+    },
+    {
+      "id": "t06_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "count": 12
+      },
+      "portValues": {
+        "count": 12
+      }
+    },
+    {
+      "id": "t06_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 420,
+        "y": 0
+      },
+      "params": {
+        "width": 644,
+        "height": 600,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 644,
+      "height": 600
+    },
+    {
+      "id": "t06_spaceX",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 150
+      },
+      "params": {
+        "b": 32,
+        "valueType": "number"
+      },
+      "parentId": "t06_region",
+      "portValues": {
+        "b": 32
+      }
+    },
+    {
+      "id": "t06_offX",
+      "defType": "math/add",
+      "position": {
+        "x": 280,
+        "y": 150
+      },
+      "params": {
+        "b": -176,
+        "valueType": "number"
+      },
+      "parentId": "t06_region",
+      "portValues": {
+        "b": -176
+      }
+    },
+    {
+      "id": "t06_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 448,
+        "y": 150
+      },
+      "params": {
+        "y": -10,
+        "w": 20,
+        "h": 20
+      },
+      "parentId": "t06_region",
+      "portValues": {
+        "y": -10,
+        "w": 20,
+        "h": 20
+      }
+    },
+    {
+      "id": "t06_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1148,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t06_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 388,
+        "y": 150
+      },
+      "params": {
+        "x": 0,
+        "y": -10
+      },
+      "parentId": "t06_region",
+      "portValues": {
+        "x": 0,
+        "y": -10
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_16",
+      "source": "t06_range",
+      "target": "t06_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_17",
+      "source": "t06_region",
+      "target": "t06_spaceX",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_18",
+      "source": "t06_spaceX",
+      "target": "t06_offX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_19",
+      "source": "t06_offX",
+      "target": "t06_rect-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_20",
+      "source": "t06_rect",
+      "target": "t06_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_21",
+      "source": "t06_region",
+      "target": "t06_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t06_rect-xy0",
+      "source": "t06_rect-xy0",
+      "target": "t06_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

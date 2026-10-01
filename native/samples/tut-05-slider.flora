@@ -1,0 +1,148 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "05 · Slider Control",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t05_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -532,
+        "y": 0
+      },
+      "params": {
+        "text": "Inline controls\n\n`io/slider` is a knob you can drag right on the node. Wire its output into any number input. Use the tiny boxes under the slider to set its min / max.\n\nDrag the slider to grow / shrink the rect.",
+        "width": 360,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Inline controls\n\n`io/slider` is a knob you can drag right on the node. Wire its output into any number input. Use the tiny boxes under the slider to set its min / max.\n\nDrag the slider to grow / shrink the rect.",
+        "width": 360,
+        "height": 200
+      }
+    },
+    {
+      "id": "t05_s",
+      "defType": "io/slider",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "value": 120,
+        "min": 20,
+        "max": 300
+      },
+      "portValues": {
+        "value": 120,
+        "min": 20,
+        "max": 300
+      }
+    },
+    {
+      "id": "t05_halfW",
+      "defType": "math/mul",
+      "position": {
+        "x": 336,
+        "y": 0
+      },
+      "params": {
+        "b": -0.5,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": -0.5
+      }
+    },
+    {
+      "id": "t05_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 616,
+        "y": 100
+      },
+      "params": {
+        "y": -50,
+        "h": 100
+      },
+      "portValues": {
+        "y": -50,
+        "h": 100
+      }
+    },
+    {
+      "id": "t05_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 923.9999999999999,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t05_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 556,
+        "y": 100
+      },
+      "params": {
+        "x": 0,
+        "y": -50
+      },
+      "portValues": {
+        "x": 0,
+        "y": -50
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_12",
+      "source": "t05_s",
+      "target": "t05_halfW",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_13",
+      "source": "t05_halfW",
+      "target": "t05_rect-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_14",
+      "source": "t05_s",
+      "target": "t05_rect",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_15",
+      "source": "t05_rect",
+      "target": "t05_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t05_rect-xy0",
+      "source": "t05_rect-xy0",
+      "target": "t05_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

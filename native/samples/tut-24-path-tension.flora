@@ -1,0 +1,371 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "24 · Path with Tension",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t24_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -560,
+        "y": 0
+      },
+      "params": {
+        "text": "Curved paths\n\n`draw/path`'s `tension` input smooths the polyline through your points. tension = 0 → straight segments; tension → 0.5 gives Catmull-Rom curves.\n\nTime drives the tension so the wave breathes between sharp and smooth.",
+        "width": 380,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Curved paths\n\n`draw/path`'s `tension` input smooths the polyline through your points. tension = 0 → straight segments; tension → 0.5 gives Catmull-Rom curves.\n\nTime drives the tension so the wave breathes between sharp and smooth.",
+        "width": 380,
+        "height": 220
+      }
+    },
+    {
+      "id": "t24_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "count": 12
+      },
+      "portValues": {
+        "count": 12
+      }
+    },
+    {
+      "id": "t24_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 392,
+        "y": 0
+      },
+      "params": {
+        "width": 672,
+        "height": 550,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "output"
+        }
+      ],
+      "width": 672,
+      "height": 550
+    },
+    {
+      "id": "t24_xMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 100
+      },
+      "params": {
+        "b": 40,
+        "valueType": "number"
+      },
+      "parentId": "t24_region",
+      "portValues": {
+        "b": 40
+      }
+    },
+    {
+      "id": "t24_xOff",
+      "defType": "math/add",
+      "position": {
+        "x": 280,
+        "y": 100
+      },
+      "params": {
+        "b": -220,
+        "valueType": "number"
+      },
+      "parentId": "t24_region",
+      "portValues": {
+        "b": -220
+      }
+    },
+    {
+      "id": "t24_yIn",
+      "defType": "math/mul",
+      "position": {
+        "x": 56,
+        "y": 300
+      },
+      "params": {
+        "b": 0.7,
+        "valueType": "number"
+      },
+      "parentId": "t24_region",
+      "portValues": {
+        "b": 0.7
+      }
+    },
+    {
+      "id": "t24_ySin",
+      "defType": "math/sin",
+      "position": {
+        "x": 280,
+        "y": 300
+      },
+      "params": {},
+      "parentId": "t24_region"
+    },
+    {
+      "id": "t24_yMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 300
+      },
+      "params": {
+        "b": 80,
+        "valueType": "number"
+      },
+      "parentId": "t24_region",
+      "portValues": {
+        "b": 80
+      }
+    },
+    {
+      "id": "t24_mkVec",
+      "defType": "vec2/make",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 150
+      },
+      "params": {},
+      "parentId": "t24_region"
+    },
+    {
+      "id": "t24_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 84,
+        "y": 700
+      },
+      "params": {}
+    },
+    {
+      "id": "t24_tSin",
+      "defType": "math/sin",
+      "position": {
+        "x": 336,
+        "y": 700
+      },
+      "params": {}
+    },
+    {
+      "id": "t24_tHalf",
+      "defType": "math/mul",
+      "position": {
+        "x": 588,
+        "y": 700
+      },
+      "params": {
+        "b": 0.25,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.25
+      }
+    },
+    {
+      "id": "t24_tOff",
+      "defType": "math/add",
+      "position": {
+        "x": 840,
+        "y": 700
+      },
+      "params": {
+        "b": 0.25,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.25
+      }
+    },
+    {
+      "id": "t24_col",
+      "defType": "color/color",
+      "position": {
+        "x": 84,
+        "y": 1000
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 90,
+        "g": 200,
+        "b": 90,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 90,
+        "g": 200,
+        "b": 90,
+        "a": 255
+      }
+    },
+    {
+      "id": "t24_path",
+      "defType": "draw/path",
+      "position": {
+        "x": 1148,
+        "y": 150
+      },
+      "params": {
+        "strokeWidth": 4
+      },
+      "portValues": {
+        "strokeWidth": 4
+      }
+    },
+    {
+      "id": "t24_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1456,
+        "y": 0
+      },
+      "params": {
+        "width": 500,
+        "height": 400
+      },
+      "portValues": {
+        "width": 500,
+        "height": 400
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_161",
+      "source": "t24_range",
+      "target": "t24_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_162",
+      "source": "t24_region",
+      "target": "t24_xMul",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_163",
+      "source": "t24_xMul",
+      "target": "t24_xOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_164",
+      "source": "t24_xOff",
+      "target": "t24_mkVec",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_165",
+      "source": "t24_region",
+      "target": "t24_yIn",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_166",
+      "source": "t24_yIn",
+      "target": "t24_ySin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_167",
+      "source": "t24_ySin",
+      "target": "t24_yMul",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_168",
+      "source": "t24_yMul",
+      "target": "t24_mkVec",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_169",
+      "source": "t24_mkVec",
+      "target": "t24_region",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_170",
+      "source": "t24_t",
+      "target": "t24_tSin",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_171",
+      "source": "t24_tSin",
+      "target": "t24_tHalf",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_172",
+      "source": "t24_tHalf",
+      "target": "t24_tOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_173",
+      "source": "t24_region",
+      "target": "t24_path",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_174",
+      "source": "t24_tOff",
+      "target": "t24_path",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-tension"
+    },
+    {
+      "id": "e_175",
+      "source": "t24_col",
+      "target": "t24_path",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_176",
+      "source": "t24_path",
+      "target": "t24_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

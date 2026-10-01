@@ -1,0 +1,396 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "30 · Keyboard Branching",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t30_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -644,
+        "y": 0
+      },
+      "params": {
+        "text": "Branching on keyboard input\n\n`input/keyboard.key` outputs the last key pressed (e.g. \"a\", \"ArrowLeft\"). `logic/eq` checks equality against a constant string. Wire the result into a `region/if` and you get key-driven branches.\n\nPress R for red rect, B for blue ellipse — others draw nothing.",
+        "width": 440,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Branching on keyboard input\n\n`input/keyboard.key` outputs the last key pressed (e.g. \"a\", \"ArrowLeft\"). `logic/eq` checks equality against a constant string. Wire the result into a `region/if` and you get key-driven branches.\n\nPress R for red rect, B for blue ellipse — others draw nothing.",
+        "width": 440,
+        "height": 240
+      }
+    },
+    {
+      "id": "t30_kb",
+      "defType": "input/keyboard",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t30_rKey",
+      "defType": "value/string",
+      "position": {
+        "x": 84,
+        "y": 450
+      },
+      "params": {
+        "value": "r"
+      },
+      "portValues": {
+        "value": "r"
+      }
+    },
+    {
+      "id": "t30_bKey",
+      "defType": "value/string",
+      "position": {
+        "x": 84,
+        "y": 850
+      },
+      "params": {
+        "value": "b"
+      },
+      "portValues": {
+        "value": "b"
+      }
+    },
+    {
+      "id": "t30_isR",
+      "defType": "logic/eq",
+      "position": {
+        "x": 336,
+        "y": 200
+      },
+      "params": {}
+    },
+    {
+      "id": "t30_isB",
+      "defType": "logic/eq",
+      "position": {
+        "x": 336,
+        "y": 700
+      },
+      "params": {}
+    },
+    {
+      "id": "t30_R",
+      "defType": "region/if",
+      "position": {
+        "x": 672,
+        "y": 0
+      },
+      "params": {
+        "width": 503.99999999999994,
+        "height": 500,
+        "label": "If R"
+      },
+      "ports": [
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 503.99999999999994,
+      "height": 500
+    },
+    {
+      "id": "t30_colR",
+      "defType": "color/color",
+      "position": {
+        "x": 56,
+        "y": 100
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 230,
+        "g": 60,
+        "b": 60,
+        "a": 255
+      },
+      "parentId": "t30_R",
+      "portValues": {
+        "mode": "rgb",
+        "r": 230,
+        "g": 60,
+        "b": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "t30_fillR",
+      "defType": "style/fill",
+      "position": {
+        "x": 251.99999999999997,
+        "y": 100
+      },
+      "params": {},
+      "parentId": "t30_R"
+    },
+    {
+      "id": "t30_rectR",
+      "defType": "draw/rect",
+      "position": {
+        "x": 308,
+        "y": 300
+      },
+      "params": {
+        "x": -80,
+        "y": -80,
+        "w": 160,
+        "h": 160
+      },
+      "parentId": "t30_R",
+      "portValues": {
+        "x": -80,
+        "y": -80,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "id": "t30_B",
+      "defType": "region/if",
+      "position": {
+        "x": 672,
+        "y": 600
+      },
+      "params": {
+        "width": 503.99999999999994,
+        "height": 500,
+        "label": "If B"
+      },
+      "ports": [
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 503.99999999999994,
+      "height": 500
+    },
+    {
+      "id": "t30_colB",
+      "defType": "color/color",
+      "position": {
+        "x": 56,
+        "y": 100
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 60,
+        "g": 130,
+        "b": 230,
+        "a": 255
+      },
+      "parentId": "t30_B",
+      "portValues": {
+        "mode": "rgb",
+        "r": 60,
+        "g": 130,
+        "b": 230,
+        "a": 255
+      }
+    },
+    {
+      "id": "t30_fillB",
+      "defType": "style/fill",
+      "position": {
+        "x": 251.99999999999997,
+        "y": 100
+      },
+      "params": {},
+      "parentId": "t30_B"
+    },
+    {
+      "id": "t30_ellB",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 308,
+        "y": 300
+      },
+      "params": {
+        "w": 200,
+        "h": 200
+      },
+      "parentId": "t30_B",
+      "portValues": {
+        "w": 200,
+        "h": 200
+      }
+    },
+    {
+      "id": "t30_grp",
+      "defType": "transform/group",
+      "position": {
+        "x": 1260,
+        "y": 300
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "t30_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1568,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t30_rectR-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 248,
+        "y": 300
+      },
+      "params": {
+        "x": -80,
+        "y": -80
+      },
+      "parentId": "t30_R",
+      "portValues": {
+        "x": -80,
+        "y": -80
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_249",
+      "source": "t30_kb",
+      "target": "t30_isR",
+      "sourceHandle": "out-key",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_250",
+      "source": "t30_rKey",
+      "target": "t30_isR",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_251",
+      "source": "t30_kb",
+      "target": "t30_isB",
+      "sourceHandle": "out-key",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_252",
+      "source": "t30_bKey",
+      "target": "t30_isB",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_253",
+      "source": "t30_isR",
+      "target": "t30_R",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-condition"
+    },
+    {
+      "id": "e_254",
+      "source": "t30_isB",
+      "target": "t30_B",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-condition"
+    },
+    {
+      "id": "e_255",
+      "source": "t30_colR",
+      "target": "t30_fillR",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_256",
+      "source": "t30_fillR",
+      "target": "t30_rectR",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_257",
+      "source": "t30_rectR",
+      "target": "t30_R",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_258",
+      "source": "t30_colB",
+      "target": "t30_fillB",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_259",
+      "source": "t30_fillB",
+      "target": "t30_ellB",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_260",
+      "source": "t30_ellB",
+      "target": "t30_B",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_261",
+      "source": "t30_R",
+      "target": "t30_grp",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_262",
+      "source": "t30_B",
+      "target": "t30_grp",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_263",
+      "source": "t30_grp",
+      "target": "t30_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t30_rectR-xy0",
+      "source": "t30_rectR-xy0",
+      "target": "t30_rectR",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

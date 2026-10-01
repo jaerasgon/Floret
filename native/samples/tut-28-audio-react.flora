@@ -1,0 +1,178 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "28 · Audio-Reactive Visual",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t28_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -644,
+        "y": 0
+      },
+      "params": {
+        "text": "Audio-reactive shapes\n\n`sound/audio-in` taps the microphone; `sound/amplitude` measures the RMS level. Map the level to a number you can wire into any shape input.\n\nMake noise → the circle grows.\n\n(You'll need to grant the browser microphone permission.)",
+        "width": 440,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Audio-reactive shapes\n\n`sound/audio-in` taps the microphone; `sound/amplitude` measures the RMS level. Map the level to a number you can wire into any shape input.\n\nMake noise → the circle grows.\n\n(You'll need to grant the browser microphone permission.)",
+        "width": 440,
+        "height": 240
+      }
+    },
+    {
+      "id": "t28_start",
+      "defType": "value/number",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "value": 1
+      },
+      "portValues": {
+        "value": 1
+      }
+    },
+    {
+      "id": "t28_mic",
+      "defType": "sound/audio-in",
+      "position": {
+        "x": 336,
+        "y": 0
+      },
+      "params": {
+        "amp": 1
+      },
+      "portValues": {
+        "amp": 1
+      }
+    },
+    {
+      "id": "t28_amp",
+      "defType": "sound/amplitude",
+      "position": {
+        "x": 616,
+        "y": 0
+      },
+      "params": {
+        "smoothing": 0.7
+      },
+      "portValues": {
+        "smoothing": 0.7
+      }
+    },
+    {
+      "id": "t28_sz",
+      "defType": "math/mul",
+      "position": {
+        "x": 868,
+        "y": 0
+      },
+      "params": {
+        "b": 400,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 400
+      }
+    },
+    {
+      "id": "t28_szO",
+      "defType": "math/add",
+      "position": {
+        "x": 1120,
+        "y": 0
+      },
+      "params": {
+        "b": 30,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 30
+      }
+    },
+    {
+      "id": "t28_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1372,
+        "y": 100
+      },
+      "params": {}
+    },
+    {
+      "id": "t28_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1680,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_233",
+      "source": "t28_start",
+      "target": "t28_mic",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_234",
+      "source": "t28_mic",
+      "target": "t28_amp",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_235",
+      "source": "t28_amp",
+      "target": "t28_sz",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_236",
+      "source": "t28_sz",
+      "target": "t28_szO",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_237",
+      "source": "t28_szO",
+      "target": "t28_ell",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_238",
+      "source": "t28_szO",
+      "target": "t28_ell",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_239",
+      "source": "t28_ell",
+      "target": "t28_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

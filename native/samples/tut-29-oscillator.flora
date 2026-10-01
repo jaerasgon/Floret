@@ -1,0 +1,223 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "29 · Oscillator (mouse-pitched)",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t29_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -616,
+        "y": 0
+      },
+      "params": {
+        "text": "Generating sound\n\n`sound/oscillator` produces a waveform; `sound/output` sends it to the speakers. Wire mouseY through a `math/map` and the pitch slides as you move the cursor.\n\nThe big ellipse is just visual feedback for how loud it is.",
+        "width": 420,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Generating sound\n\n`sound/oscillator` produces a waveform; `sound/output` sends it to the speakers. Wire mouseY through a `math/map` and the pitch slides as you move the cursor.\n\nThe big ellipse is just visual feedback for how loud it is.",
+        "width": 420,
+        "height": 240
+      }
+    },
+    {
+      "id": "t29_m",
+      "defType": "input/mouse",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t29_freq",
+      "defType": "math/map",
+      "position": {
+        "x": 364,
+        "y": 0
+      },
+      "params": {
+        "inMin": -200,
+        "inMax": 200,
+        "outMin": 800,
+        "outMax": 100
+      },
+      "portValues": {
+        "inMin": -200,
+        "inMax": 200,
+        "outMin": 800,
+        "outMax": 100
+      }
+    },
+    {
+      "id": "t29_osc",
+      "defType": "sound/oscillator",
+      "position": {
+        "x": 644,
+        "y": 0
+      },
+      "params": {
+        "type": "sine",
+        "amp": 0.2
+      },
+      "portValues": {
+        "type": "sine",
+        "amp": 0.2
+      }
+    },
+    {
+      "id": "t29_out",
+      "defType": "sound/output",
+      "position": {
+        "x": 896,
+        "y": 0
+      },
+      "params": {
+        "volume": 0.5
+      },
+      "portValues": {
+        "volume": 0.5
+      }
+    },
+    {
+      "id": "t29_amp",
+      "defType": "sound/amplitude",
+      "position": {
+        "x": 644,
+        "y": 500
+      },
+      "params": {
+        "smoothing": 0.5
+      },
+      "portValues": {
+        "smoothing": 0.5
+      }
+    },
+    {
+      "id": "t29_sz",
+      "defType": "math/mul",
+      "position": {
+        "x": 896,
+        "y": 500
+      },
+      "params": {
+        "b": 600,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 600
+      }
+    },
+    {
+      "id": "t29_szO",
+      "defType": "math/add",
+      "position": {
+        "x": 1148,
+        "y": 500
+      },
+      "params": {
+        "b": 40,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 40
+      }
+    },
+    {
+      "id": "t29_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1400,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "t29_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1708,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_240",
+      "source": "t29_m",
+      "target": "t29_freq",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_241",
+      "source": "t29_freq",
+      "target": "t29_osc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_242",
+      "source": "t29_osc",
+      "target": "t29_out",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_243",
+      "source": "t29_osc",
+      "target": "t29_amp",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_244",
+      "source": "t29_amp",
+      "target": "t29_sz",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_245",
+      "source": "t29_sz",
+      "target": "t29_szO",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_246",
+      "source": "t29_szO",
+      "target": "t29_ell",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_247",
+      "source": "t29_szO",
+      "target": "t29_ell",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_248",
+      "source": "t29_ell",
+      "target": "t29_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

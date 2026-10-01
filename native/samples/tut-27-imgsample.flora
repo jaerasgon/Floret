@@ -1,0 +1,425 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "27 · Image Sampling Grid",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t27_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -644,
+        "y": 0
+      },
+      "params": {
+        "text": "Image sampling\n\n`image/sample-spread` reads N colours from an image at N points. Combine with a grid generator and you get a \"downsample\" pipeline — perfect for posterising or pixel-art looks.\n\nA noisy gradient rasterised, then sampled at 24×24 grid centres.",
+        "width": 440,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Image sampling\n\n`image/sample-spread` reads N colours from an image at N points. Combine with a grid generator and you get a \"downsample\" pipeline — perfect for posterising or pixel-art looks.\n\nA noisy gradient rasterised, then sampled at 24×24 grid centres.",
+        "width": 440,
+        "height": 240
+      }
+    },
+    {
+      "id": "t27_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t27_colA",
+      "defType": "color/color",
+      "position": {
+        "x": 84,
+        "y": 300
+      },
+      "params": {
+        "mode": "hsl",
+        "s": 80,
+        "l": 55,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "s": 80,
+        "l": 55,
+        "a": 255
+      }
+    },
+    {
+      "id": "t27_fillA",
+      "defType": "style/fill",
+      "position": {
+        "x": 336,
+        "y": 300
+      },
+      "params": {}
+    },
+    {
+      "id": "t27_rectA",
+      "defType": "draw/rect",
+      "position": {
+        "x": 588,
+        "y": 300
+      },
+      "params": {
+        "x": -150,
+        "y": -150,
+        "w": 300,
+        "h": 300
+      },
+      "portValues": {
+        "x": -150,
+        "y": -150,
+        "w": 300,
+        "h": 300
+      }
+    },
+    {
+      "id": "t27_hueDrive",
+      "defType": "math/mul",
+      "position": {
+        "x": 84,
+        "y": 150
+      },
+      "params": {
+        "b": 60,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 60
+      }
+    },
+    {
+      "id": "t27_rast",
+      "defType": "image/from-layer",
+      "position": {
+        "x": 840,
+        "y": 300
+      },
+      "params": {
+        "w": 256,
+        "h": 256
+      },
+      "portValues": {
+        "w": 256,
+        "h": 256
+      }
+    },
+    {
+      "id": "t27_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 84,
+        "y": 800
+      },
+      "params": {
+        "cols": 24,
+        "rows": 24,
+        "w": 256,
+        "h": 256,
+        "cx": 128,
+        "cy": 128
+      },
+      "portValues": {
+        "cols": 24,
+        "rows": 24,
+        "w": 256,
+        "h": 256,
+        "cx": 128,
+        "cy": 128
+      }
+    },
+    {
+      "id": "t27_samp",
+      "defType": "image/sample-spread",
+      "position": {
+        "x": 1120,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "t27_gridScreen",
+      "defType": "spread/grid",
+      "position": {
+        "x": 84,
+        "y": 1100
+      },
+      "params": {
+        "cols": 24,
+        "rows": 24,
+        "w": 360,
+        "h": 360,
+        "cx": 0,
+        "cy": 0
+      },
+      "portValues": {
+        "cols": 24,
+        "rows": 24,
+        "w": 360,
+        "h": 360,
+        "cx": 0,
+        "cy": 0
+      }
+    },
+    {
+      "id": "t27_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1400,
+        "y": 200
+      },
+      "params": {
+        "width": 700,
+        "height": 800,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input"
+        },
+        {
+          "id": "col",
+          "name": "col",
+          "type": "color",
+          "direction": "input"
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 700,
+      "height": 800
+    },
+    {
+      "id": "t27_split",
+      "defType": "vec2/split",
+      "position": {
+        "x": 56,
+        "y": 100
+      },
+      "params": {},
+      "parentId": "t27_region"
+    },
+    {
+      "id": "t27_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 56,
+        "y": 450
+      },
+      "params": {},
+      "parentId": "t27_region"
+    },
+    {
+      "id": "t27_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 364,
+        "y": 200
+      },
+      "params": {
+        "w": 16,
+        "h": 16
+      },
+      "parentId": "t27_region",
+      "portValues": {
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "t27_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2184,
+        "y": 0
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "t27_rectA-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 528,
+        "y": 300
+      },
+      "params": {
+        "x": -150,
+        "y": -150
+      },
+      "portValues": {
+        "x": -150,
+        "y": -150
+      }
+    },
+    {
+      "id": "t27_rect-xy1",
+      "defType": "vec2/make",
+      "position": {
+        "x": 304,
+        "y": 200
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "t27_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_217",
+      "source": "t27_t",
+      "target": "t27_hueDrive",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_218",
+      "source": "t27_hueDrive",
+      "target": "t27_colA",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_219",
+      "source": "t27_colA",
+      "target": "t27_fillA",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_220",
+      "source": "t27_fillA",
+      "target": "t27_rectA",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_221",
+      "source": "t27_rectA",
+      "target": "t27_rast",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_222",
+      "source": "t27_rast",
+      "target": "t27_samp",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_223",
+      "source": "t27_grid",
+      "target": "t27_samp",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_224",
+      "source": "t27_gridScreen",
+      "target": "t27_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_225",
+      "source": "t27_samp",
+      "target": "t27_region",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_226",
+      "source": "t27_region",
+      "target": "t27_split",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_227",
+      "source": "t27_split",
+      "target": "t27_rect-xy1",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_228",
+      "source": "t27_split",
+      "target": "t27_rect-xy1",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_229",
+      "source": "t27_region",
+      "target": "t27_fill",
+      "sourceHandle": "out-col",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_230",
+      "source": "t27_fill",
+      "target": "t27_rect",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_231",
+      "source": "t27_rect",
+      "target": "t27_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_232",
+      "source": "t27_region",
+      "target": "t27_renderer",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t27_rectA-xy0",
+      "source": "t27_rectA-xy0",
+      "target": "t27_rectA",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_xy_t27_rect-xy1",
+      "source": "t27_rect-xy1",
+      "target": "t27_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

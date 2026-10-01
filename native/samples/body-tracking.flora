@@ -1,0 +1,412 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Body Tracking",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "bt_doc",
+      "defType": "meta/comment",
+      "position": {
+        "x": -896,
+        "y": -500
+      },
+      "params": {
+        "text": "BODY TRACKING (MediaPipe)\n\nToggle → starts the Camera AND the Landmarks tracker. Each detection gets a STABLE auto colour (the node's `color` / `connColor` outputs), so every person/hand entering the view is a different colour. One ForEach draws a coloured line per edge, another a coloured dot per point.\n\nSwitch the tracker dropdown (hands / face / pose / all) and raise `count` to track more people. Set `person` to 1/2/3 to isolate one.",
+        "width": 560,
+        "height": 230
+      },
+      "portValues": {
+        "text": "BODY TRACKING (MediaPipe)\n\nToggle → starts the Camera AND the Landmarks tracker. Each detection gets a STABLE auto colour (the node's `color` / `connColor` outputs), so every person/hand entering the view is a different colour. One ForEach draws a coloured line per edge, another a coloured dot per point.\n\nSwitch the tracker dropdown (hands / face / pose / all) and raise `count` to track more people. Set `person` to 1/2/3 to isolate one.",
+        "width": 560,
+        "height": 230
+      }
+    },
+    {
+      "id": "bt_cam",
+      "defType": "input/camera",
+      "position": {
+        "x": -896,
+        "y": 150
+      },
+      "params": {
+        "device": "",
+        "mirror": true
+      },
+      "portValues": {
+        "device": "",
+        "mirror": true
+      }
+    },
+    {
+      "id": "bt_tog",
+      "defType": "io/toggle",
+      "position": {
+        "x": -896,
+        "y": 550
+      },
+      "params": {
+        "value": true
+      },
+      "portValues": {
+        "value": true
+      }
+    },
+    {
+      "id": "bt_lm",
+      "defType": "input/landmarks",
+      "position": {
+        "x": -560,
+        "y": 150
+      },
+      "params": {
+        "tracker": "hands",
+        "mirror": true,
+        "count": 2,
+        "person": 0
+      },
+      "portValues": {
+        "tracker": "hands",
+        "mirror": true,
+        "count": 2,
+        "person": 0
+      }
+    },
+    {
+      "id": "bt_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": -896,
+        "y": 850
+      },
+      "params": {
+        "r": 8,
+        "g": 10,
+        "b": 16,
+        "a": 255
+      },
+      "portValues": {
+        "r": 8,
+        "g": 10,
+        "b": 16,
+        "a": 255
+      }
+    },
+    {
+      "id": "bt_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1652,
+        "y": 50
+      },
+      "params": {
+        "width": 520,
+        "height": 520
+      },
+      "portValues": {
+        "width": 520,
+        "height": 520
+      }
+    },
+    {
+      "id": "bt_lines",
+      "defType": "region/foreach",
+      "position": {
+        "x": 0,
+        "y": -300
+      },
+      "params": {
+        "width": 1260,
+        "height": 800,
+        "label": "ForEach edge"
+      },
+      "ports": [
+        {
+          "id": "a",
+          "name": "a",
+          "type": "vec2",
+          "direction": "input"
+        },
+        {
+          "id": "b",
+          "name": "b",
+          "type": "vec2",
+          "direction": "input"
+        },
+        {
+          "id": "col",
+          "name": "col",
+          "type": "color",
+          "direction": "input"
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 1260,
+      "height": 800
+    },
+    {
+      "id": "bt_lstroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 308,
+        "y": 150
+      },
+      "params": {
+        "width": 2
+      },
+      "parentId": "bt_lines",
+      "portValues": {
+        "width": 2
+      }
+    },
+    {
+      "id": "bt_line",
+      "defType": "draw/line",
+      "position": {
+        "x": 644,
+        "y": 100
+      },
+      "params": {},
+      "parentId": "bt_lines"
+    },
+    {
+      "id": "bt_points",
+      "defType": "region/foreach",
+      "position": {
+        "x": 0,
+        "y": 700
+      },
+      "params": {
+        "width": 1064,
+        "height": 750,
+        "label": "ForEach point"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input"
+        },
+        {
+          "id": "col",
+          "name": "col",
+          "type": "color",
+          "direction": "input"
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 1064,
+      "height": 750
+    },
+    {
+      "id": "bt_pfill",
+      "defType": "style/fill",
+      "position": {
+        "x": 308,
+        "y": 150
+      },
+      "params": {
+        "mode": "color"
+      },
+      "parentId": "bt_points",
+      "portValues": {
+        "mode": "color"
+      }
+    },
+    {
+      "id": "bt_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 644,
+        "y": 100
+      },
+      "params": {
+        "w": 8,
+        "h": 8
+      },
+      "parentId": "bt_points",
+      "portValues": {
+        "w": 8,
+        "h": 8
+      }
+    },
+    {
+      "id": "merge_1532",
+      "defType": "spread/merge",
+      "position": {
+        "x": 1432,
+        "y": 50
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1512",
+      "source": "bt_tog",
+      "target": "bt_cam",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_1513",
+      "source": "bt_tog",
+      "target": "bt_lm",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_1514",
+      "source": "bt_cam",
+      "target": "bt_lm",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1515",
+      "source": "bt_bg",
+      "target": "bt_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1516",
+      "source": "bt_lm",
+      "target": "bt_lines",
+      "sourceHandle": "out-connA",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1517",
+      "source": "bt_lm",
+      "target": "bt_lines",
+      "sourceHandle": "out-connB",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1518",
+      "source": "bt_lm",
+      "target": "bt_lines",
+      "sourceHandle": "out-connColor",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_1519",
+      "source": "bt_lines",
+      "target": "bt_line",
+      "sourceHandle": "out-a",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1520",
+      "source": "bt_lines",
+      "target": "bt_line",
+      "sourceHandle": "out-b",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1521",
+      "source": "bt_lines",
+      "target": "bt_lstroke",
+      "sourceHandle": "out-col",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1522",
+      "source": "bt_lstroke",
+      "target": "bt_line",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1523",
+      "source": "bt_line",
+      "target": "bt_lines",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_1524",
+      "source": "bt_lm",
+      "target": "bt_points",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_1525",
+      "source": "bt_lm",
+      "target": "bt_points",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_1526",
+      "source": "bt_points",
+      "target": "bt_dot",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_1527",
+      "source": "bt_points",
+      "target": "bt_pfill",
+      "sourceHandle": "out-col",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1528",
+      "source": "bt_pfill",
+      "target": "bt_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1529",
+      "source": "bt_dot",
+      "target": "bt_points",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_1533",
+      "source": "bt_lines",
+      "target": "merge_1532",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_1534",
+      "source": "bt_points",
+      "target": "merge_1532",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_1535",
+      "source": "merge_1532",
+      "target": "bt_renderer",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

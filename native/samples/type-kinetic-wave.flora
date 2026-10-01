@@ -1,0 +1,874 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Kinetic Wave",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "kt_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -896,
+        "y": 0
+      },
+      "params": {
+        "text": "Kinetic typography\n\nEach character of every row gets its own (x, y). The phrase is split into a Spread<string> then Repeat-tiled rows times — paired with a Range of the same length, ForEach iterates the 24 × 9 grid. Inside: floor / mod recover (rowIdx, charIdx); the column offset (charIdx − centre) gets multiplied by a row-envelope so middle rows fan out and edges stay tight. The result curves like the reference — a wave of letterforms.\n\nEdit the String node to change the phrase; the grid count rebuilds itself.",
+        "width": 520,
+        "height": 320
+      },
+      "portValues": {
+        "text": "Kinetic typography\n\nEach character of every row gets its own (x, y). The phrase is split into a Spread<string> then Repeat-tiled rows times — paired with a Range of the same length, ForEach iterates the 24 × 9 grid. Inside: floor / mod recover (rowIdx, charIdx); the column offset (charIdx − centre) gets multiplied by a row-envelope so middle rows fan out and edges stay tight. The result curves like the reference — a wave of letterforms.\n\nEdit the String node to change the phrase; the grid count rebuilds itself.",
+        "width": 520,
+        "height": 320
+      }
+    },
+    {
+      "id": "kt_str",
+      "defType": "value/string",
+      "position": {
+        "x": -812,
+        "y": 500
+      },
+      "params": {
+        "value": "I LOVE FLORET"
+      },
+      "portValues": {
+        "value": "I LOVE FLORET"
+      }
+    },
+    {
+      "id": "kt_split",
+      "defType": "string/split",
+      "position": {
+        "x": -532,
+        "y": 400
+      },
+      "params": {
+        "by": ""
+      },
+      "portValues": {
+        "by": ""
+      }
+    },
+    {
+      "id": "kt_len",
+      "defType": "string/length",
+      "position": {
+        "x": -532,
+        "y": 650
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_tile",
+      "defType": "spread/repeat",
+      "position": {
+        "x": -251.99999999999997,
+        "y": 400
+      },
+      "params": {
+        "count": 40
+      },
+      "portValues": {
+        "count": 40
+      }
+    },
+    {
+      "id": "kt_total",
+      "defType": "math/mul",
+      "position": {
+        "x": -251.99999999999997,
+        "y": 650
+      },
+      "params": {
+        "b": 40,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 40
+      }
+    },
+    {
+      "id": "kt_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 0,
+        "y": 650
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": -812,
+        "y": 900
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_bg",
+      "defType": "color/color",
+      "position": {
+        "x": -532,
+        "y": 1050
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 41,
+        "g": 70,
+        "b": 219,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 41,
+        "g": 70,
+        "b": 219,
+        "a": 255
+      }
+    },
+    {
+      "id": "kt_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 308,
+        "y": 0
+      },
+      "params": {
+        "width": 1540,
+        "height": 1750,
+        "label": "ForEach (row × char)"
+      },
+      "ports": [
+        {
+          "id": "ch",
+          "name": "ch",
+          "type": "string",
+          "direction": "input"
+        },
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "col",
+          "name": "col",
+          "type": "color",
+          "direction": "input"
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 1540,
+      "height": 1750
+    },
+    {
+      "id": "kt_palette",
+      "defType": "color/palette",
+      "position": {
+        "x": -812,
+        "y": 50
+      },
+      "params": {
+        "stopCount": 3,
+        "c0": "#ff5edb",
+        "c1": "#7afc6c",
+        "c2": "#ffd23b"
+      },
+      "portValues": {
+        "stopCount": 3,
+        "c0": "#ff5edb",
+        "c1": "#7afc6c",
+        "c2": "#ffd23b"
+      }
+    },
+    {
+      "id": "kt_widx",
+      "defType": "string/word-indices",
+      "position": {
+        "x": -532,
+        "y": 150
+      },
+      "params": {
+        "by": " "
+      },
+      "portValues": {
+        "by": " "
+      }
+    },
+    {
+      "id": "kt_perChar",
+      "defType": "spread/pick",
+      "position": {
+        "x": -251.99999999999997,
+        "y": 150
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_tileC",
+      "defType": "spread/repeat",
+      "position": {
+        "x": 0,
+        "y": 150
+      },
+      "params": {
+        "count": 40
+      },
+      "portValues": {
+        "count": 40
+      }
+    },
+    {
+      "id": "kt_charIdxOff",
+      "defType": "math/mod",
+      "position": {
+        "x": 56,
+        "y": 100
+      },
+      "params": {},
+      "parentId": "kt_region"
+    },
+    {
+      "id": "kt_rowDiv",
+      "defType": "math/div",
+      "position": {
+        "x": 56,
+        "y": 300
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "kt_region"
+    },
+    {
+      "id": "kt_rowIdx",
+      "defType": "math/floor",
+      "position": {
+        "x": 280,
+        "y": 300
+      },
+      "params": {},
+      "parentId": "kt_region"
+    },
+    {
+      "id": "kt_charCenter",
+      "defType": "math/sub",
+      "position": {
+        "x": 280,
+        "y": 100
+      },
+      "params": {
+        "b": 1,
+        "valueType": "number"
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "kt_charCenter2",
+      "defType": "math/div",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 100
+      },
+      "params": {
+        "b": 2
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "kt_charOff",
+      "defType": "math/sub",
+      "position": {
+        "x": 728,
+        "y": 100
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "kt_region"
+    },
+    {
+      "id": "kt_yMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 300
+      },
+      "params": {
+        "b": 22,
+        "valueType": "number"
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "b": 22
+      }
+    },
+    {
+      "id": "kt_yOff",
+      "defType": "math/add",
+      "position": {
+        "x": 728,
+        "y": 300
+      },
+      "params": {
+        "b": -429,
+        "valueType": "number"
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "b": -429
+      }
+    },
+    {
+      "id": "kt_tSpeed",
+      "defType": "math/mul",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 700
+      },
+      "params": {
+        "b": 1.6,
+        "valueType": "number"
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "b": 1.6
+      }
+    },
+    {
+      "id": "kt_charPhase",
+      "defType": "math/mul",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 500
+      },
+      "params": {
+        "b": 0.55,
+        "valueType": "number"
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "b": 0.55
+      }
+    },
+    {
+      "id": "kt_rowDelay",
+      "defType": "math/mul",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 900
+      },
+      "params": {
+        "b": 0.22,
+        "valueType": "number"
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "b": 0.22
+      }
+    },
+    {
+      "id": "kt_waveAdd",
+      "defType": "math/add",
+      "position": {
+        "x": 728,
+        "y": 600
+      },
+      "params": {},
+      "parentId": "kt_region"
+    },
+    {
+      "id": "kt_waveArg",
+      "defType": "math/sub",
+      "position": {
+        "x": 951.9999999999999,
+        "y": 700
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "kt_region"
+    },
+    {
+      "id": "kt_waveSin",
+      "defType": "math/sin",
+      "position": {
+        "x": 1176,
+        "y": 700
+      },
+      "params": {},
+      "parentId": "kt_region"
+    },
+    {
+      "id": "kt_xWave",
+      "defType": "math/mul",
+      "position": {
+        "x": 1400,
+        "y": 700
+      },
+      "params": {
+        "b": 26,
+        "valueType": "number"
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "b": 26
+      }
+    },
+    {
+      "id": "kt_xBase",
+      "defType": "math/mul",
+      "position": {
+        "x": 951.9999999999999,
+        "y": 100
+      },
+      "params": {
+        "b": 24
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "b": 24
+      }
+    },
+    {
+      "id": "kt_xOut",
+      "defType": "math/add",
+      "position": {
+        "x": 1400,
+        "y": 100
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "kt_region"
+    },
+    {
+      "id": "kt_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 308,
+        "y": 1150
+      },
+      "params": {},
+      "parentId": "kt_region"
+    },
+    {
+      "id": "kt_tp",
+      "defType": "style/text-params",
+      "position": {
+        "x": 560,
+        "y": 1150
+      },
+      "params": {
+        "font": "monospace",
+        "bold": true,
+        "italic": false,
+        "align": "center",
+        "baseline": "middle",
+        "kerning": 0,
+        "lineSpacing": 1
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "font": "monospace",
+        "bold": true,
+        "italic": false,
+        "align": "center",
+        "baseline": "middle",
+        "kerning": 0,
+        "lineSpacing": 1
+      }
+    },
+    {
+      "id": "kt_text",
+      "defType": "draw/text",
+      "position": {
+        "x": 1232,
+        "y": 100
+      },
+      "params": {
+        "string": "?",
+        "x": 0,
+        "y": 0,
+        "size": 16,
+        "align": "center"
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "string": "?",
+        "x": 0,
+        "y": 0,
+        "size": 16,
+        "align": "center"
+      }
+    },
+    {
+      "id": "kt_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1931.9999999999998,
+        "y": 0
+      },
+      "params": {
+        "width": 380,
+        "height": 640
+      },
+      "portValues": {
+        "width": 380,
+        "height": 640
+      }
+    },
+    {
+      "id": "kt_text-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1172,
+        "y": 100
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_411",
+      "source": "kt_str",
+      "target": "kt_split",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-text"
+    },
+    {
+      "id": "e_412",
+      "source": "kt_str",
+      "target": "kt_len",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-text"
+    },
+    {
+      "id": "e_413",
+      "source": "kt_split",
+      "target": "kt_tile",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_414",
+      "source": "kt_len",
+      "target": "kt_total",
+      "sourceHandle": "out-length",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_415",
+      "source": "kt_total",
+      "target": "kt_range",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_416",
+      "source": "kt_str",
+      "target": "kt_widx",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-text"
+    },
+    {
+      "id": "e_417",
+      "source": "kt_palette",
+      "target": "kt_perChar",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_418",
+      "source": "kt_widx",
+      "target": "kt_perChar",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_419",
+      "source": "kt_perChar",
+      "target": "kt_tileC",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_420",
+      "source": "kt_tile",
+      "target": "kt_region",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-ch"
+    },
+    {
+      "id": "e_421",
+      "source": "kt_range",
+      "target": "kt_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_422",
+      "source": "kt_tileC",
+      "target": "kt_region",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_423",
+      "source": "kt_region",
+      "target": "kt_charIdxOff",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_424",
+      "source": "kt_len",
+      "target": "kt_charIdxOff",
+      "sourceHandle": "out-length",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_425",
+      "source": "kt_region",
+      "target": "kt_rowDiv",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_426",
+      "source": "kt_len",
+      "target": "kt_rowDiv",
+      "sourceHandle": "out-length",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_427",
+      "source": "kt_rowDiv",
+      "target": "kt_rowIdx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_428",
+      "source": "kt_rowIdx",
+      "target": "kt_yMul",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_429",
+      "source": "kt_yMul",
+      "target": "kt_yOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_430",
+      "source": "kt_yOff",
+      "target": "kt_text-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_431",
+      "source": "kt_len",
+      "target": "kt_charCenter",
+      "sourceHandle": "out-length",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_432",
+      "source": "kt_charCenter",
+      "target": "kt_charCenter2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_433",
+      "source": "kt_charIdxOff",
+      "target": "kt_charOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_434",
+      "source": "kt_charCenter2",
+      "target": "kt_charOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_435",
+      "source": "kt_time",
+      "target": "kt_tSpeed",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_436",
+      "source": "kt_charIdxOff",
+      "target": "kt_charPhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_437",
+      "source": "kt_rowIdx",
+      "target": "kt_rowDelay",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_438",
+      "source": "kt_tSpeed",
+      "target": "kt_waveAdd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_439",
+      "source": "kt_charPhase",
+      "target": "kt_waveAdd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_440",
+      "source": "kt_waveAdd",
+      "target": "kt_waveArg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_441",
+      "source": "kt_rowDelay",
+      "target": "kt_waveArg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_442",
+      "source": "kt_waveArg",
+      "target": "kt_waveSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_443",
+      "source": "kt_waveSin",
+      "target": "kt_xWave",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_444",
+      "source": "kt_charOff",
+      "target": "kt_xBase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_445",
+      "source": "kt_xBase",
+      "target": "kt_xOut",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_446",
+      "source": "kt_xWave",
+      "target": "kt_xOut",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_447",
+      "source": "kt_xOut",
+      "target": "kt_text-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_448",
+      "source": "kt_region",
+      "target": "kt_fill",
+      "sourceHandle": "out-col",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_449",
+      "source": "kt_fill",
+      "target": "kt_tp",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_450",
+      "source": "kt_tp",
+      "target": "kt_text",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_451",
+      "source": "kt_region",
+      "target": "kt_text",
+      "sourceHandle": "out-ch",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_452",
+      "source": "kt_text",
+      "target": "kt_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_453",
+      "source": "kt_region",
+      "target": "kt_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_454",
+      "source": "kt_bg",
+      "target": "kt_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_xy_kt_text-xy0",
+      "source": "kt_text-xy0",
+      "target": "kt_text",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

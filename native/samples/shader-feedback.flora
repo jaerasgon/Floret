@@ -1,0 +1,53 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Shader · Feedback Ripples",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "sf_shader",
+      "defType": "gpu/shader",
+      "position": {
+        "x": -84,
+        "y": 0
+      },
+      "params": {
+        "source": "void mainImage(out vec4 fragColor, in vec2 fragCoord) {\n  vec2 uv = fragCoord / iResolution.xy;\n  vec2 px = 1.0 / iResolution.xy;\n  // blur the previous frame slightly (cheap diffusion) and fade it\n  vec4 p = texture(iChannel1, uv) * 0.25\n         + texture(iChannel1, uv + vec2(px.x, 0.0)) * 0.1875\n         + texture(iChannel1, uv - vec2(px.x, 0.0)) * 0.1875\n         + texture(iChannel1, uv + vec2(0.0, px.y)) * 0.1875\n         + texture(iChannel1, uv - vec2(0.0, px.y)) * 0.1875;\n  p.rgb *= 0.985;\n  // moving source\n  vec2 c = 0.5 + 0.35 * vec2(cos(iTime * 0.7), sin(iTime * 1.1));\n  float d = exp(-220.0 * dot(uv - c, uv - c));\n  vec3 inject = d * (0.5 + 0.5 * cos(vec3(0.0, 2.0, 4.0) + iTime));\n  fragColor = vec4(p.rgb + inject, 1.0);\n}",
+        "feedback": true
+      },
+      "portValues": {
+        "source": "void mainImage(out vec4 fragColor, in vec2 fragCoord) {\n  vec2 uv = fragCoord / iResolution.xy;\n  vec2 px = 1.0 / iResolution.xy;\n  // blur the previous frame slightly (cheap diffusion) and fade it\n  vec4 p = texture(iChannel1, uv) * 0.25\n         + texture(iChannel1, uv + vec2(px.x, 0.0)) * 0.1875\n         + texture(iChannel1, uv - vec2(px.x, 0.0)) * 0.1875\n         + texture(iChannel1, uv + vec2(0.0, px.y)) * 0.1875\n         + texture(iChannel1, uv - vec2(0.0, px.y)) * 0.1875;\n  p.rgb *= 0.985;\n  // moving source\n  vec2 c = 0.5 + 0.35 * vec2(cos(iTime * 0.7), sin(iTime * 1.1));\n  float d = exp(-220.0 * dot(uv - c, uv - c));\n  vec3 inject = d * (0.5 + 0.5 * cos(vec3(0.0, 2.0, 4.0) + iTime));\n  fragColor = vec4(p.rgb + inject, 1.0);\n}",
+        "feedback": true
+      }
+    },
+    {
+      "id": "sf_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 0
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1355",
+      "source": "sf_shader",
+      "target": "sf_renderer",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "40 · Pixel Sort",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t40_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -644,
+        "y": 0
+      },
+      "params": {
+        "text": "Pixel sorting (datamosh)\n\n`pixel/sort` reorders runs of pixels along rows or columns by brightness/saturation. The \"lo/hi\" inputs mask which pixels get sorted, leaving the rest in place.\n\nA classic glitch-art look.",
+        "width": 440,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Pixel sorting (datamosh)\n\n`pixel/sort` reorders runs of pixels along rows or columns by brightness/saturation. The \"lo/hi\" inputs mask which pixels get sorted, leaving the rest in place.\n\nA classic glitch-art look.",
+        "width": 440,
+        "height": 220
+      }
+    },
+    {
+      "id": "t40_url",
+      "defType": "io/image-url",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t40_sort",
+      "defType": "pixel/sort",
+      "position": {
+        "x": 392,
+        "y": 0
+      },
+      "params": {
+        "axis": "rows",
+        "criterion": "brightness",
+        "order": "ascending"
+      },
+      "portValues": {
+        "axis": "rows",
+        "criterion": "brightness",
+        "order": "ascending"
+      }
+    },
+    {
+      "id": "t40_draw",
+      "defType": "draw/image",
+      "position": {
+        "x": 728,
+        "y": 100
+      },
+      "params": {
+        "x": 0,
+        "y": 0,
+        "w": 320,
+        "h": 320
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0,
+        "w": 320,
+        "h": 320
+      }
+    },
+    {
+      "id": "t40_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1092,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t40_draw-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 668,
+        "y": 100
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_311",
+      "source": "t40_url",
+      "target": "t40_sort",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_312",
+      "source": "t40_sort",
+      "target": "t40_draw",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_313",
+      "source": "t40_draw",
+      "target": "t40_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t40_draw-xy0",
+      "source": "t40_draw-xy0",
+      "target": "t40_draw",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

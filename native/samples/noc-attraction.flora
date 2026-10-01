@@ -1,0 +1,629 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Mouse Attraction",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "at_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": -616,
+        "y": 50
+      },
+      "params": {}
+    },
+    {
+      "id": "at_G",
+      "defType": "io/slider",
+      "position": {
+        "x": -616,
+        "y": 250
+      },
+      "params": {
+        "value": 800,
+        "min": 50,
+        "max": 4000
+      },
+      "portValues": {
+        "value": 800,
+        "min": 50,
+        "max": 4000
+      }
+    },
+    {
+      "id": "at_damp",
+      "defType": "io/slider",
+      "position": {
+        "x": -616,
+        "y": 450
+      },
+      "params": {
+        "value": 0.985,
+        "min": 0.9,
+        "max": 1
+      },
+      "portValues": {
+        "value": 0.985,
+        "min": 0.9,
+        "max": 1
+      }
+    },
+    {
+      "id": "at_initPos",
+      "defType": "vec2/make",
+      "position": {
+        "x": -616,
+        "y": 650
+      },
+      "params": {
+        "x": -200,
+        "y": -200
+      },
+      "portValues": {
+        "x": -200,
+        "y": -200
+      }
+    },
+    {
+      "id": "at_initVel",
+      "defType": "vec2/make",
+      "position": {
+        "x": -616,
+        "y": 850
+      },
+      "params": {
+        "x": 3,
+        "y": 0
+      },
+      "portValues": {
+        "x": 3,
+        "y": 0
+      }
+    },
+    {
+      "id": "at_pos",
+      "defType": "state/value",
+      "position": {
+        "x": -336,
+        "y": 150
+      },
+      "params": {}
+    },
+    {
+      "id": "at_vel",
+      "defType": "state/value",
+      "position": {
+        "x": -336,
+        "y": 350
+      },
+      "params": {}
+    },
+    {
+      "id": "at_mv",
+      "defType": "vec2/make",
+      "position": {
+        "x": -336,
+        "y": 550
+      },
+      "params": {}
+    },
+    {
+      "id": "at_diff",
+      "defType": "vec2/sub",
+      "position": {
+        "x": -112,
+        "y": 250
+      },
+      "params": {}
+    },
+    {
+      "id": "at_dist",
+      "defType": "vec2/mag",
+      "position": {
+        "x": 112,
+        "y": 250
+      },
+      "params": {}
+    },
+    {
+      "id": "at_distSq",
+      "defType": "math/sq",
+      "position": {
+        "x": 336,
+        "y": 250
+      },
+      "params": {}
+    },
+    {
+      "id": "at_distClamp",
+      "defType": "math/clamp",
+      "position": {
+        "x": 560,
+        "y": 250
+      },
+      "params": {
+        "min": 100,
+        "max": 40000
+      },
+      "portValues": {
+        "min": 100,
+        "max": 40000
+      }
+    },
+    {
+      "id": "at_F",
+      "defType": "math/div",
+      "position": {
+        "x": 784,
+        "y": 250
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "at_dir",
+      "defType": "vec2/normalize",
+      "position": {
+        "x": 112,
+        "y": 450
+      },
+      "params": {}
+    },
+    {
+      "id": "at_acc",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 1007.9999999999999,
+        "y": 350
+      },
+      "params": {}
+    },
+    {
+      "id": "at_velAdd",
+      "defType": "vec2/add",
+      "position": {
+        "x": 1232,
+        "y": 350
+      },
+      "params": {}
+    },
+    {
+      "id": "at_velDamp",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 1456,
+        "y": 350
+      },
+      "params": {}
+    },
+    {
+      "id": "at_posAdd",
+      "defType": "vec2/add",
+      "position": {
+        "x": 1680,
+        "y": 150
+      },
+      "params": {}
+    },
+    {
+      "id": "at_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": -336,
+        "y": 800
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 240,
+        "g": 90,
+        "b": 130,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 240,
+        "g": 90,
+        "b": 130,
+        "a": 255
+      }
+    },
+    {
+      "id": "at_psDraw",
+      "defType": "vec2/split",
+      "position": {
+        "x": -112,
+        "y": 800
+      },
+      "params": {}
+    },
+    {
+      "id": "at_ball",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 112,
+        "y": 800
+      },
+      "params": {
+        "w": 28,
+        "h": 28
+      },
+      "portValues": {
+        "w": 28,
+        "h": 28
+      }
+    },
+    {
+      "id": "at_mFill",
+      "defType": "style/fill",
+      "position": {
+        "x": -336,
+        "y": 1000
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 90,
+        "g": 220,
+        "b": 240,
+        "a": 200
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 90,
+        "g": 220,
+        "b": 240,
+        "a": 200
+      }
+    },
+    {
+      "id": "at_mMark",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 112,
+        "y": 1000
+      },
+      "params": {
+        "w": 16,
+        "h": 16
+      },
+      "portValues": {
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "at_grp",
+      "defType": "transform/group",
+      "position": {
+        "x": 336,
+        "y": 900
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "at_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": -616,
+        "y": 1150
+      },
+      "params": {
+        "r": 8,
+        "g": 8,
+        "b": 16,
+        "a": 255
+      },
+      "portValues": {
+        "r": 8,
+        "g": 8,
+        "b": 16,
+        "a": 255
+      }
+    },
+    {
+      "id": "at_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 672,
+        "y": 900
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "at_ball-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 52,
+        "y": 800
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "at_mMark-xy1",
+      "defType": "vec2/make",
+      "position": {
+        "x": 52,
+        "y": 1000
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1162",
+      "source": "at_bg",
+      "target": "at_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1163",
+      "source": "at_initPos",
+      "target": "at_pos",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_1164",
+      "source": "at_initVel",
+      "target": "at_vel",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_1165",
+      "source": "at_mouse",
+      "target": "at_mv",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1166",
+      "source": "at_mouse",
+      "target": "at_mv",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1167",
+      "source": "at_mv",
+      "target": "at_diff",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1168",
+      "source": "at_pos",
+      "target": "at_diff",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1169",
+      "source": "at_diff",
+      "target": "at_dist",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1170",
+      "source": "at_dist",
+      "target": "at_distSq",
+      "sourceHandle": "out-length",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1171",
+      "source": "at_distSq",
+      "target": "at_distClamp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1172",
+      "source": "at_G",
+      "target": "at_F",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1173",
+      "source": "at_distClamp",
+      "target": "at_F",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1174",
+      "source": "at_diff",
+      "target": "at_dir",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1175",
+      "source": "at_dir",
+      "target": "at_acc",
+      "sourceHandle": "out-normalized",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1176",
+      "source": "at_F",
+      "target": "at_acc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_1177",
+      "source": "at_vel",
+      "target": "at_velAdd",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1178",
+      "source": "at_acc",
+      "target": "at_velAdd",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1179",
+      "source": "at_velAdd",
+      "target": "at_velDamp",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1180",
+      "source": "at_damp",
+      "target": "at_velDamp",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_1181",
+      "source": "at_pos",
+      "target": "at_posAdd",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1182",
+      "source": "at_velDamp",
+      "target": "at_posAdd",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1183",
+      "source": "at_posAdd",
+      "target": "at_pos",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_1184",
+      "source": "at_velDamp",
+      "target": "at_vel",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_1185",
+      "source": "at_pos",
+      "target": "at_psDraw",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1186",
+      "source": "at_psDraw",
+      "target": "at_ball-xy0",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1187",
+      "source": "at_psDraw",
+      "target": "at_ball-xy0",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1188",
+      "source": "at_fill",
+      "target": "at_ball",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1189",
+      "source": "at_mouse",
+      "target": "at_mMark-xy1",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1190",
+      "source": "at_mouse",
+      "target": "at_mMark-xy1",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1191",
+      "source": "at_mFill",
+      "target": "at_mMark",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1192",
+      "source": "at_mMark",
+      "target": "at_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_1193",
+      "source": "at_ball",
+      "target": "at_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_1194",
+      "source": "at_grp",
+      "target": "at_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_at_ball-xy0",
+      "source": "at_ball-xy0",
+      "target": "at_ball",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_xy_at_mMark-xy1",
+      "source": "at_mMark-xy1",
+      "target": "at_mMark",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

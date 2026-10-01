@@ -1,0 +1,595 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "FFT Bloom",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "fb_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": -588,
+        "y": 50
+      },
+      "params": {}
+    },
+    {
+      "id": "fb_freqMap",
+      "defType": "math/map",
+      "position": {
+        "x": -280,
+        "y": 50
+      },
+      "params": {
+        "inMin": -250,
+        "inMax": 250,
+        "outMin": 80,
+        "outMax": 500
+      },
+      "portValues": {
+        "inMin": -250,
+        "inMax": 250,
+        "outMin": 80,
+        "outMax": 500
+      }
+    },
+    {
+      "id": "fb_amp",
+      "defType": "io/slider",
+      "position": {
+        "x": -588,
+        "y": 275
+      },
+      "params": {
+        "value": 0.25,
+        "min": 0,
+        "max": 1
+      },
+      "portValues": {
+        "value": 0.25,
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "fb_osc",
+      "defType": "sound/oscillator",
+      "position": {
+        "x": 28,
+        "y": 50
+      },
+      "params": {
+        "type": "sawtooth"
+      },
+      "portValues": {
+        "type": "sawtooth"
+      }
+    },
+    {
+      "id": "fb_out",
+      "defType": "sound/output",
+      "position": {
+        "x": 336,
+        "y": 50
+      },
+      "params": {}
+    },
+    {
+      "id": "fb_fft",
+      "defType": "sound/fft",
+      "position": {
+        "x": 28,
+        "y": 275
+      },
+      "params": {
+        "bins": "64"
+      },
+      "portValues": {
+        "bins": "64"
+      }
+    },
+    {
+      "id": "fb_idxs",
+      "defType": "spread/range",
+      "position": {
+        "x": -588,
+        "y": 500
+      },
+      "params": {
+        "count": 64
+      },
+      "portValues": {
+        "count": 64
+      }
+    },
+    {
+      "id": "fb_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": -224,
+        "y": 500
+      },
+      "params": {
+        "width": 1260,
+        "height": 1150,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "v",
+          "name": "v",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 1260,
+      "height": 1150
+    },
+    {
+      "id": "fb_angleMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 84,
+        "y": 100
+      },
+      "params": {
+        "b": 0.09817477042468103,
+        "valueType": "number"
+      },
+      "parentId": "fb_region",
+      "portValues": {
+        "b": 0.09817477042468103
+      }
+    },
+    {
+      "id": "fb_vScaled",
+      "defType": "math/mul",
+      "position": {
+        "x": 84,
+        "y": 275
+      },
+      "params": {
+        "b": 0.7,
+        "valueType": "number"
+      },
+      "parentId": "fb_region",
+      "portValues": {
+        "b": 0.7
+      }
+    },
+    {
+      "id": "fb_radius",
+      "defType": "math/add",
+      "position": {
+        "x": 308,
+        "y": 275
+      },
+      "params": {
+        "b": 80,
+        "valueType": "number"
+      },
+      "parentId": "fb_region",
+      "portValues": {
+        "b": 80
+      }
+    },
+    {
+      "id": "fb_fromAng",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 532,
+        "y": 175
+      },
+      "params": {},
+      "parentId": "fb_region"
+    },
+    {
+      "id": "fb_splitPos",
+      "defType": "vec2/split",
+      "position": {
+        "x": 756,
+        "y": 175
+      },
+      "params": {},
+      "parentId": "fb_region"
+    },
+    {
+      "id": "fb_xCenter",
+      "defType": "math/add",
+      "position": {
+        "x": 979.9999999999999,
+        "y": 100
+      },
+      "params": {
+        "b": 0,
+        "valueType": "number"
+      },
+      "parentId": "fb_region",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "fb_yCenter",
+      "defType": "math/add",
+      "position": {
+        "x": 979.9999999999999,
+        "y": 275
+      },
+      "params": {
+        "b": 0,
+        "valueType": "number"
+      },
+      "parentId": "fb_region",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "fb_hueMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 84,
+        "y": 600
+      },
+      "params": {
+        "b": 5.625,
+        "valueType": "number"
+      },
+      "parentId": "fb_region",
+      "portValues": {
+        "b": 5.625
+      }
+    },
+    {
+      "id": "fb_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 308,
+        "y": 600
+      },
+      "params": {
+        "s": 80,
+        "l": 60,
+        "a": 255
+      },
+      "parentId": "fb_region",
+      "portValues": {
+        "s": 80,
+        "l": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "fb_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 532,
+        "y": 600
+      },
+      "params": {
+        "mode": "color"
+      },
+      "parentId": "fb_region",
+      "portValues": {
+        "mode": "color"
+      }
+    },
+    {
+      "id": "fb_sScaled",
+      "defType": "math/mul",
+      "position": {
+        "x": 756,
+        "y": 600
+      },
+      "params": {
+        "b": 0.04,
+        "valueType": "number"
+      },
+      "parentId": "fb_region",
+      "portValues": {
+        "b": 0.04
+      }
+    },
+    {
+      "id": "fb_sAdd",
+      "defType": "math/add",
+      "position": {
+        "x": 979.9999999999999,
+        "y": 600
+      },
+      "params": {
+        "b": 3,
+        "valueType": "number"
+      },
+      "parentId": "fb_region",
+      "portValues": {
+        "b": 3
+      }
+    },
+    {
+      "id": "fb_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1204,
+        "y": 250
+      },
+      "params": {},
+      "parentId": "fb_region"
+    },
+    {
+      "id": "fb_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": -588,
+        "y": 700
+      },
+      "params": {
+        "r": 12,
+        "g": 8,
+        "b": 28,
+        "a": 255
+      },
+      "portValues": {
+        "r": 12,
+        "g": 8,
+        "b": 28,
+        "a": 255
+      }
+    },
+    {
+      "id": "fb_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 672,
+        "y": 50
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "fb_dot-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1144,
+        "y": 250
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "fb_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1577",
+      "source": "fb_bg",
+      "target": "fb_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1578",
+      "source": "fb_mouse",
+      "target": "fb_freqMap",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1579",
+      "source": "fb_freqMap",
+      "target": "fb_osc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_1580",
+      "source": "fb_amp",
+      "target": "fb_osc",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-amp"
+    },
+    {
+      "id": "e_1581",
+      "source": "fb_osc",
+      "target": "fb_out",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_1582",
+      "source": "fb_osc",
+      "target": "fb_fft",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_1583",
+      "source": "fb_idxs",
+      "target": "fb_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_1584",
+      "source": "fb_fft",
+      "target": "fb_region",
+      "sourceHandle": "out-spectrum",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1585",
+      "source": "fb_region",
+      "target": "fb_angleMul",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1586",
+      "source": "fb_region",
+      "target": "fb_vScaled",
+      "sourceHandle": "out-v",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1587",
+      "source": "fb_vScaled",
+      "target": "fb_radius",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1588",
+      "source": "fb_angleMul",
+      "target": "fb_fromAng",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_1589",
+      "source": "fb_radius",
+      "target": "fb_fromAng",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_1590",
+      "source": "fb_fromAng",
+      "target": "fb_splitPos",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1591",
+      "source": "fb_splitPos",
+      "target": "fb_xCenter",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1592",
+      "source": "fb_splitPos",
+      "target": "fb_yCenter",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1593",
+      "source": "fb_region",
+      "target": "fb_hueMul",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1594",
+      "source": "fb_hueMul",
+      "target": "fb_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1595",
+      "source": "fb_hsl",
+      "target": "fb_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1596",
+      "source": "fb_region",
+      "target": "fb_sScaled",
+      "sourceHandle": "out-v",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1597",
+      "source": "fb_sScaled",
+      "target": "fb_sAdd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1598",
+      "source": "fb_xCenter",
+      "target": "fb_dot-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1599",
+      "source": "fb_yCenter",
+      "target": "fb_dot-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1600",
+      "source": "fb_sAdd",
+      "target": "fb_dot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_1601",
+      "source": "fb_sAdd",
+      "target": "fb_dot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1602",
+      "source": "fb_fill",
+      "target": "fb_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1603",
+      "source": "fb_dot",
+      "target": "fb_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_1604",
+      "source": "fb_region",
+      "target": "fb_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_fb_dot-xy0",
+      "source": "fb_dot-xy0",
+      "target": "fb_dot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

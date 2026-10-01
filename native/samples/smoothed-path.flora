@@ -1,0 +1,613 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Smoothed Path",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "sm_count",
+      "defType": "value/number",
+      "position": {
+        "x": -620,
+        "y": 60
+      },
+      "params": {
+        "value": 64
+      },
+      "portValues": {
+        "value": 64
+      }
+    },
+    {
+      "id": "sm_range",
+      "defType": "spread/range",
+      "position": {
+        "x": -470,
+        "y": 60
+      },
+      "params": {}
+    },
+    {
+      "id": "sm_r1",
+      "defType": "region/foreach",
+      "position": {
+        "x": -260,
+        "y": 0
+      },
+      "params": {
+        "width": 760,
+        "height": 520,
+        "label": "build points"
+      },
+      "ports": [
+        {
+          "id": "n",
+          "name": "n",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "pts",
+          "name": "pts",
+          "type": "vec2",
+          "direction": "output"
+        }
+      ],
+      "width": 760,
+      "height": 520
+    },
+    {
+      "id": "sm_nfreq",
+      "defType": "math/mul",
+      "position": {
+        "x": -120,
+        "y": 300
+      },
+      "params": {
+        "b": 1.3,
+        "valueType": "number"
+      },
+      "parentId": "sm_r1",
+      "portValues": {
+        "b": 1.3
+      }
+    },
+    {
+      "id": "sm_perlin",
+      "defType": "noise/perlin",
+      "position": {
+        "x": 40,
+        "y": 300
+      },
+      "params": {
+        "y": 0,
+        "seed": 4
+      },
+      "parentId": "sm_r1",
+      "portValues": {
+        "y": 0,
+        "seed": 4
+      }
+    },
+    {
+      "id": "sm_yMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 200,
+        "y": 300
+      },
+      "params": {
+        "b": 200,
+        "valueType": "number"
+      },
+      "parentId": "sm_r1",
+      "portValues": {
+        "b": 200
+      }
+    },
+    {
+      "id": "sm_yOff",
+      "defType": "math/add",
+      "position": {
+        "x": 340,
+        "y": 300
+      },
+      "params": {
+        "b": -100,
+        "valueType": "number"
+      },
+      "parentId": "sm_r1",
+      "portValues": {
+        "b": -100
+      }
+    },
+    {
+      "id": "sm_xMul",
+      "defType": "math/mul",
+      "position": {
+        "x": -120,
+        "y": 120
+      },
+      "params": {
+        "b": 460,
+        "valueType": "number"
+      },
+      "parentId": "sm_r1",
+      "portValues": {
+        "b": 460
+      }
+    },
+    {
+      "id": "sm_xOff",
+      "defType": "math/add",
+      "position": {
+        "x": 40,
+        "y": 120
+      },
+      "params": {
+        "b": -230,
+        "valueType": "number"
+      },
+      "parentId": "sm_r1",
+      "portValues": {
+        "b": -230
+      }
+    },
+    {
+      "id": "sm_pos1",
+      "defType": "vec2/make",
+      "position": {
+        "x": 520,
+        "y": 160
+      },
+      "params": {},
+      "parentId": "sm_r1"
+    },
+    {
+      "id": "sm_pass",
+      "defType": "spread/take",
+      "position": {
+        "x": 560,
+        "y": 40
+      },
+      "params": {
+        "count": 9999
+      },
+      "portValues": {
+        "count": 9999
+      }
+    },
+    {
+      "id": "sm_rawCol",
+      "defType": "color/hex",
+      "position": {
+        "x": 560,
+        "y": 420
+      },
+      "params": {
+        "hex": "#555a66"
+      },
+      "portValues": {
+        "hex": "#555a66"
+      }
+    },
+    {
+      "id": "sm_rawStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 720,
+        "y": 420
+      },
+      "params": {
+        "width": 1
+      },
+      "portValues": {
+        "width": 1
+      }
+    },
+    {
+      "id": "sm_rawPoly",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 900,
+        "y": 360
+      },
+      "params": {
+        "closed": false
+      },
+      "portValues": {
+        "closed": false
+      }
+    },
+    {
+      "id": "sm_r2",
+      "defType": "region/foreach",
+      "position": {
+        "x": 560,
+        "y": -40
+      },
+      "params": {
+        "width": 820,
+        "height": 560,
+        "label": "smooth (neighbours)"
+      },
+      "ports": [
+        {
+          "id": "n2",
+          "name": "self",
+          "type": "vec2",
+          "direction": "input"
+        },
+        {
+          "id": "spts",
+          "name": "spts",
+          "type": "vec2",
+          "direction": "output"
+        }
+      ],
+      "width": 820,
+      "height": 560
+    },
+    {
+      "id": "sm_nbL",
+      "defType": "spread/neighbor",
+      "position": {
+        "x": 720,
+        "y": 220
+      },
+      "params": {
+        "offset": -1,
+        "edges": "clamp"
+      },
+      "parentId": "sm_r2",
+      "portValues": {
+        "offset": -1,
+        "edges": "clamp"
+      }
+    },
+    {
+      "id": "sm_nbR",
+      "defType": "spread/neighbor",
+      "position": {
+        "x": 720,
+        "y": 360
+      },
+      "params": {
+        "offset": 1,
+        "edges": "clamp"
+      },
+      "parentId": "sm_r2",
+      "portValues": {
+        "offset": 1,
+        "edges": "clamp"
+      }
+    },
+    {
+      "id": "sm_sum",
+      "defType": "math/add",
+      "position": {
+        "x": 920,
+        "y": 160
+      },
+      "params": {
+        "slotCount": 3,
+        "valueType": "vec2"
+      },
+      "parentId": "sm_r2",
+      "portValues": {
+        "slotCount": 3,
+        "valueType": "vec2"
+      }
+    },
+    {
+      "id": "sm_avg",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 1100,
+        "y": 160
+      },
+      "params": {
+        "s": 0.3333333
+      },
+      "parentId": "sm_r2",
+      "portValues": {
+        "s": 0.3333333
+      }
+    },
+    {
+      "id": "sm_smCol",
+      "defType": "color/hex",
+      "position": {
+        "x": 1120,
+        "y": 380
+      },
+      "params": {
+        "hex": "#ffd166"
+      },
+      "portValues": {
+        "hex": "#ffd166"
+      }
+    },
+    {
+      "id": "sm_smStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 1280,
+        "y": 380
+      },
+      "params": {
+        "width": 3
+      },
+      "portValues": {
+        "width": 3
+      }
+    },
+    {
+      "id": "sm_smPoly",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 1460,
+        "y": 320
+      },
+      "params": {
+        "closed": false
+      },
+      "portValues": {
+        "closed": false
+      }
+    },
+    {
+      "id": "sm_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 1680,
+        "y": 200
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "sm_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1880,
+        "y": 120
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_869",
+      "source": "sm_count",
+      "target": "sm_range",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_870",
+      "source": "sm_range",
+      "target": "sm_r1",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_871",
+      "source": "sm_r1",
+      "target": "sm_nfreq",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_872",
+      "source": "sm_nfreq",
+      "target": "sm_perlin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_873",
+      "source": "sm_perlin",
+      "target": "sm_yMul",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_874",
+      "source": "sm_yMul",
+      "target": "sm_yOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_875",
+      "source": "sm_r1",
+      "target": "sm_xMul",
+      "sourceHandle": "out-__loopvar_fraction",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_876",
+      "source": "sm_xMul",
+      "target": "sm_xOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_877",
+      "source": "sm_xOff",
+      "target": "sm_pos1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_878",
+      "source": "sm_yOff",
+      "target": "sm_pos1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_879",
+      "source": "sm_pos1",
+      "target": "sm_r1",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pts"
+    },
+    {
+      "id": "e_880",
+      "source": "sm_rawCol",
+      "target": "sm_rawStroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_881",
+      "source": "sm_r1",
+      "target": "sm_pass",
+      "sourceHandle": "out-pts",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_882",
+      "source": "sm_r1",
+      "target": "sm_rawPoly",
+      "sourceHandle": "out-pts",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_883",
+      "source": "sm_rawStroke",
+      "target": "sm_rawPoly",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_884",
+      "source": "sm_pass",
+      "target": "sm_r2",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-n2"
+    },
+    {
+      "id": "e_885",
+      "source": "sm_pass",
+      "target": "sm_nbL",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_886",
+      "source": "sm_pass",
+      "target": "sm_nbR",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_887",
+      "source": "sm_r2",
+      "target": "sm_nbL",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_888",
+      "source": "sm_r2",
+      "target": "sm_nbR",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_889",
+      "source": "sm_nbL",
+      "target": "sm_sum",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_890",
+      "source": "sm_r2",
+      "target": "sm_sum",
+      "sourceHandle": "out-n2",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_891",
+      "source": "sm_nbR",
+      "target": "sm_sum",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_892",
+      "source": "sm_sum",
+      "target": "sm_avg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_893",
+      "source": "sm_avg",
+      "target": "sm_r2",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-spts"
+    },
+    {
+      "id": "e_894",
+      "source": "sm_smCol",
+      "target": "sm_smStroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_895",
+      "source": "sm_r2",
+      "target": "sm_smPoly",
+      "sourceHandle": "out-spts",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_896",
+      "source": "sm_smStroke",
+      "target": "sm_smPoly",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_897",
+      "source": "sm_rawPoly",
+      "target": "sm_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_898",
+      "source": "sm_smPoly",
+      "target": "sm_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_899",
+      "source": "sm_group",
+      "target": "sm_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

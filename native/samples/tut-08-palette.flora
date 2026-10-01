@@ -1,0 +1,283 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "08 · Palette Colours",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t08_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -560,
+        "y": 0
+      },
+      "params": {
+        "text": "Palettes and colour spreads\n\n`Palette` emits a Spread<Color>. To colour a 64-point grid from a 4-stop palette, use `CycleSpread` to repeat the palette until it has 64 elements.\n\nThe ForEach takes two inputs (vec2 and color) and runs once per pair.",
+        "width": 380,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Palettes and colour spreads\n\n`Palette` emits a Spread<Color>. To colour a 64-point grid from a 4-stop palette, use `CycleSpread` to repeat the palette until it has 64 elements.\n\nThe ForEach takes two inputs (vec2 and color) and runs once per pair.",
+        "width": 380,
+        "height": 220
+      }
+    },
+    {
+      "id": "t08_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "cols": 8,
+        "rows": 8,
+        "w": 320,
+        "h": 320
+      },
+      "portValues": {
+        "cols": 8,
+        "rows": 8,
+        "w": 320,
+        "h": 320
+      }
+    },
+    {
+      "id": "t08_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 84,
+        "y": 550
+      },
+      "params": {
+        "stopCount": 4
+      },
+      "portValues": {
+        "stopCount": 4
+      }
+    },
+    {
+      "id": "t08_count",
+      "defType": "value/number",
+      "position": {
+        "x": 84,
+        "y": 900
+      },
+      "params": {
+        "value": 64
+      },
+      "portValues": {
+        "value": 64
+      }
+    },
+    {
+      "id": "t08_cyc",
+      "defType": "spread/cycle",
+      "position": {
+        "x": 392,
+        "y": 550
+      },
+      "params": {
+        "count": 64
+      },
+      "portValues": {
+        "count": 64
+      }
+    },
+    {
+      "id": "t08_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 756,
+        "y": 0
+      },
+      "params": {
+        "width": 700,
+        "height": 900,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input"
+        },
+        {
+          "id": "c",
+          "name": "c",
+          "type": "color",
+          "direction": "input"
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 700,
+      "height": 900
+    },
+    {
+      "id": "t08_split",
+      "defType": "vec2/split",
+      "position": {
+        "x": 56,
+        "y": 100
+      },
+      "params": {},
+      "parentId": "t08_region"
+    },
+    {
+      "id": "t08_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 56,
+        "y": 500
+      },
+      "params": {},
+      "parentId": "t08_region"
+    },
+    {
+      "id": "t08_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 392,
+        "y": 200
+      },
+      "params": {
+        "w": 28,
+        "h": 28
+      },
+      "parentId": "t08_region",
+      "portValues": {
+        "w": 28,
+        "h": 28
+      }
+    },
+    {
+      "id": "t08_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1512,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t08_ell-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 332,
+        "y": 200
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "t08_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_28",
+      "source": "t08_pal",
+      "target": "t08_cyc",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_29",
+      "source": "t08_count",
+      "target": "t08_cyc",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_30",
+      "source": "t08_grid",
+      "target": "t08_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_31",
+      "source": "t08_cyc",
+      "target": "t08_region",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_32",
+      "source": "t08_region",
+      "target": "t08_split",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_33",
+      "source": "t08_split",
+      "target": "t08_ell-xy0",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_34",
+      "source": "t08_split",
+      "target": "t08_ell-xy0",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_35",
+      "source": "t08_region",
+      "target": "t08_fill",
+      "sourceHandle": "out-c",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_36",
+      "source": "t08_fill",
+      "target": "t08_ell",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_37",
+      "source": "t08_ell",
+      "target": "t08_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_38",
+      "source": "t08_region",
+      "target": "t08_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t08_ell-xy0",
+      "source": "t08_ell-xy0",
+      "target": "t08_ell",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

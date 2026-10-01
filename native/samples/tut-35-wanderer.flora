@@ -1,0 +1,158 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "35 · Wanderer (random drift)",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t35_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -644,
+        "y": 0
+      },
+      "params": {
+        "text": "Smooth random drift\n\n`random/wanderer2d` is a vec2 source driven by time — same idea as Perlin, but it gives you a coordinate that wanders smoothly around an area.\n\nIdeal for \"natural\" motion: floating particles, eyes, idle animations.",
+        "width": 440,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Smooth random drift\n\n`random/wanderer2d` is a vec2 source driven by time — same idea as Perlin, but it gives you a coordinate that wanders smoothly around an area.\n\nIdeal for \"natural\" motion: floating particles, eyes, idle animations.",
+        "width": 440,
+        "height": 220
+      }
+    },
+    {
+      "id": "t35_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t35_w",
+      "defType": "random/wanderer2d",
+      "position": {
+        "x": 336,
+        "y": 0
+      },
+      "params": {
+        "speed": 0.5,
+        "area": 200,
+        "seed": 1
+      },
+      "portValues": {
+        "speed": 0.5,
+        "area": 200,
+        "seed": 1
+      }
+    },
+    {
+      "id": "t35_sp",
+      "defType": "vec2/split",
+      "position": {
+        "x": 616,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t35_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 896,
+        "y": 100
+      },
+      "params": {
+        "w": 60,
+        "h": 60
+      },
+      "portValues": {
+        "w": 60,
+        "h": 60
+      }
+    },
+    {
+      "id": "t35_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1204,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t35_ell-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 836,
+        "y": 100
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_288",
+      "source": "t35_t",
+      "target": "t35_w",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_289",
+      "source": "t35_w",
+      "target": "t35_sp",
+      "sourceHandle": "out-position",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_290",
+      "source": "t35_sp",
+      "target": "t35_ell-xy0",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_291",
+      "source": "t35_sp",
+      "target": "t35_ell-xy0",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_292",
+      "source": "t35_ell",
+      "target": "t35_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t35_ell-xy0",
+      "source": "t35_ell-xy0",
+      "target": "t35_ell",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

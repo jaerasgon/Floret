@@ -1,0 +1,141 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "38 · Image Adjust",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t38_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -616,
+        "y": 0
+      },
+      "params": {
+        "text": "Image adjustments\n\nImage filter nodes are pipelines: image in, image out. Chain them like styles.\n\nload → adjust (brightness/contrast/saturation/hue) → draw. Tweak the inputs to see the change immediately.",
+        "width": 420,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Image adjustments\n\nImage filter nodes are pipelines: image in, image out. Chain them like styles.\n\nload → adjust (brightness/contrast/saturation/hue) → draw. Tweak the inputs to see the change immediately.",
+        "width": 420,
+        "height": 200
+      }
+    },
+    {
+      "id": "t38_url",
+      "defType": "io/image-url",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t38_adj",
+      "defType": "image/adjust",
+      "position": {
+        "x": 392,
+        "y": 0
+      },
+      "params": {
+        "brightness": 1.2,
+        "contrast": 1.3,
+        "saturate": 1.5,
+        "hue": 30
+      },
+      "portValues": {
+        "brightness": 1.2,
+        "contrast": 1.3,
+        "saturate": 1.5,
+        "hue": 30
+      }
+    },
+    {
+      "id": "t38_draw",
+      "defType": "draw/image",
+      "position": {
+        "x": 728,
+        "y": 100
+      },
+      "params": {
+        "x": 0,
+        "y": 0,
+        "w": 320,
+        "h": 320
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0,
+        "w": 320,
+        "h": 320
+      }
+    },
+    {
+      "id": "t38_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1092,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t38_draw-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 668,
+        "y": 100
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_304",
+      "source": "t38_url",
+      "target": "t38_adj",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_305",
+      "source": "t38_adj",
+      "target": "t38_draw",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_306",
+      "source": "t38_draw",
+      "target": "t38_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t38_draw-xy0",
+      "source": "t38_draw-xy0",
+      "target": "t38_draw",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

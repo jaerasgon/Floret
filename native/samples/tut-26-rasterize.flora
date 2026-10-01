@@ -1,0 +1,212 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "26 · Rasterize (Layer → Image)",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t26_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -616,
+        "y": 0
+      },
+      "params": {
+        "text": "Rasterising layers to bitmaps\n\n`image/from-layer` (Rasterize) draws a layer onto an offscreen canvas and outputs it as an image. Once you're in image-land you can sample, filter, blend, save, …\n\nHere: a fibonacci scatter rasterised at 256×256 and then displayed back via draw/image.",
+        "width": 420,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Rasterising layers to bitmaps\n\n`image/from-layer` (Rasterize) draws a layer onto an offscreen canvas and outputs it as an image. Once you're in image-land you can sample, filter, blend, save, …\n\nHere: a fibonacci scatter rasterised at 256×256 and then displayed back via draw/image.",
+        "width": 420,
+        "height": 240
+      }
+    },
+    {
+      "id": "t26_fib",
+      "defType": "spread/fibonacci",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "count": 200,
+        "scale": 10,
+        "phase": 0
+      },
+      "portValues": {
+        "count": 200,
+        "scale": 10,
+        "phase": 0
+      }
+    },
+    {
+      "id": "t26_col",
+      "defType": "color/color",
+      "position": {
+        "x": 84,
+        "y": 500
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 250,
+        "g": 200,
+        "b": 60,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 250,
+        "g": 200,
+        "b": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "t26_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 364,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "t26_poly",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 364,
+        "y": 0
+      },
+      "params": {
+        "closed": false
+      },
+      "portValues": {
+        "closed": false
+      }
+    },
+    {
+      "id": "t26_rast",
+      "defType": "image/from-layer",
+      "position": {
+        "x": 644,
+        "y": 150
+      },
+      "params": {
+        "w": 256,
+        "h": 256
+      },
+      "portValues": {
+        "w": 256,
+        "h": 256
+      }
+    },
+    {
+      "id": "t26_draw",
+      "defType": "draw/image",
+      "position": {
+        "x": 896,
+        "y": 150
+      },
+      "params": {
+        "x": 0,
+        "y": 0,
+        "w": 200,
+        "h": 200
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0,
+        "w": 200,
+        "h": 200
+      }
+    },
+    {
+      "id": "t26_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1204,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t26_draw-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 836,
+        "y": 150
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_211",
+      "source": "t26_fib",
+      "target": "t26_poly",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_212",
+      "source": "t26_col",
+      "target": "t26_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_213",
+      "source": "t26_fill",
+      "target": "t26_poly",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_214",
+      "source": "t26_poly",
+      "target": "t26_rast",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_215",
+      "source": "t26_rast",
+      "target": "t26_draw",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_216",
+      "source": "t26_draw",
+      "target": "t26_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t26_draw-xy0",
+      "source": "t26_draw-xy0",
+      "target": "t26_draw",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

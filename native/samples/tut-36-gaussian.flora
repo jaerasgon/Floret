@@ -1,0 +1,261 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "36 · Gaussian Scatter",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t36_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -644,
+        "y": 0
+      },
+      "params": {
+        "text": "Gaussian (bell-curve) random\n\n`random/gaussian` clusters samples around `mean` with standard deviation `sd`. Unlike Uniform (flat), most samples land near the mean — perfect for \"natural\" scatter.\n\n200 dots placed with mean=0, sd=80. See the cluster in the centre.",
+        "width": 440,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Gaussian (bell-curve) random\n\n`random/gaussian` clusters samples around `mean` with standard deviation `sd`. Unlike Uniform (flat), most samples land near the mean — perfect for \"natural\" scatter.\n\n200 dots placed with mean=0, sd=80. See the cluster in the centre.",
+        "width": 440,
+        "height": 220
+      }
+    },
+    {
+      "id": "t36_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "count": 200
+      },
+      "portValues": {
+        "count": 200
+      }
+    },
+    {
+      "id": "t36_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 448,
+        "y": 0
+      },
+      "params": {
+        "width": 756,
+        "height": 700,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 756,
+      "height": 700
+    },
+    {
+      "id": "t36_sx",
+      "defType": "math/add",
+      "position": {
+        "x": 56,
+        "y": 100
+      },
+      "params": {
+        "b": 0,
+        "valueType": "number"
+      },
+      "parentId": "t36_region",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "t36_sy",
+      "defType": "math/add",
+      "position": {
+        "x": 56,
+        "y": 250
+      },
+      "params": {
+        "b": 1000,
+        "valueType": "number"
+      },
+      "parentId": "t36_region",
+      "portValues": {
+        "b": 1000
+      }
+    },
+    {
+      "id": "t36_gx",
+      "defType": "random/gaussian",
+      "position": {
+        "x": 280,
+        "y": 100
+      },
+      "params": {
+        "mean": 0,
+        "sd": 80
+      },
+      "parentId": "t36_region",
+      "portValues": {
+        "mean": 0,
+        "sd": 80
+      }
+    },
+    {
+      "id": "t36_gy",
+      "defType": "random/gaussian",
+      "position": {
+        "x": 280,
+        "y": 250
+      },
+      "params": {
+        "mean": 0,
+        "sd": 80
+      },
+      "parentId": "t36_region",
+      "portValues": {
+        "mean": 0,
+        "sd": 80
+      }
+    },
+    {
+      "id": "t36_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 503.99999999999994,
+        "y": 200
+      },
+      "params": {
+        "w": 8,
+        "h": 8
+      },
+      "parentId": "t36_region",
+      "portValues": {
+        "w": 8,
+        "h": 8
+      }
+    },
+    {
+      "id": "t36_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1260,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t36_ell-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 443.99999999999994,
+        "y": 200
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "t36_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_293",
+      "source": "t36_range",
+      "target": "t36_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_294",
+      "source": "t36_region",
+      "target": "t36_sx",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_295",
+      "source": "t36_region",
+      "target": "t36_sy",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_296",
+      "source": "t36_sx",
+      "target": "t36_gx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-seed"
+    },
+    {
+      "id": "e_297",
+      "source": "t36_sy",
+      "target": "t36_gy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-seed"
+    },
+    {
+      "id": "e_298",
+      "source": "t36_gx",
+      "target": "t36_ell-xy0",
+      "sourceHandle": "out-sample",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_299",
+      "source": "t36_gy",
+      "target": "t36_ell-xy0",
+      "sourceHandle": "out-sample",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_300",
+      "source": "t36_ell",
+      "target": "t36_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_301",
+      "source": "t36_region",
+      "target": "t36_renderer",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t36_ell-xy0",
+      "source": "t36_ell-xy0",
+      "target": "t36_ell",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

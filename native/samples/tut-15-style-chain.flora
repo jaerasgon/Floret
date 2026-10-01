@@ -1,0 +1,193 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "15 · Style Chains",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t15_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -560,
+        "y": 0
+      },
+      "params": {
+        "text": "Chaining styles\n\nEvery style node has a `base` input. Wire one style INTO another's `base` and the second layers its override on top.\n\nFill (yellow) → Stroke (black, 6px) → Rect. The rectangle has both fill AND stroke.",
+        "width": 380,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Chaining styles\n\nEvery style node has a `base` input. Wire one style INTO another's `base` and the second layers its override on top.\n\nFill (yellow) → Stroke (black, 6px) → Rect. The rectangle has both fill AND stroke.",
+        "width": 380,
+        "height": 220
+      }
+    },
+    {
+      "id": "t15_colF",
+      "defType": "color/color",
+      "position": {
+        "x": 84,
+        "y": 0
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 250,
+        "g": 200,
+        "b": 60,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 250,
+        "g": 200,
+        "b": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "t15_colS",
+      "defType": "color/color",
+      "position": {
+        "x": 84,
+        "y": 500
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 30,
+        "g": 30,
+        "b": 30,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 30,
+        "g": 30,
+        "b": 30,
+        "a": 255
+      }
+    },
+    {
+      "id": "t15_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 364,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t15_stroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 644,
+        "y": 250
+      },
+      "params": {
+        "width": 6
+      },
+      "portValues": {
+        "width": 6
+      }
+    },
+    {
+      "id": "t15_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 979.9999999999999,
+        "y": 300
+      },
+      "params": {
+        "x": -100,
+        "y": -100,
+        "w": 200,
+        "h": 200
+      },
+      "portValues": {
+        "x": -100,
+        "y": -100,
+        "w": 200,
+        "h": 200
+      }
+    },
+    {
+      "id": "t15_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1288,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t15_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 919.9999999999999,
+        "y": 300
+      },
+      "params": {
+        "x": -100,
+        "y": -100
+      },
+      "portValues": {
+        "x": -100,
+        "y": -100
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_78",
+      "source": "t15_colF",
+      "target": "t15_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_79",
+      "source": "t15_colS",
+      "target": "t15_stroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_80",
+      "source": "t15_fill",
+      "target": "t15_stroke",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_81",
+      "source": "t15_stroke",
+      "target": "t15_rect",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_82",
+      "source": "t15_rect",
+      "target": "t15_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t15_rect-xy0",
+      "source": "t15_rect-xy0",
+      "target": "t15_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

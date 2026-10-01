@@ -41,6 +41,7 @@ pub mod time;
 pub mod transform;
 pub mod value;
 pub mod vec2;
+pub mod video;
 
 #[derive(Default)]
 pub struct Registrar {
@@ -92,6 +93,7 @@ fn registry() -> &'static Registrar {
         transform::register(&mut r);
         value::register(&mut r);
         vec2::register(&mut r);
+        video::register(&mut r);
         r
     })
 }

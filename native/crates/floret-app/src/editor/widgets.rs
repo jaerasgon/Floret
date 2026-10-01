@@ -25,6 +25,8 @@ pub enum Custom {
     Probe,
     File,
     Svg,
+    /// `video/*`: a picked video, referenced by path.
+    Video,
 }
 
 /// An arity stepper: which param it drives and its bounds.
@@ -66,6 +68,7 @@ pub fn custom_of(def_type: &str) -> Option<Custom> {
         "meta/probe" => Custom::Probe,
         "io/file" => Custom::File,
         "io/svg" => Custom::Svg,
+        t if is_video(t) => Custom::Video,
         "math/add" | "math/sub" | "math/mul" | "math/div" | "math/min" | "math/max"
         | "spread/merge" | "transform/group" => Custom::Slots(GROUP_SLOTS),
         _ => return None,
@@ -418,7 +421,8 @@ pub fn mime_for(name: &str) -> &'static str {
         "ogg" => "audio/ogg",
         "flac" => "audio/flac",
         "m4a" => "audio/mp4",
-        "mp4" => "video/mp4",
+        "mp4" | "m4v" => "video/mp4",
+        "mov" => "video/quicktime",
         "webm" => "video/webm",
         "json" => "application/json",
         "csv" => "text/csv",
@@ -466,6 +470,9 @@ pub fn file_params(def_type: &str, name: &str, bytes: &[u8]) -> Option<Vec<(Stri
 
 /// Params that clear a picked file.
 pub fn clear_file_params(def_type: &str) -> Vec<(String, Json)> {
+    if is_video(def_type) {
+        return vec![("url".to_owned(), json!(""))];
+    }
     let mut keys = vec!["dataUrl", "filename"];
     if def_type != "io/svg" {
         keys.push("mimeType");
@@ -473,6 +480,48 @@ pub fn clear_file_params(def_type: &str) -> Vec<(String, Json)> {
     keys.into_iter()
         .map(|k| (k.to_owned(), json!("")))
         .collect()
+}
+
+// ─── Video ──────────────────────────────────────────────────────────────────
+
+pub fn is_video(def_type: &str) -> bool {
+    matches!(def_type, "video/file" | "video/frame-at")
+}
+
+/// What the video file picker offers.
+pub const VIDEO_EXTENSIONS: &[&str] = &["mp4", "m4v", "mov"];
+
+/// The params a picked / dropped video writes: its path (videos are too
+/// big to copy into the patch), or a data URL when there's no path.
+pub fn video_params(
+    path: Option<&std::path::Path>,
+    bytes: Option<&[u8]>,
+    name: &str,
+) -> Option<Vec<(String, Json)>> {
+    let url = match (path, bytes) {
+        (Some(p), _) if !p.as_os_str().is_empty() => p.to_string_lossy().into_owned(),
+        (_, Some(b)) => data_url(mime_for(name), b),
+        _ => return None,
+    };
+    Some(vec![("url".to_owned(), json!(url))])
+}
+
+/// The picked video's name for the node body: its file name, or
+/// "embedded video" for a data URL.
+pub fn video_name(n: &PatchNode) -> Option<String> {
+    let url = param_str(n, "url", "").trim();
+    if url.is_empty() {
+        None
+    } else if url.starts_with("data:") {
+        Some("embedded video".into())
+    } else {
+        let path = url.strip_prefix("file://").unwrap_or(url);
+        Some(
+            std::path::Path::new(path)
+                .file_name()
+                .map_or_else(|| path.to_owned(), |f| f.to_string_lossy().into_owned()),
+        )
+    }
 }
 
 // ─── Comment ────────────────────────────────────────────────────────────────
@@ -675,6 +724,20 @@ mod tests {
         assert_eq!(format_bytes(12), "12 B");
         assert_eq!(format_bytes(1536), "1.5 KB");
         assert_eq!(format_bytes(3 * 1024 * 1024), "3.0 MB");
+        let v = with("video/file", json!({ "url": "/clips/sea.mov" }));
+        assert_eq!(custom_of("video/file"), Some(Custom::Video));
+        assert_eq!(video_name(&v).as_deref(), Some("sea.mov"));
+        let v = with("video/file", json!({ "url": "data:video/mp4;base64,AAAA" }));
+        assert_eq!(video_name(&v).as_deref(), Some("embedded video"));
+        assert_eq!(video_name(&with("video/file", json!({}))), None);
+        let p = video_params(Some(std::path::Path::new("/a/b.mp4")), None, "").unwrap();
+        assert_eq!(p[0].1, json!("/a/b.mp4"));
+        let p = video_params(None, Some(b"x"), "b.mp4").unwrap();
+        assert_eq!(p[0].1, json!("data:video/mp4;base64,eA=="));
+        assert_eq!(
+            clear_file_params("video/frame-at"),
+            vec![("url".into(), json!(""))]
+        );
         let p = file_params("io/file", "a.png", b"x").unwrap();
         assert_eq!(p[2], ("mimeType".to_owned(), json!("image/png")));
         assert!(file_params("io/svg", "a.png", b"x").is_none());

@@ -21,6 +21,7 @@ This replaces issue #30 ("Native kiosk shell (Electron / Tauri)", closed).
 | Editor | ✅ wiring, selection, undo, regions and subpatches, inline editing, custom node UIs, docking panels |
 | App shell | ✅ files, autosave + crash recovery, menus, preferences, light theme, welcome screen, library |
 | Media | ✅ sound (cpal), MIDI, camera, body tracking (MediaPipe models in a pure-Rust TFLite interpreter); needs testing on real devices |
+| Video | ✅ video files as images (`video/file`, `video/frame-at`, #38): H.264 MP4 / MOV everywhere, plus HEVC / ProRes on macOS; no audio yet |
 | Release | ⏳ performance pass, port-name freeze, README, packaging, QA |
 
 ---
@@ -65,6 +66,7 @@ browser calls.
 | Camera | `getUserMedia` | **`nokhwa`** (AVFoundation / Media Foundation / V4L2) |
 | Tracking | MediaPipe JS/WASM | **Built-in TFLite interpreter** (`floret-input`, pure Rust + `matrixmultiply`) running the *same* `.task` model files the web app vendors in `public/mediapipe/models/`, embedded in the binary — identical hand/face/pose point sets, no conversion, no native runtime to ship. MediaPipe's detect → crop → track glue (ROI tracking, one-euro smoothing) re-implemented; within ~1 px of MediaPipe on test photos. (Chosen over `ort`: needs a TFLite→ONNX conversion and ships a native library; `tract-tflite` lacks ops these models use) |
 | MIDI | Web MIDI | **`midir`** |
+| Video files | — (new) | **`floret-video`**: MP4 / MOV demuxed by **`re_mp4`** (pure Rust) and H.264 decoded by **OpenH264** compiled from the `openh264` crate's bundled source (BSD), the same on every OS; on macOS **AVFoundation** (`objc2` bindings, VideoToolbox) decodes first, so HEVC, ProRes and anything QuickTime plays work too. Nothing to install, no system FFmpeg. Windows / Linux play H.264 only. Audio tracks are ignored for now |
 | Send/Receive bus | Vite dev-server relay | **dropped** (it existed for the e-ink relay, which is out of scope) |
 | Settings / library | localStorage | files in the per-OS app data dir (`directories` crate) |
 | Updates & installers | — | **`cargo-dist`** or **Velopack**: `.dmg` / `.msi` / AppImage + auto-update |
@@ -91,6 +93,7 @@ native/
     floret-render/   wgpu renderer for the scene IR, shaders, texture export
     floret-media/    audio (cpal), camera, tracking (ort), MIDI, bus server
     floret-input/    MIDI (midir), camera (nokhwa), hand/face/pose tracking
+    floret-video/    video files: MP4 demux, OpenH264 / AVFoundation decoding
     floret-app/      egui app: editor canvas, panels, menus, documents
   fixtures/          golden fixtures exported from the TS app (see §4)
 ```

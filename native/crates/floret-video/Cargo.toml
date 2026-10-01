@@ -1,0 +1,25 @@
+[package]
+name = "floret-video"
+description = "Floret video file playback behind the engine's video provider: MP4 demux (re_mp4), H.264 via OpenH264, and AVFoundation on macOS."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+rust-version = "1.92"
+
+[features]
+default = ["openh264"]
+# H.264 decoding (and the test-clip encoder) from OpenH264's bundled source.
+openh264 = ["dep:openh264"]
+
+[dependencies]
+floret-engine = { path = "../floret-engine" }
+re_mp4 = "0.5"
+openh264 = { version = "0.9", optional = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSArray", "NSDictionary", "NSError", "NSObject", "NSString", "NSURL", "NSValue", "objc2-core-foundation"] }
+objc2-av-foundation = { version = "0.3", default-features = false, features = ["std", "AVAsset", "AVAssetReader", "AVAssetReaderOutput", "AVAssetTrack", "AVMediaFormat", "objc2-core-foundation", "objc2-core-media"] }
+objc2-core-media = { version = "0.3", default-features = false, features = ["std", "CMBase", "CMSampleBuffer", "CMTime", "CMTimeRange", "objc2-core-video"] }
+objc2-core-video = { version = "0.3", default-features = false, features = ["std", "CVBase", "CVBuffer", "CVImageBuffer", "CVPixelBuffer", "CVReturn"] }

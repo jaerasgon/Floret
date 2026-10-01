@@ -263,6 +263,15 @@ Image manipulation. The `image` wire carries an `HTMLCanvasElement` — either l
 | **Blend** · `image/blend` | `a, b: image, sx, sy, sw, sh, dx, dy, dw, dh: number` → `image: image` | Composite B into A at `(dx, dy, dw, dh)` from B's `(sx, sy, sw, sh)` region with the chosen blend mode. `mode` param: normal / add / darken / lighten / difference / exclusion / multiply / screen / overlay / hard-light / soft-light / dodge / burn. Output sized to A. |
 | **FromLayer** · `image/from-layer` | `layer: layer*, w, h: number` → `image: image` | Render a Layer (spread) into an offscreen p5.Graphics and emit it as an `image`. The bridge from drawing to data — unlocks feedback loops and using patch output as a texture. |
 
+## Video
+
+Video files as images (native app only). Frames come out on the `image` wire like any other image, so `draw/image` and the Image / Pixel nodes take them directly. MP4 / MOV with H.264 plays everywhere; on macOS anything QuickTime plays (HEVC, ProRes, …). Audio tracks are ignored. The file is referenced by path (pick it on the node), not copied into the patch.
+
+| Label · type | Inputs → Outputs | Description |
+|---|---|---|
+| **VideoFile** · `video/file` | `url: string, play, loop: boolean, speed, scrub: number` → `image: image, time, duration, width, height: number, ready: boolean` | Play a video file. `speed` is a rate (negative plays backwards). Wiring a 0..1 number into `scrub` overrides playback and holds that position; unwire it and playback carries on from there. The playhead survives patch edits and restarts with the transport. `ready` is false until the first frame is decoded. |
+| **VideoFrameAt** · `video/frame-at` | `url: string, time: number` → `image: image, duration, width, height: number, ready: boolean` | One frame of a video at `time` seconds, without playback: random access for stills, contact sheets or sensor-driven scrubbing in seconds. |
+
 ## Style
 
 Style nodes output a `Style` (a function that sets p5 drawing state). Chain them via `base`: the base style runs first, then the node's override.

@@ -11721,6 +11721,139 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null
+  },
+  {
+   "type": "video/file",
+   "category": "Video",
+   "label": "VideoFile",
+   "description": "Play a video file (MP4 / MOV) as an image. Pick a file on the node; `scrub` (0..1) overrides playback while wired.",
+   "inputs": [
+    {
+     "name": "url",
+     "type": "string",
+     "kind": "single",
+     "default": "",
+     "param": "url"
+    },
+    {
+     "name": "play",
+     "type": "boolean",
+     "kind": "single",
+     "default": true
+    },
+    {
+     "name": "loop",
+     "type": "boolean",
+     "kind": "single",
+     "default": true
+    },
+    {
+     "name": "speed",
+     "type": "number",
+     "kind": "single",
+     "default": 1
+    },
+    {
+     "name": "scrub",
+     "type": "number",
+     "kind": "single",
+     "default": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "image",
+     "type": "image",
+     "kind": "single"
+    },
+    {
+     "name": "time",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "duration",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "width",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "height",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "ready",
+     "type": "boolean",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "url": ""
+   },
+   "paramOptions": null,
+   "effectful": true
+  },
+  {
+   "type": "video/frame-at",
+   "category": "Video",
+   "label": "VideoFrameAt",
+   "description": "One frame of a video file at `time` seconds: random access without playback.",
+   "inputs": [
+    {
+     "name": "url",
+     "type": "string",
+     "kind": "single",
+     "default": "",
+     "param": "url"
+    },
+    {
+     "name": "time",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    }
+   ],
+   "outputs": [
+    {
+     "name": "image",
+     "type": "image",
+     "kind": "single"
+    },
+    {
+     "name": "duration",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "width",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "height",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "ready",
+     "type": "boolean",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "url": ""
+   },
+   "paramOptions": null,
+   "effectful": true
   }
  ]
 }

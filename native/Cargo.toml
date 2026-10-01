@@ -28,6 +28,10 @@ opt-level = 3
 [profile.dev.package.floret-input]
 opt-level = 3
 
+# Per-pixel frame conversion keeps up with playback in debug builds too.
+[profile.dev.package.floret-video]
+opt-level = 3
+
 # `./floret.sh` builds with this: optimised like release, but incremental so
 # a rebuild after a pull only recompiles what changed.
 [profile.fast]

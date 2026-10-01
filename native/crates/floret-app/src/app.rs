@@ -106,6 +106,7 @@ impl App {
         let prefs = Prefs::load();
         theme::apply(&cc.egui_ctx, prefs.theme.egui());
         devices::install();
+        floret_video::install();
         cc.egui_ctx.options_mut(|o| o.zoom_with_keyboard = false);
         cc.egui_ctx.set_zoom_factor(prefs.ui_scale);
         let gpu_name = cc.wgpu_render_state.as_ref().map_or_else(

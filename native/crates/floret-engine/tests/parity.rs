@@ -901,7 +901,14 @@ fn probe_functions_like_exporter(outputs: &Outputs) {
 
 // ─── Test entry ──────────────────────────────────────────────────────────────
 
+/// Samples with a recorded TypeScript trace. Native-only samples (nodes
+/// the web app never had) have none and aren't compared.
 fn sample_ids() -> Vec<String> {
+    let traced = |id: &String| {
+        native_dir()
+            .join(format!("fixtures/traces/{id}.json.gz"))
+            .exists()
+    };
     let mut ids: Vec<String> = std::fs::read_dir(native_dir().join("samples"))
         .expect("samples dir")
         .filter_map(|e| e.ok())
@@ -911,12 +918,7 @@ fn sample_ids() -> Vec<String> {
                 .strip_suffix(".flora")
                 .map(str::to_owned)
         })
-        // Native-only samples have no TypeScript trace to compare with.
-        .filter(|id| {
-            native_dir()
-                .join(format!("fixtures/traces/{id}.json.gz"))
-                .exists()
-        })
+        .filter(traced)
         .collect();
     ids.sort();
     if let Ok(only) = std::env::var("PARITY_ONLY") {

@@ -142,6 +142,8 @@ pub fn render_sample(
     flora: &str,
 ) -> Option<Rgba> {
     let run = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        // Off the UI thread: video nodes may wait for their frames.
+        let _wait = floret_engine::video::wait_for_frames();
         let (mut engine, _) = Engine::load_with_warnings(flora).ok()?;
         engine.set_host(Some(crate::host::shared()));
         let r = engine.graph.renderer()?;

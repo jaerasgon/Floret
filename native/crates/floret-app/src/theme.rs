@@ -141,7 +141,7 @@ pub fn category_color(category: &str) -> Color32 {
         // Time and change: sage.
         "time" | "motion" | "state" | "noise" => (140.0, 0.20),
         // Media and devices: dusty rose.
-        "image" | "pixel" | "sound" | "input" | "io" | "gpu" => (345.0, 0.24),
+        "image" | "pixel" | "video" | "sound" | "input" | "io" | "gpu" => (345.0, 0.24),
         // Simulation: muted teal.
         "particles" | "force" | "collider" | "physics" => (180.0, 0.22),
         // Structure (regions, comments, probes): neutral.

@@ -9,7 +9,7 @@ use floret_engine::patch::{parse_handle, Handle, PatchFile, PortDirection};
 use floret_engine::spec::{Catalogue, NodeSpec};
 use floret_engine::tick::Outputs;
 use floret_engine::{Engine, Value};
-use std::collections::HashMap;
+use indexmap::IndexMap;
 
 const NODE_W: f32 = 168.0;
 const HEADER_H: f32 = 26.0;
@@ -22,6 +22,9 @@ pub struct View {
     pub zoom: f32,
     pub selected: Option<String>,
     dragging: Option<String>,
+    /// Nodes raised above patch order (most recent last): selecting or
+    /// dragging a node brings it to the front.
+    raised: Vec<String>,
 }
 
 impl Default for View {
@@ -31,6 +34,7 @@ impl Default for View {
             zoom: 1.0,
             selected: None,
             dragging: None,
+            raised: Vec::new(),
         }
     }
 }
@@ -53,6 +57,28 @@ struct NodeBox {
 }
 
 impl View {
+    fn raise(&mut self, id: &str) {
+        self.raised.retain(|r| r != id);
+        self.raised.push(id.to_owned());
+    }
+
+    /// Non-region nodes back-to-front: patch order, raised nodes last.
+    fn draw_order<'a>(&self, boxes: &'a IndexMap<String, NodeBox>) -> Vec<&'a String> {
+        let mut order: Vec<&String> = boxes
+            .iter()
+            .filter(|(id, b)| !b.region && !self.raised.contains(id))
+            .map(|(id, _)| id)
+            .collect();
+        order.extend(
+            self.raised
+                .iter()
+                .filter_map(|r| boxes.get_key_value(r))
+                .filter(|(_, b)| !b.region)
+                .map(|(id, _)| id),
+        );
+        order
+    }
+
     fn to_screen(&self, origin: Pos2, p: Pos2) -> Pos2 {
         origin + (p.to_vec2() + self.pan) * self.zoom
     }
@@ -103,8 +129,8 @@ fn layout(
     cat: &Catalogue,
     view: &View,
     origin: Pos2,
-) -> HashMap<String, NodeBox> {
-    let mut boxes = HashMap::new();
+) -> IndexMap<String, NodeBox> {
+    let mut boxes = IndexMap::new();
     for n in &patch.nodes {
         let Some(spec) = cat.get(&n.def_type) else {
             continue;
@@ -236,12 +262,15 @@ pub fn show(
                 (view.pan.x * view.zoom).rem_euclid(step),
                 (view.pan.y * view.zoom).rem_euclid(step),
             );
-        let dot = FG_3.gamma_multiply(0.55);
+        // Subtle, and fading out as the grid gets dense when zoomed out.
+        let fade = ((step - 6.0) / 10.0).clamp(0.0, 1.0);
+        let dot = FG_3.gamma_multiply(0.28 * fade);
+        let radius = 0.8 * view.zoom.clamp(0.6, 1.2);
         let mut y = start.y;
         while y < area.bottom() {
             let mut x = start.x;
             while x < area.right() {
-                painter.circle_filled(pos2(x, y), 0.9, dot);
+                painter.circle_filled(pos2(x, y), radius, dot);
                 x += step;
             }
             y += step;
@@ -253,25 +282,30 @@ pub fn show(
 
     // ── Interaction: drag nodes, select, pan on empty space.
     let pointer = ui.input(|i| i.pointer.interact_pos());
+    // Hit-test front to back: nodes (topmost first), then region headers.
+    let order = view.draw_order(&boxes);
     let hit = |p: Pos2| -> Option<String> {
-        // Topmost: non-region nodes beat regions.
-        let mut best: Option<(&String, bool)> = None;
-        for (id, b) in &boxes {
-            let target = if b.region {
-                Rect::from_min_size(b.rect.min, vec2(b.rect.width(), HEADER_H * z))
-            } else {
-                b.rect
-            };
-            if target.contains(p) && (best.is_none() || best.is_some_and(|(_, r)| r && !b.region)) {
-                best = Some((id, b.region));
-            }
+        if let Some(id) = order
+            .iter()
+            .rev()
+            .find(|id| boxes[id.as_str()].rect.contains(p))
+        {
+            return Some((*id).clone());
         }
-        best.map(|(id, _)| id.clone())
+        boxes
+            .iter()
+            .rev()
+            .filter(|(_, b)| b.region)
+            .find(|(_, b)| {
+                Rect::from_min_size(b.rect.min, vec2(b.rect.width(), HEADER_H * z)).contains(p)
+            })
+            .map(|(id, _)| id.clone())
     };
     if resp.drag_started() {
-        view.dragging = pointer.and_then(hit);
-        if view.dragging.is_some() {
-            view.selected = view.dragging.clone();
+        view.dragging = pointer.and_then(&hit);
+        if let Some(id) = view.dragging.clone() {
+            view.raise(&id);
+            view.selected = Some(id);
         }
     }
     if resp.dragged() {
@@ -290,7 +324,10 @@ pub fn show(
         view.dragging = None;
     }
     if resp.clicked() {
-        view.selected = pointer.and_then(hit);
+        view.selected = pointer.and_then(&hit);
+        if let Some(id) = view.selected.clone() {
+            view.raise(&id);
+        }
     }
 
     // ── Regions (behind everything).
@@ -357,24 +394,31 @@ pub fn show(
         let out = outputs.get(idx)?.as_ref()?;
         Some(out.iter().map(format_spread).collect())
     };
-    for (id, b) in boxes.iter().filter(|(_, b)| !b.region) {
+    for id in view.draw_order(&boxes) {
+        let b = &boxes[id.as_str()];
         let selected = view.selected.as_ref() == Some(id);
         let r = CornerRadius::same((6.0 * z) as u8);
         if selected {
-            painter.rect_stroke(
-                b.rect.expand(3.0),
-                r,
-                Stroke::new(3.0, GOLD.gamma_multiply(0.25)),
-                egui::StrokeKind::Outside,
-            );
+            // Soft gold glow (the web app's --glow-gold), not a second ring.
+            let glow = egui::Shadow {
+                offset: [0, 0],
+                blur: 14,
+                spread: 0,
+                color: GOLD.gamma_multiply(0.22),
+            };
+            painter.add(glow.as_shape(b.rect, r));
         }
         painter.rect(
             b.rect,
             r,
             BG_2,
             Stroke::new(
-                if selected { 1.5 } else { 1.0 },
-                if selected { GOLD } else { BORDER },
+                1.0,
+                if selected {
+                    GOLD.gamma_multiply(0.85)
+                } else {
+                    BORDER
+                },
             ),
             egui::StrokeKind::Inside,
         );
@@ -446,7 +490,7 @@ pub fn show(
         }
     }
 
-    if resp.double_clicked() && pointer.and_then(hit).is_none() {
+    if resp.double_clicked() && pointer.and_then(&hit).is_none() {
         view.fit(patch, area);
     }
     let _ = painter.add(Shape::Noop);

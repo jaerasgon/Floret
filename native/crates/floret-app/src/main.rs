@@ -389,6 +389,20 @@ impl eframe::App for App {
                 self.preview_rect = rect;
                 let t = self.start.elapsed().as_secs_f32();
                 preview::paint(ui, rect, t, egui::Vec2::ZERO);
+                // Until the scene renderer lands (#60) this is not the patch.
+                let tag = egui::Rect::from_min_size(
+                    rect.left_bottom() + vec2(8.0, -30.0),
+                    vec2(rect.width() - 16.0, 22.0),
+                );
+                ui.painter()
+                    .rect_filled(tag, 6.0, theme::BG_0.gamma_multiply(0.85));
+                ui.painter().text(
+                    tag.center(),
+                    egui::Align2::CENTER_CENTER,
+                    "Placeholder — the patch's scene isn't rendered yet",
+                    egui::FontId::proportional(11.0),
+                    theme::FG_1,
+                );
                 ui.painter().rect_stroke(
                     rect,
                     egui::CornerRadius::same(6),

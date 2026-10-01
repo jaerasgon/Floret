@@ -1,0 +1,605 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Weight Wave",
+    "createdAt": "2026-10-01T00:00:00.000Z",
+    "modifiedAt": "2026-10-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ww_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -900,
+        "y": -120
+      },
+      "params": {
+        "text": "Variable-font weight wave\n\nSeven rows of the same word in Roboto Flex (bundled, OFL). style/font-variations sets each row’s weight (wght) and width (wdth) from sin(time − row · 0.55), so a wave of weight rolls down the stack. The engine shapes every row at its axis values, so letters reflow as they swell.",
+        "width": 460,
+        "height": 230
+      },
+      "portValues": {
+        "text": "Variable-font weight wave\n\nSeven rows of the same word in Roboto Flex (bundled, OFL). style/font-variations sets each row’s weight (wght) and width (wdth) from sin(time − row · 0.55), so a wave of weight rolls down the stack. The engine shapes every row at its axis values, so letters reflow as they swell.",
+        "width": 460,
+        "height": 230
+      }
+    },
+    {
+      "id": "ww_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": -900,
+        "y": 200
+      },
+      "params": {}
+    },
+    {
+      "id": "ww_rows",
+      "defType": "spread/range",
+      "position": {
+        "x": -900,
+        "y": 360
+      },
+      "params": {},
+      "portValues": {
+        "count": 7
+      }
+    },
+    {
+      "id": "ww_bg",
+      "defType": "color/color",
+      "position": {
+        "x": -900,
+        "y": 520
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 16,
+        "g": 14,
+        "b": 22,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 16,
+        "g": 14,
+        "b": 22,
+        "a": 255
+      }
+    },
+    {
+      "id": "ww_reg",
+      "defType": "region/foreach",
+      "position": {
+        "x": -560,
+        "y": -120
+      },
+      "params": {
+        "width": 1500,
+        "height": 900,
+        "label": "ForEach row"
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input"
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output"
+        }
+      ],
+      "width": 1500,
+      "height": 900
+    },
+    {
+      "id": "ww_pt",
+      "defType": "math/mul",
+      "position": {
+        "x": -500,
+        "y": -40
+      },
+      "params": {
+        "valueType": "number",
+        "b": 2.2
+      },
+      "portValues": {
+        "b": 2.2
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_pi",
+      "defType": "math/mul",
+      "position": {
+        "x": -500,
+        "y": 100
+      },
+      "params": {
+        "valueType": "number",
+        "b": 0.55
+      },
+      "portValues": {
+        "b": 0.55
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_ph",
+      "defType": "math/sub",
+      "position": {
+        "x": -280,
+        "y": 20
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_sin",
+      "defType": "math/sin",
+      "position": {
+        "x": -60,
+        "y": -40
+      },
+      "params": {},
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_cos",
+      "defType": "math/cos",
+      "position": {
+        "x": -60,
+        "y": 100
+      },
+      "params": {},
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_wamp",
+      "defType": "math/mul",
+      "position": {
+        "x": 140,
+        "y": -40
+      },
+      "params": {
+        "valueType": "number",
+        "b": 430
+      },
+      "portValues": {
+        "b": 430
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_w",
+      "defType": "math/add",
+      "position": {
+        "x": 340,
+        "y": -40
+      },
+      "params": {
+        "valueType": "number",
+        "b": 540
+      },
+      "portValues": {
+        "b": 540
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_damp",
+      "defType": "math/mul",
+      "position": {
+        "x": 140,
+        "y": 100
+      },
+      "params": {
+        "valueType": "number",
+        "b": -38
+      },
+      "portValues": {
+        "b": -38
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_wd",
+      "defType": "math/add",
+      "position": {
+        "x": 340,
+        "y": 100
+      },
+      "params": {
+        "valueType": "number",
+        "b": 100
+      },
+      "portValues": {
+        "b": 100
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_y0",
+      "defType": "math/sub",
+      "position": {
+        "x": -500,
+        "y": 300
+      },
+      "params": {
+        "valueType": "number",
+        "b": 3
+      },
+      "portValues": {
+        "b": 3
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_y",
+      "defType": "math/mul",
+      "position": {
+        "x": -280,
+        "y": 300
+      },
+      "params": {
+        "valueType": "number",
+        "b": 66
+      },
+      "portValues": {
+        "b": 66
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_pos",
+      "defType": "vec2/make",
+      "position": {
+        "x": -60,
+        "y": 300
+      },
+      "params": {},
+      "portValues": {
+        "x": 0
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_hue",
+      "defType": "math/mul",
+      "position": {
+        "x": -500,
+        "y": 500
+      },
+      "params": {
+        "valueType": "number",
+        "b": 16
+      },
+      "portValues": {
+        "b": 16
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_hue2",
+      "defType": "math/add",
+      "position": {
+        "x": -280,
+        "y": 500
+      },
+      "params": {
+        "valueType": "number",
+        "b": 190
+      },
+      "portValues": {
+        "b": 190
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_col",
+      "defType": "color/color",
+      "position": {
+        "x": -60,
+        "y": 500
+      },
+      "params": {
+        "mode": "hsl",
+        "h": 190,
+        "s": 75,
+        "l": 70,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "h": 190,
+        "s": 75,
+        "l": 70,
+        "a": 255
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 140,
+        "y": 500
+      },
+      "params": {},
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_tp",
+      "defType": "style/text-params",
+      "position": {
+        "x": 340,
+        "y": 380
+      },
+      "params": {
+        "font": "Roboto Flex",
+        "bold": false,
+        "italic": false,
+        "align": "center",
+        "baseline": "middle",
+        "kerning": 0,
+        "lineSpacing": 1.2
+      },
+      "portValues": {
+        "font": "Roboto Flex",
+        "bold": false,
+        "italic": false,
+        "align": "center",
+        "baseline": "middle",
+        "kerning": 0,
+        "lineSpacing": 1.2
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_fv",
+      "defType": "style/font-variations",
+      "position": {
+        "x": 560,
+        "y": 120
+      },
+      "params": {
+        "axis": ""
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_txt",
+      "defType": "draw/text",
+      "position": {
+        "x": 760,
+        "y": 260
+      },
+      "params": {
+        "string": "VARIABLE",
+        "size": 62,
+        "align": "center"
+      },
+      "portValues": {
+        "string": "VARIABLE",
+        "size": 62,
+        "align": "center"
+      },
+      "parentId": "ww_reg"
+    },
+    {
+      "id": "ww_out",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1100,
+        "y": 0
+      },
+      "params": {
+        "width": 720,
+        "height": 540
+      },
+      "portValues": {
+        "width": 720,
+        "height": 540
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_ww_0",
+      "source": "ww_rows",
+      "target": "ww_reg",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_ww_1",
+      "source": "ww_t",
+      "target": "ww_pt",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ww_2",
+      "source": "ww_reg",
+      "target": "ww_pi",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ww_3",
+      "source": "ww_pt",
+      "target": "ww_ph",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ww_4",
+      "source": "ww_pi",
+      "target": "ww_ph",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_ww_5",
+      "source": "ww_ph",
+      "target": "ww_sin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_ww_6",
+      "source": "ww_ph",
+      "target": "ww_cos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_ww_7",
+      "source": "ww_sin",
+      "target": "ww_wamp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ww_8",
+      "source": "ww_wamp",
+      "target": "ww_w",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ww_9",
+      "source": "ww_cos",
+      "target": "ww_damp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ww_10",
+      "source": "ww_damp",
+      "target": "ww_wd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ww_11",
+      "source": "ww_reg",
+      "target": "ww_y0",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ww_12",
+      "source": "ww_y0",
+      "target": "ww_y",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ww_13",
+      "source": "ww_y",
+      "target": "ww_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_ww_14",
+      "source": "ww_reg",
+      "target": "ww_hue",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ww_15",
+      "source": "ww_hue",
+      "target": "ww_hue2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ww_16",
+      "source": "ww_hue2",
+      "target": "ww_col",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_ww_17",
+      "source": "ww_col",
+      "target": "ww_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_ww_18",
+      "source": "ww_fill",
+      "target": "ww_tp",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_ww_19",
+      "source": "ww_tp",
+      "target": "ww_fv",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_ww_20",
+      "source": "ww_w",
+      "target": "ww_fv",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-weight"
+    },
+    {
+      "id": "e_ww_21",
+      "source": "ww_wd",
+      "target": "ww_fv",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-width"
+    },
+    {
+      "id": "e_ww_22",
+      "source": "ww_fv",
+      "target": "ww_txt",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ww_23",
+      "source": "ww_pos",
+      "target": "ww_txt",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_ww_24",
+      "source": "ww_txt",
+      "target": "ww_reg",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_ww_25",
+      "source": "ww_reg",
+      "target": "ww_out",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_ww_26",
+      "source": "ww_bg",
+      "target": "ww_out",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    }
+  ]
+}

@@ -25,7 +25,8 @@ use crate::text::{TextKey, TextRasterizer};
 use floret_engine::image::Image;
 use floret_engine::particles::{ParticleBuffer, ParticleHandle, ParticleTemplate};
 use floret_engine::scene::{
-    catmull_rom_beziers, mul, resolve_box, translate_mat, Affine, Paint, ResolvedStyle, SceneNode,
+    catmull_rom_beziers, mul, resolve_box, translate_mat, Affine, GlyphRun, Paint, ResolvedStyle,
+    SceneNode,
 };
 use floret_engine::Vec2;
 use std::sync::Arc;
@@ -916,8 +917,45 @@ impl Emitter<'_> {
                 }
                 self.fb.push_shader(sh.clone(), sh.input.is_some());
             }
+            SceneNode::Glyphs(run) => self.glyphs(run, m),
             #[allow(unreachable_patterns)]
             _ => fb.skipped += 1,
+        }
+    }
+
+    /// A `text/*` glyph run: each glyph's cached bitmap as a quad turned
+    /// about the glyph's origin.
+    fn glyphs(&mut self, run: &GlyphRun, m: &Affine) {
+        for g in run.glyphs.iter() {
+            let Some(bmp) = self.text.glyph(g.face, g.id, run) else {
+                self.fb.skipped += 1;
+                continue;
+            };
+            let tint = if bmp.neutral {
+                paint_rgba(run.style.fill.as_ref())
+            } else {
+                [1.0; 4]
+            };
+            if tint[3] <= 0.0 {
+                continue;
+            }
+            let (s, c) = g.angle.sin_cos();
+            let at = |lx: f64, ly: f64| {
+                let (dx, dy) = (lx - bmp.left, ly - bmp.asc);
+                apply(m, g.x + dx * c - dy * s, g.y + dx * s + dy * c)
+            };
+            let q = [
+                at(0.0, 0.0),
+                at(bmp.w, 0.0),
+                at(0.0, bmp.h),
+                at(bmp.w, bmp.h),
+            ];
+            if q.iter().flatten().any(|v| !v.is_finite()) {
+                self.fb.skipped += 1;
+                continue;
+            }
+            self.fb
+                .push_tex_quad(q, [0.0, 0.0, 1.0, 1.0], tint, bmp.clone());
         }
     }
 
@@ -1117,6 +1155,7 @@ fn style_of(n: &SceneNode) -> Option<&Arc<ResolvedStyle>> {
         | SceneNode::Text { style, .. }
         | SceneNode::ParticleBatch { style, .. }
         | SceneNode::ParticleTrailBatch { style, .. } => Some(style),
+        SceneNode::Glyphs(run) => Some(&run.style),
         _ => None,
     }
 }

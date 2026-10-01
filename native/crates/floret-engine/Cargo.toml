@@ -15,6 +15,14 @@ indexmap.workspace = true
 # text uses the system fonts, embedded raster images are decoded by resvg.
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp", "bmp"] }
 resvg = { version = "0.48", default-features = false, features = ["text", "system-fonts", "raster-images"] }
+# Typography (`text.rs`): the font database, shaper and outline reader
+# cosmic-text uses in the renderer, so both sides share one set of faces.
+fontdb = "0.23"
+harfrust = "0.5"
+skrifa = "0.40"
+unicode-bidi = "0.3"
+# WOFF / WOFF2 font files.
+wuff = "0.2"
 
 [dev-dependencies]
 flate2.workspace = true

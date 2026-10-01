@@ -296,6 +296,7 @@ fn style(o: &Fx) -> Arc<ResolvedStyle> {
         text_baseline: st("textBaseline", &d.text_baseline),
         rect_mode: st("rectMode", &d.rect_mode),
         ellipse_mode: st("ellipseMode", &d.ellipse_mode),
+        ..(**d).clone()
     })
 }
 

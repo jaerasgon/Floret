@@ -27,6 +27,8 @@ pub enum Custom {
     Svg,
     /// `video/*`: a picked video, referenced by path.
     Video,
+    /// `text/font`: a font-file picker (stores the path).
+    Font,
 }
 
 /// An arity stepper: which param it drives and its bounds.
@@ -69,6 +71,7 @@ pub fn custom_of(def_type: &str) -> Option<Custom> {
         "io/file" => Custom::File,
         "io/svg" => Custom::Svg,
         t if is_video(t) => Custom::Video,
+        "text/font" => Custom::Font,
         "math/add" | "math/sub" | "math/mul" | "math/div" | "math/min" | "math/max"
         | "spread/merge" | "transform/group" => Custom::Slots(GROUP_SLOTS),
         _ => return None,
@@ -468,10 +471,16 @@ pub fn file_params(def_type: &str, name: &str, bytes: &[u8]) -> Option<Vec<(Stri
     Some(out)
 }
 
+/// What the font picker offers.
+pub const FONT_EXTENSIONS: &[&str] = &["ttf", "otf", "ttc", "otc", "woff", "woff2"];
+
 /// Params that clear a picked file.
 pub fn clear_file_params(def_type: &str) -> Vec<(String, Json)> {
     if is_video(def_type) {
         return vec![("url".to_owned(), json!(""))];
+    }
+    if def_type == "text/font" {
+        return vec![("file".to_owned(), json!(""))];
     }
     let mut keys = vec!["dataUrl", "filename"];
     if def_type != "io/svg" {

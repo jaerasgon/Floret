@@ -667,7 +667,9 @@ pub fn menu_popup<A: Clone>(
         .iter()
         .map(|i| if i.action.is_some() { ROW_H } else { 9.0 })
         .sum();
-    let pos = clamp(at, vec2(MENU_W, h + 12.0), bounds);
+    // Long lists (installed fonts) scroll.
+    let max_h = (bounds.height() - 24.0).max(ROW_H * 4.0);
+    let pos = clamp(at, vec2(MENU_W, h.min(max_h) + 12.0), bounds);
     let mut picked = None;
     let area = egui::Area::new(Id::new("floret-canvas-menu"))
         .order(egui::Order::Foreground)
@@ -681,49 +683,56 @@ pub fn menu_popup<A: Clone>(
                 .show(ui, |ui| {
                     ui.set_width(MENU_W);
                     ui.spacing_mut().item_spacing.y = 0.0;
-                    for item in items {
-                        let Some(action) = &item.action else {
-                            let (r, _) = ui.allocate_exact_size(vec2(MENU_W, 9.0), Sense::hover());
-                            ui.painter().line_segment(
-                                [r.left_center(), r.right_center()],
-                                Stroke::new(1.0, BORDER),
-                            );
-                            continue;
-                        };
-                        let sense = if item.enabled {
-                            Sense::click()
-                        } else {
-                            Sense::hover()
-                        };
-                        let (rect, resp) = ui.allocate_exact_size(vec2(MENU_W, ROW_H), sense);
-                        if item.enabled && resp.hovered() {
-                            ui.painter().rect_filled(rect, 5.0, BG_3);
-                        }
-                        let color = match (item.enabled, item.danger) {
-                            (false, _) => FG_2,
-                            (true, true) => DANGER,
-                            (true, false) => FG_0,
-                        };
-                        ui.painter().text(
-                            rect.left_center() + vec2(9.0, 0.0),
-                            Align2::LEFT_CENTER,
-                            &item.label,
-                            FontId::proportional(13.0),
-                            *color,
-                        );
-                        if let Some(k) = item.shortcut {
-                            ui.painter().text(
-                                rect.right_center() - vec2(9.0, 0.0),
-                                Align2::RIGHT_CENTER,
-                                k,
-                                FontId::proportional(11.0),
-                                *FG_1,
-                            );
-                        }
-                        if resp.clicked() {
-                            picked = Some(action.clone());
-                        }
-                    }
+                    egui::ScrollArea::vertical()
+                        .max_height(max_h)
+                        .auto_shrink([false, true])
+                        .show(ui, |ui| {
+                            for item in items {
+                                let Some(action) = &item.action else {
+                                    let (r, _) =
+                                        ui.allocate_exact_size(vec2(MENU_W, 9.0), Sense::hover());
+                                    ui.painter().line_segment(
+                                        [r.left_center(), r.right_center()],
+                                        Stroke::new(1.0, BORDER),
+                                    );
+                                    continue;
+                                };
+                                let sense = if item.enabled {
+                                    Sense::click()
+                                } else {
+                                    Sense::hover()
+                                };
+                                let (rect, resp) =
+                                    ui.allocate_exact_size(vec2(MENU_W, ROW_H), sense);
+                                if item.enabled && resp.hovered() {
+                                    ui.painter().rect_filled(rect, 5.0, BG_3);
+                                }
+                                let color = match (item.enabled, item.danger) {
+                                    (false, _) => FG_2,
+                                    (true, true) => DANGER,
+                                    (true, false) => FG_0,
+                                };
+                                ui.painter().text(
+                                    rect.left_center() + vec2(9.0, 0.0),
+                                    Align2::LEFT_CENTER,
+                                    &item.label,
+                                    FontId::proportional(13.0),
+                                    *color,
+                                );
+                                if let Some(k) = item.shortcut {
+                                    ui.painter().text(
+                                        rect.right_center() - vec2(9.0, 0.0),
+                                        Align2::RIGHT_CENTER,
+                                        k,
+                                        FontId::proportional(11.0),
+                                        *FG_1,
+                                    );
+                                }
+                                if resp.clicked() {
+                                    picked = Some(action.clone());
+                                }
+                            }
+                        });
                 });
         });
     if let Some(a) = picked {

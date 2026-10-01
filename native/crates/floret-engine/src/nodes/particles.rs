@@ -713,6 +713,28 @@ fn sample_positions(
             }
         }
         SceneNode::Point { x, y, .. } => out.push((*x, *y)),
+        // `text/*` glyph runs (native-only): the real letterforms.
+        SceneNode::Glyphs(run) => {
+            use crate::text::outline;
+            let cs = outline::run_contours(run);
+            if mode == Sampling::Outline {
+                let n = density.max(0.0) as usize;
+                out.extend(outline::sample_contours(&cs, n).iter().map(|p| (p.x, p.y)));
+            } else if let Some((lo, hi)) = outline::bounds(&cs) {
+                let (mut i, mut tries) = (0.0, 0.0);
+                while i < density && tries < density * 100.0 {
+                    let p = Vec2 {
+                        x: lo.x + random() * (hi.x - lo.x),
+                        y: lo.y + random() * (hi.y - lo.y),
+                    };
+                    tries += 1.0;
+                    if outline::winding(&cs, p) != 0 {
+                        out.push((p.x, p.y));
+                        i += 1.0;
+                    }
+                }
+            }
+        }
         // arc, quad, particle batches: skipped (as in TS v1).
         _ => {}
     }

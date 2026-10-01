@@ -121,6 +121,13 @@ pub fn body_h(c: Custom, n: &PatchNode) -> f32 {
                 30.0
             }
         }
+        Custom::Font => {
+            if font_file(n).is_empty() {
+                30.0
+            } else {
+                46.0
+            }
+        }
         Custom::Svg => match n.params.get("mode").and_then(Json::as_str) {
             Some("url") => 26.0,
             Some("markup") => 66.0,
@@ -340,6 +347,10 @@ pub fn layout(
             video_body(n, HEADER_H + 5.0, z, b);
             row_box(cx, n, spec, wired, b);
         }
+        Custom::Font => {
+            font_body(n, HEADER_H + 5.0, z, b);
+            row_box(cx, n, spec, wired, b);
+        }
         Custom::Probe => {}
     }
 }
@@ -363,6 +374,43 @@ fn video_body(n: &PatchNode, top: f32, z: f32, b: &mut NodeBox) {
         node: n.id.clone(),
         kind: WidgetKind::Clear,
     });
+    b.notes.push(Note {
+        rect: at(b, z, 10.0, top + 23.0, NODE_W - 20.0, 13.0),
+        text: name,
+        role: NoteRole::Label,
+    });
+}
+
+fn font_file(n: &PatchNode) -> &str {
+    n.params.get("file").and_then(Json::as_str).unwrap_or("")
+}
+
+/// `text/font`: pick / clear a font file; the file's name underneath.
+fn font_body(n: &PatchNode, top: f32, z: f32, b: &mut NodeBox) {
+    let path = font_file(n);
+    let picked = !path.is_empty();
+    let push = |b: &mut NodeBox, rect: Rect, kind: WidgetKind| {
+        b.widgets.push(Widget {
+            rect,
+            node: n.id.clone(),
+            kind,
+        });
+    };
+    push(
+        b,
+        at(b, z, 10.0, top, 92.0, 19.0),
+        WidgetKind::Pick {
+            svg: false,
+            replace: picked,
+        },
+    );
+    if !picked {
+        return;
+    }
+    push(b, at(b, z, 106.0, top, 19.0, 19.0), WidgetKind::Clear);
+    let name = std::path::Path::new(path)
+        .file_name()
+        .map_or_else(|| path.to_owned(), |f| f.to_string_lossy().into_owned());
     b.notes.push(Note {
         rect: at(b, z, 10.0, top + 23.0, NODE_W - 20.0, 13.0),
         text: name,

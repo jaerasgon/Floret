@@ -247,6 +247,17 @@ Shapes accept an optional `style` input. Unconnected = white fill, no stroke (or
 | **ImageRegion** · `draw/image-region` | `image: image, sx, sy, sw, sh, dx, dy, dw, dh: number, tint: color` → `out: layer` | Draw a sub-rectangle of an image — source `(sx, sy, sw, sh)` onto destination `(dx, dy, dw, dh)`. The p5 9-arg form behind `p5.Image.copy()`. Zero in `sw/sh` means "to the image edge"; zero in `dw/dh` means "match source size". |
 | **ImageTile** · `draw/image-tile` | `image: image, x, y, w, h, cols, rows: number, tint: color` → `out: layer` | Tile an image `cols × rows` times across a `(w × h)` rect anchored at `(x, y)`. Cell size = `(w/cols, h/rows)`. |
 
+## Text
+
+Native-only generative typography. Shaping (kerning, ligatures, Arabic and other scripts, right-to-left runs, combining marks) and font fallback happen in the engine; `text/glyphs` and `text/outline` lay text out exactly like `draw/text` given the same inputs, so their outputs sit on the drawn text.
+
+| Label · type | Inputs → Outputs | Description |
+|---|---|---|
+| **Font** · `text/font` | `family, file: string` → `font: string, loaded: boolean, axes: string*, axisMin, axisDefault, axisMax: number*` | An installed family (dropdown) or a font file (.ttf/.otf/.ttc/.woff/.woff2, picked or typed as a path; it wins). `font` goes into `style/text-params`. Lists the variation axes. |
+| **Glyphs** · `text/glyphs` | `string, pos, size, align, spacing, style` → `shape: layer, glyphs: layer*, positions: vec2*, advances: number*, chars: string*, charIndex: number*` | Split text into shaped glyphs for kinetic type: per glyph a layer at the origin (translate it to its position), its baseline position, advance, characters and index. |
+| **Text on Path** · `text/on-path` | `string, points: vec2*, path: layer, closed, size, offset, spacing, align, shift, style` → `shape: layer, glyphs: layer*, positions: vec2*, angles: number*` | Lay text along a polyline or a path layer; each glyph turns to the tangent. `offset` slides it along, `shift` lifts it off the path. |
+| **Text Outline** · `text/outline` | `string, pos, size, align, spacing, mode, style` → `points: vec2*, contours, glyphs: number*` | Points every `spacing` units along the glyph outlines (`outline`) or on a grid inside them (`fill`), for particles from type and morphing. |
+
 ## Image
 
 Image manipulation. The `image` wire carries an `HTMLCanvasElement` — either loaded by `io/image-url`, derived by one of the nodes below, or rendered from a Layer via `image/from-layer`. Derived nodes own a persistent offscreen canvas per node id (via the derived-image registry) so the output bitmap is reused across frames.
@@ -277,6 +288,7 @@ Style nodes output a `Style` (a function that sets p5 drawing state). Chain them
 | **EllipseMode** · `style/ellipse-mode` | `mode: string, base: style` → `out: style` | How `(x, y, w, h)` is interpreted by Ellipse: corner / center / corners / radius. |
 | **NoFill** · `style/no-fill` | `base: style` → `out: style` | Disable fill. |
 | **NoStroke** · `style/no-stroke` | `base: style` → `out: style` | Disable stroke. |
+| **FontVariations** · `style/font-variations` | `weight, width, slant, opticalSize: number, axis: string, value: number, base: style` → `style: style` | Variable-font axes (`wght`, `wdth`, `slnt`, `opsz`, plus any tag), animatable per frame. 0 leaves an axis at the font default; chain nodes for more custom axes. Native-only. |
 
 ## Render
 

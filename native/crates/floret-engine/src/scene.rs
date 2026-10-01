@@ -123,6 +123,9 @@ pub struct ResolvedStyle {
     /// "corner" | "center" | "corners" | "radius"
     pub rect_mode: Arc<str>,
     pub ellipse_mode: Arc<str>,
+    /// Variable-font axis settings (`font-variation-settings`), in order
+    /// set; empty for the font's defaults. See `crate::text`.
+    pub font_variations: Arc<[([u8; 4], f32)]>,
 }
 
 fn s(v: &str) -> Arc<str> {
@@ -151,6 +154,7 @@ pub fn default_style() -> &'static Arc<ResolvedStyle> {
             text_baseline: s("alphabetic"),
             rect_mode: s("corner"),
             ellipse_mode: s("center"),
+            font_variations: Arc::from([]),
         })
     })
 }
@@ -204,6 +208,8 @@ pub enum StyleOp {
     TextBaseline(Arc<str>),
     RectMode(Arc<str>),
     EllipseMode(Arc<str>),
+    /// Set one variation axis (replacing an earlier value for the tag).
+    FontVariation([u8; 4], f32),
 }
 
 impl StyleOp {
@@ -231,6 +237,16 @@ impl StyleOp {
             StyleOp::TextBaseline(v) => st.text_baseline = v.clone(),
             StyleOp::RectMode(v) => st.rect_mode = v.clone(),
             StyleOp::EllipseMode(v) => st.ellipse_mode = v.clone(),
+            StyleOp::FontVariation(tag, v) => {
+                let mut all: Vec<([u8; 4], f32)> = st
+                    .font_variations
+                    .iter()
+                    .filter(|(t, _)| t != tag)
+                    .copied()
+                    .collect();
+                all.push((*tag, *v));
+                st.font_variations = Arc::from(all);
+            }
         }
     }
 }
@@ -408,6 +424,29 @@ pub enum SceneNode {
     /// `gpu/shader`: a GLSL fragment shader (plus optional buffer passes)
     /// drawn over the whole canvas. See [`crate::shader`].
     Shader(Arc<crate::shader::ShaderShape>),
+    /// `text/*`: pre-shaped glyphs, each placed and turned on its own.
+    Glyphs(Arc<GlyphRun>),
+}
+
+/// Glyphs shaped by `crate::text`, drawn with `style` (fill / stroke,
+/// `font_variations` plus the CSS weight as axis coordinates).
+#[derive(Clone, Debug, PartialEq)]
+pub struct GlyphRun {
+    pub glyphs: Arc<[PlacedGlyph]>,
+    /// Font size in scene units.
+    pub size: f64,
+    pub style: Arc<ResolvedStyle>,
+}
+
+/// One glyph: its origin (pen position on the baseline) and rotation in
+/// radians about that origin.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct PlacedGlyph {
+    pub face: crate::text::FaceId,
+    pub id: u16,
+    pub x: f64,
+    pub y: f64,
+    pub angle: f64,
 }
 
 impl SceneNode {
@@ -436,6 +475,7 @@ impl SceneNode {
             SceneNode::ParticleTrailBatch { .. } => "particle-trail-batch",
             SceneNode::Image { .. } => "image",
             SceneNode::Shader(_) => "shader",
+            SceneNode::Glyphs(_) => "glyphs",
         }
     }
 
@@ -642,6 +682,23 @@ impl SceneNode {
                 );
             }
             SceneNode::Shader(sh) => sh.fields(&mut m),
+            SceneNode::Glyphs(run) => {
+                let glyph = |g: &PlacedGlyph| {
+                    let mut o = IndexMap::new();
+                    o.insert("glyph".to_owned(), n(f64::from(g.id)));
+                    o.insert("x".to_owned(), n(g.x));
+                    o.insert("y".to_owned(), n(g.y));
+                    o.insert("angle".to_owned(), n(g.angle));
+                    Value::Object(Arc::new(o))
+                };
+                put(
+                    &mut m,
+                    "glyphs",
+                    Value::list(run.glyphs.iter().map(glyph).collect()),
+                );
+                put(&mut m, "size", n(run.size));
+                put(&mut m, "style", style_value(&run.style));
+            }
         }
         Value::Object(Arc::new(m))
     }
@@ -680,6 +737,13 @@ pub fn style_value(st: &ResolvedStyle) -> Value {
     m.insert("textBaseline".into(), Value::Str(st.text_baseline.clone()));
     m.insert("rectMode".into(), Value::Str(st.rect_mode.clone()));
     m.insert("ellipseMode".into(), Value::Str(st.ellipse_mode.clone()));
+    // Native-only, so absent unless set (keeps the TS traces comparable).
+    if !st.font_variations.is_empty() {
+        m.insert(
+            "fontVariations".into(),
+            Value::Str(Arc::from(font_variations_css(&st.font_variations))),
+        );
+    }
     Value::Object(Arc::new(m))
 }
 
@@ -764,6 +828,20 @@ pub fn catmull_rom_beziers(points: &[Vec2], closed: bool, tension: f64) -> Vec<B
             }
         })
         .collect()
+}
+
+/// `font-variation-settings` syntax: `"wght" 650, "wdth" 80`.
+pub fn font_variations_css(v: &[([u8; 4], f32)]) -> String {
+    v.iter()
+        .map(|(t, x)| {
+            format!(
+                "\"{}\" {}",
+                String::from_utf8_lossy(t),
+                js::num_to_string(f64::from(*x))
+            )
+        })
+        .collect::<Vec<_>>()
+        .join(", ")
 }
 
 /// `composeFontCss`: the CSS `font` shorthand.

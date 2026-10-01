@@ -14,6 +14,14 @@ indexmap.workspace = true
 # Image file decoding and SVG rasterisation (pure CPU, see `image.rs`).
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "webp", "bmp"] }
 resvg = { version = "0.48", default-features = false }
+# Typography (`text.rs`): the font database, shaper and outline reader
+# cosmic-text uses in the renderer, so both sides share one set of faces.
+fontdb = "0.23"
+harfrust = "0.5"
+skrifa = "0.40"
+unicode-bidi = "0.3"
+# WOFF / WOFF2 font files.
+wuff = "0.2"
 
 [dev-dependencies]
 flate2.workspace = true

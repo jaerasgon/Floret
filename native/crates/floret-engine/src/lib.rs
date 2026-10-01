@@ -27,6 +27,7 @@ pub mod patch;
 pub mod scene;
 pub mod shader;
 pub mod spec;
+pub mod text;
 pub mod tick;
 pub mod value;
 

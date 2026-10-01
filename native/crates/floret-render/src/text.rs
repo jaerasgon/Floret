@@ -14,10 +14,17 @@
 //! by `ceil(lines × fontSize × lineHeight) + 6` units, glyphs start 1 unit in,
 //! and the alphabetic baseline sits `0.8 × fontSize` below each line's top.
 //! `letterSpacing` is ignored (TS's GL path ignores it too).
+//!
+//! Fonts come from the engine's library (`floret_engine::text`): the
+//! cosmic-text font system is built from a snapshot of its database and
+//! rebuilt when a font file is loaded. Runs with variable-font axes, and
+//! the `text/*` nodes' glyph runs, are laid out by the engine (cosmic-text
+//! handles no axis but `wght`) and only rasterised here, at the engine's
+//! axis coordinates, so drawn glyphs match the nodes' outputs.
 
-use cosmic_text::fontdb;
 use cosmic_text::{Attrs, Buffer, Family, FontSystem, Metrics, Shaping, Style, SwashCache, Weight};
-use floret_engine::scene::{compose_font_css, ResolvedStyle};
+use floret_engine::scene::{compose_font_css, font_variations_css, GlyphRun, ResolvedStyle};
+use floret_engine::text::{self as typo, FaceData, FaceId};
 use std::collections::{HashMap, VecDeque};
 use std::fmt;
 use std::sync::Arc;
@@ -41,6 +48,9 @@ pub struct TextRun {
     pub asc: f64,
     /// White glyphs tinted at draw time (no stroke).
     pub neutral: bool,
+    /// For a single glyph: the glyph origin's offset from the quad's left
+    /// edge (its top is `asc` above the origin). 0 for runs.
+    pub left: f64,
     pub px_w: u32,
     pub px_h: u32,
     /// Premultiplied RGBA8, `px_w × px_h`.
@@ -83,6 +93,8 @@ pub struct TextRasterizer {
     order: VecDeque<String>,
     /// CSS `font-family` → resolved family.
     families: HashMap<String, String>,
+    /// The engine font library generation `fonts` was built from.
+    generation: u64,
     next_id: u64,
 }
 
@@ -101,31 +113,24 @@ impl TextRasterizer {
             cache: HashMap::new(),
             order: VecDeque::new(),
             families: HashMap::new(),
+            generation: 0,
             next_id: 1,
         }
     }
 
-    /// Rasterise (or fetch) a run. `None` for nothing drawable (empty text,
-    /// bad font size).
-    pub fn rasterize(&mut self, text: &str, st: &ResolvedStyle) -> Option<TextKey> {
-        let neutral = st.stroke.is_none();
-        let colour_key = if neutral {
-            "N".to_owned()
-        } else {
-            let css = |p: &Option<floret_engine::scene::Paint>| {
-                p.as_ref().map_or("null".to_owned(), |p| p.css.to_string())
-            };
-            format!("{}|{}|{}", css(&st.fill), css(&st.stroke), st.stroke_weight)
-        };
-        let key = format!(
-            "{text}|{}|{}|{colour_key}",
-            compose_font_css(st),
-            st.line_height
-        );
-        if let Some(hit) = self.cache.get(&key) {
-            return Some(hit.clone());
+    /// Rebuild the font system when the engine has loaded new fonts.
+    fn sync_fonts(&mut self) {
+        let g = typo::generation();
+        if g != self.generation {
+            self.generation = g;
+            self.fonts = None;
+            self.families.clear();
+            self.cache.clear();
+            self.order.clear();
         }
-        let run = self.render(text, st, neutral)?;
+    }
+
+    fn insert(&mut self, key: String, run: TextRun) -> TextKey {
         let run = TextKey(Arc::new(run));
         if self.cache.len() >= CACHE_CAP {
             if let Some(old) = self.order.pop_front() {
@@ -134,7 +139,212 @@ impl TextRasterizer {
         }
         self.order.push_back(key.clone());
         self.cache.insert(key, run.clone());
-        Some(run)
+        run
+    }
+
+    fn next_id(&mut self) -> u64 {
+        let id = self.next_id;
+        self.next_id += 1;
+        id
+    }
+
+    /// Rasterise (or fetch) a run. `None` for nothing drawable (empty text,
+    /// bad font size).
+    pub fn rasterize(&mut self, text: &str, st: &ResolvedStyle) -> Option<TextKey> {
+        self.sync_fonts();
+        let neutral = st.stroke.is_none();
+        let mut key = format!(
+            "{text}|{}|{}|{}",
+            compose_font_css(st),
+            st.line_height,
+            colour_key(st)
+        );
+        if !st.font_variations.is_empty() {
+            key.push('|');
+            key.push_str(&font_variations_css(&st.font_variations));
+        }
+        if let Some(hit) = self.cache.get(&key) {
+            return Some(hit.clone());
+        }
+        let run = if st.font_variations.is_empty() {
+            self.render(text, st, neutral)?
+        } else {
+            self.render_shaped(text, st, neutral)?
+        };
+        Some(self.insert(key, run))
+    }
+
+    /// One glyph of a `text/*` glyph run, as its own bitmap.
+    pub fn glyph(&mut self, face: FaceId, id: u16, run: &GlyphRun) -> Option<TextKey> {
+        self.sync_fonts();
+        let st = &*run.style;
+        let size = run.size;
+        if !(size.is_finite() && size > 0.0) {
+            return None;
+        }
+        let data = typo::face(face)?;
+        let coords = typo::normalized_coords(
+            &data,
+            &typo::face_settings(&data, &typo::FontSpec::from_style(st)),
+        );
+        let key = format!("\u{1}g|{face:?}|{id}|{size}|{coords:?}|{}", colour_key(st));
+        if let Some(hit) = self.cache.get(&key) {
+            return Some(hit.clone());
+        }
+        let neutral = st.stroke.is_none();
+        let s = SCALE.min(MAX_PX / size);
+        let (fill, stroke) = paints(st, neutral);
+        let stroke_w = (st.stroke_weight * s) as f32;
+        let mut imgs = Vec::new();
+        if let Some(col) = fill {
+            if let Some(img) = self.glyph_image(&data, id, size * s, &coords, (0.0, 0.0), None) {
+                imgs.push((img, col));
+            }
+        }
+        if let (Some(col), true) = (stroke, stroke_w > 0.0) {
+            let img = self.glyph_image(&data, id, size * s, &coords, (0.0, 0.0), Some(stroke_w));
+            if let Some(img) = img {
+                imgs.push((img, col));
+            }
+        }
+        // Pixel bounds (y up from the origin) plus a transparent 1px border,
+        // which keeps sampling clean at the quad's edges.
+        let p = |i: &swash::scale::image::Image| i.placement;
+        let left = imgs.iter().map(|(i, _)| p(i).left).min().unwrap_or(0) - 1;
+        let top = imgs.iter().map(|(i, _)| p(i).top).max().unwrap_or(0) + 1;
+        let right = imgs
+            .iter()
+            .map(|(i, _)| p(i).left + p(i).width as i32)
+            .max()
+            .unwrap_or(0)
+            + 1;
+        let bottom = imgs
+            .iter()
+            .map(|(i, _)| p(i).top - p(i).height as i32)
+            .min()
+            .unwrap_or(0)
+            - 1;
+        let (px_w, px_h) = ((right - left).max(1) as u32, (top - bottom).max(1) as u32);
+        let mut canvas = Canvas::new(px_w, px_h);
+        for (img, col) in &imgs {
+            canvas.draw_image(img, p(img).left - left, top - p(img).top, *col);
+        }
+        let run = TextRun {
+            id: self.next_id(),
+            w: f64::from(px_w) / s,
+            h: f64::from(px_h) / s,
+            asc: f64::from(top) / s,
+            neutral,
+            left: f64::from(-left) / s,
+            px_w,
+            px_h,
+            rgba: canvas.into_rgba8(),
+        };
+        Some(self.insert(key, run))
+    }
+
+    /// A glyph rasterised at `px` pixels per em at axis `coords`, offset by
+    /// a subpixel `(dx, dy)`; outlined `stroke` px wide when given.
+    fn glyph_image(
+        &mut self,
+        face: &FaceData,
+        id: u16,
+        px: f64,
+        coords: &[i16],
+        (dx, dy): (f32, f32),
+        stroke: Option<f32>,
+    ) -> Option<swash::scale::image::Image> {
+        use swash::scale::{Render, Source, StrikeWith};
+        let font = swash::FontRef::from_index(face.bytes(), face.index() as usize)?;
+        let mut scaler = self
+            .stroke_ctx
+            .builder(font)
+            .size(px as f32)
+            .hint(false)
+            .normalized_coords(coords)
+            .build();
+        let sources: &[Source] = if stroke.is_some() {
+            &[Source::Outline]
+        } else {
+            &[
+                Source::ColorOutline(0),
+                Source::ColorBitmap(StrikeWith::BestFit),
+                Source::Outline,
+            ]
+        };
+        let mut render = Render::new(sources);
+        render
+            .format(swash::zeno::Format::Alpha)
+            .offset(swash::zeno::Vector::new(dx, dy));
+        if let Some(w) = stroke {
+            render.style(swash::zeno::Stroke::new(w));
+        }
+        render.render(&mut scaler, id)
+    }
+
+    /// `draw/text` with variation axes: the engine lays the run out (the
+    /// same box metrics as `render`) and each glyph is rasterised at its
+    /// face's axis coordinates.
+    fn render_shaped(&mut self, text: &str, st: &ResolvedStyle, neutral: bool) -> Option<TextRun> {
+        let block = typo::block(text, st, 0.0)?;
+        let (w, h) = (block.w, block.h);
+        let s = SCALE.min(MAX_PX / w).min(MAX_PX / h);
+        if s < 0.05 {
+            return None;
+        }
+        let px_w = (w * s).ceil() as u32;
+        let px_h = (h * s).ceil() as u32;
+        let mut canvas = Canvas::new(px_w, px_h);
+        let (fill, stroke) = paints(st, neutral);
+        let stroke_w = (st.stroke_weight * s) as f32;
+        let font = typo::FontSpec::from_style(st);
+        let mut faces: HashMap<FaceId, (Arc<FaceData>, Vec<i16>)> = HashMap::new();
+        // Fill first, then the stroke on top (like the cosmic-text path).
+        let passes = [
+            (fill, None),
+            (stroke.filter(|_| stroke_w > 0.0), Some(stroke_w)),
+        ];
+        for (col, outline) in passes {
+            let Some(col) = col else {
+                continue;
+            };
+            for g in &block.glyphs {
+                let (face, coords) = match faces.get(&g.glyph.face) {
+                    Some(f) => f.clone(),
+                    None => {
+                        let Some(data) = typo::face(g.glyph.face) else {
+                            continue;
+                        };
+                        let coords =
+                            typo::normalized_coords(&data, &typo::face_settings(&data, &font));
+                        faces.insert(g.glyph.face, (data.clone(), coords.clone()));
+                        (data, coords)
+                    }
+                };
+                let (gx, gy) = (g.glyph.x * s, g.glyph.y * s);
+                let (fx, fy) = (gx.floor(), gy.floor());
+                let off = ((gx - fx) as f32, (gy - fy) as f32);
+                let px = st.font_size * s;
+                let Some(img) = self.glyph_image(&face, g.glyph.id, px, &coords, off, outline)
+                else {
+                    continue;
+                };
+                let x0 = fx as i32 + img.placement.left;
+                let y0 = fy as i32 - img.placement.top;
+                canvas.draw_image(&img, x0, y0, col);
+            }
+        }
+        Some(TextRun {
+            id: self.next_id(),
+            w,
+            h,
+            asc: block.asc,
+            neutral,
+            left: 0.0,
+            px_w,
+            px_h,
+            rgba: canvas.into_rgba8(),
+        })
     }
 
     fn render(&mut self, text: &str, st: &ResolvedStyle, neutral: bool) -> Option<TextRun> {
@@ -152,7 +362,7 @@ impl TextRasterizer {
         let family_name = self
             .families
             .entry(st.font_family.to_string())
-            .or_insert_with(|| resolve_family(fonts.db(), &st.font_family))
+            .or_insert_with(|| typo::resolve_family(&st.font_family))
             .clone();
         let family = match family_name.as_str() {
             "serif" => Family::Serif,
@@ -203,16 +413,7 @@ impl TextRasterizer {
         let mut canvas = Canvas::new(px_w, px_h);
         let asc = fs_px * 0.8;
 
-        let fill = if neutral {
-            Some([1.0f32; 4])
-        } else {
-            st.fill.as_ref().map(|p| p.rgba.map(|v| v as f32))
-        };
-        let stroke = if neutral {
-            None
-        } else {
-            st.stroke.as_ref().map(|p| p.rgba.map(|v| v as f32))
-        };
+        let (fill, stroke) = paints(st, neutral);
         let stroke_w = (st.stroke_weight * s) as f32;
 
         for (i, glyphs) in shaped.iter().enumerate() {
@@ -259,14 +460,13 @@ impl TextRasterizer {
             }
         }
 
-        let id = self.next_id;
-        self.next_id += 1;
         Some(TextRun {
-            id,
+            id: self.next_id(),
             w,
             h,
             asc,
             neutral,
+            left: 0.0,
             px_w,
             px_h,
             rgba: canvas.into_rgba8(),
@@ -352,97 +552,35 @@ impl Canvas {
     }
 }
 
-/// Metric-compatible stand-ins (what fontconfig aliases them to).
-const ALIASES: &[(&str, &[&str])] = &[
-    ("arial", &["Liberation Sans", "Arimo"]),
-    ("helvetica", &["Liberation Sans", "Arimo"]),
-    ("times new roman", &["Liberation Serif", "Tinos"]),
-    ("times", &["Liberation Serif", "Tinos"]),
-    ("courier new", &["Liberation Mono", "Cousine"]),
-    ("courier", &["Liberation Mono", "Cousine"]),
-];
-
-/// CSS `font-family` fallback: the first family in the list that is
-/// installed (or has an installed metric-compatible alias), else the first
-/// generic keyword, else `sans-serif`. Generic names come back lower-case.
-fn resolve_family(db: &fontdb::Database, css: &str) -> String {
-    let installed = |name: &str| {
-        db.faces()
-            .flat_map(|f| f.families.iter())
-            .find(|(n, _)| n.eq_ignore_ascii_case(name))
-            .map(|(n, _)| n.clone())
-    };
-    for raw in css.split(',') {
-        let name = raw.trim().trim_matches(|c| c == '"' || c == '\'').trim();
-        let lower = name.to_ascii_lowercase();
-        match lower.as_str() {
-            "" => continue,
-            "serif" | "sans-serif" | "monospace" | "cursive" | "fantasy" => return lower,
-            "system-ui" | "ui-sans-serif" | "-apple-system" => return "sans-serif".into(),
-            "ui-serif" => return "serif".into(),
-            "ui-monospace" => return "monospace".into(),
-            _ => {}
-        }
-        if let Some(n) = installed(name) {
-            return n;
-        }
-        if let Some((_, alts)) = ALIASES.iter().find(|(k, _)| *k == lower) {
-            if let Some(n) = alts.iter().find_map(|a| installed(a)) {
-                return n;
-            }
-        }
+/// The colour part of a cache key: neutral runs are tinted at draw time.
+fn colour_key(st: &ResolvedStyle) -> String {
+    if st.stroke.is_none() {
+        return "N".to_owned();
     }
-    "sans-serif".into()
+    let css = |p: &Option<floret_engine::scene::Paint>| {
+        p.as_ref().map_or("null".to_owned(), |p| p.css.to_string())
+    };
+    format!("{}|{}|{}", css(&st.fill), css(&st.stroke), st.stroke_weight)
+}
+
+/// The fill and stroke colours a run bakes (just white fill when neutral).
+fn paints(st: &ResolvedStyle, neutral: bool) -> (Option<[f32; 4]>, Option<[f32; 4]>) {
+    if neutral {
+        return (Some([1.0; 4]), None);
+    }
+    let rgba =
+        |p: &Option<floret_engine::scene::Paint>| p.as_ref().map(|p| p.rgba.map(|v| v as f32));
+    (rgba(&st.fill), rgba(&st.stroke))
 }
 
 fn parse_weight(w: &str) -> Weight {
-    match w.trim() {
-        "bold" | "bolder" => Weight::BOLD,
-        "lighter" => Weight::LIGHT,
-        "normal" | "" => Weight::NORMAL,
-        n => n
-            .parse::<f64>()
-            .ok()
-            .filter(|v| v.is_finite())
-            .map_or(Weight::NORMAL, |v| Weight(v.clamp(1.0, 1000.0) as u16)),
-    }
+    Weight(typo::css_weight(w))
 }
 
-/// The faces behind the generic families, bundled so `sans-serif`, `serif`
-/// and `monospace` draw the same on every OS. They are what Chrome on Linux
-/// picks (the reference images), metric-compatible with Arial / Times.
-const BUNDLED: &[&[u8]] = &[
-    include_bytes!("../fonts/LiberationSans-Regular.ttf"),
-    include_bytes!("../fonts/LiberationSans-Bold.ttf"),
-    include_bytes!("../fonts/LiberationSans-Italic.ttf"),
-    include_bytes!("../fonts/LiberationSans-BoldItalic.ttf"),
-    include_bytes!("../fonts/LiberationSerif-Regular.ttf"),
-    include_bytes!("../fonts/LiberationSerif-Bold.ttf"),
-    include_bytes!("../fonts/LiberationSerif-Italic.ttf"),
-    include_bytes!("../fonts/LiberationSerif-BoldItalic.ttf"),
-    include_bytes!("../fonts/DejaVuSansMono.ttf"),
-    include_bytes!("../fonts/DejaVuSansMono-Bold.ttf"),
-    include_bytes!("../fonts/DejaVuSansMono-Oblique.ttf"),
-    include_bytes!("../fonts/DejaVuSansMono-BoldOblique.ttf"),
-];
-
-/// System fonts (for named families) plus the bundled faces, which back
-/// every generic family. `FLORET_BUNDLED_FONTS_ONLY` skips the system ones,
-/// so output doesn't depend on the machine (the reference-image tests).
+/// The engine's font library (system + bundled + loaded files) as a
+/// cosmic-text font system.
 fn font_system() -> FontSystem {
-    let mut db = fontdb::Database::new();
-    if std::env::var_os("FLORET_BUNDLED_FONTS_ONLY").is_none() {
-        db.load_system_fonts();
-    }
-    for face in BUNDLED {
-        db.load_font_data(face.to_vec());
-    }
-    db.set_sans_serif_family("Liberation Sans");
-    db.set_cursive_family("Liberation Sans");
-    db.set_fantasy_family("Liberation Sans");
-    db.set_serif_family("Liberation Serif");
-    db.set_monospace_family("DejaVu Sans Mono");
-    FontSystem::new_with_locale_and_db("en-US".into(), db)
+    FontSystem::new_with_locale_and_db("en-US".into(), typo::database())
 }
 
 #[cfg(test)]
@@ -480,14 +618,70 @@ mod tests {
 
     #[test]
     fn parses_font_fields() {
-        let db = font_system().into_locale_and_db().1;
-        assert_eq!(resolve_family(&db, "'NoSuchFont', Serif"), "serif");
-        assert_eq!(resolve_family(&db, "NoSuchFont"), "sans-serif");
+        assert_eq!(typo::resolve_family("'NoSuchFont', Serif"), "serif");
+        assert_eq!(typo::resolve_family("NoSuchFont"), "sans-serif");
         assert_eq!(
-            resolve_family(&db, "dejavu sans mono, serif"),
+            typo::resolve_family("dejavu sans mono, serif"),
             "DejaVu Sans Mono"
         );
         assert_eq!(parse_weight("bold"), Weight::BOLD);
         assert_eq!(parse_weight("300"), Weight(300));
+    }
+
+    fn ink(run: &TextRun) -> u32 {
+        run.rgba.chunks(4).map(|p| u32::from(p[3])).sum()
+    }
+
+    fn variable(wght: f32) -> ResolvedStyle {
+        ResolvedStyle {
+            font_family: Arc::from(typo::VARIABLE_FAMILY),
+            font_size: 40.0,
+            font_variations: Arc::from([(*b"wght", wght)]),
+            ..(**default_style()).clone()
+        }
+    }
+
+    #[test]
+    fn variation_axes_reach_the_raster() {
+        let mut r = TextRasterizer::new();
+        let thin = r.rasterize("Weight", &variable(100.0)).unwrap();
+        let black = r.rasterize("Weight", &variable(1000.0)).unwrap();
+        assert_ne!(thin, black);
+        assert!(
+            ink(&black) > ink(&thin) * 2,
+            "{} vs {}",
+            ink(&black),
+            ink(&thin)
+        );
+        // The box follows the engine's layout: wider at the heavier weight.
+        assert!(black.w > thin.w);
+        assert!((thin.asc - 32.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn glyph_runs_rasterise_per_glyph() {
+        let mut r = TextRasterizer::new();
+        let st = variable(700.0);
+        let line = typo::shape_line("H", &typo::FontSpec::from_style(&st), 0.0);
+        let g = line.glyphs[0];
+        let run = GlyphRun {
+            glyphs: Arc::from([]),
+            size: 40.0,
+            style: Arc::new(st),
+        };
+        let b = r.glyph(g.face, g.id, &run).unwrap();
+        assert!(b.neutral && ink(&b) > 1000);
+        // "H" has a left side bearing: the origin is left of the bitmap.
+        // The bitmap's top is about the cap height (≈ 0.7 em) above it.
+        assert!(b.left < 0.0 && b.left > -10.0, "{b:?} left {}", b.left);
+        assert!(b.asc > 25.0 && b.asc < 35.0, "asc {}", b.asc);
+        assert_eq!(r.glyph(g.face, g.id, &run).unwrap(), b);
+        // A different weight is a different bitmap.
+        let light = GlyphRun {
+            style: Arc::new(variable(200.0)),
+            ..run.clone()
+        };
+        let l = r.glyph(g.face, g.id, &light).unwrap();
+        assert!(ink(&l) < ink(&b));
     }
 }

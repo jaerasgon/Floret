@@ -1,5 +1,5 @@
 {
- "count": 320,
+ "count": 325,
  "nodes": [
   {
    "type": "collider/circle",
@@ -1621,6 +1621,365 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null
+  },
+  {
+   "type": "text/font",
+   "category": "Text",
+   "label": "Font",
+   "description": "A font for `style/text-params`: an installed family, or a font file (.ttf, .otf, .ttc, .woff, .woff2) — a file wins. Lists the font’s variation axes (tag, min, default, max).",
+   "inputs": [
+    {
+     "name": "family",
+     "type": "string",
+     "kind": "single",
+     "default": "sans-serif",
+     "param": "family"
+    },
+    {
+     "name": "file",
+     "type": "string",
+     "kind": "single",
+     "default": "",
+     "param": "file"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "font",
+     "type": "string",
+     "kind": "single"
+    },
+    {
+     "name": "loaded",
+     "type": "boolean",
+     "kind": "single"
+    },
+    {
+     "name": "axes",
+     "type": "string",
+     "kind": "spread"
+    },
+    {
+     "name": "axisMin",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "axisDefault",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "axisMax",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "scalar",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "family": "sans-serif",
+    "file": ""
+   },
+   "paramOptions": null
+  },
+  {
+   "type": "text/glyphs",
+   "category": "Text",
+   "label": "Glyphs",
+   "description": "Text split into shaped glyphs, laid out like `draw/text`. `shape` draws them all; per glyph: a layer drawn at the origin (translate it to its position), its baseline position, advance, source characters and character index — for kinetic type in a ForEach.",
+   "inputs": [
+    {
+     "name": "string",
+     "type": "string",
+     "kind": "single",
+     "default": "Hello",
+     "param": "string"
+    },
+    {
+     "name": "pos",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "size",
+     "type": "number",
+     "kind": "single",
+     "default": 48,
+     "param": "size"
+    },
+    {
+     "name": "align",
+     "type": "string",
+     "kind": "single",
+     "default": "left",
+     "param": "align"
+    },
+    {
+     "name": "spacing",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "glyphs",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "positions",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "advances",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "chars",
+     "type": "string",
+     "kind": "spread"
+    },
+    {
+     "name": "charIndex",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "scalar",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "string": "Hello",
+    "size": 48,
+    "align": "left"
+   },
+   "paramOptions": {
+    "align": [
+     "left",
+     "center",
+     "right"
+    ]
+   }
+  },
+  {
+   "type": "text/on-path",
+   "category": "Text",
+   "label": "Text on Path",
+   "description": "Lay text along a path — a point spread, or a wired `path` layer (`draw/path`, polygon, line, ellipse). Each glyph turns to the tangent. `offset` slides the text along, `shift` lifts it off the path; `closed` wraps around a loop.",
+   "inputs": [
+    {
+     "name": "string",
+     "type": "string",
+     "kind": "single",
+     "default": "Text on a path",
+     "param": "string"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "path",
+     "type": "layer",
+     "kind": "single",
+     "default": null
+    },
+    {
+     "name": "closed",
+     "type": "boolean",
+     "kind": "single",
+     "default": false,
+     "param": "closed"
+    },
+    {
+     "name": "size",
+     "type": "number",
+     "kind": "single",
+     "default": 32,
+     "param": "size"
+    },
+    {
+     "name": "offset",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "spacing",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "align",
+     "type": "string",
+     "kind": "single",
+     "default": "left",
+     "param": "align"
+    },
+    {
+     "name": "shift",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "glyphs",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "positions",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "angles",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "scalar",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "string": "Text on a path",
+    "closed": false,
+    "size": 32,
+    "align": "left"
+   },
+   "paramOptions": {
+    "align": [
+     "left",
+     "center",
+     "right"
+    ]
+   }
+  },
+  {
+   "type": "text/outline",
+   "category": "Text",
+   "label": "Text Outline",
+   "description": "Points sampled along the glyph outlines (`outline`) or on a grid inside them (`fill`), every `spacing` units, laid out like `draw/text` — for particles from type, morphing, plotter-style lines. With each point’s contour and glyph index.",
+   "inputs": [
+    {
+     "name": "string",
+     "type": "string",
+     "kind": "single",
+     "default": "Type",
+     "param": "string"
+    },
+    {
+     "name": "pos",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "size",
+     "type": "number",
+     "kind": "single",
+     "default": 160,
+     "param": "size"
+    },
+    {
+     "name": "align",
+     "type": "string",
+     "kind": "single",
+     "default": "center",
+     "param": "align"
+    },
+    {
+     "name": "spacing",
+     "type": "number",
+     "kind": "single",
+     "default": 6
+    },
+    {
+     "name": "mode",
+     "type": "string",
+     "kind": "single",
+     "default": "outline",
+     "param": "mode"
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "contours",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "glyphs",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "scalar",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "string": "Type",
+    "size": 160,
+    "align": "center",
+    "mode": "outline"
+   },
+   "paramOptions": {
+    "align": [
+     "left",
+     "center",
+     "right"
+    ],
+    "mode": [
+     "outline",
+     "fill"
+    ]
+   }
   },
   {
    "type": "force/attractor",
@@ -10490,6 +10849,69 @@
      "bottom"
     ]
    }
+  },
+  {
+   "type": "style/font-variations",
+   "category": "Style",
+   "label": "FontVariations",
+   "description": "Variable-font axes for downstream text, animatable per frame: weight (wght), width (wdth), slant (slnt), optical size (opsz), plus any axis by tag. 0 leaves an axis at the font’s default; chain nodes for more custom axes.",
+   "inputs": [
+    {
+     "name": "weight",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "width",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "slant",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "opticalSize",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "axis",
+     "type": "string",
+     "kind": "single",
+     "default": "",
+     "param": "axis"
+    },
+    {
+     "name": "value",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "base",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "eval": "scalar",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "axis": ""
+   },
+   "paramOptions": null
   },
   {
    "type": "time/delta",

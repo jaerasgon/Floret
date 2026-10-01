@@ -36,6 +36,7 @@ pub mod sound;
 pub mod spread;
 pub mod string;
 pub mod style;
+pub mod text;
 pub mod time;
 pub mod transform;
 pub mod value;
@@ -86,6 +87,7 @@ fn registry() -> &'static Registrar {
         spread::register(&mut r);
         string::register(&mut r);
         style::register(&mut r);
+        text::register(&mut r);
         time::register(&mut r);
         transform::register(&mut r);
         value::register(&mut r);

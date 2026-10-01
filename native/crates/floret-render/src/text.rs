@@ -480,7 +480,10 @@ mod tests {
         let db = font_system().into_locale_and_db().1;
         assert_eq!(resolve_family(&db, "'NoSuchFont', Serif"), "serif");
         assert_eq!(resolve_family(&db, "NoSuchFont"), "sans-serif");
-        assert_eq!(resolve_family(&db, "hack, monospace"), "Hack");
+        assert_eq!(
+            resolve_family(&db, "dejavu sans mono, serif"),
+            "DejaVu Sans Mono"
+        );
         assert_eq!(parse_weight("bold"), Weight::BOLD);
         assert_eq!(parse_weight("300"), Weight(300));
     }

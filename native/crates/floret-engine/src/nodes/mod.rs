@@ -24,6 +24,7 @@ pub mod logic;
 pub mod math;
 pub mod meta;
 pub mod motion;
+pub mod net;
 pub mod noise;
 pub mod particles;
 pub mod physics;
@@ -72,6 +73,7 @@ fn registry() -> &'static Registrar {
         math::register(&mut r);
         meta::register(&mut r);
         motion::register(&mut r);
+        net::register(&mut r);
         noise::register(&mut r);
         particles::register(&mut r);
         physics::register(&mut r);

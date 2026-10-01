@@ -6,8 +6,8 @@
 //! (metro / counter / edge / gate) lives in each node's closure here, so it
 //! resets on recompile instead of surviving it.
 //!
-//! Not ported here (network / file IO, later phase): file, image-url,
-//! receive, send, save-svg, svg.
+//! Send / receive / save-svg live in `net.rs`; file, image-url and svg
+//! (media loading) are not ported here.
 
 use super::convert::js_string;
 use super::shared::first;

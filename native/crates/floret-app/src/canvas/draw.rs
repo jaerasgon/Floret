@@ -4,14 +4,14 @@
 use super::geom::{Field, Look, NodeBox, PinGeom, HEADER_H, LABEL_FONT, PIN_R};
 use crate::editor::ports::type_name;
 use crate::editor::values::{self, FieldKind};
-use crate::theme::{self, BG_0, BG_2, BG_3, BORDER, DANGER, FG_0, FG_1, FG_2, GOLD};
+use crate::theme::{
+    self, BG_0, BG_2, BG_3, BORDER, DANGER, FG_0, FG_1, FG_2, GOLD, GOLD_TEXT, SPREAD_PIN,
+};
 use eframe::egui::{
     self, pos2, vec2, Align2, Color32, CornerRadius, FontId, Id, LayerId, Order, Painter, Pos2,
     Rect, Stroke, StrokeKind,
 };
 use floret_engine::spec::RegionKind;
-
-pub const SPREAD_PIN: Color32 = Color32::from_rgb(0xf0, 0xd8, 0x00);
 
 #[derive(Clone, Copy)]
 pub enum PinLook {
@@ -24,10 +24,18 @@ pub enum PinLook {
 /// Frame accent per region kind (`.region-foreach` / `-if` / `-cache`).
 pub fn frame_color(kind: Option<RegionKind>) -> Color32 {
     match kind {
-        Some(RegionKind::If) => Color32::from_rgb(255, 200, 100),
-        Some(RegionKind::Cache) => Color32::from_rgb(124, 182, 255),
-        Some(RegionKind::Subpatch) => Color32::from_rgb(190, 160, 255),
+        Some(RegionKind::If) => *theme::REGION_IF,
+        Some(RegionKind::Cache) => *theme::REGION_CACHE,
+        Some(RegionKind::Subpatch) => *theme::REGION_SUBPATCH,
         _ => *GOLD,
+    }
+}
+
+/// The frame accent as title text (ForEach's gold is deeper as text).
+fn frame_text_color(kind: Option<RegionKind>) -> Color32 {
+    match kind {
+        Some(RegionKind::If | RegionKind::Cache | RegionKind::Subpatch) => frame_color(kind),
+        _ => *GOLD_TEXT,
     }
 }
 
@@ -40,7 +48,7 @@ pub fn mix(a: Color32, b: Color32, t: f32) -> Color32 {
 pub fn pin(p: &Painter, g: &PinGeom, look: PinLook, pulse: f32, z: f32) {
     let pos = g.pos;
     let mut color = if g.spread {
-        SPREAD_PIN
+        *SPREAD_PIN
     } else {
         theme::port_color(type_name(g.ty))
     };
@@ -119,7 +127,7 @@ pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
         Align2::LEFT_CENTER,
         &b.label,
         FontId::monospace(12.0 * z),
-        accent,
+        frame_text_color(st.kind),
     );
     p.text(
         pos2(b.header.right() - 4.0 * z, mid),
@@ -290,13 +298,13 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
             *FG_0,
         );
         if let Some(slot) = &b.slot {
-            let g = p.layout_no_wrap(slot.clone(), FontId::monospace(10.0 * z), *GOLD);
+            let g = p.layout_no_wrap(slot.clone(), FontId::monospace(10.0 * z), *GOLD_TEXT);
             let rr = Rect::from_min_size(
                 pos2(x, header.center().y - 7.0 * z),
                 vec2(g.size().x + 8.0 * z, 14.0 * z),
             );
             p.rect(rr, 7.0 * z, BG_3, Stroke::NONE, StrokeKind::Inside);
-            p.galley(rr.center() - g.size() / 2.0, g, *GOLD);
+            p.galley(rr.center() - g.size() / 2.0, g, *GOLD_TEXT);
             x = rr.right() + 4.0 * z;
         }
         let right = if let Some((r, _)) = &b.warning {
@@ -333,7 +341,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     for row in &b.rows {
         if let Some(label) = &row.label {
             let color = if row.expanded {
-                *GOLD
+                *GOLD_TEXT
             } else if row.toggle.is_some() {
                 *FG_1
             } else {
@@ -369,7 +377,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                     Align2::LEFT_CENTER,
                     ro,
                     FontId::monospace(10.0 * z),
-                    GOLD.gamma_multiply(0.8),
+                    *GOLD_TEXT,
                 );
             }
         }
@@ -565,7 +573,7 @@ pub fn tooltip(ctx: &egui::Context, at: Pos2, title: &str, kind: &str, body: &st
     let p = ctx.layer_painter(LayerId::new(Order::Tooltip, Id::new("floret-canvas-tip")));
     let title_g = p.layout_no_wrap(title.to_owned(), FontId::proportional(11.5), *FG_0);
     let kind_g = p.layout_no_wrap(kind.to_owned(), FontId::monospace(10.0), *FG_2);
-    let body_g = p.layout(body.to_owned(), FontId::monospace(11.0), *GOLD, 360.0);
+    let body_g = p.layout(body.to_owned(), FontId::monospace(11.0), *GOLD_TEXT, 360.0);
     let w = (title_g.size().x + kind_g.size().x + 14.0)
         .max(body_g.size().x)
         .max(80.0)
@@ -593,7 +601,7 @@ pub fn tooltip(ctx: &egui::Context, at: Pos2, title: &str, kind: &str, body: &st
         [pos2(r.left() + 6.0, line_y), pos2(r.right() - 6.0, line_y)],
         Stroke::new(1.0, BORDER),
     );
-    p.galley(pos2(r.left() + 8.0, line_y + 4.0), body_g, *GOLD);
+    p.galley(pos2(r.left() + 8.0, line_y + 4.0), body_g, *GOLD_TEXT);
 }
 
 /// Translucent rectangle while drawing a new region.
@@ -611,7 +619,7 @@ pub fn region_preview(p: &Painter, r: Rect, kind: Option<RegionKind>, label: &st
         Align2::LEFT_TOP,
         label,
         FontId::monospace(11.0),
-        accent,
+        frame_text_color(kind),
     );
 }
 

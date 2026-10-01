@@ -25,7 +25,7 @@ use crate::editor::search::{self, Fit};
 use crate::editor::values::{self, EditKey, FieldKind, LiveEdit};
 use crate::editor::widgets::{self, Pad, SliderState};
 use crate::editor::{clipboard, layout, ops, regions, subpatch};
-use crate::theme::{self, BG_0, FG_2, FG_3, GOLD};
+use crate::theme::{self, BG_0, FG_2, FG_3, GOLD, GOLD_TEXT};
 use custom::WidgetKind;
 use draw::PinLook;
 use eframe::egui::{
@@ -399,6 +399,11 @@ impl View {
     /// Fit the visible patch on the next frame.
     pub fn request_fit(&mut self) {
         self.fit_pending = true;
+    }
+
+    /// Auto-arrange the visible patch on the next frame (toolbar).
+    pub fn request_arrange(&mut self) {
+        self.queued.push(Action::Arrange);
     }
 
     /// Record a structural edit: settle, push an undo step, and ask the
@@ -1975,42 +1980,26 @@ fn toolbar(
         }
         tb.add_space(8.0);
     }
-    if popups::chip(
-        &mut tb,
-        "Arrange",
-        false,
-        "Auto-arrange the patch left → right",
-    )
-    .clicked()
+    // Arrange / Snap / Flow live in the app toolbar; only the draw tool's
+    // instructions show here.
+    if let Some(s) = view
+        .armed
+        .as_deref()
+        .and_then(|t| Catalogue::builtin().get(t))
     {
-        actions.push(Action::Arrange);
-    }
-    if popups::chip(&mut tb, "Snap", view.snap, "Snap nodes to the 24 px grid").clicked() {
-        view.snap = !view.snap;
-    }
-    if popups::chip(
-        &mut tb,
-        "Flow",
-        view.wire_flow,
-        "Animate data flow along wires",
-    )
-    .clicked()
-    {
-        view.wire_flow = !view.wire_flow;
-    }
-    tb.add_space(4.0);
-    let hint = match view.armed.as_deref().and_then(|t| Catalogue::builtin().get(t)) {
-        Some(s) => egui::RichText::new(format!(
+        let hint = format!(
             "Drag on the canvas to draw a {} region · Esc to cancel",
             s.label
-        ))
-        .color(GOLD),
-        None => egui::RichText::new(
-            "Dbl-click / Tab: add node · Q: favorites · drag pins to wire · Space-drag: in / out of regions · right-click for more",
-        )
-        .color(FG_3),
-    };
-    tb.label(hint.small());
+        );
+        egui::Frame::new()
+            .fill(*theme::BG_1)
+            .stroke(Stroke::new(1.0, GOLD.gamma_multiply(0.6)))
+            .corner_radius(6)
+            .inner_margin(egui::Margin::symmetric(8, 4))
+            .show(&mut tb, |ui| {
+                ui.label(egui::RichText::new(hint).small().color(GOLD_TEXT));
+            });
+    }
 }
 
 fn overlays(

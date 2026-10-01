@@ -75,10 +75,10 @@ impl Export {
             .as_ref()
             .filter(|(_, at)| at.elapsed() < Duration::from_secs(3));
         let (label, col, hover) = match (&self.done, recent) {
-            (Some(_), _) => ("Exporting…", theme::FG_1, "Writing the PNG…"),
-            (None, Some((Ok(m), _))) => ("✓ Saved", theme::GOLD, m.as_str()),
-            (None, Some((Err(e), _))) => ("Export failed", theme::DANGER, e.as_str()),
-            (None, None) => ("Export", theme::FG_1, "Export the current frame as PNG"),
+            (Some(_), _) => ("Exporting…", theme::FG_1, "Writing the PNG…".to_owned()),
+            (None, Some((Ok(m), _))) => ("✓ Saved", theme::GOLD_TEXT, m.clone()),
+            (None, Some((Err(e), _))) => ("Export failed", theme::DANGER, e.clone()),
+            (None, None) => ("Export", theme::FG_1, tooltip(&shortcut, self.scale)),
         };
         if recent.is_some() || self.done.is_some() {
             ui.ctx().request_repaint_after(Duration::from_millis(250));
@@ -140,6 +140,15 @@ impl Export {
             let _ = tx.send(r);
         });
     }
+}
+
+/// The Export button's tooltip: what it makes, and the shortcut.
+fn tooltip(shortcut: &egui::KeyboardShortcut, scale: u32) -> String {
+    format!(
+        "Export PNG: save the current frame as an image at 1×, 2× or 4× the canvas size \
+         (re-rendered, not upscaled). {} exports again at the last scale ({scale}×).",
+        crate::menu::shortcut_text(shortcut)
+    )
 }
 
 /// `<slug>.png`, `<slug>@2x.png`, … (TS slug rule; "floret" if empty).
@@ -244,5 +253,12 @@ mod tests {
         assert_eq!(file_name("Preview", 1), "preview.png");
         assert_eq!(file_name("  Fountain — v2! ", 2), "fountain-v2@2x.png");
         assert_eq!(file_name("***", 4), "floret@4x.png");
+    }
+
+    #[test]
+    fn tooltip_names_the_scales_and_shortcut() {
+        let sc = egui::KeyboardShortcut::new(egui::Modifiers::COMMAND, egui::Key::E);
+        let tip = tooltip(&sc, 2);
+        assert!(tip.contains("1×, 2× or 4×") && tip.contains("+E"), "{tip}");
     }
 }

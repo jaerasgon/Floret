@@ -438,12 +438,14 @@ impl PreviewPanel {
             egui::Align2::LEFT_TOP,
             "Esc to exit focus mode",
             egui::FontId::proportional(11.0),
-            *theme::FG_3,
+            *theme::FG_2,
         );
         self.output_window(ui.ctx(), rs, engine, outputs);
     }
 
-    /// Size / stats, Export, then the transport and focus / output.
+    /// One row: size / stats, then Focus, Output and Export. The transport
+    /// (pause / step / restart) is in the app toolbar: it drives the whole
+    /// patch, not one view.
     fn header(
         &mut self,
         ui: &mut egui::Ui,
@@ -452,70 +454,24 @@ impl PreviewPanel {
         outputs: &Outputs,
         id: &str,
     ) {
-        let id = Some(id);
-        ui.horizontal(|ui| {
-            ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                if let Some(id) = id {
-                    let (layers, bg) = scene(engine, outputs, id);
-                    let v = &self.views[id];
-                    let name = v.label.clone().unwrap_or_else(|| self.doc_name.clone());
-                    let size = v.size;
-                    self.export.ui(
-                        ui,
-                        rs,
-                        &name,
-                        crate::export::Frame {
-                            layers: &layers,
-                            background: bg,
-                            size,
-                        },
-                    );
-                    let mut info = format!("{} × {}", size.0, size.1);
-                    if let Some(p) = &self.views[id].gpu {
-                        let s = p.stats;
-                        info.push_str(&format!(
-                            " · {} shapes · {:.1} ms",
-                            s.sdf_instances + s.poly_fills + s.text_quads,
-                            p.encode_ms
-                        ));
-                    }
-                    ui.label(RichText::new(info).color(theme::FG_2).small().monospace());
-                }
-            });
-        });
+        let id = id.to_owned();
         ui.horizontal(|ui| {
             ui.spacing_mut().item_spacing.x = 4.0;
-            let t = &mut self.transport;
-            let (icon, tip) = if t.paused {
-                ("▶ Play", "Resume the patch")
-            } else {
-                ("⏸ Pause", "Pause the patch (time stops)")
-            };
-            if ui
-                .add(egui::Button::new(RichText::new(icon).small()).selected(t.paused))
-                .on_hover_text(tip)
-                .clicked()
-            {
-                t.toggle();
-            }
-            if ui
-                .small_button("⏭ Step")
-                .on_hover_text("Advance one frame (pauses)")
-                .clicked()
-            {
-                t.step();
-            }
-            if ui
-                .small_button("⟲ Restart")
-                .on_hover_text("Restart the scene from frame 0")
-                .clicked()
-            {
-                t.restart();
-            }
             ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                let Some(id) = id.map(str::to_owned) else {
-                    return;
-                };
+                let (layers, bg) = scene(engine, outputs, &id);
+                let v = &self.views[&id];
+                let name = v.label.clone().unwrap_or_else(|| self.doc_name.clone());
+                let size = v.size;
+                self.export.ui(
+                    ui,
+                    rs,
+                    &name,
+                    crate::export::Frame {
+                        layers: &layers,
+                        background: bg,
+                        size,
+                    },
+                );
                 let live = self.output.as_ref().is_some_and(|o| o.renderer == id);
                 ui.menu_button(
                     RichText::new(if live { "● Output" } else { "Output…" }).small(),
@@ -542,14 +498,31 @@ impl PreviewPanel {
                     },
                 )
                 .response
-                .on_hover_text("Show this renderer fullscreen on a display");
+                .on_hover_text("Show this renderer fullscreen on a display (Esc closes it)");
                 if ui
                     .small_button("⛶ Focus")
-                    .on_hover_text("Focus mode — this preview alone (Esc exits)")
+                    .on_hover_text("Focus mode: this preview alone (Esc exits)")
                     .clicked()
                 {
-                    self.focus = Some(id);
+                    self.focus = Some(id.clone());
                 }
+                let mut info = format!("{}×{}", size.0, size.1);
+                if let Some(p) = &self.views[&id].gpu {
+                    let s = p.stats;
+                    info.push_str(&format!(
+                        " · {} shapes · {:.1}ms",
+                        s.sdf_instances + s.poly_fills + s.text_quads,
+                        p.encode_ms
+                    ));
+                }
+                ui.with_layout(Layout::left_to_right(Align::Center), |ui| {
+                    ui.add(
+                        egui::Label::new(
+                            RichText::new(info).color(theme::FG_2).small().monospace(),
+                        )
+                        .truncate(),
+                    );
+                });
             });
         });
     }
@@ -845,7 +818,7 @@ fn empty(ui: &mut egui::Ui, engine: Option<&Engine>, h: f32) {
         egui::Align2::CENTER_CENTER,
         title,
         egui::FontId::monospace(11.0),
-        *theme::GOLD,
+        *theme::GOLD_TEXT,
     );
     ui.painter().text(
         area.center() + vec2(0.0, 9.0),

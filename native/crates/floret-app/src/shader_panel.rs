@@ -352,7 +352,7 @@ impl ShaderPanel {
                 let color = if bad.contains(&(i as u32)) {
                     theme::DANGER
                 } else {
-                    theme::FG_3
+                    theme::FG_2
                 };
                 let sep = if i < lines { "\n" } else { "" };
                 gutter.append(
@@ -538,13 +538,13 @@ fn highlight(text: &str, font: &FontId) -> LayoutJob {
             }
             let w = &text[start..i];
             if KEYWORDS.contains(&w) {
-                Color32::from_rgb(0xc6, 0x8a, 0xf0)
+                *theme::SYNTAX_KEYWORD
             } else if TYPES.contains(&w) {
-                Color32::from_rgb(0x6c, 0xc4, 0xf0)
+                *theme::SYNTAX_TYPE
             } else if w.starts_with('i') && floret_engine::shader::BUILTIN_UNIFORMS.contains(&w)
                 || w == "mainImage"
             {
-                *theme::GOLD
+                *theme::GOLD_TEXT
             } else {
                 *theme::FG_0
             }
@@ -554,7 +554,7 @@ fn highlight(text: &str, font: &FontId) -> LayoutJob {
             while i < b.len() && (b[i].is_ascii_alphanumeric() || b[i] == b'.') {
                 i += 1;
             }
-            Color32::from_rgb(0xf0, 0xa8, 0x6c)
+            *theme::SYNTAX_NUMBER
         } else {
             // One char (UTF-8 aware).
             i += text[i..].chars().next().map_or(1, char::len_utf8);

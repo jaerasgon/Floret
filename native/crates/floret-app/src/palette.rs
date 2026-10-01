@@ -5,7 +5,7 @@
 
 use crate::canvas::{PaletteDrag, View};
 use crate::editor::regions;
-use crate::theme::{self, BG_3, FG_0, FG_1, FG_2, GOLD};
+use crate::theme::{self, BG_3, FG_0, FG_1, FG_2, GOLD, GOLD_TEXT};
 use eframe::egui::{self, vec2, Align2, CursorIcon, FontId, RichText, Sense};
 use floret_engine::patch::PatchFile;
 use floret_engine::spec::{Catalogue, NodeSpec};
@@ -36,7 +36,7 @@ pub fn show(ui: &mut egui::Ui, query: &mut String, view: &mut View, patch: &mut 
                 .filter(|s| !s.hidden)
                 .collect();
             if q.is_empty() && !favs.is_empty() {
-                ui.label(RichText::new("★ Favorites").color(GOLD));
+                ui.label(RichText::new("★ Favorites").color(GOLD_TEXT));
                 for s in favs {
                     item(ui, view, s, &mut pick, &mut star);
                 }
@@ -114,7 +114,7 @@ fn item(
         Align2::LEFT_CENTER,
         &s.label,
         FontId::proportional(13.0),
-        if armed { *GOLD } else { *FG_0 },
+        if armed { *GOLD_TEXT } else { *FG_0 },
     );
     if resp.hovered() || armed {
         p.text(

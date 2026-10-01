@@ -87,6 +87,8 @@ pub struct App {
     prefs_window: PrefsWindow,
     welcome: welcome::Welcome,
     show_shortcuts: bool,
+    /// The `?` overlay over the canvas.
+    shortcuts_overlay: bool,
     show_about: bool,
     gpu_name: String,
     /// Menu commands waiting for the next frame.
@@ -148,6 +150,7 @@ impl App {
             prefs_window: PrefsWindow::default(),
             welcome: welcome::Welcome::default(),
             show_shortcuts: false,
+            shortcuts_overlay: false,
             show_about: false,
             gpu_name,
             commands: Vec::new(),
@@ -479,6 +482,7 @@ impl App {
                 });
                 ui.separator();
             }
+            // Document.
             ui.label(RichText::new("✿").color(theme::GOLD).size(16.0));
             let dirty = self.dirty();
             let name = RichText::new(&self.doc.name).color(theme::FG_0).strong();
@@ -491,31 +495,54 @@ impl App {
             if dirty {
                 dot(ui, *theme::FG_2).on_hover_text("Unsaved changes");
             }
-            ui.separator();
-            ui.toggle_value(&mut self.prefs.palette_visible, "Nodes")
-                .on_hover_text(shortcut_hint(&Command::ToggleNodes));
-            if ui
-                .button("Fit")
-                .on_hover_text("Fit the patch to the view (F, or double-click the canvas)")
-                .clicked()
-            {
+            cluster_gap(ui);
+            // View.
+            toggle(
+                ui,
+                &mut self.prefs.palette_visible,
+                "Nodes",
+                &shortcut_hint(&Command::ToggleNodes),
+            );
+            if tool(ui, "Fit", &shortcut_hint(&Command::FitView)).clicked() {
                 self.view.request_fit();
             }
-            if ui
-                .button("Restart")
-                .on_hover_text(shortcut_hint(&Command::Restart))
+            if tool(ui, "Arrange", "Auto-arrange the patch left → right (undo with Ctrl/⌘+Z)")
                 .clicked()
             {
-                self.commands.push(Command::Restart);
+                self.view.request_arrange();
+            }
+            cluster_gap(ui);
+            // Canvas toggles.
+            toggle(ui, &mut self.view.snap, "Snap", "Snap nodes to the 24 px grid");
+            toggle(
+                ui,
+                &mut self.view.wire_flow,
+                "Flow",
+                "Animate data flowing along wires",
+            );
+            cluster_gap(ui);
+            // Transport: the whole patch's clock.
+            let t = &mut self.preview.transport;
+            let (icon, tip) = if t.paused {
+                ("▶", "Play (Space over the preview)")
+            } else {
+                ("⏸", "Pause: time stops (Space over the preview)")
+            };
+            if tool(ui, icon, tip).clicked() {
+                t.toggle();
+            }
+            if tool(ui, "⏭", "Step one frame (pauses)").clicked() {
+                t.step();
+            }
+            if tool(ui, "⟲", &shortcut_hint(&Command::Restart)).clicked() {
+                t.restart();
             }
             ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                if ui
-                    .button("⚙")
-                    .on_hover_text(shortcut_hint(&Command::Preferences))
-                    .clicked()
-                {
+                if tool(ui, "⚙", &shortcut_hint(&Command::Preferences)).clicked() {
                     self.prefs_window.open = true;
                 }
+                toggle(ui, &mut self.shortcuts_overlay, "?", "Keyboard shortcuts (?)");
+                ui.add_space(4.0);
                 ui.label(RichText::new(format!("{:.0} fps", self.fps)).color(theme::FG_2).monospace());
                 if let Some(engine) = &self.engine {
                     let missing = engine.graph.nodes.iter().filter(|n| n.unimplemented).count();
@@ -581,10 +608,15 @@ impl App {
             ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                 ui.label(
                     RichText::new(concat!("v", env!("CARGO_PKG_VERSION")))
-                        .color(theme::FG_3)
+                        .color(theme::FG_2)
                         .small(),
                 );
                 audio::status(ui);
+                ui.label(
+                    RichText::new("Tab add node · Q favorites · ? shortcuts")
+                        .color(theme::FG_2)
+                        .small(),
+                );
             });
         });
     }
@@ -787,7 +819,7 @@ impl App {
             ui.horizontal(|ui| {
                 ui.label(
                     RichText::new(format!("Kept in {}", recovery::dir().display()))
-                        .color(theme::FG_3)
+                        .color(theme::FG_2)
                         .small(),
                 );
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
@@ -834,6 +866,16 @@ impl eframe::App for App {
         }
         for c in std::mem::take(&mut self.commands) {
             self.run(&ctx, c);
+        }
+        // `?` toggles the shortcuts overlay; Esc closes it before the
+        // canvas sees the key.
+        if self.confirm.is_none() && help::question_typed(&ctx) {
+            self.shortcuts_overlay ^= true;
+        }
+        if self.shortcuts_overlay
+            && ctx.input_mut(|i| i.consume_key(egui::Modifiers::NONE, egui::Key::Escape))
+        {
+            self.shortcuts_overlay = false;
         }
 
         // Closing the window asks about unsaved changes first.
@@ -918,8 +960,12 @@ impl eframe::App for App {
             .frame(egui::Frame::new().fill(*theme::BG_1))
             .show(ui, |ui| self.side_panel(ui, frame));
 
-        egui::CentralPanel::no_frame().show(ui, |ui| self.canvas(ui, frame));
-        // The canvas has its own Snap / Flow toggles.
+        let canvas_rect = egui::CentralPanel::no_frame()
+            .show(ui, |ui| self.canvas(ui, frame))
+            .response
+            .rect;
+        help::overlay(&ctx, canvas_rect, &mut self.shortcuts_overlay);
+        // The toolbar's Snap / Flow toggles act on the view.
         self.prefs.snap_to_grid = self.view.snap;
         self.prefs.flow_animation = self.view.wire_flow;
 
@@ -976,6 +1022,33 @@ fn apply_editor_prefs(view: &mut canvas::View, p: &Prefs) {
     editor::ops::set_default_render_size(p.default_render_width, p.default_render_height);
 }
 
+/// Toolbar buttons share one size so the clusters line up.
+const TOOL_SIZE: egui::Vec2 = egui::vec2(28.0, 24.0);
+
+/// A toolbar button.
+fn tool(ui: &mut egui::Ui, label: &str, tip: &str) -> egui::Response {
+    ui.add(egui::Button::new(label).min_size(TOOL_SIZE))
+        .on_hover_text(tip)
+}
+
+/// A toolbar on/off button (highlighted while on).
+fn toggle(ui: &mut egui::Ui, on: &mut bool, label: &str, tip: &str) -> egui::Response {
+    let r = ui
+        .add(egui::Button::new(label).selected(*on).min_size(TOOL_SIZE))
+        .on_hover_text(tip);
+    if r.clicked() {
+        *on = !*on;
+    }
+    r
+}
+
+/// The divider between toolbar clusters.
+fn cluster_gap(ui: &mut egui::Ui) {
+    ui.add_space(4.0);
+    ui.separator();
+    ui.add_space(4.0);
+}
+
 /// A small status dot.
 fn dot(ui: &mut egui::Ui, color: egui::Color32) -> egui::Response {
     let (rect, resp) = ui.allocate_exact_size(egui::vec2(8.0, 8.0), egui::Sense::hover());
@@ -1004,9 +1077,9 @@ fn empty_hint(ui: &mut egui::Ui) {
     p.text(
         rect.center() + egui::vec2(0.0, 12.0),
         egui::Align2::CENTER_CENTER,
-        "Double-click or press Tab to add a node · Help › Welcome for samples",
+        "Double-click or press Tab to add a node · ? for shortcuts · Library for samples",
         egui::FontId::proportional(12.0),
-        theme::FG_3.get(),
+        theme::FG_2.get(),
     );
 }
 

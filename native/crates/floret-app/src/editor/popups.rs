@@ -4,7 +4,7 @@
 use super::favorites::Favorites;
 use super::ports::Side;
 use super::search::{search, Fit};
-use crate::theme::{self, BG_2, BG_3, BORDER, DANGER, FG_0, FG_1, FG_2, GOLD};
+use crate::theme::{self, BG_2, BG_3, BORDER, DANGER, FG_0, FG_1, FG_2, GOLD, GOLD_TEXT};
 use eframe::egui::{
     self, pos2, vec2, Align2, CornerRadius, FontId, Id, Key, Pos2, Rect, Sense, Stroke,
 };
@@ -215,7 +215,7 @@ pub fn search_popup(
                                     Align2::LEFT_CENTER,
                                     &s.label,
                                     FontId::proportional(13.0),
-                                    if on { *GOLD } else { *FG_0 },
+                                    if on { *GOLD_TEXT } else { *FG_0 },
                                 );
                                 p.text(
                                     rect.right_center() - vec2(28.0, 0.0),
@@ -328,7 +328,7 @@ pub fn favorites_popup(
                 .show(ui, |ui| {
                     ui.set_width(w);
                     ui.horizontal(|ui| {
-                        ui.label(egui::RichText::new("★ Favorites").color(GOLD).small());
+                        ui.label(egui::RichText::new("★ Favorites").color(GOLD_TEXT).small());
                         ui.with_layout(
                             egui::Layout::right_to_left(egui::Align::Center),
                             |ui| ui.label(egui::RichText::new("Q").color(FG_2).small()),
@@ -375,7 +375,7 @@ pub fn favorites_popup(
                             Align2::LEFT_CENTER,
                             &s.label,
                             FontId::proportional(13.0),
-                            if on { *GOLD } else { *FG_0 },
+                            if on { *GOLD_TEXT } else { *FG_0 },
                         );
                         p.text(
                             rect.right_center() - vec2(8.0, 0.0),
@@ -752,7 +752,7 @@ pub fn chip(ui: &mut egui::Ui, label: &str, on: bool, tip: &str) -> egui::Respon
     ui.painter().galley(
         rect.center() - galley.size() / 2.0,
         galley,
-        if on { *GOLD } else { *FG_1 },
+        if on { *GOLD_TEXT } else { *FG_1 },
     );
     if resp.clicked() {
         // Don't keep keyboard focus: canvas shortcuts (Tab, F, …) stay live.

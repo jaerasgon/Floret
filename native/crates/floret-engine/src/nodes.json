@@ -799,6 +799,51 @@
    "paramOptions": null
   },
   {
+   "type": "data/csv-file",
+   "category": "Data",
+   "label": "CSVFile",
+   "description": "Load the numbers in a CSV file (a path relative to the patch, a URL, or a File node's url) into a number spread. Pick a column, or -1 for every cell.",
+   "inputs": [
+    {
+     "name": "url",
+     "type": "string",
+     "kind": "single",
+     "default": "",
+     "param": "url"
+    },
+    {
+     "name": "column",
+     "type": "number",
+     "kind": "single",
+     "default": -1,
+     "integer": true
+    }
+   ],
+   "outputs": [
+    {
+     "name": "values",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "rows",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "loaded",
+     "type": "boolean",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "url": ""
+   },
+   "paramOptions": null
+  },
+  {
    "type": "draw/arc",
    "category": "Draw",
    "label": "Arc",

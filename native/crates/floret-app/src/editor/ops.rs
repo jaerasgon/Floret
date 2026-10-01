@@ -230,54 +230,61 @@ pub fn region_size(n: &PatchNode) -> (f64, f64) {
     )
 }
 
-/// `findRegionAtFlow`: the smallest root-scope region containing `p`
-/// (canvas coordinates), with its position.
+/// `findRegionAtFlow`: the smallest ForEach / If / Cache region sitting
+/// directly in `scope` that contains `p` (absolute canvas coordinates).
 pub fn region_at(
     patch: &PatchFile,
     cat: &Catalogue,
     p: Position,
     exclude: &str,
-) -> Option<(String, Position)> {
+    scope: Option<&str>,
+) -> Option<String> {
     patch
         .nodes
         .iter()
-        .filter(|n| n.id != exclude && n.parent_id.is_none())
+        .filter(|n| n.id != exclude && n.parent_id.as_deref() == scope)
         .filter(|n| {
             cat.get(&n.def_type)
-                .is_some_and(|s| s.region_kind.is_some())
+                .is_some_and(|s| super::regions::is_drawable(s.region_kind))
         })
         .filter_map(|n| {
             let (w, h) = region_size(n);
-            let inside = p.x >= n.position.x
-                && p.x <= n.position.x + w
-                && p.y >= n.position.y
-                && p.y <= n.position.y + h;
+            let at = absolute_pos(patch, &n.id);
+            let inside = p.x >= at.x && p.x <= at.x + w && p.y >= at.y && p.y <= at.y + h;
             inside.then_some((w * h, n))
         })
         .min_by(|a, b| a.0.total_cmp(&b.0))
-        .map(|(_, n)| (n.id.clone(), n.position))
+        .map(|(_, n)| n.id.clone())
 }
 
-/// Add a node at a canvas point, auto-parenting it into the region the
-/// point falls in (`placeNodeAtFlow`).
+/// Add a node at an absolute canvas point inside `scope` (the entered
+/// subpatch, or the root), auto-parenting it into the region the point
+/// falls in (`placeNodeAtFlow`).
 pub fn place_node(
     patch: &mut PatchFile,
     cat: &Catalogue,
     def_type: &str,
     at: Position,
+    scope: Option<&str>,
 ) -> Option<String> {
     let is_region = cat.get(def_type)?.region_kind.is_some();
-    let id = add_node(patch, cat, def_type, at)?;
-    if !is_region {
-        if let Some((rid, rpos)) = region_at(patch, cat, at, &id) {
-            let n = super::ports::find_node_mut(patch, &id).expect("just added");
-            n.parent_id = Some(rid);
-            n.position = Position {
-                x: at.x - rpos.x,
-                y: at.y - rpos.y,
-            };
-        }
-    }
+    let parent = if is_region {
+        scope.map(str::to_owned)
+    } else {
+        region_at(patch, cat, at, "", scope).or_else(|| scope.map(str::to_owned))
+    };
+    let base = parent
+        .as_deref()
+        .map(|p| absolute_pos(patch, p))
+        .unwrap_or_default();
+    let local = Position {
+        x: at.x - base.x,
+        y: at.y - base.y,
+    };
+    let id = add_node(patch, cat, def_type, local)?;
+    super::ports::find_node_mut(patch, &id)
+        .expect("just added")
+        .parent_id = parent;
     Some(id)
 }
 
@@ -347,6 +354,51 @@ mod tests {
         assert_eq!(find_node(&p, &new[0]).unwrap().position.x, 24.0);
         let ids: HashSet<_> = p.edges.iter().map(|e| e.id.clone()).collect();
         assert_eq!(ids.len(), p.edges.len(), "edge ids unique");
+    }
+
+    #[test]
+    fn placement_parents_into_regions_and_scope() {
+        let cat = Catalogue::builtin();
+        let mut r = node("r", "region/foreach");
+        r.position = Position { x: 100.0, y: 100.0 };
+        r.width = Some(300.0);
+        r.height = Some(200.0);
+        let mut sub = node("sub", "meta/subpatch");
+        sub.position = Position { x: 1000.0, y: 0.0 };
+        let mut p = patch(vec![r, sub], vec![]);
+        let inside = place_node(
+            &mut p,
+            cat,
+            "math/add",
+            Position { x: 150.0, y: 120.0 },
+            None,
+        )
+        .unwrap();
+        let n = find_node(&p, &inside).unwrap();
+        assert_eq!(n.parent_id.as_deref(), Some("r"));
+        assert_eq!(n.position, Position { x: 50.0, y: 20.0 });
+        // A collapsed subpatch is not a drop target.
+        let beside = place_node(
+            &mut p,
+            cat,
+            "math/add",
+            Position { x: 1010.0, y: 10.0 },
+            None,
+        )
+        .unwrap();
+        assert!(find_node(&p, &beside).unwrap().parent_id.is_none());
+        // Inside an entered subpatch, new nodes belong to it.
+        let deep = place_node(
+            &mut p,
+            cat,
+            "math/add",
+            Position { x: 1010.0, y: 10.0 },
+            Some("sub"),
+        )
+        .unwrap();
+        let n = find_node(&p, &deep).unwrap();
+        assert_eq!(n.parent_id.as_deref(), Some("sub"));
+        assert_eq!(absolute_pos(&p, &deep), Position { x: 1010.0, y: 10.0 });
     }
 
     #[test]

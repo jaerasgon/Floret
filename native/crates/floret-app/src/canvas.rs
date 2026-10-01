@@ -1,47 +1,48 @@
 //! The node canvas: pan / zoom, nodes, pins, wires and live output values,
 //! plus editing — wiring, selection, clipboard, undo / redo, context menus,
-//! node search and auto-arrange. The edits themselves are plain functions
-//! in `editor::*`; this file maps pointer and keyboard input onto them.
+//! node search and favorites, region frames and subpatches, inline value
+//! editing and auto-arrange. The edits themselves are plain functions in
+//! `editor::*`; this file maps pointer and keyboard input onto them.
+//! Layout and hit-testing live in `canvas/geom.rs`, painting in
+//! `canvas/draw.rs`, engine read-outs in `canvas/live.rs`.
+
+mod draw;
+mod geom;
+mod live;
+
+pub use geom::node_size;
+pub use live::Live;
 
 use crate::editor::connect::{self, Conn};
+use crate::editor::favorites::Favorites;
 use crate::editor::history::History;
-use crate::editor::popups::{self, MenuItem, Outcome, Purpose, SearchState};
+use crate::editor::popups::{
+    self, ColorState, FavoritesState, MenuItem, Outcome, PortEditorState, Purpose, SearchState,
+};
 use crate::editor::ports::{self, type_name, Side};
 use crate::editor::search::{self, Fit};
-use crate::editor::{clipboard, layout, ops};
-use crate::theme::{self, BG_0, BG_2, BORDER, FG_0, FG_1, FG_2, FG_3, GOLD};
+use crate::editor::values::{self, EditKey, FieldKind, LiveEdit};
+use crate::editor::{clipboard, layout, ops, regions, subpatch};
+use crate::theme::{self, BG_0, FG_2, FG_3, GOLD};
+use draw::PinLook;
 use eframe::egui::{
-    self, pos2, vec2, Align2, Color32, CornerRadius, FontId, Key, Modifiers, PointerButton, Pos2,
-    Rect, Sense, Shape, Stroke, Vec2,
+    self, pos2, vec2, CursorIcon, Key, Modifiers, PointerButton, Pos2, Rect, Sense, Shape, Stroke,
+    Vec2,
 };
-use floret_engine::patch::{parse_handle, Handle, PatchFile, PatchNode, PortDirection, Position};
-use floret_engine::spec::{Catalogue, PortType};
-use floret_engine::tick::Outputs;
-use floret_engine::{Engine, Value};
+use floret_engine::patch::{PatchFile, Position};
+use floret_engine::spec::Catalogue;
+use geom::{bezier, wire_points, Field, Hits, Look, NodeBox, PinRef, NODE_W, PIN_DROP, PIN_HIT};
 use indexmap::IndexMap;
+use serde_json::Value as Json;
 use std::collections::HashSet;
 
-const NODE_W: f32 = 168.0;
-const HEADER_H: f32 = 26.0;
-const ROW_H: f32 = 20.0;
-const PIN_R: f32 = 4.5;
-/// Pointer distance (screen px) that counts as "on" a pin / wire.
-const PIN_HIT: f32 = 9.0;
-const PIN_DROP: f32 = 16.0;
-const WIRE_HIT: f32 = 6.0;
-
-/// A pin on a node: which node, which side, which port, what type.
-#[derive(Clone, Debug, PartialEq)]
-struct PinRef {
-    node: String,
-    side: Side,
-    port: String,
-    ty: PortType,
-}
+/// A palette node type being dragged onto the canvas.
+pub struct PaletteDrag(pub String);
 
 enum Gesture {
     None,
-    /// Dragging nodes; `start` holds each node's position at press time.
+    /// Dragging nodes; `start` holds each node's absolute position at
+    /// press time.
     Move {
         ids: Vec<String>,
         start: Vec<Position>,
@@ -49,6 +50,9 @@ enum Gesture {
         /// Alt-drag: the moved nodes are fresh duplicates.
         duplicated: bool,
         moved: bool,
+        /// Space was held at some point: drop re-parents into the region
+        /// under the pointer (or out of all regions).
+        reparent: bool,
     },
     /// Dragging a new wire out of a pin; `alt` = Alt held while dragging
     /// (drop → probe).
@@ -62,6 +66,32 @@ enum Gesture {
         base: Vec<String>,
     },
     Pan,
+    /// Dragging a region frame's border / corner.
+    Resize {
+        id: String,
+        dir: (i8, i8),
+        start: Position,
+        size: (f64, f64),
+        origin: Pos2,
+    },
+    /// Dragging a frame-port pill along the border.
+    PortDrag {
+        region: String,
+        port: String,
+        start_y: f64,
+        range: (f64, f64),
+        origin: Pos2,
+    },
+    /// Scrubbing a number field.
+    Scrub {
+        field: Field,
+        start: f64,
+        origin_x: f32,
+    },
+    /// Drawing a new region with the armed tool.
+    DrawRegion {
+        origin: Pos2,
+    },
 }
 
 #[derive(Clone, Debug)]
@@ -69,13 +99,38 @@ enum MenuTarget {
     Pane,
     Node(String),
     Edge(String),
+    /// A dropdown field's options.
+    Select {
+        node: String,
+        key: EditKey,
+        options: Vec<String>,
+        current: String,
+    },
 }
 
 #[derive(Clone, Debug)]
 enum Action {
-    OpenSearch { screen: Pos2, at: Position },
+    OpenSearch {
+        screen: Pos2,
+        at: Position,
+    },
+    OpenFavorites {
+        screen: Pos2,
+        at: Position,
+    },
     PickSearch(String),
+    PickFavorite(String),
+    /// Palette drop / click: place a node, or arm a region.
+    Place {
+        ty: String,
+        at: Position,
+    },
     AddComment(Position),
+    AddRegion {
+        ty: String,
+        min: Position,
+        size: (f64, f64),
+    },
     Copy,
     Cut,
     Paste(Position),
@@ -86,12 +141,46 @@ enum Action {
     DeleteEdge(String),
     ReorderEdge(String, i64),
     Connect(Conn),
-    Probe { from: PinRef, at: Position },
-    MoveOutOfRegion(String),
+    /// A wire dropped on a frame border: new port plus the wire.
+    ConnectNewPort {
+        from: PinRef,
+        hit: regions::EdgeHit,
+    },
+    Probe {
+        from: PinRef,
+        at: Position,
+    },
+    /// Re-home a node: into a region, or out to the current scope.
+    Reparent(String, Option<String>),
+    Group,
+    Enter(String),
+    Exit,
+    ViewDepth(usize),
+    Focus(String),
+    SetValue {
+        node: String,
+        key: EditKey,
+        value: Json,
+    },
     Undo,
     Redo,
     Arrange,
     Fit,
+}
+
+#[derive(Clone)]
+enum EditTarget {
+    Field(Field),
+    PortName { region: String, port: String },
+}
+
+/// A text field open over the canvas; `rect` is in canvas units so it
+/// follows pan / zoom.
+struct TextEditing {
+    target: EditTarget,
+    text: String,
+    rect: Rect,
+    first: bool,
 }
 
 /// Canvas camera, selection and editing state.
@@ -101,6 +190,8 @@ pub struct View {
     /// Selected nodes, most recently selected last.
     selection: Vec<String>,
     selected_edge: Option<String>,
+    /// Selected frame-port pills: (region, port).
+    selected_ports: Vec<(String, String)>,
     /// Nodes raised above patch order (most recent last): selecting or
     /// dragging a node brings it to the front.
     raised: Vec<String>,
@@ -109,17 +200,39 @@ pub struct View {
     pub snap: bool,
     /// Marching-ants flow animation on wires.
     pub wire_flow: bool,
+    /// Grow a region while a child is dragged against its edge.
+    pub auto_grow: bool,
+    /// Entered subpatches, outermost first.
+    stack: Vec<String>,
+    /// Inputs whose inline editor is open: (node, port).
+    expanded: HashSet<(String, String)>,
+    pub favorites: Favorites,
+    /// A region type armed by the palette / search: the next drag on the
+    /// canvas draws it.
+    armed: Option<String>,
     history: History,
     /// Last copied nodes (also mirrored to the system clipboard as JSON).
     clip: Option<PatchFile>,
     search: Option<SearchState>,
+    favorites_menu: Option<FavoritesState>,
     menu: Option<(Pos2, Position, MenuTarget)>,
+    editing: Option<TextEditing>,
+    color: Option<ColorState>,
+    port_editor: Option<PortEditorState>,
     /// Last pointer position over the canvas (paste / Tab anchor).
     last_pointer: Option<Pos2>,
     area: Rect,
     /// Text to put on the system clipboard at the end of the frame.
     copy_out: Option<String>,
     recompile: bool,
+    live_edits: Vec<LiveEdit>,
+    /// Actions raised by click handlers, applied with the frame's actions.
+    queued: Vec<Action>,
+    fit_pending: bool,
+    /// Re-fit when the canvas resizes, until the camera is touched (the
+    /// window settles over the first frames after a load).
+    keep_fitted: bool,
+    fitted_area: Rect,
 }
 
 impl Default for View {
@@ -129,46 +242,35 @@ impl Default for View {
             zoom: 1.0,
             selection: Vec::new(),
             selected_edge: None,
+            selected_ports: Vec::new(),
             raised: Vec::new(),
             gesture: Gesture::None,
             snap: false,
             wire_flow: true,
+            auto_grow: true,
+            stack: Vec::new(),
+            expanded: HashSet::new(),
+            favorites: Favorites::load(),
+            armed: None,
             history: History::default(),
             clip: None,
             search: None,
+            favorites_menu: None,
             menu: None,
+            editing: None,
+            color: None,
+            port_editor: None,
             last_pointer: None,
             area: Rect::ZERO,
             copy_out: None,
             recompile: false,
+            live_edits: Vec::new(),
+            queued: Vec::new(),
+            fit_pending: true,
+            keep_fitted: true,
+            fitted_area: Rect::NOTHING,
         }
     }
-}
-
-struct Pin {
-    /// Port name (handle without the `in-` / `out-` prefix).
-    id: String,
-    label: String,
-    ty: PortType,
-}
-
-struct NodeBox {
-    rect: Rect,
-    label: String,
-    category: String,
-    inputs: Vec<Pin>,
-    outputs: Vec<Pin>,
-    region: bool,
-    unimplemented: bool,
-    /// `meta/comment` body text.
-    comment: Option<String>,
-}
-
-struct Wire {
-    id: String,
-    pts: [Pos2; 4],
-    flat: Vec<Pos2>,
-    ty: PortType,
 }
 
 impl View {
@@ -180,20 +282,45 @@ impl View {
     pub fn select_only(&mut self, id: &str) {
         self.selection = vec![id.to_owned()];
         self.selected_edge = None;
+        self.selected_ports.clear();
         self.raise(id);
     }
 
+    /// The region type armed for drawing, if any.
+    pub fn armed(&self) -> Option<&str> {
+        self.armed.as_deref()
+    }
+
     /// A new patch was loaded: settle it (orphan wires, `valueType`
-    /// latch), seed undo with it, and drop selection / overlays.
+    /// latch), seed undo with it, drop selection / overlays, and fit it.
     pub fn on_load(&mut self, patch: &mut PatchFile) {
         crate::editor::settle(patch, Catalogue::builtin());
         self.history.reset(patch);
         self.selection.clear();
         self.selected_edge = None;
+        self.selected_ports.clear();
         self.raised.clear();
+        self.stack.clear();
+        self.expanded.clear();
         self.gesture = Gesture::None;
+        self.close_overlays();
+        self.armed = None;
+        self.fit_pending = true;
+        self.keep_fitted = true;
+    }
+
+    fn close_overlays(&mut self) {
         self.search = None;
+        self.favorites_menu = None;
         self.menu = None;
+        self.editing = None;
+        self.color = None;
+        self.port_editor = None;
+    }
+
+    /// Fit the visible patch on the next frame.
+    pub fn request_fit(&mut self) {
+        self.fit_pending = true;
     }
 
     /// Record a structural edit: settle, push an undo step, and ask the
@@ -209,6 +336,33 @@ impl View {
         std::mem::take(&mut self.recompile)
     }
 
+    /// Value edits to push into the running engine (no recompile).
+    pub fn take_live_edits(&mut self) -> Vec<LiveEdit> {
+        std::mem::take(&mut self.live_edits)
+    }
+
+    fn scope(&self) -> Option<&str> {
+        self.stack.last().map(String::as_str)
+    }
+
+    /// A palette click: arm a region, or add the node mid-canvas.
+    pub fn palette_pick(&mut self, patch: &mut PatchFile, cat: &Catalogue, ty: &str) {
+        let c = self.to_canvas(self.area.center());
+        let at = Position {
+            x: c.x - f64::from(NODE_W) / 2.0,
+            y: c.y - 30.0,
+        };
+        apply(
+            Action::Place {
+                ty: ty.to_owned(),
+                at,
+            },
+            patch,
+            cat,
+            self,
+        );
+    }
+
     fn raise(&mut self, id: &str) {
         self.raised.retain(|r| r != id);
         self.raised.push(id.to_owned());
@@ -218,24 +372,16 @@ impl View {
         self.selection.iter().any(|s| s == id)
     }
 
-    /// Non-region nodes back-to-front: patch order, raised nodes last.
+    /// Non-frame nodes back-to-front: patch order, raised nodes last.
     fn draw_order(&self, boxes: &IndexMap<String, NodeBox>) -> Vec<String> {
+        let flat = |id: &String| boxes.get(id).is_some_and(|b| !b.look.is_frame());
         let mut order: Vec<String> = boxes
-            .iter()
-            .filter(|(id, b)| !b.region && !self.raised.contains(id))
-            .map(|(id, _)| id.clone())
+            .keys()
+            .filter(|id| flat(id) && !self.raised.contains(id))
+            .cloned()
             .collect();
-        order.extend(
-            self.raised
-                .iter()
-                .filter(|r| boxes.get(r.as_str()).is_some_and(|b| !b.region))
-                .cloned(),
-        );
+        order.extend(self.raised.iter().filter(|r| flat(r)).cloned());
         order
-    }
-
-    fn to_screen(&self, origin: Pos2, p: Pos2) -> Pos2 {
-        origin + (p.to_vec2() + self.pan) * self.zoom
     }
 
     fn to_canvas(&self, p: Pos2) -> Position {
@@ -257,20 +403,29 @@ impl View {
         }
     }
 
-    /// Fit the whole patch into `area`.
+    /// Fit the visible patch into `area`.
     pub fn fit(&mut self, patch: &PatchFile, area: Rect) {
-        self.fit_nodes(patch, area, |_| true);
+        let cat = Catalogue::builtin();
+        let visible = subpatch::visible(patch, cat, &self.stack);
+        self.fit_nodes(patch, area, |id| visible.contains(id));
     }
 
     fn fit_nodes(&mut self, patch: &PatchFile, area: Rect, keep: impl Fn(&str) -> bool) {
         let cat = Catalogue::builtin();
+        let scope = self.scope().map(str::to_owned);
         let mut bb = Rect::NOTHING;
         for n in patch.nodes.iter().filter(|n| keep(&n.id)) {
             let p = ops::absolute_pos(patch, &n.id);
-            let (w, h) = node_size(n, cat);
-            bb = bb.union(Rect::from_min_size(
-                pos2(p.x as f32, p.y as f32),
-                vec2(w as f32, h as f32),
+            let look = geom::look_of(n, cat, scope.as_deref());
+            let (w, h) = geom::box_size(n, cat, look);
+            let top = if look.is_frame() {
+                regions::HEADER_H
+            } else {
+                0.0
+            };
+            bb = bb.union(Rect::from_min_max(
+                pos2(p.x as f32, (p.y - top) as f32),
+                pos2((p.x + w) as f32, (p.y + h) as f32),
             ));
         }
         if !bb.is_finite() || bb.width() <= 0.0 {
@@ -278,10 +433,10 @@ impl View {
             self.zoom = 1.0;
             return;
         }
-        let margin = 60.0;
-        self.zoom = ((area.width() - margin) / bb.width())
-            .min((area.height() - margin) / bb.height())
-            .clamp(0.4, 1.25);
+        let margin = 48.0 + 0.04 * area.width().min(area.height());
+        self.zoom = ((area.width() - 2.0 * margin) / bb.width())
+            .min((area.height() - 2.0 * margin) / bb.height())
+            .clamp(0.1, 1.25);
         let content = bb.size() * self.zoom;
         let offset = (area.size() - content) * 0.5;
         self.pan = offset / self.zoom - bb.min.to_vec2();
@@ -310,274 +465,72 @@ impl View {
         let ids: HashSet<&str> = patch.nodes.iter().map(|n| n.id.as_str()).collect();
         self.selection.retain(|s| ids.contains(s.as_str()));
         self.raised.retain(|s| ids.contains(s.as_str()));
+        self.selected_ports.retain(|(r, p)| {
+            ports::find_node(patch, r).is_some_and(|n| n.ports.iter().flatten().any(|x| &x.id == p))
+        });
         if let Some(e) = &self.selected_edge {
             if !patch.edges.iter().any(|x| &x.id == e) {
                 self.selected_edge = None;
             }
         }
-    }
-}
-
-/// A node's on-canvas size in canvas units.
-pub fn node_size(n: &PatchNode, cat: &Catalogue) -> (f64, f64) {
-    let Some(spec) = cat.get(&n.def_type) else {
-        return (f64::from(NODE_W), 80.0);
-    };
-    if spec.region_kind.is_some() {
-        return ops::region_size(n);
-    }
-    if n.def_type == "meta/comment" {
-        let param = |k: &str, d: f64| n.params.get(k).and_then(|v| v.as_f64()).unwrap_or(d);
-        return (param("width", 200.0), param("height", 80.0));
-    }
-    let (ins, outs) = pins(n, spec, cat, false);
-    let rows = ins.len().max(outs.len()) as f32;
-    (f64::from(NODE_W), f64::from(HEADER_H + rows * ROW_H + 8.0))
-}
-
-fn layout_boxes(
-    patch: &PatchFile,
-    engine: &Engine,
-    cat: &Catalogue,
-    view: &View,
-    origin: Pos2,
-) -> IndexMap<String, NodeBox> {
-    let mut boxes = IndexMap::new();
-    for n in &patch.nodes {
-        let Some(spec) = cat.get(&n.def_type) else {
-            continue;
-        };
-        let region = spec.region_kind.is_some();
-        let (inputs, outputs) = pins(n, spec, cat, region);
-        let (w, h) = node_size(n, cat);
-        let p = ops::absolute_pos(patch, &n.id);
-        let min = view.to_screen(origin, pos2(p.x as f32, p.y as f32));
-        let unimplemented = engine
-            .graph
-            .idx(&n.id)
-            .is_some_and(|i| engine.graph.nodes[i].unimplemented);
-        boxes.insert(
-            n.id.clone(),
-            NodeBox {
-                rect: Rect::from_min_size(min, vec2(w as f32, h as f32) * view.zoom),
-                label: spec.label.clone(),
-                category: spec.category.clone(),
-                inputs,
-                outputs,
-                region,
-                unimplemented,
-                comment: (n.def_type == "meta/comment").then(|| {
-                    n.params
-                        .get("text")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("")
-                        .to_owned()
-                }),
-            },
-        );
-    }
-    boxes
-}
-
-fn pins(
-    n: &PatchNode,
-    spec: &floret_engine::spec::NodeSpec,
-    cat: &Catalogue,
-    region: bool,
-) -> (Vec<Pin>, Vec<Pin>) {
-    if region {
-        let ports = n.ports.clone().unwrap_or_default();
-        let side = |d: PortDirection| {
-            ports
-                .iter()
-                .filter(|p| p.direction == d)
-                .map(|p| Pin {
-                    id: p.id.clone(),
-                    label: p.name.clone(),
-                    ty: PortType::parse(&p.ty).unwrap_or(PortType::Any),
-                })
-                .collect()
-        };
-        return (side(PortDirection::Input), side(PortDirection::Output));
-    }
-    let pin = |p: &floret_engine::spec::PortSpec| Pin {
-        id: p.name.clone(),
-        label: p.label.clone().unwrap_or_else(|| p.name.clone()),
-        ty: p.ty,
-    };
-    (
-        cat.resolved_inputs(spec, &n.params)
-            .iter()
-            .map(pin)
-            .collect(),
-        ports::resolved_outputs(spec, &n.params)
-            .iter()
-            .map(pin)
-            .collect(),
-    )
-}
-
-fn pin_pos(b: &NodeBox, side: Handle, zoom: f32) -> Option<Pos2> {
-    let (list, x) = match side {
-        Handle::In(_) => (&b.inputs, b.rect.left()),
-        Handle::Out(_) => (&b.outputs, b.rect.right()),
-    };
-    let name = match side {
-        Handle::In(n) | Handle::Out(n) => n,
-    };
-    if let Some(stripped) = name.strip_prefix("__loopvar_") {
-        let i = ["index", "count", "fraction"]
-            .iter()
-            .position(|v| *v == stripped)? as f32;
-        return Some(pos2(
-            b.rect.left() + 10.0 * zoom,
-            b.rect.top() + (HEADER_H + 10.0 + i * ROW_H) * zoom,
-        ));
-    }
-    let i = list.iter().position(|p| p.id.as_str() == name)? as f32;
-    Some(pos2(
-        x,
-        b.rect.top() + (HEADER_H + ROW_H * (i + 0.5)) * zoom,
-    ))
-}
-
-fn wire_points(a: Pos2, b: Pos2, z: f32) -> [Pos2; 4] {
-    let dx = ((b.x - a.x).abs() * 0.5).max(40.0 * z);
-    [a, a + vec2(dx, 0.0), b - vec2(dx, 0.0), b]
-}
-
-fn bezier(pts: [Pos2; 4], stroke: Stroke) -> egui::epaint::CubicBezierShape {
-    egui::epaint::CubicBezierShape::from_points_stroke(pts, false, Color32::TRANSPARENT, stroke)
-}
-
-fn dist_to_polyline(p: Pos2, line: &[Pos2]) -> f32 {
-    line.windows(2)
-        .map(|w| {
-            let (a, b) = (w[0], w[1]);
-            let ab = b - a;
-            let t = ((p - a).dot(ab) / ab.length_sq().max(1e-6)).clamp(0.0, 1.0);
-            (a + ab * t).distance(p)
-        })
-        .fold(f32::INFINITY, f32::min)
-}
-
-fn wires(patch: &PatchFile, boxes: &IndexMap<String, NodeBox>, z: f32) -> Vec<Wire> {
-    let mut out = Vec::new();
-    for e in &patch.edges {
-        let (Some(src), Some(dst)) = (boxes.get(&e.source), boxes.get(&e.target)) else {
-            continue;
-        };
-        let (Some(sh), Some(th)) = (
-            parse_handle(e.source_handle.as_deref()),
-            parse_handle(e.target_handle.as_deref()),
-        ) else {
-            continue;
-        };
-        let (Some(a), Some(b)) = (pin_pos(src, sh, z), pin_pos(dst, th, z)) else {
-            continue;
-        };
-        let ty = match sh {
-            Handle::Out(name) if ports::is_loop_var(name) => PortType::Number,
-            Handle::Out(name) => src
-                .outputs
-                .iter()
-                .find(|p| p.id.as_str() == name)
-                .map_or(PortType::Any, |p| p.ty),
-            Handle::In(_) => PortType::Any,
-        };
-        let pts = wire_points(a, b, z);
-        out.push(Wire {
-            id: e.id.clone(),
-            pts,
-            flat: bezier(pts, Stroke::NONE).flatten(Some(0.5)),
-            ty,
-        });
-    }
-    out
-}
-
-/// Hit-testing over one frame's layout.
-struct Hits<'a> {
-    boxes: &'a IndexMap<String, NodeBox>,
-    order: &'a [String],
-    wires: &'a [Wire],
-    z: f32,
-}
-
-impl Hits<'_> {
-    /// Topmost node (then region header) under `p`.
-    fn node(&self, p: Pos2) -> Option<String> {
-        if let Some(id) = self
-            .order
-            .iter()
-            .rev()
-            .find(|id| self.boxes[id.as_str()].rect.contains(p))
-        {
-            return Some(id.clone());
+        let stack = subpatch::valid_stack(patch, Catalogue::builtin(), &self.stack);
+        if stack != self.stack {
+            self.stack = stack;
+            self.fit_pending = true;
         }
-        self.boxes
-            .iter()
-            .rev()
-            .filter(|(_, b)| b.region)
-            .find(|(_, b)| {
-                Rect::from_min_size(b.rect.min, vec2(b.rect.width(), HEADER_H * self.z)).contains(p)
-            })
-            .map(|(id, _)| id.clone())
     }
 
-    /// Every pin with its screen position, topmost node first.
-    fn all_pins(&self) -> Vec<(PinRef, Pos2)> {
-        let mut ids: Vec<&String> = self.order.iter().rev().collect();
-        ids.extend(
-            self.boxes
-                .iter()
-                .filter(|(_, b)| b.region)
-                .map(|(id, _)| id),
-        );
-        let mut out = Vec::new();
-        for id in ids {
-            let b = &self.boxes[id.as_str()];
-            for (side, list) in [(Side::In, &b.inputs), (Side::Out, &b.outputs)] {
-                for p in list {
-                    let h = match side {
-                        Side::In => Handle::In(&p.id),
-                        Side::Out => Handle::Out(&p.id),
-                    };
-                    if let Some(pos) = pin_pos(b, h, self.z) {
-                        out.push((
-                            PinRef {
-                                node: id.clone(),
-                                side,
-                                port: p.id.clone(),
-                                ty: p.ty,
-                            },
-                            pos,
-                        ));
-                    }
-                }
+    /// Record a value edit: params coalesce in undo and stay live (unless
+    /// they reshape the node's inputs); port values recompile.
+    fn commit_value(&mut self, patch: &mut PatchFile, cat: &Catalogue, node: &str, key: &EditKey) {
+        let reshapes = ports::find_node(patch, node)
+            .and_then(|n| cat.get(&n.def_type))
+            .is_some_and(|s| s.has_dynamic_inputs);
+        match key {
+            EditKey::Param(k) if !reshapes => {
+                self.history.push(patch, Some(&format!("{node}.{k}")));
+            }
+            EditKey::Param(k) => {
+                values::prune_dead_inputs(patch, cat, node);
+                crate::editor::settle(patch, cat);
+                self.history.push(patch, Some(&format!("{node}.{k}")));
+                self.recompile = true;
+            }
+            EditKey::Port(p) => {
+                crate::editor::settle(patch, cat);
+                self.history.push(patch, Some(&format!("{node}.port.{p}")));
+                self.recompile = true;
             }
         }
-        out
     }
 
-    fn pin(&self, p: Pos2, radius: f32, side: Option<Side>) -> Option<PinRef> {
-        self.all_pins()
-            .into_iter()
-            .filter(|(r, _)| side.is_none_or(|s| s == r.side))
-            .map(|(r, pos)| (r, pos.distance(p)))
-            .filter(|(_, d)| *d <= radius)
-            .min_by(|a, b| a.1.total_cmp(&b.1))
-            .map(|(r, _)| r)
+    fn live(&mut self, node: &str, key: &EditKey, value: Json) {
+        self.live_edits.push(match key {
+            EditKey::Param(k) => LiveEdit::Param {
+                node: node.to_owned(),
+                key: k.clone(),
+                value,
+            },
+            EditKey::Port(p) => LiveEdit::Port {
+                node: node.to_owned(),
+                port: p.clone(),
+                value,
+            },
+        });
     }
 
-    fn wire(&self, p: Pos2) -> Option<String> {
-        self.wires
-            .iter()
-            .rev()
-            .map(|w| (w, dist_to_polyline(p, &w.flat)))
-            .filter(|(_, d)| *d <= WIRE_HIT)
-            .min_by(|a, b| a.1.total_cmp(&b.1))
-            .map(|(w, _)| w.id.clone())
+    fn canvas_rect(&self, r: Rect) -> Rect {
+        let min = self.to_canvas(r.min);
+        Rect::from_min_size(pos2(min.x as f32, min.y as f32), r.size() / self.zoom)
+    }
+
+    fn overlay_open(&self) -> bool {
+        self.search.is_some()
+            || self.favorites_menu.is_some()
+            || self.menu.is_some()
+            || self.editing.is_some()
+            || self.color.is_some()
+            || self.port_editor.is_some()
     }
 }
 
@@ -585,11 +538,19 @@ fn conn_between(a: &PinRef, b: &PinRef) -> Option<Conn> {
     Conn::between((&a.node, a.side, &a.port), (&b.node, b.side, &b.port))
 }
 
+/// Visible drawable regions (ForEach / If / Cache), the reparent targets.
+fn drawable_ids(boxes: &IndexMap<String, NodeBox>) -> Vec<&str> {
+    boxes
+        .iter()
+        .filter(|(_, b)| b.look == Look::Region)
+        .map(|(id, _)| id.as_str())
+        .collect()
+}
+
 pub fn show(
     ui: &mut egui::Ui,
     patch: &mut PatchFile,
-    engine: &Engine,
-    outputs: &Outputs,
+    live: &Live,
     cat: &Catalogue,
     view: &mut View,
 ) {
@@ -600,6 +561,13 @@ pub fn show(
     let ctx = ui.ctx().clone();
     painter.rect_filled(area, 0.0, BG_0);
 
+    let visible = subpatch::visible(patch, cat, &view.stack);
+    if view.fit_pending || (view.keep_fitted && area != view.fitted_area) {
+        view.fit_nodes(patch, area, |id| visible.contains(id));
+        view.fit_pending = false;
+        view.fitted_area = area;
+    }
+
     // ── Camera: two-finger scroll pans, pinch / ⌘-scroll zooms around the pointer.
     if resp.hovered() {
         let (scroll, zoom_delta, pointer) =
@@ -607,11 +575,13 @@ pub fn show(
         if zoom_delta != 1.0 {
             if let Some(p) = pointer {
                 let before = (p - origin) / view.zoom - view.pan;
-                view.zoom = (view.zoom * zoom_delta).clamp(0.15, 3.0);
+                view.zoom = (view.zoom * zoom_delta).clamp(0.1, 3.0);
                 view.pan = (p - origin) / view.zoom - before;
+                view.keep_fitted = false;
             }
         } else if scroll != Vec2::ZERO {
             view.pan += scroll / view.zoom;
+            view.keep_fitted = false;
         }
     }
 
@@ -639,32 +609,96 @@ pub fn show(
     }
 
     let z = view.zoom;
-    let boxes = layout_boxes(patch, engine, cat, view, origin);
+    let scope = view.scope().map(str::to_owned);
+    let decor = live.decor(patch, cat, &visible);
+    let boxes = {
+        let gx = geom::Ctx {
+            patch,
+            cat,
+            painter: &painter,
+            origin,
+            pan: view.pan,
+            zoom: z,
+            scope: scope.as_deref(),
+            expanded: &view.expanded,
+            decor: &decor,
+        };
+        let unimplemented = |id: &str| {
+            live.engine
+                .graph
+                .idx(id)
+                .is_some_and(|i| live.engine.graph.nodes[i].unimplemented)
+        };
+        geom::layout(&gx, &visible, &unimplemented)
+    };
     let order = view.draw_order(&boxes);
-    let wire_list = wires(patch, &boxes, z);
+    let wire_list = geom::wires(patch, &boxes, z);
     let hits = Hits {
         boxes: &boxes,
         order: &order,
         wires: &wire_list,
-        z,
     };
     let pointer = ui.input(|i| i.pointer.hover_pos());
     let mods = ui.input(|i| i.modifiers);
+    let typing = ctx.text_edit_focused();
+    let space = !typing && ui.input(|i| i.key_down(Key::Space));
     if let Some(p) = pointer.filter(|p| area.contains(*p)) {
         view.last_pointer = Some(p);
     }
     let mut actions: Vec<Action> = Vec::new();
 
+    // ── Palette drag-to-add.
+    let palette_hover = resp.dnd_hover_payload::<PaletteDrag>();
+    if let Some(drop) = resp.dnd_release_payload::<PaletteDrag>() {
+        if let Some(p) = pointer {
+            actions.push(Action::Place {
+                ty: drop.0.clone(),
+                at: view.to_canvas(p),
+            });
+        }
+    }
+
     // ── Gestures.
     if resp.drag_started_by(PointerButton::Primary) {
         let start = ui.input(|i| i.pointer.press_origin()).or(pointer);
         if let Some(start) = start {
-            if let Some(pin) = hits.pin(start, PIN_HIT, None) {
-                view.selected_edge = None;
+            view.selected_edge = None;
+            if view.armed.is_some()
+                && hits.pin(start, PIN_HIT, None).is_none()
+                && hits.body(start).is_none()
+            {
+                view.gesture = Gesture::DrawRegion { origin: start };
+            } else if let Some(pin) = hits.pin(start, PIN_HIT, None) {
                 view.gesture = Gesture::Wire {
                     from: pin,
                     alt: mods.alt,
                 };
+            } else if let Some(f) = hits.field(start) {
+                if matches!(f.kind, FieldKind::Number { .. } | FieldKind::Vec2) {
+                    let v = match f.axis {
+                        Some(a) => {
+                            let (x, y) = values::as_vec2(&f.value);
+                            [x, y][a.min(1)]
+                        }
+                        None => values::as_f64(&f.value),
+                    };
+                    view.gesture = Gesture::Scrub {
+                        field: f.clone(),
+                        start: v,
+                        origin_x: start.x,
+                    };
+                }
+            } else if let Some((region, port)) = hits.pill(start) {
+                if let Some(pl) = boxes[region.as_str()].pills.iter().find(|p| p.port == port) {
+                    let y = f64::from((pl.rect.center().y - boxes[region.as_str()].rect.top()) / z);
+                    view.gesture = Gesture::PortDrag {
+                        region: region.clone(),
+                        port,
+                        start_y: y,
+                        range: (pl.min_y, pl.max_y),
+                        origin: start,
+                    };
+                }
             } else if let Some(id) = hits.node(start) {
                 if !view.is_selected(&id) {
                     if mods.shift {
@@ -673,7 +707,7 @@ pub fn show(
                         view.selection = vec![id.clone()];
                     }
                 }
-                view.selected_edge = None;
+                view.selected_ports.clear();
                 view.raise(&id);
                 let mut ids = view.top_level_selection(patch);
                 let duplicated = mods.alt;
@@ -685,21 +719,25 @@ pub fn show(
                         view.raise(i);
                     }
                 }
-                let start_pos = ids
-                    .iter()
-                    .map(|i| {
-                        ports::find_node(patch, i)
-                            .map(|n| n.position)
-                            .unwrap_or_default()
-                    })
-                    .collect();
+                let start_pos = ids.iter().map(|i| ops::absolute_pos(patch, i)).collect();
                 view.gesture = Gesture::Move {
                     ids,
                     start: start_pos,
                     origin: start,
                     duplicated,
                     moved: false,
+                    reparent: space,
                 };
+            } else if let Some((id, dx, dy)) = hits.resize(start) {
+                if let Some(n) = ports::find_node(patch, &id) {
+                    view.gesture = Gesture::Resize {
+                        size: ops::region_size(n),
+                        start: ops::absolute_pos(patch, &id),
+                        id,
+                        dir: (dx, dy),
+                        origin: start,
+                    };
+                }
             } else if mods.alt {
                 view.gesture = Gesture::Pan;
             } else {
@@ -708,7 +746,6 @@ pub fn show(
                 } else {
                     Vec::new()
                 };
-                view.selected_edge = None;
                 view.gesture = Gesture::Marquee {
                     origin: start,
                     base,
@@ -719,32 +756,69 @@ pub fn show(
         view.gesture = Gesture::Pan;
     }
 
+    let mut hover_region: Option<String> = None;
     if resp.dragged() {
+        let (snap, auto_grow) = (view.snap, view.auto_grow);
         match &mut view.gesture {
-            Gesture::Pan => view.pan += resp.drag_delta() / z,
+            Gesture::Pan => {
+                view.pan += resp.drag_delta() / z;
+                view.keep_fitted = false;
+            }
             Gesture::Move {
                 ids,
                 start,
                 origin: o,
                 moved,
+                reparent,
                 ..
             } => {
+                *reparent |= space;
                 if let Some(p) = pointer {
                     let d = (p - *o) / z;
                     *moved = true;
                     for (id, s) in ids.iter().zip(start.iter()) {
-                        let mut np = Position {
+                        let mut t = Position {
                             x: s.x + f64::from(d.x),
                             y: s.y + f64::from(d.y),
                         };
-                        if view.snap {
-                            np = Position {
-                                x: ops::snap(np.x),
-                                y: ops::snap(np.y),
+                        if snap {
+                            t = Position {
+                                x: ops::snap(t.x),
+                                y: ops::snap(t.y),
                             };
                         }
+                        let parent = ports::find_node(patch, id).and_then(|n| n.parent_id.clone());
+                        let base = parent
+                            .map(|p| ops::absolute_pos(patch, &p))
+                            .unwrap_or_default();
                         if let Some(n) = ports::find_node_mut(patch, id) {
-                            n.position = np;
+                            n.position = Position {
+                                x: t.x - base.x,
+                                y: t.y - base.y,
+                            };
+                        }
+                    }
+                    if *reparent {
+                        hover_region = regions::containing(
+                            patch,
+                            drawable_ids(&boxes),
+                            view_to_canvas(area, view.pan, z, p),
+                            ids,
+                        );
+                    } else if auto_grow {
+                        for id in ids.iter() {
+                            let in_frame = ports::find_node(patch, id)
+                                .and_then(|n| n.parent_id.as_deref())
+                                .is_some_and(|p| regions::is_drawable_node(patch, cat, p));
+                            if !in_frame {
+                                continue;
+                            }
+                            let size = ports::find_node(patch, id)
+                                .map(|n| {
+                                    geom::box_size(n, cat, geom::look_of(n, cat, scope.as_deref()))
+                                })
+                                .unwrap_or_default();
+                            regions::auto_grow(patch, id, size, ids);
                         }
                     }
                 }
@@ -754,7 +828,7 @@ pub fn show(
                     let r = Rect::from_two_pos(*o, p);
                     let mut sel = base.clone();
                     for (id, b) in &boxes {
-                        if r.contains_rect(b.rect) && !sel.contains(id) {
+                        if b.look != Look::Frame && r.contains_rect(b.rect) && !sel.contains(id) {
                             sel.push(id.clone());
                         }
                     }
@@ -762,7 +836,70 @@ pub fn show(
                 }
             }
             Gesture::Wire { alt, .. } => *alt = mods.alt,
-            Gesture::None => {}
+            Gesture::Resize {
+                id,
+                dir,
+                start,
+                size,
+                origin: o,
+            } => {
+                if let Some(p) = pointer {
+                    let d = (p - *o) / z;
+                    let (dx, dy) = (f64::from(d.x), f64::from(d.y));
+                    let edge = |dir: i8, pos: f64, len: f64, delta: f64, min: f64| match dir {
+                        -1 => {
+                            let dd = delta.min(len - min);
+                            (pos + dd, len - dd)
+                        }
+                        1 => (pos, (len + delta).max(min)),
+                        _ => (pos, len),
+                    };
+                    let (x, w) = edge(dir.0, start.x, size.0, dx, regions::MIN_W);
+                    let (y, h) = edge(dir.1, start.y, size.1, dy, regions::MIN_H);
+                    regions::resize(patch, id, Position { x, y }, w, h);
+                }
+            }
+            Gesture::PortDrag {
+                region,
+                port,
+                start_y,
+                range,
+                origin: o,
+            } => {
+                if let Some(p) = pointer {
+                    let y = (*start_y + f64::from((p.y - o.y) / z)).clamp(range.0, range.1);
+                    regions::set_port_y(patch, region, port, y);
+                }
+            }
+            Gesture::Scrub {
+                field,
+                start,
+                origin_x,
+            } => {
+                if let Some(p) = pointer {
+                    let integer = matches!(field.kind, FieldKind::Number { integer: true });
+                    let v = values::scrub(
+                        *start,
+                        f64::from(p.x - *origin_x),
+                        mods.shift,
+                        mods.alt,
+                        integer,
+                    );
+                    let value = match field.axis {
+                        Some(a) => {
+                            let (x, y) = values::as_vec2(&field.value);
+                            let (x, y) = if a == 0 { (v, y) } else { (x, v) };
+                            serde_json::json!({ "x": x, "y": y })
+                        }
+                        None => serde_json::json!(v),
+                    };
+                    let (node, key) = (field.node.clone(), field.key.clone());
+                    if values::set(patch, &node, &key, value.clone()) {
+                        view.live(&node, &key, value);
+                    }
+                }
+            }
+            Gesture::DrawRegion { .. } | Gesture::None => {}
         }
     }
 
@@ -790,13 +927,53 @@ pub fn show(
             .min_by(|a, b| a.1.total_cmp(&b.1))
             .map(|(r, _)| r.clone())
     };
+    let frames: Vec<&str> = boxes
+        .iter()
+        .filter(|(_, b)| b.look.is_frame())
+        .map(|(id, _)| id.as_str())
+        .collect();
+    // A wire hovering a frame border adds a port there on release.
+    let edge_drop = |from: &PinRef, p: Pos2| -> Option<regions::EdgeHit> {
+        regions::edge_at(
+            patch,
+            frames.iter().copied(),
+            view_to_canvas(area, view.pan, z, p),
+        )
+        .filter(|h| h.region != from.node)
+    };
+    let pending_edge = match (&affinity, pointer) {
+        (Some((from, _)), Some(p)) if drop_target(p).is_none() => edge_drop(from, p),
+        _ => None,
+    };
 
     if resp.drag_stopped() {
         match std::mem::replace(&mut view.gesture, Gesture::None) {
             Gesture::Move {
-                duplicated, moved, ..
+                ids,
+                duplicated,
+                moved,
+                reparent,
+                ..
             } => {
-                if duplicated {
+                if reparent && moved {
+                    let target = pointer.and_then(|p| {
+                        regions::containing(patch, drawable_ids(&boxes), view.to_canvas(p), &ids)
+                    });
+                    let target = target.or_else(|| scope.clone());
+                    let mut changed = false;
+                    let movable: Vec<&String> = ids
+                        .iter()
+                        .filter(|id| !regions::is_drawable_node(patch, cat, id))
+                        .collect();
+                    for id in movable {
+                        changed |= regions::set_parent(patch, id, target.as_deref());
+                    }
+                    if changed || duplicated {
+                        view.commit(patch);
+                    } else {
+                        view.history.push(patch, None);
+                    }
+                } else if duplicated {
                     view.commit(patch);
                 } else if moved {
                     view.history.push(patch, None);
@@ -808,6 +985,8 @@ pub fn show(
                         if let Some(c) = conn_between(&from, &to) {
                             actions.push(Action::Connect(c));
                         }
+                    } else if let Some(hit) = edge_drop(&from, p) {
+                        actions.push(Action::ConnectNewPort { from, hit });
                     } else if hits.node(p).is_none() && hits.pin(p, PIN_HIT, None).is_none() {
                         let at = view.to_canvas(p);
                         if alt || mods.alt {
@@ -830,6 +1009,21 @@ pub fn show(
                     }
                 }
             }
+            Gesture::Resize { .. } | Gesture::PortDrag { .. } => view.history.push(patch, None),
+            Gesture::Scrub { field, .. } => view.commit_value(patch, cat, &field.node, &field.key),
+            Gesture::DrawRegion { origin: o } => {
+                if let (Some(ty), Some(p)) = (view.armed.take(), pointer) {
+                    let (a, b) = (view.to_canvas(o), view.to_canvas(p));
+                    actions.push(Action::AddRegion {
+                        ty,
+                        min: Position {
+                            x: a.x.min(b.x),
+                            y: a.y.min(b.y),
+                        },
+                        size: ((a.x - b.x).abs().max(60.0), (a.y - b.y).abs().max(60.0)),
+                    });
+                }
+            }
             Gesture::Marquee { .. } | Gesture::Pan | Gesture::None => {}
         }
     }
@@ -837,7 +1031,30 @@ pub fn show(
     // ── Clicks.
     if resp.clicked() {
         if let Some(p) = pointer {
-            if hits.pin(p, PIN_HIT, None).is_some() {
+            if view.armed.is_some() {
+                // The draw tool needs a drag.
+            } else if let Some((id, _)) = hits.chip(p) {
+                actions.push(Action::Focus(id.clone()));
+            } else if let Some(f) = hits.field(p) {
+                click_field(view, f.clone(), p);
+            } else if let Some((node, port)) = hits.toggle(p) {
+                let key = (node, port);
+                if !view.expanded.remove(&key) {
+                    view.expanded.insert(key);
+                }
+            } else if let Some(pp) = hits.pill(p) {
+                if mods.shift || mods.command {
+                    if let Some(i) = view.selected_ports.iter().position(|x| *x == pp) {
+                        view.selected_ports.remove(i);
+                    } else {
+                        view.selected_ports.push(pp);
+                    }
+                } else {
+                    view.selected_ports = vec![pp];
+                    view.selection.clear();
+                }
+                view.selected_edge = None;
+            } else if hits.pin(p, PIN_HIT, None).is_some() {
                 // Pins only start wires.
             } else if let Some(id) = hits.node(p) {
                 if mods.shift || mods.command {
@@ -850,55 +1067,89 @@ pub fn show(
                     view.selection = vec![id.clone()];
                 }
                 view.selected_edge = None;
+                view.selected_ports.clear();
                 view.raise(&id);
-            } else if let Some(e) = hits.wire(p) {
-                view.selected_edge = Some(e);
+            } else if let Some(w) = hits.wire(p) {
+                view.selected_edge = Some(w.id.clone());
                 view.selection.clear();
+                view.selected_ports.clear();
             } else if !mods.shift {
                 view.selection.clear();
                 view.selected_edge = None;
+                view.selected_ports.clear();
             }
         }
     }
-    if resp.double_clicked() {
-        if let Some(p) = pointer.filter(|p| hits.node(*p).is_none()) {
+    if resp.double_clicked() && view.armed.is_none() {
+        if let Some(p) = pointer {
             let at = view.to_canvas(p);
-            match hits.wire(p) {
-                Some(eid) => {
-                    if let Some(s) = insertion_search(patch, cat, &eid, p, at) {
-                        view.search = Some(s);
-                    }
+            if let Some((region, port)) = hits.pill(p) {
+                let name = ports::find_node(patch, &region)
+                    .and_then(|n| n.ports.iter().flatten().find(|x| x.id == port).cloned())
+                    .map(|x| x.name)
+                    .unwrap_or_default();
+                if let Some(pl) = boxes[region.as_str()].pills.iter().find(|x| x.port == port) {
+                    view.editing = Some(TextEditing {
+                        target: EditTarget::PortName { region, port },
+                        text: name,
+                        rect: view.canvas_rect(pl.rect),
+                        first: true,
+                    });
                 }
-                None => actions.push(Action::OpenSearch { screen: p, at }),
+            } else if let Some(id) = hits.node(p) {
+                if boxes[id.as_str()].look == Look::Collapsed {
+                    actions.push(Action::Enter(id));
+                }
+            } else if let Some(w) = hits.wire(p) {
+                if let Some(s) = insertion_search(patch, cat, &w.id, p, at) {
+                    view.search = Some(s);
+                }
+            } else if hits.field(p).is_none() && hits.pin(p, PIN_HIT, None).is_none() {
+                actions.push(Action::OpenSearch { screen: p, at });
             }
         }
     }
     if resp.secondary_clicked() {
-        if let Some(p) = pointer {
+        if view.armed.take().is_some() {
+            // Right-click cancels the draw tool.
+        } else if let Some(p) = pointer {
             let at = view.to_canvas(p);
-            let target = if let Some(id) = hits.node(p) {
-                if !view.is_selected(&id) {
-                    view.select_only(&id);
-                }
-                MenuTarget::Node(id)
-            } else if let Some(e) = hits.wire(p) {
-                view.selection.clear();
-                view.selected_edge = Some(e.clone());
-                MenuTarget::Edge(e)
+            let pin = hits.pin(p, PIN_HIT, Some(Side::In));
+            let pin = pin.filter(|r| boxes.get(&r.node).is_some_and(|b| b.look == Look::Node));
+            if let Some(pin) = pin {
+                open_port_editor(view, patch, cat, &boxes, &pin, p);
+            } else if hits.pill(p).is_some() {
+                // Pills delete with Del once selected, never by right-click.
             } else {
-                MenuTarget::Pane
-            };
-            view.search = None;
-            view.menu = Some((p, at, target));
+                let target = if let Some(id) = hits.node(p) {
+                    if !view.is_selected(&id) {
+                        view.select_only(&id);
+                    }
+                    MenuTarget::Node(id)
+                } else if let Some(w) = hits.wire(p) {
+                    view.selection.clear();
+                    view.selected_edge = Some(w.id.clone());
+                    MenuTarget::Edge(w.id.clone())
+                } else {
+                    MenuTarget::Pane
+                };
+                view.close_overlays();
+                view.menu = Some((p, at, target));
+            }
         }
     }
 
-    // ── Keyboard (not while typing in a text field or the search).
-    if !ctx.text_edit_focused() && view.search.is_none() {
+    // ── Keyboard (not while typing in a text field or a popup is open).
+    if !typing && !view.overlay_open() {
         let anchor = view.to_canvas(view.last_pointer.unwrap_or(area.center()));
         let cursor = view.last_pointer.unwrap_or(area.center());
         let selected_edge = view.selected_edge.clone();
-        let menu_open = view.menu.is_some();
+        let one_subpatch = match view.selection.as_slice() {
+            [id] if boxes.get(id).is_some_and(|b| b.look == Look::Collapsed) => Some(id.clone()),
+            _ => None,
+        };
+        let in_subpatch = !view.stack.is_empty();
+        let mut escape = false;
         ui.input_mut(|i| {
             let cmd_shift = Modifiers::COMMAND | Modifiers::SHIFT;
             if i.consume_key(cmd_shift, Key::Z) || i.consume_key(Modifiers::COMMAND, Key::Y) {
@@ -911,6 +1162,9 @@ pub fn show(
             }
             if i.consume_key(Modifiers::COMMAND, Key::A) {
                 actions.push(Action::SelectAll);
+            }
+            if i.consume_key(Modifiers::COMMAND, Key::G) {
+                actions.push(Action::Group);
             }
             if i.consume_key(Modifiers::NONE, Key::Delete)
                 || i.consume_key(Modifiers::NONE, Key::Backspace)
@@ -928,11 +1182,25 @@ pub fn show(
             if i.consume_key(Modifiers::NONE, Key::F) {
                 actions.push(Action::Fit);
             }
-            if !menu_open && i.consume_key(Modifiers::NONE, Key::Tab) {
+            if i.consume_key(Modifiers::NONE, Key::Tab) {
                 actions.push(Action::OpenSearch {
                     screen: cursor,
                     at: anchor,
                 });
+            }
+            if i.consume_key(Modifiers::NONE, Key::Q) {
+                actions.push(Action::OpenFavorites {
+                    screen: cursor,
+                    at: anchor,
+                });
+            }
+            if let Some(id) = &one_subpatch {
+                if i.consume_key(Modifiers::NONE, Key::I) {
+                    actions.push(Action::Enter(id.clone()));
+                }
+            }
+            if in_subpatch && i.consume_key(Modifiers::NONE, Key::O) {
+                actions.push(Action::Exit);
             }
             for ev in &i.events {
                 match ev {
@@ -944,35 +1212,100 @@ pub fn show(
                     _ => {}
                 }
             }
-            if !menu_open && i.consume_key(Modifiers::NONE, Key::Escape) {
-                view.gesture = Gesture::None;
-                view.selection.clear();
-                view.selected_edge = None;
-            }
+            escape = i.consume_key(Modifiers::NONE, Key::Escape);
         });
+        // Esc disarms the draw tool first, else clears the selection.
+        if escape && view.armed.take().is_none() {
+            view.gesture = Gesture::None;
+            view.selection.clear();
+            view.selected_edge = None;
+            view.selected_ports.clear();
+        }
     }
 
-    // ── Regions (behind everything).
+    // ── Cursor.
+    if resp.hovered() {
+        if let Some(p) = pointer {
+            let icon = if view.armed.is_some() {
+                Some(CursorIcon::Crosshair)
+            } else if matches!(view.gesture, Gesture::None) {
+                if hits.pin(p, PIN_HIT, None).is_some() {
+                    None
+                } else if hits
+                    .field(p)
+                    .is_some_and(|f| matches!(f.kind, FieldKind::Number { .. } | FieldKind::Vec2))
+                {
+                    Some(CursorIcon::ResizeHorizontal)
+                } else if hits.pill(p).is_some() {
+                    Some(CursorIcon::ResizeVertical)
+                } else if hits.node(p).is_none() {
+                    hits.resize(p).map(|(_, dx, dy)| match (dx, dy) {
+                        (0, _) => CursorIcon::ResizeVertical,
+                        (_, 0) => CursorIcon::ResizeHorizontal,
+                        (a, b) if a == b => CursorIcon::ResizeNwSe,
+                        _ => CursorIcon::ResizeNeSw,
+                    })
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+            if let Some(icon) = icon {
+                ctx.set_cursor_icon(icon);
+            }
+        }
+    }
+
+    // ── Frames (behind everything): the entered subpatch, then regions
+    // outermost first.
     let flow_t = ui.input(|i| i.time) as f32;
-    for (id, b) in boxes.iter().filter(|(_, b)| b.region) {
-        let selected = view.is_selected(id);
-        painter.rect(
-            b.rect,
-            CornerRadius::same((9.0 * z) as u8),
-            GOLD.gamma_multiply(0.05),
-            Stroke::new(
-                if selected { 2.0 } else { 1.5 },
-                GOLD.gamma_multiply(if selected { 0.95 } else { 0.55 }),
-            ),
-            egui::StrokeKind::Inside,
+    let mut frame_ids: Vec<&String> = boxes
+        .iter()
+        .filter(|(_, b)| b.look.is_frame())
+        .map(|(id, _)| id)
+        .collect();
+    frame_ids.sort_by(|a, b| {
+        let (ba, bb) = (&boxes[a.as_str()], &boxes[b.as_str()]);
+        (ba.look != Look::Frame)
+            .cmp(&(bb.look != Look::Frame))
+            .then(bb.rect.area().total_cmp(&ba.rect.area()))
+    });
+    let reparenting = matches!(view.gesture, Gesture::Move { reparent: true, .. });
+    for id in &frame_ids {
+        let b = &boxes[id.as_str()];
+        let n = ports::find_node(patch, id);
+        let def_type = n.map_or("", |n| n.def_type.as_str());
+        let sel_ports: Vec<String> = view
+            .selected_ports
+            .iter()
+            .filter(|(r, _)| r == *id)
+            .map(|(_, p)| p.clone())
+            .collect();
+        let edge_hit = pending_edge.as_ref().is_some_and(|h| &h.region == *id);
+        draw::frame(
+            &painter,
+            b,
+            &draw::FrameState {
+                kind: cat.get(def_type).and_then(|s| s.region_kind),
+                def_type,
+                selected: view.is_selected(id),
+                drop_target: (reparenting && hover_region.as_ref() == Some(*id)) || edge_hit,
+                selected_ports: &sel_ports,
+            },
+            z,
         );
-        painter.text(
-            b.rect.min + vec2(12.0, 7.0) * z,
-            Align2::LEFT_TOP,
-            &b.label,
-            FontId::proportional(12.0 * z),
-            GOLD,
-        );
+        if let Some(h) = pending_edge.as_ref().filter(|h| &h.region == *id) {
+            let x = match h.direction {
+                floret_engine::patch::PortDirection::Input => b.rect.left(),
+                floret_engine::patch::PortDirection::Output => b.rect.right(),
+            };
+            let y = b.rect.top() + h.y as f32 * z;
+            painter.line_segment(
+                [pos2(x - 12.0 * z, y), pos2(x + 12.0 * z, y)],
+                Stroke::new(3.0, GOLD),
+            );
+        }
     }
 
     // ── Wires, coloured by the source pin's type.
@@ -980,7 +1313,7 @@ pub fn show(
         (Gesture::None, Some(p))
             if resp.hovered() && hits.node(p).is_none() && hits.pin(p, PIN_HIT, None).is_none() =>
         {
-            hits.wire(p)
+            hits.wire(p).map(|w| w.id.clone())
         }
         _ => None,
     };
@@ -1000,7 +1333,7 @@ pub fn show(
         } else if hovered {
             (base, width + 0.8)
         } else {
-            (mix(base, FG_2, 0.75), width)
+            (draw::mix_wire(base), width)
         };
         painter.add(bezier(w.pts, Stroke::new(wdt, color)));
         if view.wire_flow && z > 0.3 {
@@ -1020,23 +1353,20 @@ pub fn show(
     if let (Some((from, _)), Some(p)) = (&affinity, pointer) {
         if let Some(a) = boxes
             .get(&from.node)
-            .and_then(|b| pin_pos(b, side_handle(from), z))
+            .and_then(|b| b.pin(from.side, &from.port))
+            .map(|g| g.pos)
         {
             let target = drop_target(p);
             let end = target
                 .as_ref()
-                .and_then(|t| {
-                    boxes
-                        .get(&t.node)
-                        .and_then(|b| pin_pos(b, side_handle(t), z))
-                })
-                .unwrap_or(p);
+                .and_then(|t| boxes.get(&t.node).and_then(|b| b.pin(t.side, &t.port)))
+                .map_or(p, |g| g.pos);
             let pts = match from.side {
                 Side::Out => wire_points(a, end, z),
                 Side::In => wire_points(end, a, z),
             };
             let flat = bezier(pts, Stroke::NONE).flatten(Some(0.5));
-            let color = if target.is_some() {
+            let color = if target.is_some() || pending_edge.is_some() {
                 GOLD
             } else {
                 GOLD.gamma_multiply(0.85)
@@ -1049,12 +1379,7 @@ pub fn show(
         }
     }
 
-    // ── Nodes.
-    let values = |id: &str| -> Option<Vec<String>> {
-        let idx = engine.graph.idx(id)?;
-        let out = outputs.get(idx)?.as_ref()?;
-        Some(out.iter().map(format_spread).collect())
-    };
+    // ── Pins and nodes.
     let pin_look = |node: &str, side: Side, port: &str| -> PinLook {
         match &affinity {
             None => PinLook::Normal,
@@ -1073,146 +1398,39 @@ pub fn show(
         }
     };
     let pulse = 0.5 + 0.5 * (flow_t * std::f32::consts::TAU / 1.2).sin();
-    let draw_pin = |pos: Pos2, ty: PortType, look: PinLook| {
-        let color = theme::port_color(type_name(ty));
-        match look {
-            PinLook::Dim => {
-                painter.circle(pos, PIN_R * z, color.gamma_multiply(0.18), Stroke::NONE);
-            }
-            PinLook::Match => {
-                painter.circle_filled(
-                    pos,
-                    (PIN_R + 3.0 + 2.0 * pulse) * z,
-                    GOLD.gamma_multiply(0.35 + 0.2 * pulse),
-                );
-                painter.circle(pos, PIN_R * z, color, Stroke::new(1.5, BG_2));
-            }
-            PinLook::Source => {
-                painter.circle(pos, (PIN_R + 1.0) * z, GOLD, Stroke::new(1.5, BG_2));
-            }
-            PinLook::Normal => {
-                painter.circle(pos, PIN_R * z, color, Stroke::new(1.5, BG_2));
-            }
-        }
-    };
-    for (id, b) in boxes.iter().filter(|(_, b)| b.region) {
-        for (side, list) in [(Side::In, &b.inputs), (Side::Out, &b.outputs)] {
-            for p in list {
-                let h = match side {
-                    Side::In => Handle::In(&p.id),
-                    Side::Out => Handle::Out(&p.id),
-                };
-                if let Some(pos) = pin_pos(b, h, z) {
-                    draw_pin(pos, p.ty, pin_look(id, side, &p.id));
-                }
-            }
+    for id in &frame_ids {
+        for g in &boxes[id.as_str()].pins {
+            draw::pin(&painter, g, pin_look(id, g.side, &g.port), pulse, z);
         }
     }
+    let editing_field = match &view.editing {
+        Some(TextEditing {
+            target: EditTarget::Field(f),
+            ..
+        }) => Some(f.clone()),
+        _ => None,
+    };
     for id in &order {
         let b = &boxes[id.as_str()];
-        let selected = view.is_selected(id);
-        let r = CornerRadius::same((6.0 * z) as u8);
-        if selected {
-            // Soft gold glow (the web app's --glow-gold), not a second ring.
-            let glow = egui::Shadow {
-                offset: [0, 0],
-                blur: 14,
-                spread: 0,
-                color: GOLD.gamma_multiply(0.22),
-            };
-            painter.add(glow.as_shape(b.rect, r));
-        }
-        painter.rect(
-            b.rect,
-            r,
-            BG_2,
-            Stroke::new(
-                1.0,
-                if selected {
-                    GOLD.gamma_multiply(0.85)
-                } else {
-                    BORDER
-                },
-            ),
-            egui::StrokeKind::Inside,
+        let out_text = |port: &str| live.output(patch, cat, id, port).map(|s| format_spread(&s));
+        let subtitle = (b.look == Look::Collapsed).then_some("subpatch");
+        draw::node(
+            &painter,
+            b,
+            &draw::NodeState {
+                selected: view.is_selected(id),
+                subtitle,
+                out_text: &out_text,
+                editing: editing_field.as_ref().filter(|f| &f.node == id),
+            },
+            z,
         );
-        let header = Rect::from_min_size(b.rect.min, vec2(b.rect.width(), HEADER_H * z));
-        painter.line_segment(
-            [header.left_bottom(), header.right_bottom()],
-            Stroke::new(1.0, BORDER),
-        );
-        let accent = theme::category_color(&b.category);
-        painter.circle_filled(header.left_center() + vec2(12.0 * z, 0.0), 3.2 * z, accent);
-        if z > 0.25 {
-            painter.text(
-                header.left_center() + vec2(22.0 * z, 0.0),
-                Align2::LEFT_CENTER,
-                &b.label,
-                FontId::proportional(12.5 * z),
-                FG_0,
-            );
-            if b.unimplemented {
-                painter.text(
-                    header.right_center() - vec2(8.0 * z, 0.0),
-                    Align2::RIGHT_CENTER,
-                    "not ported",
-                    FontId::proportional(9.5 * z),
-                    FG_2,
-                );
-            }
-        }
-        if let (Some(text), true) = (&b.comment, z > 0.3) {
-            let body = b.rect.shrink2(vec2(10.0, 0.0) * z);
-            let galley = painter.layout(
-                text.clone(),
-                FontId::proportional(11.5 * z),
-                FG_1,
-                body.width(),
-            );
-            let clip = Rect::from_min_max(
-                pos2(body.left(), header.bottom() + 6.0 * z),
-                pos2(body.right(), b.rect.bottom() - 6.0 * z),
-            );
-            painter.with_clip_rect(clip).galley(clip.min, galley, FG_1);
-        }
-        let vals = values(id);
-        for (i, p) in b.inputs.iter().enumerate() {
-            let y = b.rect.top() + (HEADER_H + ROW_H * (i as f32 + 0.5)) * z;
-            draw_pin(pos2(b.rect.left(), y), p.ty, pin_look(id, Side::In, &p.id));
-            if z > 0.3 {
-                painter.text(
-                    pos2(b.rect.left() + 10.0 * z, y),
-                    Align2::LEFT_CENTER,
-                    p.label.as_str(),
-                    FontId::proportional(11.0 * z),
-                    FG_1,
-                );
-            }
-        }
-        for (i, p) in b.outputs.iter().enumerate() {
-            let y = b.rect.top() + (HEADER_H + ROW_H * (i as f32 + 0.5)) * z;
-            draw_pin(
-                pos2(b.rect.right(), y),
-                p.ty,
-                pin_look(id, Side::Out, &p.id),
-            );
-            if z > 0.3 {
-                let text = match vals.as_ref().and_then(|v| v.get(i)) {
-                    Some(v) if !v.is_empty() => v.clone(),
-                    _ => p.label.as_str().to_owned(),
-                };
-                painter.text(
-                    pos2(b.rect.right() - 10.0 * z, y),
-                    Align2::RIGHT_CENTER,
-                    text,
-                    FontId::monospace(10.5 * z),
-                    if vals.is_some() { FG_0 } else { FG_1 },
-                );
-            }
+        for g in &b.pins {
+            draw::pin(&painter, g, pin_look(id, g.side, &g.port), pulse, z);
         }
     }
 
-    // ── Marquee.
+    // ── Marquee, region draw, palette drop ghost.
     if let (Gesture::Marquee { origin: o, .. }, Some(p)) = (&view.gesture, pointer) {
         let r = Rect::from_two_pos(*o, p);
         painter.rect(
@@ -1223,8 +1441,220 @@ pub fn show(
             egui::StrokeKind::Inside,
         );
     }
+    if let (Gesture::DrawRegion { origin: o }, Some(p), Some(ty)) =
+        (&view.gesture, pointer, view.armed.as_ref())
+    {
+        let spec = cat.get(ty);
+        draw::region_preview(
+            &painter,
+            Rect::from_two_pos(*o, p),
+            spec.and_then(|s| s.region_kind),
+            spec.map_or(ty.as_str(), |s| s.label.as_str()),
+        );
+    }
+    if let (Some(drag), Some(p)) = (&palette_hover, pointer) {
+        if let Some(spec) = cat.get(&drag.0) {
+            draw::drop_ghost(&painter, p, &spec.label, &spec.category, z);
+        }
+    }
 
-    // ── Corner toolbar.
+    // ── Hover tooltips: warning chips, region badges, pin and wire values.
+    if matches!(view.gesture, Gesture::None) && resp.hovered() && !view.overlay_open() {
+        if let Some(p) = pointer {
+            if let Some((_, text)) = hits.chip(p) {
+                draw::tooltip(&ctx, p, "Warning", "click to focus", text);
+            } else if let Some(hint) = hits.badge(p).filter(|h| !h.is_empty()) {
+                draw::tooltip(&ctx, p, "Iterations", "", hint);
+            } else if let Some(pin) = hits.pin(p, PIN_HIT, None) {
+                pin_tooltip(&ctx, patch, cat, live, &boxes, &pin, p);
+            } else if hits.node(p).is_none() {
+                if let Some(w) = hits.wire(p) {
+                    pin_tooltip(&ctx, patch, cat, live, &boxes, &w.source, p);
+                }
+            }
+        }
+    }
+
+    // ── Corner toolbar: breadcrumb, then canvas toggles.
+    toolbar(ui, patch, view, area, &mut actions);
+
+    // ── Overlays.
+    overlays(&ctx, patch, cat, view, area, &mut actions);
+
+    for a in actions {
+        apply(a, patch, cat, view);
+    }
+    if let Some(text) = view.copy_out.take() {
+        ctx.copy_text(text);
+    }
+}
+
+fn view_to_canvas(area: Rect, pan: Vec2, zoom: f32, p: Pos2) -> Position {
+    let c = (p - area.min) / zoom - pan;
+    Position {
+        x: f64::from(c.x),
+        y: f64::from(c.y),
+    }
+}
+
+fn pin_tooltip(
+    ctx: &egui::Context,
+    patch: &PatchFile,
+    cat: &Catalogue,
+    live: &Live,
+    boxes: &IndexMap<String, NodeBox>,
+    pin: &PinRef,
+    at: Pos2,
+) {
+    let Some(g) = boxes
+        .get(&pin.node)
+        .and_then(|b| b.pin(pin.side, &pin.port))
+    else {
+        return;
+    };
+    let kind = if g.spread {
+        format!("{} · spread", type_name(g.ty))
+    } else {
+        type_name(g.ty).to_owned()
+    };
+    let body = live
+        .pin_value(patch, cat, pin)
+        .map_or_else(|| "—".to_owned(), |v| v.text());
+    draw::tooltip(ctx, at, &g.label, &kind, &body);
+}
+
+/// A click on an inline field: toggle, open a dropdown / colour picker,
+/// or start typing.
+fn click_field(view: &mut View, f: Field, at: Pos2) {
+    match &f.kind {
+        FieldKind::Bool => {
+            let value = Json::Bool(!values::as_bool(&f.value));
+            view.gesture = Gesture::None;
+            view.menu = None;
+            let a = Action::SetValue {
+                node: f.node.clone(),
+                key: f.key.clone(),
+                value,
+            };
+            // Applied with the rest of this frame's actions.
+            view.pending_action(a);
+        }
+        FieldKind::Select(options) => {
+            let current = values::as_text(&f.value);
+            let screen = f.rect.left_bottom() + vec2(0.0, 2.0);
+            view.close_overlays();
+            view.menu = Some((
+                screen,
+                view.to_canvas(screen),
+                MenuTarget::Select {
+                    node: f.node.clone(),
+                    key: f.key.clone(),
+                    options: options.clone(),
+                    current,
+                },
+            ));
+        }
+        FieldKind::Color => {
+            let rgba = values::as_rgba(&f.value);
+            view.close_overlays();
+            view.color = Some(ColorState {
+                node: f.node.clone(),
+                key: f.key.clone(),
+                color: popups::color32(rgba),
+                hex: values::hex(rgba),
+                screen: at + vec2(8.0, 8.0),
+                before: f.value.clone(),
+            });
+        }
+        FieldKind::Number { .. } | FieldKind::Text | FieldKind::Vec2 => {
+            let text = match (f.axis, &f.kind) {
+                (Some(a), _) => {
+                    let (x, y) = values::as_vec2(&f.value);
+                    values::num([x, y][a.min(1)], 6)
+                }
+                (None, FieldKind::Number { .. }) => values::num(values::as_f64(&f.value), 6),
+                _ => values::as_text(&f.value),
+            };
+            view.close_overlays();
+            view.editing = Some(TextEditing {
+                rect: view.canvas_rect(f.rect),
+                target: EditTarget::Field(f),
+                text,
+                first: true,
+            });
+        }
+    }
+}
+
+impl View {
+    /// Queue an action raised outside `show`'s action list.
+    fn pending_action(&mut self, a: Action) {
+        self.queued.push(a);
+    }
+}
+
+fn open_port_editor(
+    view: &mut View,
+    patch: &PatchFile,
+    cat: &Catalogue,
+    boxes: &IndexMap<String, NodeBox>,
+    pin: &PinRef,
+    at: Pos2,
+) {
+    let Some(n) = ports::find_node(patch, &pin.node) else {
+        return;
+    };
+    let Some(spec) = cat.get(&n.def_type) else {
+        return;
+    };
+    let Some(port) = cat
+        .resolved_inputs(spec, &n.params)
+        .into_iter()
+        .find(|p| p.name == pin.port)
+    else {
+        return;
+    };
+    let current = n
+        .port_values
+        .as_ref()
+        .and_then(|pv| pv.get(&port.name))
+        .cloned();
+    let label = boxes
+        .get(&pin.node)
+        .and_then(|b| b.pin(Side::In, &pin.port))
+        .map_or_else(|| port.name.clone(), |g| g.label.clone());
+    view.close_overlays();
+    view.port_editor = Some(PortEditorState {
+        node: pin.node.clone(),
+        port: port.name.clone(),
+        label,
+        ty: port.ty,
+        text: current
+            .as_ref()
+            .map(values::port_editor_text)
+            .unwrap_or_default(),
+        placeholder: port
+            .default
+            .as_ref()
+            .map(|d| {
+                format!(
+                    "default: {}",
+                    values::port_editor_text(&values::value_to_json(d))
+                )
+            })
+            .unwrap_or_default(),
+        screen: at,
+        first: true,
+    });
+}
+
+fn toolbar(
+    ui: &mut egui::Ui,
+    patch: &PatchFile,
+    view: &mut View,
+    area: Rect,
+    actions: &mut Vec<Action>,
+) {
     let bar = Rect::from_min_size(area.min + vec2(10.0, 10.0), vec2(area.width() - 20.0, 26.0));
     let mut tb = ui.new_child(
         egui::UiBuilder::new()
@@ -1232,6 +1662,38 @@ pub fn show(
             .layout(egui::Layout::left_to_right(egui::Align::Center)),
     );
     tb.spacing_mut().item_spacing.x = 6.0;
+    if !view.stack.is_empty() {
+        let depth = view.stack.len();
+        if popups::chip(&mut tb, "Project", false, "Back to the top level").clicked() {
+            actions.push(Action::ViewDepth(0));
+        }
+        for (i, id) in view.stack.iter().enumerate() {
+            tb.label(egui::RichText::new("/").color(FG_2));
+            let label = ports::find_node(patch, id)
+                .and_then(|n| n.params.get("label").and_then(|v| v.as_str()))
+                .unwrap_or("Subpatch");
+            let current = i + 1 == depth;
+            if popups::chip(
+                &mut tb,
+                label,
+                current,
+                if current {
+                    "Current view"
+                } else {
+                    "Go to this level"
+                },
+            )
+            .clicked()
+                && !current
+            {
+                actions.push(Action::ViewDepth(i + 1));
+            }
+        }
+        if popups::chip(&mut tb, "⬆ O", false, "Exit one level (O)").clicked() {
+            actions.push(Action::Exit);
+        }
+        tb.add_space(8.0);
+    }
     if popups::chip(
         &mut tb,
         "Arrange",
@@ -1255,17 +1717,42 @@ pub fn show(
     {
         view.wire_flow = !view.wire_flow;
     }
+    if popups::chip(
+        &mut tb,
+        "Grow",
+        view.auto_grow,
+        "Grow a region while a child is dragged against its edge",
+    )
+    .clicked()
+    {
+        view.auto_grow = !view.auto_grow;
+    }
     tb.add_space(4.0);
-    tb.label(
-        egui::RichText::new("Dbl-click / Tab: add node · drag pins to wire · right-click for more")
-            .color(FG_3)
-            .small(),
-    );
+    let hint = match view.armed.as_deref().and_then(|t| Catalogue::builtin().get(t)) {
+        Some(s) => egui::RichText::new(format!(
+            "Drag on the canvas to draw a {} region · Esc to cancel",
+            s.label
+        ))
+        .color(GOLD),
+        None => egui::RichText::new(
+            "Dbl-click / Tab: add node · Q: favorites · drag pins to wire · Space-drag: in / out of regions · right-click for more",
+        )
+        .color(FG_3),
+    };
+    tb.label(hint.small());
+}
 
-    // ── Overlays.
+fn overlays(
+    ctx: &egui::Context,
+    patch: &mut PatchFile,
+    cat: &Catalogue,
+    view: &mut View,
+    area: Rect,
+    actions: &mut Vec<Action>,
+) {
     if let Some((at_screen, at, target)) = view.menu.clone() {
         let items = menu_items(patch, cat, view, &target, at);
-        match popups::menu_popup(&ctx, area, at_screen, &items) {
+        match popups::menu_popup(ctx, area, at_screen, &items) {
             Outcome::Open => {}
             Outcome::Close => view.menu = None,
             Outcome::Pick(a) => {
@@ -1275,44 +1762,104 @@ pub fn show(
         }
     }
     if let Some(st) = view.search.as_mut() {
-        match popups::search_popup(&ctx, area, cat, st) {
+        match popups::search_popup(ctx, area, cat, &mut view.favorites, st) {
             Outcome::Open => {}
             Outcome::Close => view.search = None,
             Outcome::Pick(ty) => actions.push(Action::PickSearch(ty)),
         }
     }
-
-    for a in actions {
-        apply(a, patch, cat, view);
+    if let Some(st) = view.favorites_menu.as_mut() {
+        match popups::favorites_popup(ctx, area, cat, &view.favorites, st) {
+            Outcome::Open => {}
+            Outcome::Close => view.favorites_menu = None,
+            Outcome::Pick(ty) => actions.push(Action::PickFavorite(ty)),
+        }
     }
-    if let Some(text) = view.copy_out.take() {
-        ctx.copy_text(text);
+    if let Some(ed) = view.editing.as_mut() {
+        let rect = Rect::from_min_size(
+            area.min + (ed.rect.min.to_vec2() + view.pan) * view.zoom,
+            ed.rect.size() * view.zoom,
+        );
+        let first = std::mem::take(&mut ed.first);
+        match popups::inline_text(ctx, rect, &mut ed.text, first) {
+            Outcome::Open => {}
+            Outcome::Close => view.editing = None,
+            Outcome::Pick(()) => {
+                let ed = view.editing.take().expect("open");
+                match ed.target {
+                    EditTarget::Field(f) => {
+                        let parsed = match f.axis {
+                            Some(a) => ed.text.trim().parse::<f64>().ok().map(|v| {
+                                let (x, y) = values::as_vec2(&f.value);
+                                let (x, y) = if a == 0 { (v, y) } else { (x, v) };
+                                serde_json::json!({ "x": x, "y": y })
+                            }),
+                            None => values::parse_field(&f.kind, &ed.text),
+                        };
+                        if let Some(value) = parsed {
+                            actions.push(Action::SetValue {
+                                node: f.node,
+                                key: f.key,
+                                value,
+                            });
+                        }
+                    }
+                    EditTarget::PortName { region, port } => {
+                        if regions::rename_port(patch, &region, &port, &ed.text) {
+                            view.history.push(patch, None);
+                        }
+                    }
+                }
+            }
+        }
     }
+    if let Some(st) = view.color.as_mut() {
+        let (changed, out) = popups::color_popup(ctx, area, st);
+        let (node, key) = (st.node.clone(), st.key.clone());
+        let value = values::rgba_json(popups::rgba_of(st.color));
+        if changed && values::set(patch, &node, &key, value.clone()) {
+            view.live(&node, &key, value);
+        }
+        match out {
+            Outcome::Open => {}
+            Outcome::Close => {
+                let st = view.color.take().expect("open");
+                values::set(patch, &node, &key, st.before.clone());
+                view.live(&node, &key, st.before);
+            }
+            Outcome::Pick(()) => {
+                let st = view.color.take().expect("open");
+                if values::as_rgba(&st.before) != popups::rgba_of(st.color) {
+                    view.commit_value(patch, cat, &node, &key);
+                }
+            }
+        }
+    }
+    if let Some(st) = view.port_editor.as_mut() {
+        match popups::port_editor(ctx, area, st) {
+            Outcome::Open => {}
+            Outcome::Close => view.port_editor = None,
+            Outcome::Pick(()) => {
+                let st = view.port_editor.take().expect("open");
+                match values::port_editor_value(st.ty, &st.text) {
+                    Some(Some(value)) => actions.push(Action::SetValue {
+                        node: st.node,
+                        key: EditKey::Port(st.port),
+                        value,
+                    }),
+                    Some(None) if values::clear_port_value(patch, &st.node, &st.port) => {
+                        view.commit_value(patch, cat, &st.node, &EditKey::Port(st.port));
+                    }
+                    _ => {}
+                }
+            }
+        }
+    }
+    actions.append(&mut view.queued);
 }
 
 /// A pin, its screen position, and whether the dragged wire may land on it.
 type PinMatch = (PinRef, Pos2, bool);
-
-#[derive(Clone, Copy)]
-enum PinLook {
-    Normal,
-    Source,
-    Match,
-    Dim,
-}
-
-fn side_handle(p: &PinRef) -> Handle<'_> {
-    match p.side {
-        Side::In => Handle::In(&p.port),
-        Side::Out => Handle::Out(&p.port),
-    }
-}
-
-/// Linear blend `a·t + b·(1−t)`.
-fn mix(a: Color32, b: Color32, t: f32) -> Color32 {
-    let l = |x: u8, y: u8| (f32::from(x) * t + f32::from(y) * (1.0 - t)).round() as u8;
-    Color32::from_rgb(l(a.r(), b.r()), l(a.g(), b.g()), l(a.b(), b.b()))
-}
 
 /// The search for splitting wire `eid` with a new node.
 fn insertion_search(
@@ -1344,32 +1891,48 @@ fn menu_items(
 ) -> Vec<MenuItem<Action>> {
     let has_clip = view.clip.is_some();
     match target {
-        MenuTarget::Pane => vec![
-            MenuItem::new(
-                "Add node…",
-                Action::OpenSearch {
-                    screen: view.menu.as_ref().map_or(Pos2::ZERO, |m| m.0),
-                    at,
-                },
-            )
-            .key("Dbl-click"),
-            MenuItem::new("Add comment", Action::AddComment(at)),
-            MenuItem::separator(),
-            MenuItem::new("Paste", Action::Paste(at))
-                .key(shortcut("V"))
-                .enabled(has_clip),
-            MenuItem::new("Select all", Action::SelectAll).key(shortcut("A")),
-            MenuItem::separator(),
-            MenuItem::new("Auto-arrange", Action::Arrange),
-            MenuItem::new("Fit view", Action::Fit).key("F"),
-            MenuItem::separator(),
-            MenuItem::new("Undo", Action::Undo)
-                .key(shortcut("Z"))
-                .enabled(view.history.can_undo()),
-            MenuItem::new("Redo", Action::Redo)
-                .key(shortcut("⇧Z"))
-                .enabled(view.history.can_redo()),
-        ],
+        MenuTarget::Pane => {
+            let mut items = vec![
+                MenuItem::new(
+                    "Add node…",
+                    Action::OpenSearch {
+                        screen: view.menu.as_ref().map_or(Pos2::ZERO, |m| m.0),
+                        at,
+                    },
+                )
+                .key("Dbl-click"),
+                MenuItem::new(
+                    "Favorites…",
+                    Action::OpenFavorites {
+                        screen: view.menu.as_ref().map_or(Pos2::ZERO, |m| m.0),
+                        at,
+                    },
+                )
+                .key("Q"),
+                MenuItem::new("Add comment", Action::AddComment(at)),
+                MenuItem::separator(),
+                MenuItem::new("Paste", Action::Paste(at))
+                    .key(shortcut("V"))
+                    .enabled(has_clip),
+                MenuItem::new("Select all", Action::SelectAll).key(shortcut("A")),
+                MenuItem::separator(),
+                MenuItem::new("Auto-arrange", Action::Arrange),
+                MenuItem::new("Fit view", Action::Fit).key("F"),
+            ];
+            if !view.stack.is_empty() {
+                items.push(MenuItem::new("Exit subpatch", Action::Exit).key("O"));
+            }
+            items.extend([
+                MenuItem::separator(),
+                MenuItem::new("Undo", Action::Undo)
+                    .key(shortcut("Z"))
+                    .enabled(view.history.can_undo()),
+                MenuItem::new("Redo", Action::Redo)
+                    .key(shortcut("⇧Z"))
+                    .enabled(view.history.can_redo()),
+            ]);
+            items
+        }
         MenuTarget::Node(id) => {
             let n = view.selection.len();
             let mut items = vec![
@@ -1394,13 +1957,60 @@ fn menu_items(
                 .key(shortcut("V"))
                 .enabled(has_clip),
             ];
-            if ports::find_node(patch, id).is_some_and(|n| n.parent_id.is_some()) {
+            let node = ports::find_node(patch, id);
+            if node.is_some_and(|n| subpatch::is_subpatch(cat, n))
+                && view.scope() != Some(id.as_str())
+            {
                 items.push(MenuItem::separator());
-                items.push(MenuItem::new(
-                    "Move out of region",
-                    Action::MoveOutOfRegion(id.clone()),
-                ));
+                items.push(MenuItem::new("Enter subpatch", Action::Enter(id.clone())).key("I"));
             }
+            if !regions::is_drawable_node(patch, cat, id) {
+                let parent = node.and_then(|n| n.parent_id.clone());
+                let scope = view.scope().map(str::to_owned);
+                let mut region_items = Vec::new();
+                if parent.is_some() && parent != scope {
+                    region_items.push(
+                        MenuItem::new(
+                            "Move out of region",
+                            Action::Reparent(id.clone(), scope.clone()),
+                        )
+                        .key("Space+drag"),
+                    );
+                }
+                let visible = subpatch::visible(patch, cat, &view.stack);
+                for r in patch.nodes.iter().filter(|r| {
+                    visible.contains(&r.id)
+                        && Some(&r.id) != parent.as_ref()
+                        && &r.id != id
+                        && regions::is_drawable_node(patch, cat, &r.id)
+                }) {
+                    let label = r
+                        .params
+                        .get("label")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("Region");
+                    region_items.push(MenuItem::new(
+                        format!("Move into {label}"),
+                        Action::Reparent(id.clone(), Some(r.id.clone())),
+                    ));
+                }
+                if !region_items.is_empty() {
+                    items.push(MenuItem::separator());
+                    items.extend(region_items);
+                }
+            }
+            items.push(MenuItem::separator());
+            items.push(
+                MenuItem::new(
+                    if n > 1 {
+                        format!("Group {n} into subpatch")
+                    } else {
+                        "Wrap in subpatch".into()
+                    },
+                    Action::Group,
+                )
+                .key(shortcut("G")),
+            );
             items.push(MenuItem::separator());
             items.push(
                 MenuItem::new(
@@ -1450,6 +2060,39 @@ fn menu_items(
             );
             items
         }
+        MenuTarget::Select {
+            node,
+            key,
+            options,
+            current,
+        } => options
+            .iter()
+            .map(|o| {
+                let label = if o == current {
+                    format!("•  {o}")
+                } else {
+                    format!("    {o}")
+                };
+                // Keep numbers numeric (e.g. FFT bins) when the stored value is.
+                let value = match ports::find_node(patch, node).and_then(|n| match key {
+                    EditKey::Param(k) => n.params.get(k),
+                    EditKey::Port(p) => n.port_values.as_ref().and_then(|pv| pv.get(p)),
+                }) {
+                    Some(Json::Number(_)) => o
+                        .parse::<f64>()
+                        .map_or_else(|_| Json::String(o.clone()), |v| serde_json::json!(v)),
+                    _ => Json::String(o.clone()),
+                };
+                MenuItem::new(
+                    label,
+                    Action::SetValue {
+                        node: node.clone(),
+                        key: key.clone(),
+                        value,
+                    },
+                )
+            })
+            .collect(),
     }
 }
 
@@ -1464,6 +2107,7 @@ fn shortcut(k: &str) -> &'static str {
         (true, "D") => "⌘D",
         (true, "C") => "⌘C",
         (true, "X") => "⌘X",
+        (true, "G") => "⌘G",
         (false, "V") => "Ctrl+V",
         (false, "A") => "Ctrl+A",
         (false, "Z") => "Ctrl+Z",
@@ -1471,15 +2115,29 @@ fn shortcut(k: &str) -> &'static str {
         (false, "D") => "Ctrl+D",
         (false, "C") => "Ctrl+C",
         (false, "X") => "Ctrl+X",
+        (false, "G") => "Ctrl+G",
         _ => "",
     }
 }
 
+fn size_of(cat: &Catalogue) -> impl Fn(&floret_engine::patch::PatchNode) -> (f64, f64) + '_ {
+    move |n| node_size(n, cat)
+}
+
 fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View) {
+    let scope = view.scope().map(str::to_owned);
     match action {
         Action::OpenSearch { screen, at } => {
-            view.menu = None;
+            view.close_overlays();
             view.search = Some(SearchState::new(screen, at, Fit::Any, Purpose::Plain));
+        }
+        Action::OpenFavorites { screen, at } => {
+            view.close_overlays();
+            view.favorites_menu = Some(FavoritesState {
+                screen,
+                at,
+                highlight: 0,
+            });
         }
         Action::PickSearch(ty) => {
             let Some(st) = view.search.take() else {
@@ -1487,8 +2145,52 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             };
             place_from_search(patch, cat, view, st, &ty);
         }
+        Action::PickFavorite(ty) => {
+            let Some(st) = view.favorites_menu.take() else {
+                return;
+            };
+            let at = Position {
+                x: st.at.x - f64::from(NODE_W) / 2.0,
+                y: st.at.y - 20.0,
+            };
+            apply(Action::Place { ty, at }, patch, cat, view);
+        }
+        Action::Place { ty, at } => {
+            if cat
+                .get(&ty)
+                .is_some_and(|s| regions::is_drawable(s.region_kind))
+            {
+                view.armed = Some(ty);
+                return;
+            }
+            if let Some(id) = ops::place_node(patch, cat, &ty, view.snapped(at), scope.as_deref()) {
+                view.select_only(&id);
+                view.commit(patch);
+            }
+        }
         Action::AddComment(at) => {
-            if let Some(id) = ops::place_node(patch, cat, "meta/comment", view.snapped(at)) {
+            if let Some(id) = ops::place_node(
+                patch,
+                cat,
+                "meta/comment",
+                view.snapped(at),
+                scope.as_deref(),
+            ) {
+                view.select_only(&id);
+                view.commit(patch);
+            }
+        }
+        Action::AddRegion { ty, min, size } => {
+            let size_fn = size_of(cat);
+            if let Some(id) = regions::add_region(
+                patch,
+                cat,
+                &ty,
+                view.snapped(min),
+                size,
+                scope.as_deref(),
+                &size_fn,
+            ) {
                 view.select_only(&id);
                 view.commit(patch);
             }
@@ -1511,15 +2213,21 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             None => apply(Action::Paste(at), patch, cat, view),
         },
         Action::Delete => {
+            let mut changed = false;
+            for (r, p) in std::mem::take(&mut view.selected_ports) {
+                changed |= regions::remove_port(patch, &r, &p);
+            }
             if !view.selection.is_empty() {
-                let ids = std::mem::take(&mut view.selection);
-                if ops::delete_nodes(patch, &ids) > 0 {
-                    view.commit(patch);
-                }
+                let ids: Vec<String> = std::mem::take(&mut view.selection)
+                    .into_iter()
+                    .filter(|id| Some(id.as_str()) != scope.as_deref())
+                    .collect();
+                changed |= ops::delete_nodes(patch, &ids) > 0;
             } else if let Some(e) = view.selected_edge.take() {
-                if connect::remove_edge(patch, &e) {
-                    view.commit(patch);
-                }
+                changed |= connect::remove_edge(patch, &e);
+            }
+            if changed {
+                view.commit(patch);
             }
             view.prune_selection(patch);
         }
@@ -1537,7 +2245,13 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             view.commit(patch);
         }
         Action::SelectAll => {
-            view.selection = patch.nodes.iter().map(|n| n.id.clone()).collect();
+            let visible = subpatch::visible(patch, cat, &view.stack);
+            view.selection = patch
+                .nodes
+                .iter()
+                .filter(|n| visible.contains(&n.id) && Some(n.id.as_str()) != scope.as_deref())
+                .map(|n| n.id.clone())
+                .collect();
             view.selected_edge = None;
         }
         Action::DeleteEdge(e) => {
@@ -1557,6 +2271,32 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 view.commit(patch);
             }
         }
+        Action::ConnectNewPort { from, hit } => {
+            let Some(pid) =
+                regions::add_port(patch, &hit.region, from.ty, hit.direction, Some(hit.y))
+            else {
+                return;
+            };
+            let c = match from.side {
+                Side::Out => Conn::new(
+                    &from.node,
+                    &Side::Out.handle(&from.port),
+                    &hit.region,
+                    &Side::In.handle(&pid),
+                ),
+                Side::In => Conn::new(
+                    &hit.region,
+                    &Side::Out.handle(&pid),
+                    &from.node,
+                    &Side::In.handle(&from.port),
+                ),
+            };
+            if connect::connect(patch, cat, &c).is_none() {
+                regions::remove_port(patch, &hit.region, &pid);
+                return;
+            }
+            view.commit(patch);
+        }
         Action::Probe { from, at } => {
             let at = view.snapped(match from.side {
                 Side::Out => at,
@@ -1565,7 +2305,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                     y: at.y,
                 },
             });
-            let Some(id) = ops::place_node(patch, cat, "meta/probe", at) else {
+            let Some(id) = ops::place_node(patch, cat, "meta/probe", at, scope.as_deref()) else {
                 return;
             };
             let c = match from.side {
@@ -1576,12 +2316,61 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             view.select_only(&id);
             view.commit(patch);
         }
-        Action::MoveOutOfRegion(id) => {
-            let abs = ops::absolute_pos(patch, &id);
-            if let Some(n) = ports::find_node_mut(patch, &id) {
-                n.parent_id = None;
-                n.position = abs;
+        Action::Reparent(id, parent) => {
+            if regions::set_parent(patch, &id, parent.as_deref()) {
                 view.commit(patch);
+            }
+        }
+        Action::Group => {
+            let ids: Vec<String> = view
+                .top_level_selection(patch)
+                .into_iter()
+                .filter(|id| Some(id.as_str()) != scope.as_deref())
+                .collect();
+            let size_fn = size_of(cat);
+            if let Some(id) = subpatch::group(patch, cat, &ids, &size_fn) {
+                view.select_only(&id);
+                view.commit(patch);
+            }
+        }
+        Action::Enter(id) => {
+            if subpatch::is_subpatch_id(patch, cat, &id) && view.scope() != Some(id.as_str()) {
+                view.stack.push(id);
+                view.stack = subpatch::valid_stack(patch, cat, &view.stack);
+                view.selection.clear();
+                view.selected_ports.clear();
+                view.selected_edge = None;
+                view.close_overlays();
+                view.fit_pending = true;
+            }
+        }
+        Action::Exit => {
+            if let Some(id) = view.stack.pop() {
+                view.close_overlays();
+                view.select_only(&id);
+                view.fit_pending = true;
+            }
+        }
+        Action::ViewDepth(d) => {
+            if d < view.stack.len() {
+                let exited = view.stack[d].clone();
+                view.stack.truncate(d);
+                view.close_overlays();
+                view.select_only(&exited);
+                view.fit_pending = true;
+            }
+        }
+        Action::Focus(id) => {
+            view.select_only(&id);
+            let area = view.area;
+            view.fit_nodes(patch, area, |n| n == id);
+            view.zoom = view.zoom.min(1.0);
+            view.keep_fitted = false;
+        }
+        Action::SetValue { node, key, value } => {
+            if values::set(patch, &node, &key, value.clone()) {
+                view.live(&node, &key, value);
+                view.commit_value(patch, cat, &node, &key);
             }
         }
         Action::Undo => {
@@ -1599,11 +2388,11 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
         Action::Arrange => {
             layout::auto_layout(patch, &|n| node_size(n, cat));
             view.commit(patch);
-            let area = view.area;
-            view.fit(patch, area);
+            view.fit_pending = true;
         }
         Action::Fit => {
             let area = view.area;
+            view.keep_fitted = false;
             if view.selection.is_empty() {
                 view.fit(patch, area);
             } else {
@@ -1634,6 +2423,15 @@ fn paste(patch: &mut PatchFile, view: &mut View, clip: &PatchFile, at: Position)
         .filter(|n| n.parent_id.is_none())
         .count()
         .min(ids.len());
+    // Inside a subpatch, pasted nodes belong to it.
+    if let Some(scope) = view.scope().map(str::to_owned) {
+        for id in &ids[..tops] {
+            if let Some(n) = ports::find_node_mut(patch, id) {
+                n.parent_id = None;
+            }
+            regions::set_parent(patch, id, Some(&scope));
+        }
+    }
     view.selection = ids[..tops].to_vec();
     view.selected_edge = None;
     for i in &ids[..tops] {
@@ -1652,6 +2450,11 @@ fn place_from_search(
     let Some(spec) = cat.get(ty) else {
         return;
     };
+    if regions::is_drawable(spec.region_kind) {
+        // Drawable regions arm the crosshair: the user sizes them.
+        view.armed = Some(ty.to_owned());
+        return;
+    }
     let at = match (&st.purpose, &st.fit) {
         // Dragged out of an input: put the node to the left of the drop.
         (Purpose::Wire { side: Side::In, .. }, _) => Position {
@@ -1667,7 +2470,8 @@ fn place_from_search(
             y: st.at.y - 20.0,
         },
     };
-    let Some(id) = ops::place_node(patch, cat, ty, view.snapped(at)) else {
+    let scope = view.scope().map(str::to_owned);
+    let Some(id) = ops::place_node(patch, cat, ty, view.snapped(at), scope.as_deref()) else {
         return;
     };
     match (&st.purpose, &st.fit) {
@@ -1714,7 +2518,8 @@ fn format_spread(s: &floret_engine::Spread) -> String {
     }
 }
 
-fn format_value(v: &Value) -> String {
+fn format_value(v: &floret_engine::Value) -> String {
+    use floret_engine::Value;
     match v {
         Value::Num(n) => {
             if n.fract() == 0.0 && n.abs() < 1e9 {
@@ -1729,12 +2534,7 @@ fn format_value(v: &Value) -> String {
             format!("\"{s}\"")
         }
         Value::Vec2(p) => format!("{:.1}, {:.1}", p.x, p.y),
-        Value::Color(c) => format!(
-            "#{:02x}{:02x}{:02x}",
-            (c.r.clamp(0.0, 1.0) * 255.0) as u8,
-            (c.g.clamp(0.0, 1.0) * 255.0) as u8,
-            (c.b.clamp(0.0, 1.0) * 255.0) as u8
-        ),
+        Value::Color(c) => values::hex([c.r, c.g, c.b, 1.0]),
         Value::List(items) => format!("[{}]", items.len()),
         Value::Undefined | Value::Null => String::new(),
         Value::Object(_) => "{…}".into(),

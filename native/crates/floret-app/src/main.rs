@@ -9,14 +9,16 @@
 
 mod canvas;
 mod editor;
+mod palette;
 mod preview;
 mod theme;
 
 use eframe::egui::{self, Align, Layout, RichText};
-use floret_engine::patch::{PatchFile, Position};
+use floret_engine::patch::PatchFile;
 use floret_engine::spec::Catalogue;
-use floret_engine::tick::Outputs;
-use floret_engine::Engine;
+use floret_engine::tick::{Outputs, RegionStats};
+use floret_engine::{CompileWarning, Engine};
+use std::collections::HashMap;
 use std::time::Instant;
 
 pub struct Sample {
@@ -45,12 +47,12 @@ struct App {
     sample: usize,
     patch: PatchFile,
     engine: Option<Engine>,
-    warnings: Vec<String>,
+    warnings: Vec<CompileWarning>,
     error: Option<String>,
     outputs: Outputs,
+    region_stats: HashMap<usize, RegionStats>,
+    tick_errors: Vec<(usize, String)>,
     view: canvas::View,
-    fit_pending: bool,
-    canvas_rect: egui::Rect,
     preview: preview::PreviewPanel,
     start: Instant,
     last: Instant,
@@ -73,9 +75,9 @@ impl App {
             warnings: Vec::new(),
             error: None,
             outputs: Vec::new(),
+            region_stats: HashMap::new(),
+            tick_errors: Vec::new(),
             view: canvas::View::default(),
-            fit_pending: true,
-            canvas_rect: egui::Rect::ZERO,
             preview: preview::PreviewPanel::new(cc.wgpu_render_state.as_ref()),
             start: Instant::now(),
             last: Instant::now(),
@@ -104,14 +106,13 @@ impl App {
         self.recompile();
         self.start = Instant::now();
         self.frame = 0;
-        self.fit_pending = true;
     }
 
     fn recompile(&mut self) {
         match Engine::from_patch(&self.patch) {
             Ok((engine, warnings)) => {
                 self.engine = Some(engine);
-                self.warnings = warnings.into_iter().map(|w| w.message).collect();
+                self.warnings = warnings;
             }
             Err(e) => {
                 self.engine = None;
@@ -119,21 +120,6 @@ impl App {
             }
         }
         self.outputs.clear();
-    }
-
-    fn add_node(&mut self, ty: &str) {
-        let cat = Catalogue::builtin();
-        let center = self.canvas_rect.center();
-        let p = (center - self.canvas_rect.min) / self.view.zoom - self.view.pan;
-        let at = Position {
-            x: f64::from(p.x - 84.0),
-            y: f64::from(p.y - 30.0),
-        };
-        if let Some(id) = editor::ops::place_node(&mut self.patch, cat, ty, at) {
-            self.view.select_only(&id);
-            // Flags a recompile, picked up after the canvas this frame.
-            self.view.commit(&mut self.patch);
-        }
     }
 
     fn tick(&mut self, ctx: &egui::Context) {
@@ -148,7 +134,10 @@ impl App {
         let Some(engine) = self.engine.as_mut() else {
             return;
         };
-        self.outputs = engine.tick(&frame).outputs;
+        let r = engine.tick(&frame);
+        self.outputs = r.outputs;
+        self.region_stats = r.region_stats;
+        self.tick_errors = r.errors;
         self.frame += 1;
     }
 
@@ -178,7 +167,7 @@ impl App {
             ui.separator();
             ui.toggle_value(&mut self.show_palette, "Nodes");
             if ui.button("Fit").on_hover_text("Fit patch to view (or double-click the canvas)").clicked() {
-                self.fit_pending = true;
+                self.view.request_fit();
             }
             if ui.button("Restart").clicked() {
                 self.recompile();
@@ -199,50 +188,8 @@ impl App {
     }
 
     fn palette(&mut self, ui: &mut egui::Ui) {
-        ui.add_space(6.0);
-        ui.add(
-            egui::TextEdit::singleline(&mut self.query)
-                .hint_text("Search nodes…")
-                .desired_width(f32::INFINITY),
-        );
-        ui.add_space(4.0);
-        let q = self.query.to_lowercase();
-        let mut add = None;
-        egui::ScrollArea::vertical()
-            .auto_shrink(false)
-            .show(ui, |ui| {
-                let mut by_cat: Vec<(&str, Vec<&floret_engine::spec::NodeSpec>)> = Vec::new();
-                for s in Catalogue::builtin().iter().filter(|s| !s.hidden) {
-                    if !q.is_empty() && !s.label.to_lowercase().contains(&q) && !s.ty.contains(&q) {
-                        continue;
-                    }
-                    match by_cat.iter_mut().find(|(c, _)| *c == s.category) {
-                        Some((_, v)) => v.push(s),
-                        None => by_cat.push((&s.category, vec![s])),
-                    }
-                }
-                by_cat.sort_by_key(|(c, _)| *c);
-                for (cat, specs) in by_cat {
-                    let header = RichText::new(cat).color(theme::category_color(cat));
-                    egui::CollapsingHeader::new(header)
-                        .default_open(!q.is_empty())
-                        .show(ui, |ui| {
-                            for s in specs {
-                                let r = ui.selectable_label(false, &s.label);
-                                let r = match &s.description {
-                                    Some(d) => r.on_hover_text(d),
-                                    None => r,
-                                };
-                                if r.clicked() {
-                                    add = Some(s.ty.clone());
-                                }
-                            }
-                        });
-                }
-            });
-        if let Some(ty) = add {
-            self.add_node(&ty);
-        }
+        palette::show(ui, &mut self.query, &mut self.view, &mut self.patch);
+        // Palette clicks add nodes; recompile picks them up after the canvas.
     }
 
     fn inspector(&self, ui: &mut egui::Ui) {
@@ -328,7 +275,13 @@ impl eframe::App for App {
                                 .color(theme::DANGER)
                                 .small(),
                         )
-                        .on_hover_text(self.warnings.join("\n"));
+                        .on_hover_text(
+                            self.warnings
+                                .iter()
+                                .map(|w| w.message.as_str())
+                                .collect::<Vec<_>>()
+                                .join("\n"),
+                        );
                     }
                     ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                         ui.label(
@@ -373,21 +326,21 @@ impl eframe::App for App {
             });
 
         egui::CentralPanel::no_frame().show(ui, |ui| {
-            self.canvas_rect = ui.max_rect();
-            if self.fit_pending {
-                self.view.fit(&self.patch, self.canvas_rect);
-                self.fit_pending = false;
-            }
             let cat = Catalogue::builtin();
             if let Some(engine) = &self.engine {
-                canvas::show(
-                    ui,
-                    &mut self.patch,
+                let live = canvas::Live {
                     engine,
-                    &self.outputs,
-                    cat,
-                    &mut self.view,
-                );
+                    outputs: &self.outputs,
+                    region_stats: &self.region_stats,
+                    warnings: &self.warnings,
+                    errors: &self.tick_errors,
+                };
+                canvas::show(ui, &mut self.patch, &live, cat, &mut self.view);
+            }
+            // Inline value edits reach the running engine without a recompile.
+            let edits = self.view.take_live_edits();
+            if let Some(engine) = self.engine.as_mut() {
+                editor::values::apply_live(engine, cat, &self.patch, edits);
             }
             // Structural edits (wires, nodes, undo) rebuild the engine.
             if self.view.take_recompile() {

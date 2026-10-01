@@ -1,6 +1,7 @@
 //! Canvas overlays: the node-search popover and right-click menus, drawn
 //! as foreground areas in Floret's dark theme.
 
+use super::favorites::Favorites;
 use super::ports::Side;
 use super::search::{search, Fit};
 use crate::theme::{self, BG_2, BG_3, BORDER, DANGER, FG_0, FG_1, FG_2, GOLD};
@@ -76,12 +77,39 @@ fn clamp(p: Pos2, size: egui::Vec2, bounds: Rect) -> Pos2 {
     )
 }
 
+/// A ★ / ☆ toggle at the right of a list row. Returns whether it was hit.
+fn star(ui: &egui::Ui, row: Rect, on: bool) -> bool {
+    let r = Rect::from_center_size(row.right_center() - vec2(12.0, 0.0), vec2(18.0, 18.0));
+    let resp = ui.interact(r, ui.id().with(("star", row.min.y as i32)), Sense::click());
+    let color = if on {
+        GOLD
+    } else if resp.hovered() {
+        FG_1
+    } else {
+        FG_2
+    };
+    ui.painter().text(
+        r.center(),
+        Align2::CENTER_CENTER,
+        if on { "★" } else { "☆" },
+        FontId::proportional(13.0),
+        color,
+    );
+    resp.on_hover_text(if on {
+        "Unfavorite"
+    } else {
+        "Favorite (adds to Q menu)"
+    })
+    .clicked()
+}
+
 /// The node-search popover. ↑/↓ move, Enter picks, Esc / click outside
-/// closes. Returns the picked node type.
+/// closes; ☆ stars a type. Returns the picked node type.
 pub fn search_popup(
     ctx: &egui::Context,
     bounds: Rect,
     cat: &Catalogue,
+    favs: &mut Favorites,
     st: &mut SearchState,
 ) -> Outcome<String> {
     let results = search(cat, &st.query, &st.fit);
@@ -129,13 +157,17 @@ pub fn search_popup(
                             Fit::Any => "add node…",
                             _ => "add compatible node…",
                         };
+                        // Focus before the field runs, so the first
+                        // keystroke after opening isn't lost.
+                        let id = Id::new("floret-node-search-input");
+                        ui.memory_mut(|m| m.request_focus(id));
                         let edit = ui.add(
                             egui::TextEdit::singleline(&mut st.query)
+                                .id(id)
                                 .hint_text(hint)
                                 .desired_width(SEARCH_W - 40.0)
                                 .frame(egui::Frame::NONE),
                         );
-                        edit.request_focus();
                         if edit.changed() {
                             st.highlight = 0;
                         }
@@ -184,12 +216,16 @@ pub fn search_popup(
                                     if on { GOLD } else { FG_0 },
                                 );
                                 p.text(
-                                    rect.right_center() - vec2(8.0, 0.0),
+                                    rect.right_center() - vec2(28.0, 0.0),
                                     Align2::RIGHT_CENTER,
                                     &s.ty,
                                     FontId::monospace(10.5),
                                     FG_2,
                                 );
+                                if star(ui, rect, favs.contains(&s.ty)) {
+                                    favs.toggle(&s.ty);
+                                    continue;
+                                }
                                 let resp = match &s.description {
                                     Some(d) => resp.on_hover_text(d),
                                     None => resp,
@@ -208,6 +244,325 @@ pub fn search_popup(
         return Outcome::Close;
     }
     Outcome::Open
+}
+
+pub struct FavoritesState {
+    pub screen: Pos2,
+    pub at: Position,
+    pub highlight: usize,
+}
+
+const DIGITS: [Key; 9] = [
+    Key::Num1,
+    Key::Num2,
+    Key::Num3,
+    Key::Num4,
+    Key::Num5,
+    Key::Num6,
+    Key::Num7,
+    Key::Num8,
+    Key::Num9,
+];
+
+/// The favorites quick-menu (Q): ↑/↓ + Enter, or 1–9 to place at once.
+pub fn favorites_popup(
+    ctx: &egui::Context,
+    bounds: Rect,
+    cat: &Catalogue,
+    favs: &Favorites,
+    st: &mut FavoritesState,
+) -> Outcome<String> {
+    let defs: Vec<_> = favs
+        .types()
+        .iter()
+        .filter_map(|t| cat.get(t))
+        .filter(|s| !s.hidden)
+        .collect();
+    let n = defs.len();
+    if st.highlight >= n.max(1) {
+        st.highlight = 0;
+    }
+    let (esc, down, up, enter, digit) = ctx.input_mut(|i| {
+        let digit = DIGITS
+            .iter()
+            .position(|k| i.consume_key(egui::Modifiers::NONE, *k));
+        (
+            i.consume_key(egui::Modifiers::NONE, Key::Escape),
+            i.consume_key(egui::Modifiers::NONE, Key::ArrowDown),
+            i.consume_key(egui::Modifiers::NONE, Key::ArrowUp),
+            i.consume_key(egui::Modifiers::NONE, Key::Enter),
+            digit,
+        )
+    });
+    if esc {
+        return Outcome::Close;
+    }
+    if let Some(d) = digit.and_then(|d| defs.get(d)) {
+        return Outcome::Pick(d.ty.clone());
+    }
+    if n > 0 {
+        if down {
+            st.highlight = (st.highlight + 1) % n;
+        }
+        if up {
+            st.highlight = (st.highlight + n - 1) % n;
+        }
+        if enter {
+            return Outcome::Pick(defs[st.highlight].ty.clone());
+        }
+    }
+    let w = 260.0;
+    let pos = clamp(st.screen, vec2(w, n.max(1) as f32 * ROW_H + 44.0), bounds);
+    let mut picked = None;
+    let area = egui::Area::new(Id::new("floret-favorites"))
+        .order(egui::Order::Foreground)
+        .fixed_pos(pos)
+        .show(ctx, |ui| {
+            egui::Frame::popup(ui.style())
+                .fill(theme::BG_1)
+                .stroke(Stroke::new(1.0, BORDER))
+                .corner_radius(CornerRadius::same(9))
+                .inner_margin(egui::Margin::same(6))
+                .show(ui, |ui| {
+                    ui.set_width(w);
+                    ui.horizontal(|ui| {
+                        ui.label(egui::RichText::new("★ Favorites").color(GOLD).small());
+                        ui.with_layout(
+                            egui::Layout::right_to_left(egui::Align::Center),
+                            |ui| ui.label(egui::RichText::new("Q").color(FG_2).small()),
+                        );
+                    });
+                    ui.spacing_mut().item_spacing.y = 0.0;
+                    if defs.is_empty() {
+                        ui.add_space(4.0);
+                        ui.label(
+                            egui::RichText::new(
+                                "No favorites yet — click the ☆ on a node in the palette or search.",
+                            )
+                            .color(FG_2)
+                            .small(),
+                        );
+                    }
+                    for (i, s) in defs.iter().enumerate() {
+                        let (rect, resp) = ui
+                            .allocate_exact_size(vec2(ui.available_width(), ROW_H), Sense::click());
+                        if resp.hovered() && ui.input(|i| i.pointer.delta() != egui::Vec2::ZERO) {
+                            st.highlight = i;
+                        }
+                        let on = i == st.highlight;
+                        if on {
+                            ui.painter().rect_filled(rect, 5.0, BG_3);
+                        }
+                        let p = ui.painter();
+                        if i < 9 {
+                            p.text(
+                                rect.left_center() + vec2(9.0, 0.0),
+                                Align2::CENTER_CENTER,
+                                (i + 1).to_string(),
+                                FontId::monospace(11.0),
+                                FG_2,
+                            );
+                        }
+                        p.circle_filled(
+                            rect.left_center() + vec2(22.0, 0.0),
+                            3.0,
+                            theme::category_color(&s.category),
+                        );
+                        p.text(
+                            rect.left_center() + vec2(32.0, 0.0),
+                            Align2::LEFT_CENTER,
+                            &s.label,
+                            FontId::proportional(13.0),
+                            if on { GOLD } else { FG_0 },
+                        );
+                        p.text(
+                            rect.right_center() - vec2(8.0, 0.0),
+                            Align2::RIGHT_CENTER,
+                            &s.ty,
+                            FontId::monospace(10.5),
+                            FG_2,
+                        );
+                        if resp.clicked() {
+                            picked = Some(s.ty.clone());
+                        }
+                    }
+                });
+        });
+    if let Some(ty) = picked {
+        return Outcome::Pick(ty);
+    }
+    if pressed_outside(ctx, area.response.rect) {
+        return Outcome::Close;
+    }
+    Outcome::Open
+}
+
+/// A single-line text field floating over the canvas (inline value or
+/// port-name editing). `Pick` on Enter / focus loss, `Close` on Esc.
+pub fn inline_text(ctx: &egui::Context, rect: Rect, text: &mut String, first: bool) -> Outcome<()> {
+    if ctx.input_mut(|i| i.consume_key(egui::Modifiers::NONE, Key::Escape)) {
+        return Outcome::Close;
+    }
+    let mut out = Outcome::Open;
+    egui::Area::new(Id::new("floret-inline-text"))
+        .order(egui::Order::Foreground)
+        .fixed_pos(rect.min)
+        .show(ctx, |ui| {
+            let edit = egui::TextEdit::singleline(text)
+                .font(FontId::monospace((rect.height() * 0.7).clamp(9.0, 16.0)))
+                .desired_width(rect.width().max(40.0))
+                .margin(egui::Margin::symmetric(3, 1))
+                .background_color(theme::BG_0);
+            let resp = ui.add(edit);
+            if first {
+                resp.request_focus();
+                if let Some(mut state) = egui::TextEdit::load_state(ctx, resp.id) {
+                    let all = egui::text::CCursorRange::two(
+                        egui::text::CCursor::new(0),
+                        egui::text::CCursor::new(text.chars().count()),
+                    );
+                    state.cursor.set_char_range(Some(all));
+                    state.store(ctx, resp.id);
+                }
+            } else if resp.lost_focus() {
+                out = Outcome::Pick(());
+            }
+        });
+    out
+}
+
+pub struct PortEditorState {
+    pub node: String,
+    pub port: String,
+    pub label: String,
+    pub ty: floret_engine::spec::PortType,
+    pub text: String,
+    pub placeholder: String,
+    pub screen: Pos2,
+    pub first: bool,
+}
+
+/// The floating port-value editor (right-click a pin): Enter sets,
+/// empty clears, Esc cancels, click outside commits.
+pub fn port_editor(ctx: &egui::Context, bounds: Rect, st: &mut PortEditorState) -> Outcome<()> {
+    if ctx.input_mut(|i| i.consume_key(egui::Modifiers::NONE, Key::Escape)) {
+        return Outcome::Close;
+    }
+    let enter = ctx.input_mut(|i| i.consume_key(egui::Modifiers::NONE, Key::Enter));
+    let w = 200.0;
+    let pos = clamp(st.screen, vec2(w, 80.0), bounds);
+    let first = std::mem::take(&mut st.first);
+    let area = egui::Area::new(Id::new("floret-port-editor"))
+        .order(egui::Order::Foreground)
+        .fixed_pos(pos)
+        .show(ctx, |ui| {
+            egui::Frame::popup(ui.style())
+                .fill(theme::BG_1)
+                .stroke(Stroke::new(1.0, BORDER))
+                .corner_radius(CornerRadius::same(8))
+                .inner_margin(egui::Margin::same(8))
+                .show(ui, |ui| {
+                    ui.set_width(w);
+                    ui.horizontal(|ui| {
+                        ui.label(egui::RichText::new(&st.label).color(FG_0));
+                        ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                            ui.label(
+                                egui::RichText::new(super::ports::type_name(st.ty))
+                                    .color(FG_2)
+                                    .monospace()
+                                    .small(),
+                            )
+                        });
+                    });
+                    let id = Id::new("floret-port-editor-input");
+                    if first {
+                        ui.memory_mut(|m| m.request_focus(id));
+                    }
+                    ui.add(
+                        egui::TextEdit::singleline(&mut st.text)
+                            .id(id)
+                            .hint_text(st.placeholder.as_str())
+                            .desired_width(f32::INFINITY),
+                    );
+                    ui.label(
+                        egui::RichText::new("Enter to set · empty to clear · Esc")
+                            .color(FG_2)
+                            .small(),
+                    );
+                });
+        });
+    if enter || pressed_outside(ctx, area.response.rect) {
+        return Outcome::Pick(());
+    }
+    Outcome::Open
+}
+
+pub struct ColorState {
+    pub node: String,
+    pub key: super::values::EditKey,
+    pub color: egui::Color32,
+    pub hex: String,
+    pub screen: Pos2,
+    /// The value before editing (restored on Esc).
+    pub before: serde_json::Value,
+}
+
+/// Colour picker for an inline colour field. Returns `(changed, outcome)`;
+/// `Pick` (commit) on click outside or Enter, `Close` (revert) on Esc.
+pub fn color_popup(ctx: &egui::Context, bounds: Rect, st: &mut ColorState) -> (bool, Outcome<()>) {
+    if ctx.input_mut(|i| i.consume_key(egui::Modifiers::NONE, Key::Escape)) {
+        return (false, Outcome::Close);
+    }
+    let enter = ctx.input_mut(|i| i.consume_key(egui::Modifiers::NONE, Key::Enter));
+    let mut changed = false;
+    let pos = clamp(st.screen, vec2(230.0, 280.0), bounds);
+    let area = egui::Area::new(Id::new("floret-color-popup"))
+        .order(egui::Order::Foreground)
+        .fixed_pos(pos)
+        .show(ctx, |ui| {
+            egui::Frame::popup(ui.style())
+                .fill(theme::BG_1)
+                .stroke(Stroke::new(1.0, BORDER))
+                .corner_radius(CornerRadius::same(8))
+                .inner_margin(egui::Margin::same(8))
+                .show(ui, |ui| {
+                    if egui::color_picker::color_picker_color32(
+                        ui,
+                        &mut st.color,
+                        egui::color_picker::Alpha::OnlyBlend,
+                    ) {
+                        changed = true;
+                        st.hex = super::values::hex(rgba_of(st.color));
+                    }
+                    let resp = ui.add(
+                        egui::TextEdit::singleline(&mut st.hex)
+                            .font(egui::TextStyle::Monospace)
+                            .desired_width(f32::INFINITY),
+                    );
+                    if resp.changed() {
+                        if let Some(c) = super::values::parse_hex(&st.hex) {
+                            st.color = color32(c);
+                            changed = true;
+                        }
+                    }
+                });
+        });
+    if enter || pressed_outside(ctx, area.response.rect) {
+        return (changed, Outcome::Pick(()));
+    }
+    (changed, Outcome::Open)
+}
+
+/// 0..1 channels of a colour (unmultiplied).
+pub fn rgba_of(c: egui::Color32) -> [f64; 4] {
+    let [r, g, b, a] = c.to_srgba_unmultiplied();
+    let f = |v: u8| f64::from(v) / 255.0;
+    [f(r), f(g), f(b), f(a)]
+}
+
+pub fn color32([r, g, b, a]: [f64; 4]) -> egui::Color32 {
+    let c = |v: f64| (v.clamp(0.0, 1.0) * 255.0).round() as u8;
+    egui::Color32::from_rgba_unmultiplied(c(r), c(g), c(b), c(a))
 }
 
 /// One row of a context menu (`action: None` draws a separator).

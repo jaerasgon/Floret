@@ -6,13 +6,17 @@
 
 pub mod clipboard;
 pub mod connect;
+pub mod favorites;
 pub mod history;
 pub mod latch;
 pub mod layout;
 pub mod ops;
 pub mod popups;
 pub mod ports;
+pub mod regions;
 pub mod search;
+pub mod subpatch;
+pub mod values;
 
 use floret_engine::patch::PatchFile;
 use floret_engine::spec::Catalogue;

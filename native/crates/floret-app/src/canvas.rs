@@ -162,6 +162,16 @@ enum Action {
         key: EditKey,
         value: Json,
     },
+    /// Record an edit already written live (colour picker).
+    CommitValue {
+        node: String,
+        key: EditKey,
+    },
+    RenamePort {
+        region: String,
+        port: String,
+        name: String,
+    },
     Undo,
     Redo,
     Arrange,
@@ -303,19 +313,38 @@ impl View {
         self.stack.clear();
         self.expanded.clear();
         self.gesture = Gesture::None;
-        self.close_overlays();
+        self.discard_overlays();
         self.armed = None;
         self.fit_pending = true;
         self.keep_fitted = true;
     }
 
+    /// Close every popup. An open text or colour edit is committed, as if
+    /// it lost focus.
     fn close_overlays(&mut self) {
+        if let Some(a) = self.editing.take().and_then(finish_edit) {
+            self.queued.push(a);
+        }
+        if let Some(c) = self.color.take() {
+            if values::as_rgba(&c.before) != popups::rgba_of(c.color) {
+                self.queued.push(Action::CommitValue {
+                    node: c.node,
+                    key: c.key,
+                });
+            }
+        }
         self.search = None;
         self.favorites_menu = None;
         self.menu = None;
+        self.port_editor = None;
+    }
+
+    /// Drop every popup and pending edit (a new patch replaced the old).
+    fn discard_overlays(&mut self) {
         self.editing = None;
         self.color = None;
-        self.port_editor = None;
+        self.queued.clear();
+        self.close_overlays();
     }
 
     /// Fit the visible patch on the next frame.
@@ -1796,30 +1825,8 @@ fn overlays(
             Outcome::Open => {}
             Outcome::Close => view.editing = None,
             Outcome::Pick(()) => {
-                let ed = view.editing.take().expect("open");
-                match ed.target {
-                    EditTarget::Field(f) => {
-                        let parsed = match f.axis {
-                            Some(a) => ed.text.trim().parse::<f64>().ok().map(|v| {
-                                let (x, y) = values::as_vec2(&f.value);
-                                let (x, y) = if a == 0 { (v, y) } else { (x, v) };
-                                serde_json::json!({ "x": x, "y": y })
-                            }),
-                            None => values::parse_field(&f.kind, &ed.text),
-                        };
-                        if let Some(value) = parsed {
-                            actions.push(Action::SetValue {
-                                node: f.node,
-                                key: f.key,
-                                value,
-                            });
-                        }
-                    }
-                    EditTarget::PortName { region, port } => {
-                        if regions::rename_port(patch, &region, &port, &ed.text) {
-                            view.history.push(patch, None);
-                        }
-                    }
+                if let Some(a) = view.editing.take().and_then(finish_edit) {
+                    actions.push(a);
                 }
             }
         }
@@ -1867,6 +1874,38 @@ fn overlays(
         }
     }
     actions.append(&mut view.queued);
+}
+
+/// The action that commits typed text.
+fn finish_edit(ed: TextEditing) -> Option<Action> {
+    match ed.target {
+        EditTarget::Field(f) => {
+            let value = match f.axis {
+                Some(a) => {
+                    let v: f64 = ed
+                        .text
+                        .trim()
+                        .parse()
+                        .ok()
+                        .filter(|v: &f64| v.is_finite())?;
+                    let (x, y) = values::as_vec2(&f.value);
+                    let (x, y) = if a == 0 { (v, y) } else { (x, v) };
+                    serde_json::json!({ "x": x, "y": y })
+                }
+                None => values::parse_field(&f.kind, &ed.text)?,
+            };
+            Some(Action::SetValue {
+                node: f.node,
+                key: f.key,
+                value,
+            })
+        }
+        EditTarget::PortName { region, port } => Some(Action::RenamePort {
+            region,
+            port,
+            name: ed.text,
+        }),
+    }
 }
 
 /// A pin, its screen position, and whether the dragged wire may land on it.
@@ -2377,6 +2416,12 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             view.fit_nodes(patch, area, |n| n == id);
             view.zoom = view.zoom.min(1.0);
             view.keep_fitted = false;
+        }
+        Action::CommitValue { node, key } => view.commit_value(patch, cat, &node, &key),
+        Action::RenamePort { region, port, name } => {
+            if regions::rename_port(patch, &region, &port, &name) {
+                view.history.push(patch, None);
+            }
         }
         Action::SetValue { node, key, value } => {
             if values::set(patch, &node, &key, value.clone()) {

@@ -233,7 +233,7 @@ fn field_width(kind: &FieldKind) -> f32 {
         FieldKind::Vec2 => 84.0,
         FieldKind::Bool => 12.0,
         FieldKind::Text | FieldKind::Color => 70.0,
-        FieldKind::Select(_) => 74.0,
+        FieldKind::Select(_) => 56.0,
     }
 }
 

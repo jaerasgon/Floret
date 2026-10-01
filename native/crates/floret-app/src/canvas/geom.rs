@@ -6,6 +6,7 @@ use crate::editor::ops;
 use crate::editor::ports::{self, Side};
 use crate::editor::regions::{self, PORT_TAB_H, PORT_TAB_W, TOP_PIN_W};
 use crate::editor::values::{self, EditKey, FieldKind, LeftItem};
+use crate::editor::widgets::{self, ProbeView};
 use eframe::egui::{self, pos2, vec2, Color32, FontId, Painter, Pos2, Rect, Stroke, Vec2};
 use floret_engine::patch::{parse_handle, Handle, PatchFile, PatchNode, PortDirection};
 use floret_engine::spec::{Catalogue, PortKind, PortType, RegionKind};
@@ -36,6 +37,8 @@ pub enum Look {
     Frame,
     /// A subpatch seen from outside: a node with one row per port.
     Collapsed,
+    /// A probe: a dashed readout card with a pass-through pin pair.
+    Probe,
 }
 
 impl Look {
@@ -50,6 +53,7 @@ pub fn look_of(n: &PatchNode, cat: &Catalogue, scope: Option<&str>) -> Look {
         Some(RegionKind::Subpatch) => Look::Collapsed,
         Some(_) => Look::Region,
         None if n.def_type == "meta/comment" => Look::Comment,
+        None if n.def_type == "meta/probe" => Look::Probe,
         None => Look::Node,
     }
 }
@@ -70,6 +74,10 @@ fn row_count(n: &PatchNode, cat: &Catalogue, look: Look) -> usize {
         let outs = subpatch_ports(n, PortDirection::Output).count();
         return ins.max(outs).max(1);
     }
+    if let Some(rows) = widgets::custom_of(&n.def_type).and_then(|c| super::custom::rows(c, n, cat))
+    {
+        return rows;
+    }
     let left = values::left_items(cat, spec, n).len();
     left.max(ports::resolved_outputs(spec, &n.params).len())
 }
@@ -82,9 +90,19 @@ pub fn box_size(n: &PatchNode, cat: &Catalogue, look: Look) -> (f64, f64) {
             let param = |k: &str, d: f64| n.params.get(k).and_then(|v| v.as_f64()).unwrap_or(d);
             (param("width", 200.0), param("height", 80.0))
         }
+        Look::Probe => super::custom::PROBE_SIZE,
         Look::Node | Look::Collapsed => {
             let rows = row_count(n, cat, look) as f32;
-            (f64::from(NODE_W), f64::from(HEADER_H + rows * ROW_H + 8.0))
+            let body = match look {
+                Look::Node => {
+                    widgets::custom_of(&n.def_type).map_or(0.0, |c| super::custom::body_h(c, n))
+                }
+                _ => 0.0,
+            };
+            (
+                f64::from(NODE_W),
+                f64::from(HEADER_H + body + rows * ROW_H + 8.0),
+            )
         }
     }
 }
@@ -123,6 +141,28 @@ pub struct Field {
     pub value: Json,
     /// Which component a vec2 field edits.
     pub axis: Option<usize>,
+    /// Scrub multiplier (value per scrub step).
+    pub step: f64,
+    /// Typed into with a multi-line editor.
+    pub multiline: bool,
+    /// Drawn as plain text until hovered (slider / pad range fields).
+    pub bare: bool,
+}
+
+impl Field {
+    pub fn new(rect: Rect, node: &str, key: EditKey, kind: FieldKind, value: Json) -> Field {
+        Field {
+            rect,
+            node: node.to_owned(),
+            key,
+            kind,
+            value,
+            axis: None,
+            step: 1.0,
+            multiline: false,
+            bare: false,
+        }
+    }
 }
 
 pub struct Row {
@@ -177,6 +217,17 @@ pub struct NodeBox {
     pub warning: Option<(Rect, String)>,
     /// Region iteration badge: rect, text, hover hint, capped.
     pub badge: Option<(Rect, String, String, bool)>,
+    /// Height of a custom body between the header and the rows (canvas
+    /// units).
+    pub body: f32,
+    /// Custom-body controls.
+    pub widgets: Vec<super::custom::Widget>,
+    /// Text drawn in the header's right corner (slider value, on / off …).
+    pub header_value: Option<String>,
+    /// Custom-body text.
+    pub notes: Vec<super::custom::Note>,
+    /// A probe's readout.
+    pub probe: Option<ProbeView>,
 }
 
 impl NodeBox {
@@ -199,6 +250,8 @@ pub struct Decor {
     pub warnings: HashMap<String, String>,
     /// Region id → (badge text, hover hint, capped).
     pub badges: HashMap<String, (String, String, bool)>,
+    /// Probe id → what it reads.
+    pub probes: HashMap<String, ProbeView>,
 }
 
 pub struct Ctx<'a> {
@@ -214,12 +267,12 @@ pub struct Ctx<'a> {
 }
 
 impl Ctx<'_> {
-    fn screen(&self, x: f64, y: f64) -> Pos2 {
+    pub fn screen(&self, x: f64, y: f64) -> Pos2 {
         self.origin + (vec2(x as f32, y as f32) + self.pan) * self.zoom
     }
 
     /// Label width in canvas units.
-    fn text_w(&self, s: &str, size: f32) -> f32 {
+    pub fn text_w(&self, s: &str, size: f32) -> f32 {
         self.painter
             .layout_no_wrap(s.to_owned(), FontId::proportional(size), Color32::WHITE)
             .size()
@@ -304,12 +357,21 @@ pub fn layout(
                 .map(|v| format!("#{}", values::short(v))),
             warning: None,
             badge: None,
+            body: 0.0,
+            widgets: Vec::new(),
+            header_value: None,
+            notes: Vec::new(),
+            probe: None,
         };
         match look {
             Look::Region | Look::Frame => frame_box(cx, n, spec, (w, h), &mut b),
             Look::Collapsed => collapsed_box(cx, n, &mut b),
-            Look::Node => row_box(cx, n, spec, &wired, &mut b),
-            Look::Comment => {}
+            Look::Node => match widgets::custom_of(&n.def_type) {
+                Some(c) => super::custom::layout(cx, n, spec, c, &wired, &mut b),
+                None => row_box(cx, n, spec, &wired, &mut b),
+            },
+            Look::Probe => super::custom::probe_box(cx, n, &mut b),
+            Look::Comment => super::custom::comment_box(cx, n, &mut b),
         }
         chips(cx, n, &mut b);
         boxes.insert(n.id.clone(), b);
@@ -403,8 +465,8 @@ fn look_spreads(kind: Option<RegionKind>) -> bool {
     matches!(kind, Some(RegionKind::Foreach | RegionKind::Cache))
 }
 
-fn row_y(b: &NodeBox, i: usize, z: f32) -> f32 {
-    b.rect.top() + (HEADER_H + ROW_H * (i as f32 + 0.5)) * z
+pub fn row_y(b: &NodeBox, i: usize, z: f32) -> f32 {
+    b.rect.top() + (HEADER_H + b.body + ROW_H * (i as f32 + 0.5)) * z
 }
 
 fn collapsed_box(cx: &Ctx, n: &PatchNode, b: &mut NodeBox) {
@@ -450,7 +512,7 @@ fn collapsed_box(cx: &Ctx, n: &PatchNode, b: &mut NodeBox) {
     }
 }
 
-fn row_box(
+pub fn row_box(
     cx: &Ctx,
     n: &PatchNode,
     spec: &floret_engine::spec::NodeSpec,
@@ -554,24 +616,20 @@ fn row_box(
                         let half = (w - 4.0) / 2.0;
                         for (axis, x) in [(0, x0), (1, x0 + half + 4.0)] {
                             b.fields.push(Field {
-                                rect: mk(x, half),
-                                node: n.id.clone(),
-                                key: key.clone(),
-                                kind: kind.clone(),
-                                value: value.clone(),
                                 axis: Some(axis),
+                                ..Field::new(
+                                    mk(x, half),
+                                    &n.id,
+                                    key.clone(),
+                                    kind.clone(),
+                                    value.clone(),
+                                )
                             });
                         }
                     } else {
                         let w = if kind == FieldKind::Bool { 12.0 } else { w };
-                        b.fields.push(Field {
-                            rect: mk(x0, w),
-                            node: n.id.clone(),
-                            key,
-                            kind,
-                            value,
-                            axis: None,
-                        });
+                        b.fields
+                            .push(Field::new(mk(x0, w), &n.id, key, kind, value));
                     }
                 }
             }
@@ -727,6 +785,15 @@ impl Hits<'_> {
             .fields
             .iter()
             .find(|f| f.rect.expand(2.0).contains(p))
+    }
+
+    /// A custom-body control under `p`.
+    pub fn widget(&self, p: Pos2) -> Option<&super::custom::Widget> {
+        let id = self.body(p)?;
+        self.boxes[id.as_str()]
+            .widgets
+            .iter()
+            .find(|w| w.kind.interactive() && w.rect.expand(1.0).contains(p))
     }
 
     /// An input label that toggles its editor: (node, port).

@@ -13,10 +13,12 @@
 
 pub mod bus;
 pub mod compile;
+pub mod devices;
 pub mod graph;
 pub mod host;
 pub mod image;
 pub mod js;
+pub mod landmarks;
 pub mod legacy;
 pub mod node;
 pub mod nodes;

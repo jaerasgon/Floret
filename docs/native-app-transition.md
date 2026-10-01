@@ -69,7 +69,7 @@ browser calls.
 | Image/pixel ops | Canvas2D, CSS filters, `getImageData` | wgpu compute shaders + **`image`** crate on the CPU |
 | Audio | Web Audio | **`cpal`** (audio in/out on all 3 OSes) + our own DSP graph (or **`fundsp`**) — also fixes today's one-consumer limit |
 | Camera | `getUserMedia` | **`nokhwa`** (AVFoundation / Media Foundation / V4L2) |
-| Tracking | MediaPipe JS/WASM | **ONNX Runtime** (`ort`) running MediaPipe's detector + landmark models converted from TFLite to ONNX — same hand/face/pose point sets as today, on all 3 OSes. We re-implement MediaPipe's detect → crop → track glue ourselves |
+| Tracking | MediaPipe JS/WASM | **Built-in TFLite interpreter** (`floret-input`, pure Rust + `matrixmultiply`) running the *same* `.task` model files the web app vendors in `public/mediapipe/models/`, embedded in the binary — identical hand/face/pose point sets, no conversion, no native runtime to ship. MediaPipe's detect → crop → track glue (ROI tracking, one-euro smoothing) re-implemented; within ~1 px of MediaPipe on test photos. (Chosen over `ort`: needs a TFLite→ONNX conversion and ships a native library; `tract-tflite` lacks ops these models use) |
 | MIDI | Web MIDI | **`midir`** |
 | Send/Receive bus | Vite dev-server relay | small **in-app HTTP server** — the Raspberry Pi e-ink poller keeps working unchanged |
 | Settings / library | localStorage | files in the per-OS app data dir (`directories` crate) |
@@ -96,6 +96,7 @@ native/
                      migrations. NO GPU / UI / OS dependencies.
     floret-render/   wgpu renderer for the scene IR, shaders, texture export
     floret-media/    audio (cpal), camera, tracking (ort), MIDI, bus server
+    floret-input/    MIDI (midir), camera (nokhwa), hand/face/pose tracking
     floret-app/      egui app: editor canvas, panels, menus, documents
   fixtures/          golden fixtures exported from the TS app (see §4)
 ```

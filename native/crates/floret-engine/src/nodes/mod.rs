@@ -15,6 +15,7 @@ pub mod color;
 pub mod convert;
 pub mod data;
 pub mod input;
+pub mod io;
 pub mod logic;
 pub mod math;
 pub mod meta;
@@ -54,6 +55,7 @@ fn registry() -> &'static Registrar {
         convert::register(&mut r);
         data::register(&mut r);
         input::register(&mut r);
+        io::register(&mut r);
         logic::register(&mut r);
         math::register(&mut r);
         meta::register(&mut r);

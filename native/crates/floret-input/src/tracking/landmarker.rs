@@ -134,7 +134,13 @@ impl Landmarker {
             spec,
             max: max.max(1),
             det,
-            lm: Interpreter::new(models.landmarks.clone()),
+            // Landmarks, presence, and for pose the refinement heatmap; not
+            // the segmentation mask, world landmarks or handedness.
+            lm: Interpreter::new(models.landmarks.clone()).with_outputs(if kind == Tracker::Pose {
+                &[0, 1, 3]
+            } else {
+                &[0, 1]
+            }),
             anchors,
             box_output,
             tracked: Vec::new(),

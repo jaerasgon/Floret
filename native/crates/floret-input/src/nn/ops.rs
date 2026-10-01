@@ -200,18 +200,55 @@ pub fn depthwise(
 ) {
     let (oh, ow) = w.out_hw;
     let (kh, kw) = w.kernel;
+    let in_w = w.in_hw.1;
     fill_bias(out, bias, c);
+    // With stride 1 a tap touches a contiguous run of a row; for narrow
+    // layers, tiling each tap's weights across the row turns it into one
+    // long, vectorisable multiply-add (wide layers already have long rows).
+    let unit = w.stride.1 == 1 && c < 64;
+    let tiled: Vec<f32> = if unit {
+        (0..kh * kw)
+            .flat_map(|t| filter[t * c..][..c].iter().copied().cycle().take(ow * c))
+            .collect()
+    } else {
+        Vec::new()
+    };
     for oy in 0..oh {
-        for ox in 0..ow {
-            let acc = &mut out[(oy * ow + ox) * c..][..c];
-            for ky in 0..kh {
-                let Some(iy) = w.y(oy, ky) else { continue };
-                for kx in 0..kw {
-                    let Some(ix) = w.x(ox, kx) else { continue };
-                    let src = &input[(iy * w.in_hw.1 + ix) * c..][..c];
-                    let wt = &filter[(ky * kw + kx) * c..][..c];
-                    for ((a, s), f) in acc.iter_mut().zip(src).zip(wt) {
+        let acc_row = &mut out[oy * ow * c..][..ow * c];
+        for ky in 0..kh {
+            let Some(iy) = w.y(oy, ky) else { continue };
+            let in_row = &input[iy * in_w * c..][..in_w * c];
+            for kx in 0..kw {
+                let tap = ky * kw + kx;
+                // Output columns whose input ix = ox·s + kx·d − pad is in
+                // the frame.
+                let (s, off) = (
+                    w.stride.1 as i64,
+                    (kx * w.dilation.1) as i64 - w.pad.1 as i64,
+                );
+                let lo = ((-off).max(0) as usize).div_ceil(s as usize);
+                let hi = ((in_w as i64 - 1 - off).div_euclid(s) + 1).clamp(0, ow as i64) as usize;
+                if lo >= hi {
+                    continue;
+                }
+                if unit {
+                    let ix = (lo as i64 + off) as usize;
+                    let n = (hi - lo) * c;
+                    let a = &mut acc_row[lo * c..][..n];
+                    let src = &in_row[ix * c..][..n];
+                    let wt = &tiled[tap * ow * c + lo * c..][..n];
+                    for ((a, s), f) in a.iter_mut().zip(src).zip(wt) {
                         *a += s * f;
+                    }
+                } else {
+                    let wt = &filter[tap * c..][..c];
+                    for ox in lo..hi {
+                        let ix = (ox as i64 * s + off) as usize;
+                        let a = &mut acc_row[ox * c..][..c];
+                        let src = &in_row[ix * c..][..c];
+                        for ((a, s), f) in a.iter_mut().zip(src).zip(wt) {
+                            *a += s * f;
+                        }
                     }
                 }
             }

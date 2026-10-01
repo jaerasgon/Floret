@@ -628,6 +628,8 @@ pub struct Interpreter {
     model: Arc<Model>,
     values: Vec<Vec<f32>>,
     scratch: Vec<f32>,
+    /// Per op: whether a wanted output depends on it.
+    active: Vec<bool>,
 }
 
 impl Interpreter {
@@ -645,10 +647,29 @@ impl Interpreter {
             })
             .collect();
         Interpreter {
+            active: vec![true; model.ops.len()],
             model,
             values,
             scratch: Vec::new(),
         }
+    }
+
+    /// Only compute what outputs `wanted` need (e.g. skip a segmentation
+    /// head nobody reads); other outputs keep stale values.
+    pub fn with_outputs(mut self, wanted: &[usize]) -> Interpreter {
+        let mut needed = vec![false; self.model.tensors.len()];
+        for &o in wanted {
+            needed[self.model.outputs[o]] = true;
+        }
+        for (i, (op, out)) in self.model.ops.iter().enumerate().rev() {
+            self.active[i] = needed[*out];
+            if needed[*out] {
+                for t in op_inputs(op) {
+                    needed[t] = true;
+                }
+            }
+        }
+        self
     }
 
     pub fn model(&self) -> &Model {
@@ -677,7 +698,10 @@ impl Interpreter {
 
     pub fn run(&mut self) {
         let model = self.model.clone();
-        for (op, out) in &model.ops {
+        for (i, (op, out)) in model.ops.iter().enumerate() {
+            if !self.active[i] {
+                continue;
+            }
             let mut dst = std::mem::take(&mut self.values[*out]);
             self.exec(op, *out, &mut dst);
             self.values[*out] = dst;

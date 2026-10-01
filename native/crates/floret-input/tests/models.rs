@@ -276,3 +276,22 @@ fn pose_models_match_litert() {
         ],
     );
 }
+
+#[test]
+fn pruned_outputs_match_a_full_run() {
+    let bytes = bundle::entry(bundle::POSE_TASK, "pose_landmarks_detector.tflite").unwrap();
+    let model = Arc::new(Model::from_bytes(bytes).unwrap());
+    let mut full = Interpreter::new(model.clone());
+    let mut pruned = Interpreter::new(model).with_outputs(&[0, 1, 3]);
+    for it in [&mut full, &mut pruned] {
+        for (i, x) in it.input_mut(0).iter_mut().enumerate() {
+            *x = ((i * 31) % 255) as f32 / 255.0;
+        }
+        it.run();
+    }
+    for o in [0, 1, 3] {
+        assert_eq!(full.output(o), pruned.output(o), "output {o}");
+    }
+    // The skipped segmentation head was never computed.
+    assert!(pruned.output(2).iter().all(|&v| v == 0.0));
+}

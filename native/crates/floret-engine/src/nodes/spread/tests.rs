@@ -43,6 +43,8 @@ fn encode(v: &Value) -> J {
         Value::Color(c) => json!({"r": num(c.r), "g": num(c.g), "b": num(c.b), "a": num(c.a)}),
         Value::List(items) => J::Array(items.iter().map(encode).collect()),
         Value::Object(m) => J::Object(m.iter().map(|(k, v)| (k.clone(), encode(v))).collect()),
+        Value::Scene(n) => encode(&n.to_value()),
+        Value::Style(_) => json!({"$fn": "style"}),
     }
 }
 

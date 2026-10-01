@@ -69,6 +69,10 @@ pub enum Value {
     List(Spread),
     /// A JS object with no dedicated variant. Key order is preserved.
     Object(Arc<IndexMap<String, Value>>),
+    /// A drawable layer (`SceneNode`).
+    Scene(Arc<crate::scene::SceneNode>),
+    /// A style chain (a JS closure in TS).
+    Style(crate::scene::Style),
 }
 
 impl Value {
@@ -109,7 +113,7 @@ impl Value {
     pub fn is_object(&self) -> bool {
         matches!(
             self,
-            Value::Vec2(_) | Value::Color(_) | Value::List(_) | Value::Object(_)
+            Value::Vec2(_) | Value::Color(_) | Value::List(_) | Value::Object(_) | Value::Scene(_)
         )
     }
 
@@ -187,6 +191,8 @@ impl Value {
             (Value::Color(a), Value::Color(b)) => a == b,
             (Value::List(a), Value::List(b)) => Arc::ptr_eq(a, b),
             (Value::Object(a), Value::Object(b)) => Arc::ptr_eq(a, b),
+            (Value::Scene(a), Value::Scene(b)) => Arc::ptr_eq(a, b),
+            (Value::Style(a), Value::Style(b)) => Arc::ptr_eq(&a.0, &b.0),
             _ => false,
         }
     }
@@ -285,6 +291,8 @@ impl fmt::Debug for Value {
             Value::Color(c) => write!(f, "{{r:{}, g:{}, b:{}, a:{}}}", c.r, c.g, c.b, c.a),
             Value::List(items) => f.debug_list().entries(items.iter()).finish(),
             Value::Object(map) => f.debug_map().entries(map.iter()).finish(),
+            Value::Scene(n) => write!(f, "<{}>", n.kind()),
+            Value::Style(st) => write!(f, "<style ×{}>", st.0.len()),
         }
     }
 }

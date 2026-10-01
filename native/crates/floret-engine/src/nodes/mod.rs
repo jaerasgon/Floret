@@ -14,6 +14,7 @@ use std::sync::OnceLock;
 pub mod color;
 pub mod convert;
 pub mod data;
+pub mod draw;
 pub mod input;
 pub mod io;
 pub mod logic;
@@ -26,7 +27,9 @@ pub mod render;
 pub mod shared;
 pub mod spread;
 pub mod string;
+pub mod style;
 pub mod time;
+pub mod transform;
 pub mod value;
 pub mod vec2;
 
@@ -54,6 +57,7 @@ fn registry() -> &'static Registrar {
         color::register(&mut r);
         convert::register(&mut r);
         data::register(&mut r);
+        draw::register(&mut r);
         input::register(&mut r);
         io::register(&mut r);
         logic::register(&mut r);
@@ -65,7 +69,9 @@ fn registry() -> &'static Registrar {
         render::register(&mut r);
         spread::register(&mut r);
         string::register(&mut r);
+        style::register(&mut r);
         time::register(&mut r);
+        transform::register(&mut r);
         value::register(&mut r);
         vec2::register(&mut r);
         r

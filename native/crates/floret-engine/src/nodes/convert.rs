@@ -29,6 +29,9 @@ pub(crate) fn js_string(v: &Value) -> String {
         Value::Str(s) => s.to_string(),
         Value::List(items) => js_join(items, ","),
         Value::Vec2(_) | Value::Color(_) | Value::Object(_) => "[object Object]".into(),
+        Value::Scene(_) => "[object Object]".into(),
+        // JS prints a function's source; there's no equivalent for a style chain.
+        Value::Style(_) => "function".into(),
     }
 }
 
@@ -133,7 +136,9 @@ fn write_json(v: &Value, out: &mut String) -> bool {
         out.push('}');
     };
     match v {
-        Value::Undefined => return false,
+        // JSON.stringify drops functions like undefined.
+        Value::Undefined | Value::Style(_) => return false,
+        Value::Scene(n) => return write_json(&n.to_value(), out),
         Value::Null => out.push_str("null"),
         Value::Bool(b) => out.push_str(if *b { "true" } else { "false" }),
         Value::Num(n) => num(*n, out),
@@ -185,6 +190,8 @@ fn key_count(v: &Value) -> usize {
 pub(crate) fn value_to_string(v: &Value) -> String {
     match v {
         Value::Undefined | Value::Null => String::new(),
+        Value::Scene(n) => value_to_string(&n.to_value()),
+        Value::Style(_) => "function".into(),
         Value::Str(s) => s.to_string(),
         Value::Num(n) => {
             let n = *n;

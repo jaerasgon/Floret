@@ -45,6 +45,9 @@ fn js_to_string(v: &Value) -> String {
         Value::Num(n) => js::num_to_string(*n),
         Value::Str(s) => s.to_string(),
         Value::Vec2(_) | Value::Color(_) | Value::Object(_) => "[object Object]".into(),
+        Value::Scene(_) => "[object Object]".into(),
+        // JS prints a function's source; there's no equivalent for a style chain.
+        Value::Style(_) => "function".into(),
         // Array.prototype.join: nullish elements become "".
         Value::List(items) => items
             .iter()

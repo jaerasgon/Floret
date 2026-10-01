@@ -529,5 +529,7 @@ fn format_value(v: &Value) -> String {
         Value::List(items) => format!("[{}]", items.len()),
         Value::Undefined | Value::Null => String::new(),
         Value::Object(_) => "{…}".into(),
+        Value::Scene(n) => n.kind().to_owned(),
+        Value::Style(_) => "style".into(),
     }
 }

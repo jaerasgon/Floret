@@ -46,6 +46,9 @@ pub fn to_js_string(v: &Value) -> String {
         Value::Str(s) => s.to_string(),
         Value::List(items) => join(items),
         Value::Vec2(_) | Value::Color(_) | Value::Object(_) => "[object Object]".into(),
+        Value::Scene(_) => "[object Object]".into(),
+        // JS prints a function's source; there's no equivalent for a style chain.
+        Value::Style(_) => "function".into(),
     }
 }
 

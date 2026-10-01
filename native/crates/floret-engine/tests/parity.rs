@@ -10,9 +10,9 @@
 //! report; set `PARITY_ONLY=<id,...>` to check specific samples and
 //! `PARITY_VERBOSE=1` to print every mismatch.
 
-use floret_engine::{tick::Outputs, Engine, FrameCtx, Value};
+use floret_engine::{scene, tick::Outputs, Engine, FrameCtx, Value};
 use serde_json::Value as J;
-use std::collections::{BTreeMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -161,6 +161,33 @@ impl Cmp {
                 }
                 Ok(())
             }
+            (Value::Scene(a), Fx::Obj(b)) => {
+                let key = (Arc::as_ptr(a) as usize, Arc::as_ptr(b) as usize);
+                if !self.seen.insert(key) {
+                    return Ok(());
+                }
+                self.value(&a.to_value(), f, path)
+            }
+            // A TS style closure is recorded as its result on NEUTRAL_STYLE.
+            (Value::Style(st), Fx::Tag(tag, inner)) if tag == "$style" => {
+                let resolved = scene::style_value(&st.apply(scene::neutral_style()));
+                let mut refs = Vec::new();
+                self.value(
+                    &resolved,
+                    &decode(inner, &mut refs),
+                    &format!("{path}<style>"),
+                )
+            }
+            (_, Fx::Tag(tag, inner)) if tag == "$summary" => {
+                let want: Stats =
+                    serde_json::from_value((**inner).clone()).map_err(|e| e.to_string())?;
+                let got = Summarizer::default().visit(v);
+                if want.matches(&got) {
+                    Ok(())
+                } else {
+                    Err(format!("{path}: summary rust {got:?} vs ts {want:?}"))
+                }
+            }
             _ => mismatch(),
         }
     }
@@ -181,6 +208,115 @@ impl Cmp {
             }
         }
         Ok(())
+    }
+}
+
+/// Sharing-independent stats over a value as a JS tree (see the exporter's
+/// `$summary`): every object/array reached counts, every time.
+#[derive(Clone, Debug, Default, serde::Deserialize)]
+struct Stats {
+    objects: f64,
+    numbers: f64,
+    sum: f64,
+    abs: f64,
+    strings: f64,
+    kinds: BTreeMap<String, f64>,
+}
+
+impl Stats {
+    fn add(&mut self, o: &Stats) {
+        self.objects += o.objects;
+        self.numbers += o.numbers;
+        self.sum += o.sum;
+        self.abs += o.abs;
+        self.strings += o.strings;
+        for (k, n) in &o.kinds {
+            *self.kinds.entry(k.clone()).or_default() += n;
+        }
+    }
+
+    fn matches(&self, o: &Stats) -> bool {
+        let close = |a: f64, b: f64| (a - b).abs() <= 1e-6 * a.abs().max(b.abs()).max(1.0);
+        self.objects == o.objects
+            && self.numbers == o.numbers
+            && self.strings == o.strings
+            && self.kinds == o.kinds
+            && close(self.sum, o.sum)
+            && close(self.abs, o.abs)
+    }
+}
+
+#[derive(Default)]
+struct Summarizer {
+    memo: HashMap<usize, Stats>,
+}
+
+impl Summarizer {
+    fn num(n: f64) -> Stats {
+        let mut s = Stats {
+            numbers: 1.0,
+            ..Default::default()
+        };
+        if n.is_finite() {
+            s.sum = n;
+            s.abs = n.abs();
+        }
+        s
+    }
+
+    fn visit(&mut self, v: &Value) -> Stats {
+        let key = match v {
+            Value::List(a) => Some(Arc::as_ptr(a) as *const () as usize),
+            Value::Object(a) => Some(Arc::as_ptr(a) as usize),
+            Value::Scene(a) => Some(Arc::as_ptr(a) as usize),
+            _ => None,
+        };
+        if let Some(s) = key.and_then(|k| self.memo.get(&k)) {
+            return s.clone();
+        }
+        let mut s = Stats::default();
+        match v {
+            Value::Num(n) => return Self::num(*n),
+            Value::Str(_) => {
+                return Stats {
+                    strings: 1.0,
+                    ..Default::default()
+                }
+            }
+            Value::Vec2(p) => {
+                s.objects = 1.0;
+                s.add(&Self::num(p.x));
+                s.add(&Self::num(p.y));
+            }
+            Value::Color(c) => {
+                s.objects = 1.0;
+                for x in [c.r, c.g, c.b, c.a] {
+                    s.add(&Self::num(x));
+                }
+            }
+            Value::List(items) => {
+                s.objects = 1.0;
+                for x in items.iter() {
+                    s.add(&self.visit(x));
+                }
+            }
+            Value::Object(m) => {
+                s.objects = 1.0;
+                if let Some(Value::Str(k)) = m.get("kind") {
+                    s.kinds.insert(k.to_string(), 1.0);
+                }
+                for x in m.values() {
+                    s.add(&self.visit(x));
+                }
+            }
+            Value::Scene(n) => s = self.visit(&n.to_value()),
+            // Functions are leaves; undefined / null / booleans carry nothing.
+            _ => {}
+        }
+        if let Some(k) = key {
+            self.memo.insert(k, s.clone());
+        }
+        s
     }
 }
 

@@ -623,6 +623,9 @@ fn write_hash(v: &Value, s: &mut String) {
     use std::fmt::Write;
     match v {
         Value::Undefined | Value::Null => s.push_str("null"),
+        // TS's replacer hashes every function (style) as "function".
+        Value::Style(_) => s.push_str("\"function\""),
+        Value::Scene(n) => write_hash(&n.to_value(), s),
         Value::Bool(b) => {
             let _ = write!(s, "{b}");
         }

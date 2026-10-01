@@ -185,7 +185,9 @@ fn write_json(v: &Value, out: &mut String) {
         out.push('}');
     };
     match v {
-        Value::Undefined | Value::Null => out.push_str("null"),
+        // Functions serialise like undefined (null inside arrays).
+        Value::Undefined | Value::Null | Value::Style(_) => out.push_str("null"),
+        Value::Scene(n) => write_json(&n.to_value(), out),
         Value::Bool(b) => out.push_str(if *b { "true" } else { "false" }),
         Value::Num(n) => num(*n, out),
         Value::Str(s) => out.push_str(&serde_json::to_string(&**s).unwrap_or_default()),

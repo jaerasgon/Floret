@@ -115,12 +115,12 @@
       "id": "lfo_region",
       "defType": "region/foreach",
       "position": {
-        "x": 693,
-        "y": 75
+        "x": 689,
+        "y": 48
       },
       "params": {
-        "width": 1047,
-        "height": 228,
+        "width": 706,
+        "height": 268,
         "label": "ForEach"
       },
       "ports": [
@@ -129,66 +129,32 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 82
+          "y": 79
         },
         {
           "id": "h",
           "name": "h",
           "type": "number",
           "direction": "input",
-          "y": 140
+          "y": 198
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 90
+          "y": 129
         }
       ],
-      "width": 1047,
-      "height": 228
-    },
-    {
-      "id": "lfo_space",
-      "defType": "math/mul",
-      "position": {
-        "x": 128,
-        "y": 42
-      },
-      "params": {
-        "b": 28,
-        "valueType": "number"
-      },
-      "parentId": "lfo_region",
-      "portValues": {
-        "b": 28,
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "lfo_off",
-      "defType": "math/add",
-      "position": {
-        "x": 392,
-        "y": 41
-      },
-      "params": {
-        "b": -154,
-        "valueType": "number"
-      },
-      "parentId": "lfo_region",
-      "portValues": {
-        "b": -154,
-        "valueType": "number"
-      }
+      "width": 706,
+      "height": 268
     },
     {
       "id": "lfo_xy",
       "defType": "vec2/make",
       "position": {
-        "x": 657,
-        "y": 40
+        "x": 314,
+        "y": 67
       },
       "params": {
         "x": 0,
@@ -204,8 +170,8 @@
       "id": "lfo_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 839,
-        "y": 54
+        "x": 498,
+        "y": 94
       },
       "params": {
         "w": 16,
@@ -281,8 +247,8 @@
       "id": "lfo_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1169,
-        "y": 403
+        "x": 994,
+        "y": 405
       },
       "params": {
         "w": 18,
@@ -297,8 +263,8 @@
       "id": "lfo_group",
       "defType": "transform/group",
       "position": {
-        "x": 1855,
-        "y": 256
+        "x": 1509,
+        "y": 263
       },
       "params": {
         "slotCount": 2
@@ -308,8 +274,8 @@
       "id": "lfo_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2119,
-        "y": 256
+        "x": 1773,
+        "y": 263
       },
       "params": {
         "width": 400,
@@ -318,6 +284,27 @@
       "portValues": {
         "width": 400,
         "height": 400
+      }
+    },
+    {
+      "id": "lfo_x",
+      "defType": "math/map",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 11,
+        "outMin": -154,
+        "outMax": 154
+      },
+      "parentId": "lfo_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 11,
+        "outMin": -154,
+        "outMax": 154
       }
     }
   ],
@@ -335,27 +322,6 @@
       "target": "lfo_region",
       "sourceHandle": "out-value",
       "targetHandle": "in-h"
-    },
-    {
-      "id": "e_lfo_region_lfo_space_a",
-      "source": "lfo_region",
-      "target": "lfo_space",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_lfo_space_lfo_off_a",
-      "source": "lfo_space",
-      "target": "lfo_off",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_lfo_off_lfo_xy_x",
-      "source": "lfo_off",
-      "target": "lfo_xy",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
     },
     {
       "id": "e_lfo_xy_lfo_rect_pos",
@@ -440,6 +406,20 @@
       "target": "lfo_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_lfo_region_lfo_x_x",
+      "source": "lfo_region",
+      "target": "lfo_x",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_lfo_x_lfo_xy_x",
+      "source": "lfo_x",
+      "target": "lfo_xy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
     }
   ]
 }

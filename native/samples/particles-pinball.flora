@@ -30,7 +30,7 @@
       "id": "pp_time",
       "defType": "time/seconds",
       "position": {
-        "x": 656,
+        "x": 454,
         "y": 380
       },
       "params": {}
@@ -39,7 +39,7 @@
       "id": "pp_ring",
       "defType": "spread/ring",
       "position": {
-        "x": 428,
+        "x": 226,
         "y": 0
       },
       "params": {
@@ -54,46 +54,36 @@
       }
     },
     {
-      "id": "pp_polyC",
-      "defType": "color/color",
+      "id": "pp_polyS",
+      "defType": "style/stroke",
       "position": {
         "x": 0,
         "y": 162
       },
       "params": {
-        "mode": "rgb",
-        "r": 220,
-        "g": 220,
-        "b": 240,
-        "a": 255
+        "width": 2,
+        "color": {
+          "r": 0.8627450980392157,
+          "g": 0.8627450980392157,
+          "b": 0.9411764705882353,
+          "a": 1
+        }
       },
       "portValues": {
-        "mode": "rgb",
-        "r": 220,
-        "g": 220,
-        "b": 240,
-        "a": 255
-      }
-    },
-    {
-      "id": "pp_polyS",
-      "defType": "style/stroke",
-      "position": {
-        "x": 246,
-        "y": 162
-      },
-      "params": {
-        "width": 2
-      },
-      "portValues": {
-        "width": 2
+        "width": 2,
+        "color": {
+          "r": 0.8627450980392157,
+          "g": 0.8627450980392157,
+          "b": 0.9411764705882353,
+          "a": 1
+        }
       }
     },
     {
       "id": "pp_polyN",
       "defType": "style/no-fill",
       "position": {
-        "x": 446,
+        "x": 244,
         "y": 162
       },
       "params": {}
@@ -102,7 +92,7 @@
       "id": "pp_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 653,
+        "x": 451,
         "y": 61
       },
       "params": {
@@ -116,7 +106,7 @@
       "id": "pp_coll",
       "defType": "collider/from-layer",
       "position": {
-        "x": 879,
+        "x": 677,
         "y": 116
       },
       "params": {
@@ -134,7 +124,7 @@
       "id": "pp_world",
       "defType": "physics/world",
       "position": {
-        "x": 1125,
+        "x": 923,
         "y": 70
       },
       "params": {
@@ -158,7 +148,7 @@
       "id": "pp_tHue",
       "defType": "math/mul",
       "position": {
-        "x": 846,
+        "x": 644,
         "y": 339
       },
       "params": {
@@ -173,7 +163,7 @@
       "id": "pp_hsl",
       "defType": "color/color",
       "position": {
-        "x": 1119,
+        "x": 917,
         "y": 292
       },
       "params": {
@@ -195,7 +185,7 @@
       "id": "pp_em",
       "defType": "particles/emitter",
       "position": {
-        "x": 1378,
+        "x": 1176,
         "y": 161
       },
       "params": {
@@ -229,7 +219,7 @@
       "id": "pp_render",
       "defType": "particles/render-as",
       "position": {
-        "x": 1627,
+        "x": 1425,
         "y": 274
       },
       "params": {
@@ -245,7 +235,7 @@
       "id": "pp_trailW",
       "defType": "style/stroke-weight",
       "position": {
-        "x": 1388,
+        "x": 1186,
         "y": 39
       },
       "params": {
@@ -259,7 +249,7 @@
       "id": "pp_trail",
       "defType": "particles/trail",
       "position": {
-        "x": 1627,
+        "x": 1425,
         "y": 32
       },
       "params": {
@@ -274,48 +264,38 @@
       }
     },
     {
-      "id": "pp_bg",
-      "defType": "color/color",
-      "position": {
-        "x": 1896,
-        "y": 189
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 6,
-        "g": 10,
-        "b": 18,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 6,
-        "g": 10,
-        "b": 18,
-        "a": 255
-      }
-    },
-    {
       "id": "pp_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2160,
-        "y": 108
+        "x": 1949,
+        "y": 47
       },
       "params": {
         "width": 560,
-        "height": 560
+        "height": 560,
+        "background": {
+          "r": 0.023529411764705882,
+          "g": 0.0392156862745098,
+          "b": 0.07058823529411765,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 560,
-        "height": 560
+        "height": 560,
+        "background": {
+          "r": 0.023529411764705882,
+          "g": 0.0392156862745098,
+          "b": 0.07058823529411765,
+          "a": 1
+        }
       }
     },
     {
       "id": "merge_684",
       "defType": "spread/merge",
       "position": {
-        "x": 1887,
+        "x": 1685,
         "y": 47
       },
       "params": {
@@ -359,13 +339,6 @@
       "id": "e_670",
       "source": "pp_hsl",
       "target": "pp_em",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
-    {
-      "id": "e_671",
-      "source": "pp_polyC",
-      "target": "pp_polyS",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
@@ -424,13 +397,6 @@
       "target": "pp_render",
       "sourceHandle": "out-particles",
       "targetHandle": "in-particles"
-    },
-    {
-      "id": "e_683",
-      "source": "pp_bg",
-      "target": "pp_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
     },
     {
       "id": "e_685",

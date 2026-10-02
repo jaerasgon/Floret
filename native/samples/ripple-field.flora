@@ -12,8 +12,8 @@
       "id": "rf_time",
       "defType": "time/seconds",
       "position": {
-        "x": 28,
-        "y": 182
+        "x": 16,
+        "y": 218
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "rf_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 12,
-        "y": 0
+        "x": 0,
+        "y": 36
       },
       "params": {
         "cols": 25,
@@ -35,74 +35,18 @@
         "rows": 25,
         "w": 480,
         "h": 480
-      }
-    },
-    {
-      "id": "rf_cx",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 284
-      },
-      "params": {
-        "value": 0
-      },
-      "portValues": {
-        "value": 0
-      }
-    },
-    {
-      "id": "rf_cy",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 488
-      },
-      "params": {
-        "value": 0
-      },
-      "portValues": {
-        "value": 0
-      }
-    },
-    {
-      "id": "rf_distScale",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 590
-      },
-      "params": {
-        "value": 0.05
-      },
-      "portValues": {
-        "value": 0.05
-      }
-    },
-    {
-      "id": "rf_timeScale",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 794
-      },
-      "params": {
-        "value": 3
-      },
-      "portValues": {
-        "value": 3
       }
     },
     {
       "id": "rf_region",
       "defType": "region/foreach",
       "position": {
-        "x": 295,
-        "y": 278
+        "x": 220,
+        "y": 22
       },
       "params": {
-        "width": 2684,
-        "height": 378,
+        "width": 2063,
+        "height": 352,
         "label": "ForEach"
       },
       "ports": [
@@ -111,101 +55,57 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 154
+          "y": 106
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 115
+          "y": 76
         }
       ],
-      "width": 2684,
-      "height": 378
-    },
-    {
-      "id": "rf_split",
-      "defType": "vec2/split",
-      "position": {
-        "x": 171,
-        "y": 108
-      },
-      "params": {},
-      "parentId": "rf_region"
-    },
-    {
-      "id": "rf_xOff",
-      "defType": "math/add",
-      "position": {
-        "x": 401,
-        "y": 52
-      },
-      "params": {
-        "b": 10,
-        "valueType": "number"
-      },
-      "parentId": "rf_region",
-      "portValues": {
-        "b": 10
-      }
-    },
-    {
-      "id": "rf_yOff",
-      "defType": "math/add",
-      "position": {
-        "x": 401,
-        "y": 174
-      },
-      "params": {
-        "b": 10,
-        "valueType": "number"
-      },
-      "parentId": "rf_region",
-      "portValues": {
-        "b": 10
-      }
-    },
-    {
-      "id": "rf_dist",
-      "defType": "math/dist",
-      "position": {
-        "x": 688,
-        "y": 162
-      },
-      "params": {},
-      "parentId": "rf_region"
+      "width": 2063,
+      "height": 352
     },
     {
       "id": "rf_dScaled",
       "defType": "math/mul",
       "position": {
-        "x": 866,
-        "y": 185
+        "x": 580,
+        "y": 94
       },
       "params": {
-        "valueType": "number"
+        "valueType": "number",
+        "b": 0.05
       },
-      "parentId": "rf_region"
+      "parentId": "rf_region",
+      "portValues": {
+        "b": 0.05
+      }
     },
     {
       "id": "rf_tScaled",
       "defType": "math/mul",
       "position": {
-        "x": 129,
-        "y": 264
+        "x": 130,
+        "y": 170
       },
       "params": {
-        "valueType": "number"
+        "valueType": "number",
+        "b": 3
       },
-      "parentId": "rf_region"
+      "parentId": "rf_region",
+      "portValues": {
+        "b": 3
+      }
     },
     {
       "id": "rf_wavePhase",
       "defType": "math/sub",
       "position": {
-        "x": 1133,
-        "y": 209
+        "x": 848,
+        "y": 121
       },
       "params": {
         "valueType": "number"
@@ -216,102 +116,18 @@
       "id": "rf_ripple",
       "defType": "math/sin",
       "position": {
-        "x": 1399,
-        "y": 199
+        "x": 1113,
+        "y": 118
       },
       "params": {},
-      "parentId": "rf_region"
-    },
-    {
-      "id": "rf_sizeBase",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 386
-      },
-      "params": {
-        "value": 6
-      },
-      "portValues": {
-        "value": 6
-      }
-    },
-    {
-      "id": "rf_sizeMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 1577,
-        "y": 133
-      },
-      "params": {
-        "b": 6,
-        "valueType": "number"
-      },
-      "parentId": "rf_region",
-      "portValues": {
-        "b": 6
-      }
-    },
-    {
-      "id": "rf_sizeAdd",
-      "defType": "math/add",
-      "position": {
-        "x": 1842,
-        "y": 108
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "rf_region"
-    },
-    {
-      "id": "rf_hueMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 1577,
-        "y": 255
-      },
-      "params": {
-        "b": 60,
-        "valueType": "number"
-      },
-      "parentId": "rf_region",
-      "portValues": {
-        "b": 60
-      }
-    },
-    {
-      "id": "rf_hueBase",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 692
-      },
-      "params": {
-        "value": 200
-      },
-      "portValues": {
-        "value": 200
-      }
-    },
-    {
-      "id": "rf_hueAdd",
-      "defType": "math/add",
-      "position": {
-        "x": 1842,
-        "y": 230
-      },
-      "params": {
-        "valueType": "number"
-      },
       "parentId": "rf_region"
     },
     {
       "id": "rf_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 2109,
-        "y": 208
+        "x": 1471,
+        "y": 197
       },
       "params": {
         "s": 80,
@@ -329,8 +145,8 @@
       "id": "rf_fill",
       "defType": "style/fill",
       "position": {
-        "x": 2292,
-        "y": 186
+        "x": 1657,
+        "y": 238
       },
       "params": {
         "mode": "color"
@@ -344,8 +160,8 @@
       "id": "rf_ellipse",
       "defType": "draw/ellipse",
       "position": {
-        "x": 2476,
-        "y": 79
+        "x": 1855,
+        "y": 40
       },
       "params": {},
       "parentId": "rf_region"
@@ -354,8 +170,8 @@
       "id": "rf_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 3075,
-        "y": 357
+        "x": 2379,
+        "y": 62
       },
       "params": {
         "width": 500,
@@ -367,20 +183,77 @@
       }
     },
     {
-      "id": "rf_ellipse-xy0",
-      "defType": "vec2/make",
+      "id": "rf_pos",
+      "defType": "math/add",
       "position": {
-        "x": 682,
-        "y": 40
+        "x": 130,
+        "y": 48
       },
       "params": {
-        "x": 0,
-        "y": 0
+        "b": {
+          "x": 10,
+          "y": 10
+        },
+        "valueType": "vec2"
       },
       "parentId": "rf_region",
       "portValues": {
-        "x": 0,
-        "y": 0
+        "b": {
+          "x": 10,
+          "y": 10
+        }
+      }
+    },
+    {
+      "id": "rf_dist",
+      "defType": "vec2/mag",
+      "position": {
+        "x": 399,
+        "y": 86
+      },
+      "params": {},
+      "parentId": "rf_region"
+    },
+    {
+      "id": "rf_size",
+      "defType": "math/map",
+      "position": {
+        "x": 1661,
+        "y": 56
+      },
+      "params": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 0,
+        "outMax": 12
+      },
+      "parentId": "rf_region",
+      "portValues": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 0,
+        "outMax": 12
+      }
+    },
+    {
+      "id": "rf_hue",
+      "defType": "math/map",
+      "position": {
+        "x": 1287,
+        "y": 157
+      },
+      "params": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 140,
+        "outMax": 260
+      },
+      "parentId": "rf_region",
+      "portValues": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 140,
+        "outMax": 260
       }
     }
   ],
@@ -393,81 +266,11 @@
       "targetHandle": "in-p"
     },
     {
-      "id": "e_941",
-      "source": "rf_region",
-      "target": "rf_split",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_942",
-      "source": "rf_split",
-      "target": "rf_xOff",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_943",
-      "source": "rf_split",
-      "target": "rf_yOff",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_944",
-      "source": "rf_xOff",
-      "target": "rf_dist",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x1"
-    },
-    {
-      "id": "e_945",
-      "source": "rf_yOff",
-      "target": "rf_dist",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y1"
-    },
-    {
-      "id": "e_946",
-      "source": "rf_cx",
-      "target": "rf_dist",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-x2"
-    },
-    {
-      "id": "e_947",
-      "source": "rf_cy",
-      "target": "rf_dist",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-y2"
-    },
-    {
-      "id": "e_948",
-      "source": "rf_dist",
-      "target": "rf_dScaled",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_949",
-      "source": "rf_distScale",
-      "target": "rf_dScaled",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
       "id": "e_950",
       "source": "rf_time",
       "target": "rf_tScaled",
       "sourceHandle": "out-t",
       "targetHandle": "in-a"
-    },
-    {
-      "id": "e_951",
-      "source": "rf_timeScale",
-      "target": "rf_tScaled",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
     },
     {
       "id": "e_952",
@@ -491,88 +294,11 @@
       "targetHandle": "in-x"
     },
     {
-      "id": "e_955",
-      "source": "rf_ripple",
-      "target": "rf_sizeMul",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_956",
-      "source": "rf_sizeBase",
-      "target": "rf_sizeAdd",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_957",
-      "source": "rf_sizeMul",
-      "target": "rf_sizeAdd",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_958",
-      "source": "rf_ripple",
-      "target": "rf_hueMul",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_959",
-      "source": "rf_hueBase",
-      "target": "rf_hueAdd",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_960",
-      "source": "rf_hueMul",
-      "target": "rf_hueAdd",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_961",
-      "source": "rf_hueAdd",
-      "target": "rf_hsl",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-h"
-    },
-    {
       "id": "e_962",
       "source": "rf_hsl",
       "target": "rf_fill",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
-    },
-    {
-      "id": "e_963",
-      "source": "rf_xOff",
-      "target": "rf_ellipse-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_964",
-      "source": "rf_yOff",
-      "target": "rf_ellipse-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_965",
-      "source": "rf_sizeAdd",
-      "target": "rf_ellipse",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_966",
-      "source": "rf_sizeAdd",
-      "target": "rf_ellipse",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-h"
     },
     {
       "id": "e_967",
@@ -596,11 +322,67 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_rf_ellipse-xy0",
-      "source": "rf_ellipse-xy0",
+      "id": "e_rf_region_rf_pos_a",
+      "source": "rf_region",
+      "target": "rf_pos",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_rf_pos_rf_dist_v",
+      "source": "rf_pos",
+      "target": "rf_dist",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_rf_dist_rf_dScaled_a",
+      "source": "rf_dist",
+      "target": "rf_dScaled",
+      "sourceHandle": "out-length",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_rf_pos_rf_ellipse_pos",
+      "source": "rf_pos",
       "target": "rf_ellipse",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_rf_ripple_rf_size_x",
+      "source": "rf_ripple",
+      "target": "rf_size",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_rf_size_rf_ellipse_w",
+      "source": "rf_size",
+      "target": "rf_ellipse",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_rf_size_rf_ellipse_h",
+      "source": "rf_size",
+      "target": "rf_ellipse",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_rf_ripple_rf_hue_x",
+      "source": "rf_ripple",
+      "target": "rf_hue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_rf_hue_rf_hsl_h",
+      "source": "rf_hue",
+      "target": "rf_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
     }
   ]
 }

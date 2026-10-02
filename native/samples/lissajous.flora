@@ -13,7 +13,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 0
+        "y": 9
       },
       "params": {
         "value": 3,
@@ -31,7 +31,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 126
+        "y": 135
       },
       "params": {
         "value": 5,
@@ -49,7 +49,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 42,
-        "y": 252
+        "y": 261
       },
       "params": {}
     },
@@ -58,80 +58,24 @@
       "defType": "spread/range",
       "position": {
         "x": 24,
-        "y": 864
+        "y": 363
       },
       "params": {
         "count": 240
       },
       "portValues": {
         "count": 240
-      }
-    },
-    {
-      "id": "lj_tStep",
-      "defType": "value/number",
-      "position": {
-        "x": 14,
-        "y": 456
-      },
-      "params": {
-        "value": 0.02617993877991494
-      },
-      "portValues": {
-        "value": 0.02617993877991494
-      }
-    },
-    {
-      "id": "lj_radius",
-      "defType": "value/number",
-      "position": {
-        "x": 14,
-        "y": 558
-      },
-      "params": {
-        "value": 200
-      },
-      "portValues": {
-        "value": 200
-      }
-    },
-    {
-      "id": "lj_cx",
-      "defType": "value/number",
-      "position": {
-        "x": 14,
-        "y": 660
-      },
-      "params": {
-        "value": 0
-      },
-      "portValues": {
-        "value": 0
-      }
-    },
-    {
-      "id": "lj_cy",
-      "defType": "value/number",
-      "position": {
-        "x": 14,
-        "y": 762
-      },
-      "params": {
-        "value": 0
-      },
-      "portValues": {
-        "value": 0
       }
     },
     {
       "id": "lj_region",
       "defType": "region/foreach",
       "position": {
-        "x": 328,
-        "y": 250
+        "x": 293,
+        "y": 22
       },
       "params": {
-        "width": 2037,
+        "width": 1773,
         "height": 438,
         "label": "ForEach"
       },
@@ -151,7 +95,7 @@
           "y": 175
         }
       ],
-      "width": 2037,
+      "width": 1773,
       "height": 438
     },
     {
@@ -162,16 +106,20 @@
         "y": 132
       },
       "params": {
-        "valueType": "number"
+        "valueType": "number",
+        "b": 0.02617993877991494
       },
-      "parentId": "lj_region"
+      "parentId": "lj_region",
+      "portValues": {
+        "b": 0.02617993877991494
+      }
     },
     {
       "id": "lj_axMul",
       "defType": "math/mul",
       "position": {
         "x": 407,
-        "y": 64
+        "y": 63
       },
       "params": {
         "valueType": "number"
@@ -183,7 +131,7 @@
       "defType": "math/mul",
       "position": {
         "x": 407,
-        "y": 186
+        "y": 185
       },
       "params": {
         "valueType": "number"
@@ -195,7 +143,7 @@
       "defType": "math/add",
       "position": {
         "x": 672,
-        "y": 58
+        "y": 55
       },
       "params": {
         "valueType": "number"
@@ -207,7 +155,7 @@
       "defType": "math/add",
       "position": {
         "x": 672,
-        "y": 180
+        "y": 177
       },
       "params": {
         "valueType": "number"
@@ -218,8 +166,8 @@
       "id": "lj_cosX",
       "defType": "math/cos",
       "position": {
-        "x": 936,
-        "y": 52
+        "x": 937,
+        "y": 48
       },
       "params": {},
       "parentId": "lj_region"
@@ -228,8 +176,8 @@
       "id": "lj_sinY",
       "defType": "math/sin",
       "position": {
-        "x": 936,
-        "y": 174
+        "x": 937,
+        "y": 170
       },
       "params": {},
       "parentId": "lj_region"
@@ -238,49 +186,33 @@
       "id": "lj_rX",
       "defType": "math/mul",
       "position": {
-        "x": 1105,
-        "y": 46
+        "x": 1106,
+        "y": 40
       },
       "params": {
-        "valueType": "number"
+        "valueType": "number",
+        "b": 200
       },
-      "parentId": "lj_region"
+      "parentId": "lj_region",
+      "portValues": {
+        "b": 200
+      }
     },
     {
       "id": "lj_rY",
       "defType": "math/mul",
       "position": {
-        "x": 1105,
-        "y": 168
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "lj_region"
-    },
-    {
-      "id": "lj_xFin",
-      "defType": "math/add",
-      "position": {
-        "x": 1370,
-        "y": 40
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "lj_region"
-    },
-    {
-      "id": "lj_yFin",
-      "defType": "math/add",
-      "position": {
-        "x": 1370,
+        "x": 1106,
         "y": 162
       },
       "params": {
-        "valueType": "number"
+        "valueType": "number",
+        "b": 200
       },
-      "parentId": "lj_region"
+      "parentId": "lj_region",
+      "portValues": {
+        "b": 200
+      }
     },
     {
       "id": "lj_hueMul",
@@ -302,7 +234,7 @@
       "id": "lj_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1412,
+        "x": 1148,
         "y": 284
       },
       "params": {
@@ -321,7 +253,7 @@
       "id": "lj_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1644,
+        "x": 1380,
         "y": 252
       },
       "params": {
@@ -333,35 +265,28 @@
       }
     },
     {
-      "id": "lj_dotSize",
-      "defType": "value/number",
-      "position": {
-        "x": 14,
-        "y": 354
-      },
-      "params": {
-        "value": 4
-      },
-      "portValues": {
-        "value": 4
-      }
-    },
-    {
       "id": "lj_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1829,
+        "x": 1565,
         "y": 139
       },
-      "params": {},
-      "parentId": "lj_region"
+      "params": {
+        "w": 4,
+        "h": 4
+      },
+      "parentId": "lj_region",
+      "portValues": {
+        "w": 4,
+        "h": 4
+      }
     },
     {
       "id": "lj_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2461,
-        "y": 389
+        "x": 2162,
+        "y": 161
       },
       "params": {
         "width": 500,
@@ -376,7 +301,7 @@
       "id": "lj_dot-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1644,
+        "x": 1380,
         "y": 107
       },
       "params": {
@@ -404,13 +329,6 @@
       "target": "lj_tMul",
       "sourceHandle": "out-i",
       "targetHandle": "in-a"
-    },
-    {
-      "id": "e_713",
-      "source": "lj_tStep",
-      "target": "lj_tMul",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
     },
     {
       "id": "e_714",
@@ -490,53 +408,11 @@
       "targetHandle": "in-a"
     },
     {
-      "id": "e_725",
-      "source": "lj_radius",
-      "target": "lj_rX",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
       "id": "e_726",
       "source": "lj_sinY",
       "target": "lj_rY",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
-    },
-    {
-      "id": "e_727",
-      "source": "lj_radius",
-      "target": "lj_rY",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_728",
-      "source": "lj_rX",
-      "target": "lj_xFin",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_729",
-      "source": "lj_cx",
-      "target": "lj_xFin",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_730",
-      "source": "lj_rY",
-      "target": "lj_yFin",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_731",
-      "source": "lj_cy",
-      "target": "lj_yFin",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
     },
     {
       "id": "e_732",
@@ -561,31 +437,17 @@
     },
     {
       "id": "e_735",
-      "source": "lj_xFin",
+      "source": "lj_rX",
       "target": "lj_dot-xy0",
       "sourceHandle": "out-result",
       "targetHandle": "in-x"
     },
     {
       "id": "e_736",
-      "source": "lj_yFin",
+      "source": "lj_rY",
       "target": "lj_dot-xy0",
       "sourceHandle": "out-result",
       "targetHandle": "in-y"
-    },
-    {
-      "id": "e_737",
-      "source": "lj_dotSize",
-      "target": "lj_dot",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_738",
-      "source": "lj_dotSize",
-      "target": "lj_dot",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-h"
     },
     {
       "id": "e_739",

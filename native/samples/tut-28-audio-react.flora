@@ -27,38 +27,26 @@
       }
     },
     {
-      "id": "t28_start",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 50
-      },
-      "params": {
-        "value": 1
-      },
-      "portValues": {
-        "value": 1
-      }
-    },
-    {
       "id": "t28_mic",
       "defType": "sound/audio-in",
       "position": {
-        "x": 236,
+        "x": 0,
         "y": 30
       },
       "params": {
-        "amp": 1
+        "amp": 1,
+        "start": true
       },
       "portValues": {
-        "amp": 1
+        "amp": 1,
+        "start": true
       }
     },
     {
       "id": "t28_amp",
       "defType": "sound/amplitude",
       "position": {
-        "x": 427,
+        "x": 191,
         "y": 30
       },
       "params": {
@@ -72,7 +60,7 @@
       "id": "t28_sz",
       "defType": "math/mul",
       "position": {
-        "x": 620,
+        "x": 384,
         "y": 30
       },
       "params": {
@@ -87,7 +75,7 @@
       "id": "t28_szO",
       "defType": "math/add",
       "position": {
-        "x": 884,
+        "x": 648,
         "y": 30
       },
       "params": {
@@ -102,7 +90,7 @@
       "id": "t28_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1150,
+        "x": 914,
         "y": 0
       },
       "params": {}
@@ -111,7 +99,7 @@
       "id": "t28_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1352,
+        "x": 1116,
         "y": 0
       },
       "params": {
@@ -125,13 +113,6 @@
     }
   ],
   "edges": [
-    {
-      "id": "e_233",
-      "source": "t28_start",
-      "target": "t28_mic",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-start"
-    },
     {
       "id": "e_234",
       "source": "t28_mic",

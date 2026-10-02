@@ -31,7 +31,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 273
+        "y": 229
       },
       "params": {}
     },
@@ -40,7 +40,7 @@
       "defType": "color/color",
       "position": {
         "x": 444,
-        "y": 254
+        "y": 209
       },
       "params": {
         "mode": "hsl",
@@ -59,8 +59,8 @@
       "id": "t27_fillA",
       "defType": "style/fill",
       "position": {
-        "x": 699,
-        "y": 254
+        "x": 690,
+        "y": 210
       },
       "params": {}
     },
@@ -68,20 +68,24 @@
       "id": "t27_rectA",
       "defType": "draw/rect",
       "position": {
-        "x": 890,
-        "y": 153
+        "x": 870,
+        "y": 131
       },
       "params": {
-        "x": -150,
-        "y": -150,
         "w": 300,
-        "h": 300
+        "h": 300,
+        "pos": {
+          "x": -150,
+          "y": -150
+        }
       },
       "portValues": {
-        "x": -150,
-        "y": -150,
         "w": 300,
-        "h": 300
+        "h": 300,
+        "pos": {
+          "x": -150,
+          "y": -150
+        }
       }
     },
     {
@@ -89,7 +93,7 @@
       "defType": "math/mul",
       "position": {
         "x": 180,
-        "y": 273
+        "y": 229
       },
       "params": {
         "b": 60,
@@ -103,8 +107,8 @@
       "id": "t27_rast",
       "defType": "image/from-layer",
       "position": {
-        "x": 1096,
-        "y": 154
+        "x": 1122,
+        "y": 131
       },
       "params": {
         "w": 256,
@@ -119,8 +123,8 @@
       "id": "t27_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 1082,
-        "y": 296
+        "x": 1108,
+        "y": 273
       },
       "params": {
         "cols": 24,
@@ -143,8 +147,8 @@
       "id": "t27_samp",
       "defType": "image/sample-spread",
       "position": {
-        "x": 1304,
-        "y": 215
+        "x": 1330,
+        "y": 193
       },
       "params": {}
     },
@@ -152,8 +156,8 @@
       "id": "t27_gridScreen",
       "defType": "spread/grid",
       "position": {
-        "x": 1304,
-        "y": 33
+        "x": 1330,
+        "y": 11
       },
       "params": {
         "cols": 24,
@@ -176,12 +180,12 @@
       "id": "t27_region",
       "defType": "region/foreach",
       "position": {
-        "x": 1520,
+        "x": 1549,
         "y": 22
       },
       "params": {
-        "width": 700,
-        "height": 276,
+        "width": 516,
+        "height": 234,
         "label": "ForEach"
       },
       "ports": [
@@ -190,42 +194,32 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 79
+          "y": 76
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
           "direction": "input",
-          "y": 198
+          "y": 156
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 100
+          "y": 76
         }
       ],
-      "width": 700,
-      "height": 276
-    },
-    {
-      "id": "t27_split",
-      "defType": "vec2/split",
-      "position": {
-        "x": 128,
-        "y": 40
-      },
-      "params": {},
-      "parentId": "t27_region"
+      "width": 516,
+      "height": 234
     },
     {
       "id": "t27_fill",
       "defType": "style/fill",
       "position": {
         "x": 128,
-        "y": 162
+        "y": 120
       },
       "params": {},
       "parentId": "t27_region"
@@ -234,8 +228,8 @@
       "id": "t27_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 492,
-        "y": 64
+        "x": 308,
+        "y": 40
       },
       "params": {
         "w": 16,
@@ -251,8 +245,8 @@
       "id": "t27_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2316,
-        "y": 86
+        "x": 2161,
+        "y": 62
       },
       "params": {
         "width": 500,
@@ -261,39 +255,6 @@
       "portValues": {
         "width": 500,
         "height": 500
-      }
-    },
-    {
-      "id": "t27_rectA-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 690,
-        "y": 132
-      },
-      "params": {
-        "x": -150,
-        "y": -150
-      },
-      "portValues": {
-        "x": -150,
-        "y": -150
-      }
-    },
-    {
-      "id": "t27_rect-xy1",
-      "defType": "vec2/make",
-      "position": {
-        "x": 310,
-        "y": 48
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "parentId": "t27_region",
-      "portValues": {
-        "x": 0,
-        "y": 0
       }
     }
   ],
@@ -362,27 +323,6 @@
       "targetHandle": "in-col"
     },
     {
-      "id": "e_226",
-      "source": "t27_region",
-      "target": "t27_split",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_227",
-      "source": "t27_split",
-      "target": "t27_rect-xy1",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_228",
-      "source": "t27_split",
-      "target": "t27_rect-xy1",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
       "id": "e_229",
       "source": "t27_region",
       "target": "t27_fill",
@@ -411,17 +351,10 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_t27_rectA-xy0",
-      "source": "t27_rectA-xy0",
-      "target": "t27_rectA",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
-    },
-    {
       "id": "e_xy_t27_rect-xy1",
-      "source": "t27_rect-xy1",
+      "source": "t27_region",
       "target": "t27_rect",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     }
   ]

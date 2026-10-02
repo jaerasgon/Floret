@@ -31,7 +31,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 173
+        "y": 153
       },
       "params": {
         "count": 200
@@ -48,8 +48,8 @@
         "y": 22
       },
       "params": {
-        "width": 1000,
-        "height": 326,
+        "width": 997,
+        "height": 296,
         "label": "ForEach"
       },
       "ports": [
@@ -58,41 +58,25 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 187
+          "y": 167
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 137
+          "y": 103
         }
       ],
-      "width": 1000,
-      "height": 326
-    },
-    {
-      "id": "t36_sx",
-      "defType": "math/add",
-      "position": {
-        "x": 133,
-        "y": 90
-      },
-      "params": {
-        "b": 0,
-        "valueType": "number"
-      },
-      "parentId": "t36_region",
-      "portValues": {
-        "b": 0
-      }
+      "width": 997,
+      "height": 296
     },
     {
       "id": "t36_sy",
       "defType": "math/add",
       "position": {
-        "x": 133,
-        "y": 212
+        "x": 132,
+        "y": 182
       },
       "params": {
         "b": 1000,
@@ -107,7 +91,7 @@
       "id": "t36_gx",
       "defType": "random/gaussian",
       "position": {
-        "x": 398,
+        "x": 161,
         "y": 40
       },
       "params": {
@@ -124,8 +108,8 @@
       "id": "t36_gy",
       "defType": "random/gaussian",
       "position": {
-        "x": 398,
-        "y": 182
+        "x": 400,
+        "y": 115
       },
       "params": {
         "mean": 0,
@@ -141,8 +125,8 @@
       "id": "t36_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 792,
-        "y": 101
+        "x": 789,
+        "y": 67
       },
       "params": {
         "w": 8,
@@ -158,8 +142,8 @@
       "id": "t36_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1312,
-        "y": 123
+        "x": 1309,
+        "y": 89
       },
       "params": {
         "width": 400,
@@ -174,8 +158,8 @@
       "id": "t36_ell-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 612,
-        "y": 101
+        "x": 609,
+        "y": 67
       },
       "params": {
         "x": 0,
@@ -197,13 +181,6 @@
       "targetHandle": "in-i"
     },
     {
-      "id": "e_294",
-      "source": "t36_region",
-      "target": "t36_sx",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_295",
       "source": "t36_region",
       "target": "t36_sy",
@@ -212,9 +189,9 @@
     },
     {
       "id": "e_296",
-      "source": "t36_sx",
+      "source": "t36_region",
       "target": "t36_gx",
-      "sourceHandle": "out-result",
+      "sourceHandle": "out-i",
       "targetHandle": "in-seed"
     },
     {

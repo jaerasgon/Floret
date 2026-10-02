@@ -31,7 +31,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 515
+        "y": 449
       },
       "params": {}
     },
@@ -39,47 +39,17 @@
       "id": "gp_ws",
       "defType": "math/sin",
       "position": {
-        "x": 190,
-        "y": 447
+        "x": 198,
+        "y": 327
       },
       "params": {}
-    },
-    {
-      "id": "gp_wa",
-      "defType": "math/mul",
-      "position": {
-        "x": 368,
-        "y": 380
-      },
-      "params": {
-        "valueType": "number",
-        "b": 380
-      },
-      "portValues": {
-        "b": 380
-      }
-    },
-    {
-      "id": "gp_w",
-      "defType": "math/add",
-      "position": {
-        "x": 642,
-        "y": 313
-      },
-      "params": {
-        "valueType": "number",
-        "b": 520
-      },
-      "portValues": {
-        "b": 520
-      }
     },
     {
       "id": "gp_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 654,
-        "y": 435
+        "x": 384,
+        "y": 388
       },
       "params": {
         "font": "Roboto Flex",
@@ -104,8 +74,8 @@
       "id": "gp_fv",
       "defType": "style/font-variations",
       "position": {
-        "x": 924,
-        "y": 304
+        "x": 631,
+        "y": 242
       },
       "params": {
         "axis": ""
@@ -118,45 +88,40 @@
       }
     },
     {
-      "id": "gp_pos",
-      "defType": "vec2/make",
-      "position": {
-        "x": 941,
-        "y": 182
-      },
-      "params": {},
-      "portValues": {
-        "x": 0,
-        "y": 52
-      }
-    },
-    {
       "id": "gp_ol",
       "defType": "text/outline",
       "position": {
-        "x": 1161,
-        "y": 202
+        "x": 854,
+        "y": 162
       },
       "params": {
         "string": "Floret",
         "size": 170,
         "align": "center",
-        "mode": "outline"
+        "mode": "outline",
+        "pos": {
+          "x": 0,
+          "y": 52
+        }
       },
       "portValues": {
         "string": "Floret",
         "size": 170,
         "align": "center",
         "mode": "outline",
-        "spacing": 3
+        "spacing": 3,
+        "pos": {
+          "x": 0,
+          "y": 52
+        }
       }
     },
     {
       "id": "gp_turb",
       "defType": "force/turbulence",
       "position": {
-        "x": 925,
-        "y": 526
+        "x": 632,
+        "y": 464
       },
       "params": {
         "scale": 0.012,
@@ -175,8 +140,8 @@
       "id": "gp_world",
       "defType": "physics/world",
       "position": {
-        "x": 1160,
-        "y": 424
+        "x": 853,
+        "y": 384
       },
       "params": {
         "gravity": {
@@ -199,8 +164,8 @@
       "id": "gp_em",
       "defType": "particles/emitter",
       "position": {
-        "x": 1509,
-        "y": 315
+        "x": 1204,
+        "y": 272
       },
       "params": {
         "rate": 900,
@@ -245,8 +210,8 @@
       "id": "gp_ra",
       "defType": "particles/render-as",
       "position": {
-        "x": 1841,
-        "y": 266
+        "x": 1536,
+        "y": 223
       },
       "params": {
         "template": "circle",
@@ -255,51 +220,41 @@
       "portValues": {
         "template": "circle",
         "useBufferColor": true
-      }
-    },
-    {
-      "id": "gp_gc",
-      "defType": "color/color",
-      "position": {
-        "x": 908,
-        "y": 0
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 120,
-        "g": 150,
-        "b": 255,
-        "a": 110
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 120,
-        "g": 150,
-        "b": 255,
-        "a": 110
       }
     },
     {
       "id": "gp_gf",
       "defType": "style/stroke",
       "position": {
-        "x": 1186,
-        "y": 40
+        "x": 851,
+        "y": 0
       },
       "params": {
-        "align": "center"
+        "align": "center",
+        "color": {
+          "r": 0.47058823529411764,
+          "g": 0.5882352941176471,
+          "b": 1,
+          "a": 0.43137254901960786
+        }
       },
       "portValues": {
         "width": 2,
-        "align": "center"
+        "align": "center",
+        "color": {
+          "r": 0.47058823529411764,
+          "g": 0.5882352941176471,
+          "b": 1,
+          "a": 0.43137254901960786
+        }
       }
     },
     {
       "id": "gp_dots",
       "defType": "region/foreach",
       "position": {
-        "x": 1414,
-        "y": 106
+        "x": 1108,
+        "y": 65
       },
       "params": {
         "width": 324,
@@ -339,49 +294,59 @@
       "id": "gp_g",
       "defType": "transform/group",
       "position": {
-        "x": 2081,
-        "y": 196
+        "x": 1775,
+        "y": 154
       },
       "params": {
         "slotCount": 2
       }
     },
     {
-      "id": "gp_bg",
-      "defType": "color/color",
-      "position": {
-        "x": 2090,
-        "y": 318
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 9,
-        "g": 8,
-        "b": 16,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 9,
-        "g": 8,
-        "b": 16,
-        "a": 255
-      }
-    },
-    {
       "id": "gp_out",
       "defType": "render/renderer",
       "position": {
-        "x": 2352,
-        "y": 247
+        "x": 2039,
+        "y": 154
       },
       "params": {
         "width": 640,
-        "height": 400
+        "height": 400,
+        "background": {
+          "r": 0.03529411764705882,
+          "g": 0.03137254901960784,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 640,
-        "height": 400
+        "height": 400,
+        "background": {
+          "r": 0.03529411764705882,
+          "g": 0.03137254901960784,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "gp_w",
+      "defType": "math/map",
+      "position": {
+        "x": 416,
+        "y": 206
+      },
+      "params": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 140,
+        "outMax": 900
+      },
+      "portValues": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 140,
+        "outMax": 900
       }
     }
   ],
@@ -394,20 +359,6 @@
       "targetHandle": "in-x"
     },
     {
-      "id": "e_gp_1",
-      "source": "gp_ws",
-      "target": "gp_wa",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_gp_2",
-      "source": "gp_wa",
-      "target": "gp_w",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_gp_3",
       "source": "gp_tp",
       "target": "gp_fv",
@@ -415,25 +366,11 @@
       "targetHandle": "in-base"
     },
     {
-      "id": "e_gp_4",
-      "source": "gp_w",
-      "target": "gp_fv",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-weight"
-    },
-    {
       "id": "e_gp_5",
       "source": "gp_fv",
       "target": "gp_ol",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_gp_6",
-      "source": "gp_pos",
-      "target": "gp_ol",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     },
     {
       "id": "e_gp_7",
@@ -469,13 +406,6 @@
       "target": "gp_ra",
       "sourceHandle": "out-particles",
       "targetHandle": "in-particles"
-    },
-    {
-      "id": "e_gp_12",
-      "source": "gp_gc",
-      "target": "gp_gf",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
     },
     {
       "id": "e_gp_13",
@@ -527,11 +457,18 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_gp_20",
-      "source": "gp_bg",
-      "target": "gp_out",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
+      "id": "e_gp_ws_gp_w_x",
+      "source": "gp_ws",
+      "target": "gp_w",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_gp_w_gp_fv_weight",
+      "source": "gp_w",
+      "target": "gp_fv",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-weight"
     }
   ]
 }

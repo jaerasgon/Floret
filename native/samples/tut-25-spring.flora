@@ -16,12 +16,12 @@
         "y": -304
       },
       "params": {
-        "text": "Spring physics with state\n\nA position chases the mouse with Hooke + damping. Two state slots (vec2): position and velocity. Each frame:\n  • a = (mouse − pos) · k − vel · damp\n  • vel ← vel + a\n  • pos ← pos + vel\n\nWrite/Read are used twice — one for pos, one for vel.",
+        "text": "Spring physics with state\n\nA position chases the mouse with Hooke + damping. Two state slots (vec2): position and velocity. Each frame, with vec2 maths:\n  • vel ← vel · damp + (mouse − pos) · k\n  • pos ← pos + vel\nThe two Scale nodes hold k (0.05) and damp (0.85).\n\nWrite/Read are used twice — one for pos, one for vel.",
         "width": 440,
         "height": 240
       },
       "portValues": {
-        "text": "Spring physics with state\n\nA position chases the mouse with Hooke + damping. Two state slots (vec2): position and velocity. Each frame:\n  • a = (mouse − pos) · k − vel · damp\n  • vel ← vel + a\n  • pos ← pos + vel\n\nWrite/Read are used twice — one for pos, one for vel.",
+        "text": "Spring physics with state\n\nA position chases the mouse with Hooke + damping. Two state slots (vec2): position and velocity. Each frame, with vec2 maths:\n  • vel ← vel · damp + (mouse − pos) · k\n  • pos ← pos + vel\nThe two Scale nodes hold k (0.05) and damp (0.85).\n\nWrite/Read are used twice — one for pos, one for vel.",
         "width": 440,
         "height": 240
       }
@@ -30,8 +30,8 @@
       "id": "t25_m",
       "defType": "input/mouse",
       "position": {
-        "x": 30,
-        "y": 0
+        "x": 0,
+        "y": 69
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "t25_mVec",
       "defType": "vec2/make",
       "position": {
-        "x": 269,
-        "y": 0
+        "x": 210,
+        "y": 69
       },
       "params": {}
     },
@@ -48,8 +48,8 @@
       "id": "t25_posR",
       "defType": "state/read",
       "position": {
-        "x": 239,
-        "y": 122
+        "x": 180,
+        "y": 191
       },
       "params": {
         "slot": 1,
@@ -70,213 +70,30 @@
       "id": "t25_velR",
       "defType": "state/read",
       "position": {
-        "x": 0,
-        "y": 249
-      },
-      "params": {
-        "slot": 2,
-        "init": {
-          "x": 0,
-          "y": 0
-        }
-      },
-      "portValues": {
-        "slot": 2,
-        "init": {
-          "x": 0,
-          "y": 0
-        }
-      }
-    },
-    {
-      "id": "t25_mS",
-      "defType": "vec2/split",
-      "position": {
-        "x": 536,
+        "x": 427,
         "y": 0
       },
-      "params": {}
-    },
-    {
-      "id": "t25_pS",
-      "defType": "vec2/split",
-      "position": {
-        "x": 536,
-        "y": 122
-      },
-      "params": {}
-    },
-    {
-      "id": "t25_vS",
-      "defType": "vec2/split",
-      "position": {
-        "x": 269,
-        "y": 249
-      },
-      "params": {}
-    },
-    {
-      "id": "t25_k",
-      "defType": "value/number",
-      "position": {
-        "x": 789,
-        "y": 284
-      },
       "params": {
-        "value": 0.05
+        "slot": 2,
+        "init": {
+          "x": 0,
+          "y": 0
+        }
       },
       "portValues": {
-        "value": 0.05
+        "slot": 2,
+        "init": {
+          "x": 0,
+          "y": 0
+        }
       }
-    },
-    {
-      "id": "t25_damp",
-      "defType": "value/number",
-      "position": {
-        "x": 241,
-        "y": 371
-      },
-      "params": {
-        "value": 0.85
-      },
-      "portValues": {
-        "value": 0.85
-      }
-    },
-    {
-      "id": "t25_subX",
-      "defType": "math/sub",
-      "position": {
-        "x": 775,
-        "y": 8
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "t25_subY",
-      "defType": "math/sub",
-      "position": {
-        "x": 775,
-        "y": 130
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "t25_accX",
-      "defType": "math/mul",
-      "position": {
-        "x": 1067,
-        "y": 195
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "t25_accY",
-      "defType": "math/mul",
-      "position": {
-        "x": 1067,
-        "y": 317
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "t25_dvX",
-      "defType": "math/mul",
-      "position": {
-        "x": 494,
-        "y": 244
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "t25_dvY",
-      "defType": "math/mul",
-      "position": {
-        "x": 494,
-        "y": 366
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "t25_nvX",
-      "defType": "math/add",
-      "position": {
-        "x": 1340,
-        "y": 179
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "t25_nvY",
-      "defType": "math/add",
-      "position": {
-        "x": 1340,
-        "y": 313
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "t25_npX",
-      "defType": "math/add",
-      "position": {
-        "x": 1622,
-        "y": 53
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "t25_npY",
-      "defType": "math/add",
-      "position": {
-        "x": 1622,
-        "y": 175
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "t25_nP",
-      "defType": "vec2/make",
-      "position": {
-        "x": 1908,
-        "y": 41
-      },
-      "params": {}
-    },
-    {
-      "id": "t25_nV",
-      "defType": "vec2/make",
-      "position": {
-        "x": 1664,
-        "y": 297
-      },
-      "params": {}
     },
     {
       "id": "t25_posW",
       "defType": "state/write",
       "position": {
-        "x": 2094,
-        "y": 21
+        "x": 1248,
+        "y": 69
       },
       "params": {
         "slot": 1
@@ -289,8 +106,8 @@
       "id": "t25_velW",
       "defType": "state/write",
       "position": {
-        "x": 1903,
-        "y": 285
+        "x": 1050,
+        "y": 18
       },
       "params": {
         "slot": 2
@@ -303,8 +120,8 @@
       "id": "t25_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 2092,
-        "y": 163
+        "x": 1247,
+        "y": 191
       },
       "params": {
         "w": 30,
@@ -319,8 +136,8 @@
       "id": "t25_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2284,
-        "y": 163
+        "x": 1439,
+        "y": 191
       },
       "params": {
         "width": 400,
@@ -332,20 +149,59 @@
       }
     },
     {
-      "id": "t25_ell-xy0",
-      "defType": "vec2/make",
+      "id": "t25_diff",
+      "defType": "vec2/sub",
       "position": {
-        "x": 1908,
-        "y": 163
+        "x": 456,
+        "y": 122
+      },
+      "params": {}
+    },
+    {
+      "id": "t25_acc",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 666,
+        "y": 124
       },
       "params": {
-        "x": 0,
-        "y": 0
+        "s": 0.05
       },
       "portValues": {
-        "x": 0,
-        "y": 0
+        "s": 0.05
       }
+    },
+    {
+      "id": "t25_drag",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 666,
+        "y": 2
+      },
+      "params": {
+        "s": 0.85
+      },
+      "portValues": {
+        "s": 0.85
+      }
+    },
+    {
+      "id": "t25_nV",
+      "defType": "vec2/add",
+      "position": {
+        "x": 857,
+        "y": 76
+      },
+      "params": {}
+    },
+    {
+      "id": "t25_nP",
+      "defType": "vec2/add",
+      "position": {
+        "x": 1055,
+        "y": 140
+      },
+      "params": {}
     }
   ],
   "edges": [
@@ -364,223 +220,6 @@
       "targetHandle": "in-y"
     },
     {
-      "id": "e_179",
-      "source": "t25_mVec",
-      "target": "t25_mS",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_180",
-      "source": "t25_posR",
-      "target": "t25_pS",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_181",
-      "source": "t25_velR",
-      "target": "t25_vS",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_182",
-      "source": "t25_mS",
-      "target": "t25_subX",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_183",
-      "source": "t25_pS",
-      "target": "t25_subX",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_184",
-      "source": "t25_mS",
-      "target": "t25_subY",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_185",
-      "source": "t25_pS",
-      "target": "t25_subY",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_186",
-      "source": "t25_subX",
-      "target": "t25_accX",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_187",
-      "source": "t25_k",
-      "target": "t25_accX",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_188",
-      "source": "t25_subY",
-      "target": "t25_accY",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_189",
-      "source": "t25_k",
-      "target": "t25_accY",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_190",
-      "source": "t25_vS",
-      "target": "t25_dvX",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_191",
-      "source": "t25_damp",
-      "target": "t25_dvX",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_192",
-      "source": "t25_vS",
-      "target": "t25_dvY",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_193",
-      "source": "t25_damp",
-      "target": "t25_dvY",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_194",
-      "source": "t25_dvX",
-      "target": "t25_nvX",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_195",
-      "source": "t25_accX",
-      "target": "t25_nvX",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_196",
-      "source": "t25_dvY",
-      "target": "t25_nvY",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_197",
-      "source": "t25_accY",
-      "target": "t25_nvY",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_198",
-      "source": "t25_pS",
-      "target": "t25_npX",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_199",
-      "source": "t25_nvX",
-      "target": "t25_npX",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_200",
-      "source": "t25_pS",
-      "target": "t25_npY",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_201",
-      "source": "t25_nvY",
-      "target": "t25_npY",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_202",
-      "source": "t25_npX",
-      "target": "t25_nP",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_203",
-      "source": "t25_npY",
-      "target": "t25_nP",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_204",
-      "source": "t25_nvX",
-      "target": "t25_nV",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_205",
-      "source": "t25_nvY",
-      "target": "t25_nV",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_206",
-      "source": "t25_nP",
-      "target": "t25_posW",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_207",
-      "source": "t25_nV",
-      "target": "t25_velW",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_208",
-      "source": "t25_npX",
-      "target": "t25_ell-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_209",
-      "source": "t25_npY",
-      "target": "t25_ell-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
       "id": "e_210",
       "source": "t25_ell",
       "target": "t25_renderer",
@@ -588,8 +227,78 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_t25_ell-xy0",
-      "source": "t25_ell-xy0",
+      "id": "e_t25_mVec_t25_diff_a",
+      "source": "t25_mVec",
+      "target": "t25_diff",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_t25_posR_t25_diff_b",
+      "source": "t25_posR",
+      "target": "t25_diff",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_t25_diff_t25_acc_v",
+      "source": "t25_diff",
+      "target": "t25_acc",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_t25_velR_t25_drag_v",
+      "source": "t25_velR",
+      "target": "t25_drag",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_t25_drag_t25_nV_a",
+      "source": "t25_drag",
+      "target": "t25_nV",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_t25_acc_t25_nV_b",
+      "source": "t25_acc",
+      "target": "t25_nV",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_t25_posR_t25_nP_a",
+      "source": "t25_posR",
+      "target": "t25_nP",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_t25_nV_t25_nP_b",
+      "source": "t25_nV",
+      "target": "t25_nP",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_t25_nP_t25_posW_next",
+      "source": "t25_nP",
+      "target": "t25_posW",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_t25_nV_t25_velW_next",
+      "source": "t25_nV",
+      "target": "t25_velW",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_t25_nP_t25_ell_pos",
+      "source": "t25_nP",
       "target": "t25_ell",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"

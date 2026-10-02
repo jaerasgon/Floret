@@ -69,8 +69,8 @@
       "id": "vp_draw",
       "defType": "draw/image",
       "position": {
-        "x": 477,
-        "y": 190
+        "x": 469,
+        "y": 139
       },
       "params": {
         "w": 640,
@@ -79,30 +79,14 @@
       "portValues": {
         "w": 640,
         "h": 360
-      }
-    },
-    {
-      "id": "vp_draw-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 283,
-        "y": 261
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
       }
     },
     {
       "id": "vp_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 669,
-        "y": 190
+        "x": 661,
+        "y": 139
       },
       "params": {
         "width": 640,
@@ -135,13 +119,6 @@
       "target": "vp_draw",
       "sourceHandle": "out-image",
       "targetHandle": "in-image"
-    },
-    {
-      "id": "e_4",
-      "source": "vp_draw-xy0",
-      "target": "vp_draw",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     },
     {
       "id": "e_5",

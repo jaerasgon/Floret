@@ -16,12 +16,12 @@
         "y": -304
       },
       "params": {
-        "text": "Grids and vec2 spreads\n\n`GridSpread` emits a Spread<vec2> — one (x,y) per cell. Pass it into a ForEach, then `vec2/split` inside the region to break each vec2 into its x and y, and feed those into a shape.\n\nResult: an 8×8 grid of circles.",
+        "text": "Grids and vec2 spreads\n\n`GridSpread` emits a Spread<vec2> — one (x,y) per cell. Pass it into a ForEach: inside the region each slot is one vec2, which wires straight into a shape's `pos`.\n\nResult: an 8×8 grid of circles.",
         "width": 380,
         "height": 240
       },
       "portValues": {
-        "text": "Grids and vec2 spreads\n\n`GridSpread` emits a Spread<vec2> — one (x,y) per cell. Pass it into a ForEach, then `vec2/split` inside the region to break each vec2 into its x and y, and feed those into a shape.\n\nResult: an 8×8 grid of circles.",
+        "text": "Grids and vec2 spreads\n\n`GridSpread` emits a Spread<vec2> — one (x,y) per cell. Pass it into a ForEach: inside the region each slot is one vec2, which wires straight into a shape's `pos`.\n\nResult: an 8×8 grid of circles.",
         "width": 380,
         "height": 240
       }
@@ -54,7 +54,7 @@
         "y": 22
       },
       "params": {
-        "width": 696,
+        "width": 336,
         "height": 214,
         "label": "ForEach"
       },
@@ -74,24 +74,14 @@
           "y": 76
         }
       ],
-      "width": 696,
+      "width": 336,
       "height": 214
-    },
-    {
-      "id": "t07_split",
-      "defType": "vec2/split",
-      "position": {
-        "x": 128,
-        "y": 40
-      },
-      "params": {},
-      "parentId": "t07_region"
     },
     {
       "id": "t07_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 488,
+        "x": 128,
         "y": 40
       },
       "params": {
@@ -108,7 +98,7 @@
       "id": "t07_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 998,
+        "x": 638,
         "y": 62
       },
       "params": {
@@ -119,23 +109,6 @@
         "width": 400,
         "height": 400
       }
-    },
-    {
-      "id": "t07_ell-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 308,
-        "y": 40
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "parentId": "t07_region",
-      "portValues": {
-        "x": 0,
-        "y": 0
-      }
     }
   ],
   "edges": [
@@ -145,27 +118,6 @@
       "target": "t07_region",
       "sourceHandle": "out-positions",
       "targetHandle": "in-p"
-    },
-    {
-      "id": "e_23",
-      "source": "t07_region",
-      "target": "t07_split",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_24",
-      "source": "t07_split",
-      "target": "t07_ell-xy0",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_25",
-      "source": "t07_split",
-      "target": "t07_ell-xy0",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
     },
     {
       "id": "e_26",
@@ -183,9 +135,9 @@
     },
     {
       "id": "e_xy_t07_ell-xy0",
-      "source": "t07_ell-xy0",
+      "source": "t07_region",
       "target": "t07_ell",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     }
   ]

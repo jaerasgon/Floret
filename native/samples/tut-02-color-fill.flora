@@ -31,7 +31,7 @@
       "defType": "color/color",
       "position": {
         "x": 0,
-        "y": 122
+        "y": 80
       },
       "params": {
         "mode": "rgb",
@@ -52,8 +52,8 @@
       "id": "t02_fill",
       "defType": "style/fill",
       "position": {
-        "x": 252,
-        "y": 122
+        "x": 246,
+        "y": 80
       },
       "params": {}
     },
@@ -61,52 +61,40 @@
       "id": "t02_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 440,
-        "y": 21
+        "x": 426,
+        "y": 0
       },
       "params": {
-        "x": -70,
-        "y": -70,
         "w": 140,
-        "h": 140
+        "h": 140,
+        "pos": {
+          "x": -70,
+          "y": -70
+        }
       },
       "portValues": {
-        "x": -70,
-        "y": -70,
         "w": 140,
-        "h": 140
+        "h": 140,
+        "pos": {
+          "x": -70,
+          "y": -70
+        }
       }
     },
     {
       "id": "t02_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 632,
-        "y": 21
-      },
-      "params": {
-        "width": 400,
-        "height": 400
-      },
-      "portValues": {
-        "width": 400,
-        "height": 400
-      }
-    },
-    {
-      "id": "t02_rect-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 246,
+        "x": 652,
         "y": 0
       },
       "params": {
-        "x": -70,
-        "y": -70
+        "width": 400,
+        "height": 400
       },
       "portValues": {
-        "x": -70,
-        "y": -70
+        "width": 400,
+        "height": 400
       }
     }
   ],
@@ -131,13 +119,6 @@
       "target": "t02_renderer",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_xy_t02_rect-xy0",
-      "source": "t02_rect-xy0",
-      "target": "t02_rect",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

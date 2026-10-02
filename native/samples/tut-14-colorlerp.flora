@@ -131,7 +131,7 @@
       "id": "t14_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1089,
+        "x": 1080,
         "y": 162
       },
       "params": {}
@@ -140,28 +140,32 @@
       "id": "t14_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 1281,
-        "y": 61
+        "x": 1260,
+        "y": 82
       },
       "params": {
-        "x": -120,
-        "y": -120,
         "w": 240,
-        "h": 240
+        "h": 240,
+        "pos": {
+          "x": -120,
+          "y": -120
+        }
       },
       "portValues": {
-        "x": -120,
-        "y": -120,
         "w": 240,
-        "h": 240
+        "h": 240,
+        "pos": {
+          "x": -120,
+          "y": -120
+        }
       }
     },
     {
       "id": "t14_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1473,
-        "y": 61
+        "x": 1498,
+        "y": 82
       },
       "params": {
         "width": 400,
@@ -170,22 +174,6 @@
       "portValues": {
         "width": 400,
         "height": 400
-      }
-    },
-    {
-      "id": "t14_rect-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 1080,
-        "y": 40
-      },
-      "params": {
-        "x": -120,
-        "y": -120
-      },
-      "portValues": {
-        "x": -120,
-        "y": -120
       }
     }
   ],
@@ -252,13 +240,6 @@
       "target": "t14_renderer",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_xy_t14_rect-xy0",
-      "source": "t14_rect-xy0",
-      "target": "t14_rect",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

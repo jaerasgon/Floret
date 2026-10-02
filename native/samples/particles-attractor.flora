@@ -200,41 +200,31 @@
       }
     },
     {
-      "id": "pa_bg",
-      "defType": "color/color",
-      "position": {
-        "x": 1294,
-        "y": 430
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 8,
-        "g": 10,
-        "b": 24,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 8,
-        "g": 10,
-        "b": 24,
-        "a": 255
-      }
-    },
-    {
       "id": "pa_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1557,
-        "y": 359
+        "x": 1549,
+        "y": 308
       },
       "params": {
         "width": 540,
-        "height": 540
+        "height": 540,
+        "background": {
+          "r": 0.03137254901960784,
+          "g": 0.0392156862745098,
+          "b": 0.09411764705882353,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 540,
-        "height": 540
+        "height": 540,
+        "background": {
+          "r": 0.03137254901960784,
+          "g": 0.0392156862745098,
+          "b": 0.09411764705882353,
+          "a": 1
+        }
       }
     },
     {
@@ -294,13 +284,6 @@
       "target": "pa_render",
       "sourceHandle": "out-particles",
       "targetHandle": "in-particles"
-    },
-    {
-      "id": "e_656",
-      "source": "pa_bg",
-      "target": "pa_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
     },
     {
       "id": "e_658",

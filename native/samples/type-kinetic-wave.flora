@@ -31,7 +31,7 @@
       "defType": "value/string",
       "position": {
         "x": 0,
-        "y": 302
+        "y": 355
       },
       "params": {
         "value": "I LOVE FLORET"
@@ -44,8 +44,8 @@
       "id": "kt_split",
       "defType": "string/split",
       "position": {
-        "x": 609,
-        "y": 96
+        "x": 605,
+        "y": 217
       },
       "params": {
         "by": ""
@@ -58,8 +58,8 @@
       "id": "kt_len",
       "defType": "string/length",
       "position": {
-        "x": 328,
-        "y": 273
+        "x": 327,
+        "y": 319
       },
       "params": {}
     },
@@ -67,8 +67,8 @@
       "id": "kt_tile",
       "defType": "spread/repeat",
       "position": {
-        "x": 835,
-        "y": 82
+        "x": 840,
+        "y": 153
       },
       "params": {
         "count": 40
@@ -81,8 +81,8 @@
       "id": "kt_total",
       "defType": "math/mul",
       "position": {
-        "x": 567,
-        "y": 218
+        "x": 563,
+        "y": 406
       },
       "params": {
         "b": 40,
@@ -96,8 +96,8 @@
       "id": "kt_range",
       "defType": "spread/range",
       "position": {
-        "x": 837,
-        "y": 233
+        "x": 842,
+        "y": 493
       },
       "params": {}
     },
@@ -105,43 +105,21 @@
       "id": "kt_time",
       "defType": "time/seconds",
       "position": {
-        "x": 851,
-        "y": 399
+        "x": 856,
+        "y": 391
       },
       "params": {}
-    },
-    {
-      "id": "kt_bg",
-      "defType": "color/color",
-      "position": {
-        "x": 2183,
-        "y": 712
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 41,
-        "g": 70,
-        "b": 219,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 41,
-        "g": 70,
-        "b": 219,
-        "a": 255
-      }
     },
     {
       "id": "kt_region",
       "defType": "region/foreach",
       "position": {
-        "x": 1060,
+        "x": 1070,
         "y": 22
       },
       "params": {
-        "width": 2396,
-        "height": 642,
+        "width": 2403,
+        "height": 702,
         "label": "ForEach (row × char)"
       },
       "ports": [
@@ -150,39 +128,39 @@
           "name": "ch",
           "type": "string",
           "direction": "input",
-          "y": 83
+          "y": 103
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 320
+          "y": 380
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
           "direction": "input",
-          "y": 564
+          "y": 624
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 168
+          "y": 194
         }
       ],
-      "width": 2396,
-      "height": 642
+      "width": 2403,
+      "height": 702
     },
     {
       "id": "kt_palette",
       "defType": "color/palette",
       "position": {
-        "x": 287,
-        "y": 375
+        "x": 286,
+        "y": 421
       },
       "params": {
         "stopCount": 3,
@@ -201,8 +179,8 @@
       "id": "kt_widx",
       "defType": "string/word-indices",
       "position": {
-        "x": 318,
-        "y": 537
+        "x": 317,
+        "y": 583
       },
       "params": {
         "by": " "
@@ -215,8 +193,8 @@
       "id": "kt_perChar",
       "defType": "spread/pick",
       "position": {
-        "x": 602,
-        "y": 491
+        "x": 598,
+        "y": 546
       },
       "params": {}
     },
@@ -224,8 +202,8 @@
       "id": "kt_tileC",
       "defType": "spread/repeat",
       "position": {
-        "x": 835,
-        "y": 520
+        "x": 840,
+        "y": 595
       },
       "params": {
         "count": 40
@@ -239,7 +217,7 @@
       "defType": "math/mod",
       "position": {
         "x": 185,
-        "y": 162
+        "y": 222
       },
       "params": {},
       "parentId": "kt_region"
@@ -249,7 +227,7 @@
       "defType": "math/div",
       "position": {
         "x": 137,
-        "y": 406
+        "y": 466
       },
       "params": {
         "valueType": "number"
@@ -261,92 +239,29 @@
       "defType": "math/floor",
       "position": {
         "x": 465,
-        "y": 391
+        "y": 438
       },
       "params": {},
       "parentId": "kt_region"
     },
     {
-      "id": "kt_charCenter",
-      "defType": "math/sub",
-      "position": {
-        "x": 137,
-        "y": 40
-      },
-      "params": {
-        "b": 1,
-        "valueType": "number"
-      },
-      "parentId": "kt_region",
-      "portValues": {
-        "b": 1
-      }
-    },
-    {
-      "id": "kt_charCenter2",
-      "defType": "math/div",
-      "position": {
-        "x": 417,
-        "y": 147
-      },
-      "params": {
-        "b": 2
-      },
-      "parentId": "kt_region",
-      "portValues": {
-        "b": 2
-      }
-    },
-    {
       "id": "kt_charOff",
       "defType": "math/sub",
       "position": {
-        "x": 689,
-        "y": 93
+        "x": 417,
+        "y": 116
       },
       "params": {
         "valueType": "number"
       },
       "parentId": "kt_region"
-    },
-    {
-      "id": "kt_yMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 1401,
-        "y": 337
-      },
-      "params": {
-        "b": 22,
-        "valueType": "number"
-      },
-      "parentId": "kt_region",
-      "portValues": {
-        "b": 22
-      }
-    },
-    {
-      "id": "kt_yOff",
-      "defType": "math/add",
-      "position": {
-        "x": 1675,
-        "y": 266
-      },
-      "params": {
-        "b": -429,
-        "valueType": "number"
-      },
-      "parentId": "kt_region",
-      "portValues": {
-        "b": -429
-      }
     },
     {
       "id": "kt_tSpeed",
       "defType": "math/mul",
       "position": {
         "x": 137,
-        "y": 284
+        "y": 344
       },
       "params": {
         "b": 1.6,
@@ -361,8 +276,8 @@
       "id": "kt_charPhase",
       "defType": "math/mul",
       "position": {
-        "x": 417,
-        "y": 269
+        "x": 688,
+        "y": 266
       },
       "params": {
         "b": 0.55,
@@ -377,37 +292,27 @@
       "id": "kt_rowDelay",
       "defType": "math/mul",
       "position": {
-        "x": 689,
-        "y": 337
+        "x": 688,
+        "y": 388
       },
       "params": {
-        "b": 0.22,
+        "b": -0.22,
         "valueType": "number"
       },
       "parentId": "kt_region",
       "portValues": {
-        "b": 0.22
+        "b": -0.22
       }
     },
     {
       "id": "kt_waveAdd",
       "defType": "math/add",
       "position": {
-        "x": 689,
-        "y": 215
-      },
-      "params": {},
-      "parentId": "kt_region"
-    },
-    {
-      "id": "kt_waveArg",
-      "defType": "math/sub",
-      "position": {
-        "x": 963,
-        "y": 255
+        "x": 967,
+        "y": 249
       },
       "params": {
-        "valueType": "number"
+        "slotCount": 3
       },
       "parentId": "kt_region"
     },
@@ -415,8 +320,8 @@
       "id": "kt_waveSin",
       "defType": "math/sin",
       "position": {
-        "x": 1230,
-        "y": 234
+        "x": 1238,
+        "y": 245
       },
       "params": {},
       "parentId": "kt_region"
@@ -425,8 +330,8 @@
       "id": "kt_xWave",
       "defType": "math/mul",
       "position": {
-        "x": 1401,
-        "y": 215
+        "x": 1411,
+        "y": 242
       },
       "params": {
         "b": 26,
@@ -441,8 +346,8 @@
       "id": "kt_xBase",
       "defType": "math/mul",
       "position": {
-        "x": 1401,
-        "y": 93
+        "x": 1411,
+        "y": 120
       },
       "params": {
         "b": 24
@@ -456,8 +361,8 @@
       "id": "kt_xOut",
       "defType": "math/add",
       "position": {
-        "x": 1675,
-        "y": 144
+        "x": 1683,
+        "y": 170
       },
       "params": {
         "valueType": "number"
@@ -469,7 +374,7 @@
       "defType": "style/fill",
       "position": {
         "x": 179,
-        "y": 528
+        "y": 588
       },
       "params": {},
       "parentId": "kt_region"
@@ -478,8 +383,8 @@
       "id": "kt_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 1952,
-        "y": 283
+        "x": 1960,
+        "y": 310
       },
       "params": {
         "font": "monospace",
@@ -505,8 +410,8 @@
       "id": "kt_text",
       "defType": "draw/text",
       "position": {
-        "x": 2198,
-        "y": 133
+        "x": 2205,
+        "y": 159
       },
       "params": {
         "string": "?",
@@ -528,24 +433,36 @@
       "id": "kt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 3592,
-        "y": 423
+        "x": 3569,
+        "y": 180
       },
       "params": {
         "width": 380,
-        "height": 640
+        "height": 640,
+        "background": {
+          "r": 0.1607843137254902,
+          "g": 0.27450980392156865,
+          "b": 0.8588235294117647,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 380,
-        "height": 640
+        "height": 640,
+        "background": {
+          "r": 0.1607843137254902,
+          "g": 0.27450980392156865,
+          "b": 0.8588235294117647,
+          "a": 1
+        }
       }
     },
     {
       "id": "kt_text-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1980,
-        "y": 161
+        "x": 1987,
+        "y": 188
       },
       "params": {
         "x": 0,
@@ -555,6 +472,48 @@
       "portValues": {
         "x": 0,
         "y": 0
+      }
+    },
+    {
+      "id": "kt_charCenter",
+      "defType": "math/map",
+      "position": {
+        "x": 185,
+        "y": 40
+      },
+      "params": {
+        "inMin": 1,
+        "inMax": 3,
+        "outMin": 0,
+        "outMax": 1
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "inMin": 1,
+        "inMax": 3,
+        "outMin": 0,
+        "outMax": 1
+      }
+    },
+    {
+      "id": "kt_y",
+      "defType": "math/map",
+      "position": {
+        "x": 1724,
+        "y": 292
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 39,
+        "outMin": -429,
+        "outMax": 429
+      },
+      "parentId": "kt_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 39,
+        "outMin": -429,
+        "outMax": 429
       }
     }
   ],
@@ -679,53 +638,11 @@
       "targetHandle": "in-x"
     },
     {
-      "id": "e_428",
-      "source": "kt_rowIdx",
-      "target": "kt_yMul",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_429",
-      "source": "kt_yMul",
-      "target": "kt_yOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_430",
-      "source": "kt_yOff",
-      "target": "kt_text-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_431",
-      "source": "kt_len",
-      "target": "kt_charCenter",
-      "sourceHandle": "out-length",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_432",
-      "source": "kt_charCenter",
-      "target": "kt_charCenter2",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_433",
       "source": "kt_charIdxOff",
       "target": "kt_charOff",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
-    },
-    {
-      "id": "e_434",
-      "source": "kt_charCenter2",
-      "target": "kt_charOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
     },
     {
       "id": "e_435",
@@ -761,27 +678,6 @@
       "target": "kt_waveAdd",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
-    },
-    {
-      "id": "e_440",
-      "source": "kt_waveAdd",
-      "target": "kt_waveArg",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_441",
-      "source": "kt_rowDelay",
-      "target": "kt_waveArg",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_442",
-      "source": "kt_waveArg",
-      "target": "kt_waveSin",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
     },
     {
       "id": "e_443",
@@ -861,18 +757,53 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_454",
-      "source": "kt_bg",
-      "target": "kt_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
-    {
       "id": "e_xy_kt_text-xy0",
       "source": "kt_text-xy0",
       "target": "kt_text",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_kt_len_kt_charCenter_x",
+      "source": "kt_len",
+      "target": "kt_charCenter",
+      "sourceHandle": "out-length",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_kt_charCenter_kt_charOff_b",
+      "source": "kt_charCenter",
+      "target": "kt_charOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_kt_rowIdx_kt_y_x",
+      "source": "kt_rowIdx",
+      "target": "kt_y",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_kt_y_kt_text-xy0_y",
+      "source": "kt_y",
+      "target": "kt_text-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_kt_rowDelay_kt_waveAdd_c",
+      "source": "kt_rowDelay",
+      "target": "kt_waveAdd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_kt_waveAdd_kt_waveSin_x",
+      "source": "kt_waveAdd",
+      "target": "kt_waveSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
     }
   ]
 }

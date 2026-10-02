@@ -30,62 +30,41 @@
       "id": "pt_time",
       "defType": "time/seconds",
       "position": {
-        "x": 929,
+        "x": 721,
         "y": 364
       },
       "params": {}
     },
     {
-      "id": "pt_str",
-      "defType": "value/string",
-      "position": {
-        "x": 426,
-        "y": 157
-      },
-      "params": {
-        "value": "FLORET"
-      },
-      "portValues": {
-        "value": "FLORET"
-      }
-    },
-    {
-      "id": "pt_fillC",
-      "defType": "color/color",
-      "position": {
-        "x": 0,
-        "y": 521
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 255,
-        "g": 255,
-        "b": 255,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 255,
-        "g": 255,
-        "b": 255,
-        "a": 255
-      }
-    },
-    {
       "id": "pt_fill",
       "defType": "style/fill",
       "position": {
-        "x": 246,
-        "y": 521
+        "x": 0,
+        "y": 452
       },
-      "params": {}
+      "params": {
+        "color": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1
+        }
+      }
     },
     {
       "id": "pt_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 432,
-        "y": 381
+        "x": 226,
+        "y": 312
       },
       "params": {
         "font": "sans-serif",
@@ -104,27 +83,25 @@
       "id": "pt_text",
       "defType": "draw/text",
       "position": {
-        "x": 704,
+        "x": 467,
         "y": 232
       },
       "params": {
-        "x": 0,
-        "y": 0,
         "size": 120,
-        "align": "center"
+        "align": "center",
+        "string": "FLORET"
       },
       "portValues": {
-        "x": 0,
-        "y": 0,
         "size": 120,
-        "align": "center"
+        "align": "center",
+        "string": "FLORET"
       }
     },
     {
       "id": "pt_fromL",
       "defType": "particles/from-layer",
       "position": {
-        "x": 919,
+        "x": 711,
         "y": 222
       },
       "params": {
@@ -140,7 +117,7 @@
       "id": "pt_turb",
       "defType": "force/turbulence",
       "position": {
-        "x": 689,
+        "x": 474,
         "y": 70
       },
       "params": {
@@ -160,7 +137,7 @@
       "id": "pt_world",
       "defType": "physics/world",
       "position": {
-        "x": 902,
+        "x": 694,
         "y": 0
       },
       "params": {
@@ -184,7 +161,7 @@
       "id": "pt_em",
       "defType": "particles/emitter",
       "position": {
-        "x": 1152,
+        "x": 944,
         "y": 109
       },
       "params": {
@@ -230,7 +207,7 @@
       "id": "pt_render",
       "defType": "particles/render-as",
       "position": {
-        "x": 1388,
+        "x": 1173,
         "y": 109
       },
       "params": {
@@ -243,75 +220,35 @@
       }
     },
     {
-      "id": "pt_bg",
-      "defType": "color/color",
-      "position": {
-        "x": 1381,
-        "y": 311
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 8,
-        "g": 8,
-        "b": 16,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 8,
-        "g": 8,
-        "b": 16,
-        "a": 255
-      }
-    },
-    {
       "id": "pt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1641,
-        "y": 200
+        "x": 1405,
+        "y": 109
       },
       "params": {
         "width": 560,
-        "height": 380
+        "height": 380,
+        "background": {
+          "r": 0.03137254901960784,
+          "g": 0.03137254901960784,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 560,
-        "height": 380
-      }
-    },
-    {
-      "id": "pt_text-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 462,
-        "y": 259
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
+        "height": 380,
+        "background": {
+          "r": 0.03137254901960784,
+          "g": 0.03137254901960784,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       }
     }
   ],
   "edges": [
-    {
-      "id": "e_635",
-      "source": "pt_str",
-      "target": "pt_text",
-      "sourceHandle": "out-text",
-      "targetHandle": "in-string"
-    },
-    {
-      "id": "e_636",
-      "source": "pt_fillC",
-      "target": "pt_fill",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
     {
       "id": "e_637",
       "source": "pt_fill",
@@ -374,20 +311,6 @@
       "target": "pt_renderer",
       "sourceHandle": "out-layer",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_646",
-      "source": "pt_bg",
-      "target": "pt_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
-    {
-      "id": "e_xy_pt_text-xy0",
-      "source": "pt_text-xy0",
-      "target": "pt_text",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

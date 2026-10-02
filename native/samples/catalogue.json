@@ -46,7 +46,7 @@
       "id": "tut-07-grid",
       "name": "07 · Grid of Dots",
       "category": "Tutorial",
-      "description": "GridSpread emits one vec2 per cell — split + ellipse → 8×8 grid.",
+      "description": "GridSpread emits one vec2 per cell — each one wires straight into an ellipse → 8×8 grid.",
       "file": "tut-07-grid.flora"
     },
     {
@@ -228,7 +228,7 @@
       "id": "tut-34-text",
       "name": "34 · Draw Text",
       "category": "Tutorial",
-      "description": "draw/text is just a draw node — x, y, size, style — with a string param.",
+      "description": "draw/text is just a draw node — pos, size, style — with a string param.",
       "file": "tut-34-text.flora"
     },
     {
@@ -550,7 +550,7 @@
       "id": "noc-spring",
       "name": "Spring",
       "category": "Nature",
-      "description": "Hooke's law: F = −k·(y − restY), plus gravity and damping. State<number> for y and v_y. A bob oscillates beneath a hanging point. NOC §3.",
+      "description": "Hooke's law: F = −k·y (at rest at y = 0), plus gravity and damping. State<number> for y and v_y. A bob oscillates beneath a hanging point. NOC §3.",
       "file": "noc-spring.flora"
     },
     {
@@ -578,7 +578,7 @@
       "id": "fractal-tree-spread",
       "name": "Fractal Tree (spread)",
       "category": "Nature",
-      "description": "The same fractal tree with zero node duplication: the recursion bakes its branch geometry into five data/csv-inline number spreads, zipped through ONE ForEach → one draw/line. 30 nodes → 14, per-branch stroke weight preserved.",
+      "description": "The same fractal tree with zero node duplication: the recursion bakes its branch geometry into five data/csv-inline number spreads, zipped through ONE ForEach → one draw/line. Per-branch stroke weight preserved.",
       "file": "fractal-tree-spread.flora"
     },
     {
@@ -613,7 +613,7 @@
       "id": "fractal-tree-generative",
       "name": "Fractal Tree (generative)",
       "category": "Nature",
-      "description": "The recursion lives IN the graph — no baked coordinates. A single ForEach walks 32 steps with three scalar accumulators (angle, x, y) as a turtle, resetting per leaf-path and turning ±ANGLE decoded from the leaf bits. Fully parametric: change ANGLE / SCALE / LEVELS and the tree reshapes.",
+      "description": "The recursion lives IN the graph — no baked coordinates. One ForEach walks 8 root-to-tip paths × 4 levels with three scalar accumulators (angle, x, y) as a turtle: back to the root at each trunk, turning ±0.5 rad by the path's bits, 0.7× shorter per level. A Sift keeps each of the 15 branches once. Edit the turn (Map), the shrink (0.7) or the trunk (140) and the tree reshapes.",
       "file": "fractal-tree-generative.flora"
     },
     {

@@ -12,8 +12,8 @@
       "id": "spr_k",
       "defType": "io/slider",
       "position": {
-        "x": 527,
-        "y": 173
+        "x": 236,
+        "y": 214
       },
       "params": {
         "value": 0.12,
@@ -30,8 +30,8 @@
       "id": "spr_damp",
       "defType": "io/slider",
       "position": {
-        "x": 1661,
-        "y": 186
+        "x": 1125,
+        "y": 152
       },
       "params": {
         "value": 0.98,
@@ -42,34 +42,6 @@
         "value": 0.98,
         "min": 0.9,
         "max": 1
-      }
-    },
-    {
-      "id": "spr_gravity",
-      "defType": "value/number",
-      "position": {
-        "x": 1130,
-        "y": 204
-      },
-      "params": {
-        "value": 0.5
-      },
-      "portValues": {
-        "value": 0.5
-      }
-    },
-    {
-      "id": "spr_restY",
-      "defType": "value/number",
-      "position": {
-        "x": 260,
-        "y": 71
-      },
-      "params": {
-        "value": 0
-      },
-      "portValues": {
-        "value": 0
       }
     },
     {
@@ -77,7 +49,7 @@
       "defType": "value/number",
       "position": {
         "x": 0,
-        "y": 258
+        "y": 92
       },
       "params": {
         "value": -180
@@ -90,8 +62,8 @@
       "id": "spr_initVy",
       "defType": "value/number",
       "position": {
-        "x": 1130,
-        "y": 0
+        "x": 563,
+        "y": 15
       },
       "params": {
         "value": 0
@@ -104,8 +76,8 @@
       "id": "spr_y",
       "defType": "state/value",
       "position": {
-        "x": 287,
-        "y": 258
+        "x": 277,
+        "y": 92
       },
       "params": {}
     },
@@ -113,59 +85,43 @@
       "id": "spr_vy",
       "defType": "state/value",
       "position": {
-        "x": 1430,
-        "y": 14
+        "x": 879,
+        "y": 0
       },
       "params": {}
-    },
-    {
-      "id": "spr_stretch",
-      "defType": "math/sub",
-      "position": {
-        "x": 527,
-        "y": 51
-      },
-      "params": {
-        "valueType": "number"
-      }
     },
     {
       "id": "spr_kx",
       "defType": "math/mul",
       "position": {
-        "x": 827,
-        "y": 103
+        "x": 549,
+        "y": 117
       },
       "params": {
         "valueType": "number"
       }
     },
     {
-      "id": "spr_Fspring",
-      "defType": "math/neg",
-      "position": {
-        "x": 1164,
-        "y": 102
-      },
-      "params": {}
-    },
-    {
       "id": "spr_acc",
-      "defType": "math/add",
+      "defType": "math/sub",
       "position": {
-        "x": 1389,
-        "y": 136
+        "x": 838,
+        "y": 122
       },
       "params": {
-        "valueType": "number"
+        "valueType": "number",
+        "a": 0.5
+      },
+      "portValues": {
+        "a": 0.5
       }
     },
     {
       "id": "spr_vyAdd",
       "defType": "math/add",
       "position": {
-        "x": 1661,
-        "y": 64
+        "x": 1125,
+        "y": 30
       },
       "params": {}
     },
@@ -173,8 +129,8 @@
       "id": "spr_vyDamp",
       "defType": "math/mul",
       "position": {
-        "x": 1938,
-        "y": 149
+        "x": 1415,
+        "y": 63
       },
       "params": {
         "valueType": "number"
@@ -184,76 +140,61 @@
       "id": "spr_yNext",
       "defType": "math/add",
       "position": {
-        "x": 2211,
-        "y": 191
+        "x": 1701,
+        "y": 2
       },
       "params": {}
-    },
-    {
-      "id": "spr_anchorY",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 695
-      },
-      "params": {
-        "value": -240
-      },
-      "portValues": {
-        "value": -240
-      }
-    },
-    {
-      "id": "spr_strokeC",
-      "defType": "color/rgb",
-      "position": {
-        "x": 287,
-        "y": 674
-      },
-      "params": {
-        "r": 200,
-        "g": 200,
-        "b": 200,
-        "a": 200
-      },
-      "portValues": {
-        "r": 200,
-        "g": 200,
-        "b": 200,
-        "a": 200
-      }
     },
     {
       "id": "spr_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 568,
-        "y": 665
+        "x": 562,
+        "y": 239
       },
-      "params": {}
+      "params": {
+        "color": {
+          "r": 0.7843137254901961,
+          "g": 0.7843137254901961,
+          "b": 0.7843137254901961,
+          "a": 0.7843137254901961
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.7843137254901961,
+          "g": 0.7843137254901961,
+          "b": 0.7843137254901961,
+          "a": 0.7843137254901961
+        }
+      }
     },
     {
       "id": "spr_rod",
       "defType": "draw/line",
       "position": {
-        "x": 869,
-        "y": 514
+        "x": 866,
+        "y": 244
       },
       "params": {
-        "x1": 0,
-        "x2": 0
+        "a": {
+          "x": 0,
+          "y": -240
+        }
       },
       "portValues": {
-        "x1": 0,
-        "x2": 0
+        "a": {
+          "x": 0,
+          "y": -240
+        }
       }
     },
     {
       "id": "spr_anchorFill",
       "defType": "style/fill",
       "position": {
-        "x": 288,
-        "y": 1029
+        "x": 591,
+        "y": 523
       },
       "params": {
         "mode": "rgb",
@@ -274,26 +215,32 @@
       "id": "spr_anchor",
       "defType": "draw/ellipse",
       "position": {
-        "x": 563,
-        "y": 949
+        "x": 860,
+        "y": 386
       },
       "params": {
-        "x": 0,
         "w": 14,
-        "h": 14
+        "h": 14,
+        "pos": {
+          "x": 0,
+          "y": -240
+        }
       },
       "portValues": {
-        "x": 0,
         "w": 14,
-        "h": 14
+        "h": 14,
+        "pos": {
+          "x": 0,
+          "y": -240
+        }
       }
     },
     {
       "id": "spr_fill",
       "defType": "style/fill",
       "position": {
-        "x": 569,
-        "y": 827
+        "x": 591,
+        "y": 648
       },
       "params": {
         "mode": "rgb",
@@ -314,16 +261,14 @@
       "id": "spr_bob",
       "defType": "draw/ellipse",
       "position": {
-        "x": 863,
-        "y": 656
+        "x": 874,
+        "y": 568
       },
       "params": {
-        "x": 0,
         "w": 36,
         "h": 36
       },
       "portValues": {
-        "x": 0,
         "w": 36,
         "h": 36
       }
@@ -332,106 +277,50 @@
       "id": "spr_grp",
       "defType": "transform/group",
       "position": {
-        "x": 1116,
-        "y": 686
+        "x": 1125,
+        "y": 379
       },
       "params": {
         "slotCount": 3
       },
       "portValues": {
         "slotCount": 3
-      }
-    },
-    {
-      "id": "spr_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 1158,
-        "y": 828
-      },
-      "params": {
-        "r": 10,
-        "g": 10,
-        "b": 18,
-        "a": 255
-      },
-      "portValues": {
-        "r": 10,
-        "g": 10,
-        "b": 18,
-        "a": 255
       }
     },
     {
       "id": "spr_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1398,
-        "y": 747
+        "x": 1400,
+        "y": 379
       },
       "params": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.0392156862745098,
+          "b": 0.07058823529411765,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 500,
-        "height": 500
-      }
-    },
-    {
-      "id": "spr_rod-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 569,
-        "y": 543
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
+        "height": 500,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.0392156862745098,
+          "b": 0.07058823529411765,
+          "a": 1
+        }
       }
     },
     {
       "id": "spr_rod-xy1",
       "defType": "vec2/make",
       "position": {
-        "x": 569,
-        "y": 299
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
-      }
-    },
-    {
-      "id": "spr_anchor-xy2",
-      "defType": "vec2/make",
-      "position": {
-        "x": 288,
-        "y": 836
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
-      }
-    },
-    {
-      "id": "spr_bob-xy3",
-      "defType": "vec2/make",
-      "position": {
-        "x": 569,
-        "y": 421
+        "x": 591,
+        "y": 401
       },
       "params": {
         "x": 0,
@@ -444,13 +333,6 @@
     }
   ],
   "edges": [
-    {
-      "id": "e_1195",
-      "source": "spr_bg",
-      "target": "spr_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
     {
       "id": "e_1196",
       "source": "spr_initY",
@@ -466,51 +348,9 @@
       "targetHandle": "in-init"
     },
     {
-      "id": "e_1198",
-      "source": "spr_y",
-      "target": "spr_stretch",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1199",
-      "source": "spr_restY",
-      "target": "spr_stretch",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1200",
-      "source": "spr_stretch",
-      "target": "spr_kx",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_1201",
       "source": "spr_k",
       "target": "spr_kx",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1202",
-      "source": "spr_kx",
-      "target": "spr_Fspring",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1203",
-      "source": "spr_Fspring",
-      "target": "spr_acc",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1204",
-      "source": "spr_gravity",
-      "target": "spr_acc",
       "sourceHandle": "out-number",
       "targetHandle": "in-b"
     },
@@ -571,25 +411,11 @@
       "targetHandle": "in-next"
     },
     {
-      "id": "e_1213",
-      "source": "spr_strokeC",
-      "target": "spr_stroke",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
-    {
       "id": "e_1214",
       "source": "spr_stroke",
       "target": "spr_rod",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_1215",
-      "source": "spr_anchorY",
-      "target": "spr_rod-xy0",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-y"
     },
     {
       "id": "e_1216",
@@ -604,20 +430,6 @@
       "target": "spr_anchor",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_1218",
-      "source": "spr_anchorY",
-      "target": "spr_anchor-xy2",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1219",
-      "source": "spr_y",
-      "target": "spr_bob-xy3",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-y"
     },
     {
       "id": "e_1220",
@@ -655,13 +467,6 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_spr_rod-xy0",
-      "source": "spr_rod-xy0",
-      "target": "spr_rod",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_xy_spr_rod-xy1",
       "source": "spr_rod-xy1",
       "target": "spr_rod",
@@ -669,18 +474,25 @@
       "targetHandle": "in-b"
     },
     {
-      "id": "e_xy_spr_anchor-xy2",
-      "source": "spr_anchor-xy2",
-      "target": "spr_anchor",
+      "id": "e_xy_spr_bob-xy3",
+      "source": "spr_rod-xy1",
+      "target": "spr_bob",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_xy_spr_bob-xy3",
-      "source": "spr_bob-xy3",
-      "target": "spr_bob",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
+      "id": "e_spr_y_spr_kx_a",
+      "source": "spr_y",
+      "target": "spr_kx",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_spr_kx_spr_acc_b",
+      "source": "spr_kx",
+      "target": "spr_acc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
     }
   ]
 }

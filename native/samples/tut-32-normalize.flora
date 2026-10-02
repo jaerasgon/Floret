@@ -31,7 +31,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 0,
-        "y": 121
+        "y": 20
       },
       "params": {}
     },
@@ -40,7 +40,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 180,
-        "y": 121
+        "y": 20
       },
       "params": {}
     },
@@ -49,7 +49,7 @@
       "defType": "vec2/normalize",
       "position": {
         "x": 360,
-        "y": 121
+        "y": 20
       },
       "params": {}
     },
@@ -58,7 +58,7 @@
       "defType": "vec2/scale",
       "position": {
         "x": 550,
-        "y": 121
+        "y": 20
       },
       "params": {
         "s": 180
@@ -66,38 +66,22 @@
       "portValues": {
         "s": 180
       }
-    },
-    {
-      "id": "t32_sp",
-      "defType": "vec2/split",
-      "position": {
-        "x": 730,
-        "y": 122
-      },
-      "params": {}
     },
     {
       "id": "t32_line",
       "defType": "draw/line",
       "position": {
-        "x": 1098,
-        "y": 51
+        "x": 730,
+        "y": 0
       },
-      "params": {
-        "x1": 0,
-        "y1": 0
-      },
-      "portValues": {
-        "x1": 0,
-        "y1": 0
-      }
+      "params": {}
     },
     {
       "id": "t32_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1278,
-        "y": 51
+        "x": 920,
+        "y": 0
       },
       "params": {
         "width": 400,
@@ -106,38 +90,6 @@
       "portValues": {
         "width": 400,
         "height": 400
-      }
-    },
-    {
-      "id": "t32_line-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 910,
-        "y": 0
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
-      }
-    },
-    {
-      "id": "t32_line-xy1",
-      "defType": "vec2/make",
-      "position": {
-        "x": 910,
-        "y": 122
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
       }
     }
   ],
@@ -171,27 +123,6 @@
       "targetHandle": "in-v"
     },
     {
-      "id": "e_275",
-      "source": "t32_sc",
-      "target": "t32_sp",
-      "sourceHandle": "out-scaled",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_276",
-      "source": "t32_sp",
-      "target": "t32_line-xy1",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_277",
-      "source": "t32_sp",
-      "target": "t32_line-xy1",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
       "id": "e_278",
       "source": "t32_line",
       "target": "t32_renderer",
@@ -199,17 +130,10 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_t32_line-xy0",
-      "source": "t32_line-xy0",
-      "target": "t32_line",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_xy_t32_line-xy1",
-      "source": "t32_line-xy1",
+      "source": "t32_sc",
       "target": "t32_line",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-scaled",
       "targetHandle": "in-b"
     }
   ]

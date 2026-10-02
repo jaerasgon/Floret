@@ -9,437 +9,293 @@
   },
   "nodes": [
     {
-      "id": "gt_n",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 500
-      },
-      "params": {
-        "value": 32
-      },
-      "portValues": {
-        "value": 32
-      }
-    },
-    {
-      "id": "gt_range",
+      "id": "gt_paths",
       "defType": "spread/range",
       "position": {
-        "x": 236,
-        "y": 500
+        "x": 0,
+        "y": 235
       },
       "params": {
-        "count": 32
+        "count": 8
       },
       "portValues": {
-        "count": 32
+        "count": 8
       }
     },
     {
-      "id": "gt_strokeC",
-      "defType": "color/rgb",
+      "id": "gt_levels",
+      "defType": "spread/range",
       "position": {
-        "x": 27,
-        "y": 338
+        "x": 0,
+        "y": 337
       },
       "params": {
-        "r": 230,
-        "g": 160,
-        "b": 80,
-        "a": 255
+        "count": 4
       },
       "portValues": {
-        "r": 230,
-        "g": 160,
-        "b": 80,
-        "a": 255
+        "count": 4
       }
     },
     {
-      "id": "gt_stroke",
-      "defType": "style/stroke",
+      "id": "gt_steps",
+      "defType": "spread/cross",
       "position": {
-        "x": 249,
-        "y": 338
+        "x": 213,
+        "y": 276
       },
       "params": {}
     },
     {
-      "id": "gt_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 2873,
-        "y": 936
-      },
-      "params": {
-        "r": 16,
-        "g": 22,
-        "b": 16,
-        "a": 255
-      },
-      "portValues": {
-        "r": 16,
-        "g": 22,
-        "b": 16,
-        "a": 255
-      }
-    },
-    {
-      "id": "gt_renderer",
-      "defType": "render/renderer",
-      "position": {
-        "x": 5507,
-        "y": 667
-      },
-      "params": {
-        "width": 500,
-        "height": 500
-      },
-      "portValues": {
-        "width": 500,
-        "height": 500
-      }
-    },
-    {
-      "id": "gt_region",
+      "id": "gt_loop",
       "defType": "region/foreach",
       "position": {
-        "x": 455,
+        "x": 473,
         "y": 22
       },
       "params": {
-        "width": 4919,
-        "height": 866,
+        "width": 2788,
+        "height": 892,
         "label": "ForEach step"
       },
-      "width": 4919,
-      "height": 866
+      "ports": [
+        {
+          "id": "path",
+          "name": "path",
+          "type": "number",
+          "direction": "input",
+          "y": 199
+        },
+        {
+          "id": "level",
+          "name": "level",
+          "type": "number",
+          "direction": "input",
+          "y": 402
+        },
+        {
+          "id": "branch",
+          "name": "branch",
+          "type": "layer",
+          "direction": "output",
+          "y": 420
+        },
+        {
+          "id": "first",
+          "name": "first",
+          "type": "boolean",
+          "direction": "output",
+          "y": 137
+        }
+      ],
+      "width": 2788,
+      "height": 892
     },
     {
-      "id": "gt_kin",
-      "defType": "region/splicer-in/number",
+      "id": "gt_pow2",
+      "defType": "math/pow",
       "position": {
-        "x": 128,
-        "y": 460
-      },
-      "params": {},
-      "parentId": "gt_region"
-    },
-    {
-      "id": "gt_seg",
-      "defType": "math/mod",
-      "position": {
-        "x": 374,
-        "y": 585
+        "x": 187,
+        "y": 168
       },
       "params": {
-        "b": 4
+        "a": 2
       },
-      "parentId": "gt_region",
+      "parentId": "gt_loop",
       "portValues": {
-        "b": 4
+        "a": 2
       }
     },
     {
-      "id": "gt_leafd",
+      "id": "gt_shift",
       "defType": "math/div",
       "position": {
-        "x": 562,
-        "y": 333
+        "x": 420,
+        "y": 112
       },
       "params": {
-        "b": 4,
         "valueType": "number"
       },
-      "parentId": "gt_region",
+      "parentId": "gt_loop"
+    },
+    {
+      "id": "gt_first",
+      "defType": "logic/lt",
+      "position": {
+        "x": 695,
+        "y": 40
+      },
+      "params": {
+        "b": 1
+      },
+      "parentId": "gt_loop",
       "portValues": {
-        "b": 4
+        "b": 1
       }
     },
     {
-      "id": "gt_leaf",
-      "defType": "math/floor",
+      "id": "gt_fract",
+      "defType": "math/fract",
       "position": {
-        "x": 882,
-        "y": 284
+        "x": 701,
+        "y": 162
       },
       "params": {},
-      "parentId": "gt_region"
+      "parentId": "gt_loop"
     },
     {
-      "id": "gt_stepG",
-      "defType": "math/step",
+      "id": "gt_bit",
+      "defType": "math/round",
       "position": {
-        "x": 591,
-        "y": 455
+        "x": 880,
+        "y": 175
+      },
+      "params": {},
+      "parentId": "gt_loop"
+    },
+    {
+      "id": "gt_turn",
+      "defType": "math/map",
+      "position": {
+        "x": 1075,
+        "y": 189
       },
       "params": {
-        "edge": 0.5
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": -0.5,
+        "outMax": 0.5
       },
-      "parentId": "gt_region",
+      "parentId": "gt_loop",
       "portValues": {
-        "edge": 0.5
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": -0.5,
+        "outMax": 0.5
       }
     },
     {
-      "id": "gt_gate0",
-      "defType": "math/sub",
+      "id": "gt_above",
+      "defType": "math/min",
       "position": {
-        "x": 834,
-        "y": 386
-      },
-      "params": {
-        "a": 1,
-        "valueType": "number"
-      },
-      "parentId": "gt_region",
-      "portValues": {
-        "a": 1
-      }
-    },
-    {
-      "id": "gt_exp",
-      "defType": "math/sub",
-      "position": {
-        "x": 562,
-        "y": 577
+        "x": 142,
+        "y": 290
       },
       "params": {
         "b": 1,
         "valueType": "number"
       },
-      "parentId": "gt_region",
+      "parentId": "gt_loop",
       "portValues": {
         "b": 1
       }
     },
     {
-      "id": "gt_powB",
-      "defType": "math/pow",
-      "position": {
-        "x": 879,
-        "y": 508
-      },
-      "params": {
-        "a": 2
-      },
-      "parentId": "gt_region",
-      "portValues": {
-        "a": 2
-      }
-    },
-    {
-      "id": "gt_div2",
-      "defType": "math/div",
-      "position": {
-        "x": 1131,
-        "y": 406
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "gt_region"
-    },
-    {
-      "id": "gt_flr2",
-      "defType": "math/floor",
-      "position": {
-        "x": 1430,
-        "y": 438
-      },
-      "params": {},
-      "parentId": "gt_region"
-    },
-    {
-      "id": "gt_bit",
-      "defType": "math/mod",
-      "position": {
-        "x": 1607,
-        "y": 422
-      },
-      "params": {
-        "b": 2
-      },
-      "parentId": "gt_region",
-      "portValues": {
-        "b": 2
-      }
-    },
-    {
-      "id": "gt_sgn1",
-      "defType": "math/mul",
-      "position": {
-        "x": 1777,
-        "y": 420
-      },
-      "params": {
-        "b": 2,
-        "valueType": "number"
-      },
-      "parentId": "gt_region",
-      "portValues": {
-        "b": 2
-      }
-    },
-    {
-      "id": "gt_sgn",
-      "defType": "math/sub",
-      "position": {
-        "x": 2043,
-        "y": 417
-      },
-      "params": {
-        "b": 1
-      },
-      "parentId": "gt_region",
-      "portValues": {
-        "b": 1
-      }
-    },
-    {
-      "id": "gt_trnR",
-      "defType": "math/mul",
-      "position": {
-        "x": 2309,
-        "y": 414
-      },
-      "params": {
-        "b": 0.5
-      },
-      "parentId": "gt_region",
-      "portValues": {
-        "b": 0.5
-      }
-    },
-    {
-      "id": "gt_turn",
-      "defType": "math/mul",
-      "position": {
-        "x": 2576,
-        "y": 432
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "gt_region"
-    },
-    {
-      "id": "gt_ra",
+      "id": "gt_rAngle",
       "defType": "region/accumulator-read/number",
       "position": {
-        "x": 853,
-        "y": 162
+        "x": 1054,
+        "y": 67
       },
       "params": {
         "slot": 1
       },
-      "parentId": "gt_region",
-      "portValues": {
-        "slot": 1
-      }
+      "parentId": "gt_loop"
     },
     {
-      "id": "gt_rx",
+      "id": "gt_rX",
       "defType": "region/accumulator-read/number",
       "position": {
-        "x": 853,
-        "y": 40
+        "x": 162,
+        "y": 656
       },
       "params": {
         "slot": 2
       },
-      "parentId": "gt_region",
-      "portValues": {
-        "slot": 2
-      }
+      "parentId": "gt_loop"
     },
     {
-      "id": "gt_ry",
+      "id": "gt_rY",
       "defType": "region/accumulator-read/number",
       "position": {
-        "x": 853,
-        "y": 630
+        "x": 162,
+        "y": 778
       },
       "params": {
         "slot": 3
       },
-      "parentId": "gt_region",
-      "portValues": {
-        "slot": 3
-      }
+      "parentId": "gt_loop"
     },
     {
-      "id": "gt_pAng",
-      "defType": "math/lerp",
-      "position": {
-        "x": 1179,
-        "y": 264
-      },
-      "params": {
-        "b": 0,
-        "valueType": "number"
-      },
-      "parentId": "gt_region",
-      "portValues": {
-        "b": 0
-      }
-    },
-    {
-      "id": "gt_pX",
-      "defType": "math/lerp",
-      "position": {
-        "x": 1179,
-        "y": 122
-      },
-      "params": {
-        "b": 0,
-        "valueType": "number"
-      },
-      "parentId": "gt_region",
-      "portValues": {
-        "b": 0
-      }
-    },
-    {
-      "id": "gt_pY",
-      "defType": "math/lerp",
-      "position": {
-        "x": 1179,
-        "y": 528
-      },
-      "params": {
-        "b": 220,
-        "valueType": "number"
-      },
-      "parentId": "gt_region",
-      "portValues": {
-        "b": 220
-      }
-    },
-    {
-      "id": "gt_nAng",
+      "id": "gt_turned",
       "defType": "math/add",
       "position": {
-        "x": 2852,
-        "y": 334
+        "x": 1292,
+        "y": 155
       },
       "params": {
         "valueType": "number"
       },
-      "parentId": "gt_region"
+      "parentId": "gt_loop"
     },
     {
-      "id": "gt_lpow",
+      "id": "gt_angle",
+      "defType": "math/lerp",
+      "position": {
+        "x": 1600,
+        "y": 212
+      },
+      "params": {
+        "a": -1.5707963267948966,
+        "valueType": "number"
+      },
+      "parentId": "gt_loop",
+      "portValues": {
+        "a": -1.5707963267948966
+      }
+    },
+    {
+      "id": "gt_prev",
+      "defType": "vec2/make",
+      "position": {
+        "x": 462,
+        "y": 667
+      },
+      "params": {},
+      "parentId": "gt_loop"
+    },
+    {
+      "id": "gt_start",
+      "defType": "math/lerp",
+      "position": {
+        "x": 1858,
+        "y": 396
+      },
+      "params": {
+        "a": {
+          "x": 0,
+          "y": 220
+        },
+        "valueType": "vec2"
+      },
+      "parentId": "gt_loop",
+      "portValues": {
+        "a": {
+          "x": 0,
+          "y": 220
+        }
+      }
+    },
+    {
+      "id": "gt_shrink",
       "defType": "math/pow",
       "position": {
-        "x": 2891,
-        "y": 583
+        "x": 181,
+        "y": 412
       },
       "params": {
         "a": 0.7
       },
-      "parentId": "gt_region",
+      "parentId": "gt_loop",
       "portValues": {
         "a": 0.7
       }
@@ -448,622 +304,454 @@
       "id": "gt_len",
       "defType": "math/mul",
       "position": {
-        "x": 3134,
-        "y": 552
+        "x": 1567,
+        "y": 404
       },
       "params": {
         "a": 140,
         "valueType": "number"
       },
-      "parentId": "gt_region",
+      "parentId": "gt_loop",
       "portValues": {
         "a": 140
       }
     },
     {
-      "id": "gt_sin",
-      "defType": "math/sin",
+      "id": "gt_step",
+      "defType": "vec2/from-angle",
       "position": {
-        "x": 3182,
-        "y": 418
+        "x": 1863,
+        "y": 274
       },
       "params": {},
-      "parentId": "gt_region"
+      "parentId": "gt_loop"
     },
     {
-      "id": "gt_cos",
-      "defType": "math/cos",
-      "position": {
-        "x": 3182,
-        "y": 316
-      },
-      "params": {},
-      "parentId": "gt_region"
-    },
-    {
-      "id": "gt_dx",
-      "defType": "math/mul",
-      "position": {
-        "x": 3420,
-        "y": 407
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "gt_region"
-    },
-    {
-      "id": "gt_ncos",
-      "defType": "math/neg",
-      "position": {
-        "x": 3468,
-        "y": 305
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "gt_region"
-    },
-    {
-      "id": "gt_dy",
-      "defType": "math/mul",
-      "position": {
-        "x": 3717,
-        "y": 504
-      },
-      "params": {},
-      "parentId": "gt_region"
-    },
-    {
-      "id": "gt_nX",
+      "id": "gt_end",
       "defType": "math/add",
       "position": {
-        "x": 3717,
-        "y": 301
+        "x": 2083,
+        "y": 330
       },
       "params": {
-        "valueType": "number"
+        "valueType": "vec2"
       },
-      "parentId": "gt_region"
+      "parentId": "gt_loop"
     },
     {
-      "id": "gt_nY",
-      "defType": "math/add",
+      "id": "gt_endXY",
+      "defType": "vec2/split",
       "position": {
-        "x": 3987,
-        "y": 463
+        "x": 2359,
+        "y": 266
       },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "gt_region"
+      "params": {},
+      "parentId": "gt_loop"
     },
     {
-      "id": "gt_wa",
+      "id": "gt_wAngle",
       "defType": "region/accumulator-write/number",
       "position": {
-        "x": 3154,
+        "x": 1848,
+        "y": 152
+      },
+      "params": {
+        "slot": 1
+      },
+      "parentId": "gt_loop"
+    },
+    {
+      "id": "gt_wX",
+      "defType": "region/accumulator-write/number",
+      "position": {
+        "x": 2547,
         "y": 194
       },
       "params": {
-        "slot": 1
-      },
-      "parentId": "gt_region",
-      "portValues": {
-        "slot": 1
-      }
-    },
-    {
-      "id": "gt_wx",
-      "defType": "region/accumulator-write/number",
-      "position": {
-        "x": 4007,
-        "y": 280
-      },
-      "params": {
         "slot": 2
       },
-      "parentId": "gt_region",
-      "portValues": {
-        "slot": 2
-      }
+      "parentId": "gt_loop"
     },
     {
-      "id": "gt_wy",
+      "id": "gt_wY",
       "defType": "region/accumulator-write/number",
       "position": {
-        "x": 4261,
-        "y": 512
+        "x": 2547,
+        "y": 316
       },
       "params": {
         "slot": 3
       },
-      "parentId": "gt_region",
-      "portValues": {
-        "slot": 3
-      }
+      "parentId": "gt_loop"
     },
     {
-      "id": "gt_wsub",
+      "id": "gt_weight",
       "defType": "math/sub",
       "position": {
-        "x": 562,
-        "y": 699
+        "x": 142,
+        "y": 534
       },
       "params": {
         "a": 4,
         "valueType": "number"
       },
-      "parentId": "gt_region",
+      "parentId": "gt_loop",
       "portValues": {
         "a": 4
       }
     },
     {
-      "id": "gt_wmax",
-      "defType": "math/max",
+      "id": "gt_stroke",
+      "defType": "style/stroke",
       "position": {
-        "x": 834,
-        "y": 752
+        "x": 2102,
+        "y": 452
       },
       "params": {
-        "b": 1,
-        "valueType": "number"
+        "color": {
+          "r": 0.9019607843137255,
+          "g": 0.6274509803921569,
+          "b": 0.3137254901960784,
+          "a": 1
+        }
       },
-      "parentId": "gt_region",
+      "parentId": "gt_loop",
       "portValues": {
-        "b": 1
+        "color": {
+          "r": 0.9019607843137255,
+          "g": 0.6274509803921569,
+          "b": 0.3137254901960784,
+          "a": 1
+        }
       }
-    },
-    {
-      "id": "gt_swt",
-      "defType": "style/stroke-weight",
-      "position": {
-        "x": 1159,
-        "y": 736
-      },
-      "params": {},
-      "parentId": "gt_region"
-    },
-    {
-      "id": "gt_a",
-      "defType": "vec2/make",
-      "position": {
-        "x": 1424,
-        "y": 316
-      },
-      "params": {},
-      "parentId": "gt_region"
-    },
-    {
-      "id": "gt_b",
-      "defType": "vec2/make",
-      "position": {
-        "x": 4283,
-        "y": 390
-      },
-      "params": {},
-      "parentId": "gt_region"
     },
     {
       "id": "gt_line",
       "defType": "draw/line",
       "position": {
-        "x": 4502,
-        "y": 419
+        "x": 2359,
+        "y": 388
       },
       "params": {},
-      "parentId": "gt_region"
+      "parentId": "gt_loop"
     },
     {
-      "id": "gt_out",
-      "defType": "region/splicer-out/layer",
+      "id": "gt_once",
+      "defType": "spread/sift",
       "position": {
-        "x": 4682,
-        "y": 419
+        "x": 3380,
+        "y": 255
       },
-      "params": {},
-      "parentId": "gt_region"
+      "params": {}
+    },
+    {
+      "id": "gt_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 3574,
+        "y": 255
+      },
+      "params": {
+        "width": 500,
+        "height": 500,
+        "background": {
+          "r": 0.06274509803921569,
+          "g": 0.08627450980392157,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500,
+        "background": {
+          "r": 0.06274509803921569,
+          "g": 0.08627450980392157,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
+      }
     }
   ],
   "edges": [
     {
-      "id": "e_1357",
-      "source": "gt_n",
-      "target": "gt_range",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-count"
-    },
-    {
-      "id": "e_1358",
-      "source": "gt_strokeC",
-      "target": "gt_stroke",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
-    {
-      "id": "e_1359",
-      "source": "gt_bg",
-      "target": "gt_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
-    {
-      "id": "e_1360",
-      "source": "gt_range",
-      "target": "gt_kin",
+      "id": "e_gt_paths_gt_steps_a",
+      "source": "gt_paths",
+      "target": "gt_steps",
       "sourceHandle": "out-indices",
-      "targetHandle": "in-outer"
-    },
-    {
-      "id": "e_1361",
-      "source": "gt_kin",
-      "target": "gt_seg",
-      "sourceHandle": "out-inner",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_1362",
-      "source": "gt_kin",
-      "target": "gt_leafd",
-      "sourceHandle": "out-inner",
+      "id": "e_gt_levels_gt_steps_b",
+      "source": "gt_levels",
+      "target": "gt_steps",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_gt_steps_gt_loop_path",
+      "source": "gt_steps",
+      "target": "gt_loop",
+      "sourceHandle": "out-a",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_gt_steps_gt_loop_level",
+      "source": "gt_steps",
+      "target": "gt_loop",
+      "sourceHandle": "out-b",
+      "targetHandle": "in-level"
+    },
+    {
+      "id": "e_gt_loop_gt_pow2_b",
+      "source": "gt_loop",
+      "target": "gt_pow2",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_gt_loop_gt_shift_a",
+      "source": "gt_loop",
+      "target": "gt_shift",
+      "sourceHandle": "out-path",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_1363",
-      "source": "gt_leafd",
-      "target": "gt_leaf",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1364",
-      "source": "gt_seg",
-      "target": "gt_stepG",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1365",
-      "source": "gt_stepG",
-      "target": "gt_gate0",
+      "id": "e_gt_pow2_gt_shift_b",
+      "source": "gt_pow2",
+      "target": "gt_shift",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_1366",
-      "source": "gt_seg",
-      "target": "gt_exp",
+      "id": "e_gt_shift_gt_first_a",
+      "source": "gt_shift",
+      "target": "gt_first",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_1367",
-      "source": "gt_exp",
-      "target": "gt_powB",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1368",
-      "source": "gt_leaf",
-      "target": "gt_div2",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1369",
-      "source": "gt_powB",
-      "target": "gt_div2",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1370",
-      "source": "gt_div2",
-      "target": "gt_flr2",
+      "id": "e_gt_shift_gt_fract_x",
+      "source": "gt_shift",
+      "target": "gt_fract",
       "sourceHandle": "out-result",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_1371",
-      "source": "gt_flr2",
+      "id": "e_gt_fract_gt_bit_x",
+      "source": "gt_fract",
       "target": "gt_bit",
       "sourceHandle": "out-result",
-      "targetHandle": "in-a"
+      "targetHandle": "in-x"
     },
     {
-      "id": "e_1372",
+      "id": "e_gt_bit_gt_turn_x",
       "source": "gt_bit",
-      "target": "gt_sgn1",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1373",
-      "source": "gt_sgn1",
-      "target": "gt_sgn",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1374",
-      "source": "gt_sgn",
-      "target": "gt_trnR",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1375",
-      "source": "gt_trnR",
       "target": "gt_turn",
       "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_gt_loop_gt_above_a",
+      "source": "gt_loop",
+      "target": "gt_above",
+      "sourceHandle": "out-level",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_1376",
-      "source": "gt_stepG",
-      "target": "gt_turn",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1377",
-      "source": "gt_ra",
-      "target": "gt_pAng",
+      "id": "e_gt_rAngle_gt_turned_a",
+      "source": "gt_rAngle",
+      "target": "gt_turned",
       "sourceHandle": "out-read",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_1378",
-      "source": "gt_gate0",
-      "target": "gt_pAng",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-t"
-    },
-    {
-      "id": "e_1379",
-      "source": "gt_rx",
-      "target": "gt_pX",
-      "sourceHandle": "out-read",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1380",
-      "source": "gt_gate0",
-      "target": "gt_pX",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-t"
-    },
-    {
-      "id": "e_1381",
-      "source": "gt_ry",
-      "target": "gt_pY",
-      "sourceHandle": "out-read",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1382",
-      "source": "gt_gate0",
-      "target": "gt_pY",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-t"
-    },
-    {
-      "id": "e_1383",
-      "source": "gt_pAng",
-      "target": "gt_nAng",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1384",
+      "id": "e_gt_turn_gt_turned_b",
       "source": "gt_turn",
-      "target": "gt_nAng",
+      "target": "gt_turned",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_1385",
-      "source": "gt_seg",
-      "target": "gt_lpow",
+      "id": "e_gt_turned_gt_angle_b",
+      "source": "gt_turned",
+      "target": "gt_angle",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_1386",
-      "source": "gt_lpow",
+      "id": "e_gt_above_gt_angle_t",
+      "source": "gt_above",
+      "target": "gt_angle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_gt_rX_gt_prev_x",
+      "source": "gt_rX",
+      "target": "gt_prev",
+      "sourceHandle": "out-read",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_gt_rY_gt_prev_y",
+      "source": "gt_rY",
+      "target": "gt_prev",
+      "sourceHandle": "out-read",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_gt_prev_gt_start_b",
+      "source": "gt_prev",
+      "target": "gt_start",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_gt_above_gt_start_t",
+      "source": "gt_above",
+      "target": "gt_start",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_gt_loop_gt_shrink_b",
+      "source": "gt_loop",
+      "target": "gt_shrink",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_gt_shrink_gt_len_b",
+      "source": "gt_shrink",
       "target": "gt_len",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_1387",
-      "source": "gt_nAng",
-      "target": "gt_sin",
+      "id": "e_gt_angle_gt_step_angle",
+      "source": "gt_angle",
+      "target": "gt_step",
       "sourceHandle": "out-result",
-      "targetHandle": "in-x"
+      "targetHandle": "in-angle"
     },
     {
-      "id": "e_1388",
-      "source": "gt_nAng",
-      "target": "gt_cos",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1389",
+      "id": "e_gt_len_gt_step_mag",
       "source": "gt_len",
-      "target": "gt_dx",
+      "target": "gt_step",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_gt_start_gt_end_a",
+      "source": "gt_start",
+      "target": "gt_end",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_1390",
-      "source": "gt_sin",
-      "target": "gt_dx",
-      "sourceHandle": "out-result",
+      "id": "e_gt_step_gt_end_b",
+      "source": "gt_step",
+      "target": "gt_end",
+      "sourceHandle": "out-vector",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_1391",
-      "source": "gt_cos",
-      "target": "gt_ncos",
+      "id": "e_gt_end_gt_endXY_v",
+      "source": "gt_end",
+      "target": "gt_endXY",
       "sourceHandle": "out-result",
-      "targetHandle": "in-x"
+      "targetHandle": "in-v"
     },
     {
-      "id": "e_1392",
-      "source": "gt_len",
-      "target": "gt_dy",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1393",
-      "source": "gt_ncos",
-      "target": "gt_dy",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1394",
-      "source": "gt_pX",
-      "target": "gt_nX",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1395",
-      "source": "gt_dx",
-      "target": "gt_nX",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1396",
-      "source": "gt_pY",
-      "target": "gt_nY",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1397",
-      "source": "gt_dy",
-      "target": "gt_nY",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1398",
-      "source": "gt_nAng",
-      "target": "gt_wa",
+      "id": "e_gt_angle_gt_wAngle_write",
+      "source": "gt_angle",
+      "target": "gt_wAngle",
       "sourceHandle": "out-result",
       "targetHandle": "in-write"
     },
     {
-      "id": "e_1399",
-      "source": "gt_nX",
-      "target": "gt_wx",
-      "sourceHandle": "out-result",
+      "id": "e_gt_endXY_gt_wX_write",
+      "source": "gt_endXY",
+      "target": "gt_wX",
+      "sourceHandle": "out-x",
       "targetHandle": "in-write"
     },
     {
-      "id": "e_1400",
-      "source": "gt_nY",
-      "target": "gt_wy",
-      "sourceHandle": "out-result",
+      "id": "e_gt_endXY_gt_wY_write",
+      "source": "gt_endXY",
+      "target": "gt_wY",
+      "sourceHandle": "out-y",
       "targetHandle": "in-write"
     },
     {
-      "id": "e_1401",
-      "source": "gt_seg",
-      "target": "gt_wsub",
-      "sourceHandle": "out-result",
+      "id": "e_gt_loop_gt_weight_b",
+      "source": "gt_loop",
+      "target": "gt_weight",
+      "sourceHandle": "out-level",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_1402",
-      "source": "gt_wsub",
-      "target": "gt_wmax",
+      "id": "e_gt_weight_gt_stroke_width",
+      "source": "gt_weight",
+      "target": "gt_stroke",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-width"
+    },
+    {
+      "id": "e_gt_start_gt_line_a",
+      "source": "gt_start",
+      "target": "gt_line",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_1403",
+      "id": "e_gt_end_gt_line_b",
+      "source": "gt_end",
+      "target": "gt_line",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_gt_stroke_gt_line_style",
       "source": "gt_stroke",
-      "target": "gt_swt",
-      "sourceHandle": "out-style",
-      "targetHandle": "in-base"
-    },
-    {
-      "id": "e_1404",
-      "source": "gt_wmax",
-      "target": "gt_swt",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_1405",
-      "source": "gt_pX",
-      "target": "gt_a",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1406",
-      "source": "gt_pY",
-      "target": "gt_a",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1407",
-      "source": "gt_nX",
-      "target": "gt_b",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1408",
-      "source": "gt_nY",
-      "target": "gt_b",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1409",
-      "source": "gt_a",
-      "target": "gt_line",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1410",
-      "source": "gt_b",
-      "target": "gt_line",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1411",
-      "source": "gt_swt",
       "target": "gt_line",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_1412",
+      "id": "e_gt_line_gt_loop_branch",
       "source": "gt_line",
-      "target": "gt_out",
+      "target": "gt_loop",
       "sourceHandle": "out-shape",
-      "targetHandle": "in-inner"
+      "targetHandle": "in-branch"
     },
     {
-      "id": "e_1413",
-      "source": "gt_out",
+      "id": "e_gt_first_gt_loop_first",
+      "source": "gt_first",
+      "target": "gt_loop",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-first"
+    },
+    {
+      "id": "e_gt_loop_gt_once_spread",
+      "source": "gt_loop",
+      "target": "gt_once",
+      "sourceHandle": "out-branch",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_gt_loop_gt_once_keep",
+      "source": "gt_loop",
+      "target": "gt_once",
+      "sourceHandle": "out-first",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_gt_once_gt_renderer_layers",
+      "source": "gt_once",
       "target": "gt_renderer",
-      "sourceHandle": "out-outer",
+      "sourceHandle": "out-values",
       "targetHandle": "in-layers"
     }
   ]

@@ -16,12 +16,12 @@
         "y": -284
       },
       "params": {
-        "text": "Welcome to Floret!\n\nEvery patch ends at a Renderer (the box on the right with the canvas preview). Output pins are on the right of each node, input pins on the left. Drag from one to the other to make a wire.\n\nThis patch wires a single Rect into the Renderer. Open the Rect — change x/y/w/h to move and resize it.",
+        "text": "Welcome to Floret!\n\nEvery patch ends at a Renderer (the box on the right with the canvas preview). Output pins are on the right of each node, input pins on the left. Drag from one to the other to make a wire.\n\nThis patch wires a single Rect into the Renderer. Open the Rect — change pos / w / h to move and resize it.",
         "width": 360,
         "height": 220
       },
       "portValues": {
-        "text": "Welcome to Floret!\n\nEvery patch ends at a Renderer (the box on the right with the canvas preview). Output pins are on the right of each node, input pins on the left. Drag from one to the other to make a wire.\n\nThis patch wires a single Rect into the Renderer. Open the Rect — change x/y/w/h to move and resize it.",
+        "text": "Welcome to Floret!\n\nEvery patch ends at a Renderer (the box on the right with the canvas preview). Output pins are on the right of each node, input pins on the left. Drag from one to the other to make a wire.\n\nThis patch wires a single Rect into the Renderer. Open the Rect — change pos / w / h to move and resize it.",
         "width": 360,
         "height": 220
       }
@@ -30,27 +30,31 @@
       "id": "t01_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 191,
+        "x": 0,
         "y": 0
       },
       "params": {
-        "x": -50,
-        "y": -50,
         "w": 100,
-        "h": 100
+        "h": 100,
+        "pos": {
+          "x": -50,
+          "y": -50
+        }
       },
       "portValues": {
-        "x": -50,
-        "y": -50,
         "w": 100,
-        "h": 100
+        "h": 100,
+        "pos": {
+          "x": -50,
+          "y": -50
+        }
       }
     },
     {
       "id": "t01_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 383,
+        "x": 226,
         "y": 0
       },
       "params": {
@@ -60,22 +64,6 @@
       "portValues": {
         "width": 400,
         "height": 400
-      }
-    },
-    {
-      "id": "t01_rect-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 0,
-        "y": 0
-      },
-      "params": {
-        "x": -50,
-        "y": -50
-      },
-      "portValues": {
-        "x": -50,
-        "y": -50
       }
     }
   ],
@@ -86,13 +74,6 @@
       "target": "t01_renderer",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_xy_t01_rect-xy0",
-      "source": "t01_rect-xy0",
-      "target": "t01_rect",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

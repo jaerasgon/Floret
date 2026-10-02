@@ -30,7 +30,7 @@
       "id": "t26_fib",
       "defType": "spread/fibonacci",
       "position": {
-        "x": 246,
+        "x": 0,
         "y": 0
       },
       "params": {
@@ -45,41 +45,34 @@
       }
     },
     {
-      "id": "t26_col",
-      "defType": "color/color",
-      "position": {
-        "x": 0,
-        "y": 142
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 250,
-        "g": 200,
-        "b": 60,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 250,
-        "g": 200,
-        "b": 60,
-        "a": 255
-      }
-    },
-    {
       "id": "t26_fill",
       "defType": "style/fill",
       "position": {
-        "x": 270,
+        "x": 1,
         "y": 142
       },
-      "params": {}
+      "params": {
+        "color": {
+          "r": 0.9803921568627451,
+          "g": 0.7843137254901961,
+          "b": 0.23529411764705882,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.9803921568627451,
+          "g": 0.7843137254901961,
+          "b": 0.23529411764705882,
+          "a": 1
+        }
+      }
     },
     {
       "id": "t26_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 481,
+        "x": 235,
         "y": 51
       },
       "params": {
@@ -93,7 +86,7 @@
       "id": "t26_rast",
       "defType": "image/from-layer",
       "position": {
-        "x": 666,
+        "x": 420,
         "y": 51
       },
       "params": {
@@ -109,18 +102,14 @@
       "id": "t26_draw",
       "defType": "draw/image",
       "position": {
-        "x": 859,
-        "y": 112
+        "x": 604,
+        "y": 51
       },
       "params": {
-        "x": 0,
-        "y": 0,
         "w": 200,
         "h": 200
       },
       "portValues": {
-        "x": 0,
-        "y": 0,
         "w": 200,
         "h": 200
       }
@@ -129,8 +118,8 @@
       "id": "t26_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1051,
-        "y": 112
+        "x": 796,
+        "y": 51
       },
       "params": {
         "width": 400,
@@ -139,22 +128,6 @@
       "portValues": {
         "width": 400,
         "height": 400
-      }
-    },
-    {
-      "id": "t26_draw-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 668,
-        "y": 193
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
       }
     }
   ],
@@ -165,13 +138,6 @@
       "target": "t26_poly",
       "sourceHandle": "out-positions",
       "targetHandle": "in-points"
-    },
-    {
-      "id": "e_212",
-      "source": "t26_col",
-      "target": "t26_fill",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
     },
     {
       "id": "e_213",
@@ -200,13 +166,6 @@
       "target": "t26_renderer",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_xy_t26_draw-xy0",
-      "source": "t26_draw-xy0",
-      "target": "t26_draw",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

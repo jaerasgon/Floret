@@ -16,75 +16,72 @@
         "y": -264
       },
       "params": {
-        "text": "Text on the canvas\n\n`draw/text` is just another draw node — it has x, y, size, and style inputs like any shape.\n\nDouble-click the node to edit its `string` param, or wire a value/string into it from outside.",
+        "text": "Text on the canvas\n\n`draw/text` is just another draw node — it has pos, size and style inputs like any shape.\n\nDouble-click the node to edit its `string` param, or wire a value/string into it from outside.",
         "width": 400,
         "height": 200
       },
       "portValues": {
-        "text": "Text on the canvas\n\n`draw/text` is just another draw node — it has x, y, size, and style inputs like any shape.\n\nDouble-click the node to edit its `string` param, or wire a value/string into it from outside.",
+        "text": "Text on the canvas\n\n`draw/text` is just another draw node — it has pos, size and style inputs like any shape.\n\nDouble-click the node to edit its `string` param, or wire a value/string into it from outside.",
         "width": 400,
         "height": 200
-      }
-    },
-    {
-      "id": "t34_col",
-      "defType": "color/color",
-      "position": {
-        "x": 0,
-        "y": 122
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 230,
-        "g": 240,
-        "b": 250,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 230,
-        "g": 240,
-        "b": 250,
-        "a": 255
       }
     },
     {
       "id": "t34_fill",
       "defType": "style/fill",
       "position": {
-        "x": 255,
-        "y": 122
+        "x": 0,
+        "y": 80
       },
-      "params": {}
+      "params": {
+        "color": {
+          "r": 0.9019607843137255,
+          "g": 0.9411764705882353,
+          "b": 0.9803921568627451,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.9019607843137255,
+          "g": 0.9411764705882353,
+          "b": 0.9803921568627451,
+          "a": 1
+        }
+      }
     },
     {
       "id": "t34_text",
       "defType": "draw/text",
       "position": {
-        "x": 448,
-        "y": 11
+        "x": 226,
+        "y": 0
       },
       "params": {
         "string": "hello, floret",
-        "x": -120,
-        "y": 0,
         "size": 28,
-        "align": "left"
+        "align": "left",
+        "pos": {
+          "x": -120,
+          "y": 0
+        }
       },
       "portValues": {
         "string": "hello, floret",
-        "x": -120,
-        "y": 0,
         "size": 28,
-        "align": "left"
+        "align": "left",
+        "pos": {
+          "x": -120,
+          "y": 0
+        }
       }
     },
     {
       "id": "t34_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 697,
-        "y": 11
+        "x": 475,
+        "y": 0
       },
       "params": {
         "width": 400,
@@ -93,33 +90,10 @@
       "portValues": {
         "width": 400,
         "height": 400
-      }
-    },
-    {
-      "id": "t34_text-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 246,
-        "y": 0
-      },
-      "params": {
-        "x": -120,
-        "y": 0
-      },
-      "portValues": {
-        "x": -120,
-        "y": 0
       }
     }
   ],
   "edges": [
-    {
-      "id": "e_285",
-      "source": "t34_col",
-      "target": "t34_fill",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
     {
       "id": "e_286",
       "source": "t34_fill",
@@ -133,13 +107,6 @@
       "target": "t34_renderer",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_xy_t34_text-xy0",
-      "source": "t34_text-xy0",
-      "target": "t34_text",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

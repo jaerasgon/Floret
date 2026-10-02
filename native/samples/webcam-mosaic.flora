@@ -85,7 +85,7 @@
       "defType": "input/camera",
       "position": {
         "x": 264,
-        "y": 54
+        "y": 49
       },
       "params": {
         "device": "",
@@ -101,7 +101,7 @@
       "defType": "io/toggle",
       "position": {
         "x": 0,
-        "y": 60
+        "y": 55
       },
       "params": {
         "value": true
@@ -115,7 +115,7 @@
       "defType": "image/resize",
       "position": {
         "x": 535,
-        "y": 54
+        "y": 49
       },
       "params": {
         "w": 500,
@@ -131,7 +131,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 745,
-        "y": 241
+        "y": 291
       },
       "params": {
         "cols": 36,
@@ -151,7 +151,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 524,
-        "y": 196
+        "y": 191
       },
       "params": {
         "cols": 36,
@@ -179,44 +179,36 @@
       "defType": "image/sample-spread",
       "position": {
         "x": 745,
-        "y": 115
+        "y": 110
       },
       "params": {}
-    },
-    {
-      "id": "wm_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 1687,
-        "y": 1055
-      },
-      "params": {
-        "r": 6,
-        "g": 7,
-        "b": 12,
-        "a": 255
-      },
-      "portValues": {
-        "r": 6,
-        "g": 7,
-        "b": 12,
-        "a": 255
-      }
     },
     {
       "id": "wm_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2658,
-        "y": 629
+        "x": 2360,
+        "y": 217
       },
       "params": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.023529411764705882,
+          "g": 0.027450980392156862,
+          "b": 0.047058823529411764,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.023529411764705882,
+          "g": 0.027450980392156862,
+          "b": 0.047058823529411764,
+          "a": 1
+        }
       }
     },
     {
@@ -227,8 +219,8 @@
         "y": 22
       },
       "params": {
-        "width": 1544,
-        "height": 985,
+        "width": 1307,
+        "height": 886,
         "label": "④ ForEach cell"
       },
       "ports": [
@@ -237,71 +229,51 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 255
+          "y": 305
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
           "direction": "input",
-          "y": 129
+          "y": 124
         },
         {
           "id": "dot",
           "name": "dot",
           "type": "layer",
           "direction": "output",
-          "y": 238
+          "y": 231
         }
       ],
-      "width": 1544,
-      "height": 985
+      "width": 1307,
+      "height": 886
     },
     {
       "id": "wm_n_pos",
       "defType": "meta/comment",
       "position": {
-        "x": 131,
-        "y": 681
+        "x": 133,
+        "y": 582
       },
       "params": {
-        "text": "a · POSITION\nWhere this cell sits on the centred canvas — fed to both shapes.",
+        "text": "a · POSITION\nWhere this cell sits on the centred canvas: the grid point goes straight into both shapes.",
         "width": 320,
         "height": 70
       },
       "parentId": "wm_region",
       "portValues": {
-        "text": "a · POSITION\nWhere this cell sits on the centred canvas — fed to both shapes.",
+        "text": "a · POSITION\nWhere this cell sits on the centred canvas: the grid point goes straight into both shapes.",
         "width": 320,
         "height": 70
       }
     },
     {
-      "id": "wm_split",
-      "defType": "vec2/split",
-      "position": {
-        "x": 132,
-        "y": 219
-      },
-      "params": {},
-      "parentId": "wm_region"
-    },
-    {
-      "id": "wm_pos",
-      "defType": "vec2/make",
-      "position": {
-        "x": 360,
-        "y": 224
-      },
-      "params": {},
-      "parentId": "wm_region"
-    },
-    {
       "id": "wm_n_lum",
       "defType": "meta/comment",
       "position": {
-        "x": 515,
-        "y": 681
+        "x": 517,
+        "y": 582
       },
       "params": {
         "text": "b · BRIGHTNESS\nAverage the pixel's R, G, B (0–255). Greater than 128 (mid-grey) → \"light\".",
@@ -319,33 +291,22 @@
       "id": "wm_srgb",
       "defType": "color/split-rgb",
       "position": {
-        "x": 132,
-        "y": 57
+        "x": 155,
+        "y": 52
       },
       "params": {},
-      "parentId": "wm_region"
-    },
-    {
-      "id": "wm_rg",
-      "defType": "math/add",
-      "position": {
-        "x": 318,
-        "y": 40
-      },
-      "params": {
-        "valueType": "number"
-      },
       "parentId": "wm_region"
     },
     {
       "id": "wm_rgb",
       "defType": "math/add",
       "position": {
-        "x": 603,
-        "y": 62
+        "x": 364,
+        "y": 40
       },
       "params": {
-        "valueType": "number"
+        "valueType": "number",
+        "slotCount": 3
       },
       "parentId": "wm_region"
     },
@@ -353,8 +314,8 @@
       "id": "wm_lum",
       "defType": "math/mul",
       "position": {
-        "x": 874,
-        "y": 105
+        "x": 635,
+        "y": 91
       },
       "params": {
         "b": 0.333,
@@ -369,8 +330,8 @@
       "id": "wm_isLight",
       "defType": "logic/gt",
       "position": {
-        "x": 1144,
-        "y": 149
+        "x": 907,
+        "y": 142
       },
       "params": {
         "b": 128
@@ -384,8 +345,8 @@
       "id": "wm_n_shapes",
       "defType": "meta/comment",
       "position": {
-        "x": 131,
-        "y": 875
+        "x": 497,
+        "y": 716
       },
       "params": {
         "text": "c · TWO SHAPES\nBoth are built every cell: a yellow circle and a blue square.",
@@ -397,50 +358,41 @@
         "text": "c · TWO SHAPES\nBoth are built every cell: a yellow circle and a blue square.",
         "width": 360,
         "height": 70
-      }
-    },
-    {
-      "id": "wm_yCol",
-      "defType": "color/rgb",
-      "position": {
-        "x": 131,
-        "y": 341
-      },
-      "params": {
-        "r": 250,
-        "g": 210,
-        "b": 40,
-        "a": 255
-      },
-      "parentId": "wm_region",
-      "portValues": {
-        "r": 250,
-        "g": 210,
-        "b": 40,
-        "a": 255
       }
     },
     {
       "id": "wm_yFill",
       "defType": "style/fill",
       "position": {
-        "x": 360,
-        "y": 346
+        "x": 133,
+        "y": 268
       },
       "params": {
-        "mode": "color"
+        "mode": "color",
+        "color": {
+          "r": 0.9803921568627451,
+          "g": 0.8235294117647058,
+          "b": 0.1568627450980392,
+          "a": 1
+        }
       },
       "parentId": "wm_region",
       "portValues": {
-        "mode": "color"
+        "mode": "color",
+        "color": {
+          "r": 0.9803921568627451,
+          "g": 0.8235294117647058,
+          "b": 0.1568627450980392,
+          "a": 1
+        }
       }
     },
     {
       "id": "wm_circle",
       "defType": "draw/ellipse",
       "position": {
-        "x": 639,
-        "y": 184
+        "x": 400,
+        "y": 182
       },
       "params": {
         "w": 13,
@@ -450,50 +402,41 @@
       "portValues": {
         "w": 13,
         "h": 13
-      }
-    },
-    {
-      "id": "wm_bCol",
-      "defType": "color/rgb",
-      "position": {
-        "x": 132,
-        "y": 503
-      },
-      "params": {
-        "r": 40,
-        "g": 90,
-        "b": 225,
-        "a": 255
-      },
-      "parentId": "wm_region",
-      "portValues": {
-        "r": 40,
-        "g": 90,
-        "b": 225,
-        "a": 255
       }
     },
     {
       "id": "wm_bFill",
       "defType": "style/fill",
       "position": {
-        "x": 360,
-        "y": 474
+        "x": 133,
+        "y": 444
       },
       "params": {
-        "mode": "color"
+        "mode": "color",
+        "color": {
+          "r": 0.1568627450980392,
+          "g": 0.35294117647058826,
+          "b": 0.8823529411764706,
+          "a": 1
+        }
       },
       "parentId": "wm_region",
       "portValues": {
-        "mode": "color"
+        "mode": "color",
+        "color": {
+          "r": 0.1568627450980392,
+          "g": 0.35294117647058826,
+          "b": 0.8823529411764706,
+          "a": 1
+        }
       }
     },
     {
       "id": "wm_square",
       "defType": "draw/rect",
       "position": {
-        "x": 639,
-        "y": 366
+        "x": 400,
+        "y": 364
       },
       "params": {
         "w": 12,
@@ -509,8 +452,8 @@
       "id": "wm_n_pick",
       "defType": "meta/comment",
       "position": {
-        "x": 999,
-        "y": 681
+        "x": 133,
+        "y": 716
       },
       "params": {
         "text": "d · SELECT\nlight → yellow circle\ndark → blue square\nOnly the picked shape is emitted.",
@@ -528,8 +471,8 @@
       "id": "wm_pick",
       "defType": "logic/select",
       "position": {
-        "x": 1332,
-        "y": 202
+        "x": 1095,
+        "y": 196
       },
       "params": {},
       "parentId": "wm_region"
@@ -565,13 +508,6 @@
       "targetHandle": "in-points"
     },
     {
-      "id": "e_1488",
-      "source": "wm_bg",
-      "target": "wm_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
-    {
       "id": "e_1489",
       "source": "wm_drawGrid",
       "target": "wm_region",
@@ -586,38 +522,17 @@
       "targetHandle": "in-col"
     },
     {
-      "id": "e_1491",
-      "source": "wm_region",
-      "target": "wm_split",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_1492",
-      "source": "wm_split",
-      "target": "wm_pos",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1493",
-      "source": "wm_split",
-      "target": "wm_pos",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
       "id": "e_1494",
-      "source": "wm_pos",
+      "source": "wm_region",
       "target": "wm_circle",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     },
     {
       "id": "e_1495",
-      "source": "wm_pos",
+      "source": "wm_region",
       "target": "wm_square",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     },
     {
@@ -626,34 +541,6 @@
       "target": "wm_srgb",
       "sourceHandle": "out-col",
       "targetHandle": "in-color"
-    },
-    {
-      "id": "e_1497",
-      "source": "wm_srgb",
-      "target": "wm_rg",
-      "sourceHandle": "out-r",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1498",
-      "source": "wm_srgb",
-      "target": "wm_rg",
-      "sourceHandle": "out-g",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1499",
-      "source": "wm_rg",
-      "target": "wm_rgb",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1500",
-      "source": "wm_srgb",
-      "target": "wm_rgb",
-      "sourceHandle": "out-b",
-      "targetHandle": "in-b"
     },
     {
       "id": "e_1501",
@@ -670,25 +557,11 @@
       "targetHandle": "in-a"
     },
     {
-      "id": "e_1503",
-      "source": "wm_yCol",
-      "target": "wm_yFill",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
-    {
       "id": "e_1504",
       "source": "wm_yFill",
       "target": "wm_circle",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_1505",
-      "source": "wm_bCol",
-      "target": "wm_bFill",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
     },
     {
       "id": "e_1506",
@@ -731,6 +604,27 @@
       "target": "wm_renderer",
       "sourceHandle": "out-dot",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_wm_srgb_wm_rgb_a",
+      "source": "wm_srgb",
+      "target": "wm_rgb",
+      "sourceHandle": "out-r",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_wm_srgb_wm_rgb_b",
+      "source": "wm_srgb",
+      "target": "wm_rgb",
+      "sourceHandle": "out-g",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_wm_srgb_wm_rgb_c",
+      "source": "wm_srgb",
+      "target": "wm_rgb",
+      "sourceHandle": "out-b",
+      "targetHandle": "in-c"
     }
   ]
 }

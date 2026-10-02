@@ -145,7 +145,7 @@
       "id": "pf_render",
       "defType": "particles/render-as",
       "position": {
-        "x": 715,
+        "x": 708,
         "y": 0
       },
       "params": {
@@ -158,41 +158,31 @@
       }
     },
     {
-      "id": "pf_bg",
-      "defType": "color/color",
-      "position": {
-        "x": 708,
-        "y": 202
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 12,
-        "g": 12,
-        "b": 22,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 12,
-        "g": 12,
-        "b": 22,
-        "a": 255
-      }
-    },
-    {
       "id": "pf_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 968,
-        "y": 91
+        "x": 940,
+        "y": 0
       },
       "params": {
         "width": 540,
-        "height": 540
+        "height": 540,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.047058823529411764,
+          "b": 0.08627450980392157,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 540,
-        "height": 540
+        "height": 540,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.047058823529411764,
+          "b": 0.08627450980392157,
+          "a": 1
+        }
       }
     }
   ],
@@ -238,13 +228,6 @@
       "target": "pf_renderer",
       "sourceHandle": "out-layer",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_634",
-      "source": "pf_bg",
-      "target": "pf_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
     }
   ]
 }

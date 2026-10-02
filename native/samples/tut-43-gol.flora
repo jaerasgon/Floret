@@ -27,53 +27,11 @@
       }
     },
     {
-      "id": "t43_cols",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 0
-      },
-      "params": {
-        "value": 32
-      },
-      "portValues": {
-        "value": 32
-      }
-    },
-    {
-      "id": "t43_rows",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 102
-      },
-      "params": {
-        "value": 32
-      },
-      "portValues": {
-        "value": 32
-      }
-    },
-    {
-      "id": "t43_total",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 204
-      },
-      "params": {
-        "value": 1024
-      },
-      "portValues": {
-        "value": 1024
-      }
-    },
-    {
       "id": "t43_range",
       "defType": "spread/range",
       "position": {
-        "x": 7,
-        "y": 375
+        "x": 0,
+        "y": 282
       },
       "params": {
         "count": 1024
@@ -86,8 +44,8 @@
       "id": "t43_seed",
       "defType": "region/foreach",
       "position": {
-        "x": 236,
-        "y": 295
+        "x": 223,
+        "y": 202
       },
       "params": {
         "width": 520,
@@ -149,8 +107,8 @@
       "id": "t43_rState",
       "defType": "state/read-spread",
       "position": {
-        "x": 852,
-        "y": 315
+        "x": 839,
+        "y": 222
       },
       "params": {
         "slot": 1
@@ -163,8 +121,8 @@
       "id": "t43_step",
       "defType": "spread/gol-step",
       "position": {
-        "x": 2085,
-        "y": 130
+        "x": 1333,
+        "y": 299
       },
       "params": {
         "cols": 32,
@@ -179,40 +137,26 @@
       "id": "t43_wState",
       "defType": "state/write-spread",
       "position": {
-        "x": 3313,
-        "y": 110
+        "x": 1843,
+        "y": 279
       },
       "params": {
         "slot": 1
       },
       "portValues": {
         "slot": 1
-      }
-    },
-    {
-      "id": "t43_idx",
-      "defType": "spread/range",
-      "position": {
-        "x": 860,
-        "y": 437
-      },
-      "params": {
-        "count": 1024
-      },
-      "portValues": {
-        "count": 1024
       }
     },
     {
       "id": "t43_draw",
       "defType": "region/foreach",
       "position": {
-        "x": 1125,
-        "y": 294
+        "x": 1093,
+        "y": 22
       },
       "params": {
-        "width": 2042,
-        "height": 365,
+        "width": 604,
+        "height": 229,
         "label": "draw"
       },
       "ports": [
@@ -221,149 +165,32 @@
           "name": "b",
           "type": "boolean",
           "direction": "input",
-          "y": 287
+          "y": 136
         },
         {
-          "id": "i",
-          "name": "i",
-          "type": "number",
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
           "direction": "input",
-          "y": 135
+          "y": 76
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 214
+          "y": 91
         }
       ],
-      "width": 2042,
-      "height": 365
-    },
-    {
-      "id": "t43_div",
-      "defType": "math/mul",
-      "position": {
-        "x": 130,
-        "y": 129
-      },
-      "params": {
-        "b": 0.03125,
-        "valueType": "number"
-      },
-      "parentId": "t43_draw",
-      "portValues": {
-        "b": 0.03125
-      }
-    },
-    {
-      "id": "t43_fl",
-      "defType": "math/floor",
-      "position": {
-        "x": 397,
-        "y": 140
-      },
-      "params": {},
-      "parentId": "t43_draw"
-    },
-    {
-      "id": "t43_rowMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 571,
-        "y": 102
-      },
-      "params": {
-        "b": 32,
-        "valueType": "number"
-      },
-      "parentId": "t43_draw",
-      "portValues": {
-        "b": 32
-      }
-    },
-    {
-      "id": "t43_colSub",
-      "defType": "math/sub",
-      "position": {
-        "x": 839,
-        "y": 52
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "t43_draw"
-    },
-    {
-      "id": "t43_xPos",
-      "defType": "math/mul",
-      "position": {
-        "x": 1105,
-        "y": 42
-      },
-      "params": {
-        "b": 7
-      },
-      "parentId": "t43_draw",
-      "portValues": {
-        "b": 7
-      }
-    },
-    {
-      "id": "t43_xOff",
-      "defType": "math/add",
-      "position": {
-        "x": 1369,
-        "y": 40
-      },
-      "params": {
-        "b": -120,
-        "valueType": "number"
-      },
-      "parentId": "t43_draw",
-      "portValues": {
-        "b": -120
-      }
-    },
-    {
-      "id": "t43_yPos",
-      "defType": "math/mul",
-      "position": {
-        "x": 1105,
-        "y": 164
-      },
-      "params": {
-        "b": 7,
-        "valueType": "number"
-      },
-      "parentId": "t43_draw",
-      "portValues": {
-        "b": 7
-      }
-    },
-    {
-      "id": "t43_yOff",
-      "defType": "math/add",
-      "position": {
-        "x": 1369,
-        "y": 162
-      },
-      "params": {
-        "b": -120,
-        "valueType": "number"
-      },
-      "parentId": "t43_draw",
-      "portValues": {
-        "b": -120
-      }
+      "width": 604,
+      "height": 229
     },
     {
       "id": "t43_sz",
       "defType": "math/mul",
       "position": {
-        "x": 130,
-        "y": 251
+        "x": 128,
+        "y": 100
       },
       "params": {
         "b": 6,
@@ -378,8 +205,8 @@
       "id": "t43_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 1834,
-        "y": 178
+        "x": 396,
+        "y": 55
       },
       "params": {},
       "parentId": "t43_draw"
@@ -388,8 +215,8 @@
       "id": "t43_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 3263,
-        "y": 472
+        "x": 1793,
+        "y": 77
       },
       "params": {
         "width": 500,
@@ -401,20 +228,31 @@
       }
     },
     {
-      "id": "t43_rect-xy0",
-      "defType": "vec2/make",
+      "id": "t43_grid",
+      "defType": "spread/grid",
       "position": {
-        "x": 1645,
-        "y": 120
+        "x": 846,
+        "y": 40
       },
       "params": {
-        "x": 0,
-        "y": 0
+        "cols": 32,
+        "rows": 32,
+        "w": 217,
+        "h": 217,
+        "center": {
+          "x": -11.5,
+          "y": -11.5
+        }
       },
-      "parentId": "t43_draw",
       "portValues": {
-        "x": 0,
-        "y": 0
+        "cols": 32,
+        "rows": 32,
+        "w": 217,
+        "h": 217,
+        "center": {
+          "x": -11.5,
+          "y": -11.5
+        }
       }
     }
   ],
@@ -469,95 +307,11 @@
       "targetHandle": "in-next"
     },
     {
-      "id": "e_345",
-      "source": "t43_idx",
-      "target": "t43_draw",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
       "id": "e_346",
       "source": "t43_rState",
       "target": "t43_draw",
       "sourceHandle": "out-current",
       "targetHandle": "in-b"
-    },
-    {
-      "id": "e_347",
-      "source": "t43_draw",
-      "target": "t43_div",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_348",
-      "source": "t43_div",
-      "target": "t43_fl",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_349",
-      "source": "t43_fl",
-      "target": "t43_rowMul",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_350",
-      "source": "t43_draw",
-      "target": "t43_colSub",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_351",
-      "source": "t43_rowMul",
-      "target": "t43_colSub",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_352",
-      "source": "t43_colSub",
-      "target": "t43_xPos",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_353",
-      "source": "t43_xPos",
-      "target": "t43_xOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_354",
-      "source": "t43_xOff",
-      "target": "t43_rect-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_355",
-      "source": "t43_fl",
-      "target": "t43_yPos",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_356",
-      "source": "t43_yPos",
-      "target": "t43_yOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_357",
-      "source": "t43_yOff",
-      "target": "t43_rect-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
     },
     {
       "id": "e_358",
@@ -595,10 +349,17 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_t43_rect-xy0",
-      "source": "t43_rect-xy0",
+      "id": "e_t43_grid_t43_draw_p",
+      "source": "t43_grid",
+      "target": "t43_draw",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_t43_draw_t43_rect_pos",
+      "source": "t43_draw",
       "target": "t43_rect",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     }
   ]

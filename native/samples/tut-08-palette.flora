@@ -30,8 +30,8 @@
       "id": "t08_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 270,
-        "y": 34
+        "x": 264,
+        "y": 11
       },
       "params": {
         "cols": 8,
@@ -51,35 +51,21 @@
       "defType": "color/palette",
       "position": {
         "x": 0,
-        "y": 95
+        "y": 113
       },
       "params": {
         "stopCount": 4
       },
       "portValues": {
         "stopCount": 4
-      }
-    },
-    {
-      "id": "t08_count",
-      "defType": "value/number",
-      "position": {
-        "x": 14,
-        "y": 277
-      },
-      "params": {
-        "value": 64
-      },
-      "portValues": {
-        "value": 64
       }
     },
     {
       "id": "t08_cyc",
       "defType": "spread/cycle",
       "position": {
-        "x": 273,
-        "y": 216
+        "x": 267,
+        "y": 193
       },
       "params": {
         "count": 64
@@ -92,12 +78,12 @@
       "id": "t08_region",
       "defType": "region/foreach",
       "position": {
-        "x": 481,
+        "x": 478,
         "y": 22
       },
       "params": {
-        "width": 700,
-        "height": 276,
+        "width": 516,
+        "height": 234,
         "label": "ForEach"
       },
       "ports": [
@@ -106,42 +92,32 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 79
+          "y": 76
         },
         {
           "id": "c",
           "name": "c",
           "type": "color",
           "direction": "input",
-          "y": 198
+          "y": 156
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 100
+          "y": 76
         }
       ],
-      "width": 700,
-      "height": 276
-    },
-    {
-      "id": "t08_split",
-      "defType": "vec2/split",
-      "position": {
-        "x": 128,
-        "y": 40
-      },
-      "params": {},
-      "parentId": "t08_region"
+      "width": 516,
+      "height": 234
     },
     {
       "id": "t08_fill",
       "defType": "style/fill",
       "position": {
         "x": 128,
-        "y": 162
+        "y": 120
       },
       "params": {},
       "parentId": "t08_region"
@@ -150,8 +126,8 @@
       "id": "t08_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 492,
-        "y": 64
+        "x": 308,
+        "y": 40
       },
       "params": {
         "w": 28,
@@ -167,8 +143,8 @@
       "id": "t08_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1277,
-        "y": 86
+        "x": 1090,
+        "y": 62
       },
       "params": {
         "width": 400,
@@ -177,23 +153,6 @@
       "portValues": {
         "width": 400,
         "height": 400
-      }
-    },
-    {
-      "id": "t08_ell-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 310,
-        "y": 48
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "parentId": "t08_region",
-      "portValues": {
-        "x": 0,
-        "y": 0
       }
     }
   ],
@@ -204,13 +163,6 @@
       "target": "t08_cyc",
       "sourceHandle": "out-colors",
       "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_29",
-      "source": "t08_count",
-      "target": "t08_cyc",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-count"
     },
     {
       "id": "e_30",
@@ -225,27 +177,6 @@
       "target": "t08_region",
       "sourceHandle": "out-values",
       "targetHandle": "in-c"
-    },
-    {
-      "id": "e_32",
-      "source": "t08_region",
-      "target": "t08_split",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_33",
-      "source": "t08_split",
-      "target": "t08_ell-xy0",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_34",
-      "source": "t08_split",
-      "target": "t08_ell-xy0",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
     },
     {
       "id": "e_35",
@@ -277,9 +208,9 @@
     },
     {
       "id": "e_xy_t08_ell-xy0",
-      "source": "t08_ell-xy0",
+      "source": "t08_region",
       "target": "t08_ell",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     }
   ]

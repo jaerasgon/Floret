@@ -12,8 +12,8 @@
       "id": "wg_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 0,
-        "y": 533
+        "x": 42,
+        "y": 509
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "wg_mass",
       "defType": "io/slider",
       "position": {
-        "x": 180,
-        "y": 292
+        "x": 0,
+        "y": 251
       },
       "params": {
         "value": 1,
@@ -33,54 +33,34 @@
         "value": 1,
         "min": 0.5,
         "max": 3
-      }
-    },
-    {
-      "id": "wg_windMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 180,
-        "y": 533
-      },
-      "params": {
-        "b": 0.003,
-        "valueType": "number"
-      },
-      "portValues": {
-        "b": 0.003
       }
     },
     {
       "id": "wg_windVec",
-      "defType": "vec2/make",
+      "defType": "vec2/scale",
       "position": {
-        "x": 506,
-        "y": 532
-      },
-      "params": {}
-    },
-    {
-      "id": "wg_gravity",
-      "defType": "vec2/make",
-      "position": {
-        "x": 791,
-        "y": 649
+        "x": 318,
+        "y": 489
       },
       "params": {
-        "x": 0,
-        "y": 0.2
+        "v": {
+          "x": 0.003,
+          "y": 0
+        }
       },
       "portValues": {
-        "x": 0,
-        "y": 0.2
+        "v": {
+          "x": 0.003,
+          "y": 0
+        }
       }
     },
     {
       "id": "wg_initPos",
       "defType": "vec2/make",
       "position": {
-        "x": 0,
-        "y": 0
+        "x": 42,
+        "y": 1
       },
       "params": {
         "x": 0,
@@ -95,8 +75,8 @@
       "id": "wg_initVel",
       "defType": "vec2/make",
       "position": {
-        "x": 791,
-        "y": 405
+        "x": 567,
+        "y": 268
       },
       "params": {
         "x": 0,
@@ -111,8 +91,8 @@
       "id": "wg_pos",
       "defType": "state/value",
       "position": {
-        "x": 221,
-        "y": 0
+        "x": 325,
+        "y": 1
       },
       "params": {}
     },
@@ -120,8 +100,8 @@
       "id": "wg_vel",
       "defType": "state/value",
       "position": {
-        "x": 1034,
-        "y": 439
+        "x": 813,
+        "y": 255
       },
       "params": {}
     },
@@ -129,8 +109,8 @@
       "id": "wg_wScaled",
       "defType": "vec2/scale",
       "position": {
-        "x": 791,
-        "y": 527
+        "x": 567,
+        "y": 404
       },
       "params": {}
     },
@@ -138,8 +118,8 @@
       "id": "wg_invMass",
       "defType": "math/div",
       "position": {
-        "x": 464,
-        "y": 410
+        "x": 284,
+        "y": 367
       },
       "params": {
         "a": 1,
@@ -153,17 +133,28 @@
       "id": "wg_accAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 1035,
-        "y": 561
+        "x": 814,
+        "y": 377
       },
-      "params": {}
+      "params": {
+        "b": {
+          "x": 0,
+          "y": 0.2
+        }
+      },
+      "portValues": {
+        "b": {
+          "x": 0,
+          "y": 0.2
+        }
+      }
     },
     {
       "id": "wg_velAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 1275,
-        "y": 406
+        "x": 1066,
+        "y": 261
       },
       "params": {}
     },
@@ -171,8 +162,8 @@
       "id": "wg_posAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 1517,
-        "y": 190
+        "x": 1264,
+        "y": 120
       },
       "params": {}
     },
@@ -180,8 +171,8 @@
       "id": "wg_ps",
       "defType": "vec2/split",
       "position": {
-        "x": 1703,
-        "y": 150
+        "x": 1449,
+        "y": 85
       },
       "params": {}
     },
@@ -189,31 +180,17 @@
       "id": "wg_vs",
       "defType": "vec2/split",
       "position": {
-        "x": 1921,
-        "y": 445
+        "x": 1638,
+        "y": 308
       },
       "params": {}
-    },
-    {
-      "id": "wg_bounds",
-      "defType": "value/number",
-      "position": {
-        "x": 1893,
-        "y": 293
-      },
-      "params": {
-        "value": 230
-      },
-      "portValues": {
-        "value": 230
-      }
     },
     {
       "id": "wg_absX",
       "defType": "math/abs",
       "position": {
-        "x": 1927,
-        "y": 89
+        "x": 1644,
+        "y": 27
       },
       "params": {
         "valueType": "number"
@@ -223,17 +200,22 @@
       "id": "wg_hitX",
       "defType": "logic/gt",
       "position": {
-        "x": 2149,
-        "y": 136
+        "x": 1828,
+        "y": 0
       },
-      "params": {}
+      "params": {
+        "b": 230
+      },
+      "portValues": {
+        "b": 230
+      }
     },
     {
       "id": "wg_absY",
       "defType": "math/abs",
       "position": {
-        "x": 1927,
-        "y": 191
+        "x": 1644,
+        "y": 129
       },
       "params": {
         "valueType": "number"
@@ -243,17 +225,22 @@
       "id": "wg_hitY",
       "defType": "logic/gt",
       "position": {
-        "x": 2149,
-        "y": 258
+        "x": 1828,
+        "y": 122
       },
-      "params": {}
+      "params": {
+        "b": 230
+      },
+      "portValues": {
+        "b": 230
+      }
     },
     {
       "id": "wg_vxNeg",
       "defType": "math/neg",
       "position": {
-        "x": 2155,
-        "y": 380
+        "x": 1834,
+        "y": 244
       },
       "params": {
         "valueType": "number"
@@ -263,8 +250,8 @@
       "id": "wg_vyNeg",
       "defType": "math/neg",
       "position": {
-        "x": 2155,
-        "y": 482
+        "x": 1834,
+        "y": 346
       },
       "params": {
         "valueType": "number"
@@ -274,8 +261,8 @@
       "id": "wg_vxOut",
       "defType": "logic/select",
       "position": {
-        "x": 2356,
-        "y": 297
+        "x": 2035,
+        "y": 161
       },
       "params": {}
     },
@@ -283,8 +270,8 @@
       "id": "wg_vyOut",
       "defType": "logic/select",
       "position": {
-        "x": 2356,
-        "y": 439
+        "x": 2035,
+        "y": 303
       },
       "params": {}
     },
@@ -292,8 +279,8 @@
       "id": "wg_vFinal",
       "defType": "vec2/make",
       "position": {
-        "x": 2562,
-        "y": 358
+        "x": 2240,
+        "y": 222
       },
       "params": {}
     },
@@ -301,8 +288,8 @@
       "id": "wg_fill",
       "defType": "style/fill",
       "position": {
-        "x": 791,
-        "y": 283
+        "x": 326,
+        "y": 245
       },
       "params": {
         "mode": "rgb",
@@ -320,20 +307,11 @@
       }
     },
     {
-      "id": "wg_psDraw",
-      "defType": "vec2/split",
-      "position": {
-        "x": 506,
-        "y": 40
-      },
-      "params": {}
-    },
-    {
       "id": "wg_ball",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1029,
-        "y": 95
+        "x": 561,
+        "y": 86
       },
       "params": {
         "w": 36,
@@ -348,8 +326,8 @@
       "id": "wg_sizeMul",
       "defType": "math/mul",
       "position": {
-        "x": 749,
-        "y": 161
+        "x": 284,
+        "y": 123
       },
       "params": {
         "b": 24,
@@ -360,66 +338,35 @@
       }
     },
     {
-      "id": "wg_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 1035,
-        "y": 277
-      },
-      "params": {
-        "r": 14,
-        "g": 14,
-        "b": 24,
-        "a": 255
-      },
-      "portValues": {
-        "r": 14,
-        "g": 14,
-        "b": 24,
-        "a": 255
-      }
-    },
-    {
       "id": "wg_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1241,
-        "y": 176
+        "x": 757,
+        "y": 93
       },
       "params": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.054901960784313725,
+          "g": 0.054901960784313725,
+          "b": 0.09411764705882353,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 500,
-        "height": 500
-      }
-    },
-    {
-      "id": "wg_ball-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 791,
-        "y": 39
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
+        "height": 500,
+        "background": {
+          "r": 0.054901960784313725,
+          "g": 0.054901960784313725,
+          "b": 0.09411764705882353,
+          "a": 1
+        }
       }
     }
   ],
   "edges": [
-    {
-      "id": "e_1079",
-      "source": "wg_bg",
-      "target": "wg_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
     {
       "id": "e_1080",
       "source": "wg_initPos",
@@ -435,24 +382,10 @@
       "targetHandle": "in-init"
     },
     {
-      "id": "e_1082",
-      "source": "wg_mouse",
-      "target": "wg_windMul",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1083",
-      "source": "wg_windMul",
-      "target": "wg_windVec",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
       "id": "e_1084",
       "source": "wg_windVec",
       "target": "wg_wScaled",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-scaled",
       "targetHandle": "in-v"
     },
     {
@@ -475,13 +408,6 @@
       "target": "wg_accAdd",
       "sourceHandle": "out-scaled",
       "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1088",
-      "source": "wg_gravity",
-      "target": "wg_accAdd",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-b"
     },
     {
       "id": "e_1089",
@@ -547,25 +473,11 @@
       "targetHandle": "in-a"
     },
     {
-      "id": "e_1098",
-      "source": "wg_bounds",
-      "target": "wg_hitX",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
       "id": "e_1099",
       "source": "wg_absY",
       "target": "wg_hitY",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1100",
-      "source": "wg_bounds",
-      "target": "wg_hitY",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
     },
     {
       "id": "e_1101",
@@ -652,27 +564,6 @@
       "targetHandle": "in-next"
     },
     {
-      "id": "e_1113",
-      "source": "wg_pos",
-      "target": "wg_psDraw",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_1114",
-      "source": "wg_psDraw",
-      "target": "wg_ball-xy0",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1115",
-      "source": "wg_psDraw",
-      "target": "wg_ball-xy0",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
       "id": "e_1116",
       "source": "wg_mass",
       "target": "wg_sizeMul",
@@ -709,10 +600,17 @@
     },
     {
       "id": "e_xy_wg_ball-xy0",
-      "source": "wg_ball-xy0",
+      "source": "wg_pos",
       "target": "wg_ball",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-current",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_wg_mouse_wg_windVec_s",
+      "source": "wg_mouse",
+      "target": "wg_windVec",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-s"
     }
   ]
 }

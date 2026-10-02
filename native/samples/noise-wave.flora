@@ -13,7 +13,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 42,
-        "y": 182
+        "y": 192
       },
       "params": {}
     },
@@ -22,7 +22,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 26,
-        "y": 0
+        "y": 10
       },
       "params": {
         "cols": 32,
@@ -42,7 +42,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 284
+        "y": 294
       },
       "params": {
         "value": 24,
@@ -53,32 +53,18 @@
         "value": 24,
         "min": 0,
         "max": 60
-      }
-    },
-    {
-      "id": "dm_noiseScale",
-      "defType": "value/number",
-      "position": {
-        "x": 14,
-        "y": 410
-      },
-      "params": {
-        "value": 0.018
-      },
-      "portValues": {
-        "value": 0.018
       }
     },
     {
       "id": "dm_region",
       "defType": "region/foreach",
       "position": {
-        "x": 305,
-        "y": 134
+        "x": 279,
+        "y": 22
       },
       "params": {
-        "width": 2346,
-        "height": 438,
+        "width": 2155,
+        "height": 420,
         "label": "ForEach"
       },
       "ports": [
@@ -87,59 +73,25 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 177
+          "y": 118
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 175
+          "y": 102
         }
       ],
-      "width": 2346,
-      "height": 438
-    },
-    {
-      "id": "dm_split",
-      "defType": "vec2/split",
-      "position": {
-        "x": 128,
-        "y": 141
-      },
-      "params": {},
-      "parentId": "dm_region"
-    },
-    {
-      "id": "dm_xScaled",
-      "defType": "math/mul",
-      "position": {
-        "x": 322,
-        "y": 130
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "dm_region"
-    },
-    {
-      "id": "dm_yScaled",
-      "defType": "math/mul",
-      "position": {
-        "x": 322,
-        "y": 252
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "dm_region"
+      "width": 2155,
+      "height": 420
     },
     {
       "id": "dm_yPlusT",
       "defType": "math/add",
       "position": {
-        "x": 603,
-        "y": 139
+        "x": 509,
+        "y": 136
       },
       "params": {
         "valueType": "number"
@@ -150,8 +102,8 @@
       "id": "dm_perlinD",
       "defType": "noise/perlin",
       "position": {
-        "x": 913,
-        "y": 89
+        "x": 780,
+        "y": 64
       },
       "params": {
         "octaves": 3,
@@ -161,41 +113,31 @@
       "portValues": {
         "octaves": 3,
         "falloff": 0.55
-      }
-    },
-    {
-      "id": "dm_yPlus100",
-      "defType": "math/add",
-      "position": {
-        "x": 603,
-        "y": 293
-      },
-      "params": {
-        "b": 100
-      },
-      "parentId": "dm_region",
-      "portValues": {
-        "b": 100
       }
     },
     {
       "id": "dm_yHueT",
       "defType": "math/add",
       "position": {
-        "x": 871,
-        "y": 303
+        "x": 509,
+        "y": 258
       },
       "params": {
-        "valueType": "number"
+        "valueType": "number",
+        "slotCount": 3,
+        "b": 100
       },
-      "parentId": "dm_region"
+      "parentId": "dm_region",
+      "portValues": {
+        "b": 100
+      }
     },
     {
       "id": "dm_perlinH",
       "defType": "noise/perlin",
       "position": {
-        "x": 1181,
-        "y": 260
+        "x": 780,
+        "y": 246
       },
       "params": {
         "octaves": 1
@@ -209,8 +151,8 @@
       "id": "dm_dispShift",
       "defType": "math/sub",
       "position": {
-        "x": 1139,
-        "y": 102
+        "x": 962,
+        "y": 74
       },
       "params": {
         "b": 0.5,
@@ -225,32 +167,8 @@
       "id": "dm_dispScale",
       "defType": "math/mul",
       "position": {
-        "x": 1405,
-        "y": 115
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "dm_region"
-    },
-    {
-      "id": "dm_xFin",
-      "defType": "math/add",
-      "position": {
-        "x": 1679,
-        "y": 40
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "dm_region"
-    },
-    {
-      "id": "dm_yFin",
-      "defType": "math/add",
-      "position": {
-        "x": 1679,
-        "y": 162
+        "x": 1228,
+        "y": 83
       },
       "params": {
         "valueType": "number"
@@ -261,8 +179,8 @@
       "id": "dm_hueScale",
       "defType": "math/mul",
       "position": {
-        "x": 1405,
-        "y": 272
+        "x": 1228,
+        "y": 223
       },
       "params": {
         "b": 360,
@@ -277,8 +195,8 @@
       "id": "dm_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1721,
-        "y": 284
+        "x": 1495,
+        "y": 200
       },
       "params": {
         "s": 85,
@@ -296,8 +214,8 @@
       "id": "dm_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1953,
-        "y": 252
+        "x": 1721,
+        "y": 173
       },
       "params": {
         "mode": "color"
@@ -305,142 +223,108 @@
       "parentId": "dm_region",
       "portValues": {
         "mode": "color"
-      }
-    },
-    {
-      "id": "dm_cellSize",
-      "defType": "value/number",
-      "position": {
-        "x": 14,
-        "y": 512
-      },
-      "params": {
-        "value": 11
-      },
-      "portValues": {
-        "value": 11
       }
     },
     {
       "id": "dm_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 2138,
-        "y": 139
-      },
-      "params": {},
-      "parentId": "dm_region"
-    },
-    {
-      "id": "dm_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 1436,
-        "y": 620
+        "x": 1947,
+        "y": 66
       },
       "params": {
-        "r": 8,
-        "g": 8,
-        "b": 14,
-        "a": 255
+        "w": 11,
+        "h": 11
       },
+      "parentId": "dm_region",
       "portValues": {
-        "r": 8,
-        "g": 8,
-        "b": 14,
-        "a": 255
+        "w": 11,
+        "h": 11
       }
     },
     {
       "id": "dm_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2772,
-        "y": 437
+        "x": 2530,
+        "y": 88
       },
       "params": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.03137254901960784,
+          "g": 0.03137254901960784,
+          "b": 0.054901960784313725,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.03137254901960784,
+          "g": 0.03137254901960784,
+          "b": 0.054901960784313725,
+          "a": 1
+        }
       }
     },
     {
-      "id": "dm_rect-xy0",
-      "defType": "vec2/make",
+      "id": "dm_scaled",
+      "defType": "vec2/scale",
       "position": {
-        "x": 1953,
-        "y": 107
+        "x": 131,
+        "y": 119
       },
       "params": {
-        "x": 0,
-        "y": 0
+        "s": 0.018
       },
       "parentId": "dm_region",
       "portValues": {
-        "x": 0,
-        "y": 0
+        "s": 0.018
       }
+    },
+    {
+      "id": "dm_sxy",
+      "defType": "vec2/split",
+      "position": {
+        "x": 315,
+        "y": 146
+      },
+      "params": {},
+      "parentId": "dm_region"
+    },
+    {
+      "id": "dm_disp",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1495,
+        "y": 78
+      },
+      "params": {},
+      "parentId": "dm_region"
+    },
+    {
+      "id": "dm_pos",
+      "defType": "math/add",
+      "position": {
+        "x": 1679,
+        "y": 40
+      },
+      "params": {
+        "valueType": "vec2"
+      },
+      "parentId": "dm_region"
     }
   ],
   "edges": [
-    {
-      "id": "e_970",
-      "source": "dm_bg",
-      "target": "dm_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
     {
       "id": "e_971",
       "source": "dm_grid",
       "target": "dm_region",
       "sourceHandle": "out-positions",
       "targetHandle": "in-p"
-    },
-    {
-      "id": "e_972",
-      "source": "dm_region",
-      "target": "dm_split",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_973",
-      "source": "dm_split",
-      "target": "dm_xScaled",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_974",
-      "source": "dm_noiseScale",
-      "target": "dm_xScaled",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_975",
-      "source": "dm_split",
-      "target": "dm_yScaled",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_976",
-      "source": "dm_noiseScale",
-      "target": "dm_yScaled",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_977",
-      "source": "dm_yScaled",
-      "target": "dm_yPlusT",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
     },
     {
       "id": "e_978",
@@ -450,46 +334,11 @@
       "targetHandle": "in-b"
     },
     {
-      "id": "e_979",
-      "source": "dm_xScaled",
-      "target": "dm_perlinD",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
       "id": "e_980",
       "source": "dm_yPlusT",
       "target": "dm_perlinD",
       "sourceHandle": "out-result",
       "targetHandle": "in-y"
-    },
-    {
-      "id": "e_981",
-      "source": "dm_yScaled",
-      "target": "dm_yPlus100",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_982",
-      "source": "dm_yPlus100",
-      "target": "dm_yHueT",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_983",
-      "source": "dm_time",
-      "target": "dm_yHueT",
-      "sourceHandle": "out-t",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_984",
-      "source": "dm_xScaled",
-      "target": "dm_perlinH",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
     },
     {
       "id": "e_985",
@@ -520,34 +369,6 @@
       "targetHandle": "in-b"
     },
     {
-      "id": "e_989",
-      "source": "dm_split",
-      "target": "dm_xFin",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_990",
-      "source": "dm_dispScale",
-      "target": "dm_xFin",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_991",
-      "source": "dm_split",
-      "target": "dm_yFin",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_992",
-      "source": "dm_dispScale",
-      "target": "dm_yFin",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
       "id": "e_993",
       "source": "dm_perlinH",
       "target": "dm_hueScale",
@@ -567,34 +388,6 @@
       "target": "dm_fill",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
-    },
-    {
-      "id": "e_996",
-      "source": "dm_xFin",
-      "target": "dm_rect-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_997",
-      "source": "dm_yFin",
-      "target": "dm_rect-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_998",
-      "source": "dm_cellSize",
-      "target": "dm_rect",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_999",
-      "source": "dm_cellSize",
-      "target": "dm_rect",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-h"
     },
     {
       "id": "e_1000",
@@ -618,10 +411,87 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_dm_rect-xy0",
-      "source": "dm_rect-xy0",
-      "target": "dm_rect",
+      "id": "e_dm_region_dm_scaled_v",
+      "source": "dm_region",
+      "target": "dm_scaled",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_dm_scaled_dm_sxy_v",
+      "source": "dm_scaled",
+      "target": "dm_sxy",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_dm_sxy_dm_perlinD_x",
+      "source": "dm_sxy",
+      "target": "dm_perlinD",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_dm_sxy_dm_yPlusT_a",
+      "source": "dm_sxy",
+      "target": "dm_yPlusT",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_dm_sxy_dm_perlinH_x",
+      "source": "dm_sxy",
+      "target": "dm_perlinH",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_dm_sxy_dm_yHueT_a",
+      "source": "dm_sxy",
+      "target": "dm_yHueT",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_dm_time_dm_yHueT_c",
+      "source": "dm_time",
+      "target": "dm_yHueT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_dm_dispScale_dm_disp_x",
+      "source": "dm_dispScale",
+      "target": "dm_disp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_dm_dispScale_dm_disp_y",
+      "source": "dm_dispScale",
+      "target": "dm_disp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_dm_region_dm_pos_a",
+      "source": "dm_region",
+      "target": "dm_pos",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_dm_disp_dm_pos_b",
+      "source": "dm_disp",
+      "target": "dm_pos",
       "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_dm_pos_dm_rect_pos",
+      "source": "dm_pos",
+      "target": "dm_rect",
+      "sourceHandle": "out-result",
       "targetHandle": "in-pos"
     }
   ]

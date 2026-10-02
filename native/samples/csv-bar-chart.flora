@@ -13,7 +13,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 0,
-        "y": 53
+        "y": 280
       },
       "params": {
         "data": "12, 45, 22, 67, 38, 91, 54, 73, 29, 60, 84, 19, 41, 77, 33, 55"
@@ -21,96 +21,31 @@
       "portValues": {
         "data": "12, 45, 22, 67, 38, 91, 54, 73, 29, 60, 84, 19, 41, 77, 33, 55"
       }
-    },
-    {
-      "id": "csv_count",
-      "defType": "spread/count",
-      "position": {
-        "x": 919,
-        "y": 0
-      },
-      "params": {}
     },
     {
       "id": "csv_idx",
       "defType": "spread/range",
       "position": {
         "x": 25,
-        "y": 155
+        "y": 178
       },
       "params": {
         "count": 16
       },
       "portValues": {
         "count": 16
-      }
-    },
-    {
-      "id": "csv_barW",
-      "defType": "value/number",
-      "position": {
-        "x": 12,
-        "y": 257
-      },
-      "params": {
-        "value": 26
-      },
-      "portValues": {
-        "value": 26
-      }
-    },
-    {
-      "id": "csv_gap",
-      "defType": "value/number",
-      "position": {
-        "x": 12,
-        "y": 359
-      },
-      "params": {
-        "value": 6
-      },
-      "portValues": {
-        "value": 6
-      }
-    },
-    {
-      "id": "csv_baseY",
-      "defType": "value/number",
-      "position": {
-        "x": 12,
-        "y": 461
-      },
-      "params": {
-        "value": 220
-      },
-      "portValues": {
-        "value": 220
-      }
-    },
-    {
-      "id": "csv_heightScale",
-      "defType": "value/number",
-      "position": {
-        "x": 12,
-        "y": 563
-      },
-      "params": {
-        "value": 4
-      },
-      "portValues": {
-        "value": 4
       }
     },
     {
       "id": "csv_region",
       "defType": "region/foreach",
       "position": {
-        "x": 300,
-        "y": 124
+        "x": 264,
+        "y": 22
       },
       "params": {
-        "width": 1346,
-        "height": 455,
+        "width": 1075,
+        "height": 465,
         "label": "ForEach"
       },
       "ports": [
@@ -119,96 +54,64 @@
           "name": "v",
           "type": "number",
           "direction": "input",
-          "y": 241
+          "y": 258
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 161
+          "y": 228
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 204
+          "y": 201
         }
       ],
-      "width": 1346,
-      "height": 455
-    },
-    {
-      "id": "csv_stride",
-      "defType": "math/add",
-      "position": {
-        "x": 143,
-        "y": 83
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "csv_region"
-    },
-    {
-      "id": "csv_xMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 411,
-        "y": 40
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "csv_region"
-    },
-    {
-      "id": "csv_xFin",
-      "defType": "math/add",
-      "position": {
-        "x": 682,
-        "y": 86
-      },
-      "params": {
-        "b": -240,
-        "valueType": "number"
-      },
-      "parentId": "csv_region",
-      "portValues": {
-        "b": -240
-      }
+      "width": 1075,
+      "height": 465
     },
     {
       "id": "csv_hMul",
       "defType": "math/mul",
       "position": {
-        "x": 143,
-        "y": 205
+        "x": 139,
+        "y": 222
       },
       "params": {
-        "valueType": "number"
+        "valueType": "number",
+        "b": 4
       },
-      "parentId": "csv_region"
+      "parentId": "csv_region",
+      "portValues": {
+        "b": 4
+      }
     },
     {
       "id": "csv_yFin",
       "defType": "math/sub",
       "position": {
-        "x": 411,
-        "y": 162
+        "x": 410,
+        "y": 160
       },
       "params": {
-        "valueType": "number"
+        "valueType": "number",
+        "a": 220
       },
-      "parentId": "csv_region"
+      "parentId": "csv_region",
+      "portValues": {
+        "a": 220
+      }
     },
     {
       "id": "csv_hueMul",
       "defType": "math/mul",
       "position": {
-        "x": 143,
-        "y": 327
+        "x": 139,
+        "y": 344
       },
       "params": {
         "b": 22,
@@ -223,8 +126,8 @@
       "id": "csv_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 724,
-        "y": 301
+        "x": 452,
+        "y": 311
       },
       "params": {
         "s": 80,
@@ -242,8 +145,8 @@
       "id": "csv_fill",
       "defType": "style/fill",
       "position": {
-        "x": 952,
-        "y": 274
+        "x": 679,
+        "y": 278
       },
       "params": {
         "mode": "color"
@@ -257,54 +160,51 @@
       "id": "csv_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 1138,
-        "y": 168
-      },
-      "params": {},
-      "parentId": "csv_region"
-    },
-    {
-      "id": "csv_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 931,
-        "y": 627
+        "x": 867,
+        "y": 165
       },
       "params": {
-        "r": 24,
-        "g": 24,
-        "b": 30,
-        "a": 255
+        "w": 26
       },
+      "parentId": "csv_region",
       "portValues": {
-        "r": 24,
-        "g": 24,
-        "b": 30,
-        "a": 255
+        "w": 26
       }
     },
     {
       "id": "csv_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1766,
-        "y": 449
+        "x": 1435,
+        "y": 187
       },
       "params": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.09411764705882353,
+          "g": 0.09411764705882353,
+          "b": 0.11764705882352941,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.09411764705882353,
+          "g": 0.09411764705882353,
+          "b": 0.11764705882352941,
+          "a": 1
+        }
       }
     },
     {
       "id": "csv_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 952,
-        "y": 132
+        "x": 679,
+        "y": 115
       },
       "params": {
         "x": 0,
@@ -315,23 +215,30 @@
         "x": 0,
         "y": 0
       }
+    },
+    {
+      "id": "csv_x",
+      "defType": "math/map",
+      "position": {
+        "x": 180,
+        "y": 40
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 15,
+        "outMin": -240,
+        "outMax": 240
+      },
+      "parentId": "csv_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 15,
+        "outMin": -240,
+        "outMax": 240
+      }
     }
   ],
   "edges": [
-    {
-      "id": "e_1646",
-      "source": "csv_bg",
-      "target": "csv_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
-    {
-      "id": "e_1647",
-      "source": "csv_csv",
-      "target": "csv_count",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-spread"
-    },
     {
       "id": "e_1648",
       "source": "csv_csv",
@@ -347,59 +254,10 @@
       "targetHandle": "in-i"
     },
     {
-      "id": "e_1650",
-      "source": "csv_barW",
-      "target": "csv_stride",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1651",
-      "source": "csv_gap",
-      "target": "csv_stride",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1652",
-      "source": "csv_region",
-      "target": "csv_xMul",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1653",
-      "source": "csv_stride",
-      "target": "csv_xMul",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1654",
-      "source": "csv_xMul",
-      "target": "csv_xFin",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_1655",
       "source": "csv_region",
       "target": "csv_hMul",
       "sourceHandle": "out-v",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1656",
-      "source": "csv_heightScale",
-      "target": "csv_hMul",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1657",
-      "source": "csv_baseY",
-      "target": "csv_yFin",
-      "sourceHandle": "out-number",
       "targetHandle": "in-a"
     },
     {
@@ -431,25 +289,11 @@
       "targetHandle": "in-color"
     },
     {
-      "id": "e_1662",
-      "source": "csv_xFin",
-      "target": "csv_rect-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
       "id": "e_1663",
       "source": "csv_yFin",
       "target": "csv_rect-xy0",
       "sourceHandle": "out-result",
       "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1664",
-      "source": "csv_barW",
-      "target": "csv_rect",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-w"
     },
     {
       "id": "e_1665",
@@ -485,6 +329,20 @@
       "target": "csv_rect",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_csv_region_csv_x_x",
+      "source": "csv_region",
+      "target": "csv_x",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_csv_x_csv_rect-xy0_x",
+      "source": "csv_x",
+      "target": "csv_rect-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
     }
   ]
 }

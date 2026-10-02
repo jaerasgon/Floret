@@ -9,33 +9,24 @@
   },
   "nodes": [
     {
-      "id": "ph_count",
-      "defType": "value/number",
+      "id": "ph_range",
+      "defType": "spread/range",
       "position": {
         "x": 0,
         "y": 212
       },
       "params": {
-        "value": 500
+        "count": 500
       },
       "portValues": {
-        "value": 500
+        "count": 500
       }
-    },
-    {
-      "id": "ph_range",
-      "defType": "spread/range",
-      "position": {
-        "x": 236,
-        "y": 212
-      },
-      "params": {}
     },
     {
       "id": "ph_region",
       "defType": "region/foreach",
       "position": {
-        "x": 443,
+        "x": 216,
         "y": 22
       },
       "params": {
@@ -180,7 +171,7 @@
       "id": "ph_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1628,
+        "x": 1401,
         "y": 150
       },
       "params": {
@@ -194,13 +185,6 @@
     }
   ],
   "edges": [
-    {
-      "id": "e_855",
-      "source": "ph_count",
-      "target": "ph_range",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-count"
-    },
     {
       "id": "e_856",
       "source": "ph_range",

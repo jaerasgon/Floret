@@ -5,7 +5,7 @@
 
 use crate::canvas::{PaletteDrag, View};
 use crate::editor::regions;
-use crate::theme::{self, BG_3, FG_0, FG_1, FG_2, GOLD, GOLD_TEXT};
+use crate::theme::{BG_3, FG_0, FG_1, FG_2, GOLD, GOLD_TEXT};
 use eframe::egui::{self, vec2, Align2, CursorIcon, FontId, RichText, Sense};
 use floret_engine::patch::PatchFile;
 use floret_engine::spec::{Catalogue, NodeSpec};
@@ -65,8 +65,7 @@ pub fn show(ui: &mut egui::Ui, query: &mut String, view: &mut View, patch: &mut 
             }
             for (c, mut specs) in by_cat {
                 specs.sort_by_key(|s| s.label.to_lowercase());
-                let header = RichText::new(format!("{c}  ·  {}", specs.len()))
-                    .color(theme::category_color(c));
+                let header = RichText::new(format!("{c}  ·  {}", specs.len())).color(*FG_1);
                 egui::CollapsingHeader::new(header)
                     .id_salt(c)
                     .open((!q.is_empty()).then_some(true))
@@ -104,11 +103,6 @@ fn item(
     if resp.hovered() || armed {
         p.rect_filled(rect, 4.0, BG_3);
     }
-    p.circle_filled(
-        rect.left_center() + vec2(6.0, 0.0),
-        2.5,
-        theme::category_color(&s.category),
-    );
     p.text(
         rect.left_center() + vec2(14.0, 0.0),
         Align2::LEFT_CENTER,

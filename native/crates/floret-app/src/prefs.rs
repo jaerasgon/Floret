@@ -60,6 +60,10 @@ pub struct Prefs {
     /// doesn't expose; here it's a preference. Stops camera moves, node
     /// entrances, the selection breath and ambient drift.
     pub reduce_motion: bool,
+    /// The Nodes browser. Hidden by default (a new key, so earlier
+    /// default-on settings don't carry over); Tab / double-click search
+    /// adds nodes.
+    #[serde(rename = "nodesPanelVisible")]
     pub palette_visible: bool,
     pub default_render_width: u32,
     pub default_render_height: u32,
@@ -82,7 +86,7 @@ impl Default for Prefs {
             show_minimap: true,
             ambient_motion: true,
             reduce_motion: false,
-            palette_visible: true,
+            palette_visible: false,
             default_render_width: 1080,
             default_render_height: 1920,
             startup_patch: Startup::Last,

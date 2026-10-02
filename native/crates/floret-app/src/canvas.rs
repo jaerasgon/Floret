@@ -1657,7 +1657,7 @@ pub fn show(
     };
     // Thinner as you zoom in, so close-ups stay clean; a touch heavier when
     // zoomed out so wires stay visible.
-    let width = (1.8 / z.sqrt()).clamp(0.9, 2.6);
+    let width = (1.4 / z.sqrt()).clamp(0.8, 1.7);
     for w in &wire_list {
         let base = theme::port_color(type_name(w.ty));
         let selected = view.selected_edge.as_ref() == Some(&w.id);
@@ -1800,7 +1800,6 @@ pub fn show(
                     .push((id.clone(), custom::probe_body(b, z), max));
             }
         }
-        let out_text = |port: &str| live.output(patch, cat, id, port).map(|s| format_spread(&s));
         let subtitle = (b.look == Look::Collapsed).then_some("subpatch");
         let active = view.flashes.contains_key(id)
             || matches!(&view.gesture, Gesture::Widget { node, .. } if node == id);
@@ -1816,7 +1815,6 @@ pub fn show(
                 selected: view.is_selected(id),
                 breathe,
                 subtitle,
-                out_text: &out_text,
                 editing: editing_field.as_ref().filter(|f| &f.node == id),
                 body: custom::BodyState {
                     hover: pointer.filter(|_| resp.hovered()),
@@ -3106,44 +3104,6 @@ fn place_from_search(
     }
     view.select_only(&id);
     view.commit(patch);
-}
-
-/// Short live-value text for an output pin.
-fn format_spread(s: &floret_engine::Spread) -> String {
-    match s.len() {
-        0 => String::new(),
-        1 => format_value(&s[0]),
-        n => format!("[{n}]"),
-    }
-}
-
-fn format_value(v: &floret_engine::Value) -> String {
-    use floret_engine::Value;
-    match v {
-        Value::Num(n) => {
-            if n.fract() == 0.0 && n.abs() < 1e9 {
-                format!("{n:.0}")
-            } else {
-                format!("{n:.3}")
-            }
-        }
-        Value::Bool(b) => b.to_string(),
-        // An empty string reads as nothing: the pin's label shows instead.
-        Value::Str(s) if s.is_empty() => String::new(),
-        Value::Str(s) => {
-            let s: String = s.chars().take(14).collect();
-            format!("\"{s}\"")
-        }
-        Value::Vec2(p) => format!("{:.1}, {:.1}", p.x, p.y),
-        Value::Color(c) => values::hex([c.r, c.g, c.b, 1.0]),
-        Value::List(items) => format!("[{}]", items.len()),
-        Value::Undefined | Value::Null => String::new(),
-        Value::Object(_) => "{…}".into(),
-        Value::Scene(n) => n.kind().to_owned(),
-        Value::Style(_) => "style".into(),
-        Value::Handle(h) => h.type_name().to_owned(),
-        Value::Image(i) => format!("{}×{}", i.width(), i.height()),
-    }
 }
 
 /// One frame of a control drag at pointer `p`.

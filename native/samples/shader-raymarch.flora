@@ -1,0 +1,82 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Shader · Raymarched Gyroid",
+    "createdAt": "2026-10-02T00:00:00.000Z",
+    "modifiedAt": "2026-10-02T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "rm_note",
+      "defType": "meta/comment",
+      "position": {
+        "x": -520,
+        "y": -200
+      },
+      "params": {
+        "text": "RAYMARCHED GYROID\n\nA full 3D scene in one fragment shader: five metaballs melt together (smooth min), a gyroid lattice carves through them, with soft shadows, ambient occlusion, fresnel iridescence and a glowing grid floor.\n\nThe Scale slider drives the `scale` uniform (the lattice density). Select the Shader node and edit the GLSL in the Shader panel.",
+        "width": 320,
+        "height": 190
+      }
+    },
+    {
+      "id": "rm_scale",
+      "defType": "io/slider",
+      "position": {
+        "x": -520,
+        "y": 60
+      },
+      "params": {
+        "value": 1,
+        "min": 0.25,
+        "max": 3
+      }
+    },
+    {
+      "id": "rm_shader",
+      "defType": "gpu/shader",
+      "position": {
+        "x": -80,
+        "y": 0
+      },
+      "params": {
+        "source": "uniform float scale;\n\n#define MAX_STEPS 120\n#define MAX_DIST 40.0\n#define SURF 0.001\n\nmat2 rot(float a){ float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }\n\nfloat smin(float a, float b, float k){\n  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);\n  return mix(b, a, h) - k * h * (1.0 - h);\n}\n\nfloat gyroid(vec3 p){ return dot(sin(p), cos(p.yzx)); }\n\nfloat blob(vec3 p){\n  float t = iTime;\n  vec3 q = p;\n  q.xz *= rot(t * 0.3);\n  q.xy *= rot(t * 0.2);\n  float d = 1e9;\n  for (int i = 0; i < 5; i++){\n    float fi = float(i);\n    vec3 o = vec3(sin(t * 0.7 + fi * 1.3), cos(t * 0.5 + fi * 2.1), sin(t * 0.9 + fi * 0.7)) * 1.2;\n    d = smin(d, length(q - o) - 0.55, 0.6);\n  }\n  float f = 4.0 * max(scale, 0.1);\n  float g = abs(gyroid(q * f)) / f - 0.04;\n  float lattice = max(d, g);\n  return mix(d, lattice, 0.5 + 0.5 * sin(t * 0.5));\n}\n\nfloat map(vec3 p){ return min(blob(p), p.y + 2.0); }\n\nvec3 calcNormal(vec3 p){\n  vec2 e = vec2(0.001, -0.001);\n  return normalize(e.xyy * map(p + e.xyy) + e.yyx * map(p + e.yyx) +\n                   e.yxy * map(p + e.yxy) + e.xxx * map(p + e.xxx));\n}\n\nfloat softShadow(vec3 ro, vec3 rd){\n  float res = 1.0, t = 0.02;\n  for (int i = 0; i < 48; i++){\n    float h = map(ro + rd * t);\n    res = min(res, 8.0 * h / t);\n    t += clamp(h, 0.02, 0.3);\n    if (res < 0.001 || t > 10.0) break;\n  }\n  return clamp(res, 0.0, 1.0);\n}\n\nfloat calcAO(vec3 p, vec3 n){\n  float o = 0.0, s = 1.0;\n  for (int i = 1; i <= 5; i++){\n    float h = 0.04 * float(i);\n    o += (h - map(p + n * h)) * s;\n    s *= 0.7;\n  }\n  return clamp(1.0 - 2.0 * o, 0.0, 1.0);\n}\n\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord){\n  vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;\n  float t = iTime;\n\n  vec3 ro = vec3(0.0, 0.8, -6.0);\n  ro.xz *= rot(t * 0.15);\n  vec3 f = normalize(-ro);\n  vec3 r = normalize(cross(vec3(0.0, 1.0, 0.0), f));\n  vec3 u = cross(f, r);\n  vec3 rd = normalize(uv.x * r + uv.y * u + 1.6 * f);\n\n  float d = 0.0, glow = 0.0;\n  bool hit = false;\n  for (int i = 0; i < MAX_STEPS; i++){\n    vec3 p = ro + rd * d;\n    float h = map(p);\n    glow += exp(-blob(p) * 6.0) * 0.015;\n    if (h < SURF){ hit = true; break; }\n    d += h * 0.8;\n    if (d > MAX_DIST) break;\n  }\n\n  vec3 bg = mix(vec3(0.02, 0.02, 0.05), vec3(0.15, 0.1, 0.25), uv.y + 0.5);\n  vec3 col = bg;\n\n  if (hit){\n    vec3 p = ro + rd * d;\n    vec3 n = calcNormal(p);\n    vec3 L = normalize(vec3(0.6, 0.8, -0.4));\n    float dif = clamp(dot(n, L), 0.0, 1.0) * softShadow(p + n * 0.01, L);\n    float ao = calcAO(p, n);\n    float fres = pow(1.0 - clamp(dot(n, -rd), 0.0, 1.0), 3.0);\n    float spec = pow(clamp(dot(reflect(rd, n), L), 0.0, 1.0), 32.0);\n\n    if (p.y + 2.0 < 0.01){\n      vec2 g = abs(fract(p.xz) - 0.5);\n      float line = smoothstep(0.47, 0.5, max(g.x, g.y));\n      vec3 mat = vec3(0.04) + line * vec3(0.25, 0.1, 0.5);\n      col = mat * (0.2 + dif) * ao;\n    } else {\n      vec3 iri = 0.5 + 0.5 * cos(6.2831 * (vec3(0.0, 0.33, 0.67) + fres * 0.8 + n.y * 0.3 + t * 0.1));\n      col = iri * (0.15 + dif * 0.9) * ao + spec + fres * iri * 1.5;\n    }\n    col = mix(col, bg, 1.0 - exp(-0.003 * d * d));\n  }\n\n  col += glow * vec3(0.4, 0.2, 1.0);\n  col = col / (1.0 + col);\n  col = pow(col, vec3(0.4545));\n  col *= 1.0 - 0.4 * dot(uv, uv);\n\n  fragColor = vec4(col, 1.0);\n}",
+        "feedback": false
+      }
+    },
+    {
+      "id": "rm_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 360,
+        "y": 0
+      },
+      "params": {
+        "width": 640,
+        "height": 480
+      },
+      "portValues": {
+        "width": 640,
+        "height": 480
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "rm_e1",
+      "source": "rm_scale",
+      "target": "rm_shader",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "rm_e2",
+      "source": "rm_shader",
+      "target": "rm_renderer",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

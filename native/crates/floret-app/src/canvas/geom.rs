@@ -165,16 +165,6 @@ pub fn text_width(s: &str, font: FontId) -> f32 {
     }
 }
 
-/// Room kept on the right of a row for an output's live value.
-fn out_reserve(ty: PortType) -> f32 {
-    match ty {
-        PortType::Number | PortType::Boolean => 46.0,
-        PortType::Vec2 => 70.0,
-        PortType::Color => 50.0,
-        _ => 36.0,
-    }
-}
-
 /// Inputs of `node` with a wire in.
 fn wired_inputs<'a>(patch: &'a PatchFile, node: &str) -> HashSet<&'a str> {
     patch
@@ -204,7 +194,7 @@ pub fn node_width(
         return NODE_W;
     }
     let label_font = FontId::proportional(LABEL_FONT);
-    let out_font = FontId::monospace(10.5);
+    let out_font = FontId::proportional(LABEL_FONT);
     let mut widest: f32 = 0.0;
     let mut row = |left: f32, out: Option<f32>| {
         let w = 10.0 + left + out.map_or(0.0, |o| 14.0 + o) + 10.0;
@@ -245,7 +235,7 @@ pub fn node_width(
         for i in 0..items.len().max(outs.len()) {
             let out = outs.get(i).map(|p| {
                 let label = values::display_label(p, false);
-                text_width(&label, out_font.clone()).max(out_reserve(p.ty))
+                text_width(&label, out_font.clone())
             });
             let left = match items.get(i) {
                 None => 0.0,
@@ -770,13 +760,12 @@ pub fn row_box(
             );
             if let Some((key, kind, value)) = editor {
                 let x0 = 10.0 + lw + 6.0;
-                // Leave room for the row's output readout.
+                // Leave room for the row's output label.
                 let width = b.rect.width() / z;
                 let right = match outs.get(i) {
                     Some(p) => {
                         let label = values::display_label(p, false);
-                        let out =
-                            text_width(&label, FontId::monospace(10.5)).max(out_reserve(p.ty));
+                        let out = text_width(&label, FontId::proportional(LABEL_FONT));
                         width - 10.0 - out - 14.0
                     }
                     None => width - 10.0,

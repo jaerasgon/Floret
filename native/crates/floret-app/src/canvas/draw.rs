@@ -99,16 +99,16 @@ pub struct FrameState<'a> {
 pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
     let accent = frame_color(st.kind);
     let (fill, stroke) = if st.drop_target {
-        (accent.gamma_multiply(0.12), Stroke::new(2.5, accent))
+        (accent.gamma_multiply(0.12), Stroke::new(1.5, accent))
     } else if st.selected {
         (
             accent.gamma_multiply(0.05),
-            Stroke::new(2.0, accent.gamma_multiply(0.95)),
+            Stroke::new(1.25, accent.gamma_multiply(0.95)),
         )
     } else {
         (
             accent.gamma_multiply(0.04),
-            Stroke::new(1.5, accent.gamma_multiply(0.55)),
+            Stroke::new(0.75, accent.gamma_multiply(0.5)),
         )
     };
     p.rect(
@@ -223,8 +223,6 @@ pub struct NodeState<'a> {
     /// The selected glow's slow breath, 0–1 (0 with reduced motion).
     pub breathe: f32,
     pub subtitle: Option<&'a str>,
-    /// Live value text for an output port.
-    pub out_text: &'a dyn Fn(&str) -> Option<String>,
     /// The field being typed into (drawn by the text editor instead).
     pub editing: Option<&'a Field>,
     /// Custom-body state (pointer, active control, probe scroll …).
@@ -376,10 +374,10 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                 );
             }
         }
-        if let Some((label, port)) = &row.output {
-            // Keep clear of an inline field on the same row. A live value
-            // that doesn't fit gives way to the port name (the pin tooltip
-            // still has the value).
+        if let Some((label, _)) = &row.output {
+            // Output rows show the port name (as in the web app); the live
+            // value is in the pin's hover tooltip. Keep clear of an inline
+            // field on the same row.
             let left = b
                 .fields
                 .iter()
@@ -387,17 +385,9 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                 .map(|f| f.rect.right() + 4.0 * z)
                 .fold(b.rect.left(), f32::max);
             let right = b.rect.right() - 10.0 * z;
-            let font = FontId::monospace(10.5 * z);
-            let live = (st.out_text)(port)
-                .filter(|t| !t.is_empty())
-                .map(|t| p.layout_no_wrap(t, font.clone(), *FG_0))
-                .filter(|g| right - g.size().x >= left);
-            let (g, color) = match live {
-                Some(g) => (g, *FG_0),
-                None => (p.layout_no_wrap(label.clone(), font, *FG_1), *FG_1),
-            };
+            let g = p.layout_no_wrap(label.clone(), FontId::proportional(LABEL_FONT * z), *FG_1);
             if right - g.size().x >= left {
-                p.galley(pos2(right - g.size().x, row.y - g.size().y / 2.0), g, color);
+                p.galley(pos2(right - g.size().x, row.y - g.size().y / 2.0), g, *FG_1);
             }
         }
     }
@@ -738,6 +728,8 @@ pub fn drop_ghost(p: &Painter, at: Pos2, label: &str, category: &str, z: f32) {
     );
 }
 
+/// A resting wire: its type colour, muted toward the canvas so the nodes
+/// read first.
 pub fn mix_wire(base: Color32) -> Color32 {
-    mix(base, *FG_2, 0.75)
+    mix(mix(base, *FG_2, 0.6), *BG_0, 0.45)
 }

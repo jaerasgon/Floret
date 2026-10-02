@@ -12,8 +12,8 @@
       "id": "gp_c",
       "defType": "meta/comment",
       "position": {
-        "x": -900,
-        "y": -120
+        "x": 0,
+        "y": -294
       },
       "params": {
         "text": "Particles from glyph outlines\n\ntext/outline samples points every few units along the letterforms’ contours. They seed a particle emitter, drift on turbulence and fade. The font’s weight breathes with time (style/font-variations), so the outlines — and the particles born on them — thicken and thin.",
@@ -30,8 +30,8 @@
       "id": "gp_t",
       "defType": "time/seconds",
       "position": {
-        "x": -900,
-        "y": 200
+        "x": 0,
+        "y": 515
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "gp_ws",
       "defType": "math/sin",
       "position": {
-        "x": -680,
-        "y": 200
+        "x": 190,
+        "y": 447
       },
       "params": {}
     },
@@ -48,8 +48,8 @@
       "id": "gp_wa",
       "defType": "math/mul",
       "position": {
-        "x": -480,
-        "y": 200
+        "x": 368,
+        "y": 380
       },
       "params": {
         "valueType": "number",
@@ -63,8 +63,8 @@
       "id": "gp_w",
       "defType": "math/add",
       "position": {
-        "x": -280,
-        "y": 200
+        "x": 642,
+        "y": 313
       },
       "params": {
         "valueType": "number",
@@ -78,8 +78,8 @@
       "id": "gp_tp",
       "defType": "style/text-params",
       "position": {
-        "x": -480,
-        "y": 420
+        "x": 654,
+        "y": 435
       },
       "params": {
         "font": "Roboto Flex",
@@ -104,8 +104,8 @@
       "id": "gp_fv",
       "defType": "style/font-variations",
       "position": {
-        "x": -200,
-        "y": 420
+        "x": 924,
+        "y": 304
       },
       "params": {
         "axis": ""
@@ -121,8 +121,8 @@
       "id": "gp_pos",
       "defType": "vec2/make",
       "position": {
-        "x": -200,
-        "y": 640
+        "x": 941,
+        "y": 182
       },
       "params": {},
       "portValues": {
@@ -134,8 +134,8 @@
       "id": "gp_ol",
       "defType": "text/outline",
       "position": {
-        "x": 60,
-        "y": 300
+        "x": 1161,
+        "y": 202
       },
       "params": {
         "string": "Floret",
@@ -155,8 +155,8 @@
       "id": "gp_turb",
       "defType": "force/turbulence",
       "position": {
-        "x": -200,
-        "y": 900
+        "x": 925,
+        "y": 526
       },
       "params": {
         "scale": 0.012,
@@ -175,8 +175,8 @@
       "id": "gp_world",
       "defType": "physics/world",
       "position": {
-        "x": 60,
-        "y": 900
+        "x": 1160,
+        "y": 424
       },
       "params": {
         "gravity": {
@@ -199,8 +199,8 @@
       "id": "gp_em",
       "defType": "particles/emitter",
       "position": {
-        "x": 360,
-        "y": 300
+        "x": 1509,
+        "y": 315
       },
       "params": {
         "rate": 900,
@@ -245,8 +245,8 @@
       "id": "gp_ra",
       "defType": "particles/render-as",
       "position": {
-        "x": 640,
-        "y": 300
+        "x": 1841,
+        "y": 266
       },
       "params": {
         "template": "circle",
@@ -261,8 +261,8 @@
       "id": "gp_gc",
       "defType": "color/color",
       "position": {
-        "x": 360,
-        "y": 600
+        "x": 908,
+        "y": 0
       },
       "params": {
         "mode": "rgb",
@@ -283,8 +283,8 @@
       "id": "gp_gf",
       "defType": "style/stroke",
       "position": {
-        "x": 540,
-        "y": 600
+        "x": 1186,
+        "y": 40
       },
       "params": {
         "align": "center"
@@ -298,12 +298,12 @@
       "id": "gp_dots",
       "defType": "region/foreach",
       "position": {
-        "x": 360,
-        "y": 720
+        "x": 1414,
+        "y": 106
       },
       "params": {
-        "width": 520,
-        "height": 220,
+        "width": 324,
+        "height": 154,
         "label": "ForEach point"
       },
       "ports": [
@@ -311,24 +311,26 @@
           "id": "p",
           "name": "p",
           "type": "vec2",
-          "direction": "input"
+          "direction": "input",
+          "y": 76
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 76
         }
       ],
-      "width": 520,
-      "height": 220
+      "width": 324,
+      "height": 154
     },
     {
       "id": "gp_pt",
       "defType": "draw/point",
       "position": {
-        "x": 600,
-        "y": 800
+        "x": 128,
+        "y": 40
       },
       "params": {},
       "parentId": "gp_dots"
@@ -337,8 +339,8 @@
       "id": "gp_g",
       "defType": "transform/group",
       "position": {
-        "x": 940,
-        "y": 400
+        "x": 2081,
+        "y": 196
       },
       "params": {
         "slotCount": 2
@@ -348,8 +350,8 @@
       "id": "gp_bg",
       "defType": "color/color",
       "position": {
-        "x": 940,
-        "y": 640
+        "x": 2090,
+        "y": 318
       },
       "params": {
         "mode": "rgb",
@@ -370,8 +372,8 @@
       "id": "gp_out",
       "defType": "render/renderer",
       "position": {
-        "x": 1180,
-        "y": 400
+        "x": 2352,
+        "y": 247
       },
       "params": {
         "width": 640,

@@ -12,8 +12,8 @@
       "id": "t06_c",
       "defType": "meta/comment",
       "position": {
-        "x": -532,
-        "y": 0
+        "x": 0,
+        "y": -284
       },
       "params": {
         "text": "Spreads = lists of values\n\nA spread is a list. `RangeSpread` produces 0,1,2,…,N-1. To use each value individually, wrap a ForEach region around the body — it runs the inside once per element.\n\nHere: 12 rects laid out across the canvas.",
@@ -30,8 +30,8 @@
       "id": "t06_range",
       "defType": "spread/range",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 64
       },
       "params": {
         "count": 12
@@ -44,12 +44,12 @@
       "id": "t06_region",
       "defType": "region/foreach",
       "position": {
-        "x": 420,
-        "y": 0
+        "x": 210,
+        "y": 22
       },
       "params": {
-        "width": 644,
-        "height": 600,
+        "width": 1044,
+        "height": 214,
         "label": "ForEach"
       },
       "ports": [
@@ -57,24 +57,26 @@
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 78
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 76
         }
       ],
-      "width": 644,
-      "height": 600
+      "width": 1044,
+      "height": 214
     },
     {
       "id": "t06_spaceX",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 150
+        "x": 128,
+        "y": 42
       },
       "params": {
         "b": 32,
@@ -89,8 +91,8 @@
       "id": "t06_offX",
       "defType": "math/add",
       "position": {
-        "x": 280,
-        "y": 150
+        "x": 392,
+        "y": 41
       },
       "params": {
         "b": -176,
@@ -105,8 +107,8 @@
       "id": "t06_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 448,
-        "y": 150
+        "x": 836,
+        "y": 40
       },
       "params": {
         "y": -10,
@@ -124,8 +126,8 @@
       "id": "t06_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1148,
-        "y": 0
+        "x": 1350,
+        "y": 62
       },
       "params": {
         "width": 400,
@@ -140,8 +142,8 @@
       "id": "t06_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 388,
-        "y": 150
+        "x": 656,
+        "y": 40
       },
       "params": {
         "x": 0,

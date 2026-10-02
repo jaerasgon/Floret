@@ -12,8 +12,8 @@
       "id": "fb_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": -588,
-        "y": 50
+        "x": 0,
+        "y": 111
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "fb_freqMap",
       "defType": "math/map",
       "position": {
-        "x": -280,
-        "y": 50
+        "x": 223,
+        "y": 131
       },
       "params": {
         "inMin": -250,
@@ -41,8 +41,8 @@
       "id": "fb_amp",
       "defType": "io/slider",
       "position": {
-        "x": -588,
-        "y": 275
+        "x": 180,
+        "y": 313
       },
       "params": {
         "value": 0.25,
@@ -59,8 +59,8 @@
       "id": "fb_osc",
       "defType": "sound/oscillator",
       "position": {
-        "x": 28,
-        "y": 50
+        "x": 456,
+        "y": 194
       },
       "params": {
         "type": "sawtooth"
@@ -73,8 +73,8 @@
       "id": "fb_out",
       "defType": "sound/output",
       "position": {
-        "x": 336,
-        "y": 50
+        "x": 768,
+        "y": 72
       },
       "params": {}
     },
@@ -82,8 +82,8 @@
       "id": "fb_fft",
       "defType": "sound/fft",
       "position": {
-        "x": 28,
-        "y": 275
+        "x": 729,
+        "y": 296
       },
       "params": {
         "bins": "64"
@@ -96,8 +96,8 @@
       "id": "fb_idxs",
       "defType": "spread/range",
       "position": {
-        "x": -588,
-        "y": 500
+        "x": 753,
+        "y": 194
       },
       "params": {
         "count": 64
@@ -110,12 +110,12 @@
       "id": "fb_region",
       "defType": "region/foreach",
       "position": {
-        "x": -224,
-        "y": 500
+        "x": 994,
+        "y": 22
       },
       "params": {
-        "width": 1260,
-        "height": 1150,
+        "width": 1823,
+        "height": 540,
         "label": "ForEach"
       },
       "ports": [
@@ -123,30 +123,33 @@
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 249
         },
         {
           "id": "v",
           "name": "v",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 269
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 255
         }
       ],
-      "width": 1260,
-      "height": 1150
+      "width": 1823,
+      "height": 540
     },
     {
       "id": "fb_angleMul",
       "defType": "math/mul",
       "position": {
-        "x": 84,
-        "y": 100
+        "x": 142,
+        "y": 40
       },
       "params": {
         "b": 0.09817477042468103,
@@ -161,8 +164,8 @@
       "id": "fb_vScaled",
       "defType": "math/mul",
       "position": {
-        "x": 84,
-        "y": 275
+        "x": 142,
+        "y": 162
       },
       "params": {
         "b": 0.7,
@@ -177,8 +180,8 @@
       "id": "fb_radius",
       "defType": "math/add",
       "position": {
-        "x": 308,
-        "y": 275
+        "x": 410,
+        "y": 135
       },
       "params": {
         "b": 80,
@@ -193,8 +196,8 @@
       "id": "fb_fromAng",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 532,
-        "y": 175
+        "x": 678,
+        "y": 89
       },
       "params": {},
       "parentId": "fb_region"
@@ -203,8 +206,8 @@
       "id": "fb_splitPos",
       "defType": "vec2/split",
       "position": {
-        "x": 756,
-        "y": 175
+        "x": 876,
+        "y": 110
       },
       "params": {},
       "parentId": "fb_region"
@@ -213,8 +216,8 @@
       "id": "fb_xCenter",
       "defType": "math/add",
       "position": {
-        "x": 979.9999999999999,
-        "y": 100
+        "x": 1065,
+        "y": 70
       },
       "params": {
         "b": 0,
@@ -229,8 +232,8 @@
       "id": "fb_yCenter",
       "defType": "math/add",
       "position": {
-        "x": 979.9999999999999,
-        "y": 275
+        "x": 1065,
+        "y": 192
       },
       "params": {
         "b": 0,
@@ -245,8 +248,8 @@
       "id": "fb_hueMul",
       "defType": "math/mul",
       "position": {
-        "x": 84,
-        "y": 600
+        "x": 142,
+        "y": 406
       },
       "params": {
         "b": 5.625,
@@ -261,8 +264,8 @@
       "id": "fb_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 308,
-        "y": 600
+        "x": 1107,
+        "y": 386
       },
       "params": {
         "s": 80,
@@ -280,8 +283,8 @@
       "id": "fb_fill",
       "defType": "style/fill",
       "position": {
-        "x": 532,
-        "y": 600
+        "x": 1380,
+        "y": 376
       },
       "params": {
         "mode": "color"
@@ -295,8 +298,8 @@
       "id": "fb_sScaled",
       "defType": "math/mul",
       "position": {
-        "x": 756,
-        "y": 600
+        "x": 142,
+        "y": 284
       },
       "params": {
         "b": 0.04,
@@ -311,8 +314,8 @@
       "id": "fb_sAdd",
       "defType": "math/add",
       "position": {
-        "x": 979.9999999999999,
-        "y": 600
+        "x": 1338,
+        "y": 254
       },
       "params": {
         "b": 3,
@@ -327,8 +330,8 @@
       "id": "fb_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1204,
-        "y": 250
+        "x": 1615,
+        "y": 219
       },
       "params": {},
       "parentId": "fb_region"
@@ -337,8 +340,8 @@
       "id": "fb_bg",
       "defType": "color/rgb",
       "position": {
-        "x": -588,
-        "y": 700
+        "x": 1863,
+        "y": 610
       },
       "params": {
         "r": 12,
@@ -357,8 +360,8 @@
       "id": "fb_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 672,
-        "y": 50
+        "x": 2939,
+        "y": 415
       },
       "params": {
         "width": 500,
@@ -373,8 +376,8 @@
       "id": "fb_dot-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1144,
-        "y": 250
+        "x": 1380,
+        "y": 132
       },
       "params": {
         "x": 0,

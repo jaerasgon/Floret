@@ -12,8 +12,8 @@
       "id": "tdr_c",
       "defType": "meta/comment",
       "position": {
-        "x": -784,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Noise drift\n\nThe passage sits as a monospace grid. A slow Perlin “mask” (smoothstep threshold) picks drifting CLUSTERS; inside them a second noise field shoves the letters around and tints them, while the rest stays still and readable. The clusters wander over time.",
@@ -30,8 +30,8 @@
       "id": "tdr_str",
       "defType": "value/string",
       "position": {
-        "x": -784,
-        "y": 550
+        "x": 0,
+        "y": 82
       },
       "params": {
         "value": "It was the best of times,       it was the worst of times,      it was the age of wisdom,       it was the age of foolishness,  it was the epoch of belief,     it was the epoch of incredulity,it was the season of Light,     it was the season of Darkness.  "
@@ -44,8 +44,8 @@
       "id": "tdr_split",
       "defType": "string/split",
       "position": {
-        "x": -503.99999999999994,
-        "y": 500
+        "x": 270,
+        "y": 82
       },
       "params": {}
     },
@@ -53,8 +53,8 @@
       "id": "tdr_range",
       "defType": "spread/range",
       "position": {
-        "x": -503.99999999999994,
-        "y": 750
+        "x": 252,
+        "y": 204
       },
       "params": {
         "count": 256
@@ -67,8 +67,8 @@
       "id": "tdr_time",
       "defType": "time/seconds",
       "position": {
-        "x": -784,
-        "y": 900
+        "x": 270,
+        "y": 312
       },
       "params": {}
     },
@@ -76,8 +76,8 @@
       "id": "tdr_bg",
       "defType": "color/color",
       "position": {
-        "x": -503.99999999999994,
-        "y": 950
+        "x": 2195,
+        "y": 722
       },
       "params": {
         "mode": "rgb",
@@ -98,12 +98,12 @@
       "id": "tdr_region",
       "defType": "region/foreach",
       "position": {
-        "x": 168,
-        "y": 0
+        "x": 475,
+        "y": 22
       },
       "params": {
-        "width": 2184,
-        "height": 1900,
+        "width": 3590,
+        "height": 652,
         "label": "ForEach letter"
       },
       "ports": [
@@ -111,30 +111,33 @@
           "id": "ch",
           "name": "ch",
           "type": "string",
-          "direction": "input"
+          "direction": "input",
+          "y": 142
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 172
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 130
         }
       ],
-      "width": 2184,
-      "height": 1900
+      "width": 3590,
+      "height": 652
     },
     {
       "id": "tdr_rowF",
       "defType": "math/div",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 131,
+        "y": 176
       },
       "params": {
         "b": 32,
@@ -149,8 +152,8 @@
       "id": "tdr_row",
       "defType": "math/floor",
       "position": {
-        "x": 280,
-        "y": 100
+        "x": 399,
+        "y": 200
       },
       "params": {},
       "parentId": "tdr_region"
@@ -159,8 +162,8 @@
       "id": "tdr_rowCol",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 100
+        "x": 577,
+        "y": 151
       },
       "params": {
         "b": 32,
@@ -175,8 +178,8 @@
       "id": "tdr_col",
       "defType": "math/sub",
       "position": {
-        "x": 728,
-        "y": 100
+        "x": 846,
+        "y": 98
       },
       "params": {
         "valueType": "number"
@@ -187,8 +190,8 @@
       "id": "tdr_colCen",
       "defType": "math/sub",
       "position": {
-        "x": 951.9999999999999,
-        "y": 100
+        "x": 1120,
+        "y": 82
       },
       "params": {
         "b": 15.5
@@ -202,8 +205,8 @@
       "id": "tdr_gx",
       "defType": "math/mul",
       "position": {
-        "x": 1176,
-        "y": 100
+        "x": 1394,
+        "y": 65
       },
       "params": {
         "b": 12
@@ -217,8 +220,8 @@
       "id": "tdr_rowCen",
       "defType": "math/sub",
       "position": {
-        "x": 503.99999999999994,
-        "y": 350
+        "x": 577,
+        "y": 273
       },
       "params": {
         "b": 3.5,
@@ -233,8 +236,8 @@
       "id": "tdr_gy",
       "defType": "math/mul",
       "position": {
-        "x": 728,
-        "y": 350
+        "x": 846,
+        "y": 290
       },
       "params": {
         "b": 30
@@ -248,8 +251,8 @@
       "id": "tdr_gsx",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 600
+        "x": 1676,
+        "y": 61
       },
       "params": {
         "b": 0.012,
@@ -264,8 +267,8 @@
       "id": "tdr_gsy",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 750
+        "x": 1394,
+        "y": 269
       },
       "params": {
         "b": 0.012
@@ -279,8 +282,8 @@
       "id": "tdr_tDisp",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 900
+        "x": 131,
+        "y": 366
       },
       "params": {
         "b": 0.3,
@@ -295,8 +298,8 @@
       "id": "tdr_gsyT",
       "defType": "math/add",
       "position": {
-        "x": 280,
-        "y": 800
+        "x": 1676,
+        "y": 305
       },
       "params": {
         "valueType": "number"
@@ -307,8 +310,8 @@
       "id": "tdr_msx",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 1100
+        "x": 1676,
+        "y": 183
       },
       "params": {
         "b": 0.022,
@@ -323,8 +326,8 @@
       "id": "tdr_msy",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 1250
+        "x": 1120,
+        "y": 354
       },
       "params": {
         "b": 0.022
@@ -338,8 +341,8 @@
       "id": "tdr_tMask",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 1400
+        "x": 131,
+        "y": 488
       },
       "params": {
         "b": 0.15,
@@ -354,8 +357,8 @@
       "id": "tdr_msyT",
       "defType": "math/add",
       "position": {
-        "x": 280,
-        "y": 1300
+        "x": 1394,
+        "y": 423
       },
       "params": {
         "valueType": "number"
@@ -366,8 +369,8 @@
       "id": "tdr_nX",
       "defType": "noise/perlin",
       "position": {
-        "x": 503.99999999999994,
-        "y": 600
+        "x": 1976,
+        "y": 45
       },
       "params": {
         "seed": 7
@@ -381,8 +384,8 @@
       "id": "tdr_nY",
       "defType": "noise/perlin",
       "position": {
-        "x": 503.99999999999994,
-        "y": 800
+        "x": 1976,
+        "y": 227
       },
       "params": {
         "seed": 23
@@ -396,8 +399,8 @@
       "id": "tdr_mN",
       "defType": "noise/perlin",
       "position": {
-        "x": 503.99999999999994,
-        "y": 1200
+        "x": 1976,
+        "y": 409
       },
       "params": {
         "seed": 99
@@ -411,8 +414,8 @@
       "id": "tdr_mask",
       "defType": "math/smoothstep",
       "position": {
-        "x": 756,
-        "y": 1200
+        "x": 2161,
+        "y": 404
       },
       "params": {
         "edge0": 0.55,
@@ -428,8 +431,8 @@
       "id": "tdr_dxM",
       "defType": "math/map",
       "position": {
-        "x": 756,
-        "y": 600
+        "x": 2182,
+        "y": 40
       },
       "params": {
         "inMin": 0.3,
@@ -449,8 +452,8 @@
       "id": "tdr_dyM",
       "defType": "math/map",
       "position": {
-        "x": 756,
-        "y": 800
+        "x": 2182,
+        "y": 222
       },
       "params": {
         "inMin": 0.3,
@@ -470,8 +473,8 @@
       "id": "tdr_dxg",
       "defType": "math/mul",
       "position": {
-        "x": 1007.9999999999999,
-        "y": 600
+        "x": 2411,
+        "y": 172
       },
       "params": {
         "valueType": "number"
@@ -482,8 +485,8 @@
       "id": "tdr_dyg",
       "defType": "math/mul",
       "position": {
-        "x": 1007.9999999999999,
-        "y": 800
+        "x": 2411,
+        "y": 294
       },
       "params": {
         "valueType": "number"
@@ -494,8 +497,8 @@
       "id": "tdr_fx",
       "defType": "math/add",
       "position": {
-        "x": 1260,
-        "y": 300
+        "x": 2685,
+        "y": 89
       },
       "params": {
         "valueType": "number"
@@ -506,8 +509,8 @@
       "id": "tdr_fy",
       "defType": "math/add",
       "position": {
-        "x": 1260,
-        "y": 500
+        "x": 2685,
+        "y": 224
       },
       "params": {
         "valueType": "number"
@@ -518,8 +521,8 @@
       "id": "tdr_pos",
       "defType": "vec2/make",
       "position": {
-        "x": 1484,
-        "y": 400
+        "x": 2960,
+        "y": 136
       },
       "params": {},
       "parentId": "tdr_region"
@@ -528,8 +531,8 @@
       "id": "tdr_hueM",
       "defType": "math/mul",
       "position": {
-        "x": 1007.9999999999999,
-        "y": 1200
+        "x": 2411,
+        "y": 416
       },
       "params": {
         "b": 220,
@@ -544,8 +547,8 @@
       "id": "tdr_satM",
       "defType": "math/mul",
       "position": {
-        "x": 1007.9999999999999,
-        "y": 1350
+        "x": 2411,
+        "y": 538
       },
       "params": {
         "b": 90,
@@ -560,8 +563,8 @@
       "id": "tdr_hsl",
       "defType": "color/color",
       "position": {
-        "x": 1260,
-        "y": 1200
+        "x": 2694,
+        "y": 428
       },
       "params": {
         "mode": "hsl",
@@ -583,8 +586,8 @@
       "id": "tdr_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1484,
-        "y": 1200
+        "x": 2960,
+        "y": 390
       },
       "params": {},
       "parentId": "tdr_region"
@@ -593,8 +596,8 @@
       "id": "tdr_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 1708,
-        "y": 1200
+        "x": 3145,
+        "y": 212
       },
       "params": {
         "font": "Menlo, Consolas, monospace",
@@ -616,8 +619,8 @@
       "id": "tdr_text",
       "defType": "draw/text",
       "position": {
-        "x": 1736,
-        "y": 400
+        "x": 3392,
+        "y": 94
       },
       "params": {
         "string": "?",
@@ -635,8 +638,8 @@
       "id": "tdr_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2464,
-        "y": 0
+        "x": 4205,
+        "y": 409
       },
       "params": {
         "width": 560,

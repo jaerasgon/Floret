@@ -12,8 +12,8 @@
       "id": "t18_c",
       "defType": "meta/comment",
       "position": {
-        "x": -560,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Seeded randomness\n\nUse the loop index as the seed of `random/uniform` and you get a stable scatter — same patch loaded later gives the same scatter. Change the seed input to reroll.\n\n80 ellipses placed at deterministic random (x, y).",
@@ -30,8 +30,8 @@
       "id": "t18_range",
       "defType": "spread/range",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 13,
+        "y": 128
       },
       "params": {
         "count": 80
@@ -44,8 +44,8 @@
       "id": "t18_seed",
       "defType": "value/number",
       "position": {
-        "x": 84,
-        "y": 500
+        "x": 0,
+        "y": 230
       },
       "params": {
         "value": 17
@@ -58,12 +58,12 @@
       "id": "t18_region",
       "defType": "region/foreach",
       "position": {
-        "x": 448,
-        "y": 0
+        "x": 237,
+        "y": 22
       },
       "params": {
-        "width": 812,
-        "height": 800,
+        "width": 1301,
+        "height": 327,
         "label": "ForEach"
       },
       "ports": [
@@ -71,30 +71,33 @@
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 147
         },
         {
           "id": "s",
           "name": "seed",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 239
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 147
         }
       ],
-      "width": 812,
-      "height": 800
+      "width": 1301,
+      "height": 327
     },
     {
       "id": "t18_seedX",
       "defType": "math/add",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 133,
+        "y": 162
       },
       "params": {
         "valueType": "number"
@@ -105,8 +108,8 @@
       "id": "t18_seedYoff",
       "defType": "math/add",
       "position": {
-        "x": 56,
-        "y": 300
+        "x": 133,
+        "y": 40
       },
       "params": {
         "b": 1000,
@@ -121,8 +124,8 @@
       "id": "t18_seedY",
       "defType": "math/add",
       "position": {
-        "x": 280,
-        "y": 300
+        "x": 418,
+        "y": 178
       },
       "params": {
         "valueType": "number"
@@ -133,8 +136,8 @@
       "id": "t18_ux",
       "defType": "random/uniform",
       "position": {
-        "x": 503.99999999999994,
-        "y": 100
+        "x": 690,
+        "y": 51
       },
       "params": {
         "min": -180,
@@ -150,8 +153,8 @@
       "id": "t18_uy",
       "defType": "random/uniform",
       "position": {
-        "x": 503.99999999999994,
-        "y": 300
+        "x": 690,
+        "y": 193
       },
       "params": {
         "min": -180,
@@ -167,8 +170,8 @@
       "id": "t18_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 728,
-        "y": 200
+        "x": 1093,
+        "y": 111
       },
       "params": {
         "w": 14,
@@ -184,8 +187,8 @@
       "id": "t18_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1316,
-        "y": 0
+        "x": 1634,
+        "y": 133
       },
       "params": {
         "width": 400,
@@ -200,8 +203,8 @@
       "id": "t18_ell-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 668,
-        "y": 200
+        "x": 913,
+        "y": 112
       },
       "params": {
         "x": 0,

@@ -12,8 +12,8 @@
       "id": "t36_c",
       "defType": "meta/comment",
       "position": {
-        "x": -644,
-        "y": 0
+        "x": 0,
+        "y": -284
       },
       "params": {
         "text": "Gaussian (bell-curve) random\n\n`random/gaussian` clusters samples around `mean` with standard deviation `sd`. Unlike Uniform (flat), most samples land near the mean — perfect for \"natural\" scatter.\n\n200 dots placed with mean=0, sd=80. See the cluster in the centre.",
@@ -30,8 +30,8 @@
       "id": "t36_range",
       "defType": "spread/range",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 173
       },
       "params": {
         "count": 200
@@ -44,12 +44,12 @@
       "id": "t36_region",
       "defType": "region/foreach",
       "position": {
-        "x": 448,
-        "y": 0
+        "x": 216,
+        "y": 22
       },
       "params": {
-        "width": 756,
-        "height": 700,
+        "width": 1000,
+        "height": 326,
         "label": "ForEach"
       },
       "ports": [
@@ -57,24 +57,26 @@
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 187
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 137
         }
       ],
-      "width": 756,
-      "height": 700
+      "width": 1000,
+      "height": 326
     },
     {
       "id": "t36_sx",
       "defType": "math/add",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 133,
+        "y": 90
       },
       "params": {
         "b": 0,
@@ -89,8 +91,8 @@
       "id": "t36_sy",
       "defType": "math/add",
       "position": {
-        "x": 56,
-        "y": 250
+        "x": 133,
+        "y": 212
       },
       "params": {
         "b": 1000,
@@ -105,8 +107,8 @@
       "id": "t36_gx",
       "defType": "random/gaussian",
       "position": {
-        "x": 280,
-        "y": 100
+        "x": 398,
+        "y": 40
       },
       "params": {
         "mean": 0,
@@ -122,8 +124,8 @@
       "id": "t36_gy",
       "defType": "random/gaussian",
       "position": {
-        "x": 280,
-        "y": 250
+        "x": 398,
+        "y": 182
       },
       "params": {
         "mean": 0,
@@ -139,8 +141,8 @@
       "id": "t36_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 503.99999999999994,
-        "y": 200
+        "x": 792,
+        "y": 101
       },
       "params": {
         "w": 8,
@@ -156,8 +158,8 @@
       "id": "t36_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1260,
-        "y": 0
+        "x": 1312,
+        "y": 123
       },
       "params": {
         "width": 400,
@@ -172,8 +174,8 @@
       "id": "t36_ell-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 443.99999999999994,
-        "y": 200
+        "x": 612,
+        "y": 101
       },
       "params": {
         "x": 0,

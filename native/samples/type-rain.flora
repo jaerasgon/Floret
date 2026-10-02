@@ -12,8 +12,8 @@
       "id": "trn_c",
       "defType": "meta/comment",
       "position": {
-        "x": -756,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Type rain\n\nA 18 × 22 grid where each column scrolls vertically at a unique noise-seeded speed. y = (rowIdx · ROW_H + time · speed[col]) mod CANVAS_H − CANVAS_H/2. Characters appear to fall like Matrix code.",
@@ -30,8 +30,8 @@
       "id": "trn_str",
       "defType": "value/string",
       "position": {
-        "x": -756,
-        "y": 500
+        "x": 0,
+        "y": 69
       },
       "params": {
         "value": "FLORET01"
@@ -44,8 +44,8 @@
       "id": "trn_split",
       "defType": "string/split",
       "position": {
-        "x": -503.99999999999994,
-        "y": 400
+        "x": 252,
+        "y": 69
       },
       "params": {}
     },
@@ -53,8 +53,8 @@
       "id": "trn_tile",
       "defType": "spread/repeat",
       "position": {
-        "x": -251.99999999999997,
-        "y": 400
+        "x": 435,
+        "y": 69
       },
       "params": {
         "count": 396
@@ -67,8 +67,8 @@
       "id": "trn_range",
       "defType": "spread/range",
       "position": {
-        "x": -251.99999999999997,
-        "y": 650
+        "x": 432,
+        "y": 293
       },
       "params": {
         "count": 396
@@ -81,8 +81,8 @@
       "id": "trn_time",
       "defType": "time/seconds",
       "position": {
-        "x": -756,
-        "y": 800
+        "x": 450,
+        "y": 191
       },
       "params": {}
     },
@@ -90,8 +90,8 @@
       "id": "trn_bg",
       "defType": "color/color",
       "position": {
-        "x": -503.99999999999994,
-        "y": 850
+        "x": 2514,
+        "y": 496
       },
       "params": {
         "mode": "rgb",
@@ -112,12 +112,12 @@
       "id": "trn_region",
       "defType": "region/foreach",
       "position": {
-        "x": 168,
-        "y": 0
+        "x": 657,
+        "y": 22
       },
       "params": {
-        "width": 1540,
-        "height": 1500,
+        "width": 3864,
+        "height": 426,
         "label": "ForEach cell"
       },
       "ports": [
@@ -125,30 +125,33 @@
           "id": "ch",
           "name": "ch",
           "type": "string",
-          "direction": "input"
+          "direction": "input",
+          "y": 138
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 244
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 76
         }
       ],
-      "width": 1540,
-      "height": 1500
+      "width": 3864,
+      "height": 426
     },
     {
       "id": "trn_colIdx",
       "defType": "math/mod",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 181,
+        "y": 147
       },
       "params": {
         "b": 18
@@ -162,8 +165,8 @@
       "id": "trn_rowDiv",
       "defType": "math/div",
       "position": {
-        "x": 56,
-        "y": 250
+        "x": 133,
+        "y": 269
       },
       "params": {
         "b": 18,
@@ -178,8 +181,8 @@
       "id": "trn_rowIdx",
       "defType": "math/floor",
       "position": {
-        "x": 280,
-        "y": 250
+        "x": 1162,
+        "y": 297
       },
       "params": {},
       "parentId": "trn_region"
@@ -188,8 +191,8 @@
       "id": "trn_colOff",
       "defType": "math/sub",
       "position": {
-        "x": 280,
-        "y": 100
+        "x": 1922,
+        "y": 78
       },
       "params": {
         "b": 8.5,
@@ -204,8 +207,8 @@
       "id": "trn_x",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 100
+        "x": 2196,
+        "y": 68
       },
       "params": {
         "b": 26,
@@ -220,8 +223,8 @@
       "id": "trn_nArg",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 450
+        "x": 401,
+        "y": 177
       },
       "params": {
         "b": 0.27,
@@ -236,8 +239,8 @@
       "id": "trn_speedN",
       "defType": "noise/perlin",
       "position": {
-        "x": 280,
-        "y": 450
+        "x": 667,
+        "y": 168
       },
       "params": {
         "seed": 13
@@ -251,8 +254,8 @@
       "id": "trn_speedM",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 450
+        "x": 848,
+        "y": 171
       },
       "params": {
         "b": 90,
@@ -267,8 +270,8 @@
       "id": "trn_speed",
       "defType": "math/add",
       "position": {
-        "x": 728,
-        "y": 450
+        "x": 1114,
+        "y": 175
       },
       "params": {
         "b": 60
@@ -282,8 +285,8 @@
       "id": "trn_scroll",
       "defType": "math/mul",
       "position": {
-        "x": 951.9999999999999,
-        "y": 450
+        "x": 1380,
+        "y": 172
       },
       "params": {
         "valueType": "number"
@@ -294,8 +297,8 @@
       "id": "trn_rowY",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 650
+        "x": 1380,
+        "y": 294
       },
       "params": {
         "b": 26,
@@ -310,8 +313,8 @@
       "id": "trn_ySum",
       "defType": "math/add",
       "position": {
-        "x": 1176,
-        "y": 550
+        "x": 1656,
+        "y": 229
       },
       "params": {
         "valueType": "number"
@@ -322,8 +325,8 @@
       "id": "trn_yWrap",
       "defType": "math/mod",
       "position": {
-        "x": 1400,
-        "y": 550
+        "x": 1970,
+        "y": 244
       },
       "params": {
         "b": 600
@@ -337,8 +340,8 @@
       "id": "trn_y",
       "defType": "math/sub",
       "position": {
-        "x": 1624,
-        "y": 550
+        "x": 2196,
+        "y": 190
       },
       "params": {
         "b": 300,
@@ -353,8 +356,8 @@
       "id": "trn_yNorm",
       "defType": "math/div",
       "position": {
-        "x": 1400,
-        "y": 800
+        "x": 2196,
+        "y": 312
       },
       "params": {
         "b": 600,
@@ -369,8 +372,8 @@
       "id": "trn_dimSub",
       "defType": "math/sub",
       "position": {
-        "x": 1624,
-        "y": 800
+        "x": 2470,
+        "y": 298
       },
       "params": {
         "a": 1
@@ -384,8 +387,8 @@
       "id": "trn_lOut",
       "defType": "math/mul",
       "position": {
-        "x": 1847.9999999999998,
-        "y": 800
+        "x": 2735,
+        "y": 304
       },
       "params": {
         "b": 70,
@@ -400,8 +403,8 @@
       "id": "trn_hsl",
       "defType": "color/color",
       "position": {
-        "x": 2072,
-        "y": 800
+        "x": 3001,
+        "y": 251
       },
       "params": {
         "mode": "hsl",
@@ -423,8 +426,8 @@
       "id": "trn_fill",
       "defType": "style/fill",
       "position": {
-        "x": 2296,
-        "y": 800
+        "x": 3249,
+        "y": 258
       },
       "params": {},
       "parentId": "trn_region"
@@ -433,8 +436,8 @@
       "id": "trn_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 2520,
-        "y": 800
+        "x": 3430,
+        "y": 125
       },
       "params": {
         "font": "monospace",
@@ -456,8 +459,8 @@
       "id": "trn_text",
       "defType": "draw/text",
       "position": {
-        "x": 1847.9999999999998,
-        "y": 200
+        "x": 3666,
+        "y": 40
       },
       "params": {
         "string": "?",
@@ -475,8 +478,8 @@
       "id": "trn_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2800,
-        "y": 0
+        "x": 4649,
+        "y": 269
       },
       "params": {
         "width": 520,
@@ -491,8 +494,8 @@
       "id": "trn_text-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1787.9999999999998,
-        "y": 200
+        "x": 2512,
+        "y": 108
       },
       "params": {
         "x": 0,

@@ -12,8 +12,8 @@
       "id": "t24_c",
       "defType": "meta/comment",
       "position": {
-        "x": -560,
-        "y": 0
+        "x": 0,
+        "y": -284
       },
       "params": {
         "text": "Curved paths\n\n`draw/path`'s `tension` input smooths the polyline through your points. tension = 0 → straight segments; tension → 0.5 gives Catmull-Rom curves.\n\nTime drives the tension so the wave breathes between sharp and smooth.",
@@ -30,8 +30,8 @@
       "id": "t24_range",
       "defType": "spread/range",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 375,
+        "y": 123
       },
       "params": {
         "count": 12
@@ -44,12 +44,12 @@
       "id": "t24_region",
       "defType": "region/foreach",
       "position": {
-        "x": 392,
-        "y": 0
+        "x": 612,
+        "y": 22
       },
       "params": {
-        "width": 672,
-        "height": 550,
+        "width": 1032,
+        "height": 276,
         "label": "ForEach"
       },
       "ports": [
@@ -57,24 +57,26 @@
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 137
         },
         {
           "id": "p",
           "name": "p",
           "type": "vec2",
-          "direction": "output"
+          "direction": "output",
+          "y": 127
         }
       ],
-      "width": 672,
-      "height": 550
+      "width": 1032,
+      "height": 276
     },
     {
       "id": "t24_xMul",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 133,
+        "y": 40
       },
       "params": {
         "b": 40,
@@ -89,8 +91,8 @@
       "id": "t24_xOff",
       "defType": "math/add",
       "position": {
-        "x": 280,
-        "y": 100
+        "x": 565,
+        "y": 40
       },
       "params": {
         "b": -220,
@@ -105,8 +107,8 @@
       "id": "t24_yIn",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 300
+        "x": 133,
+        "y": 162
       },
       "params": {
         "b": 0.7,
@@ -121,8 +123,8 @@
       "id": "t24_ySin",
       "defType": "math/sin",
       "position": {
-        "x": 280,
-        "y": 300
+        "x": 397,
+        "y": 162
       },
       "params": {},
       "parentId": "t24_region"
@@ -131,8 +133,8 @@
       "id": "t24_yMul",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 300
+        "x": 565,
+        "y": 162
       },
       "params": {
         "b": 80,
@@ -147,8 +149,8 @@
       "id": "t24_mkVec",
       "defType": "vec2/make",
       "position": {
-        "x": 503.99999999999994,
-        "y": 150
+        "x": 836,
+        "y": 91
       },
       "params": {},
       "parentId": "t24_region"
@@ -157,8 +159,8 @@
       "id": "t24_t",
       "defType": "time/seconds",
       "position": {
-        "x": 84,
-        "y": 700
+        "x": 0,
+        "y": 528
       },
       "params": {}
     },
@@ -166,8 +168,8 @@
       "id": "t24_tSin",
       "defType": "math/sin",
       "position": {
-        "x": 336,
-        "y": 700
+        "x": 180,
+        "y": 528
       },
       "params": {}
     },
@@ -175,8 +177,8 @@
       "id": "t24_tHalf",
       "defType": "math/mul",
       "position": {
-        "x": 588,
-        "y": 700
+        "x": 348,
+        "y": 528
       },
       "params": {
         "b": 0.25,
@@ -190,8 +192,8 @@
       "id": "t24_tOff",
       "defType": "math/add",
       "position": {
-        "x": 840,
-        "y": 700
+        "x": 1044,
+        "y": 528
       },
       "params": {
         "b": 0.25,
@@ -205,8 +207,8 @@
       "id": "t24_col",
       "defType": "color/color",
       "position": {
-        "x": 84,
-        "y": 1000
+        "x": 1053,
+        "y": 346
       },
       "params": {
         "mode": "rgb",
@@ -227,8 +229,8 @@
       "id": "t24_path",
       "defType": "draw/path",
       "position": {
-        "x": 1148,
-        "y": 150
+        "x": 1768,
+        "y": 302
       },
       "params": {
         "strokeWidth": 4
@@ -241,8 +243,8 @@
       "id": "t24_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1456,
-        "y": 0
+        "x": 1957,
+        "y": 302
       },
       "params": {
         "width": 500,

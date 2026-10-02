@@ -12,8 +12,8 @@
       "id": "gt_n",
       "defType": "value/number",
       "position": {
-        "x": -1007.9999999999999,
-        "y": 50
+        "x": 0,
+        "y": 500
       },
       "params": {
         "value": 32
@@ -26,8 +26,8 @@
       "id": "gt_range",
       "defType": "spread/range",
       "position": {
-        "x": -784,
-        "y": 50
+        "x": 236,
+        "y": 500
       },
       "params": {
         "count": 32
@@ -40,8 +40,8 @@
       "id": "gt_strokeC",
       "defType": "color/rgb",
       "position": {
-        "x": -1007.9999999999999,
-        "y": -200
+        "x": 27,
+        "y": 338
       },
       "params": {
         "r": 230,
@@ -60,8 +60,8 @@
       "id": "gt_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": -784,
-        "y": -200
+        "x": 249,
+        "y": 338
       },
       "params": {}
     },
@@ -69,8 +69,8 @@
       "id": "gt_bg",
       "defType": "color/rgb",
       "position": {
-        "x": -1007.9999999999999,
-        "y": 300
+        "x": 2873,
+        "y": 936
       },
       "params": {
         "r": 16,
@@ -89,8 +89,8 @@
       "id": "gt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2380,
-        "y": 0
+        "x": 5507,
+        "y": 667
       },
       "params": {
         "width": 500,
@@ -105,23 +105,23 @@
       "id": "gt_region",
       "defType": "region/foreach",
       "position": {
-        "x": -448,
-        "y": -100
+        "x": 455,
+        "y": 22
       },
       "params": {
-        "width": 2744,
-        "height": 1550,
+        "width": 4919,
+        "height": 866,
         "label": "ForEach step"
       },
-      "width": 2744,
-      "height": 1550
+      "width": 4919,
+      "height": 866
     },
     {
       "id": "gt_kin",
       "defType": "region/splicer-in/number",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 128,
+        "y": 460
       },
       "params": {},
       "parentId": "gt_region"
@@ -130,8 +130,8 @@
       "id": "gt_seg",
       "defType": "math/mod",
       "position": {
-        "x": 280,
-        "y": 100
+        "x": 374,
+        "y": 585
       },
       "params": {
         "b": 4
@@ -145,8 +145,8 @@
       "id": "gt_leafd",
       "defType": "math/div",
       "position": {
-        "x": 280,
-        "y": 300
+        "x": 562,
+        "y": 333
       },
       "params": {
         "b": 4,
@@ -161,8 +161,8 @@
       "id": "gt_leaf",
       "defType": "math/floor",
       "position": {
-        "x": 503.99999999999994,
-        "y": 300
+        "x": 882,
+        "y": 284
       },
       "params": {},
       "parentId": "gt_region"
@@ -171,8 +171,8 @@
       "id": "gt_stepG",
       "defType": "math/step",
       "position": {
-        "x": 503.99999999999994,
-        "y": 100
+        "x": 591,
+        "y": 455
       },
       "params": {
         "edge": 0.5
@@ -186,8 +186,8 @@
       "id": "gt_gate0",
       "defType": "math/sub",
       "position": {
-        "x": 728,
-        "y": 100
+        "x": 834,
+        "y": 386
       },
       "params": {
         "a": 1,
@@ -202,8 +202,8 @@
       "id": "gt_exp",
       "defType": "math/sub",
       "position": {
-        "x": 728,
-        "y": 400
+        "x": 562,
+        "y": 577
       },
       "params": {
         "b": 1,
@@ -218,8 +218,8 @@
       "id": "gt_powB",
       "defType": "math/pow",
       "position": {
-        "x": 951.9999999999999,
-        "y": 400
+        "x": 879,
+        "y": 508
       },
       "params": {
         "a": 2
@@ -233,8 +233,8 @@
       "id": "gt_div2",
       "defType": "math/div",
       "position": {
-        "x": 1176,
-        "y": 400
+        "x": 1131,
+        "y": 406
       },
       "params": {
         "valueType": "number"
@@ -245,8 +245,8 @@
       "id": "gt_flr2",
       "defType": "math/floor",
       "position": {
-        "x": 1400,
-        "y": 400
+        "x": 1430,
+        "y": 438
       },
       "params": {},
       "parentId": "gt_region"
@@ -255,8 +255,8 @@
       "id": "gt_bit",
       "defType": "math/mod",
       "position": {
-        "x": 1624,
-        "y": 400
+        "x": 1607,
+        "y": 422
       },
       "params": {
         "b": 2
@@ -270,8 +270,8 @@
       "id": "gt_sgn1",
       "defType": "math/mul",
       "position": {
-        "x": 1624,
-        "y": 600
+        "x": 1777,
+        "y": 420
       },
       "params": {
         "b": 2,
@@ -286,8 +286,8 @@
       "id": "gt_sgn",
       "defType": "math/sub",
       "position": {
-        "x": 1847.9999999999998,
-        "y": 600
+        "x": 2043,
+        "y": 417
       },
       "params": {
         "b": 1
@@ -301,8 +301,8 @@
       "id": "gt_trnR",
       "defType": "math/mul",
       "position": {
-        "x": 1847.9999999999998,
-        "y": 800
+        "x": 2309,
+        "y": 414
       },
       "params": {
         "b": 0.5
@@ -316,8 +316,8 @@
       "id": "gt_turn",
       "defType": "math/mul",
       "position": {
-        "x": 2072,
-        "y": 800
+        "x": 2576,
+        "y": 432
       },
       "params": {
         "valueType": "number"
@@ -328,8 +328,8 @@
       "id": "gt_ra",
       "defType": "region/accumulator-read/number",
       "position": {
-        "x": 951.9999999999999,
-        "y": 950
+        "x": 853,
+        "y": 162
       },
       "params": {
         "slot": 1
@@ -343,8 +343,8 @@
       "id": "gt_rx",
       "defType": "region/accumulator-read/number",
       "position": {
-        "x": 951.9999999999999,
-        "y": 1150
+        "x": 853,
+        "y": 40
       },
       "params": {
         "slot": 2
@@ -358,8 +358,8 @@
       "id": "gt_ry",
       "defType": "region/accumulator-read/number",
       "position": {
-        "x": 951.9999999999999,
-        "y": 1350
+        "x": 853,
+        "y": 630
       },
       "params": {
         "slot": 3
@@ -373,8 +373,8 @@
       "id": "gt_pAng",
       "defType": "math/lerp",
       "position": {
-        "x": 1260,
-        "y": 950
+        "x": 1179,
+        "y": 264
       },
       "params": {
         "b": 0,
@@ -389,8 +389,8 @@
       "id": "gt_pX",
       "defType": "math/lerp",
       "position": {
-        "x": 1260,
-        "y": 1150
+        "x": 1179,
+        "y": 122
       },
       "params": {
         "b": 0,
@@ -405,8 +405,8 @@
       "id": "gt_pY",
       "defType": "math/lerp",
       "position": {
-        "x": 1260,
-        "y": 1350
+        "x": 1179,
+        "y": 528
       },
       "params": {
         "b": 220,
@@ -421,8 +421,8 @@
       "id": "gt_nAng",
       "defType": "math/add",
       "position": {
-        "x": 2296,
-        "y": 950
+        "x": 2852,
+        "y": 334
       },
       "params": {
         "valueType": "number"
@@ -433,8 +433,8 @@
       "id": "gt_lpow",
       "defType": "math/pow",
       "position": {
-        "x": 1484,
-        "y": 1550
+        "x": 2891,
+        "y": 583
       },
       "params": {
         "a": 0.7
@@ -448,8 +448,8 @@
       "id": "gt_len",
       "defType": "math/mul",
       "position": {
-        "x": 1708,
-        "y": 1550
+        "x": 3134,
+        "y": 552
       },
       "params": {
         "a": 140,
@@ -464,8 +464,8 @@
       "id": "gt_sin",
       "defType": "math/sin",
       "position": {
-        "x": 2520,
-        "y": 900
+        "x": 3182,
+        "y": 418
       },
       "params": {},
       "parentId": "gt_region"
@@ -474,8 +474,8 @@
       "id": "gt_cos",
       "defType": "math/cos",
       "position": {
-        "x": 2520,
-        "y": 1100
+        "x": 3182,
+        "y": 316
       },
       "params": {},
       "parentId": "gt_region"
@@ -484,8 +484,8 @@
       "id": "gt_dx",
       "defType": "math/mul",
       "position": {
-        "x": 2744,
-        "y": 900
+        "x": 3420,
+        "y": 407
       },
       "params": {
         "valueType": "number"
@@ -496,8 +496,8 @@
       "id": "gt_ncos",
       "defType": "math/neg",
       "position": {
-        "x": 2744,
-        "y": 1200
+        "x": 3468,
+        "y": 305
       },
       "params": {
         "valueType": "number"
@@ -508,8 +508,8 @@
       "id": "gt_dy",
       "defType": "math/mul",
       "position": {
-        "x": 2968,
-        "y": 1200
+        "x": 3717,
+        "y": 504
       },
       "params": {},
       "parentId": "gt_region"
@@ -518,8 +518,8 @@
       "id": "gt_nX",
       "defType": "math/add",
       "position": {
-        "x": 3192,
-        "y": 1100
+        "x": 3717,
+        "y": 301
       },
       "params": {
         "valueType": "number"
@@ -530,8 +530,8 @@
       "id": "gt_nY",
       "defType": "math/add",
       "position": {
-        "x": 3192,
-        "y": 1350
+        "x": 3987,
+        "y": 463
       },
       "params": {
         "valueType": "number"
@@ -542,8 +542,8 @@
       "id": "gt_wa",
       "defType": "region/accumulator-write/number",
       "position": {
-        "x": 2548,
-        "y": 750
+        "x": 3154,
+        "y": 194
       },
       "params": {
         "slot": 1
@@ -557,8 +557,8 @@
       "id": "gt_wx",
       "defType": "region/accumulator-write/number",
       "position": {
-        "x": 3416,
-        "y": 1100
+        "x": 4007,
+        "y": 280
       },
       "params": {
         "slot": 2
@@ -572,8 +572,8 @@
       "id": "gt_wy",
       "defType": "region/accumulator-write/number",
       "position": {
-        "x": 3416,
-        "y": 1350
+        "x": 4261,
+        "y": 512
       },
       "params": {
         "slot": 3
@@ -587,8 +587,8 @@
       "id": "gt_wsub",
       "defType": "math/sub",
       "position": {
-        "x": 2296,
-        "y": 1650
+        "x": 562,
+        "y": 699
       },
       "params": {
         "a": 4,
@@ -603,8 +603,8 @@
       "id": "gt_wmax",
       "defType": "math/max",
       "position": {
-        "x": 2520,
-        "y": 1650
+        "x": 834,
+        "y": 752
       },
       "params": {
         "b": 1,
@@ -619,8 +619,8 @@
       "id": "gt_swt",
       "defType": "style/stroke-weight",
       "position": {
-        "x": 2800,
-        "y": 1650
+        "x": 1159,
+        "y": 736
       },
       "params": {},
       "parentId": "gt_region"
@@ -629,8 +629,8 @@
       "id": "gt_a",
       "defType": "vec2/make",
       "position": {
-        "x": 3416,
-        "y": 900
+        "x": 1424,
+        "y": 316
       },
       "params": {},
       "parentId": "gt_region"
@@ -639,8 +639,8 @@
       "id": "gt_b",
       "defType": "vec2/make",
       "position": {
-        "x": 3639.9999999999995,
-        "y": 1200
+        "x": 4283,
+        "y": 390
       },
       "params": {},
       "parentId": "gt_region"
@@ -649,8 +649,8 @@
       "id": "gt_line",
       "defType": "draw/line",
       "position": {
-        "x": 3863.9999999999995,
-        "y": 1050
+        "x": 4502,
+        "y": 419
       },
       "params": {},
       "parentId": "gt_region"
@@ -659,8 +659,8 @@
       "id": "gt_out",
       "defType": "region/splicer-out/layer",
       "position": {
-        "x": 4087.9999999999995,
-        "y": 1050
+        "x": 4682,
+        "y": 419
       },
       "params": {},
       "parentId": "gt_region"

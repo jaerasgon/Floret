@@ -12,8 +12,8 @@
       "id": "t33_c",
       "defType": "meta/comment",
       "position": {
-        "x": -644,
-        "y": 0
+        "x": 0,
+        "y": -284
       },
       "params": {
         "text": "Gradients = interpolated palettes\n\n`color/gradient` reads a Spread<Color> and a t ∈ [0, 1]; it linearly interpolates between adjacent stops. Smoother than CycleSpread when you want a continuous transition.\n\nMouseX → t → sampled gradient → fill colour.",
@@ -30,7 +30,7 @@
       "id": "t33_pal",
       "defType": "color/palette",
       "position": {
-        "x": 84,
+        "x": 180,
         "y": 0
       },
       "params": {
@@ -44,8 +44,8 @@
       "id": "t33_m",
       "defType": "input/mouse",
       "position": {
-        "x": 84,
-        "y": 700
+        "x": 0,
+        "y": 202
       },
       "params": {}
     },
@@ -53,8 +53,8 @@
       "id": "t33_tmap",
       "defType": "math/map",
       "position": {
-        "x": 364,
-        "y": 700
+        "x": 225,
+        "y": 202
       },
       "params": {
         "inMin": -200,
@@ -73,8 +73,8 @@
       "id": "t33_grad",
       "defType": "color/gradient",
       "position": {
-        "x": 644,
-        "y": 200
+        "x": 450,
+        "y": 141
       },
       "params": {}
     },
@@ -82,8 +82,8 @@
       "id": "t33_fill",
       "defType": "style/fill",
       "position": {
-        "x": 896,
-        "y": 200
+        "x": 644,
+        "y": 141
       },
       "params": {}
     },
@@ -91,8 +91,8 @@
       "id": "t33_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 1148,
-        "y": 300
+        "x": 835,
+        "y": 40
       },
       "params": {
         "x": -150,
@@ -111,8 +111,8 @@
       "id": "t33_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1456,
-        "y": 0
+        "x": 1027,
+        "y": 40
       },
       "params": {
         "width": 400,
@@ -127,8 +127,8 @@
       "id": "t33_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1088,
-        "y": 300
+        "x": 635,
+        "y": 19
       },
       "params": {
         "x": -150,

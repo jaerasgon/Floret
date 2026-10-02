@@ -12,8 +12,8 @@
       "id": "t48_c",
       "defType": "meta/comment",
       "position": {
-        "x": -616,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Drone / rhythm with Pulse\n\n`sound/pulse` is a duty-cycle-controllable square wave. With `width` near 0 it sounds hollow; near ±1 it gets thin. Sweep `width` with sin(time) for a moving timbre.\n\nVisualised by a circle that breathes with the level.",
@@ -30,8 +30,8 @@
       "id": "t48_t",
       "defType": "time/seconds",
       "position": {
-        "x": 84,
-        "y": 500
+        "x": 0,
+        "y": 101
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "t48_s",
       "defType": "math/sin",
       "position": {
-        "x": 336,
-        "y": 500
+        "x": 180,
+        "y": 101
       },
       "params": {}
     },
@@ -48,8 +48,8 @@
       "id": "t48_half",
       "defType": "math/mul",
       "position": {
-        "x": 588,
-        "y": 500
+        "x": 348,
+        "y": 101
       },
       "params": {
         "b": 0.9,
@@ -63,8 +63,8 @@
       "id": "t48_pulse",
       "defType": "sound/pulse",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 612,
+        "y": 61
       },
       "params": {
         "freq": 110,
@@ -81,7 +81,7 @@
       "id": "t48_out",
       "defType": "sound/output",
       "position": {
-        "x": 364,
+        "x": 831,
         "y": 0
       },
       "params": {
@@ -95,8 +95,8 @@
       "id": "t48_amp",
       "defType": "sound/amplitude",
       "position": {
-        "x": 364,
-        "y": 150
+        "x": 824,
+        "y": 122
       },
       "params": {
         "smoothing": 0.6
@@ -109,8 +109,8 @@
       "id": "t48_sz",
       "defType": "math/mul",
       "position": {
-        "x": 644,
-        "y": 150
+        "x": 1017,
+        "y": 122
       },
       "params": {
         "b": 500,
@@ -124,8 +124,8 @@
       "id": "t48_szO",
       "defType": "math/add",
       "position": {
-        "x": 868,
-        "y": 150
+        "x": 1281,
+        "y": 122
       },
       "params": {
         "b": 30,
@@ -139,8 +139,8 @@
       "id": "t48_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1120,
-        "y": 150
+        "x": 1547,
+        "y": 92
       },
       "params": {}
     },
@@ -148,8 +148,8 @@
       "id": "t48_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1428,
-        "y": 0
+        "x": 1749,
+        "y": 92
       },
       "params": {
         "width": 400,

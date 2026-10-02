@@ -13,6 +13,8 @@ mod draw;
 mod geom;
 mod live;
 mod minimap;
+#[cfg(test)]
+mod samples;
 
 pub use geom::node_size;
 pub use live::Live;

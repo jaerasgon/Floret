@@ -12,8 +12,8 @@
       "id": "bt_doc",
       "defType": "meta/comment",
       "position": {
-        "x": -896,
-        "y": -500
+        "x": 0,
+        "y": -294
       },
       "params": {
         "text": "BODY TRACKING (MediaPipe)\n\nToggle → starts the Camera AND the Landmarks tracker. Each detection gets a STABLE auto colour (the node's `color` / `connColor` outputs), so every person/hand entering the view is a different colour. One ForEach draws a coloured line per edge, another a coloured dot per point.\n\nSwitch the tracker dropdown (hands / face / pose / all) and raise `count` to track more people. Set `person` to 1/2/3 to isolate one.",
@@ -30,8 +30,8 @@
       "id": "bt_cam",
       "defType": "input/camera",
       "position": {
-        "x": -896,
-        "y": 150
+        "x": 270,
+        "y": 239
       },
       "params": {
         "device": "",
@@ -46,8 +46,8 @@
       "id": "bt_tog",
       "defType": "io/toggle",
       "position": {
-        "x": -896,
-        "y": 550
+        "x": 0,
+        "y": 286
       },
       "params": {
         "value": true
@@ -60,8 +60,8 @@
       "id": "bt_lm",
       "defType": "input/landmarks",
       "position": {
-        "x": -560,
-        "y": 150
+        "x": 538,
+        "y": 213
       },
       "params": {
         "tracker": "hands",
@@ -80,8 +80,8 @@
       "id": "bt_bg",
       "defType": "color/rgb",
       "position": {
-        "x": -896,
-        "y": 850
+        "x": 1499,
+        "y": 334
       },
       "params": {
         "r": 8,
@@ -100,8 +100,8 @@
       "id": "bt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1652,
-        "y": 50
+        "x": 1728,
+        "y": 263
       },
       "params": {
         "width": 520,
@@ -116,12 +116,12 @@
       "id": "bt_lines",
       "defType": "region/foreach",
       "position": {
-        "x": 0,
-        "y": -300
+        "x": 821,
+        "y": 326
       },
       "params": {
-        "width": 1260,
-        "height": 800,
+        "width": 512,
+        "height": 286,
         "label": "ForEach edge"
       },
       "ports": [
@@ -129,36 +129,40 @@
           "id": "a",
           "name": "a",
           "type": "vec2",
-          "direction": "input"
+          "direction": "input",
+          "y": 76
         },
         {
           "id": "b",
           "name": "b",
           "type": "vec2",
-          "direction": "input"
+          "direction": "input",
+          "y": 108
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
-          "direction": "input"
+          "direction": "input",
+          "y": 168
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 91
         }
       ],
-      "width": 1260,
-      "height": 800
+      "width": 512,
+      "height": 286
     },
     {
       "id": "bt_lstroke",
       "defType": "style/stroke",
       "position": {
-        "x": 308,
-        "y": 150
+        "x": 128,
+        "y": 132
       },
       "params": {
         "width": 2
@@ -172,8 +176,8 @@
       "id": "bt_line",
       "defType": "draw/line",
       "position": {
-        "x": 644,
-        "y": 100
+        "x": 316,
+        "y": 55
       },
       "params": {},
       "parentId": "bt_lines"
@@ -182,12 +186,12 @@
       "id": "bt_points",
       "defType": "region/foreach",
       "position": {
-        "x": 0,
-        "y": 700
+        "x": 819,
+        "y": 22
       },
       "params": {
-        "width": 1064,
-        "height": 750,
+        "width": 516,
+        "height": 234,
         "label": "ForEach point"
       },
       "ports": [
@@ -195,30 +199,33 @@
           "id": "p",
           "name": "p",
           "type": "vec2",
-          "direction": "input"
+          "direction": "input",
+          "y": 76
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
-          "direction": "input"
+          "direction": "input",
+          "y": 156
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 76
         }
       ],
-      "width": 1064,
-      "height": 750
+      "width": 516,
+      "height": 234
     },
     {
       "id": "bt_pfill",
       "defType": "style/fill",
       "position": {
-        "x": 308,
-        "y": 150
+        "x": 128,
+        "y": 120
       },
       "params": {
         "mode": "color"
@@ -232,8 +239,8 @@
       "id": "bt_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 644,
-        "y": 100
+        "x": 308,
+        "y": 40
       },
       "params": {
         "w": 8,
@@ -249,8 +256,8 @@
       "id": "merge_1532",
       "defType": "spread/merge",
       "position": {
-        "x": 1432,
-        "y": 50
+        "x": 1457,
+        "y": 212
       },
       "params": {
         "slotCount": 2

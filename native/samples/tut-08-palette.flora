@@ -12,8 +12,8 @@
       "id": "t08_c",
       "defType": "meta/comment",
       "position": {
-        "x": -560,
-        "y": 0
+        "x": 0,
+        "y": -284
       },
       "params": {
         "text": "Palettes and colour spreads\n\n`Palette` emits a Spread<Color>. To colour a 64-point grid from a 4-stop palette, use `CycleSpread` to repeat the palette until it has 64 elements.\n\nThe ForEach takes two inputs (vec2 and color) and runs once per pair.",
@@ -30,8 +30,8 @@
       "id": "t08_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 270,
+        "y": 34
       },
       "params": {
         "cols": 8,
@@ -50,8 +50,8 @@
       "id": "t08_pal",
       "defType": "color/palette",
       "position": {
-        "x": 84,
-        "y": 550
+        "x": 0,
+        "y": 95
       },
       "params": {
         "stopCount": 4
@@ -64,8 +64,8 @@
       "id": "t08_count",
       "defType": "value/number",
       "position": {
-        "x": 84,
-        "y": 900
+        "x": 14,
+        "y": 277
       },
       "params": {
         "value": 64
@@ -78,8 +78,8 @@
       "id": "t08_cyc",
       "defType": "spread/cycle",
       "position": {
-        "x": 392,
-        "y": 550
+        "x": 273,
+        "y": 216
       },
       "params": {
         "count": 64
@@ -92,12 +92,12 @@
       "id": "t08_region",
       "defType": "region/foreach",
       "position": {
-        "x": 756,
-        "y": 0
+        "x": 481,
+        "y": 22
       },
       "params": {
         "width": 700,
-        "height": 900,
+        "height": 276,
         "label": "ForEach"
       },
       "ports": [
@@ -105,30 +105,33 @@
           "id": "p",
           "name": "p",
           "type": "vec2",
-          "direction": "input"
+          "direction": "input",
+          "y": 79
         },
         {
           "id": "c",
           "name": "c",
           "type": "color",
-          "direction": "input"
+          "direction": "input",
+          "y": 198
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 100
         }
       ],
       "width": 700,
-      "height": 900
+      "height": 276
     },
     {
       "id": "t08_split",
       "defType": "vec2/split",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 128,
+        "y": 40
       },
       "params": {},
       "parentId": "t08_region"
@@ -137,8 +140,8 @@
       "id": "t08_fill",
       "defType": "style/fill",
       "position": {
-        "x": 56,
-        "y": 500
+        "x": 128,
+        "y": 162
       },
       "params": {},
       "parentId": "t08_region"
@@ -147,8 +150,8 @@
       "id": "t08_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 392,
-        "y": 200
+        "x": 492,
+        "y": 64
       },
       "params": {
         "w": 28,
@@ -164,8 +167,8 @@
       "id": "t08_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1512,
-        "y": 0
+        "x": 1277,
+        "y": 86
       },
       "params": {
         "width": 400,
@@ -180,8 +183,8 @@
       "id": "t08_ell-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 332,
-        "y": 200
+        "x": 310,
+        "y": 48
       },
       "params": {
         "x": 0,

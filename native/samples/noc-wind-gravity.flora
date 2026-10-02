@@ -12,8 +12,8 @@
       "id": "wg_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": -616,
-        "y": 50
+        "x": 0,
+        "y": 455
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "wg_mass",
       "defType": "io/slider",
       "position": {
-        "x": -616,
-        "y": 250
+        "x": 180,
+        "y": 329
       },
       "params": {
         "value": 1,
@@ -39,8 +39,8 @@
       "id": "wg_windMul",
       "defType": "math/mul",
       "position": {
-        "x": -336,
-        "y": 50
+        "x": 180,
+        "y": 455
       },
       "params": {
         "b": 0.003,
@@ -54,8 +54,8 @@
       "id": "wg_windVec",
       "defType": "vec2/make",
       "position": {
-        "x": -112,
-        "y": 50
+        "x": 508,
+        "y": 339
       },
       "params": {}
     },
@@ -63,8 +63,8 @@
       "id": "wg_gravity",
       "defType": "vec2/make",
       "position": {
-        "x": -336,
-        "y": 250
+        "x": 785,
+        "y": 528
       },
       "params": {
         "x": 0,
@@ -79,8 +79,8 @@
       "id": "wg_initPos",
       "defType": "vec2/make",
       "position": {
-        "x": -616,
-        "y": 450
+        "x": 0,
+        "y": 0
       },
       "params": {
         "x": 0,
@@ -95,8 +95,8 @@
       "id": "wg_initVel",
       "defType": "vec2/make",
       "position": {
-        "x": -616,
-        "y": 650
+        "x": 0,
+        "y": 207
       },
       "params": {
         "x": 0,
@@ -111,8 +111,8 @@
       "id": "wg_pos",
       "defType": "state/value",
       "position": {
-        "x": -336,
-        "y": 500
+        "x": 221,
+        "y": 0
       },
       "params": {}
     },
@@ -120,8 +120,8 @@
       "id": "wg_vel",
       "defType": "state/value",
       "position": {
-        "x": -336,
-        "y": 700
+        "x": 221,
+        "y": 207
       },
       "params": {}
     },
@@ -129,8 +129,8 @@
       "id": "wg_wScaled",
       "defType": "vec2/scale",
       "position": {
-        "x": 112,
-        "y": 50
+        "x": 785,
+        "y": 406
       },
       "params": {}
     },
@@ -138,8 +138,8 @@
       "id": "wg_invMass",
       "defType": "math/div",
       "position": {
-        "x": 112,
-        "y": 200
+        "x": 466,
+        "y": 461
       },
       "params": {
         "a": 1,
@@ -153,8 +153,8 @@
       "id": "wg_accAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 336,
-        "y": 150
+        "x": 1029,
+        "y": 437
       },
       "params": {}
     },
@@ -162,8 +162,8 @@
       "id": "wg_velAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 560,
-        "y": 500
+        "x": 1261,
+        "y": 343
       },
       "params": {}
     },
@@ -171,8 +171,8 @@
       "id": "wg_posAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 784,
-        "y": 500
+        "x": 1498,
+        "y": 166
       },
       "params": {}
     },
@@ -180,8 +180,8 @@
       "id": "wg_ps",
       "defType": "vec2/split",
       "position": {
-        "x": 1007.9999999999999,
-        "y": 500
+        "x": 1682,
+        "y": 140
       },
       "params": {}
     },
@@ -189,8 +189,8 @@
       "id": "wg_vs",
       "defType": "vec2/split",
       "position": {
-        "x": 1007.9999999999999,
-        "y": 700
+        "x": 1906,
+        "y": 370
       },
       "params": {}
     },
@@ -198,8 +198,8 @@
       "id": "wg_bounds",
       "defType": "value/number",
       "position": {
-        "x": -616,
-        "y": 850
+        "x": 1878,
+        "y": 138
       },
       "params": {
         "value": 230
@@ -212,8 +212,8 @@
       "id": "wg_absX",
       "defType": "math/abs",
       "position": {
-        "x": 1232,
-        "y": 400
+        "x": 1912,
+        "y": 36
       },
       "params": {
         "valueType": "number"
@@ -223,8 +223,8 @@
       "id": "wg_hitX",
       "defType": "logic/gt",
       "position": {
-        "x": 1456,
-        "y": 400
+        "x": 2124,
+        "y": 60
       },
       "params": {}
     },
@@ -232,8 +232,8 @@
       "id": "wg_absY",
       "defType": "math/abs",
       "position": {
-        "x": 1232,
-        "y": 550
+        "x": 1912,
+        "y": 240
       },
       "params": {
         "valueType": "number"
@@ -243,8 +243,8 @@
       "id": "wg_hitY",
       "defType": "logic/gt",
       "position": {
-        "x": 1456,
-        "y": 550
+        "x": 2124,
+        "y": 182
       },
       "params": {}
     },
@@ -252,8 +252,8 @@
       "id": "wg_vxNeg",
       "defType": "math/neg",
       "position": {
-        "x": 1232,
-        "y": 700
+        "x": 2130,
+        "y": 304
       },
       "params": {
         "valueType": "number"
@@ -263,8 +263,8 @@
       "id": "wg_vyNeg",
       "defType": "math/neg",
       "position": {
-        "x": 1232,
-        "y": 850
+        "x": 2130,
+        "y": 406
       },
       "params": {
         "valueType": "number"
@@ -274,8 +274,8 @@
       "id": "wg_vxOut",
       "defType": "logic/select",
       "position": {
-        "x": 1680,
-        "y": 700
+        "x": 2331,
+        "y": 222
       },
       "params": {}
     },
@@ -283,8 +283,8 @@
       "id": "wg_vyOut",
       "defType": "logic/select",
       "position": {
-        "x": 1680,
-        "y": 850
+        "x": 2331,
+        "y": 364
       },
       "params": {}
     },
@@ -292,8 +292,8 @@
       "id": "wg_vFinal",
       "defType": "vec2/make",
       "position": {
-        "x": 1903.9999999999998,
-        "y": 700
+        "x": 2536,
+        "y": 283
       },
       "params": {}
     },
@@ -301,8 +301,8 @@
       "id": "wg_fill",
       "defType": "style/fill",
       "position": {
-        "x": -336,
-        "y": 950
+        "x": 785,
+        "y": 284
       },
       "params": {
         "mode": "rgb",
@@ -323,8 +323,8 @@
       "id": "wg_psDraw",
       "defType": "vec2/split",
       "position": {
-        "x": -112,
-        "y": 950
+        "x": 508,
+        "y": 40
       },
       "params": {}
     },
@@ -332,8 +332,8 @@
       "id": "wg_ball",
       "defType": "draw/ellipse",
       "position": {
-        "x": 112,
-        "y": 950
+        "x": 1023,
+        "y": 93
       },
       "params": {
         "w": 36,
@@ -348,8 +348,8 @@
       "id": "wg_sizeMul",
       "defType": "math/mul",
       "position": {
-        "x": -336,
-        "y": 1150
+        "x": 743,
+        "y": 162
       },
       "params": {
         "b": 24,
@@ -363,8 +363,8 @@
       "id": "wg_bg",
       "defType": "color/rgb",
       "position": {
-        "x": -616,
-        "y": 1050
+        "x": 1029,
+        "y": 275
       },
       "params": {
         "r": 14,
@@ -383,8 +383,8 @@
       "id": "wg_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 336,
-        "y": 950
+        "x": 1228,
+        "y": 174
       },
       "params": {
         "width": 500,
@@ -399,8 +399,8 @@
       "id": "wg_ball-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 52,
-        "y": 950
+        "x": 785,
+        "y": 40
       },
       "params": {
         "x": 0,

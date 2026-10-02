@@ -12,8 +12,8 @@
       "id": "t49_c",
       "defType": "meta/comment",
       "position": {
-        "x": -644,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "FFT spectrum bars\n\n`sound/fft` analyses a live audio signal and outputs a `spectrum` spread (one number per frequency bin, 0..1). Wrap it in a ForEach with an index and you get a bar-chart visualiser.\n\nMic → 128 bins → 128 rectangles. Grant microphone permission.",
@@ -30,8 +30,8 @@
       "id": "t49_start",
       "defType": "value/number",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 224
       },
       "params": {
         "value": 1
@@ -44,8 +44,8 @@
       "id": "t49_mic",
       "defType": "sound/audio-in",
       "position": {
-        "x": 336,
-        "y": 0
+        "x": 236,
+        "y": 204
       },
       "params": {
         "amp": 1
@@ -58,8 +58,8 @@
       "id": "t49_fft",
       "defType": "sound/fft",
       "position": {
-        "x": 588,
-        "y": 0
+        "x": 427,
+        "y": 184
       },
       "params": {
         "smoothing": 0.7
@@ -72,8 +72,8 @@
       "id": "t49_idx",
       "defType": "spread/range",
       "position": {
-        "x": 84,
-        "y": 500
+        "x": 449,
+        "y": 68
       },
       "params": {
         "count": 128
@@ -86,12 +86,12 @@
       "id": "t49_region",
       "defType": "region/foreach",
       "position": {
-        "x": 896,
-        "y": 0
+        "x": 686,
+        "y": 22
       },
       "params": {
-        "width": 756,
-        "height": 800,
+        "width": 1052,
+        "height": 276,
         "label": "bars"
       },
       "ports": [
@@ -99,30 +99,33 @@
           "id": "b",
           "name": "bin",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 198
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 82
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 127
         }
       ],
-      "width": 756,
-      "height": 800
+      "width": 1052,
+      "height": 276
     },
     {
       "id": "t49_xMul",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 200
+        "x": 128,
+        "y": 40
       },
       "params": {
         "b": 4,
@@ -137,8 +140,8 @@
       "id": "t49_xOff",
       "defType": "math/add",
       "position": {
-        "x": 280,
-        "y": 200
+        "x": 395,
+        "y": 56
       },
       "params": {
         "b": -250,
@@ -153,8 +156,8 @@
       "id": "t49_hScale",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 128,
+        "y": 162
       },
       "params": {
         "b": -400,
@@ -169,8 +172,8 @@
       "id": "t49_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 503.99999999999994,
-        "y": 200
+        "x": 844,
+        "y": 91
       },
       "params": {
         "y": 200,
@@ -186,8 +189,8 @@
       "id": "t49_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1680,
-        "y": 0
+        "x": 1834,
+        "y": 113
       },
       "params": {
         "width": 500,
@@ -202,8 +205,8 @@
       "id": "t49_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 443.99999999999994,
-        "y": 200
+        "x": 661,
+        "y": 73
       },
       "params": {
         "x": 0,

@@ -12,8 +12,8 @@
       "id": "pf_c",
       "defType": "meta/comment",
       "position": {
-        "x": -756,
-        "y": 0
+        "x": 0,
+        "y": -324
       },
       "params": {
         "text": "Particle fountain\n\nA Particles patch is four nodes at minimum: time/seconds → Emitter, an Emitter to spawn from, a World to integrate against, and a Render-As to draw the live buffer. Gravity lives on the World and applies to every Emitter wired to it.\n\nDrag tames terminal velocity; the wrap-bounds keep the canvas cycling.",
@@ -30,8 +30,8 @@
       "id": "pf_time",
       "defType": "time/seconds",
       "position": {
-        "x": -756,
-        "y": 600
+        "x": 272,
+        "y": 240
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "pf_drag",
       "defType": "force/drag",
       "position": {
-        "x": -475.99999999999994,
-        "y": 600
+        "x": 9,
+        "y": 39
       },
       "params": {
         "strength": 0.3
@@ -53,8 +53,8 @@
       "id": "pf_bnds",
       "defType": "particles/bounds",
       "position": {
-        "x": -475.99999999999994,
-        "y": 800
+        "x": 0,
+        "y": 141
       },
       "params": {
         "size": {
@@ -75,8 +75,8 @@
       "id": "pf_world",
       "defType": "physics/world",
       "position": {
-        "x": -196,
-        "y": 600
+        "x": 245,
+        "y": 0
       },
       "params": {
         "gravity": {
@@ -99,8 +99,8 @@
       "id": "pf_em",
       "defType": "particles/emitter",
       "position": {
-        "x": 196,
-        "y": 100
+        "x": 479,
+        "y": 0
       },
       "params": {
         "rate": 240,
@@ -145,8 +145,8 @@
       "id": "pf_render",
       "defType": "particles/render-as",
       "position": {
-        "x": 616,
-        "y": 100
+        "x": 715,
+        "y": 0
       },
       "params": {
         "template": "circle",
@@ -161,8 +161,8 @@
       "id": "pf_bg",
       "defType": "color/color",
       "position": {
-        "x": 196,
-        "y": 550
+        "x": 708,
+        "y": 202
       },
       "params": {
         "mode": "rgb",
@@ -183,8 +183,8 @@
       "id": "pf_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1007.9999999999999,
-        "y": 0
+        "x": 968,
+        "y": 91
       },
       "params": {
         "width": 540,

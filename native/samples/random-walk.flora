@@ -12,8 +12,8 @@
       "id": "rw_time",
       "defType": "time/seconds",
       "position": {
-        "x": -672,
-        "y": 50
+        "x": 433,
+        "y": 0
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "rw_step",
       "defType": "io/slider",
       "position": {
-        "x": -672,
-        "y": 250
+        "x": 391,
+        "y": 224
       },
       "params": {
         "value": 6,
@@ -39,8 +39,8 @@
       "id": "rw_seed",
       "defType": "io/slider",
       "position": {
-        "x": -672,
-        "y": 450
+        "x": 391,
+        "y": 350
       },
       "params": {
         "value": 7,
@@ -57,8 +57,8 @@
       "id": "rw_center",
       "defType": "vec2/make",
       "position": {
-        "x": -672,
-        "y": 650
+        "x": 0,
+        "y": 122
       },
       "params": {
         "x": 0,
@@ -73,8 +73,8 @@
       "id": "rw_init",
       "defType": "spread/repeat",
       "position": {
-        "x": -364,
-        "y": 650
+        "x": 180,
+        "y": 122
       },
       "params": {
         "count": 200
@@ -87,8 +87,8 @@
       "id": "rw_read",
       "defType": "state/read-spread",
       "position": {
-        "x": 196,
-        "y": 200
+        "x": 404,
+        "y": 102
       },
       "params": {
         "slot": 1
@@ -101,8 +101,8 @@
       "id": "rw_walk",
       "defType": "spread/walk-step",
       "position": {
-        "x": 503.99999999999994,
-        "y": 200
+        "x": 679,
+        "y": 141
       },
       "params": {
         "bounds": 230
@@ -115,8 +115,8 @@
       "id": "rw_write",
       "defType": "state/write-spread",
       "position": {
-        "x": 812,
-        "y": 200
+        "x": 1405,
+        "y": 29
       },
       "params": {
         "slot": 1
@@ -129,8 +129,8 @@
       "id": "rw_idx",
       "defType": "spread/range",
       "position": {
-        "x": -672,
-        "y": 850
+        "x": 683,
+        "y": 457
       },
       "params": {
         "count": 200
@@ -143,12 +143,12 @@
       "id": "rw_region",
       "defType": "region/foreach",
       "position": {
-        "x": 280,
-        "y": 200
+        "x": 917,
+        "y": 173
       },
       "params": {
-        "width": 1007.9999999999999,
-        "height": 1150,
+        "width": 1076,
+        "height": 520,
         "label": "ForEach"
       },
       "ports": [
@@ -156,30 +156,33 @@
           "id": "p",
           "name": "p",
           "type": "vec2",
-          "direction": "input"
+          "direction": "input",
+          "y": 96
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 320
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 149
         }
       ],
-      "width": 1007.9999999999999,
-      "height": 1150
+      "width": 1076,
+      "height": 520
     },
     {
       "id": "rw_split",
       "defType": "vec2/split",
       "position": {
-        "x": 84,
-        "y": 150
+        "x": 179,
+        "y": 40
       },
       "params": {},
       "parentId": "rw_region"
@@ -188,8 +191,8 @@
       "id": "rw_hueMul",
       "defType": "math/mul",
       "position": {
-        "x": 84,
-        "y": 400
+        "x": 137,
+        "y": 284
       },
       "params": {
         "b": 1.8,
@@ -204,8 +207,8 @@
       "id": "rw_alpMul",
       "defType": "math/mul",
       "position": {
-        "x": 84,
-        "y": 550
+        "x": 137,
+        "y": 406
       },
       "params": {
         "b": 1.275,
@@ -220,8 +223,8 @@
       "id": "rw_sizeMul",
       "defType": "math/mul",
       "position": {
-        "x": 84,
-        "y": 700
+        "x": 137,
+        "y": 162
       },
       "params": {
         "b": 0.02,
@@ -236,8 +239,8 @@
       "id": "rw_sizeAdd",
       "defType": "math/add",
       "position": {
-        "x": 336,
-        "y": 700
+        "x": 593,
+        "y": 142
       },
       "params": {
         "b": 1,
@@ -252,8 +255,8 @@
       "id": "rw_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 336,
-        "y": 400
+        "x": 408,
+        "y": 297
       },
       "params": {
         "s": 85,
@@ -269,8 +272,8 @@
       "id": "rw_fill",
       "defType": "style/fill",
       "position": {
-        "x": 588,
-        "y": 400
+        "x": 635,
+        "y": 264
       },
       "params": {
         "mode": "color"
@@ -284,8 +287,8 @@
       "id": "rw_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 840,
-        "y": 150
+        "x": 868,
+        "y": 113
       },
       "params": {},
       "parentId": "rw_region"
@@ -294,8 +297,8 @@
       "id": "rw_bg",
       "defType": "color/rgb",
       "position": {
-        "x": -672,
-        "y": 1050
+        "x": 1413,
+        "y": 741
       },
       "params": {
         "r": 14,
@@ -314,8 +317,8 @@
       "id": "rw_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1400,
-        "y": 50
+        "x": 2122,
+        "y": 503
       },
       "params": {
         "width": 500,
@@ -330,8 +333,8 @@
       "id": "rw_dot-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 780,
-        "y": 150
+        "x": 408,
+        "y": 60
       },
       "params": {
         "x": 0,

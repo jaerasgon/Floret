@@ -12,8 +12,8 @@
       "id": "t43_c",
       "defType": "meta/comment",
       "position": {
-        "x": -644,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Game of Life\n\n`spread/gol-step` advances a 2-D boolean grid by one Conway tick.\n\nHere the grid is read from state, stepped, written back. Plus a starter pattern in the upper-left so frame 0 has something to chew on. Watch the colony evolve.",
@@ -30,7 +30,7 @@
       "id": "t43_cols",
       "defType": "value/number",
       "position": {
-        "x": 84,
+        "x": 0,
         "y": 0
       },
       "params": {
@@ -44,8 +44,8 @@
       "id": "t43_rows",
       "defType": "value/number",
       "position": {
-        "x": 84,
-        "y": 150
+        "x": 0,
+        "y": 102
       },
       "params": {
         "value": 32
@@ -58,8 +58,8 @@
       "id": "t43_total",
       "defType": "value/number",
       "position": {
-        "x": 84,
-        "y": 300
+        "x": 0,
+        "y": 204
       },
       "params": {
         "value": 1024
@@ -72,8 +72,8 @@
       "id": "t43_range",
       "defType": "spread/range",
       "position": {
-        "x": 84,
-        "y": 500
+        "x": 7,
+        "y": 375
       },
       "params": {
         "count": 1024
@@ -86,12 +86,12 @@
       "id": "t43_seed",
       "defType": "region/foreach",
       "position": {
-        "x": 448,
-        "y": 400
+        "x": 236,
+        "y": 295
       },
       "params": {
-        "width": 532,
-        "height": 600,
+        "width": 520,
+        "height": 174,
         "label": "seed"
       },
       "ports": [
@@ -99,24 +99,26 @@
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 116
         },
         {
           "id": "b",
           "name": "b",
           "type": "boolean",
-          "direction": "output"
+          "direction": "output",
+          "y": 76
         }
       ],
-      "width": 532,
-      "height": 600
+      "width": 520,
+      "height": 174
     },
     {
       "id": "t43_u",
       "defType": "random/uniform",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 128,
+        "y": 40
       },
       "params": {
         "min": 0,
@@ -132,8 +134,8 @@
       "id": "t43_lt",
       "defType": "logic/lt",
       "position": {
-        "x": 280,
-        "y": 100
+        "x": 324,
+        "y": 40
       },
       "params": {
         "b": 0.35
@@ -147,8 +149,8 @@
       "id": "t43_rState",
       "defType": "state/read-spread",
       "position": {
-        "x": 84,
-        "y": 1150
+        "x": 852,
+        "y": 315
       },
       "params": {
         "slot": 1
@@ -161,8 +163,8 @@
       "id": "t43_step",
       "defType": "spread/gol-step",
       "position": {
-        "x": 1064,
-        "y": 900
+        "x": 2085,
+        "y": 130
       },
       "params": {
         "cols": 32,
@@ -177,8 +179,8 @@
       "id": "t43_wState",
       "defType": "state/write-spread",
       "position": {
-        "x": 1372,
-        "y": 900
+        "x": 3313,
+        "y": 110
       },
       "params": {
         "slot": 1
@@ -191,8 +193,8 @@
       "id": "t43_idx",
       "defType": "spread/range",
       "position": {
-        "x": 84,
-        "y": 1450
+        "x": 860,
+        "y": 437
       },
       "params": {
         "count": 1024
@@ -205,12 +207,12 @@
       "id": "t43_draw",
       "defType": "region/foreach",
       "position": {
-        "x": 1652,
-        "y": 900
+        "x": 1125,
+        "y": 294
       },
       "params": {
-        "width": 700,
-        "height": 700,
+        "width": 2042,
+        "height": 365,
         "label": "draw"
       },
       "ports": [
@@ -218,30 +220,33 @@
           "id": "b",
           "name": "b",
           "type": "boolean",
-          "direction": "input"
+          "direction": "input",
+          "y": 287
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 135
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 214
         }
       ],
-      "width": 700,
-      "height": 700
+      "width": 2042,
+      "height": 365
     },
     {
       "id": "t43_div",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 200
+        "x": 130,
+        "y": 129
       },
       "params": {
         "b": 0.03125,
@@ -256,8 +261,8 @@
       "id": "t43_fl",
       "defType": "math/floor",
       "position": {
-        "x": 280,
-        "y": 200
+        "x": 397,
+        "y": 140
       },
       "params": {},
       "parentId": "t43_draw"
@@ -266,8 +271,8 @@
       "id": "t43_rowMul",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 200
+        "x": 571,
+        "y": 102
       },
       "params": {
         "b": 32,
@@ -282,8 +287,8 @@
       "id": "t43_colSub",
       "defType": "math/sub",
       "position": {
-        "x": 56,
-        "y": 350
+        "x": 839,
+        "y": 52
       },
       "params": {
         "valueType": "number"
@@ -294,8 +299,8 @@
       "id": "t43_xPos",
       "defType": "math/mul",
       "position": {
-        "x": 280,
-        "y": 350
+        "x": 1105,
+        "y": 42
       },
       "params": {
         "b": 7
@@ -309,8 +314,8 @@
       "id": "t43_xOff",
       "defType": "math/add",
       "position": {
-        "x": 503.99999999999994,
-        "y": 350
+        "x": 1369,
+        "y": 40
       },
       "params": {
         "b": -120,
@@ -325,8 +330,8 @@
       "id": "t43_yPos",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 500
+        "x": 1105,
+        "y": 164
       },
       "params": {
         "b": 7,
@@ -341,8 +346,8 @@
       "id": "t43_yOff",
       "defType": "math/add",
       "position": {
-        "x": 728,
-        "y": 500
+        "x": 1369,
+        "y": 162
       },
       "params": {
         "b": -120,
@@ -357,8 +362,8 @@
       "id": "t43_sz",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 130,
+        "y": 251
       },
       "params": {
         "b": 6,
@@ -373,8 +378,8 @@
       "id": "t43_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 979.9999999999999,
-        "y": 250
+        "x": 1834,
+        "y": 178
       },
       "params": {},
       "parentId": "t43_draw"
@@ -383,8 +388,8 @@
       "id": "t43_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2464,
-        "y": 0
+        "x": 3263,
+        "y": 472
       },
       "params": {
         "width": 500,
@@ -399,8 +404,8 @@
       "id": "t43_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 919.9999999999999,
-        "y": 250
+        "x": 1645,
+        "y": 120
       },
       "params": {
         "x": 0,

@@ -12,8 +12,8 @@
       "id": "t26_c",
       "defType": "meta/comment",
       "position": {
-        "x": -616,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Rasterising layers to bitmaps\n\n`image/from-layer` (Rasterize) draws a layer onto an offscreen canvas and outputs it as an image. Once you're in image-land you can sample, filter, blend, save, …\n\nHere: a fibonacci scatter rasterised at 256×256 and then displayed back via draw/image.",
@@ -30,7 +30,7 @@
       "id": "t26_fib",
       "defType": "spread/fibonacci",
       "position": {
-        "x": 84,
+        "x": 246,
         "y": 0
       },
       "params": {
@@ -48,8 +48,8 @@
       "id": "t26_col",
       "defType": "color/color",
       "position": {
-        "x": 84,
-        "y": 500
+        "x": 0,
+        "y": 142
       },
       "params": {
         "mode": "rgb",
@@ -70,8 +70,8 @@
       "id": "t26_fill",
       "defType": "style/fill",
       "position": {
-        "x": 364,
-        "y": 500
+        "x": 270,
+        "y": 142
       },
       "params": {}
     },
@@ -79,8 +79,8 @@
       "id": "t26_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 364,
-        "y": 0
+        "x": 481,
+        "y": 51
       },
       "params": {
         "closed": false
@@ -93,8 +93,8 @@
       "id": "t26_rast",
       "defType": "image/from-layer",
       "position": {
-        "x": 644,
-        "y": 150
+        "x": 666,
+        "y": 51
       },
       "params": {
         "w": 256,
@@ -109,8 +109,8 @@
       "id": "t26_draw",
       "defType": "draw/image",
       "position": {
-        "x": 896,
-        "y": 150
+        "x": 859,
+        "y": 112
       },
       "params": {
         "x": 0,
@@ -129,8 +129,8 @@
       "id": "t26_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1204,
-        "y": 0
+        "x": 1051,
+        "y": 112
       },
       "params": {
         "width": 400,
@@ -145,8 +145,8 @@
       "id": "t26_draw-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 836,
-        "y": 150
+        "x": 668,
+        "y": 193
       },
       "params": {
         "x": 0,

@@ -12,8 +12,8 @@
       "id": "t44_c",
       "defType": "meta/comment",
       "position": {
-        "x": -644,
-        "y": 0
+        "x": 0,
+        "y": -324
       },
       "params": {
         "text": "Accumulator: fold within a ForEach\n\nThe split Read / Write pair lets you fold a spread without ever drawing a back-edge wire. Drop **AccRead** on the left of the region (it emits the running value via `read`) and **AccWrite** on the right (its `write` input becomes the next iteration's read; its `final` output is the last value once the loop ends). The pair is matched by `slot`.\n\nHere we sum 1..10 by accumulating an integer — every wire flows left to right.",
@@ -30,8 +30,8 @@
       "id": "t44_range",
       "defType": "spread/range",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 13,
+        "y": 205
       },
       "params": {
         "count": 10
@@ -44,8 +44,8 @@
       "id": "t44_init",
       "defType": "value/number",
       "position": {
-        "x": 84,
-        "y": 400
+        "x": 0,
+        "y": 103
       },
       "params": {
         "value": 0
@@ -58,12 +58,12 @@
       "id": "t44_region",
       "defType": "region/foreach",
       "position": {
-        "x": 448,
-        "y": 0
+        "x": 239,
+        "y": 22
       },
       "params": {
-        "width": 951.9999999999999,
-        "height": 750,
+        "width": 904,
+        "height": 276,
         "label": "sum"
       },
       "ports": [
@@ -71,18 +71,19 @@
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 198
         }
       ],
-      "width": 951.9999999999999,
-      "height": 750
+      "width": 904,
+      "height": 276
     },
     {
       "id": "t44_read",
       "defType": "region/accumulator-read/number",
       "position": {
-        "x": 56,
-        "y": 200
+        "x": 148,
+        "y": 40
       },
       "params": {
         "slot": 1
@@ -96,8 +97,8 @@
       "id": "t44_inc",
       "defType": "math/add",
       "position": {
-        "x": 308,
-        "y": 400
+        "x": 128,
+        "y": 162
       },
       "params": {
         "b": 1,
@@ -112,8 +113,8 @@
       "id": "t44_sum",
       "defType": "math/add",
       "position": {
-        "x": 560,
-        "y": 200
+        "x": 400,
+        "y": 91
       },
       "params": {
         "valueType": "number"
@@ -124,8 +125,8 @@
       "id": "t44_write",
       "defType": "region/accumulator-write/number",
       "position": {
-        "x": 812,
-        "y": 200
+        "x": 664,
+        "y": 71
       },
       "params": {
         "slot": 1
@@ -139,8 +140,8 @@
       "id": "t44_col",
       "defType": "color/color",
       "position": {
-        "x": 84,
-        "y": 700
+        "x": 616,
+        "y": 346
       },
       "params": {
         "mode": "rgb",
@@ -161,8 +162,8 @@
       "id": "t44_fill",
       "defType": "style/fill",
       "position": {
-        "x": 336,
-        "y": 700
+        "x": 1245,
+        "y": 305
       },
       "params": {}
     },
@@ -170,8 +171,8 @@
       "id": "t44_text",
       "defType": "draw/text",
       "position": {
-        "x": 1568,
-        "y": 200
+        "x": 1431,
+        "y": 185
       },
       "params": {
         "string": "0",
@@ -192,8 +193,8 @@
       "id": "t44_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1903.9999999999998,
-        "y": 0
+        "x": 1626,
+        "y": 185
       },
       "params": {
         "width": 400,
@@ -208,8 +209,8 @@
       "id": "t44_text-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1508,
-        "y": 200
+        "x": 1245,
+        "y": 164
       },
       "params": {
         "x": -60,

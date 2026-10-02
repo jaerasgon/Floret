@@ -12,8 +12,8 @@
       "id": "t46_c",
       "defType": "meta/comment",
       "position": {
-        "x": -616,
-        "y": 0
+        "x": 0,
+        "y": -284
       },
       "params": {
         "text": "Filter the sound\n\n`sound/filter` is a biquad (lowpass / highpass / bandpass). Wire any audio source into it, then on into `sound/output`.\n\nMouseX → filter cutoff frequency. A saw wave through a sweeping filter — the classic synth sound.",
@@ -30,7 +30,7 @@
       "id": "t46_osc",
       "defType": "sound/oscillator",
       "position": {
-        "x": 84,
+        "x": 223,
         "y": 0
       },
       "params": {
@@ -48,8 +48,8 @@
       "id": "t46_m",
       "defType": "input/mouse",
       "position": {
-        "x": 84,
-        "y": 500
+        "x": 11,
+        "y": 142
       },
       "params": {}
     },
@@ -57,8 +57,8 @@
       "id": "t46_freq",
       "defType": "math/map",
       "position": {
-        "x": 336,
-        "y": 500
+        "x": 258,
+        "y": 142
       },
       "params": {
         "inMin": -200,
@@ -77,8 +77,8 @@
       "id": "t46_filt",
       "defType": "sound/filter",
       "position": {
-        "x": 364,
-        "y": 0
+        "x": 506,
+        "y": 41
       },
       "params": {
         "type": "lowpass",
@@ -93,8 +93,8 @@
       "id": "t46_out",
       "defType": "sound/output",
       "position": {
-        "x": 644,
-        "y": 0
+        "x": 760,
+        "y": 41
       },
       "params": {
         "volume": 0.5
@@ -107,8 +107,8 @@
       "id": "t46_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 644,
-        "y": 500
+        "x": 0,
+        "y": 350
       },
       "params": {
         "w": 100,
@@ -123,8 +123,8 @@
       "id": "t46_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 951.9999999999999,
-        "y": 0
+        "x": 202,
+        "y": 350
       },
       "params": {
         "width": 400,

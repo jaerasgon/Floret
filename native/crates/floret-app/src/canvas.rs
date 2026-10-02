@@ -3027,8 +3027,8 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             }
         }
         Action::Arrange => {
-            let size_fn = sizes_of(patch, cat);
-            layout::auto_layout(patch, &size_fn);
+            let metrics = geom::Metrics::of(patch, cat);
+            layout::auto_layout(patch, &metrics);
             view.commit(patch);
             view.fit_animated = true;
         }

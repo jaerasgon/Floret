@@ -130,6 +130,124 @@ pub fn node_size(patch: &PatchFile, n: &PatchNode, cat: &Catalogue) -> (f64, f64
     box_size(patch, n, cat, look_of(n, cat, None))
 }
 
+/// How the patch is drawn, for the auto-arrange: sizes, pin heights and
+/// frames, read off one layout of every node.
+pub struct Metrics {
+    sizes: HashMap<String, (f64, f64)>,
+    /// (node, handle) → pin height below the node's top, seen from its
+    /// parent's scope.
+    pins: HashMap<(String, String), f64>,
+    /// The same for subpatch frames seen from inside.
+    frame_pins: HashMap<(String, String), f64>,
+    frames: HashSet<String>,
+    /// Frame → the highest its input pills may sit.
+    pill_floors: HashMap<String, f64>,
+}
+
+impl Metrics {
+    pub fn of(patch: &PatchFile, cat: &Catalogue) -> Metrics {
+        let painter = measuring_painter();
+        let (decor, expanded) = (Decor::default(), HashSet::new());
+        let pins_of = |scope: Option<&str>, ids: &HashSet<String>| {
+            let cx = Ctx {
+                patch,
+                cat,
+                painter: &painter,
+                origin: Pos2::ZERO,
+                pan: Vec2::ZERO,
+                zoom: 1.0,
+                scope,
+                expanded: &expanded,
+                decor: &decor,
+            };
+            let mut out = HashMap::new();
+            for (id, b) in layout(&cx, ids, &|_| false) {
+                for p in &b.pins {
+                    let handle = match p.side {
+                        Side::In => format!("in-{}", p.port),
+                        Side::Out => format!("out-{}", p.port),
+                    };
+                    out.insert((id.clone(), handle), f64::from(p.pos.y - b.rect.top()));
+                }
+            }
+            out
+        };
+        let all: HashSet<String> = patch.nodes.iter().map(|n| n.id.clone()).collect();
+        let mut frame_pins = HashMap::new();
+        for n in &patch.nodes {
+            if look_of(n, cat, Some(&n.id)) == Look::Frame {
+                frame_pins.extend(pins_of(Some(&n.id), &HashSet::from([n.id.clone()])));
+            }
+        }
+        Metrics {
+            sizes: patch
+                .nodes
+                .iter()
+                .map(|n| (n.id.clone(), node_size(patch, n, cat)))
+                .collect(),
+            pins: pins_of(None, &all),
+            frame_pins,
+            frames: patch
+                .nodes
+                .iter()
+                .filter(|n| look_of(n, cat, None) == Look::Region)
+                .map(|n| n.id.clone())
+                .collect(),
+            pill_floors: patch
+                .nodes
+                .iter()
+                .filter_map(|n| {
+                    let spec = cat.get(&n.def_type).filter(|s| s.region_kind.is_some())?;
+                    Some((n.id.clone(), regions::input_pill_floor(spec)))
+                })
+                .collect(),
+        }
+    }
+}
+
+impl crate::editor::layout::Measure for Metrics {
+    fn size(&self, n: &PatchNode) -> (f64, f64) {
+        self.sizes.get(&n.id).copied().unwrap_or((0.0, 0.0))
+    }
+
+    fn pin_y(&self, n: &PatchNode, handle: &str) -> Option<f64> {
+        self.pins.get(&(n.id.clone(), handle.to_owned())).copied()
+    }
+
+    fn frame_pin_y(&self, n: &PatchNode, handle: &str) -> Option<f64> {
+        let key = (n.id.clone(), handle.to_owned());
+        self.frame_pins
+            .get(&key)
+            .or_else(|| self.pins.get(&key).filter(|_| self.frames.contains(&n.id)))
+            .copied()
+    }
+
+    fn pill_floor(&self, n: &PatchNode) -> f64 {
+        self.pill_floors.get(&n.id).copied().unwrap_or(0.0)
+    }
+
+    fn is_frame(&self, n: &PatchNode) -> bool {
+        self.frames.contains(&n.id)
+    }
+}
+
+/// A painter to measure text with: the canvas's context, else (headless) a
+/// fresh one.
+pub fn measuring_painter() -> Painter {
+    let ctx = MEASURE
+        .read()
+        .ok()
+        .and_then(|m| m.clone())
+        .unwrap_or_else(|| {
+            let ctx = egui::Context::default();
+            ctx.run_ui(egui::RawInput::default(), |_| {})
+                .textures_delta
+                .clear();
+            ctx
+        });
+    Painter::new(ctx, egui::LayerId::background(), Rect::EVERYTHING)
+}
+
 /// The context whose fonts measure node content (set by the canvas each
 /// frame; without one, as in tests, widths are estimated).
 static MEASURE: std::sync::RwLock<Option<egui::Context>> = std::sync::RwLock::new(None);

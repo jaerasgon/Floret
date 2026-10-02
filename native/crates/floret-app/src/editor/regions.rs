@@ -12,8 +12,8 @@ use floret_engine::spec::{Catalogue, NodeSpec, PortType, RegionKind};
 
 pub const PORT_TAB_W: f64 = 56.0;
 pub const PORT_TAB_H: f64 = 14.0;
-const PORT_ROW_PITCH: f64 = 20.0;
-const PORT_TOP_OFFSET: f64 = 14.0;
+pub const PORT_ROW_PITCH: f64 = 20.0;
+pub const PORT_TOP_OFFSET: f64 = 14.0;
 const PORT_TAB_INSET: f64 = 4.0;
 const TOP_PIN_START: f64 = 12.0;
 const TOP_PIN_PITCH: f64 = 16.0;
@@ -90,13 +90,33 @@ pub struct FrameLayout {
     pub top: Vec<TopPin>,
 }
 
+/// Whether a frame shows the loop variables in its top-left stack.
+fn has_loop_vars(spec: &NodeSpec) -> bool {
+    matches!(
+        spec.region_kind,
+        Some(RegionKind::Foreach | RegionKind::Cache)
+    )
+}
+
+/// The highest an input pill may sit: below the top-left stack.
+pub fn input_pill_floor(spec: &NodeSpec) -> f64 {
+    let rows = spec.inputs.len()
+        + if has_loop_vars(spec) {
+            LOOP_VARS.len()
+        } else {
+            0
+        };
+    if rows > 0 {
+        TOP_PIN_START + rows as f64 * TOP_PIN_PITCH
+    } else {
+        PORT_TOP_OFFSET
+    }
+}
+
 /// Lay out a region (or an expanded subpatch) frame of width `w`, height `h`.
 pub fn frame_layout(n: &PatchNode, spec: &NodeSpec, w: f64, h: f64) -> FrameLayout {
     let mut out = FrameLayout::default();
-    let loop_vars = matches!(
-        spec.region_kind,
-        Some(RegionKind::Foreach | RegionKind::Cache)
-    );
+    let loop_vars = has_loop_vars(spec);
     let half = PORT_TAB_H / 2.0;
     let mut row = 0.0;
     for p in &spec.inputs {
@@ -138,11 +158,7 @@ pub fn frame_layout(n: &PatchNode, spec: &NodeSpec, w: f64, h: f64) -> FrameLayo
             });
         }
     }
-    let min_input_top = if row > 0.0 {
-        TOP_PIN_START + row * TOP_PIN_PITCH
-    } else {
-        PORT_TOP_OFFSET
-    };
+    let min_input_top = input_pill_floor(spec);
     let ports = n.ports.as_deref().unwrap_or_default();
     let (mut i_in, mut i_out) = (0.0, 0.0);
     for p in ports {

@@ -1,0 +1,236 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "48 · Pulse Width Drone",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t48_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -304
+      },
+      "params": {
+        "text": "Drone / rhythm with Pulse\n\n`sound/pulse` is a duty-cycle-controllable square wave. With `width` near 0 it sounds hollow; near ±1 it gets thin. Sweep `width` with sin(time) for a moving timbre.\n\nVisualised by a circle that breathes with the level.",
+        "width": 420,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Drone / rhythm with Pulse\n\n`sound/pulse` is a duty-cycle-controllable square wave. With `width` near 0 it sounds hollow; near ±1 it gets thin. Sweep `width` with sin(time) for a moving timbre.\n\nVisualised by a circle that breathes with the level.",
+        "width": 420,
+        "height": 240
+      }
+    },
+    {
+      "id": "t48_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 0,
+        "y": 101
+      },
+      "params": {}
+    },
+    {
+      "id": "t48_s",
+      "defType": "math/sin",
+      "position": {
+        "x": 180,
+        "y": 101
+      },
+      "params": {}
+    },
+    {
+      "id": "t48_half",
+      "defType": "math/mul",
+      "position": {
+        "x": 348,
+        "y": 101
+      },
+      "params": {
+        "b": 0.9,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.9
+      }
+    },
+    {
+      "id": "t48_pulse",
+      "defType": "sound/pulse",
+      "position": {
+        "x": 612,
+        "y": 61
+      },
+      "params": {
+        "freq": 110,
+        "amp": 0.3,
+        "width": 0
+      },
+      "portValues": {
+        "freq": 110,
+        "amp": 0.3,
+        "width": 0
+      }
+    },
+    {
+      "id": "t48_out",
+      "defType": "sound/output",
+      "position": {
+        "x": 831,
+        "y": 0
+      },
+      "params": {
+        "volume": 0.5
+      },
+      "portValues": {
+        "volume": 0.5
+      }
+    },
+    {
+      "id": "t48_amp",
+      "defType": "sound/amplitude",
+      "position": {
+        "x": 824,
+        "y": 122
+      },
+      "params": {
+        "smoothing": 0.6
+      },
+      "portValues": {
+        "smoothing": 0.6
+      }
+    },
+    {
+      "id": "t48_sz",
+      "defType": "math/mul",
+      "position": {
+        "x": 1017,
+        "y": 122
+      },
+      "params": {
+        "b": 500,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 500
+      }
+    },
+    {
+      "id": "t48_szO",
+      "defType": "math/add",
+      "position": {
+        "x": 1281,
+        "y": 122
+      },
+      "params": {
+        "b": 30,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 30
+      }
+    },
+    {
+      "id": "t48_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1547,
+        "y": 92
+      },
+      "params": {}
+    },
+    {
+      "id": "t48_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1749,
+        "y": 92
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_390",
+      "source": "t48_t",
+      "target": "t48_s",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_391",
+      "source": "t48_s",
+      "target": "t48_half",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_392",
+      "source": "t48_half",
+      "target": "t48_pulse",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-width"
+    },
+    {
+      "id": "e_393",
+      "source": "t48_pulse",
+      "target": "t48_out",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_394",
+      "source": "t48_pulse",
+      "target": "t48_amp",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_395",
+      "source": "t48_amp",
+      "target": "t48_sz",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_396",
+      "source": "t48_sz",
+      "target": "t48_szO",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_397",
+      "source": "t48_szO",
+      "target": "t48_ell",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_398",
+      "source": "t48_szO",
+      "target": "t48_ell",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_399",
+      "source": "t48_ell",
+      "target": "t48_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

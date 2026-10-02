@@ -1,0 +1,617 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Motion Lab",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "mf_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 0,
+        "y": 389
+      },
+      "params": {}
+    },
+    {
+      "id": "mf_tscale",
+      "defType": "math/mul",
+      "position": {
+        "x": 180,
+        "y": 389
+      },
+      "params": {
+        "b": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "mf_sin",
+      "defType": "math/sin",
+      "position": {
+        "x": 444,
+        "y": 389
+      },
+      "params": {}
+    },
+    {
+      "id": "mf_targetX",
+      "defType": "math/mul",
+      "position": {
+        "x": 612,
+        "y": 389
+      },
+      "params": {
+        "b": 165,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 165
+      }
+    },
+    {
+      "id": "mf_gTop",
+      "defType": "vec2/make",
+      "position": {
+        "x": 969,
+        "y": 0
+      },
+      "params": {
+        "y": -200
+      },
+      "portValues": {
+        "y": -200
+      }
+    },
+    {
+      "id": "mf_gBot",
+      "defType": "vec2/make",
+      "position": {
+        "x": 969,
+        "y": 122
+      },
+      "params": {
+        "y": 200
+      },
+      "portValues": {
+        "y": 200
+      }
+    },
+    {
+      "id": "mf_gCol",
+      "defType": "color/hex",
+      "position": {
+        "x": 634,
+        "y": 244
+      },
+      "params": {
+        "hex": "#555a66"
+      },
+      "portValues": {
+        "hex": "#555a66"
+      }
+    },
+    {
+      "id": "mf_gStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 968,
+        "y": 244
+      },
+      "params": {
+        "width": 1
+      },
+      "portValues": {
+        "width": 1
+      }
+    },
+    {
+      "id": "mf_gLine",
+      "defType": "draw/line",
+      "position": {
+        "x": 1191,
+        "y": 138
+      },
+      "params": {}
+    },
+    {
+      "id": "mf_refPos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1191,
+        "y": 280
+      },
+      "params": {
+        "y": -150
+      },
+      "portValues": {
+        "y": -150
+      }
+    },
+    {
+      "id": "mf_refDot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1387,
+        "y": 278
+      },
+      "params": {
+        "w": 16,
+        "h": 16
+      },
+      "portValues": {
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "mf_smooth",
+      "defType": "motion/smooth",
+      "position": {
+        "x": 968,
+        "y": 406
+      },
+      "params": {
+        "rate": 2.5,
+        "valueType": "number"
+      },
+      "portValues": {
+        "rate": 2.5
+      }
+    },
+    {
+      "id": "mf_smPos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1191,
+        "y": 402
+      },
+      "params": {
+        "y": -50
+      },
+      "portValues": {
+        "y": -50
+      }
+    },
+    {
+      "id": "mf_smCol",
+      "defType": "color/hex",
+      "position": {
+        "x": 949,
+        "y": 528
+      },
+      "params": {
+        "hex": "#4aa8ff"
+      },
+      "portValues": {
+        "hex": "#4aa8ff"
+      }
+    },
+    {
+      "id": "mf_smFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1191,
+        "y": 524
+      },
+      "params": {}
+    },
+    {
+      "id": "mf_smDot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1387,
+        "y": 460
+      },
+      "params": {
+        "w": 24,
+        "h": 24
+      },
+      "portValues": {
+        "w": 24,
+        "h": 24
+      }
+    },
+    {
+      "id": "mf_spring",
+      "defType": "motion/spring",
+      "position": {
+        "x": 968,
+        "y": 630
+      },
+      "params": {
+        "stiffness": 65,
+        "damping": 5,
+        "valueType": "number"
+      },
+      "portValues": {
+        "stiffness": 65,
+        "damping": 5
+      }
+    },
+    {
+      "id": "mf_spPos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1191,
+        "y": 646
+      },
+      "params": {
+        "y": 50
+      },
+      "portValues": {
+        "y": 50
+      }
+    },
+    {
+      "id": "mf_spCol",
+      "defType": "color/hex",
+      "position": {
+        "x": 949,
+        "y": 772
+      },
+      "params": {
+        "hex": "#ff8a3d"
+      },
+      "portValues": {
+        "hex": "#ff8a3d"
+      }
+    },
+    {
+      "id": "mf_spFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1191,
+        "y": 768
+      },
+      "params": {}
+    },
+    {
+      "id": "mf_spDot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1387,
+        "y": 642
+      },
+      "params": {
+        "w": 24,
+        "h": 24
+      },
+      "portValues": {
+        "w": 24,
+        "h": 24
+      }
+    },
+    {
+      "id": "mf_delay",
+      "defType": "motion/delay-line",
+      "position": {
+        "x": 966,
+        "y": 874
+      },
+      "params": {
+        "delay": 0.5,
+        "valueType": "number"
+      },
+      "portValues": {
+        "delay": 0.5
+      }
+    },
+    {
+      "id": "mf_dlPos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1191,
+        "y": 890
+      },
+      "params": {
+        "y": 150
+      },
+      "portValues": {
+        "y": 150
+      }
+    },
+    {
+      "id": "mf_dlCol",
+      "defType": "color/hex",
+      "position": {
+        "x": 949,
+        "y": 1012
+      },
+      "params": {
+        "hex": "#54d08a"
+      },
+      "portValues": {
+        "hex": "#54d08a"
+      }
+    },
+    {
+      "id": "mf_dlFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1191,
+        "y": 1012
+      },
+      "params": {}
+    },
+    {
+      "id": "mf_dlDot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1387,
+        "y": 824
+      },
+      "params": {
+        "w": 24,
+        "h": 24
+      },
+      "portValues": {
+        "w": 24,
+        "h": 24
+      }
+    },
+    {
+      "id": "mf_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 1629,
+        "y": 406
+      },
+      "params": {
+        "slotCount": 5
+      },
+      "portValues": {
+        "slotCount": 5
+      }
+    },
+    {
+      "id": "mf_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1893,
+        "y": 406
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_804",
+      "source": "mf_time",
+      "target": "mf_tscale",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_805",
+      "source": "mf_tscale",
+      "target": "mf_sin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_806",
+      "source": "mf_sin",
+      "target": "mf_targetX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_807",
+      "source": "mf_targetX",
+      "target": "mf_gTop",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_808",
+      "source": "mf_targetX",
+      "target": "mf_gBot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_809",
+      "source": "mf_gTop",
+      "target": "mf_gLine",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_810",
+      "source": "mf_gBot",
+      "target": "mf_gLine",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_811",
+      "source": "mf_gCol",
+      "target": "mf_gStroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_812",
+      "source": "mf_gStroke",
+      "target": "mf_gLine",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_813",
+      "source": "mf_targetX",
+      "target": "mf_refPos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_814",
+      "source": "mf_refPos",
+      "target": "mf_refDot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_815",
+      "source": "mf_targetX",
+      "target": "mf_smooth",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_816",
+      "source": "mf_smooth",
+      "target": "mf_smPos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_817",
+      "source": "mf_smPos",
+      "target": "mf_smDot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_818",
+      "source": "mf_smCol",
+      "target": "mf_smFill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_819",
+      "source": "mf_smFill",
+      "target": "mf_smDot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_820",
+      "source": "mf_targetX",
+      "target": "mf_spring",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_821",
+      "source": "mf_spring",
+      "target": "mf_spPos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_822",
+      "source": "mf_spPos",
+      "target": "mf_spDot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_823",
+      "source": "mf_spCol",
+      "target": "mf_spFill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_824",
+      "source": "mf_spFill",
+      "target": "mf_spDot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_825",
+      "source": "mf_targetX",
+      "target": "mf_delay",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_826",
+      "source": "mf_delay",
+      "target": "mf_dlPos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_827",
+      "source": "mf_dlPos",
+      "target": "mf_dlDot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_828",
+      "source": "mf_dlCol",
+      "target": "mf_dlFill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_829",
+      "source": "mf_dlFill",
+      "target": "mf_dlDot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_830",
+      "source": "mf_gLine",
+      "target": "mf_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_831",
+      "source": "mf_refDot",
+      "target": "mf_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_832",
+      "source": "mf_smDot",
+      "target": "mf_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_833",
+      "source": "mf_spDot",
+      "target": "mf_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_834",
+      "source": "mf_dlDot",
+      "target": "mf_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_835",
+      "source": "mf_group",
+      "target": "mf_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

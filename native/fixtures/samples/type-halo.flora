@@ -1,0 +1,981 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Halo",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "th_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -324
+      },
+      "params": {
+        "text": "Type halo\n\nThe phrase is tiled into 3 concentric RINGS. A ForEach lays each character around its ring: posInRing = i mod N, angle = posInRing·(2π/N) + spin (inner rings spin faster). Each letter’s size wiggles with sin(time + i), and hue cycles per character + time.",
+        "width": 500,
+        "height": 260
+      },
+      "portValues": {
+        "text": "Type halo\n\nThe phrase is tiled into 3 concentric RINGS. A ForEach lays each character around its ring: posInRing = i mod N, angle = posInRing·(2π/N) + spin (inner rings spin faster). Each letter’s size wiggles with sin(time + i), and hue cycles per character + time.",
+        "width": 500,
+        "height": 260
+      }
+    },
+    {
+      "id": "th_str",
+      "defType": "value/string",
+      "position": {
+        "x": 0,
+        "y": 281
+      },
+      "params": {
+        "value": "GENERATIVE FLORET TYPE STUDIO "
+      },
+      "portValues": {
+        "value": "GENERATIVE FLORET TYPE STUDIO "
+      }
+    },
+    {
+      "id": "th_split",
+      "defType": "string/split",
+      "position": {
+        "x": 500,
+        "y": 186
+      },
+      "params": {}
+    },
+    {
+      "id": "th_len",
+      "defType": "string/length",
+      "position": {
+        "x": 266,
+        "y": 375
+      },
+      "params": {}
+    },
+    {
+      "id": "th_total",
+      "defType": "math/mul",
+      "position": {
+        "x": 458,
+        "y": 308
+      },
+      "params": {
+        "b": 3,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 3
+      }
+    },
+    {
+      "id": "th_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 732,
+        "y": 303
+      },
+      "params": {}
+    },
+    {
+      "id": "th_tiled",
+      "defType": "spread/repeat",
+      "position": {
+        "x": 730,
+        "y": 136
+      },
+      "params": {
+        "count": 3
+      },
+      "portValues": {
+        "count": 3
+      }
+    },
+    {
+      "id": "th_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 745,
+        "y": 504
+      },
+      "params": {}
+    },
+    {
+      "id": "th_bg",
+      "defType": "color/color",
+      "position": {
+        "x": 2302,
+        "y": 995
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 12,
+        "g": 14,
+        "b": 24,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 12,
+        "g": 14,
+        "b": 24,
+        "a": 255
+      }
+    },
+    {
+      "id": "th_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 951,
+        "y": 22
+      },
+      "params": {
+        "width": 2852,
+        "height": 925,
+        "label": "ForEach char"
+      },
+      "ports": [
+        {
+          "id": "ch",
+          "name": "ch",
+          "type": "string",
+          "direction": "input",
+          "y": 99
+        },
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input",
+          "y": 311
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 176
+        }
+      ],
+      "width": 2852,
+      "height": 925
+    },
+    {
+      "id": "th_step",
+      "defType": "math/div",
+      "position": {
+        "x": 159,
+        "y": 201
+      },
+      "params": {
+        "a": 6.283185307179586,
+        "valueType": "number"
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "a": 6.283185307179586
+      }
+    },
+    {
+      "id": "th_ringF",
+      "defType": "math/div",
+      "position": {
+        "x": 159,
+        "y": 79
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_ring",
+      "defType": "math/floor",
+      "position": {
+        "x": 483,
+        "y": 114
+      },
+      "params": {},
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_ringN",
+      "defType": "math/mul",
+      "position": {
+        "x": 725,
+        "y": 131
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_posIn",
+      "defType": "math/sub",
+      "position": {
+        "x": 993,
+        "y": 101
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_angB",
+      "defType": "math/mul",
+      "position": {
+        "x": 1264,
+        "y": 146
+      },
+      "params": {},
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_tBase",
+      "defType": "math/mul",
+      "position": {
+        "x": 159,
+        "y": 323
+      },
+      "params": {
+        "b": 0.3,
+        "valueType": "number"
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "b": 0.3
+      }
+    },
+    {
+      "id": "th_r1",
+      "defType": "math/add",
+      "position": {
+        "x": 725,
+        "y": 285
+      },
+      "params": {
+        "b": 1,
+        "valueType": "number"
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "th_spin",
+      "defType": "math/div",
+      "position": {
+        "x": 993,
+        "y": 233
+      },
+      "params": {},
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_angle",
+      "defType": "math/add",
+      "position": {
+        "x": 1533,
+        "y": 180
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_cos",
+      "defType": "math/cos",
+      "position": {
+        "x": 1866,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_sin",
+      "defType": "math/sin",
+      "position": {
+        "x": 1866,
+        "y": 264
+      },
+      "params": {},
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_ringG",
+      "defType": "math/mul",
+      "position": {
+        "x": 1533,
+        "y": 58
+      },
+      "params": {
+        "b": 70,
+        "valueType": "number"
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "b": 70
+      }
+    },
+    {
+      "id": "th_radius",
+      "defType": "math/add",
+      "position": {
+        "x": 1818,
+        "y": 142
+      },
+      "params": {
+        "b": 90
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "b": 90
+      }
+    },
+    {
+      "id": "th_x",
+      "defType": "math/mul",
+      "position": {
+        "x": 2093,
+        "y": 73
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_y",
+      "defType": "math/mul",
+      "position": {
+        "x": 2093,
+        "y": 195
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_pos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2410,
+        "y": 121
+      },
+      "params": {},
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_wT",
+      "defType": "math/mul",
+      "position": {
+        "x": 159,
+        "y": 445
+      },
+      "params": {
+        "b": 2.5,
+        "valueType": "number"
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "b": 2.5
+      }
+    },
+    {
+      "id": "th_wI",
+      "defType": "math/mul",
+      "position": {
+        "x": 159,
+        "y": 567
+      },
+      "params": {
+        "b": 0.7,
+        "valueType": "number"
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "b": 0.7
+      }
+    },
+    {
+      "id": "th_wPh",
+      "defType": "math/add",
+      "position": {
+        "x": 435,
+        "y": 471
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_wSin",
+      "defType": "math/sin",
+      "position": {
+        "x": 1866,
+        "y": 366
+      },
+      "params": {},
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_wAmp",
+      "defType": "math/mul",
+      "position": {
+        "x": 2093,
+        "y": 317
+      },
+      "params": {
+        "b": 7,
+        "valueType": "number"
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "b": 7
+      }
+    },
+    {
+      "id": "th_size",
+      "defType": "math/add",
+      "position": {
+        "x": 2368,
+        "y": 243
+      },
+      "params": {
+        "b": 26,
+        "valueType": "number"
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "b": 26
+      }
+    },
+    {
+      "id": "th_hueI",
+      "defType": "math/mul",
+      "position": {
+        "x": 159,
+        "y": 689
+      },
+      "params": {
+        "b": 16,
+        "valueType": "number"
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "b": 16
+      }
+    },
+    {
+      "id": "th_hueT",
+      "defType": "math/mul",
+      "position": {
+        "x": 159,
+        "y": 811
+      },
+      "params": {
+        "b": 30,
+        "valueType": "number"
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "b": 30
+      }
+    },
+    {
+      "id": "th_hue",
+      "defType": "math/add",
+      "position": {
+        "x": 435,
+        "y": 712
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_hsl",
+      "defType": "color/color",
+      "position": {
+        "x": 1827,
+        "y": 575
+      },
+      "params": {
+        "mode": "hsl",
+        "h": 0,
+        "s": 90,
+        "l": 65,
+        "a": 255
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "mode": "hsl",
+        "h": 0,
+        "s": 90,
+        "l": 65,
+        "a": 255
+      }
+    },
+    {
+      "id": "th_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2135,
+        "y": 540
+      },
+      "params": {},
+      "parentId": "th_region"
+    },
+    {
+      "id": "th_tp",
+      "defType": "style/text-params",
+      "position": {
+        "x": 2383,
+        "y": 365
+      },
+      "params": {
+        "font": "monospace",
+        "bold": true,
+        "italic": false,
+        "align": "center",
+        "baseline": "middle"
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "font": "monospace",
+        "bold": true,
+        "italic": false,
+        "align": "center",
+        "baseline": "middle"
+      }
+    },
+    {
+      "id": "th_text",
+      "defType": "draw/text",
+      "position": {
+        "x": 2654,
+        "y": 141
+      },
+      "params": {
+        "string": "?",
+        "size": 30,
+        "align": "center"
+      },
+      "parentId": "th_region",
+      "portValues": {
+        "string": "?",
+        "size": 30,
+        "align": "center"
+      }
+    },
+    {
+      "id": "th_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 3960,
+        "y": 569
+      },
+      "params": {
+        "width": 560,
+        "height": 560
+      },
+      "portValues": {
+        "width": 560,
+        "height": 560
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_455",
+      "source": "th_str",
+      "target": "th_split",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-text"
+    },
+    {
+      "id": "e_456",
+      "source": "th_str",
+      "target": "th_len",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-text"
+    },
+    {
+      "id": "e_457",
+      "source": "th_len",
+      "target": "th_total",
+      "sourceHandle": "out-length",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_458",
+      "source": "th_total",
+      "target": "th_range",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_459",
+      "source": "th_split",
+      "target": "th_tiled",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_460",
+      "source": "th_tiled",
+      "target": "th_region",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-ch"
+    },
+    {
+      "id": "e_461",
+      "source": "th_range",
+      "target": "th_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_462",
+      "source": "th_len",
+      "target": "th_step",
+      "sourceHandle": "out-length",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_463",
+      "source": "th_len",
+      "target": "th_ringF",
+      "sourceHandle": "out-length",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_464",
+      "source": "th_len",
+      "target": "th_ringN",
+      "sourceHandle": "out-length",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_465",
+      "source": "th_region",
+      "target": "th_ringF",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_466",
+      "source": "th_ringF",
+      "target": "th_ring",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_467",
+      "source": "th_ring",
+      "target": "th_ringN",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_468",
+      "source": "th_region",
+      "target": "th_posIn",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_469",
+      "source": "th_ringN",
+      "target": "th_posIn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_470",
+      "source": "th_posIn",
+      "target": "th_angB",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_471",
+      "source": "th_step",
+      "target": "th_angB",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_472",
+      "source": "th_time",
+      "target": "th_tBase",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_473",
+      "source": "th_ring",
+      "target": "th_r1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_474",
+      "source": "th_tBase",
+      "target": "th_spin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_475",
+      "source": "th_r1",
+      "target": "th_spin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_476",
+      "source": "th_angB",
+      "target": "th_angle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_477",
+      "source": "th_spin",
+      "target": "th_angle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_478",
+      "source": "th_angle",
+      "target": "th_cos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_479",
+      "source": "th_angle",
+      "target": "th_sin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_480",
+      "source": "th_ring",
+      "target": "th_ringG",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_481",
+      "source": "th_ringG",
+      "target": "th_radius",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_482",
+      "source": "th_cos",
+      "target": "th_x",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_483",
+      "source": "th_radius",
+      "target": "th_x",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_484",
+      "source": "th_sin",
+      "target": "th_y",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_485",
+      "source": "th_radius",
+      "target": "th_y",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_486",
+      "source": "th_x",
+      "target": "th_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_487",
+      "source": "th_y",
+      "target": "th_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_488",
+      "source": "th_pos",
+      "target": "th_text",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_489",
+      "source": "th_time",
+      "target": "th_wT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_490",
+      "source": "th_region",
+      "target": "th_wI",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_491",
+      "source": "th_wT",
+      "target": "th_wPh",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_492",
+      "source": "th_wI",
+      "target": "th_wPh",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_493",
+      "source": "th_wPh",
+      "target": "th_wSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_494",
+      "source": "th_wSin",
+      "target": "th_wAmp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_495",
+      "source": "th_wAmp",
+      "target": "th_size",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_496",
+      "source": "th_size",
+      "target": "th_text",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-size"
+    },
+    {
+      "id": "e_497",
+      "source": "th_region",
+      "target": "th_hueI",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_498",
+      "source": "th_time",
+      "target": "th_hueT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_499",
+      "source": "th_hueI",
+      "target": "th_hue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_500",
+      "source": "th_hueT",
+      "target": "th_hue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_501",
+      "source": "th_hue",
+      "target": "th_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_502",
+      "source": "th_hsl",
+      "target": "th_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_503",
+      "source": "th_fill",
+      "target": "th_tp",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_504",
+      "source": "th_tp",
+      "target": "th_text",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_505",
+      "source": "th_region",
+      "target": "th_text",
+      "sourceHandle": "out-ch",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_506",
+      "source": "th_text",
+      "target": "th_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_507",
+      "source": "th_region",
+      "target": "th_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_508",
+      "source": "th_bg",
+      "target": "th_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    }
+  ]
+}

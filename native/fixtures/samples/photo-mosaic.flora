@@ -1,0 +1,505 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Photo Mosaic",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "pm_img",
+      "defType": "io/image-url",
+      "position": {
+        "x": 0,
+        "y": 191
+      },
+      "params": {
+        "url": "https://picsum.photos/seed/mosaic/500/500"
+      },
+      "portValues": {
+        "url": "https://picsum.photos/seed/mosaic/500/500"
+      }
+    },
+    {
+      "id": "pm_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 19,
+        "y": 9
+      },
+      "params": {
+        "cols": 32,
+        "rows": 32,
+        "w": 500,
+        "h": 500
+      },
+      "portValues": {
+        "cols": 32,
+        "rows": 32,
+        "w": 500,
+        "h": 500
+      }
+    },
+    {
+      "id": "pm_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 35,
+        "y": 353
+      },
+      "params": {}
+    },
+    {
+      "id": "pm_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2663,
+        "y": 303
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "pm_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": 1363,
+        "y": 516
+      },
+      "params": {
+        "r": 8,
+        "g": 8,
+        "b": 12,
+        "a": 255
+      },
+      "portValues": {
+        "r": 8,
+        "g": 8,
+        "b": 12,
+        "a": 255
+      }
+    },
+    {
+      "id": "pm_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 272,
+        "y": 22
+      },
+      "params": {
+        "width": 2266,
+        "height": 446,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 150
+        },
+        {
+          "id": "dot",
+          "name": "dot",
+          "type": "layer",
+          "direction": "output",
+          "y": 125
+        }
+      ],
+      "width": 2266,
+      "height": 446
+    },
+    {
+      "id": "pm_split",
+      "defType": "vec2/split",
+      "position": {
+        "x": 170,
+        "y": 112
+      },
+      "params": {},
+      "parentId": "pm_region"
+    },
+    {
+      "id": "pm_sample",
+      "defType": "image/sample",
+      "position": {
+        "x": 403,
+        "y": 162
+      },
+      "params": {},
+      "parentId": "pm_region"
+    },
+    {
+      "id": "pm_srgb",
+      "defType": "color/split-rgb",
+      "position": {
+        "x": 598,
+        "y": 97
+      },
+      "params": {},
+      "parentId": "pm_region"
+    },
+    {
+      "id": "pm_rg",
+      "defType": "math/add",
+      "position": {
+        "x": 780,
+        "y": 87
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "pm_region"
+    },
+    {
+      "id": "pm_rgb",
+      "defType": "math/add",
+      "position": {
+        "x": 1048,
+        "y": 112
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "pm_region"
+    },
+    {
+      "id": "pm_lum",
+      "defType": "math/mul",
+      "position": {
+        "x": 1314,
+        "y": 101
+      },
+      "params": {
+        "b": 0.333,
+        "valueType": "number"
+      },
+      "parentId": "pm_region",
+      "portValues": {
+        "b": 0.333
+      }
+    },
+    {
+      "id": "pm_sizeBase",
+      "defType": "math/map",
+      "position": {
+        "x": 1583,
+        "y": 90
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 255,
+        "outMin": 0.5,
+        "outMax": 13
+      },
+      "parentId": "pm_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 255,
+        "outMin": 0.5,
+        "outMax": 13
+      }
+    },
+    {
+      "id": "pm_tMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 128,
+        "y": 268
+      },
+      "params": {
+        "b": 1.8,
+        "valueType": "number"
+      },
+      "parentId": "pm_region",
+      "portValues": {
+        "b": 1.8
+      }
+    },
+    {
+      "id": "pm_sinT",
+      "defType": "math/sin",
+      "position": {
+        "x": 1362,
+        "y": 270
+      },
+      "params": {},
+      "parentId": "pm_region"
+    },
+    {
+      "id": "pm_wobble",
+      "defType": "math/map",
+      "position": {
+        "x": 1579,
+        "y": 272
+      },
+      "params": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 0.75,
+        "outMax": 1.25
+      },
+      "parentId": "pm_region",
+      "portValues": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 0.75,
+        "outMax": 1.25
+      }
+    },
+    {
+      "id": "pm_dotSize",
+      "defType": "math/mul",
+      "position": {
+        "x": 1784,
+        "y": 117
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "pm_region"
+    },
+    {
+      "id": "pm_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1826,
+        "y": 239
+      },
+      "params": {
+        "mode": "color"
+      },
+      "parentId": "pm_region",
+      "portValues": {
+        "mode": "color"
+      }
+    },
+    {
+      "id": "pm_ellipse",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 2058,
+        "y": 89
+      },
+      "params": {},
+      "parentId": "pm_region"
+    },
+    {
+      "id": "pm_ellipse-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 405,
+        "y": 40
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "pm_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1458",
+      "source": "pm_bg",
+      "target": "pm_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1459",
+      "source": "pm_grid",
+      "target": "pm_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_1460",
+      "source": "pm_region",
+      "target": "pm_split",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1461",
+      "source": "pm_split",
+      "target": "pm_sample",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1462",
+      "source": "pm_split",
+      "target": "pm_sample",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1463",
+      "source": "pm_img",
+      "target": "pm_sample",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1464",
+      "source": "pm_sample",
+      "target": "pm_srgb",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1465",
+      "source": "pm_srgb",
+      "target": "pm_rg",
+      "sourceHandle": "out-r",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1466",
+      "source": "pm_srgb",
+      "target": "pm_rg",
+      "sourceHandle": "out-g",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1467",
+      "source": "pm_rg",
+      "target": "pm_rgb",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1468",
+      "source": "pm_srgb",
+      "target": "pm_rgb",
+      "sourceHandle": "out-b",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1469",
+      "source": "pm_rgb",
+      "target": "pm_lum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1470",
+      "source": "pm_lum",
+      "target": "pm_sizeBase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1471",
+      "source": "pm_time",
+      "target": "pm_tMul",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1472",
+      "source": "pm_tMul",
+      "target": "pm_sinT",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1473",
+      "source": "pm_sinT",
+      "target": "pm_wobble",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1474",
+      "source": "pm_sizeBase",
+      "target": "pm_dotSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1475",
+      "source": "pm_wobble",
+      "target": "pm_dotSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1476",
+      "source": "pm_sample",
+      "target": "pm_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1477",
+      "source": "pm_fill",
+      "target": "pm_ellipse",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1478",
+      "source": "pm_split",
+      "target": "pm_ellipse-xy0",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1479",
+      "source": "pm_split",
+      "target": "pm_ellipse-xy0",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1480",
+      "source": "pm_dotSize",
+      "target": "pm_ellipse",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_1481",
+      "source": "pm_dotSize",
+      "target": "pm_ellipse",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1482",
+      "source": "pm_ellipse",
+      "target": "pm_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-dot"
+    },
+    {
+      "id": "e_1483",
+      "source": "pm_region",
+      "target": "pm_renderer",
+      "sourceHandle": "out-dot",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_pm_ellipse-xy0",
+      "source": "pm_ellipse-xy0",
+      "target": "pm_ellipse",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

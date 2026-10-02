@@ -1,0 +1,296 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Phyllotaxis",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ph_count",
+      "defType": "value/number",
+      "position": {
+        "x": 0,
+        "y": 212
+      },
+      "params": {
+        "value": 500
+      },
+      "portValues": {
+        "value": 500
+      }
+    },
+    {
+      "id": "ph_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 236,
+        "y": 212
+      },
+      "params": {}
+    },
+    {
+      "id": "ph_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 443,
+        "y": 22
+      },
+      "params": {
+        "width": 1089,
+        "height": 406,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "n",
+          "name": "n",
+          "type": "number",
+          "direction": "input",
+          "y": 226
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 164
+        }
+      ],
+      "width": 1089,
+      "height": 406
+    },
+    {
+      "id": "ph_angle",
+      "defType": "math/mul",
+      "position": {
+        "x": 146,
+        "y": 40
+      },
+      "params": {
+        "b": 2.399963,
+        "valueType": "number"
+      },
+      "parentId": "ph_region",
+      "portValues": {
+        "b": 2.399963
+      }
+    },
+    {
+      "id": "ph_sqrt",
+      "defType": "math/sqrt",
+      "position": {
+        "x": 194,
+        "y": 162
+      },
+      "params": {},
+      "parentId": "ph_region"
+    },
+    {
+      "id": "ph_rad",
+      "defType": "math/mul",
+      "position": {
+        "x": 415,
+        "y": 130
+      },
+      "params": {
+        "b": 10.5,
+        "valueType": "number"
+      },
+      "parentId": "ph_region",
+      "portValues": {
+        "b": 10.5
+      }
+    },
+    {
+      "id": "ph_pos",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 683,
+        "y": 91
+      },
+      "params": {},
+      "parentId": "ph_region"
+    },
+    {
+      "id": "ph_hue",
+      "defType": "math/mul",
+      "position": {
+        "x": 146,
+        "y": 264
+      },
+      "params": {
+        "b": 320,
+        "valueType": "number"
+      },
+      "parentId": "ph_region",
+      "portValues": {
+        "b": 320
+      }
+    },
+    {
+      "id": "ph_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 457,
+        "y": 252
+      },
+      "params": {
+        "s": 85,
+        "l": 60,
+        "a": 255
+      },
+      "parentId": "ph_region",
+      "portValues": {
+        "s": 85,
+        "l": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "ph_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 690,
+        "y": 227
+      },
+      "params": {},
+      "parentId": "ph_region"
+    },
+    {
+      "id": "ph_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 881,
+        "y": 122
+      },
+      "params": {
+        "w": 8,
+        "h": 8
+      },
+      "parentId": "ph_region",
+      "portValues": {
+        "w": 8,
+        "h": 8
+      }
+    },
+    {
+      "id": "ph_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1628,
+        "y": 150
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_855",
+      "source": "ph_count",
+      "target": "ph_range",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_856",
+      "source": "ph_range",
+      "target": "ph_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_857",
+      "source": "ph_region",
+      "target": "ph_angle",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_858",
+      "source": "ph_region",
+      "target": "ph_sqrt",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_859",
+      "source": "ph_angle",
+      "target": "ph_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_860",
+      "source": "ph_sqrt",
+      "target": "ph_rad",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_861",
+      "source": "ph_rad",
+      "target": "ph_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_862",
+      "source": "ph_pos",
+      "target": "ph_dot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_863",
+      "source": "ph_region",
+      "target": "ph_hue",
+      "sourceHandle": "out-__loopvar_fraction",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_864",
+      "source": "ph_hue",
+      "target": "ph_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_865",
+      "source": "ph_hsl",
+      "target": "ph_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_866",
+      "source": "ph_fill",
+      "target": "ph_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_867",
+      "source": "ph_dot",
+      "target": "ph_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_868",
+      "source": "ph_region",
+      "target": "ph_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

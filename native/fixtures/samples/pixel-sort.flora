@@ -1,0 +1,297 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Pixel Sort",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ps_img",
+      "defType": "io/image-url",
+      "position": {
+        "x": 891,
+        "y": 0
+      },
+      "params": {
+        "url": "https://picsum.photos/seed/pixel-sort/500/500"
+      },
+      "portValues": {
+        "url": "https://picsum.photos/seed/pixel-sort/500/500"
+      }
+    },
+    {
+      "id": "ps_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 0,
+        "y": 359
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_lo",
+      "defType": "io/slider",
+      "position": {
+        "x": 884,
+        "y": 162
+      },
+      "params": {
+        "value": 0,
+        "min": 0,
+        "max": 1
+      },
+      "portValues": {
+        "value": 0,
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "ps_hi",
+      "defType": "io/slider",
+      "position": {
+        "x": 612,
+        "y": 233
+      },
+      "params": {
+        "value": 0.85,
+        "min": 0,
+        "max": 1
+      },
+      "portValues": {
+        "value": 0.85,
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "ps_tMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 180,
+        "y": 359
+      },
+      "params": {
+        "b": 0.6,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.6
+      }
+    },
+    {
+      "id": "ps_sinT",
+      "defType": "math/sin",
+      "position": {
+        "x": 444,
+        "y": 359
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_wobMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 612,
+        "y": 359
+      },
+      "params": {
+        "b": 0.05,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.05
+      }
+    },
+    {
+      "id": "ps_hiFinal",
+      "defType": "math/add",
+      "position": {
+        "x": 884,
+        "y": 288
+      },
+      "params": {
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "ps_sort",
+      "defType": "pixel/sort",
+      "position": {
+        "x": 1167,
+        "y": 71
+      },
+      "params": {
+        "axis": "rows",
+        "criterion": "brightness",
+        "order": "ascending"
+      },
+      "portValues": {
+        "axis": "rows",
+        "criterion": "brightness",
+        "order": "ascending"
+      }
+    },
+    {
+      "id": "ps_draw",
+      "defType": "draw/image",
+      "position": {
+        "x": 1425,
+        "y": 162
+      },
+      "params": {
+        "x": -250,
+        "y": -250,
+        "w": 500,
+        "h": 500
+      },
+      "portValues": {
+        "x": -250,
+        "y": -250,
+        "w": 500,
+        "h": 500
+      }
+    },
+    {
+      "id": "ps_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": 1431,
+        "y": 364
+      },
+      "params": {
+        "r": 12,
+        "g": 10,
+        "b": 16,
+        "a": 255
+      },
+      "portValues": {
+        "r": 12,
+        "g": 10,
+        "b": 16,
+        "a": 255
+      }
+    },
+    {
+      "id": "ps_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1631,
+        "y": 253
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "ps_draw-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1191,
+        "y": 273
+      },
+      "params": {
+        "x": -250,
+        "y": -250
+      },
+      "portValues": {
+        "x": -250,
+        "y": -250
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1536",
+      "source": "ps_img",
+      "target": "ps_sort",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1537",
+      "source": "ps_time",
+      "target": "ps_tMul",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1538",
+      "source": "ps_tMul",
+      "target": "ps_sinT",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1539",
+      "source": "ps_sinT",
+      "target": "ps_wobMul",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1540",
+      "source": "ps_hi",
+      "target": "ps_hiFinal",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1541",
+      "source": "ps_wobMul",
+      "target": "ps_hiFinal",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1542",
+      "source": "ps_lo",
+      "target": "ps_sort",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-lo"
+    },
+    {
+      "id": "e_1543",
+      "source": "ps_hiFinal",
+      "target": "ps_sort",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-hi"
+    },
+    {
+      "id": "e_1544",
+      "source": "ps_sort",
+      "target": "ps_draw",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1545",
+      "source": "ps_draw",
+      "target": "ps_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_1546",
+      "source": "ps_bg",
+      "target": "ps_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_xy_ps_draw-xy0",
+      "source": "ps_draw-xy0",
+      "target": "ps_draw",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

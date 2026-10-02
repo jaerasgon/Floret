@@ -1,0 +1,416 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Paint Trail",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "pt_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 30,
+        "y": 303
+      },
+      "params": {}
+    },
+    {
+      "id": "pt_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 30,
+        "y": 445
+      },
+      "params": {}
+    },
+    {
+      "id": "pt_read",
+      "defType": "state/read",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "pt_prevCopy",
+      "defType": "image/crop",
+      "position": {
+        "x": 276,
+        "y": 0
+      },
+      "params": {
+        "sx": 0,
+        "sy": 0,
+        "sw": 0,
+        "sh": 0
+      },
+      "portValues": {
+        "sx": 0,
+        "sy": 0,
+        "sw": 0,
+        "sh": 0
+      }
+    },
+    {
+      "id": "pt_drawPrev",
+      "defType": "draw/image",
+      "position": {
+        "x": 520,
+        "y": 110
+      },
+      "params": {
+        "x": 0,
+        "y": 0,
+        "w": 500,
+        "h": 500
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0,
+        "w": 500,
+        "h": 500
+      }
+    },
+    {
+      "id": "pt_hueMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 239,
+        "y": 442
+      },
+      "params": {
+        "b": 50,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 50
+      }
+    },
+    {
+      "id": "pt_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 526,
+        "y": 439
+      },
+      "params": {
+        "s": 90,
+        "l": 60,
+        "a": 255
+      },
+      "portValues": {
+        "s": 90,
+        "l": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "pt_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 758,
+        "y": 436
+      },
+      "params": {
+        "mode": "color"
+      },
+      "portValues": {
+        "mode": "color"
+      }
+    },
+    {
+      "id": "pt_size",
+      "defType": "io/slider",
+      "position": {
+        "x": 716,
+        "y": 310
+      },
+      "params": {
+        "value": 28,
+        "min": 4,
+        "max": 80
+      },
+      "portValues": {
+        "value": 28,
+        "min": 4,
+        "max": 80
+      }
+    },
+    {
+      "id": "pt_brush",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 993,
+        "y": 273
+      },
+      "params": {}
+    },
+    {
+      "id": "pt_stack",
+      "defType": "spread/stack",
+      "position": {
+        "x": 1193,
+        "y": 195
+      },
+      "params": {}
+    },
+    {
+      "id": "pt_fromLayer",
+      "defType": "image/from-layer",
+      "position": {
+        "x": 1394,
+        "y": 195
+      },
+      "params": {
+        "w": 500,
+        "h": 500
+      },
+      "portValues": {
+        "w": 500,
+        "h": 500
+      }
+    },
+    {
+      "id": "pt_write",
+      "defType": "state/write",
+      "position": {
+        "x": 1591,
+        "y": 147
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "pt_display",
+      "defType": "draw/image",
+      "position": {
+        "x": 1589,
+        "y": 269
+      },
+      "params": {
+        "x": 0,
+        "y": 0,
+        "w": 500,
+        "h": 500
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0,
+        "w": 500,
+        "h": 500
+      }
+    },
+    {
+      "id": "pt_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1781,
+        "y": 269
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "pt_drawPrev-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 281,
+        "y": 182
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "pt_brush-xy1",
+      "defType": "vec2/make",
+      "position": {
+        "x": 281,
+        "y": 304
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "pt_display-xy2",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1396,
+        "y": 337
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1630",
+      "source": "pt_read",
+      "target": "pt_prevCopy",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1631",
+      "source": "pt_prevCopy",
+      "target": "pt_drawPrev",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1632",
+      "source": "pt_time",
+      "target": "pt_hueMul",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1633",
+      "source": "pt_hueMul",
+      "target": "pt_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1634",
+      "source": "pt_hsl",
+      "target": "pt_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1635",
+      "source": "pt_fill",
+      "target": "pt_brush",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1636",
+      "source": "pt_mouse",
+      "target": "pt_brush-xy1",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1637",
+      "source": "pt_mouse",
+      "target": "pt_brush-xy1",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1638",
+      "source": "pt_size",
+      "target": "pt_brush",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_1639",
+      "source": "pt_size",
+      "target": "pt_brush",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1640",
+      "source": "pt_drawPrev",
+      "target": "pt_stack",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1641",
+      "source": "pt_brush",
+      "target": "pt_stack",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1642",
+      "source": "pt_stack",
+      "target": "pt_fromLayer",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_1643",
+      "source": "pt_fromLayer",
+      "target": "pt_write",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_1644",
+      "source": "pt_fromLayer",
+      "target": "pt_display",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1645",
+      "source": "pt_display",
+      "target": "pt_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_pt_drawPrev-xy0",
+      "source": "pt_drawPrev-xy0",
+      "target": "pt_drawPrev",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_xy_pt_brush-xy1",
+      "source": "pt_brush-xy1",
+      "target": "pt_brush",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_xy_pt_display-xy2",
+      "source": "pt_display-xy2",
+      "target": "pt_display",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

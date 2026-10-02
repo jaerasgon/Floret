@@ -1,0 +1,1629 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Fractal Tree",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ft_strokeC",
+      "defType": "color/rgb",
+      "position": {
+        "x": 0,
+        "y": 2826
+      },
+      "params": {
+        "r": 230,
+        "g": 160,
+        "b": 80,
+        "a": 255
+      },
+      "portValues": {
+        "r": 230,
+        "g": 160,
+        "b": 80,
+        "a": 255
+      }
+    },
+    {
+      "id": "ft_stroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 183,
+        "y": 2826
+      },
+      "params": {}
+    },
+    {
+      "id": "ft_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": 1148,
+        "y": 2906
+      },
+      "params": {
+        "r": 16,
+        "g": 22,
+        "b": 16,
+        "a": 255
+      },
+      "portValues": {
+        "r": 16,
+        "g": 22,
+        "b": 16,
+        "a": 255
+      }
+    },
+    {
+      "id": "ft_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1397,
+        "y": 2705
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "ft_grp",
+      "defType": "transform/group",
+      "position": {
+        "x": 1106,
+        "y": 2524
+      },
+      "params": {
+        "slotCount": 15
+      },
+      "portValues": {
+        "slotCount": 15
+      }
+    },
+    {
+      "id": "ft_sw_0",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 244
+      },
+      "params": {
+        "w": 4
+      },
+      "portValues": {
+        "w": 4
+      }
+    },
+    {
+      "id": "ft_ln_0",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 707
+      },
+      "params": {
+        "x1": 0,
+        "y1": 220,
+        "x2": 0,
+        "y2": 80
+      },
+      "portValues": {
+        "x1": 0,
+        "y1": 220,
+        "x2": 0,
+        "y2": 80
+      }
+    },
+    {
+      "id": "ft_sw_1",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 610
+      },
+      "params": {
+        "w": 3
+      },
+      "portValues": {
+        "w": 3
+      }
+    },
+    {
+      "id": "ft_ln_1",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 987
+      },
+      "params": {
+        "x1": 0,
+        "y1": 80,
+        "x2": -46.983702783211896,
+        "y2": -6.003091065256527
+      },
+      "portValues": {
+        "x1": 0,
+        "y1": 80,
+        "x2": -46.983702783211896,
+        "y2": -6.003091065256527
+      }
+    },
+    {
+      "id": "ft_sw_2",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 976
+      },
+      "params": {
+        "w": 2
+      },
+      "portValues": {
+        "w": 2
+      }
+    },
+    {
+      "id": "ft_ln_2",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 1266
+      },
+      "params": {
+        "x1": -46.983702783211896,
+        "y1": -6.003091065256527,
+        "x2": -104.70861234103359,
+        "y2": -43.06782924781091
+      },
+      "portValues": {
+        "x1": -46.983702783211896,
+        "y1": -6.003091065256527,
+        "x2": -104.70861234103359,
+        "y2": -43.06782924781091
+      }
+    },
+    {
+      "id": "ft_sw_3",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 1342
+      },
+      "params": {
+        "w": 1
+      },
+      "portValues": {
+        "w": 1
+      }
+    },
+    {
+      "id": "ft_ln_3",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 1546
+      },
+      "params": {
+        "x1": -104.70861234103359,
+        "y1": -43.06782924781091,
+        "x2": -152.60832159776027,
+        "y2": -46.46462967189401
+      },
+      "portValues": {
+        "x1": -104.70861234103359,
+        "y1": -43.06782924781091,
+        "x2": -152.60832159776027,
+        "y2": -46.46462967189401
+      }
+    },
+    {
+      "id": "ft_sw_4",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 1708
+      },
+      "params": {
+        "w": 1
+      },
+      "portValues": {
+        "w": 1
+      }
+    },
+    {
+      "id": "ft_ln_4",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 1825
+      },
+      "params": {
+        "x1": -104.70861234103359,
+        "y1": -43.06782924781091,
+        "x2": -127.7306267048074,
+        "y2": -85.20934386978661
+      },
+      "portValues": {
+        "x1": -104.70861234103359,
+        "y1": -43.06782924781091,
+        "x2": -127.7306267048074,
+        "y2": -85.20934386978661
+      }
+    },
+    {
+      "id": "ft_sw_5",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 2074
+      },
+      "params": {
+        "w": 2
+      },
+      "portValues": {
+        "w": 2
+      }
+    },
+    {
+      "id": "ft_ln_5",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 2105
+      },
+      "params": {
+        "x1": -46.983702783211896,
+        "y1": -6.003091065256527,
+        "x2": -46.983702783211896,
+        "y2": -74.60309106525652
+      },
+      "portValues": {
+        "x1": -46.983702783211896,
+        "y1": -6.003091065256527,
+        "x2": -46.983702783211896,
+        "y2": -74.60309106525652
+      }
+    },
+    {
+      "id": "ft_sw_6",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 2440
+      },
+      "params": {
+        "w": 1
+      },
+      "portValues": {
+        "w": 1
+      }
+    },
+    {
+      "id": "ft_ln_6",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 2384
+      },
+      "params": {
+        "x1": -46.983702783211896,
+        "y1": -74.60309106525652,
+        "x2": -70.00571714698572,
+        "y2": -116.74460568723222
+      },
+      "portValues": {
+        "x1": -46.983702783211896,
+        "y1": -74.60309106525652,
+        "x2": -70.00571714698572,
+        "y2": -116.74460568723222
+      }
+    },
+    {
+      "id": "ft_sw_7",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 2806
+      },
+      "params": {
+        "w": 1
+      },
+      "portValues": {
+        "w": 1
+      }
+    },
+    {
+      "id": "ft_ln_7",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 2664
+      },
+      "params": {
+        "x1": -46.983702783211896,
+        "y1": -74.60309106525652,
+        "x2": -23.96168841943807,
+        "y2": -116.74460568723222
+      },
+      "portValues": {
+        "x1": -46.983702783211896,
+        "y1": -74.60309106525652,
+        "x2": -23.96168841943807,
+        "y2": -116.74460568723222
+      }
+    },
+    {
+      "id": "ft_sw_8",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 3172
+      },
+      "params": {
+        "w": 3
+      },
+      "portValues": {
+        "w": 3
+      }
+    },
+    {
+      "id": "ft_ln_8",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 2943
+      },
+      "params": {
+        "x1": 0,
+        "y1": 80,
+        "x2": 46.983702783211896,
+        "y2": -6.003091065256527
+      },
+      "portValues": {
+        "x1": 0,
+        "y1": 80,
+        "x2": 46.983702783211896,
+        "y2": -6.003091065256527
+      }
+    },
+    {
+      "id": "ft_sw_9",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 3538
+      },
+      "params": {
+        "w": 2
+      },
+      "portValues": {
+        "w": 2
+      }
+    },
+    {
+      "id": "ft_ln_9",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 3223
+      },
+      "params": {
+        "x1": 46.983702783211896,
+        "y1": -6.003091065256527,
+        "x2": 46.983702783211896,
+        "y2": -74.60309106525652
+      },
+      "portValues": {
+        "x1": 46.983702783211896,
+        "y1": -6.003091065256527,
+        "x2": 46.983702783211896,
+        "y2": -74.60309106525652
+      }
+    },
+    {
+      "id": "ft_sw_10",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 3904
+      },
+      "params": {
+        "w": 1
+      },
+      "portValues": {
+        "w": 1
+      }
+    },
+    {
+      "id": "ft_ln_10",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 3502
+      },
+      "params": {
+        "x1": 46.983702783211896,
+        "y1": -74.60309106525652,
+        "x2": 23.96168841943807,
+        "y2": -116.74460568723222
+      },
+      "portValues": {
+        "x1": 46.983702783211896,
+        "y1": -74.60309106525652,
+        "x2": 23.96168841943807,
+        "y2": -116.74460568723222
+      }
+    },
+    {
+      "id": "ft_sw_11",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 4270
+      },
+      "params": {
+        "w": 1
+      },
+      "portValues": {
+        "w": 1
+      }
+    },
+    {
+      "id": "ft_ln_11",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 3782
+      },
+      "params": {
+        "x1": 46.983702783211896,
+        "y1": -74.60309106525652,
+        "x2": 70.00571714698572,
+        "y2": -116.74460568723222
+      },
+      "portValues": {
+        "x1": 46.983702783211896,
+        "y1": -74.60309106525652,
+        "x2": 70.00571714698572,
+        "y2": -116.74460568723222
+      }
+    },
+    {
+      "id": "ft_sw_12",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 4636
+      },
+      "params": {
+        "w": 2
+      },
+      "portValues": {
+        "w": 2
+      }
+    },
+    {
+      "id": "ft_ln_12",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 4061
+      },
+      "params": {
+        "x1": 46.983702783211896,
+        "y1": -6.003091065256527,
+        "x2": 104.70861234103359,
+        "y2": -43.06782924781091
+      },
+      "portValues": {
+        "x1": 46.983702783211896,
+        "y1": -6.003091065256527,
+        "x2": 104.70861234103359,
+        "y2": -43.06782924781091
+      }
+    },
+    {
+      "id": "ft_sw_13",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 5002
+      },
+      "params": {
+        "w": 1
+      },
+      "portValues": {
+        "w": 1
+      }
+    },
+    {
+      "id": "ft_ln_13",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 4341
+      },
+      "params": {
+        "x1": 104.70861234103359,
+        "y1": -43.06782924781091,
+        "x2": 127.7306267048074,
+        "y2": -85.20934386978661
+      },
+      "portValues": {
+        "x1": 104.70861234103359,
+        "y1": -43.06782924781091,
+        "x2": 127.7306267048074,
+        "y2": -85.20934386978661
+      }
+    },
+    {
+      "id": "ft_sw_14",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 488,
+        "y": 5368
+      },
+      "params": {
+        "w": 1
+      },
+      "portValues": {
+        "w": 1
+      }
+    },
+    {
+      "id": "ft_ln_14",
+      "defType": "draw/line",
+      "position": {
+        "x": 806,
+        "y": 4620
+      },
+      "params": {
+        "x1": 104.70861234103359,
+        "y1": -43.06782924781091,
+        "x2": 152.60832159776027,
+        "y2": -46.46462967189401
+      },
+      "portValues": {
+        "x1": 104.70861234103359,
+        "y1": -43.06782924781091,
+        "x2": 152.60832159776027,
+        "y2": -46.46462967189401
+      }
+    },
+    {
+      "id": "ft_ln_0-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 503,
+        "y": 0
+      },
+      "params": {
+        "x": 0,
+        "y": 220
+      },
+      "portValues": {
+        "x": 0,
+        "y": 220
+      }
+    },
+    {
+      "id": "ft_ln_0-xy1",
+      "defType": "vec2/make",
+      "position": {
+        "x": 503,
+        "y": 122
+      },
+      "params": {
+        "x": 0,
+        "y": 80
+      },
+      "portValues": {
+        "x": 0,
+        "y": 80
+      }
+    },
+    {
+      "id": "ft_ln_1-xy2",
+      "defType": "vec2/make",
+      "position": {
+        "x": 503,
+        "y": 366
+      },
+      "params": {
+        "x": 0,
+        "y": 80
+      },
+      "portValues": {
+        "x": 0,
+        "y": 80
+      }
+    },
+    {
+      "id": "ft_ln_1-xy3",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 488
+      },
+      "params": {
+        "x": -46.983702783211896,
+        "y": -6.003091065256527
+      },
+      "portValues": {
+        "x": -46.983702783211896,
+        "y": -6.003091065256527
+      }
+    },
+    {
+      "id": "ft_ln_2-xy4",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 732
+      },
+      "params": {
+        "x": -46.983702783211896,
+        "y": -6.003091065256527
+      },
+      "portValues": {
+        "x": -46.983702783211896,
+        "y": -6.003091065256527
+      }
+    },
+    {
+      "id": "ft_ln_2-xy5",
+      "defType": "vec2/make",
+      "position": {
+        "x": 485,
+        "y": 854
+      },
+      "params": {
+        "x": -104.70861234103359,
+        "y": -43.06782924781091
+      },
+      "portValues": {
+        "x": -104.70861234103359,
+        "y": -43.06782924781091
+      }
+    },
+    {
+      "id": "ft_ln_3-xy6",
+      "defType": "vec2/make",
+      "position": {
+        "x": 485,
+        "y": 1098
+      },
+      "params": {
+        "x": -104.70861234103359,
+        "y": -43.06782924781091
+      },
+      "portValues": {
+        "x": -104.70861234103359,
+        "y": -43.06782924781091
+      }
+    },
+    {
+      "id": "ft_ln_3-xy7",
+      "defType": "vec2/make",
+      "position": {
+        "x": 485,
+        "y": 1220
+      },
+      "params": {
+        "x": -152.60832159776027,
+        "y": -46.46462967189401
+      },
+      "portValues": {
+        "x": -152.60832159776027,
+        "y": -46.46462967189401
+      }
+    },
+    {
+      "id": "ft_ln_4-xy8",
+      "defType": "vec2/make",
+      "position": {
+        "x": 485,
+        "y": 1464
+      },
+      "params": {
+        "x": -104.70861234103359,
+        "y": -43.06782924781091
+      },
+      "portValues": {
+        "x": -104.70861234103359,
+        "y": -43.06782924781091
+      }
+    },
+    {
+      "id": "ft_ln_4-xy9",
+      "defType": "vec2/make",
+      "position": {
+        "x": 485,
+        "y": 1586
+      },
+      "params": {
+        "x": -127.7306267048074,
+        "y": -85.20934386978661
+      },
+      "portValues": {
+        "x": -127.7306267048074,
+        "y": -85.20934386978661
+      }
+    },
+    {
+      "id": "ft_ln_5-xy10",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 1830
+      },
+      "params": {
+        "x": -46.983702783211896,
+        "y": -6.003091065256527
+      },
+      "portValues": {
+        "x": -46.983702783211896,
+        "y": -6.003091065256527
+      }
+    },
+    {
+      "id": "ft_ln_5-xy11",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 1952
+      },
+      "params": {
+        "x": -46.983702783211896,
+        "y": -74.60309106525652
+      },
+      "portValues": {
+        "x": -46.983702783211896,
+        "y": -74.60309106525652
+      }
+    },
+    {
+      "id": "ft_ln_6-xy12",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 2196
+      },
+      "params": {
+        "x": -46.983702783211896,
+        "y": -74.60309106525652
+      },
+      "portValues": {
+        "x": -46.983702783211896,
+        "y": -74.60309106525652
+      }
+    },
+    {
+      "id": "ft_ln_6-xy13",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 2318
+      },
+      "params": {
+        "x": -70.00571714698572,
+        "y": -116.74460568723222
+      },
+      "portValues": {
+        "x": -70.00571714698572,
+        "y": -116.74460568723222
+      }
+    },
+    {
+      "id": "ft_ln_7-xy14",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 2562
+      },
+      "params": {
+        "x": -46.983702783211896,
+        "y": -74.60309106525652
+      },
+      "portValues": {
+        "x": -46.983702783211896,
+        "y": -74.60309106525652
+      }
+    },
+    {
+      "id": "ft_ln_7-xy15",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 2684
+      },
+      "params": {
+        "x": -23.96168841943807,
+        "y": -116.74460568723222
+      },
+      "portValues": {
+        "x": -23.96168841943807,
+        "y": -116.74460568723222
+      }
+    },
+    {
+      "id": "ft_ln_8-xy16",
+      "defType": "vec2/make",
+      "position": {
+        "x": 503,
+        "y": 2928
+      },
+      "params": {
+        "x": 0,
+        "y": 80
+      },
+      "portValues": {
+        "x": 0,
+        "y": 80
+      }
+    },
+    {
+      "id": "ft_ln_8-xy17",
+      "defType": "vec2/make",
+      "position": {
+        "x": 491,
+        "y": 3050
+      },
+      "params": {
+        "x": 46.983702783211896,
+        "y": -6.003091065256527
+      },
+      "portValues": {
+        "x": 46.983702783211896,
+        "y": -6.003091065256527
+      }
+    },
+    {
+      "id": "ft_ln_9-xy18",
+      "defType": "vec2/make",
+      "position": {
+        "x": 491,
+        "y": 3294
+      },
+      "params": {
+        "x": 46.983702783211896,
+        "y": -6.003091065256527
+      },
+      "portValues": {
+        "x": 46.983702783211896,
+        "y": -6.003091065256527
+      }
+    },
+    {
+      "id": "ft_ln_9-xy19",
+      "defType": "vec2/make",
+      "position": {
+        "x": 491,
+        "y": 3416
+      },
+      "params": {
+        "x": 46.983702783211896,
+        "y": -74.60309106525652
+      },
+      "portValues": {
+        "x": 46.983702783211896,
+        "y": -74.60309106525652
+      }
+    },
+    {
+      "id": "ft_ln_10-xy20",
+      "defType": "vec2/make",
+      "position": {
+        "x": 491,
+        "y": 3660
+      },
+      "params": {
+        "x": 46.983702783211896,
+        "y": -74.60309106525652
+      },
+      "portValues": {
+        "x": 46.983702783211896,
+        "y": -74.60309106525652
+      }
+    },
+    {
+      "id": "ft_ln_10-xy21",
+      "defType": "vec2/make",
+      "position": {
+        "x": 491,
+        "y": 3782
+      },
+      "params": {
+        "x": 23.96168841943807,
+        "y": -116.74460568723222
+      },
+      "portValues": {
+        "x": 23.96168841943807,
+        "y": -116.74460568723222
+      }
+    },
+    {
+      "id": "ft_ln_11-xy22",
+      "defType": "vec2/make",
+      "position": {
+        "x": 491,
+        "y": 4026
+      },
+      "params": {
+        "x": 46.983702783211896,
+        "y": -74.60309106525652
+      },
+      "portValues": {
+        "x": 46.983702783211896,
+        "y": -74.60309106525652
+      }
+    },
+    {
+      "id": "ft_ln_11-xy23",
+      "defType": "vec2/make",
+      "position": {
+        "x": 491,
+        "y": 4148
+      },
+      "params": {
+        "x": 70.00571714698572,
+        "y": -116.74460568723222
+      },
+      "portValues": {
+        "x": 70.00571714698572,
+        "y": -116.74460568723222
+      }
+    },
+    {
+      "id": "ft_ln_12-xy24",
+      "defType": "vec2/make",
+      "position": {
+        "x": 491,
+        "y": 4392
+      },
+      "params": {
+        "x": 46.983702783211896,
+        "y": -6.003091065256527
+      },
+      "portValues": {
+        "x": 46.983702783211896,
+        "y": -6.003091065256527
+      }
+    },
+    {
+      "id": "ft_ln_12-xy25",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 4514
+      },
+      "params": {
+        "x": 104.70861234103359,
+        "y": -43.06782924781091
+      },
+      "portValues": {
+        "x": 104.70861234103359,
+        "y": -43.06782924781091
+      }
+    },
+    {
+      "id": "ft_ln_13-xy26",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 4758
+      },
+      "params": {
+        "x": 104.70861234103359,
+        "y": -43.06782924781091
+      },
+      "portValues": {
+        "x": 104.70861234103359,
+        "y": -43.06782924781091
+      }
+    },
+    {
+      "id": "ft_ln_13-xy27",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 4880
+      },
+      "params": {
+        "x": 127.7306267048074,
+        "y": -85.20934386978661
+      },
+      "portValues": {
+        "x": 127.7306267048074,
+        "y": -85.20934386978661
+      }
+    },
+    {
+      "id": "ft_ln_14-xy28",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 5124
+      },
+      "params": {
+        "x": 104.70861234103359,
+        "y": -43.06782924781091
+      },
+      "portValues": {
+        "x": 104.70861234103359,
+        "y": -43.06782924781091
+      }
+    },
+    {
+      "id": "ft_ln_14-xy29",
+      "defType": "vec2/make",
+      "position": {
+        "x": 488,
+        "y": 5246
+      },
+      "params": {
+        "x": 152.60832159776027,
+        "y": -46.46462967189401
+      },
+      "portValues": {
+        "x": 152.60832159776027,
+        "y": -46.46462967189401
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1287",
+      "source": "ft_bg",
+      "target": "ft_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1288",
+      "source": "ft_strokeC",
+      "target": "ft_stroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1289",
+      "source": "ft_grp",
+      "target": "ft_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_1290",
+      "source": "ft_stroke",
+      "target": "ft_sw_0",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1291",
+      "source": "ft_sw_0",
+      "target": "ft_ln_0",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1292",
+      "source": "ft_ln_0",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_1293",
+      "source": "ft_stroke",
+      "target": "ft_sw_1",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1294",
+      "source": "ft_sw_1",
+      "target": "ft_ln_1",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1295",
+      "source": "ft_ln_1",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_1296",
+      "source": "ft_stroke",
+      "target": "ft_sw_2",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1297",
+      "source": "ft_sw_2",
+      "target": "ft_ln_2",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1298",
+      "source": "ft_ln_2",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_1299",
+      "source": "ft_stroke",
+      "target": "ft_sw_3",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1300",
+      "source": "ft_sw_3",
+      "target": "ft_ln_3",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1301",
+      "source": "ft_ln_3",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_1302",
+      "source": "ft_stroke",
+      "target": "ft_sw_4",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1303",
+      "source": "ft_sw_4",
+      "target": "ft_ln_4",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1304",
+      "source": "ft_ln_4",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_1305",
+      "source": "ft_stroke",
+      "target": "ft_sw_5",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1306",
+      "source": "ft_sw_5",
+      "target": "ft_ln_5",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1307",
+      "source": "ft_ln_5",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s6"
+    },
+    {
+      "id": "e_1308",
+      "source": "ft_stroke",
+      "target": "ft_sw_6",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1309",
+      "source": "ft_sw_6",
+      "target": "ft_ln_6",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1310",
+      "source": "ft_ln_6",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s7"
+    },
+    {
+      "id": "e_1311",
+      "source": "ft_stroke",
+      "target": "ft_sw_7",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1312",
+      "source": "ft_sw_7",
+      "target": "ft_ln_7",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1313",
+      "source": "ft_ln_7",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s8"
+    },
+    {
+      "id": "e_1314",
+      "source": "ft_stroke",
+      "target": "ft_sw_8",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1315",
+      "source": "ft_sw_8",
+      "target": "ft_ln_8",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1316",
+      "source": "ft_ln_8",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s9"
+    },
+    {
+      "id": "e_1317",
+      "source": "ft_stroke",
+      "target": "ft_sw_9",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1318",
+      "source": "ft_sw_9",
+      "target": "ft_ln_9",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1319",
+      "source": "ft_ln_9",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s10"
+    },
+    {
+      "id": "e_1320",
+      "source": "ft_stroke",
+      "target": "ft_sw_10",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1321",
+      "source": "ft_sw_10",
+      "target": "ft_ln_10",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1322",
+      "source": "ft_ln_10",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s11"
+    },
+    {
+      "id": "e_1323",
+      "source": "ft_stroke",
+      "target": "ft_sw_11",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1324",
+      "source": "ft_sw_11",
+      "target": "ft_ln_11",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1325",
+      "source": "ft_ln_11",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s12"
+    },
+    {
+      "id": "e_1326",
+      "source": "ft_stroke",
+      "target": "ft_sw_12",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1327",
+      "source": "ft_sw_12",
+      "target": "ft_ln_12",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1328",
+      "source": "ft_ln_12",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s13"
+    },
+    {
+      "id": "e_1329",
+      "source": "ft_stroke",
+      "target": "ft_sw_13",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1330",
+      "source": "ft_sw_13",
+      "target": "ft_ln_13",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1331",
+      "source": "ft_ln_13",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s14"
+    },
+    {
+      "id": "e_1332",
+      "source": "ft_stroke",
+      "target": "ft_sw_14",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1333",
+      "source": "ft_sw_14",
+      "target": "ft_ln_14",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1334",
+      "source": "ft_ln_14",
+      "target": "ft_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s15"
+    },
+    {
+      "id": "e_xy_ft_ln_0-xy0",
+      "source": "ft_ln_0-xy0",
+      "target": "ft_ln_0",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_0-xy1",
+      "source": "ft_ln_0-xy1",
+      "target": "ft_ln_0",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_1-xy2",
+      "source": "ft_ln_1-xy2",
+      "target": "ft_ln_1",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_1-xy3",
+      "source": "ft_ln_1-xy3",
+      "target": "ft_ln_1",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_2-xy4",
+      "source": "ft_ln_2-xy4",
+      "target": "ft_ln_2",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_2-xy5",
+      "source": "ft_ln_2-xy5",
+      "target": "ft_ln_2",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_3-xy6",
+      "source": "ft_ln_3-xy6",
+      "target": "ft_ln_3",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_3-xy7",
+      "source": "ft_ln_3-xy7",
+      "target": "ft_ln_3",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_4-xy8",
+      "source": "ft_ln_4-xy8",
+      "target": "ft_ln_4",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_4-xy9",
+      "source": "ft_ln_4-xy9",
+      "target": "ft_ln_4",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_5-xy10",
+      "source": "ft_ln_5-xy10",
+      "target": "ft_ln_5",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_5-xy11",
+      "source": "ft_ln_5-xy11",
+      "target": "ft_ln_5",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_6-xy12",
+      "source": "ft_ln_6-xy12",
+      "target": "ft_ln_6",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_6-xy13",
+      "source": "ft_ln_6-xy13",
+      "target": "ft_ln_6",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_7-xy14",
+      "source": "ft_ln_7-xy14",
+      "target": "ft_ln_7",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_7-xy15",
+      "source": "ft_ln_7-xy15",
+      "target": "ft_ln_7",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_8-xy16",
+      "source": "ft_ln_8-xy16",
+      "target": "ft_ln_8",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_8-xy17",
+      "source": "ft_ln_8-xy17",
+      "target": "ft_ln_8",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_9-xy18",
+      "source": "ft_ln_9-xy18",
+      "target": "ft_ln_9",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_9-xy19",
+      "source": "ft_ln_9-xy19",
+      "target": "ft_ln_9",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_10-xy20",
+      "source": "ft_ln_10-xy20",
+      "target": "ft_ln_10",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_10-xy21",
+      "source": "ft_ln_10-xy21",
+      "target": "ft_ln_10",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_11-xy22",
+      "source": "ft_ln_11-xy22",
+      "target": "ft_ln_11",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_11-xy23",
+      "source": "ft_ln_11-xy23",
+      "target": "ft_ln_11",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_12-xy24",
+      "source": "ft_ln_12-xy24",
+      "target": "ft_ln_12",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_12-xy25",
+      "source": "ft_ln_12-xy25",
+      "target": "ft_ln_12",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_13-xy26",
+      "source": "ft_ln_13-xy26",
+      "target": "ft_ln_13",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_13-xy27",
+      "source": "ft_ln_13-xy27",
+      "target": "ft_ln_13",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_xy_ft_ln_14-xy28",
+      "source": "ft_ln_14-xy28",
+      "target": "ft_ln_14",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_ft_ln_14-xy29",
+      "source": "ft_ln_14-xy29",
+      "target": "ft_ln_14",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    }
+  ]
+}

@@ -1,0 +1,393 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Text Dust",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "pt_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -324
+      },
+      "params": {
+        "text": "Text dust\n\nparticles/from-layer rasterises the wired text shape to an offscreen canvas and samples inside the alpha mask. The result is a Spread<vec2> of points INSIDE the glyphs — wire it into the Emitter's positions input and particles spawn from the letters themselves.\n\nTurbulence + slow upward drift turn the letters into smoke.",
+        "width": 500,
+        "height": 260
+      },
+      "portValues": {
+        "text": "Text dust\n\nparticles/from-layer rasterises the wired text shape to an offscreen canvas and samples inside the alpha mask. The result is a Spread<vec2> of points INSIDE the glyphs — wire it into the Emitter's positions input and particles spawn from the letters themselves.\n\nTurbulence + slow upward drift turn the letters into smoke.",
+        "width": 500,
+        "height": 260
+      }
+    },
+    {
+      "id": "pt_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 929,
+        "y": 364
+      },
+      "params": {}
+    },
+    {
+      "id": "pt_str",
+      "defType": "value/string",
+      "position": {
+        "x": 426,
+        "y": 157
+      },
+      "params": {
+        "value": "FLORET"
+      },
+      "portValues": {
+        "value": "FLORET"
+      }
+    },
+    {
+      "id": "pt_fillC",
+      "defType": "color/color",
+      "position": {
+        "x": 0,
+        "y": 521
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 255
+      }
+    },
+    {
+      "id": "pt_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 246,
+        "y": 521
+      },
+      "params": {}
+    },
+    {
+      "id": "pt_tp",
+      "defType": "style/text-params",
+      "position": {
+        "x": 432,
+        "y": 381
+      },
+      "params": {
+        "font": "sans-serif",
+        "bold": true,
+        "align": "center",
+        "baseline": "middle"
+      },
+      "portValues": {
+        "font": "sans-serif",
+        "bold": true,
+        "align": "center",
+        "baseline": "middle"
+      }
+    },
+    {
+      "id": "pt_text",
+      "defType": "draw/text",
+      "position": {
+        "x": 704,
+        "y": 232
+      },
+      "params": {
+        "x": 0,
+        "y": 0,
+        "size": 120,
+        "align": "center"
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0,
+        "size": 120,
+        "align": "center"
+      }
+    },
+    {
+      "id": "pt_fromL",
+      "defType": "particles/from-layer",
+      "position": {
+        "x": 919,
+        "y": 222
+      },
+      "params": {
+        "mode": "fill",
+        "density": 320
+      },
+      "portValues": {
+        "mode": "fill",
+        "density": 320
+      }
+    },
+    {
+      "id": "pt_turb",
+      "defType": "force/turbulence",
+      "position": {
+        "x": 689,
+        "y": 70
+      },
+      "params": {
+        "scale": 0.015,
+        "speed": 0.3,
+        "strength": 30,
+        "seed": 3
+      },
+      "portValues": {
+        "scale": 0.015,
+        "speed": 0.3,
+        "strength": 30,
+        "seed": 3
+      }
+    },
+    {
+      "id": "pt_world",
+      "defType": "physics/world",
+      "position": {
+        "x": 902,
+        "y": 0
+      },
+      "params": {
+        "gravity": {
+          "x": 0,
+          "y": -12
+        },
+        "drag": 0.5,
+        "integrator": "euler"
+      },
+      "portValues": {
+        "gravity": {
+          "x": 0,
+          "y": -12
+        },
+        "drag": 0.5,
+        "integrator": "euler"
+      }
+    },
+    {
+      "id": "pt_em",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 1152,
+        "y": 109
+      },
+      "params": {
+        "rate": 600,
+        "lifetime": 5,
+        "initialVel": {
+          "x": 0,
+          "y": 0
+        },
+        "velSpread": 0.04,
+        "color": {
+          "r": 1,
+          "g": 0.92,
+          "b": 0.78,
+          "a": 0.9
+        },
+        "size": 1.8,
+        "maxCount": 3500,
+        "overflowMode": "drop",
+        "seed": 11
+      },
+      "portValues": {
+        "rate": 600,
+        "lifetime": 5,
+        "initialVel": {
+          "x": 0,
+          "y": 0
+        },
+        "velSpread": 0.04,
+        "color": {
+          "r": 1,
+          "g": 0.92,
+          "b": 0.78,
+          "a": 0.9
+        },
+        "size": 1.8,
+        "maxCount": 3500,
+        "overflowMode": "drop",
+        "seed": 11
+      }
+    },
+    {
+      "id": "pt_render",
+      "defType": "particles/render-as",
+      "position": {
+        "x": 1388,
+        "y": 109
+      },
+      "params": {
+        "template": "circle",
+        "useBufferColor": true
+      },
+      "portValues": {
+        "template": "circle",
+        "useBufferColor": true
+      }
+    },
+    {
+      "id": "pt_bg",
+      "defType": "color/color",
+      "position": {
+        "x": 1381,
+        "y": 311
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 8,
+        "g": 8,
+        "b": 16,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 8,
+        "g": 8,
+        "b": 16,
+        "a": 255
+      }
+    },
+    {
+      "id": "pt_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1641,
+        "y": 200
+      },
+      "params": {
+        "width": 560,
+        "height": 380
+      },
+      "portValues": {
+        "width": 560,
+        "height": 380
+      }
+    },
+    {
+      "id": "pt_text-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 462,
+        "y": 259
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_635",
+      "source": "pt_str",
+      "target": "pt_text",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_636",
+      "source": "pt_fillC",
+      "target": "pt_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_637",
+      "source": "pt_fill",
+      "target": "pt_tp",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_638",
+      "source": "pt_tp",
+      "target": "pt_text",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_639",
+      "source": "pt_text",
+      "target": "pt_fromL",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_640",
+      "source": "pt_fromL",
+      "target": "pt_em",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_641",
+      "source": "pt_turb",
+      "target": "pt_world",
+      "sourceHandle": "out-force",
+      "targetHandle": "in-forces"
+    },
+    {
+      "id": "e_642",
+      "source": "pt_world",
+      "target": "pt_em",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_643",
+      "source": "pt_time",
+      "target": "pt_em",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_644",
+      "source": "pt_em",
+      "target": "pt_render",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_645",
+      "source": "pt_render",
+      "target": "pt_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_646",
+      "source": "pt_bg",
+      "target": "pt_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_xy_pt_text-xy0",
+      "source": "pt_text-xy0",
+      "target": "pt_text",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

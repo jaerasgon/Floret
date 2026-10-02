@@ -1,0 +1,440 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Galactic Spiral",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ps_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -344
+      },
+      "params": {
+        "text": "Galactic spiral\n\nphysics/world.integrator is set to VERLET — two-pass integration that preserves long-running orbits much better than Euler. Vortex + central attractor produce stable spirals; trails (per-particle buffer colour, fadeOut) drag the colour through space.\n\nFlip the integrator to euler and watch the particles drift outward over time.",
+        "width": 500,
+        "height": 280
+      },
+      "portValues": {
+        "text": "Galactic spiral\n\nphysics/world.integrator is set to VERLET — two-pass integration that preserves long-running orbits much better than Euler. Vortex + central attractor produce stable spirals; trails (per-particle buffer colour, fadeOut) drag the colour through space.\n\nFlip the integrator to euler and watch the particles drift outward over time.",
+        "width": 500,
+        "height": 280
+      }
+    },
+    {
+      "id": "ps_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 25,
+        "y": 483
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_vortex",
+      "defType": "force/vortex",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "axisStrength": 900,
+        "pull": 80,
+        "radius": 400,
+        "falloff": "constant",
+        "showViz": false
+      },
+      "portValues": {
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "axisStrength": 900,
+        "pull": 80,
+        "radius": 400,
+        "falloff": "constant",
+        "showViz": false
+      }
+    },
+    {
+      "id": "ps_attr",
+      "defType": "force/attractor",
+      "position": {
+        "x": 6,
+        "y": 202
+      },
+      "params": {
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "strength": 600,
+        "radius": 400,
+        "falloff": "linear",
+        "showViz": false
+      },
+      "portValues": {
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "strength": 600,
+        "radius": 400,
+        "falloff": "linear",
+        "showViz": false
+      }
+    },
+    {
+      "id": "ps_world",
+      "defType": "physics/world",
+      "position": {
+        "x": 523,
+        "y": 11
+      },
+      "params": {
+        "gravity": {
+          "x": 0,
+          "y": 0
+        },
+        "drag": 0.02,
+        "integrator": "verlet"
+      },
+      "portValues": {
+        "gravity": {
+          "x": 0,
+          "y": 0
+        },
+        "drag": 0.02,
+        "integrator": "verlet"
+      }
+    },
+    {
+      "id": "ps_tHue",
+      "defType": "math/mul",
+      "position": {
+        "x": 243,
+        "y": 442
+      },
+      "params": {
+        "b": 720,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 720
+      }
+    },
+    {
+      "id": "ps_hsl",
+      "defType": "color/color",
+      "position": {
+        "x": 511,
+        "y": 395
+      },
+      "params": {
+        "mode": "hsl",
+        "h": 0,
+        "s": 90,
+        "l": 60,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "h": 0,
+        "s": 90,
+        "l": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "ps_ring",
+      "defType": "spread/ring",
+      "position": {
+        "x": 523,
+        "y": 233
+      },
+      "params": {
+        "count": 80,
+        "radius": 220
+      },
+      "portValues": {
+        "count": 80,
+        "radius": 220
+      }
+    },
+    {
+      "id": "ps_em",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 787,
+        "y": 211
+      },
+      "params": {
+        "rate": 240,
+        "lifetime": 9,
+        "initialVel": {
+          "x": 0,
+          "y": 0
+        },
+        "velSpread": 0.2,
+        "size": 2,
+        "maxCount": 1800,
+        "overflowMode": "replace-oldest",
+        "seed": 23
+      },
+      "portValues": {
+        "rate": 240,
+        "lifetime": 9,
+        "initialVel": {
+          "x": 0,
+          "y": 0
+        },
+        "velSpread": 0.2,
+        "size": 2,
+        "maxCount": 1800,
+        "overflowMode": "replace-oldest",
+        "seed": 23
+      }
+    },
+    {
+      "id": "ps_render",
+      "defType": "particles/render-as",
+      "position": {
+        "x": 1072,
+        "y": 318
+      },
+      "params": {
+        "template": "circle",
+        "useBufferColor": true
+      },
+      "portValues": {
+        "template": "circle",
+        "useBufferColor": true
+      }
+    },
+    {
+      "id": "ps_trailW",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 815,
+        "y": 89
+      },
+      "params": {
+        "w": 3
+      },
+      "portValues": {
+        "w": 3
+      }
+    },
+    {
+      "id": "ps_trail",
+      "defType": "particles/trail",
+      "position": {
+        "x": 1072,
+        "y": 76
+      },
+      "params": {
+        "segments": 32,
+        "fadeOut": true,
+        "useBufferColor": true,
+        "tapered": true,
+        "tailWidth": 0.05
+      },
+      "portValues": {
+        "segments": 32,
+        "fadeOut": true,
+        "useBufferColor": true,
+        "tapered": true,
+        "tailWidth": 0.05
+      }
+    },
+    {
+      "id": "ps_bg",
+      "defType": "color/color",
+      "position": {
+        "x": 1329,
+        "y": 309
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 4,
+        "g": 4,
+        "b": 12,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 4,
+        "g": 4,
+        "b": 12,
+        "a": 255
+      }
+    },
+    {
+      "id": "ps_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1592,
+        "y": 238
+      },
+      "params": {
+        "width": 600,
+        "height": 600
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600
+      }
+    },
+    {
+      "id": "merge_703",
+      "defType": "spread/merge",
+      "position": {
+        "x": 243,
+        "y": 91
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "merge_707",
+      "defType": "spread/merge",
+      "position": {
+        "x": 1320,
+        "y": 187
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_689",
+      "source": "ps_time",
+      "target": "ps_tHue",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_690",
+      "source": "ps_tHue",
+      "target": "ps_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_691",
+      "source": "ps_hsl",
+      "target": "ps_em",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_694",
+      "source": "ps_world",
+      "target": "ps_em",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_695",
+      "source": "ps_ring",
+      "target": "ps_em",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_696",
+      "source": "ps_time",
+      "target": "ps_em",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_697",
+      "source": "ps_em",
+      "target": "ps_trail",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_698",
+      "source": "ps_em",
+      "target": "ps_render",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_699",
+      "source": "ps_trailW",
+      "target": "ps_trail",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_702",
+      "source": "ps_bg",
+      "target": "ps_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_704",
+      "source": "ps_vortex",
+      "target": "merge_703",
+      "sourceHandle": "out-force",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_705",
+      "source": "ps_attr",
+      "target": "merge_703",
+      "sourceHandle": "out-force",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_706",
+      "source": "merge_703",
+      "target": "ps_world",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-forces"
+    },
+    {
+      "id": "e_708",
+      "source": "ps_trail",
+      "target": "merge_707",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_709",
+      "source": "ps_render",
+      "target": "merge_707",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_710",
+      "source": "merge_707",
+      "target": "ps_renderer",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

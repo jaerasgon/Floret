@@ -2,8 +2,7 @@
  * Golden-fixture exporter for the native (Rust) port.
  *
  * Writes, from the TypeScript implementation (the reference):
- *   native/samples/<id>.flora        every built-in sample as a real patch file
- *   native/samples/catalogue.json    sample order / name / category / description
+ *   native/fixtures/samples/<id>.flora  every built-in sample as a real patch file
  *   native/fixtures/registry.json    every NodeDef: ports, defaults, flags
  *   native/fixtures/traces/<id>.json.gz  compile result + per-frame node outputs
  *
@@ -36,8 +35,10 @@ import { resetRegistries } from '../../src/editor/editor-state/registry-sync';
 import type { FloretEdge, FloretNode } from '../../src/editor/editor-state';
 
 const ROOT = path.resolve(__dirname, '../..');
-const SAMPLES_DIR = path.join(ROOT, 'native/samples');
 const FIXTURES_DIR = path.join(ROOT, 'native/fixtures');
+// The graphs the traces were recorded from. The app's sample library
+// (native/samples + its catalogue.json) has moved on and is kept there.
+const SAMPLES_DIR = path.join(FIXTURES_DIR, 'samples');
 const TRACES_DIR = path.join(FIXTURES_DIR, 'traces');
 
 /** Format version of the trace files. Bump when the shape changes. */
@@ -436,7 +437,6 @@ it('exports samples, registry and traces', () => {
     nodes: defs.map(defJson),
   }, true);
 
-  const catalogue: unknown[] = [];
   const summary: string[] = [];
 
   for (const sample of SAMPLES) {
@@ -452,10 +452,6 @@ it('exports samples, registry and traces', () => {
     const floraText = JSON.stringify(flora, null, 2) + '\n';
     fs.mkdirSync(SAMPLES_DIR, { recursive: true });
     fs.writeFileSync(path.join(SAMPLES_DIR, `${sample.id}.flora`), floraText);
-    catalogue.push({
-      id: sample.id, name: sample.name, category: sample.category ?? 'Misc',
-      description: sample.description, file: `${sample.id}.flora`,
-    });
 
     // 2. Load the file we just wrote (round-trip proves it's self-contained).
     const { nodes, edges } = loadPatch(JSON.parse(floraText) as PatchFile);
@@ -555,7 +551,6 @@ it('exports samples, registry and traces', () => {
     }
   }
 
-  if (!only) writeJson(path.join(SAMPLES_DIR, 'catalogue.json'), { samples: catalogue }, true);
   Math.random = realRandom;
   // eslint-disable-next-line no-console
   console.log(summary.join('\n'));

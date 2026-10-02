@@ -1,0 +1,569 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Flow Field",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "flo_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 42,
+        "y": 182
+      },
+      "params": {}
+    },
+    {
+      "id": "flo_noiseScale",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 284
+      },
+      "params": {
+        "value": 0.012,
+        "min": 0.002,
+        "max": 0.05
+      },
+      "portValues": {
+        "value": 0.012,
+        "min": 0.002,
+        "max": 0.05
+      }
+    },
+    {
+      "id": "flo_len",
+      "defType": "value/number",
+      "position": {
+        "x": 14,
+        "y": 410
+      },
+      "params": {
+        "value": 18
+      },
+      "portValues": {
+        "value": 18
+      }
+    },
+    {
+      "id": "flo_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 26,
+        "y": 0
+      },
+      "params": {
+        "cols": 16,
+        "rows": 16,
+        "w": 460,
+        "h": 460
+      },
+      "portValues": {
+        "cols": 16,
+        "rows": 16,
+        "w": 460,
+        "h": 460
+      }
+    },
+    {
+      "id": "flo_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 294,
+        "y": 29
+      },
+      "params": {
+        "width": 2462,
+        "height": 499,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 206
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 167
+        }
+      ],
+      "width": 2462,
+      "height": 499
+    },
+    {
+      "id": "flo_split",
+      "defType": "vec2/split",
+      "position": {
+        "x": 128,
+        "y": 170
+      },
+      "params": {},
+      "parentId": "flo_region"
+    },
+    {
+      "id": "flo_xs",
+      "defType": "math/mul",
+      "position": {
+        "x": 331,
+        "y": 162
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "flo_region"
+    },
+    {
+      "id": "flo_ys",
+      "defType": "math/mul",
+      "position": {
+        "x": 331,
+        "y": 284
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "flo_region"
+    },
+    {
+      "id": "flo_yt",
+      "defType": "math/add",
+      "position": {
+        "x": 600,
+        "y": 256
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "flo_region"
+    },
+    {
+      "id": "flo_per",
+      "defType": "noise/perlin",
+      "position": {
+        "x": 868,
+        "y": 207
+      },
+      "params": {
+        "octaves": 2
+      },
+      "parentId": "flo_region",
+      "portValues": {
+        "octaves": 2
+      }
+    },
+    {
+      "id": "flo_ang",
+      "defType": "math/mul",
+      "position": {
+        "x": 1060,
+        "y": 193
+      },
+      "params": {
+        "b": 12.566370614359172,
+        "valueType": "number"
+      },
+      "parentId": "flo_region",
+      "portValues": {
+        "b": 12.566370614359172
+      }
+    },
+    {
+      "id": "flo_fa",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 1326,
+        "y": 184
+      },
+      "params": {},
+      "parentId": "flo_region"
+    },
+    {
+      "id": "flo_fs",
+      "defType": "vec2/split",
+      "position": {
+        "x": 1564,
+        "y": 174
+      },
+      "params": {},
+      "parentId": "flo_region"
+    },
+    {
+      "id": "flo_x2",
+      "defType": "math/add",
+      "position": {
+        "x": 1794,
+        "y": 101
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "flo_region"
+    },
+    {
+      "id": "flo_y2",
+      "defType": "math/add",
+      "position": {
+        "x": 1794,
+        "y": 223
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "flo_region"
+    },
+    {
+      "id": "flo_hueMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 1522,
+        "y": 316
+      },
+      "params": {
+        "b": 50,
+        "valueType": "number"
+      },
+      "parentId": "flo_region",
+      "portValues": {
+        "b": 50
+      }
+    },
+    {
+      "id": "flo_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 1836,
+        "y": 345
+      },
+      "params": {
+        "s": 70,
+        "l": 55,
+        "a": 220
+      },
+      "parentId": "flo_region",
+      "portValues": {
+        "s": 70,
+        "l": 55,
+        "a": 220
+      }
+    },
+    {
+      "id": "flo_strokeC",
+      "defType": "style/stroke",
+      "position": {
+        "x": 2070,
+        "y": 268
+      },
+      "params": {},
+      "parentId": "flo_region"
+    },
+    {
+      "id": "flo_line",
+      "defType": "draw/line",
+      "position": {
+        "x": 2266,
+        "y": 131
+      },
+      "params": {},
+      "parentId": "flo_region"
+    },
+    {
+      "id": "flo_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": 1483,
+        "y": 576
+      },
+      "params": {
+        "r": 10,
+        "g": 10,
+        "b": 18,
+        "a": 255
+      },
+      "portValues": {
+        "r": 10,
+        "g": 10,
+        "b": 18,
+        "a": 255
+      }
+    },
+    {
+      "id": "flo_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2882,
+        "y": 358
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "flo_line-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 373,
+        "y": 40
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "flo_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "flo_line-xy1",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2071,
+        "y": 146
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "flo_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1258",
+      "source": "flo_bg",
+      "target": "flo_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1259",
+      "source": "flo_grid",
+      "target": "flo_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_1260",
+      "source": "flo_region",
+      "target": "flo_split",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1261",
+      "source": "flo_split",
+      "target": "flo_xs",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1262",
+      "source": "flo_noiseScale",
+      "target": "flo_xs",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1263",
+      "source": "flo_split",
+      "target": "flo_ys",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1264",
+      "source": "flo_noiseScale",
+      "target": "flo_ys",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1265",
+      "source": "flo_ys",
+      "target": "flo_yt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1266",
+      "source": "flo_time",
+      "target": "flo_yt",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1267",
+      "source": "flo_xs",
+      "target": "flo_per",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1268",
+      "source": "flo_yt",
+      "target": "flo_per",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1269",
+      "source": "flo_per",
+      "target": "flo_ang",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1270",
+      "source": "flo_ang",
+      "target": "flo_fa",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_1271",
+      "source": "flo_len",
+      "target": "flo_fa",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_1272",
+      "source": "flo_fa",
+      "target": "flo_fs",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1273",
+      "source": "flo_split",
+      "target": "flo_x2",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1274",
+      "source": "flo_fs",
+      "target": "flo_x2",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1275",
+      "source": "flo_split",
+      "target": "flo_y2",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1276",
+      "source": "flo_fs",
+      "target": "flo_y2",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1277",
+      "source": "flo_per",
+      "target": "flo_hueMul",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1278",
+      "source": "flo_hueMul",
+      "target": "flo_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1279",
+      "source": "flo_hsl",
+      "target": "flo_strokeC",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1280",
+      "source": "flo_strokeC",
+      "target": "flo_line",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1281",
+      "source": "flo_split",
+      "target": "flo_line-xy0",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1282",
+      "source": "flo_split",
+      "target": "flo_line-xy0",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1283",
+      "source": "flo_x2",
+      "target": "flo_line-xy1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1284",
+      "source": "flo_y2",
+      "target": "flo_line-xy1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1285",
+      "source": "flo_line",
+      "target": "flo_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_1286",
+      "source": "flo_region",
+      "target": "flo_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_flo_line-xy0",
+      "source": "flo_line-xy0",
+      "target": "flo_line",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_flo_line-xy1",
+      "source": "flo_line-xy1",
+      "target": "flo_line",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    }
+  ]
+}

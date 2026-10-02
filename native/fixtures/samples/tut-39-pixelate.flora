@@ -1,0 +1,157 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "39 · Pixelate",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t39_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Retro pixel look\n\n`image/pixelate` downsamples then upsamples — chunky blocks.\n\nA slider drives the block size. Big values give Atari, small values keep most detail.",
+        "width": 420,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Retro pixel look\n\n`image/pixelate` downsamples then upsamples — chunky blocks.\n\nA slider drives the block size. Big values give Atari, small values keep most detail.",
+        "width": 420,
+        "height": 200
+      }
+    },
+    {
+      "id": "t39_url",
+      "defType": "io/image-url",
+      "position": {
+        "x": 7,
+        "y": 0
+      },
+      "params": {
+        "url": "https://picsum.photos/seed/floret-pixelate/500/500"
+      }
+    },
+    {
+      "id": "t39_sz",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 162
+      },
+      "params": {
+        "value": 8,
+        "min": 1,
+        "max": 32
+      },
+      "portValues": {
+        "value": 8,
+        "min": 1,
+        "max": 32
+      }
+    },
+    {
+      "id": "t39_pix",
+      "defType": "image/pixelate",
+      "position": {
+        "x": 275,
+        "y": 73
+      },
+      "params": {}
+    },
+    {
+      "id": "t39_draw",
+      "defType": "draw/image",
+      "position": {
+        "x": 474,
+        "y": 124
+      },
+      "params": {
+        "x": 0,
+        "y": 0,
+        "w": 320,
+        "h": 320
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0,
+        "w": 320,
+        "h": 320
+      }
+    },
+    {
+      "id": "t39_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 666,
+        "y": 124
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t39_draw-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 280,
+        "y": 195
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_307",
+      "source": "t39_url",
+      "target": "t39_pix",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_308",
+      "source": "t39_sz",
+      "target": "t39_pix",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-size"
+    },
+    {
+      "id": "e_309",
+      "source": "t39_pix",
+      "target": "t39_draw",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_310",
+      "source": "t39_draw",
+      "target": "t39_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t39_draw-xy0",
+      "source": "t39_draw-xy0",
+      "target": "t39_draw",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

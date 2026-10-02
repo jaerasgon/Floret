@@ -1,0 +1,708 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "The Raven",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "rv_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -304
+      },
+      "params": {
+        "text": "The Raven\n\nA passage laid out as a serif grid. Each letter's opacity is its own slow Perlin walk — noise(i, time) — so letters fade in and out independently in black & white, and the dimmer a letter gets, the more it blurs.",
+        "width": 500,
+        "height": 240
+      },
+      "portValues": {
+        "text": "The Raven\n\nA passage laid out as a serif grid. Each letter's opacity is its own slow Perlin walk — noise(i, time) — so letters fade in and out independently in black & white, and the dimmer a letter gets, the more it blurs.",
+        "width": 500,
+        "height": 240
+      }
+    },
+    {
+      "id": "rv_str",
+      "defType": "value/string",
+      "position": {
+        "x": 0,
+        "y": 60
+      },
+      "params": {
+        "value": "Once upon a midnight dreary,     while I pondered, weak and weary,over many a quaint and curious   volume of forgotten lore —       while I nodded, nearly napping,  suddenly there came a tapping,   "
+      },
+      "portValues": {
+        "value": "Once upon a midnight dreary,     while I pondered, weak and weary,over many a quaint and curious   volume of forgotten lore —       while I nodded, nearly napping,  suddenly there came a tapping,   "
+      }
+    },
+    {
+      "id": "rv_split",
+      "defType": "string/split",
+      "position": {
+        "x": 270,
+        "y": 60
+      },
+      "params": {}
+    },
+    {
+      "id": "rv_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 252,
+        "y": 182
+      },
+      "params": {
+        "count": 198
+      },
+      "portValues": {
+        "count": 198
+      }
+    },
+    {
+      "id": "rv_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 270,
+        "y": 284
+      },
+      "params": {}
+    },
+    {
+      "id": "rv_bg",
+      "defType": "color/color",
+      "position": {
+        "x": 1581,
+        "y": 625
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 8,
+        "g": 8,
+        "b": 10,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 8,
+        "g": 8,
+        "b": 10,
+        "a": 255
+      }
+    },
+    {
+      "id": "rv_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 473,
+        "y": 22
+      },
+      "params": {
+        "width": 2365,
+        "height": 555,
+        "label": "ForEach letter"
+      },
+      "ports": [
+        {
+          "id": "ch",
+          "name": "ch",
+          "type": "string",
+          "direction": "input",
+          "y": 109
+        },
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input",
+          "y": 181
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 100
+        }
+      ],
+      "width": 2365,
+      "height": 555
+    },
+    {
+      "id": "rv_rowF",
+      "defType": "math/div",
+      "position": {
+        "x": 137,
+        "y": 145
+      },
+      "params": {
+        "b": 33,
+        "valueType": "number"
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "b": 33
+      }
+    },
+    {
+      "id": "rv_row",
+      "defType": "math/floor",
+      "position": {
+        "x": 416,
+        "y": 153
+      },
+      "params": {},
+      "parentId": "rv_region"
+    },
+    {
+      "id": "rv_rowCol",
+      "defType": "math/mul",
+      "position": {
+        "x": 596,
+        "y": 115
+      },
+      "params": {
+        "b": 33,
+        "valueType": "number"
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "b": 33
+      }
+    },
+    {
+      "id": "rv_col",
+      "defType": "math/sub",
+      "position": {
+        "x": 868,
+        "y": 64
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "rv_region"
+    },
+    {
+      "id": "rv_colCen",
+      "defType": "math/sub",
+      "position": {
+        "x": 1140,
+        "y": 50
+      },
+      "params": {
+        "b": 16
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "b": 16
+      }
+    },
+    {
+      "id": "rv_x",
+      "defType": "math/mul",
+      "position": {
+        "x": 1411,
+        "y": 40
+      },
+      "params": {
+        "b": 13,
+        "valueType": "number"
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "b": 13
+      }
+    },
+    {
+      "id": "rv_rowCen",
+      "defType": "math/sub",
+      "position": {
+        "x": 1140,
+        "y": 172
+      },
+      "params": {
+        "b": 2.5,
+        "valueType": "number"
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "b": 2.5
+      }
+    },
+    {
+      "id": "rv_y",
+      "defType": "math/mul",
+      "position": {
+        "x": 1411,
+        "y": 162
+      },
+      "params": {
+        "b": 38,
+        "valueType": "number"
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "b": 38
+      }
+    },
+    {
+      "id": "rv_pos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1729,
+        "y": 77
+      },
+      "params": {},
+      "parentId": "rv_region"
+    },
+    {
+      "id": "rv_ni",
+      "defType": "math/mul",
+      "position": {
+        "x": 137,
+        "y": 267
+      },
+      "params": {
+        "b": 9.1,
+        "valueType": "number"
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "b": 9.1
+      }
+    },
+    {
+      "id": "rv_ts",
+      "defType": "math/mul",
+      "position": {
+        "x": 137,
+        "y": 389
+      },
+      "params": {
+        "b": 0.16,
+        "valueType": "number"
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "b": 0.16
+      }
+    },
+    {
+      "id": "rv_noise",
+      "defType": "noise/perlin",
+      "position": {
+        "x": 410,
+        "y": 327
+      },
+      "params": {},
+      "parentId": "rv_region"
+    },
+    {
+      "id": "rv_alpha",
+      "defType": "math/map",
+      "position": {
+        "x": 640,
+        "y": 346
+      },
+      "params": {
+        "inMin": 0.22,
+        "inMax": 0.37,
+        "outMin": 0,
+        "outMax": 1
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "inMin": 0.22,
+        "inMax": 0.37,
+        "outMin": 0,
+        "outMax": 1
+      }
+    },
+    {
+      "id": "rv_a255",
+      "defType": "math/mul",
+      "position": {
+        "x": 868,
+        "y": 399
+      },
+      "params": {
+        "b": 255,
+        "valueType": "number"
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "b": 255
+      }
+    },
+    {
+      "id": "rv_inv",
+      "defType": "math/sub",
+      "position": {
+        "x": 1411,
+        "y": 284
+      },
+      "params": {
+        "a": 1,
+        "valueType": "number"
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "rv_blurA",
+      "defType": "math/mul",
+      "position": {
+        "x": 1687,
+        "y": 199
+      },
+      "params": {
+        "b": 7,
+        "valueType": "number"
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "b": 7
+      }
+    },
+    {
+      "id": "rv_white",
+      "defType": "color/color",
+      "position": {
+        "x": 1149,
+        "y": 373
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 245,
+        "g": 245,
+        "b": 245,
+        "a": 255
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "mode": "rgb",
+        "r": 245,
+        "g": 245,
+        "b": 245,
+        "a": 255
+      }
+    },
+    {
+      "id": "rv_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1453,
+        "y": 417
+      },
+      "params": {},
+      "parentId": "rv_region"
+    },
+    {
+      "id": "rv_tp",
+      "defType": "style/text-params",
+      "position": {
+        "x": 1699,
+        "y": 321
+      },
+      "params": {
+        "font": "Georgia, \"Times New Roman\", serif",
+        "bold": false,
+        "italic": false,
+        "align": "center",
+        "baseline": "middle"
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "font": "Georgia, \"Times New Roman\", serif",
+        "bold": false,
+        "italic": false,
+        "align": "center",
+        "baseline": "middle"
+      }
+    },
+    {
+      "id": "rv_blur",
+      "defType": "style/blur",
+      "position": {
+        "x": 1964,
+        "y": 215
+      },
+      "params": {},
+      "parentId": "rv_region"
+    },
+    {
+      "id": "rv_text",
+      "defType": "draw/text",
+      "position": {
+        "x": 2167,
+        "y": 65
+      },
+      "params": {
+        "string": "?",
+        "size": 22,
+        "align": "center"
+      },
+      "parentId": "rv_region",
+      "portValues": {
+        "string": "?",
+        "size": 22,
+        "align": "center"
+      }
+    },
+    {
+      "id": "rv_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2973,
+        "y": 345
+      },
+      "params": {
+        "width": 560,
+        "height": 360
+      },
+      "portValues": {
+        "width": 560,
+        "height": 360
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_509",
+      "source": "rv_str",
+      "target": "rv_split",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-text"
+    },
+    {
+      "id": "e_510",
+      "source": "rv_split",
+      "target": "rv_region",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-ch"
+    },
+    {
+      "id": "e_511",
+      "source": "rv_range",
+      "target": "rv_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_512",
+      "source": "rv_bg",
+      "target": "rv_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_513",
+      "source": "rv_region",
+      "target": "rv_rowF",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_514",
+      "source": "rv_rowF",
+      "target": "rv_row",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_515",
+      "source": "rv_row",
+      "target": "rv_rowCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_516",
+      "source": "rv_region",
+      "target": "rv_col",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_517",
+      "source": "rv_rowCol",
+      "target": "rv_col",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_518",
+      "source": "rv_col",
+      "target": "rv_colCen",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_519",
+      "source": "rv_colCen",
+      "target": "rv_x",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_520",
+      "source": "rv_row",
+      "target": "rv_rowCen",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_521",
+      "source": "rv_rowCen",
+      "target": "rv_y",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_522",
+      "source": "rv_x",
+      "target": "rv_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_523",
+      "source": "rv_y",
+      "target": "rv_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_524",
+      "source": "rv_pos",
+      "target": "rv_text",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_525",
+      "source": "rv_region",
+      "target": "rv_ni",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_526",
+      "source": "rv_time",
+      "target": "rv_ts",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_527",
+      "source": "rv_ni",
+      "target": "rv_noise",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_528",
+      "source": "rv_ts",
+      "target": "rv_noise",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_529",
+      "source": "rv_noise",
+      "target": "rv_alpha",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_530",
+      "source": "rv_alpha",
+      "target": "rv_a255",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_531",
+      "source": "rv_a255",
+      "target": "rv_white",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_532",
+      "source": "rv_alpha",
+      "target": "rv_inv",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_533",
+      "source": "rv_inv",
+      "target": "rv_blurA",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_534",
+      "source": "rv_blurA",
+      "target": "rv_blur",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-amount"
+    },
+    {
+      "id": "e_535",
+      "source": "rv_white",
+      "target": "rv_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_536",
+      "source": "rv_fill",
+      "target": "rv_tp",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_537",
+      "source": "rv_tp",
+      "target": "rv_blur",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_538",
+      "source": "rv_blur",
+      "target": "rv_text",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_539",
+      "source": "rv_region",
+      "target": "rv_text",
+      "sourceHandle": "out-ch",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_540",
+      "source": "rv_text",
+      "target": "rv_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_541",
+      "source": "rv_region",
+      "target": "rv_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

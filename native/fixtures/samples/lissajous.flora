@@ -1,0 +1,619 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Lissajous Threads",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "lj_a",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {
+        "value": 3,
+        "min": 1,
+        "max": 8
+      },
+      "portValues": {
+        "value": 3,
+        "min": 1,
+        "max": 8
+      }
+    },
+    {
+      "id": "lj_b",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 126
+      },
+      "params": {
+        "value": 5,
+        "min": 1,
+        "max": 8
+      },
+      "portValues": {
+        "value": 5,
+        "min": 1,
+        "max": 8
+      }
+    },
+    {
+      "id": "lj_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 42,
+        "y": 252
+      },
+      "params": {}
+    },
+    {
+      "id": "lj_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 24,
+        "y": 864
+      },
+      "params": {
+        "count": 240
+      },
+      "portValues": {
+        "count": 240
+      }
+    },
+    {
+      "id": "lj_tStep",
+      "defType": "value/number",
+      "position": {
+        "x": 14,
+        "y": 456
+      },
+      "params": {
+        "value": 0.02617993877991494
+      },
+      "portValues": {
+        "value": 0.02617993877991494
+      }
+    },
+    {
+      "id": "lj_radius",
+      "defType": "value/number",
+      "position": {
+        "x": 14,
+        "y": 558
+      },
+      "params": {
+        "value": 200
+      },
+      "portValues": {
+        "value": 200
+      }
+    },
+    {
+      "id": "lj_cx",
+      "defType": "value/number",
+      "position": {
+        "x": 14,
+        "y": 660
+      },
+      "params": {
+        "value": 0
+      },
+      "portValues": {
+        "value": 0
+      }
+    },
+    {
+      "id": "lj_cy",
+      "defType": "value/number",
+      "position": {
+        "x": 14,
+        "y": 762
+      },
+      "params": {
+        "value": 0
+      },
+      "portValues": {
+        "value": 0
+      }
+    },
+    {
+      "id": "lj_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 328,
+        "y": 250
+      },
+      "params": {
+        "width": 2037,
+        "height": 438,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input",
+          "y": 229
+        },
+        {
+          "id": "p",
+          "name": "p",
+          "type": "layer",
+          "direction": "output",
+          "y": 175
+        }
+      ],
+      "width": 2037,
+      "height": 438
+    },
+    {
+      "id": "lj_tMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 133,
+        "y": 132
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "lj_region"
+    },
+    {
+      "id": "lj_axMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 407,
+        "y": 64
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "lj_region"
+    },
+    {
+      "id": "lj_ayMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 407,
+        "y": 186
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "lj_region"
+    },
+    {
+      "id": "lj_axAdd",
+      "defType": "math/add",
+      "position": {
+        "x": 672,
+        "y": 58
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "lj_region"
+    },
+    {
+      "id": "lj_ayAdd",
+      "defType": "math/add",
+      "position": {
+        "x": 672,
+        "y": 180
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "lj_region"
+    },
+    {
+      "id": "lj_cosX",
+      "defType": "math/cos",
+      "position": {
+        "x": 936,
+        "y": 52
+      },
+      "params": {},
+      "parentId": "lj_region"
+    },
+    {
+      "id": "lj_sinY",
+      "defType": "math/sin",
+      "position": {
+        "x": 936,
+        "y": 174
+      },
+      "params": {},
+      "parentId": "lj_region"
+    },
+    {
+      "id": "lj_rX",
+      "defType": "math/mul",
+      "position": {
+        "x": 1105,
+        "y": 46
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "lj_region"
+    },
+    {
+      "id": "lj_rY",
+      "defType": "math/mul",
+      "position": {
+        "x": 1105,
+        "y": 168
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "lj_region"
+    },
+    {
+      "id": "lj_xFin",
+      "defType": "math/add",
+      "position": {
+        "x": 1370,
+        "y": 40
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "lj_region"
+    },
+    {
+      "id": "lj_yFin",
+      "defType": "math/add",
+      "position": {
+        "x": 1370,
+        "y": 162
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "lj_region"
+    },
+    {
+      "id": "lj_hueMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 133,
+        "y": 254
+      },
+      "params": {
+        "b": 1.5,
+        "valueType": "number"
+      },
+      "parentId": "lj_region",
+      "portValues": {
+        "b": 1.5
+      }
+    },
+    {
+      "id": "lj_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 1412,
+        "y": 284
+      },
+      "params": {
+        "s": 75,
+        "l": 60,
+        "a": 255
+      },
+      "parentId": "lj_region",
+      "portValues": {
+        "s": 75,
+        "l": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "lj_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1644,
+        "y": 252
+      },
+      "params": {
+        "mode": "color"
+      },
+      "parentId": "lj_region",
+      "portValues": {
+        "mode": "color"
+      }
+    },
+    {
+      "id": "lj_dotSize",
+      "defType": "value/number",
+      "position": {
+        "x": 14,
+        "y": 354
+      },
+      "params": {
+        "value": 4
+      },
+      "portValues": {
+        "value": 4
+      }
+    },
+    {
+      "id": "lj_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1829,
+        "y": 139
+      },
+      "params": {},
+      "parentId": "lj_region"
+    },
+    {
+      "id": "lj_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2461,
+        "y": 389
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "lj_dot-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1644,
+        "y": 107
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "lj_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_711",
+      "source": "lj_range",
+      "target": "lj_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_712",
+      "source": "lj_region",
+      "target": "lj_tMul",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_713",
+      "source": "lj_tStep",
+      "target": "lj_tMul",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_714",
+      "source": "lj_tMul",
+      "target": "lj_axMul",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_715",
+      "source": "lj_a",
+      "target": "lj_axMul",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_716",
+      "source": "lj_axMul",
+      "target": "lj_axAdd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_717",
+      "source": "lj_time",
+      "target": "lj_axAdd",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_718",
+      "source": "lj_tMul",
+      "target": "lj_ayMul",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_719",
+      "source": "lj_b",
+      "target": "lj_ayMul",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_720",
+      "source": "lj_ayMul",
+      "target": "lj_ayAdd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_721",
+      "source": "lj_time",
+      "target": "lj_ayAdd",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_722",
+      "source": "lj_axAdd",
+      "target": "lj_cosX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_723",
+      "source": "lj_ayAdd",
+      "target": "lj_sinY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_724",
+      "source": "lj_cosX",
+      "target": "lj_rX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_725",
+      "source": "lj_radius",
+      "target": "lj_rX",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_726",
+      "source": "lj_sinY",
+      "target": "lj_rY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_727",
+      "source": "lj_radius",
+      "target": "lj_rY",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_728",
+      "source": "lj_rX",
+      "target": "lj_xFin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_729",
+      "source": "lj_cx",
+      "target": "lj_xFin",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_730",
+      "source": "lj_rY",
+      "target": "lj_yFin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_731",
+      "source": "lj_cy",
+      "target": "lj_yFin",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_732",
+      "source": "lj_region",
+      "target": "lj_hueMul",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_733",
+      "source": "lj_hueMul",
+      "target": "lj_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_734",
+      "source": "lj_hsl",
+      "target": "lj_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_735",
+      "source": "lj_xFin",
+      "target": "lj_dot-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_736",
+      "source": "lj_yFin",
+      "target": "lj_dot-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_737",
+      "source": "lj_dotSize",
+      "target": "lj_dot",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_738",
+      "source": "lj_dotSize",
+      "target": "lj_dot",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_739",
+      "source": "lj_fill",
+      "target": "lj_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_740",
+      "source": "lj_dot",
+      "target": "lj_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_741",
+      "source": "lj_region",
+      "target": "lj_renderer",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_lj_dot-xy0",
+      "source": "lj_dot-xy0",
+      "target": "lj_dot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

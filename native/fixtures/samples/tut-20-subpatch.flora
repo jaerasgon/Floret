@@ -1,0 +1,365 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "20 · Subpatch (Reusable Box)",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t20_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -304
+      },
+      "params": {
+        "text": "Subpatches: your own reusable nodes\n\nA `meta/subpatch` is a box that hides a sub-graph behind custom input/output ports. Double-click the subpatch to descend into it; click the breadcrumb to come back.\n\nHere we built a \"ColoredRect(x, y, hue)\" subpatch and used it twice.",
+        "width": 420,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Subpatches: your own reusable nodes\n\nA `meta/subpatch` is a box that hides a sub-graph behind custom input/output ports. Double-click the subpatch to descend into it; click the breadcrumb to come back.\n\nHere we built a \"ColoredRect(x, y, hue)\" subpatch and used it twice.",
+        "width": 420,
+        "height": 240
+      }
+    },
+    {
+      "id": "t20_sub",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 460,
+        "y": 104
+      },
+      "params": {
+        "label": "ColoredRect",
+        "width": 766,
+        "height": 336
+      },
+      "ports": [
+        {
+          "id": "x",
+          "name": "x",
+          "type": "number",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "y",
+          "name": "y",
+          "type": "number",
+          "direction": "input",
+          "y": 96
+        },
+        {
+          "id": "hue",
+          "name": "hue",
+          "type": "number",
+          "direction": "input",
+          "y": 218
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 90
+        }
+      ],
+      "width": 766,
+      "height": 336
+    },
+    {
+      "id": "t20_col",
+      "defType": "color/color",
+      "position": {
+        "x": 128,
+        "y": 162
+      },
+      "params": {
+        "mode": "hsl",
+        "s": 80,
+        "l": 55,
+        "a": 255
+      },
+      "parentId": "t20_sub",
+      "portValues": {
+        "mode": "hsl",
+        "s": 80,
+        "l": 55,
+        "a": 255
+      }
+    },
+    {
+      "id": "t20_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 376,
+        "y": 148
+      },
+      "params": {},
+      "parentId": "t20_sub"
+    },
+    {
+      "id": "t20_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 558,
+        "y": 54
+      },
+      "params": {
+        "w": 80,
+        "h": 80
+      },
+      "parentId": "t20_sub",
+      "portValues": {
+        "w": 80,
+        "h": 80
+      }
+    },
+    {
+      "id": "t20_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 0,
+        "y": 204
+      },
+      "params": {}
+    },
+    {
+      "id": "t20_hueSpeed",
+      "defType": "math/mul",
+      "position": {
+        "x": 180,
+        "y": 204
+      },
+      "params": {
+        "b": 40,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 40
+      }
+    },
+    {
+      "id": "t20_sib",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 496,
+        "y": 259
+      },
+      "params": {
+        "x": 120,
+        "y": 0,
+        "w": 60,
+        "h": 60
+      },
+      "portValues": {
+        "x": 120,
+        "y": 0,
+        "w": 60,
+        "h": 60
+      }
+    },
+    {
+      "id": "t20_grp",
+      "defType": "transform/group",
+      "position": {
+        "x": 734,
+        "y": 172
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "t20_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 998,
+        "y": 172
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t20_x1",
+      "defType": "value/number",
+      "position": {
+        "x": 194,
+        "y": 0
+      },
+      "params": {
+        "value": -100
+      },
+      "portValues": {
+        "value": -100
+      }
+    },
+    {
+      "id": "t20_y1",
+      "defType": "value/number",
+      "position": {
+        "x": 194,
+        "y": 102
+      },
+      "params": {
+        "value": 0
+      },
+      "portValues": {
+        "value": 0
+      }
+    },
+    {
+      "id": "t20_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 161,
+        "y": 40
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "t20_sub",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "t20_sib-xy1",
+      "defType": "vec2/make",
+      "position": {
+        "x": 217,
+        "y": 326
+      },
+      "params": {
+        "x": 120,
+        "y": 0
+      },
+      "portValues": {
+        "x": 120,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_126",
+      "source": "t20_sub",
+      "target": "t20_col",
+      "sourceHandle": "out-hue",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_127",
+      "source": "t20_col",
+      "target": "t20_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_128",
+      "source": "t20_fill",
+      "target": "t20_rect",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_129",
+      "source": "t20_sub",
+      "target": "t20_rect-xy0",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_130",
+      "source": "t20_sub",
+      "target": "t20_rect-xy0",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_131",
+      "source": "t20_rect",
+      "target": "t20_sub",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_132",
+      "source": "t20_t",
+      "target": "t20_hueSpeed",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_133",
+      "source": "t20_hueSpeed",
+      "target": "t20_sub",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-hue"
+    },
+    {
+      "id": "e_134",
+      "source": "t20_x1",
+      "target": "t20_sub",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_135",
+      "source": "t20_y1",
+      "target": "t20_sub",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_136",
+      "source": "t20_sub",
+      "target": "t20_grp",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_137",
+      "source": "t20_sib",
+      "target": "t20_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_138",
+      "source": "t20_grp",
+      "target": "t20_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t20_rect-xy0",
+      "source": "t20_rect-xy0",
+      "target": "t20_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_xy_t20_sib-xy1",
+      "source": "t20_sib-xy1",
+      "target": "t20_sib",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

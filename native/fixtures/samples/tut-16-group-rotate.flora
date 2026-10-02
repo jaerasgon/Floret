@@ -1,0 +1,201 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "16 · Group + Transform",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t16_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -284
+      },
+      "params": {
+        "text": "Group + Transform\n\n`transform/group` turns multiple layers into one. `transform/rotate` then rotates everything together.\n\nTwo rectangles offset from origin, grouped, rotated. The pair spins as a unit.",
+        "width": 380,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Group + Transform\n\n`transform/group` turns multiple layers into one. `transform/rotate` then rotates everything together.\n\nTwo rectangles offset from origin, grouped, rotated. The pair spins as a unit.",
+        "width": 380,
+        "height": 220
+      }
+    },
+    {
+      "id": "t16_r1",
+      "defType": "draw/rect",
+      "position": {
+        "x": 197,
+        "y": 21
+      },
+      "params": {
+        "x": -120,
+        "y": -20,
+        "w": 80,
+        "h": 40
+      },
+      "portValues": {
+        "x": -120,
+        "y": -20,
+        "w": 80,
+        "h": 40
+      }
+    },
+    {
+      "id": "t16_r2",
+      "defType": "draw/rect",
+      "position": {
+        "x": 197,
+        "y": 203
+      },
+      "params": {
+        "x": 40,
+        "y": -20,
+        "w": 80,
+        "h": 40
+      },
+      "portValues": {
+        "x": 40,
+        "y": -20,
+        "w": 80,
+        "h": 40
+      }
+    },
+    {
+      "id": "t16_grp",
+      "defType": "transform/group",
+      "position": {
+        "x": 401,
+        "y": 102
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "t16_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 443,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t16_rot",
+      "defType": "transform/rotate",
+      "position": {
+        "x": 671,
+        "y": 41
+      },
+      "params": {}
+    },
+    {
+      "id": "t16_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 852,
+        "y": 41
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t16_r1-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 0,
+        "y": 21
+      },
+      "params": {
+        "x": -120,
+        "y": -20
+      },
+      "portValues": {
+        "x": -120,
+        "y": -20
+      }
+    },
+    {
+      "id": "t16_r2-xy1",
+      "defType": "vec2/make",
+      "position": {
+        "x": 6,
+        "y": 203
+      },
+      "params": {
+        "x": 40,
+        "y": -20
+      },
+      "portValues": {
+        "x": 40,
+        "y": -20
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_83",
+      "source": "t16_r1",
+      "target": "t16_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_84",
+      "source": "t16_r2",
+      "target": "t16_grp",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_85",
+      "source": "t16_grp",
+      "target": "t16_rot",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_86",
+      "source": "t16_t",
+      "target": "t16_rot",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_87",
+      "source": "t16_rot",
+      "target": "t16_renderer",
+      "sourceHandle": "out-rotated",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t16_r1-xy0",
+      "source": "t16_r1-xy0",
+      "target": "t16_r1",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_xy_t16_r2-xy1",
+      "source": "t16_r2-xy1",
+      "target": "t16_r2",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

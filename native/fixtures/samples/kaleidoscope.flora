@@ -1,0 +1,482 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Kaleidoscope",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ks_url",
+      "defType": "io/image-url",
+      "position": {
+        "x": 892,
+        "y": 33
+      },
+      "params": {
+        "url": "https://picsum.photos/seed/floret-kaleido/500/500"
+      },
+      "portValues": {
+        "url": "https://picsum.photos/seed/floret-kaleido/500/500"
+      }
+    },
+    {
+      "id": "ks_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 0,
+        "y": 256
+      },
+      "params": {}
+    },
+    {
+      "id": "ks_tScale",
+      "defType": "math/mul",
+      "position": {
+        "x": 180,
+        "y": 256
+      },
+      "params": {
+        "b": 0.3,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.3
+      }
+    },
+    {
+      "id": "ks_sinT",
+      "defType": "math/sin",
+      "position": {
+        "x": 452,
+        "y": 205
+      },
+      "params": {}
+    },
+    {
+      "id": "ks_cosT",
+      "defType": "math/cos",
+      "position": {
+        "x": 452,
+        "y": 307
+      },
+      "params": {}
+    },
+    {
+      "id": "ks_wOff",
+      "defType": "math/mul",
+      "position": {
+        "x": 621,
+        "y": 195
+      },
+      "params": {
+        "b": 120,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 120
+      }
+    },
+    {
+      "id": "ks_hOff",
+      "defType": "math/mul",
+      "position": {
+        "x": 621,
+        "y": 317
+      },
+      "params": {
+        "b": 120,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 120
+      }
+    },
+    {
+      "id": "ks_sxAnim",
+      "defType": "math/add",
+      "position": {
+        "x": 885,
+        "y": 195
+      },
+      "params": {
+        "b": 200,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 200
+      }
+    },
+    {
+      "id": "ks_syAnim",
+      "defType": "math/add",
+      "position": {
+        "x": 885,
+        "y": 317
+      },
+      "params": {
+        "b": 200,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 200
+      }
+    },
+    {
+      "id": "ks_imgRegion",
+      "defType": "draw/image-region",
+      "position": {
+        "x": 1176,
+        "y": 162
+      },
+      "params": {
+        "sw": 200,
+        "sh": 200,
+        "dx": 30,
+        "dy": -100,
+        "dw": 200,
+        "dh": 200
+      },
+      "portValues": {
+        "sw": 200,
+        "sh": 200,
+        "dx": 30,
+        "dy": -100,
+        "dw": 200,
+        "dh": 200
+      }
+    },
+    {
+      "id": "ks_angles",
+      "defType": "spread/ring",
+      "position": {
+        "x": 1168,
+        "y": 0
+      },
+      "params": {
+        "count": 12
+      },
+      "portValues": {
+        "count": 12
+      }
+    },
+    {
+      "id": "ks_idxs",
+      "defType": "spread/range",
+      "position": {
+        "x": 1174,
+        "y": 444
+      },
+      "params": {
+        "count": 12
+      },
+      "portValues": {
+        "count": 12
+      }
+    },
+    {
+      "id": "ks_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1421,
+        "y": 137
+      },
+      "params": {
+        "width": 1206,
+        "height": 228,
+        "label": "ForEach Wedge"
+      },
+      "ports": [
+        {
+          "id": "angle",
+          "name": "angle",
+          "type": "number",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input",
+          "y": 134
+        },
+        {
+          "id": "out",
+          "name": "out",
+          "type": "layer",
+          "direction": "output",
+          "y": 83
+        }
+      ],
+      "width": 1206,
+      "height": 228
+    },
+    {
+      "id": "ks_iMod",
+      "defType": "math/mod",
+      "position": {
+        "x": 128,
+        "y": 98
+      },
+      "params": {
+        "b": 2
+      },
+      "parentId": "ks_region",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "ks_iMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 296,
+        "y": 96
+      },
+      "params": {
+        "b": -2,
+        "valueType": "number"
+      },
+      "parentId": "ks_region",
+      "portValues": {
+        "b": -2
+      }
+    },
+    {
+      "id": "ks_sign",
+      "defType": "math/add",
+      "position": {
+        "x": 561,
+        "y": 95
+      },
+      "params": {
+        "b": 1,
+        "valueType": "number"
+      },
+      "parentId": "ks_region",
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "ks_scaled",
+      "defType": "transform/scale",
+      "position": {
+        "x": 825,
+        "y": 94
+      },
+      "params": {
+        "sy": 1
+      },
+      "parentId": "ks_region",
+      "portValues": {
+        "sy": 1
+      }
+    },
+    {
+      "id": "ks_rotated",
+      "defType": "transform/rotate",
+      "position": {
+        "x": 1009,
+        "y": 47
+      },
+      "params": {},
+      "parentId": "ks_region"
+    },
+    {
+      "id": "ks_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": 1982,
+        "y": 413
+      },
+      "params": {
+        "r": 6,
+        "g": 6,
+        "b": 14,
+        "a": 255
+      },
+      "portValues": {
+        "r": 6,
+        "g": 6,
+        "b": 14,
+        "a": 255
+      }
+    },
+    {
+      "id": "ks_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2739,
+        "y": 288
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_742",
+      "source": "ks_bg",
+      "target": "ks_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_743",
+      "source": "ks_time",
+      "target": "ks_tScale",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_744",
+      "source": "ks_tScale",
+      "target": "ks_sinT",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_745",
+      "source": "ks_tScale",
+      "target": "ks_cosT",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_746",
+      "source": "ks_sinT",
+      "target": "ks_wOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_747",
+      "source": "ks_cosT",
+      "target": "ks_hOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_748",
+      "source": "ks_wOff",
+      "target": "ks_sxAnim",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_749",
+      "source": "ks_hOff",
+      "target": "ks_syAnim",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_750",
+      "source": "ks_url",
+      "target": "ks_imgRegion",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_751",
+      "source": "ks_sxAnim",
+      "target": "ks_imgRegion",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-sx"
+    },
+    {
+      "id": "e_752",
+      "source": "ks_syAnim",
+      "target": "ks_imgRegion",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-sy"
+    },
+    {
+      "id": "e_753",
+      "source": "ks_angles",
+      "target": "ks_region",
+      "sourceHandle": "out-angles",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_754",
+      "source": "ks_idxs",
+      "target": "ks_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_755",
+      "source": "ks_region",
+      "target": "ks_iMod",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_756",
+      "source": "ks_iMod",
+      "target": "ks_iMul",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_757",
+      "source": "ks_iMul",
+      "target": "ks_sign",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_758",
+      "source": "ks_imgRegion",
+      "target": "ks_scaled",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_759",
+      "source": "ks_sign",
+      "target": "ks_scaled",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-sx"
+    },
+    {
+      "id": "e_760",
+      "source": "ks_scaled",
+      "target": "ks_rotated",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_761",
+      "source": "ks_region",
+      "target": "ks_rotated",
+      "sourceHandle": "out-angle",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_762",
+      "source": "ks_rotated",
+      "target": "ks_region",
+      "sourceHandle": "out-rotated",
+      "targetHandle": "in-out"
+    },
+    {
+      "id": "e_763",
+      "source": "ks_region",
+      "target": "ks_renderer",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

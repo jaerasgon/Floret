@@ -1,0 +1,78 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Shader · Plasma",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "sh_scale",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 36
+      },
+      "params": {
+        "value": 6,
+        "min": 1,
+        "max": 24
+      },
+      "portValues": {
+        "value": 6,
+        "min": 1,
+        "max": 24
+      }
+    },
+    {
+      "id": "sh_shader",
+      "defType": "gpu/shader",
+      "position": {
+        "x": 264,
+        "y": 0
+      },
+      "params": {
+        "source": "uniform float scale;\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord) {\n  vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;\n  uv *= scale;\n  float t = iTime * 0.5;\n  float v = sin(uv.x + t)\n          + sin(uv.y + t)\n          + sin(uv.x + uv.y + t)\n          + sin(length(uv) * 2.0 - t);\n  vec3 col = 0.5 + 0.5 * cos(vec3(0.0, 2.0, 4.0) + v + t);\n  fragColor = vec4(col, 1.0);\n}",
+        "feedback": false
+      },
+      "portValues": {
+        "source": "uniform float scale;\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord) {\n  vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;\n  uv *= scale;\n  float t = iTime * 0.5;\n  float v = sin(uv.x + t)\n          + sin(uv.y + t)\n          + sin(uv.x + uv.y + t)\n          + sin(length(uv) * 2.0 - t);\n  vec3 col = 0.5 + 0.5 * cos(vec3(0.0, 2.0, 4.0) + v + t);\n  fragColor = vec4(col, 1.0);\n}",
+        "feedback": false
+      }
+    },
+    {
+      "id": "sh_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 481,
+        "y": 0
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1353",
+      "source": "sh_scale",
+      "target": "sh_shader",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_1354",
+      "source": "sh_shader",
+      "target": "sh_renderer",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

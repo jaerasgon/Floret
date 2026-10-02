@@ -1,0 +1,216 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "32 · Normalize + Polar",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t32_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -284
+      },
+      "params": {
+        "text": "Unit vectors\n\n`vec2/normalize` divides by length so the result has magnitude 1. Useful for \"give me the DIRECTION but not the SIZE\", then scale by whatever length you want.\n\nA unit vector from origin to mouse, then scaled to a fixed radius — an arrow that always reaches the same distance.",
+        "width": 420,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Unit vectors\n\n`vec2/normalize` divides by length so the result has magnitude 1. Useful for \"give me the DIRECTION but not the SIZE\", then scale by whatever length you want.\n\nA unit vector from origin to mouse, then scaled to a fixed radius — an arrow that always reaches the same distance.",
+        "width": 420,
+        "height": 220
+      }
+    },
+    {
+      "id": "t32_m",
+      "defType": "input/mouse",
+      "position": {
+        "x": 0,
+        "y": 121
+      },
+      "params": {}
+    },
+    {
+      "id": "t32_mv",
+      "defType": "vec2/make",
+      "position": {
+        "x": 180,
+        "y": 121
+      },
+      "params": {}
+    },
+    {
+      "id": "t32_n",
+      "defType": "vec2/normalize",
+      "position": {
+        "x": 360,
+        "y": 121
+      },
+      "params": {}
+    },
+    {
+      "id": "t32_sc",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 550,
+        "y": 121
+      },
+      "params": {
+        "s": 180
+      },
+      "portValues": {
+        "s": 180
+      }
+    },
+    {
+      "id": "t32_sp",
+      "defType": "vec2/split",
+      "position": {
+        "x": 730,
+        "y": 122
+      },
+      "params": {}
+    },
+    {
+      "id": "t32_line",
+      "defType": "draw/line",
+      "position": {
+        "x": 1098,
+        "y": 51
+      },
+      "params": {
+        "x1": 0,
+        "y1": 0
+      },
+      "portValues": {
+        "x1": 0,
+        "y1": 0
+      }
+    },
+    {
+      "id": "t32_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1278,
+        "y": 51
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t32_line-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 910,
+        "y": 0
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "t32_line-xy1",
+      "defType": "vec2/make",
+      "position": {
+        "x": 910,
+        "y": 122
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_271",
+      "source": "t32_m",
+      "target": "t32_mv",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_272",
+      "source": "t32_m",
+      "target": "t32_mv",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_273",
+      "source": "t32_mv",
+      "target": "t32_n",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_274",
+      "source": "t32_n",
+      "target": "t32_sc",
+      "sourceHandle": "out-normalized",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_275",
+      "source": "t32_sc",
+      "target": "t32_sp",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_276",
+      "source": "t32_sp",
+      "target": "t32_line-xy1",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_277",
+      "source": "t32_sp",
+      "target": "t32_line-xy1",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_278",
+      "source": "t32_line",
+      "target": "t32_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t32_line-xy0",
+      "source": "t32_line-xy0",
+      "target": "t32_line",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_t32_line-xy1",
+      "source": "t32_line-xy1",
+      "target": "t32_line",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    }
+  ]
+}

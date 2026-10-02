@@ -1,0 +1,211 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "22 · Cache Region",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t22_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -304
+      },
+      "params": {
+        "text": "Cache: skip work when inputs are stable\n\n`region/cache` runs its body only when an input changes. Wrap an expensive computation inside it and the runtime returns the same output every tick until you nudge an input.\n\nHere: a 200-point Fibonacci scatter, cached. The Path is rebuilt only when `scale` changes.",
+        "width": 420,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Cache: skip work when inputs are stable\n\n`region/cache` runs its body only when an input changes. Wrap an expensive computation inside it and the runtime returns the same output every tick until you nudge an input.\n\nHere: a 200-point Fibonacci scatter, cached. The Path is rebuilt only when `scale` changes.",
+        "width": 420,
+        "height": 240
+      }
+    },
+    {
+      "id": "t22_scale",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 79
+      },
+      "params": {
+        "value": 10,
+        "min": 4,
+        "max": 20
+      },
+      "portValues": {
+        "value": 10,
+        "min": 4,
+        "max": 20
+      }
+    },
+    {
+      "id": "t22_region",
+      "defType": "region/cache",
+      "position": {
+        "x": 264,
+        "y": 22
+      },
+      "params": {
+        "width": 765,
+        "height": 356,
+        "label": "Cache"
+      },
+      "ports": [
+        {
+          "id": "s",
+          "name": "scale",
+          "type": "number",
+          "direction": "input",
+          "y": 97
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 109
+        }
+      ],
+      "width": 765,
+      "height": 356
+    },
+    {
+      "id": "t22_fib",
+      "defType": "spread/fibonacci",
+      "position": {
+        "x": 138,
+        "y": 40
+      },
+      "params": {
+        "count": 200,
+        "phase": 0
+      },
+      "parentId": "t22_region",
+      "portValues": {
+        "count": 200,
+        "phase": 0
+      }
+    },
+    {
+      "id": "t22_col",
+      "defType": "color/color",
+      "position": {
+        "x": 128,
+        "y": 182
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 90,
+        "g": 200,
+        "b": 200,
+        "a": 255
+      },
+      "parentId": "t22_region",
+      "portValues": {
+        "mode": "rgb",
+        "r": 90,
+        "g": 200,
+        "b": 200,
+        "a": 255
+      }
+    },
+    {
+      "id": "t22_poly",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 564,
+        "y": 73
+      },
+      "params": {
+        "closed": false
+      },
+      "parentId": "t22_region",
+      "portValues": {
+        "closed": false
+      }
+    },
+    {
+      "id": "t22_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 379,
+        "y": 148
+      },
+      "params": {},
+      "parentId": "t22_region"
+    },
+    {
+      "id": "t22_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1125,
+        "y": 95
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_148",
+      "source": "t22_scale",
+      "target": "t22_region",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_149",
+      "source": "t22_region",
+      "target": "t22_fib",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_150",
+      "source": "t22_fib",
+      "target": "t22_poly",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_151",
+      "source": "t22_col",
+      "target": "t22_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_152",
+      "source": "t22_fill",
+      "target": "t22_poly",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_153",
+      "source": "t22_poly",
+      "target": "t22_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_154",
+      "source": "t22_region",
+      "target": "t22_renderer",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

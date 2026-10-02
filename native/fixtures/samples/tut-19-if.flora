@@ -1,0 +1,231 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "19 · If Region (Conditional)",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t19_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -304
+      },
+      "params": {
+        "text": "Conditional execution\n\n`region/if` only runs its body when `condition` is true — its outputs become empty when false.\n\nHere `sin(time) > 0` toggles the condition, so the red rectangle blinks on and off. Swap the time source for a mouse, slider, or key to drive it yourself.",
+        "width": 420,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Conditional execution\n\n`region/if` only runs its body when `condition` is true — its outputs become empty when false.\n\nHere `sin(time) > 0` toggles the condition, so the red rectangle blinks on and off. Swap the time source for a mouse, slider, or key to drive it yourself.",
+        "width": 420,
+        "height": 240
+      }
+    },
+    {
+      "id": "t19_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t19_sin",
+      "defType": "math/sin",
+      "position": {
+        "x": 180,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t19_gt",
+      "defType": "logic/gt",
+      "position": {
+        "x": 348,
+        "y": 0
+      },
+      "params": {
+        "b": 0
+      },
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "t19_region",
+      "defType": "region/if",
+      "position": {
+        "x": 528,
+        "y": 24
+      },
+      "params": {
+        "width": 776,
+        "height": 336,
+        "label": "If"
+      },
+      "ports": [
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 97
+        }
+      ],
+      "width": 776,
+      "height": 336
+    },
+    {
+      "id": "t19_col",
+      "defType": "color/color",
+      "position": {
+        "x": 128,
+        "y": 162
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 220,
+        "g": 50,
+        "b": 50,
+        "a": 255
+      },
+      "parentId": "t19_region",
+      "portValues": {
+        "mode": "rgb",
+        "r": 220,
+        "g": 50,
+        "b": 50,
+        "a": 255
+      }
+    },
+    {
+      "id": "t19_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 380,
+        "y": 162
+      },
+      "params": {},
+      "parentId": "t19_region"
+    },
+    {
+      "id": "t19_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 568,
+        "y": 61
+      },
+      "params": {
+        "x": -50,
+        "y": -50,
+        "w": 100,
+        "h": 100
+      },
+      "parentId": "t19_region",
+      "portValues": {
+        "x": -50,
+        "y": -50,
+        "w": 100,
+        "h": 100
+      }
+    },
+    {
+      "id": "t19_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1400,
+        "y": 85
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t19_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 374,
+        "y": 40
+      },
+      "params": {
+        "x": -50,
+        "y": -50
+      },
+      "parentId": "t19_region",
+      "portValues": {
+        "x": -50,
+        "y": -50
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_119",
+      "source": "t19_time",
+      "target": "t19_sin",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_120",
+      "source": "t19_sin",
+      "target": "t19_gt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_121",
+      "source": "t19_gt",
+      "target": "t19_region",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-condition"
+    },
+    {
+      "id": "e_122",
+      "source": "t19_col",
+      "target": "t19_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_123",
+      "source": "t19_fill",
+      "target": "t19_rect",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_124",
+      "source": "t19_rect",
+      "target": "t19_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_125",
+      "source": "t19_region",
+      "target": "t19_renderer",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t19_rect-xy0",
+      "source": "t19_rect-xy0",
+      "target": "t19_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

@@ -172,11 +172,14 @@ impl Ctx<'_> {
         self.children.get(&parent).cloned().unwrap_or_default()
     }
 
+    /// Size in the node's scope: a region's frame as just fitted to its
+    /// contents; a subpatch stays a collapsed node however big its inside.
     fn size(&self, i: usize) -> (f64, f64) {
-        if let Some(&s) = self.region_size.get(&i) {
+        let n = &self.patch.nodes[i];
+        if let Some(&s) = self.region_size.get(&i).filter(|_| self.m.is_frame(n)) {
             return s;
         }
-        let (w, h) = self.m.size(&self.patch.nodes[i]);
+        let (w, h) = self.m.size(n);
         (
             if w > 0.0 { w } else { FALLBACK.0 },
             if h > 0.0 { h } else { FALLBACK.1 },
@@ -1100,6 +1103,26 @@ mod tests {
         assert_eq!(ports[0].y, Some(pin));
         assert_eq!(ports[1].y, Some(pin));
         assert!(ports[0].y.unwrap() >= 76.0, "below the top-left stack");
+    }
+
+    #[test]
+    fn a_subpatch_keeps_its_node_size_outside() {
+        let mut p = patch(
+            vec![
+                node("a", "math/add"),
+                node("s", "meta/subpatch"),
+                node("b", "math/add"),
+                child("c1", "s"),
+                child("c2", "s"),
+            ],
+            vec![e("a", "s"), e("s", "b"), e("c1", "c2")],
+        );
+        auto_layout(&mut p, &Headless);
+        // Its inside is laid out and the frame sized to it…
+        let s = p.nodes.iter().find(|n| n.id == "s").unwrap();
+        assert!(s.width.unwrap() >= PAD_LEFT + 2.0 * FALLBACK.0 + H_GAP + PAD_RIGHT);
+        // …but outside it's one node wide.
+        assert_eq!(at(&p, "b").x - at(&p, "s").x, FALLBACK.0 + H_GAP);
     }
 
     #[test]

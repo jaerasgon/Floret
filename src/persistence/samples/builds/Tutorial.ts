@@ -1534,7 +1534,7 @@ export function buildTutImageUrl() {
     'Loading images\n\n`io/image-url` fetches an image asynchronously. Once it lands, the `image` output carries a canvas you can draw, sample, or filter.\n\nDouble-click the node to change the URL. Picsum returns a fresh photo per seed.',
     { w: 420, h: 200 },
   );
-  const url = node('t37_url', 'io/image-url', { x: 60, y: 0 });
+  const url = node('t37_url', 'io/image-url', { x: 60, y: 0 }, { url: 'https://picsum.photos/seed/floret/500/500' });
   const drawImg = node('t37_draw', 'draw/image', { x: 280, y: 40 }, { x: 0, y: 0, w: 320, h: 320 });
   const renderer = node('t37_renderer', 'render/renderer', { x: 540, y: 0 }, { width: 400, height: 400 });
   return {
@@ -1555,7 +1555,7 @@ export function buildTutImageAdjust() {
     'Image adjustments\n\nImage filter nodes are pipelines: image in, image out. Chain them like styles.\n\nload → adjust (brightness/contrast/saturation/hue) → draw. Tweak the inputs to see the change immediately.',
     { w: 420, h: 200 },
   );
-  const url = node('t38_url', 'io/image-url', { x: 60, y: 0 });
+  const url = node('t38_url', 'io/image-url', { x: 60, y: 0 }, { url: 'https://picsum.photos/seed/floret-adjust/500/500' });
   const adj = node('t38_adj', 'image/adjust', { x: 280, y: 0 }, { brightness: 1.2, contrast: 1.3, saturate: 1.5, hue: 30 });
   const drawImg = node('t38_draw', 'draw/image', { x: 520, y: 40 }, { x: 0, y: 0, w: 320, h: 320 });
   const renderer = node('t38_renderer', 'render/renderer', { x: 780, y: 0 }, { width: 400, height: 400 });
@@ -1578,7 +1578,7 @@ export function buildTutPixelate() {
     'Retro pixel look\n\n`image/pixelate` downsamples then upsamples — chunky blocks.\n\nA slider drives the block size. Big values give Atari, small values keep most detail.',
     { w: 420, h: 200 },
   );
-  const url = node('t39_url', 'io/image-url', { x: 60, y: 0 });
+  const url = node('t39_url', 'io/image-url', { x: 60, y: 0 }, { url: 'https://picsum.photos/seed/floret-pixelate/500/500' });
   const sz = node('t39_sz', 'io/slider', { x: 60, y: 200 }, { value: 8, min: 1, max: 32 });
   const pix = node('t39_pix', 'image/pixelate', { x: 320, y: 0 });
   const drawImg = node('t39_draw', 'draw/image', { x: 540, y: 40 }, { x: 0, y: 0, w: 320, h: 320 });
@@ -1603,7 +1603,7 @@ export function buildTutPixelSort() {
     'Pixel sorting (datamosh)\n\n`pixel/sort` reorders runs of pixels along rows or columns by brightness/saturation. The "lo/hi" inputs mask which pixels get sorted, leaving the rest in place.\n\nA classic glitch-art look.',
     { w: 440, h: 220 },
   );
-  const url = node('t40_url', 'io/image-url', { x: 60, y: 0 });
+  const url = node('t40_url', 'io/image-url', { x: 60, y: 0 }, { url: 'https://picsum.photos/seed/floret-sort/500/500' });
   const sort = node('t40_sort', 'pixel/sort', { x: 280, y: 0 }, { axis: 'rows', criterion: 'brightness', order: 'ascending' });
   const drawImg = node('t40_draw', 'draw/image', { x: 520, y: 40 }, { x: 0, y: 0, w: 320, h: 320 });
   const renderer = node('t40_renderer', 'render/renderer', { x: 780, y: 0 }, { width: 400, height: 400 });

@@ -54,6 +54,9 @@ pub trait Measure {
     fn pill_floor(&self, n: &PatchNode) -> f64;
     /// Drawn as a frame its children sit in (ForEach / If / Cache).
     fn is_frame(&self, n: &PatchNode) -> bool;
+    /// A wire into this input brings last frame's value back (a stateful
+    /// node's `next`): feedback, which doesn't order the columns.
+    fn is_feedback(&self, n: &PatchNode, handle: &str) -> bool;
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -261,6 +264,7 @@ impl Ctx<'_> {
             None
         };
         let mut wires: Vec<(usize, f64, usize, f64)> = Vec::new();
+        let mut feedback = Vec::new();
         let mut left_fed = vec![false; n_real];
         for e in &patch.edges {
             let (Some(&s0), Some(&t0)) =
@@ -284,10 +288,20 @@ impl Ctx<'_> {
                     verts.len() - 1
                 })
             };
+            let back = e
+                .target_handle
+                .as_deref()
+                .is_some_and(|h| self.m.is_feedback(&patch.nodes[t0], h));
             match (vert_of.get(&s), vert_of.get(&t)) {
                 (Some(&a), Some(&b)) if a != b => {
-                    wires.push((a, pin(&verts, a, sh), b, pin(&verts, b, th)));
+                    let w = (a, pin(&verts, a, sh), b, pin(&verts, b, th));
+                    if back {
+                        feedback.push(w);
+                    } else {
+                        wires.push(w);
+                    }
                 }
+                _ if back => {}
                 (None, Some(&b)) if Some(s) == parent => {
                     let Some(h) = sh else { continue };
                     let a = frame_pin(&mut verts, h, true);
@@ -310,6 +324,29 @@ impl Ctx<'_> {
             if a < n_real && b < n_real {
                 outs[a].push(b);
                 ins[b].push(a);
+            }
+        }
+        // Feedback that closes a loop doesn't order the columns (the loop
+        // reads left to right, the wire back is the exception); feedback
+        // into a node downstream of nothing it feeds is a plain wire.
+        for w in feedback {
+            let (a, _, b, _) = w;
+            let mut seen = vec![false; n_real];
+            let mut stack = vec![b];
+            let mut loops = false;
+            while let Some(v) = stack.pop() {
+                if v == a {
+                    loops = true;
+                    break;
+                }
+                if !std::mem::replace(&mut seen[v], true) {
+                    stack.extend(&outs[v]);
+                }
+            }
+            if !loops {
+                outs[a].push(b);
+                ins[b].push(a);
+                wires.push(w);
             }
         }
         let mut depth = vec![0usize; n_real];
@@ -939,6 +976,9 @@ mod tests {
         fn is_frame(&self, n: &PatchNode) -> bool {
             n.def_type.starts_with("region/")
         }
+        fn is_feedback(&self, n: &PatchNode, handle: &str) -> bool {
+            n.def_type == "state/value" && handle == "in-next"
+        }
     }
 
     fn at(p: &PatchFile, id: &str) -> Position {
@@ -1026,6 +1066,30 @@ mod tests {
         );
         auto_layout(&mut p, &Headless);
         assert_eq!(at(&p, "k").x, at(&p, "c").x);
+    }
+
+    #[test]
+    fn feedback_doesnt_turn_the_flow_around() {
+        // s → b → c, and c feeds s's `next`: still left to right. c also
+        // feeds w's `next`, which closes no loop: w sits after c.
+        let mut p = patch(
+            vec![
+                node("c", "math/add"),
+                node("b", "math/add"),
+                node("s", "state/value"),
+                node("w", "state/value"),
+            ],
+            vec![
+                edge("s", "out-current", "b", "in-a"),
+                e("b", "c"),
+                edge("c", "out-result", "s", "in-next"),
+                edge("c", "out-result", "w", "in-next"),
+            ],
+        );
+        auto_layout(&mut p, &Headless);
+        assert!(at(&p, "s").x < at(&p, "b").x);
+        assert!(at(&p, "b").x < at(&p, "c").x);
+        assert!(at(&p, "c").x < at(&p, "w").x);
     }
 
     #[test]

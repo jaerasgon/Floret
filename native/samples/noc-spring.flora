@@ -13,7 +13,7 @@
       "defType": "io/slider",
       "position": {
         "x": 527,
-        "y": 199
+        "y": 173
       },
       "params": {
         "value": 0.12,
@@ -30,8 +30,8 @@
       "id": "spr_damp",
       "defType": "io/slider",
       "position": {
-        "x": 1658,
-        "y": 195
+        "x": 1661,
+        "y": 186
       },
       "params": {
         "value": 0.98,
@@ -49,7 +49,7 @@
       "defType": "value/number",
       "position": {
         "x": 1130,
-        "y": 200
+        "y": 204
       },
       "params": {
         "value": 0.5
@@ -63,7 +63,7 @@
       "defType": "value/number",
       "position": {
         "x": 260,
-        "y": 122
+        "y": 71
       },
       "params": {
         "value": 0
@@ -77,7 +77,7 @@
       "defType": "value/number",
       "position": {
         "x": 0,
-        "y": 283
+        "y": 258
       },
       "params": {
         "value": -180
@@ -90,7 +90,7 @@
       "id": "spr_initVy",
       "defType": "value/number",
       "position": {
-        "x": 0,
+        "x": 1130,
         "y": 0
       },
       "params": {
@@ -105,7 +105,7 @@
       "defType": "state/value",
       "position": {
         "x": 287,
-        "y": 283
+        "y": 258
       },
       "params": {}
     },
@@ -113,8 +113,8 @@
       "id": "spr_vy",
       "defType": "state/value",
       "position": {
-        "x": 287,
-        "y": 0
+        "x": 1430,
+        "y": 14
       },
       "params": {}
     },
@@ -123,7 +123,7 @@
       "defType": "math/sub",
       "position": {
         "x": 527,
-        "y": 77
+        "y": 51
       },
       "params": {
         "valueType": "number"
@@ -134,7 +134,7 @@
       "defType": "math/mul",
       "position": {
         "x": 827,
-        "y": 119
+        "y": 103
       },
       "params": {
         "valueType": "number"
@@ -145,7 +145,7 @@
       "defType": "math/neg",
       "position": {
         "x": 1164,
-        "y": 98
+        "y": 102
       },
       "params": {}
     },
@@ -153,8 +153,8 @@
       "id": "spr_acc",
       "defType": "math/add",
       "position": {
-        "x": 1390,
-        "y": 124
+        "x": 1389,
+        "y": 136
       },
       "params": {
         "valueType": "number"
@@ -164,8 +164,8 @@
       "id": "spr_vyAdd",
       "defType": "math/add",
       "position": {
-        "x": 1658,
-        "y": 73
+        "x": 1661,
+        "y": 64
       },
       "params": {}
     },
@@ -173,8 +173,8 @@
       "id": "spr_vyDamp",
       "defType": "math/mul",
       "position": {
-        "x": 1935,
-        "y": 157
+        "x": 1938,
+        "y": 149
       },
       "params": {
         "valueType": "number"
@@ -184,8 +184,8 @@
       "id": "spr_yNext",
       "defType": "math/add",
       "position": {
-        "x": 2208,
-        "y": 199
+        "x": 2211,
+        "y": 191
       },
       "params": {}
     },
@@ -194,7 +194,7 @@
       "defType": "value/number",
       "position": {
         "x": 0,
-        "y": 721
+        "y": 695
       },
       "params": {
         "value": -240
@@ -208,7 +208,7 @@
       "defType": "color/rgb",
       "position": {
         "x": 287,
-        "y": 700
+        "y": 674
       },
       "params": {
         "r": 200,
@@ -228,7 +228,7 @@
       "defType": "style/stroke",
       "position": {
         "x": 568,
-        "y": 691
+        "y": 665
       },
       "params": {}
     },
@@ -237,7 +237,7 @@
       "defType": "draw/line",
       "position": {
         "x": 869,
-        "y": 540
+        "y": 514
       },
       "params": {
         "x1": 0,
@@ -253,7 +253,7 @@
       "defType": "style/fill",
       "position": {
         "x": 288,
-        "y": 1055
+        "y": 1029
       },
       "params": {
         "mode": "rgb",
@@ -275,7 +275,7 @@
       "defType": "draw/ellipse",
       "position": {
         "x": 563,
-        "y": 975
+        "y": 949
       },
       "params": {
         "x": 0,
@@ -293,7 +293,7 @@
       "defType": "style/fill",
       "position": {
         "x": 569,
-        "y": 853
+        "y": 827
       },
       "params": {
         "mode": "rgb",
@@ -315,7 +315,7 @@
       "defType": "draw/ellipse",
       "position": {
         "x": 863,
-        "y": 682
+        "y": 656
       },
       "params": {
         "x": 0,
@@ -333,7 +333,7 @@
       "defType": "transform/group",
       "position": {
         "x": 1116,
-        "y": 712
+        "y": 686
       },
       "params": {
         "slotCount": 3
@@ -347,7 +347,7 @@
       "defType": "color/rgb",
       "position": {
         "x": 1158,
-        "y": 854
+        "y": 828
       },
       "params": {
         "r": 10,
@@ -367,7 +367,7 @@
       "defType": "render/renderer",
       "position": {
         "x": 1398,
-        "y": 773
+        "y": 747
       },
       "params": {
         "width": 500,
@@ -383,7 +383,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 569,
-        "y": 569
+        "y": 543
       },
       "params": {
         "x": 0,
@@ -399,7 +399,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 569,
-        "y": 325
+        "y": 299
       },
       "params": {
         "x": 0,
@@ -415,7 +415,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 288,
-        "y": 862
+        "y": 836
       },
       "params": {
         "x": 0,
@@ -431,7 +431,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 569,
-        "y": 447
+        "y": 421
       },
       "params": {
         "x": 0,

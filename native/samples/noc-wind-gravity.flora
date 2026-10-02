@@ -13,7 +13,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 0,
-        "y": 455
+        "y": 533
       },
       "params": {}
     },
@@ -22,7 +22,7 @@
       "defType": "io/slider",
       "position": {
         "x": 180,
-        "y": 329
+        "y": 292
       },
       "params": {
         "value": 1,
@@ -40,7 +40,7 @@
       "defType": "math/mul",
       "position": {
         "x": 180,
-        "y": 455
+        "y": 533
       },
       "params": {
         "b": 0.003,
@@ -54,8 +54,8 @@
       "id": "wg_windVec",
       "defType": "vec2/make",
       "position": {
-        "x": 508,
-        "y": 339
+        "x": 506,
+        "y": 532
       },
       "params": {}
     },
@@ -63,8 +63,8 @@
       "id": "wg_gravity",
       "defType": "vec2/make",
       "position": {
-        "x": 785,
-        "y": 528
+        "x": 791,
+        "y": 649
       },
       "params": {
         "x": 0,
@@ -95,8 +95,8 @@
       "id": "wg_initVel",
       "defType": "vec2/make",
       "position": {
-        "x": 0,
-        "y": 207
+        "x": 791,
+        "y": 405
       },
       "params": {
         "x": 0,
@@ -120,8 +120,8 @@
       "id": "wg_vel",
       "defType": "state/value",
       "position": {
-        "x": 221,
-        "y": 207
+        "x": 1034,
+        "y": 439
       },
       "params": {}
     },
@@ -129,8 +129,8 @@
       "id": "wg_wScaled",
       "defType": "vec2/scale",
       "position": {
-        "x": 785,
-        "y": 406
+        "x": 791,
+        "y": 527
       },
       "params": {}
     },
@@ -138,8 +138,8 @@
       "id": "wg_invMass",
       "defType": "math/div",
       "position": {
-        "x": 466,
-        "y": 461
+        "x": 464,
+        "y": 410
       },
       "params": {
         "a": 1,
@@ -153,8 +153,8 @@
       "id": "wg_accAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 1029,
-        "y": 437
+        "x": 1035,
+        "y": 561
       },
       "params": {}
     },
@@ -162,8 +162,8 @@
       "id": "wg_velAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 1261,
-        "y": 343
+        "x": 1275,
+        "y": 406
       },
       "params": {}
     },
@@ -171,8 +171,8 @@
       "id": "wg_posAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 1498,
-        "y": 166
+        "x": 1517,
+        "y": 190
       },
       "params": {}
     },
@@ -180,8 +180,8 @@
       "id": "wg_ps",
       "defType": "vec2/split",
       "position": {
-        "x": 1682,
-        "y": 140
+        "x": 1703,
+        "y": 150
       },
       "params": {}
     },
@@ -189,8 +189,8 @@
       "id": "wg_vs",
       "defType": "vec2/split",
       "position": {
-        "x": 1906,
-        "y": 370
+        "x": 1921,
+        "y": 445
       },
       "params": {}
     },
@@ -198,8 +198,8 @@
       "id": "wg_bounds",
       "defType": "value/number",
       "position": {
-        "x": 1878,
-        "y": 138
+        "x": 1893,
+        "y": 293
       },
       "params": {
         "value": 230
@@ -212,8 +212,8 @@
       "id": "wg_absX",
       "defType": "math/abs",
       "position": {
-        "x": 1912,
-        "y": 36
+        "x": 1927,
+        "y": 89
       },
       "params": {
         "valueType": "number"
@@ -223,8 +223,8 @@
       "id": "wg_hitX",
       "defType": "logic/gt",
       "position": {
-        "x": 2124,
-        "y": 60
+        "x": 2149,
+        "y": 136
       },
       "params": {}
     },
@@ -232,8 +232,8 @@
       "id": "wg_absY",
       "defType": "math/abs",
       "position": {
-        "x": 1912,
-        "y": 240
+        "x": 1927,
+        "y": 191
       },
       "params": {
         "valueType": "number"
@@ -243,8 +243,8 @@
       "id": "wg_hitY",
       "defType": "logic/gt",
       "position": {
-        "x": 2124,
-        "y": 182
+        "x": 2149,
+        "y": 258
       },
       "params": {}
     },
@@ -252,8 +252,8 @@
       "id": "wg_vxNeg",
       "defType": "math/neg",
       "position": {
-        "x": 2130,
-        "y": 304
+        "x": 2155,
+        "y": 380
       },
       "params": {
         "valueType": "number"
@@ -263,8 +263,8 @@
       "id": "wg_vyNeg",
       "defType": "math/neg",
       "position": {
-        "x": 2130,
-        "y": 406
+        "x": 2155,
+        "y": 482
       },
       "params": {
         "valueType": "number"
@@ -274,8 +274,8 @@
       "id": "wg_vxOut",
       "defType": "logic/select",
       "position": {
-        "x": 2331,
-        "y": 222
+        "x": 2356,
+        "y": 297
       },
       "params": {}
     },
@@ -283,8 +283,8 @@
       "id": "wg_vyOut",
       "defType": "logic/select",
       "position": {
-        "x": 2331,
-        "y": 364
+        "x": 2356,
+        "y": 439
       },
       "params": {}
     },
@@ -292,8 +292,8 @@
       "id": "wg_vFinal",
       "defType": "vec2/make",
       "position": {
-        "x": 2536,
-        "y": 283
+        "x": 2562,
+        "y": 358
       },
       "params": {}
     },
@@ -301,8 +301,8 @@
       "id": "wg_fill",
       "defType": "style/fill",
       "position": {
-        "x": 785,
-        "y": 284
+        "x": 791,
+        "y": 283
       },
       "params": {
         "mode": "rgb",
@@ -323,7 +323,7 @@
       "id": "wg_psDraw",
       "defType": "vec2/split",
       "position": {
-        "x": 508,
+        "x": 506,
         "y": 40
       },
       "params": {}
@@ -332,8 +332,8 @@
       "id": "wg_ball",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1023,
-        "y": 93
+        "x": 1029,
+        "y": 95
       },
       "params": {
         "w": 36,
@@ -348,8 +348,8 @@
       "id": "wg_sizeMul",
       "defType": "math/mul",
       "position": {
-        "x": 743,
-        "y": 162
+        "x": 749,
+        "y": 161
       },
       "params": {
         "b": 24,
@@ -363,8 +363,8 @@
       "id": "wg_bg",
       "defType": "color/rgb",
       "position": {
-        "x": 1029,
-        "y": 275
+        "x": 1035,
+        "y": 277
       },
       "params": {
         "r": 14,
@@ -383,8 +383,8 @@
       "id": "wg_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1228,
-        "y": 174
+        "x": 1241,
+        "y": 176
       },
       "params": {
         "width": 500,
@@ -399,8 +399,8 @@
       "id": "wg_ball-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 785,
-        "y": 40
+        "x": 791,
+        "y": 39
       },
       "params": {
         "x": 0,

@@ -142,6 +142,8 @@ pub struct Metrics {
     frames: HashSet<String>,
     /// Frame → the highest its input pills may sit.
     pill_floors: HashMap<String, f64>,
+    /// Stateful nodes (their `next` input is feedback).
+    stateful: HashSet<String>,
 }
 
 impl Metrics {
@@ -201,6 +203,12 @@ impl Metrics {
                     Some((n.id.clone(), regions::input_pill_floor(spec)))
                 })
                 .collect(),
+            stateful: patch
+                .nodes
+                .iter()
+                .filter(|n| cat.get(&n.def_type).is_some_and(|s| s.stateful))
+                .map(|n| n.id.clone())
+                .collect(),
         }
     }
 }
@@ -228,6 +236,10 @@ impl crate::editor::layout::Measure for Metrics {
 
     fn is_frame(&self, n: &PatchNode) -> bool {
         self.frames.contains(&n.id)
+    }
+
+    fn is_feedback(&self, n: &PatchNode, handle: &str) -> bool {
+        handle == "in-next" && self.stateful.contains(&n.id)
     }
 }
 

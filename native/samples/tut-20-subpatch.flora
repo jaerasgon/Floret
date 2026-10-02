@@ -12,8 +12,8 @@
       "id": "t20_c",
       "defType": "meta/comment",
       "position": {
-        "x": -616,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Subpatches: your own reusable nodes\n\nA `meta/subpatch` is a box that hides a sub-graph behind custom input/output ports. Double-click the subpatch to descend into it; click the breadcrumb to come back.\n\nHere we built a \"ColoredRect(x, y, hue)\" subpatch and used it twice.",
@@ -30,49 +30,53 @@
       "id": "t20_sub",
       "defType": "meta/subpatch",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 460,
+        "y": 104
       },
       "params": {
         "label": "ColoredRect",
-        "width": 672,
-        "height": 650
+        "width": 766,
+        "height": 336
       },
       "ports": [
         {
           "id": "x",
           "name": "x",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 76
         },
         {
           "id": "y",
           "name": "y",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 96
         },
         {
           "id": "hue",
           "name": "hue",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 218
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 90
         }
       ],
-      "width": 672,
-      "height": 650
+      "width": 766,
+      "height": 336
     },
     {
       "id": "t20_col",
       "defType": "color/color",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 128,
+        "y": 162
       },
       "params": {
         "mode": "hsl",
@@ -92,8 +96,8 @@
       "id": "t20_fill",
       "defType": "style/fill",
       "position": {
-        "x": 280,
-        "y": 100
+        "x": 376,
+        "y": 148
       },
       "params": {},
       "parentId": "t20_sub"
@@ -102,8 +106,8 @@
       "id": "t20_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 336,
-        "y": 300
+        "x": 558,
+        "y": 54
       },
       "params": {
         "w": 80,
@@ -119,8 +123,8 @@
       "id": "t20_t",
       "defType": "time/seconds",
       "position": {
-        "x": 84,
-        "y": 800
+        "x": 0,
+        "y": 204
       },
       "params": {}
     },
@@ -128,8 +132,8 @@
       "id": "t20_hueSpeed",
       "defType": "math/mul",
       "position": {
-        "x": 336,
-        "y": 800
+        "x": 180,
+        "y": 204
       },
       "params": {
         "b": 40,
@@ -143,8 +147,8 @@
       "id": "t20_sib",
       "defType": "draw/ellipse",
       "position": {
-        "x": 979.9999999999999,
-        "y": 800
+        "x": 496,
+        "y": 259
       },
       "params": {
         "x": 120,
@@ -163,8 +167,8 @@
       "id": "t20_grp",
       "defType": "transform/group",
       "position": {
-        "x": 979.9999999999999,
-        "y": 500
+        "x": 734,
+        "y": 172
       },
       "params": {
         "slotCount": 2
@@ -177,8 +181,8 @@
       "id": "t20_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1288,
-        "y": 500
+        "x": 998,
+        "y": 172
       },
       "params": {
         "width": 400,
@@ -193,8 +197,8 @@
       "id": "t20_x1",
       "defType": "value/number",
       "position": {
-        "x": 84,
-        "y": 1450
+        "x": 194,
+        "y": 0
       },
       "params": {
         "value": -100
@@ -207,8 +211,8 @@
       "id": "t20_y1",
       "defType": "value/number",
       "position": {
-        "x": 84,
-        "y": 1600
+        "x": 194,
+        "y": 102
       },
       "params": {
         "value": 0
@@ -221,8 +225,8 @@
       "id": "t20_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 276,
-        "y": 300
+        "x": 161,
+        "y": 40
       },
       "params": {
         "x": 0,
@@ -238,8 +242,8 @@
       "id": "t20_sib-xy1",
       "defType": "vec2/make",
       "position": {
-        "x": 919.9999999999999,
-        "y": 800
+        "x": 217,
+        "y": 326
       },
       "params": {
         "x": 120,

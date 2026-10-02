@@ -631,7 +631,9 @@ pub fn field(p: &Painter, f: &Field, z: f32, hover: Option<Pos2>) {
         }
         FieldKind::Select(_) => {
             boxed(p);
-            p.with_clip_rect(r.shrink(2.0)).text(
+            // The option text stops short of the ▾.
+            let text = Rect::from_min_max(r.min, pos2(r.right() - 12.0 * z, r.bottom()));
+            p.with_clip_rect(text.shrink(2.0)).text(
                 r.left_center() + vec2(4.0 * z, 0.0),
                 Align2::LEFT_CENTER,
                 values::option_label(&values::as_text(&f.value)),

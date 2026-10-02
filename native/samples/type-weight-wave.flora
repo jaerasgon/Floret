@@ -12,8 +12,8 @@
       "id": "ww_c",
       "defType": "meta/comment",
       "position": {
-        "x": -900,
-        "y": -120
+        "x": 0,
+        "y": -294
       },
       "params": {
         "text": "Variable-font weight wave\n\nSeven rows of the same word in Roboto Flex (bundled, OFL). style/font-variations sets each row’s weight (wght) and width (wdth) from sin(time − row · 0.55), so a wave of weight rolls down the stack. The engine shapes every row at its axis values, so letters reflow as they swell.",
@@ -30,8 +30,8 @@
       "id": "ww_t",
       "defType": "time/seconds",
       "position": {
-        "x": -900,
-        "y": 200
+        "x": 14,
+        "y": 359
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "ww_rows",
       "defType": "spread/range",
       "position": {
-        "x": -900,
-        "y": 360
+        "x": 0,
+        "y": 257
       },
       "params": {},
       "portValues": {
@@ -51,8 +51,8 @@
       "id": "ww_bg",
       "defType": "color/color",
       "position": {
-        "x": -900,
-        "y": 520
+        "x": 1117,
+        "y": 728
       },
       "params": {
         "mode": "rgb",
@@ -73,12 +73,12 @@
       "id": "ww_reg",
       "defType": "region/foreach",
       "position": {
-        "x": -560,
-        "y": -120
+        "x": 214,
+        "y": 22
       },
       "params": {
-        "width": 1500,
-        "height": 900,
+        "width": 1956,
+        "height": 658,
         "label": "ForEach row"
       },
       "ports": [
@@ -86,24 +86,26 @@
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 315
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 130
         }
       ],
-      "width": 1500,
-      "height": 900
+      "width": 1956,
+      "height": 658
     },
     {
       "id": "ww_pt",
       "defType": "math/mul",
       "position": {
-        "x": -500,
-        "y": -40
+        "x": 143,
+        "y": 198
       },
       "params": {
         "valueType": "number",
@@ -118,8 +120,8 @@
       "id": "ww_pi",
       "defType": "math/mul",
       "position": {
-        "x": -500,
-        "y": 100
+        "x": 143,
+        "y": 320
       },
       "params": {
         "valueType": "number",
@@ -134,8 +136,8 @@
       "id": "ww_ph",
       "defType": "math/sub",
       "position": {
-        "x": -280,
-        "y": 20
+        "x": 416,
+        "y": 242
       },
       "params": {
         "valueType": "number"
@@ -146,8 +148,8 @@
       "id": "ww_sin",
       "defType": "math/sin",
       "position": {
-        "x": -60,
-        "y": -40
+        "x": 727,
+        "y": 185
       },
       "params": {},
       "parentId": "ww_reg"
@@ -156,8 +158,8 @@
       "id": "ww_cos",
       "defType": "math/cos",
       "position": {
-        "x": -60,
-        "y": 100
+        "x": 727,
+        "y": 287
       },
       "params": {},
       "parentId": "ww_reg"
@@ -166,8 +168,8 @@
       "id": "ww_wamp",
       "defType": "math/mul",
       "position": {
-        "x": 140,
-        "y": -40
+        "x": 939,
+        "y": 168
       },
       "params": {
         "valueType": "number",
@@ -182,8 +184,8 @@
       "id": "ww_w",
       "defType": "math/add",
       "position": {
-        "x": 340,
-        "y": -40
+        "x": 1208,
+        "y": 162
       },
       "params": {
         "valueType": "number",
@@ -198,8 +200,8 @@
       "id": "ww_damp",
       "defType": "math/mul",
       "position": {
-        "x": 140,
-        "y": 100
+        "x": 939,
+        "y": 290
       },
       "params": {
         "valueType": "number",
@@ -214,8 +216,8 @@
       "id": "ww_wd",
       "defType": "math/add",
       "position": {
-        "x": 340,
-        "y": 100
+        "x": 1208,
+        "y": 284
       },
       "params": {
         "valueType": "number",
@@ -230,8 +232,8 @@
       "id": "ww_y0",
       "defType": "math/sub",
       "position": {
-        "x": -500,
-        "y": 300
+        "x": 143,
+        "y": 76
       },
       "params": {
         "valueType": "number",
@@ -246,8 +248,8 @@
       "id": "ww_y",
       "defType": "math/mul",
       "position": {
-        "x": -280,
-        "y": 300
+        "x": 1208,
+        "y": 40
       },
       "params": {
         "valueType": "number",
@@ -262,8 +264,8 @@
       "id": "ww_pos",
       "defType": "vec2/make",
       "position": {
-        "x": -60,
-        "y": 300
+        "x": 1498,
+        "y": 67
       },
       "params": {},
       "portValues": {
@@ -275,8 +277,8 @@
       "id": "ww_hue",
       "defType": "math/mul",
       "position": {
-        "x": -500,
-        "y": 500
+        "x": 143,
+        "y": 442
       },
       "params": {
         "valueType": "number",
@@ -291,8 +293,8 @@
       "id": "ww_hue2",
       "defType": "math/add",
       "position": {
-        "x": -280,
-        "y": 500
+        "x": 416,
+        "y": 473
       },
       "params": {
         "valueType": "number",
@@ -307,8 +309,8 @@
       "id": "ww_col",
       "defType": "color/color",
       "position": {
-        "x": -60,
-        "y": 500
+        "x": 688,
+        "y": 484
       },
       "params": {
         "mode": "hsl",
@@ -330,8 +332,8 @@
       "id": "ww_fill",
       "defType": "style/fill",
       "position": {
-        "x": 140,
-        "y": 500
+        "x": 981,
+        "y": 515
       },
       "params": {},
       "parentId": "ww_reg"
@@ -340,8 +342,8 @@
       "id": "ww_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 340,
-        "y": 380
+        "x": 1219,
+        "y": 406
       },
       "params": {
         "font": "Roboto Flex",
@@ -367,8 +369,8 @@
       "id": "ww_fv",
       "defType": "style/font-variations",
       "position": {
-        "x": 560,
-        "y": 120
+        "x": 1481,
+        "y": 222
       },
       "params": {
         "axis": ""
@@ -379,8 +381,8 @@
       "id": "ww_txt",
       "defType": "draw/text",
       "position": {
-        "x": 760,
-        "y": 260
+        "x": 1703,
+        "y": 94
       },
       "params": {
         "string": "VARIABLE",
@@ -398,8 +400,8 @@
       "id": "ww_out",
       "defType": "render/renderer",
       "position": {
-        "x": 1100,
-        "y": 0
+        "x": 2310,
+        "y": 412
       },
       "params": {
         "width": 720,

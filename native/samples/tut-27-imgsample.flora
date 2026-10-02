@@ -12,8 +12,8 @@
       "id": "t27_c",
       "defType": "meta/comment",
       "position": {
-        "x": -644,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Image sampling\n\n`image/sample-spread` reads N colours from an image at N points. Combine with a grid generator and you get a \"downsample\" pipeline — perfect for posterising or pixel-art looks.\n\nA noisy gradient rasterised, then sampled at 24×24 grid centres.",
@@ -30,8 +30,8 @@
       "id": "t27_t",
       "defType": "time/seconds",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 273
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "t27_colA",
       "defType": "color/color",
       "position": {
-        "x": 84,
-        "y": 300
+        "x": 444,
+        "y": 254
       },
       "params": {
         "mode": "hsl",
@@ -59,8 +59,8 @@
       "id": "t27_fillA",
       "defType": "style/fill",
       "position": {
-        "x": 336,
-        "y": 300
+        "x": 699,
+        "y": 254
       },
       "params": {}
     },
@@ -68,8 +68,8 @@
       "id": "t27_rectA",
       "defType": "draw/rect",
       "position": {
-        "x": 588,
-        "y": 300
+        "x": 890,
+        "y": 153
       },
       "params": {
         "x": -150,
@@ -88,8 +88,8 @@
       "id": "t27_hueDrive",
       "defType": "math/mul",
       "position": {
-        "x": 84,
-        "y": 150
+        "x": 180,
+        "y": 273
       },
       "params": {
         "b": 60,
@@ -103,8 +103,8 @@
       "id": "t27_rast",
       "defType": "image/from-layer",
       "position": {
-        "x": 840,
-        "y": 300
+        "x": 1096,
+        "y": 154
       },
       "params": {
         "w": 256,
@@ -119,8 +119,8 @@
       "id": "t27_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 84,
-        "y": 800
+        "x": 1082,
+        "y": 296
       },
       "params": {
         "cols": 24,
@@ -143,8 +143,8 @@
       "id": "t27_samp",
       "defType": "image/sample-spread",
       "position": {
-        "x": 1120,
-        "y": 500
+        "x": 1304,
+        "y": 215
       },
       "params": {}
     },
@@ -152,8 +152,8 @@
       "id": "t27_gridScreen",
       "defType": "spread/grid",
       "position": {
-        "x": 84,
-        "y": 1100
+        "x": 1304,
+        "y": 33
       },
       "params": {
         "cols": 24,
@@ -176,12 +176,12 @@
       "id": "t27_region",
       "defType": "region/foreach",
       "position": {
-        "x": 1400,
-        "y": 200
+        "x": 1520,
+        "y": 22
       },
       "params": {
         "width": 700,
-        "height": 800,
+        "height": 276,
         "label": "ForEach"
       },
       "ports": [
@@ -189,30 +189,33 @@
           "id": "p",
           "name": "p",
           "type": "vec2",
-          "direction": "input"
+          "direction": "input",
+          "y": 79
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
-          "direction": "input"
+          "direction": "input",
+          "y": 198
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 100
         }
       ],
       "width": 700,
-      "height": 800
+      "height": 276
     },
     {
       "id": "t27_split",
       "defType": "vec2/split",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 128,
+        "y": 40
       },
       "params": {},
       "parentId": "t27_region"
@@ -221,8 +224,8 @@
       "id": "t27_fill",
       "defType": "style/fill",
       "position": {
-        "x": 56,
-        "y": 450
+        "x": 128,
+        "y": 162
       },
       "params": {},
       "parentId": "t27_region"
@@ -231,8 +234,8 @@
       "id": "t27_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 364,
-        "y": 200
+        "x": 492,
+        "y": 64
       },
       "params": {
         "w": 16,
@@ -248,8 +251,8 @@
       "id": "t27_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2184,
-        "y": 0
+        "x": 2316,
+        "y": 86
       },
       "params": {
         "width": 500,
@@ -264,8 +267,8 @@
       "id": "t27_rectA-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 528,
-        "y": 300
+        "x": 690,
+        "y": 132
       },
       "params": {
         "x": -150,
@@ -280,8 +283,8 @@
       "id": "t27_rect-xy1",
       "defType": "vec2/make",
       "position": {
-        "x": 304,
-        "y": 200
+        "x": 310,
+        "y": 48
       },
       "params": {
         "x": 0,

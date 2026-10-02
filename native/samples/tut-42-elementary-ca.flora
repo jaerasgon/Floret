@@ -12,8 +12,8 @@
       "id": "t42_c",
       "defType": "meta/comment",
       "position": {
-        "x": -644,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Cellular automata: one step\n\n`spread/elementary-ca` advances a 1-D row of booleans by one tick using a Wolfram rule (try 30, 90, 110, 184).\n\nHere a single-cell starting row is advanced once. Combine with `state/write-spread`/`read-spread` to grow the classic triangle over time.",
@@ -30,8 +30,8 @@
       "id": "t42_range",
       "defType": "spread/range",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 184
       },
       "params": {
         "count": 60
@@ -44,12 +44,12 @@
       "id": "t42_region",
       "defType": "region/foreach",
       "position": {
-        "x": 448,
-        "y": 0
+        "x": 210,
+        "y": 144
       },
       "params": {
-        "width": 700,
-        "height": 600,
+        "width": 324,
+        "height": 154,
         "label": "seedRow"
       },
       "ports": [
@@ -57,24 +57,26 @@
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 76
         },
         {
           "id": "b",
           "name": "b",
           "type": "boolean",
-          "direction": "output"
+          "direction": "output",
+          "y": 76
         }
       ],
-      "width": 700,
-      "height": 600
+      "width": 324,
+      "height": 154
     },
     {
       "id": "t42_eq",
       "defType": "logic/eq",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 128,
+        "y": 40
       },
       "params": {
         "b": 30
@@ -88,8 +90,8 @@
       "id": "t42_rule",
       "defType": "spread/elementary-ca",
       "position": {
-        "x": 1232,
-        "y": 0
+        "x": 630,
+        "y": 184
       },
       "params": {
         "rule": 90
@@ -102,8 +104,8 @@
       "id": "t42_idx",
       "defType": "spread/range",
       "position": {
-        "x": 84,
-        "y": 700
+        "x": 651,
+        "y": 68
       },
       "params": {
         "count": 60
@@ -116,12 +118,12 @@
       "id": "t42_draw",
       "defType": "region/foreach",
       "position": {
-        "x": 1540,
-        "y": 0
+        "x": 881,
+        "y": 22
       },
       "params": {
-        "width": 672,
-        "height": 650,
+        "width": 1052,
+        "height": 276,
         "label": "drawRow"
       },
       "ports": [
@@ -129,30 +131,33 @@
           "id": "b",
           "name": "b",
           "type": "boolean",
-          "direction": "input"
+          "direction": "input",
+          "y": 198
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 82
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 127
         }
       ],
-      "width": 672,
-      "height": 650
+      "width": 1052,
+      "height": 276
     },
     {
       "id": "t42_xMul",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 200
+        "x": 128,
+        "y": 40
       },
       "params": {
         "b": 8,
@@ -167,8 +172,8 @@
       "id": "t42_xOff",
       "defType": "math/add",
       "position": {
-        "x": 280,
-        "y": 200
+        "x": 395,
+        "y": 56
       },
       "params": {
         "b": -240,
@@ -183,8 +188,8 @@
       "id": "t42_hScale",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 128,
+        "y": 162
       },
       "params": {
         "b": 20,
@@ -199,8 +204,8 @@
       "id": "t42_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 448,
-        "y": 200
+        "x": 844,
+        "y": 91
       },
       "params": {
         "y": 0,
@@ -216,8 +221,8 @@
       "id": "t42_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2268,
-        "y": 0
+        "x": 2029,
+        "y": 113
       },
       "params": {
         "width": 500,
@@ -232,8 +237,8 @@
       "id": "t42_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 388,
-        "y": 200
+        "x": 661,
+        "y": 73
       },
       "params": {
         "x": 0,

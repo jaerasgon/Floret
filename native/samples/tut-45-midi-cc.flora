@@ -12,8 +12,8 @@
       "id": "t45_c",
       "defType": "meta/comment",
       "position": {
-        "x": -644,
-        "y": 0
+        "x": 0,
+        "y": -284
       },
       "params": {
         "text": "MIDI CC → parameter\n\n`input/midi-cc` reads one Control Change knob from a connected MIDI device. The output is already mapped to [0, 1] via `value`; `raw` gives the original 0–127.\n\nPlug in a controller, pick the device + CC number; rotate the knob to scale the rectangle.",
@@ -30,8 +30,8 @@
       "id": "t45_cc",
       "defType": "input/midi-cc",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 66
       },
       "params": {
         "device": "",
@@ -48,8 +48,8 @@
       "id": "t45_sz",
       "defType": "math/mul",
       "position": {
-        "x": 364,
-        "y": 0
+        "x": 256,
+        "y": 66
       },
       "params": {
         "b": 300,
@@ -63,8 +63,8 @@
       "id": "t45_szO",
       "defType": "math/add",
       "position": {
-        "x": 588,
-        "y": 0
+        "x": 520,
+        "y": 66
       },
       "params": {
         "b": 30,
@@ -78,8 +78,8 @@
       "id": "t45_half",
       "defType": "math/mul",
       "position": {
-        "x": 588,
-        "y": 250
+        "x": 793,
+        "y": 3
       },
       "params": {
         "b": -0.5,
@@ -93,8 +93,8 @@
       "id": "t45_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 868,
-        "y": 100
+        "x": 1246,
+        "y": 38
       },
       "params": {}
     },
@@ -102,8 +102,8 @@
       "id": "t45_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1204,
-        "y": 0
+        "x": 1438,
+        "y": 38
       },
       "params": {
         "width": 400,
@@ -118,8 +118,8 @@
       "id": "t45_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 808,
-        "y": 100
+        "x": 1060,
+        "y": 0
       },
       "params": {
         "x": 0,

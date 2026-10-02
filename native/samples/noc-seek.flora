@@ -12,8 +12,8 @@
       "id": "sk_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": -616,
-        "y": 50
+        "x": 9,
+        "y": 131
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "sk_maxSpeed",
       "defType": "io/slider",
       "position": {
-        "x": -616,
-        "y": 250
+        "x": 615,
+        "y": 102
       },
       "params": {
         "value": 6,
@@ -39,8 +39,8 @@
       "id": "sk_maxForce",
       "defType": "io/slider",
       "position": {
-        "x": -616,
-        "y": 450
+        "x": 1113,
+        "y": 288
       },
       "params": {
         "value": 0.4,
@@ -57,8 +57,8 @@
       "id": "sk_initPos",
       "defType": "vec2/make",
       "position": {
-        "x": -616,
-        "y": 650
+        "x": 0,
+        "y": 273
       },
       "params": {
         "x": -100,
@@ -73,8 +73,8 @@
       "id": "sk_initVel",
       "defType": "vec2/make",
       "position": {
-        "x": -616,
-        "y": 850
+        "x": 9,
+        "y": 525
       },
       "params": {
         "x": 0,
@@ -89,8 +89,8 @@
       "id": "sk_pos",
       "defType": "state/value",
       "position": {
-        "x": -308,
-        "y": 150
+        "x": 220,
+        "y": 159
       },
       "params": {}
     },
@@ -98,8 +98,8 @@
       "id": "sk_vel",
       "defType": "state/value",
       "position": {
-        "x": -308,
-        "y": 350
+        "x": 220,
+        "y": 525
       },
       "params": {}
     },
@@ -107,8 +107,8 @@
       "id": "sk_mv",
       "defType": "vec2/make",
       "position": {
-        "x": -308,
-        "y": 600
+        "x": 221,
+        "y": 37
       },
       "params": {}
     },
@@ -116,8 +116,8 @@
       "id": "sk_diff",
       "defType": "vec2/sub",
       "position": {
-        "x": -84,
-        "y": 250
+        "x": 420,
+        "y": 59
       },
       "params": {}
     },
@@ -125,8 +125,8 @@
       "id": "sk_dir",
       "defType": "vec2/normalize",
       "position": {
-        "x": 140,
-        "y": 250
+        "x": 652,
+        "y": 0
       },
       "params": {}
     },
@@ -134,8 +134,8 @@
       "id": "sk_desired",
       "defType": "vec2/scale",
       "position": {
-        "x": 364,
-        "y": 250
+        "x": 905,
+        "y": 49
       },
       "params": {}
     },
@@ -143,8 +143,8 @@
       "id": "sk_steerRaw",
       "defType": "vec2/sub",
       "position": {
-        "x": 588,
-        "y": 350
+        "x": 1155,
+        "y": 166
       },
       "params": {}
     },
@@ -152,8 +152,8 @@
       "id": "sk_steer",
       "defType": "vec2/limit",
       "position": {
-        "x": 812,
-        "y": 350
+        "x": 1428,
+        "y": 282
       },
       "params": {}
     },
@@ -161,8 +161,8 @@
       "id": "sk_velAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 1036,
-        "y": 350
+        "x": 1663,
+        "y": 388
       },
       "params": {}
     },
@@ -170,8 +170,8 @@
       "id": "sk_velCap",
       "defType": "vec2/limit",
       "position": {
-        "x": 1260,
-        "y": 350
+        "x": 1867,
+        "y": 229
       },
       "params": {}
     },
@@ -179,8 +179,8 @@
       "id": "sk_posAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 1484,
-        "y": 150
+        "x": 2051,
+        "y": 182
       },
       "params": {}
     },
@@ -188,8 +188,8 @@
       "id": "sk_head",
       "defType": "vec2/heading",
       "position": {
-        "x": -84,
-        "y": 950
+        "x": 420,
+        "y": 589
       },
       "params": {}
     },
@@ -197,8 +197,8 @@
       "id": "sk_tFill",
       "defType": "style/fill",
       "position": {
-        "x": -308,
-        "y": 1050
+        "x": 221,
+        "y": 403
       },
       "params": {
         "mode": "rgb",
@@ -219,8 +219,8 @@
       "id": "sk_target",
       "defType": "draw/ellipse",
       "position": {
-        "x": -84,
-        "y": 1150
+        "x": 414,
+        "y": 336
       },
       "params": {
         "w": 18,
@@ -235,8 +235,8 @@
       "id": "sk_vFill",
       "defType": "style/fill",
       "position": {
-        "x": -308,
-        "y": 1250
+        "x": 657,
+        "y": 476
       },
       "params": {
         "mode": "rgb",
@@ -257,8 +257,8 @@
       "id": "sk_splitP",
       "defType": "vec2/split",
       "position": {
-        "x": -84,
-        "y": 1350
+        "x": 420,
+        "y": 214
       },
       "params": {}
     },
@@ -266,8 +266,8 @@
       "id": "sk_vehicle",
       "defType": "draw/ellipse",
       "position": {
-        "x": 140,
-        "y": 1350
+        "x": 899,
+        "y": 396
       },
       "params": {
         "w": 22,
@@ -282,8 +282,8 @@
       "id": "sk_grp",
       "defType": "transform/group",
       "position": {
-        "x": 392,
-        "y": 1200
+        "x": 1113,
+        "y": 414
       },
       "params": {
         "slotCount": 2
@@ -296,8 +296,8 @@
       "id": "sk_bg",
       "defType": "color/rgb",
       "position": {
-        "x": -616,
-        "y": 1400
+        "x": 1155,
+        "y": 536
       },
       "params": {
         "r": 10,
@@ -316,8 +316,8 @@
       "id": "sk_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 728,
-        "y": 1200
+        "x": 1395,
+        "y": 429
       },
       "params": {
         "width": 500,
@@ -332,8 +332,8 @@
       "id": "sk_target-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": -144,
-        "y": 1150
+        "x": 221,
+        "y": 281
       },
       "params": {
         "x": 0,
@@ -348,8 +348,8 @@
       "id": "sk_vehicle-xy1",
       "defType": "vec2/make",
       "position": {
-        "x": 80,
-        "y": 1350
+        "x": 657,
+        "y": 265
       },
       "params": {
         "x": 0,

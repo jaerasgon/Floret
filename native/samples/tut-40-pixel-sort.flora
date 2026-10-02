@@ -12,8 +12,8 @@
       "id": "t40_c",
       "defType": "meta/comment",
       "position": {
-        "x": -644,
-        "y": 0
+        "x": 0,
+        "y": -284
       },
       "params": {
         "text": "Pixel sorting (datamosh)\n\n`pixel/sort` reorders runs of pixels along rows or columns by brightness/saturation. The \"lo/hi\" inputs mask which pixels get sorted, leaving the rest in place.\n\nA classic glitch-art look.",
@@ -30,16 +30,18 @@
       "id": "t40_url",
       "defType": "io/image-url",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 60
       },
-      "params": {}
+      "params": {
+        "url": "https://picsum.photos/seed/floret-sort/500/500"
+      }
     },
     {
       "id": "t40_sort",
       "defType": "pixel/sort",
       "position": {
-        "x": 392,
+        "x": 250,
         "y": 0
       },
       "params": {
@@ -57,8 +59,8 @@
       "id": "t40_draw",
       "defType": "draw/image",
       "position": {
-        "x": 728,
-        "y": 100
+        "x": 508,
+        "y": 91
       },
       "params": {
         "x": 0,
@@ -77,8 +79,8 @@
       "id": "t40_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1092,
-        "y": 0
+        "x": 700,
+        "y": 91
       },
       "params": {
         "width": 400,
@@ -93,8 +95,8 @@
       "id": "t40_draw-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 668,
-        "y": 100
+        "x": 282,
+        "y": 202
       },
       "params": {
         "x": 0,

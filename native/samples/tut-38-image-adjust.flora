@@ -12,8 +12,8 @@
       "id": "t38_c",
       "defType": "meta/comment",
       "position": {
-        "x": -616,
-        "y": 0
+        "x": 0,
+        "y": -264
       },
       "params": {
         "text": "Image adjustments\n\nImage filter nodes are pipelines: image in, image out. Chain them like styles.\n\nload → adjust (brightness/contrast/saturation/hue) → draw. Tweak the inputs to see the change immediately.",
@@ -30,16 +30,18 @@
       "id": "t38_url",
       "defType": "io/image-url",
       "position": {
-        "x": 84,
+        "x": 0,
         "y": 0
       },
-      "params": {}
+      "params": {
+        "url": "https://picsum.photos/seed/floret-adjust/500/500"
+      }
     },
     {
       "id": "t38_adj",
       "defType": "image/adjust",
       "position": {
-        "x": 392,
+        "x": 250,
         "y": 0
       },
       "params": {
@@ -59,8 +61,8 @@
       "id": "t38_draw",
       "defType": "draw/image",
       "position": {
-        "x": 728,
-        "y": 100
+        "x": 454,
+        "y": 81
       },
       "params": {
         "x": 0,
@@ -79,8 +81,8 @@
       "id": "t38_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1092,
-        "y": 0
+        "x": 646,
+        "y": 81
       },
       "params": {
         "width": 400,
@@ -95,8 +97,8 @@
       "id": "t38_draw-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 668,
-        "y": 100
+        "x": 256,
+        "y": 182
       },
       "params": {
         "x": 0,

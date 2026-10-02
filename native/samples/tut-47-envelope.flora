@@ -12,8 +12,8 @@
       "id": "t47_c",
       "defType": "meta/comment",
       "position": {
-        "x": -616,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "ADSR envelope\n\n`sound/envelope` shapes amplitude over time using Attack / Decay / Sustain / Release. Wire an audio source through it, then re-trigger the gate to hear the shape.\n\nMouseY drives a gate (pressed = mouse below origin). Click the canvas to \"tap a note\".",
@@ -30,7 +30,7 @@
       "id": "t47_osc",
       "defType": "sound/oscillator",
       "position": {
-        "x": 84,
+        "x": 0,
         "y": 0
       },
       "params": {
@@ -48,8 +48,8 @@
       "id": "t47_env",
       "defType": "sound/envelope",
       "position": {
-        "x": 364,
-        "y": 0
+        "x": 314,
+        "y": 31
       },
       "params": {
         "attack": 0.05,
@@ -70,8 +70,8 @@
       "id": "t47_m",
       "defType": "input/mouse",
       "position": {
-        "x": 84,
-        "y": 500
+        "x": 37,
+        "y": 142
       },
       "params": {}
     },
@@ -79,8 +79,8 @@
       "id": "t47_out",
       "defType": "sound/output",
       "position": {
-        "x": 644,
-        "y": 0
+        "x": 554,
+        "y": 31
       },
       "params": {
         "volume": 0.5
@@ -93,8 +93,8 @@
       "id": "t47_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 644,
-        "y": 500
+        "x": 26,
+        "y": 284
       },
       "params": {
         "w": 80,
@@ -109,8 +109,8 @@
       "id": "t47_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 951.9999999999999,
-        "y": 0
+        "x": 259,
+        "y": 284
       },
       "params": {
         "width": 400,

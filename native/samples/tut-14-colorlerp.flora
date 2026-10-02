@@ -12,8 +12,8 @@
       "id": "t14_c",
       "defType": "meta/comment",
       "position": {
-        "x": -560,
-        "y": 0
+        "x": 0,
+        "y": -264
       },
       "params": {
         "text": "Blending colours\n\n`color/lerp` mixes two colours by t ∈ [0, 1]. sin(time)*0.5+0.5 oscillates t between 0 and 1, so the fill colour smoothly slides between magenta and cyan and back.",
@@ -30,7 +30,7 @@
       "id": "t14_colA",
       "defType": "color/color",
       "position": {
-        "x": 84,
+        "x": 621,
         "y": 0
       },
       "params": {
@@ -52,8 +52,8 @@
       "id": "t14_colB",
       "defType": "color/color",
       "position": {
-        "x": 84,
-        "y": 500
+        "x": 621,
+        "y": 182
       },
       "params": {
         "mode": "rgb",
@@ -74,8 +74,8 @@
       "id": "t14_t",
       "defType": "time/seconds",
       "position": {
-        "x": 84,
-        "y": 1000
+        "x": 0,
+        "y": 364
       },
       "params": {}
     },
@@ -83,8 +83,8 @@
       "id": "t14_sin",
       "defType": "math/sin",
       "position": {
-        "x": 336,
-        "y": 1000
+        "x": 180,
+        "y": 364
       },
       "params": {}
     },
@@ -92,8 +92,8 @@
       "id": "t14_half",
       "defType": "math/mul",
       "position": {
-        "x": 588,
-        "y": 1000
+        "x": 348,
+        "y": 364
       },
       "params": {
         "b": 0.5,
@@ -107,8 +107,8 @@
       "id": "t14_off",
       "defType": "math/add",
       "position": {
-        "x": 840,
-        "y": 1000
+        "x": 612,
+        "y": 364
       },
       "params": {
         "b": 0.5,
@@ -122,8 +122,8 @@
       "id": "t14_lerp",
       "defType": "color/lerp",
       "position": {
-        "x": 420,
-        "y": 250
+        "x": 900,
+        "y": 162
       },
       "params": {}
     },
@@ -131,8 +131,8 @@
       "id": "t14_fill",
       "defType": "style/fill",
       "position": {
-        "x": 700,
-        "y": 250
+        "x": 1089,
+        "y": 162
       },
       "params": {}
     },
@@ -140,8 +140,8 @@
       "id": "t14_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 979.9999999999999,
-        "y": 350
+        "x": 1281,
+        "y": 61
       },
       "params": {
         "x": -120,
@@ -160,8 +160,8 @@
       "id": "t14_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1288,
-        "y": 0
+        "x": 1473,
+        "y": 61
       },
       "params": {
         "width": 400,
@@ -176,8 +176,8 @@
       "id": "t14_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 919.9999999999999,
-        "y": 350
+        "x": 1080,
+        "y": 40
       },
       "params": {
         "x": -120,

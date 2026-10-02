@@ -12,8 +12,8 @@
       "id": "kt_c",
       "defType": "meta/comment",
       "position": {
-        "x": -896,
-        "y": 0
+        "x": 0,
+        "y": -384
       },
       "params": {
         "text": "Kinetic typography\n\nEach character of every row gets its own (x, y). The phrase is split into a Spread<string> then Repeat-tiled rows times — paired with a Range of the same length, ForEach iterates the 24 × 9 grid. Inside: floor / mod recover (rowIdx, charIdx); the column offset (charIdx − centre) gets multiplied by a row-envelope so middle rows fan out and edges stay tight. The result curves like the reference — a wave of letterforms.\n\nEdit the String node to change the phrase; the grid count rebuilds itself.",
@@ -30,8 +30,8 @@
       "id": "kt_str",
       "defType": "value/string",
       "position": {
-        "x": -812,
-        "y": 500
+        "x": 0,
+        "y": 302
       },
       "params": {
         "value": "I LOVE FLORET"
@@ -44,8 +44,8 @@
       "id": "kt_split",
       "defType": "string/split",
       "position": {
-        "x": -532,
-        "y": 400
+        "x": 609,
+        "y": 96
       },
       "params": {
         "by": ""
@@ -58,8 +58,8 @@
       "id": "kt_len",
       "defType": "string/length",
       "position": {
-        "x": -532,
-        "y": 650
+        "x": 328,
+        "y": 273
       },
       "params": {}
     },
@@ -67,8 +67,8 @@
       "id": "kt_tile",
       "defType": "spread/repeat",
       "position": {
-        "x": -251.99999999999997,
-        "y": 400
+        "x": 835,
+        "y": 82
       },
       "params": {
         "count": 40
@@ -81,8 +81,8 @@
       "id": "kt_total",
       "defType": "math/mul",
       "position": {
-        "x": -251.99999999999997,
-        "y": 650
+        "x": 567,
+        "y": 218
       },
       "params": {
         "b": 40,
@@ -96,8 +96,8 @@
       "id": "kt_range",
       "defType": "spread/range",
       "position": {
-        "x": 0,
-        "y": 650
+        "x": 837,
+        "y": 233
       },
       "params": {}
     },
@@ -105,8 +105,8 @@
       "id": "kt_time",
       "defType": "time/seconds",
       "position": {
-        "x": -812,
-        "y": 900
+        "x": 851,
+        "y": 399
       },
       "params": {}
     },
@@ -114,8 +114,8 @@
       "id": "kt_bg",
       "defType": "color/color",
       "position": {
-        "x": -532,
-        "y": 1050
+        "x": 2183,
+        "y": 712
       },
       "params": {
         "mode": "rgb",
@@ -136,12 +136,12 @@
       "id": "kt_region",
       "defType": "region/foreach",
       "position": {
-        "x": 308,
-        "y": 0
+        "x": 1060,
+        "y": 22
       },
       "params": {
-        "width": 1540,
-        "height": 1750,
+        "width": 2396,
+        "height": 642,
         "label": "ForEach (row × char)"
       },
       "ports": [
@@ -149,36 +149,40 @@
           "id": "ch",
           "name": "ch",
           "type": "string",
-          "direction": "input"
+          "direction": "input",
+          "y": 83
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 320
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
-          "direction": "input"
+          "direction": "input",
+          "y": 564
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 168
         }
       ],
-      "width": 1540,
-      "height": 1750
+      "width": 2396,
+      "height": 642
     },
     {
       "id": "kt_palette",
       "defType": "color/palette",
       "position": {
-        "x": -812,
-        "y": 50
+        "x": 287,
+        "y": 375
       },
       "params": {
         "stopCount": 3,
@@ -197,8 +201,8 @@
       "id": "kt_widx",
       "defType": "string/word-indices",
       "position": {
-        "x": -532,
-        "y": 150
+        "x": 318,
+        "y": 537
       },
       "params": {
         "by": " "
@@ -211,8 +215,8 @@
       "id": "kt_perChar",
       "defType": "spread/pick",
       "position": {
-        "x": -251.99999999999997,
-        "y": 150
+        "x": 602,
+        "y": 491
       },
       "params": {}
     },
@@ -220,8 +224,8 @@
       "id": "kt_tileC",
       "defType": "spread/repeat",
       "position": {
-        "x": 0,
-        "y": 150
+        "x": 835,
+        "y": 520
       },
       "params": {
         "count": 40
@@ -234,8 +238,8 @@
       "id": "kt_charIdxOff",
       "defType": "math/mod",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 185,
+        "y": 162
       },
       "params": {},
       "parentId": "kt_region"
@@ -244,8 +248,8 @@
       "id": "kt_rowDiv",
       "defType": "math/div",
       "position": {
-        "x": 56,
-        "y": 300
+        "x": 137,
+        "y": 406
       },
       "params": {
         "valueType": "number"
@@ -256,8 +260,8 @@
       "id": "kt_rowIdx",
       "defType": "math/floor",
       "position": {
-        "x": 280,
-        "y": 300
+        "x": 465,
+        "y": 391
       },
       "params": {},
       "parentId": "kt_region"
@@ -266,8 +270,8 @@
       "id": "kt_charCenter",
       "defType": "math/sub",
       "position": {
-        "x": 280,
-        "y": 100
+        "x": 137,
+        "y": 40
       },
       "params": {
         "b": 1,
@@ -282,8 +286,8 @@
       "id": "kt_charCenter2",
       "defType": "math/div",
       "position": {
-        "x": 503.99999999999994,
-        "y": 100
+        "x": 417,
+        "y": 147
       },
       "params": {
         "b": 2
@@ -297,8 +301,8 @@
       "id": "kt_charOff",
       "defType": "math/sub",
       "position": {
-        "x": 728,
-        "y": 100
+        "x": 689,
+        "y": 93
       },
       "params": {
         "valueType": "number"
@@ -309,8 +313,8 @@
       "id": "kt_yMul",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 300
+        "x": 1401,
+        "y": 337
       },
       "params": {
         "b": 22,
@@ -325,8 +329,8 @@
       "id": "kt_yOff",
       "defType": "math/add",
       "position": {
-        "x": 728,
-        "y": 300
+        "x": 1675,
+        "y": 266
       },
       "params": {
         "b": -429,
@@ -341,8 +345,8 @@
       "id": "kt_tSpeed",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 700
+        "x": 137,
+        "y": 284
       },
       "params": {
         "b": 1.6,
@@ -357,8 +361,8 @@
       "id": "kt_charPhase",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 500
+        "x": 417,
+        "y": 269
       },
       "params": {
         "b": 0.55,
@@ -373,8 +377,8 @@
       "id": "kt_rowDelay",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 900
+        "x": 689,
+        "y": 337
       },
       "params": {
         "b": 0.22,
@@ -389,8 +393,8 @@
       "id": "kt_waveAdd",
       "defType": "math/add",
       "position": {
-        "x": 728,
-        "y": 600
+        "x": 689,
+        "y": 215
       },
       "params": {},
       "parentId": "kt_region"
@@ -399,8 +403,8 @@
       "id": "kt_waveArg",
       "defType": "math/sub",
       "position": {
-        "x": 951.9999999999999,
-        "y": 700
+        "x": 963,
+        "y": 255
       },
       "params": {
         "valueType": "number"
@@ -411,8 +415,8 @@
       "id": "kt_waveSin",
       "defType": "math/sin",
       "position": {
-        "x": 1176,
-        "y": 700
+        "x": 1230,
+        "y": 234
       },
       "params": {},
       "parentId": "kt_region"
@@ -421,8 +425,8 @@
       "id": "kt_xWave",
       "defType": "math/mul",
       "position": {
-        "x": 1400,
-        "y": 700
+        "x": 1401,
+        "y": 215
       },
       "params": {
         "b": 26,
@@ -437,8 +441,8 @@
       "id": "kt_xBase",
       "defType": "math/mul",
       "position": {
-        "x": 951.9999999999999,
-        "y": 100
+        "x": 1401,
+        "y": 93
       },
       "params": {
         "b": 24
@@ -452,8 +456,8 @@
       "id": "kt_xOut",
       "defType": "math/add",
       "position": {
-        "x": 1400,
-        "y": 100
+        "x": 1675,
+        "y": 144
       },
       "params": {
         "valueType": "number"
@@ -464,8 +468,8 @@
       "id": "kt_fill",
       "defType": "style/fill",
       "position": {
-        "x": 308,
-        "y": 1150
+        "x": 179,
+        "y": 528
       },
       "params": {},
       "parentId": "kt_region"
@@ -474,8 +478,8 @@
       "id": "kt_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 560,
-        "y": 1150
+        "x": 1952,
+        "y": 283
       },
       "params": {
         "font": "monospace",
@@ -501,8 +505,8 @@
       "id": "kt_text",
       "defType": "draw/text",
       "position": {
-        "x": 1232,
-        "y": 100
+        "x": 2198,
+        "y": 133
       },
       "params": {
         "string": "?",
@@ -524,8 +528,8 @@
       "id": "kt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1931.9999999999998,
-        "y": 0
+        "x": 3592,
+        "y": 423
       },
       "params": {
         "width": 380,
@@ -540,8 +544,8 @@
       "id": "kt_text-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1172,
-        "y": 100
+        "x": 1980,
+        "y": 161
       },
       "params": {
         "x": 0,

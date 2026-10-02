@@ -12,8 +12,8 @@
       "id": "pm_img",
       "defType": "io/image-url",
       "position": {
-        "x": -475.99999999999994,
-        "y": 50
+        "x": 0,
+        "y": 191
       },
       "params": {
         "url": "https://picsum.photos/seed/mosaic/500/500"
@@ -26,8 +26,8 @@
       "id": "pm_grid",
       "defType": "spread/grid",
       "position": {
-        "x": -475.99999999999994,
-        "y": 350
+        "x": 19,
+        "y": 9
       },
       "params": {
         "cols": 32,
@@ -46,8 +46,8 @@
       "id": "pm_time",
       "defType": "time/seconds",
       "position": {
-        "x": -475.99999999999994,
-        "y": 650
+        "x": 35,
+        "y": 353
       },
       "params": {}
     },
@@ -55,8 +55,8 @@
       "id": "pm_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1568,
-        "y": 50
+        "x": 2663,
+        "y": 303
       },
       "params": {
         "width": 500,
@@ -71,8 +71,8 @@
       "id": "pm_bg",
       "defType": "color/rgb",
       "position": {
-        "x": -475.99999999999994,
-        "y": 850
+        "x": 1363,
+        "y": 516
       },
       "params": {
         "r": 8,
@@ -91,12 +91,12 @@
       "id": "pm_region",
       "defType": "region/foreach",
       "position": {
-        "x": 0,
-        "y": 50
+        "x": 272,
+        "y": 22
       },
       "params": {
-        "width": 1484,
-        "height": 1550,
+        "width": 2266,
+        "height": 446,
         "label": "ForEach"
       },
       "ports": [
@@ -104,24 +104,26 @@
           "id": "p",
           "name": "p",
           "type": "vec2",
-          "direction": "input"
+          "direction": "input",
+          "y": 150
         },
         {
           "id": "dot",
           "name": "dot",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 125
         }
       ],
-      "width": 1484,
-      "height": 1550
+      "width": 2266,
+      "height": 446
     },
     {
       "id": "pm_split",
       "defType": "vec2/split",
       "position": {
-        "x": 56,
-        "y": 150
+        "x": 170,
+        "y": 112
       },
       "params": {},
       "parentId": "pm_region"
@@ -130,8 +132,8 @@
       "id": "pm_sample",
       "defType": "image/sample",
       "position": {
-        "x": 308,
-        "y": 150
+        "x": 403,
+        "y": 162
       },
       "params": {},
       "parentId": "pm_region"
@@ -140,8 +142,8 @@
       "id": "pm_srgb",
       "defType": "color/split-rgb",
       "position": {
-        "x": 588,
-        "y": 150
+        "x": 598,
+        "y": 97
       },
       "params": {},
       "parentId": "pm_region"
@@ -150,8 +152,8 @@
       "id": "pm_rg",
       "defType": "math/add",
       "position": {
-        "x": 812,
-        "y": 100
+        "x": 780,
+        "y": 87
       },
       "params": {
         "valueType": "number"
@@ -162,8 +164,8 @@
       "id": "pm_rgb",
       "defType": "math/add",
       "position": {
-        "x": 812,
-        "y": 250
+        "x": 1048,
+        "y": 112
       },
       "params": {
         "valueType": "number"
@@ -174,8 +176,8 @@
       "id": "pm_lum",
       "defType": "math/mul",
       "position": {
-        "x": 951.9999999999999,
-        "y": 150
+        "x": 1314,
+        "y": 101
       },
       "params": {
         "b": 0.333,
@@ -190,8 +192,8 @@
       "id": "pm_sizeBase",
       "defType": "math/map",
       "position": {
-        "x": 1064,
-        "y": 150
+        "x": 1583,
+        "y": 90
       },
       "params": {
         "inMin": 0,
@@ -211,8 +213,8 @@
       "id": "pm_tMul",
       "defType": "math/mul",
       "position": {
-        "x": 280,
-        "y": 850
+        "x": 128,
+        "y": 268
       },
       "params": {
         "b": 1.8,
@@ -227,8 +229,8 @@
       "id": "pm_sinT",
       "defType": "math/sin",
       "position": {
-        "x": 475.99999999999994,
-        "y": 850
+        "x": 1362,
+        "y": 270
       },
       "params": {},
       "parentId": "pm_region"
@@ -237,8 +239,8 @@
       "id": "pm_wobble",
       "defType": "math/map",
       "position": {
-        "x": 644,
-        "y": 850
+        "x": 1579,
+        "y": 272
       },
       "params": {
         "inMin": -1,
@@ -258,8 +260,8 @@
       "id": "pm_dotSize",
       "defType": "math/mul",
       "position": {
-        "x": 868,
-        "y": 500
+        "x": 1784,
+        "y": 117
       },
       "params": {
         "valueType": "number"
@@ -270,8 +272,8 @@
       "id": "pm_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1064,
-        "y": 500
+        "x": 1826,
+        "y": 239
       },
       "params": {
         "mode": "color"
@@ -285,8 +287,8 @@
       "id": "pm_ellipse",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1232,
-        "y": 250
+        "x": 2058,
+        "y": 89
       },
       "params": {},
       "parentId": "pm_region"
@@ -295,8 +297,8 @@
       "id": "pm_ellipse-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1172,
-        "y": 250
+        "x": 405,
+        "y": 40
       },
       "params": {
         "x": 0,

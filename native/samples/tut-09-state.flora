@@ -12,8 +12,8 @@
       "id": "t09_c",
       "defType": "meta/comment",
       "position": {
-        "x": -560,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "State = memory across frames\n\n`state/value` carries a value from one frame to the next.\n• `current` is what last frame stored.\n• Wire something into `next` and that becomes `current` on the very next frame.\n\nHere we add 1 every frame and use it to rotate the hue.",
@@ -30,8 +30,8 @@
       "id": "t09_state",
       "defType": "state/value",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 71
       },
       "params": {
         "init": 0
@@ -44,7 +44,7 @@
       "id": "t09_step",
       "defType": "math/add",
       "position": {
-        "x": 364,
+        "x": 193,
         "y": 0
       },
       "params": {
@@ -58,8 +58,8 @@
       "id": "t09_col",
       "defType": "color/color",
       "position": {
-        "x": 364,
-        "y": 500
+        "x": 202,
+        "y": 122
       },
       "params": {
         "mode": "hsl",
@@ -78,8 +78,8 @@
       "id": "t09_fill",
       "defType": "style/fill",
       "position": {
-        "x": 644,
-        "y": 500
+        "x": 457,
+        "y": 122
       },
       "params": {}
     },
@@ -87,8 +87,8 @@
       "id": "t09_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 923.9999999999999,
-        "y": 0
+        "x": 637,
+        "y": 42
       },
       "params": {
         "w": 160,
@@ -103,8 +103,8 @@
       "id": "t09_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1232,
-        "y": 0
+        "x": 839,
+        "y": 42
       },
       "params": {
         "width": 400,

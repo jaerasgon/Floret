@@ -12,8 +12,8 @@
       "id": "pp_c",
       "defType": "meta/comment",
       "position": {
-        "x": -756,
-        "y": 0
+        "x": 0,
+        "y": -344
       },
       "params": {
         "text": "Polygon pinball\n\ncollider/from-layer accepts any shape layer. Here a draw/polygon octagon is wired into BOTH the renderer (so you can see it) AND the collider (so it deflects particles). The collider precomputes edge normals at compile and uses them for proper bounce — not a centroid approximation.",
@@ -30,8 +30,8 @@
       "id": "pp_time",
       "defType": "time/seconds",
       "position": {
-        "x": -756,
-        "y": 650
+        "x": 656,
+        "y": 380
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "pp_ring",
       "defType": "spread/ring",
       "position": {
-        "x": -756,
-        "y": 900
+        "x": 428,
+        "y": 0
       },
       "params": {
         "count": 8,
@@ -57,8 +57,8 @@
       "id": "pp_polyC",
       "defType": "color/color",
       "position": {
-        "x": -475.99999999999994,
-        "y": 500
+        "x": 0,
+        "y": 162
       },
       "params": {
         "mode": "rgb",
@@ -79,8 +79,8 @@
       "id": "pp_polyS",
       "defType": "style/stroke",
       "position": {
-        "x": -196,
-        "y": 500
+        "x": 246,
+        "y": 162
       },
       "params": {
         "width": 2
@@ -93,8 +93,8 @@
       "id": "pp_polyN",
       "defType": "style/no-fill",
       "position": {
-        "x": 84,
-        "y": 500
+        "x": 446,
+        "y": 162
       },
       "params": {}
     },
@@ -102,8 +102,8 @@
       "id": "pp_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 364,
-        "y": 650
+        "x": 653,
+        "y": 61
       },
       "params": {
         "closed": true
@@ -116,8 +116,8 @@
       "id": "pp_coll",
       "defType": "collider/from-layer",
       "position": {
-        "x": 672,
-        "y": 650
+        "x": 879,
+        "y": 116
       },
       "params": {
         "mode": "bounce",
@@ -134,8 +134,8 @@
       "id": "pp_world",
       "defType": "physics/world",
       "position": {
-        "x": 979.9999999999999,
-        "y": 650
+        "x": 1125,
+        "y": 70
       },
       "params": {
         "gravity": {
@@ -158,8 +158,8 @@
       "id": "pp_tHue",
       "defType": "math/mul",
       "position": {
-        "x": 979.9999999999999,
-        "y": 500
+        "x": 846,
+        "y": 339
       },
       "params": {
         "b": 540,
@@ -173,8 +173,8 @@
       "id": "pp_hsl",
       "defType": "color/color",
       "position": {
-        "x": 1232,
-        "y": 500
+        "x": 1119,
+        "y": 292
       },
       "params": {
         "mode": "hsl",
@@ -195,8 +195,8 @@
       "id": "pp_em",
       "defType": "particles/emitter",
       "position": {
-        "x": 1288,
-        "y": 100
+        "x": 1378,
+        "y": 161
       },
       "params": {
         "rate": 60,
@@ -229,8 +229,8 @@
       "id": "pp_render",
       "defType": "particles/render-as",
       "position": {
-        "x": 1652,
-        "y": 100
+        "x": 1627,
+        "y": 274
       },
       "params": {
         "template": "circle",
@@ -245,8 +245,8 @@
       "id": "pp_trailW",
       "defType": "style/stroke-weight",
       "position": {
-        "x": 1400,
-        "y": 400
+        "x": 1388,
+        "y": 39
       },
       "params": {
         "w": 2.5
@@ -259,8 +259,8 @@
       "id": "pp_trail",
       "defType": "particles/trail",
       "position": {
-        "x": 1652,
-        "y": 400
+        "x": 1627,
+        "y": 32
       },
       "params": {
         "segments": 18,
@@ -277,8 +277,8 @@
       "id": "pp_bg",
       "defType": "color/color",
       "position": {
-        "x": 1288,
-        "y": 500
+        "x": 1896,
+        "y": 189
       },
       "params": {
         "mode": "rgb",
@@ -299,8 +299,8 @@
       "id": "pp_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1987.9999999999998,
-        "y": 0
+        "x": 2160,
+        "y": 108
       },
       "params": {
         "width": 560,
@@ -315,8 +315,8 @@
       "id": "merge_684",
       "defType": "spread/merge",
       "position": {
-        "x": 1767.9999999999998,
-        "y": 0
+        "x": 1887,
+        "y": 47
       },
       "params": {
         "slotCount": 3

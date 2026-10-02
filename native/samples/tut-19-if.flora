@@ -12,8 +12,8 @@
       "id": "t19_c",
       "defType": "meta/comment",
       "position": {
-        "x": -616,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Conditional execution\n\n`region/if` only runs its body when `condition` is true — its outputs become empty when false.\n\nHere `sin(time) > 0` toggles the condition, so the red rectangle blinks on and off. Swap the time source for a mouse, slider, or key to drive it yourself.",
@@ -30,7 +30,7 @@
       "id": "t19_time",
       "defType": "time/seconds",
       "position": {
-        "x": 84,
+        "x": 0,
         "y": 0
       },
       "params": {}
@@ -39,7 +39,7 @@
       "id": "t19_sin",
       "defType": "math/sin",
       "position": {
-        "x": 336,
+        "x": 180,
         "y": 0
       },
       "params": {}
@@ -48,7 +48,7 @@
       "id": "t19_gt",
       "defType": "logic/gt",
       "position": {
-        "x": 588,
+        "x": 348,
         "y": 0
       },
       "params": {
@@ -62,12 +62,12 @@
       "id": "t19_region",
       "defType": "region/if",
       "position": {
-        "x": 868,
-        "y": 0
+        "x": 528,
+        "y": 24
       },
       "params": {
-        "width": 644,
-        "height": 600,
+        "width": 776,
+        "height": 336,
         "label": "If"
       },
       "ports": [
@@ -75,18 +75,19 @@
           "id": "l",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 97
         }
       ],
-      "width": 644,
-      "height": 600
+      "width": 776,
+      "height": 336
     },
     {
       "id": "t19_col",
       "defType": "color/color",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 128,
+        "y": 162
       },
       "params": {
         "mode": "rgb",
@@ -108,8 +109,8 @@
       "id": "t19_fill",
       "defType": "style/fill",
       "position": {
-        "x": 280,
-        "y": 100
+        "x": 380,
+        "y": 162
       },
       "params": {},
       "parentId": "t19_region"
@@ -118,8 +119,8 @@
       "id": "t19_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 336,
-        "y": 300
+        "x": 568,
+        "y": 61
       },
       "params": {
         "x": -50,
@@ -139,8 +140,8 @@
       "id": "t19_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1596,
-        "y": 0
+        "x": 1400,
+        "y": 85
       },
       "params": {
         "width": 400,
@@ -155,8 +156,8 @@
       "id": "t19_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 276,
-        "y": 300
+        "x": 374,
+        "y": 40
       },
       "params": {
         "x": -50,

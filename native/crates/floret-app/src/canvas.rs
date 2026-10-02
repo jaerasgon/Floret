@@ -13,6 +13,8 @@ mod draw;
 mod geom;
 mod live;
 mod minimap;
+#[cfg(test)]
+mod samples;
 
 pub use geom::node_size;
 pub use live::Live;
@@ -44,6 +46,10 @@ use std::collections::{HashMap, HashSet};
 
 /// A palette node type being dragged onto the canvas.
 pub struct PaletteDrag(pub String);
+
+/// How long after a load the camera keeps re-fitting (instantly) while the
+/// window and the docks find their size.
+const SETTLE_SECS: f64 = 1.0;
 
 enum Gesture {
     None,
@@ -302,6 +308,9 @@ pub struct View {
     /// window settles over the first frames after a load).
     keep_fitted: bool,
     fitted_area: Rect,
+    /// Until this time the fit is redone every frame: window, panels,
+    /// display scale and measured node sizes settle after a load.
+    settle_until: f64,
     /// Bangs fired recently (node → time), for the flash.
     flashes: HashMap<String, f64>,
     /// Probe list scroll offsets (canvas units).
@@ -359,6 +368,7 @@ impl Default for View {
             minimap: minimap::MiniMap::default(),
             keep_fitted: true,
             fitted_area: Rect::NOTHING,
+            settle_until: 0.0,
             flashes: HashMap::new(),
             probe_scroll: HashMap::new(),
             probe_areas: Vec::new(),
@@ -400,8 +410,10 @@ impl View {
         self.gesture = Gesture::None;
         self.discard_overlays();
         self.armed = None;
+        // Fitted at once (never animated from the old patch's camera).
         self.fit_pending = true;
         self.keep_fitted = true;
+        self.fit_animated = false;
         self.anim = None;
         // Like a fresh mount in the web app, the whole patch settles in.
         self.appeared.clear();
@@ -606,12 +618,35 @@ impl View {
             return (vec2(40.0, 40.0), 1.0);
         }
         let margin = 48.0 + 0.04 * area.width().min(area.height());
-        let zoom = ((area.width() - 2.0 * margin) / bb.width())
-            .min((area.height() - 2.0 * margin) / bb.height())
-            .clamp(0.1, max_zoom);
-        let content = bb.size() * zoom;
-        let offset = (area.size() - content) * 0.5;
-        (offset / zoom - bb.min.to_vec2(), zoom)
+        // Centred in the canvas, `inset` further in on each side.
+        let fit = |inset: Vec2| {
+            let room = area.size() - 2.0 * (Vec2::splat(margin) + inset);
+            let zoom = (room.x / bb.width())
+                .min(room.y / bb.height())
+                .clamp(0.1, max_zoom);
+            let offset = (area.size() - bb.size() * zoom) * 0.5;
+            (offset / zoom - bb.min.to_vec2(), zoom)
+        };
+        let plain = fit(Vec2::ZERO);
+        if !self.show_minimap {
+            return plain;
+        }
+        // Keep clear of the minimap: give up its width or its height on
+        // both sides (staying centred), whichever leaves the graph larger.
+        let map = minimap::map_rect(area).expand(8.0);
+        let shown = |(pan, zoom): (Vec2, f32)| {
+            Rect::from_min_size(area.min + (pan + bb.min.to_vec2()) * zoom, bb.size() * zoom)
+        };
+        if !shown(plain).intersects(map) {
+            return plain;
+        }
+        let across = fit(vec2((area.right() - map.left() - margin).max(0.0), 0.0));
+        let down = fit(vec2(0.0, (area.bottom() - map.top() - margin).max(0.0)));
+        if across.1 >= down.1 {
+            across
+        } else {
+            down
+        }
     }
 
     /// Selected ids without those whose region is also selected (a region
@@ -744,13 +779,24 @@ pub fn show(
 
     let visible = subpatch::visible(patch, cat, &view.stack);
     view.grid_origin = subpatch::view_origin(patch, &view.stack);
-    if view.fit_pending || (view.keep_fitted && area != view.fitted_area) {
+    let settling =
+        view.keep_fitted && view.time < view.settle_until && matches!(view.gesture, Gesture::None);
+    if view.fit_pending || (view.keep_fitted && (settling || area != view.fitted_area)) {
+        if view.fit_pending {
+            view.settle_until = view.time + SETTLE_SECS;
+        }
         view.fit_nodes(patch, area, |id| visible.contains(id));
         view.fit_pending = false;
         view.fit_animated = false;
         view.fitted_area = area;
     } else if std::mem::take(&mut view.fit_animated) {
         view.fit_animated(patch, area, 1.25, |id| visible.contains(id));
+    }
+    if let Some(a) = &mut view.anim {
+        // The canvas resized mid-move: keep the destination centred.
+        if a.size != area.size() {
+            *a = a.resized(area.size());
+        }
     }
     if let Some(a) = view.anim {
         let ((pan, zoom), done) = a.at(view.time);
@@ -2983,8 +3029,8 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             }
         }
         Action::Arrange => {
-            let size_fn = sizes_of(patch, cat);
-            layout::auto_layout(patch, &size_fn);
+            let metrics = geom::Metrics::of(patch, cat);
+            layout::auto_layout(patch, &metrics);
             view.commit(patch);
             view.fit_animated = true;
         }

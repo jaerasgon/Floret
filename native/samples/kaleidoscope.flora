@@ -12,8 +12,8 @@
       "id": "ks_url",
       "defType": "io/image-url",
       "position": {
-        "x": -784,
-        "y": 50
+        "x": 892,
+        "y": 33
       },
       "params": {
         "url": "https://picsum.photos/seed/floret-kaleido/500/500"
@@ -26,8 +26,8 @@
       "id": "ks_time",
       "defType": "time/seconds",
       "position": {
-        "x": -784,
-        "y": 250
+        "x": 0,
+        "y": 256
       },
       "params": {}
     },
@@ -35,8 +35,8 @@
       "id": "ks_tScale",
       "defType": "math/mul",
       "position": {
-        "x": -503.99999999999994,
-        "y": 250
+        "x": 180,
+        "y": 256
       },
       "params": {
         "b": 0.3,
@@ -50,8 +50,8 @@
       "id": "ks_sinT",
       "defType": "math/sin",
       "position": {
-        "x": -251.99999999999997,
-        "y": 200
+        "x": 452,
+        "y": 205
       },
       "params": {}
     },
@@ -59,8 +59,8 @@
       "id": "ks_cosT",
       "defType": "math/cos",
       "position": {
-        "x": -251.99999999999997,
-        "y": 350
+        "x": 452,
+        "y": 307
       },
       "params": {}
     },
@@ -68,8 +68,8 @@
       "id": "ks_wOff",
       "defType": "math/mul",
       "position": {
-        "x": 0,
-        "y": 200
+        "x": 621,
+        "y": 195
       },
       "params": {
         "b": 120,
@@ -83,8 +83,8 @@
       "id": "ks_hOff",
       "defType": "math/mul",
       "position": {
-        "x": 0,
-        "y": 350
+        "x": 621,
+        "y": 317
       },
       "params": {
         "b": 120,
@@ -98,8 +98,8 @@
       "id": "ks_sxAnim",
       "defType": "math/add",
       "position": {
-        "x": 251.99999999999997,
-        "y": 200
+        "x": 885,
+        "y": 195
       },
       "params": {
         "b": 200,
@@ -113,8 +113,8 @@
       "id": "ks_syAnim",
       "defType": "math/add",
       "position": {
-        "x": 251.99999999999997,
-        "y": 350
+        "x": 885,
+        "y": 317
       },
       "params": {
         "b": 200,
@@ -128,8 +128,8 @@
       "id": "ks_imgRegion",
       "defType": "draw/image-region",
       "position": {
-        "x": 532,
-        "y": 250
+        "x": 1176,
+        "y": 162
       },
       "params": {
         "sw": 200,
@@ -152,8 +152,8 @@
       "id": "ks_angles",
       "defType": "spread/ring",
       "position": {
-        "x": -784,
-        "y": 550
+        "x": 1168,
+        "y": 0
       },
       "params": {
         "count": 12
@@ -166,8 +166,8 @@
       "id": "ks_idxs",
       "defType": "spread/range",
       "position": {
-        "x": -784,
-        "y": 700
+        "x": 1174,
+        "y": 444
       },
       "params": {
         "count": 12
@@ -180,12 +180,12 @@
       "id": "ks_region",
       "defType": "region/foreach",
       "position": {
-        "x": 868,
-        "y": 550
+        "x": 1421,
+        "y": 137
       },
       "params": {
-        "width": 979.9999999999999,
-        "height": 900,
+        "width": 1206,
+        "height": 228,
         "label": "ForEach Wedge"
       },
       "ports": [
@@ -193,30 +193,33 @@
           "id": "angle",
           "name": "angle",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 76
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 134
         },
         {
           "id": "out",
           "name": "out",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 83
         }
       ],
-      "width": 979.9999999999999,
-      "height": 900
+      "width": 1206,
+      "height": 228
     },
     {
       "id": "ks_iMod",
       "defType": "math/mod",
       "position": {
-        "x": 84,
-        "y": 100
+        "x": 128,
+        "y": 98
       },
       "params": {
         "b": 2
@@ -230,8 +233,8 @@
       "id": "ks_iMul",
       "defType": "math/mul",
       "position": {
-        "x": 308,
-        "y": 100
+        "x": 296,
+        "y": 96
       },
       "params": {
         "b": -2,
@@ -246,8 +249,8 @@
       "id": "ks_sign",
       "defType": "math/add",
       "position": {
-        "x": 532,
-        "y": 100
+        "x": 561,
+        "y": 95
       },
       "params": {
         "b": 1,
@@ -262,8 +265,8 @@
       "id": "ks_scaled",
       "defType": "transform/scale",
       "position": {
-        "x": 112,
-        "y": 400
+        "x": 825,
+        "y": 94
       },
       "params": {
         "sy": 1
@@ -277,8 +280,8 @@
       "id": "ks_rotated",
       "defType": "transform/rotate",
       "position": {
-        "x": 392,
-        "y": 400
+        "x": 1009,
+        "y": 47
       },
       "params": {},
       "parentId": "ks_region"
@@ -287,8 +290,8 @@
       "id": "ks_bg",
       "defType": "color/rgb",
       "position": {
-        "x": -784,
-        "y": 900
+        "x": 1982,
+        "y": 413
       },
       "params": {
         "r": 6,
@@ -307,8 +310,8 @@
       "id": "ks_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1875.9999999999998,
-        "y": 50
+        "x": 2739,
+        "y": 288
       },
       "params": {
         "width": 500,

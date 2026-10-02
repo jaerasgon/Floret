@@ -12,8 +12,8 @@
       "id": "pe_length",
       "defType": "io/slider",
       "position": {
-        "x": -784,
-        "y": 50
+        "x": 0,
+        "y": 321
       },
       "params": {
         "value": 200,
@@ -30,8 +30,8 @@
       "id": "pe_gravity",
       "defType": "io/slider",
       "position": {
-        "x": -784,
-        "y": 250
+        "x": 0,
+        "y": 93
       },
       "params": {
         "value": 0.35,
@@ -48,8 +48,8 @@
       "id": "pe_damping",
       "defType": "io/slider",
       "position": {
-        "x": -784,
-        "y": 450
+        "x": 1306,
+        "y": 175
       },
       "params": {
         "value": 0.999,
@@ -66,8 +66,8 @@
       "id": "pe_initTheta",
       "defType": "value/number",
       "position": {
-        "x": -475.99999999999994,
-        "y": 50
+        "x": 14,
+        "y": 219
       },
       "params": {
         "value": 0.8
@@ -80,8 +80,8 @@
       "id": "pe_initOmega",
       "defType": "value/number",
       "position": {
-        "x": -475.99999999999994,
-        "y": 250
+        "x": 764,
+        "y": 0
       },
       "params": {
         "value": 0
@@ -94,8 +94,8 @@
       "id": "pe_theta",
       "defType": "state/value",
       "position": {
-        "x": -224,
-        "y": 50
+        "x": 330,
+        "y": 262
       },
       "params": {}
     },
@@ -103,8 +103,8 @@
       "id": "pe_omega",
       "defType": "state/value",
       "position": {
-        "x": -224,
-        "y": 250
+        "x": 1065,
+        "y": 0
       },
       "params": {}
     },
@@ -112,8 +112,8 @@
       "id": "pe_gOverL",
       "defType": "math/div",
       "position": {
-        "x": 56,
-        "y": 500
+        "x": 289,
+        "y": 140
       },
       "params": {
         "valueType": "number"
@@ -123,8 +123,8 @@
       "id": "pe_sinTheta",
       "defType": "math/sin",
       "position": {
-        "x": 56,
-        "y": 50
+        "x": 567,
+        "y": 259
       },
       "params": {}
     },
@@ -132,8 +132,8 @@
       "id": "pe_alphaRaw",
       "defType": "math/mul",
       "position": {
-        "x": 308,
-        "y": 150
+        "x": 750,
+        "y": 140
       },
       "params": {
         "valueType": "number"
@@ -143,8 +143,8 @@
       "id": "pe_alpha",
       "defType": "math/neg",
       "position": {
-        "x": 532,
-        "y": 150
+        "x": 1072,
+        "y": 122
       },
       "params": {}
     },
@@ -152,8 +152,8 @@
       "id": "pe_omegaSum",
       "defType": "math/add",
       "position": {
-        "x": 756,
-        "y": 250
+        "x": 1306,
+        "y": 53
       },
       "params": {}
     },
@@ -161,8 +161,8 @@
       "id": "pe_omegaNext",
       "defType": "math/mul",
       "position": {
-        "x": 979.9999999999999,
-        "y": 250
+        "x": 1597,
+        "y": 141
       },
       "params": {
         "valueType": "number"
@@ -172,8 +172,8 @@
       "id": "pe_thetaNext",
       "defType": "math/add",
       "position": {
-        "x": 979.9999999999999,
-        "y": 50
+        "x": 1870,
+        "y": 94
       },
       "params": {}
     },
@@ -181,8 +181,8 @@
       "id": "pe_cosTheta",
       "defType": "math/cos",
       "position": {
-        "x": 308,
-        "y": 600
+        "x": 567,
+        "y": 361
       },
       "params": {}
     },
@@ -190,8 +190,8 @@
       "id": "pe_bobX",
       "defType": "math/mul",
       "position": {
-        "x": 532,
-        "y": 500
+        "x": 1024,
+        "y": 302
       },
       "params": {
         "valueType": "number"
@@ -201,8 +201,8 @@
       "id": "pe_bobY",
       "defType": "math/mul",
       "position": {
-        "x": 532,
-        "y": 700
+        "x": 750,
+        "y": 386
       },
       "params": {
         "valueType": "number"
@@ -212,8 +212,8 @@
       "id": "pe_pivotY",
       "defType": "value/number",
       "position": {
-        "x": 756,
-        "y": 500
+        "x": 764,
+        "y": 508
       },
       "params": {
         "value": -150
@@ -226,8 +226,8 @@
       "id": "pe_bobYAbs",
       "defType": "math/add",
       "position": {
-        "x": 979.9999999999999,
-        "y": 700
+        "x": 1024,
+        "y": 424
       },
       "params": {
         "valueType": "number"
@@ -237,8 +237,8 @@
       "id": "pe_rodC",
       "defType": "style/stroke",
       "position": {
-        "x": -224,
-        "y": 950
+        "x": 1065,
+        "y": 687
       },
       "params": {}
     },
@@ -246,8 +246,8 @@
       "id": "pe_rodW",
       "defType": "style/stroke-weight",
       "position": {
-        "x": 56,
-        "y": 950
+        "x": 1334,
+        "y": 667
       },
       "params": {
         "w": 2
@@ -260,8 +260,8 @@
       "id": "pe_rod",
       "defType": "draw/line",
       "position": {
-        "x": 336,
-        "y": 950
+        "x": 1639,
+        "y": 460
       },
       "params": {
         "x1": 0
@@ -274,8 +274,8 @@
       "id": "pe_bobFill",
       "defType": "style/fill",
       "position": {
-        "x": -224,
-        "y": 1150
+        "x": 1348,
+        "y": 789
       },
       "params": {
         "mode": "rgb",
@@ -296,8 +296,8 @@
       "id": "pe_bob",
       "defType": "draw/ellipse",
       "position": {
-        "x": 336,
-        "y": 1150
+        "x": 1633,
+        "y": 602
       },
       "params": {
         "w": 32,
@@ -312,8 +312,8 @@
       "id": "pe_group",
       "defType": "transform/group",
       "position": {
-        "x": 1260,
-        "y": 1050
+        "x": 1870,
+        "y": 521
       },
       "params": {
         "slotCount": 2
@@ -326,8 +326,8 @@
       "id": "pe_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1540,
-        "y": 1050
+        "x": 2134,
+        "y": 521
       },
       "params": {
         "width": 500,
@@ -344,8 +344,8 @@
       "id": "pe_rod-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 276,
-        "y": 950
+        "x": 1348,
+        "y": 545
       },
       "params": {
         "x": 0,
@@ -360,8 +360,8 @@
       "id": "pe_rod-xy1",
       "defType": "vec2/make",
       "position": {
-        "x": 276,
-        "y": 950
+        "x": 1348,
+        "y": 301
       },
       "params": {
         "x": 0,
@@ -376,8 +376,8 @@
       "id": "pe_bob-xy2",
       "defType": "vec2/make",
       "position": {
-        "x": 276,
-        "y": 1150
+        "x": 1348,
+        "y": 423
       },
       "params": {
         "x": 0,

@@ -12,8 +12,8 @@
       "id": "t29_c",
       "defType": "meta/comment",
       "position": {
-        "x": -616,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Generating sound\n\n`sound/oscillator` produces a waveform; `sound/output` sends it to the speakers. Wire mouseY through a `math/map` and the pitch slides as you move the cursor.\n\nThe big ellipse is just visual feedback for how loud it is.",
@@ -30,8 +30,8 @@
       "id": "t29_m",
       "defType": "input/mouse",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 61
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "t29_freq",
       "defType": "math/map",
       "position": {
-        "x": 364,
-        "y": 0
+        "x": 180,
+        "y": 81
       },
       "params": {
         "inMin": -200,
@@ -59,8 +59,8 @@
       "id": "t29_osc",
       "defType": "sound/oscillator",
       "position": {
-        "x": 644,
-        "y": 0
+        "x": 358,
+        "y": 61
       },
       "params": {
         "type": "sine",
@@ -75,7 +75,7 @@
       "id": "t29_out",
       "defType": "sound/output",
       "position": {
-        "x": 896,
+        "x": 628,
         "y": 0
       },
       "params": {
@@ -89,8 +89,8 @@
       "id": "t29_amp",
       "defType": "sound/amplitude",
       "position": {
-        "x": 644,
-        "y": 500
+        "x": 621,
+        "y": 122
       },
       "params": {
         "smoothing": 0.5
@@ -103,8 +103,8 @@
       "id": "t29_sz",
       "defType": "math/mul",
       "position": {
-        "x": 896,
-        "y": 500
+        "x": 814,
+        "y": 122
       },
       "params": {
         "b": 600,
@@ -118,8 +118,8 @@
       "id": "t29_szO",
       "defType": "math/add",
       "position": {
-        "x": 1148,
-        "y": 500
+        "x": 1078,
+        "y": 122
       },
       "params": {
         "b": 40,
@@ -133,8 +133,8 @@
       "id": "t29_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1400,
-        "y": 500
+        "x": 1344,
+        "y": 92
       },
       "params": {}
     },
@@ -142,8 +142,8 @@
       "id": "t29_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1708,
-        "y": 0
+        "x": 1546,
+        "y": 92
       },
       "params": {
         "width": 400,

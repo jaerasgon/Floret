@@ -12,8 +12,8 @@
       "id": "t25_c",
       "defType": "meta/comment",
       "position": {
-        "x": -644,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Spring physics with state\n\nA position chases the mouse with Hooke + damping. Two state slots (vec2): position and velocity. Each frame:\n  • a = (mouse − pos) · k − vel · damp\n  • vel ← vel + a\n  • pos ← pos + vel\n\nWrite/Read are used twice — one for pos, one for vel.",
@@ -30,7 +30,7 @@
       "id": "t25_m",
       "defType": "input/mouse",
       "position": {
-        "x": 84,
+        "x": 30,
         "y": 0
       },
       "params": {}
@@ -39,7 +39,7 @@
       "id": "t25_mVec",
       "defType": "vec2/make",
       "position": {
-        "x": 336,
+        "x": 269,
         "y": 0
       },
       "params": {}
@@ -48,8 +48,8 @@
       "id": "t25_posR",
       "defType": "state/read",
       "position": {
-        "x": 84,
-        "y": 400
+        "x": 239,
+        "y": 122
       },
       "params": {
         "slot": 1,
@@ -70,8 +70,8 @@
       "id": "t25_velR",
       "defType": "state/read",
       "position": {
-        "x": 84,
-        "y": 600
+        "x": 0,
+        "y": 249
       },
       "params": {
         "slot": 2,
@@ -92,7 +92,7 @@
       "id": "t25_mS",
       "defType": "vec2/split",
       "position": {
-        "x": 588,
+        "x": 536,
         "y": 0
       },
       "params": {}
@@ -101,8 +101,8 @@
       "id": "t25_pS",
       "defType": "vec2/split",
       "position": {
-        "x": 588,
-        "y": 400
+        "x": 536,
+        "y": 122
       },
       "params": {}
     },
@@ -110,8 +110,8 @@
       "id": "t25_vS",
       "defType": "vec2/split",
       "position": {
-        "x": 588,
-        "y": 600
+        "x": 269,
+        "y": 249
       },
       "params": {}
     },
@@ -119,8 +119,8 @@
       "id": "t25_k",
       "defType": "value/number",
       "position": {
-        "x": 84,
-        "y": 950
+        "x": 789,
+        "y": 284
       },
       "params": {
         "value": 0.05
@@ -133,8 +133,8 @@
       "id": "t25_damp",
       "defType": "value/number",
       "position": {
-        "x": 84,
-        "y": 1100
+        "x": 241,
+        "y": 371
       },
       "params": {
         "value": 0.85
@@ -147,8 +147,8 @@
       "id": "t25_subX",
       "defType": "math/sub",
       "position": {
-        "x": 840,
-        "y": 200
+        "x": 775,
+        "y": 8
       },
       "params": {
         "valueType": "number"
@@ -158,8 +158,8 @@
       "id": "t25_subY",
       "defType": "math/sub",
       "position": {
-        "x": 840,
-        "y": 350
+        "x": 775,
+        "y": 130
       },
       "params": {
         "valueType": "number"
@@ -169,8 +169,8 @@
       "id": "t25_accX",
       "defType": "math/mul",
       "position": {
-        "x": 1064,
-        "y": 200
+        "x": 1067,
+        "y": 195
       },
       "params": {
         "valueType": "number"
@@ -180,8 +180,8 @@
       "id": "t25_accY",
       "defType": "math/mul",
       "position": {
-        "x": 1064,
-        "y": 350
+        "x": 1067,
+        "y": 317
       },
       "params": {
         "valueType": "number"
@@ -191,8 +191,8 @@
       "id": "t25_dvX",
       "defType": "math/mul",
       "position": {
-        "x": 840,
-        "y": 550
+        "x": 494,
+        "y": 244
       },
       "params": {
         "valueType": "number"
@@ -202,8 +202,8 @@
       "id": "t25_dvY",
       "defType": "math/mul",
       "position": {
-        "x": 840,
-        "y": 700
+        "x": 494,
+        "y": 366
       },
       "params": {
         "valueType": "number"
@@ -213,8 +213,8 @@
       "id": "t25_nvX",
       "defType": "math/add",
       "position": {
-        "x": 1288,
-        "y": 400
+        "x": 1340,
+        "y": 179
       },
       "params": {
         "valueType": "number"
@@ -224,8 +224,8 @@
       "id": "t25_nvY",
       "defType": "math/add",
       "position": {
-        "x": 1288,
-        "y": 550
+        "x": 1340,
+        "y": 313
       },
       "params": {
         "valueType": "number"
@@ -235,8 +235,8 @@
       "id": "t25_npX",
       "defType": "math/add",
       "position": {
-        "x": 1512,
-        "y": 200
+        "x": 1622,
+        "y": 53
       },
       "params": {
         "valueType": "number"
@@ -246,8 +246,8 @@
       "id": "t25_npY",
       "defType": "math/add",
       "position": {
-        "x": 1512,
-        "y": 350
+        "x": 1622,
+        "y": 175
       },
       "params": {
         "valueType": "number"
@@ -257,8 +257,8 @@
       "id": "t25_nP",
       "defType": "vec2/make",
       "position": {
-        "x": 1736,
-        "y": 250
+        "x": 1908,
+        "y": 41
       },
       "params": {}
     },
@@ -266,8 +266,8 @@
       "id": "t25_nV",
       "defType": "vec2/make",
       "position": {
-        "x": 1736,
-        "y": 500
+        "x": 1664,
+        "y": 297
       },
       "params": {}
     },
@@ -275,8 +275,8 @@
       "id": "t25_posW",
       "defType": "state/write",
       "position": {
-        "x": 1987.9999999999998,
-        "y": 250
+        "x": 2094,
+        "y": 21
       },
       "params": {
         "slot": 1
@@ -289,8 +289,8 @@
       "id": "t25_velW",
       "defType": "state/write",
       "position": {
-        "x": 1987.9999999999998,
-        "y": 500
+        "x": 1903,
+        "y": 285
       },
       "params": {
         "slot": 2
@@ -303,8 +303,8 @@
       "id": "t25_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1512,
-        "y": 800
+        "x": 2092,
+        "y": 163
       },
       "params": {
         "w": 30,
@@ -319,8 +319,8 @@
       "id": "t25_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2268,
-        "y": 0
+        "x": 2284,
+        "y": 163
       },
       "params": {
         "width": 400,
@@ -335,8 +335,8 @@
       "id": "t25_ell-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1452,
-        "y": 800
+        "x": 1908,
+        "y": 163
       },
       "params": {
         "x": 0,

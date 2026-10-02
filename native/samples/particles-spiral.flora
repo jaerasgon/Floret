@@ -12,8 +12,8 @@
       "id": "ps_c",
       "defType": "meta/comment",
       "position": {
-        "x": -756,
-        "y": 0
+        "x": 0,
+        "y": -344
       },
       "params": {
         "text": "Galactic spiral\n\nphysics/world.integrator is set to VERLET — two-pass integration that preserves long-running orbits much better than Euler. Vortex + central attractor produce stable spirals; trails (per-particle buffer colour, fadeOut) drag the colour through space.\n\nFlip the integrator to euler and watch the particles drift outward over time.",
@@ -30,8 +30,8 @@
       "id": "ps_time",
       "defType": "time/seconds",
       "position": {
-        "x": -756,
-        "y": 700
+        "x": 25,
+        "y": 483
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "ps_vortex",
       "defType": "force/vortex",
       "position": {
-        "x": -475.99999999999994,
-        "y": 600
+        "x": 0,
+        "y": 0
       },
       "params": {
         "center": {
@@ -69,8 +69,8 @@
       "id": "ps_attr",
       "defType": "force/attractor",
       "position": {
-        "x": -475.99999999999994,
-        "y": 850
+        "x": 6,
+        "y": 202
       },
       "params": {
         "center": {
@@ -97,8 +97,8 @@
       "id": "ps_world",
       "defType": "physics/world",
       "position": {
-        "x": -196,
-        "y": 750
+        "x": 523,
+        "y": 11
       },
       "params": {
         "gravity": {
@@ -121,8 +121,8 @@
       "id": "ps_tHue",
       "defType": "math/mul",
       "position": {
-        "x": -756,
-        "y": 500
+        "x": 243,
+        "y": 442
       },
       "params": {
         "b": 720,
@@ -136,8 +136,8 @@
       "id": "ps_hsl",
       "defType": "color/color",
       "position": {
-        "x": -475.99999999999994,
-        "y": 400
+        "x": 511,
+        "y": 395
       },
       "params": {
         "mode": "hsl",
@@ -158,8 +158,8 @@
       "id": "ps_ring",
       "defType": "spread/ring",
       "position": {
-        "x": -196,
-        "y": 150
+        "x": 523,
+        "y": 233
       },
       "params": {
         "count": 80,
@@ -174,8 +174,8 @@
       "id": "ps_em",
       "defType": "particles/emitter",
       "position": {
-        "x": 196,
-        "y": 100
+        "x": 787,
+        "y": 211
       },
       "params": {
         "rate": 240,
@@ -208,8 +208,8 @@
       "id": "ps_render",
       "defType": "particles/render-as",
       "position": {
-        "x": 616,
-        "y": 100
+        "x": 1072,
+        "y": 318
       },
       "params": {
         "template": "circle",
@@ -224,8 +224,8 @@
       "id": "ps_trailW",
       "defType": "style/stroke-weight",
       "position": {
-        "x": 392,
-        "y": 400
+        "x": 815,
+        "y": 89
       },
       "params": {
         "w": 3
@@ -238,8 +238,8 @@
       "id": "ps_trail",
       "defType": "particles/trail",
       "position": {
-        "x": 616,
-        "y": 400
+        "x": 1072,
+        "y": 76
       },
       "params": {
         "segments": 32,
@@ -260,8 +260,8 @@
       "id": "ps_bg",
       "defType": "color/color",
       "position": {
-        "x": 196,
-        "y": 500
+        "x": 1329,
+        "y": 309
       },
       "params": {
         "mode": "rgb",
@@ -282,8 +282,8 @@
       "id": "ps_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1007.9999999999999,
-        "y": 0
+        "x": 1592,
+        "y": 238
       },
       "params": {
         "width": 600,
@@ -298,8 +298,8 @@
       "id": "merge_703",
       "defType": "spread/merge",
       "position": {
-        "x": -416,
-        "y": 750
+        "x": 243,
+        "y": 91
       },
       "params": {
         "slotCount": 2
@@ -312,8 +312,8 @@
       "id": "merge_707",
       "defType": "spread/merge",
       "position": {
-        "x": 787.9999999999999,
-        "y": 0
+        "x": 1320,
+        "y": 187
       },
       "params": {
         "slotCount": 2

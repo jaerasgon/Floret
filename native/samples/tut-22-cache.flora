@@ -12,8 +12,8 @@
       "id": "t22_c",
       "defType": "meta/comment",
       "position": {
-        "x": -616,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Cache: skip work when inputs are stable\n\n`region/cache` runs its body only when an input changes. Wrap an expensive computation inside it and the runtime returns the same output every tick until you nudge an input.\n\nHere: a 200-point Fibonacci scatter, cached. The Path is rebuilt only when `scale` changes.",
@@ -30,8 +30,8 @@
       "id": "t22_scale",
       "defType": "io/slider",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 79
       },
       "params": {
         "value": 10,
@@ -48,12 +48,12 @@
       "id": "t22_region",
       "defType": "region/cache",
       "position": {
-        "x": 448,
-        "y": 0
+        "x": 264,
+        "y": 22
       },
       "params": {
-        "width": 700,
-        "height": 600,
+        "width": 765,
+        "height": 356,
         "label": "Cache"
       },
       "ports": [
@@ -61,24 +61,26 @@
           "id": "s",
           "name": "scale",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 97
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 109
         }
       ],
-      "width": 700,
-      "height": 600
+      "width": 765,
+      "height": 356
     },
     {
       "id": "t22_fib",
       "defType": "spread/fibonacci",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 138,
+        "y": 40
       },
       "params": {
         "count": 200,
@@ -94,8 +96,8 @@
       "id": "t22_col",
       "defType": "color/color",
       "position": {
-        "x": 308,
-        "y": 300
+        "x": 128,
+        "y": 182
       },
       "params": {
         "mode": "rgb",
@@ -117,8 +119,8 @@
       "id": "t22_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 503.99999999999994,
-        "y": 100
+        "x": 564,
+        "y": 73
       },
       "params": {
         "closed": false
@@ -132,8 +134,8 @@
       "id": "t22_fill",
       "defType": "style/fill",
       "position": {
-        "x": 503.99999999999994,
-        "y": 300
+        "x": 379,
+        "y": 148
       },
       "params": {},
       "parentId": "t22_region"
@@ -142,8 +144,8 @@
       "id": "t22_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1232,
-        "y": 0
+        "x": 1125,
+        "y": 95
       },
       "params": {
         "width": 400,

@@ -12,8 +12,8 @@
       "id": "t30_c",
       "defType": "meta/comment",
       "position": {
-        "x": -644,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Branching on keyboard input\n\n`input/keyboard.key` outputs the last key pressed (e.g. \"a\", \"ArrowLeft\"). `logic/eq` checks equality against a constant string. Wire the result into a `region/if` and you get key-driven branches.\n\nPress R for red rect, B for blue ellipse — others draw nothing.",
@@ -30,8 +30,8 @@
       "id": "t30_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 33,
+        "y": 115
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "t30_rKey",
       "defType": "value/string",
       "position": {
-        "x": 84,
-        "y": 450
+        "x": 0,
+        "y": 237
       },
       "params": {
         "value": "r"
@@ -53,8 +53,8 @@
       "id": "t30_bKey",
       "defType": "value/string",
       "position": {
-        "x": 84,
-        "y": 850
+        "x": 0,
+        "y": 339
       },
       "params": {
         "value": "b"
@@ -67,8 +67,8 @@
       "id": "t30_isR",
       "defType": "logic/eq",
       "position": {
-        "x": 336,
-        "y": 200
+        "x": 275,
+        "y": 116
       },
       "params": {}
     },
@@ -76,8 +76,8 @@
       "id": "t30_isB",
       "defType": "logic/eq",
       "position": {
-        "x": 336,
-        "y": 700
+        "x": 275,
+        "y": 286
       },
       "params": {}
     },
@@ -85,12 +85,12 @@
       "id": "t30_R",
       "defType": "region/if",
       "position": {
-        "x": 672,
-        "y": 0
+        "x": 472,
+        "y": 22
       },
       "params": {
-        "width": 503.99999999999994,
-        "height": 500,
+        "width": 776,
+        "height": 336,
         "label": "If R"
       },
       "ports": [
@@ -98,18 +98,19 @@
           "id": "l",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 97
         }
       ],
-      "width": 503.99999999999994,
-      "height": 500
+      "width": 776,
+      "height": 336
     },
     {
       "id": "t30_colR",
       "defType": "color/color",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 128,
+        "y": 162
       },
       "params": {
         "mode": "rgb",
@@ -131,8 +132,8 @@
       "id": "t30_fillR",
       "defType": "style/fill",
       "position": {
-        "x": 251.99999999999997,
-        "y": 100
+        "x": 380,
+        "y": 162
       },
       "params": {},
       "parentId": "t30_R"
@@ -141,8 +142,8 @@
       "id": "t30_rectR",
       "defType": "draw/rect",
       "position": {
-        "x": 308,
-        "y": 300
+        "x": 568,
+        "y": 61
       },
       "params": {
         "x": -80,
@@ -162,12 +163,12 @@
       "id": "t30_B",
       "defType": "region/if",
       "position": {
-        "x": 672,
-        "y": 600
+        "x": 474,
+        "y": 428
       },
       "params": {
-        "width": 503.99999999999994,
-        "height": 500,
+        "width": 772,
+        "height": 294,
         "label": "If B"
       },
       "ports": [
@@ -175,18 +176,19 @@
           "id": "l",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 76
         }
       ],
-      "width": 503.99999999999994,
-      "height": 500
+      "width": 772,
+      "height": 294
     },
     {
       "id": "t30_colB",
       "defType": "color/color",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 128,
+        "y": 120
       },
       "params": {
         "mode": "rgb",
@@ -208,8 +210,8 @@
       "id": "t30_fillB",
       "defType": "style/fill",
       "position": {
-        "x": 251.99999999999997,
-        "y": 100
+        "x": 374,
+        "y": 120
       },
       "params": {},
       "parentId": "t30_B"
@@ -218,8 +220,8 @@
       "id": "t30_ellB",
       "defType": "draw/ellipse",
       "position": {
-        "x": 308,
-        "y": 300
+        "x": 554,
+        "y": 40
       },
       "params": {
         "w": 200,
@@ -235,8 +237,8 @@
       "id": "t30_grp",
       "defType": "transform/group",
       "position": {
-        "x": 1260,
-        "y": 300
+        "x": 1372,
+        "y": 265
       },
       "params": {
         "slotCount": 2
@@ -249,8 +251,8 @@
       "id": "t30_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1568,
-        "y": 0
+        "x": 1636,
+        "y": 265
       },
       "params": {
         "width": 400,
@@ -265,8 +267,8 @@
       "id": "t30_rectR-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 248,
-        "y": 300
+        "x": 374,
+        "y": 40
       },
       "params": {
         "x": -80,

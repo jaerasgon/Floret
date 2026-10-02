@@ -12,8 +12,8 @@
       "id": "t21_c",
       "defType": "meta/comment",
       "position": {
-        "x": -616,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Trails: state + spread\n\nThe Write* / Read* pair stash a SPREAD between frames. Read* emits last frame's spread; we append today's mouse vec2 to it (Stack), then Write* keeps the new spread for tomorrow.\n\nDraw the buffer as a Path → the line trails the cursor.",
@@ -30,8 +30,8 @@
       "id": "t21_m",
       "defType": "input/mouse",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 122
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "t21_mkVec",
       "defType": "vec2/make",
       "position": {
-        "x": 364,
-        "y": 0
+        "x": 210,
+        "y": 122
       },
       "params": {}
     },
@@ -48,8 +48,8 @@
       "id": "t21_read",
       "defType": "state/read-spread",
       "position": {
-        "x": 84,
-        "y": 500
+        "x": 180,
+        "y": 0
       },
       "params": {
         "slot": 1
@@ -62,8 +62,8 @@
       "id": "t21_stack",
       "defType": "spread/stack",
       "position": {
-        "x": 644,
-        "y": 250
+        "x": 427,
+        "y": 51
       },
       "params": {}
     },
@@ -71,8 +71,8 @@
       "id": "t21_take",
       "defType": "spread/slice",
       "position": {
-        "x": 896,
-        "y": 250
+        "x": 652,
+        "y": 51
       },
       "params": {
         "start": -80,
@@ -87,8 +87,8 @@
       "id": "t21_write",
       "defType": "state/write-spread",
       "position": {
-        "x": 1148,
-        "y": 500
+        "x": 885,
+        "y": 4
       },
       "params": {
         "slot": 1
@@ -101,8 +101,8 @@
       "id": "t21_col",
       "defType": "color/color",
       "position": {
-        "x": 644,
-        "y": 800
+        "x": 628,
+        "y": 193
       },
       "params": {
         "mode": "rgb",
@@ -123,8 +123,8 @@
       "id": "t21_path",
       "defType": "draw/path",
       "position": {
-        "x": 1148,
-        "y": 150
+        "x": 888,
+        "y": 126
       },
       "params": {
         "strokeWidth": 3
@@ -137,8 +137,8 @@
       "id": "t21_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1456,
-        "y": 0
+        "x": 1080,
+        "y": 126
       },
       "params": {
         "width": 500,

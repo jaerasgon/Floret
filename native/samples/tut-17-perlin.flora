@@ -12,8 +12,8 @@
       "id": "t17_c",
       "defType": "meta/comment",
       "position": {
-        "x": -560,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Perlin noise\n\nUnlike random/uniform (jumpy), Perlin noise is smooth — neighbouring inputs give neighbouring outputs. Perfect for organic motion.\n\nFor each cell, sample noise at (cellX, time). Use the result to nudge y AND shift hue.",
@@ -30,8 +30,8 @@
       "id": "t17_range",
       "defType": "spread/range",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 137
       },
       "params": {
         "count": 40
@@ -44,8 +44,8 @@
       "id": "t17_t",
       "defType": "time/seconds",
       "position": {
-        "x": 84,
-        "y": 500
+        "x": 15,
+        "y": 318
       },
       "params": {}
     },
@@ -53,12 +53,12 @@
       "id": "t17_region",
       "defType": "region/foreach",
       "position": {
-        "x": 448,
-        "y": 0
+        "x": 210,
+        "y": 22
       },
       "params": {
-        "width": 840,
-        "height": 900,
+        "width": 1527,
+        "height": 458,
         "label": "ForEach"
       },
       "ports": [
@@ -66,30 +66,33 @@
           "id": "i",
           "name": "i",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 151
         },
         {
           "id": "tm",
           "name": "t",
           "type": "number",
-          "direction": "input"
+          "direction": "input",
+          "y": 332
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 175
         }
       ],
-      "width": 840,
-      "height": 900
+      "width": 1527,
+      "height": 458
     },
     {
       "id": "t17_stepX",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 133,
+        "y": 52
       },
       "params": {
         "b": 10,
@@ -104,8 +107,8 @@
       "id": "t17_offX",
       "defType": "math/add",
       "position": {
-        "x": 280,
-        "y": 100
+        "x": 860,
+        "y": 40
       },
       "params": {
         "b": -200,
@@ -120,8 +123,8 @@
       "id": "t17_noiseX",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 300
+        "x": 133,
+        "y": 174
       },
       "params": {
         "b": 0.01,
@@ -136,8 +139,8 @@
       "id": "t17_noiseT",
       "defType": "math/mul",
       "position": {
-        "x": 56,
-        "y": 450
+        "x": 133,
+        "y": 296
       },
       "params": {
         "b": 0.3,
@@ -152,8 +155,8 @@
       "id": "t17_n",
       "defType": "noise/perlin",
       "position": {
-        "x": 280,
-        "y": 350
+        "x": 405,
+        "y": 227
       },
       "params": {},
       "parentId": "t17_region"
@@ -162,8 +165,8 @@
       "id": "t17_yScale",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 300
+        "x": 594,
+        "y": 169
       },
       "params": {
         "b": 300,
@@ -178,8 +181,8 @@
       "id": "t17_yOff",
       "defType": "math/add",
       "position": {
-        "x": 503.99999999999994,
-        "y": 450
+        "x": 860,
+        "y": 162
       },
       "params": {
         "b": -150,
@@ -194,8 +197,8 @@
       "id": "t17_hue",
       "defType": "math/mul",
       "position": {
-        "x": 503.99999999999994,
-        "y": 600
+        "x": 594,
+        "y": 291
       },
       "params": {
         "b": 360,
@@ -210,8 +213,8 @@
       "id": "t17_col",
       "defType": "color/color",
       "position": {
-        "x": 503.99999999999994,
-        "y": 750
+        "x": 869,
+        "y": 284
       },
       "params": {
         "mode": "hsl",
@@ -231,8 +234,8 @@
       "id": "t17_fill",
       "defType": "style/fill",
       "position": {
-        "x": 728,
-        "y": 750
+        "x": 1134,
+        "y": 251
       },
       "params": {},
       "parentId": "t17_region"
@@ -241,8 +244,8 @@
       "id": "t17_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 728,
-        "y": 250
+        "x": 1319,
+        "y": 139
       },
       "params": {
         "w": 12,
@@ -258,8 +261,8 @@
       "id": "t17_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1344,
-        "y": 0
+        "x": 1833,
+        "y": 161
       },
       "params": {
         "width": 400,
@@ -274,8 +277,8 @@
       "id": "t17_ell-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 668,
-        "y": 250
+        "x": 1134,
+        "y": 107
       },
       "params": {
         "x": 0,

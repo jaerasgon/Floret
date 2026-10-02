@@ -12,8 +12,8 @@
       "id": "mf_time",
       "defType": "time/seconds",
       "position": {
-        "x": -460,
-        "y": 40
+        "x": 0,
+        "y": 389
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "mf_tscale",
       "defType": "math/mul",
       "position": {
-        "x": -300,
-        "y": 40
+        "x": 180,
+        "y": 389
       },
       "params": {
         "b": 2,
@@ -36,8 +36,8 @@
       "id": "mf_sin",
       "defType": "math/sin",
       "position": {
-        "x": -150,
-        "y": 40
+        "x": 444,
+        "y": 389
       },
       "params": {}
     },
@@ -45,8 +45,8 @@
       "id": "mf_targetX",
       "defType": "math/mul",
       "position": {
-        "x": -10,
-        "y": 40
+        "x": 612,
+        "y": 389
       },
       "params": {
         "b": 165,
@@ -60,8 +60,8 @@
       "id": "mf_gTop",
       "defType": "vec2/make",
       "position": {
-        "x": 460,
-        "y": -40
+        "x": 969,
+        "y": 0
       },
       "params": {
         "y": -200
@@ -74,8 +74,8 @@
       "id": "mf_gBot",
       "defType": "vec2/make",
       "position": {
-        "x": 460,
-        "y": 30
+        "x": 969,
+        "y": 122
       },
       "params": {
         "y": 200
@@ -88,8 +88,8 @@
       "id": "mf_gCol",
       "defType": "color/hex",
       "position": {
-        "x": 460,
-        "y": 120
+        "x": 634,
+        "y": 244
       },
       "params": {
         "hex": "#555a66"
@@ -102,8 +102,8 @@
       "id": "mf_gStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 620,
-        "y": 80
+        "x": 968,
+        "y": 244
       },
       "params": {
         "width": 1
@@ -116,8 +116,8 @@
       "id": "mf_gLine",
       "defType": "draw/line",
       "position": {
-        "x": 780,
-        "y": -20
+        "x": 1191,
+        "y": 138
       },
       "params": {}
     },
@@ -125,8 +125,8 @@
       "id": "mf_refPos",
       "defType": "vec2/make",
       "position": {
-        "x": 460,
-        "y": 220
+        "x": 1191,
+        "y": 280
       },
       "params": {
         "y": -150
@@ -139,8 +139,8 @@
       "id": "mf_refDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 780,
-        "y": 200
+        "x": 1387,
+        "y": 278
       },
       "params": {
         "w": 16,
@@ -155,8 +155,8 @@
       "id": "mf_smooth",
       "defType": "motion/smooth",
       "position": {
-        "x": 460,
-        "y": 320
+        "x": 968,
+        "y": 406
       },
       "params": {
         "rate": 2.5,
@@ -170,8 +170,8 @@
       "id": "mf_smPos",
       "defType": "vec2/make",
       "position": {
-        "x": 620,
-        "y": 320
+        "x": 1191,
+        "y": 402
       },
       "params": {
         "y": -50
@@ -184,8 +184,8 @@
       "id": "mf_smCol",
       "defType": "color/hex",
       "position": {
-        "x": 620,
-        "y": 400
+        "x": 949,
+        "y": 528
       },
       "params": {
         "hex": "#4aa8ff"
@@ -198,8 +198,8 @@
       "id": "mf_smFill",
       "defType": "style/fill",
       "position": {
-        "x": 780,
-        "y": 400
+        "x": 1191,
+        "y": 524
       },
       "params": {}
     },
@@ -207,8 +207,8 @@
       "id": "mf_smDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 940,
-        "y": 320
+        "x": 1387,
+        "y": 460
       },
       "params": {
         "w": 24,
@@ -223,8 +223,8 @@
       "id": "mf_spring",
       "defType": "motion/spring",
       "position": {
-        "x": 460,
-        "y": 500
+        "x": 968,
+        "y": 630
       },
       "params": {
         "stiffness": 65,
@@ -240,8 +240,8 @@
       "id": "mf_spPos",
       "defType": "vec2/make",
       "position": {
-        "x": 620,
-        "y": 500
+        "x": 1191,
+        "y": 646
       },
       "params": {
         "y": 50
@@ -254,8 +254,8 @@
       "id": "mf_spCol",
       "defType": "color/hex",
       "position": {
-        "x": 620,
-        "y": 580
+        "x": 949,
+        "y": 772
       },
       "params": {
         "hex": "#ff8a3d"
@@ -268,8 +268,8 @@
       "id": "mf_spFill",
       "defType": "style/fill",
       "position": {
-        "x": 780,
-        "y": 580
+        "x": 1191,
+        "y": 768
       },
       "params": {}
     },
@@ -277,8 +277,8 @@
       "id": "mf_spDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 940,
-        "y": 500
+        "x": 1387,
+        "y": 642
       },
       "params": {
         "w": 24,
@@ -293,8 +293,8 @@
       "id": "mf_delay",
       "defType": "motion/delay-line",
       "position": {
-        "x": 460,
-        "y": 680
+        "x": 966,
+        "y": 874
       },
       "params": {
         "delay": 0.5,
@@ -308,8 +308,8 @@
       "id": "mf_dlPos",
       "defType": "vec2/make",
       "position": {
-        "x": 620,
-        "y": 680
+        "x": 1191,
+        "y": 890
       },
       "params": {
         "y": 150
@@ -322,8 +322,8 @@
       "id": "mf_dlCol",
       "defType": "color/hex",
       "position": {
-        "x": 620,
-        "y": 760
+        "x": 949,
+        "y": 1012
       },
       "params": {
         "hex": "#54d08a"
@@ -336,8 +336,8 @@
       "id": "mf_dlFill",
       "defType": "style/fill",
       "position": {
-        "x": 780,
-        "y": 760
+        "x": 1191,
+        "y": 1012
       },
       "params": {}
     },
@@ -345,8 +345,8 @@
       "id": "mf_dlDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 940,
-        "y": 680
+        "x": 1387,
+        "y": 824
       },
       "params": {
         "w": 24,
@@ -361,8 +361,8 @@
       "id": "mf_group",
       "defType": "transform/group",
       "position": {
-        "x": 1140,
-        "y": 320
+        "x": 1629,
+        "y": 406
       },
       "params": {
         "slotCount": 5
@@ -375,8 +375,8 @@
       "id": "mf_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1340,
-        "y": 200
+        "x": 1893,
+        "y": 406
       },
       "params": {
         "width": 500,

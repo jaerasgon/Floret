@@ -12,8 +12,8 @@
       "id": "pa_c",
       "defType": "meta/comment",
       "position": {
-        "x": -756,
-        "y": 0
+        "x": 0,
+        "y": -324
       },
       "params": {
         "text": "Attractor field\n\nThree forces wired into the World: turbulence (perlin field), drag (terminal velocity), and an attractor pulling everything toward (0, 0).\n\nThe attractor's `viz` output draws its influence ring — toggle `showViz` to debug placement.",
@@ -30,8 +30,8 @@
       "id": "pa_time",
       "defType": "time/seconds",
       "position": {
-        "x": -756,
-        "y": 600
+        "x": 538,
+        "y": 384
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "pa_turb",
       "defType": "force/turbulence",
       "position": {
-        "x": -475.99999999999994,
-        "y": 500
+        "x": 6,
+        "y": 63
       },
       "params": {
         "scale": 0.005,
@@ -59,8 +59,8 @@
       "id": "pa_drag",
       "defType": "force/drag",
       "position": {
-        "x": -475.99999999999994,
-        "y": 700
+        "x": 0,
+        "y": 225
       },
       "params": {
         "strength": 1.6
@@ -73,8 +73,8 @@
       "id": "pa_attr",
       "defType": "force/attractor",
       "position": {
-        "x": -475.99999999999994,
-        "y": 900
+        "x": 2,
+        "y": 327
       },
       "params": {
         "center": {
@@ -101,8 +101,8 @@
       "id": "pa_world",
       "defType": "physics/world",
       "position": {
-        "x": -196,
-        "y": 700
+        "x": 517,
+        "y": 0
       },
       "params": {
         "gravity": {
@@ -125,8 +125,8 @@
       "id": "pa_ring",
       "defType": "spread/ring",
       "position": {
-        "x": -196,
-        "y": 200
+        "x": 518,
+        "y": 222
       },
       "params": {
         "count": 60,
@@ -141,8 +141,8 @@
       "id": "pa_em",
       "defType": "particles/emitter",
       "position": {
-        "x": 196,
-        "y": 200
+        "x": 758,
+        "y": 127
       },
       "params": {
         "rate": 600,
@@ -187,8 +187,8 @@
       "id": "pa_render",
       "defType": "particles/render-as",
       "position": {
-        "x": 616,
-        "y": 200
+        "x": 1037,
+        "y": 220
       },
       "params": {
         "template": "circle",
@@ -203,8 +203,8 @@
       "id": "pa_bg",
       "defType": "color/color",
       "position": {
-        "x": 196,
-        "y": 550
+        "x": 1294,
+        "y": 430
       },
       "params": {
         "mode": "rgb",
@@ -225,8 +225,8 @@
       "id": "pa_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1007.9999999999999,
-        "y": 0
+        "x": 1557,
+        "y": 359
       },
       "params": {
         "width": 540,
@@ -241,8 +241,8 @@
       "id": "merge_657",
       "defType": "spread/merge",
       "position": {
-        "x": -416,
-        "y": 700
+        "x": 241,
+        "y": 159
       },
       "params": {
         "slotCount": 3
@@ -255,8 +255,8 @@
       "id": "merge_662",
       "defType": "spread/merge",
       "position": {
-        "x": 787.9999999999999,
-        "y": 0
+        "x": 1285,
+        "y": 308
       },
       "params": {
         "slotCount": 2

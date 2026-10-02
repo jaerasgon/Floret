@@ -12,8 +12,8 @@
       "id": "t07_c",
       "defType": "meta/comment",
       "position": {
-        "x": -560,
-        "y": 0
+        "x": 0,
+        "y": -304
       },
       "params": {
         "text": "Grids and vec2 spreads\n\n`GridSpread` emits a Spread<vec2> — one (x,y) per cell. Pass it into a ForEach, then `vec2/split` inside the region to break each vec2 into its x and y, and feed those into a shape.\n\nResult: an 8×8 grid of circles.",
@@ -30,8 +30,8 @@
       "id": "t07_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 84,
-        "y": 0
+        "x": 0,
+        "y": 62
       },
       "params": {
         "cols": 8,
@@ -50,12 +50,12 @@
       "id": "t07_region",
       "defType": "region/foreach",
       "position": {
-        "x": 420,
-        "y": 0
+        "x": 206,
+        "y": 22
       },
       "params": {
-        "width": 644,
-        "height": 600,
+        "width": 696,
+        "height": 214,
         "label": "ForEach"
       },
       "ports": [
@@ -63,24 +63,26 @@
           "id": "p",
           "name": "p",
           "type": "vec2",
-          "direction": "input"
+          "direction": "input",
+          "y": 76
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
-          "direction": "output"
+          "direction": "output",
+          "y": 76
         }
       ],
-      "width": 644,
-      "height": 600
+      "width": 696,
+      "height": 214
     },
     {
       "id": "t07_split",
       "defType": "vec2/split",
       "position": {
-        "x": 56,
-        "y": 100
+        "x": 128,
+        "y": 40
       },
       "params": {},
       "parentId": "t07_region"
@@ -89,8 +91,8 @@
       "id": "t07_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 336,
-        "y": 100
+        "x": 488,
+        "y": 40
       },
       "params": {
         "w": 14,
@@ -106,8 +108,8 @@
       "id": "t07_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1148,
-        "y": 0
+        "x": 998,
+        "y": 62
       },
       "params": {
         "width": 400,
@@ -122,8 +124,8 @@
       "id": "t07_ell-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 276,
-        "y": 100
+        "x": 308,
+        "y": 40
       },
       "params": {
         "x": 0,

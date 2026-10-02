@@ -12,8 +12,8 @@
       "id": "vp_doc",
       "defType": "meta/comment",
       "position": {
-        "x": -500,
-        "y": -20
+        "x": 0,
+        "y": -354
       },
       "params": {
         "text": "VIDEO PIXELATE\n\nA video file played as an image and run through an image effect.\n\nVideo File plays a short embedded clip on a loop. Click Replace… on it to play your own MP4 / MOV (H.264 everywhere; on macOS also HEVC and ProRes). play, loop and speed set the playback; wire a 0..1 number into scrub to scrub through it instead.\n\nThe frames go through Pixelate (the slider sets the block size) into Draw Image, like any other image.",
@@ -43,7 +43,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 300
+        "y": 248
       },
       "params": {
         "value": 6,
@@ -60,8 +60,8 @@
       "id": "vp_pix",
       "defType": "image/pixelate",
       "position": {
-        "x": 280,
-        "y": 0
+        "x": 278,
+        "y": 139
       },
       "params": {}
     },
@@ -69,8 +69,8 @@
       "id": "vp_draw",
       "defType": "draw/image",
       "position": {
-        "x": 560,
-        "y": 0
+        "x": 477,
+        "y": 190
       },
       "params": {
         "w": 640,
@@ -85,8 +85,8 @@
       "id": "vp_draw-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 280,
-        "y": 200
+        "x": 283,
+        "y": 261
       },
       "params": {
         "x": 0,
@@ -101,8 +101,8 @@
       "id": "vp_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 840,
-        "y": 0
+        "x": 669,
+        "y": 190
       },
       "params": {
         "width": 640,

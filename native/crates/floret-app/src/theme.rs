@@ -172,6 +172,28 @@ fn hsl(h: f32, s: f32, l: f32) -> Color32 {
 }
 
 /// Install both themes' styles and follow `pref` (dark / light / system).
+/// egui's default fonts plus DejaVu Sans Mono (bundled with the engine)
+/// as a last fallback, so arrows and other symbols in comments and labels
+/// ("→", "×", "≤" …) draw instead of a box. Call once at startup.
+pub fn install_fonts(ctx: &egui::Context) {
+    const FALLBACK: &str = "dejavu-fallback";
+    let mut fonts = egui::FontDefinitions::default();
+    fonts.font_data.insert(
+        FALLBACK.to_owned(),
+        std::sync::Arc::new(egui::FontData::from_static(include_bytes!(
+            "../../floret-engine/fonts/DejaVuSansMono.ttf"
+        ))),
+    );
+    for family in [egui::FontFamily::Proportional, egui::FontFamily::Monospace] {
+        fonts
+            .families
+            .entry(family)
+            .or_default()
+            .push(FALLBACK.to_owned());
+    }
+    ctx.set_fonts(fonts);
+}
+
 pub fn apply(ctx: &egui::Context, pref: egui::ThemePreference) {
     for theme in [egui::Theme::Dark, egui::Theme::Light] {
         ctx.style_mut_of(theme, |style| style_for(style, theme == egui::Theme::Light));

@@ -104,6 +104,7 @@ pub struct App {
 impl App {
     pub fn new(cc: &eframe::CreationContext<'_>, launch: Launch) -> App {
         let prefs = Prefs::load();
+        theme::install_fonts(&cc.egui_ctx);
         theme::apply(&cc.egui_ctx, prefs.theme.egui());
         devices::install();
         floret_video::install();

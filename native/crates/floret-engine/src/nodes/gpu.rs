@@ -134,22 +134,18 @@ fn num(v: Value) -> f64 {
 }
 
 /// The uniform's value from slot 0 of its port (`toVec2` / `toColor` /
-/// `Number`). Note `toColor` divides by 255 like TS, though colours are
-/// 0..1 on the wire.
+/// `Number`). Colours are 0..1 on the wire and go to the shader as is.
+/// (The web app divided by 255 here, which made every colour uniform
+/// nearly black; fixed on purpose, no sample relies on it.)
 fn uniform_value(ty: PortType, v: Value) -> UniformValue {
     match ty {
         PortType::Vec2 => UniformValue::Vec2([num(v.get("x")), num(v.get("y"))]),
         PortType::Color => {
             let a = match v.get("a") {
-                x if x.is_nullish() => 255.0,
+                x if x.is_nullish() => 1.0,
                 x => x.to_number(),
             };
-            UniformValue::Color([
-                num(v.get("r")) / 255.0,
-                num(v.get("g")) / 255.0,
-                num(v.get("b")) / 255.0,
-                a / 255.0,
-            ])
+            UniformValue::Color([num(v.get("r")), num(v.get("g")), num(v.get("b")), a])
         }
         _ => UniformValue::Number(num(v)),
     }
@@ -296,7 +292,7 @@ mod tests {
             &[
                 UniformValue::Number(1.0),
                 UniformValue::Vec2([3.0, 4.0]),
-                UniformValue::Color([1.0 / 255.0, 0.5 / 255.0, 0.0, 1.0 / 255.0]),
+                UniformValue::Color([1.0, 0.5, 0.0, 1.0]),
             ]
         );
         assert!(sh.input.is_none());

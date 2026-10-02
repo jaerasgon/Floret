@@ -75,6 +75,21 @@ impl CameraAnim {
         let c = c0 + (c1 - c0) * e;
         ((half / zoom - c, zoom), false)
     }
+
+    /// The same move on a canvas of another size: both ends keep the
+    /// point they centre on.
+    pub fn resized(&self, size: Vec2) -> CameraAnim {
+        let recentre = |(pan, zoom): (Vec2, f32)| {
+            let centre = self.size * 0.5 / zoom - pan;
+            (size * 0.5 / zoom - centre, zoom)
+        };
+        CameraAnim {
+            from: recentre(self.from),
+            to: recentre(self.to),
+            size,
+            ..*self
+        }
+    }
 }
 
 /// How a node `age` seconds old is drawn while it settles in: (opacity,
@@ -138,6 +153,22 @@ mod tests {
         assert_eq!(a.at(10.0 + FIT_SECS), (a.to, true));
         let ((_, z), _) = a.at(10.15);
         assert!(z < 1.0 && z > 0.5);
+    }
+
+    #[test]
+    fn a_resized_move_keeps_its_destination_centred() {
+        let a = CameraAnim {
+            from: (vec2(0.0, 0.0), 1.0),
+            to: (vec2(-100.0, 50.0), 0.5),
+            start: 0.0,
+            size: vec2(800.0, 600.0),
+        };
+        let centre = |size: Vec2, (pan, zoom): (Vec2, f32)| size * 0.5 / zoom - pan;
+        let b = a.resized(vec2(1000.0, 500.0));
+        assert_eq!(b.size, vec2(1000.0, 500.0));
+        assert_eq!(centre(b.size, b.to), centre(a.size, a.to));
+        assert_eq!(centre(b.size, b.from), centre(a.size, a.from));
+        assert_eq!(b.to.1, 0.5);
     }
 
     #[test]

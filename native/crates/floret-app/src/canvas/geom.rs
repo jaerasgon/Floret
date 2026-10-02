@@ -441,13 +441,21 @@ impl Ctx<'_> {
     }
 }
 
+/// Room a dropdown keeps for its ▾ and insets around the option text.
+const SELECT_CHROME: f32 = 20.0;
+
 fn field_width(kind: &FieldKind) -> f32 {
     match kind {
         FieldKind::Number { .. } => 48.0,
         FieldKind::Vec2 => 84.0,
         FieldKind::Bool => 12.0,
         FieldKind::Text | FieldKind::Color => 70.0,
-        FieldKind::Select(_) => 56.0,
+        // Wide enough for the longest option.
+        FieldKind::Select(opts) => opts
+            .iter()
+            .map(|o| text_width(values::option_label(o), FontId::monospace(10.0)) + SELECT_CHROME)
+            .fold(56.0, f32::max)
+            .min(160.0),
     }
 }
 

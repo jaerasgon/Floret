@@ -13,7 +13,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 9,
-        "y": 161
+        "y": 226
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "sk_maxSpeed",
       "defType": "io/slider",
       "position": {
-        "x": 630,
-        "y": 346
+        "x": 635,
+        "y": 373
       },
       "params": {
         "value": 6,
@@ -39,8 +39,8 @@
       "id": "sk_maxForce",
       "defType": "io/slider",
       "position": {
-        "x": 1229,
-        "y": 215
+        "x": 1240,
+        "y": 266
       },
       "params": {
         "value": 0.4,
@@ -58,7 +58,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 0,
-        "y": 39
+        "y": 104
       },
       "params": {
         "x": -100,
@@ -73,7 +73,7 @@
       "id": "sk_initVel",
       "defType": "vec2/make",
       "position": {
-        "x": 672,
+        "x": 677,
         "y": 0
       },
       "params": {
@@ -90,7 +90,7 @@
       "defType": "state/value",
       "position": {
         "x": 197,
-        "y": 39
+        "y": 104
       },
       "params": {}
     },
@@ -98,8 +98,8 @@
       "id": "sk_vel",
       "defType": "state/value",
       "position": {
-        "x": 978,
-        "y": 25
+        "x": 979,
+        "y": 16
       },
       "params": {}
     },
@@ -108,7 +108,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 198,
-        "y": 161
+        "y": 226
       },
       "params": {}
     },
@@ -117,7 +117,7 @@
       "defType": "vec2/sub",
       "position": {
         "x": 430,
-        "y": 33
+        "y": 98
       },
       "params": {}
     },
@@ -125,8 +125,8 @@
       "id": "sk_dir",
       "defType": "vec2/normalize",
       "position": {
-        "x": 667,
-        "y": 122
+        "x": 672,
+        "y": 149
       },
       "params": {}
     },
@@ -134,8 +134,8 @@
       "id": "sk_desired",
       "defType": "vec2/scale",
       "position": {
-        "x": 979,
-        "y": 147
+        "x": 980,
+        "y": 300
       },
       "params": {}
     },
@@ -143,8 +143,8 @@
       "id": "sk_steerRaw",
       "defType": "vec2/sub",
       "position": {
-        "x": 1271,
-        "y": 93
+        "x": 1282,
+        "y": 144
       },
       "params": {}
     },
@@ -152,8 +152,8 @@
       "id": "sk_steer",
       "defType": "vec2/limit",
       "position": {
-        "x": 1503,
-        "y": 137
+        "x": 1514,
+        "y": 186
       },
       "params": {}
     },
@@ -161,8 +161,8 @@
       "id": "sk_velAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 1690,
-        "y": 101
+        "x": 1705,
+        "y": 146
       },
       "params": {}
     },
@@ -170,8 +170,8 @@
       "id": "sk_velCap",
       "defType": "vec2/limit",
       "position": {
-        "x": 1878,
-        "y": 152
+        "x": 1891,
+        "y": 187
       },
       "params": {}
     },
@@ -179,8 +179,8 @@
       "id": "sk_posAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 2065,
-        "y": 83
+        "x": 2077,
+        "y": 127
       },
       "params": {}
     },
@@ -189,7 +189,7 @@
       "defType": "style/fill",
       "position": {
         "x": 198,
-        "y": 283
+        "y": 348
       },
       "params": {
         "mode": "rgb",
@@ -211,7 +211,7 @@
       "defType": "draw/ellipse",
       "position": {
         "x": 424,
-        "y": 155
+        "y": 220
       },
       "params": {
         "w": 18,
@@ -227,7 +227,7 @@
       "defType": "style/fill",
       "position": {
         "x": 198,
-        "y": 417
+        "y": 482
       },
       "params": {
         "mode": "rgb",
@@ -249,7 +249,7 @@
       "defType": "draw/ellipse",
       "position": {
         "x": 424,
-        "y": 337
+        "y": 402
       },
       "params": {
         "w": 22,
@@ -264,8 +264,8 @@
       "id": "sk_grp",
       "defType": "transform/group",
       "position": {
-        "x": 630,
-        "y": 224
+        "x": 635,
+        "y": 251
       },
       "params": {
         "slotCount": 2
@@ -278,8 +278,8 @@
       "id": "sk_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 921,
-        "y": 269
+        "x": 922,
+        "y": 138
       },
       "params": {
         "width": 500,

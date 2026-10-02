@@ -13,7 +13,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 42,
-        "y": 192
+        "y": 202
       },
       "params": {}
     },
@@ -22,7 +22,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 26,
-        "y": 10
+        "y": 19
       },
       "params": {
         "cols": 32,
@@ -42,7 +42,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 294
+        "y": 304
       },
       "params": {
         "value": 24,
@@ -63,8 +63,8 @@
         "y": 22
       },
       "params": {
-        "width": 2155,
-        "height": 420,
+        "width": 2173,
+        "height": 444,
         "label": "ForEach"
       },
       "ports": [
@@ -73,7 +73,7 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 118
+          "y": 120
         },
         {
           "id": "layer",
@@ -83,15 +83,15 @@
           "y": 102
         }
       ],
-      "width": 2155,
-      "height": 420
+      "width": 2173,
+      "height": 444
     },
     {
       "id": "dm_yPlusT",
       "defType": "math/add",
       "position": {
-        "x": 509,
-        "y": 136
+        "x": 516,
+        "y": 188
       },
       "params": {
         "valueType": "number"
@@ -102,8 +102,8 @@
       "id": "dm_perlinD",
       "defType": "noise/perlin",
       "position": {
-        "x": 780,
-        "y": 64
+        "x": 798,
+        "y": 65
       },
       "params": {
         "octaves": 3,
@@ -119,8 +119,8 @@
       "id": "dm_yHueT",
       "defType": "math/add",
       "position": {
-        "x": 509,
-        "y": 258
+        "x": 516,
+        "y": 310
       },
       "params": {
         "valueType": "number",
@@ -136,8 +136,8 @@
       "id": "dm_perlinH",
       "defType": "noise/perlin",
       "position": {
-        "x": 780,
-        "y": 246
+        "x": 798,
+        "y": 247
       },
       "params": {
         "octaves": 1
@@ -151,7 +151,7 @@
       "id": "dm_dispShift",
       "defType": "math/sub",
       "position": {
-        "x": 962,
+        "x": 980,
         "y": 74
       },
       "params": {
@@ -167,7 +167,7 @@
       "id": "dm_dispScale",
       "defType": "math/mul",
       "position": {
-        "x": 1228,
+        "x": 1246,
         "y": 83
       },
       "params": {
@@ -179,7 +179,7 @@
       "id": "dm_hueScale",
       "defType": "math/mul",
       "position": {
-        "x": 1228,
+        "x": 1246,
         "y": 223
       },
       "params": {
@@ -195,7 +195,7 @@
       "id": "dm_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1495,
+        "x": 1513,
         "y": 200
       },
       "params": {
@@ -214,7 +214,7 @@
       "id": "dm_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1721,
+        "x": 1739,
         "y": 173
       },
       "params": {
@@ -229,7 +229,7 @@
       "id": "dm_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 1947,
+        "x": 1965,
         "y": 66
       },
       "params": {
@@ -246,7 +246,7 @@
       "id": "dm_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2530,
+        "x": 2548,
         "y": 88
       },
       "params": {
@@ -275,7 +275,7 @@
       "defType": "vec2/scale",
       "position": {
         "x": 131,
-        "y": 119
+        "y": 120
       },
       "params": {
         "s": 0.018
@@ -299,7 +299,7 @@
       "id": "dm_disp",
       "defType": "vec2/make",
       "position": {
-        "x": 1495,
+        "x": 1513,
         "y": 78
       },
       "params": {},
@@ -309,7 +309,7 @@
       "id": "dm_pos",
       "defType": "math/add",
       "position": {
-        "x": 1679,
+        "x": 1697,
         "y": 40
       },
       "params": {

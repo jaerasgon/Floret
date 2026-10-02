@@ -77,12 +77,12 @@
       "id": "ff_region",
       "defType": "region/foreach",
       "position": {
-        "x": 291,
-        "y": 49
+        "x": 295,
+        "y": 43
       },
       "params": {
-        "width": 2496,
-        "height": 441,
+        "width": 2484,
+        "height": 438,
         "label": "ForEach"
       },
       "ports": [
@@ -91,25 +91,25 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 169
+          "y": 200
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 151
+          "y": 168
         }
       ],
-      "width": 2496,
-      "height": 441
+      "width": 2484,
+      "height": 438
     },
     {
       "id": "ff_tScaled",
       "defType": "math/mul",
       "position": {
         "x": 128,
-        "y": 255
+        "y": 286
       },
       "params": {
         "valueType": "number",
@@ -124,8 +124,8 @@
       "id": "ff_ySum",
       "defType": "math/add",
       "position": {
-        "x": 774,
-        "y": 193
+        "x": 771,
+        "y": 229
       },
       "params": {
         "valueType": "number"
@@ -136,8 +136,8 @@
       "id": "ff_perlin",
       "defType": "noise/perlin",
       "position": {
-        "x": 1042,
-        "y": 152
+        "x": 1039,
+        "y": 186
       },
       "params": {
         "octaves": 2
@@ -151,8 +151,8 @@
       "id": "ff_angleMul",
       "defType": "math/mul",
       "position": {
-        "x": 1242,
-        "y": 288
+        "x": 1229,
+        "y": 252
       },
       "params": {
         "b": 6.2831853,
@@ -167,8 +167,8 @@
       "id": "ff_tipVec",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 1509,
-        "y": 304
+        "x": 1497,
+        "y": 278
       },
       "params": {},
       "parentId": "ff_region"
@@ -177,8 +177,8 @@
       "id": "ff_hueMul",
       "defType": "math/mul",
       "position": {
-        "x": 1242,
-        "y": 147
+        "x": 1229,
+        "y": 130
       },
       "params": {
         "b": 360,
@@ -193,8 +193,8 @@
       "id": "ff_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1516,
-        "y": 142
+        "x": 1504,
+        "y": 116
       },
       "params": {
         "s": 75,
@@ -212,8 +212,8 @@
       "id": "ff_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1773,
-        "y": 327
+        "x": 1745,
+        "y": 202
       },
       "params": {
         "mode": "color"
@@ -224,21 +224,11 @@
       }
     },
     {
-      "id": "ff_noFill",
-      "defType": "style/no-fill",
-      "position": {
-        "x": 1516,
-        "y": 40
-      },
-      "params": {},
-      "parentId": "ff_region"
-    },
-    {
       "id": "ff_strokeC",
       "defType": "style/stroke",
       "position": {
-        "x": 1772,
-        "y": 43
+        "x": 1744,
+        "y": 40
       },
       "params": {
         "width": 2.5
@@ -252,8 +242,8 @@
       "id": "ff_line",
       "defType": "draw/line",
       "position": {
-        "x": 2021,
-        "y": 54
+        "x": 2008,
+        "y": 71
       },
       "params": {},
       "parentId": "ff_region"
@@ -262,8 +252,8 @@
       "id": "ff_tipDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 2015,
-        "y": 196
+        "x": 2002,
+        "y": 213
       },
       "params": {
         "w": 5,
@@ -279,8 +269,8 @@
       "id": "ff_group",
       "defType": "transform/group",
       "position": {
-        "x": 2216,
-        "y": 115
+        "x": 2204,
+        "y": 132
       },
       "params": {
         "slotCount": 2
@@ -291,8 +281,8 @@
       "id": "ff_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2883,
-        "y": 164
+        "x": 2875,
+        "y": 175
       },
       "params": {
         "width": 500,
@@ -320,7 +310,7 @@
       "defType": "math/add",
       "position": {
         "x": 128,
-        "y": 133
+        "y": 164
       },
       "params": {
         "b": {
@@ -341,8 +331,8 @@
       "id": "ff_scaled",
       "defType": "vec2/scale",
       "position": {
-        "x": 407,
-        "y": 140
+        "x": 401,
+        "y": 165
       },
       "params": {},
       "parentId": "ff_region"
@@ -351,8 +341,8 @@
       "id": "ff_sxy",
       "defType": "vec2/split",
       "position": {
-        "x": 590,
-        "y": 145
+        "x": 585,
+        "y": 178
       },
       "params": {},
       "parentId": "ff_region"
@@ -361,8 +351,8 @@
       "id": "ff_tip",
       "defType": "math/add",
       "position": {
-        "x": 1731,
-        "y": 205
+        "x": 1703,
+        "y": 324
       },
       "params": {
         "valueType": "vec2"
@@ -447,13 +437,6 @@
       "target": "ff_strokeC",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
-    },
-    {
-      "id": "e_1030",
-      "source": "ff_noFill",
-      "target": "ff_strokeC",
-      "sourceHandle": "out-style",
-      "targetHandle": "in-base"
     },
     {
       "id": "e_1039",

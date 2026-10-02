@@ -31,7 +31,7 @@
       "defType": "string/split",
       "position": {
         "x": 0,
-        "y": 18
+        "y": 24
       },
       "params": {
         "text": "It was the best of times,       it was the worst of times,      it was the age of wisdom,       it was the age of foolishness,  it was the epoch of belief,     it was the epoch of incredulity,it was the season of Light,     it was the season of Darkness.  "
@@ -45,7 +45,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 31,
-        "y": 322
+        "y": 328
       },
       "params": {}
     },
@@ -53,12 +53,12 @@
       "id": "tdr_region",
       "defType": "region/foreach",
       "position": {
-        "x": 253,
+        "x": 251,
         "y": 22
       },
       "params": {
-        "width": 2650,
-        "height": 593,
+        "width": 2553,
+        "height": 597,
         "label": "ForEach letter"
       },
       "ports": [
@@ -67,63 +67,32 @@
           "name": "ch",
           "type": "string",
           "direction": "input",
-          "y": 107
+          "y": 99
         },
         {
           "id": "p",
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 156
+          "y": 184
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 88
+          "y": 84
         }
       ],
-      "width": 2650,
-      "height": 593
-    },
-    {
-      "id": "tdr_gsx",
-      "defType": "math/mul",
-      "position": {
-        "x": 697,
-        "y": 85
-      },
-      "params": {
-        "b": 0.012,
-        "valueType": "number"
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 0.012
-      }
-    },
-    {
-      "id": "tdr_gsy",
-      "defType": "math/mul",
-      "position": {
-        "x": 417,
-        "y": 189
-      },
-      "params": {
-        "b": 0.012
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 0.012
-      }
+      "width": 2553,
+      "height": 597
     },
     {
       "id": "tdr_tDisp",
       "defType": "math/mul",
       "position": {
-        "x": 133,
-        "y": 310
+        "x": 144,
+        "y": 239
       },
       "params": {
         "b": 0.3,
@@ -138,8 +107,8 @@
       "id": "tdr_gsyT",
       "defType": "math/add",
       "position": {
-        "x": 697,
-        "y": 207
+        "x": 602,
+        "y": 206
       },
       "params": {
         "valueType": "number"
@@ -147,42 +116,11 @@
       "parentId": "tdr_region"
     },
     {
-      "id": "tdr_msx",
-      "defType": "math/mul",
-      "position": {
-        "x": 697,
-        "y": 329
-      },
-      "params": {
-        "b": 0.022,
-        "valueType": "number"
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 0.022
-      }
-    },
-    {
-      "id": "tdr_msy",
-      "defType": "math/mul",
-      "position": {
-        "x": 417,
-        "y": 343
-      },
-      "params": {
-        "b": 0.022
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 0.022
-      }
-    },
-    {
       "id": "tdr_tMask",
       "defType": "math/mul",
       "position": {
-        "x": 133,
-        "y": 470
+        "x": 144,
+        "y": 483
       },
       "params": {
         "b": 0.15,
@@ -197,8 +135,8 @@
       "id": "tdr_msyT",
       "defType": "math/add",
       "position": {
-        "x": 697,
-        "y": 451
+        "x": 602,
+        "y": 452
       },
       "params": {
         "valueType": "number"
@@ -209,8 +147,8 @@
       "id": "tdr_nX",
       "defType": "noise/perlin",
       "position": {
-        "x": 983,
-        "y": 50
+        "x": 886,
+        "y": 51
       },
       "params": {
         "seed": 7
@@ -224,8 +162,8 @@
       "id": "tdr_nY",
       "defType": "noise/perlin",
       "position": {
-        "x": 983,
-        "y": 232
+        "x": 886,
+        "y": 233
       },
       "params": {
         "seed": 23
@@ -239,8 +177,8 @@
       "id": "tdr_mN",
       "defType": "noise/perlin",
       "position": {
-        "x": 983,
-        "y": 414
+        "x": 886,
+        "y": 415
       },
       "params": {
         "seed": 99
@@ -254,7 +192,7 @@
       "id": "tdr_mask",
       "defType": "math/smoothstep",
       "position": {
-        "x": 1168,
+        "x": 1070,
         "y": 404
       },
       "params": {
@@ -271,7 +209,7 @@
       "id": "tdr_dxM",
       "defType": "math/map",
       "position": {
-        "x": 1189,
+        "x": 1091,
         "y": 40
       },
       "params": {
@@ -292,7 +230,7 @@
       "id": "tdr_dyM",
       "defType": "math/map",
       "position": {
-        "x": 1189,
+        "x": 1091,
         "y": 222
       },
       "params": {
@@ -313,8 +251,8 @@
       "id": "tdr_hueM",
       "defType": "math/mul",
       "position": {
-        "x": 1402,
-        "y": 357
+        "x": 1304,
+        "y": 356
       },
       "params": {
         "b": 220,
@@ -329,8 +267,8 @@
       "id": "tdr_satM",
       "defType": "math/mul",
       "position": {
-        "x": 1402,
-        "y": 479
+        "x": 1304,
+        "y": 478
       },
       "params": {
         "b": 90,
@@ -345,8 +283,8 @@
       "id": "tdr_hsl",
       "defType": "color/color",
       "position": {
-        "x": 1677,
-        "y": 371
+        "x": 1580,
+        "y": 369
       },
       "params": {
         "mode": "hsl",
@@ -368,8 +306,8 @@
       "id": "tdr_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1979,
-        "y": 337
+        "x": 1882,
+        "y": 335
       },
       "params": {},
       "parentId": "tdr_region"
@@ -378,8 +316,8 @@
       "id": "tdr_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 2206,
-        "y": 165
+        "x": 2109,
+        "y": 161
       },
       "params": {
         "font": "Menlo, Consolas, monospace",
@@ -401,8 +339,8 @@
       "id": "tdr_text",
       "defType": "draw/text",
       "position": {
-        "x": 2452,
-        "y": 53
+        "x": 2355,
+        "y": 49
       },
       "params": {
         "string": "?",
@@ -420,8 +358,8 @@
       "id": "tdr_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2999,
-        "y": 74
+        "x": 2900,
+        "y": 70
       },
       "params": {
         "width": 560,
@@ -449,7 +387,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 15,
-        "y": 140
+        "y": 146
       },
       "params": {
         "cols": 32,
@@ -465,21 +403,11 @@
       }
     },
     {
-      "id": "tdr_gxy",
-      "defType": "vec2/split",
-      "position": {
-        "x": 175,
-        "y": 188
-      },
-      "params": {},
-      "parentId": "tdr_region"
-    },
-    {
       "id": "tdr_disp",
       "defType": "vec2/make",
       "position": {
-        "x": 1444,
-        "y": 148
+        "x": 1346,
+        "y": 147
       },
       "params": {},
       "parentId": "tdr_region"
@@ -488,8 +416,8 @@
       "id": "tdr_dispM",
       "defType": "vec2/scale",
       "position": {
-        "x": 1710,
-        "y": 202
+        "x": 1613,
+        "y": 201
       },
       "params": {},
       "parentId": "tdr_region"
@@ -498,12 +426,62 @@
       "id": "tdr_pos",
       "defType": "math/add",
       "position": {
-        "x": 1937,
-        "y": 89
+        "x": 1840,
+        "y": 87
       },
       "params": {
         "valueType": "vec2"
       },
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_gs",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 186,
+        "y": 117
+      },
+      "params": {
+        "s": 0.012
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "s": 0.012
+      }
+    },
+    {
+      "id": "tdr_gsxy",
+      "defType": "vec2/split",
+      "position": {
+        "x": 413,
+        "y": 129
+      },
+      "params": {},
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_ms",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 186,
+        "y": 361
+      },
+      "params": {
+        "s": 0.022
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "s": 0.022
+      }
+    },
+    {
+      "id": "tdr_msxy",
+      "defType": "vec2/split",
+      "position": {
+        "x": 413,
+        "y": 394
+      },
+      "params": {},
       "parentId": "tdr_region"
     }
   ],
@@ -523,13 +501,6 @@
       "targetHandle": "in-a"
     },
     {
-      "id": "e_558",
-      "source": "tdr_gsy",
-      "target": "tdr_gsyT",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_559",
       "source": "tdr_tDisp",
       "target": "tdr_gsyT",
@@ -544,25 +515,11 @@
       "targetHandle": "in-a"
     },
     {
-      "id": "e_563",
-      "source": "tdr_msy",
-      "target": "tdr_msyT",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_564",
       "source": "tdr_tMask",
       "target": "tdr_msyT",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
-    },
-    {
-      "id": "e_565",
-      "source": "tdr_gsx",
-      "target": "tdr_nX",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
     },
     {
       "id": "e_566",
@@ -572,25 +529,11 @@
       "targetHandle": "in-y"
     },
     {
-      "id": "e_567",
-      "source": "tdr_gsx",
-      "target": "tdr_nY",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
       "id": "e_568",
       "source": "tdr_gsyT",
       "target": "tdr_nY",
       "sourceHandle": "out-result",
       "targetHandle": "in-y"
-    },
-    {
-      "id": "e_569",
-      "source": "tdr_msx",
-      "target": "tdr_mN",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
     },
     {
       "id": "e_570",
@@ -698,41 +641,6 @@
       "targetHandle": "in-p"
     },
     {
-      "id": "e_tdr_region_tdr_gxy_v",
-      "source": "tdr_region",
-      "target": "tdr_gxy",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_tdr_gxy_tdr_gsx_a",
-      "source": "tdr_gxy",
-      "target": "tdr_gsx",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_tdr_gxy_tdr_msx_a",
-      "source": "tdr_gxy",
-      "target": "tdr_msx",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_tdr_gxy_tdr_gsy_a",
-      "source": "tdr_gxy",
-      "target": "tdr_gsy",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_tdr_gxy_tdr_msy_a",
-      "source": "tdr_gxy",
-      "target": "tdr_msy",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_tdr_dxM_tdr_disp_x",
       "source": "tdr_dxM",
       "target": "tdr_disp",
@@ -780,6 +688,69 @@
       "target": "tdr_text",
       "sourceHandle": "out-result",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_tdr_region_tdr_gs_v",
+      "source": "tdr_region",
+      "target": "tdr_gs",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_tdr_gs_tdr_gsxy_v",
+      "source": "tdr_gs",
+      "target": "tdr_gsxy",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_tdr_region_tdr_ms_v",
+      "source": "tdr_region",
+      "target": "tdr_ms",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_tdr_ms_tdr_msxy_v",
+      "source": "tdr_ms",
+      "target": "tdr_msxy",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_tdr_gsxy_tdr_nX_x",
+      "source": "tdr_gsxy",
+      "target": "tdr_nX",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_tdr_gsxy_tdr_nY_x",
+      "source": "tdr_gsxy",
+      "target": "tdr_nY",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_tdr_gsxy_tdr_gsyT_a",
+      "source": "tdr_gsxy",
+      "target": "tdr_gsyT",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_tdr_msxy_tdr_mN_x",
+      "source": "tdr_msxy",
+      "target": "tdr_mN",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_tdr_msxy_tdr_msyT_a",
+      "source": "tdr_msxy",
+      "target": "tdr_msyT",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
     }
   ]
 }

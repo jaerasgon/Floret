@@ -55,8 +55,8 @@
       "id": "pm_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2376,
-        "y": 121
+        "x": 2355,
+        "y": 85
       },
       "params": {
         "width": 500,
@@ -83,12 +83,12 @@
       "id": "pm_region",
       "defType": "region/foreach",
       "position": {
-        "x": 273,
-        "y": 29
+        "x": 270,
+        "y": 45
       },
       "params": {
-        "width": 2007,
-        "height": 401,
+        "width": 1989,
+        "height": 397,
         "label": "ForEach"
       },
       "ports": [
@@ -97,25 +97,25 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 145
+          "y": 101
         },
         {
           "id": "dot",
           "name": "dot",
           "type": "layer",
           "direction": "output",
-          "y": 128
+          "y": 76
         }
       ],
-      "width": 2007,
-      "height": 401
+      "width": 1989,
+      "height": 397
     },
     {
       "id": "pm_split",
       "defType": "vec2/split",
       "position": {
         "x": 173,
-        "y": 147
+        "y": 104
       },
       "params": {},
       "parentId": "pm_region"
@@ -124,8 +124,8 @@
       "id": "pm_sample",
       "defType": "image/sample",
       "position": {
-        "x": 401,
-        "y": 166
+        "x": 399,
+        "y": 105
       },
       "params": {},
       "parentId": "pm_region"
@@ -134,8 +134,8 @@
       "id": "pm_srgb",
       "defType": "color/split-rgb",
       "position": {
-        "x": 598,
-        "y": 112
+        "x": 592,
+        "y": 51
       },
       "params": {},
       "parentId": "pm_region"
@@ -144,8 +144,8 @@
       "id": "pm_rgb",
       "defType": "math/add",
       "position": {
-        "x": 784,
-        "y": 101
+        "x": 773,
+        "y": 50
       },
       "params": {
         "valueType": "number",
@@ -157,8 +157,8 @@
       "id": "pm_lum",
       "defType": "math/mul",
       "position": {
-        "x": 1053,
-        "y": 71
+        "x": 1038,
+        "y": 45
       },
       "params": {
         "b": 0.333,
@@ -173,8 +173,8 @@
       "id": "pm_sizeBase",
       "defType": "math/map",
       "position": {
-        "x": 1325,
-        "y": 40
+        "x": 1307,
+        "y": 41
       },
       "params": {
         "inMin": 0,
@@ -195,7 +195,7 @@
       "defType": "math/mul",
       "position": {
         "x": 131,
-        "y": 269
+        "y": 226
       },
       "params": {
         "b": 1.8,
@@ -210,8 +210,8 @@
       "id": "pm_sinT",
       "defType": "math/sin",
       "position": {
-        "x": 1101,
-        "y": 218
+        "x": 1086,
+        "y": 224
       },
       "params": {},
       "parentId": "pm_region"
@@ -220,8 +220,8 @@
       "id": "pm_wobble",
       "defType": "math/map",
       "position": {
-        "x": 1321,
-        "y": 222
+        "x": 1303,
+        "y": 223
       },
       "params": {
         "inMin": -1,
@@ -241,8 +241,8 @@
       "id": "pm_dotSize",
       "defType": "math/mul",
       "position": {
-        "x": 1518,
-        "y": 122
+        "x": 1507,
+        "y": 68
       },
       "params": {
         "valueType": "number"
@@ -253,8 +253,8 @@
       "id": "pm_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1560,
-        "y": 287
+        "x": 1549,
+        "y": 190
       },
       "params": {
         "mode": "color"
@@ -268,8 +268,8 @@
       "id": "pm_ellipse",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1799,
-        "y": 92
+        "x": 1781,
+        "y": 40
       },
       "params": {},
       "parentId": "pm_region"

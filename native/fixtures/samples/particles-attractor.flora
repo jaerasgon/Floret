@@ -1,0 +1,355 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Attractor Field",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "pa_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -324
+      },
+      "params": {
+        "text": "Attractor field\n\nThree forces wired into the World: turbulence (perlin field), drag (terminal velocity), and an attractor pulling everything toward (0, 0).\n\nThe attractor's `viz` output draws its influence ring — toggle `showViz` to debug placement.",
+        "width": 500,
+        "height": 260
+      },
+      "portValues": {
+        "text": "Attractor field\n\nThree forces wired into the World: turbulence (perlin field), drag (terminal velocity), and an attractor pulling everything toward (0, 0).\n\nThe attractor's `viz` output draws its influence ring — toggle `showViz` to debug placement.",
+        "width": 500,
+        "height": 260
+      }
+    },
+    {
+      "id": "pa_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 538,
+        "y": 384
+      },
+      "params": {}
+    },
+    {
+      "id": "pa_turb",
+      "defType": "force/turbulence",
+      "position": {
+        "x": 6,
+        "y": 63
+      },
+      "params": {
+        "scale": 0.005,
+        "speed": 0.4,
+        "strength": 140,
+        "seed": 5
+      },
+      "portValues": {
+        "scale": 0.005,
+        "speed": 0.4,
+        "strength": 140,
+        "seed": 5
+      }
+    },
+    {
+      "id": "pa_drag",
+      "defType": "force/drag",
+      "position": {
+        "x": 0,
+        "y": 225
+      },
+      "params": {
+        "strength": 1.6
+      },
+      "portValues": {
+        "strength": 1.6
+      }
+    },
+    {
+      "id": "pa_attr",
+      "defType": "force/attractor",
+      "position": {
+        "x": 2,
+        "y": 327
+      },
+      "params": {
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "strength": 240,
+        "radius": 360,
+        "falloff": "linear",
+        "showViz": true
+      },
+      "portValues": {
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "strength": 240,
+        "radius": 360,
+        "falloff": "linear",
+        "showViz": true
+      }
+    },
+    {
+      "id": "pa_world",
+      "defType": "physics/world",
+      "position": {
+        "x": 517,
+        "y": 0
+      },
+      "params": {
+        "gravity": {
+          "x": 0,
+          "y": 0
+        },
+        "drag": 0,
+        "integrator": "euler"
+      },
+      "portValues": {
+        "gravity": {
+          "x": 0,
+          "y": 0
+        },
+        "drag": 0,
+        "integrator": "euler"
+      }
+    },
+    {
+      "id": "pa_ring",
+      "defType": "spread/ring",
+      "position": {
+        "x": 518,
+        "y": 222
+      },
+      "params": {
+        "count": 60,
+        "radius": 180
+      },
+      "portValues": {
+        "count": 60,
+        "radius": 180
+      }
+    },
+    {
+      "id": "pa_em",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 758,
+        "y": 127
+      },
+      "params": {
+        "rate": 600,
+        "lifetime": 6,
+        "initialVel": {
+          "x": 0,
+          "y": 0
+        },
+        "velSpread": 0,
+        "color": {
+          "r": 0.6,
+          "g": 0.9,
+          "b": 1,
+          "a": 0.9
+        },
+        "size": 2.5,
+        "maxCount": 2400,
+        "overflowMode": "replace-oldest",
+        "seed": 13
+      },
+      "portValues": {
+        "rate": 600,
+        "lifetime": 6,
+        "initialVel": {
+          "x": 0,
+          "y": 0
+        },
+        "velSpread": 0,
+        "color": {
+          "r": 0.6,
+          "g": 0.9,
+          "b": 1,
+          "a": 0.9
+        },
+        "size": 2.5,
+        "maxCount": 2400,
+        "overflowMode": "replace-oldest",
+        "seed": 13
+      }
+    },
+    {
+      "id": "pa_render",
+      "defType": "particles/render-as",
+      "position": {
+        "x": 1037,
+        "y": 220
+      },
+      "params": {
+        "template": "circle",
+        "useBufferColor": true
+      },
+      "portValues": {
+        "template": "circle",
+        "useBufferColor": true
+      }
+    },
+    {
+      "id": "pa_bg",
+      "defType": "color/color",
+      "position": {
+        "x": 1294,
+        "y": 430
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 8,
+        "g": 10,
+        "b": 24,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 8,
+        "g": 10,
+        "b": 24,
+        "a": 255
+      }
+    },
+    {
+      "id": "pa_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1557,
+        "y": 359
+      },
+      "params": {
+        "width": 540,
+        "height": 540
+      },
+      "portValues": {
+        "width": 540,
+        "height": 540
+      }
+    },
+    {
+      "id": "merge_657",
+      "defType": "spread/merge",
+      "position": {
+        "x": 241,
+        "y": 159
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "merge_662",
+      "defType": "spread/merge",
+      "position": {
+        "x": 1285,
+        "y": 308
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_651",
+      "source": "pa_ring",
+      "target": "pa_em",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_652",
+      "source": "pa_world",
+      "target": "pa_em",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_653",
+      "source": "pa_time",
+      "target": "pa_em",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_654",
+      "source": "pa_em",
+      "target": "pa_render",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_656",
+      "source": "pa_bg",
+      "target": "pa_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_658",
+      "source": "pa_turb",
+      "target": "merge_657",
+      "sourceHandle": "out-force",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_659",
+      "source": "pa_drag",
+      "target": "merge_657",
+      "sourceHandle": "out-force",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_660",
+      "source": "pa_attr",
+      "target": "merge_657",
+      "sourceHandle": "out-force",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_661",
+      "source": "merge_657",
+      "target": "pa_world",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-forces"
+    },
+    {
+      "id": "e_663",
+      "source": "pa_attr",
+      "target": "merge_662",
+      "sourceHandle": "out-viz",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_664",
+      "source": "pa_render",
+      "target": "merge_662",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_665",
+      "source": "merge_662",
+      "target": "pa_renderer",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

@@ -137,42 +137,35 @@
       }
     },
     {
-      "id": "t44_col",
-      "defType": "color/color",
-      "position": {
-        "x": 616,
-        "y": 346
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 230,
-        "g": 240,
-        "b": 250,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 230,
-        "g": 240,
-        "b": 250,
-        "a": 255
-      }
-    },
-    {
       "id": "t44_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1245,
-        "y": 305
+        "x": 1239,
+        "y": 246
       },
-      "params": {}
+      "params": {
+        "color": {
+          "r": 0.9019607843137255,
+          "g": 0.9411764705882353,
+          "b": 0.9803921568627451,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.9019607843137255,
+          "g": 0.9411764705882353,
+          "b": 0.9803921568627451,
+          "a": 1
+        }
+      }
     },
     {
       "id": "t44_text",
       "defType": "draw/text",
       "position": {
-        "x": 1431,
-        "y": 185
+        "x": 1470,
+        "y": 135
       },
       "params": {
         "string": "0",
@@ -193,8 +186,8 @@
       "id": "t44_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1626,
-        "y": 185
+        "x": 1665,
+        "y": 135
       },
       "params": {
         "width": 400,
@@ -209,8 +202,8 @@
       "id": "t44_text-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1245,
-        "y": 164
+        "x": 1262,
+        "y": 124
       },
       "params": {
         "x": -60,
@@ -264,13 +257,6 @@
       "target": "t44_write",
       "sourceHandle": "out-result",
       "targetHandle": "in-write"
-    },
-    {
-      "id": "e_369",
-      "source": "t44_col",
-      "target": "t44_fill",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
     },
     {
       "id": "e_370",

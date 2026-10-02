@@ -12,8 +12,8 @@
       "id": "pt_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 30,
-        "y": 303
+        "x": 0,
+        "y": 167
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "pt_time",
       "defType": "time/seconds",
       "position": {
-        "x": 30,
-        "y": 445
+        "x": 0,
+        "y": 353
       },
       "params": {}
     },
@@ -30,7 +30,7 @@
       "id": "pt_read",
       "defType": "state/read",
       "position": {
-        "x": 0,
+        "x": 444,
         "y": 0
       },
       "params": {
@@ -44,7 +44,7 @@
       "id": "pt_prevCopy",
       "defType": "image/crop",
       "position": {
-        "x": 276,
+        "x": 720,
         "y": 0
       },
       "params": {
@@ -64,18 +64,14 @@
       "id": "pt_drawPrev",
       "defType": "draw/image",
       "position": {
-        "x": 520,
-        "y": 110
+        "x": 958,
+        "y": 0
       },
       "params": {
-        "x": 0,
-        "y": 0,
         "w": 500,
         "h": 500
       },
       "portValues": {
-        "x": 0,
-        "y": 0,
         "w": 500,
         "h": 500
       }
@@ -84,8 +80,8 @@
       "id": "pt_hueMul",
       "defType": "math/mul",
       "position": {
-        "x": 239,
-        "y": 442
+        "x": 180,
+        "y": 353
       },
       "params": {
         "b": 50,
@@ -99,8 +95,8 @@
       "id": "pt_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 526,
-        "y": 439
+        "x": 474,
+        "y": 353
       },
       "params": {
         "s": 90,
@@ -117,8 +113,8 @@
       "id": "pt_fill",
       "defType": "style/fill",
       "position": {
-        "x": 758,
-        "y": 436
+        "x": 725,
+        "y": 353
       },
       "params": {
         "mode": "color"
@@ -131,8 +127,8 @@
       "id": "pt_size",
       "defType": "io/slider",
       "position": {
-        "x": 716,
-        "y": 310
+        "x": 683,
+        "y": 227
       },
       "params": {
         "value": 28,
@@ -149,8 +145,8 @@
       "id": "pt_brush",
       "defType": "draw/ellipse",
       "position": {
-        "x": 993,
-        "y": 273
+        "x": 958,
+        "y": 202
       },
       "params": {}
     },
@@ -158,8 +154,8 @@
       "id": "pt_stack",
       "defType": "spread/stack",
       "position": {
-        "x": 1193,
-        "y": 195
+        "x": 1163,
+        "y": 91
       },
       "params": {}
     },
@@ -167,8 +163,8 @@
       "id": "pt_fromLayer",
       "defType": "image/from-layer",
       "position": {
-        "x": 1394,
-        "y": 195
+        "x": 1364,
+        "y": 91
       },
       "params": {
         "w": 500,
@@ -183,8 +179,8 @@
       "id": "pt_write",
       "defType": "state/write",
       "position": {
-        "x": 1591,
-        "y": 147
+        "x": 1558,
+        "y": 21
       },
       "params": {
         "slot": 1
@@ -197,18 +193,14 @@
       "id": "pt_display",
       "defType": "draw/image",
       "position": {
-        "x": 1589,
-        "y": 269
+        "x": 1556,
+        "y": 143
       },
       "params": {
-        "x": 0,
-        "y": 0,
         "w": 500,
         "h": 500
       },
       "portValues": {
-        "x": 0,
-        "y": 0,
         "w": 500,
         "h": 500
       }
@@ -217,8 +209,8 @@
       "id": "pt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1781,
-        "y": 269
+        "x": 1748,
+        "y": 143
       },
       "params": {
         "width": 500,
@@ -227,46 +219,14 @@
       "portValues": {
         "width": 500,
         "height": 500
-      }
-    },
-    {
-      "id": "pt_drawPrev-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 281,
-        "y": 182
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
       }
     },
     {
       "id": "pt_brush-xy1",
       "defType": "vec2/make",
       "position": {
-        "x": 281,
-        "y": 304
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
-      }
-    },
-    {
-      "id": "pt_display-xy2",
-      "defType": "vec2/make",
-      "position": {
-        "x": 1396,
-        "y": 337
+        "x": 222,
+        "y": 167
       },
       "params": {
         "x": 0,
@@ -392,23 +352,9 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_pt_drawPrev-xy0",
-      "source": "pt_drawPrev-xy0",
-      "target": "pt_drawPrev",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
-    },
-    {
       "id": "e_xy_pt_brush-xy1",
       "source": "pt_brush-xy1",
       "target": "pt_brush",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
-    },
-    {
-      "id": "e_xy_pt_display-xy2",
-      "source": "pt_display-xy2",
-      "target": "pt_display",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
     }

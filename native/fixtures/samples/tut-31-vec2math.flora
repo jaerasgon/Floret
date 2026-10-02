@@ -1,0 +1,188 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "31 · Vec2 Math",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t31_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -284
+      },
+      "params": {
+        "text": "Vec2 math (no splitting)\n\n`vec2/*` nodes operate on vec2 as one unit. Add, Scale, Length, Normalize all take vec2 inputs and produce vec2 outputs — much cleaner than splitting and recombining.\n\nMake a base vec2, scale it by sin(time), draw an ellipse there.",
+        "width": 420,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Vec2 math (no splitting)\n\n`vec2/*` nodes operate on vec2 as one unit. Add, Scale, Length, Normalize all take vec2 inputs and produce vec2 outputs — much cleaner than splitting and recombining.\n\nMake a base vec2, scale it by sin(time), draw an ellipse there.",
+        "width": 420,
+        "height": 220
+      }
+    },
+    {
+      "id": "t31_base",
+      "defType": "vec2/make",
+      "position": {
+        "x": 180,
+        "y": 0
+      },
+      "params": {
+        "x": 150,
+        "y": 0
+      },
+      "portValues": {
+        "x": 150,
+        "y": 0
+      }
+    },
+    {
+      "id": "t31_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 0,
+        "y": 122
+      },
+      "params": {}
+    },
+    {
+      "id": "t31_s",
+      "defType": "math/sin",
+      "position": {
+        "x": 192,
+        "y": 122
+      },
+      "params": {}
+    },
+    {
+      "id": "t31_sc",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 379,
+        "y": 51
+      },
+      "params": {}
+    },
+    {
+      "id": "t31_sp",
+      "defType": "vec2/split",
+      "position": {
+        "x": 559,
+        "y": 51
+      },
+      "params": {}
+    },
+    {
+      "id": "t31_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 919,
+        "y": 51
+      },
+      "params": {
+        "w": 50,
+        "h": 50
+      },
+      "portValues": {
+        "w": 50,
+        "h": 50
+      }
+    },
+    {
+      "id": "t31_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1111,
+        "y": 51
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t31_ell-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 739,
+        "y": 51
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_264",
+      "source": "t31_base",
+      "target": "t31_sc",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_265",
+      "source": "t31_t",
+      "target": "t31_s",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_266",
+      "source": "t31_s",
+      "target": "t31_sc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_267",
+      "source": "t31_sc",
+      "target": "t31_sp",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_268",
+      "source": "t31_sp",
+      "target": "t31_ell-xy0",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_269",
+      "source": "t31_sp",
+      "target": "t31_ell-xy0",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_270",
+      "source": "t31_ell",
+      "target": "t31_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t31_ell-xy0",
+      "source": "t31_ell-xy0",
+      "target": "t31_ell",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

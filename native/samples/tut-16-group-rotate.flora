@@ -30,47 +30,55 @@
       "id": "t16_r1",
       "defType": "draw/rect",
       "position": {
-        "x": 197,
+        "x": 0,
         "y": 21
       },
       "params": {
-        "x": -120,
-        "y": -20,
         "w": 80,
-        "h": 40
+        "h": 40,
+        "pos": {
+          "x": -120,
+          "y": -20
+        }
       },
       "portValues": {
-        "x": -120,
-        "y": -20,
         "w": 80,
-        "h": 40
+        "h": 40,
+        "pos": {
+          "x": -120,
+          "y": -20
+        }
       }
     },
     {
       "id": "t16_r2",
       "defType": "draw/rect",
       "position": {
-        "x": 197,
+        "x": 6,
         "y": 203
       },
       "params": {
-        "x": 40,
-        "y": -20,
         "w": 80,
-        "h": 40
+        "h": 40,
+        "pos": {
+          "x": 40,
+          "y": -20
+        }
       },
       "portValues": {
-        "x": 40,
-        "y": -20,
         "w": 80,
-        "h": 40
+        "h": 40,
+        "pos": {
+          "x": 40,
+          "y": -20
+        }
       }
     },
     {
       "id": "t16_grp",
       "defType": "transform/group",
       "position": {
-        "x": 401,
+        "x": 244,
         "y": 102
       },
       "params": {
@@ -84,7 +92,7 @@
       "id": "t16_t",
       "defType": "time/seconds",
       "position": {
-        "x": 443,
+        "x": 286,
         "y": 0
       },
       "params": {}
@@ -93,7 +101,7 @@
       "id": "t16_rot",
       "defType": "transform/rotate",
       "position": {
-        "x": 671,
+        "x": 514,
         "y": 41
       },
       "params": {}
@@ -102,7 +110,7 @@
       "id": "t16_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 852,
+        "x": 695,
         "y": 41
       },
       "params": {
@@ -112,38 +120,6 @@
       "portValues": {
         "width": 400,
         "height": 400
-      }
-    },
-    {
-      "id": "t16_r1-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 0,
-        "y": 21
-      },
-      "params": {
-        "x": -120,
-        "y": -20
-      },
-      "portValues": {
-        "x": -120,
-        "y": -20
-      }
-    },
-    {
-      "id": "t16_r2-xy1",
-      "defType": "vec2/make",
-      "position": {
-        "x": 6,
-        "y": 203
-      },
-      "params": {
-        "x": 40,
-        "y": -20
-      },
-      "portValues": {
-        "x": 40,
-        "y": -20
       }
     }
   ],
@@ -182,20 +158,6 @@
       "target": "t16_renderer",
       "sourceHandle": "out-rotated",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_xy_t16_r1-xy0",
-      "source": "t16_r1-xy0",
-      "target": "t16_r1",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
-    },
-    {
-      "id": "e_xy_t16_r2-xy1",
-      "source": "t16_r2-xy1",
-      "target": "t16_r2",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

@@ -1,0 +1,264 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "14 · Lerp Two Colours",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t14_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Blending colours\n\n`color/lerp` mixes two colours by t ∈ [0, 1]. sin(time)*0.5+0.5 oscillates t between 0 and 1, so the fill colour smoothly slides between magenta and cyan and back.",
+        "width": 380,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Blending colours\n\n`color/lerp` mixes two colours by t ∈ [0, 1]. sin(time)*0.5+0.5 oscillates t between 0 and 1, so the fill colour smoothly slides between magenta and cyan and back.",
+        "width": 380,
+        "height": 200
+      }
+    },
+    {
+      "id": "t14_colA",
+      "defType": "color/color",
+      "position": {
+        "x": 621,
+        "y": 0
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 230,
+        "g": 60,
+        "b": 200,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 230,
+        "g": 60,
+        "b": 200,
+        "a": 255
+      }
+    },
+    {
+      "id": "t14_colB",
+      "defType": "color/color",
+      "position": {
+        "x": 621,
+        "y": 182
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 60,
+        "g": 200,
+        "b": 230,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 60,
+        "g": 200,
+        "b": 230,
+        "a": 255
+      }
+    },
+    {
+      "id": "t14_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 0,
+        "y": 364
+      },
+      "params": {}
+    },
+    {
+      "id": "t14_sin",
+      "defType": "math/sin",
+      "position": {
+        "x": 180,
+        "y": 364
+      },
+      "params": {}
+    },
+    {
+      "id": "t14_half",
+      "defType": "math/mul",
+      "position": {
+        "x": 348,
+        "y": 364
+      },
+      "params": {
+        "b": 0.5,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "t14_off",
+      "defType": "math/add",
+      "position": {
+        "x": 612,
+        "y": 364
+      },
+      "params": {
+        "b": 0.5,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "t14_lerp",
+      "defType": "color/lerp",
+      "position": {
+        "x": 900,
+        "y": 162
+      },
+      "params": {}
+    },
+    {
+      "id": "t14_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1089,
+        "y": 162
+      },
+      "params": {}
+    },
+    {
+      "id": "t14_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 1281,
+        "y": 61
+      },
+      "params": {
+        "x": -120,
+        "y": -120,
+        "w": 240,
+        "h": 240
+      },
+      "portValues": {
+        "x": -120,
+        "y": -120,
+        "w": 240,
+        "h": 240
+      }
+    },
+    {
+      "id": "t14_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1473,
+        "y": 61
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t14_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1080,
+        "y": 40
+      },
+      "params": {
+        "x": -120,
+        "y": -120
+      },
+      "portValues": {
+        "x": -120,
+        "y": -120
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_69",
+      "source": "t14_t",
+      "target": "t14_sin",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_70",
+      "source": "t14_sin",
+      "target": "t14_half",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_71",
+      "source": "t14_half",
+      "target": "t14_off",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_72",
+      "source": "t14_colA",
+      "target": "t14_lerp",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_73",
+      "source": "t14_colB",
+      "target": "t14_lerp",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_74",
+      "source": "t14_off",
+      "target": "t14_lerp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_75",
+      "source": "t14_lerp",
+      "target": "t14_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_76",
+      "source": "t14_fill",
+      "target": "t14_rect",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_77",
+      "source": "t14_rect",
+      "target": "t14_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t14_rect-xy0",
+      "source": "t14_rect-xy0",
+      "target": "t14_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

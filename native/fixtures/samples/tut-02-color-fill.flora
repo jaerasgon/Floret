@@ -1,0 +1,143 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "02 · Colour & Fill",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t02_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Colors and styles\n\nShapes have a `style` input. Style nodes (Fill, Stroke, NoFill…) build up a style value. Color nodes (Color, Palette…) build colour values.\n\nHere: Color (pink) → Fill → Rect.style. Open the Color node to swap modes (rgb / hsl / hex).",
+        "width": 360,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Colors and styles\n\nShapes have a `style` input. Style nodes (Fill, Stroke, NoFill…) build up a style value. Color nodes (Color, Palette…) build colour values.\n\nHere: Color (pink) → Fill → Rect.style. Open the Color node to swap modes (rgb / hsl / hex).",
+        "width": 360,
+        "height": 200
+      }
+    },
+    {
+      "id": "t02_col",
+      "defType": "color/color",
+      "position": {
+        "x": 0,
+        "y": 122
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 230,
+        "g": 80,
+        "b": 150,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 230,
+        "g": 80,
+        "b": 150,
+        "a": 255
+      }
+    },
+    {
+      "id": "t02_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 252,
+        "y": 122
+      },
+      "params": {}
+    },
+    {
+      "id": "t02_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 440,
+        "y": 21
+      },
+      "params": {
+        "x": -70,
+        "y": -70,
+        "w": 140,
+        "h": 140
+      },
+      "portValues": {
+        "x": -70,
+        "y": -70,
+        "w": 140,
+        "h": 140
+      }
+    },
+    {
+      "id": "t02_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 632,
+        "y": 21
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t02_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 246,
+        "y": 0
+      },
+      "params": {
+        "x": -70,
+        "y": -70
+      },
+      "portValues": {
+        "x": -70,
+        "y": -70
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_2",
+      "source": "t02_col",
+      "target": "t02_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_3",
+      "source": "t02_fill",
+      "target": "t02_rect",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_4",
+      "source": "t02_rect",
+      "target": "t02_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t02_rect-xy0",
+      "source": "t02_rect-xy0",
+      "target": "t02_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

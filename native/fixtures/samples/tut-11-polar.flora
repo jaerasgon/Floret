@@ -1,0 +1,216 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "11 · Polar Coordinates",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t11_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -284
+      },
+      "params": {
+        "text": "Polar coordinates\n\nA point on a circle is (cos(angle)·r, sin(angle)·r). Drive `angle` with time and you get rotation; vary `r` and you get spirals.\n\nThis line goes from the origin out to a rotating point.",
+        "width": 360,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Polar coordinates\n\nA point on a circle is (cos(angle)·r, sin(angle)·r). Drive `angle` with time and you get rotation; vary `r` and you get spirals.\n\nThis line goes from the origin out to a rotating point.",
+        "width": 360,
+        "height": 220
+      }
+    },
+    {
+      "id": "t11_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 0,
+        "y": 132
+      },
+      "params": {}
+    },
+    {
+      "id": "t11_cos",
+      "defType": "math/cos",
+      "position": {
+        "x": 188,
+        "y": 81
+      },
+      "params": {}
+    },
+    {
+      "id": "t11_sin",
+      "defType": "math/sin",
+      "position": {
+        "x": 188,
+        "y": 183
+      },
+      "params": {}
+    },
+    {
+      "id": "t11_rx",
+      "defType": "math/mul",
+      "position": {
+        "x": 357,
+        "y": 71
+      },
+      "params": {
+        "b": 180,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 180
+      }
+    },
+    {
+      "id": "t11_ry",
+      "defType": "math/mul",
+      "position": {
+        "x": 357,
+        "y": 193
+      },
+      "params": {
+        "b": 180,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 180
+      }
+    },
+    {
+      "id": "t11_line",
+      "defType": "draw/line",
+      "position": {
+        "x": 816,
+        "y": 51
+      },
+      "params": {
+        "x1": 0,
+        "y1": 0
+      },
+      "portValues": {
+        "x1": 0,
+        "y1": 0
+      }
+    },
+    {
+      "id": "t11_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 996,
+        "y": 51
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t11_line-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 629,
+        "y": 0
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "t11_line-xy1",
+      "defType": "vec2/make",
+      "position": {
+        "x": 629,
+        "y": 122
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_45",
+      "source": "t11_t",
+      "target": "t11_cos",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_46",
+      "source": "t11_t",
+      "target": "t11_sin",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_47",
+      "source": "t11_cos",
+      "target": "t11_rx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_48",
+      "source": "t11_sin",
+      "target": "t11_ry",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_49",
+      "source": "t11_rx",
+      "target": "t11_line-xy1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_50",
+      "source": "t11_ry",
+      "target": "t11_line-xy1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_51",
+      "source": "t11_line",
+      "target": "t11_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t11_line-xy0",
+      "source": "t11_line-xy0",
+      "target": "t11_line",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_xy_t11_line-xy1",
+      "source": "t11_line-xy1",
+      "target": "t11_line",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    }
+  ]
+}

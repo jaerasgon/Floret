@@ -31,7 +31,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 184
+        "y": 125
       },
       "params": {
         "count": 60
@@ -44,8 +44,8 @@
       "id": "t42_region",
       "defType": "region/foreach",
       "position": {
-        "x": 210,
-        "y": 144
+        "x": 222,
+        "y": 167
       },
       "params": {
         "width": 324,
@@ -90,40 +90,26 @@
       "id": "t42_rule",
       "defType": "spread/elementary-ca",
       "position": {
-        "x": 630,
-        "y": 184
+        "x": 645,
+        "y": 225
       },
       "params": {
         "rule": 90
       },
       "portValues": {
         "rule": 90
-      }
-    },
-    {
-      "id": "t42_idx",
-      "defType": "spread/range",
-      "position": {
-        "x": 651,
-        "y": 68
-      },
-      "params": {
-        "count": 60
-      },
-      "portValues": {
-        "count": 60
       }
     },
     {
       "id": "t42_draw",
       "defType": "region/foreach",
       "position": {
-        "x": 881,
+        "x": 899,
         "y": 22
       },
       "params": {
-        "width": 1052,
-        "height": 276,
+        "width": 794,
+        "height": 336,
         "label": "drawRow"
       },
       "ports": [
@@ -132,64 +118,32 @@
           "name": "b",
           "type": "boolean",
           "direction": "input",
-          "y": 198
+          "y": 258
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 82
+          "y": 80
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 127
+          "y": 169
         }
       ],
-      "width": 1052,
-      "height": 276
-    },
-    {
-      "id": "t42_xMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 128,
-        "y": 40
-      },
-      "params": {
-        "b": 8,
-        "valueType": "number"
-      },
-      "parentId": "t42_draw",
-      "portValues": {
-        "b": 8
-      }
-    },
-    {
-      "id": "t42_xOff",
-      "defType": "math/add",
-      "position": {
-        "x": 395,
-        "y": 56
-      },
-      "params": {
-        "b": -240,
-        "valueType": "number"
-      },
-      "parentId": "t42_draw",
-      "portValues": {
-        "b": -240
-      }
+      "width": 794,
+      "height": 336
     },
     {
       "id": "t42_hScale",
       "defType": "math/mul",
       "position": {
         "x": 128,
-        "y": 162
+        "y": 222
       },
       "params": {
         "b": 20,
@@ -204,8 +158,8 @@
       "id": "t42_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 844,
-        "y": 91
+        "x": 586,
+        "y": 133
       },
       "params": {
         "y": 0,
@@ -221,8 +175,8 @@
       "id": "t42_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2029,
-        "y": 113
+        "x": 1789,
+        "y": 155
       },
       "params": {
         "width": 500,
@@ -237,8 +191,8 @@
       "id": "t42_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 661,
-        "y": 73
+        "x": 399,
+        "y": 86
       },
       "params": {
         "x": 0,
@@ -248,6 +202,27 @@
       "portValues": {
         "x": 0,
         "y": 0
+      }
+    },
+    {
+      "id": "t42_x",
+      "defType": "math/map",
+      "position": {
+        "x": 169,
+        "y": 40
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 59,
+        "outMin": -240,
+        "outMax": 232
+      },
+      "parentId": "t42_draw",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 59,
+        "outMin": -240,
+        "outMax": 232
       }
     }
   ],
@@ -289,7 +264,7 @@
     },
     {
       "id": "e_330",
-      "source": "t42_idx",
+      "source": "t42_range",
       "target": "t42_draw",
       "sourceHandle": "out-indices",
       "targetHandle": "in-i"
@@ -307,27 +282,6 @@
       "target": "t42_rect",
       "sourceHandle": "out-result",
       "targetHandle": "in-h"
-    },
-    {
-      "id": "e_333",
-      "source": "t42_draw",
-      "target": "t42_xMul",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_334",
-      "source": "t42_xMul",
-      "target": "t42_xOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_335",
-      "source": "t42_xOff",
-      "target": "t42_rect-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
     },
     {
       "id": "e_336",
@@ -349,6 +303,20 @@
       "target": "t42_rect",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_t42_draw_t42_x_x",
+      "source": "t42_draw",
+      "target": "t42_x",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_t42_x_t42_rect-xy0_x",
+      "source": "t42_x",
+      "target": "t42_rect-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
     }
   ]
 }

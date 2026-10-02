@@ -1,0 +1,534 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Random Walk Trail",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "rw_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 433,
+        "y": 122
+      },
+      "params": {}
+    },
+    {
+      "id": "rw_step",
+      "defType": "io/slider",
+      "position": {
+        "x": 391,
+        "y": 224
+      },
+      "params": {
+        "value": 6,
+        "min": 1,
+        "max": 20
+      },
+      "portValues": {
+        "value": 6,
+        "min": 1,
+        "max": 20
+      }
+    },
+    {
+      "id": "rw_seed",
+      "defType": "io/slider",
+      "position": {
+        "x": 391,
+        "y": 350
+      },
+      "params": {
+        "value": 7,
+        "min": 1,
+        "max": 99
+      },
+      "portValues": {
+        "value": 7,
+        "min": 1,
+        "max": 99
+      }
+    },
+    {
+      "id": "rw_center",
+      "defType": "vec2/make",
+      "position": {
+        "x": 0,
+        "y": 20
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "rw_init",
+      "defType": "spread/repeat",
+      "position": {
+        "x": 180,
+        "y": 20
+      },
+      "params": {
+        "count": 200
+      },
+      "portValues": {
+        "count": 200
+      }
+    },
+    {
+      "id": "rw_read",
+      "defType": "state/read-spread",
+      "position": {
+        "x": 404,
+        "y": 0
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "rw_walk",
+      "defType": "spread/walk-step",
+      "position": {
+        "x": 677,
+        "y": 146
+      },
+      "params": {
+        "bounds": 230
+      },
+      "portValues": {
+        "bounds": 230
+      }
+    },
+    {
+      "id": "rw_write",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 1404,
+        "y": 34
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "rw_idx",
+      "defType": "spread/range",
+      "position": {
+        "x": 681,
+        "y": 462
+      },
+      "params": {
+        "count": 200
+      },
+      "portValues": {
+        "count": 200
+      }
+    },
+    {
+      "id": "rw_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 915,
+        "y": 178
+      },
+      "params": {
+        "width": 1076,
+        "height": 520,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 96
+        },
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input",
+          "y": 320
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 149
+        }
+      ],
+      "width": 1076,
+      "height": 520
+    },
+    {
+      "id": "rw_split",
+      "defType": "vec2/split",
+      "position": {
+        "x": 179,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "rw_region"
+    },
+    {
+      "id": "rw_hueMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 137,
+        "y": 284
+      },
+      "params": {
+        "b": 1.8,
+        "valueType": "number"
+      },
+      "parentId": "rw_region",
+      "portValues": {
+        "b": 1.8
+      }
+    },
+    {
+      "id": "rw_alpMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 137,
+        "y": 406
+      },
+      "params": {
+        "b": 1.275,
+        "valueType": "number"
+      },
+      "parentId": "rw_region",
+      "portValues": {
+        "b": 1.275
+      }
+    },
+    {
+      "id": "rw_sizeMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 137,
+        "y": 162
+      },
+      "params": {
+        "b": 0.02,
+        "valueType": "number"
+      },
+      "parentId": "rw_region",
+      "portValues": {
+        "b": 0.02
+      }
+    },
+    {
+      "id": "rw_sizeAdd",
+      "defType": "math/add",
+      "position": {
+        "x": 593,
+        "y": 142
+      },
+      "params": {
+        "b": 1,
+        "valueType": "number"
+      },
+      "parentId": "rw_region",
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "rw_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 408,
+        "y": 297
+      },
+      "params": {
+        "s": 85,
+        "l": 60
+      },
+      "parentId": "rw_region",
+      "portValues": {
+        "s": 85,
+        "l": 60
+      }
+    },
+    {
+      "id": "rw_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 635,
+        "y": 264
+      },
+      "params": {
+        "mode": "color"
+      },
+      "parentId": "rw_region",
+      "portValues": {
+        "mode": "color"
+      }
+    },
+    {
+      "id": "rw_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 868,
+        "y": 113
+      },
+      "params": {},
+      "parentId": "rw_region"
+    },
+    {
+      "id": "rw_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": 1411,
+        "y": 746
+      },
+      "params": {
+        "r": 14,
+        "g": 14,
+        "b": 26,
+        "a": 255
+      },
+      "portValues": {
+        "r": 14,
+        "g": 14,
+        "b": 26,
+        "a": 255
+      }
+    },
+    {
+      "id": "rw_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2120,
+        "y": 508
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "rw_dot-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 408,
+        "y": 60
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "rw_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1605",
+      "source": "rw_bg",
+      "target": "rw_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1606",
+      "source": "rw_center",
+      "target": "rw_init",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_1607",
+      "source": "rw_init",
+      "target": "rw_read",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_1608",
+      "source": "rw_read",
+      "target": "rw_walk",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-trail"
+    },
+    {
+      "id": "e_1609",
+      "source": "rw_time",
+      "target": "rw_walk",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_1610",
+      "source": "rw_step",
+      "target": "rw_walk",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-step"
+    },
+    {
+      "id": "e_1611",
+      "source": "rw_seed",
+      "target": "rw_walk",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-seed"
+    },
+    {
+      "id": "e_1612",
+      "source": "rw_walk",
+      "target": "rw_write",
+      "sourceHandle": "out-trail",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_1613",
+      "source": "rw_walk",
+      "target": "rw_region",
+      "sourceHandle": "out-trail",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_1614",
+      "source": "rw_idx",
+      "target": "rw_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_1615",
+      "source": "rw_region",
+      "target": "rw_split",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1616",
+      "source": "rw_region",
+      "target": "rw_hueMul",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1617",
+      "source": "rw_region",
+      "target": "rw_alpMul",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1618",
+      "source": "rw_region",
+      "target": "rw_sizeMul",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1619",
+      "source": "rw_sizeMul",
+      "target": "rw_sizeAdd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1620",
+      "source": "rw_hueMul",
+      "target": "rw_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1621",
+      "source": "rw_alpMul",
+      "target": "rw_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1622",
+      "source": "rw_hsl",
+      "target": "rw_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1623",
+      "source": "rw_split",
+      "target": "rw_dot-xy0",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1624",
+      "source": "rw_split",
+      "target": "rw_dot-xy0",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1625",
+      "source": "rw_sizeAdd",
+      "target": "rw_dot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_1626",
+      "source": "rw_sizeAdd",
+      "target": "rw_dot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1627",
+      "source": "rw_fill",
+      "target": "rw_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1628",
+      "source": "rw_dot",
+      "target": "rw_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_1629",
+      "source": "rw_region",
+      "target": "rw_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_rw_dot-xy0",
+      "source": "rw_dot-xy0",
+      "target": "rw_dot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

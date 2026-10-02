@@ -1,0 +1,751 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Type Rain",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "trn_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -304
+      },
+      "params": {
+        "text": "Type rain\n\nA 18 × 22 grid where each column scrolls vertically at a unique noise-seeded speed. y = (rowIdx · ROW_H + time · speed[col]) mod CANVAS_H − CANVAS_H/2. Characters appear to fall like Matrix code.",
+        "width": 500,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Type rain\n\nA 18 × 22 grid where each column scrolls vertically at a unique noise-seeded speed. y = (rowIdx · ROW_H + time · speed[col]) mod CANVAS_H − CANVAS_H/2. Characters appear to fall like Matrix code.",
+        "width": 500,
+        "height": 240
+      }
+    },
+    {
+      "id": "trn_str",
+      "defType": "value/string",
+      "position": {
+        "x": 0,
+        "y": 69
+      },
+      "params": {
+        "value": "FLORET01"
+      },
+      "portValues": {
+        "value": "FLORET01"
+      }
+    },
+    {
+      "id": "trn_split",
+      "defType": "string/split",
+      "position": {
+        "x": 252,
+        "y": 69
+      },
+      "params": {}
+    },
+    {
+      "id": "trn_tile",
+      "defType": "spread/repeat",
+      "position": {
+        "x": 435,
+        "y": 69
+      },
+      "params": {
+        "count": 396
+      },
+      "portValues": {
+        "count": 396
+      }
+    },
+    {
+      "id": "trn_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 432,
+        "y": 293
+      },
+      "params": {
+        "count": 396
+      },
+      "portValues": {
+        "count": 396
+      }
+    },
+    {
+      "id": "trn_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 450,
+        "y": 191
+      },
+      "params": {}
+    },
+    {
+      "id": "trn_bg",
+      "defType": "color/color",
+      "position": {
+        "x": 2514,
+        "y": 496
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 4,
+        "g": 8,
+        "b": 6,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 4,
+        "g": 8,
+        "b": 6,
+        "a": 255
+      }
+    },
+    {
+      "id": "trn_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 657,
+        "y": 22
+      },
+      "params": {
+        "width": 3864,
+        "height": 426,
+        "label": "ForEach cell"
+      },
+      "ports": [
+        {
+          "id": "ch",
+          "name": "ch",
+          "type": "string",
+          "direction": "input",
+          "y": 138
+        },
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input",
+          "y": 244
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 76
+        }
+      ],
+      "width": 3864,
+      "height": 426
+    },
+    {
+      "id": "trn_colIdx",
+      "defType": "math/mod",
+      "position": {
+        "x": 181,
+        "y": 147
+      },
+      "params": {
+        "b": 18
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 18
+      }
+    },
+    {
+      "id": "trn_rowDiv",
+      "defType": "math/div",
+      "position": {
+        "x": 133,
+        "y": 269
+      },
+      "params": {
+        "b": 18,
+        "valueType": "number"
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 18
+      }
+    },
+    {
+      "id": "trn_rowIdx",
+      "defType": "math/floor",
+      "position": {
+        "x": 1162,
+        "y": 297
+      },
+      "params": {},
+      "parentId": "trn_region"
+    },
+    {
+      "id": "trn_colOff",
+      "defType": "math/sub",
+      "position": {
+        "x": 1922,
+        "y": 78
+      },
+      "params": {
+        "b": 8.5,
+        "valueType": "number"
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 8.5
+      }
+    },
+    {
+      "id": "trn_x",
+      "defType": "math/mul",
+      "position": {
+        "x": 2196,
+        "y": 68
+      },
+      "params": {
+        "b": 26,
+        "valueType": "number"
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 26
+      }
+    },
+    {
+      "id": "trn_nArg",
+      "defType": "math/mul",
+      "position": {
+        "x": 401,
+        "y": 177
+      },
+      "params": {
+        "b": 0.27,
+        "valueType": "number"
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 0.27
+      }
+    },
+    {
+      "id": "trn_speedN",
+      "defType": "noise/perlin",
+      "position": {
+        "x": 667,
+        "y": 168
+      },
+      "params": {
+        "seed": 13
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "seed": 13
+      }
+    },
+    {
+      "id": "trn_speedM",
+      "defType": "math/mul",
+      "position": {
+        "x": 848,
+        "y": 171
+      },
+      "params": {
+        "b": 90,
+        "valueType": "number"
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 90
+      }
+    },
+    {
+      "id": "trn_speed",
+      "defType": "math/add",
+      "position": {
+        "x": 1114,
+        "y": 175
+      },
+      "params": {
+        "b": 60
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 60
+      }
+    },
+    {
+      "id": "trn_scroll",
+      "defType": "math/mul",
+      "position": {
+        "x": 1380,
+        "y": 172
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "trn_region"
+    },
+    {
+      "id": "trn_rowY",
+      "defType": "math/mul",
+      "position": {
+        "x": 1380,
+        "y": 294
+      },
+      "params": {
+        "b": 26,
+        "valueType": "number"
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 26
+      }
+    },
+    {
+      "id": "trn_ySum",
+      "defType": "math/add",
+      "position": {
+        "x": 1656,
+        "y": 229
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "trn_region"
+    },
+    {
+      "id": "trn_yWrap",
+      "defType": "math/mod",
+      "position": {
+        "x": 1970,
+        "y": 244
+      },
+      "params": {
+        "b": 600
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 600
+      }
+    },
+    {
+      "id": "trn_y",
+      "defType": "math/sub",
+      "position": {
+        "x": 2196,
+        "y": 190
+      },
+      "params": {
+        "b": 300,
+        "valueType": "number"
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 300
+      }
+    },
+    {
+      "id": "trn_yNorm",
+      "defType": "math/div",
+      "position": {
+        "x": 2196,
+        "y": 312
+      },
+      "params": {
+        "b": 600,
+        "valueType": "number"
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 600
+      }
+    },
+    {
+      "id": "trn_dimSub",
+      "defType": "math/sub",
+      "position": {
+        "x": 2470,
+        "y": 298
+      },
+      "params": {
+        "a": 1
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "trn_lOut",
+      "defType": "math/mul",
+      "position": {
+        "x": 2735,
+        "y": 304
+      },
+      "params": {
+        "b": 70,
+        "valueType": "number"
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 70
+      }
+    },
+    {
+      "id": "trn_hsl",
+      "defType": "color/color",
+      "position": {
+        "x": 3001,
+        "y": 251
+      },
+      "params": {
+        "mode": "hsl",
+        "h": 140,
+        "s": 90,
+        "l": 60,
+        "a": 255
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "mode": "hsl",
+        "h": 140,
+        "s": 90,
+        "l": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "trn_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 3249,
+        "y": 258
+      },
+      "params": {},
+      "parentId": "trn_region"
+    },
+    {
+      "id": "trn_tp",
+      "defType": "style/text-params",
+      "position": {
+        "x": 3430,
+        "y": 125
+      },
+      "params": {
+        "font": "monospace",
+        "bold": true,
+        "italic": false,
+        "align": "center",
+        "baseline": "middle"
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "font": "monospace",
+        "bold": true,
+        "italic": false,
+        "align": "center",
+        "baseline": "middle"
+      }
+    },
+    {
+      "id": "trn_text",
+      "defType": "draw/text",
+      "position": {
+        "x": 3666,
+        "y": 40
+      },
+      "params": {
+        "string": "?",
+        "size": 18,
+        "align": "center"
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "string": "?",
+        "size": 18,
+        "align": "center"
+      }
+    },
+    {
+      "id": "trn_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 4649,
+        "y": 269
+      },
+      "params": {
+        "width": 520,
+        "height": 600
+      },
+      "portValues": {
+        "width": 520,
+        "height": 600
+      }
+    },
+    {
+      "id": "trn_text-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2512,
+        "y": 108
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_595",
+      "source": "trn_str",
+      "target": "trn_split",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-text"
+    },
+    {
+      "id": "e_596",
+      "source": "trn_split",
+      "target": "trn_tile",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_597",
+      "source": "trn_tile",
+      "target": "trn_region",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-ch"
+    },
+    {
+      "id": "e_598",
+      "source": "trn_range",
+      "target": "trn_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_599",
+      "source": "trn_region",
+      "target": "trn_colIdx",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_600",
+      "source": "trn_region",
+      "target": "trn_rowDiv",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_601",
+      "source": "trn_rowDiv",
+      "target": "trn_rowIdx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_602",
+      "source": "trn_colIdx",
+      "target": "trn_colOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_603",
+      "source": "trn_colOff",
+      "target": "trn_x",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_604",
+      "source": "trn_x",
+      "target": "trn_text-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_605",
+      "source": "trn_colIdx",
+      "target": "trn_nArg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_606",
+      "source": "trn_nArg",
+      "target": "trn_speedN",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_607",
+      "source": "trn_speedN",
+      "target": "trn_speedM",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_608",
+      "source": "trn_speedM",
+      "target": "trn_speed",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_609",
+      "source": "trn_time",
+      "target": "trn_scroll",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_610",
+      "source": "trn_speed",
+      "target": "trn_scroll",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_611",
+      "source": "trn_rowIdx",
+      "target": "trn_rowY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_612",
+      "source": "trn_rowY",
+      "target": "trn_ySum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_613",
+      "source": "trn_scroll",
+      "target": "trn_ySum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_614",
+      "source": "trn_ySum",
+      "target": "trn_yWrap",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_615",
+      "source": "trn_yWrap",
+      "target": "trn_y",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_616",
+      "source": "trn_y",
+      "target": "trn_text-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_617",
+      "source": "trn_yWrap",
+      "target": "trn_yNorm",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_618",
+      "source": "trn_yNorm",
+      "target": "trn_dimSub",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_619",
+      "source": "trn_dimSub",
+      "target": "trn_lOut",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_620",
+      "source": "trn_lOut",
+      "target": "trn_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_621",
+      "source": "trn_hsl",
+      "target": "trn_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_622",
+      "source": "trn_fill",
+      "target": "trn_tp",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_623",
+      "source": "trn_tp",
+      "target": "trn_text",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_624",
+      "source": "trn_region",
+      "target": "trn_text",
+      "sourceHandle": "out-ch",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_625",
+      "source": "trn_text",
+      "target": "trn_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_626",
+      "source": "trn_region",
+      "target": "trn_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_627",
+      "source": "trn_bg",
+      "target": "trn_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_xy_trn_text-xy0",
+      "source": "trn_text-xy0",
+      "target": "trn_text",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

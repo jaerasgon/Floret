@@ -31,7 +31,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 14,
-        "y": 359
+        "y": 371
       },
       "params": {}
     },
@@ -40,7 +40,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 257
+        "y": 269
       },
       "params": {},
       "portValues": {
@@ -48,37 +48,15 @@
       }
     },
     {
-      "id": "ww_bg",
-      "defType": "color/color",
-      "position": {
-        "x": 1117,
-        "y": 728
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 16,
-        "g": 14,
-        "b": 22,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 16,
-        "g": 14,
-        "b": 22,
-        "a": 255
-      }
-    },
-    {
       "id": "ww_reg",
       "defType": "region/foreach",
       "position": {
-        "x": 214,
+        "x": 212,
         "y": 22
       },
       "params": {
-        "width": 1956,
-        "height": 658,
+        "width": 1623,
+        "height": 699,
         "label": "ForEach row"
       },
       "ports": [
@@ -87,25 +65,25 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 315
+          "y": 319
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 130
+          "y": 119
         }
       ],
-      "width": 1956,
-      "height": 658
+      "width": 1623,
+      "height": 699
     },
     {
       "id": "ww_pt",
       "defType": "math/mul",
       "position": {
-        "x": 143,
-        "y": 198
+        "x": 146,
+        "y": 222
       },
       "params": {
         "valueType": "number",
@@ -120,8 +98,8 @@
       "id": "ww_pi",
       "defType": "math/mul",
       "position": {
-        "x": 143,
-        "y": 320
+        "x": 146,
+        "y": 344
       },
       "params": {
         "valueType": "number",
@@ -136,8 +114,8 @@
       "id": "ww_ph",
       "defType": "math/sub",
       "position": {
-        "x": 416,
-        "y": 242
+        "x": 422,
+        "y": 246
       },
       "params": {
         "valueType": "number"
@@ -148,8 +126,8 @@
       "id": "ww_sin",
       "defType": "math/sin",
       "position": {
-        "x": 727,
-        "y": 185
+        "x": 704,
+        "y": 168
       },
       "params": {},
       "parentId": "ww_reg"
@@ -158,114 +136,18 @@
       "id": "ww_cos",
       "defType": "math/cos",
       "position": {
-        "x": 727,
-        "y": 287
+        "x": 704,
+        "y": 270
       },
       "params": {},
-      "parentId": "ww_reg"
-    },
-    {
-      "id": "ww_wamp",
-      "defType": "math/mul",
-      "position": {
-        "x": 939,
-        "y": 168
-      },
-      "params": {
-        "valueType": "number",
-        "b": 430
-      },
-      "portValues": {
-        "b": 430
-      },
-      "parentId": "ww_reg"
-    },
-    {
-      "id": "ww_w",
-      "defType": "math/add",
-      "position": {
-        "x": 1208,
-        "y": 162
-      },
-      "params": {
-        "valueType": "number",
-        "b": 540
-      },
-      "portValues": {
-        "b": 540
-      },
-      "parentId": "ww_reg"
-    },
-    {
-      "id": "ww_damp",
-      "defType": "math/mul",
-      "position": {
-        "x": 939,
-        "y": 290
-      },
-      "params": {
-        "valueType": "number",
-        "b": -38
-      },
-      "portValues": {
-        "b": -38
-      },
-      "parentId": "ww_reg"
-    },
-    {
-      "id": "ww_wd",
-      "defType": "math/add",
-      "position": {
-        "x": 1208,
-        "y": 284
-      },
-      "params": {
-        "valueType": "number",
-        "b": 100
-      },
-      "portValues": {
-        "b": 100
-      },
-      "parentId": "ww_reg"
-    },
-    {
-      "id": "ww_y0",
-      "defType": "math/sub",
-      "position": {
-        "x": 143,
-        "y": 76
-      },
-      "params": {
-        "valueType": "number",
-        "b": 3
-      },
-      "portValues": {
-        "b": 3
-      },
-      "parentId": "ww_reg"
-    },
-    {
-      "id": "ww_y",
-      "defType": "math/mul",
-      "position": {
-        "x": 1208,
-        "y": 40
-      },
-      "params": {
-        "valueType": "number",
-        "b": 66
-      },
-      "portValues": {
-        "b": 66
-      },
       "parentId": "ww_reg"
     },
     {
       "id": "ww_pos",
       "defType": "vec2/make",
       "position": {
-        "x": 1498,
-        "y": 67
+        "x": 1165,
+        "y": 49
       },
       "params": {},
       "portValues": {
@@ -274,43 +156,11 @@
       "parentId": "ww_reg"
     },
     {
-      "id": "ww_hue",
-      "defType": "math/mul",
-      "position": {
-        "x": 143,
-        "y": 442
-      },
-      "params": {
-        "valueType": "number",
-        "b": 16
-      },
-      "portValues": {
-        "b": 16
-      },
-      "parentId": "ww_reg"
-    },
-    {
-      "id": "ww_hue2",
-      "defType": "math/add",
-      "position": {
-        "x": 416,
-        "y": 473
-      },
-      "params": {
-        "valueType": "number",
-        "b": 190
-      },
-      "portValues": {
-        "b": 190
-      },
-      "parentId": "ww_reg"
-    },
-    {
       "id": "ww_col",
       "defType": "color/color",
       "position": {
-        "x": 688,
-        "y": 484
+        "x": 431,
+        "y": 499
       },
       "params": {
         "mode": "hsl",
@@ -332,8 +182,8 @@
       "id": "ww_fill",
       "defType": "style/fill",
       "position": {
-        "x": 981,
-        "y": 515
+        "x": 698,
+        "y": 552
       },
       "params": {},
       "parentId": "ww_reg"
@@ -342,8 +192,8 @@
       "id": "ww_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 1219,
-        "y": 406
+        "x": 888,
+        "y": 465
       },
       "params": {
         "font": "Roboto Flex",
@@ -369,8 +219,8 @@
       "id": "ww_fv",
       "defType": "style/font-variations",
       "position": {
-        "x": 1481,
-        "y": 222
+        "x": 1148,
+        "y": 218
       },
       "params": {
         "axis": ""
@@ -381,8 +231,8 @@
       "id": "ww_txt",
       "defType": "draw/text",
       "position": {
-        "x": 1703,
-        "y": 94
+        "x": 1370,
+        "y": 83
       },
       "params": {
         "string": "VARIABLE",
@@ -400,16 +250,112 @@
       "id": "ww_out",
       "defType": "render/renderer",
       "position": {
-        "x": 2310,
-        "y": 412
+        "x": 1931,
+        "y": 105
       },
       "params": {
         "width": 720,
-        "height": 540
+        "height": 540,
+        "background": {
+          "r": 0.06274509803921569,
+          "g": 0.054901960784313725,
+          "b": 0.08627450980392157,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 720,
-        "height": 540
+        "height": 540,
+        "background": {
+          "r": 0.06274509803921569,
+          "g": 0.054901960784313725,
+          "b": 0.08627450980392157,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "ww_w",
+      "defType": "math/map",
+      "position": {
+        "x": 919,
+        "y": 101
+      },
+      "params": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 110,
+        "outMax": 970
+      },
+      "parentId": "ww_reg",
+      "portValues": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 110,
+        "outMax": 970
+      }
+    },
+    {
+      "id": "ww_wd",
+      "defType": "math/map",
+      "position": {
+        "x": 920,
+        "y": 283
+      },
+      "params": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 138,
+        "outMax": 62
+      },
+      "parentId": "ww_reg",
+      "portValues": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 138,
+        "outMax": 62
+      }
+    },
+    {
+      "id": "ww_y",
+      "defType": "math/map",
+      "position": {
+        "x": 187,
+        "y": 40
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 6,
+        "outMin": -198,
+        "outMax": 198
+      },
+      "parentId": "ww_reg",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 6,
+        "outMin": -198,
+        "outMax": 198
+      }
+    },
+    {
+      "id": "ww_hue",
+      "defType": "math/map",
+      "position": {
+        "x": 189,
+        "y": 466
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 6,
+        "outMin": 190,
+        "outMax": 286
+      },
+      "parentId": "ww_reg",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 6,
+        "outMin": 190,
+        "outMax": 286
       }
     }
   ],
@@ -464,76 +410,6 @@
       "targetHandle": "in-x"
     },
     {
-      "id": "e_ww_7",
-      "source": "ww_sin",
-      "target": "ww_wamp",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_ww_8",
-      "source": "ww_wamp",
-      "target": "ww_w",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_ww_9",
-      "source": "ww_cos",
-      "target": "ww_damp",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_ww_10",
-      "source": "ww_damp",
-      "target": "ww_wd",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_ww_11",
-      "source": "ww_reg",
-      "target": "ww_y0",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_ww_12",
-      "source": "ww_y0",
-      "target": "ww_y",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_ww_13",
-      "source": "ww_y",
-      "target": "ww_pos",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_ww_14",
-      "source": "ww_reg",
-      "target": "ww_hue",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_ww_15",
-      "source": "ww_hue",
-      "target": "ww_hue2",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_ww_16",
-      "source": "ww_hue2",
-      "target": "ww_col",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-h"
-    },
-    {
       "id": "e_ww_17",
       "source": "ww_col",
       "target": "ww_fill",
@@ -553,20 +429,6 @@
       "target": "ww_fv",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
-    },
-    {
-      "id": "e_ww_20",
-      "source": "ww_w",
-      "target": "ww_fv",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-weight"
-    },
-    {
-      "id": "e_ww_21",
-      "source": "ww_wd",
-      "target": "ww_fv",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-width"
     },
     {
       "id": "e_ww_22",
@@ -597,11 +459,60 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_ww_26",
-      "source": "ww_bg",
-      "target": "ww_out",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
+      "id": "e_ww_sin_ww_w_x",
+      "source": "ww_sin",
+      "target": "ww_w",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_ww_w_ww_fv_weight",
+      "source": "ww_w",
+      "target": "ww_fv",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-weight"
+    },
+    {
+      "id": "e_ww_cos_ww_wd_x",
+      "source": "ww_cos",
+      "target": "ww_wd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_ww_wd_ww_fv_width",
+      "source": "ww_wd",
+      "target": "ww_fv",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-width"
+    },
+    {
+      "id": "e_ww_reg_ww_y_x",
+      "source": "ww_reg",
+      "target": "ww_y",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_ww_y_ww_pos_y",
+      "source": "ww_y",
+      "target": "ww_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_ww_reg_ww_hue_x",
+      "source": "ww_reg",
+      "target": "ww_hue",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_ww_hue_ww_col_h",
+      "source": "ww_hue",
+      "target": "ww_col",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
     }
   ]
 }

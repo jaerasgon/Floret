@@ -1,0 +1,464 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Polygon Pinball",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "pp_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -344
+      },
+      "params": {
+        "text": "Polygon pinball\n\ncollider/from-layer accepts any shape layer. Here a draw/polygon octagon is wired into BOTH the renderer (so you can see it) AND the collider (so it deflects particles). The collider precomputes edge normals at compile and uses them for proper bounce — not a centroid approximation.",
+        "width": 500,
+        "height": 280
+      },
+      "portValues": {
+        "text": "Polygon pinball\n\ncollider/from-layer accepts any shape layer. Here a draw/polygon octagon is wired into BOTH the renderer (so you can see it) AND the collider (so it deflects particles). The collider precomputes edge normals at compile and uses them for proper bounce — not a centroid approximation.",
+        "width": 500,
+        "height": 280
+      }
+    },
+    {
+      "id": "pp_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 656,
+        "y": 380
+      },
+      "params": {}
+    },
+    {
+      "id": "pp_ring",
+      "defType": "spread/ring",
+      "position": {
+        "x": 428,
+        "y": 0
+      },
+      "params": {
+        "count": 8,
+        "radius": 220,
+        "phase": 1.5707963267948966
+      },
+      "portValues": {
+        "count": 8,
+        "radius": 220,
+        "phase": 1.5707963267948966
+      }
+    },
+    {
+      "id": "pp_polyC",
+      "defType": "color/color",
+      "position": {
+        "x": 0,
+        "y": 162
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 220,
+        "g": 220,
+        "b": 240,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 220,
+        "g": 220,
+        "b": 240,
+        "a": 255
+      }
+    },
+    {
+      "id": "pp_polyS",
+      "defType": "style/stroke",
+      "position": {
+        "x": 246,
+        "y": 162
+      },
+      "params": {
+        "width": 2
+      },
+      "portValues": {
+        "width": 2
+      }
+    },
+    {
+      "id": "pp_polyN",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 446,
+        "y": 162
+      },
+      "params": {}
+    },
+    {
+      "id": "pp_poly",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 653,
+        "y": 61
+      },
+      "params": {
+        "closed": true
+      },
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "pp_coll",
+      "defType": "collider/from-layer",
+      "position": {
+        "x": 879,
+        "y": 116
+      },
+      "params": {
+        "mode": "bounce",
+        "restitution": 0.85,
+        "inverted": true
+      },
+      "portValues": {
+        "mode": "bounce",
+        "restitution": 0.85,
+        "inverted": true
+      }
+    },
+    {
+      "id": "pp_world",
+      "defType": "physics/world",
+      "position": {
+        "x": 1125,
+        "y": 70
+      },
+      "params": {
+        "gravity": {
+          "x": 0,
+          "y": 280
+        },
+        "drag": 0.02,
+        "integrator": "euler"
+      },
+      "portValues": {
+        "gravity": {
+          "x": 0,
+          "y": 280
+        },
+        "drag": 0.02,
+        "integrator": "euler"
+      }
+    },
+    {
+      "id": "pp_tHue",
+      "defType": "math/mul",
+      "position": {
+        "x": 846,
+        "y": 339
+      },
+      "params": {
+        "b": 540,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 540
+      }
+    },
+    {
+      "id": "pp_hsl",
+      "defType": "color/color",
+      "position": {
+        "x": 1119,
+        "y": 292
+      },
+      "params": {
+        "mode": "hsl",
+        "h": 0,
+        "s": 90,
+        "l": 60,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "h": 0,
+        "s": 90,
+        "l": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "pp_em",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 1378,
+        "y": 161
+      },
+      "params": {
+        "rate": 60,
+        "lifetime": 12,
+        "initialVel": {
+          "x": 200,
+          "y": -200
+        },
+        "velSpread": 0.6,
+        "size": 6,
+        "maxCount": 220,
+        "overflowMode": "drop",
+        "seed": 19
+      },
+      "portValues": {
+        "rate": 60,
+        "lifetime": 12,
+        "initialVel": {
+          "x": 200,
+          "y": -200
+        },
+        "velSpread": 0.6,
+        "size": 6,
+        "maxCount": 220,
+        "overflowMode": "drop",
+        "seed": 19
+      }
+    },
+    {
+      "id": "pp_render",
+      "defType": "particles/render-as",
+      "position": {
+        "x": 1627,
+        "y": 274
+      },
+      "params": {
+        "template": "circle",
+        "useBufferColor": true
+      },
+      "portValues": {
+        "template": "circle",
+        "useBufferColor": true
+      }
+    },
+    {
+      "id": "pp_trailW",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 1388,
+        "y": 39
+      },
+      "params": {
+        "w": 2.5
+      },
+      "portValues": {
+        "w": 2.5
+      }
+    },
+    {
+      "id": "pp_trail",
+      "defType": "particles/trail",
+      "position": {
+        "x": 1627,
+        "y": 32
+      },
+      "params": {
+        "segments": 18,
+        "fadeOut": true,
+        "useBufferColor": true
+      },
+      "portValues": {
+        "segments": 18,
+        "fadeOut": true,
+        "useBufferColor": true
+      }
+    },
+    {
+      "id": "pp_bg",
+      "defType": "color/color",
+      "position": {
+        "x": 1896,
+        "y": 189
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 6,
+        "g": 10,
+        "b": 18,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 6,
+        "g": 10,
+        "b": 18,
+        "a": 255
+      }
+    },
+    {
+      "id": "pp_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2160,
+        "y": 108
+      },
+      "params": {
+        "width": 560,
+        "height": 560
+      },
+      "portValues": {
+        "width": 560,
+        "height": 560
+      }
+    },
+    {
+      "id": "merge_684",
+      "defType": "spread/merge",
+      "position": {
+        "x": 1887,
+        "y": 47
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {
+        "slotCount": 3
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_666",
+      "source": "pp_ring",
+      "target": "pp_poly",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_667",
+      "source": "pp_trailW",
+      "target": "pp_trail",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_668",
+      "source": "pp_time",
+      "target": "pp_tHue",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_669",
+      "source": "pp_tHue",
+      "target": "pp_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_670",
+      "source": "pp_hsl",
+      "target": "pp_em",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_671",
+      "source": "pp_polyC",
+      "target": "pp_polyS",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_672",
+      "source": "pp_polyS",
+      "target": "pp_polyN",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_673",
+      "source": "pp_polyN",
+      "target": "pp_poly",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_674",
+      "source": "pp_poly",
+      "target": "pp_coll",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_676",
+      "source": "pp_coll",
+      "target": "pp_world",
+      "sourceHandle": "out-collider",
+      "targetHandle": "in-colliders"
+    },
+    {
+      "id": "e_677",
+      "source": "pp_world",
+      "target": "pp_em",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_678",
+      "source": "pp_time",
+      "target": "pp_em",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_679",
+      "source": "pp_em",
+      "target": "pp_trail",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_680",
+      "source": "pp_em",
+      "target": "pp_render",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_683",
+      "source": "pp_bg",
+      "target": "pp_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_685",
+      "source": "pp_poly",
+      "target": "merge_684",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_686",
+      "source": "pp_trail",
+      "target": "merge_684",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_687",
+      "source": "pp_render",
+      "target": "merge_684",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_688",
+      "source": "merge_684",
+      "target": "pp_renderer",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

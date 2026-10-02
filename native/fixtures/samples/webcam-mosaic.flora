@@ -1,0 +1,736 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Webcam Mosaic",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "wm_doc",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "WEBCAM MOSAIC — how it works\n\nA live halftone of the camera. The frame is read once, sampled on a grid, and each cell becomes a YELLOW CIRCLE (where the image is light) or a BLUE SQUARE (where it is dark).\n\n①→② Read the feed · ③ Lay out a grid · ④ Per cell decide a shape · ⑤ Render",
+        "width": 560,
+        "height": 200
+      },
+      "portValues": {
+        "text": "WEBCAM MOSAIC — how it works\n\nA live halftone of the camera. The frame is read once, sampled on a grid, and each cell becomes a YELLOW CIRCLE (where the image is light) or a BLUE SQUARE (where it is dark).\n\n①→② Read the feed · ③ Lay out a grid · ④ Per cell decide a shape · ⑤ Render",
+        "width": 560,
+        "height": 200
+      }
+    },
+    {
+      "id": "wm_n_src",
+      "defType": "meta/comment",
+      "position": {
+        "x": 624,
+        "y": -264
+      },
+      "params": {
+        "text": "① LIVE SOURCE\nThe Toggle opens the camera (start). image/resize squares the feed to 500×500 so grid coords line up with pixels 1:1.",
+        "width": 420,
+        "height": 120
+      },
+      "portValues": {
+        "text": "① LIVE SOURCE\nThe Toggle opens the camera (start). image/resize squares the feed to 500×500 so grid coords line up with pixels 1:1.",
+        "width": 420,
+        "height": 120
+      }
+    },
+    {
+      "id": "wm_n_grid",
+      "defType": "meta/comment",
+      "position": {
+        "x": 1108,
+        "y": -264
+      },
+      "params": {
+        "text": "② GRID + ONE READ\nTwo matching 36×36 grids: the DRAW grid (centred — where shapes go) and the SAMPLE grid (pixel space — where to read). image/sample-spread reads the whole frame ONCE → one colour per cell (fast).",
+        "width": 440,
+        "height": 140
+      },
+      "portValues": {
+        "text": "② GRID + ONE READ\nTwo matching 36×36 grids: the DRAW grid (centred — where shapes go) and the SAMPLE grid (pixel space — where to read). image/sample-spread reads the whole frame ONCE → one colour per cell (fast).",
+        "width": 440,
+        "height": 140
+      }
+    },
+    {
+      "id": "wm_n_render",
+      "defType": "meta/comment",
+      "position": {
+        "x": 1612,
+        "y": -264
+      },
+      "params": {
+        "text": "⑤ RENDER\nThe ForEach hands back one chosen shape per cell; the Renderer draws them all into the live mosaic.",
+        "width": 360,
+        "height": 120
+      },
+      "portValues": {
+        "text": "⑤ RENDER\nThe ForEach hands back one chosen shape per cell; the Renderer draws them all into the live mosaic.",
+        "width": 360,
+        "height": 120
+      }
+    },
+    {
+      "id": "wm_cam",
+      "defType": "input/camera",
+      "position": {
+        "x": 264,
+        "y": 54
+      },
+      "params": {
+        "device": "",
+        "mirror": true
+      },
+      "portValues": {
+        "device": "",
+        "mirror": true
+      }
+    },
+    {
+      "id": "wm_start",
+      "defType": "io/toggle",
+      "position": {
+        "x": 0,
+        "y": 60
+      },
+      "params": {
+        "value": true
+      },
+      "portValues": {
+        "value": true
+      }
+    },
+    {
+      "id": "wm_resize",
+      "defType": "image/resize",
+      "position": {
+        "x": 535,
+        "y": 54
+      },
+      "params": {
+        "w": 500,
+        "h": 500
+      },
+      "portValues": {
+        "w": 500,
+        "h": 500
+      }
+    },
+    {
+      "id": "wm_drawGrid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 745,
+        "y": 241
+      },
+      "params": {
+        "cols": 36,
+        "rows": 36,
+        "w": 500,
+        "h": 500
+      },
+      "portValues": {
+        "cols": 36,
+        "rows": 36,
+        "w": 500,
+        "h": 500
+      }
+    },
+    {
+      "id": "wm_sampleGrid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 524,
+        "y": 196
+      },
+      "params": {
+        "cols": 36,
+        "rows": 36,
+        "w": 500,
+        "h": 500,
+        "center": {
+          "x": 250,
+          "y": 250
+        }
+      },
+      "portValues": {
+        "cols": 36,
+        "rows": 36,
+        "w": 500,
+        "h": 500,
+        "center": {
+          "x": 250,
+          "y": 250
+        }
+      }
+    },
+    {
+      "id": "wm_colors",
+      "defType": "image/sample-spread",
+      "position": {
+        "x": 745,
+        "y": 115
+      },
+      "params": {}
+    },
+    {
+      "id": "wm_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": 1687,
+        "y": 1055
+      },
+      "params": {
+        "r": 6,
+        "g": 7,
+        "b": 12,
+        "a": 255
+      },
+      "portValues": {
+        "r": 6,
+        "g": 7,
+        "b": 12,
+        "a": 255
+      }
+    },
+    {
+      "id": "wm_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2658,
+        "y": 629
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "wm_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 957,
+        "y": 22
+      },
+      "params": {
+        "width": 1544,
+        "height": 985,
+        "label": "④ ForEach cell"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 255
+        },
+        {
+          "id": "col",
+          "name": "col",
+          "type": "color",
+          "direction": "input",
+          "y": 129
+        },
+        {
+          "id": "dot",
+          "name": "dot",
+          "type": "layer",
+          "direction": "output",
+          "y": 238
+        }
+      ],
+      "width": 1544,
+      "height": 985
+    },
+    {
+      "id": "wm_n_pos",
+      "defType": "meta/comment",
+      "position": {
+        "x": 131,
+        "y": 681
+      },
+      "params": {
+        "text": "a · POSITION\nWhere this cell sits on the centred canvas — fed to both shapes.",
+        "width": 320,
+        "height": 70
+      },
+      "parentId": "wm_region",
+      "portValues": {
+        "text": "a · POSITION\nWhere this cell sits on the centred canvas — fed to both shapes.",
+        "width": 320,
+        "height": 70
+      }
+    },
+    {
+      "id": "wm_split",
+      "defType": "vec2/split",
+      "position": {
+        "x": 132,
+        "y": 219
+      },
+      "params": {},
+      "parentId": "wm_region"
+    },
+    {
+      "id": "wm_pos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 360,
+        "y": 224
+      },
+      "params": {},
+      "parentId": "wm_region"
+    },
+    {
+      "id": "wm_n_lum",
+      "defType": "meta/comment",
+      "position": {
+        "x": 515,
+        "y": 681
+      },
+      "params": {
+        "text": "b · BRIGHTNESS\nAverage the pixel's R, G, B (0–255). Greater than 128 (mid-grey) → \"light\".",
+        "width": 420,
+        "height": 70
+      },
+      "parentId": "wm_region",
+      "portValues": {
+        "text": "b · BRIGHTNESS\nAverage the pixel's R, G, B (0–255). Greater than 128 (mid-grey) → \"light\".",
+        "width": 420,
+        "height": 70
+      }
+    },
+    {
+      "id": "wm_srgb",
+      "defType": "color/split-rgb",
+      "position": {
+        "x": 132,
+        "y": 57
+      },
+      "params": {},
+      "parentId": "wm_region"
+    },
+    {
+      "id": "wm_rg",
+      "defType": "math/add",
+      "position": {
+        "x": 318,
+        "y": 40
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "wm_region"
+    },
+    {
+      "id": "wm_rgb",
+      "defType": "math/add",
+      "position": {
+        "x": 603,
+        "y": 62
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "wm_region"
+    },
+    {
+      "id": "wm_lum",
+      "defType": "math/mul",
+      "position": {
+        "x": 874,
+        "y": 105
+      },
+      "params": {
+        "b": 0.333,
+        "valueType": "number"
+      },
+      "parentId": "wm_region",
+      "portValues": {
+        "b": 0.333
+      }
+    },
+    {
+      "id": "wm_isLight",
+      "defType": "logic/gt",
+      "position": {
+        "x": 1144,
+        "y": 149
+      },
+      "params": {
+        "b": 128
+      },
+      "parentId": "wm_region",
+      "portValues": {
+        "b": 128
+      }
+    },
+    {
+      "id": "wm_n_shapes",
+      "defType": "meta/comment",
+      "position": {
+        "x": 131,
+        "y": 875
+      },
+      "params": {
+        "text": "c · TWO SHAPES\nBoth are built every cell: a yellow circle and a blue square.",
+        "width": 360,
+        "height": 70
+      },
+      "parentId": "wm_region",
+      "portValues": {
+        "text": "c · TWO SHAPES\nBoth are built every cell: a yellow circle and a blue square.",
+        "width": 360,
+        "height": 70
+      }
+    },
+    {
+      "id": "wm_yCol",
+      "defType": "color/rgb",
+      "position": {
+        "x": 131,
+        "y": 341
+      },
+      "params": {
+        "r": 250,
+        "g": 210,
+        "b": 40,
+        "a": 255
+      },
+      "parentId": "wm_region",
+      "portValues": {
+        "r": 250,
+        "g": 210,
+        "b": 40,
+        "a": 255
+      }
+    },
+    {
+      "id": "wm_yFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 360,
+        "y": 346
+      },
+      "params": {
+        "mode": "color"
+      },
+      "parentId": "wm_region",
+      "portValues": {
+        "mode": "color"
+      }
+    },
+    {
+      "id": "wm_circle",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 639,
+        "y": 184
+      },
+      "params": {
+        "w": 13,
+        "h": 13
+      },
+      "parentId": "wm_region",
+      "portValues": {
+        "w": 13,
+        "h": 13
+      }
+    },
+    {
+      "id": "wm_bCol",
+      "defType": "color/rgb",
+      "position": {
+        "x": 132,
+        "y": 503
+      },
+      "params": {
+        "r": 40,
+        "g": 90,
+        "b": 225,
+        "a": 255
+      },
+      "parentId": "wm_region",
+      "portValues": {
+        "r": 40,
+        "g": 90,
+        "b": 225,
+        "a": 255
+      }
+    },
+    {
+      "id": "wm_bFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 360,
+        "y": 474
+      },
+      "params": {
+        "mode": "color"
+      },
+      "parentId": "wm_region",
+      "portValues": {
+        "mode": "color"
+      }
+    },
+    {
+      "id": "wm_square",
+      "defType": "draw/rect",
+      "position": {
+        "x": 639,
+        "y": 366
+      },
+      "params": {
+        "w": 12,
+        "h": 12
+      },
+      "parentId": "wm_region",
+      "portValues": {
+        "w": 12,
+        "h": 12
+      }
+    },
+    {
+      "id": "wm_n_pick",
+      "defType": "meta/comment",
+      "position": {
+        "x": 999,
+        "y": 681
+      },
+      "params": {
+        "text": "d · SELECT\nlight → yellow circle\ndark → blue square\nOnly the picked shape is emitted.",
+        "width": 300,
+        "height": 130
+      },
+      "parentId": "wm_region",
+      "portValues": {
+        "text": "d · SELECT\nlight → yellow circle\ndark → blue square\nOnly the picked shape is emitted.",
+        "width": 300,
+        "height": 130
+      }
+    },
+    {
+      "id": "wm_pick",
+      "defType": "logic/select",
+      "position": {
+        "x": 1332,
+        "y": 202
+      },
+      "params": {},
+      "parentId": "wm_region"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1484",
+      "source": "wm_start",
+      "target": "wm_cam",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_1485",
+      "source": "wm_cam",
+      "target": "wm_resize",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1486",
+      "source": "wm_resize",
+      "target": "wm_colors",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_1487",
+      "source": "wm_sampleGrid",
+      "target": "wm_colors",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_1488",
+      "source": "wm_bg",
+      "target": "wm_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1489",
+      "source": "wm_drawGrid",
+      "target": "wm_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_1490",
+      "source": "wm_colors",
+      "target": "wm_region",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_1491",
+      "source": "wm_region",
+      "target": "wm_split",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1492",
+      "source": "wm_split",
+      "target": "wm_pos",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1493",
+      "source": "wm_split",
+      "target": "wm_pos",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1494",
+      "source": "wm_pos",
+      "target": "wm_circle",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_1495",
+      "source": "wm_pos",
+      "target": "wm_square",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_1496",
+      "source": "wm_region",
+      "target": "wm_srgb",
+      "sourceHandle": "out-col",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1497",
+      "source": "wm_srgb",
+      "target": "wm_rg",
+      "sourceHandle": "out-r",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1498",
+      "source": "wm_srgb",
+      "target": "wm_rg",
+      "sourceHandle": "out-g",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1499",
+      "source": "wm_rg",
+      "target": "wm_rgb",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1500",
+      "source": "wm_srgb",
+      "target": "wm_rgb",
+      "sourceHandle": "out-b",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1501",
+      "source": "wm_rgb",
+      "target": "wm_lum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1502",
+      "source": "wm_lum",
+      "target": "wm_isLight",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1503",
+      "source": "wm_yCol",
+      "target": "wm_yFill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1504",
+      "source": "wm_yFill",
+      "target": "wm_circle",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1505",
+      "source": "wm_bCol",
+      "target": "wm_bFill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1506",
+      "source": "wm_bFill",
+      "target": "wm_square",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1507",
+      "source": "wm_isLight",
+      "target": "wm_pick",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_1508",
+      "source": "wm_circle",
+      "target": "wm_pick",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1509",
+      "source": "wm_square",
+      "target": "wm_pick",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1510",
+      "source": "wm_pick",
+      "target": "wm_region",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-dot"
+    },
+    {
+      "id": "e_1511",
+      "source": "wm_region",
+      "target": "wm_renderer",
+      "sourceHandle": "out-dot",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

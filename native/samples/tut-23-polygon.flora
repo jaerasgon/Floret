@@ -30,7 +30,7 @@
       "id": "t23_fib",
       "defType": "spread/fibonacci",
       "position": {
-        "x": 501,
+        "x": 226,
         "y": 0
       },
       "params": {
@@ -45,77 +45,60 @@
       }
     },
     {
-      "id": "t23_col",
-      "defType": "color/color",
-      "position": {
-        "x": 0,
-        "y": 263
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 240,
-        "g": 200,
-        "b": 80,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 240,
-        "g": 200,
-        "b": 80,
-        "a": 255
-      }
-    },
-    {
-      "id": "t23_colS",
-      "defType": "color/color",
-      "position": {
-        "x": 246,
-        "y": 81
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 30,
-        "g": 30,
-        "b": 30,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 30,
-        "g": 30,
-        "b": 30,
-        "a": 255
-      }
-    },
-    {
       "id": "t23_fill",
       "defType": "style/fill",
       "position": {
-        "x": 279,
-        "y": 263
+        "x": 0,
+        "y": 202
       },
-      "params": {}
+      "params": {
+        "color": {
+          "r": 0.9411764705882353,
+          "g": 0.7843137254901961,
+          "b": 0.3137254901960784,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.9411764705882353,
+          "g": 0.7843137254901961,
+          "b": 0.3137254901960784,
+          "a": 1
+        }
+      }
     },
     {
       "id": "t23_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 524,
+        "x": 227,
         "y": 142
       },
       "params": {
-        "width": 1
+        "width": 1,
+        "color": {
+          "r": 0.11764705882352941,
+          "g": 0.11764705882352941,
+          "b": 0.11764705882352941,
+          "a": 1
+        }
       },
       "portValues": {
-        "width": 1
+        "width": 1,
+        "color": {
+          "r": 0.11764705882352941,
+          "g": 0.11764705882352941,
+          "b": 0.11764705882352941,
+          "a": 1
+        }
       }
     },
     {
       "id": "t23_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 736,
+        "x": 461,
         "y": 51
       },
       "params": {
@@ -129,7 +112,7 @@
       "id": "t23_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 921,
+        "x": 646,
         "y": 51
       },
       "params": {
@@ -149,20 +132,6 @@
       "target": "t23_poly",
       "sourceHandle": "out-positions",
       "targetHandle": "in-points"
-    },
-    {
-      "id": "e_156",
-      "source": "t23_col",
-      "target": "t23_fill",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
-    {
-      "id": "e_157",
-      "source": "t23_colS",
-      "target": "t23_stroke",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
     },
     {
       "id": "e_158",

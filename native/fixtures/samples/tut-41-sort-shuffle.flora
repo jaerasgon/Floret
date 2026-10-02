@@ -1,0 +1,303 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "41 · Spread Sort + Shuffle",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t41_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -284
+      },
+      "params": {
+        "text": "Reordering spreads\n\n`SortSpread` arranges numbers ascending/descending; `ShuffleSpread` permutes them deterministically by seed.\n\nA RandomSpread of 30 numbers, sorted, drawn as a bar chart. Try wiring the shuffle node back in instead.",
+        "width": 440,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Reordering spreads\n\n`SortSpread` arranges numbers ascending/descending; `ShuffleSpread` permutes them deterministically by seed.\n\nA RandomSpread of 30 numbers, sorted, drawn as a bar chart. Try wiring the shuffle node back in instead.",
+        "width": 440,
+        "height": 220
+      }
+    },
+    {
+      "id": "t41_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 0,
+        "y": 184
+      },
+      "params": {
+        "count": 30
+      },
+      "portValues": {
+        "count": 30
+      }
+    },
+    {
+      "id": "t41_shuf",
+      "defType": "spread/randomize",
+      "position": {
+        "x": 210,
+        "y": 184
+      },
+      "params": {
+        "seed": 7
+      },
+      "portValues": {
+        "seed": 7
+      }
+    },
+    {
+      "id": "t41_sort",
+      "defType": "spread/sort",
+      "position": {
+        "x": 444,
+        "y": 184
+      },
+      "params": {}
+    },
+    {
+      "id": "t41_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 653,
+        "y": 22
+      },
+      "params": {
+        "width": 1052,
+        "height": 276,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "v",
+          "name": "v",
+          "type": "number",
+          "direction": "input",
+          "y": 198
+        },
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input",
+          "y": 82
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 127
+        }
+      ],
+      "width": 1052,
+      "height": 276
+    },
+    {
+      "id": "t41_idx",
+      "defType": "spread/range",
+      "position": {
+        "x": 443,
+        "y": 68
+      },
+      "params": {
+        "count": 30
+      },
+      "portValues": {
+        "count": 30
+      }
+    },
+    {
+      "id": "t41_xMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {
+        "b": 12,
+        "valueType": "number"
+      },
+      "parentId": "t41_region",
+      "portValues": {
+        "b": 12
+      }
+    },
+    {
+      "id": "t41_xOff",
+      "defType": "math/add",
+      "position": {
+        "x": 395,
+        "y": 56
+      },
+      "params": {
+        "b": -180,
+        "valueType": "number"
+      },
+      "parentId": "t41_region",
+      "portValues": {
+        "b": -180
+      }
+    },
+    {
+      "id": "t41_hMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 128,
+        "y": 162
+      },
+      "params": {
+        "b": -8,
+        "valueType": "number"
+      },
+      "parentId": "t41_region",
+      "portValues": {
+        "b": -8
+      }
+    },
+    {
+      "id": "t41_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 844,
+        "y": 91
+      },
+      "params": {
+        "y": 100,
+        "w": 8
+      },
+      "parentId": "t41_region",
+      "portValues": {
+        "y": 100,
+        "w": 8
+      }
+    },
+    {
+      "id": "t41_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1801,
+        "y": 113
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t41_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 661,
+        "y": 73
+      },
+      "params": {
+        "x": 0,
+        "y": 100
+      },
+      "parentId": "t41_region",
+      "portValues": {
+        "x": 0,
+        "y": 100
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_314",
+      "source": "t41_range",
+      "target": "t41_shuf",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_315",
+      "source": "t41_shuf",
+      "target": "t41_sort",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_316",
+      "source": "t41_sort",
+      "target": "t41_region",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_317",
+      "source": "t41_idx",
+      "target": "t41_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_318",
+      "source": "t41_region",
+      "target": "t41_xMul",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_319",
+      "source": "t41_xMul",
+      "target": "t41_xOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_320",
+      "source": "t41_xOff",
+      "target": "t41_rect-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_321",
+      "source": "t41_region",
+      "target": "t41_hMul",
+      "sourceHandle": "out-v",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_322",
+      "source": "t41_hMul",
+      "target": "t41_rect",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_323",
+      "source": "t41_rect",
+      "target": "t41_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_324",
+      "source": "t41_region",
+      "target": "t41_renderer",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t41_rect-xy0",
+      "source": "t41_rect-xy0",
+      "target": "t41_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

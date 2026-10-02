@@ -1,8 +1,13 @@
 //! Parity against the TypeScript reference.
 //!
-//! For every sample in `native/samples`, compile the `.flora` with the Rust
-//! engine, replay the recorded frame inputs, and compare every node's
-//! outputs at the recorded frames with `native/fixtures/traces/<id>.json.gz`.
+//! For every sample in `native/fixtures/samples`, compile the `.flora` with
+//! the Rust engine, replay the recorded frame inputs, and compare every
+//! node's outputs at the recorded frames with
+//! `native/fixtures/traces/<id>.json.gz`.
+//!
+//! `fixtures/samples` keeps each graph exactly as its trace recorded it.
+//! The library samples in `native/samples` are free to change (to use fewer
+//! nodes, say), so they no longer line up with the traces node for node.
 //!
 //! The test prints a per-sample report and fails if any sample listed in
 //! `tests/parity-passing.txt` no longer matches (a ratchet: once a sample
@@ -651,6 +656,11 @@ fn native_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }
 
+/// The samples as the traces recorded them (not the library's copies).
+fn samples_dir() -> PathBuf {
+    native_dir().join("fixtures/samples")
+}
+
 fn read_trace(id: &str) -> J {
     let path = native_dir().join(format!("fixtures/traces/{id}.json.gz"));
     let file = std::fs::File::open(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
@@ -703,8 +713,7 @@ impl SampleReport {
 fn run_sample(id: &str) -> SampleReport {
     let mut rep = SampleReport::default();
     let trace = read_trace(id);
-    let text =
-        std::fs::read_to_string(native_dir().join(format!("samples/{id}.flora"))).expect("flora");
+    let text = std::fs::read_to_string(samples_dir().join(format!("{id}.flora"))).expect("flora");
 
     let (mut engine, warnings) = match Engine::load_with_warnings(&text) {
         Ok(x) => x,
@@ -901,16 +910,16 @@ fn probe_functions_like_exporter(outputs: &Outputs) {
 
 // ─── Test entry ──────────────────────────────────────────────────────────────
 
-/// Samples with a recorded TypeScript trace. Native-only samples (nodes
-/// the web app never had) have none and aren't compared.
+/// Fixture samples with a recorded TypeScript trace. Native-only samples
+/// (nodes the web app never had) have no trace and no fixture copy.
 fn sample_ids() -> Vec<String> {
     let traced = |id: &String| {
         native_dir()
             .join(format!("fixtures/traces/{id}.json.gz"))
             .exists()
     };
-    let mut ids: Vec<String> = std::fs::read_dir(native_dir().join("samples"))
-        .expect("samples dir")
+    let mut ids: Vec<String> = std::fs::read_dir(samples_dir())
+        .expect("fixture samples dir")
         .filter_map(|e| e.ok())
         .filter_map(|e| {
             e.file_name()

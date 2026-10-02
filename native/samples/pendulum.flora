@@ -13,7 +13,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 321
+        "y": 244
       },
       "params": {
         "value": 200,
@@ -31,7 +31,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 93
+        "y": 16
       },
       "params": {
         "value": 0.35,
@@ -48,8 +48,8 @@
       "id": "pe_damping",
       "defType": "io/slider",
       "position": {
-        "x": 1306,
-        "y": 175
+        "x": 1132,
+        "y": 145
       },
       "params": {
         "value": 0.999,
@@ -67,7 +67,7 @@
       "defType": "value/number",
       "position": {
         "x": 14,
-        "y": 219
+        "y": 142
       },
       "params": {
         "value": 0.8
@@ -80,8 +80,8 @@
       "id": "pe_initOmega",
       "defType": "value/number",
       "position": {
-        "x": 764,
-        "y": 0
+        "x": 592,
+        "y": 76
       },
       "params": {
         "value": 0
@@ -95,7 +95,7 @@
       "defType": "state/value",
       "position": {
         "x": 330,
-        "y": 262
+        "y": 181
       },
       "params": {}
     },
@@ -103,8 +103,8 @@
       "id": "pe_omega",
       "defType": "state/value",
       "position": {
-        "x": 1065,
-        "y": 0
+        "x": 893,
+        "y": 24
       },
       "params": {}
     },
@@ -113,7 +113,7 @@
       "defType": "math/div",
       "position": {
         "x": 289,
-        "y": 140
+        "y": 59
       },
       "params": {
         "valueType": "number"
@@ -123,8 +123,8 @@
       "id": "pe_sinTheta",
       "defType": "math/sin",
       "position": {
-        "x": 567,
-        "y": 259
+        "x": 626,
+        "y": 178
       },
       "params": {}
     },
@@ -132,28 +132,19 @@
       "id": "pe_alphaRaw",
       "defType": "math/mul",
       "position": {
-        "x": 750,
-        "y": 140
+        "x": 852,
+        "y": 146
       },
       "params": {
         "valueType": "number"
       }
     },
     {
-      "id": "pe_alpha",
-      "defType": "math/neg",
-      "position": {
-        "x": 1072,
-        "y": 122
-      },
-      "params": {}
-    },
-    {
       "id": "pe_omegaSum",
-      "defType": "math/add",
+      "defType": "math/sub",
       "position": {
-        "x": 1306,
-        "y": 53
+        "x": 1132,
+        "y": 23
       },
       "params": {}
     },
@@ -161,8 +152,8 @@
       "id": "pe_omegaNext",
       "defType": "math/mul",
       "position": {
-        "x": 1597,
-        "y": 141
+        "x": 1410,
+        "y": 57
       },
       "params": {
         "valueType": "number"
@@ -172,110 +163,51 @@
       "id": "pe_thetaNext",
       "defType": "math/add",
       "position": {
-        "x": 1870,
-        "y": 94
+        "x": 1684,
+        "y": 0
       },
       "params": {}
-    },
-    {
-      "id": "pe_cosTheta",
-      "defType": "math/cos",
-      "position": {
-        "x": 567,
-        "y": 361
-      },
-      "params": {}
-    },
-    {
-      "id": "pe_bobX",
-      "defType": "math/mul",
-      "position": {
-        "x": 1024,
-        "y": 302
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "pe_bobY",
-      "defType": "math/mul",
-      "position": {
-        "x": 750,
-        "y": 386
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "pe_pivotY",
-      "defType": "value/number",
-      "position": {
-        "x": 764,
-        "y": 508
-      },
-      "params": {
-        "value": -150
-      },
-      "portValues": {
-        "value": -150
-      }
-    },
-    {
-      "id": "pe_bobYAbs",
-      "defType": "math/add",
-      "position": {
-        "x": 1024,
-        "y": 424
-      },
-      "params": {
-        "valueType": "number"
-      }
     },
     {
       "id": "pe_rodC",
       "defType": "style/stroke",
       "position": {
-        "x": 1065,
-        "y": 687
-      },
-      "params": {}
-    },
-    {
-      "id": "pe_rodW",
-      "defType": "style/stroke-weight",
-      "position": {
-        "x": 1334,
-        "y": 667
+        "x": 1173,
+        "y": 271
       },
       "params": {
-        "w": 2
+        "width": 2
       },
       "portValues": {
-        "w": 2
+        "width": 2
       }
     },
     {
       "id": "pe_rod",
       "defType": "draw/line",
       "position": {
-        "x": 1639,
-        "y": 460
+        "x": 1438,
+        "y": 317
       },
       "params": {
-        "x1": 0
+        "a": {
+          "x": 0,
+          "y": -150
+        }
       },
       "portValues": {
-        "x1": 0
+        "a": {
+          "x": 0,
+          "y": -150
+        }
       }
     },
     {
       "id": "pe_bobFill",
       "defType": "style/fill",
       "position": {
-        "x": 1348,
-        "y": 789
+        "x": 1174,
+        "y": 555
       },
       "params": {
         "mode": "rgb",
@@ -296,8 +228,8 @@
       "id": "pe_bob",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1633,
-        "y": 602
+        "x": 1446,
+        "y": 459
       },
       "params": {
         "w": 32,
@@ -312,8 +244,8 @@
       "id": "pe_group",
       "defType": "transform/group",
       "position": {
-        "x": 1870,
-        "y": 521
+        "x": 1684,
+        "y": 378
       },
       "params": {
         "slotCount": 2
@@ -326,8 +258,8 @@
       "id": "pe_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2134,
-        "y": 521
+        "x": 1948,
+        "y": 378
       },
       "params": {
         "width": 500,
@@ -341,51 +273,48 @@
       }
     },
     {
-      "id": "pe_rod-xy0",
-      "defType": "vec2/make",
+      "id": "pe_down",
+      "defType": "math/sub",
       "position": {
-        "x": 1348,
-        "y": 545
+        "x": 578,
+        "y": 280
       },
       "params": {
-        "x": 0,
-        "y": 0
+        "a": 1.5707963267948966,
+        "valueType": "number"
       },
       "portValues": {
-        "x": 0,
-        "y": 0
+        "a": 1.5707963267948966
       }
     },
     {
-      "id": "pe_rod-xy1",
-      "defType": "vec2/make",
+      "id": "pe_arm",
+      "defType": "vec2/from-angle",
       "position": {
-        "x": 1348,
-        "y": 301
+        "x": 887,
+        "y": 344
       },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
-      }
+      "params": {}
     },
     {
-      "id": "pe_bob-xy2",
-      "defType": "vec2/make",
+      "id": "pe_bobPos",
+      "defType": "math/add",
       "position": {
-        "x": 1348,
-        "y": 423
+        "x": 1132,
+        "y": 433
       },
       "params": {
-        "x": 0,
-        "y": 0
+        "a": {
+          "x": 0,
+          "y": -150
+        },
+        "valueType": "vec2"
       },
       "portValues": {
-        "x": 0,
-        "y": 0
+        "a": {
+          "x": 0,
+          "y": -150
+        }
       }
     }
   ],
@@ -408,13 +337,6 @@
       "id": "e_1047",
       "source": "pe_theta",
       "target": "pe_sinTheta",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1048",
-      "source": "pe_theta",
-      "target": "pe_cosTheta",
       "sourceHandle": "out-current",
       "targetHandle": "in-x"
     },
@@ -447,25 +369,11 @@
       "targetHandle": "in-b"
     },
     {
-      "id": "e_1053",
-      "source": "pe_alphaRaw",
-      "target": "pe_alpha",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
       "id": "e_1054",
       "source": "pe_omega",
       "target": "pe_omegaSum",
       "sourceHandle": "out-current",
       "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1055",
-      "source": "pe_alpha",
-      "target": "pe_omegaSum",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
     },
     {
       "id": "e_1056",
@@ -510,97 +418,6 @@
       "targetHandle": "in-next"
     },
     {
-      "id": "e_1062",
-      "source": "pe_sinTheta",
-      "target": "pe_bobX",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1063",
-      "source": "pe_length",
-      "target": "pe_bobX",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1064",
-      "source": "pe_cosTheta",
-      "target": "pe_bobY",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1065",
-      "source": "pe_length",
-      "target": "pe_bobY",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1066",
-      "source": "pe_bobY",
-      "target": "pe_bobYAbs",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1067",
-      "source": "pe_pivotY",
-      "target": "pe_bobYAbs",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1068",
-      "source": "pe_pivotY",
-      "target": "pe_rod-xy0",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1069",
-      "source": "pe_bobX",
-      "target": "pe_rod-xy1",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1070",
-      "source": "pe_bobYAbs",
-      "target": "pe_rod-xy1",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1071",
-      "source": "pe_rodC",
-      "target": "pe_rodW",
-      "sourceHandle": "out-style",
-      "targetHandle": "in-base"
-    },
-    {
-      "id": "e_1072",
-      "source": "pe_rodW",
-      "target": "pe_rod",
-      "sourceHandle": "out-style",
-      "targetHandle": "in-style"
-    },
-    {
-      "id": "e_1073",
-      "source": "pe_bobX",
-      "target": "pe_bob-xy2",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1074",
-      "source": "pe_bobYAbs",
-      "target": "pe_bob-xy2",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
       "id": "e_1075",
       "source": "pe_bobFill",
       "target": "pe_bob",
@@ -629,24 +446,59 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_pe_rod-xy0",
-      "source": "pe_rod-xy0",
-      "target": "pe_rod",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-a"
+      "id": "e_pe_alphaRaw_pe_omegaSum_b",
+      "source": "pe_alphaRaw",
+      "target": "pe_omegaSum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
     },
     {
-      "id": "e_xy_pe_rod-xy1",
-      "source": "pe_rod-xy1",
+      "id": "e_pe_rodC_pe_rod_style",
+      "source": "pe_rodC",
       "target": "pe_rod",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_pe_theta_pe_down_b",
+      "source": "pe_theta",
+      "target": "pe_down",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_pe_down_pe_arm_angle",
+      "source": "pe_down",
+      "target": "pe_arm",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_pe_length_pe_arm_mag",
+      "source": "pe_length",
+      "target": "pe_arm",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_pe_arm_pe_bobPos_b",
+      "source": "pe_arm",
+      "target": "pe_bobPos",
       "sourceHandle": "out-vector",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_xy_pe_bob-xy2",
-      "source": "pe_bob-xy2",
+      "id": "e_pe_bobPos_pe_rod_b",
+      "source": "pe_bobPos",
+      "target": "pe_rod",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_pe_bobPos_pe_bob_pos",
+      "source": "pe_bobPos",
       "target": "pe_bob",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-pos"
     }
   ]

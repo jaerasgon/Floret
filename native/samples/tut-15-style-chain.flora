@@ -27,140 +27,97 @@
       }
     },
     {
-      "id": "t15_colF",
-      "defType": "color/color",
-      "position": {
-        "x": 0,
-        "y": 243
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 250,
-        "g": 200,
-        "b": 60,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 250,
-        "g": 200,
-        "b": 60,
-        "a": 255
-      }
-    },
-    {
-      "id": "t15_colS",
-      "defType": "color/color",
-      "position": {
-        "x": 246,
-        "y": 61
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 30,
-        "g": 30,
-        "b": 30,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 30,
-        "g": 30,
-        "b": 30,
-        "a": 255
-      }
-    },
-    {
       "id": "t15_fill",
       "defType": "style/fill",
       "position": {
-        "x": 279,
-        "y": 243
+        "x": 0,
+        "y": 140
       },
-      "params": {}
+      "params": {
+        "color": {
+          "r": 0.9803921568627451,
+          "g": 0.7843137254901961,
+          "b": 0.23529411764705882,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.9803921568627451,
+          "g": 0.7843137254901961,
+          "b": 0.23529411764705882,
+          "a": 1
+        }
+      }
     },
     {
       "id": "t15_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 509,
-        "y": 122
+        "x": 226,
+        "y": 80
       },
       "params": {
-        "width": 6
+        "width": 6,
+        "color": {
+          "r": 0.11764705882352941,
+          "g": 0.11764705882352941,
+          "b": 0.11764705882352941,
+          "a": 1
+        }
       },
       "portValues": {
-        "width": 6
+        "width": 6,
+        "color": {
+          "r": 0.11764705882352941,
+          "g": 0.11764705882352941,
+          "b": 0.11764705882352941,
+          "a": 1
+        }
       }
     },
     {
       "id": "t15_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 701,
-        "y": 21
+        "x": 452,
+        "y": 0
       },
       "params": {
-        "x": -100,
-        "y": -100,
         "w": 200,
-        "h": 200
+        "h": 200,
+        "pos": {
+          "x": -100,
+          "y": -100
+        }
       },
       "portValues": {
-        "x": -100,
-        "y": -100,
         "w": 200,
-        "h": 200
+        "h": 200,
+        "pos": {
+          "x": -100,
+          "y": -100
+        }
       }
     },
     {
       "id": "t15_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 893,
-        "y": 21
-      },
-      "params": {
-        "width": 400,
-        "height": 400
-      },
-      "portValues": {
-        "width": 400,
-        "height": 400
-      }
-    },
-    {
-      "id": "t15_rect-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 501,
+        "x": 690,
         "y": 0
       },
       "params": {
-        "x": -100,
-        "y": -100
+        "width": 400,
+        "height": 400
       },
       "portValues": {
-        "x": -100,
-        "y": -100
+        "width": 400,
+        "height": 400
       }
     }
   ],
   "edges": [
-    {
-      "id": "e_78",
-      "source": "t15_colF",
-      "target": "t15_fill",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
-    {
-      "id": "e_79",
-      "source": "t15_colS",
-      "target": "t15_stroke",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
     {
       "id": "e_80",
       "source": "t15_fill",
@@ -181,13 +138,6 @@
       "target": "t15_renderer",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_xy_t15_rect-xy0",
-      "source": "t15_rect-xy0",
-      "target": "t15_rect",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

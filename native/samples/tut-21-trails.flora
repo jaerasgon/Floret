@@ -31,7 +31,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 0,
-        "y": 122
+        "y": 142
       },
       "params": {}
     },
@@ -40,7 +40,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 210,
-        "y": 122
+        "y": 142
       },
       "params": {}
     },
@@ -49,7 +49,7 @@
       "defType": "state/read-spread",
       "position": {
         "x": 180,
-        "y": 0
+        "y": 20
       },
       "params": {
         "slot": 1
@@ -63,7 +63,7 @@
       "defType": "spread/stack",
       "position": {
         "x": 427,
-        "y": 51
+        "y": 71
       },
       "params": {}
     },
@@ -71,8 +71,8 @@
       "id": "t21_take",
       "defType": "spread/slice",
       "position": {
-        "x": 652,
-        "y": 51
+        "x": 628,
+        "y": 71
       },
       "params": {
         "start": -80,
@@ -87,58 +87,48 @@
       "id": "t21_write",
       "defType": "state/write-spread",
       "position": {
-        "x": 885,
-        "y": 4
+        "x": 832,
+        "y": 0
       },
       "params": {
         "slot": 1
       },
       "portValues": {
         "slot": 1
-      }
-    },
-    {
-      "id": "t21_col",
-      "defType": "color/color",
-      "position": {
-        "x": 628,
-        "y": 193
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 240,
-        "g": 90,
-        "b": 180,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 240,
-        "g": 90,
-        "b": 180,
-        "a": 255
       }
     },
     {
       "id": "t21_path",
       "defType": "draw/path",
       "position": {
-        "x": 888,
-        "y": 126
+        "x": 835,
+        "y": 122
       },
       "params": {
-        "strokeWidth": 3
+        "strokeWidth": 3,
+        "color": {
+          "r": 0.9411764705882353,
+          "g": 0.35294117647058826,
+          "b": 0.7058823529411765,
+          "a": 1
+        }
       },
       "portValues": {
-        "strokeWidth": 3
+        "strokeWidth": 3,
+        "color": {
+          "r": 0.9411764705882353,
+          "g": 0.35294117647058826,
+          "b": 0.7058823529411765,
+          "a": 1
+        }
       }
     },
     {
       "id": "t21_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1080,
-        "y": 126
+        "x": 1027,
+        "y": 122
       },
       "params": {
         "width": 500,
@@ -199,13 +189,6 @@
       "target": "t21_path",
       "sourceHandle": "out-values",
       "targetHandle": "in-points"
-    },
-    {
-      "id": "e_146",
-      "source": "t21_col",
-      "target": "t21_path",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
     },
     {
       "id": "e_147",

@@ -1,0 +1,1070 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Fractal Tree (generative)",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "gt_n",
+      "defType": "value/number",
+      "position": {
+        "x": 0,
+        "y": 500
+      },
+      "params": {
+        "value": 32
+      },
+      "portValues": {
+        "value": 32
+      }
+    },
+    {
+      "id": "gt_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 236,
+        "y": 500
+      },
+      "params": {
+        "count": 32
+      },
+      "portValues": {
+        "count": 32
+      }
+    },
+    {
+      "id": "gt_strokeC",
+      "defType": "color/rgb",
+      "position": {
+        "x": 27,
+        "y": 338
+      },
+      "params": {
+        "r": 230,
+        "g": 160,
+        "b": 80,
+        "a": 255
+      },
+      "portValues": {
+        "r": 230,
+        "g": 160,
+        "b": 80,
+        "a": 255
+      }
+    },
+    {
+      "id": "gt_stroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 249,
+        "y": 338
+      },
+      "params": {}
+    },
+    {
+      "id": "gt_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": 2873,
+        "y": 936
+      },
+      "params": {
+        "r": 16,
+        "g": 22,
+        "b": 16,
+        "a": 255
+      },
+      "portValues": {
+        "r": 16,
+        "g": 22,
+        "b": 16,
+        "a": 255
+      }
+    },
+    {
+      "id": "gt_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 5507,
+        "y": 667
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "gt_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 455,
+        "y": 22
+      },
+      "params": {
+        "width": 4919,
+        "height": 866,
+        "label": "ForEach step"
+      },
+      "width": 4919,
+      "height": 866
+    },
+    {
+      "id": "gt_kin",
+      "defType": "region/splicer-in/number",
+      "position": {
+        "x": 128,
+        "y": 460
+      },
+      "params": {},
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_seg",
+      "defType": "math/mod",
+      "position": {
+        "x": 374,
+        "y": 585
+      },
+      "params": {
+        "b": 4
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "b": 4
+      }
+    },
+    {
+      "id": "gt_leafd",
+      "defType": "math/div",
+      "position": {
+        "x": 562,
+        "y": 333
+      },
+      "params": {
+        "b": 4,
+        "valueType": "number"
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "b": 4
+      }
+    },
+    {
+      "id": "gt_leaf",
+      "defType": "math/floor",
+      "position": {
+        "x": 882,
+        "y": 284
+      },
+      "params": {},
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_stepG",
+      "defType": "math/step",
+      "position": {
+        "x": 591,
+        "y": 455
+      },
+      "params": {
+        "edge": 0.5
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "edge": 0.5
+      }
+    },
+    {
+      "id": "gt_gate0",
+      "defType": "math/sub",
+      "position": {
+        "x": 834,
+        "y": 386
+      },
+      "params": {
+        "a": 1,
+        "valueType": "number"
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "gt_exp",
+      "defType": "math/sub",
+      "position": {
+        "x": 562,
+        "y": 577
+      },
+      "params": {
+        "b": 1,
+        "valueType": "number"
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "gt_powB",
+      "defType": "math/pow",
+      "position": {
+        "x": 879,
+        "y": 508
+      },
+      "params": {
+        "a": 2
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "a": 2
+      }
+    },
+    {
+      "id": "gt_div2",
+      "defType": "math/div",
+      "position": {
+        "x": 1131,
+        "y": 406
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_flr2",
+      "defType": "math/floor",
+      "position": {
+        "x": 1430,
+        "y": 438
+      },
+      "params": {},
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_bit",
+      "defType": "math/mod",
+      "position": {
+        "x": 1607,
+        "y": 422
+      },
+      "params": {
+        "b": 2
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "gt_sgn1",
+      "defType": "math/mul",
+      "position": {
+        "x": 1777,
+        "y": 420
+      },
+      "params": {
+        "b": 2,
+        "valueType": "number"
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "gt_sgn",
+      "defType": "math/sub",
+      "position": {
+        "x": 2043,
+        "y": 417
+      },
+      "params": {
+        "b": 1
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "gt_trnR",
+      "defType": "math/mul",
+      "position": {
+        "x": 2309,
+        "y": 414
+      },
+      "params": {
+        "b": 0.5
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "gt_turn",
+      "defType": "math/mul",
+      "position": {
+        "x": 2576,
+        "y": 432
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_ra",
+      "defType": "region/accumulator-read/number",
+      "position": {
+        "x": 853,
+        "y": 162
+      },
+      "params": {
+        "slot": 1
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "gt_rx",
+      "defType": "region/accumulator-read/number",
+      "position": {
+        "x": 853,
+        "y": 40
+      },
+      "params": {
+        "slot": 2
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "slot": 2
+      }
+    },
+    {
+      "id": "gt_ry",
+      "defType": "region/accumulator-read/number",
+      "position": {
+        "x": 853,
+        "y": 630
+      },
+      "params": {
+        "slot": 3
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "slot": 3
+      }
+    },
+    {
+      "id": "gt_pAng",
+      "defType": "math/lerp",
+      "position": {
+        "x": 1179,
+        "y": 264
+      },
+      "params": {
+        "b": 0,
+        "valueType": "number"
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "gt_pX",
+      "defType": "math/lerp",
+      "position": {
+        "x": 1179,
+        "y": 122
+      },
+      "params": {
+        "b": 0,
+        "valueType": "number"
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "gt_pY",
+      "defType": "math/lerp",
+      "position": {
+        "x": 1179,
+        "y": 528
+      },
+      "params": {
+        "b": 220,
+        "valueType": "number"
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "b": 220
+      }
+    },
+    {
+      "id": "gt_nAng",
+      "defType": "math/add",
+      "position": {
+        "x": 2852,
+        "y": 334
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_lpow",
+      "defType": "math/pow",
+      "position": {
+        "x": 2891,
+        "y": 583
+      },
+      "params": {
+        "a": 0.7
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "a": 0.7
+      }
+    },
+    {
+      "id": "gt_len",
+      "defType": "math/mul",
+      "position": {
+        "x": 3134,
+        "y": 552
+      },
+      "params": {
+        "a": 140,
+        "valueType": "number"
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "a": 140
+      }
+    },
+    {
+      "id": "gt_sin",
+      "defType": "math/sin",
+      "position": {
+        "x": 3182,
+        "y": 418
+      },
+      "params": {},
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_cos",
+      "defType": "math/cos",
+      "position": {
+        "x": 3182,
+        "y": 316
+      },
+      "params": {},
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_dx",
+      "defType": "math/mul",
+      "position": {
+        "x": 3420,
+        "y": 407
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_ncos",
+      "defType": "math/neg",
+      "position": {
+        "x": 3468,
+        "y": 305
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_dy",
+      "defType": "math/mul",
+      "position": {
+        "x": 3717,
+        "y": 504
+      },
+      "params": {},
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_nX",
+      "defType": "math/add",
+      "position": {
+        "x": 3717,
+        "y": 301
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_nY",
+      "defType": "math/add",
+      "position": {
+        "x": 3987,
+        "y": 463
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_wa",
+      "defType": "region/accumulator-write/number",
+      "position": {
+        "x": 3154,
+        "y": 194
+      },
+      "params": {
+        "slot": 1
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "gt_wx",
+      "defType": "region/accumulator-write/number",
+      "position": {
+        "x": 4007,
+        "y": 280
+      },
+      "params": {
+        "slot": 2
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "slot": 2
+      }
+    },
+    {
+      "id": "gt_wy",
+      "defType": "region/accumulator-write/number",
+      "position": {
+        "x": 4261,
+        "y": 512
+      },
+      "params": {
+        "slot": 3
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "slot": 3
+      }
+    },
+    {
+      "id": "gt_wsub",
+      "defType": "math/sub",
+      "position": {
+        "x": 562,
+        "y": 699
+      },
+      "params": {
+        "a": 4,
+        "valueType": "number"
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "a": 4
+      }
+    },
+    {
+      "id": "gt_wmax",
+      "defType": "math/max",
+      "position": {
+        "x": 834,
+        "y": 752
+      },
+      "params": {
+        "b": 1,
+        "valueType": "number"
+      },
+      "parentId": "gt_region",
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "gt_swt",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 1159,
+        "y": 736
+      },
+      "params": {},
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_a",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1424,
+        "y": 316
+      },
+      "params": {},
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_b",
+      "defType": "vec2/make",
+      "position": {
+        "x": 4283,
+        "y": 390
+      },
+      "params": {},
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_line",
+      "defType": "draw/line",
+      "position": {
+        "x": 4502,
+        "y": 419
+      },
+      "params": {},
+      "parentId": "gt_region"
+    },
+    {
+      "id": "gt_out",
+      "defType": "region/splicer-out/layer",
+      "position": {
+        "x": 4682,
+        "y": 419
+      },
+      "params": {},
+      "parentId": "gt_region"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1357",
+      "source": "gt_n",
+      "target": "gt_range",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_1358",
+      "source": "gt_strokeC",
+      "target": "gt_stroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1359",
+      "source": "gt_bg",
+      "target": "gt_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_1360",
+      "source": "gt_range",
+      "target": "gt_kin",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-outer"
+    },
+    {
+      "id": "e_1361",
+      "source": "gt_kin",
+      "target": "gt_seg",
+      "sourceHandle": "out-inner",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1362",
+      "source": "gt_kin",
+      "target": "gt_leafd",
+      "sourceHandle": "out-inner",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1363",
+      "source": "gt_leafd",
+      "target": "gt_leaf",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1364",
+      "source": "gt_seg",
+      "target": "gt_stepG",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1365",
+      "source": "gt_stepG",
+      "target": "gt_gate0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1366",
+      "source": "gt_seg",
+      "target": "gt_exp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1367",
+      "source": "gt_exp",
+      "target": "gt_powB",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1368",
+      "source": "gt_leaf",
+      "target": "gt_div2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1369",
+      "source": "gt_powB",
+      "target": "gt_div2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1370",
+      "source": "gt_div2",
+      "target": "gt_flr2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1371",
+      "source": "gt_flr2",
+      "target": "gt_bit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1372",
+      "source": "gt_bit",
+      "target": "gt_sgn1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1373",
+      "source": "gt_sgn1",
+      "target": "gt_sgn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1374",
+      "source": "gt_sgn",
+      "target": "gt_trnR",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1375",
+      "source": "gt_trnR",
+      "target": "gt_turn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1376",
+      "source": "gt_stepG",
+      "target": "gt_turn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1377",
+      "source": "gt_ra",
+      "target": "gt_pAng",
+      "sourceHandle": "out-read",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1378",
+      "source": "gt_gate0",
+      "target": "gt_pAng",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_1379",
+      "source": "gt_rx",
+      "target": "gt_pX",
+      "sourceHandle": "out-read",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1380",
+      "source": "gt_gate0",
+      "target": "gt_pX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_1381",
+      "source": "gt_ry",
+      "target": "gt_pY",
+      "sourceHandle": "out-read",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1382",
+      "source": "gt_gate0",
+      "target": "gt_pY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_1383",
+      "source": "gt_pAng",
+      "target": "gt_nAng",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1384",
+      "source": "gt_turn",
+      "target": "gt_nAng",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1385",
+      "source": "gt_seg",
+      "target": "gt_lpow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1386",
+      "source": "gt_lpow",
+      "target": "gt_len",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1387",
+      "source": "gt_nAng",
+      "target": "gt_sin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1388",
+      "source": "gt_nAng",
+      "target": "gt_cos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1389",
+      "source": "gt_len",
+      "target": "gt_dx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1390",
+      "source": "gt_sin",
+      "target": "gt_dx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1391",
+      "source": "gt_cos",
+      "target": "gt_ncos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1392",
+      "source": "gt_len",
+      "target": "gt_dy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1393",
+      "source": "gt_ncos",
+      "target": "gt_dy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1394",
+      "source": "gt_pX",
+      "target": "gt_nX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1395",
+      "source": "gt_dx",
+      "target": "gt_nX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1396",
+      "source": "gt_pY",
+      "target": "gt_nY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1397",
+      "source": "gt_dy",
+      "target": "gt_nY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1398",
+      "source": "gt_nAng",
+      "target": "gt_wa",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-write"
+    },
+    {
+      "id": "e_1399",
+      "source": "gt_nX",
+      "target": "gt_wx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-write"
+    },
+    {
+      "id": "e_1400",
+      "source": "gt_nY",
+      "target": "gt_wy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-write"
+    },
+    {
+      "id": "e_1401",
+      "source": "gt_seg",
+      "target": "gt_wsub",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1402",
+      "source": "gt_wsub",
+      "target": "gt_wmax",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1403",
+      "source": "gt_stroke",
+      "target": "gt_swt",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_1404",
+      "source": "gt_wmax",
+      "target": "gt_swt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_1405",
+      "source": "gt_pX",
+      "target": "gt_a",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1406",
+      "source": "gt_pY",
+      "target": "gt_a",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1407",
+      "source": "gt_nX",
+      "target": "gt_b",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1408",
+      "source": "gt_nY",
+      "target": "gt_b",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1409",
+      "source": "gt_a",
+      "target": "gt_line",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1410",
+      "source": "gt_b",
+      "target": "gt_line",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1411",
+      "source": "gt_swt",
+      "target": "gt_line",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1412",
+      "source": "gt_line",
+      "target": "gt_out",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-inner"
+    },
+    {
+      "id": "e_1413",
+      "source": "gt_out",
+      "target": "gt_renderer",
+      "sourceHandle": "out-outer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

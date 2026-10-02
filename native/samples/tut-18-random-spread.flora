@@ -31,7 +31,7 @@
       "defType": "spread/range",
       "position": {
         "x": 13,
-        "y": 128
+        "y": 235
       },
       "params": {
         "count": 80
@@ -45,7 +45,7 @@
       "defType": "value/number",
       "position": {
         "x": 0,
-        "y": 230
+        "y": 133
       },
       "params": {
         "value": 17
@@ -58,12 +58,12 @@
       "id": "t18_region",
       "defType": "region/foreach",
       "position": {
-        "x": 237,
+        "x": 244,
         "y": 22
       },
       "params": {
-        "width": 1301,
-        "height": 327,
+        "width": 1008,
+        "height": 346,
         "label": "ForEach"
       },
       "ports": [
@@ -72,32 +72,25 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 147
-        },
-        {
-          "id": "s",
-          "name": "seed",
-          "type": "number",
-          "direction": "input",
-          "y": 239
+          "y": 197
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 147
+          "y": 137
         }
       ],
-      "width": 1301,
-      "height": 327
+      "width": 1008,
+      "height": 346
     },
     {
       "id": "t18_seedX",
       "defType": "math/add",
       "position": {
-        "x": 133,
-        "y": 162
+        "x": 132,
+        "y": 90
       },
       "params": {
         "valueType": "number"
@@ -105,15 +98,16 @@
       "parentId": "t18_region"
     },
     {
-      "id": "t18_seedYoff",
+      "id": "t18_seedY",
       "defType": "math/add",
       "position": {
-        "x": 133,
-        "y": 40
+        "x": 132,
+        "y": 212
       },
       "params": {
-        "b": 1000,
-        "valueType": "number"
+        "valueType": "number",
+        "slotCount": 3,
+        "b": 1000
       },
       "parentId": "t18_region",
       "portValues": {
@@ -121,23 +115,11 @@
       }
     },
     {
-      "id": "t18_seedY",
-      "defType": "math/add",
-      "position": {
-        "x": 418,
-        "y": 178
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "t18_region"
-    },
-    {
       "id": "t18_ux",
       "defType": "random/uniform",
       "position": {
-        "x": 690,
-        "y": 51
+        "x": 397,
+        "y": 40
       },
       "params": {
         "min": -180,
@@ -153,8 +135,8 @@
       "id": "t18_uy",
       "defType": "random/uniform",
       "position": {
-        "x": 690,
-        "y": 193
+        "x": 397,
+        "y": 182
       },
       "params": {
         "min": -180,
@@ -170,8 +152,8 @@
       "id": "t18_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1093,
-        "y": 111
+        "x": 800,
+        "y": 101
       },
       "params": {
         "w": 14,
@@ -187,8 +169,8 @@
       "id": "t18_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1634,
-        "y": 133
+        "x": 1348,
+        "y": 123
       },
       "params": {
         "width": 400,
@@ -203,8 +185,8 @@
       "id": "t18_ell-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 913,
-        "y": 112
+        "x": 620,
+        "y": 101
       },
       "params": {
         "x": 0,
@@ -226,45 +208,10 @@
       "targetHandle": "in-i"
     },
     {
-      "id": "e_107",
-      "source": "t18_seed",
-      "target": "t18_region",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_108",
-      "source": "t18_region",
-      "target": "t18_seedX",
-      "sourceHandle": "out-s",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_109",
       "source": "t18_region",
       "target": "t18_seedX",
       "sourceHandle": "out-i",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_110",
-      "source": "t18_region",
-      "target": "t18_seedYoff",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_111",
-      "source": "t18_seedYoff",
-      "target": "t18_seedY",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_112",
-      "source": "t18_region",
-      "target": "t18_seedY",
-      "sourceHandle": "out-s",
       "targetHandle": "in-b"
     },
     {
@@ -315,6 +262,27 @@
       "target": "t18_ell",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_t18_seed_t18_seedX_a",
+      "source": "t18_seed",
+      "target": "t18_seedX",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_t18_region_t18_seedY_a",
+      "source": "t18_region",
+      "target": "t18_seedY",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_t18_seed_t18_seedY_c",
+      "source": "t18_seed",
+      "target": "t18_seedY",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-c"
     }
   ]
 }

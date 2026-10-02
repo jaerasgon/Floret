@@ -27,39 +27,27 @@
       }
     },
     {
-      "id": "t49_start",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 224
-      },
-      "params": {
-        "value": 1
-      },
-      "portValues": {
-        "value": 1
-      }
-    },
-    {
       "id": "t49_mic",
       "defType": "sound/audio-in",
       "position": {
-        "x": 236,
-        "y": 204
+        "x": 0,
+        "y": 264
       },
       "params": {
-        "amp": 1
+        "amp": 1,
+        "start": true
       },
       "portValues": {
-        "amp": 1
+        "amp": 1,
+        "start": true
       }
     },
     {
       "id": "t49_fft",
       "defType": "sound/fft",
       "position": {
-        "x": 427,
-        "y": 184
+        "x": 191,
+        "y": 244
       },
       "params": {
         "smoothing": 0.7
@@ -72,8 +60,8 @@
       "id": "t49_idx",
       "defType": "spread/range",
       "position": {
-        "x": 449,
-        "y": 68
+        "x": 213,
+        "y": 66
       },
       "params": {
         "count": 128
@@ -86,12 +74,12 @@
       "id": "t49_region",
       "defType": "region/foreach",
       "position": {
-        "x": 686,
+        "x": 450,
         "y": 22
       },
       "params": {
-        "width": 1052,
-        "height": 276,
+        "width": 794,
+        "height": 336,
         "label": "bars"
       },
       "ports": [
@@ -100,64 +88,32 @@
           "name": "bin",
           "type": "number",
           "direction": "input",
-          "y": 198
+          "y": 258
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 82
+          "y": 80
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 127
+          "y": 169
         }
       ],
-      "width": 1052,
-      "height": 276
-    },
-    {
-      "id": "t49_xMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 128,
-        "y": 40
-      },
-      "params": {
-        "b": 4,
-        "valueType": "number"
-      },
-      "parentId": "t49_region",
-      "portValues": {
-        "b": 4
-      }
-    },
-    {
-      "id": "t49_xOff",
-      "defType": "math/add",
-      "position": {
-        "x": 395,
-        "y": 56
-      },
-      "params": {
-        "b": -250,
-        "valueType": "number"
-      },
-      "parentId": "t49_region",
-      "portValues": {
-        "b": -250
-      }
+      "width": 794,
+      "height": 336
     },
     {
       "id": "t49_hScale",
       "defType": "math/mul",
       "position": {
         "x": 128,
-        "y": 162
+        "y": 222
       },
       "params": {
         "b": -400,
@@ -172,8 +128,8 @@
       "id": "t49_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 844,
-        "y": 91
+        "x": 586,
+        "y": 133
       },
       "params": {
         "y": 200,
@@ -189,8 +145,8 @@
       "id": "t49_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1834,
-        "y": 113
+        "x": 1340,
+        "y": 155
       },
       "params": {
         "width": 500,
@@ -205,8 +161,8 @@
       "id": "t49_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 661,
-        "y": 73
+        "x": 399,
+        "y": 86
       },
       "params": {
         "x": 0,
@@ -217,16 +173,30 @@
         "x": 0,
         "y": 200
       }
+    },
+    {
+      "id": "t49_x",
+      "defType": "math/map",
+      "position": {
+        "x": 169,
+        "y": 40
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 127,
+        "outMin": -250,
+        "outMax": 258
+      },
+      "parentId": "t49_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 127,
+        "outMin": -250,
+        "outMax": 258
+      }
     }
   ],
   "edges": [
-    {
-      "id": "e_400",
-      "source": "t49_start",
-      "target": "t49_mic",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-start"
-    },
     {
       "id": "e_401",
       "source": "t49_mic",
@@ -263,27 +233,6 @@
       "targetHandle": "in-h"
     },
     {
-      "id": "e_406",
-      "source": "t49_region",
-      "target": "t49_xMul",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_407",
-      "source": "t49_xMul",
-      "target": "t49_xOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_408",
-      "source": "t49_xOff",
-      "target": "t49_rect-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
       "id": "e_409",
       "source": "t49_rect",
       "target": "t49_region",
@@ -303,6 +252,20 @@
       "target": "t49_rect",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_t49_region_t49_x_x",
+      "source": "t49_region",
+      "target": "t49_x",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_t49_x_t49_rect-xy0_x",
+      "source": "t49_x",
+      "target": "t49_rect-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
     }
   ]
 }

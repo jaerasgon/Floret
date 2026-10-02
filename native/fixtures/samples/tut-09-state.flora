@@ -1,0 +1,163 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "09 · State (per-frame memory)",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t09_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -304
+      },
+      "params": {
+        "text": "State = memory across frames\n\n`state/value` carries a value from one frame to the next.\n• `current` is what last frame stored.\n• Wire something into `next` and that becomes `current` on the very next frame.\n\nHere we add 1 every frame and use it to rotate the hue.",
+        "width": 380,
+        "height": 240
+      },
+      "portValues": {
+        "text": "State = memory across frames\n\n`state/value` carries a value from one frame to the next.\n• `current` is what last frame stored.\n• Wire something into `next` and that becomes `current` on the very next frame.\n\nHere we add 1 every frame and use it to rotate the hue.",
+        "width": 380,
+        "height": 240
+      }
+    },
+    {
+      "id": "t09_state",
+      "defType": "state/value",
+      "position": {
+        "x": 0,
+        "y": 71
+      },
+      "params": {
+        "init": 0
+      },
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "t09_step",
+      "defType": "math/add",
+      "position": {
+        "x": 193,
+        "y": 0
+      },
+      "params": {
+        "b": 1
+      },
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "t09_col",
+      "defType": "color/color",
+      "position": {
+        "x": 202,
+        "y": 122
+      },
+      "params": {
+        "mode": "hsl",
+        "s": 80,
+        "l": 55,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "s": 80,
+        "l": 55,
+        "a": 255
+      }
+    },
+    {
+      "id": "t09_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 457,
+        "y": 122
+      },
+      "params": {}
+    },
+    {
+      "id": "t09_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 637,
+        "y": 42
+      },
+      "params": {
+        "w": 160,
+        "h": 160
+      },
+      "portValues": {
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "id": "t09_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 839,
+        "y": 42
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_39",
+      "source": "t09_state",
+      "target": "t09_step",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_40",
+      "source": "t09_step",
+      "target": "t09_state",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_41",
+      "source": "t09_state",
+      "target": "t09_col",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_42",
+      "source": "t09_col",
+      "target": "t09_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_43",
+      "source": "t09_fill",
+      "target": "t09_ell",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_44",
+      "source": "t09_ell",
+      "target": "t09_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

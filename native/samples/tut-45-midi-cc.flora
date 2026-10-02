@@ -45,40 +45,10 @@
       }
     },
     {
-      "id": "t45_sz",
-      "defType": "math/mul",
-      "position": {
-        "x": 256,
-        "y": 66
-      },
-      "params": {
-        "b": 300,
-        "valueType": "number"
-      },
-      "portValues": {
-        "b": 300
-      }
-    },
-    {
-      "id": "t45_szO",
-      "defType": "math/add",
-      "position": {
-        "x": 520,
-        "y": 66
-      },
-      "params": {
-        "b": 30,
-        "valueType": "number"
-      },
-      "portValues": {
-        "b": 30
-      }
-    },
-    {
       "id": "t45_half",
       "defType": "math/mul",
       "position": {
-        "x": 793,
+        "x": 443,
         "y": 3
       },
       "params": {
@@ -93,7 +63,7 @@
       "id": "t45_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 1246,
+        "x": 896,
         "y": 38
       },
       "params": {}
@@ -102,7 +72,7 @@
       "id": "t45_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1438,
+        "x": 1088,
         "y": 38
       },
       "params": {
@@ -118,7 +88,7 @@
       "id": "t45_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1060,
+        "x": 710,
         "y": 0
       },
       "params": {
@@ -129,44 +99,29 @@
         "x": 0,
         "y": 0
       }
+    },
+    {
+      "id": "t45_size",
+      "defType": "math/map",
+      "position": {
+        "x": 256,
+        "y": 66
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 30,
+        "outMax": 330
+      },
+      "portValues": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 30,
+        "outMax": 330
+      }
     }
   ],
   "edges": [
-    {
-      "id": "e_373",
-      "source": "t45_cc",
-      "target": "t45_sz",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_374",
-      "source": "t45_sz",
-      "target": "t45_szO",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_375",
-      "source": "t45_szO",
-      "target": "t45_rect",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_376",
-      "source": "t45_szO",
-      "target": "t45_rect",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_377",
-      "source": "t45_szO",
-      "target": "t45_half",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
     {
       "id": "e_378",
       "source": "t45_half",
@@ -194,6 +149,34 @@
       "target": "t45_rect",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_t45_cc_t45_size_x",
+      "source": "t45_cc",
+      "target": "t45_size",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_t45_size_t45_rect_w",
+      "source": "t45_size",
+      "target": "t45_rect",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_t45_size_t45_rect_h",
+      "source": "t45_size",
+      "target": "t45_rect",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_t45_size_t45_half_a",
+      "source": "t45_size",
+      "target": "t45_half",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
     }
   ]
 }

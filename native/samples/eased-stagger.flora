@@ -9,33 +9,24 @@
   },
   "nodes": [
     {
-      "id": "es_count",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 196
-      },
-      "params": {
-        "value": 28
-      },
-      "portValues": {
-        "value": 28
-      }
-    },
-    {
       "id": "es_range",
       "defType": "spread/range",
       "position": {
-        "x": 251,
-        "y": 196
+        "x": 13,
+        "y": 220
       },
-      "params": {}
+      "params": {
+        "count": 28
+      },
+      "portValues": {
+        "count": 28
+      }
     },
     {
       "id": "es_delayV",
       "defType": "value/number",
       "position": {
-        "x": 236,
+        "x": 0,
         "y": 0
       },
       "params": {
@@ -49,12 +40,12 @@
       "id": "es_region",
       "defType": "region/foreach",
       "position": {
-        "x": 472,
+        "x": 236,
         "y": 24
       },
       "params": {
-        "width": 2058,
-        "height": 438,
+        "width": 1719,
+        "height": 476,
         "label": "ForEach"
       },
       "ports": [
@@ -63,25 +54,25 @@
           "name": "n",
           "type": "number",
           "direction": "input",
-          "y": 208
+          "y": 232
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 176
+          "y": 189
         }
       ],
-      "width": 2058,
-      "height": 438
+      "width": 1719,
+      "height": 476
     },
     {
       "id": "es_time",
       "defType": "time/seconds",
       "position": {
-        "x": 189,
-        "y": 169
+        "x": 193,
+        "y": 222
       },
       "params": {},
       "parentId": "es_region"
@@ -90,8 +81,8 @@
       "id": "es_tmul",
       "defType": "math/mul",
       "position": {
-        "x": 411,
-        "y": 172
+        "x": 417,
+        "y": 207
       },
       "params": {
         "b": 0.45,
@@ -106,8 +97,8 @@
       "id": "es_saw",
       "defType": "math/fract",
       "position": {
-        "x": 675,
-        "y": 175
+        "x": 683,
+        "y": 191
       },
       "params": {},
       "parentId": "es_region"
@@ -116,8 +107,8 @@
       "id": "es_eased",
       "defType": "motion/ease",
       "position": {
-        "x": 844,
-        "y": 158
+        "x": 853,
+        "y": 155
       },
       "params": {
         "curve": "inOutCubic"
@@ -125,77 +116,13 @@
       "parentId": "es_region",
       "portValues": {
         "curve": "inOutCubic"
-      }
-    },
-    {
-      "id": "es_yMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 1126,
-        "y": 160
-      },
-      "params": {
-        "b": 170,
-        "valueType": "number"
-      },
-      "parentId": "es_region",
-      "portValues": {
-        "b": 170
-      }
-    },
-    {
-      "id": "es_yOff",
-      "defType": "math/add",
-      "position": {
-        "x": 1390,
-        "y": 162
-      },
-      "params": {
-        "b": -85,
-        "valueType": "number"
-      },
-      "parentId": "es_region",
-      "portValues": {
-        "b": -85
-      }
-    },
-    {
-      "id": "es_xMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 147,
-        "y": 47
-      },
-      "params": {
-        "b": 470,
-        "valueType": "number"
-      },
-      "parentId": "es_region",
-      "portValues": {
-        "b": 470
-      }
-    },
-    {
-      "id": "es_xOff",
-      "defType": "math/add",
-      "position": {
-        "x": 1390,
-        "y": 40
-      },
-      "params": {
-        "b": -235,
-        "valueType": "number"
-      },
-      "parentId": "es_region",
-      "portValues": {
-        "b": -235
       }
     },
     {
       "id": "es_pos",
       "defType": "vec2/make",
       "position": {
-        "x": 1665,
+        "x": 1325,
         "y": 108
       },
       "params": {},
@@ -205,8 +132,8 @@
       "id": "es_hue",
       "defType": "math/mul",
       "position": {
-        "x": 147,
-        "y": 271
+        "x": 151,
+        "y": 324
       },
       "params": {
         "b": 300,
@@ -221,8 +148,8 @@
       "id": "es_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1432,
-        "y": 284
+        "x": 1138,
+        "y": 322
       },
       "params": {
         "s": 85,
@@ -240,8 +167,8 @@
       "id": "es_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1665,
-        "y": 252
+        "x": 1325,
+        "y": 277
       },
       "params": {},
       "parentId": "es_region"
@@ -250,8 +177,8 @@
       "id": "es_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1850,
-        "y": 140
+        "x": 1511,
+        "y": 153
       },
       "params": {
         "w": 22,
@@ -267,8 +194,8 @@
       "id": "es_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2626,
-        "y": 164
+        "x": 2051,
+        "y": 177
       },
       "params": {
         "width": 500,
@@ -278,16 +205,51 @@
         "width": 500,
         "height": 500
       }
+    },
+    {
+      "id": "es_y",
+      "defType": "math/map",
+      "position": {
+        "x": 1140,
+        "y": 140
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": -85,
+        "outMax": 85
+      },
+      "parentId": "es_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": -85,
+        "outMax": 85
+      }
+    },
+    {
+      "id": "es_x",
+      "defType": "math/map",
+      "position": {
+        "x": 192,
+        "y": 40
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": -235,
+        "outMax": 235
+      },
+      "parentId": "es_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": -235,
+        "outMax": 235
+      }
     }
   ],
   "edges": [
-    {
-      "id": "e_836",
-      "source": "es_count",
-      "target": "es_range",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-count"
-    },
     {
       "id": "e_837",
       "source": "es_range",
@@ -322,48 +284,6 @@
       "target": "es_eased",
       "sourceHandle": "out-result",
       "targetHandle": "in-t"
-    },
-    {
-      "id": "e_842",
-      "source": "es_eased",
-      "target": "es_yMul",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_843",
-      "source": "es_yMul",
-      "target": "es_yOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_844",
-      "source": "es_region",
-      "target": "es_xMul",
-      "sourceHandle": "out-__loopvar_fraction",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_845",
-      "source": "es_xMul",
-      "target": "es_xOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_846",
-      "source": "es_xOff",
-      "target": "es_pos",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_847",
-      "source": "es_yOff",
-      "target": "es_pos",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
     },
     {
       "id": "e_848",
@@ -413,6 +333,34 @@
       "target": "es_renderer",
       "sourceHandle": "out-layer",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_es_eased_es_y_x",
+      "source": "es_eased",
+      "target": "es_y",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_es_y_es_pos_y",
+      "source": "es_y",
+      "target": "es_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_es_region_es_x_x",
+      "source": "es_region",
+      "target": "es_x",
+      "sourceHandle": "out-__loopvar_fraction",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_es_x_es_pos_x",
+      "source": "es_x",
+      "target": "es_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
     }
   ]
 }

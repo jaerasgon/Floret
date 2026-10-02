@@ -31,7 +31,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 79
+        "y": 78
       },
       "params": {
         "value": 10,
@@ -52,8 +52,8 @@
         "y": 22
       },
       "params": {
-        "width": 765,
-        "height": 356,
+        "width": 564,
+        "height": 296,
         "label": "Cache"
       },
       "ports": [
@@ -62,24 +62,24 @@
           "name": "scale",
           "type": "number",
           "direction": "input",
-          "y": 97
+          "y": 96
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 109
+          "y": 127
         }
       ],
-      "width": 765,
-      "height": 356
+      "width": 564,
+      "height": 296
     },
     {
       "id": "t22_fib",
       "defType": "spread/fibonacci",
       "position": {
-        "x": 138,
+        "x": 128,
         "y": 40
       },
       "params": {
@@ -93,34 +93,11 @@
       }
     },
     {
-      "id": "t22_col",
-      "defType": "color/color",
-      "position": {
-        "x": 128,
-        "y": 182
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 90,
-        "g": 200,
-        "b": 200,
-        "a": 255
-      },
-      "parentId": "t22_region",
-      "portValues": {
-        "mode": "rgb",
-        "r": 90,
-        "g": 200,
-        "b": 200,
-        "a": 255
-      }
-    },
-    {
       "id": "t22_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 564,
-        "y": 73
+        "x": 363,
+        "y": 91
       },
       "params": {
         "closed": false
@@ -134,18 +111,33 @@
       "id": "t22_fill",
       "defType": "style/fill",
       "position": {
-        "x": 379,
-        "y": 148
+        "x": 129,
+        "y": 182
       },
-      "params": {},
-      "parentId": "t22_region"
+      "params": {
+        "color": {
+          "r": 0.35294117647058826,
+          "g": 0.7843137254901961,
+          "b": 0.7843137254901961,
+          "a": 1
+        }
+      },
+      "parentId": "t22_region",
+      "portValues": {
+        "color": {
+          "r": 0.35294117647058826,
+          "g": 0.7843137254901961,
+          "b": 0.7843137254901961,
+          "a": 1
+        }
+      }
     },
     {
       "id": "t22_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1125,
-        "y": 95
+        "x": 924,
+        "y": 113
       },
       "params": {
         "width": 400,
@@ -178,13 +170,6 @@
       "target": "t22_poly",
       "sourceHandle": "out-positions",
       "targetHandle": "in-points"
-    },
-    {
-      "id": "e_151",
-      "source": "t22_col",
-      "target": "t22_fill",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
     },
     {
       "id": "e_152",

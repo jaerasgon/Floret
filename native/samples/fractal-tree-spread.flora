@@ -12,7 +12,7 @@
       "id": "fts_x1",
       "defType": "data/csv-inline",
       "position": {
-        "x": 183,
+        "x": 0,
         "y": 0
       },
       "params": {
@@ -26,7 +26,7 @@
       "id": "fts_y1",
       "defType": "data/csv-inline",
       "position": {
-        "x": 183,
+        "x": 0,
         "y": 102
       },
       "params": {
@@ -40,7 +40,7 @@
       "id": "fts_x2",
       "defType": "data/csv-inline",
       "position": {
-        "x": 183,
+        "x": 0,
         "y": 204
       },
       "params": {
@@ -54,8 +54,8 @@
       "id": "fts_y2",
       "defType": "data/csv-inline",
       "position": {
-        "x": 183,
-        "y": 468
+        "x": 0,
+        "y": 306
       },
       "params": {
         "data": "80, -6, -43.07, -46.46, -85.21, -74.6, -116.74, -116.74, -6, -74.6, -116.74, -116.74, -43.07, -85.21, -46.46"
@@ -68,91 +68,79 @@
       "id": "fts_w",
       "defType": "data/csv-inline",
       "position": {
-        "x": 183,
-        "y": 570
-      },
-      "params": {
-        "data": "4, 3, 2, 1, 1, 2, 1, 1, 3, 2, 1, 1, 2, 1, 1"
-      },
-      "portValues": {
-        "data": "4, 3, 2, 1, 1, 2, 1, 1, 3, 2, 1, 1, 2, 1, 1"
-      }
-    },
-    {
-      "id": "fts_strokeC",
-      "defType": "color/rgb",
-      "position": {
         "x": 0,
-        "y": 306
+        "y": 408
       },
       "params": {
-        "r": 230,
-        "g": 160,
-        "b": 80,
-        "a": 255
+        "data": "4, 3, 2, 1, 1, 2, 1, 1, 3, 2, 1, 1, 2, 1, 1"
       },
       "portValues": {
-        "r": 230,
-        "g": 160,
-        "b": 80,
-        "a": 255
+        "data": "4, 3, 2, 1, 1, 2, 1, 1, 3, 2, 1, 1, 2, 1, 1"
       }
     },
     {
       "id": "fts_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 222,
-        "y": 306
-      },
-      "params": {}
-    },
-    {
-      "id": "fts_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 699,
-        "y": 572
+        "x": 128,
+        "y": 284
       },
       "params": {
-        "r": 16,
-        "g": 22,
-        "b": 16,
-        "a": 255
+        "color": {
+          "r": 0.9019607843137255,
+          "g": 0.6274509803921569,
+          "b": 0.3137254901960784,
+          "a": 1
+        }
       },
+      "parentId": "fts_region",
       "portValues": {
-        "r": 16,
-        "g": 22,
-        "b": 16,
-        "a": 255
+        "color": {
+          "r": 0.9019607843137255,
+          "g": 0.6274509803921569,
+          "b": 0.3137254901960784,
+          "a": 1
+        }
       }
     },
     {
       "id": "fts_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1132,
-        "y": 410
+        "x": 934,
+        "y": 196
       },
       "params": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.06274509803921569,
+          "g": 0.08627450980392157,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.06274509803921569,
+          "g": 0.08627450980392157,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       }
     },
     {
       "id": "fts_region",
       "defType": "region/foreach",
       "position": {
-        "x": 467,
-        "y": 126
+        "x": 273,
+        "y": 54
       },
       "params": {
-        "width": 548,
-        "height": 398,
+        "width": 565,
+        "height": 438,
         "label": "ForEach branch"
       },
       "ports": [
@@ -189,7 +177,7 @@
           "name": "w",
           "type": "number",
           "direction": "input",
-          "y": 320
+          "y": 340
         },
         {
           "id": "layer",
@@ -199,14 +187,14 @@
           "y": 178
         }
       ],
-      "width": 548,
-      "height": 398
+      "width": 565,
+      "height": 438
     },
     {
       "id": "fts_a",
       "defType": "vec2/make",
       "position": {
-        "x": 143,
+        "x": 151,
         "y": 40
       },
       "params": {},
@@ -216,18 +204,8 @@
       "id": "fts_b",
       "defType": "vec2/make",
       "position": {
-        "x": 143,
+        "x": 151,
         "y": 162
-      },
-      "params": {},
-      "parentId": "fts_region"
-    },
-    {
-      "id": "fts_sw",
-      "defType": "style/stroke-weight",
-      "position": {
-        "x": 128,
-        "y": 284
       },
       "params": {},
       "parentId": "fts_region"
@@ -236,7 +214,7 @@
       "id": "fts_line",
       "defType": "draw/line",
       "position": {
-        "x": 352,
+        "x": 369,
         "y": 142
       },
       "params": {},
@@ -244,20 +222,6 @@
     }
   ],
   "edges": [
-    {
-      "id": "e_1335",
-      "source": "fts_bg",
-      "target": "fts_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
-    {
-      "id": "e_1336",
-      "source": "fts_strokeC",
-      "target": "fts_stroke",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
     {
       "id": "e_1337",
       "source": "fts_x1",
@@ -322,20 +286,6 @@
       "targetHandle": "in-y"
     },
     {
-      "id": "e_1346",
-      "source": "fts_stroke",
-      "target": "fts_sw",
-      "sourceHandle": "out-style",
-      "targetHandle": "in-base"
-    },
-    {
-      "id": "e_1347",
-      "source": "fts_region",
-      "target": "fts_sw",
-      "sourceHandle": "out-w",
-      "targetHandle": "in-w"
-    },
-    {
       "id": "e_1348",
       "source": "fts_a",
       "target": "fts_line",
@@ -350,13 +300,6 @@
       "targetHandle": "in-b"
     },
     {
-      "id": "e_1350",
-      "source": "fts_sw",
-      "target": "fts_line",
-      "sourceHandle": "out-style",
-      "targetHandle": "in-style"
-    },
-    {
       "id": "e_1351",
       "source": "fts_line",
       "target": "fts_region",
@@ -369,6 +312,20 @@
       "target": "fts_renderer",
       "sourceHandle": "out-layer",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_fts_region_fts_stroke_width",
+      "source": "fts_region",
+      "target": "fts_stroke",
+      "sourceHandle": "out-w",
+      "targetHandle": "in-width"
+    },
+    {
+      "id": "e_fts_stroke_fts_line_style",
+      "source": "fts_stroke",
+      "target": "fts_line",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
     }
   ]
 }

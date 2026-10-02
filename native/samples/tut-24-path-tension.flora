@@ -30,8 +30,8 @@
       "id": "t24_range",
       "defType": "spread/range",
       "position": {
-        "x": 375,
-        "y": 123
+        "x": 180,
+        "y": 153
       },
       "params": {
         "count": 12
@@ -44,12 +44,12 @@
       "id": "t24_region",
       "defType": "region/foreach",
       "position": {
-        "x": 612,
+        "x": 390,
         "y": 22
       },
       "params": {
-        "width": 1032,
-        "height": 276,
+        "width": 1043,
+        "height": 336,
         "label": "ForEach"
       },
       "ports": [
@@ -58,57 +58,25 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 137
+          "y": 167
         },
         {
           "id": "p",
           "name": "p",
           "type": "vec2",
           "direction": "output",
-          "y": 127
+          "y": 130
         }
       ],
-      "width": 1032,
-      "height": 276
-    },
-    {
-      "id": "t24_xMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 133,
-        "y": 40
-      },
-      "params": {
-        "b": 40,
-        "valueType": "number"
-      },
-      "parentId": "t24_region",
-      "portValues": {
-        "b": 40
-      }
-    },
-    {
-      "id": "t24_xOff",
-      "defType": "math/add",
-      "position": {
-        "x": 565,
-        "y": 40
-      },
-      "params": {
-        "b": -220,
-        "valueType": "number"
-      },
-      "parentId": "t24_region",
-      "portValues": {
-        "b": -220
-      }
+      "width": 1043,
+      "height": 336
     },
     {
       "id": "t24_yIn",
       "defType": "math/mul",
       "position": {
-        "x": 133,
-        "y": 162
+        "x": 135,
+        "y": 222
       },
       "params": {
         "b": 0.7,
@@ -123,8 +91,8 @@
       "id": "t24_ySin",
       "defType": "math/sin",
       "position": {
-        "x": 397,
-        "y": 162
+        "x": 404,
+        "y": 186
       },
       "params": {},
       "parentId": "t24_region"
@@ -133,8 +101,8 @@
       "id": "t24_yMul",
       "defType": "math/mul",
       "position": {
-        "x": 565,
-        "y": 162
+        "x": 578,
+        "y": 150
       },
       "params": {
         "b": 80,
@@ -149,8 +117,8 @@
       "id": "t24_mkVec",
       "defType": "vec2/make",
       "position": {
-        "x": 836,
-        "y": 91
+        "x": 847,
+        "y": 94
       },
       "params": {},
       "parentId": "t24_region"
@@ -160,7 +128,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 528
+        "y": 406
       },
       "params": {}
     },
@@ -168,83 +136,43 @@
       "id": "t24_tSin",
       "defType": "math/sin",
       "position": {
-        "x": 180,
-        "y": 528
+        "x": 201,
+        "y": 406
       },
       "params": {}
-    },
-    {
-      "id": "t24_tHalf",
-      "defType": "math/mul",
-      "position": {
-        "x": 348,
-        "y": 528
-      },
-      "params": {
-        "b": 0.25,
-        "valueType": "number"
-      },
-      "portValues": {
-        "b": 0.25
-      }
-    },
-    {
-      "id": "t24_tOff",
-      "defType": "math/add",
-      "position": {
-        "x": 1044,
-        "y": 528
-      },
-      "params": {
-        "b": 0.25,
-        "valueType": "number"
-      },
-      "portValues": {
-        "b": 0.25
-      }
-    },
-    {
-      "id": "t24_col",
-      "defType": "color/color",
-      "position": {
-        "x": 1053,
-        "y": 346
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 90,
-        "g": 200,
-        "b": 90,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 90,
-        "g": 200,
-        "b": 90,
-        "a": 255
-      }
     },
     {
       "id": "t24_path",
       "defType": "draw/path",
       "position": {
-        "x": 1768,
-        "y": 302
+        "x": 1546,
+        "y": 231
       },
       "params": {
-        "strokeWidth": 4
+        "strokeWidth": 4,
+        "color": {
+          "r": 0.35294117647058826,
+          "g": 0.7843137254901961,
+          "b": 0.35294117647058826,
+          "a": 1
+        }
       },
       "portValues": {
-        "strokeWidth": 4
+        "strokeWidth": 4,
+        "color": {
+          "r": 0.35294117647058826,
+          "g": 0.7843137254901961,
+          "b": 0.35294117647058826,
+          "a": 1
+        }
       }
     },
     {
       "id": "t24_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1957,
-        "y": 302
+        "x": 1735,
+        "y": 231
       },
       "params": {
         "width": 500,
@@ -253,6 +181,47 @@
       "portValues": {
         "width": 500,
         "height": 400
+      }
+    },
+    {
+      "id": "t24_x",
+      "defType": "math/map",
+      "position": {
+        "x": 176,
+        "y": 40
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 11,
+        "outMin": -220,
+        "outMax": 220
+      },
+      "parentId": "t24_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 11,
+        "outMin": -220,
+        "outMax": 220
+      }
+    },
+    {
+      "id": "t24_tension",
+      "defType": "math/map",
+      "position": {
+        "x": 871,
+        "y": 406
+      },
+      "params": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 0,
+        "outMax": 0.5
+      },
+      "portValues": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 0,
+        "outMax": 0.5
       }
     }
   ],
@@ -263,27 +232,6 @@
       "target": "t24_region",
       "sourceHandle": "out-indices",
       "targetHandle": "in-i"
-    },
-    {
-      "id": "e_162",
-      "source": "t24_region",
-      "target": "t24_xMul",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_163",
-      "source": "t24_xMul",
-      "target": "t24_xOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_164",
-      "source": "t24_xOff",
-      "target": "t24_mkVec",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
     },
     {
       "id": "e_165",
@@ -328,20 +276,6 @@
       "targetHandle": "in-x"
     },
     {
-      "id": "e_171",
-      "source": "t24_tSin",
-      "target": "t24_tHalf",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_172",
-      "source": "t24_tHalf",
-      "target": "t24_tOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_173",
       "source": "t24_region",
       "target": "t24_path",
@@ -349,25 +283,39 @@
       "targetHandle": "in-points"
     },
     {
-      "id": "e_174",
-      "source": "t24_tOff",
-      "target": "t24_path",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-tension"
-    },
-    {
-      "id": "e_175",
-      "source": "t24_col",
-      "target": "t24_path",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
-    {
       "id": "e_176",
       "source": "t24_path",
       "target": "t24_renderer",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_t24_region_t24_x_x",
+      "source": "t24_region",
+      "target": "t24_x",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_t24_x_t24_mkVec_x",
+      "source": "t24_x",
+      "target": "t24_mkVec",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_t24_tSin_t24_tension_x",
+      "source": "t24_tSin",
+      "target": "t24_tension",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_t24_tension_t24_path_tension",
+      "source": "t24_tension",
+      "target": "t24_path",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-tension"
     }
   ]
 }

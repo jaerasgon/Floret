@@ -27,83 +27,38 @@
       }
     },
     {
-      "id": "tdr_str",
-      "defType": "value/string",
-      "position": {
-        "x": 0,
-        "y": 82
-      },
-      "params": {
-        "value": "It was the best of times,       it was the worst of times,      it was the age of wisdom,       it was the age of foolishness,  it was the epoch of belief,     it was the epoch of incredulity,it was the season of Light,     it was the season of Darkness.  "
-      },
-      "portValues": {
-        "value": "It was the best of times,       it was the worst of times,      it was the age of wisdom,       it was the age of foolishness,  it was the epoch of belief,     it was the epoch of incredulity,it was the season of Light,     it was the season of Darkness.  "
-      }
-    },
-    {
       "id": "tdr_split",
       "defType": "string/split",
       "position": {
-        "x": 270,
-        "y": 82
-      },
-      "params": {}
-    },
-    {
-      "id": "tdr_range",
-      "defType": "spread/range",
-      "position": {
-        "x": 252,
-        "y": 204
+        "x": 0,
+        "y": 24
       },
       "params": {
-        "count": 256
+        "text": "It was the best of times,       it was the worst of times,      it was the age of wisdom,       it was the age of foolishness,  it was the epoch of belief,     it was the epoch of incredulity,it was the season of Light,     it was the season of Darkness.  "
       },
       "portValues": {
-        "count": 256
+        "text": "It was the best of times,       it was the worst of times,      it was the age of wisdom,       it was the age of foolishness,  it was the epoch of belief,     it was the epoch of incredulity,it was the season of Light,     it was the season of Darkness.  "
       }
     },
     {
       "id": "tdr_time",
       "defType": "time/seconds",
       "position": {
-        "x": 270,
-        "y": 312
+        "x": 31,
+        "y": 328
       },
       "params": {}
-    },
-    {
-      "id": "tdr_bg",
-      "defType": "color/color",
-      "position": {
-        "x": 2195,
-        "y": 722
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 10,
-        "g": 11,
-        "b": 16,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 10,
-        "g": 11,
-        "b": 16,
-        "a": 255
-      }
     },
     {
       "id": "tdr_region",
       "defType": "region/foreach",
       "position": {
-        "x": 475,
+        "x": 251,
         "y": 22
       },
       "params": {
-        "width": 3590,
-        "height": 652,
+        "width": 2553,
+        "height": 597,
         "label": "ForEach letter"
       },
       "ports": [
@@ -112,178 +67,32 @@
           "name": "ch",
           "type": "string",
           "direction": "input",
-          "y": 142
+          "y": 99
         },
         {
-          "id": "i",
-          "name": "i",
-          "type": "number",
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
           "direction": "input",
-          "y": 172
+          "y": 184
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 130
+          "y": 84
         }
       ],
-      "width": 3590,
-      "height": 652
-    },
-    {
-      "id": "tdr_rowF",
-      "defType": "math/div",
-      "position": {
-        "x": 131,
-        "y": 176
-      },
-      "params": {
-        "b": 32,
-        "valueType": "number"
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 32
-      }
-    },
-    {
-      "id": "tdr_row",
-      "defType": "math/floor",
-      "position": {
-        "x": 399,
-        "y": 200
-      },
-      "params": {},
-      "parentId": "tdr_region"
-    },
-    {
-      "id": "tdr_rowCol",
-      "defType": "math/mul",
-      "position": {
-        "x": 577,
-        "y": 151
-      },
-      "params": {
-        "b": 32,
-        "valueType": "number"
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 32
-      }
-    },
-    {
-      "id": "tdr_col",
-      "defType": "math/sub",
-      "position": {
-        "x": 846,
-        "y": 98
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "tdr_region"
-    },
-    {
-      "id": "tdr_colCen",
-      "defType": "math/sub",
-      "position": {
-        "x": 1120,
-        "y": 82
-      },
-      "params": {
-        "b": 15.5
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 15.5
-      }
-    },
-    {
-      "id": "tdr_gx",
-      "defType": "math/mul",
-      "position": {
-        "x": 1394,
-        "y": 65
-      },
-      "params": {
-        "b": 12
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 12
-      }
-    },
-    {
-      "id": "tdr_rowCen",
-      "defType": "math/sub",
-      "position": {
-        "x": 577,
-        "y": 273
-      },
-      "params": {
-        "b": 3.5,
-        "valueType": "number"
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 3.5
-      }
-    },
-    {
-      "id": "tdr_gy",
-      "defType": "math/mul",
-      "position": {
-        "x": 846,
-        "y": 290
-      },
-      "params": {
-        "b": 30
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 30
-      }
-    },
-    {
-      "id": "tdr_gsx",
-      "defType": "math/mul",
-      "position": {
-        "x": 1676,
-        "y": 61
-      },
-      "params": {
-        "b": 0.012,
-        "valueType": "number"
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 0.012
-      }
-    },
-    {
-      "id": "tdr_gsy",
-      "defType": "math/mul",
-      "position": {
-        "x": 1394,
-        "y": 269
-      },
-      "params": {
-        "b": 0.012
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 0.012
-      }
+      "width": 2553,
+      "height": 597
     },
     {
       "id": "tdr_tDisp",
       "defType": "math/mul",
       "position": {
-        "x": 131,
-        "y": 366
+        "x": 144,
+        "y": 239
       },
       "params": {
         "b": 0.3,
@@ -298,8 +107,8 @@
       "id": "tdr_gsyT",
       "defType": "math/add",
       "position": {
-        "x": 1676,
-        "y": 305
+        "x": 602,
+        "y": 206
       },
       "params": {
         "valueType": "number"
@@ -307,42 +116,11 @@
       "parentId": "tdr_region"
     },
     {
-      "id": "tdr_msx",
-      "defType": "math/mul",
-      "position": {
-        "x": 1676,
-        "y": 183
-      },
-      "params": {
-        "b": 0.022,
-        "valueType": "number"
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 0.022
-      }
-    },
-    {
-      "id": "tdr_msy",
-      "defType": "math/mul",
-      "position": {
-        "x": 1120,
-        "y": 354
-      },
-      "params": {
-        "b": 0.022
-      },
-      "parentId": "tdr_region",
-      "portValues": {
-        "b": 0.022
-      }
-    },
-    {
       "id": "tdr_tMask",
       "defType": "math/mul",
       "position": {
-        "x": 131,
-        "y": 488
+        "x": 144,
+        "y": 483
       },
       "params": {
         "b": 0.15,
@@ -357,8 +135,8 @@
       "id": "tdr_msyT",
       "defType": "math/add",
       "position": {
-        "x": 1394,
-        "y": 423
+        "x": 602,
+        "y": 452
       },
       "params": {
         "valueType": "number"
@@ -369,8 +147,8 @@
       "id": "tdr_nX",
       "defType": "noise/perlin",
       "position": {
-        "x": 1976,
-        "y": 45
+        "x": 886,
+        "y": 51
       },
       "params": {
         "seed": 7
@@ -384,8 +162,8 @@
       "id": "tdr_nY",
       "defType": "noise/perlin",
       "position": {
-        "x": 1976,
-        "y": 227
+        "x": 886,
+        "y": 233
       },
       "params": {
         "seed": 23
@@ -399,8 +177,8 @@
       "id": "tdr_mN",
       "defType": "noise/perlin",
       "position": {
-        "x": 1976,
-        "y": 409
+        "x": 886,
+        "y": 415
       },
       "params": {
         "seed": 99
@@ -414,7 +192,7 @@
       "id": "tdr_mask",
       "defType": "math/smoothstep",
       "position": {
-        "x": 2161,
+        "x": 1070,
         "y": 404
       },
       "params": {
@@ -431,7 +209,7 @@
       "id": "tdr_dxM",
       "defType": "math/map",
       "position": {
-        "x": 2182,
+        "x": 1091,
         "y": 40
       },
       "params": {
@@ -452,7 +230,7 @@
       "id": "tdr_dyM",
       "defType": "math/map",
       "position": {
-        "x": 2182,
+        "x": 1091,
         "y": 222
       },
       "params": {
@@ -470,69 +248,11 @@
       }
     },
     {
-      "id": "tdr_dxg",
-      "defType": "math/mul",
-      "position": {
-        "x": 2411,
-        "y": 172
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "tdr_region"
-    },
-    {
-      "id": "tdr_dyg",
-      "defType": "math/mul",
-      "position": {
-        "x": 2411,
-        "y": 294
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "tdr_region"
-    },
-    {
-      "id": "tdr_fx",
-      "defType": "math/add",
-      "position": {
-        "x": 2685,
-        "y": 89
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "tdr_region"
-    },
-    {
-      "id": "tdr_fy",
-      "defType": "math/add",
-      "position": {
-        "x": 2685,
-        "y": 224
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "tdr_region"
-    },
-    {
-      "id": "tdr_pos",
-      "defType": "vec2/make",
-      "position": {
-        "x": 2960,
-        "y": 136
-      },
-      "params": {},
-      "parentId": "tdr_region"
-    },
-    {
       "id": "tdr_hueM",
       "defType": "math/mul",
       "position": {
-        "x": 2411,
-        "y": 416
+        "x": 1304,
+        "y": 356
       },
       "params": {
         "b": 220,
@@ -547,8 +267,8 @@
       "id": "tdr_satM",
       "defType": "math/mul",
       "position": {
-        "x": 2411,
-        "y": 538
+        "x": 1304,
+        "y": 478
       },
       "params": {
         "b": 90,
@@ -563,8 +283,8 @@
       "id": "tdr_hsl",
       "defType": "color/color",
       "position": {
-        "x": 2694,
-        "y": 428
+        "x": 1580,
+        "y": 369
       },
       "params": {
         "mode": "hsl",
@@ -586,8 +306,8 @@
       "id": "tdr_fill",
       "defType": "style/fill",
       "position": {
-        "x": 2960,
-        "y": 390
+        "x": 1882,
+        "y": 335
       },
       "params": {},
       "parentId": "tdr_region"
@@ -596,8 +316,8 @@
       "id": "tdr_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 3145,
-        "y": 212
+        "x": 2109,
+        "y": 161
       },
       "params": {
         "font": "Menlo, Consolas, monospace",
@@ -619,8 +339,8 @@
       "id": "tdr_text",
       "defType": "draw/text",
       "position": {
-        "x": 3392,
-        "y": 94
+        "x": 2355,
+        "y": 49
       },
       "params": {
         "string": "?",
@@ -638,27 +358,134 @@
       "id": "tdr_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 4205,
-        "y": 409
+        "x": 2900,
+        "y": 70
       },
       "params": {
         "width": 560,
-        "height": 340
+        "height": 340,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.043137254901960784,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 560,
-        "height": 340
+        "height": 340,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.043137254901960784,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       }
+    },
+    {
+      "id": "tdr_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 15,
+        "y": 146
+      },
+      "params": {
+        "cols": 32,
+        "rows": 8,
+        "w": 372,
+        "h": 210
+      },
+      "portValues": {
+        "cols": 32,
+        "rows": 8,
+        "w": 372,
+        "h": 210
+      }
+    },
+    {
+      "id": "tdr_disp",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1346,
+        "y": 147
+      },
+      "params": {},
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_dispM",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 1613,
+        "y": 201
+      },
+      "params": {},
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_pos",
+      "defType": "math/add",
+      "position": {
+        "x": 1840,
+        "y": 87
+      },
+      "params": {
+        "valueType": "vec2"
+      },
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_gs",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 186,
+        "y": 117
+      },
+      "params": {
+        "s": 0.012
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "s": 0.012
+      }
+    },
+    {
+      "id": "tdr_gsxy",
+      "defType": "vec2/split",
+      "position": {
+        "x": 413,
+        "y": 129
+      },
+      "params": {},
+      "parentId": "tdr_region"
+    },
+    {
+      "id": "tdr_ms",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 186,
+        "y": 361
+      },
+      "params": {
+        "s": 0.022
+      },
+      "parentId": "tdr_region",
+      "portValues": {
+        "s": 0.022
+      }
+    },
+    {
+      "id": "tdr_msxy",
+      "defType": "vec2/split",
+      "position": {
+        "x": 413,
+        "y": 394
+      },
+      "params": {},
+      "parentId": "tdr_region"
     }
   ],
   "edges": [
-    {
-      "id": "e_542",
-      "source": "tdr_str",
-      "target": "tdr_split",
-      "sourceHandle": "out-text",
-      "targetHandle": "in-text"
-    },
     {
       "id": "e_543",
       "source": "tdr_split",
@@ -667,108 +494,10 @@
       "targetHandle": "in-ch"
     },
     {
-      "id": "e_544",
-      "source": "tdr_range",
-      "target": "tdr_region",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_545",
-      "source": "tdr_bg",
-      "target": "tdr_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
-    {
-      "id": "e_546",
-      "source": "tdr_region",
-      "target": "tdr_rowF",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_547",
-      "source": "tdr_rowF",
-      "target": "tdr_row",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_548",
-      "source": "tdr_row",
-      "target": "tdr_rowCol",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_549",
-      "source": "tdr_region",
-      "target": "tdr_col",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_550",
-      "source": "tdr_rowCol",
-      "target": "tdr_col",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_551",
-      "source": "tdr_col",
-      "target": "tdr_colCen",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_552",
-      "source": "tdr_colCen",
-      "target": "tdr_gx",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_553",
-      "source": "tdr_row",
-      "target": "tdr_rowCen",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_554",
-      "source": "tdr_rowCen",
-      "target": "tdr_gy",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_555",
-      "source": "tdr_gx",
-      "target": "tdr_gsx",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_556",
-      "source": "tdr_gy",
-      "target": "tdr_gsy",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_557",
       "source": "tdr_time",
       "target": "tdr_tDisp",
       "sourceHandle": "out-t",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_558",
-      "source": "tdr_gsy",
-      "target": "tdr_gsyT",
-      "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
@@ -779,31 +508,10 @@
       "targetHandle": "in-b"
     },
     {
-      "id": "e_560",
-      "source": "tdr_gx",
-      "target": "tdr_msx",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_561",
-      "source": "tdr_gy",
-      "target": "tdr_msy",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_562",
       "source": "tdr_time",
       "target": "tdr_tMask",
       "sourceHandle": "out-t",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_563",
-      "source": "tdr_msy",
-      "target": "tdr_msyT",
-      "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
@@ -814,13 +522,6 @@
       "targetHandle": "in-b"
     },
     {
-      "id": "e_565",
-      "source": "tdr_gsx",
-      "target": "tdr_nX",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
       "id": "e_566",
       "source": "tdr_gsyT",
       "target": "tdr_nX",
@@ -828,25 +529,11 @@
       "targetHandle": "in-y"
     },
     {
-      "id": "e_567",
-      "source": "tdr_gsx",
-      "target": "tdr_nY",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
       "id": "e_568",
       "source": "tdr_gsyT",
       "target": "tdr_nY",
       "sourceHandle": "out-result",
       "targetHandle": "in-y"
-    },
-    {
-      "id": "e_569",
-      "source": "tdr_msx",
-      "target": "tdr_mN",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
     },
     {
       "id": "e_570",
@@ -875,83 +562,6 @@
       "target": "tdr_dyM",
       "sourceHandle": "out-noise",
       "targetHandle": "in-x"
-    },
-    {
-      "id": "e_574",
-      "source": "tdr_dxM",
-      "target": "tdr_dxg",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_575",
-      "source": "tdr_mask",
-      "target": "tdr_dxg",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_576",
-      "source": "tdr_dyM",
-      "target": "tdr_dyg",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_577",
-      "source": "tdr_mask",
-      "target": "tdr_dyg",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_578",
-      "source": "tdr_gx",
-      "target": "tdr_fx",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_579",
-      "source": "tdr_dxg",
-      "target": "tdr_fx",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_580",
-      "source": "tdr_gy",
-      "target": "tdr_fy",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_581",
-      "source": "tdr_dyg",
-      "target": "tdr_fy",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_582",
-      "source": "tdr_fx",
-      "target": "tdr_pos",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_583",
-      "source": "tdr_fy",
-      "target": "tdr_pos",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_584",
-      "source": "tdr_pos",
-      "target": "tdr_text",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     },
     {
       "id": "e_585",
@@ -1022,6 +632,125 @@
       "target": "tdr_renderer",
       "sourceHandle": "out-layer",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_tdr_grid_tdr_region_p",
+      "source": "tdr_grid",
+      "target": "tdr_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_tdr_dxM_tdr_disp_x",
+      "source": "tdr_dxM",
+      "target": "tdr_disp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_tdr_dyM_tdr_disp_y",
+      "source": "tdr_dyM",
+      "target": "tdr_disp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_tdr_disp_tdr_dispM_v",
+      "source": "tdr_disp",
+      "target": "tdr_dispM",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_tdr_mask_tdr_dispM_s",
+      "source": "tdr_mask",
+      "target": "tdr_dispM",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_tdr_region_tdr_pos_a",
+      "source": "tdr_region",
+      "target": "tdr_pos",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_tdr_dispM_tdr_pos_b",
+      "source": "tdr_dispM",
+      "target": "tdr_pos",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_tdr_pos_tdr_text_pos",
+      "source": "tdr_pos",
+      "target": "tdr_text",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_tdr_region_tdr_gs_v",
+      "source": "tdr_region",
+      "target": "tdr_gs",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_tdr_gs_tdr_gsxy_v",
+      "source": "tdr_gs",
+      "target": "tdr_gsxy",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_tdr_region_tdr_ms_v",
+      "source": "tdr_region",
+      "target": "tdr_ms",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_tdr_ms_tdr_msxy_v",
+      "source": "tdr_ms",
+      "target": "tdr_msxy",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_tdr_gsxy_tdr_nX_x",
+      "source": "tdr_gsxy",
+      "target": "tdr_nX",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_tdr_gsxy_tdr_nY_x",
+      "source": "tdr_gsxy",
+      "target": "tdr_nY",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_tdr_gsxy_tdr_gsyT_a",
+      "source": "tdr_gsxy",
+      "target": "tdr_gsyT",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_tdr_msxy_tdr_mN_x",
+      "source": "tdr_msxy",
+      "target": "tdr_mN",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_tdr_msxy_tdr_msyT_a",
+      "source": "tdr_msxy",
+      "target": "tdr_msyT",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
     }
   ]
 }

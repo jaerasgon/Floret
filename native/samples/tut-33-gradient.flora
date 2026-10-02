@@ -82,7 +82,7 @@
       "id": "t33_fill",
       "defType": "style/fill",
       "position": {
-        "x": 644,
+        "x": 635,
         "y": 141
       },
       "params": {}
@@ -91,28 +91,32 @@
       "id": "t33_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 835,
-        "y": 40
+        "x": 815,
+        "y": 61
       },
       "params": {
-        "x": -150,
-        "y": -150,
         "w": 300,
-        "h": 300
+        "h": 300,
+        "pos": {
+          "x": -150,
+          "y": -150
+        }
       },
       "portValues": {
-        "x": -150,
-        "y": -150,
         "w": 300,
-        "h": 300
+        "h": 300,
+        "pos": {
+          "x": -150,
+          "y": -150
+        }
       }
     },
     {
       "id": "t33_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1027,
-        "y": 40
+        "x": 1053,
+        "y": 61
       },
       "params": {
         "width": 400,
@@ -121,22 +125,6 @@
       "portValues": {
         "width": 400,
         "height": 400
-      }
-    },
-    {
-      "id": "t33_rect-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 635,
-        "y": 19
-      },
-      "params": {
-        "x": -150,
-        "y": -150
-      },
-      "portValues": {
-        "x": -150,
-        "y": -150
       }
     }
   ],
@@ -182,13 +170,6 @@
       "target": "t33_renderer",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_xy_t33_rect-xy0",
-      "source": "t33_rect-xy0",
-      "target": "t33_rect",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

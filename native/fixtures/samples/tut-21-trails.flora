@@ -1,0 +1,218 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "21 · Trails (Write*/Read*)",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t21_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -304
+      },
+      "params": {
+        "text": "Trails: state + spread\n\nThe Write* / Read* pair stash a SPREAD between frames. Read* emits last frame's spread; we append today's mouse vec2 to it (Stack), then Write* keeps the new spread for tomorrow.\n\nDraw the buffer as a Path → the line trails the cursor.",
+        "width": 420,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Trails: state + spread\n\nThe Write* / Read* pair stash a SPREAD between frames. Read* emits last frame's spread; we append today's mouse vec2 to it (Stack), then Write* keeps the new spread for tomorrow.\n\nDraw the buffer as a Path → the line trails the cursor.",
+        "width": 420,
+        "height": 240
+      }
+    },
+    {
+      "id": "t21_m",
+      "defType": "input/mouse",
+      "position": {
+        "x": 0,
+        "y": 122
+      },
+      "params": {}
+    },
+    {
+      "id": "t21_mkVec",
+      "defType": "vec2/make",
+      "position": {
+        "x": 210,
+        "y": 122
+      },
+      "params": {}
+    },
+    {
+      "id": "t21_read",
+      "defType": "state/read-spread",
+      "position": {
+        "x": 180,
+        "y": 0
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "t21_stack",
+      "defType": "spread/stack",
+      "position": {
+        "x": 427,
+        "y": 51
+      },
+      "params": {}
+    },
+    {
+      "id": "t21_take",
+      "defType": "spread/slice",
+      "position": {
+        "x": 652,
+        "y": 51
+      },
+      "params": {
+        "start": -80,
+        "end": 0
+      },
+      "portValues": {
+        "start": -80,
+        "end": 0
+      }
+    },
+    {
+      "id": "t21_write",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 885,
+        "y": 4
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "t21_col",
+      "defType": "color/color",
+      "position": {
+        "x": 628,
+        "y": 193
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 240,
+        "g": 90,
+        "b": 180,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 240,
+        "g": 90,
+        "b": 180,
+        "a": 255
+      }
+    },
+    {
+      "id": "t21_path",
+      "defType": "draw/path",
+      "position": {
+        "x": 888,
+        "y": 126
+      },
+      "params": {
+        "strokeWidth": 3
+      },
+      "portValues": {
+        "strokeWidth": 3
+      }
+    },
+    {
+      "id": "t21_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1080,
+        "y": 126
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_139",
+      "source": "t21_m",
+      "target": "t21_mkVec",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_140",
+      "source": "t21_m",
+      "target": "t21_mkVec",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_141",
+      "source": "t21_read",
+      "target": "t21_stack",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_142",
+      "source": "t21_mkVec",
+      "target": "t21_stack",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_143",
+      "source": "t21_stack",
+      "target": "t21_take",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_144",
+      "source": "t21_take",
+      "target": "t21_write",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_145",
+      "source": "t21_take",
+      "target": "t21_path",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_146",
+      "source": "t21_col",
+      "target": "t21_path",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_147",
+      "source": "t21_path",
+      "target": "t21_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

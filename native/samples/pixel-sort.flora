@@ -139,72 +139,52 @@
       "id": "ps_draw",
       "defType": "draw/image",
       "position": {
-        "x": 1425,
-        "y": 162
+        "x": 1411,
+        "y": 71
       },
       "params": {
-        "x": -250,
-        "y": -250,
         "w": 500,
-        "h": 500
+        "h": 500,
+        "pos": {
+          "x": -250,
+          "y": -250
+        }
       },
       "portValues": {
-        "x": -250,
-        "y": -250,
         "w": 500,
-        "h": 500
-      }
-    },
-    {
-      "id": "ps_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 1431,
-        "y": 364
-      },
-      "params": {
-        "r": 12,
-        "g": 10,
-        "b": 16,
-        "a": 255
-      },
-      "portValues": {
-        "r": 12,
-        "g": 10,
-        "b": 16,
-        "a": 255
+        "h": 500,
+        "pos": {
+          "x": -250,
+          "y": -250
+        }
       }
     },
     {
       "id": "ps_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1631,
-        "y": 253
+        "x": 1611,
+        "y": 71
       },
       "params": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.0392156862745098,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 500,
-        "height": 500
-      }
-    },
-    {
-      "id": "ps_draw-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 1191,
-        "y": 273
-      },
-      "params": {
-        "x": -250,
-        "y": -250
-      },
-      "portValues": {
-        "x": -250,
-        "y": -250
+        "height": 500,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.0392156862745098,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       }
     }
   ],
@@ -278,20 +258,6 @@
       "target": "ps_renderer",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_1546",
-      "source": "ps_bg",
-      "target": "ps_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
-    {
-      "id": "e_xy_ps_draw-xy0",
-      "source": "ps_draw-xy0",
-      "target": "ps_draw",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

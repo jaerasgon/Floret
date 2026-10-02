@@ -31,7 +31,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 184
+        "y": 125
       },
       "params": {
         "count": 30
@@ -44,8 +44,8 @@
       "id": "t41_shuf",
       "defType": "spread/randomize",
       "position": {
-        "x": 210,
-        "y": 184
+        "x": 216,
+        "y": 165
       },
       "params": {
         "seed": 7
@@ -58,8 +58,8 @@
       "id": "t41_sort",
       "defType": "spread/sort",
       "position": {
-        "x": 444,
-        "y": 184
+        "x": 455,
+        "y": 205
       },
       "params": {}
     },
@@ -67,12 +67,12 @@
       "id": "t41_region",
       "defType": "region/foreach",
       "position": {
-        "x": 653,
+        "x": 670,
         "y": 22
       },
       "params": {
-        "width": 1052,
-        "height": 276,
+        "width": 794,
+        "height": 336,
         "label": "ForEach"
       },
       "ports": [
@@ -81,78 +81,32 @@
           "name": "v",
           "type": "number",
           "direction": "input",
-          "y": 198
+          "y": 258
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 82
+          "y": 80
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 127
+          "y": 169
         }
       ],
-      "width": 1052,
-      "height": 276
-    },
-    {
-      "id": "t41_idx",
-      "defType": "spread/range",
-      "position": {
-        "x": 443,
-        "y": 68
-      },
-      "params": {
-        "count": 30
-      },
-      "portValues": {
-        "count": 30
-      }
-    },
-    {
-      "id": "t41_xMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 128,
-        "y": 40
-      },
-      "params": {
-        "b": 12,
-        "valueType": "number"
-      },
-      "parentId": "t41_region",
-      "portValues": {
-        "b": 12
-      }
-    },
-    {
-      "id": "t41_xOff",
-      "defType": "math/add",
-      "position": {
-        "x": 395,
-        "y": 56
-      },
-      "params": {
-        "b": -180,
-        "valueType": "number"
-      },
-      "parentId": "t41_region",
-      "portValues": {
-        "b": -180
-      }
+      "width": 794,
+      "height": 336
     },
     {
       "id": "t41_hMul",
       "defType": "math/mul",
       "position": {
         "x": 128,
-        "y": 162
+        "y": 222
       },
       "params": {
         "b": -8,
@@ -167,8 +121,8 @@
       "id": "t41_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 844,
-        "y": 91
+        "x": 586,
+        "y": 133
       },
       "params": {
         "y": 100,
@@ -184,8 +138,8 @@
       "id": "t41_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1801,
-        "y": 113
+        "x": 1560,
+        "y": 155
       },
       "params": {
         "width": 400,
@@ -200,8 +154,8 @@
       "id": "t41_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 661,
-        "y": 73
+        "x": 399,
+        "y": 86
       },
       "params": {
         "x": 0,
@@ -211,6 +165,27 @@
       "portValues": {
         "x": 0,
         "y": 100
+      }
+    },
+    {
+      "id": "t41_x",
+      "defType": "math/map",
+      "position": {
+        "x": 169,
+        "y": 40
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 29,
+        "outMin": -180,
+        "outMax": 168
+      },
+      "parentId": "t41_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 29,
+        "outMin": -180,
+        "outMax": 168
       }
     }
   ],
@@ -238,31 +213,10 @@
     },
     {
       "id": "e_317",
-      "source": "t41_idx",
+      "source": "t41_range",
       "target": "t41_region",
       "sourceHandle": "out-indices",
       "targetHandle": "in-i"
-    },
-    {
-      "id": "e_318",
-      "source": "t41_region",
-      "target": "t41_xMul",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_319",
-      "source": "t41_xMul",
-      "target": "t41_xOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_320",
-      "source": "t41_xOff",
-      "target": "t41_rect-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
     },
     {
       "id": "e_321",
@@ -298,6 +252,20 @@
       "target": "t41_rect",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_t41_region_t41_x_x",
+      "source": "t41_region",
+      "target": "t41_x",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_t41_x_t41_rect-xy0_x",
+      "source": "t41_x",
+      "target": "t41_rect-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
     }
   ]
 }

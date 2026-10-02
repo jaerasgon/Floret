@@ -1,0 +1,596 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Tone Surface",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ts_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 28,
+        "y": 203
+      },
+      "params": {}
+    },
+    {
+      "id": "ts_freqMap",
+      "defType": "math/map",
+      "position": {
+        "x": 1273,
+        "y": 0
+      },
+      "params": {
+        "inMin": -250,
+        "inMax": 250,
+        "outMin": 110,
+        "outMax": 880
+      },
+      "portValues": {
+        "inMin": -250,
+        "inMax": 250,
+        "outMin": 110,
+        "outMax": 880
+      }
+    },
+    {
+      "id": "ts_ampMap",
+      "defType": "math/map",
+      "position": {
+        "x": 1274,
+        "y": 182
+      },
+      "params": {
+        "inMin": -250,
+        "inMax": 250,
+        "outMin": 0.4,
+        "outMax": 0
+      },
+      "portValues": {
+        "inMin": -250,
+        "inMax": 250,
+        "outMin": 0.4,
+        "outMax": 0
+      }
+    },
+    {
+      "id": "ts_osc",
+      "defType": "sound/oscillator",
+      "position": {
+        "x": 2473,
+        "y": 61
+      },
+      "params": {
+        "type": "sine"
+      },
+      "portValues": {
+        "type": "sine"
+      }
+    },
+    {
+      "id": "ts_out",
+      "defType": "sound/output",
+      "position": {
+        "x": 2747,
+        "y": 61
+      },
+      "params": {}
+    },
+    {
+      "id": "ts_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 12,
+        "y": 345
+      },
+      "params": {
+        "cols": 20,
+        "rows": 20,
+        "w": 480,
+        "h": 480
+      },
+      "portValues": {
+        "cols": 20,
+        "rows": 20,
+        "w": 480,
+        "h": 480
+      }
+    },
+    {
+      "id": "ts_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 284,
+        "y": 386
+      },
+      "params": {
+        "width": 2060,
+        "height": 346,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 141
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 78
+        }
+      ],
+      "width": 2060,
+      "height": 346
+    },
+    {
+      "id": "ts_split",
+      "defType": "vec2/split",
+      "position": {
+        "x": 128,
+        "y": 105
+      },
+      "params": {},
+      "parentId": "ts_region"
+    },
+    {
+      "id": "ts_xOff",
+      "defType": "math/add",
+      "position": {
+        "x": 316,
+        "y": 54
+      },
+      "params": {
+        "b": 10,
+        "valueType": "number"
+      },
+      "parentId": "ts_region",
+      "portValues": {
+        "b": 10
+      }
+    },
+    {
+      "id": "ts_yOff",
+      "defType": "math/add",
+      "position": {
+        "x": 316,
+        "y": 176
+      },
+      "params": {
+        "b": 10,
+        "valueType": "number"
+      },
+      "parentId": "ts_region",
+      "portValues": {
+        "b": 10
+      }
+    },
+    {
+      "id": "ts_dist",
+      "defType": "math/dist",
+      "position": {
+        "x": 602,
+        "y": 166
+      },
+      "params": {},
+      "parentId": "ts_region"
+    },
+    {
+      "id": "ts_distScaled",
+      "defType": "math/mul",
+      "position": {
+        "x": 786,
+        "y": 110
+      },
+      "params": {
+        "b": 0.4,
+        "valueType": "number"
+      },
+      "parentId": "ts_region",
+      "portValues": {
+        "b": 0.4
+      }
+    },
+    {
+      "id": "ts_hueBase",
+      "defType": "value/number",
+      "position": {
+        "x": 0,
+        "y": 527
+      },
+      "params": {
+        "value": 220
+      },
+      "portValues": {
+        "value": 220
+      }
+    },
+    {
+      "id": "ts_hue",
+      "defType": "math/sub",
+      "position": {
+        "x": 1051,
+        "y": 95
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "ts_region"
+    },
+    {
+      "id": "ts_lScaled",
+      "defType": "math/mul",
+      "position": {
+        "x": 786,
+        "y": 232
+      },
+      "params": {
+        "b": 0.07,
+        "valueType": "number"
+      },
+      "parentId": "ts_region",
+      "portValues": {
+        "b": 0.07
+      }
+    },
+    {
+      "id": "ts_lBase",
+      "defType": "value/number",
+      "position": {
+        "x": 0,
+        "y": 629
+      },
+      "params": {
+        "value": 80
+      },
+      "portValues": {
+        "value": 80
+      }
+    },
+    {
+      "id": "ts_lit",
+      "defType": "math/sub",
+      "position": {
+        "x": 1051,
+        "y": 217
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "ts_region"
+    },
+    {
+      "id": "ts_lClamp",
+      "defType": "math/clamp",
+      "position": {
+        "x": 1319,
+        "y": 189
+      },
+      "params": {
+        "min": 10,
+        "max": 80
+      },
+      "parentId": "ts_region",
+      "portValues": {
+        "min": 10,
+        "max": 80
+      }
+    },
+    {
+      "id": "ts_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 1491,
+        "y": 122
+      },
+      "params": {
+        "s": 75,
+        "a": 255
+      },
+      "parentId": "ts_region",
+      "portValues": {
+        "s": 75,
+        "a": 255
+      }
+    },
+    {
+      "id": "ts_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1672,
+        "y": 121
+      },
+      "params": {
+        "mode": "color"
+      },
+      "parentId": "ts_region",
+      "portValues": {
+        "mode": "color"
+      }
+    },
+    {
+      "id": "ts_dotSize",
+      "defType": "value/number",
+      "position": {
+        "x": 0,
+        "y": 731
+      },
+      "params": {
+        "value": 6
+      },
+      "portValues": {
+        "value": 6
+      }
+    },
+    {
+      "id": "ts_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1852,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "ts_region"
+    },
+    {
+      "id": "ts_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2452,
+        "y": 428
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "ts_dot-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 596,
+        "y": 44
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "ts_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1547",
+      "source": "ts_mouse",
+      "target": "ts_freqMap",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1548",
+      "source": "ts_mouse",
+      "target": "ts_ampMap",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1549",
+      "source": "ts_freqMap",
+      "target": "ts_osc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_1550",
+      "source": "ts_ampMap",
+      "target": "ts_osc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-amp"
+    },
+    {
+      "id": "e_1551",
+      "source": "ts_osc",
+      "target": "ts_out",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_1552",
+      "source": "ts_grid",
+      "target": "ts_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_1553",
+      "source": "ts_region",
+      "target": "ts_split",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_1554",
+      "source": "ts_split",
+      "target": "ts_xOff",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1555",
+      "source": "ts_split",
+      "target": "ts_yOff",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1556",
+      "source": "ts_xOff",
+      "target": "ts_dist",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x1"
+    },
+    {
+      "id": "e_1557",
+      "source": "ts_yOff",
+      "target": "ts_dist",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y1"
+    },
+    {
+      "id": "e_1558",
+      "source": "ts_mouse",
+      "target": "ts_dist",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x2"
+    },
+    {
+      "id": "e_1559",
+      "source": "ts_mouse",
+      "target": "ts_dist",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y2"
+    },
+    {
+      "id": "e_1560",
+      "source": "ts_dist",
+      "target": "ts_distScaled",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1561",
+      "source": "ts_hueBase",
+      "target": "ts_hue",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1562",
+      "source": "ts_distScaled",
+      "target": "ts_hue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1563",
+      "source": "ts_hue",
+      "target": "ts_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1564",
+      "source": "ts_dist",
+      "target": "ts_lScaled",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1565",
+      "source": "ts_lBase",
+      "target": "ts_lit",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_1566",
+      "source": "ts_lScaled",
+      "target": "ts_lit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_1567",
+      "source": "ts_lit",
+      "target": "ts_lClamp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1568",
+      "source": "ts_lClamp",
+      "target": "ts_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_1569",
+      "source": "ts_hsl",
+      "target": "ts_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_1570",
+      "source": "ts_xOff",
+      "target": "ts_dot-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_1571",
+      "source": "ts_yOff",
+      "target": "ts_dot-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_1572",
+      "source": "ts_dotSize",
+      "target": "ts_dot",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_1573",
+      "source": "ts_dotSize",
+      "target": "ts_dot",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1574",
+      "source": "ts_fill",
+      "target": "ts_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1575",
+      "source": "ts_dot",
+      "target": "ts_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_1576",
+      "source": "ts_region",
+      "target": "ts_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_ts_dot-xy0",
+      "source": "ts_dot-xy0",
+      "target": "ts_dot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

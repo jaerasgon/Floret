@@ -1,0 +1,342 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Curl Flow",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "cf_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2219,
+        "y": 62
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "cf_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 0,
+        "y": 66
+      },
+      "params": {
+        "cols": 26,
+        "rows": 26,
+        "w": 460,
+        "h": 460,
+        "center": {
+          "x": 250,
+          "y": 250
+        }
+      },
+      "portValues": {
+        "cols": 26,
+        "rows": 26,
+        "w": 460,
+        "h": 460,
+        "center": {
+          "x": 250,
+          "y": 250
+        }
+      }
+    },
+    {
+      "id": "cf_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 212,
+        "y": 22
+      },
+      "params": {
+        "width": 1911,
+        "height": 331,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "pos",
+          "name": "pos",
+          "type": "vec2",
+          "direction": "input",
+          "y": 80
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 76
+        }
+      ],
+      "width": 1911,
+      "height": 331
+    },
+    {
+      "id": "cf_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 131,
+        "y": 136
+      },
+      "params": {},
+      "parentId": "cf_region"
+    },
+    {
+      "id": "cf_driftMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 311,
+        "y": 136
+      },
+      "params": {
+        "slotCount": 2,
+        "b": 18,
+        "valueType": "number"
+      },
+      "parentId": "cf_region",
+      "portValues": {
+        "slotCount": 2,
+        "b": 18
+      }
+    },
+    {
+      "id": "cf_drift",
+      "defType": "vec2/make",
+      "position": {
+        "x": 576,
+        "y": 137
+      },
+      "params": {},
+      "parentId": "cf_region"
+    },
+    {
+      "id": "cf_sampleP",
+      "defType": "math/add",
+      "position": {
+        "x": 759,
+        "y": 92
+      },
+      "params": {
+        "slotCount": 2,
+        "valueType": "vec2"
+      },
+      "parentId": "cf_region",
+      "portValues": {
+        "slotCount": 2,
+        "valueType": "vec2"
+      }
+    },
+    {
+      "id": "cf_curl",
+      "defType": "noise/curl",
+      "position": {
+        "x": 1024,
+        "y": 91
+      },
+      "params": {
+        "scale": 0.012,
+        "seed": 7,
+        "octaves": 2,
+        "falloff": 0.5
+      },
+      "parentId": "cf_region",
+      "portValues": {
+        "scale": 0.012,
+        "seed": 7,
+        "octaves": 2,
+        "falloff": 0.5
+      }
+    },
+    {
+      "id": "cf_flowScale",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 1230,
+        "y": 90
+      },
+      "params": {
+        "s": 16
+      },
+      "parentId": "cf_region",
+      "portValues": {
+        "s": 16
+      }
+    },
+    {
+      "id": "cf_endP",
+      "defType": "math/add",
+      "position": {
+        "x": 1436,
+        "y": 55
+      },
+      "params": {
+        "slotCount": 2,
+        "valueType": "vec2"
+      },
+      "parentId": "cf_region",
+      "portValues": {
+        "slotCount": 2,
+        "valueType": "vec2"
+      }
+    },
+    {
+      "id": "cf_col",
+      "defType": "color/hex",
+      "position": {
+        "x": 1210,
+        "y": 212
+      },
+      "params": {
+        "hex": "#38e0d0"
+      },
+      "parentId": "cf_region",
+      "portValues": {
+        "hex": "#38e0d0"
+      }
+    },
+    {
+      "id": "cf_stroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 1477,
+        "y": 177
+      },
+      "params": {
+        "width": 2
+      },
+      "parentId": "cf_region",
+      "portValues": {
+        "width": 2
+      }
+    },
+    {
+      "id": "cf_line",
+      "defType": "draw/line",
+      "position": {
+        "x": 1715,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "cf_region"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_925",
+      "source": "cf_grid",
+      "target": "cf_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_926",
+      "source": "cf_time",
+      "target": "cf_driftMul",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_927",
+      "source": "cf_driftMul",
+      "target": "cf_drift",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_928",
+      "source": "cf_region",
+      "target": "cf_sampleP",
+      "sourceHandle": "out-pos",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_929",
+      "source": "cf_drift",
+      "target": "cf_sampleP",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_930",
+      "source": "cf_sampleP",
+      "target": "cf_curl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_931",
+      "source": "cf_curl",
+      "target": "cf_flowScale",
+      "sourceHandle": "out-flow",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_932",
+      "source": "cf_region",
+      "target": "cf_endP",
+      "sourceHandle": "out-pos",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_933",
+      "source": "cf_flowScale",
+      "target": "cf_endP",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_934",
+      "source": "cf_region",
+      "target": "cf_line",
+      "sourceHandle": "out-pos",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_935",
+      "source": "cf_endP",
+      "target": "cf_line",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_936",
+      "source": "cf_col",
+      "target": "cf_stroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_937",
+      "source": "cf_stroke",
+      "target": "cf_line",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_938",
+      "source": "cf_line",
+      "target": "cf_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_939",
+      "source": "cf_region",
+      "target": "cf_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

@@ -13,7 +13,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 9,
-        "y": 309
+        "y": 282
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "at_G",
       "defType": "io/slider",
       "position": {
-        "x": 1024,
-        "y": 156
+        "x": 1201,
+        "y": 171
       },
       "params": {
         "value": 800,
@@ -39,8 +39,8 @@
       "id": "at_damp",
       "defType": "io/slider",
       "position": {
-        "x": 1764,
-        "y": 170
+        "x": 1941,
+        "y": 223
       },
       "params": {
         "value": 0.985,
@@ -58,7 +58,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 0,
-        "y": 126
+        "y": 160
       },
       "params": {
         "x": -200,
@@ -73,7 +73,7 @@
       "id": "at_initVel",
       "defType": "vec2/make",
       "position": {
-        "x": 1340,
+        "x": 1515,
         "y": 0
       },
       "params": {
@@ -89,8 +89,8 @@
       "id": "at_pos",
       "defType": "state/value",
       "position": {
-        "x": 206,
-        "y": 126
+        "x": 197,
+        "y": 160
       },
       "params": {}
     },
@@ -98,8 +98,8 @@
       "id": "at_vel",
       "defType": "state/value",
       "position": {
-        "x": 1572,
-        "y": 17
+        "x": 1745,
+        "y": 10
       },
       "params": {}
     },
@@ -107,8 +107,8 @@
       "id": "at_mv",
       "defType": "vec2/make",
       "position": {
-        "x": 207,
-        "y": 248
+        "x": 198,
+        "y": 282
       },
       "params": {}
     },
@@ -116,8 +116,8 @@
       "id": "at_diff",
       "defType": "vec2/sub",
       "position": {
-        "x": 445,
-        "y": 158
+        "x": 430,
+        "y": 154
       },
       "params": {}
     },
@@ -125,8 +125,8 @@
       "id": "at_dist",
       "defType": "vec2/mag",
       "position": {
-        "x": 638,
-        "y": 199
+        "x": 670,
+        "y": 202
       },
       "params": {}
     },
@@ -134,8 +134,8 @@
       "id": "at_distSq",
       "defType": "math/sq",
       "position": {
-        "x": 837,
-        "y": 241
+        "x": 963,
+        "y": 249
       },
       "params": {}
     },
@@ -143,8 +143,8 @@
       "id": "at_distClamp",
       "defType": "math/clamp",
       "position": {
-        "x": 1070,
-        "y": 282
+        "x": 1247,
+        "y": 297
       },
       "params": {
         "min": 100,
@@ -159,7 +159,7 @@
       "id": "at_F",
       "defType": "math/div",
       "position": {
-        "x": 1298,
+        "x": 1473,
         "y": 224
       },
       "params": {
@@ -170,7 +170,7 @@
       "id": "at_dir",
       "defType": "vec2/normalize",
       "position": {
-        "x": 1335,
+        "x": 1510,
         "y": 122
       },
       "params": {}
@@ -179,8 +179,8 @@
       "id": "at_acc",
       "defType": "vec2/scale",
       "position": {
-        "x": 1573,
-        "y": 139
+        "x": 1746,
+        "y": 149
       },
       "params": {}
     },
@@ -188,8 +188,8 @@
       "id": "at_velAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 1806,
-        "y": 48
+        "x": 1983,
+        "y": 101
       },
       "params": {}
     },
@@ -197,8 +197,8 @@
       "id": "at_velDamp",
       "defType": "vec2/scale",
       "position": {
-        "x": 2039,
-        "y": 81
+        "x": 2216,
+        "y": 136
       },
       "params": {}
     },
@@ -206,8 +206,8 @@
       "id": "at_posAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 2225,
-        "y": 20
+        "x": 2401,
+        "y": 79
       },
       "params": {}
     },
@@ -215,8 +215,8 @@
       "id": "at_fill",
       "defType": "style/fill",
       "position": {
-        "x": 638,
-        "y": 574
+        "x": 198,
+        "y": 538
       },
       "params": {
         "mode": "rgb",
@@ -234,20 +234,11 @@
       }
     },
     {
-      "id": "at_psDraw",
-      "defType": "vec2/split",
-      "position": {
-        "x": 445,
-        "y": 462
-      },
-      "params": {}
-    },
-    {
       "id": "at_ball",
       "defType": "draw/ellipse",
       "position": {
-        "x": 825,
-        "y": 463
+        "x": 424,
+        "y": 458
       },
       "params": {
         "w": 28,
@@ -262,8 +253,8 @@
       "id": "at_mFill",
       "defType": "style/fill",
       "position": {
-        "x": 207,
-        "y": 492
+        "x": 198,
+        "y": 404
       },
       "params": {
         "mode": "rgb",
@@ -284,8 +275,8 @@
       "id": "at_mMark",
       "defType": "draw/ellipse",
       "position": {
-        "x": 439,
-        "y": 280
+        "x": 424,
+        "y": 276
       },
       "params": {
         "w": 16,
@@ -300,93 +291,46 @@
       "id": "at_grp",
       "defType": "transform/group",
       "position": {
-        "x": 1024,
-        "y": 424
+        "x": 628,
+        "y": 357
       },
       "params": {
         "slotCount": 2
       },
       "portValues": {
         "slotCount": 2
-      }
-    },
-    {
-      "id": "at_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 1066,
-        "y": 546
-      },
-      "params": {
-        "r": 8,
-        "g": 8,
-        "b": 16,
-        "a": 255
-      },
-      "portValues": {
-        "r": 8,
-        "g": 8,
-        "b": 16,
-        "a": 255
       }
     },
     {
       "id": "at_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1306,
-        "y": 475
+        "x": 899,
+        "y": 357
       },
       "params": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.03137254901960784,
+          "g": 0.03137254901960784,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 500,
-        "height": 500
-      }
-    },
-    {
-      "id": "at_ball-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 638,
-        "y": 452
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
-      }
-    },
-    {
-      "id": "at_mMark-xy1",
-      "defType": "vec2/make",
-      "position": {
-        "x": 207,
-        "y": 370
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
+        "height": 500,
+        "background": {
+          "r": 0.03137254901960784,
+          "g": 0.03137254901960784,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       }
     }
   ],
   "edges": [
-    {
-      "id": "e_1162",
-      "source": "at_bg",
-      "target": "at_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
     {
       "id": "e_1163",
       "source": "at_initPos",
@@ -542,46 +486,11 @@
       "targetHandle": "in-next"
     },
     {
-      "id": "e_1185",
-      "source": "at_pos",
-      "target": "at_psDraw",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_1186",
-      "source": "at_psDraw",
-      "target": "at_ball-xy0",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1187",
-      "source": "at_psDraw",
-      "target": "at_ball-xy0",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
       "id": "e_1188",
       "source": "at_fill",
       "target": "at_ball",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_1189",
-      "source": "at_mouse",
-      "target": "at_mMark-xy1",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1190",
-      "source": "at_mouse",
-      "target": "at_mMark-xy1",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
     },
     {
       "id": "e_1191",
@@ -613,14 +522,14 @@
     },
     {
       "id": "e_xy_at_ball-xy0",
-      "source": "at_ball-xy0",
+      "source": "at_pos",
       "target": "at_ball",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-current",
       "targetHandle": "in-pos"
     },
     {
       "id": "e_xy_at_mMark-xy1",
-      "source": "at_mMark-xy1",
+      "source": "at_mv",
       "target": "at_mMark",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"

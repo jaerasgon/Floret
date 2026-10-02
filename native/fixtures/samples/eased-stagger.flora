@@ -1,0 +1,418 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Eased Stagger",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "es_count",
+      "defType": "value/number",
+      "position": {
+        "x": 0,
+        "y": 196
+      },
+      "params": {
+        "value": 28
+      },
+      "portValues": {
+        "value": 28
+      }
+    },
+    {
+      "id": "es_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 251,
+        "y": 196
+      },
+      "params": {}
+    },
+    {
+      "id": "es_delayV",
+      "defType": "value/number",
+      "position": {
+        "x": 236,
+        "y": 0
+      },
+      "params": {
+        "value": 0.11
+      },
+      "portValues": {
+        "value": 0.11
+      }
+    },
+    {
+      "id": "es_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 472,
+        "y": 24
+      },
+      "params": {
+        "width": 2058,
+        "height": 438,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "n",
+          "name": "n",
+          "type": "number",
+          "direction": "input",
+          "y": 208
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 176
+        }
+      ],
+      "width": 2058,
+      "height": 438
+    },
+    {
+      "id": "es_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 189,
+        "y": 169
+      },
+      "params": {},
+      "parentId": "es_region"
+    },
+    {
+      "id": "es_tmul",
+      "defType": "math/mul",
+      "position": {
+        "x": 411,
+        "y": 172
+      },
+      "params": {
+        "b": 0.45,
+        "valueType": "number"
+      },
+      "parentId": "es_region",
+      "portValues": {
+        "b": 0.45
+      }
+    },
+    {
+      "id": "es_saw",
+      "defType": "math/fract",
+      "position": {
+        "x": 675,
+        "y": 175
+      },
+      "params": {},
+      "parentId": "es_region"
+    },
+    {
+      "id": "es_eased",
+      "defType": "motion/ease",
+      "position": {
+        "x": 844,
+        "y": 158
+      },
+      "params": {
+        "curve": "inOutCubic"
+      },
+      "parentId": "es_region",
+      "portValues": {
+        "curve": "inOutCubic"
+      }
+    },
+    {
+      "id": "es_yMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 1126,
+        "y": 160
+      },
+      "params": {
+        "b": 170,
+        "valueType": "number"
+      },
+      "parentId": "es_region",
+      "portValues": {
+        "b": 170
+      }
+    },
+    {
+      "id": "es_yOff",
+      "defType": "math/add",
+      "position": {
+        "x": 1390,
+        "y": 162
+      },
+      "params": {
+        "b": -85,
+        "valueType": "number"
+      },
+      "parentId": "es_region",
+      "portValues": {
+        "b": -85
+      }
+    },
+    {
+      "id": "es_xMul",
+      "defType": "math/mul",
+      "position": {
+        "x": 147,
+        "y": 47
+      },
+      "params": {
+        "b": 470,
+        "valueType": "number"
+      },
+      "parentId": "es_region",
+      "portValues": {
+        "b": 470
+      }
+    },
+    {
+      "id": "es_xOff",
+      "defType": "math/add",
+      "position": {
+        "x": 1390,
+        "y": 40
+      },
+      "params": {
+        "b": -235,
+        "valueType": "number"
+      },
+      "parentId": "es_region",
+      "portValues": {
+        "b": -235
+      }
+    },
+    {
+      "id": "es_pos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1665,
+        "y": 108
+      },
+      "params": {},
+      "parentId": "es_region"
+    },
+    {
+      "id": "es_hue",
+      "defType": "math/mul",
+      "position": {
+        "x": 147,
+        "y": 271
+      },
+      "params": {
+        "b": 300,
+        "valueType": "number"
+      },
+      "parentId": "es_region",
+      "portValues": {
+        "b": 300
+      }
+    },
+    {
+      "id": "es_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 1432,
+        "y": 284
+      },
+      "params": {
+        "s": 85,
+        "l": 62,
+        "a": 255
+      },
+      "parentId": "es_region",
+      "portValues": {
+        "s": 85,
+        "l": 62,
+        "a": 255
+      }
+    },
+    {
+      "id": "es_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1665,
+        "y": 252
+      },
+      "params": {},
+      "parentId": "es_region"
+    },
+    {
+      "id": "es_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1850,
+        "y": 140
+      },
+      "params": {
+        "w": 22,
+        "h": 22
+      },
+      "parentId": "es_region",
+      "portValues": {
+        "w": 22,
+        "h": 22
+      }
+    },
+    {
+      "id": "es_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2626,
+        "y": 164
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_836",
+      "source": "es_count",
+      "target": "es_range",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_837",
+      "source": "es_range",
+      "target": "es_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_838",
+      "source": "es_delayV",
+      "target": "es_region",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-delay"
+    },
+    {
+      "id": "e_839",
+      "source": "es_time",
+      "target": "es_tmul",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_840",
+      "source": "es_tmul",
+      "target": "es_saw",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_841",
+      "source": "es_saw",
+      "target": "es_eased",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_842",
+      "source": "es_eased",
+      "target": "es_yMul",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_843",
+      "source": "es_yMul",
+      "target": "es_yOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_844",
+      "source": "es_region",
+      "target": "es_xMul",
+      "sourceHandle": "out-__loopvar_fraction",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_845",
+      "source": "es_xMul",
+      "target": "es_xOff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_846",
+      "source": "es_xOff",
+      "target": "es_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_847",
+      "source": "es_yOff",
+      "target": "es_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_848",
+      "source": "es_pos",
+      "target": "es_dot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_849",
+      "source": "es_region",
+      "target": "es_hue",
+      "sourceHandle": "out-__loopvar_fraction",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_850",
+      "source": "es_hue",
+      "target": "es_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_851",
+      "source": "es_hsl",
+      "target": "es_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_852",
+      "source": "es_fill",
+      "target": "es_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_853",
+      "source": "es_dot",
+      "target": "es_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_854",
+      "source": "es_region",
+      "target": "es_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

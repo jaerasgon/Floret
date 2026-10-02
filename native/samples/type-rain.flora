@@ -27,48 +27,25 @@
       }
     },
     {
-      "id": "trn_str",
-      "defType": "value/string",
-      "position": {
-        "x": 0,
-        "y": 69
-      },
-      "params": {
-        "value": "FLORET01"
-      },
-      "portValues": {
-        "value": "FLORET01"
-      }
-    },
-    {
       "id": "trn_split",
       "defType": "string/split",
       "position": {
-        "x": 252,
-        "y": 69
+        "x": 0,
+        "y": 25
       },
-      "params": {}
+      "params": {
+        "text": "FLORET01"
+      },
+      "portValues": {
+        "text": "FLORET01"
+      }
     },
     {
       "id": "trn_tile",
       "defType": "spread/repeat",
       "position": {
-        "x": 435,
-        "y": 69
-      },
-      "params": {
-        "count": 396
-      },
-      "portValues": {
-        "count": 396
-      }
-    },
-    {
-      "id": "trn_range",
-      "defType": "spread/range",
-      "position": {
-        "x": 432,
-        "y": 293
+        "x": 231,
+        "y": 25
       },
       "params": {
         "count": 396
@@ -81,43 +58,21 @@
       "id": "trn_time",
       "defType": "time/seconds",
       "position": {
-        "x": 450,
-        "y": 191
+        "x": 246,
+        "y": 329
       },
       "params": {}
-    },
-    {
-      "id": "trn_bg",
-      "defType": "color/color",
-      "position": {
-        "x": 2514,
-        "y": 496
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 4,
-        "g": 8,
-        "b": 6,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 4,
-        "g": 8,
-        "b": 6,
-        "a": 255
-      }
     },
     {
       "id": "trn_region",
       "defType": "region/foreach",
       "position": {
-        "x": 657,
+        "x": 461,
         "y": 22
       },
       "params": {
-        "width": 3864,
-        "height": 426,
+        "width": 2711,
+        "height": 437,
         "label": "ForEach cell"
       },
       "ports": [
@@ -126,121 +81,32 @@
           "name": "ch",
           "type": "string",
           "direction": "input",
-          "y": 138
+          "y": 139
         },
         {
-          "id": "i",
-          "name": "i",
-          "type": "number",
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
           "direction": "input",
-          "y": 244
+          "y": 186
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 76
+          "y": 77
         }
       ],
-      "width": 3864,
-      "height": 426
-    },
-    {
-      "id": "trn_colIdx",
-      "defType": "math/mod",
-      "position": {
-        "x": 181,
-        "y": 147
-      },
-      "params": {
-        "b": 18
-      },
-      "parentId": "trn_region",
-      "portValues": {
-        "b": 18
-      }
-    },
-    {
-      "id": "trn_rowDiv",
-      "defType": "math/div",
-      "position": {
-        "x": 133,
-        "y": 269
-      },
-      "params": {
-        "b": 18,
-        "valueType": "number"
-      },
-      "parentId": "trn_region",
-      "portValues": {
-        "b": 18
-      }
-    },
-    {
-      "id": "trn_rowIdx",
-      "defType": "math/floor",
-      "position": {
-        "x": 1162,
-        "y": 297
-      },
-      "params": {},
-      "parentId": "trn_region"
-    },
-    {
-      "id": "trn_colOff",
-      "defType": "math/sub",
-      "position": {
-        "x": 1922,
-        "y": 78
-      },
-      "params": {
-        "b": 8.5,
-        "valueType": "number"
-      },
-      "parentId": "trn_region",
-      "portValues": {
-        "b": 8.5
-      }
-    },
-    {
-      "id": "trn_x",
-      "defType": "math/mul",
-      "position": {
-        "x": 2196,
-        "y": 68
-      },
-      "params": {
-        "b": 26,
-        "valueType": "number"
-      },
-      "parentId": "trn_region",
-      "portValues": {
-        "b": 26
-      }
-    },
-    {
-      "id": "trn_nArg",
-      "defType": "math/mul",
-      "position": {
-        "x": 401,
-        "y": 177
-      },
-      "params": {
-        "b": 0.27,
-        "valueType": "number"
-      },
-      "parentId": "trn_region",
-      "portValues": {
-        "b": 0.27
-      }
+      "width": 2711,
+      "height": 437
     },
     {
       "id": "trn_speedN",
       "defType": "noise/perlin",
       "position": {
-        "x": 667,
-        "y": 168
+        "x": 504,
+        "y": 226
       },
       "params": {
         "seed": 13
@@ -248,85 +114,43 @@
       "parentId": "trn_region",
       "portValues": {
         "seed": 13
-      }
-    },
-    {
-      "id": "trn_speedM",
-      "defType": "math/mul",
-      "position": {
-        "x": 848,
-        "y": 171
-      },
-      "params": {
-        "b": 90,
-        "valueType": "number"
-      },
-      "parentId": "trn_region",
-      "portValues": {
-        "b": 90
-      }
-    },
-    {
-      "id": "trn_speed",
-      "defType": "math/add",
-      "position": {
-        "x": 1114,
-        "y": 175
-      },
-      "params": {
-        "b": 60
-      },
-      "parentId": "trn_region",
-      "portValues": {
-        "b": 60
       }
     },
     {
       "id": "trn_scroll",
       "defType": "math/mul",
       "position": {
-        "x": 1380,
-        "y": 172
+        "x": 865,
+        "y": 224
       },
       "params": {
         "valueType": "number"
       },
       "parentId": "trn_region"
-    },
-    {
-      "id": "trn_rowY",
-      "defType": "math/mul",
-      "position": {
-        "x": 1380,
-        "y": 294
-      },
-      "params": {
-        "b": 26,
-        "valueType": "number"
-      },
-      "parentId": "trn_region",
-      "portValues": {
-        "b": 26
-      }
     },
     {
       "id": "trn_ySum",
       "defType": "math/add",
       "position": {
-        "x": 1656,
-        "y": 229
+        "x": 1131,
+        "y": 176
       },
       "params": {
-        "valueType": "number"
+        "valueType": "number",
+        "slotCount": 3,
+        "b": 273
       },
-      "parentId": "trn_region"
+      "parentId": "trn_region",
+      "portValues": {
+        "b": 273
+      }
     },
     {
       "id": "trn_yWrap",
       "defType": "math/mod",
       "position": {
-        "x": 1970,
-        "y": 244
+        "x": 1397,
+        "y": 194
       },
       "params": {
         "b": 600
@@ -340,8 +164,8 @@
       "id": "trn_y",
       "defType": "math/sub",
       "position": {
-        "x": 2196,
-        "y": 190
+        "x": 1576,
+        "y": 141
       },
       "params": {
         "b": 300,
@@ -353,58 +177,11 @@
       }
     },
     {
-      "id": "trn_yNorm",
-      "defType": "math/div",
-      "position": {
-        "x": 2196,
-        "y": 312
-      },
-      "params": {
-        "b": 600,
-        "valueType": "number"
-      },
-      "parentId": "trn_region",
-      "portValues": {
-        "b": 600
-      }
-    },
-    {
-      "id": "trn_dimSub",
-      "defType": "math/sub",
-      "position": {
-        "x": 2470,
-        "y": 298
-      },
-      "params": {
-        "a": 1
-      },
-      "parentId": "trn_region",
-      "portValues": {
-        "a": 1
-      }
-    },
-    {
-      "id": "trn_lOut",
-      "defType": "math/mul",
-      "position": {
-        "x": 2735,
-        "y": 304
-      },
-      "params": {
-        "b": 70,
-        "valueType": "number"
-      },
-      "parentId": "trn_region",
-      "portValues": {
-        "b": 70
-      }
-    },
-    {
       "id": "trn_hsl",
       "defType": "color/color",
       "position": {
-        "x": 3001,
-        "y": 251
+        "x": 1845,
+        "y": 224
       },
       "params": {
         "mode": "hsl",
@@ -426,8 +203,8 @@
       "id": "trn_fill",
       "defType": "style/fill",
       "position": {
-        "x": 3249,
-        "y": 258
+        "x": 2094,
+        "y": 244
       },
       "params": {},
       "parentId": "trn_region"
@@ -436,7 +213,7 @@
       "id": "trn_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 3430,
+        "x": 2277,
         "y": 125
       },
       "params": {
@@ -459,7 +236,7 @@
       "id": "trn_text",
       "defType": "draw/text",
       "position": {
-        "x": 3666,
+        "x": 2513,
         "y": 40
       },
       "params": {
@@ -478,24 +255,36 @@
       "id": "trn_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 4649,
-        "y": 269
+        "x": 3268,
+        "y": 63
       },
       "params": {
         "width": 520,
-        "height": 600
+        "height": 600,
+        "background": {
+          "r": 0.01568627450980392,
+          "g": 0.03137254901960784,
+          "b": 0.023529411764705882,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 520,
-        "height": 600
+        "height": 600,
+        "background": {
+          "r": 0.01568627450980392,
+          "g": 0.03137254901960784,
+          "b": 0.023529411764705882,
+          "a": 1
+        }
       }
     },
     {
       "id": "trn_text-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 2512,
-        "y": 108
+        "x": 1878,
+        "y": 90
       },
       "params": {
         "x": 0,
@@ -506,16 +295,102 @@
         "x": 0,
         "y": 0
       }
+    },
+    {
+      "id": "trn_speed",
+      "defType": "math/map",
+      "position": {
+        "x": 686,
+        "y": 235
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 60,
+        "outMax": 150
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 60,
+        "outMax": 150
+      }
+    },
+    {
+      "id": "trn_light",
+      "defType": "math/map",
+      "position": {
+        "x": 1623,
+        "y": 263
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 600,
+        "outMin": 70,
+        "outMax": 0
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 600,
+        "outMin": 70,
+        "outMax": 0
+      }
+    },
+    {
+      "id": "trn_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 230,
+        "y": 147
+      },
+      "params": {
+        "cols": 18,
+        "rows": 22,
+        "w": 442,
+        "h": 546
+      },
+      "portValues": {
+        "cols": 18,
+        "rows": 22,
+        "w": 442,
+        "h": 546
+      }
+    },
+    {
+      "id": "trn_xy",
+      "defType": "vec2/split",
+      "position": {
+        "x": 129,
+        "y": 150
+      },
+      "params": {},
+      "parentId": "trn_region"
+    },
+    {
+      "id": "trn_nArg",
+      "defType": "math/map",
+      "position": {
+        "x": 319,
+        "y": 218
+      },
+      "params": {
+        "inMin": -221,
+        "inMax": 221,
+        "outMin": 0,
+        "outMax": 4.59
+      },
+      "parentId": "trn_region",
+      "portValues": {
+        "inMin": -221,
+        "inMax": 221,
+        "outMin": 0,
+        "outMax": 4.59
+      }
     }
   ],
   "edges": [
-    {
-      "id": "e_595",
-      "source": "trn_str",
-      "target": "trn_split",
-      "sourceHandle": "out-text",
-      "targetHandle": "in-text"
-    },
     {
       "id": "e_596",
       "source": "trn_split",
@@ -531,116 +406,11 @@
       "targetHandle": "in-ch"
     },
     {
-      "id": "e_598",
-      "source": "trn_range",
-      "target": "trn_region",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_599",
-      "source": "trn_region",
-      "target": "trn_colIdx",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_600",
-      "source": "trn_region",
-      "target": "trn_rowDiv",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_601",
-      "source": "trn_rowDiv",
-      "target": "trn_rowIdx",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_602",
-      "source": "trn_colIdx",
-      "target": "trn_colOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_603",
-      "source": "trn_colOff",
-      "target": "trn_x",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_604",
-      "source": "trn_x",
-      "target": "trn_text-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_605",
-      "source": "trn_colIdx",
-      "target": "trn_nArg",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_606",
-      "source": "trn_nArg",
-      "target": "trn_speedN",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_607",
-      "source": "trn_speedN",
-      "target": "trn_speedM",
-      "sourceHandle": "out-noise",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_608",
-      "source": "trn_speedM",
-      "target": "trn_speed",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_609",
       "source": "trn_time",
       "target": "trn_scroll",
       "sourceHandle": "out-t",
       "targetHandle": "in-a"
-    },
-    {
-      "id": "e_610",
-      "source": "trn_speed",
-      "target": "trn_scroll",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_611",
-      "source": "trn_rowIdx",
-      "target": "trn_rowY",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_612",
-      "source": "trn_rowY",
-      "target": "trn_ySum",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_613",
-      "source": "trn_scroll",
-      "target": "trn_ySum",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
     },
     {
       "id": "e_614",
@@ -662,34 +432,6 @@
       "target": "trn_text-xy0",
       "sourceHandle": "out-result",
       "targetHandle": "in-y"
-    },
-    {
-      "id": "e_617",
-      "source": "trn_yWrap",
-      "target": "trn_yNorm",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_618",
-      "source": "trn_yNorm",
-      "target": "trn_dimSub",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_619",
-      "source": "trn_dimSub",
-      "target": "trn_lOut",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_620",
-      "source": "trn_lOut",
-      "target": "trn_hsl",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-l"
     },
     {
       "id": "e_621",
@@ -734,18 +476,88 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_627",
-      "source": "trn_bg",
-      "target": "trn_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
-    {
       "id": "e_xy_trn_text-xy0",
       "source": "trn_text-xy0",
       "target": "trn_text",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_trn_speedN_trn_speed_x",
+      "source": "trn_speedN",
+      "target": "trn_speed",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_trn_speed_trn_scroll_b",
+      "source": "trn_speed",
+      "target": "trn_scroll",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_trn_yWrap_trn_light_x",
+      "source": "trn_yWrap",
+      "target": "trn_light",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_trn_light_trn_hsl_l",
+      "source": "trn_light",
+      "target": "trn_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_trn_grid_trn_region_p",
+      "source": "trn_grid",
+      "target": "trn_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_trn_region_trn_xy_v",
+      "source": "trn_region",
+      "target": "trn_xy",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_trn_xy_trn_nArg_x",
+      "source": "trn_xy",
+      "target": "trn_nArg",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_trn_nArg_trn_speedN_x",
+      "source": "trn_nArg",
+      "target": "trn_speedN",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_trn_xy_trn_text-xy0_x",
+      "source": "trn_xy",
+      "target": "trn_text-xy0",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_trn_xy_trn_ySum_a",
+      "source": "trn_xy",
+      "target": "trn_ySum",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_trn_scroll_trn_ySum_c",
+      "source": "trn_scroll",
+      "target": "trn_ySum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-c"
     }
   ]
 }

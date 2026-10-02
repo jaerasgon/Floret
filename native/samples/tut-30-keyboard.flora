@@ -31,7 +31,7 @@
       "defType": "input/keyboard",
       "position": {
         "x": 33,
-        "y": 115
+        "y": 64
       },
       "params": {}
     },
@@ -40,7 +40,7 @@
       "defType": "value/string",
       "position": {
         "x": 0,
-        "y": 237
+        "y": 186
       },
       "params": {
         "value": "r"
@@ -54,7 +54,7 @@
       "defType": "value/string",
       "position": {
         "x": 0,
-        "y": 339
+        "y": 288
       },
       "params": {
         "value": "b"
@@ -67,8 +67,8 @@
       "id": "t30_isR",
       "defType": "logic/eq",
       "position": {
-        "x": 275,
-        "y": 116
+        "x": 272,
+        "y": 82
       },
       "params": {}
     },
@@ -76,8 +76,8 @@
       "id": "t30_isB",
       "defType": "logic/eq",
       "position": {
-        "x": 275,
-        "y": 286
+        "x": 272,
+        "y": 218
       },
       "params": {}
     },
@@ -85,12 +85,12 @@
       "id": "t30_R",
       "defType": "region/if",
       "position": {
-        "x": 472,
+        "x": 465,
         "y": 22
       },
       "params": {
-        "width": 776,
-        "height": 336,
+        "width": 596,
+        "height": 234,
         "label": "If R"
       },
       "ports": [
@@ -99,76 +99,72 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 97
+          "y": 76
         }
       ],
-      "width": 776,
-      "height": 336
-    },
-    {
-      "id": "t30_colR",
-      "defType": "color/color",
-      "position": {
-        "x": 128,
-        "y": 162
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 230,
-        "g": 60,
-        "b": 60,
-        "a": 255
-      },
-      "parentId": "t30_R",
-      "portValues": {
-        "mode": "rgb",
-        "r": 230,
-        "g": 60,
-        "b": 60,
-        "a": 255
-      }
+      "width": 596,
+      "height": 234
     },
     {
       "id": "t30_fillR",
       "defType": "style/fill",
       "position": {
-        "x": 380,
-        "y": 162
+        "x": 128,
+        "y": 120
       },
-      "params": {},
-      "parentId": "t30_R"
+      "params": {
+        "color": {
+          "r": 0.9019607843137255,
+          "g": 0.23529411764705882,
+          "b": 0.23529411764705882,
+          "a": 1
+        }
+      },
+      "parentId": "t30_R",
+      "portValues": {
+        "color": {
+          "r": 0.9019607843137255,
+          "g": 0.23529411764705882,
+          "b": 0.23529411764705882,
+          "a": 1
+        }
+      }
     },
     {
       "id": "t30_rectR",
       "defType": "draw/rect",
       "position": {
-        "x": 568,
-        "y": 61
+        "x": 354,
+        "y": 40
       },
       "params": {
-        "x": -80,
-        "y": -80,
         "w": 160,
-        "h": 160
+        "h": 160,
+        "pos": {
+          "x": -80,
+          "y": -80
+        }
       },
       "parentId": "t30_R",
       "portValues": {
-        "x": -80,
-        "y": -80,
         "w": 160,
-        "h": 160
+        "h": 160,
+        "pos": {
+          "x": -80,
+          "y": -80
+        }
       }
     },
     {
       "id": "t30_B",
       "defType": "region/if",
       "position": {
-        "x": 474,
-        "y": 428
+        "x": 477,
+        "y": 326
       },
       "params": {
-        "width": 772,
-        "height": 294,
+        "width": 572,
+        "height": 234,
         "label": "If B"
       },
       "ports": [
@@ -180,47 +176,39 @@
           "y": 76
         }
       ],
-      "width": 772,
-      "height": 294
-    },
-    {
-      "id": "t30_colB",
-      "defType": "color/color",
-      "position": {
-        "x": 128,
-        "y": 120
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 60,
-        "g": 130,
-        "b": 230,
-        "a": 255
-      },
-      "parentId": "t30_B",
-      "portValues": {
-        "mode": "rgb",
-        "r": 60,
-        "g": 130,
-        "b": 230,
-        "a": 255
-      }
+      "width": 572,
+      "height": 234
     },
     {
       "id": "t30_fillB",
       "defType": "style/fill",
       "position": {
-        "x": 374,
+        "x": 128,
         "y": 120
       },
-      "params": {},
-      "parentId": "t30_B"
+      "params": {
+        "color": {
+          "r": 0.23529411764705882,
+          "g": 0.5098039215686274,
+          "b": 0.9019607843137255,
+          "a": 1
+        }
+      },
+      "parentId": "t30_B",
+      "portValues": {
+        "color": {
+          "r": 0.23529411764705882,
+          "g": 0.5098039215686274,
+          "b": 0.9019607843137255,
+          "a": 1
+        }
+      }
     },
     {
       "id": "t30_ellB",
       "defType": "draw/ellipse",
       "position": {
-        "x": 554,
+        "x": 354,
         "y": 40
       },
       "params": {
@@ -237,8 +225,8 @@
       "id": "t30_grp",
       "defType": "transform/group",
       "position": {
-        "x": 1372,
-        "y": 265
+        "x": 1178,
+        "y": 204
       },
       "params": {
         "slotCount": 2
@@ -251,8 +239,8 @@
       "id": "t30_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1636,
-        "y": 265
+        "x": 1442,
+        "y": 204
       },
       "params": {
         "width": 400,
@@ -261,23 +249,6 @@
       "portValues": {
         "width": 400,
         "height": 400
-      }
-    },
-    {
-      "id": "t30_rectR-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 374,
-        "y": 40
-      },
-      "params": {
-        "x": -80,
-        "y": -80
-      },
-      "parentId": "t30_R",
-      "portValues": {
-        "x": -80,
-        "y": -80
       }
     }
   ],
@@ -325,13 +296,6 @@
       "targetHandle": "in-condition"
     },
     {
-      "id": "e_255",
-      "source": "t30_colR",
-      "target": "t30_fillR",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
-    {
       "id": "e_256",
       "source": "t30_fillR",
       "target": "t30_rectR",
@@ -344,13 +308,6 @@
       "target": "t30_R",
       "sourceHandle": "out-shape",
       "targetHandle": "in-l"
-    },
-    {
-      "id": "e_258",
-      "source": "t30_colB",
-      "target": "t30_fillB",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
     },
     {
       "id": "e_259",
@@ -386,13 +343,6 @@
       "target": "t30_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_xy_t30_rectR-xy0",
-      "source": "t30_rectR-xy0",
-      "target": "t30_rectR",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

@@ -257,41 +257,31 @@
       }
     },
     {
-      "id": "ps_bg",
-      "defType": "color/color",
-      "position": {
-        "x": 1329,
-        "y": 309
-      },
-      "params": {
-        "mode": "rgb",
-        "r": 4,
-        "g": 4,
-        "b": 12,
-        "a": 255
-      },
-      "portValues": {
-        "mode": "rgb",
-        "r": 4,
-        "g": 4,
-        "b": 12,
-        "a": 255
-      }
-    },
-    {
       "id": "ps_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1592,
-        "y": 238
+        "x": 1584,
+        "y": 187
       },
       "params": {
         "width": 600,
-        "height": 600
+        "height": 600,
+        "background": {
+          "r": 0.01568627450980392,
+          "g": 0.01568627450980392,
+          "b": 0.047058823529411764,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 600,
-        "height": 600
+        "height": 600,
+        "background": {
+          "r": 0.01568627450980392,
+          "g": 0.01568627450980392,
+          "b": 0.047058823529411764,
+          "a": 1
+        }
       }
     },
     {
@@ -386,13 +376,6 @@
       "target": "ps_trail",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_702",
-      "source": "ps_bg",
-      "target": "ps_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
     },
     {
       "id": "e_704",

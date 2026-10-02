@@ -12,8 +12,8 @@
       "id": "ts_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 28,
-        "y": 203
+        "x": 0,
+        "y": 313
       },
       "params": {}
     },
@@ -21,7 +21,7 @@
       "id": "ts_freqMap",
       "defType": "math/map",
       "position": {
-        "x": 1273,
+        "x": 244,
         "y": 0
       },
       "params": {
@@ -41,7 +41,7 @@
       "id": "ts_ampMap",
       "defType": "math/map",
       "position": {
-        "x": 1274,
+        "x": 245,
         "y": 182
       },
       "params": {
@@ -61,7 +61,7 @@
       "id": "ts_osc",
       "defType": "sound/oscillator",
       "position": {
-        "x": 2473,
+        "x": 1139,
         "y": 61
       },
       "params": {
@@ -75,7 +75,7 @@
       "id": "ts_out",
       "defType": "sound/output",
       "position": {
-        "x": 2747,
+        "x": 2138,
         "y": 61
       },
       "params": {}
@@ -84,8 +84,8 @@
       "id": "ts_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 12,
-        "y": 345
+        "x": 227,
+        "y": 364
       },
       "params": {
         "cols": 20,
@@ -104,12 +104,12 @@
       "id": "ts_region",
       "defType": "region/foreach",
       "position": {
-        "x": 284,
-        "y": 386
+        "x": 451,
+        "y": 327
       },
       "params": {
-        "width": 2060,
-        "height": 346,
+        "width": 1533,
+        "height": 399,
         "label": "ForEach"
       },
       "ports": [
@@ -118,161 +118,25 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 141
+          "y": 128
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 78
+          "y": 76
         }
       ],
-      "width": 2060,
-      "height": 346
-    },
-    {
-      "id": "ts_split",
-      "defType": "vec2/split",
-      "position": {
-        "x": 128,
-        "y": 105
-      },
-      "params": {},
-      "parentId": "ts_region"
-    },
-    {
-      "id": "ts_xOff",
-      "defType": "math/add",
-      "position": {
-        "x": 316,
-        "y": 54
-      },
-      "params": {
-        "b": 10,
-        "valueType": "number"
-      },
-      "parentId": "ts_region",
-      "portValues": {
-        "b": 10
-      }
-    },
-    {
-      "id": "ts_yOff",
-      "defType": "math/add",
-      "position": {
-        "x": 316,
-        "y": 176
-      },
-      "params": {
-        "b": 10,
-        "valueType": "number"
-      },
-      "parentId": "ts_region",
-      "portValues": {
-        "b": 10
-      }
-    },
-    {
-      "id": "ts_dist",
-      "defType": "math/dist",
-      "position": {
-        "x": 602,
-        "y": 166
-      },
-      "params": {},
-      "parentId": "ts_region"
-    },
-    {
-      "id": "ts_distScaled",
-      "defType": "math/mul",
-      "position": {
-        "x": 786,
-        "y": 110
-      },
-      "params": {
-        "b": 0.4,
-        "valueType": "number"
-      },
-      "parentId": "ts_region",
-      "portValues": {
-        "b": 0.4
-      }
-    },
-    {
-      "id": "ts_hueBase",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 527
-      },
-      "params": {
-        "value": 220
-      },
-      "portValues": {
-        "value": 220
-      }
-    },
-    {
-      "id": "ts_hue",
-      "defType": "math/sub",
-      "position": {
-        "x": 1051,
-        "y": 95
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "ts_region"
-    },
-    {
-      "id": "ts_lScaled",
-      "defType": "math/mul",
-      "position": {
-        "x": 786,
-        "y": 232
-      },
-      "params": {
-        "b": 0.07,
-        "valueType": "number"
-      },
-      "parentId": "ts_region",
-      "portValues": {
-        "b": 0.07
-      }
-    },
-    {
-      "id": "ts_lBase",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 629
-      },
-      "params": {
-        "value": 80
-      },
-      "portValues": {
-        "value": 80
-      }
-    },
-    {
-      "id": "ts_lit",
-      "defType": "math/sub",
-      "position": {
-        "x": 1051,
-        "y": 217
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "ts_region"
+      "width": 1533,
+      "height": 399
     },
     {
       "id": "ts_lClamp",
       "defType": "math/clamp",
       "position": {
-        "x": 1319,
-        "y": 189
+        "x": 777,
+        "y": 265
       },
       "params": {
         "min": 10,
@@ -288,8 +152,8 @@
       "id": "ts_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1491,
-        "y": 122
+        "x": 961,
+        "y": 147
       },
       "params": {
         "s": 75,
@@ -305,8 +169,8 @@
       "id": "ts_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1672,
-        "y": 121
+        "x": 1143,
+        "y": 133
       },
       "params": {
         "mode": "color"
@@ -314,38 +178,31 @@
       "parentId": "ts_region",
       "portValues": {
         "mode": "color"
-      }
-    },
-    {
-      "id": "ts_dotSize",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 731
-      },
-      "params": {
-        "value": 6
-      },
-      "portValues": {
-        "value": 6
       }
     },
     {
       "id": "ts_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1852,
+        "x": 1325,
         "y": 40
       },
-      "params": {},
-      "parentId": "ts_region"
+      "params": {
+        "w": 6,
+        "h": 6
+      },
+      "parentId": "ts_region",
+      "portValues": {
+        "w": 6,
+        "h": 6
+      }
     },
     {
       "id": "ts_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2452,
-        "y": 428
+        "x": 2080,
+        "y": 367
       },
       "params": {
         "width": 500,
@@ -357,20 +214,86 @@
       }
     },
     {
-      "id": "ts_dot-xy0",
+      "id": "ts_mv",
       "defType": "vec2/make",
       "position": {
-        "x": 596,
-        "y": 44
+        "x": 243,
+        "y": 546
+      },
+      "params": {}
+    },
+    {
+      "id": "ts_pos",
+      "defType": "math/add",
+      "position": {
+        "x": 129,
+        "y": 84
       },
       "params": {
-        "x": 0,
-        "y": 0
+        "b": {
+          "x": 10,
+          "y": 10
+        },
+        "valueType": "vec2"
       },
       "parentId": "ts_region",
       "portValues": {
-        "x": 0,
-        "y": 0
+        "b": {
+          "x": 10,
+          "y": 10
+        }
+      }
+    },
+    {
+      "id": "ts_dist",
+      "defType": "vec2/dist",
+      "position": {
+        "x": 398,
+        "y": 122
+      },
+      "params": {},
+      "parentId": "ts_region"
+    },
+    {
+      "id": "ts_hue",
+      "defType": "math/map",
+      "position": {
+        "x": 772,
+        "y": 83
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 100,
+        "outMin": 220,
+        "outMax": 180
+      },
+      "parentId": "ts_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 100,
+        "outMin": 220,
+        "outMax": 180
+      }
+    },
+    {
+      "id": "ts_lit",
+      "defType": "math/map",
+      "position": {
+        "x": 589,
+        "y": 193
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 100,
+        "outMin": 80,
+        "outMax": 73
+      },
+      "parentId": "ts_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 100,
+        "outMin": 80,
+        "outMax": 73
       }
     }
   ],
@@ -418,111 +341,6 @@
       "targetHandle": "in-p"
     },
     {
-      "id": "e_1553",
-      "source": "ts_region",
-      "target": "ts_split",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_1554",
-      "source": "ts_split",
-      "target": "ts_xOff",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1555",
-      "source": "ts_split",
-      "target": "ts_yOff",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1556",
-      "source": "ts_xOff",
-      "target": "ts_dist",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x1"
-    },
-    {
-      "id": "e_1557",
-      "source": "ts_yOff",
-      "target": "ts_dist",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y1"
-    },
-    {
-      "id": "e_1558",
-      "source": "ts_mouse",
-      "target": "ts_dist",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x2"
-    },
-    {
-      "id": "e_1559",
-      "source": "ts_mouse",
-      "target": "ts_dist",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y2"
-    },
-    {
-      "id": "e_1560",
-      "source": "ts_dist",
-      "target": "ts_distScaled",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1561",
-      "source": "ts_hueBase",
-      "target": "ts_hue",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1562",
-      "source": "ts_distScaled",
-      "target": "ts_hue",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1563",
-      "source": "ts_hue",
-      "target": "ts_hsl",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_1564",
-      "source": "ts_dist",
-      "target": "ts_lScaled",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1565",
-      "source": "ts_lBase",
-      "target": "ts_lit",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1566",
-      "source": "ts_lScaled",
-      "target": "ts_lit",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1567",
-      "source": "ts_lit",
-      "target": "ts_lClamp",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
       "id": "e_1568",
       "source": "ts_lClamp",
       "target": "ts_hsl",
@@ -535,34 +353,6 @@
       "target": "ts_fill",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
-    },
-    {
-      "id": "e_1570",
-      "source": "ts_xOff",
-      "target": "ts_dot-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1571",
-      "source": "ts_yOff",
-      "target": "ts_dot-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1572",
-      "source": "ts_dotSize",
-      "target": "ts_dot",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_1573",
-      "source": "ts_dotSize",
-      "target": "ts_dot",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-h"
     },
     {
       "id": "e_1574",
@@ -586,11 +376,74 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_ts_dot-xy0",
-      "source": "ts_dot-xy0",
-      "target": "ts_dot",
+      "id": "e_ts_mouse_ts_mv_x",
+      "source": "ts_mouse",
+      "target": "ts_mv",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_ts_mouse_ts_mv_y",
+      "source": "ts_mouse",
+      "target": "ts_mv",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_ts_region_ts_pos_a",
+      "source": "ts_region",
+      "target": "ts_pos",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ts_pos_ts_dist_a",
+      "source": "ts_pos",
+      "target": "ts_dist",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_ts_mv_ts_dist_b",
+      "source": "ts_mv",
+      "target": "ts_dist",
       "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_ts_pos_ts_dot_pos",
+      "source": "ts_pos",
+      "target": "ts_dot",
+      "sourceHandle": "out-result",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_ts_dist_ts_hue_x",
+      "source": "ts_dist",
+      "target": "ts_hue",
+      "sourceHandle": "out-distance",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_ts_hue_ts_hsl_h",
+      "source": "ts_hue",
+      "target": "ts_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_ts_dist_ts_lit_x",
+      "source": "ts_dist",
+      "target": "ts_lit",
+      "sourceHandle": "out-distance",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_ts_lit_ts_lClamp_x",
+      "source": "ts_lit",
+      "target": "ts_lClamp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
     }
   ]
 }

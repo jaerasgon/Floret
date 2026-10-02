@@ -36,20 +36,6 @@
       }
     },
     {
-      "id": "flo_len",
-      "defType": "value/number",
-      "position": {
-        "x": 14,
-        "y": 410
-      },
-      "params": {
-        "value": 18
-      },
-      "portValues": {
-        "value": 18
-      }
-    },
-    {
       "id": "flo_grid",
       "defType": "spread/grid",
       "position": {
@@ -73,12 +59,12 @@
       "id": "flo_region",
       "defType": "region/foreach",
       "position": {
-        "x": 294,
-        "y": 29
+        "x": 279,
+        "y": 40
       },
       "params": {
-        "width": 2462,
-        "height": 499,
+        "width": 1895,
+        "height": 366,
         "label": "ForEach"
       },
       "ports": [
@@ -87,59 +73,25 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 206
+          "y": 93
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 167
+          "y": 76
         }
       ],
-      "width": 2462,
-      "height": 499
-    },
-    {
-      "id": "flo_split",
-      "defType": "vec2/split",
-      "position": {
-        "x": 128,
-        "y": 170
-      },
-      "params": {},
-      "parentId": "flo_region"
-    },
-    {
-      "id": "flo_xs",
-      "defType": "math/mul",
-      "position": {
-        "x": 331,
-        "y": 162
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "flo_region"
-    },
-    {
-      "id": "flo_ys",
-      "defType": "math/mul",
-      "position": {
-        "x": 331,
-        "y": 284
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "flo_region"
+      "width": 1895,
+      "height": 366
     },
     {
       "id": "flo_yt",
       "defType": "math/add",
       "position": {
-        "x": 600,
-        "y": 256
+        "x": 500,
+        "y": 183
       },
       "params": {
         "valueType": "number"
@@ -150,8 +102,8 @@
       "id": "flo_per",
       "defType": "noise/perlin",
       "position": {
-        "x": 868,
-        "y": 207
+        "x": 767,
+        "y": 142
       },
       "params": {
         "octaves": 2
@@ -165,8 +117,8 @@
       "id": "flo_ang",
       "defType": "math/mul",
       "position": {
-        "x": 1060,
-        "y": 193
+        "x": 957,
+        "y": 90
       },
       "params": {
         "b": 12.566370614359172,
@@ -181,52 +133,23 @@
       "id": "flo_fa",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 1326,
-        "y": 184
-      },
-      "params": {},
-      "parentId": "flo_region"
-    },
-    {
-      "id": "flo_fs",
-      "defType": "vec2/split",
-      "position": {
-        "x": 1564,
-        "y": 174
-      },
-      "params": {},
-      "parentId": "flo_region"
-    },
-    {
-      "id": "flo_x2",
-      "defType": "math/add",
-      "position": {
-        "x": 1794,
-        "y": 101
+        "x": 1221,
+        "y": 90
       },
       "params": {
-        "valueType": "number"
+        "mag": 18
       },
-      "parentId": "flo_region"
-    },
-    {
-      "id": "flo_y2",
-      "defType": "math/add",
-      "position": {
-        "x": 1794,
-        "y": 223
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "flo_region"
+      "parentId": "flo_region",
+      "portValues": {
+        "mag": 18
+      }
     },
     {
       "id": "flo_hueMul",
       "defType": "math/mul",
       "position": {
-        "x": 1522,
-        "y": 316
+        "x": 957,
+        "y": 212
       },
       "params": {
         "b": 50,
@@ -241,8 +164,8 @@
       "id": "flo_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1836,
-        "y": 345
+        "x": 1228,
+        "y": 212
       },
       "params": {
         "s": 70,
@@ -260,8 +183,8 @@
       "id": "flo_strokeC",
       "defType": "style/stroke",
       "position": {
-        "x": 2070,
-        "y": 268
+        "x": 1462,
+        "y": 177
       },
       "params": {},
       "parentId": "flo_region"
@@ -270,91 +193,74 @@
       "id": "flo_line",
       "defType": "draw/line",
       "position": {
-        "x": 2266,
+        "x": 1699,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "flo_region"
+    },
+    {
+      "id": "flo_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2270,
+        "y": 80
+      },
+      "params": {
+        "width": 500,
+        "height": 500,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.0392156862745098,
+          "b": 0.07058823529411765,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.0392156862745098,
+          "b": 0.07058823529411765,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "flo_scaled",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 132,
+        "y": 116
+      },
+      "params": {},
+      "parentId": "flo_region"
+    },
+    {
+      "id": "flo_sxy",
+      "defType": "vec2/split",
+      "position": {
+        "x": 315,
         "y": 131
       },
       "params": {},
       "parentId": "flo_region"
     },
     {
-      "id": "flo_bg",
-      "defType": "color/rgb",
+      "id": "flo_end",
+      "defType": "math/add",
       "position": {
-        "x": 1483,
-        "y": 576
+        "x": 1421,
+        "y": 55
       },
       "params": {
-        "r": 10,
-        "g": 10,
-        "b": 18,
-        "a": 255
+        "valueType": "vec2"
       },
-      "portValues": {
-        "r": 10,
-        "g": 10,
-        "b": 18,
-        "a": 255
-      }
-    },
-    {
-      "id": "flo_renderer",
-      "defType": "render/renderer",
-      "position": {
-        "x": 2882,
-        "y": 358
-      },
-      "params": {
-        "width": 500,
-        "height": 500
-      },
-      "portValues": {
-        "width": 500,
-        "height": 500
-      }
-    },
-    {
-      "id": "flo_line-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 373,
-        "y": 40
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "parentId": "flo_region",
-      "portValues": {
-        "x": 0,
-        "y": 0
-      }
-    },
-    {
-      "id": "flo_line-xy1",
-      "defType": "vec2/make",
-      "position": {
-        "x": 2071,
-        "y": 146
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "parentId": "flo_region",
-      "portValues": {
-        "x": 0,
-        "y": 0
-      }
+      "parentId": "flo_region"
     }
   ],
   "edges": [
-    {
-      "id": "e_1258",
-      "source": "flo_bg",
-      "target": "flo_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
     {
       "id": "e_1259",
       "source": "flo_grid",
@@ -363,60 +269,11 @@
       "targetHandle": "in-p"
     },
     {
-      "id": "e_1260",
-      "source": "flo_region",
-      "target": "flo_split",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_1261",
-      "source": "flo_split",
-      "target": "flo_xs",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1262",
-      "source": "flo_noiseScale",
-      "target": "flo_xs",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1263",
-      "source": "flo_split",
-      "target": "flo_ys",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1264",
-      "source": "flo_noiseScale",
-      "target": "flo_ys",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1265",
-      "source": "flo_ys",
-      "target": "flo_yt",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_1266",
       "source": "flo_time",
       "target": "flo_yt",
       "sourceHandle": "out-t",
       "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1267",
-      "source": "flo_xs",
-      "target": "flo_per",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
     },
     {
       "id": "e_1268",
@@ -438,48 +295,6 @@
       "target": "flo_fa",
       "sourceHandle": "out-result",
       "targetHandle": "in-angle"
-    },
-    {
-      "id": "e_1271",
-      "source": "flo_len",
-      "target": "flo_fa",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-mag"
-    },
-    {
-      "id": "e_1272",
-      "source": "flo_fa",
-      "target": "flo_fs",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_1273",
-      "source": "flo_split",
-      "target": "flo_x2",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1274",
-      "source": "flo_fs",
-      "target": "flo_x2",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1275",
-      "source": "flo_split",
-      "target": "flo_y2",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1276",
-      "source": "flo_fs",
-      "target": "flo_y2",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-b"
     },
     {
       "id": "e_1277",
@@ -510,34 +325,6 @@
       "targetHandle": "in-style"
     },
     {
-      "id": "e_1281",
-      "source": "flo_split",
-      "target": "flo_line-xy0",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1282",
-      "source": "flo_split",
-      "target": "flo_line-xy0",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1283",
-      "source": "flo_x2",
-      "target": "flo_line-xy1",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1284",
-      "source": "flo_y2",
-      "target": "flo_line-xy1",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
       "id": "e_1285",
       "source": "flo_line",
       "target": "flo_region",
@@ -552,17 +339,66 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_flo_line-xy0",
-      "source": "flo_line-xy0",
-      "target": "flo_line",
-      "sourceHandle": "out-vector",
+      "id": "e_flo_region_flo_scaled_v",
+      "source": "flo_region",
+      "target": "flo_scaled",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_flo_noiseScale_flo_scaled_s",
+      "source": "flo_noiseScale",
+      "target": "flo_scaled",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_flo_scaled_flo_sxy_v",
+      "source": "flo_scaled",
+      "target": "flo_sxy",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_flo_sxy_flo_per_x",
+      "source": "flo_sxy",
+      "target": "flo_per",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_flo_sxy_flo_yt_a",
+      "source": "flo_sxy",
+      "target": "flo_yt",
+      "sourceHandle": "out-y",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_xy_flo_line-xy1",
-      "source": "flo_line-xy1",
-      "target": "flo_line",
+      "id": "e_flo_region_flo_end_a",
+      "source": "flo_region",
+      "target": "flo_end",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_flo_fa_flo_end_b",
+      "source": "flo_fa",
+      "target": "flo_end",
       "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_flo_region_flo_line_a",
+      "source": "flo_region",
+      "target": "flo_line",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_flo_end_flo_line_b",
+      "source": "flo_end",
+      "target": "flo_line",
+      "sourceHandle": "out-result",
       "targetHandle": "in-b"
     }
   ]

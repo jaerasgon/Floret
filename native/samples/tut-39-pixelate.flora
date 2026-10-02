@@ -68,18 +68,14 @@
       "id": "t39_draw",
       "defType": "draw/image",
       "position": {
-        "x": 474,
-        "y": 124
+        "x": 466,
+        "y": 73
       },
       "params": {
-        "x": 0,
-        "y": 0,
         "w": 320,
         "h": 320
       },
       "portValues": {
-        "x": 0,
-        "y": 0,
         "w": 320,
         "h": 320
       }
@@ -88,8 +84,8 @@
       "id": "t39_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 666,
-        "y": 124
+        "x": 658,
+        "y": 73
       },
       "params": {
         "width": 400,
@@ -98,22 +94,6 @@
       "portValues": {
         "width": 400,
         "height": 400
-      }
-    },
-    {
-      "id": "t39_draw-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 280,
-        "y": 195
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
       }
     }
   ],
@@ -145,13 +125,6 @@
       "target": "t39_renderer",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_xy_t39_draw-xy0",
-      "source": "t39_draw-xy0",
-      "target": "t39_draw",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

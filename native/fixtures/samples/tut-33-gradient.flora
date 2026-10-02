@@ -1,0 +1,194 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "33 · Gradient Sampling",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t33_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -284
+      },
+      "params": {
+        "text": "Gradients = interpolated palettes\n\n`color/gradient` reads a Spread<Color> and a t ∈ [0, 1]; it linearly interpolates between adjacent stops. Smoother than CycleSpread when you want a continuous transition.\n\nMouseX → t → sampled gradient → fill colour.",
+        "width": 440,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Gradients = interpolated palettes\n\n`color/gradient` reads a Spread<Color> and a t ∈ [0, 1]; it linearly interpolates between adjacent stops. Smoother than CycleSpread when you want a continuous transition.\n\nMouseX → t → sampled gradient → fill colour.",
+        "width": 440,
+        "height": 220
+      }
+    },
+    {
+      "id": "t33_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 180,
+        "y": 0
+      },
+      "params": {
+        "stopCount": 5
+      },
+      "portValues": {
+        "stopCount": 5
+      }
+    },
+    {
+      "id": "t33_m",
+      "defType": "input/mouse",
+      "position": {
+        "x": 0,
+        "y": 202
+      },
+      "params": {}
+    },
+    {
+      "id": "t33_tmap",
+      "defType": "math/map",
+      "position": {
+        "x": 225,
+        "y": 202
+      },
+      "params": {
+        "inMin": -200,
+        "inMax": 200,
+        "outMin": 0,
+        "outMax": 1
+      },
+      "portValues": {
+        "inMin": -200,
+        "inMax": 200,
+        "outMin": 0,
+        "outMax": 1
+      }
+    },
+    {
+      "id": "t33_grad",
+      "defType": "color/gradient",
+      "position": {
+        "x": 450,
+        "y": 141
+      },
+      "params": {}
+    },
+    {
+      "id": "t33_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 644,
+        "y": 141
+      },
+      "params": {}
+    },
+    {
+      "id": "t33_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 835,
+        "y": 40
+      },
+      "params": {
+        "x": -150,
+        "y": -150,
+        "w": 300,
+        "h": 300
+      },
+      "portValues": {
+        "x": -150,
+        "y": -150,
+        "w": 300,
+        "h": 300
+      }
+    },
+    {
+      "id": "t33_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1027,
+        "y": 40
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t33_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 635,
+        "y": 19
+      },
+      "params": {
+        "x": -150,
+        "y": -150
+      },
+      "portValues": {
+        "x": -150,
+        "y": -150
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_279",
+      "source": "t33_pal",
+      "target": "t33_grad",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_280",
+      "source": "t33_m",
+      "target": "t33_tmap",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_281",
+      "source": "t33_tmap",
+      "target": "t33_grad",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_282",
+      "source": "t33_grad",
+      "target": "t33_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_283",
+      "source": "t33_fill",
+      "target": "t33_rect",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_284",
+      "source": "t33_rect",
+      "target": "t33_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t33_rect-xy0",
+      "source": "t33_rect-xy0",
+      "target": "t33_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

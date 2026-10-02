@@ -1,0 +1,628 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Noise Wave",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "dm_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 42,
+        "y": 182
+      },
+      "params": {}
+    },
+    {
+      "id": "dm_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 26,
+        "y": 0
+      },
+      "params": {
+        "cols": 32,
+        "rows": 32,
+        "w": 500,
+        "h": 500
+      },
+      "portValues": {
+        "cols": 32,
+        "rows": 32,
+        "w": 500,
+        "h": 500
+      }
+    },
+    {
+      "id": "dm_noiseAmt",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 284
+      },
+      "params": {
+        "value": 24,
+        "min": 0,
+        "max": 60
+      },
+      "portValues": {
+        "value": 24,
+        "min": 0,
+        "max": 60
+      }
+    },
+    {
+      "id": "dm_noiseScale",
+      "defType": "value/number",
+      "position": {
+        "x": 14,
+        "y": 410
+      },
+      "params": {
+        "value": 0.018
+      },
+      "portValues": {
+        "value": 0.018
+      }
+    },
+    {
+      "id": "dm_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 305,
+        "y": 134
+      },
+      "params": {
+        "width": 2346,
+        "height": 438,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 177
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 175
+        }
+      ],
+      "width": 2346,
+      "height": 438
+    },
+    {
+      "id": "dm_split",
+      "defType": "vec2/split",
+      "position": {
+        "x": 128,
+        "y": 141
+      },
+      "params": {},
+      "parentId": "dm_region"
+    },
+    {
+      "id": "dm_xScaled",
+      "defType": "math/mul",
+      "position": {
+        "x": 322,
+        "y": 130
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "dm_region"
+    },
+    {
+      "id": "dm_yScaled",
+      "defType": "math/mul",
+      "position": {
+        "x": 322,
+        "y": 252
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "dm_region"
+    },
+    {
+      "id": "dm_yPlusT",
+      "defType": "math/add",
+      "position": {
+        "x": 603,
+        "y": 139
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "dm_region"
+    },
+    {
+      "id": "dm_perlinD",
+      "defType": "noise/perlin",
+      "position": {
+        "x": 913,
+        "y": 89
+      },
+      "params": {
+        "octaves": 3,
+        "falloff": 0.55
+      },
+      "parentId": "dm_region",
+      "portValues": {
+        "octaves": 3,
+        "falloff": 0.55
+      }
+    },
+    {
+      "id": "dm_yPlus100",
+      "defType": "math/add",
+      "position": {
+        "x": 603,
+        "y": 293
+      },
+      "params": {
+        "b": 100
+      },
+      "parentId": "dm_region",
+      "portValues": {
+        "b": 100
+      }
+    },
+    {
+      "id": "dm_yHueT",
+      "defType": "math/add",
+      "position": {
+        "x": 871,
+        "y": 303
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "dm_region"
+    },
+    {
+      "id": "dm_perlinH",
+      "defType": "noise/perlin",
+      "position": {
+        "x": 1181,
+        "y": 260
+      },
+      "params": {
+        "octaves": 1
+      },
+      "parentId": "dm_region",
+      "portValues": {
+        "octaves": 1
+      }
+    },
+    {
+      "id": "dm_dispShift",
+      "defType": "math/sub",
+      "position": {
+        "x": 1139,
+        "y": 102
+      },
+      "params": {
+        "b": 0.5,
+        "valueType": "number"
+      },
+      "parentId": "dm_region",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "dm_dispScale",
+      "defType": "math/mul",
+      "position": {
+        "x": 1405,
+        "y": 115
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "dm_region"
+    },
+    {
+      "id": "dm_xFin",
+      "defType": "math/add",
+      "position": {
+        "x": 1679,
+        "y": 40
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "dm_region"
+    },
+    {
+      "id": "dm_yFin",
+      "defType": "math/add",
+      "position": {
+        "x": 1679,
+        "y": 162
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "dm_region"
+    },
+    {
+      "id": "dm_hueScale",
+      "defType": "math/mul",
+      "position": {
+        "x": 1405,
+        "y": 272
+      },
+      "params": {
+        "b": 360,
+        "valueType": "number"
+      },
+      "parentId": "dm_region",
+      "portValues": {
+        "b": 360
+      }
+    },
+    {
+      "id": "dm_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 1721,
+        "y": 284
+      },
+      "params": {
+        "s": 85,
+        "l": 60,
+        "a": 255
+      },
+      "parentId": "dm_region",
+      "portValues": {
+        "s": 85,
+        "l": 60,
+        "a": 255
+      }
+    },
+    {
+      "id": "dm_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1953,
+        "y": 252
+      },
+      "params": {
+        "mode": "color"
+      },
+      "parentId": "dm_region",
+      "portValues": {
+        "mode": "color"
+      }
+    },
+    {
+      "id": "dm_cellSize",
+      "defType": "value/number",
+      "position": {
+        "x": 14,
+        "y": 512
+      },
+      "params": {
+        "value": 11
+      },
+      "portValues": {
+        "value": 11
+      }
+    },
+    {
+      "id": "dm_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 2138,
+        "y": 139
+      },
+      "params": {},
+      "parentId": "dm_region"
+    },
+    {
+      "id": "dm_bg",
+      "defType": "color/rgb",
+      "position": {
+        "x": 1436,
+        "y": 620
+      },
+      "params": {
+        "r": 8,
+        "g": 8,
+        "b": 14,
+        "a": 255
+      },
+      "portValues": {
+        "r": 8,
+        "g": 8,
+        "b": 14,
+        "a": 255
+      }
+    },
+    {
+      "id": "dm_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2772,
+        "y": 437
+      },
+      "params": {
+        "width": 500,
+        "height": 500
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    {
+      "id": "dm_rect-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1953,
+        "y": 107
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "dm_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_970",
+      "source": "dm_bg",
+      "target": "dm_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    },
+    {
+      "id": "e_971",
+      "source": "dm_grid",
+      "target": "dm_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_972",
+      "source": "dm_region",
+      "target": "dm_split",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_973",
+      "source": "dm_split",
+      "target": "dm_xScaled",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_974",
+      "source": "dm_noiseScale",
+      "target": "dm_xScaled",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_975",
+      "source": "dm_split",
+      "target": "dm_yScaled",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_976",
+      "source": "dm_noiseScale",
+      "target": "dm_yScaled",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_977",
+      "source": "dm_yScaled",
+      "target": "dm_yPlusT",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_978",
+      "source": "dm_time",
+      "target": "dm_yPlusT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_979",
+      "source": "dm_xScaled",
+      "target": "dm_perlinD",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_980",
+      "source": "dm_yPlusT",
+      "target": "dm_perlinD",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_981",
+      "source": "dm_yScaled",
+      "target": "dm_yPlus100",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_982",
+      "source": "dm_yPlus100",
+      "target": "dm_yHueT",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_983",
+      "source": "dm_time",
+      "target": "dm_yHueT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_984",
+      "source": "dm_xScaled",
+      "target": "dm_perlinH",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_985",
+      "source": "dm_yHueT",
+      "target": "dm_perlinH",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_986",
+      "source": "dm_perlinD",
+      "target": "dm_dispShift",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_987",
+      "source": "dm_dispShift",
+      "target": "dm_dispScale",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_988",
+      "source": "dm_noiseAmt",
+      "target": "dm_dispScale",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_989",
+      "source": "dm_split",
+      "target": "dm_xFin",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_990",
+      "source": "dm_dispScale",
+      "target": "dm_xFin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_991",
+      "source": "dm_split",
+      "target": "dm_yFin",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_992",
+      "source": "dm_dispScale",
+      "target": "dm_yFin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_993",
+      "source": "dm_perlinH",
+      "target": "dm_hueScale",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_994",
+      "source": "dm_hueScale",
+      "target": "dm_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_995",
+      "source": "dm_hsl",
+      "target": "dm_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_996",
+      "source": "dm_xFin",
+      "target": "dm_rect-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_997",
+      "source": "dm_yFin",
+      "target": "dm_rect-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_998",
+      "source": "dm_cellSize",
+      "target": "dm_rect",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_999",
+      "source": "dm_cellSize",
+      "target": "dm_rect",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_1000",
+      "source": "dm_fill",
+      "target": "dm_rect",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_1001",
+      "source": "dm_rect",
+      "target": "dm_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_1002",
+      "source": "dm_region",
+      "target": "dm_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_dm_rect-xy0",
+      "source": "dm_rect-xy0",
+      "target": "dm_rect",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

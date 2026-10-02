@@ -1,0 +1,150 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "03 · Animate with Time",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t03_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Animation = time → shape\n\n`time/seconds` outputs the time elapsed in seconds. Run it through `sin` and you get a smooth oscillation between -1 and 1. Multiply to scale the motion to pixels.\n\nThis ellipse swings left-right with sin(t)·150.",
+        "width": 360,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Animation = time → shape\n\n`time/seconds` outputs the time elapsed in seconds. Run it through `sin` and you get a smooth oscillation between -1 and 1. Multiply to scale the motion to pixels.\n\nThis ellipse swings left-right with sin(t)·150.",
+        "width": 360,
+        "height": 200
+      }
+    },
+    {
+      "id": "t03_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t03_sin",
+      "defType": "math/sin",
+      "position": {
+        "x": 180,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "t03_amp",
+      "defType": "math/mul",
+      "position": {
+        "x": 348,
+        "y": 0
+      },
+      "params": {
+        "b": 150,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 150
+      }
+    },
+    {
+      "id": "t03_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 792,
+        "y": 0
+      },
+      "params": {
+        "y": 0,
+        "w": 80,
+        "h": 80
+      },
+      "portValues": {
+        "y": 0,
+        "w": 80,
+        "h": 80
+      }
+    },
+    {
+      "id": "t03_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 984,
+        "y": 0
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t03_ell-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 612,
+        "y": 0
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_5",
+      "source": "t03_t",
+      "target": "t03_sin",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_6",
+      "source": "t03_sin",
+      "target": "t03_amp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_7",
+      "source": "t03_amp",
+      "target": "t03_ell-xy0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_8",
+      "source": "t03_ell",
+      "target": "t03_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t03_ell-xy0",
+      "source": "t03_ell-xy0",
+      "target": "t03_ell",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

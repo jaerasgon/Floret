@@ -13,7 +13,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 9,
-        "y": 131
+        "y": 226
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "sk_maxSpeed",
       "defType": "io/slider",
       "position": {
-        "x": 615,
-        "y": 102
+        "x": 635,
+        "y": 373
       },
       "params": {
         "value": 6,
@@ -39,8 +39,8 @@
       "id": "sk_maxForce",
       "defType": "io/slider",
       "position": {
-        "x": 1113,
-        "y": 288
+        "x": 1240,
+        "y": 266
       },
       "params": {
         "value": 0.4,
@@ -58,7 +58,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 0,
-        "y": 273
+        "y": 104
       },
       "params": {
         "x": -100,
@@ -73,8 +73,8 @@
       "id": "sk_initVel",
       "defType": "vec2/make",
       "position": {
-        "x": 9,
-        "y": 525
+        "x": 677,
+        "y": 0
       },
       "params": {
         "x": 0,
@@ -89,8 +89,8 @@
       "id": "sk_pos",
       "defType": "state/value",
       "position": {
-        "x": 220,
-        "y": 159
+        "x": 197,
+        "y": 104
       },
       "params": {}
     },
@@ -98,8 +98,8 @@
       "id": "sk_vel",
       "defType": "state/value",
       "position": {
-        "x": 220,
-        "y": 525
+        "x": 979,
+        "y": 16
       },
       "params": {}
     },
@@ -107,8 +107,8 @@
       "id": "sk_mv",
       "defType": "vec2/make",
       "position": {
-        "x": 221,
-        "y": 37
+        "x": 198,
+        "y": 226
       },
       "params": {}
     },
@@ -116,8 +116,8 @@
       "id": "sk_diff",
       "defType": "vec2/sub",
       "position": {
-        "x": 420,
-        "y": 59
+        "x": 430,
+        "y": 98
       },
       "params": {}
     },
@@ -125,8 +125,8 @@
       "id": "sk_dir",
       "defType": "vec2/normalize",
       "position": {
-        "x": 652,
-        "y": 0
+        "x": 672,
+        "y": 149
       },
       "params": {}
     },
@@ -134,8 +134,8 @@
       "id": "sk_desired",
       "defType": "vec2/scale",
       "position": {
-        "x": 905,
-        "y": 49
+        "x": 980,
+        "y": 300
       },
       "params": {}
     },
@@ -143,8 +143,8 @@
       "id": "sk_steerRaw",
       "defType": "vec2/sub",
       "position": {
-        "x": 1155,
-        "y": 166
+        "x": 1282,
+        "y": 144
       },
       "params": {}
     },
@@ -152,8 +152,8 @@
       "id": "sk_steer",
       "defType": "vec2/limit",
       "position": {
-        "x": 1428,
-        "y": 282
+        "x": 1514,
+        "y": 186
       },
       "params": {}
     },
@@ -161,8 +161,8 @@
       "id": "sk_velAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 1663,
-        "y": 388
+        "x": 1705,
+        "y": 146
       },
       "params": {}
     },
@@ -170,8 +170,8 @@
       "id": "sk_velCap",
       "defType": "vec2/limit",
       "position": {
-        "x": 1867,
-        "y": 229
+        "x": 1891,
+        "y": 187
       },
       "params": {}
     },
@@ -179,17 +179,8 @@
       "id": "sk_posAdd",
       "defType": "vec2/add",
       "position": {
-        "x": 2051,
-        "y": 182
-      },
-      "params": {}
-    },
-    {
-      "id": "sk_head",
-      "defType": "vec2/heading",
-      "position": {
-        "x": 420,
-        "y": 589
+        "x": 2077,
+        "y": 127
       },
       "params": {}
     },
@@ -197,8 +188,8 @@
       "id": "sk_tFill",
       "defType": "style/fill",
       "position": {
-        "x": 221,
-        "y": 403
+        "x": 198,
+        "y": 348
       },
       "params": {
         "mode": "rgb",
@@ -219,8 +210,8 @@
       "id": "sk_target",
       "defType": "draw/ellipse",
       "position": {
-        "x": 414,
-        "y": 336
+        "x": 424,
+        "y": 220
       },
       "params": {
         "w": 18,
@@ -235,8 +226,8 @@
       "id": "sk_vFill",
       "defType": "style/fill",
       "position": {
-        "x": 657,
-        "y": 476
+        "x": 198,
+        "y": 482
       },
       "params": {
         "mode": "rgb",
@@ -254,20 +245,11 @@
       }
     },
     {
-      "id": "sk_splitP",
-      "defType": "vec2/split",
-      "position": {
-        "x": 420,
-        "y": 214
-      },
-      "params": {}
-    },
-    {
       "id": "sk_vehicle",
       "defType": "draw/ellipse",
       "position": {
-        "x": 899,
-        "y": 396
+        "x": 424,
+        "y": 402
       },
       "params": {
         "w": 22,
@@ -282,93 +264,46 @@
       "id": "sk_grp",
       "defType": "transform/group",
       "position": {
-        "x": 1113,
-        "y": 414
+        "x": 635,
+        "y": 251
       },
       "params": {
         "slotCount": 2
       },
       "portValues": {
         "slotCount": 2
-      }
-    },
-    {
-      "id": "sk_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 1155,
-        "y": 536
-      },
-      "params": {
-        "r": 10,
-        "g": 10,
-        "b": 18,
-        "a": 255
-      },
-      "portValues": {
-        "r": 10,
-        "g": 10,
-        "b": 18,
-        "a": 255
       }
     },
     {
       "id": "sk_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1395,
-        "y": 429
+        "x": 922,
+        "y": 138
       },
       "params": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.0392156862745098,
+          "b": 0.07058823529411765,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 500,
-        "height": 500
-      }
-    },
-    {
-      "id": "sk_target-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 221,
-        "y": 281
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
-      }
-    },
-    {
-      "id": "sk_vehicle-xy1",
-      "defType": "vec2/make",
-      "position": {
-        "x": 657,
-        "y": 265
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
+        "height": 500,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.0392156862745098,
+          "b": 0.07058823529411765,
+          "a": 1
+        }
       }
     }
   ],
   "edges": [
-    {
-      "id": "e_1225",
-      "source": "sk_bg",
-      "target": "sk_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
     {
       "id": "e_1226",
       "source": "sk_initPos",
@@ -517,53 +452,11 @@
       "targetHandle": "in-next"
     },
     {
-      "id": "e_1247",
-      "source": "sk_vel",
-      "target": "sk_head",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_1248",
-      "source": "sk_mouse",
-      "target": "sk_target-xy0",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1249",
-      "source": "sk_mouse",
-      "target": "sk_target-xy0",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
       "id": "e_1250",
       "source": "sk_tFill",
       "target": "sk_target",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_1251",
-      "source": "sk_pos",
-      "target": "sk_splitP",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_1252",
-      "source": "sk_splitP",
-      "target": "sk_vehicle-xy1",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1253",
-      "source": "sk_splitP",
-      "target": "sk_vehicle-xy1",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
     },
     {
       "id": "e_1254",
@@ -595,16 +488,16 @@
     },
     {
       "id": "e_xy_sk_target-xy0",
-      "source": "sk_target-xy0",
+      "source": "sk_mv",
       "target": "sk_target",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
     },
     {
       "id": "e_xy_sk_vehicle-xy1",
-      "source": "sk_vehicle-xy1",
+      "source": "sk_pos",
       "target": "sk_vehicle",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-current",
       "targetHandle": "in-pos"
     }
   ]

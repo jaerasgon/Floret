@@ -13,7 +13,7 @@
       "defType": "spread/noise",
       "position": {
         "x": 0,
-        "y": 361
+        "y": 401
       },
       "params": {
         "count": 40,
@@ -30,12 +30,12 @@
       "id": "lp_region",
       "defType": "region/foreach",
       "position": {
-        "x": 235,
+        "x": 238,
         "y": 22
       },
       "params": {
-        "width": 1843,
-        "height": 632,
+        "width": 1760,
+        "height": 692,
         "label": "ForEach"
       },
       "ports": [
@@ -44,25 +44,25 @@
           "name": "h",
           "type": "number",
           "direction": "input",
-          "y": 493
+          "y": 553
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 405
+          "y": 346
         }
       ],
-      "width": 1843,
-      "height": 632
+      "width": 1760,
+      "height": 692
     },
     {
       "id": "lp_nbL",
       "defType": "spread/neighbor",
       "position": {
-        "x": 162,
-        "y": 40
+        "x": 168,
+        "y": 222
       },
       "params": {
         "offset": -1,
@@ -78,8 +78,8 @@
       "id": "lp_nbR",
       "defType": "spread/neighbor",
       "position": {
-        "x": 162,
-        "y": 202
+        "x": 168,
+        "y": 384
       },
       "params": {
         "offset": 1,
@@ -95,8 +95,8 @@
       "id": "lp_gtL",
       "defType": "math/step",
       "position": {
-        "x": 452,
-        "y": 270
+        "x": 445,
+        "y": 358
       },
       "params": {},
       "parentId": "lp_region"
@@ -105,8 +105,8 @@
       "id": "lp_gtR",
       "defType": "math/step",
       "position": {
-        "x": 452,
-        "y": 392
+        "x": 445,
+        "y": 480
       },
       "params": {},
       "parentId": "lp_region"
@@ -115,8 +115,8 @@
       "id": "lp_peak",
       "defType": "math/mul",
       "position": {
-        "x": 646,
-        "y": 356
+        "x": 635,
+        "y": 401
       },
       "params": {
         "valueType": "number"
@@ -127,8 +127,8 @@
       "id": "lp_sat",
       "defType": "math/mul",
       "position": {
-        "x": 914,
-        "y": 384
+        "x": 905,
+        "y": 385
       },
       "params": {
         "b": 95,
@@ -143,8 +143,8 @@
       "id": "lp_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1221,
-        "y": 391
+        "x": 1174,
+        "y": 348
       },
       "params": {
         "h": 135,
@@ -162,50 +162,18 @@
       "id": "lp_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1460,
-        "y": 481
+        "x": 1373,
+        "y": 430
       },
       "params": {},
       "parentId": "lp_region"
     },
     {
-      "id": "lp_xMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 154,
-        "y": 364
-      },
-      "params": {
-        "b": 460,
-        "valueType": "number"
-      },
-      "parentId": "lp_region",
-      "portValues": {
-        "b": 460
-      }
-    },
-    {
-      "id": "lp_xOff",
-      "defType": "math/add",
-      "position": {
-        "x": 1182,
-        "y": 269
-      },
-      "params": {
-        "b": -230,
-        "valueType": "number"
-      },
-      "parentId": "lp_region",
-      "portValues": {
-        "b": -230
-      }
-    },
-    {
       "id": "lp_hMul",
       "defType": "math/mul",
       "position": {
-        "x": 154,
-        "y": 518
+        "x": 160,
+        "y": 578
       },
       "params": {
         "b": 210,
@@ -220,8 +188,8 @@
       "id": "lp_pos",
       "defType": "vec2/make",
       "position": {
-        "x": 1460,
-        "y": 319
+        "x": 1373,
+        "y": 232
       },
       "params": {
         "y": 200
@@ -235,8 +203,8 @@
       "id": "lp_bar",
       "defType": "draw/rect",
       "position": {
-        "x": 1647,
-        "y": 370
+        "x": 1564,
+        "y": 310
       },
       "params": {
         "w": 11,
@@ -252,8 +220,8 @@
       "id": "lp_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2174,
-        "y": 391
+        "x": 2094,
+        "y": 332
       },
       "params": {
         "width": 500,
@@ -262,6 +230,27 @@
       "portValues": {
         "width": 500,
         "height": 500
+      }
+    },
+    {
+      "id": "lp_x",
+      "defType": "math/map",
+      "position": {
+        "x": 201,
+        "y": 40
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": -230,
+        "outMax": 230
+      },
+      "parentId": "lp_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": -230,
+        "outMax": 230
       }
     }
   ],
@@ -365,27 +354,6 @@
       "targetHandle": "in-color"
     },
     {
-      "id": "e_1683",
-      "source": "lp_region",
-      "target": "lp_xMul",
-      "sourceHandle": "out-__loopvar_fraction",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1684",
-      "source": "lp_xMul",
-      "target": "lp_xOff",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1685",
-      "source": "lp_xOff",
-      "target": "lp_pos",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
       "id": "e_1686",
       "source": "lp_region",
       "target": "lp_hMul",
@@ -426,6 +394,20 @@
       "target": "lp_renderer",
       "sourceHandle": "out-layer",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_lp_region_lp_x_x",
+      "source": "lp_region",
+      "target": "lp_x",
+      "sourceHandle": "out-__loopvar_fraction",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_lp_x_lp_pos_x",
+      "source": "lp_x",
+      "target": "lp_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
     }
   ]
 }

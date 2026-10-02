@@ -1,0 +1,192 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "07 · Grid of Dots",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "t07_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -304
+      },
+      "params": {
+        "text": "Grids and vec2 spreads\n\n`GridSpread` emits a Spread<vec2> — one (x,y) per cell. Pass it into a ForEach, then `vec2/split` inside the region to break each vec2 into its x and y, and feed those into a shape.\n\nResult: an 8×8 grid of circles.",
+        "width": 380,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Grids and vec2 spreads\n\n`GridSpread` emits a Spread<vec2> — one (x,y) per cell. Pass it into a ForEach, then `vec2/split` inside the region to break each vec2 into its x and y, and feed those into a shape.\n\nResult: an 8×8 grid of circles.",
+        "width": 380,
+        "height": 240
+      }
+    },
+    {
+      "id": "t07_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 0,
+        "y": 62
+      },
+      "params": {
+        "cols": 8,
+        "rows": 8,
+        "w": 320,
+        "h": 320
+      },
+      "portValues": {
+        "cols": 8,
+        "rows": 8,
+        "w": 320,
+        "h": 320
+      }
+    },
+    {
+      "id": "t07_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 206,
+        "y": 22
+      },
+      "params": {
+        "width": 696,
+        "height": 214,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 76
+        }
+      ],
+      "width": 696,
+      "height": 214
+    },
+    {
+      "id": "t07_split",
+      "defType": "vec2/split",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "t07_region"
+    },
+    {
+      "id": "t07_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 488,
+        "y": 40
+      },
+      "params": {
+        "w": 14,
+        "h": 14
+      },
+      "parentId": "t07_region",
+      "portValues": {
+        "w": 14,
+        "h": 14
+      }
+    },
+    {
+      "id": "t07_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 998,
+        "y": 62
+      },
+      "params": {
+        "width": 400,
+        "height": 400
+      },
+      "portValues": {
+        "width": 400,
+        "height": 400
+      }
+    },
+    {
+      "id": "t07_ell-xy0",
+      "defType": "vec2/make",
+      "position": {
+        "x": 308,
+        "y": 40
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "parentId": "t07_region",
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_22",
+      "source": "t07_grid",
+      "target": "t07_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_23",
+      "source": "t07_region",
+      "target": "t07_split",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_24",
+      "source": "t07_split",
+      "target": "t07_ell-xy0",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_25",
+      "source": "t07_split",
+      "target": "t07_ell-xy0",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_26",
+      "source": "t07_ell",
+      "target": "t07_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_27",
+      "source": "t07_region",
+      "target": "t07_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_xy_t07_ell-xy0",
+      "source": "t07_ell-xy0",
+      "target": "t07_ell",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    }
+  ]
+}

@@ -77,39 +77,31 @@
       }
     },
     {
-      "id": "bt_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 1499,
-        "y": 334
-      },
-      "params": {
-        "r": 8,
-        "g": 10,
-        "b": 16,
-        "a": 255
-      },
-      "portValues": {
-        "r": 8,
-        "g": 10,
-        "b": 16,
-        "a": 255
-      }
-    },
-    {
       "id": "bt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1728,
-        "y": 263
+        "x": 1721,
+        "y": 212
       },
       "params": {
         "width": 520,
-        "height": 520
+        "height": 520,
+        "background": {
+          "r": 0.03137254901960784,
+          "g": 0.0392156862745098,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 520,
-        "height": 520
+        "height": 520,
+        "background": {
+          "r": 0.03137254901960784,
+          "g": 0.0392156862745098,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       }
     },
     {
@@ -288,13 +280,6 @@
       "target": "bt_lm",
       "sourceHandle": "out-image",
       "targetHandle": "in-image"
-    },
-    {
-      "id": "e_1515",
-      "source": "bt_bg",
-      "target": "bt_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
     },
     {
       "id": "e_1516",

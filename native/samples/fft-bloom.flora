@@ -13,7 +13,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 0,
-        "y": 111
+        "y": 85
       },
       "params": {}
     },
@@ -22,7 +22,7 @@
       "defType": "math/map",
       "position": {
         "x": 223,
-        "y": 131
+        "y": 105
       },
       "params": {
         "inMin": -250,
@@ -42,7 +42,7 @@
       "defType": "io/slider",
       "position": {
         "x": 180,
-        "y": 313
+        "y": 287
       },
       "params": {
         "value": 0.25,
@@ -60,7 +60,7 @@
       "defType": "sound/oscillator",
       "position": {
         "x": 456,
-        "y": 194
+        "y": 168
       },
       "params": {
         "type": "sawtooth"
@@ -73,8 +73,8 @@
       "id": "fb_out",
       "defType": "sound/output",
       "position": {
-        "x": 768,
-        "y": 72
+        "x": 761,
+        "y": 97
       },
       "params": {}
     },
@@ -82,8 +82,8 @@
       "id": "fb_fft",
       "defType": "sound/fft",
       "position": {
-        "x": 729,
-        "y": 296
+        "x": 721,
+        "y": 219
       },
       "params": {
         "bins": "64"
@@ -96,8 +96,8 @@
       "id": "fb_idxs",
       "defType": "spread/range",
       "position": {
-        "x": 753,
-        "y": 194
+        "x": 746,
+        "y": 361
       },
       "params": {
         "count": 64
@@ -110,12 +110,12 @@
       "id": "fb_region",
       "defType": "region/foreach",
       "position": {
-        "x": 994,
+        "x": 989,
         "y": 22
       },
       "params": {
-        "width": 1823,
-        "height": 540,
+        "width": 1027,
+        "height": 640,
         "label": "ForEach"
       },
       "ports": [
@@ -124,31 +124,31 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 249
+          "y": 319
         },
         {
           "id": "v",
           "name": "v",
           "type": "number",
           "direction": "input",
-          "y": 269
+          "y": 289
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 255
+          "y": 305
         }
       ],
-      "width": 1823,
-      "height": 540
+      "width": 1027,
+      "height": 640
     },
     {
       "id": "fb_angleMul",
       "defType": "math/mul",
       "position": {
-        "x": 142,
+        "x": 146,
         "y": 40
       },
       "params": {
@@ -161,95 +161,21 @@
       }
     },
     {
-      "id": "fb_vScaled",
-      "defType": "math/mul",
-      "position": {
-        "x": 142,
-        "y": 162
-      },
-      "params": {
-        "b": 0.7,
-        "valueType": "number"
-      },
-      "parentId": "fb_region",
-      "portValues": {
-        "b": 0.7
-      }
-    },
-    {
-      "id": "fb_radius",
-      "defType": "math/add",
-      "position": {
-        "x": 410,
-        "y": 135
-      },
-      "params": {
-        "b": 80,
-        "valueType": "number"
-      },
-      "parentId": "fb_region",
-      "portValues": {
-        "b": 80
-      }
-    },
-    {
       "id": "fb_fromAng",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 678,
-        "y": 89
+        "x": 427,
+        "y": 150
       },
       "params": {},
       "parentId": "fb_region"
-    },
-    {
-      "id": "fb_splitPos",
-      "defType": "vec2/split",
-      "position": {
-        "x": 876,
-        "y": 110
-      },
-      "params": {},
-      "parentId": "fb_region"
-    },
-    {
-      "id": "fb_xCenter",
-      "defType": "math/add",
-      "position": {
-        "x": 1065,
-        "y": 70
-      },
-      "params": {
-        "b": 0,
-        "valueType": "number"
-      },
-      "parentId": "fb_region",
-      "portValues": {
-        "b": 0
-      }
-    },
-    {
-      "id": "fb_yCenter",
-      "defType": "math/add",
-      "position": {
-        "x": 1065,
-        "y": 192
-      },
-      "params": {
-        "b": 0,
-        "valueType": "number"
-      },
-      "parentId": "fb_region",
-      "portValues": {
-        "b": 0
-      }
     },
     {
       "id": "fb_hueMul",
       "defType": "math/mul",
       "position": {
-        "x": 142,
-        "y": 406
+        "x": 146,
+        "y": 526
       },
       "params": {
         "b": 5.625,
@@ -264,8 +190,8 @@
       "id": "fb_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1107,
-        "y": 386
+        "x": 434,
+        "y": 467
       },
       "params": {
         "s": 80,
@@ -283,8 +209,8 @@
       "id": "fb_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1380,
-        "y": 376
+        "x": 630,
+        "y": 408
       },
       "params": {
         "mode": "color"
@@ -292,112 +218,90 @@
       "parentId": "fb_region",
       "portValues": {
         "mode": "color"
-      }
-    },
-    {
-      "id": "fb_sScaled",
-      "defType": "math/mul",
-      "position": {
-        "x": 142,
-        "y": 284
-      },
-      "params": {
-        "b": 0.04,
-        "valueType": "number"
-      },
-      "parentId": "fb_region",
-      "portValues": {
-        "b": 0.04
-      }
-    },
-    {
-      "id": "fb_sAdd",
-      "defType": "math/add",
-      "position": {
-        "x": 1338,
-        "y": 254
-      },
-      "params": {
-        "b": 3,
-        "valueType": "number"
-      },
-      "parentId": "fb_region",
-      "portValues": {
-        "b": 3
       }
     },
     {
       "id": "fb_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1615,
-        "y": 219
+        "x": 819,
+        "y": 269
       },
       "params": {},
       "parentId": "fb_region"
     },
     {
-      "id": "fb_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 1863,
-        "y": 610
-      },
-      "params": {
-        "r": 12,
-        "g": 8,
-        "b": 28,
-        "a": 255
-      },
-      "portValues": {
-        "r": 12,
-        "g": 8,
-        "b": 28,
-        "a": 255
-      }
-    },
-    {
       "id": "fb_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2939,
-        "y": 415
+        "x": 2112,
+        "y": 291
       },
       "params": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.03137254901960784,
+          "b": 0.10980392156862745,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.03137254901960784,
+          "b": 0.10980392156862745,
+          "a": 1
+        }
       }
     },
     {
-      "id": "fb_dot-xy0",
-      "defType": "vec2/make",
+      "id": "fb_radius",
+      "defType": "math/map",
       "position": {
-        "x": 1380,
-        "y": 132
+        "x": 189,
+        "y": 162
       },
       "params": {
-        "x": 0,
-        "y": 0
+        "inMin": 0,
+        "inMax": 100,
+        "outMin": 80,
+        "outMax": 150
       },
       "parentId": "fb_region",
       "portValues": {
-        "x": 0,
-        "y": 0
+        "inMin": 0,
+        "inMax": 100,
+        "outMin": 80,
+        "outMax": 150
+      }
+    },
+    {
+      "id": "fb_size",
+      "defType": "math/map",
+      "position": {
+        "x": 193,
+        "y": 344
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 100,
+        "outMin": 3,
+        "outMax": 7
+      },
+      "parentId": "fb_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 100,
+        "outMin": 3,
+        "outMax": 7
       }
     }
   ],
   "edges": [
-    {
-      "id": "e_1577",
-      "source": "fb_bg",
-      "target": "fb_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
     {
       "id": "e_1578",
       "source": "fb_mouse",
@@ -455,53 +359,11 @@
       "targetHandle": "in-a"
     },
     {
-      "id": "e_1586",
-      "source": "fb_region",
-      "target": "fb_vScaled",
-      "sourceHandle": "out-v",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1587",
-      "source": "fb_vScaled",
-      "target": "fb_radius",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_1588",
       "source": "fb_angleMul",
       "target": "fb_fromAng",
       "sourceHandle": "out-result",
       "targetHandle": "in-angle"
-    },
-    {
-      "id": "e_1589",
-      "source": "fb_radius",
-      "target": "fb_fromAng",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-mag"
-    },
-    {
-      "id": "e_1590",
-      "source": "fb_fromAng",
-      "target": "fb_splitPos",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_1591",
-      "source": "fb_splitPos",
-      "target": "fb_xCenter",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1592",
-      "source": "fb_splitPos",
-      "target": "fb_yCenter",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-a"
     },
     {
       "id": "e_1593",
@@ -525,48 +387,6 @@
       "targetHandle": "in-color"
     },
     {
-      "id": "e_1596",
-      "source": "fb_region",
-      "target": "fb_sScaled",
-      "sourceHandle": "out-v",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1597",
-      "source": "fb_sScaled",
-      "target": "fb_sAdd",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1598",
-      "source": "fb_xCenter",
-      "target": "fb_dot-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1599",
-      "source": "fb_yCenter",
-      "target": "fb_dot-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1600",
-      "source": "fb_sAdd",
-      "target": "fb_dot",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_1601",
-      "source": "fb_sAdd",
-      "target": "fb_dot",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-h"
-    },
-    {
       "id": "e_1602",
       "source": "fb_fill",
       "target": "fb_dot",
@@ -588,11 +408,46 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_fb_dot-xy0",
-      "source": "fb_dot-xy0",
+      "id": "e_fb_fromAng_fb_dot_pos",
+      "source": "fb_fromAng",
       "target": "fb_dot",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_fb_region_fb_radius_x",
+      "source": "fb_region",
+      "target": "fb_radius",
+      "sourceHandle": "out-v",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_fb_radius_fb_fromAng_mag",
+      "source": "fb_radius",
+      "target": "fb_fromAng",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_fb_region_fb_size_x",
+      "source": "fb_region",
+      "target": "fb_size",
+      "sourceHandle": "out-v",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_fb_size_fb_dot_w",
+      "source": "fb_size",
+      "target": "fb_dot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_fb_size_fb_dot_h",
+      "source": "fb_size",
+      "target": "fb_dot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
     }
   ]
 }

@@ -12,8 +12,8 @@
       "id": "imd_time",
       "defType": "time/seconds",
       "position": {
-        "x": 28,
-        "y": 306
+        "x": 0,
+        "y": 396
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "imd_sinT",
       "defType": "math/sin",
       "position": {
-        "x": 594,
-        "y": 189
+        "x": 444,
+        "y": 396
       },
       "params": {}
     },
@@ -30,8 +30,8 @@
       "id": "imd_tSpeed",
       "defType": "math/mul",
       "position": {
-        "x": 259,
-        "y": 306
+        "x": 180,
+        "y": 396
       },
       "params": {
         "b": 1.2,
@@ -42,228 +42,141 @@
       }
     },
     {
-      "id": "imd_offsetMul",
-      "defType": "math/mul",
-      "position": {
-        "x": 781,
-        "y": 203
-      },
-      "params": {
-        "b": 22,
-        "valueType": "number"
-      },
-      "portValues": {
-        "b": 22
-      }
-    },
-    {
-      "id": "imd_negOffset",
-      "defType": "math/mul",
-      "position": {
-        "x": 1064,
-        "y": 244
-      },
-      "params": {
-        "b": -1
-      },
-      "portValues": {
-        "b": -1
-      }
-    },
-    {
       "id": "imd_img",
       "defType": "io/image-url",
       "position": {
-        "x": 266,
-        "y": 428
+        "x": 842,
+        "y": 337
       },
       "params": {
         "url": "https://picsum.photos/seed/floret/500/500"
       },
       "portValues": {
         "url": "https://picsum.photos/seed/floret/500/500"
-      }
-    },
-    {
-      "id": "imd_baseX",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 0
-      },
-      "params": {
-        "value": -200
-      },
-      "portValues": {
-        "value": -200
-      }
-    },
-    {
-      "id": "imd_baseY",
-      "defType": "value/number",
-      "position": {
-        "x": 0,
-        "y": 191
-      },
-      "params": {
-        "value": -200
-      },
-      "portValues": {
-        "value": -200
-      }
-    },
-    {
-      "id": "imd_drawW",
-      "defType": "value/number",
-      "position": {
-        "x": 273,
-        "y": 590
-      },
-      "params": {
-        "value": 400
-      },
-      "portValues": {
-        "value": 400
-      }
-    },
-    {
-      "id": "imd_drawH",
-      "defType": "value/number",
-      "position": {
-        "x": 273,
-        "y": 692
-      },
-      "params": {
-        "value": 400
-      },
-      "portValues": {
-        "value": 400
-      }
-    },
-    {
-      "id": "imd_xShifted",
-      "defType": "math/add",
-      "position": {
-        "x": 1064,
-        "y": 55
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "imd_xShiftedNeg",
-      "defType": "math/add",
-      "position": {
-        "x": 1342,
-        "y": 206
-      },
-      "params": {
-        "valueType": "number"
-      }
-    },
-    {
-      "id": "imd_redTint",
-      "defType": "color/rgb",
-      "position": {
-        "x": 1382,
-        "y": 396
-      },
-      "params": {
-        "r": 255,
-        "g": 0,
-        "b": 0,
-        "a": 200
-      },
-      "portValues": {
-        "r": 255,
-        "g": 0,
-        "b": 0,
-        "a": 200
-      }
-    },
-    {
-      "id": "imd_grnTint",
-      "defType": "color/rgb",
-      "position": {
-        "x": 301,
-        "y": 794
-      },
-      "params": {
-        "r": 0,
-        "g": 255,
-        "b": 0,
-        "a": 200
-      },
-      "portValues": {
-        "r": 0,
-        "g": 255,
-        "b": 0,
-        "a": 200
-      }
-    },
-    {
-      "id": "imd_bluTint",
-      "defType": "color/rgb",
-      "position": {
-        "x": 1655,
-        "y": 554
-      },
-      "params": {
-        "r": 0,
-        "g": 0,
-        "b": 255,
-        "a": 200
-      },
-      "portValues": {
-        "r": 0,
-        "g": 0,
-        "b": 255,
-        "a": 200
       }
     },
     {
       "id": "imd_drawBase",
       "defType": "draw/image",
       "position": {
-        "x": 582,
-        "y": 291
+        "x": 1150,
+        "y": 0
       },
-      "params": {}
+      "params": {
+        "w": 400,
+        "h": 400,
+        "pos": {
+          "x": -200,
+          "y": -200
+        }
+      },
+      "portValues": {
+        "w": 400,
+        "h": 400,
+        "pos": {
+          "x": -200,
+          "y": -200
+        }
+      }
     },
     {
       "id": "imd_drawR",
       "defType": "draw/image",
       "position": {
-        "x": 1649,
-        "y": 352
+        "x": 1153,
+        "y": 202
       },
-      "params": {}
+      "params": {
+        "w": 400,
+        "h": 400,
+        "tint": {
+          "r": 1,
+          "g": 0,
+          "b": 0,
+          "a": 0.7843137254901961
+        }
+      },
+      "portValues": {
+        "w": 400,
+        "h": 400,
+        "tint": {
+          "r": 1,
+          "g": 0,
+          "b": 0,
+          "a": 0.7843137254901961
+        }
+      }
     },
     {
       "id": "imd_drawG",
       "defType": "draw/image",
       "position": {
-        "x": 582,
-        "y": 525
+        "x": 1150,
+        "y": 404
       },
-      "params": {}
+      "params": {
+        "w": 400,
+        "h": 400,
+        "pos": {
+          "x": -200,
+          "y": -200
+        },
+        "tint": {
+          "r": 0,
+          "g": 1,
+          "b": 0,
+          "a": 0.7843137254901961
+        }
+      },
+      "portValues": {
+        "w": 400,
+        "h": 400,
+        "pos": {
+          "x": -200,
+          "y": -200
+        },
+        "tint": {
+          "r": 0,
+          "g": 1,
+          "b": 0,
+          "a": 0.7843137254901961
+        }
+      }
     },
     {
       "id": "imd_drawB",
       "defType": "draw/image",
       "position": {
-        "x": 1901,
-        "y": 522
+        "x": 1153,
+        "y": 606
       },
-      "params": {}
+      "params": {
+        "w": 400,
+        "h": 400,
+        "tint": {
+          "r": 0,
+          "g": 0,
+          "b": 1,
+          "a": 0.7843137254901961
+        }
+      },
+      "portValues": {
+        "w": 400,
+        "h": 400,
+        "tint": {
+          "r": 0,
+          "g": 0,
+          "b": 1,
+          "a": 0.7843137254901961
+        }
+      }
     },
     {
       "id": "imd_blendBase",
       "defType": "transform/blend",
       "position": {
-        "x": 1888,
-        "y": 274
+        "x": 1377,
+        "y": 100
       },
       "params": {
         "mode": "blend"
@@ -276,8 +189,8 @@
       "id": "imd_blendR",
       "defType": "transform/blend",
       "position": {
-        "x": 1894,
-        "y": 396
+        "x": 1383,
+        "y": 222
       },
       "params": {
         "mode": "add"
@@ -290,8 +203,8 @@
       "id": "imd_blendG",
       "defType": "transform/blend",
       "position": {
-        "x": 2120,
-        "y": 594
+        "x": 1368,
+        "y": 344
       },
       "params": {
         "mode": "subtract"
@@ -304,8 +217,8 @@
       "id": "imd_blendB",
       "defType": "transform/blend",
       "position": {
-        "x": 2379,
-        "y": 549
+        "x": 1383,
+        "y": 466
       },
       "params": {
         "mode": "add"
@@ -313,152 +226,111 @@
       "portValues": {
         "mode": "add"
       }
-    },
-    {
-      "id": "imd_s1",
-      "defType": "spread/stack",
-      "position": {
-        "x": 2138,
-        "y": 359
-      },
-      "params": {}
-    },
-    {
-      "id": "imd_s2",
-      "defType": "spread/stack",
-      "position": {
-        "x": 2382,
-        "y": 427
-      },
-      "params": {}
-    },
-    {
-      "id": "imd_s3",
-      "defType": "spread/stack",
-      "position": {
-        "x": 2594,
-        "y": 476
-      },
-      "params": {}
     },
     {
       "id": "imd_finalGroup",
       "defType": "transform/group",
       "position": {
-        "x": 2795,
-        "y": 471
-      },
-      "params": {}
-    },
-    {
-      "id": "imd_bg",
-      "defType": "color/rgb",
-      "position": {
-        "x": 2837,
-        "y": 593
+        "x": 1628,
+        "y": 253
       },
       "params": {
-        "r": 10,
-        "g": 8,
-        "b": 16,
-        "a": 255
+        "slotCount": 4
       },
-      "portValues": {
-        "r": 10,
-        "g": 8,
-        "b": 16,
-        "a": 255
-      }
+      "portValues": {}
     },
     {
       "id": "imd_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 3067,
-        "y": 520
+        "x": 1892,
+        "y": 253
       },
       "params": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.03137254901960784,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       },
       "portValues": {
         "width": 500,
-        "height": 500
+        "height": 500,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.03137254901960784,
+          "b": 0.06274509803921569,
+          "a": 1
+        }
       }
     },
     {
-      "id": "imd_drawBase-xy0",
-      "defType": "vec2/make",
+      "id": "imd_offset",
+      "defType": "vec2/scale",
       "position": {
-        "x": 301,
-        "y": 30
+        "x": 612,
+        "y": 376
       },
       "params": {
-        "x": 0,
-        "y": 0
+        "v": {
+          "x": 22,
+          "y": 0
+        }
       },
       "portValues": {
-        "x": 0,
-        "y": 0
+        "v": {
+          "x": 22,
+          "y": 0
+        }
       }
     },
     {
-      "id": "imd_drawR-xy1",
-      "defType": "vec2/make",
+      "id": "imd_posR",
+      "defType": "math/add",
       "position": {
-        "x": 1384,
-        "y": 84
+        "x": 835,
+        "y": 215
       },
       "params": {
-        "x": 0,
-        "y": 0
+        "a": {
+          "x": -200,
+          "y": -200
+        },
+        "valueType": "vec2"
       },
       "portValues": {
-        "x": 0,
-        "y": 0
+        "a": {
+          "x": -200,
+          "y": -200
+        }
       }
     },
     {
-      "id": "imd_drawG-xy2",
-      "defType": "vec2/make",
+      "id": "imd_posB",
+      "defType": "math/sub",
       "position": {
-        "x": 301,
-        "y": 152
+        "x": 835,
+        "y": 499
       },
       "params": {
-        "x": 0,
-        "y": 0
+        "a": {
+          "x": -200,
+          "y": -200
+        },
+        "valueType": "vec2"
       },
       "portValues": {
-        "x": 0,
-        "y": 0
-      }
-    },
-    {
-      "id": "imd_drawB-xy3",
-      "defType": "vec2/make",
-      "position": {
-        "x": 1655,
-        "y": 230
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
+        "a": {
+          "x": -200,
+          "y": -200
+        }
       }
     }
   ],
   "edges": [
-    {
-      "id": "e_1414",
-      "source": "imd_bg",
-      "target": "imd_renderer",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-background"
-    },
     {
       "id": "e_1415",
       "source": "imd_time",
@@ -472,48 +344,6 @@
       "target": "imd_sinT",
       "sourceHandle": "out-result",
       "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1417",
-      "source": "imd_sinT",
-      "target": "imd_offsetMul",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1418",
-      "source": "imd_offsetMul",
-      "target": "imd_negOffset",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1419",
-      "source": "imd_baseX",
-      "target": "imd_xShifted",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1420",
-      "source": "imd_offsetMul",
-      "target": "imd_xShifted",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1421",
-      "source": "imd_baseX",
-      "target": "imd_xShiftedNeg",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1422",
-      "source": "imd_negOffset",
-      "target": "imd_xShiftedNeg",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
     },
     {
       "id": "e_1423",
@@ -544,139 +374,6 @@
       "targetHandle": "in-image"
     },
     {
-      "id": "e_1427",
-      "source": "imd_baseX",
-      "target": "imd_drawBase-xy0",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1428",
-      "source": "imd_baseY",
-      "target": "imd_drawBase-xy0",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1429",
-      "source": "imd_drawW",
-      "target": "imd_drawBase",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_1430",
-      "source": "imd_drawH",
-      "target": "imd_drawBase",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_1431",
-      "source": "imd_xShifted",
-      "target": "imd_drawR-xy1",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1432",
-      "source": "imd_baseY",
-      "target": "imd_drawR-xy1",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1433",
-      "source": "imd_drawW",
-      "target": "imd_drawR",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_1434",
-      "source": "imd_drawH",
-      "target": "imd_drawR",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_1435",
-      "source": "imd_redTint",
-      "target": "imd_drawR",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-tint"
-    },
-    {
-      "id": "e_1436",
-      "source": "imd_baseX",
-      "target": "imd_drawG-xy2",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1437",
-      "source": "imd_baseY",
-      "target": "imd_drawG-xy2",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1438",
-      "source": "imd_drawW",
-      "target": "imd_drawG",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_1439",
-      "source": "imd_drawH",
-      "target": "imd_drawG",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_1440",
-      "source": "imd_grnTint",
-      "target": "imd_drawG",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-tint"
-    },
-    {
-      "id": "e_1441",
-      "source": "imd_xShiftedNeg",
-      "target": "imd_drawB-xy3",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_1442",
-      "source": "imd_baseY",
-      "target": "imd_drawB-xy3",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_1443",
-      "source": "imd_drawW",
-      "target": "imd_drawB",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_1444",
-      "source": "imd_drawH",
-      "target": "imd_drawB",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_1445",
-      "source": "imd_bluTint",
-      "target": "imd_drawB",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-tint"
-    },
-    {
       "id": "e_1446",
       "source": "imd_drawBase",
       "target": "imd_blendBase",
@@ -705,55 +402,6 @@
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_1450",
-      "source": "imd_blendBase",
-      "target": "imd_s1",
-      "sourceHandle": "out-blended",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1451",
-      "source": "imd_blendR",
-      "target": "imd_s1",
-      "sourceHandle": "out-blended",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1452",
-      "source": "imd_s1",
-      "target": "imd_s2",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1453",
-      "source": "imd_blendG",
-      "target": "imd_s2",
-      "sourceHandle": "out-blended",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1454",
-      "source": "imd_s2",
-      "target": "imd_s3",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_1455",
-      "source": "imd_blendB",
-      "target": "imd_s3",
-      "sourceHandle": "out-blended",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1456",
-      "source": "imd_s3",
-      "target": "imd_finalGroup",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-s1"
-    },
-    {
       "id": "e_1457",
       "source": "imd_finalGroup",
       "target": "imd_renderer",
@@ -761,32 +409,67 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_imd_drawBase-xy0",
-      "source": "imd_drawBase-xy0",
-      "target": "imd_drawBase",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
+      "id": "e_imd_sinT_imd_offset_s",
+      "source": "imd_sinT",
+      "target": "imd_offset",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
     },
     {
-      "id": "e_xy_imd_drawR-xy1",
-      "source": "imd_drawR-xy1",
+      "id": "e_imd_offset_imd_posR_b",
+      "source": "imd_offset",
+      "target": "imd_posR",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_imd_offset_imd_posB_b",
+      "source": "imd_offset",
+      "target": "imd_posB",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_imd_posR_imd_drawR_pos",
+      "source": "imd_posR",
       "target": "imd_drawR",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_xy_imd_drawG-xy2",
-      "source": "imd_drawG-xy2",
-      "target": "imd_drawG",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
-    },
-    {
-      "id": "e_xy_imd_drawB-xy3",
-      "source": "imd_drawB-xy3",
+      "id": "e_imd_posB_imd_drawB_pos",
+      "source": "imd_posB",
       "target": "imd_drawB",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_imd_blendBase_imd_finalGroup_s1",
+      "source": "imd_blendBase",
+      "target": "imd_finalGroup",
+      "sourceHandle": "out-blended",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_imd_blendR_imd_finalGroup_s2",
+      "source": "imd_blendR",
+      "target": "imd_finalGroup",
+      "sourceHandle": "out-blended",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_imd_blendG_imd_finalGroup_s3",
+      "source": "imd_blendG",
+      "target": "imd_finalGroup",
+      "sourceHandle": "out-blended",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_imd_blendB_imd_finalGroup_s4",
+      "source": "imd_blendB",
+      "target": "imd_finalGroup",
+      "sourceHandle": "out-blended",
+      "targetHandle": "in-s4"
     }
   ]
 }

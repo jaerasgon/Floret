@@ -7,7 +7,18 @@ engine must reproduce them. Don't edit by hand; re-export instead.
 | File | Contents |
 |---|---|
 | `registry.json` | Every node type: ports (name, type, kind, default, `param`, `constant`), eval kind, flags |
-| `traces/<sample>.json.gz` | For each sample in `../samples/`: compile result (warnings, scope order, runtime nodes, edges), the frame input for every tick (`inputs`), and every node's outputs at frames 0, 1, 2, 10, 30, 60 |
+| `samples/<sample>.flora` | Each traced sample's patch exactly as the trace recorded it |
+| `traces/<sample>.json.gz` | For each sample in `samples/`: compile result (warnings, scope order, runtime nodes, edges), the frame input for every tick (`inputs`), and every node's outputs at frames 0, 1, 2, 10, 30, 60 |
+
+## Frozen samples
+
+The parity test (`crates/floret-engine/tests/parity.rs`) compiles
+`samples/<id>.flora` from this folder, not the app's library in
+`../samples/`. A trace names every node of the graph it was recorded from,
+so parity needs that graph. The library samples have since been reworked
+(fewer nodes, the same pictures) and no longer match the traces node for
+node. They're checked by `tests/all_samples.rs` instead: each one compiles
+without warnings, runs and draws.
 
 ## Run conditions
 

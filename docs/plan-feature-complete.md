@@ -15,12 +15,21 @@ product; the TypeScript web app is reference-only.
 - **CI is manual-only** (Actions tab → native → Run workflow, Linux by
   default). GitHub Actions minutes ran out; macOS counts 10×, Windows 2×.
   Test locally before pushing; never trigger macOS/Windows runs casually.
-- **In flight when this was written:** a sample-slimming agent (branch
-  `worktree-agent-a4320434ded6225e6`). It freezes today's samples as parity
-  fixtures in `native/fixtures/samples/`, rebuilds `noc-fractal-tree` around a
-  ForEach, and cuts node counts in every sample. If that branch still
-  exists, merge it (`--no-ff`), run fmt / clippy / tests, push, and remove the
-  worktree.
+- **Samples:** slimmed from 1662 to 1266 nodes; NOC Fractal Tree is rebuilt
+  around one ForEach. Parity now reads frozen copies of the original samples
+  in `native/fixtures/samples/`, so library samples can change freely
+  (`tests/all_samples.rs` checks they compile, run and draw).
+- **Open questions for the owner (not changed yet):**
+  - noc-fractal-tree and fractal-tree-spread are now the same patch; drop one
+    or make it different?
+  - Several samples draw shapes off-centre: their positions were written for
+    top-left anchors, but draw nodes now anchor at the centre (tut-01,
+    pixel-sort, datamosh). Fix them, which changes their pictures?
+  - Comments that were already wrong:
+    - tut-19 says "Move past 150px" but toggles on time.
+    - tut-20 says the subpatch is "used twice" (it's used once).
+    - tut-41 mentions a shuffle node that isn't in the patch.
+    - kaleidoscope's description says "mouse-controlled triangle".
 - **Deferred until feature complete:** the proper Floret.app bundle (icon,
   Finder double-click, signing / notarisation), port-name freeze (#78),
   README (#77), release (#81), QA (#82). Windows / Linux come later.

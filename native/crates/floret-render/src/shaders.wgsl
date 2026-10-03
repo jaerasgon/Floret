@@ -10,9 +10,73 @@ struct View {
     _pad: vec2<f32>,
 };
 @group(0) @binding(0) var<uniform> view: View;
+// Gradient paints (`FrameBuilder::paint`), 1024 RGBA32F texels a row.
+@group(0) @binding(1) var grad_tex: texture_2d<f32>;
 
 fn to_clip(p: vec2<f32>) -> vec4<f32> {
     return vec4<f32>(p.x / (view.size.x * 0.5), -p.y / (view.size.y * 0.5), 0.0, 1.0);
+}
+
+// ─── Paints ──────────────────────────────────────────────────────────────────
+
+fn grad_texel(k: u32) -> vec4<f32> {
+    return textureLoad(grad_tex, vec2<i32>(i32(k % 1024u), i32(k / 1024u)), 0);
+}
+
+// A gradient reference's colour at fragment `frag` (pixels), premultiplied.
+// `c.r` is the header texel: (kind, extend, stop offset, stop count), then
+// the world → gradient affine as two rows; `c.a - 2` is the opacity.
+fn gradient_at(c: vec4<f32>, frag: vec2<f32>) -> vec4<f32> {
+    let h = u32(c.r + 0.5);
+    let head = grad_texel(h);
+    let world = vec3<f32>(frag - view.size * 0.5, 1.0);
+    let p = vec2<f32>(dot(grad_texel(h + 1u).xyz, world), dot(grad_texel(h + 2u).xyz, world));
+    var t: f32;
+    if (head.x < 0.5) {
+        t = p.x;                                    // linear
+    } else if (head.x < 1.5) {
+        t = length(p);                              // radial
+    } else {
+        t = atan2(p.y, p.x) / 6.283185307;          // conic, clockwise on screen
+        t = t - floor(t);
+    }
+    if (head.y < 0.5) {
+        t = clamp(t, 0.0, 1.0);                     // pad
+    } else if (head.y < 1.5) {
+        t = t - floor(t);                           // repeat
+    } else {
+        t = 1.0 - abs((t * 0.5 - floor(t * 0.5)) * 2.0 - 1.0);   // mirror
+    }
+    let off = u32(head.z + 0.5);
+    let n = u32(head.w + 0.5);
+    if (n == 0u) {
+        return vec4<f32>(0.0);
+    }
+    // Stops: (position), (premultiplied colour).
+    var col = grad_texel(off + 2u * (n - 1u) + 1u);
+    if (t <= grad_texel(off).x) {
+        col = grad_texel(off + 1u);
+    } else {
+        for (var i = 1u; i < n; i++) {
+            let pb = grad_texel(off + 2u * i).x;
+            if (t <= pb) {
+                let pa = grad_texel(off + 2u * (i - 1u)).x;
+                let f = select(1.0, (t - pa) / (pb - pa), pb > pa);
+                col = mix(grad_texel(off + 2u * i - 1u), grad_texel(off + 2u * i + 1u), f);
+                break;
+            }
+        }
+    }
+    return col * clamp(c.a - 2.0, 0.0, 1.0);
+}
+
+// A paint colour (straight RGBA, or a gradient reference: alpha >= 1.5) at
+// a fragment, premultiplied.
+fn paint_at(c: vec4<f32>, frag: vec2<f32>) -> vec4<f32> {
+    if (c.a >= 1.5) {
+        return gradient_at(c, frag);
+    }
+    return vec4<f32>(c.rgb * c.a, c.a);
 }
 
 // ─── A. SDF instances: rect / ellipse / capsule ──────────────────────────────
@@ -116,8 +180,9 @@ fn sd_ellipse(p_in: vec2<f32>, ab_in: vec2<f32>) -> f32 {
     return length(r - p) * sign(p.y - r.y);
 }
 
-fn over(dst: vec4<f32>, rgb: vec3<f32>, a: f32) -> vec4<f32> {
-    return vec4<f32>(rgb * a + dst.rgb * (1.0 - a), a + dst.a * (1.0 - a));
+// Premultiplied `src` over `dst`.
+fn over(dst: vec4<f32>, src: vec4<f32>) -> vec4<f32> {
+    return src + dst * (1.0 - src.a);
 }
 
 @fragment
@@ -139,7 +204,7 @@ fn fs_sdf(in: SdfOut) -> @location(0) vec4<f32> {
     var col = vec4<f32>(0.0);
     if (in.fill.a > 0.0) {
         let c = 1.0 - smoothstep(-aa, aa, d);
-        col = over(col, in.fill.rgb, in.fill.a * c);
+        col = over(col, paint_at(in.fill, in.pos.xy) * c);
     }
     if (ty < 1.5 && in.stroke.a > 0.0 && sw > 0.0) {
         var bc = 0.0;
@@ -150,7 +215,7 @@ fn fs_sdf(in: SdfOut) -> @location(0) vec4<f32> {
         }
         let edge = abs(d - bc) - sw * 0.5;
         let c = 1.0 - smoothstep(-aa, aa, edge);
-        col = over(col, in.stroke.rgb, in.stroke.a * c);
+        col = over(col, paint_at(in.stroke, in.pos.xy) * c);
     }
     if (col.a <= 0.0) {
         discard;
@@ -175,6 +240,9 @@ fn vs_fill(@location(0) pos: vec2<f32>, @location(1) col: vec4<f32>) -> FillOut 
 
 @fragment
 fn fs_fill(in: FillOut) -> @location(0) vec4<f32> {
+    if (in.col.a >= 1.5) {
+        return gradient_at(in.col, in.pos.xy);
+    }
     return in.col;   // premultiplied
 }
 
@@ -205,7 +273,8 @@ fn vs_tex(
 @fragment
 fn fs_tex(in: TexOut) -> @location(0) vec4<f32> {
     let t = textureSample(t_tex, t_samp, in.uv);   // premultiplied
-    return vec4<f32>(t.rgb * in.tint.rgb, t.a) * in.tint.a;
+    let p = paint_at(in.tint, in.pos.xy);
+    return vec4<f32>(t.rgb * p.rgb, t.a * p.a);
 }
 
 // ─── Layer composite ─────────────────────────────────────────────────────────
@@ -226,6 +295,39 @@ fn fs_composite(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     let dims = vec2<i32>(textureDimensions(t_tex));
     let p = clamp(vec2<i32>(floor(pos.xy)), vec2<i32>(0), dims - vec2<i32>(1));
     return textureLoad(t_tex, p, 0);
+}
+
+// Mask composites (destination-in, pipeline state): the output alpha is
+// the mask layer's coverage at the pixel — its alpha, or its luminance
+// (premultiplied, so × alpha) — or 1 − that when inverted.
+fn mask_coverage(pos: vec4<f32>, luminance: bool) -> f32 {
+    let dims = vec2<i32>(textureDimensions(t_tex));
+    let p = clamp(vec2<i32>(floor(pos.xy)), vec2<i32>(0), dims - vec2<i32>(1));
+    let c = textureLoad(t_tex, p, 0);
+    if (luminance) {
+        return clamp(dot(c.rgb, vec3<f32>(0.2126, 0.7152, 0.0722)), 0.0, 1.0);
+    }
+    return c.a;
+}
+
+@fragment
+fn fs_mask_alpha(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(mask_coverage(pos, false));
+}
+
+@fragment
+fn fs_mask_luminance(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(mask_coverage(pos, true));
+}
+
+@fragment
+fn fs_mask_alpha_inverted(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(1.0 - mask_coverage(pos, false));
+}
+
+@fragment
+fn fs_mask_luminance_inverted(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
+    return vec4<f32>(1.0 - mask_coverage(pos, true));
 }
 
 // ─── Separable Gaussian (style.blur) ─────────────────────────────────────────

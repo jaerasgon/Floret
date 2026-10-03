@@ -273,6 +273,8 @@ pub enum ShaderChannel {
     None,
     /// The wired `input` layer.
     Input,
+    /// The second layer, [`ShaderShape::map`] (built-in effects only).
+    Map,
     /// Another buffer's output (its own: the previous frame).
     Buffer(ShaderBuffer),
 }
@@ -317,6 +319,9 @@ pub struct ShaderShape {
     pub uniforms: Arc<[UniformValue]>,
     /// The `input` channel's layer (rendered to a texture first).
     pub input: Option<Arc<crate::scene::SceneNode>>,
+    /// A second layer for [`ShaderChannel::Map`] (`gpu/effect`'s
+    /// displacement map); `gpu/shader` never sets it.
+    pub map: Option<Arc<crate::scene::SceneNode>>,
 }
 
 impl ShaderShape {
@@ -330,6 +335,7 @@ impl ShaderShape {
         let channel = |c: &ShaderChannel| match c {
             ShaderChannel::None => Value::Null,
             ShaderChannel::Input => obj(vec![("kind", Value::str("input"))]),
+            ShaderChannel::Map => obj(vec![("kind", Value::str("map"))]),
             ShaderChannel::Buffer(b) => obj(vec![
                 ("kind", Value::str("buffer")),
                 ("buf", Value::str(b.as_str())),
@@ -384,6 +390,10 @@ impl ShaderShape {
             "input".into(),
             self.input.clone().map_or(Value::Null, Value::Scene),
         );
+        // Native-only, so absent unless set (keeps the TS traces comparable).
+        if let Some(map) = &self.map {
+            m.insert("map".into(), Value::Scene(map.clone()));
+        }
     }
 }
 

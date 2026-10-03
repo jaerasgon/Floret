@@ -5,7 +5,9 @@
 //! (`src/runtime/gl/`): SDF rects / ellipses / capsules, stencil-winding
 //! polygon fills, CPU-rasterised text quads, image quads, particle batches
 //! and trails (instanced SDFs), blend-group layers, per-shape Gaussian blur,
-//! scissor clips, MSAA, premultiplied alpha. [`LayerRasterizer`] renders
+//! scissor clips, MSAA, premultiplied alpha. Native additions: gradient
+//! paints (evaluated per pixel), alpha / luminance masks, and `gpu/effect`
+//! post-effects (built-in shader passes). [`LayerRasterizer`] renders
 //! layers back into engine images.
 //!
 //! ```no_run

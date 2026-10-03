@@ -19,10 +19,13 @@ use std::sync::{Arc, OnceLock};
 // ─── Paint ───────────────────────────────────────────────────────────────────
 
 /// A fill / stroke colour: the CSS string TS stores plus RGBA (0..1).
+/// A gradient paint (`style/gradient`) also carries its [`Gradient`]; `rgba`
+/// is then its first stop, for consumers that only draw flat colours.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Paint {
     pub css: Arc<str>,
     pub rgba: [f64; 4],
+    pub gradient: Option<Arc<Gradient>>,
 }
 
 impl Paint {
@@ -63,6 +66,7 @@ impl Paint {
         Paint {
             css: Arc::from(css),
             rgba: [r / 255.0, g / 255.0, b / 255.0, a],
+            gradient: None,
         }
     }
 
@@ -72,7 +76,124 @@ impl Paint {
         Paint {
             css: Arc::from(s),
             rgba: parse_css(s).unwrap_or([0.0, 0.0, 0.0, 1.0]),
+            gradient: None,
         }
+    }
+
+    /// A gradient paint. Its CSS form names the kind and the stops, e.g.
+    /// `linear-gradient(rgb(255,0,0) 0, rgb(0,0,255) 1)`.
+    pub fn gradient(g: Gradient) -> Paint {
+        let stops: Vec<String> = g
+            .stops
+            .iter()
+            .map(|s| {
+                let [r, gr, b, a] = s.rgba;
+                let css = Paint::from_color(Color { r, g: gr, b, a }).css;
+                format!("{css} {}", js::num_to_string(s.pos))
+            })
+            .collect();
+        let kind = match g.shape {
+            GradientShape::Linear { .. } => "linear",
+            GradientShape::Radial { .. } => "radial",
+            GradientShape::Conic { .. } => "conic",
+        };
+        Paint {
+            css: Arc::from(format!("{kind}-gradient({})", stops.join(", "))),
+            rgba: g.stops.first().map_or([0.0; 4], |s| s.rgba),
+            gradient: Some(Arc::new(g)),
+        }
+    }
+}
+
+// ─── Gradients ───────────────────────────────────────────────────────────────
+
+/// A gradient paint (`style/gradient`), drawn per pixel by the renderer.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Gradient {
+    pub shape: GradientShape,
+    /// At least one stop, positions in 0..1 ascending; straight RGBA 0..1.
+    pub stops: Arc<[GradientStop]>,
+    pub units: GradientUnits,
+    pub extend: GradientExtend,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct GradientStop {
+    pub pos: f64,
+    pub rgba: [f64; 4],
+}
+
+/// Where the gradient lies, in [`GradientUnits`].
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum GradientShape {
+    /// 0 at `start`, 1 at `end`, constant across.
+    Linear { start: Vec2, end: Vec2 },
+    /// 0 at `center`, 1 at `radius`.
+    Radial { center: Vec2, radius: f64 },
+    /// A sweep around `center`, clockwise on screen from `angle` (radians,
+    /// 0 = pointing right, like `transform/rotate`).
+    Conic { center: Vec2, angle: f64 },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum GradientUnits {
+    /// Relative to each shape's bounds: −1..1 across it, centre origin
+    /// (y down). Points outside the box are fine.
+    Box,
+    /// Scene units, like shape coordinates (group transforms apply).
+    Scene,
+}
+
+/// What the gradient does past its ends (t outside 0..1).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum GradientExtend {
+    /// Hold the end colours.
+    Pad,
+    Repeat,
+    /// Repeat, every other copy reversed.
+    Mirror,
+}
+
+impl Gradient {
+    /// The colour at `t` (straight RGBA), interpolated in premultiplied
+    /// space like CSS, after applying `extend`. The renderer does the same
+    /// per pixel; this is the reference.
+    pub fn sample(&self, t: f64) -> [f64; 4] {
+        let t = match self.extend {
+            GradientExtend::Pad => t.clamp(0.0, 1.0),
+            GradientExtend::Repeat => t - t.floor(),
+            GradientExtend::Mirror => 1.0 - ((t / 2.0 - (t / 2.0).floor()) * 2.0 - 1.0).abs(),
+        };
+        let stops = &self.stops;
+        let Some(first) = stops.first() else {
+            return [0.0; 4];
+        };
+        if t <= first.pos {
+            return first.rgba;
+        }
+        for w in stops.windows(2) {
+            let (a, b) = (w[0], w[1]);
+            if t <= b.pos {
+                let f = if b.pos > a.pos {
+                    (t - a.pos) / (b.pos - a.pos)
+                } else {
+                    1.0
+                };
+                let pa = a.rgba.map(|c| c * a.rgba[3]);
+                let pb = b.rgba.map(|c| c * b.rgba[3]);
+                let alpha = a.rgba[3] + (b.rgba[3] - a.rgba[3]) * f;
+                let ch = |i: usize| {
+                    let p = pa[i] + (pb[i] - pa[i]) * f;
+                    if alpha > 0.0 {
+                        p / alpha
+                    } else {
+                        0.0
+                    }
+                };
+                return [ch(0), ch(1), ch(2), alpha];
+            }
+        }
+        stops[stops.len() - 1].rgba
     }
 }
 
@@ -447,6 +568,15 @@ pub enum SceneNode {
     Shader(Arc<crate::shader::ShaderShape>),
     /// `text/*`: pre-shaped glyphs, each placed and turned on its own.
     Glyphs(Arc<GlyphRun>),
+    /// `transform/mask`: `content` shown through `mask`. The mask's alpha
+    /// (`luminance: false`) or its luminance × alpha is the coverage;
+    /// `invert` uses 1 − coverage.
+    Mask {
+        content: Arc<SceneNode>,
+        mask: Arc<SceneNode>,
+        luminance: bool,
+        invert: bool,
+    },
 }
 
 /// Glyphs shaped by `crate::text`, drawn with `style` (fill / stroke,
@@ -497,6 +627,7 @@ impl SceneNode {
             SceneNode::Image { .. } => "image",
             SceneNode::Shader(_) => "shader",
             SceneNode::Glyphs(_) => "glyphs",
+            SceneNode::Mask { .. } => "mask",
         }
     }
 
@@ -720,6 +851,18 @@ impl SceneNode {
                 put(&mut m, "size", n(run.size));
                 put(&mut m, "style", style_value(&run.style));
             }
+            SceneNode::Mask {
+                content,
+                mask,
+                luminance,
+                invert,
+            } => {
+                put(&mut m, "content", Value::Scene(content.clone()));
+                put(&mut m, "mask", Value::Scene(mask.clone()));
+                let mode = if *luminance { "luminance" } else { "alpha" };
+                put(&mut m, "mode", Value::str(mode));
+                put(&mut m, "invert", Value::Bool(*invert));
+            }
         }
         Value::Object(Arc::new(m))
     }
@@ -923,6 +1066,62 @@ mod tests {
             resolve_style(Some(&fill), line_default_style()).stroke,
             None
         );
+    }
+
+    fn stops(v: &[(f64, [f64; 4])]) -> Arc<[GradientStop]> {
+        v.iter()
+            .map(|&(pos, rgba)| GradientStop { pos, rgba })
+            .collect()
+    }
+
+    #[test]
+    fn gradients_interpolate_premultiplied_and_extend() {
+        let mut g = Gradient {
+            shape: GradientShape::Linear {
+                start: Vec2 { x: -1.0, y: 0.0 },
+                end: Vec2 { x: 1.0, y: 0.0 },
+            },
+            stops: stops(&[
+                (0.0, [1.0, 0.0, 0.0, 1.0]),
+                (0.5, [0.0, 0.0, 1.0, 1.0]),
+                (1.0, [0.0, 0.0, 1.0, 0.0]),
+            ]),
+            units: GradientUnits::Box,
+            extend: GradientExtend::Pad,
+        };
+        assert_eq!(g.sample(-1.0), [1.0, 0.0, 0.0, 1.0]);
+        assert_eq!(g.sample(0.25), [0.5, 0.0, 0.5, 1.0]);
+        // Fading to transparent keeps the hue (premultiplied lerp).
+        assert_eq!(g.sample(0.75), [0.0, 0.0, 1.0, 0.5]);
+        assert_eq!(g.sample(2.0)[3], 0.0);
+        g.extend = GradientExtend::Repeat;
+        assert_eq!(g.sample(1.25), g.sample(0.25));
+        g.extend = GradientExtend::Mirror;
+        assert_eq!(g.sample(1.75), g.sample(0.25));
+        let p = Paint::gradient(g);
+        assert_eq!(
+            &*p.css,
+            "linear-gradient(rgb(255,0,0) 0, rgb(0,0,255) 0.5, rgba(0,0,255,0.000) 1)"
+        );
+        assert_eq!(p.rgba, [1.0, 0.0, 0.0, 1.0]);
+        assert!(p.gradient.is_some());
+    }
+
+    #[test]
+    fn masks_describe_themselves() {
+        let dot = Arc::new(SceneNode::Point {
+            x: 0.0,
+            y: 0.0,
+            style: default_style().clone(),
+        });
+        let m = SceneNode::Mask {
+            content: dot.clone(),
+            mask: dot,
+            luminance: true,
+            invert: false,
+        };
+        assert_eq!(m.kind(), "mask");
+        assert!(matches!(m.to_value().get("mode"), Value::Str(s) if &*s == "luminance"));
     }
 
     #[test]

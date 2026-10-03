@@ -16,6 +16,7 @@ pub mod color;
 pub mod convert;
 pub mod data;
 pub mod draw;
+pub mod effect;
 pub mod force;
 pub mod geometry;
 pub mod gpu;
@@ -72,6 +73,7 @@ fn registry() -> &'static Registrar {
         convert::register(&mut r);
         data::register(&mut r);
         draw::register(&mut r);
+        effect::register(&mut r);
         force::register(&mut r);
         geometry::register(&mut r);
         image::register(&mut r);

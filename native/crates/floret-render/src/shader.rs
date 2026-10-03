@@ -476,6 +476,8 @@ struct DrawPlan {
     passes: Vec<PassPlan>,
     /// The Image pass's target, composited onto the parent.
     output: Option<usize>,
+    /// The target holding the map layer ([`ShaderChannel::Map`]).
+    map: Option<usize>,
 }
 
 /// Compiles, caches and runs `gpu/shader` draws for one [`crate::Renderer`].
@@ -828,6 +830,25 @@ impl ShaderRunner {
         self.targets.len() - 1
     }
 
+    /// A target of the draw's own that lives while the node draws (not
+    /// shared with other draws' transient passes): its map channel.
+    fn owned_target(&mut self, device: &wgpu::Device, key: String) -> usize {
+        if let Some(f) = self.feedback.get_mut(&key) {
+            f.used = true;
+            return f.read;
+        }
+        let t = self.new_target(device);
+        self.feedback.insert(
+            key,
+            Feedback {
+                read: t,
+                write: t,
+                used: true,
+            },
+        );
+        t
+    }
+
     fn feedback_pair(&mut self, device: &wgpu::Device, key: String) -> (usize, usize) {
         if let Some(f) = self.feedback.get_mut(&key) {
             f.used = true;
@@ -905,6 +926,10 @@ impl ShaderRunner {
             let key = format!("{}:{}", sh.node_id, b.as_str());
             pairs.insert(*b, self.feedback_pair(device, key));
         }
+        let map = sh
+            .map
+            .as_ref()
+            .map(|_| self.owned_target(device, format!("{}:map", sh.node_id)));
         // Transient targets: any target not owned by a live pair.
         let owned: Vec<usize> = self
             .feedback
@@ -936,6 +961,7 @@ impl ShaderRunner {
             let source_of = |c: ShaderChannel| match c {
                 ShaderChannel::None => Source::Transparent,
                 ShaderChannel::Input => Source::Input,
+                ShaderChannel::Map => map.map_or(Source::Transparent, Source::Target),
                 ShaderChannel::Buffer(b) if rendered.contains(&b) => Source::Target(
                     pairs
                         .get(&b)
@@ -983,7 +1009,11 @@ impl ShaderRunner {
                 f.write = *r;
             }
         }
-        DrawPlan { passes, output }
+        DrawPlan {
+            passes,
+            output,
+            map,
+        }
     }
 
     fn uniform_buffer(&mut self, device: &wgpu::Device, slot: usize, size: u32) -> wgpu::Buffer {
@@ -1029,6 +1059,28 @@ impl ShaderRunner {
             layout: &self.pass_layout,
             entries: &entries,
         })
+    }
+
+    /// Copy the layer holding draw `index`'s rendered map subtree (the
+    /// renderer's bind group) into its map channel.
+    pub(crate) fn encode_map(
+        &self,
+        encoder: &mut wgpu::CommandEncoder,
+        index: usize,
+        src: &wgpu::BindGroup,
+    ) {
+        let Some(t) = self
+            .plans
+            .get(index)
+            .and_then(|p| p.map)
+            .and_then(|m| self.targets.get(m))
+        else {
+            return;
+        };
+        let mut pass = begin(encoder, &t.view, "floret shader map");
+        pass.set_pipeline(&self.flip_pipe);
+        pass.set_bind_group(0, src, &[]);
+        pass.draw(0..3, 0..1);
     }
 
     /// Record draw `index`'s passes. `input`: the renderer's bind group of
@@ -1306,6 +1358,7 @@ void mainImage(out vec4 c, in vec2 f) { c = col * k * float(n); }";
                 UniformValue::Number(-3.7),
             ]),
             input: None,
+            map: None,
         };
         let clock = RenderClock {
             time: 1.5,

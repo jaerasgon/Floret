@@ -370,7 +370,7 @@ pub(crate) struct Poly {
 }
 
 /// The style a node's `style` pin gives its polygons (a wired chain, else
-/// the draw nodes' defaults: white fill for closed shapes, a thin black
+/// the draw nodes' defaults: white fill for closed shapes, a thin white
 /// line for open ones).
 pub(crate) fn pin_style(style: &Value, closed: bool) -> Arc<ResolvedStyle> {
     let fallback = if closed {

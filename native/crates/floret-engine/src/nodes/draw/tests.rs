@@ -13,6 +13,12 @@
 //! Known divergence (cases left out): TS stores a non-number `w` / `h`
 //! verbatim in the shape (`w: undefined`), while `SceneNode` fields are
 //! numbers, so Rust holds the coerced value (NaN). Positions agree.
+//!
+//! Known divergence (replayed): unstyled lines, points, paths and open
+//! polygons stroke white natively but black in TS. The cases run with
+//! `scene::ts_reference_line_default` on, so they still check the rest
+//! of the default style exactly; `unstyled_lines_stroke_white` checks the
+//! native default.
 
 use crate::node::{EvalCtx, FrameCtx, NodeInit, ParamStore};
 use crate::scene::{neutral_style, style_value, SceneNode, Style, StyleOp};
@@ -116,6 +122,8 @@ fn try_run(ty: &str, params: &Params, inputs: &[Spread]) -> Result<Vec<Spread>, 
 fn matches_typescript_cases() {
     let cases: Vec<J> = serde_json::from_str(include_str!("ts_cases.json")).expect("ts_cases.json");
     assert!(cases.len() > 100, "parsed {} cases", cases.len());
+    // Recorded with the web app's black default line stroke.
+    let _ts = crate::scene::ts_reference_line_default();
     let mut failures = Vec::new();
     for (i, case) in cases.iter().enumerate() {
         let ty = case["type"].as_str().unwrap();
@@ -150,6 +158,57 @@ fn matches_typescript_cases() {
         "{} mismatches:\n{}",
         failures.len(),
         failures.join("\n")
+    );
+}
+
+/// Natively, unstyled lines, points, paths and open polygons stroke white
+/// (visible on the default black canvas); closed shapes keep their white
+/// fill and no stroke; a wired style still wins.
+#[test]
+fn unstyled_lines_stroke_white() {
+    let stroke_of = |ty: &str, inputs: Vec<Vec<J>>| {
+        let inputs: Vec<Spread> = inputs
+            .iter()
+            .map(|s| Arc::from(s.iter().map(decode).collect::<Vec<_>>()))
+            .collect();
+        let out = run(ty, &Params::default(), &inputs);
+        encode(&out[0][0])["style"]["stroke"].clone()
+    };
+    let (a, b) = (json!({"x": 0, "y": 0}), json!({"x": 10, "y": 5}));
+    let white = json!("#ffffff");
+    assert_eq!(
+        stroke_of("draw/line", vec![vec![a.clone()], vec![b.clone()], vec![]]),
+        white
+    );
+    assert_eq!(
+        stroke_of("draw/point", vec![vec![a.clone()], vec![]]),
+        white
+    );
+    let pts = vec![a.clone(), b.clone(), json!({"x": 20, "y": 0})];
+    assert_eq!(
+        stroke_of(
+            "draw/path",
+            vec![pts.clone(), vec![], vec![], vec![], vec![]]
+        ),
+        white
+    );
+    assert_eq!(
+        stroke_of(
+            "draw/polygon",
+            vec![pts.clone(), vec![json!(false)], vec![], vec![]]
+        ),
+        white
+    );
+    // Closed: filled, unstroked, as before.
+    assert_eq!(
+        stroke_of("draw/polygon", vec![pts, vec![json!(true)], vec![], vec![]]),
+        J::Null
+    );
+    // A wired style resolves against NEUTRAL: no default stroke.
+    let red = json!({"$fill": {"r": 1, "g": 0, "b": 0, "a": 1}});
+    assert_eq!(
+        stroke_of("draw/line", vec![vec![a], vec![b], vec![red]]),
+        J::Null
     );
 }
 

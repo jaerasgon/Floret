@@ -301,16 +301,60 @@ pub fn default_style() -> &'static Arc<ResolvedStyle> {
     })
 }
 
-/// Lines / open polygons: thin black stroke, no fill.
+/// What an unstyled line, point, path or open polygon uses: a thin white
+/// stroke, no fill.
+///
+/// Known divergence from the web app, which stroked them black (invisible
+/// on the default black canvas). Code replaying TS reference data turns
+/// the old default back on with [`ts_reference_line_default`].
 pub fn line_default_style() -> &'static Arc<ResolvedStyle> {
-    static S: OnceLock<Arc<ResolvedStyle>> = OnceLock::new();
-    S.get_or_init(|| {
+    static WHITE: OnceLock<Arc<ResolvedStyle>> = OnceLock::new();
+    static TS_BLACK: OnceLock<Arc<ResolvedStyle>> = OnceLock::new();
+    let (cell, css) = if TS_LINE_DEFAULT.with(std::cell::Cell::get) {
+        (&TS_BLACK, TS_LINE_STROKE)
+    } else {
+        (&WHITE, LINE_STROKE)
+    };
+    cell.get_or_init(|| {
         Arc::new(ResolvedStyle {
             fill: None,
-            stroke: Some(Paint::css("#000000")),
+            stroke: Some(Paint::css(css)),
             ..(**default_style()).clone()
         })
     })
+}
+
+/// [`line_default_style`]'s stroke.
+pub const LINE_STROKE: &str = "#ffffff";
+/// The web app's stroke for unstyled lines, which its recorded traces and
+/// `ts_cases.json` files hold.
+pub const TS_LINE_STROKE: &str = "#000000";
+
+thread_local! {
+    static TS_LINE_DEFAULT: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// **For comparing against TypeScript reference data only** (the parity
+/// traces, the `ts_cases.json` node cases). While the returned guard lives,
+/// [`line_default_style`] on this thread strokes black ([`TS_LINE_STROKE`])
+/// as the web app did. The engine evaluates on the calling thread, so
+/// this covers a whole `Engine::tick`. Never use it in the app.
+#[must_use = "the TS default is on only while the guard lives"]
+pub fn ts_reference_line_default() -> TsLineDefault {
+    let was = TS_LINE_DEFAULT.with(|c| c.replace(true));
+    TsLineDefault { was }
+}
+
+/// Guard from [`ts_reference_line_default`]; dropping it restores the
+/// previous default.
+pub struct TsLineDefault {
+    was: bool,
+}
+
+impl Drop for TsLineDefault {
+    fn drop(&mut self) {
+        TS_LINE_DEFAULT.with(|c| c.set(self.was));
+    }
 }
 
 /// What a WIRED style chain resolves against: no paint, structural defaults.
@@ -1037,6 +1081,34 @@ mod tests {
         assert_eq!(c(0.5, 0.5, 0.5, 0.5), "rgba(128,128,128,0.500)");
         assert_eq!(c(2.0, -1.0, 0.0, 1.5), "rgb(255,0,0)");
         assert_eq!(c(f64::NAN, 0.0, 0.0, 1.0), "rgb(NaN,0,0)");
+    }
+
+    #[test]
+    fn unstyled_lines_stroke_white_and_ts_replays_black() {
+        let stroke = || {
+            line_default_style()
+                .stroke
+                .as_ref()
+                .map(|p| p.css.to_string())
+        };
+        assert_eq!(stroke().as_deref(), Some("#ffffff"));
+        assert_eq!(line_default_style().fill, None);
+        {
+            let _ts = ts_reference_line_default();
+            assert_eq!(stroke().as_deref(), Some("#000000"));
+            // Nested guards restore what was there.
+            drop(ts_reference_line_default());
+            assert_eq!(stroke().as_deref(), Some("#000000"));
+            // Only this thread sees it.
+            let other = std::thread::spawn(move || {
+                line_default_style()
+                    .stroke
+                    .as_ref()
+                    .map(|p| p.css.to_string())
+            });
+            assert_eq!(other.join().unwrap().as_deref(), Some("#ffffff"));
+        }
+        assert_eq!(stroke().as_deref(), Some("#ffffff"));
     }
 
     #[test]

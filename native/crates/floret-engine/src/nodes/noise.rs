@@ -134,10 +134,10 @@ fn curl(init: &NodeInit) -> Box<dyn NodeImpl> {
 /// A 2D noise function of (x, y, seed), in [0, 1].
 type Base = fn(f64, f64, f64) -> f64;
 
-/// Every seed the Noise node uses goes through here, so a patch-wide seed
-/// can be mixed into all of them in one place.
+/// Every seed the Noise node (and the Expression's `noise()`) uses goes
+/// through here, which mixes in the patch seed ([`crate::seed`]).
 pub(crate) fn node_seed(seed: f64) -> f64 {
-    seed
+    crate::seed::mix(seed)
 }
 
 /// More octaves than this add nothing visible (the 33rd is 2^32 times

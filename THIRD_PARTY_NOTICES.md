@@ -30,3 +30,37 @@ own license text.
 Apache-2.0 is permissive and compatible with redistribution. The obligations
 met here: the license and NOTICE are retained alongside the redistributed
 assets, the assets are unmodified, and no trademark/endorsement is implied.
+
+---
+
+## gif (Rust crate)
+
+- **What:** the `gif` crate (with its `color_quant` NeuQuant quantiser and
+  `weezl` LZW coder), used by `floret-video` to write animated GIFs for
+  File → Export Video / GIF. Compiled into the app; no files vendored.
+- **Copyright:** © 2015 nwin and the image-rs developers (`gif`); © 2016
+  PistonDevelopers (`color_quant`); © 2020 HeroicKatora (`weezl`)
+- **License:** `gif` and `weezl`: MIT OR Apache-2.0; `color_quant`: MIT.
+- **Project:** https://github.com/image-rs/image-gif
+
+The MIT terms are met by keeping the copyright and permission notice with
+binary distributions (an app bundle's licenses file / About box).
+
+---
+
+## OpenH264 (Cisco) via the `openh264` crate
+
+- **What:** Cisco's OpenH264 codec, compiled from the source the
+  `openh264-sys2` crate bundles, through the `openh264` Rust bindings. Used
+  by `floret-video` to decode H.264 video files and to encode MP4 exports
+  (File → Export Video / GIF).
+- **Copyright:** © Cisco Systems, Inc. (OpenH264); © Ralf Biedert and
+  contributors (`openh264` crates)
+- **License:** BSD-2-Clause.
+- **Project:** https://github.com/cisco/openh264 ·
+  https://github.com/ralfbiedert/openh264-rs
+
+BSD-2-Clause asks for the copyright notice and disclaimer in binary
+distributions. Note: Cisco's royalty-free H.264 patent coverage applies to
+the prebuilt binaries Cisco distributes, not to OpenH264 compiled from
+source, as here; check H.264 patent licensing before a commercial release.

@@ -9,12 +9,15 @@ rust-version = "1.92"
 
 [features]
 default = ["openh264"]
-# H.264 decoding (and the test-clip encoder) from OpenH264's bundled source.
+# H.264 decoding and encoding (video export, test clips) from OpenH264's
+# bundled source.
 openh264 = ["dep:openh264"]
 
 [dependencies]
 floret-engine = { path = "../floret-engine" }
 re_mp4 = "0.5"
+# Animated GIF export (MIT / Apache-2.0; already in the tree through image).
+gif = "0.14"
 openh264 = { version = "0.9", optional = true }
 
 [target.'cfg(target_os = "macos")'.dependencies]

@@ -33,14 +33,16 @@ pub enum Tab {
     Presets,
 }
 
-/// Panels that can be closed and reopened.
+/// Panels that can be closed and reopened, in their default order.
+/// Presets comes before Profiler so it's on screen at the default dock
+/// width, where the last tab is cut off.
 const PANELS: [Tab; 6] = [
     Tab::Inspector,
     Tab::Help,
     Tab::Library,
     Tab::Shader,
-    Tab::Profiler,
     Tab::Presets,
+    Tab::Profiler,
 ];
 
 fn title(tab: &Tab) -> &'static str {
@@ -58,18 +60,8 @@ fn title(tab: &Tab) -> &'static str {
 /// The default layout: previews on top, the other panels tabbed below.
 pub fn default_dock() -> DockState<Tab> {
     let mut dock = DockState::new(vec![Tab::Preview(0)]);
-    dock.main_surface_mut().split_below(
-        NodeIndex::root(),
-        0.56,
-        vec![
-            Tab::Inspector,
-            Tab::Help,
-            Tab::Library,
-            Tab::Shader,
-            Tab::Profiler,
-            Tab::Presets,
-        ],
-    );
+    dock.main_surface_mut()
+        .split_below(NodeIndex::root(), 0.56, PANELS.to_vec());
     dock
 }
 
@@ -183,6 +175,11 @@ impl Workspace {
     /// Bring the Library (samples and saved patches) forward.
     pub fn show_library(&mut self) {
         reveal(&mut self.dock, Tab::Library);
+    }
+
+    /// Bring the Presets panel forward (a patch with presets was loaded).
+    pub fn show_presets(&mut self) {
+        reveal(&mut self.dock, Tab::Presets);
     }
 
     /// Put every panel back where it started.
@@ -588,6 +585,34 @@ mod tests {
         let p = d.find_tab(&Tab::Help).expect("reopened");
         let leaf = d.leaf(p.node_path()).unwrap();
         assert_eq!(leaf.tabs()[leaf.active.0], Tab::Help);
+    }
+
+    #[test]
+    fn presets_comes_before_profiler_in_the_default_dock() {
+        let t = tabs(&default_dock());
+        let at = |tab: Tab| t.iter().position(|x| *x == tab).unwrap();
+        assert!(at(Tab::Presets) < at(Tab::Profiler));
+        // Every panel starts open, in `PANELS` order.
+        let panels: Vec<Tab> = t.iter().filter(|x| PANELS.contains(x)).cloned().collect();
+        assert_eq!(panels, PANELS.to_vec());
+    }
+
+    #[test]
+    fn show_presets_brings_its_tab_forward() {
+        let mut w = Workspace {
+            dock: default_dock(),
+            help: HelpPanel::default(),
+            library: Library::default(),
+            presets: PresetsPanel::default(),
+            saved: String::new(),
+            last_selected: None,
+            dragging: None,
+            profiling: false,
+        };
+        w.show_presets();
+        let p = w.dock.find_tab(&Tab::Presets).unwrap();
+        let leaf = w.dock.leaf(p.node_path()).unwrap();
+        assert_eq!(leaf.tabs()[leaf.active.0], Tab::Presets);
     }
 
     #[test]

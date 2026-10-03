@@ -1,0 +1,150 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "L-System Plant",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ls_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -290
+      },
+      "params": {
+        "text": "L-system plant\n\nThe L-System node rewrites `X` five times by its rules, then a turtle draws the string: F steps forward, + and - turn by `angle`, [ and ] branch.\n\n`jitter` bends every turn a little at random (fixed by `seed`); an LFO sways `angle` like wind.",
+        "width": 420,
+        "height": 220
+      },
+      "portValues": {
+        "text": "L-system plant\n\nThe L-System node rewrites `X` five times by its rules, then a turtle draws the string: F steps forward, + and - turn by `angle`, [ and ] branch.\n\n`jitter` bends every turn a little at random (fixed by `seed`); an LFO sways `angle` like wind.",
+        "width": 420,
+        "height": 220
+      }
+    },
+    {
+      "id": "ls_lfo",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 0,
+        "y": 40
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 0.15,
+        "min": 22.5,
+        "max": 27.5
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 0.15,
+        "min": 22.5,
+        "max": 27.5
+      }
+    },
+    {
+      "id": "ls_stroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 0,
+        "y": 330
+      },
+      "params": {
+        "width": 1.1,
+        "color": {
+          "r": 0.56,
+          "g": 0.8,
+          "b": 0.47,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "width": 1.1,
+        "color": {
+          "r": 0.56,
+          "g": 0.8,
+          "b": 0.47,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "ls_plant",
+      "defType": "geometry/lsystem",
+      "position": {
+        "x": 280,
+        "y": 40
+      },
+      "params": {},
+      "portValues": {
+        "axiom": "X",
+        "rules": "X=F+[[X]-X]-F[-FX]+X; F=FF",
+        "iterations": 5,
+        "step": 5.4,
+        "fit": 0,
+        "position": {
+          "x": -105,
+          "y": 245
+        },
+        "heading": -90,
+        "jitter": 4,
+        "seed": 7
+      }
+    },
+    {
+      "id": "ls_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 600,
+        "y": 80
+      },
+      "params": {
+        "width": 520,
+        "height": 520,
+        "background": {
+          "r": 0.05,
+          "g": 0.07,
+          "b": 0.06,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "width": 520,
+        "height": 520,
+        "background": {
+          "r": 0.05,
+          "g": 0.07,
+          "b": 0.06,
+          "a": 1
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "ls_lfo",
+      "target": "ls_plant",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_2",
+      "source": "ls_stroke",
+      "target": "ls_plant",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_3",
+      "source": "ls_plant",
+      "target": "ls_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

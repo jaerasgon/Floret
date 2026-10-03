@@ -1,0 +1,344 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Contour Blobs",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "cb_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -290
+      },
+      "params": {
+        "text": "Contour blobs\n\nSeven random circles, merged by Shape Boolean (union) into one blob. A second ForEach offsets that outline 18 times, from 36 px out to 66 px in (Path Ops, `offset`), each ring a little bluer.\n\nTry another scatter seed, or `miter` joins on Path Ops.",
+        "width": 440,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Contour blobs\n\nSeven random circles, merged by Shape Boolean (union) into one blob. A second ForEach offsets that outline 18 times, from 36 px out to 66 px in (Path Ops, `offset`), each ring a little bluer.\n\nTry another scatter seed, or `miter` joins on Path Ops.",
+        "width": 440,
+        "height": 220
+      }
+    },
+    {
+      "id": "cb_scatter",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 0,
+        "y": 40
+      },
+      "params": {
+        "mode": "random"
+      },
+      "portValues": {
+        "size": {
+          "x": 230,
+          "y": 230
+        },
+        "count": 7,
+        "seed": 5
+      }
+    },
+    {
+      "id": "cb_blobs",
+      "defType": "region/foreach",
+      "position": {
+        "x": 260,
+        "y": 20
+      },
+      "params": {
+        "width": 330,
+        "height": 190,
+        "label": "ForEach circle"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 70
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 70
+        }
+      ],
+      "width": 330,
+      "height": 190
+    },
+    {
+      "id": "cb_ell",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 110,
+        "y": 40
+      },
+      "params": {
+        "w": 150,
+        "h": 150
+      },
+      "parentId": "cb_blobs",
+      "portValues": {
+        "w": 150,
+        "h": 150
+      }
+    },
+    {
+      "id": "cb_union",
+      "defType": "geometry/boolean",
+      "position": {
+        "x": 660,
+        "y": 40
+      },
+      "params": {
+        "mode": "union"
+      }
+    },
+    {
+      "id": "cb_lin",
+      "defType": "spread/linear",
+      "position": {
+        "x": 660,
+        "y": 260
+      },
+      "params": {
+        "from": 36,
+        "to": -66,
+        "count": 18
+      },
+      "portValues": {
+        "from": 36,
+        "to": -66,
+        "count": 18
+      }
+    },
+    {
+      "id": "cb_rings",
+      "defType": "region/foreach",
+      "position": {
+        "x": 940,
+        "y": 20
+      },
+      "params": {
+        "width": 940,
+        "height": 300,
+        "label": "ForEach ring"
+      },
+      "ports": [
+        {
+          "id": "d",
+          "name": "distance",
+          "type": "number",
+          "direction": "input",
+          "y": 150
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 120
+        }
+      ],
+      "width": 940,
+      "height": 300
+    },
+    {
+      "id": "cb_map",
+      "defType": "math/map",
+      "position": {
+        "x": 80,
+        "y": 150
+      },
+      "params": {
+        "outMin": 330,
+        "outMax": 190
+      },
+      "parentId": "cb_rings",
+      "portValues": {
+        "outMin": 330,
+        "outMax": 190
+      }
+    },
+    {
+      "id": "cb_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 290,
+        "y": 150
+      },
+      "params": {
+        "s": 70,
+        "l": 64,
+        "a": 255
+      },
+      "parentId": "cb_rings",
+      "portValues": {
+        "s": 70,
+        "l": 64,
+        "a": 255
+      }
+    },
+    {
+      "id": "cb_stroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 490,
+        "y": 150
+      },
+      "params": {
+        "width": 2
+      },
+      "parentId": "cb_rings",
+      "portValues": {
+        "width": 2
+      }
+    },
+    {
+      "id": "cb_offset",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 700,
+        "y": 30
+      },
+      "params": {
+        "mode": "offset"
+      },
+      "parentId": "cb_rings",
+      "portValues": {
+        "join": "round"
+      }
+    },
+    {
+      "id": "cb_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1960,
+        "y": 100
+      },
+      "params": {
+        "width": 520,
+        "height": 520,
+        "background": {
+          "r": 0.06,
+          "g": 0.06,
+          "b": 0.1,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "width": 520,
+        "height": 520,
+        "background": {
+          "r": 0.06,
+          "g": 0.06,
+          "b": 0.1,
+          "a": 1
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "cb_scatter",
+      "target": "cb_blobs",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_2",
+      "source": "cb_blobs",
+      "target": "cb_ell",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_3",
+      "source": "cb_ell",
+      "target": "cb_blobs",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_4",
+      "source": "cb_blobs",
+      "target": "cb_union",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_5",
+      "source": "cb_lin",
+      "target": "cb_rings",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_6",
+      "source": "cb_rings",
+      "target": "cb_offset",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-distance"
+    },
+    {
+      "id": "e_7",
+      "source": "cb_union",
+      "target": "cb_offset",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_8",
+      "source": "cb_rings",
+      "target": "cb_map",
+      "sourceHandle": "out-__loopvar_fraction",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_9",
+      "source": "cb_map",
+      "target": "cb_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_10",
+      "source": "cb_hsl",
+      "target": "cb_stroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_11",
+      "source": "cb_stroke",
+      "target": "cb_offset",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_12",
+      "source": "cb_offset",
+      "target": "cb_rings",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_13",
+      "source": "cb_rings",
+      "target": "cb_renderer",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

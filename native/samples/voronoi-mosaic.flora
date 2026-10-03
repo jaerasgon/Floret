@@ -1,0 +1,158 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Voronoi Mosaic",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "vm_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -300
+      },
+      "params": {
+        "text": "Voronoi mosaic\n\nScatter lays points at least `distance` apart (Poisson disc). Cells turns them into Voronoi cells inside the canvas, `gap` apart, each filled from the palette. Path Ops smooths every cell's corners (Chaikin).\n\nChange the seed for a new mosaic; switch Cells to `delaunay` for triangles.",
+        "width": 420,
+        "height": 230
+      },
+      "portValues": {
+        "text": "Voronoi mosaic\n\nScatter lays points at least `distance` apart (Poisson disc). Cells turns them into Voronoi cells inside the canvas, `gap` apart, each filled from the palette. Path Ops smooths every cell's corners (Chaikin).\n\nChange the seed for a new mosaic; switch Cells to `delaunay` for triangles.",
+        "width": 420,
+        "height": 230
+      }
+    },
+    {
+      "id": "vm_scatter",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 0,
+        "y": 40
+      },
+      "params": {
+        "mode": "poisson"
+      },
+      "portValues": {
+        "size": {
+          "x": 520,
+          "y": 520
+        },
+        "distance": 34,
+        "seed": 3
+      }
+    },
+    {
+      "id": "vm_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 300
+      },
+      "params": {
+        "stopCount": 5,
+        "c0": "#264653",
+        "c1": "#2a9d8f",
+        "c2": "#e9c46a",
+        "c3": "#f4a261",
+        "c4": "#e76f51"
+      },
+      "portValues": {
+        "stopCount": 5
+      }
+    },
+    {
+      "id": "vm_cells",
+      "defType": "geometry/cells",
+      "position": {
+        "x": 300,
+        "y": 60
+      },
+      "params": {
+        "mode": "voronoi"
+      },
+      "portValues": {
+        "size": {
+          "x": 520,
+          "y": 520
+        },
+        "gap": 7
+      }
+    },
+    {
+      "id": "vm_smooth",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 590,
+        "y": 60
+      },
+      "params": {
+        "mode": "smooth"
+      },
+      "portValues": {
+        "iterations": 3
+      }
+    },
+    {
+      "id": "vm_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 880,
+        "y": 80
+      },
+      "params": {
+        "width": 520,
+        "height": 520,
+        "background": {
+          "r": 0.07,
+          "g": 0.07,
+          "b": 0.09,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "width": 520,
+        "height": 520,
+        "background": {
+          "r": 0.07,
+          "g": 0.07,
+          "b": 0.09,
+          "a": 1
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "vm_scatter",
+      "target": "vm_cells",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_2",
+      "source": "vm_pal",
+      "target": "vm_cells",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_3",
+      "source": "vm_cells",
+      "target": "vm_smooth",
+      "sourceHandle": "out-cells",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_4",
+      "source": "vm_smooth",
+      "target": "vm_renderer",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

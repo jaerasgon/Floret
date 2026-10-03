@@ -699,6 +699,27 @@
       "category": "Data",
       "description": "Noise bars where each lights green only if it is taller than BOTH neighbours — local-maximum detection with spread/neighbor inside a ForEach.",
       "file": "local-peaks.flora"
+    },
+    {
+      "id": "voronoi-mosaic",
+      "name": "Voronoi Mosaic",
+      "category": "Geometry",
+      "description": "Poisson-disc points → Voronoi cells with gaps, filled from a palette → corners smoothed by Path Ops. A new seed, a new mosaic.",
+      "file": "voronoi-mosaic.flora"
+    },
+    {
+      "id": "lsystem-plant",
+      "name": "L-System Plant",
+      "category": "Nature",
+      "description": "A bracketed L-system (X → F+[[X]-X]-F[-FX]+X, F → FF) grown five times and drawn by a turtle; jitter makes it organic, an LFO sways it.",
+      "file": "lsystem-plant.flora"
+    },
+    {
+      "id": "contour-blobs",
+      "name": "Contour Blobs",
+      "category": "Geometry",
+      "description": "Random circles merged by Shape Boolean, then offset in and out by Path Ops inside a ForEach — topographic rings around one blob.",
+      "file": "contour-blobs.flora"
     }
   ]
 }

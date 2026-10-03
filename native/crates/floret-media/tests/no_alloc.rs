@@ -65,7 +65,7 @@ fn wav(path: &std::path::Path) {
 
 fn graph(step: usize, url: &Arc<str>, with_gain: bool) -> AudioGraph {
     let i = |s: &str| Some(Arc::<str>::from(s));
-    let gate = step % 3 != 0;
+    let gate = !step.is_multiple_of(3);
     let x = step as f64;
     let mut nodes = vec![
         (

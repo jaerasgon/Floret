@@ -378,7 +378,9 @@ fn physarum_trail_fades_without_agents() {
     let alpha = |out: &[Vec<Value>]| -> u64 {
         image(out)
             .rgba()
-            .chunks_exact(4)
+            .as_chunks::<4>()
+            .0
+            .iter()
             .map(|p| u64::from(p[3]))
             .sum()
     };
@@ -432,7 +434,7 @@ fn physarum_agents_build_a_trail_and_follow_the_seed() {
     let a = run(1.0);
     // The grid keeps the field's aspect.
     assert_eq!((a.width(), a.height()), (64, 32));
-    assert!(a.rgba().chunks_exact(4).any(|p| p[3] > 128));
+    assert!(a.rgba().as_chunks::<4>().0.iter().any(|p| p[3] > 128));
     assert_eq!(a.rgba(), run(1.0).rgba());
     assert_ne!(a.rgba(), run(2.0).rgba());
 }

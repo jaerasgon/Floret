@@ -67,7 +67,7 @@ impl Image {
     /// From premultiplied RGBA8 (GPU readback, tiny-skia), un-premultiplied
     /// the way Canvas2D's `getImageData` does.
     pub fn from_premultiplied(width: u32, height: u32, mut rgba: Vec<u8>) -> Image {
-        for px in rgba.chunks_exact_mut(4) {
+        for px in rgba.as_chunks_mut::<4>().0 {
             let a = px[3];
             if a != 0 && a != 255 {
                 for c in &mut px[..3] {
@@ -123,7 +123,7 @@ impl Image {
     /// Premultiplied RGBA8 (for GPU upload).
     pub fn premultiplied(&self) -> Vec<u8> {
         let mut out = self.rgba.clone();
-        for px in out.chunks_exact_mut(4) {
+        for px in out.as_chunks_mut::<4>().0 {
             let a = u32::from(px[3]);
             if a != 255 {
                 for c in &mut px[..3] {

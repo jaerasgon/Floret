@@ -30,7 +30,9 @@ impl Surface {
     pub fn from_image(img: &Image) -> Surface {
         let px = img
             .rgba()
-            .chunks_exact(4)
+            .as_chunks::<4>()
+            .0
+            .iter()
             .map(|p| {
                 let a = f32::from(p[3]) / 255.0;
                 [

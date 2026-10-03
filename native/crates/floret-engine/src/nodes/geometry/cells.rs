@@ -108,7 +108,9 @@ fn triangulate(pts: &[Vec2]) -> delaunator::Triangulation {
 pub(super) fn delaunay(pts: &[Vec2]) -> Vec<Vec<Vec2>> {
     let t = triangulate(pts);
     t.triangles
-        .chunks_exact(3)
+        .as_chunks::<3>()
+        .0
+        .iter()
         .map(|tri| tri.iter().map(|&i| pts[i]).collect())
         .collect()
 }
@@ -149,7 +151,7 @@ pub(super) fn voronoi(pts: &[Vec2], center: Vec2, size: Vec2) -> Vec<Vec<Vec2>> 
             neighbours[w[1]].push(w[0]);
         }
     } else {
-        for tri in t.triangles.chunks_exact(3) {
+        for tri in t.triangles.as_chunks::<3>().0 {
             for k in 0..3 {
                 let (a, b) = (tri[k], tri[(k + 1) % 3]);
                 neighbours[a].push(b);

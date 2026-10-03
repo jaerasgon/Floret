@@ -307,7 +307,7 @@ fn crop(_: &NodeInit) -> Box<dyn NodeImpl> {
                 // A 1:1 copy round-trips exactly through the canvas, except
                 // that fully transparent pixels come back as 0,0,0,0.
                 let mut out = crop_exact(img, sx as u32, sy as u32, w, h).into_rgba();
-                for p in out.chunks_exact_mut(4) {
+                for p in out.as_chunks_mut::<4>().0 {
                     if p[3] == 0 {
                         p.copy_from_slice(&[0; 4]);
                     }
@@ -430,7 +430,7 @@ fn filter(_: &NodeInit) -> Box<dyn NodeImpl> {
             match mode.as_str() {
                 "threshold" => {
                     let t = js::max(0.0, js::min(1.0, level)) * 255.0;
-                    for p in d.chunks_exact_mut(4) {
+                    for p in d.as_chunks_mut::<4>().0 {
                         let lum = 0.299 * f64::from(p[0])
                             + 0.587 * f64::from(p[1])
                             + 0.114 * f64::from(p[2]);
@@ -441,13 +441,13 @@ fn filter(_: &NodeInit) -> Box<dyn NodeImpl> {
                 "posterize" => {
                     let levels = js::max(2.0, js::min(255.0, js::round(level)));
                     let step = 255.0 / (levels - 1.0);
-                    for p in d.chunks_exact_mut(4) {
+                    for p in d.as_chunks_mut::<4>().0 {
                         for c in &mut p[..3] {
                             *c = pixel::clamp_u8(js::round(f64::from(*c) / step) * step);
                         }
                     }
                 }
-                "opaque" => d.chunks_exact_mut(4).for_each(|p| p[3] = 255),
+                "opaque" => d.as_chunks_mut::<4>().0.iter_mut().for_each(|p| p[3] = 255),
                 _ => return Ok(img.clone()),
             }
             Ok(Arc::new(Image::new(img.width(), img.height(), d)))

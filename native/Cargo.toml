@@ -7,7 +7,7 @@ version = "0.1.0"
 edition = "2021"
 license = "LicenseRef-Proprietary"
 publish = false
-rust-version = "1.85"
+rust-version = "1.95"
 
 [workspace.dependencies]
 serde = { version = "1", features = ["derive"] }
@@ -31,6 +31,15 @@ opt-level = 3
 # Per-pixel frame conversion keeps up with playback in debug builds too.
 [profile.dev.package.floret-video]
 opt-level = 3
+
+# The engine's node maths (simulations, noise, spreads) and the renderer's
+# per-frame batching are far too slow unoptimised; level 1 speeds them up a
+# lot while keeping debug builds quick to compile and debuggable.
+[profile.dev.package.floret-engine]
+opt-level = 1
+
+[profile.dev.package.floret-render]
+opt-level = 1
 
 # `./floret.sh` builds with this: optimised like release, but incremental so
 # a rebuild after a pull only recompiles what changed.

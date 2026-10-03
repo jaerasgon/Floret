@@ -311,7 +311,7 @@ pub fn binary(
     }
     if a.len() == out.len()
         && !b.is_empty()
-        && out.len() % b.len() == 0
+        && out.len().is_multiple_of(b.len())
         && b_is_trailing(b_shape, out_shape)
     {
         for (row_o, row_a) in out.chunks_exact_mut(b.len()).zip(a.chunks_exact(b.len())) {

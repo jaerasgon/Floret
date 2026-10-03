@@ -146,6 +146,14 @@ frozen copies in `native/fixtures/samples`, which are unchanged.
   some untouched samples whose nodes had grown since its last run (for
   example the taller Palette and Lerp nodes).
 
+## Follow-ups (approved by the owner, 2026-10-03)
+
+- **Palette:** in its generating modes the node grows (about 196 px) so the mode dropdown shows "complementary" / "analogous" in full.
+- **Open polygons** stay unfilled (unchanged).
+- **Unstyled lines** (Line, Path, Point, Polygon, geometry, landmark guides) now stroke white instead of black, so they show on the default black canvas. Parity replays the TS black default through `scene::ts_reference_line_default()` (see "Known divergences" in `native/fixtures/README.md`).
+- **Image sampling is centre-origin:** `image/sample` and `image/sample-spread` read (0, 0) at the image centre, y down, like drawing. Patch files are now version 3; older files load with a hidden `origin: "top-left"` so they look as before (older Floret builds refuse version 3 files). photo-mosaic, tut-27 and webcam-mosaic were updated and look the same.
+- **Mac app:** `./floret.sh install` builds `Floret.app` (sunflower icon) into Applications and opens it; run it again to update.
+
 ## Still open
 
 The deferred list is unchanged: the proper Floret.app bundle, #77, #78, #81 and #82.

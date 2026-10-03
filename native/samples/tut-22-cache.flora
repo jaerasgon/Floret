@@ -16,12 +16,12 @@
         "y": -304
       },
       "params": {
-        "text": "Cache: skip work when inputs are stable\n\n`region/cache` runs its body only when an input changes. Wrap an expensive computation inside it and the runtime returns the same output every tick until you nudge an input.\n\nHere: a 200-point Fibonacci scatter, cached. The Path is rebuilt only when `scale` changes.",
+        "text": "Cache: skip work when inputs are stable\n\n`region/cache` runs its body only when an input changes. Wrap an expensive computation inside it and the runtime returns the same output every tick until you nudge an input.\n\nHere: a 200-point Fibonacci spiral drawn as one open polyline, cached. It is rebuilt only when `scale` changes.",
         "width": 420,
         "height": 240
       },
       "portValues": {
-        "text": "Cache: skip work when inputs are stable\n\n`region/cache` runs its body only when an input changes. Wrap an expensive computation inside it and the runtime returns the same output every tick until you nudge an input.\n\nHere: a 200-point Fibonacci scatter, cached. The Path is rebuilt only when `scale` changes.",
+        "text": "Cache: skip work when inputs are stable\n\n`region/cache` runs its body only when an input changes. Wrap an expensive computation inside it and the runtime returns the same output every tick until you nudge an input.\n\nHere: a 200-point Fibonacci spiral drawn as one open polyline, cached. It is rebuilt only when `scale` changes.",
         "width": 420,
         "height": 240
       }
@@ -53,7 +53,7 @@
       },
       "params": {
         "width": 564,
-        "height": 296,
+        "height": 336,
         "label": "Cache"
       },
       "ports": [
@@ -73,7 +73,7 @@
         }
       ],
       "width": 564,
-      "height": 296
+      "height": 336
     },
     {
       "id": "t22_fib",
@@ -108,8 +108,8 @@
       }
     },
     {
-      "id": "t22_fill",
-      "defType": "style/fill",
+      "id": "t22_stroke",
+      "defType": "style/stroke",
       "position": {
         "x": 129,
         "y": 182
@@ -120,7 +120,8 @@
           "g": 0.7843137254901961,
           "b": 0.7843137254901961,
           "a": 1
-        }
+        },
+        "width": 1.5
       },
       "parentId": "t22_region",
       "portValues": {
@@ -129,7 +130,8 @@
           "g": 0.7843137254901961,
           "b": 0.7843137254901961,
           "a": 1
-        }
+        },
+        "width": 1.5
       }
     },
     {
@@ -173,7 +175,7 @@
     },
     {
       "id": "e_152",
-      "source": "t22_fill",
+      "source": "t22_stroke",
       "target": "t22_poly",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"

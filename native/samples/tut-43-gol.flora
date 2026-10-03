@@ -16,12 +16,12 @@
         "y": -304
       },
       "params": {
-        "text": "Game of Life\n\n`spread/gol-step` advances a 2-D boolean grid by one Conway tick.\n\nHere the grid is read from state, stepped, written back. Plus a starter pattern in the upper-left so frame 0 has something to chew on. Watch the colony evolve.",
+        "text": "Game of Life\n\n`spread/gol-step` advances a 2-D boolean grid (32 × 32) by one Conway tick.\n\nHere the grid is read from state, stepped and written back every frame. The first frame starts from a random soup (about a third of the cells alive, seeded per cell). Watch the colony evolve.",
         "width": 440,
         "height": 240
       },
       "portValues": {
-        "text": "Game of Life\n\n`spread/gol-step` advances a 2-D boolean grid by one Conway tick.\n\nHere the grid is read from state, stepped, written back. Plus a starter pattern in the upper-left so frame 0 has something to chew on. Watch the colony evolve.",
+        "text": "Game of Life\n\n`spread/gol-step` advances a 2-D boolean grid (32 × 32) by one Conway tick.\n\nHere the grid is read from state, stepped and written back every frame. The first frame starts from a random soup (about a third of the cells alive, seeded per cell). Watch the colony evolve.",
         "width": 440,
         "height": 240
       }
@@ -193,12 +193,12 @@
         "y": 100
       },
       "params": {
-        "b": 6,
+        "b": 12,
         "valueType": "number"
       },
       "parentId": "t43_draw",
       "portValues": {
-        "b": 6
+        "b": 12
       }
     },
     {
@@ -231,27 +231,27 @@
       "id": "t43_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 846,
+        "x": 853,
         "y": 40
       },
       "params": {
         "cols": 32,
         "rows": 32,
-        "w": 217,
-        "h": 217,
+        "w": 434,
+        "h": 434,
         "center": {
-          "x": -11.5,
-          "y": -11.5
+          "x": 0,
+          "y": 0
         }
       },
       "portValues": {
         "cols": 32,
         "rows": 32,
-        "w": 217,
-        "h": 217,
+        "w": 434,
+        "h": 434,
         "center": {
-          "x": -11.5,
-          "y": -11.5
+          "x": 0,
+          "y": 0
         }
       }
     }

@@ -31,7 +31,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 0,
-        "y": 20
+        "y": 0
       },
       "params": {}
     },
@@ -40,7 +40,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 180,
-        "y": 20
+        "y": 0
       },
       "params": {}
     },
@@ -49,7 +49,7 @@
       "defType": "vec2/normalize",
       "position": {
         "x": 360,
-        "y": 20
+        "y": 0
       },
       "params": {}
     },
@@ -57,8 +57,8 @@
       "id": "t32_sc",
       "defType": "vec2/scale",
       "position": {
-        "x": 550,
-        "y": 20
+        "x": 573,
+        "y": 0
       },
       "params": {
         "s": 180
@@ -71,8 +71,8 @@
       "id": "t32_line",
       "defType": "draw/line",
       "position": {
-        "x": 730,
-        "y": 0
+        "x": 784,
+        "y": 31
       },
       "params": {}
     },
@@ -80,8 +80,8 @@
       "id": "t32_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 920,
-        "y": 0
+        "x": 974,
+        "y": 31
       },
       "params": {
         "width": 400,
@@ -90,6 +90,32 @@
       "portValues": {
         "width": 400,
         "height": 400
+      }
+    },
+    {
+      "id": "t32_stroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 550,
+        "y": 122
+      },
+      "params": {
+        "width": 3,
+        "color": {
+          "r": 0.9,
+          "g": 0.94,
+          "b": 0.98,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "width": 3,
+        "color": {
+          "r": 0.9,
+          "g": 0.94,
+          "b": 0.98,
+          "a": 1
+        }
       }
     }
   ],
@@ -135,6 +161,13 @@
       "target": "t32_line",
       "sourceHandle": "out-scaled",
       "targetHandle": "in-b"
+    },
+    {
+      "id": "e_fix_1",
+      "source": "t32_stroke",
+      "target": "t32_line",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
     }
   ]
 }

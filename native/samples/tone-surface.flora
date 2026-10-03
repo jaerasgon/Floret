@@ -61,7 +61,7 @@
       "id": "ts_osc",
       "defType": "sound/oscillator",
       "position": {
-        "x": 1139,
+        "x": 1005,
         "y": 61
       },
       "params": {
@@ -75,7 +75,7 @@
       "id": "ts_out",
       "defType": "sound/output",
       "position": {
-        "x": 2138,
+        "x": 1871,
         "y": 61
       },
       "params": {}
@@ -105,11 +105,11 @@
       "defType": "region/foreach",
       "position": {
         "x": 451,
-        "y": 327
+        "y": 333
       },
       "params": {
-        "width": 1533,
-        "height": 399,
+        "width": 1266,
+        "height": 398,
         "label": "ForEach"
       },
       "ports": [
@@ -118,7 +118,7 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 128
+          "y": 117
         },
         {
           "id": "layer",
@@ -128,15 +128,15 @@
           "y": 76
         }
       ],
-      "width": 1533,
-      "height": 399
+      "width": 1266,
+      "height": 398
     },
     {
       "id": "ts_lClamp",
       "defType": "math/clamp",
       "position": {
-        "x": 777,
-        "y": 265
+        "x": 510,
+        "y": 264
       },
       "params": {
         "min": 10,
@@ -152,8 +152,8 @@
       "id": "ts_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 961,
-        "y": 147
+        "x": 694,
+        "y": 146
       },
       "params": {
         "s": 75,
@@ -169,7 +169,7 @@
       "id": "ts_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1143,
+        "x": 876,
         "y": 133
       },
       "params": {
@@ -184,7 +184,7 @@
       "id": "ts_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1325,
+        "x": 1058,
         "y": 40
       },
       "params": {
@@ -201,8 +201,8 @@
       "id": "ts_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2080,
-        "y": 367
+        "x": 1813,
+        "y": 373
       },
       "params": {
         "width": 500,
@@ -223,33 +223,11 @@
       "params": {}
     },
     {
-      "id": "ts_pos",
-      "defType": "math/add",
-      "position": {
-        "x": 129,
-        "y": 84
-      },
-      "params": {
-        "b": {
-          "x": 10,
-          "y": 10
-        },
-        "valueType": "vec2"
-      },
-      "parentId": "ts_region",
-      "portValues": {
-        "b": {
-          "x": 10,
-          "y": 10
-        }
-      }
-    },
-    {
       "id": "ts_dist",
       "defType": "vec2/dist",
       "position": {
-        "x": 398,
-        "y": 122
+        "x": 131,
+        "y": 120
       },
       "params": {},
       "parentId": "ts_region"
@@ -258,8 +236,8 @@
       "id": "ts_hue",
       "defType": "math/map",
       "position": {
-        "x": 772,
-        "y": 83
+        "x": 505,
+        "y": 82
       },
       "params": {
         "inMin": 0,
@@ -279,8 +257,8 @@
       "id": "ts_lit",
       "defType": "math/map",
       "position": {
-        "x": 589,
-        "y": 193
+        "x": 322,
+        "y": 192
       },
       "params": {
         "inMin": 0,
@@ -390,32 +368,11 @@
       "targetHandle": "in-y"
     },
     {
-      "id": "e_ts_region_ts_pos_a",
-      "source": "ts_region",
-      "target": "ts_pos",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_ts_pos_ts_dist_a",
-      "source": "ts_pos",
-      "target": "ts_dist",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_ts_mv_ts_dist_b",
       "source": "ts_mv",
       "target": "ts_dist",
       "sourceHandle": "out-vector",
       "targetHandle": "in-b"
-    },
-    {
-      "id": "e_ts_pos_ts_dot_pos",
-      "source": "ts_pos",
-      "target": "ts_dot",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-pos"
     },
     {
       "id": "e_ts_dist_ts_hue_x",
@@ -444,6 +401,20 @@
       "target": "ts_lClamp",
       "sourceHandle": "out-result",
       "targetHandle": "in-x"
+    },
+    {
+      "id": "e_fix_1",
+      "source": "ts_region",
+      "target": "ts_dist",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fix_2",
+      "source": "ts_region",
+      "target": "ts_dot",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
     }
   ]
 }

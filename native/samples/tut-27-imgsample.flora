@@ -16,12 +16,12 @@
         "y": -304
       },
       "params": {
-        "text": "Image sampling\n\n`image/sample-spread` reads N colours from an image at N points. Combine with a grid generator and you get a \"downsample\" pipeline — perfect for posterising or pixel-art looks.\n\nA noisy gradient rasterised, then sampled at 24×24 grid centres.",
+        "text": "Image sampling\n\n`image/sample-spread` reads N colours from an image at N points, in pixels from its top-left corner. Combine with a grid generator and you get a \"downsample\" pipeline — perfect for posterising or pixel-art looks.\n\nA diagonal gradient (a triadic palette whose hue drifts with time) is rasterised at 256×256, then sampled at 24×24 grid points and redrawn as squares.",
         "width": 440,
         "height": 240
       },
       "portValues": {
-        "text": "Image sampling\n\n`image/sample-spread` reads N colours from an image at N points. Combine with a grid generator and you get a \"downsample\" pipeline — perfect for posterising or pixel-art looks.\n\nA noisy gradient rasterised, then sampled at 24×24 grid centres.",
+        "text": "Image sampling\n\n`image/sample-spread` reads N colours from an image at N points, in pixels from its top-left corner. Combine with a grid generator and you get a \"downsample\" pipeline — perfect for posterising or pixel-art looks.\n\nA diagonal gradient (a triadic palette whose hue drifts with time) is rasterised at 256×256, then sampled at 24×24 grid points and redrawn as squares.",
         "width": 440,
         "height": 240
       }
@@ -31,7 +31,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 229
+        "y": 320
       },
       "params": {}
     },
@@ -40,7 +40,7 @@
       "defType": "color/color",
       "position": {
         "x": 444,
-        "y": 209
+        "y": 302
       },
       "params": {
         "mode": "hsl",
@@ -56,35 +56,26 @@
       }
     },
     {
-      "id": "t27_fillA",
-      "defType": "style/fill",
-      "position": {
-        "x": 690,
-        "y": 210
-      },
-      "params": {}
-    },
-    {
       "id": "t27_rectA",
       "defType": "draw/rect",
       "position": {
-        "x": 870,
-        "y": 131
+        "x": 1199,
+        "y": 128
       },
       "params": {
         "w": 300,
         "h": 300,
         "pos": {
-          "x": -150,
-          "y": -150
+          "x": 0,
+          "y": 0
         }
       },
       "portValues": {
         "w": 300,
         "h": 300,
         "pos": {
-          "x": -150,
-          "y": -150
+          "x": 0,
+          "y": 0
         }
       }
     },
@@ -93,7 +84,7 @@
       "defType": "math/mul",
       "position": {
         "x": 180,
-        "y": 229
+        "y": 320
       },
       "params": {
         "b": 60,
@@ -107,8 +98,8 @@
       "id": "t27_rast",
       "defType": "image/from-layer",
       "position": {
-        "x": 1122,
-        "y": 131
+        "x": 1415,
+        "y": 130
       },
       "params": {
         "w": 256,
@@ -123,32 +114,36 @@
       "id": "t27_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 1108,
-        "y": 273
+        "x": 1401,
+        "y": 272
       },
       "params": {
         "cols": 24,
         "rows": 24,
         "w": 256,
         "h": 256,
-        "cx": 128,
-        "cy": 128
+        "center": {
+          "x": 128,
+          "y": 128
+        }
       },
       "portValues": {
         "cols": 24,
         "rows": 24,
         "w": 256,
         "h": 256,
-        "cx": 128,
-        "cy": 128
+        "center": {
+          "x": 128,
+          "y": 128
+        }
       }
     },
     {
       "id": "t27_samp",
       "defType": "image/sample-spread",
       "position": {
-        "x": 1330,
-        "y": 193
+        "x": 1623,
+        "y": 192
       },
       "params": {}
     },
@@ -156,31 +151,27 @@
       "id": "t27_gridScreen",
       "defType": "spread/grid",
       "position": {
-        "x": 1330,
-        "y": 11
+        "x": 1623,
+        "y": 10
       },
       "params": {
         "cols": 24,
         "rows": 24,
         "w": 360,
-        "h": 360,
-        "cx": 0,
-        "cy": 0
+        "h": 360
       },
       "portValues": {
         "cols": 24,
         "rows": 24,
         "w": 360,
-        "h": 360,
-        "cx": 0,
-        "cy": 0
+        "h": 360
       }
     },
     {
       "id": "t27_region",
       "defType": "region/foreach",
       "position": {
-        "x": 1549,
+        "x": 1843,
         "y": 22
       },
       "params": {
@@ -245,7 +236,7 @@
       "id": "t27_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2161,
+        "x": 2455,
         "y": 62
       },
       "params": {
@@ -255,6 +246,58 @@
       "portValues": {
         "width": 500,
         "height": 500
+      }
+    },
+    {
+      "id": "t27_palA",
+      "defType": "color/palette",
+      "position": {
+        "x": 690,
+        "y": 284
+      },
+      "params": {
+        "mode": "triadic",
+        "stopCount": 3
+      },
+      "portValues": {
+        "mode": "triadic",
+        "stopCount": 3
+      }
+    },
+    {
+      "id": "t27_gradA",
+      "defType": "style/gradient",
+      "position": {
+        "x": 955,
+        "y": 206
+      },
+      "params": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "canvas",
+        "extend": "pad",
+        "start": {
+          "x": -128,
+          "y": -128
+        },
+        "end": {
+          "x": 128,
+          "y": 128
+        }
+      },
+      "portValues": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "canvas",
+        "extend": "pad",
+        "start": {
+          "x": -128,
+          "y": -128
+        },
+        "end": {
+          "x": 128,
+          "y": 128
+        }
       }
     }
   ],
@@ -272,20 +315,6 @@
       "target": "t27_colA",
       "sourceHandle": "out-result",
       "targetHandle": "in-h"
-    },
-    {
-      "id": "e_219",
-      "source": "t27_colA",
-      "target": "t27_fillA",
-      "sourceHandle": "out-color",
-      "targetHandle": "in-color"
-    },
-    {
-      "id": "e_220",
-      "source": "t27_fillA",
-      "target": "t27_rectA",
-      "sourceHandle": "out-style",
-      "targetHandle": "in-style"
     },
     {
       "id": "e_221",
@@ -356,6 +385,27 @@
       "target": "t27_rect",
       "sourceHandle": "out-p",
       "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_fix_1",
+      "source": "t27_colA",
+      "target": "t27_palA",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_fix_2",
+      "source": "t27_palA",
+      "target": "t27_gradA",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_fix_3",
+      "source": "t27_gradA",
+      "target": "t27_rectA",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
     }
   ]
 }

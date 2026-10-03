@@ -31,7 +31,7 @@
       "defType": "input/midi-cc",
       "position": {
         "x": 0,
-        "y": 66
+        "y": 30
       },
       "params": {
         "device": "",
@@ -42,38 +42,34 @@
         "device": "",
         "channel": 0,
         "cc": 1
-      }
-    },
-    {
-      "id": "t45_half",
-      "defType": "math/mul",
-      "position": {
-        "x": 443,
-        "y": 3
-      },
-      "params": {
-        "b": -0.5,
-        "valueType": "number"
-      },
-      "portValues": {
-        "b": -0.5
       }
     },
     {
       "id": "t45_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 896,
-        "y": 38
+        "x": 436,
+        "y": 0
       },
-      "params": {}
+      "params": {
+        "pos": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 0
+        }
+      }
     },
     {
       "id": "t45_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1088,
-        "y": 38
+        "x": 638,
+        "y": 0
       },
       "params": {
         "width": 400,
@@ -82,22 +78,6 @@
       "portValues": {
         "width": 400,
         "height": 400
-      }
-    },
-    {
-      "id": "t45_rect-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 710,
-        "y": 0
-      },
-      "params": {
-        "x": 0,
-        "y": 0
-      },
-      "portValues": {
-        "x": 0,
-        "y": 0
       }
     },
     {
@@ -105,7 +85,7 @@
       "defType": "math/map",
       "position": {
         "x": 256,
-        "y": 66
+        "y": 30
       },
       "params": {
         "inMin": 0,
@@ -123,32 +103,11 @@
   ],
   "edges": [
     {
-      "id": "e_378",
-      "source": "t45_half",
-      "target": "t45_rect-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_379",
-      "source": "t45_half",
-      "target": "t45_rect-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-y"
-    },
-    {
       "id": "e_380",
       "source": "t45_rect",
       "target": "t45_renderer",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_xy_t45_rect-xy0",
-      "source": "t45_rect-xy0",
-      "target": "t45_rect",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     },
     {
       "id": "e_t45_cc_t45_size_x",
@@ -170,13 +129,6 @@
       "target": "t45_rect",
       "sourceHandle": "out-result",
       "targetHandle": "in-h"
-    },
-    {
-      "id": "e_t45_size_t45_half_a",
-      "source": "t45_size",
-      "target": "t45_half",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
     }
   ]
 }

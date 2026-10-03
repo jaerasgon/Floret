@@ -36,7 +36,8 @@ fn run(patch: &PatchFile) -> String {
 }
 
 /// Samples built on every kind of seeded node: random / noise values,
-/// spreads (noise, shuffle, Game of Life), forces, walkers and LFOs.
+/// spreads (noise, shuffle, Game of Life), forces, walkers and LFOs;
+/// geometry (scatter, L-system jitter) and simulations.
 const SEEDED: &[&str] = &[
     "tut-17-perlin",
     "tut-18-random-spread",
@@ -47,6 +48,10 @@ const SEEDED: &[&str] = &[
     "curl-flow",
     "force-field",
     "variations",
+    "voronoi-mosaic",
+    "lsystem-plant",
+    "sim-flocking",
+    "sim-dla-coral",
 ];
 
 #[test]

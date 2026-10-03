@@ -28,9 +28,10 @@ pub fn register(r: &mut Registrar) {
     r.dynamic("gpu/effect", effect_inputs);
 }
 
-/// Every effect's seed goes through here (the place to mix in a
-/// patch-wide seed): the node's own seed, as the float the passes read.
+/// Every effect's seed goes through here: the node's own seed with the
+/// patch seed mixed in ([`crate::seed`]), as the float the passes read.
 pub(crate) fn effect_seed(seed: f64) -> f64 {
+    let seed = crate::seed::mix(seed);
     if seed.is_finite() {
         seed.floor()
     } else {
@@ -543,5 +544,14 @@ mod tests {
             sh.uniforms[i.unwrap()],
             UniformValue::Color([1.0, 0.0, 0.0, 0.5])
         );
+    }
+
+    #[test]
+    fn the_patch_seed_shifts_the_effect_seed() {
+        assert_eq!(effect_seed(3.7), 3.0);
+        let _patch = crate::seed::install(4242);
+        let mixed = effect_seed(3.0);
+        assert_ne!(mixed, 3.0);
+        assert_eq!(mixed, mixed.floor());
     }
 }

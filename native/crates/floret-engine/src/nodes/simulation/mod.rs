@@ -260,7 +260,7 @@ impl Ins<'_> {
     }
 
     pub(crate) fn seed(&self) -> u64 {
-        self.num("seed", 1.0) as i64 as u64
+        crate::seed::mix(self.num("seed", 1.0)) as i64 as u64
     }
 
     pub(crate) fn style(&self) -> Option<crate::scene::Style> {
@@ -270,8 +270,8 @@ impl Ins<'_> {
 
 // ─── Randomness ──────────────────────────────────────────────────────────────
 
-/// Every random stream a simulation uses starts here, from the node's own
-/// `seed` pin, so a patch-wide seed can later be mixed in in one place.
+/// Every random stream a simulation uses starts here, from the node's
+/// `seed` pin with the patch seed already mixed in (see `seed()` above).
 pub(crate) fn sim_rng(seed: u64) -> Rng {
     Rng::new(seed)
 }

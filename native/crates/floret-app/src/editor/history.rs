@@ -1,7 +1,7 @@
 //! Undo / redo. Port of `src/editor/history.ts`.
 //!
 //! An entry is a snapshot of the patch (nodes, edges, params — params live
-//! on the nodes here). Every committed mutation pushes one entry; live
+//! on the nodes here — and the loop length setting). Every committed mutation pushes one entry; live
 //! scrubs don't push at all; a param commit on the same `(node, key)`
 //! within 250 ms of the previous one replaces that entry instead of
 //! stacking, so typing collapses into one step.
@@ -19,6 +19,7 @@ pub const COALESCE: Duration = Duration::from_millis(250);
 struct Entry {
     nodes: Vec<PatchNode>,
     edges: Vec<PatchEdge>,
+    loop_length: Option<f64>,
     at: Instant,
     /// `"<node>.<key>"` for param commits (coalescing key).
     param_key: Option<String>,
@@ -38,6 +39,7 @@ impl History {
         Entry {
             nodes: patch.nodes.clone(),
             edges: patch.edges.clone(),
+            loop_length: patch.loop_length,
             at,
             param_key,
             id: self.next_id,
@@ -117,6 +119,7 @@ impl History {
     fn apply(e: &Entry, patch: &mut PatchFile) {
         patch.nodes = e.nodes.clone();
         patch.edges = e.edges.clone();
+        patch.loop_length = e.loop_length;
     }
 
     /// Number of undo states held (including the current one).
@@ -194,6 +197,22 @@ mod tests {
         assert_eq!(value(&p), 3.0);
         h.undo(&mut p);
         assert_eq!(value(&p), 2.0, "merged step lands on the last value");
+    }
+
+    #[test]
+    fn loop_length_edits_undo() {
+        let mut p = patch(vec![], vec![]);
+        let mut h = History::default();
+        h.reset(&p);
+        p.loop_length = Some(3.0);
+        h.push(&p, Some("patch.loopLength"));
+        p.loop_length = Some(6.0);
+        h.push(&p, Some("patch.loopLength"));
+        assert_eq!(h.depth(), 2, "dragging the setting is one step");
+        h.undo(&mut p);
+        assert_eq!(p.loop_length, None);
+        h.redo(&mut p);
+        assert_eq!(p.loop_length, Some(6.0));
     }
 
     #[test]

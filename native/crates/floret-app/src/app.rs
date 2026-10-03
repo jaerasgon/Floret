@@ -11,8 +11,8 @@ use crate::files::{self, Document, Origin};
 use crate::menu::{self, Command, MenuState};
 use crate::prefs::{Prefs, PrefsWindow, Startup};
 use crate::{
-    audio, canvas, crash, devices, editor, help, host, palette, preview, recovery, shader_panel,
-    theme, welcome, workspace, SAMPLES,
+    audio, canvas, crash, devices, editor, help, host, palette, preview, recording, recovery,
+    shader_panel, theme, welcome, workspace, SAMPLES,
 };
 use eframe::egui::{self, Align, Layout, RichText};
 use floret_engine::patch::PatchFile;
@@ -78,6 +78,8 @@ pub struct App {
     // ── Editor and panels
     view: canvas::View,
     preview: preview::PreviewPanel,
+    /// The Export Video window and any recording in progress.
+    recorder: recording::Recorder,
     /// When the monitor list for the output window was last read.
     monitors_read: Option<Instant>,
     query: String,
@@ -146,6 +148,7 @@ impl App {
             fps: 0.0,
             view,
             preview: preview::PreviewPanel::new(cc.wgpu_render_state.as_ref()),
+            recorder: recording::Recorder::default(),
             monitors_read: None,
             query: String::new(),
             crash: crash::Guard::default(),
@@ -403,6 +406,8 @@ impl App {
         let Some(engine) = self.engine.as_mut() else {
             return;
         };
+        // The loop length is a patch setting, edited without a recompile.
+        engine.loop_length = self.patch.loop_seconds();
         if self.crash.paused() {
             return;
         }
@@ -437,6 +442,7 @@ impl App {
                 self.save_as();
             }
             Command::BrowseSamples => self.workspace.show_library(),
+            Command::ExportVideo => self.recorder.open(None, None),
             Command::Quit => self.request(ctx, After::Quit),
             Command::ToggleNodes => self.prefs.palette_visible ^= true,
             Command::ZoomIn => self.prefs.step_scale(1),
@@ -654,6 +660,9 @@ impl App {
         if let Some(engine) = self.engine.as_mut() {
             engine.set_profiling(self.workspace.profiling());
         }
+        if let Some((renderer, format)) = self.preview.take_record() {
+            self.recorder.open(Some(renderer), Some(format));
+        }
         match action {
             Some(workspace::ShellAction::LoadSample(i)) => self.request(ui.ctx(), After::Sample(i)),
             Some(workspace::ShellAction::LoadPatch(p)) => {
@@ -662,7 +671,7 @@ impl App {
                     .as_ref()
                     .and_then(|m| m.name.clone())
                     .unwrap_or_else(|| "Untitled".into());
-                self.request(ui.ctx(), After::Patch(Box::new(p), name));
+                self.request(ui.ctx(), After::Patch(p, name));
             }
             None => {}
         }
@@ -1026,6 +1035,14 @@ impl eframe::App for App {
         self.prefs_window.show(&ctx, &mut self.prefs);
         help::shortcuts_window(&ctx, &mut self.show_shortcuts);
         help::about_window(&ctx, &mut self.show_about, &self.gpu_name);
+        self.recorder.show(
+            &ctx,
+            rs,
+            &mut self.patch,
+            &mut self.view,
+            &self.preview.renderers(),
+            &self.doc.name,
+        );
         self.recovery_dialog(&ctx);
         self.confirm_dialog(&ctx);
 
@@ -1125,5 +1142,6 @@ pub fn empty_patch() -> PatchFile {
         meta: None,
         nodes: Vec::new(),
         edges: Vec::new(),
+        loop_length: None,
     }
 }

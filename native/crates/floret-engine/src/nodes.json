@@ -11104,7 +11104,7 @@
    "type": "time/seconds",
    "category": "Time",
    "label": "Time",
-   "description": "Output seconds elapsed since the patch started.",
+   "description": "Output seconds elapsed since the patch started, and the loop phase: 0..1 over the patch's loop length (set in Export Video), so animations built on it loop perfectly.",
    "inputs": [],
    "outputs": [
     {
@@ -11112,6 +11112,12 @@
      "type": "number",
      "kind": "single",
      "label": "t"
+    },
+    {
+     "name": "loop",
+     "type": "number",
+     "kind": "single",
+     "label": "loop"
     }
    ],
    "eval": "context",

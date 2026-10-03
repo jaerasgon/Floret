@@ -7,12 +7,13 @@
 //! Unlike TS, export works while the patch runs: it takes the frame shown
 //! when the export starts. Cmd/Ctrl+E exports again at the last scale.
 
+use crate::recording::Format;
 use crate::theme;
 use eframe::egui::{self, RichText};
 use eframe::egui_wgpu::{self, wgpu};
 use floret_engine::scene::SceneNode;
 use floret_render::Renderer;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::mpsc;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -35,6 +36,9 @@ pub struct Export {
     status: Option<(Result<String, String>, Instant)>,
     /// PNG encodes run off the UI thread and report back here.
     done: Option<mpsc::Receiver<Result<String, String>>>,
+    /// A recording (video / GIF / PNG sequence) picked from the menu, for
+    /// the app to open its export window with.
+    record: Option<Format>,
 }
 
 impl Default for Export {
@@ -43,6 +47,7 @@ impl Default for Export {
             scale: 1,
             status: None,
             done: None,
+            record: None,
         }
     }
 }
@@ -104,6 +109,14 @@ impl Export {
                         ui.close();
                     }
                 }
+                // Recordings: the export window takes it from here.
+                ui.separator();
+                for f in Format::ALL {
+                    if ui.button(f.menu_label()).clicked() {
+                        self.record = Some(f);
+                        ui.close();
+                    }
+                }
             })
             .response
             .on_hover_text(hover);
@@ -112,6 +125,11 @@ impl Export {
             self.scale = scale;
             self.export(rs, name, frame, scale);
         }
+    }
+
+    /// A recording picked from the menu since the last call.
+    pub fn take_record(&mut self) -> Option<Format> {
+        self.record.take()
     }
 
     fn export(&mut self, rs: &egui_wgpu::RenderState, name: &str, frame: Frame<'_>, scale: u32) {
@@ -153,6 +171,17 @@ fn tooltip(shortcut: &egui::KeyboardShortcut, scale: u32) -> String {
 
 /// `<slug>.png`, `<slug>@2x.png`, … (TS slug rule; "floret" if empty).
 pub fn file_name(name: &str, scale: u32) -> String {
+    let slug = slug(name);
+    if scale == 1 {
+        format!("{slug}.png")
+    } else {
+        format!("{slug}@{scale}x.png")
+    }
+}
+
+/// A file-name stem from a patch or preview name (TS slug rule; "floret"
+/// if empty).
+pub fn slug(name: &str) -> String {
     let mut slug = String::new();
     for c in name.to_lowercase().chars() {
         if c.is_ascii_alphanumeric() {
@@ -162,11 +191,10 @@ pub fn file_name(name: &str, scale: u32) -> String {
         }
     }
     let slug = slug.trim_matches('-');
-    let slug = if slug.is_empty() { "floret" } else { slug };
-    if scale == 1 {
-        format!("{slug}.png")
+    if slug.is_empty() {
+        "floret".to_owned()
     } else {
-        format!("{slug}@{scale}x.png")
+        slug.to_owned()
     }
 }
 
@@ -182,39 +210,16 @@ fn display_name(p: &Path) -> String {
 fn render(rs: &egui_wgpu::RenderState, frame: &Frame<'_>, scale: u32) -> Result<Vec<u8>, String> {
     let (w, h) = (frame.size.0 * scale, frame.size.1 * scale);
     let device = &rs.device;
-    let msaa = u64::from(w) * u64::from(h) <= MSAA_MAX_PIXELS
-        && [
-            floret_render::OFFSCREEN_FORMAT,
-            floret_render::STENCIL_FORMAT,
-        ]
-        .iter()
-        .all(|f| {
-            rs.adapter
-                .get_texture_format_features(*f)
-                .flags
-                .sample_count_supported(4)
-        });
     let scope = device.push_error_scope(wgpu::ErrorFilter::OutOfMemory);
     let validation = device.push_error_scope(wgpu::ErrorFilter::Validation);
     let mut renderer = Renderer::new(
         device,
         &rs.queue,
         floret_render::OFFSCREEN_FORMAT,
-        if msaa { 4 } else { 1 },
+        samples(&rs.adapter, (w, h)),
     );
-    // Scene units are canvas pixels around a centre origin, so scaling the
-    // whole scene about the origin is a re-render at the bigger size.
     let s = f64::from(scale);
-    let layers = if scale == 1 {
-        frame.layers.to_vec()
-    } else {
-        vec![Arc::new(SceneNode::Group {
-            children: Arc::from(frame.layers.to_vec()),
-            transform: Some([s, 0.0, 0.0, s, 0.0, 0.0]),
-            blend_mode: None,
-            clip: None,
-        })]
-    };
+    let layers = scaled(frame.layers, s, s);
     let (pixels, _) = floret_render::render_and_read(
         device,
         &rs.queue,
@@ -232,9 +237,46 @@ fn render(rs: &egui_wgpu::RenderState, frame: &Frame<'_>, scale: u32) -> Result<
     Ok(pixels)
 }
 
+/// MSAA samples for an export renderer of `size` on this adapter: 4 when
+/// supported and the frame isn't huge, else 1.
+pub(crate) fn samples(adapter: &wgpu::Adapter, (w, h): (u32, u32)) -> u32 {
+    let msaa = u64::from(w) * u64::from(h) <= MSAA_MAX_PIXELS
+        && [
+            floret_render::OFFSCREEN_FORMAT,
+            floret_render::STENCIL_FORMAT,
+        ]
+        .iter()
+        .all(|f| {
+            adapter
+                .get_texture_format_features(*f)
+                .flags
+                .sample_count_supported(4)
+        });
+    if msaa {
+        4
+    } else {
+        1
+    }
+}
+
+/// The scene scaled by `sx`, `sy`. Scene units are canvas pixels around a
+/// centre origin, so scaling the whole scene about the origin is a
+/// re-render at the bigger size.
+pub(crate) fn scaled(layers: &[Arc<SceneNode>], sx: f64, sy: f64) -> Vec<Arc<SceneNode>> {
+    if sx == 1.0 && sy == 1.0 {
+        return layers.to_vec();
+    }
+    vec![Arc::new(SceneNode::Group {
+        children: Arc::from(layers.to_vec()),
+        transform: Some([sx, 0.0, 0.0, sy, 0.0, 0.0]),
+        blend_mode: None,
+        clip: None,
+    })]
+}
+
 /// RGBA8 → PNG. The frame is opaque (the background is cleared opaque), so
 /// premultiplied and straight alpha agree.
-fn write_png(path: &PathBuf, w: u32, h: u32, rgba: &[u8]) -> Result<(), String> {
+pub(crate) fn write_png(path: &Path, w: u32, h: u32, rgba: &[u8]) -> Result<(), String> {
     let f = std::fs::File::create(path).map_err(|e| e.to_string())?;
     let mut enc = png::Encoder::new(std::io::BufWriter::new(f), w, h);
     enc.set_color(png::ColorType::Rgba);

@@ -21,6 +21,10 @@ const INPUT_RENAMES: &[(&str, &str, &str)] = &[
     ("spread/repeat", "value", "source"),
 ];
 
+/// Nodes that had a single output in the web app and gained native-only
+/// outputs after it: old output names still mean the first one.
+const ONCE_SINGLE_OUTPUT: &[&str] = &["time/seconds"];
+
 /// Old output names on single-output nodes → that output; renamed inputs.
 pub fn migrate_legacy_edges(patch: &mut PatchFile, cat: &Catalogue) {
     let def_type: HashMap<&str, &str> = patch
@@ -32,12 +36,11 @@ pub fn migrate_legacy_edges(patch: &mut PatchFile, cat: &Catalogue) {
     for (i, e) in patch.edges.iter().enumerate() {
         let mut source = None;
         if let Some(Handle::Out(name)) = parse_handle(e.source_handle.as_deref()) {
-            if let Some(spec) = def_type.get(e.source.as_str()).and_then(|t| cat.get(t)) {
+            let ty = def_type.get(e.source.as_str()).copied();
+            if let Some(spec) = ty.and_then(|t| cat.get(t)) {
                 let outs = &spec.outputs;
-                if spec.region_kind.is_none()
-                    && outs.len() == 1
-                    && !outs.iter().any(|p| p.name == name)
-                {
+                let single = outs.len() == 1 || ty.is_some_and(|t| ONCE_SINGLE_OUTPUT.contains(&t));
+                if spec.region_kind.is_none() && single && !outs.iter().any(|p| p.name == name) {
                     source = Some(format!("out-{}", outs[0].name));
                 }
             }
@@ -206,6 +209,8 @@ mod tests {
         );
         let e = &p.edges[0];
         assert_ne!(e.source_handle.as_deref(), Some("out-out"));
+        // The native-only `loop` output doesn't change what `out-out` meant.
+        assert_eq!(e.source_handle.as_deref(), Some("out-t"));
         assert_eq!(e.target_handle.as_deref(), Some("in-source"));
     }
 

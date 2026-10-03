@@ -6,6 +6,8 @@ use serde::{Deserialize, Serialize};
 
 pub const CURRENT_PATCH_VERSION: u32 = 2;
 pub const PATCH_KIND: &str = "floret.patch";
+/// Loop length (seconds) of a patch that doesn't set one.
+pub const DEFAULT_LOOP_LENGTH: f64 = 4.0;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -18,6 +20,11 @@ pub struct PatchFile {
     pub meta: Option<PatchMeta>,
     pub nodes: Vec<PatchNode>,
     pub edges: Vec<PatchEdge>,
+    /// Loop length in seconds: the time node's `loop` phase runs 0..1 over
+    /// it, and video / GIF export records whole loops. Absent in older
+    /// files (and not written while unset): [`DEFAULT_LOOP_LENGTH`].
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loop_length: Option<f64>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -142,6 +149,14 @@ impl PatchFile {
     pub fn to_json(&self) -> String {
         serde_json::to_string_pretty(self).expect("patch serialises")
     }
+
+    /// The loop length in effect: the patch's own if it's a usable
+    /// positive number, else [`DEFAULT_LOOP_LENGTH`].
+    pub fn loop_seconds(&self) -> f64 {
+        self.loop_length
+            .filter(|l| l.is_finite() && *l > 0.0)
+            .unwrap_or(DEFAULT_LOOP_LENGTH)
+    }
 }
 
 /// Run the migration ladder up to `CURRENT_PATCH_VERSION`.
@@ -196,6 +211,28 @@ mod tests {
         assert_eq!(p.nodes[0].def_type, "math/add");
         assert_eq!(p.nodes[0].params["valueType"], "vec2");
         assert_eq!(p.edges[0].source_handle.as_deref(), Some("out-result"));
+    }
+
+    #[test]
+    fn loop_length_is_optional_and_round_trips() {
+        // Older files load unchanged, and an unset loop isn't written.
+        let old = r#"{"kind":"floret.patch","version":2,"nodes":[],"edges":[]}"#;
+        let mut p = PatchFile::load(old).unwrap();
+        assert_eq!(p.loop_length, None);
+        assert_eq!(p.loop_seconds(), DEFAULT_LOOP_LENGTH);
+        assert!(!p.to_json().contains("loopLength"));
+        // Set: written, read back, and in effect.
+        p.loop_length = Some(2.5);
+        let json = p.to_json();
+        assert!(json.contains("\"loopLength\": 2.5"), "{json}");
+        let back = PatchFile::load(&json).unwrap();
+        assert_eq!(back.loop_length, Some(2.5));
+        assert_eq!(back.loop_seconds(), 2.5);
+        // Unusable values fall back to the default.
+        for bad in [0.0, -1.0, f64::NAN] {
+            p.loop_length = Some(bad);
+            assert_eq!(p.loop_seconds(), DEFAULT_LOOP_LENGTH);
+        }
     }
 
     #[test]

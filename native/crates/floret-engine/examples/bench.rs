@@ -29,6 +29,7 @@ fn frame(i: usize, width: f64, height: f64) -> FrameCtx {
         mouse_is_pressed: (20..40).contains(&(i % 40)),
         key: if i >= 10 { "a".into() } else { String::new() },
         key_is_pressed: (10..20).contains(&i),
+        ..FrameCtx::default()
     }
 }
 

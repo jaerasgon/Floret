@@ -478,6 +478,13 @@ impl View {
         self.recompile = true;
     }
 
+    /// Record a patch-setting edit (the loop length): an undo step, merged
+    /// while the same setting keeps changing; the engine reads settings
+    /// live, so nothing recompiles.
+    pub fn commit_setting(&mut self, patch: &PatchFile, key: &str) {
+        self.history.push(patch, Some(key));
+    }
+
     /// The patch's undo revision: changes with every committed edit, undo
     /// and redo (the app's dirty tracking).
     pub fn revision(&self) -> u64 {

@@ -35,6 +35,10 @@ serde.workspace = true
 # Paste from the Edit menu (already in the tree through egui-winit).
 arboard = { version = "3", default-features = false }
 
+[dev-dependencies]
+# Reading exported GIFs back in tests.
+gif = "0.14"
+
 # Native menu bar (macOS, Windows). Linux uses an egui menu bar: muda needs
 # a GTK window there and winit doesn't create one.
 [target.'cfg(any(target_os = "macos", target_os = "windows"))'.dependencies]

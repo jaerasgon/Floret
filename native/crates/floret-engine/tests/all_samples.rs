@@ -104,6 +104,7 @@ fn frame(f: usize) -> FrameCtx {
         mouse_is_pressed: f % 20 < 10,
         key: "r".into(),
         key_is_pressed: f >= 30,
+        ..FrameCtx::default()
     }
 }
 

@@ -15,14 +15,22 @@
 //!
 //! Audio tracks are ignored. Each playing node gets a [`session`]: a
 //! decoder thread with a small frame cache around the playhead.
+//!
+//! Writing (the app's video export): H.264 MP4 through OpenH264's encoder
+//! and a minimal MP4 muxer ([`encode`], [`mux`]), and animated GIF
+//! ([`gif_writer`]).
 
 pub mod demux;
+pub mod gif_writer;
+pub mod mux;
 mod session;
 
 #[cfg(target_os = "macos")]
 mod avf;
 #[cfg(feature = "openh264")]
 pub mod clip;
+#[cfg(feature = "openh264")]
+pub mod encode;
 #[cfg(feature = "openh264")]
 mod h264;
 

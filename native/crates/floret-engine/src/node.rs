@@ -22,6 +22,10 @@ pub struct FrameCtx {
     /// Last key pressed (lowercase), empty if none.
     pub key: String,
     pub key_is_pressed: bool,
+    /// The patch's loop length in seconds (the time node's `loop` phase).
+    /// 0 when the caller leaves it to the engine, which fills in its
+    /// patch's (see [`crate::Engine::loop_length`]).
+    pub loop_length: f64,
 }
 
 /// Live parameter values, keyed by node id — the editor writes here while

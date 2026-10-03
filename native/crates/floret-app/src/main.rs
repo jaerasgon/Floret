@@ -31,6 +31,7 @@ mod palette;
 mod prefs;
 mod preview;
 mod profiler;
+mod recording;
 mod recovery;
 mod shader_panel;
 mod theme;

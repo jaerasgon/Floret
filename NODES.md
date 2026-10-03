@@ -38,7 +38,7 @@ re-created when the node type changes or the editor node is deleted.
 
 | Label · type | Inputs → Outputs | Description |
 |---|---|---|
-| **Time** · `time/seconds` | — → `t: number` | Seconds since runtime start. |
+| **Time** · `time/seconds` | — → `t, loop: number` | Seconds since runtime start, and `loop`: the phase 0..1 through the patch's loop length (File → Export Video / GIF… sets it). Build on `loop` and a recording of one loop repeats seamlessly. |
 | **Frame** · `time/frame` | — → `frame: number` | Integer frame counter. |
 
 ## Math

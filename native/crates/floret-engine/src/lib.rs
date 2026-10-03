@@ -68,6 +68,8 @@ impl Engine {
         let mut params = ParamStore::default();
         params.replace_all(patch.nodes.iter().map(|n| (n.id.as_str(), &n.params)));
         let result = compile(patch, Catalogue::builtin(), &params)?;
-        Ok((Engine::new(result.graph, params), result.warnings))
+        let mut engine = Engine::new(result.graph, params);
+        engine.loop_length = patch.loop_seconds();
+        Ok((engine, result.warnings))
     }
 }

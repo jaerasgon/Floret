@@ -320,11 +320,13 @@ pub fn node_width(
     let Some(spec) = cat.get(&n.def_type) else {
         return NODE_W;
     };
-    if look == Look::Node && widgets::custom_of(&n.def_type).is_some() {
-        return NODE_W;
-    }
     let label_font = FontId::proportional(LABEL_FONT);
     let out_font = FontId::proportional(LABEL_FONT);
+    if look == Look::Node {
+        if let Some(c) = widgets::custom_of(&n.def_type) {
+            return custom_width(n, spec, cat, c, &label_font, &out_font);
+        }
+    }
     let mut widest: f32 = 0.0;
     let mut row = |left: f32, out: Option<f32>| {
         let w = 10.0 + left + out.map_or(0.0, |o| 14.0 + o) + 10.0;
@@ -401,6 +403,43 @@ pub fn node_width(
         MIN_W
     };
     widest.max(header).clamp(min, MAX_W).ceil()
+}
+
+/// A custom-body node is [`NODE_W`] wide. One whose body lays out the
+/// standard rows (e.g. a Palette in a generating mode) grows when one of
+/// its dropdown rows needs more room, so the dropdown fits its longest
+/// option next to the row's output label.
+fn custom_width(
+    n: &PatchNode,
+    spec: &floret_engine::spec::NodeSpec,
+    cat: &Catalogue,
+    c: widgets::Custom,
+    label_font: &FontId,
+    out_font: &FontId,
+) -> f32 {
+    if super::custom::rows(c, n, cat).is_some() {
+        return NODE_W;
+    }
+    let items = values::left_items(cat, spec, n);
+    let outs = ports::resolved_outputs(spec, &n.params);
+    let widest = items
+        .iter()
+        .enumerate()
+        .filter_map(|(i, item)| match item {
+            LeftItem::Param {
+                key,
+                kind: kind @ FieldKind::Select(_),
+            } => {
+                let left = text_width(key, label_font.clone()) + 6.0 + field_width(kind);
+                let out = outs.get(i).map_or(0.0, |p| {
+                    14.0 + text_width(&values::display_label(p, false), out_font.clone())
+                });
+                Some(10.0 + left + out + 10.0)
+            }
+            _ => None,
+        })
+        .fold(NODE_W, f32::max);
+    widest.min(MAX_W).ceil()
 }
 
 /// A pin on a node: which node, which side, which port, what type.

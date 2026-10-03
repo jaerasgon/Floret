@@ -34,14 +34,14 @@ pub enum Tab {
 }
 
 /// Panels that can be closed and reopened, in their default order.
-/// Presets comes before Profiler so it's on screen at the default dock
-/// width, where the last tab is cut off.
+/// Presets comes right after Inspector so the whole tab is on screen at the
+/// default dock width, where the last tabs are cut off.
 const PANELS: [Tab; 6] = [
     Tab::Inspector,
+    Tab::Presets,
     Tab::Help,
     Tab::Library,
     Tab::Shader,
-    Tab::Presets,
     Tab::Profiler,
 ];
 
@@ -588,9 +588,10 @@ mod tests {
     }
 
     #[test]
-    fn presets_comes_before_profiler_in_the_default_dock() {
+    fn presets_comes_right_after_inspector_in_the_default_dock() {
         let t = tabs(&default_dock());
         let at = |tab: Tab| t.iter().position(|x| *x == tab).unwrap();
+        assert_eq!(at(Tab::Presets), at(Tab::Inspector) + 1);
         assert!(at(Tab::Presets) < at(Tab::Profiler));
         // Every panel starts open, in `PANELS` order.
         let panels: Vec<Tab> = t.iter().filter(|x| PANELS.contains(x)).cloned().collect();

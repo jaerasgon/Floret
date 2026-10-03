@@ -227,6 +227,7 @@ All transform nodes use `push`/`pop` so they don't leak state into sibling layer
 | **Blend** · `transform/blend` | `mode: string, layer: layer` → `out: layer` | Draw the inner Layer with a blend mode (add / multiply / screen / difference / overlay / …), then restore. Not a Style because p5's `blendMode` isn't saved by push/pop. |
 | **Group** · `transform/group` | `layers: layer*` → `out: layer` | Combine a spread of Layers into a single Layer. Lets a single Transform reposition a whole ForEach result as one unit. |
 | **Cache** · `transform/cache` | `layer: layer*, w, h: number` → `out: layer` | Rasterise a Layer (or spread) into a persistent offscreen canvas, then blit it each frame. Re-renders only when upstream inputs change — the runtime already memoises compute, so a stable layer chain stays bitmap-cached at ~0.07ms / frame regardless of how many primitives it contains. Massive speedup for static or rarely-updated scenes (ForEach grids, dense generative art, hand-drawn backgrounds). `w` / `h` default to 0 → match the active renderer's canvas size. Skip Cache for layers that change every frame — it would re-rasterise every frame and add overhead. |
+| **Mask** · `transform/mask` | `layer: layer*, mask: layer*, invert: boolean` → `masked: layer` | Show `layer` through `mask`. The `mode` dropdown picks the coverage: the mask's `alpha`, or its `luminance` (white shows, black hides, transparent hides). `invert` shows the layer where the mask is empty instead. Native-only. |
 
 ## Draw
 
@@ -298,12 +299,14 @@ Style nodes output a `Style` (a function that sets p5 drawing state). Chain them
 | **NoFill** · `style/no-fill` | `base: style` → `out: style` | Disable fill. |
 | **NoStroke** · `style/no-stroke` | `base: style` → `out: style` | Disable stroke. |
 | **FontVariations** · `style/font-variations` | `weight, width, slant, opticalSize: number, axis: string, value: number, base: style` → `style: style` | Variable-font axes (`wght`, `wdth`, `slnt`, `opsz`, plus any tag), animatable per frame. 0 leaves an axis at the font default; chain nodes for more custom axes. Native-only. |
+| **Gradient Fill** · `style/gradient` | `colors: color*, positions: number*`, geometry per `mode`, `base: style` → `style: style` | Fill (or, with `target`, stroke) downstream shapes with a `linear` (start / end), `radial` (center / radius) or `conic` (center / angle, radians, clockwise from pointing right) gradient through the `colors` spread, evenly spaced unless `positions` (0..1) are given. `units`: `shape` places the geometry in each shape's own box (−1..1 across it, centre origin; particles and glyph runs get one each), `canvas` in scene units. `extend`: `pad`, `repeat` or `mirror` past the ends. Colours blend in premultiplied RGB. Drawn per pixel on the GPU. Native-only. |
 
 ## Render
 
 | Label · type | Inputs → Outputs | Description |
 |---|---|---|
 | **Renderer** · `render/renderer` | `layers: layer*, background: color` → `layers: layer*, background: color` | The patch sink. Connect layers and (optionally) a background colour. Inline `width` / `height` params set the canvas size. |
+| **Effect** · `gpu/effect` | `input: layer*`, pins per `mode` → `out: layer` | A post-effect on a layer, on the GPU. `bloom` (threshold, radius px, intensity: bright parts glow), `grain` (amount, size px, seed: animated film grain), `displace` (amount px; noise scale / speed / seed, or a wired `map` layer whose red pushes right and green down), `dither` (levels, pixel size: ordered Bayer), `halftone` (cell size px, angle: dots sized by brightness, in the image's colours), `chromatic` (amount px at the frame edge: red out, blue in), `vignette` (amount, radius, softness, colour: darkens towards the corners, the background too). Covers the whole canvas, like Shader; it animates even when the patch is idle. Native-only. |
 
 ## Sound
 

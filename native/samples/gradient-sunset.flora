@@ -1,0 +1,655 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Gradient Sunset",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "gs_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -420
+      },
+      "params": {
+        "text": "Gradient fills and masks\n\nGradient Fill paints shapes with a linear, radial or conic gradient through a colour spread.\n\n\u2022 Sky: linear, in canvas units, top to bottom.\n\u2022 Sun: linear in shape units (-1..1 across its own box).\n\u2022 Stripes: a hard-edged gradient (positions 0, 0.6, 0.6, 1) repeated every 26 px, sliding down. It masks the sun by luminance: white shows, black hides. The plain rect keeps the top half whole.\n\u2022 Ring: a conic gradient on the stroke, turning.\n\nFlip `invert` on the Mask, or try mode `alpha`.",
+        "width": 440,
+        "height": 340
+      },
+      "portValues": {
+        "text": "Gradient fills and masks\n\nGradient Fill paints shapes with a linear, radial or conic gradient through a colour spread.\n\n\u2022 Sky: linear, in canvas units, top to bottom.\n\u2022 Sun: linear in shape units (-1..1 across its own box).\n\u2022 Stripes: a hard-edged gradient (positions 0, 0.6, 0.6, 1) repeated every 26 px, sliding down. It masks the sun by luminance: white shows, black hides. The plain rect keeps the top half whole.\n\u2022 Ring: a conic gradient on the stroke, turning.\n\nFlip `invert` on the Mask, or try mode `alpha`.",
+        "width": 440,
+        "height": 340
+      }
+    },
+    {
+      "id": "gs_sky_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {
+        "stopCount": 4,
+        "c0": "#140a3a",
+        "c1": "#5a1b6e",
+        "c2": "#c2306a",
+        "c3": "#ff7a3d"
+      }
+    },
+    {
+      "id": "gs_sky_grad",
+      "defType": "style/gradient",
+      "position": {
+        "x": 300,
+        "y": 0
+      },
+      "params": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "canvas",
+        "extend": "pad",
+        "start": {
+          "x": 0,
+          "y": -300
+        },
+        "end": {
+          "x": 0,
+          "y": 300
+        }
+      },
+      "portValues": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "canvas",
+        "extend": "pad",
+        "start": {
+          "x": 0,
+          "y": -300
+        },
+        "end": {
+          "x": 0,
+          "y": 300
+        }
+      }
+    },
+    {
+      "id": "gs_sky",
+      "defType": "draw/rect",
+      "position": {
+        "x": 600,
+        "y": 0
+      },
+      "params": {
+        "w": 600,
+        "h": 600
+      },
+      "portValues": {
+        "w": 600,
+        "h": 600
+      }
+    },
+    {
+      "id": "gs_sun_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 260
+      },
+      "params": {
+        "stopCount": 3,
+        "c0": "#ffe76b",
+        "c1": "#ff9a3c",
+        "c2": "#ff2e88"
+      }
+    },
+    {
+      "id": "gs_sun_grad",
+      "defType": "style/gradient",
+      "position": {
+        "x": 300,
+        "y": 260
+      },
+      "params": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "shape",
+        "extend": "pad",
+        "start": {
+          "x": 0,
+          "y": -1
+        },
+        "end": {
+          "x": 0,
+          "y": 1
+        }
+      },
+      "portValues": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "shape",
+        "extend": "pad",
+        "start": {
+          "x": 0,
+          "y": -1
+        },
+        "end": {
+          "x": 0,
+          "y": 1
+        }
+      }
+    },
+    {
+      "id": "gs_sun",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 600,
+        "y": 260
+      },
+      "params": {
+        "pos": {
+          "x": 0,
+          "y": 20
+        },
+        "w": 320,
+        "h": 320
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 20
+        },
+        "w": 320,
+        "h": 320
+      }
+    },
+    {
+      "id": "gs_stripe_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 520
+      },
+      "params": {
+        "stopCount": 4,
+        "c0": "#ffffff",
+        "c1": "#ffffff",
+        "c2": "#000000",
+        "c3": "#000000"
+      }
+    },
+    {
+      "id": "gs_stripe_pos",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 0,
+        "y": 760
+      },
+      "params": {
+        "data": "0, 0.6, 0.6, 1"
+      }
+    },
+    {
+      "id": "gs_stripe_grad",
+      "defType": "style/gradient",
+      "position": {
+        "x": 300,
+        "y": 560
+      },
+      "params": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "canvas",
+        "extend": "repeat",
+        "start": {
+          "x": 0,
+          "y": 20
+        },
+        "end": {
+          "x": 0,
+          "y": 46
+        }
+      },
+      "portValues": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "canvas",
+        "extend": "repeat",
+        "start": {
+          "x": 0,
+          "y": 20
+        },
+        "end": {
+          "x": 0,
+          "y": 46
+        }
+      }
+    },
+    {
+      "id": "gs_stripes",
+      "defType": "draw/rect",
+      "position": {
+        "x": 600,
+        "y": 560
+      },
+      "params": {
+        "pos": {
+          "x": 0,
+          "y": 300
+        },
+        "w": 600,
+        "h": 620
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 300
+        },
+        "w": 600,
+        "h": 620
+      }
+    },
+    {
+      "id": "gs_slide",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 0,
+        "y": 880
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 0.5,
+        "min": 0,
+        "max": 26
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 0.5,
+        "min": 0,
+        "max": 26
+      }
+    },
+    {
+      "id": "gs_slide_xy",
+      "defType": "vec2/make",
+      "position": {
+        "x": 300,
+        "y": 880
+      },
+      "params": {
+        "x": 0,
+        "y": 0
+      },
+      "portValues": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "gs_slide_tr",
+      "defType": "transform/translate",
+      "position": {
+        "x": 600,
+        "y": 860
+      },
+      "params": {}
+    },
+    {
+      "id": "gs_top",
+      "defType": "draw/rect",
+      "position": {
+        "x": 600,
+        "y": 1000
+      },
+      "params": {
+        "pos": {
+          "x": 0,
+          "y": -280
+        },
+        "w": 600,
+        "h": 600
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": -280
+        },
+        "w": 600,
+        "h": 600
+      }
+    },
+    {
+      "id": "gs_mask_layers",
+      "defType": "transform/group",
+      "position": {
+        "x": 900,
+        "y": 900
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "gs_mask",
+      "defType": "transform/mask",
+      "position": {
+        "x": 900,
+        "y": 560
+      },
+      "params": {
+        "mode": "luminance",
+        "invert": false
+      },
+      "portValues": {
+        "mode": "luminance",
+        "invert": false
+      }
+    },
+    {
+      "id": "gs_ring_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 1240
+      },
+      "params": {
+        "stopCount": 4,
+        "c0": "#ff2e88",
+        "c1": "#ffe76b",
+        "c2": "#3ad6ff",
+        "c3": "#ff2e88"
+      }
+    },
+    {
+      "id": "gs_turn",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 0,
+        "y": 1480
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 0.08,
+        "min": 0,
+        "max": 6.283185307179586
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 0.08,
+        "min": 0,
+        "max": 6.283185307179586
+      }
+    },
+    {
+      "id": "gs_ring_nofill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 300,
+        "y": 1240
+      },
+      "params": {}
+    },
+    {
+      "id": "gs_ring_weight",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 300,
+        "y": 1340
+      },
+      "params": {
+        "w": 5
+      },
+      "portValues": {
+        "w": 5
+      }
+    },
+    {
+      "id": "gs_ring_grad",
+      "defType": "style/gradient",
+      "position": {
+        "x": 300,
+        "y": 1460
+      },
+      "params": {
+        "mode": "conic",
+        "target": "stroke",
+        "units": "shape",
+        "extend": "pad",
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": 0
+      },
+      "portValues": {
+        "mode": "conic",
+        "target": "stroke",
+        "units": "shape",
+        "extend": "pad",
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": 0
+      }
+    },
+    {
+      "id": "gs_ring",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 600,
+        "y": 1400
+      },
+      "params": {
+        "pos": {
+          "x": 0,
+          "y": 20
+        },
+        "w": 372,
+        "h": 372
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 20
+        },
+        "w": 372,
+        "h": 372
+      }
+    },
+    {
+      "id": "gs_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 1160,
+        "y": 300
+      },
+      "params": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "gs_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1420,
+        "y": 300
+      },
+      "params": {
+        "width": 600,
+        "height": 600
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_gs_sky_pal_gs_sky_grad_colors",
+      "source": "gs_sky_pal",
+      "target": "gs_sky_grad",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_gs_sky_grad_gs_sky_style",
+      "source": "gs_sky_grad",
+      "target": "gs_sky",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_gs_sun_pal_gs_sun_grad_colors",
+      "source": "gs_sun_pal",
+      "target": "gs_sun_grad",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_gs_sun_grad_gs_sun_style",
+      "source": "gs_sun_grad",
+      "target": "gs_sun",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_gs_stripe_pal_gs_stripe_grad_colors",
+      "source": "gs_stripe_pal",
+      "target": "gs_stripe_grad",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_gs_stripe_pos_gs_stripe_grad_positions",
+      "source": "gs_stripe_pos",
+      "target": "gs_stripe_grad",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_gs_stripe_grad_gs_stripes_style",
+      "source": "gs_stripe_grad",
+      "target": "gs_stripes",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_gs_slide_gs_slide_xy_y",
+      "source": "gs_slide",
+      "target": "gs_slide_xy",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_gs_slide_xy_gs_slide_tr_by",
+      "source": "gs_slide_xy",
+      "target": "gs_slide_tr",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_gs_stripes_gs_slide_tr_layer",
+      "source": "gs_stripes",
+      "target": "gs_slide_tr",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_gs_slide_tr_gs_mask_layers_s1",
+      "source": "gs_slide_tr",
+      "target": "gs_mask_layers",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_gs_top_gs_mask_layers_s2",
+      "source": "gs_top",
+      "target": "gs_mask_layers",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_gs_sun_gs_mask_layer",
+      "source": "gs_sun",
+      "target": "gs_mask",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_gs_mask_layers_gs_mask_mask",
+      "source": "gs_mask_layers",
+      "target": "gs_mask",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-mask"
+    },
+    {
+      "id": "e_gs_ring_pal_gs_ring_grad_colors",
+      "source": "gs_ring_pal",
+      "target": "gs_ring_grad",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_gs_turn_gs_ring_grad_angle",
+      "source": "gs_turn",
+      "target": "gs_ring_grad",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_gs_ring_nofill_gs_ring_weight_base",
+      "source": "gs_ring_nofill",
+      "target": "gs_ring_weight",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_gs_ring_weight_gs_ring_grad_base",
+      "source": "gs_ring_weight",
+      "target": "gs_ring_grad",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_gs_ring_grad_gs_ring_style",
+      "source": "gs_ring_grad",
+      "target": "gs_ring",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_gs_sky_gs_group_s1",
+      "source": "gs_sky",
+      "target": "gs_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_gs_mask_gs_group_s2",
+      "source": "gs_mask",
+      "target": "gs_group",
+      "sourceHandle": "out-masked",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_gs_ring_gs_group_s3",
+      "source": "gs_ring",
+      "target": "gs_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_gs_group_gs_renderer_layers",
+      "source": "gs_group",
+      "target": "gs_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

@@ -12321,6 +12321,178 @@
    },
    "paramOptions": null,
    "effectful": true
+  },
+  {
+   "type": "style/gradient",
+   "category": "Style",
+   "label": "Gradient Fill",
+   "description": "Fill (or stroke) downstream shapes with a linear, radial or conic gradient through the `colors` spread (evenly spaced, or at `positions` 0..1). `units`: `shape` places the geometry in each shape's own box (-1..1 across it, centre origin), `canvas` in scene units. `extend` says what happens past the ends: pad, repeat or mirror. The `mode` dropdown swaps the geometry pins (start / end, center / radius, center / angle in radians). Chain via `base` like Fill.",
+   "inputs": [
+    {
+     "name": "colors",
+     "type": "color",
+     "kind": "spread"
+    },
+    {
+     "name": "positions",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "start",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": -1,
+      "y": 0
+     }
+    },
+    {
+     "name": "end",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 1,
+      "y": 0
+     }
+    },
+    {
+     "name": "base",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "linear",
+    "target": "fill",
+    "units": "shape",
+    "extend": "pad"
+   },
+   "paramOptions": {
+    "mode": [
+     "linear",
+     "radial",
+     "conic"
+    ],
+    "target": [
+     "fill",
+     "stroke"
+    ],
+    "units": [
+     "shape",
+     "canvas"
+    ],
+    "extend": [
+     "pad",
+     "repeat",
+     "mirror"
+    ]
+   }
+  },
+  {
+   "type": "transform/mask",
+   "category": "Transform",
+   "label": "Mask",
+   "description": "Show `layer` through `mask`: by the mask's alpha, or by its luminance (white shows, black hides). `invert` shows the layer where the mask is empty instead.",
+   "inputs": [
+    {
+     "name": "layer",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "mask",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "invert",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    }
+   ],
+   "outputs": [
+    {
+     "name": "masked",
+     "type": "layer",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "mode": "alpha"
+   },
+   "paramOptions": {
+    "mode": [
+     "alpha",
+     "luminance"
+    ]
+   }
+  },
+  {
+   "type": "gpu/effect",
+   "category": "Render",
+   "label": "Effect",
+   "description": "A post-effect on a layer, on the GPU: bloom / glow, film grain (animates by itself), displacement (by noise, or by a `map` layer: red pushes right, green down), ordered dither, colour halftone dots, chromatic aberration, vignette. Pick the `mode`; the pins follow it. Sizes are in pixels.",
+   "inputs": [
+    {
+     "name": "input",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "threshold",
+     "type": "number",
+     "kind": "single",
+     "default": 0.6
+    },
+    {
+     "name": "radius",
+     "type": "number",
+     "kind": "single",
+     "default": 24
+    },
+    {
+     "name": "intensity",
+     "type": "number",
+     "kind": "single",
+     "default": 1.5
+    }
+   ],
+   "outputs": [
+    {
+     "name": "out",
+     "type": "layer",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "bloom"
+   },
+   "paramOptions": {
+    "mode": [
+     "bloom",
+     "grain",
+     "displace",
+     "dither",
+     "halftone",
+     "chromatic",
+     "vignette"
+    ]
+   }
   }
  ]
 }

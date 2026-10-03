@@ -27,6 +27,8 @@ const TEXT_TTL_FRAMES: u64 = 240;
 /// Image textures go sooner: a changing image makes a new id every frame.
 /// Unused ones are recycled for new images of the same size first.
 const IMAGE_TTL_FRAMES: u64 = 2;
+/// Gradient texels per row of the gradient table (see `shaders.wgsl`).
+const GRADIENT_ROW: u32 = 1024;
 
 /// Counts from the last [`Renderer::render`], for diagnostics / tests.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -160,7 +162,11 @@ pub struct Renderer {
     sample_count: u32,
     max_texture: u32,
     view_buf: wgpu::Buffer,
+    view_layout: wgpu::BindGroupLayout,
+    /// The view uniform + the gradient table (rebuilt when the table grows).
     view_bg: wgpu::BindGroup,
+    /// RGBA32F gradient texels, `GRADIENT_ROW` wide (see `FrameBuilder::paint`).
+    gradients: wgpu::Texture,
     tex_layout: wgpu::BindGroupLayout,
     blur_layout: wgpu::BindGroupLayout,
     sampler: wgpu::Sampler,
@@ -168,7 +174,8 @@ pub struct Renderer {
     winding_pipe: wgpu::RenderPipeline,
     cover_pipe: wgpu::RenderPipeline,
     tex_pipe: wgpu::RenderPipeline,
-    composite_pipes: [wgpu::RenderPipeline; 4],
+    /// By `Blend as usize`.
+    composite_pipes: [wgpu::RenderPipeline; 8],
     gauss_pipe: wgpu::RenderPipeline,
     sdf_buf: GrowBuffer,
     fill_buf: GrowBuffer,
@@ -207,16 +214,28 @@ impl Renderer {
         });
         let view_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
             label: Some("floret-render view"),
-            entries: &[wgpu::BindGroupLayoutEntry {
-                binding: 0,
-                visibility: wgpu::ShaderStages::VERTEX_FRAGMENT,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Uniform,
-                    has_dynamic_offset: false,
-                    min_binding_size: None,
+            entries: &[
+                wgpu::BindGroupLayoutEntry {
+                    binding: 0,
+                    visibility: wgpu::ShaderStages::VERTEX_FRAGMENT,
+                    ty: wgpu::BindingType::Buffer {
+                        ty: wgpu::BufferBindingType::Uniform,
+                        has_dynamic_offset: false,
+                        min_binding_size: None,
+                    },
+                    count: None,
                 },
-                count: None,
-            }],
+                wgpu::BindGroupLayoutEntry {
+                    binding: 1,
+                    visibility: wgpu::ShaderStages::FRAGMENT,
+                    ty: wgpu::BindingType::Texture {
+                        sample_type: wgpu::TextureSampleType::Float { filterable: false },
+                        view_dimension: wgpu::TextureViewDimension::D2,
+                        multisampled: false,
+                    },
+                    count: None,
+                },
+            ],
         });
         let tex_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
             label: Some("floret-render texture"),
@@ -262,14 +281,8 @@ impl Renderer {
             }),
             usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
         });
-        let view_bg = device.create_bind_group(&wgpu::BindGroupDescriptor {
-            label: Some("floret-render view"),
-            layout: &view_layout,
-            entries: &[wgpu::BindGroupEntry {
-                binding: 0,
-                resource: view_buf.as_entire_binding(),
-            }],
-        });
+        let gradients = gradient_texture(device, 1);
+        let view_bg = view_bind_group(device, &view_layout, &view_buf, &gradients);
         let sampler = device.create_sampler(&wgpu::SamplerDescriptor {
             label: Some("floret-render linear"),
             address_mode_u: wgpu::AddressMode::ClampToEdge,
@@ -467,12 +480,24 @@ impl Renderer {
                 Blend::Add => c(F::One, F::One),
                 Blend::Multiply => c(F::Dst, F::OneMinusSrcAlpha),
                 Blend::Screen => c(F::One, F::OneMinusSrc),
+                // Destination-in by the coverage the shader outputs as alpha.
+                Blend::MaskAlpha
+                | Blend::MaskLuminance
+                | Blend::MaskAlphaInverted
+                | Blend::MaskLuminanceInverted => c(F::Zero, F::SrcAlpha),
+            };
+            let fs = match blend {
+                Blend::MaskAlpha => "fs_mask_alpha",
+                Blend::MaskLuminance => "fs_mask_luminance",
+                Blend::MaskAlphaInverted => "fs_mask_alpha_inverted",
+                Blend::MaskLuminanceInverted => "fs_mask_luminance_inverted",
+                _ => "fs_composite",
             };
             mk(
                 "floret composite",
                 &scene_layout,
                 "vs_composite",
-                "fs_composite",
+                fs,
                 &[Some(tex_vb.clone())],
                 TriangleList,
                 Some(ignore.clone()),
@@ -489,6 +514,10 @@ impl Renderer {
             comp(Blend::Add),
             comp(Blend::Multiply),
             comp(Blend::Screen),
+            comp(Blend::MaskAlpha),
+            comp(Blend::MaskLuminance),
+            comp(Blend::MaskAlphaInverted),
+            comp(Blend::MaskLuminanceInverted),
         ];
         let gauss_pipe = mk(
             "floret gauss",
@@ -518,7 +547,9 @@ impl Renderer {
             sample_count,
             max_texture: device.limits().max_texture_dimension_2d,
             view_buf,
+            view_layout,
             view_bg,
+            gradients,
             tex_layout,
             blur_layout,
             sampler,
@@ -707,6 +738,7 @@ impl Renderer {
                 }
             }
         }
+        self.upload_gradients(device, queue);
         self.upload_text(device, queue);
         self.upload_images(device, queue);
         self.shaders
@@ -809,6 +841,40 @@ impl Renderer {
         if blur && targets.blur_tmp.is_none() {
             targets.blur_tmp = Some(make_layer("floret blur scratch", 1));
         }
+    }
+
+    /// The frame's gradient texels, in rows of `GRADIENT_ROW` (the table
+    /// only grows, so its bind group is rebuilt rarely).
+    fn upload_gradients(&mut self, device: &wgpu::Device, queue: &wgpu::Queue) {
+        let texels = &self.fb.gradients;
+        if texels.is_empty() {
+            return;
+        }
+        let rows = (texels.len() as u32)
+            .div_ceil(GRADIENT_ROW)
+            .min(self.max_texture);
+        if self.gradients.height() < rows {
+            self.gradients =
+                gradient_texture(device, rows.next_power_of_two().min(self.max_texture));
+            self.view_bg =
+                view_bind_group(device, &self.view_layout, &self.view_buf, &self.gradients);
+        }
+        let mut data = texels.clone();
+        data.resize((rows * GRADIENT_ROW) as usize, [0.0; 4]);
+        queue.write_texture(
+            self.gradients.as_image_copy(),
+            bytemuck::cast_slice(&data),
+            wgpu::TexelCopyBufferLayout {
+                offset: 0,
+                bytes_per_row: Some(GRADIENT_ROW * 16),
+                rows_per_image: Some(rows),
+            },
+            wgpu::Extent3d {
+                width: GRADIENT_ROW,
+                height: rows,
+                depth_or_array_layers: 1,
+            },
+        );
     }
 
     fn upload_text(&mut self, device: &wgpu::Device, queue: &wgpu::Queue) {
@@ -1164,6 +1230,15 @@ impl Renderer {
                         shader: None,
                     });
                 }
+                Cmd::ShaderMap { index } => {
+                    let Some(Level::Layer(k)) = stack.pop() else {
+                        stack.push(Level::Base);
+                        continue;
+                    };
+                    self.shaders
+                        .encode_map(encoder, *index as usize, &t.layers[k].bind);
+                    load = wgpu::LoadOp::Load;
+                }
                 Cmd::Shader { index, input } => {
                     let input = if *input {
                         let Some(Level::Layer(k)) = stack.pop() else {
@@ -1305,8 +1380,53 @@ impl Renderer {
 fn is_boundary(c: &Cmd) -> bool {
     matches!(
         c,
-        Cmd::PushLayer | Cmd::PopLayer { .. } | Cmd::PopLayerBlur { .. } | Cmd::Shader { .. }
+        Cmd::PushLayer
+            | Cmd::PopLayer { .. }
+            | Cmd::PopLayerBlur { .. }
+            | Cmd::Shader { .. }
+            | Cmd::ShaderMap { .. }
     )
+}
+
+/// The gradient table: `GRADIENT_ROW × rows` RGBA32F.
+fn gradient_texture(device: &wgpu::Device, rows: u32) -> wgpu::Texture {
+    device.create_texture(&wgpu::TextureDescriptor {
+        label: Some("floret gradients"),
+        size: wgpu::Extent3d {
+            width: GRADIENT_ROW,
+            height: rows.max(1),
+            depth_or_array_layers: 1,
+        },
+        mip_level_count: 1,
+        sample_count: 1,
+        dimension: wgpu::TextureDimension::D2,
+        format: wgpu::TextureFormat::Rgba32Float,
+        usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+        view_formats: &[],
+    })
+}
+
+fn view_bind_group(
+    device: &wgpu::Device,
+    layout: &wgpu::BindGroupLayout,
+    view: &wgpu::Buffer,
+    gradients: &wgpu::Texture,
+) -> wgpu::BindGroup {
+    let table = gradients.create_view(&Default::default());
+    device.create_bind_group(&wgpu::BindGroupDescriptor {
+        label: Some("floret-render view"),
+        layout,
+        entries: &[
+            wgpu::BindGroupEntry {
+                binding: 0,
+                resource: view.as_entire_binding(),
+            },
+            wgpu::BindGroupEntry {
+                binding: 1,
+                resource: wgpu::BindingResource::TextureView(&table),
+            },
+        ],
+    })
 }
 
 fn finite01(v: f64) -> f64 {

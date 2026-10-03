@@ -146,6 +146,7 @@ fn has_live(n: &SceneNode) -> bool {
     match n {
         SceneNode::ParticleBatch { .. } | SceneNode::ParticleTrailBatch { .. } => true,
         SceneNode::Group { children, .. } => children.iter().any(|c| has_live(c)),
+        SceneNode::Mask { content, mask, .. } => has_live(content) || has_live(mask),
         _ => false,
     }
 }

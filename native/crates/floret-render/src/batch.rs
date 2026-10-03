@@ -14,6 +14,10 @@
 //! Group transforms are baked into world coordinates (incl. shear), blend
 //! groups and blurred shapes become layer push/pop commands, clips become
 //! scissor rects (axis-aligned) or a masked layer composite (rotated).
+//! Gradient paints become references into a per-frame gradient table
+//! ([`FrameBuilder::paint`]); a mask is a layer composited into the layer
+//! below it (destination-in), and a shader's map layer pops into its
+//! channel before the input is drawn.
 //!
 //! World coordinates are centre-origin, y down — what the web app's canvas
 //! driver feeds its renderer (`centreOrigin: true`).
@@ -25,8 +29,8 @@ use crate::text::{TextKey, TextRasterizer};
 use floret_engine::image::Image;
 use floret_engine::particles::{ParticleBuffer, ParticleHandle, ParticleTemplate};
 use floret_engine::scene::{
-    catmull_rom_beziers, mul, resolve_box, translate_mat, Affine, GlyphRun, Paint, ResolvedStyle,
-    SceneNode,
+    catmull_rom_beziers, mul, resolve_box, rotate_mat, translate_mat, Affine, GlyphRun, Gradient,
+    GradientExtend, GradientShape, GradientUnits, Paint, ResolvedStyle, SceneNode,
 };
 use floret_engine::Vec2;
 use std::sync::Arc;
@@ -58,12 +62,20 @@ pub enum SdfAlign {
 /// Composite modes for blend groups. Unknown CSS modes fall back to
 /// source-over, like TS (`darken` / `lighten` have codes there but the
 /// compositor only implements these four).
+///
+/// The `Mask*` modes composite a mask layer INTO the layer below it
+/// (destination-in): that layer keeps its pixels × the mask's coverage —
+/// alpha, or luminance × alpha — or × (1 − coverage) when inverted.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Blend {
     SourceOver = 0,
     Add = 1,
     Multiply = 2,
     Screen = 3,
+    MaskAlpha = 4,
+    MaskLuminance = 5,
+    MaskAlphaInverted = 6,
+    MaskLuminanceInverted = 7,
 }
 
 impl Blend {
@@ -73,6 +85,16 @@ impl Blend {
             "multiply" => Blend::Multiply,
             "screen" => Blend::Screen,
             _ => Blend::SourceOver,
+        }
+    }
+
+    /// The mask composite for a [`SceneNode::Mask`].
+    pub fn mask(luminance: bool, invert: bool) -> Blend {
+        match (luminance, invert) {
+            (false, false) => Blend::MaskAlpha,
+            (true, false) => Blend::MaskLuminance,
+            (false, true) => Blend::MaskAlphaInverted,
+            (true, true) => Blend::MaskLuminanceInverted,
         }
     }
 }
@@ -191,6 +213,9 @@ pub enum Cmd {
     /// view. With `input`, the top layer holds the rendered input subtree
     /// and is consumed (popped) as the `input` channel.
     Shader { index: u32, input: bool },
+    /// The top layer holds `shaders[index]`'s map subtree: pop it into the
+    /// draw's map channel (before its input is drawn).
+    ShaderMap { index: u32 },
 }
 
 /// One frame's worth of batched geometry + the ordered command list.
@@ -206,9 +231,35 @@ pub struct FrameBuilder {
     pub skipped: usize,
     /// `gpu/shader` draws, referenced by [`Cmd::Shader`].
     pub shaders: Vec<Arc<floret_engine::shader::ShaderShape>>,
+    /// Gradient paints as RGBA32F texels (see [`FrameBuilder::paint`]).
+    pub gradients: Vec<[f32; 4]>,
+    /// Stop blocks already in `gradients`, by gradient (pointer).
+    gradient_stops: Vec<(usize, u32)>,
     clip_stack: Vec<Clip>,
     /// Content bounds of each open layer.
     bounds_stack: Vec<[f32; 4]>,
+}
+
+/// A paint's alpha at or above this marks a gradient: `r` is the texel
+/// index of its header in [`FrameBuilder::gradients`] and `a − GRADIENT`
+/// its opacity (see `shaders.wgsl`).
+pub const GRADIENT: f32 = 2.0;
+/// Stops per gradient the shaders read (more are dropped).
+pub const MAX_STOPS: usize = 64;
+
+/// Is this paint colour a gradient reference?
+pub fn is_gradient(c: Rgba) -> bool {
+    c[3] >= GRADIENT - 0.5
+}
+
+/// Scale a paint's opacity (a gradient reference keeps its tag).
+pub fn fade(mut c: Rgba, k: f32) -> Rgba {
+    if is_gradient(c) {
+        c[3] = GRADIENT + (c[3] - GRADIENT) * k;
+    } else {
+        c[3] *= k;
+    }
+    c
 }
 
 impl FrameBuilder {
@@ -224,8 +275,87 @@ impl FrameBuilder {
         self.cmds.clear();
         self.skipped = 0;
         self.shaders.clear();
+        self.gradients.clear();
+        self.gradient_stops.clear();
         self.clip_stack.clear();
         self.bounds_stack.clear();
+    }
+
+    /// A shape's paint as an instance / vertex colour. Flat colours are
+    /// their RGBA; a gradient becomes a reference to texels in
+    /// [`FrameBuilder::gradients`]: a 3-texel header (kind, extend, stop
+    /// offset, stop count; then the world → gradient-space affine as rows
+    /// `[a, c, e]`, `[b, d, f]` in texels 1–2) and a stop block shared by
+    /// every use of the same gradient (2 texels a stop: position, then
+    /// premultiplied colour). `m` is the shape's world transform and `bx`
+    /// its local bounds `[x, y, w, h]` (for shape units).
+    pub fn paint(&mut self, p: Option<&Paint>, m: &Affine, bx: [f64; 4]) -> Rgba {
+        match p.and_then(|p| p.gradient.as_ref()) {
+            Some(g) => self.gradient(g, m, bx),
+            None => paint_rgba(p),
+        }
+    }
+
+    fn gradient(&mut self, g: &Arc<Gradient>, m: &Affine, bx: [f64; 4]) -> Rgba {
+        let key = Arc::as_ptr(g) as usize;
+        let n = g.stops.len().min(MAX_STOPS);
+        let stops = match self.gradient_stops.iter().find(|(k, _)| *k == key) {
+            Some(&(_, off)) => off,
+            None => {
+                let off = self.gradients.len() as u32;
+                for s in g.stops.iter().take(n) {
+                    let c = s.rgba.map(|v| if v.is_finite() { v as f32 } else { 0.0 });
+                    self.gradients.push([s.pos as f32, 0.0, 0.0, 0.0]);
+                    self.gradients.push(premul(c));
+                }
+                self.gradient_stops.push((key, off));
+                off
+            }
+        };
+        // World → local → (shape box) → the canonical space of the kind:
+        // linear t = x, radial t = |p|, conic t = angle(p) / 2π.
+        let mut a = invert(m);
+        if g.units == GradientUnits::Box {
+            let hw = (bx[2].abs() / 2.0).max(1e-6);
+            let hh = (bx[3].abs() / 2.0).max(1e-6);
+            let (cx, cy) = (bx[0] + bx[2] / 2.0, bx[1] + bx[3] / 2.0);
+            a = mul(&[1.0 / hw, 0.0, 0.0, 1.0 / hh, -cx / hw, -cy / hh], &a);
+        }
+        let (kind, k) = match g.shape {
+            GradientShape::Linear { start, end } => {
+                let (dx, dy) = (end.x - start.x, end.y - start.y);
+                let l2 = dx * dx + dy * dy;
+                let k = if l2 > 1e-12 && l2.is_finite() {
+                    let c = -(start.x * dx + start.y * dy) / l2;
+                    [dx / l2, 0.0, dy / l2, 0.0, c, 0.0]
+                } else {
+                    [0.0; 6]
+                };
+                (0.0, k)
+            }
+            GradientShape::Radial { center, radius } => {
+                let r = radius.abs().max(1e-9);
+                (
+                    1.0,
+                    [1.0 / r, 0.0, 0.0, 1.0 / r, -center.x / r, -center.y / r],
+                )
+            }
+            GradientShape::Conic { center, angle } => (
+                2.0,
+                mul(&rotate_mat(-angle), &translate_mat(-center.x, -center.y)),
+            ),
+        };
+        let a = mul(&k, &a).map(|v| if v.is_finite() { v as f32 } else { 0.0 });
+        let extend = match g.extend {
+            GradientExtend::Pad => 0.0,
+            GradientExtend::Repeat => 1.0,
+            GradientExtend::Mirror => 2.0,
+        };
+        let header = self.gradients.len() as u32;
+        self.gradients.push([kind, extend, stops as f32, n as f32]);
+        self.gradients.push([a[0], a[2], a[4], 0.0]);
+        self.gradients.push([a[1], a[3], a[5], 0.0]);
+        [header as f32, 0.0, 0.0, GRADIENT + 1.0]
     }
 
     /// Note drawn geometry (world AABB) in the open layer's bounds.
@@ -269,17 +399,52 @@ impl FrameBuilder {
         self.grow(bounds);
     }
 
+    /// Composite the open (mask) layer into the layer below it with a
+    /// `Blend::Mask*` mode. The mask covers the whole layer below (where
+    /// the mask is empty the layer is cleared, or kept when inverted).
+    pub fn pop_mask(&mut self, luminance: bool, invert: bool) {
+        let mask = self.bounds_stack.pop().unwrap_or(EMPTY);
+        let Some(content) = self.bounds_stack.last_mut() else {
+            return;
+        };
+        self.cmds.push(Cmd::PopLayer {
+            blend: Blend::mask(luminance, invert),
+            mask: None,
+            bounds: *content,
+        });
+        if !invert {
+            *content = intersect(*content, mask);
+        }
+    }
+
+    /// The map layer of a shader draw is open: pop it into the draw's map
+    /// channel (see [`Cmd::ShaderMap`]). Returns the draw's index for
+    /// [`FrameBuilder::push_shader`].
+    pub fn push_shader_map(&mut self, shape: Arc<floret_engine::shader::ShaderShape>) -> u32 {
+        self.bounds_stack.pop();
+        self.shaders.push(shape);
+        let index = self.shaders.len() as u32 - 1;
+        self.cmds.push(Cmd::ShaderMap { index });
+        index
+    }
+
     /// A shader draw (see [`Cmd::Shader`]). It covers the whole view and
-    /// ignores clips, like TS.
-    pub fn push_shader(&mut self, shape: Arc<floret_engine::shader::ShaderShape>, input: bool) {
+    /// ignores clips, like TS. `mapped`: the draw's index from
+    /// [`FrameBuilder::push_shader_map`].
+    pub fn push_shader(
+        &mut self,
+        shape: Arc<floret_engine::shader::ShaderShape>,
+        input: bool,
+        mapped: Option<u32>,
+    ) {
         if input {
             self.bounds_stack.pop();
         }
-        self.shaders.push(shape);
-        self.cmds.push(Cmd::Shader {
-            index: self.shaders.len() as u32 - 1,
-            input,
+        let index = mapped.unwrap_or_else(|| {
+            self.shaders.push(shape);
+            self.shaders.len() as u32 - 1
         });
+        self.cmds.push(Cmd::Shader { index, input });
         if let Some(top) = self.bounds_stack.last_mut() {
             *top = [
                 f32::NEG_INFINITY,
@@ -314,6 +479,7 @@ impl FrameBuilder {
                 }
                 Cmd::PopLayer { .. }
                 | Cmd::PopLayerBlur { .. }
+                | Cmd::ShaderMap { .. }
                 | Cmd::Shader { input: true, .. } => d = d.saturating_sub(1),
                 _ => {}
             }
@@ -371,7 +537,8 @@ impl FrameBuilder {
         if n < 3 {
             return;
         }
-        let col = premul(c);
+        // Gradient references go through as they are.
+        let col = if is_gradient(c) { c } else { premul(c) };
         let v = |p: [f64; 2]| FillVertex {
             pos: [p[0] as f32, p[1] as f32],
             col,
@@ -495,6 +662,40 @@ fn align_code(a: &str) -> SdfAlign {
 
 pub fn apply(m: &Affine, x: f64, y: f64) -> [f64; 2] {
     [m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5]]
+}
+
+/// The inverse affine; all zeros when `m` is singular.
+pub fn invert(m: &Affine) -> Affine {
+    let det = m[0] * m[3] - m[1] * m[2];
+    if det.abs() < 1e-12 || !det.is_finite() {
+        return [0.0; 6];
+    }
+    let (a, b, c, d) = (m[3] / det, -m[1] / det, -m[2] / det, m[0] / det);
+    [a, b, c, d, -(a * m[4] + c * m[5]), -(b * m[4] + d * m[5])]
+}
+
+/// Local bounds `[x, y, w, h]` of points.
+fn bounds_of(pts: impl IntoIterator<Item = [f64; 2]>) -> [f64; 4] {
+    let b = pts.into_iter().fold(
+        [
+            f64::INFINITY,
+            f64::INFINITY,
+            f64::NEG_INFINITY,
+            f64::NEG_INFINITY,
+        ],
+        |b, p| {
+            [
+                b[0].min(p[0]),
+                b[1].min(p[1]),
+                b[2].max(p[0]),
+                b[3].max(p[1]),
+            ]
+        },
+    );
+    if !(b[0] <= b[2] && b[1] <= b[3]) {
+        return [0.0; 4];
+    }
+    [b[0], b[1], b[2] - b[0], b[3] - b[1]]
 }
 
 /// Mean axis scale of an affine (TS `scaleOf`).
@@ -700,6 +901,9 @@ impl Emitter<'_> {
                 } else {
                     SdfType::Ellipse
                 };
+                let bx = bounds_of([[left, top], [left + w, top + h]]);
+                let fill = fb.paint(style.fill.as_ref(), m, bx);
+                let stroke = fb.paint(style.stroke.as_ref(), m, bx);
                 // |w|, |h|: negative dims have a valid centre but need a
                 // positive half-extent or the SDF is never inside.
                 fb.push_sdf(
@@ -710,8 +914,8 @@ impl Emitter<'_> {
                     w.abs() / 2.0,
                     h.abs() / 2.0,
                     finite_or_zero(style.stroke_weight),
-                    paint_rgba(style.fill.as_ref()),
-                    paint_rgba(style.stroke.as_ref()),
+                    fill,
+                    stroke,
                     align_code(&style.stroke_align),
                 );
             }
@@ -727,16 +931,13 @@ impl Emitter<'_> {
                 };
                 let a = apply(m, *x1, *y1);
                 let b = apply(m, *x2, *y2);
-                emit_capsule(
-                    fb,
-                    a,
-                    b,
-                    style.stroke_weight * scale_of(m) / 2.0,
-                    paint_rgba(Some(stroke)),
-                );
+                let col = fb.paint(Some(stroke), m, bounds_of([[*x1, *y1], [*x2, *y2]]));
+                emit_capsule(fb, a, b, style.stroke_weight * scale_of(m) / 2.0, col);
             }
             SceneNode::Point { x, y, style } => {
-                let col = paint_rgba(style.stroke.as_ref().or(style.fill.as_ref()));
+                let lr = style.stroke_weight.max(1.0) / 2.0;
+                let bx = [x - lr, y - lr, lr * 2.0, lr * 2.0];
+                let col = fb.paint(style.stroke.as_ref().or(style.fill.as_ref()), m, bx);
                 if col[3] <= 0.0 {
                     return;
                 }
@@ -759,14 +960,8 @@ impl Emitter<'_> {
                     SdfAlign::Center,
                 );
             }
-            SceneNode::Triangle { pts, style } => {
-                let p: Vec<[f64; 2]> = pts.chunks(2).map(|c| apply(m, c[0], c[1])).collect();
-                closed_shape(fb, &p, style, m);
-            }
-            SceneNode::Quad { pts, style } => {
-                let p: Vec<[f64; 2]> = pts.chunks(2).map(|c| apply(m, c[0], c[1])).collect();
-                closed_shape(fb, &p, style, m);
-            }
+            SceneNode::Triangle { pts, style } => closed_shape(fb, pts, style, m),
+            SceneNode::Quad { pts, style } => closed_shape(fb, pts, style, m),
             SceneNode::Polygon {
                 points,
                 closed,
@@ -774,15 +969,18 @@ impl Emitter<'_> {
                 tension,
             } => {
                 let pts = poly_world(points, *closed, tension.unwrap_or(0.0), m);
+                let bx = bounds_of(points.iter().map(|p| [p.x, p.y]));
                 if *closed {
-                    fill_polygon(fb, &pts, paint_rgba(style.fill.as_ref()));
+                    let fill = fb.paint(style.fill.as_ref(), m, bx);
+                    fill_polygon(fb, &pts, fill);
                 }
+                let stroke = fb.paint(style.stroke.as_ref(), m, bx);
                 stroke_polygon(
                     fb,
                     &pts,
                     *closed,
                     style.stroke_weight * scale_of(m) / 2.0,
-                    paint_rgba(style.stroke.as_ref()),
+                    stroke,
                 );
             }
             SceneNode::Arc {
@@ -803,13 +1001,16 @@ impl Emitter<'_> {
                         apply(m, cx + a.cos() * rx, cy + a.sin() * ry)
                     })
                     .collect();
-                fill_polygon(fb, &pts, paint_rgba(style.fill.as_ref()));
+                let bx = bounds_of([[left, top], [left + w, top + h]]);
+                let fill = fb.paint(style.fill.as_ref(), m, bx);
+                fill_polygon(fb, &pts, fill);
+                let stroke = fb.paint(style.stroke.as_ref(), m, bx);
                 stroke_polygon(
                     fb,
                     &pts,
                     false,
                     style.stroke_weight * scale_of(m) / 2.0,
-                    paint_rgba(style.stroke.as_ref()),
+                    stroke,
                 );
             }
             SceneNode::Text { text, x, y, style } => {
@@ -820,16 +1021,6 @@ impl Emitter<'_> {
                     self.fb.skipped += 1;
                     return;
                 };
-                // Neutral (white) glyphs carry colour + opacity as the quad
-                // tint; baked (stroked) glyphs draw at full white tint.
-                let tint = if run.neutral {
-                    paint_rgba(style.fill.as_ref())
-                } else {
-                    [1.0; 4]
-                };
-                if tint[3] <= 0.0 {
-                    return;
-                }
                 let (w, h) = (run.w, run.h);
                 let ax = match &*style.text_align {
                     "center" => -w / 2.0,
@@ -851,6 +1042,16 @@ impl Emitter<'_> {
                 ];
                 if c.iter().flatten().any(|v| !v.is_finite()) {
                     self.fb.skipped += 1;
+                    return;
+                }
+                // Neutral (white) glyphs carry colour + opacity as the quad
+                // tint; baked (stroked) glyphs draw at full white tint.
+                let tint = if run.neutral {
+                    self.fb.paint(style.fill.as_ref(), m, [lx, ly, w, h])
+                } else {
+                    [1.0; 4]
+                };
+                if tint[3] <= 0.0 {
                     return;
                 }
                 self.fb
@@ -911,13 +1112,34 @@ impl Emitter<'_> {
                 fb.push_image_quad(c, uv.map(|v| v as f32), tint, image.clone());
             }
             SceneNode::Shader(sh) => {
+                // A map layer (`gpu/effect`) goes to its channel first.
+                let mapped = sh.map.as_ref().map(|map| {
+                    self.fb.push_layer();
+                    self.emit(map, m);
+                    self.fb.push_shader_map(sh.clone())
+                });
                 if let Some(input) = &sh.input {
-                    fb.push_layer();
+                    self.fb.push_layer();
                     self.emit(input, m);
                 }
-                self.fb.push_shader(sh.clone(), sh.input.is_some());
+                self.fb.push_shader(sh.clone(), sh.input.is_some(), mapped);
             }
             SceneNode::Glyphs(run) => self.glyphs(run, m),
+            SceneNode::Mask {
+                content,
+                mask,
+                luminance,
+                invert,
+            } => {
+                // The content in a layer, the mask composited into it
+                // (destination-in), then the result onto the parent.
+                fb.push_layer();
+                self.emit(content, m);
+                self.fb.push_layer();
+                self.emit(mask, m);
+                self.fb.pop_mask(*luminance, *invert);
+                self.fb.pop_layer(Blend::SourceOver, None);
+            }
             #[allow(unreachable_patterns)]
             _ => fb.skipped += 1,
         }
@@ -926,23 +1148,17 @@ impl Emitter<'_> {
     /// A `text/*` glyph run: each glyph's cached bitmap as a quad turned
     /// about the glyph's origin.
     fn glyphs(&mut self, run: &GlyphRun, m: &Affine) {
+        // Each glyph's quad in run space; their bounds place a gradient.
+        let mut quads = Vec::with_capacity(run.glyphs.len());
         for g in run.glyphs.iter() {
             let Some(bmp) = self.text.glyph(g.face, g.id, run) else {
                 self.fb.skipped += 1;
                 continue;
             };
-            let tint = if bmp.neutral {
-                paint_rgba(run.style.fill.as_ref())
-            } else {
-                [1.0; 4]
-            };
-            if tint[3] <= 0.0 {
-                continue;
-            }
             let (s, c) = g.angle.sin_cos();
             let at = |lx: f64, ly: f64| {
                 let (dx, dy) = (lx - bmp.left, ly - bmp.asc);
-                apply(m, g.x + dx * c - dy * s, g.y + dx * s + dy * c)
+                [g.x + dx * c - dy * s, g.y + dx * s + dy * c]
             };
             let q = [
                 at(0.0, 0.0),
@@ -950,12 +1166,25 @@ impl Emitter<'_> {
                 at(0.0, bmp.h),
                 at(bmp.w, bmp.h),
             ];
+            quads.push((bmp, q));
+        }
+        let bx = bounds_of(quads.iter().flat_map(|(_, q)| *q));
+        let mut fill = None;
+        for (bmp, q) in quads {
+            let tint = if bmp.neutral {
+                *fill.get_or_insert_with(|| self.fb.paint(run.style.fill.as_ref(), m, bx))
+            } else {
+                [1.0; 4]
+            };
+            if tint[3] <= 0.0 {
+                continue;
+            }
+            let q = q.map(|p| apply(m, p[0], p[1]));
             if q.iter().flatten().any(|v| !v.is_finite()) {
                 self.fb.skipped += 1;
                 continue;
             }
-            self.fb
-                .push_tex_quad(q, [0.0, 0.0, 1.0, 1.0], tint, bmp.clone());
+            self.fb.push_tex_quad(q, [0.0, 0.0, 1.0, 1.0], tint, bmp);
         }
     }
 
@@ -986,7 +1215,13 @@ impl Emitter<'_> {
             return;
         }
         let fb = &mut *self.fb;
-        let fill = paint_rgba(style.fill.as_ref());
+        // A gradient in shape units is placed on every particle.
+        let per_particle = !use_buffer_color && is_shape_gradient(style.fill.as_ref());
+        let fill = if per_particle {
+            TRANSPARENT
+        } else {
+            fb.paint(style.fill.as_ref(), m, [0.0; 4])
+        };
         let sc = scale_of(m);
         // Circles stay round under any transform (TS: identity basis,
         // radius × mean scale); squares follow the full transform.
@@ -1001,15 +1236,22 @@ impl Emitter<'_> {
             } else {
                 fill
             };
-            if col[3] <= 0.0 {
+            if col[3] <= 0.0 && !per_particle {
                 continue;
             }
-            let [cx, cy] = apply(m, f64::from(buf.pos_x[i]), f64::from(buf.pos_y[i]));
-            let r = f64::from(buf.size[i]).max(0.4) * unit;
+            let (x, y) = (f64::from(buf.pos_x[i]), f64::from(buf.pos_y[i]));
+            let [cx, cy] = apply(m, x, y);
+            let s = f64::from(buf.size[i]).max(0.4);
+            let r = s * unit;
             if !(cx.is_finite() && cy.is_finite() && r.is_finite()) {
                 fb.skipped += 1;
                 continue;
             }
+            let col = if per_particle {
+                fb.paint(style.fill.as_ref(), m, [x - s, y - s, s * 2.0, s * 2.0])
+            } else {
+                col
+            };
             fb.push_sdf(
                 ty,
                 cx,
@@ -1054,20 +1296,28 @@ fn particle_trails(
         return;
     }
     let n = live_len(buf).min(trail.history.len() / (segs * 2));
-    let stroke = paint_rgba(style.stroke.as_ref());
+    // A gradient in shape units is placed on every trail.
+    let per_trail = !use_buffer_color && is_shape_gradient(style.stroke.as_ref());
+    let stroke = if per_trail {
+        TRANSPARENT
+    } else {
+        fb.paint(style.stroke.as_ref(), m, [0.0; 4])
+    };
     let sc = scale_of(m);
     let head = trail.head % segs;
     let mut pts: Vec<[f64; 2]> = Vec::with_capacity(segs);
+    let mut local: Vec<[f64; 2]> = Vec::with_capacity(segs);
     for slot in (0..n).filter(|&i| buf.alive[i] != 0) {
         let col = if use_buffer_color {
             buffer_rgba(buf, slot)
         } else {
             stroke
         };
-        if col[3] <= 0.0 {
+        if col[3] <= 0.0 && !per_trail {
             continue;
         }
         pts.clear();
+        local.clear();
         for s in 0..segs {
             let base = (slot * segs + (head + segs - s) % segs) * 2;
             let (x, y) = (
@@ -1078,7 +1328,13 @@ fn particle_trails(
                 break;
             }
             pts.push(apply(m, x, y));
+            local.push([x, y]);
         }
+        let col = if per_trail && pts.len() > 1 {
+            fb.paint(style.stroke.as_ref(), m, bounds_of(local.iter().copied()))
+        } else {
+            col
+        };
         for k in 1..pts.len() {
             let age = (k as f64 - 0.5) / segs as f64;
             let mut w = style.stroke_weight;
@@ -1088,10 +1344,11 @@ fn particle_trails(
                     w = 0.001;
                 }
             }
-            let mut c = col;
-            if trail.fade_out {
-                c[3] *= (1.0 - age) as f32;
-            }
+            let c = if trail.fade_out {
+                fade(col, (1.0 - age) as f32)
+            } else {
+                col
+            };
             emit_capsule(fb, pts[k - 1], pts[k], w * sc / 2.0, c);
         }
     }
@@ -1123,15 +1380,26 @@ fn buffer_rgba(b: &ParticleBuffer, i: usize) -> Rgba {
     })
 }
 
-fn closed_shape(fb: &mut FrameBuilder, pts: &[[f64; 2]], style: &ResolvedStyle, m: &Affine) {
-    fill_polygon(fb, pts, paint_rgba(style.fill.as_ref()));
+/// A triangle / quad from its local corner coordinates (x, y pairs).
+fn closed_shape(fb: &mut FrameBuilder, local: &[f64], style: &ResolvedStyle, m: &Affine) {
+    let bx = bounds_of(local.chunks(2).map(|c| [c[0], c[1]]));
+    let pts: Vec<[f64; 2]> = local.chunks(2).map(|c| apply(m, c[0], c[1])).collect();
+    let fill = fb.paint(style.fill.as_ref(), m, bx);
+    fill_polygon(fb, &pts, fill);
+    let stroke = fb.paint(style.stroke.as_ref(), m, bx);
     stroke_polygon(
         fb,
-        pts,
+        &pts,
         true,
         style.stroke_weight * scale_of(m) / 2.0,
-        paint_rgba(style.stroke.as_ref()),
+        stroke,
     );
+}
+
+/// A gradient paint in shape units (placed per shape).
+fn is_shape_gradient(p: Option<&Paint>) -> bool {
+    p.and_then(|p| p.gradient.as_ref())
+        .is_some_and(|g| g.units == GradientUnits::Box)
 }
 
 fn finite_or_zero(v: f64) -> f64 {
@@ -1514,5 +1782,165 @@ mod tests {
         assert_eq!(Blend::from_css("darken"), Blend::SourceOver);
         assert_eq!(Blend::from_css("lighter"), Blend::Add);
         assert_eq!(Blend::from_css("screen"), Blend::Screen);
+    }
+
+    fn gradient_style(units: GradientUnits) -> Arc<ResolvedStyle> {
+        let stop = |pos, rgba| floret_engine::scene::GradientStop { pos, rgba };
+        let g = Gradient {
+            shape: GradientShape::Linear {
+                start: Vec2 { x: -1.0, y: 0.0 },
+                end: Vec2 { x: 1.0, y: 0.0 },
+            },
+            stops: Arc::from([
+                stop(0.0, [1.0, 0.0, 0.0, 1.0]),
+                stop(1.0, [0.0, 0.0, 1.0, 0.5]),
+            ]),
+            units,
+            extend: GradientExtend::Mirror,
+        };
+        Arc::new(ResolvedStyle {
+            fill: Some(Paint::gradient(g)),
+            stroke: None,
+            ..(**default_style()).clone()
+        })
+    }
+
+    /// Evaluate a gradient header's affine at a world point.
+    fn gradient_space(fb: &FrameBuilder, header: usize, x: f32, y: f32) -> [f32; 2] {
+        let (r0, r1) = (fb.gradients[header + 1], fb.gradients[header + 2]);
+        [r0[0] * x + r0[1] * y + r0[2], r1[0] * x + r1[1] * y + r1[2]]
+    }
+
+    #[test]
+    fn gradients_become_table_references() {
+        let style = gradient_style(GradientUnits::Box);
+        let shape = |x| SceneNode::Rect {
+            x,
+            y: 10.0,
+            w: 40.0,
+            h: 20.0,
+            mode: Arc::from("center"),
+            style: style.clone(),
+        };
+        let fb = build(&[shape(0.0), shape(100.0)]);
+        // The stop block once (2 stops × 2 texels), a header per shape.
+        assert_eq!(fb.gradients.len(), 4 + 3 + 3);
+        assert_eq!(fb.gradients[0], [0.0, 0.0, 0.0, 0.0]);
+        assert_eq!(fb.gradients[3], [0.0, 0.0, 0.5, 0.5]);
+        let (a, b) = (fb.sdf[0].fill, fb.sdf[1].fill);
+        assert!(is_gradient(a) && is_gradient(b));
+        assert_eq!((a[0], b[0]), (4.0, 7.0));
+        // Header: linear, mirror, stops at 0, 2 of them.
+        assert_eq!(fb.gradients[4], [0.0, 2.0, 0.0, 2.0]);
+        // Shape units: t runs 0 → 1 across each rect's own box.
+        assert_eq!(gradient_space(&fb, 4, -20.0, 10.0)[0], 0.0);
+        assert_eq!(gradient_space(&fb, 4, 20.0, 0.0)[0], 1.0);
+        assert_eq!(gradient_space(&fb, 7, 80.0, 0.0)[0], 0.0);
+        assert_eq!(gradient_space(&fb, 7, 100.0, 0.0)[0], 0.5);
+        // Canvas units ignore the box; transforms still apply.
+        let style = gradient_style(GradientUnits::Scene);
+        let g = SceneNode::Group {
+            children: Arc::from(vec![Arc::new(SceneNode::Rect {
+                x: 0.0,
+                y: 0.0,
+                w: 40.0,
+                h: 20.0,
+                mode: Arc::from("center"),
+                style,
+            })]),
+            transform: Some([2.0, 0.0, 0.0, 2.0, 10.0, 0.0]),
+            blend_mode: None,
+            clip: None,
+        };
+        let fb = build(&[g]);
+        assert_eq!(gradient_space(&fb, 4, 10.0, 0.0)[0], 0.5);
+        assert_eq!(gradient_space(&fb, 4, 12.0, 0.0)[0], 1.0);
+        // A faded gradient keeps its tag.
+        let f = fade(a, 0.5);
+        assert!(is_gradient(f) && f[3] == GRADIENT + 0.5);
+        assert_eq!(fade([1.0, 1.0, 1.0, 0.8], 0.5)[3], 0.4);
+    }
+
+    #[test]
+    fn masks_composite_into_their_content_layer() {
+        let content = Arc::new(rect(0.0, 0.0, 10.0, 10.0));
+        let m = Arc::new(rect(5.0, 5.0, 10.0, 10.0));
+        let fb = build(&[SceneNode::Mask {
+            content,
+            mask: m,
+            luminance: true,
+            invert: false,
+        }]);
+        let kinds: Vec<_> = fb
+            .cmds
+            .iter()
+            .map(|c| match c {
+                Cmd::PushLayer => "push",
+                Cmd::PopLayer {
+                    blend: Blend::MaskLuminance,
+                    ..
+                } => "mask",
+                Cmd::PopLayer {
+                    blend: Blend::SourceOver,
+                    ..
+                } => "pop",
+                Cmd::Sdf { .. } => "sdf",
+                _ => "?",
+            })
+            .collect();
+        assert_eq!(kinds, ["push", "sdf", "push", "sdf", "mask", "pop"]);
+        assert_eq!(fb.max_layer_depth(), 2);
+        // The mask covers the whole content; the result only their overlap.
+        let bounds: Vec<_> = fb
+            .cmds
+            .iter()
+            .filter_map(|c| match c {
+                Cmd::PopLayer { bounds, .. } => Some(*bounds),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(bounds, [[-2.5, -2.5, 12.5, 12.5], [2.5, 2.5, 12.5, 12.5]]);
+        assert_eq!(Blend::mask(false, true), Blend::MaskAlphaInverted);
+    }
+
+    #[test]
+    fn shader_maps_draw_before_their_input() {
+        use floret_engine::shader::ShaderShape;
+        let dot = Arc::new(rect(0.0, 0.0, 2.0, 2.0));
+        let sh = Arc::new(ShaderShape {
+            node_id: Arc::from("fx"),
+            passes: Arc::from([]),
+            uniform_decls: Arc::from([]),
+            uniforms: Arc::from([]),
+            input: Some(dot.clone()),
+            map: Some(dot),
+        });
+        let fb = build(&[SceneNode::Shader(sh)]);
+        assert_eq!(fb.shaders.len(), 1);
+        assert!(matches!(
+            fb.cmds[..],
+            [
+                Cmd::PushLayer,
+                Cmd::Sdf { .. },
+                Cmd::ShaderMap { index: 0 },
+                Cmd::PushLayer,
+                Cmd::Sdf { .. },
+                Cmd::Shader {
+                    index: 0,
+                    input: true
+                },
+            ]
+        ));
+        assert_eq!(fb.max_layer_depth(), 1);
+    }
+
+    #[test]
+    fn inverse_affines() {
+        let m = [2.0, 1.0, -1.0, 3.0, 5.0, -7.0];
+        let r = mul(&m, &invert(&m));
+        for (got, want) in r.iter().zip(IDENTITY) {
+            assert!((got - want).abs() < 1e-12);
+        }
+        assert_eq!(invert(&[0.0; 6]), [0.0; 6]);
     }
 }

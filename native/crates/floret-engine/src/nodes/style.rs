@@ -6,12 +6,15 @@
 
 use super::color::{hex_to_color01, hsl_to_color01};
 use super::convert::js_string;
-use super::shared::first;
+use super::shared::{first, to_color, to_vec2};
 use super::Registrar;
 use crate::js;
 use crate::node::{raw, scalar, EvalCtx, NodeImpl, NodeInit};
-use crate::scene::{Paint, Style, StyleOp};
-use crate::value::{one, Color, Value};
+use crate::scene::{
+    Gradient, GradientExtend, GradientShape, GradientStop, GradientUnits, Paint, Style, StyleOp,
+};
+use crate::spec::{Params, PortKind, PortSpec, PortType};
+use crate::value::{one, Color, Value, Vec2};
 use std::sync::Arc;
 
 pub fn register(r: &mut Registrar) {
@@ -26,6 +29,8 @@ pub fn register(r: &mut Registrar) {
     r.node("style/stroke-cap", stroke_cap);
     r.node("style/stroke-join", stroke_join);
     r.node("style/text-params", text_params);
+    r.node("style/gradient", gradient);
+    r.dynamic("style/gradient", gradient_inputs);
 }
 
 // ─── Shared helpers (also used by draw/*) ────────────────────────────────────
@@ -284,4 +289,250 @@ fn text_params(init: &NodeInit) -> Box<dyn NodeImpl> {
             ],
         ))
     })
+}
+
+// ─── style/gradient ──────────────────────────────────────────────────────────
+
+fn vec2_port(name: &str, x: f64, y: f64) -> PortSpec {
+    PortSpec::new(name, PortType::Vec2).default(Value::Vec2(Vec2 { x, y }))
+}
+
+/// `colors` and `positions` (the stops), the mode's two geometry pins,
+/// then `base`.
+fn gradient_inputs(params: &Params) -> Vec<PortSpec> {
+    let mode = match params.get("mode") {
+        Some(serde_json::Value::String(s)) => s.as_str(),
+        _ => "linear",
+    };
+    let geometry = match mode {
+        "radial" => [
+            vec2_port("center", 0.0, 0.0),
+            PortSpec::new("radius", PortType::Number).default(Value::Num(1.0)),
+        ],
+        "conic" => [
+            vec2_port("center", 0.0, 0.0),
+            PortSpec::new("angle", PortType::Number).default(Value::Num(0.0)),
+        ],
+        _ => [vec2_port("start", -1.0, 0.0), vec2_port("end", 1.0, 0.0)],
+    };
+    let mut ports = vec![
+        PortSpec::new("colors", PortType::Color).kind(PortKind::Spread),
+        PortSpec::new("positions", PortType::Number).kind(PortKind::Spread),
+    ];
+    ports.extend(geometry);
+    ports.push(PortSpec::new("base", PortType::Style));
+    ports
+}
+
+/// Stops from a colour spread and optional positions: evenly spaced unless
+/// a finite position is given, clamped to 0..1 and never decreasing (like
+/// CSS). No colours → white to black.
+pub(crate) fn gradient_stops(colors: &[Value], positions: &[Value]) -> Vec<GradientStop> {
+    let colors: Vec<Color> = if colors.is_empty() {
+        vec![Color::WHITE, Color::BLACK]
+    } else {
+        colors.iter().map(to_color).collect()
+    };
+    let n = colors.len();
+    let mut prev = 0.0f64;
+    colors
+        .iter()
+        .enumerate()
+        .map(|(i, c)| {
+            let even = if n > 1 {
+                i as f64 / (n - 1) as f64
+            } else {
+                0.0
+            };
+            let pos = positions
+                .get(i)
+                .and_then(Value::as_f64)
+                .filter(|p| p.is_finite())
+                .unwrap_or(even)
+                .clamp(0.0, 1.0)
+                .max(prev);
+            prev = pos;
+            // Quantised like a flat Fill colour.
+            let rgba = Paint::from_color(*c)
+                .rgba
+                .map(|v| if v.is_finite() { v } else { 0.0 });
+            GradientStop { pos, rgba }
+        })
+        .collect()
+}
+
+fn gradient(_: &NodeInit) -> Box<dyn NodeImpl> {
+    raw(|inputs, cx| {
+        let spread = |i: usize| inputs.get(i).map_or(&[][..], |s| &s[..]);
+        let num = |i: usize, d: f64| match first(inputs, i) {
+            v if v.is_nullish() => d,
+            v => v.to_number(),
+        };
+        let vec2 = |i: usize, x: f64, y: f64| match first(inputs, i) {
+            v if v.is_nullish() => Vec2 { x, y },
+            v => to_vec2(&v),
+        };
+        let param = |k: &str, d: &str| match cx.param(k) {
+            Some(serde_json::Value::String(s)) => s.clone(),
+            _ => d.to_owned(),
+        };
+        let shape = match param("mode", "linear").as_str() {
+            "radial" => GradientShape::Radial {
+                center: vec2(2, 0.0, 0.0),
+                radius: num(3, 1.0),
+            },
+            "conic" => GradientShape::Conic {
+                center: vec2(2, 0.0, 0.0),
+                angle: num(3, 0.0),
+            },
+            _ => GradientShape::Linear {
+                start: vec2(2, -1.0, 0.0),
+                end: vec2(3, 1.0, 0.0),
+            },
+        };
+        let units = match param("units", "shape").as_str() {
+            "canvas" => GradientUnits::Scene,
+            _ => GradientUnits::Box,
+        };
+        let extend = match param("extend", "pad").as_str() {
+            "repeat" => GradientExtend::Repeat,
+            "mirror" => GradientExtend::Mirror,
+            _ => GradientExtend::Pad,
+        };
+        let paint = Paint::gradient(Gradient {
+            shape,
+            stops: Arc::from(gradient_stops(spread(0), spread(1))),
+            units,
+            extend,
+        });
+        let op = match param("target", "fill").as_str() {
+            "stroke" => StyleOp::Stroke(Some(paint)),
+            _ => StyleOp::Fill(Some(paint)),
+        };
+        let base = first(inputs, 4);
+        Ok(vec![one(Value::Style(Style::chain(
+            style_arg(&base),
+            [op],
+        )))])
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::value::harness::node;
+    use super::*;
+    use crate::scene::{default_style, neutral_style, resolve_style};
+    use crate::spec::Catalogue;
+    use serde_json::json;
+
+    fn col(r: f64, g: f64, b: f64) -> Value {
+        Value::Color(Color { r, g, b, a: 1.0 })
+    }
+
+    fn resolved(v: &Value) -> crate::scene::ResolvedStyle {
+        match v {
+            Value::Style(s) => s.apply(neutral_style()),
+            other => panic!("not a style: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn gradient_pins_follow_the_mode() {
+        let cat = Catalogue::builtin();
+        let spec = cat.get("style/gradient").unwrap();
+        let names = |mode: &str| -> Vec<String> {
+            let params: Params = serde_json::from_value(json!({ "mode": mode })).unwrap();
+            cat.resolved_inputs(spec, &params)
+                .into_iter()
+                .map(|p| p.name)
+                .collect()
+        };
+        assert_eq!(
+            names("linear"),
+            ["colors", "positions", "start", "end", "base"]
+        );
+        assert_eq!(
+            names("radial"),
+            ["colors", "positions", "center", "radius", "base"]
+        );
+        assert_eq!(
+            names("conic"),
+            ["colors", "positions", "center", "angle", "base"]
+        );
+    }
+
+    #[test]
+    fn stops_are_even_unless_placed() {
+        let rgb = [col(1.0, 0.0, 0.0), col(0.0, 1.0, 0.0), col(0.0, 0.0, 1.0)];
+        let s = gradient_stops(&rgb, &[]);
+        let pos = |s: &[GradientStop]| s.iter().map(|s| s.pos).collect::<Vec<_>>();
+        assert_eq!(pos(&s), [0.0, 0.5, 1.0]);
+        assert_eq!(s[1].rgba, [0.0, 1.0, 0.0, 1.0]);
+        // Given positions are clamped and never go backwards; missing ones
+        // fall back to even spacing.
+        let s = gradient_stops(&rgb, &[Value::Num(0.8), Value::Num(0.2)]);
+        assert_eq!(pos(&s), [0.8, 0.8, 1.0]);
+        let s = gradient_stops(&[], &[]);
+        assert_eq!(s.len(), 2);
+        assert_eq!(s[1].rgba, [0.0, 0.0, 0.0, 1.0]);
+    }
+
+    #[test]
+    fn gradient_sets_the_fill_or_the_stroke() {
+        let mut h = node(
+            "style/gradient",
+            json!({ "mode": "radial", "units": "canvas" }),
+        );
+        let out = h
+            .eval(vec![
+                vec![col(1.0, 1.0, 1.0), col(0.0, 0.0, 0.0)],
+                vec![],
+                vec![Value::Vec2(Vec2 { x: 10.0, y: 20.0 })],
+                vec![Value::Num(50.0)],
+                vec![],
+            ])
+            .unwrap();
+        let st = resolved(&out[0][0]);
+        let g = st.fill.as_ref().and_then(|p| p.gradient.clone()).unwrap();
+        assert_eq!(
+            g.shape,
+            GradientShape::Radial {
+                center: Vec2 { x: 10.0, y: 20.0 },
+                radius: 50.0
+            }
+        );
+        assert_eq!(g.units, GradientUnits::Scene);
+        assert_eq!(g.extend, GradientExtend::Pad);
+        assert!(st.stroke.is_none());
+        // Stroke target, chained on a base that set a flat fill.
+        let base = Style::chain(None, [StyleOp::Fill(Some(Paint::css("#ff0000")))]);
+        let mut h = node(
+            "style/gradient",
+            json!({ "target": "stroke", "extend": "mirror" }),
+        );
+        let out = h
+            .eval(vec![
+                vec![],
+                vec![],
+                vec![],
+                vec![],
+                vec![Value::Style(base)],
+            ])
+            .unwrap();
+        let st = resolved(&out[0][0]);
+        assert_eq!(st.fill.as_ref().unwrap().css.as_ref(), "#ff0000");
+        let g = st.stroke.as_ref().and_then(|p| p.gradient.clone()).unwrap();
+        assert_eq!(g.extend, GradientExtend::Mirror);
+        assert_eq!(
+            g.shape,
+            GradientShape::Linear {
+                start: Vec2 { x: -1.0, y: 0.0 },
+                end: Vec2 { x: 1.0, y: 0.0 }
+            }
+        );
+        let Value::Style(s) = &out[0][0] else {
+            unreachable!()
+        };
+        assert!(resolve_style(Some(s), default_style()).stroke.is_some());
+    }
 }

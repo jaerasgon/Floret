@@ -152,7 +152,7 @@ fn uniform_value(ty: PortType, v: Value) -> UniformValue {
 }
 
 /// `asLayer`: a spread of layers → nothing, the one layer, or a group.
-fn as_layer(v: Option<&[Value]>) -> Option<Arc<SceneNode>> {
+pub(crate) fn as_layer(v: Option<&[Value]>) -> Option<Arc<SceneNode>> {
     let nodes: Vec<Arc<SceneNode>> = v?
         .iter()
         .filter(|x| x.truthy())
@@ -200,6 +200,7 @@ fn shader(_: &NodeInit) -> Box<dyn NodeImpl> {
             uniform_decls: Arc::from(decls),
             uniforms: Arc::from(uniforms),
             input: as_layer(inputs.first().map(|s| &s[..])),
+            map: None,
         };
         Ok(vec![one(Value::Scene(Arc::new(SceneNode::Shader(
             Arc::new(shape),

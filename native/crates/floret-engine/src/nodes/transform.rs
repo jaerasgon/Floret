@@ -5,6 +5,8 @@
 //! transform or a blend mode; `transform/group` concatenates N layer slots.
 //!
 //! Not ported yet: `transform/cache` (it rasterises into an image).
+//!
+//! Native-only: `transform/mask`.
 
 use super::shared::to_vec2;
 use super::Registrar;
@@ -24,6 +26,7 @@ pub fn register(r: &mut Registrar) {
     r.node("transform/blend", blend);
     r.node("transform/group", group);
     r.dynamic("transform/group", build_layer_slots);
+    r.node("transform/mask", mask);
 }
 
 /// The scene nodes among a wire's values. TS puts whatever arrived into
@@ -160,9 +163,86 @@ fn group(_: &NodeInit) -> Box<dyn NodeImpl> {
     })
 }
 
+// ─── transform/mask (native) ─────────────────────────────────────────────────
+
+/// `layer` shown through `mask` (both spreads of layers, each drawn as one
+/// group). The `mode` param picks alpha or luminance coverage; `invert`
+/// shows the layer where the mask is empty. An empty mask hides the whole
+/// layer (inverted: shows all of it).
+fn mask(_: &NodeInit) -> Box<dyn NodeImpl> {
+    raw(|inputs, cx| {
+        let layer = |i: usize| {
+            let nodes = scenes(inputs.get(i).map_or(&[][..], |s| &s[..]));
+            Arc::new(SceneNode::group(nodes))
+        };
+        let luminance = matches!(
+            cx.param("mode"),
+            Some(serde_json::Value::String(s)) if s == "luminance"
+        );
+        let invert = inputs
+            .get(2)
+            .and_then(|s| s.first())
+            .is_some_and(Value::truthy);
+        Ok(vec![one(Value::Scene(Arc::new(SceneNode::Mask {
+            content: layer(0),
+            mask: layer(1),
+            luminance,
+            invert,
+        })))])
+    })
+}
+
 #[cfg(test)]
 mod tests {
+    use super::super::value::harness::node;
     use super::*;
+    use crate::scene::default_style;
+
+    #[test]
+    fn mask_wraps_layer_and_mask() {
+        let dot = Value::Scene(Arc::new(SceneNode::Point {
+            x: 1.0,
+            y: 2.0,
+            style: default_style().clone(),
+        }));
+        let mut h = node("transform/mask", serde_json::json!({ "mode": "luminance" }));
+        let out = h
+            .eval(vec![
+                vec![dot.clone(), dot.clone()],
+                vec![dot],
+                vec![Value::Bool(true)],
+            ])
+            .unwrap();
+        let Value::Scene(n) = &out[0][0] else {
+            panic!("not a layer")
+        };
+        let SceneNode::Mask {
+            content,
+            mask,
+            luminance,
+            invert,
+        } = &**n
+        else {
+            panic!("not a mask: {n:?}")
+        };
+        assert!(*luminance && *invert);
+        assert!(matches!(&**content, SceneNode::Group { children, .. } if children.len() == 2));
+        assert!(matches!(&**mask, SceneNode::Group { children, .. } if children.len() == 1));
+        // Defaults: alpha, not inverted.
+        let mut h = node("transform/mask", serde_json::json!({}));
+        let out = h.eval(vec![vec![], vec![], vec![]]).unwrap();
+        let Value::Scene(n) = &out[0][0] else {
+            panic!("not a layer")
+        };
+        assert!(matches!(
+            &**n,
+            SceneNode::Mask {
+                luminance: false,
+                invert: false,
+                ..
+            }
+        ));
+    }
 
     fn slots(j: serde_json::Value) -> Vec<String> {
         let params: Params = serde_json::from_value(j).unwrap();

@@ -1,0 +1,491 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Neon Bloom",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "nb_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -380
+      },
+      "params": {
+        "text": "Post-effects\n\nThe Effect node runs a GPU pass over a whole layer. Here four are chained: bloom makes the bright strokes glow, chromatic aberration splits red and blue towards the edges, film grain flickers on its own every frame, and a vignette darkens the corners.\n\nPick another `mode` on any of them (displace, dither, halftone \u2026): the pins follow the mode.",
+        "width": 420,
+        "height": 260
+      },
+      "portValues": {
+        "text": "Post-effects\n\nThe Effect node runs a GPU pass over a whole layer. Here four are chained: bloom makes the bright strokes glow, chromatic aberration splits red and blue towards the edges, film grain flickers on its own every frame, and a vignette darkens the corners.\n\nPick another `mode` on any of them (displace, dither, halftone \u2026): the pins follow the mode.",
+        "width": 420,
+        "height": 260
+      }
+    },
+    {
+      "id": "nb_bg_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {
+        "color": {
+          "r": 0.050980392156862744,
+          "g": 0.03137254901960784,
+          "b": 0.12549019607843137,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.050980392156862744,
+          "g": 0.03137254901960784,
+          "b": 0.12549019607843137,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "nb_bg",
+      "defType": "draw/rect",
+      "position": {
+        "x": 300,
+        "y": 0
+      },
+      "params": {
+        "w": 600,
+        "h": 600
+      },
+      "portValues": {
+        "w": 600,
+        "h": 600
+      }
+    },
+    {
+      "id": "nb_turn",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 0,
+        "y": 220
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 0.05,
+        "min": 0,
+        "max": 6.283185307179586
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 0.05,
+        "min": 0,
+        "max": 6.283185307179586
+      }
+    },
+    {
+      "id": "nb_turn_back",
+      "defType": "math/neg",
+      "position": {
+        "x": 300,
+        "y": 400
+      },
+      "params": {}
+    },
+    {
+      "id": "nb_outer",
+      "defType": "spread/ring",
+      "position": {
+        "x": 300,
+        "y": 220
+      },
+      "params": {
+        "count": 7,
+        "radius": 170
+      },
+      "portValues": {
+        "count": 7,
+        "radius": 170
+      }
+    },
+    {
+      "id": "nb_inner",
+      "defType": "spread/ring",
+      "position": {
+        "x": 300,
+        "y": 500
+      },
+      "params": {
+        "count": 5,
+        "radius": 90
+      },
+      "portValues": {
+        "count": 5,
+        "radius": 90
+      }
+    },
+    {
+      "id": "nb_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 560
+      },
+      "params": {
+        "stopCount": 5,
+        "c0": "#ff2e88",
+        "c1": "#ffd23f",
+        "c2": "#3ad6ff",
+        "c3": "#9b5cff",
+        "c4": "#ff2e88"
+      }
+    },
+    {
+      "id": "nb_nofill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 0,
+        "y": 800
+      },
+      "params": {}
+    },
+    {
+      "id": "nb_weight",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 0,
+        "y": 900
+      },
+      "params": {
+        "w": 6
+      },
+      "portValues": {
+        "w": 6
+      }
+    },
+    {
+      "id": "nb_grad",
+      "defType": "style/gradient",
+      "position": {
+        "x": 300,
+        "y": 720
+      },
+      "params": {
+        "mode": "conic",
+        "target": "stroke",
+        "units": "canvas",
+        "extend": "pad",
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": 0
+      },
+      "portValues": {
+        "mode": "conic",
+        "target": "stroke",
+        "units": "canvas",
+        "extend": "pad",
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": 0
+      }
+    },
+    {
+      "id": "nb_outer_poly",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 600,
+        "y": 220
+      },
+      "params": {}
+    },
+    {
+      "id": "nb_inner_poly",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 600,
+        "y": 500
+      },
+      "params": {}
+    },
+    {
+      "id": "nb_core",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 600,
+        "y": 760
+      },
+      "params": {
+        "w": 36,
+        "h": 36
+      },
+      "portValues": {
+        "w": 36,
+        "h": 36
+      }
+    },
+    {
+      "id": "nb_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 900,
+        "y": 300
+      },
+      "params": {
+        "slotCount": 4
+      }
+    },
+    {
+      "id": "nb_bloom",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1140,
+        "y": 300
+      },
+      "params": {
+        "mode": "bloom",
+        "threshold": 0.25,
+        "radius": 40,
+        "intensity": 2.4
+      },
+      "portValues": {
+        "mode": "bloom",
+        "threshold": 0.25,
+        "radius": 40,
+        "intensity": 2.4
+      }
+    },
+    {
+      "id": "nb_chroma",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1380,
+        "y": 300
+      },
+      "params": {
+        "mode": "chromatic",
+        "amount": 5
+      },
+      "portValues": {
+        "mode": "chromatic",
+        "amount": 5
+      }
+    },
+    {
+      "id": "nb_grain",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1620,
+        "y": 300
+      },
+      "params": {
+        "mode": "grain",
+        "amount": 0.1,
+        "size": 1.5,
+        "seed": 0
+      },
+      "portValues": {
+        "mode": "grain",
+        "amount": 0.1,
+        "size": 1.5,
+        "seed": 0
+      }
+    },
+    {
+      "id": "nb_vignette",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1860,
+        "y": 300
+      },
+      "params": {
+        "mode": "vignette",
+        "amount": 0.85,
+        "radius": 0.55,
+        "softness": 0.7,
+        "color": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "mode": "vignette",
+        "amount": 0.85,
+        "radius": 0.55,
+        "softness": 0.7,
+        "color": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1
+        }
+      }
+    },
+    {
+      "id": "nb_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2100,
+        "y": 300
+      },
+      "params": {
+        "width": 600,
+        "height": 600
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_nb_bg_fill_nb_bg_style",
+      "source": "nb_bg_fill",
+      "target": "nb_bg",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_nb_turn_nb_outer_phase",
+      "source": "nb_turn",
+      "target": "nb_outer",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_nb_turn_nb_turn_back_x",
+      "source": "nb_turn",
+      "target": "nb_turn_back",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_nb_turn_back_nb_inner_phase",
+      "source": "nb_turn_back",
+      "target": "nb_inner",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_nb_outer_nb_outer_poly_points",
+      "source": "nb_outer",
+      "target": "nb_outer_poly",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_nb_inner_nb_inner_poly_points",
+      "source": "nb_inner",
+      "target": "nb_inner_poly",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_nb_pal_nb_grad_colors",
+      "source": "nb_pal",
+      "target": "nb_grad",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_nb_nofill_nb_weight_base",
+      "source": "nb_nofill",
+      "target": "nb_weight",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_nb_weight_nb_grad_base",
+      "source": "nb_weight",
+      "target": "nb_grad",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_nb_grad_nb_outer_poly_style",
+      "source": "nb_grad",
+      "target": "nb_outer_poly",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_nb_grad_nb_inner_poly_style",
+      "source": "nb_grad",
+      "target": "nb_inner_poly",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_nb_bg_nb_group_s1",
+      "source": "nb_bg",
+      "target": "nb_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_nb_outer_poly_nb_group_s2",
+      "source": "nb_outer_poly",
+      "target": "nb_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_nb_inner_poly_nb_group_s3",
+      "source": "nb_inner_poly",
+      "target": "nb_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_nb_core_nb_group_s4",
+      "source": "nb_core",
+      "target": "nb_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_nb_group_nb_bloom_input",
+      "source": "nb_group",
+      "target": "nb_bloom",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_nb_bloom_nb_chroma_input",
+      "source": "nb_bloom",
+      "target": "nb_chroma",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_nb_chroma_nb_grain_input",
+      "source": "nb_chroma",
+      "target": "nb_grain",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_nb_grain_nb_vignette_input",
+      "source": "nb_grain",
+      "target": "nb_vignette",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_nb_vignette_nb_renderer_layers",
+      "source": "nb_vignette",
+      "target": "nb_renderer",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

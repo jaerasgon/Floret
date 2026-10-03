@@ -1,6 +1,6 @@
 {
   "kind": "floret.patch",
-  "version": 2,
+  "version": 3,
   "appVersion": "0.0.1",
   "meta": {
     "name": "27 · Image Sampling Grid",
@@ -16,12 +16,12 @@
         "y": -304
       },
       "params": {
-        "text": "Image sampling\n\n`image/sample-spread` reads N colours from an image at N points, in pixels from its top-left corner. Combine with a grid generator and you get a \"downsample\" pipeline — perfect for posterising or pixel-art looks.\n\nA diagonal gradient (a triadic palette whose hue drifts with time) is rasterised at 256×256, then sampled at 24×24 grid points and redrawn as squares.",
+        "text": "Image sampling\n\n`image/sample-spread` reads N colours from an image at N points, measured from its centre like positions on the canvas. Combine with a grid generator and you get a \"downsample\" pipeline — perfect for posterising or pixel-art looks.\n\nA diagonal gradient (a triadic palette whose hue drifts with time) is rasterised at 256×256, then sampled at 24×24 grid points and redrawn as squares.",
         "width": 440,
         "height": 240
       },
       "portValues": {
-        "text": "Image sampling\n\n`image/sample-spread` reads N colours from an image at N points, in pixels from its top-left corner. Combine with a grid generator and you get a \"downsample\" pipeline — perfect for posterising or pixel-art looks.\n\nA diagonal gradient (a triadic palette whose hue drifts with time) is rasterised at 256×256, then sampled at 24×24 grid points and redrawn as squares.",
+        "text": "Image sampling\n\n`image/sample-spread` reads N colours from an image at N points, measured from its centre like positions on the canvas. Combine with a grid generator and you get a \"downsample\" pipeline — perfect for posterising or pixel-art looks.\n\nA diagonal gradient (a triadic palette whose hue drifts with time) is rasterised at 256×256, then sampled at 24×24 grid points and redrawn as squares.",
         "width": 440,
         "height": 240
       }
@@ -121,21 +121,13 @@
         "cols": 24,
         "rows": 24,
         "w": 256,
-        "h": 256,
-        "center": {
-          "x": 128,
-          "y": 128
-        }
+        "h": 256
       },
       "portValues": {
         "cols": 24,
         "rows": 24,
         "w": 256,
-        "h": 256,
-        "center": {
-          "x": 128,
-          "y": 128
-        }
+        "h": 256
       }
     },
     {

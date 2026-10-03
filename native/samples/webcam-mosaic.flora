@@ -1,6 +1,6 @@
 {
   "kind": "floret.patch",
-  "version": 2,
+  "version": 3,
   "appVersion": "0.0.1",
   "meta": {
     "name": "Webcam Mosaic",
@@ -52,12 +52,12 @@
         "y": -264
       },
       "params": {
-        "text": "② GRID + ONE READ\nTwo matching 36×36 grids: the DRAW grid (centred — where shapes go) and the SAMPLE grid (pixel space — where to read). image/sample-spread reads the whole frame ONCE → one colour per cell (fast).",
+        "text": "② GRID + ONE READ\nOne 36×36 grid, centred: its points place the shapes, and image/sample-spread reads the frame at the same points (sampling is centred like the canvas) — the whole frame ONCE → one colour per cell (fast).",
         "width": 440,
         "height": 140
       },
       "portValues": {
-        "text": "② GRID + ONE READ\nTwo matching 36×36 grids: the DRAW grid (centred — where shapes go) and the SAMPLE grid (pixel space — where to read). image/sample-spread reads the whole frame ONCE → one colour per cell (fast).",
+        "text": "② GRID + ONE READ\nOne 36×36 grid, centred: its points place the shapes, and image/sample-spread reads the frame at the same points (sampling is centred like the canvas) — the whole frame ONCE → one colour per cell (fast).",
         "width": 440,
         "height": 140
       }
@@ -144,34 +144,6 @@
         "rows": 36,
         "w": 500,
         "h": 500
-      }
-    },
-    {
-      "id": "wm_sampleGrid",
-      "defType": "spread/grid",
-      "position": {
-        "x": 524,
-        "y": 191
-      },
-      "params": {
-        "cols": 36,
-        "rows": 36,
-        "w": 500,
-        "h": 500,
-        "center": {
-          "x": 250,
-          "y": 250
-        }
-      },
-      "portValues": {
-        "cols": 36,
-        "rows": 36,
-        "w": 500,
-        "h": 500,
-        "center": {
-          "x": 250,
-          "y": 250
-        }
       }
     },
     {
@@ -501,13 +473,6 @@
       "targetHandle": "in-image"
     },
     {
-      "id": "e_1487",
-      "source": "wm_sampleGrid",
-      "target": "wm_colors",
-      "sourceHandle": "out-positions",
-      "targetHandle": "in-points"
-    },
-    {
       "id": "e_1489",
       "source": "wm_drawGrid",
       "target": "wm_region",
@@ -625,6 +590,13 @@
       "target": "wm_rgb",
       "sourceHandle": "out-b",
       "targetHandle": "in-c"
+    },
+    {
+      "id": "e_wm_drawGrid_wm_colors",
+      "source": "wm_drawGrid",
+      "target": "wm_colors",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
     }
   ]
 }

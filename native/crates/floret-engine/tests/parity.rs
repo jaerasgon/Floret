@@ -14,6 +14,12 @@
 //! passes, it has to keep passing). Run with `-- --nocapture` to see the
 //! report; set `PARITY_ONLY=<id,...>` to check specific samples and
 //! `PARITY_VERBOSE=1` to print every mismatch.
+//!
+//! Known divergences replayed here (see `fixtures/README.md`): unstyled
+//! lines stroke white natively but black in TS, so each sample runs with
+//! `scene::ts_reference_line_default` on; and image sampling is
+//! centre-origin natively, which the frozen (version 2) samples don't see:
+//! loading migrates their sampling nodes to the old top-left origin.
 
 use floret_engine::particles::{Handle, TypedArray};
 use floret_engine::{scene, tick::Outputs, Engine, FrameCtx, Value};
@@ -712,6 +718,8 @@ impl SampleReport {
 }
 
 fn run_sample(id: &str) -> SampleReport {
+    // The traces were recorded with the web app's black line default.
+    let _ts = scene::ts_reference_line_default();
     let mut rep = SampleReport::default();
     let trace = read_trace(id);
     let text = std::fs::read_to_string(samples_dir().join(format!("{id}.flora"))).expect("flora");

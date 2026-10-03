@@ -2877,7 +2877,7 @@
    "type": "image/sample",
    "category": "Image",
    "label": "Sample",
-   "description": "Read one pixel of an image as a color.",
+   "description": "Read one pixel of an image as a color. (x, y) is measured from the image's centre, like positions on the canvas (y down).",
    "inputs": [
     {
      "name": "image",
@@ -2913,7 +2913,7 @@
    "type": "image/sample-spread",
    "category": "Image",
    "label": "SampleSpread",
-   "description": "Read a spread of points from an image as a spread of colors.",
+   "description": "Read a spread of points from an image as a spread of colors. Points are measured from the image's centre, like positions on the canvas (y down).",
    "inputs": [
     {
      "name": "image",

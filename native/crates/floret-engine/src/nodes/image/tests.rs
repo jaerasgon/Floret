@@ -13,6 +13,10 @@
 //!
 //! Resampling, filters and blend modes can't match Skia bit for bit; their
 //! tests below check behaviour from the specs.
+//!
+//! Known divergence (replayed): `image/sample*` read positions from the
+//! image's centre natively, from its top-left pixel in TS. The TS cases
+//! run with `origin: "top-left"`, the param pre-v3 patches load with.
 
 use super::super::value::harness::node;
 use crate::host::{self, Host};
@@ -113,7 +117,12 @@ fn matches_typescript_cases() {
     let mut failures = Vec::new();
     for (i, case) in cases.iter().enumerate() {
         let ty = case["type"].as_str().unwrap();
-        let mut h = node(ty, case["params"].clone());
+        let mut params = case["params"].clone();
+        if crate::patch::IMAGE_POSITION_NODES.contains(&ty) {
+            // TS sampled from the top-left pixel, as pre-v3 patches still do.
+            params[crate::patch::ORIGIN_PARAM] = json!(crate::patch::ORIGIN_TOP_LEFT);
+        }
+        let mut h = node(ty, params);
         // TS `compute` ignores extra arguments; Rust checks arity.
         let arity = crate::spec::Catalogue::builtin()
             .get(ty)
@@ -181,6 +190,97 @@ fn n(x: f64) -> Value {
 
 fn im(i: &Arc<Image>) -> Value {
     Value::Image(i.clone())
+}
+
+// ─── Sampling origin ─────────────────────────────────────────────────────────
+
+/// A `w`×`h` image whose pixel (x, y) is rgb(x, y, 7).
+fn coords_image(w: u32, h: u32) -> Arc<Image> {
+    let mut px = Vec::with_capacity((w * h * 4) as usize);
+    for y in 0..h {
+        for x in 0..w {
+            px.extend_from_slice(&[x as u8, y as u8, 7, 255]);
+        }
+    }
+    Arc::new(Image::new(w, h, px))
+}
+
+/// The pixel a sampled colour came from (see [`coords_image`]).
+fn pixel_of(v: &Value) -> (u32, u32) {
+    let Value::Color(c) = v else {
+        panic!("not a color: {v:?}")
+    };
+    assert_eq!((c.b * 255.0).round(), 7.0);
+    ((c.r * 255.0).round() as u32, (c.g * 255.0).round() as u32)
+}
+
+fn sample_at(params: J, img: &Arc<Image>, x: f64, y: f64) -> (u32, u32) {
+    let mut h = node("image/sample", params);
+    let out = h.eval(vec![vec![im(img)], vec![n(x)], vec![n(y)]]).unwrap();
+    pixel_of(&out[0][0])
+}
+
+fn sample_spread_at(params: J, img: &Arc<Image>, pts: &[(f64, f64)]) -> Vec<(u32, u32)> {
+    let mut h = node("image/sample-spread", params);
+    let points = pts
+        .iter()
+        .map(|&(x, y)| Value::Vec2(crate::value::Vec2 { x, y }))
+        .collect();
+    let out = h.eval(vec![vec![im(img)], points]).unwrap();
+    out[0].iter().map(pixel_of).collect()
+}
+
+#[test]
+fn sampling_is_centre_origin_like_the_canvas() {
+    // Even and odd sizes: (0, 0) is the middle, y grows downwards.
+    for (w, hgt) in [(10u32, 6u32), (9, 5)] {
+        let img = coords_image(w, hgt);
+        let (cx, cy) = (w / 2, hgt / 2);
+        let (hw, hh) = (f64::from(w) / 2.0, f64::from(hgt) / 2.0);
+        let cases = [
+            ((0.0, 0.0), (cx, cy)),
+            ((-hw, -hh), (0, 0)),
+            ((hw - 0.5, hh - 0.5), (w - 1, hgt - 1)),
+            ((1.0, 2.0), (cx + 1, cy + 2)),
+            // Outside the image: clamped to the edge, as before.
+            ((-1000.0, 1000.0), (0, hgt - 1)),
+        ];
+        for ((x, y), want) in cases {
+            assert_eq!(
+                sample_at(json!({}), &img, x, y),
+                want,
+                "{w}×{hgt} at ({x}, {y})"
+            );
+        }
+        let pts: Vec<_> = cases.iter().map(|c| c.0).collect();
+        let want: Vec<_> = cases.iter().map(|c| c.1).collect();
+        assert_eq!(sample_spread_at(json!({}), &img, &pts), want, "{w}×{hgt}");
+    }
+}
+
+#[test]
+fn migrated_sampling_keeps_the_top_left_origin() {
+    let img = coords_image(10, 6);
+    let legacy = || json!({ crate::patch::ORIGIN_PARAM: crate::patch::ORIGIN_TOP_LEFT });
+    assert_eq!(sample_at(legacy(), &img, 0.0, 0.0), (0, 0));
+    assert_eq!(sample_at(legacy(), &img, 3.7, 2.2), (3, 2));
+    assert_eq!(sample_at(legacy(), &img, 99.0, -4.0), (9, 0));
+    assert_eq!(
+        sample_spread_at(legacy(), &img, &[(0.0, 0.0), (5.0, 3.0), (-1.0, 99.0)]),
+        vec![(0, 0), (5, 3), (0, 5)]
+    );
+    // A loaded pre-v3 patch: its sampling node reads top-left; the same
+    // node in a current patch reads from the centre.
+    for (version, want) in [(2, (0, 0)), (3, (5, 3))] {
+        let text = format!(
+            r#"{{"kind":"floret.patch","version":{version},"nodes":[
+                {{"id":"s","defType":"image/sample","position":{{"x":0,"y":0}},"params":{{}}}}],
+                "edges":[]}}"#
+        );
+        let p = crate::load_patch(&text).unwrap();
+        let params = serde_json::Value::Object(p.nodes[0].params.clone());
+        assert_eq!(sample_at(params, &img, 0.0, 0.0), want, "v{version}");
+    }
 }
 
 // ─── Canvas-op nodes ─────────────────────────────────────────────────────────

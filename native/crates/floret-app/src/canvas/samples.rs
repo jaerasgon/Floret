@@ -254,6 +254,65 @@ fn sample_nodes_fit_their_text() {
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
 
+/// The Palette's mode dropdown is wide enough for every mode, in every
+/// mode: a generating palette (standard rows, the output on the mode's
+/// row) grows to fit it; the stops body keeps the custom-node width.
+#[test]
+fn palette_mode_dropdown_fits_every_option() {
+    real_fonts();
+    let cat = Catalogue::builtin();
+    let painter = geom::measuring_painter();
+    let mono = egui::FontId::monospace(10.0);
+    let w = |s: &str| {
+        painter
+            .layout_no_wrap(s.to_owned(), mono.clone(), egui::Color32::WHITE)
+            .size()
+            .x
+    };
+    let modes = cat.get("color/palette").unwrap().param_options["mode"].clone();
+    let longest = modes.iter().map(|m| w(m)).fold(0.0, f32::max);
+    for mode in &modes {
+        let flora = json!({
+            "kind": "floret.patch", "version": 2, "edges": [],
+            "nodes": [{"id": "p", "defType": "color/palette", "position": {"x": 0, "y": 0},
+                       "params": {"mode": mode, "stopCount": 3}}],
+        });
+        let patch = loaded(&flora.to_string());
+        let all: HashSet<String> = ["p".to_owned()].into();
+        let (decor, expanded) = (geom::Decor::default(), HashSet::new());
+        let cx = geom::Ctx {
+            patch: &patch,
+            cat,
+            painter: &painter,
+            origin: Pos2::ZERO,
+            pan: Vec2::ZERO,
+            zoom: 1.0,
+            scope: None,
+            expanded: &expanded,
+            decor: &decor,
+        };
+        let boxes = geom::layout(&cx, &all, &|_| false);
+        let b = &boxes["p"];
+        let field = b
+            .fields
+            .iter()
+            .find(|f| f.key == EditKey::Param("mode".into()))
+            .unwrap_or_else(|| panic!("{mode}: no mode dropdown"));
+        // The same fit rule as `sample_nodes_fit_their_text`.
+        assert!(
+            longest + 4.0 <= field.rect.width() - 12.0,
+            "{mode}: dropdown {} wide, longest option {longest}",
+            field.rect.width()
+        );
+        assert!(field.rect.right() <= b.rect.right() - 10.0, "{mode}");
+        if mode == "stops" {
+            assert_eq!(b.rect.width(), geom::NODE_W, "stops keeps its width");
+        } else {
+            assert!(b.rect.width() >= geom::NODE_W, "{mode}");
+        }
+    }
+}
+
 fn samples_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../samples")
 }

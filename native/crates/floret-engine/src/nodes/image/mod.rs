@@ -481,19 +481,52 @@ fn clamp_index(v: f64, n: u32) -> u32 {
     }
 }
 
+/// Where `image/sample*` measure positions from: the image's centre, like
+/// the canvas ((0, 0) is the middle, y down), so (x, y) reads pixel
+/// (x + w/2, y + h/2). Nodes from patches saved before v3 carry
+/// `origin: "top-left"` (see `patch::v2_to_v3`) and read pixel (x, y),
+/// as the web app did.
+#[derive(Clone, Copy)]
+struct Origin {
+    top_left: bool,
+}
+
+impl Origin {
+    fn of(params: &crate::spec::Params) -> Origin {
+        Origin {
+            top_left: params
+                .get(crate::patch::ORIGIN_PARAM)
+                .and_then(|v| v.as_str())
+                == Some(crate::patch::ORIGIN_TOP_LEFT),
+        }
+    }
+
+    /// Pixel-space offset added to a position on `img`.
+    fn offset(self, img: &Image) -> (f64, f64) {
+        if self.top_left {
+            (0.0, 0.0)
+        } else {
+            (f64::from(img.width()) / 2.0, f64::from(img.height()) / 2.0)
+        }
+    }
+}
+
 fn sample(init: &NodeInit) -> Box<dyn NodeImpl> {
-    scalar(init, |args| {
+    let origin = Origin::of(init.params);
+    scalar(init, move |args| {
         let Some(img) = ready(&args[0]) else {
             return Ok(vec![Value::Color(TRANSPARENT)]);
         };
-        let x = clamp_index(args[1].to_number(), img.width());
-        let y = clamp_index(args[2].to_number(), img.height());
+        let (ox, oy) = origin.offset(img);
+        let x = clamp_index(args[1].to_number() + ox, img.width());
+        let y = clamp_index(args[2].to_number() + oy, img.height());
         Ok(vec![color_from(img.pixel(x, y))])
     })
 }
 
-fn sample_spread(_: &NodeInit) -> Box<dyn NodeImpl> {
-    raw(|inputs, _| {
+fn sample_spread(init: &NodeInit) -> Box<dyn NodeImpl> {
+    let origin = Origin::of(init.params);
+    raw(move |inputs, _| {
         let src = first(inputs, 0);
         let points = inputs.get(1).cloned().unwrap_or_else(crate::value::empty);
         let Some(img) = ready(&src).filter(|_| !points.is_empty()) else {
@@ -501,13 +534,14 @@ fn sample_spread(_: &NodeInit) -> Box<dyn NodeImpl> {
             return Ok(vec![Arc::from(out)]);
         };
         let (w, h) = (f64::from(img.width()), f64::from(img.height()));
+        let (ox, oy) = origin.offset(img);
         let mut out = Vec::with_capacity(points.len());
         for p in points.iter() {
             if p.is_nullish() {
                 return Err(format!("Cannot read properties of {p:?} (reading 'x')"));
             }
-            let ix = js::max(0.0, js::min(w - 1.0, p.get("x").to_number().floor()));
-            let iy = js::max(0.0, js::min(h - 1.0, p.get("y").to_number().floor()));
+            let ix = js::max(0.0, js::min(w - 1.0, (p.get("x").to_number() + ox).floor()));
+            let iy = js::max(0.0, js::min(h - 1.0, (p.get("y").to_number() + oy).floor()));
             out.push(if ix.is_nan() || iy.is_nan() {
                 // `data[NaN]` is undefined → NaN channels.
                 Value::Color(Color {

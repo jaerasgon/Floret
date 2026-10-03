@@ -2,9 +2,10 @@
 //! `text.ts`, `walker-cluster.ts`).
 //!
 //! Each node returns one `SceneNode`. With nothing wired into `style`, a
-//! shape uses its own default (white fill for filled shapes, thin black
-//! stroke for lines / points / open polygons); a wired chain resolves
-//! against NEUTRAL (see `scene::resolve_style`).
+//! shape uses its own default (white fill for filled shapes, thin white
+//! stroke for lines / points / paths / open polygons, see
+//! `scene::line_default_style`); a wired chain resolves against NEUTRAL
+//! (see `scene::resolve_style`).
 //!
 //! The image draw nodes (`draw/image`, `draw/image-region`,
 //! `draw/image-tile`) live with the other image nodes in `nodes::image`.
@@ -250,13 +251,17 @@ fn path(_: &NodeInit) -> Box<dyn NodeImpl> {
         let width_in = num_or(2, 2.0);
         let tension = num_or(3, 0.0).clamp(0.0, 1.0);
         let widths = numbers_of(inputs, 4);
+        let line_default = (**line_default_style()).clone();
         let stroke = if color_in.truthy() {
             paint_of(&color_in)?
         } else {
-            Paint::css("#000000")
+            // Unwired: the unstyled-line stroke.
+            line_default
+                .stroke
+                .clone()
+                .unwrap_or_else(|| Paint::css(crate::scene::LINE_STROKE))
         };
         let base_width = js::max(0.0, width_in);
-        let line_default = (**line_default_style()).clone();
 
         if widths_are_variable(&widths) && pts.len() >= 2 {
             let outline = build_offset_polygon(&pts, &widths, base_width, false);

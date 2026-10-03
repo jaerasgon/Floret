@@ -34,6 +34,7 @@ pub mod physics;
 pub mod random;
 pub mod render;
 pub mod shared;
+pub mod simulation;
 pub mod sound;
 pub mod spread;
 pub mod string;
@@ -88,6 +89,7 @@ fn registry() -> &'static Registrar {
         physics::register(&mut r);
         random::register(&mut r);
         render::register(&mut r);
+        simulation::register(&mut r);
         sound::register(&mut r);
         spread::register(&mut r);
         string::register(&mut r);

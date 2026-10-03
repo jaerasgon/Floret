@@ -727,6 +727,34 @@
       "category": "Motion",
       "description": "A ring of dots breathing in a travelling wave, built on the Time node's loop phase so it repeats perfectly every 5 s — export one loop as MP4 or GIF (File → Export Video / GIF…) and it plays on repeat without a seam.",
       "file": "loop-bloom.flora"
+    },
+    {
+      "id": "sim-flocking",
+      "name": "Flocking",
+      "category": "Particles",
+      "description": "Simulation in flocking mode: 300 boids separate, align and cohere on a wrapping field. Sliders reshape the flock live; the mouse herds it.",
+      "file": "sim-flocking.flora"
+    },
+    {
+      "id": "sim-slime-mould",
+      "name": "Slime Mould",
+      "category": "Particles",
+      "description": "Simulation in physarum mode: 20 000 agents lay and follow a trail map that grows into veins. The trail map is an image, coloured by a palette ramp; the mouse feeds it.",
+      "file": "sim-slime-mould.flora"
+    },
+    {
+      "id": "sim-dla-coral",
+      "name": "DLA Coral",
+      "category": "Particles",
+      "description": "Simulation in dla mode: random walkers stick to a growing cluster and it branches like coral. Lines join each particle to its parent, coloured by growth order.",
+      "file": "sim-dla-coral.flora"
+    },
+    {
+      "id": "sim-cloth",
+      "name": "Cloth",
+      "category": "Particles",
+      "description": "Simulation in cloth mode: a Verlet spring mesh hung from two corners, blown by gusts. Drag it with the mouse; pull hard and it tears.",
+      "file": "sim-cloth.flora"
     }
   ]
 }

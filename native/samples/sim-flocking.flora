@@ -1,0 +1,260 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Flocking",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "fl_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -290
+      },
+      "params": {
+        "text": "Flocking\n\nThe Simulation node in flocking mode: 300 boids, each steering by the neighbours within `radius` — away from the closest (separation), along with their heading (alignment) and toward their centre (cohesion). The field wraps at its edges.\n\nThe sliders, top to bottom: separation, alignment, cohesion and attract. Drag them to change the flock's character as it flies; raise attract to herd it with the mouse. `colors` gives each boid its own shade of the palette.",
+        "width": 560,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Flocking\n\nThe Simulation node in flocking mode: 300 boids, each steering by the neighbours within `radius` — away from the closest (separation), along with their heading (alignment) and toward their centre (cohesion). The field wraps at its edges.\n\nThe sliders, top to bottom: separation, alignment, cohesion and attract. Drag them to change the flock's character as it flies; raise attract to herd it with the mouse. `colors` gives each boid its own shade of the palette.",
+        "width": 560,
+        "height": 220
+      }
+    },
+    {
+      "id": "fl_sep",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {
+        "value": 1.6,
+        "min": 0,
+        "max": 4
+      },
+      "portValues": {
+        "value": 1.6,
+        "min": 0,
+        "max": 4
+      }
+    },
+    {
+      "id": "fl_ali",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 90
+      },
+      "params": {
+        "value": 1.0,
+        "min": 0,
+        "max": 3
+      },
+      "portValues": {
+        "value": 1.0,
+        "min": 0,
+        "max": 3
+      }
+    },
+    {
+      "id": "fl_coh",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 180
+      },
+      "params": {
+        "value": 0.9,
+        "min": 0,
+        "max": 3
+      },
+      "portValues": {
+        "value": 0.9,
+        "min": 0,
+        "max": 3
+      }
+    },
+    {
+      "id": "fl_att",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 270
+      },
+      "params": {
+        "value": 0,
+        "min": 0,
+        "max": 2
+      },
+      "portValues": {
+        "value": 0,
+        "min": 0,
+        "max": 2
+      }
+    },
+    {
+      "id": "fl_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 0,
+        "y": 380
+      },
+      "params": {}
+    },
+    {
+      "id": "fl_mv",
+      "defType": "vec2/make",
+      "position": {
+        "x": 220,
+        "y": 380
+      },
+      "params": {}
+    },
+    {
+      "id": "fl_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 220,
+        "y": 480
+      },
+      "params": {
+        "stopCount": 5,
+        "c0": "#ffd36e",
+        "c1": "#ff7a59",
+        "c2": "#e8457a",
+        "c3": "#8a5cf6",
+        "c4": "#4cc9f0"
+      },
+      "portValues": {
+        "stopCount": 5,
+        "c0": "#ffd36e",
+        "c1": "#ff7a59",
+        "c2": "#e8457a",
+        "c3": "#8a5cf6",
+        "c4": "#4cc9f0"
+      }
+    },
+    {
+      "id": "fl_sim",
+      "defType": "particles/simulation",
+      "position": {
+        "x": 470,
+        "y": 0
+      },
+      "params": {
+        "mode": "flocking"
+      },
+      "portValues": {
+        "mode": "flocking",
+        "count": 300,
+        "size": {
+          "x": 600,
+          "y": 600
+        },
+        "maxSpeed": 150,
+        "radius": 40,
+        "scale": 7,
+        "seed": 1
+      }
+    },
+    {
+      "id": "fl_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 760,
+        "y": 0
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.047058823529411764,
+          "b": 0.08627450980392157,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.047058823529411764,
+          "b": 0.08627450980392157,
+          "a": 1
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "fl_sep",
+      "target": "fl_sim",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-separation"
+    },
+    {
+      "id": "e_2",
+      "source": "fl_ali",
+      "target": "fl_sim",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-alignment"
+    },
+    {
+      "id": "e_3",
+      "source": "fl_coh",
+      "target": "fl_sim",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-cohesion"
+    },
+    {
+      "id": "e_4",
+      "source": "fl_att",
+      "target": "fl_sim",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-attract"
+    },
+    {
+      "id": "e_5",
+      "source": "fl_mouse",
+      "target": "fl_mv",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_6",
+      "source": "fl_mouse",
+      "target": "fl_mv",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_7",
+      "source": "fl_mv",
+      "target": "fl_sim",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-target"
+    },
+    {
+      "id": "e_8",
+      "source": "fl_pal",
+      "target": "fl_sim",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_9",
+      "source": "fl_sim",
+      "target": "fl_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

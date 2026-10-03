@@ -1,0 +1,261 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Cloth",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "cl_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -290
+      },
+      "params": {
+        "text": "Cloth\n\nA Verlet spring mesh: 30 × 20 points joined by springs, hanging from its two top corners. Every step the points keep their speed, fall and catch the wind, then the springs pull them back toward their rest length.\n\nPress and drag on the canvas to grab the cloth. Pull hard and springs stretched past `tear` × their length snap (the lower slider). Springs colour by how far they're stretched. The upper slider blows wind in gusts.",
+        "width": 560,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Cloth\n\nA Verlet spring mesh: 30 × 20 points joined by springs, hanging from its two top corners. Every step the points keep their speed, fall and catch the wind, then the springs pull them back toward their rest length.\n\nPress and drag on the canvas to grab the cloth. Pull hard and springs stretched past `tear` × their length snap (the lower slider). Springs colour by how far they're stretched. The upper slider blows wind in gusts.",
+        "width": 560,
+        "height": 220
+      }
+    },
+    {
+      "id": "cl_wind",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {
+        "value": 120,
+        "min": 0,
+        "max": 800
+      },
+      "portValues": {
+        "value": 120,
+        "min": 0,
+        "max": 800
+      }
+    },
+    {
+      "id": "cl_wv",
+      "defType": "vec2/make",
+      "position": {
+        "x": 220,
+        "y": 0
+      },
+      "params": {},
+      "portValues": {
+        "y": 0
+      }
+    },
+    {
+      "id": "cl_tear",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 100
+      },
+      "params": {
+        "value": 2.5,
+        "min": 1.2,
+        "max": 6
+      },
+      "portValues": {
+        "value": 2.5,
+        "min": 1.2,
+        "max": 6
+      }
+    },
+    {
+      "id": "cl_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 0,
+        "y": 200
+      },
+      "params": {}
+    },
+    {
+      "id": "cl_mv",
+      "defType": "vec2/make",
+      "position": {
+        "x": 220,
+        "y": 200
+      },
+      "params": {}
+    },
+    {
+      "id": "cl_weight",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 0,
+        "y": 330
+      },
+      "params": {},
+      "portValues": {
+        "w": 1.5
+      }
+    },
+    {
+      "id": "cl_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 220,
+        "y": 300
+      },
+      "params": {
+        "stopCount": 3,
+        "c0": "#dfe6f0",
+        "c1": "#ffd166",
+        "c2": "#ef476f"
+      },
+      "portValues": {
+        "stopCount": 3,
+        "c0": "#dfe6f0",
+        "c1": "#ffd166",
+        "c2": "#ef476f"
+      }
+    },
+    {
+      "id": "cl_sim",
+      "defType": "particles/simulation",
+      "position": {
+        "x": 470,
+        "y": 0
+      },
+      "params": {
+        "mode": "cloth",
+        "pin": "corners"
+      },
+      "portValues": {
+        "mode": "cloth",
+        "pin": "corners",
+        "cols": 30,
+        "rows": 20,
+        "size": {
+          "x": 440,
+          "y": 290
+        },
+        "pos": {
+          "x": 0,
+          "y": -60
+        },
+        "gravity": {
+          "x": 0,
+          "y": 600
+        },
+        "stiffness": 1,
+        "iterations": 8,
+        "damping": 0.01
+      }
+    },
+    {
+      "id": "cl_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 760,
+        "y": 0
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.06274509803921569,
+          "g": 0.06274509803921569,
+          "b": 0.09411764705882353,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.06274509803921569,
+          "g": 0.06274509803921569,
+          "b": 0.09411764705882353,
+          "a": 1
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "cl_wind",
+      "target": "cl_wv",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_2",
+      "source": "cl_wv",
+      "target": "cl_sim",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-wind"
+    },
+    {
+      "id": "e_3",
+      "source": "cl_tear",
+      "target": "cl_sim",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-tear"
+    },
+    {
+      "id": "e_4",
+      "source": "cl_mouse",
+      "target": "cl_mv",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_5",
+      "source": "cl_mouse",
+      "target": "cl_mv",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_6",
+      "source": "cl_mv",
+      "target": "cl_sim",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pointer"
+    },
+    {
+      "id": "e_7",
+      "source": "cl_mouse",
+      "target": "cl_sim",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-grab"
+    },
+    {
+      "id": "e_8",
+      "source": "cl_weight",
+      "target": "cl_sim",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_9",
+      "source": "cl_pal",
+      "target": "cl_sim",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_10",
+      "source": "cl_sim",
+      "target": "cl_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

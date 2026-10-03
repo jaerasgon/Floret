@@ -12558,7 +12558,7 @@
    "type": "geometry/boolean",
    "category": "Geometry",
    "label": "Shape Boolean",
-   "description": "Union, intersect, subtract (a \u2212 b) or xor the filled areas of two layers, as polygons (holes included). Closed shapes count (nonzero winding), lines don't; with only `a` wired, `union` merges its shapes. Drawn in the first shape's style unless `style` is wired.",
+   "description": "Union, intersect, subtract (a − b) or xor the filled areas of two layers, as polygons (holes included). Closed shapes count (nonzero winding), lines don't; with only `a` wired, `union` merges its shapes. Drawn in the first shape's style unless `style` is wired.",
    "inputs": [
     {
      "name": "a",
@@ -12616,7 +12616,7 @@
    "type": "geometry/lsystem",
    "category": "Geometry",
    "label": "L-System",
-   "description": "Grow a string from `axiom` by `rules` (e.g. `F=F[+F]F[-F]F`; separate rules with `;`), `iterations` times, and draw it with a turtle: `F` / `G` draw a step, `f` / `g` move, `+` / `-` turn by `angle` degrees, `|` turns round, `[` / `]` branch; other symbols only rewrite. `fit` > 0 scales the drawing into a `fit`-wide box centred on `position` (0: start at `position`, `step` per move). `heading` in degrees (\u221290 = up); `jitter` varies every turn by up to that many degrees.",
+   "description": "Grow a string from `axiom` by `rules` (e.g. `F=F[+F]F[-F]F`; separate rules with `;`), `iterations` times, and draw it with a turtle: `F` / `G` draw a step, `f` / `g` move, `+` / `-` turn by `angle` degrees, `|` turns round, `[` / `]` branch; other symbols only rewrite. `fit` > 0 scales the drawing into a `fit`-wide box centred on `position` (0: start at `position`, `step` per move). `heading` in degrees (−90 = up); `jitter` varies every turn by up to that many degrees.",
    "inputs": [
     {
      "name": "axiom",
@@ -12715,6 +12715,157 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null
+  },
+  {
+   "type": "particles/simulation",
+   "category": "Particles",
+   "label": "Simulation",
+   "description": "A running simulation; pick it with `mode` and the pins follow. flocking: boids that separate, align and cohere on a wrapping field (`attract` pulls them to `target`). physarum: slime-mould agents following and laying a trail map, which comes out as `image` (angles in degrees, distances in grid cells; `food` points keep feeding the trail). dla: walkers sticking to a growing cluster from `seeds`, `rate` particles a second up to `count`. cloth: a Verlet spring mesh hanging from its `pin`s, with wind, tearing (`tear` × rest length) and `grab` to drag the point nearest `pointer`. `layer` draws it (shapes take `style`; `colors` ramps along `values`); `points`, `values` (heading, growth order or stretch) and the `from` / `to` line segments are there to draw your own. Steps 60 times per second of frame time, so the same seed and frames give the same result. A rising edge on `reset` starts over.",
+   "inputs": [
+    {
+     "name": "count",
+     "type": "number",
+     "kind": "single",
+     "default": 250,
+     "integer": true
+    },
+    {
+     "name": "size",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 600,
+      "y": 600
+     }
+    },
+    {
+     "name": "maxSpeed",
+     "type": "number",
+     "kind": "single",
+     "default": 140
+    },
+    {
+     "name": "separation",
+     "type": "number",
+     "kind": "single",
+     "default": 1.6
+    },
+    {
+     "name": "alignment",
+     "type": "number",
+     "kind": "single",
+     "default": 1
+    },
+    {
+     "name": "cohesion",
+     "type": "number",
+     "kind": "single",
+     "default": 0.9
+    },
+    {
+     "name": "radius",
+     "type": "number",
+     "kind": "single",
+     "default": 40
+    },
+    {
+     "name": "target",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "attract",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "scale",
+     "type": "number",
+     "kind": "single",
+     "default": 7
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single",
+     "default": null
+    },
+    {
+     "name": "colors",
+     "type": "color",
+     "kind": "spread"
+    },
+    {
+     "name": "seed",
+     "type": "number",
+     "kind": "single",
+     "default": 1,
+     "integer": true
+    },
+    {
+     "name": "reset",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    }
+   ],
+   "outputs": [
+    {
+     "name": "layer",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "values",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "from",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "to",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "image",
+     "type": "image",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "flocking"
+   },
+   "paramOptions": {
+    "mode": [
+     "flocking",
+     "physarum",
+     "dla",
+     "cloth"
+    ],
+    "pin": [
+     "top",
+     "corners",
+     "left",
+     "none"
+    ]
+   },
+   "effectful": true
   }
  ]
 }

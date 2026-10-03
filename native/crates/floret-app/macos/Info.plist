@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!-- Embedded in the `floret` binary (__TEXT,__info_plist, see build.rs) so
-     macOS shows the microphone prompt for the unbundled executable. Reuse it
-     as the bundle's Info.plist once the app ships as a .app. -->
+     macOS shows the microphone prompt for the unbundled executable, and
+     copied into Floret.app by `./floret.sh install`, which adds the icon
+     and version keys. -->
 <plist version="1.0">
 <dict>
 	<key>CFBundleIdentifier</key>

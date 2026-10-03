@@ -250,6 +250,7 @@ impl PresetsPanel {
             ui.label(RichText::new("→").color(*theme::FG_2));
             pick(ui, "floret-morph-b", &mut self.b);
         });
+        ui.spacing_mut().slider_width = (ui.available_width() - 8.0).max(80.0);
         let r = ui
             .add(egui::Slider::new(&mut self.t, 0.0..=1.0).show_value(false))
             .on_hover_text(

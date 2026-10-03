@@ -25,7 +25,7 @@ pub struct Entry {
 /// What the user picked.
 pub enum Pick {
     Sample(usize),
-    Patch(PatchFile),
+    Patch(Box<PatchFile>),
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -378,7 +378,7 @@ impl Library {
             .iter()
             .find(|e| e.id == id)?;
         match entry.load() {
-            Ok(p) => Some(Pick::Patch(p)),
+            Ok(p) => Some(Pick::Patch(Box::new(p))),
             Err(e) => {
                 self.status = Some(format!("Couldn't open {}: {e}", entry.name));
                 None
@@ -392,7 +392,7 @@ impl Library {
             .map_err(|e| e.to_string())
             .and_then(|t| PatchFile::load(&t).map_err(|e| e.to_string()))
         {
-            Ok(p) => Some(Pick::Patch(p)),
+            Ok(p) => Some(Pick::Patch(Box::new(p))),
             Err(e) => {
                 self.status = Some(format!("Couldn't open {file}: {e}"));
                 None

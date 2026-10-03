@@ -676,7 +676,7 @@ impl App {
                     .as_ref()
                     .and_then(|m| m.name.clone())
                     .unwrap_or_else(|| "Untitled".into());
-                self.request(ui.ctx(), After::Patch(Box::new(p), name));
+                self.request(ui.ctx(), After::Patch(p, name));
             }
             None => {}
         }

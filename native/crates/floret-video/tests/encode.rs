@@ -1,9 +1,8 @@
 //! Export encoders, checked by reading their output back: MP4 frames
-//! through our own demuxer + OpenH264 decoder, GIF frames through the
-//! `gif` decoder.
+//! through the platform's decoder (AVFoundation on macOS, else our own
+//! demuxer + OpenH264), GIF frames through the `gif` decoder.
 
 use floret_video::gif_writer::GifWriter;
-use std::path::PathBuf;
 
 const W: u32 = 96;
 const H: u32 = 64;
@@ -27,27 +26,35 @@ fn frame(i: usize, n: usize) -> Vec<u8> {
     px
 }
 
-fn tmp(name: &str) -> PathBuf {
-    PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join(name)
+#[cfg(any(feature = "openh264", target_os = "macos"))]
+fn tmp(name: &str) -> std::path::PathBuf {
+    std::path::PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join(name)
 }
 
-#[cfg(feature = "openh264")]
+#[cfg(any(feature = "openh264", target_os = "macos"))]
 #[test]
 fn mp4_round_trips_through_the_decoder() {
-    use floret_video::encode::{H264Settings, Mp4Encoder};
+    use floret_video::export::{H264Settings, Mp4File};
     use floret_video::{open_with, Backend};
 
     let (n, fps) = (24, 24);
     let path = tmp("floret-export-test.mp4");
-    let file = std::io::BufWriter::new(std::fs::File::create(&path).unwrap());
-    let mut enc = Mp4Encoder::new(file, H264Settings::export(W, H, fps)).unwrap();
+    let mut enc = Mp4File::create(&path, H264Settings::export(W, H, fps)).unwrap();
+    if cfg!(target_os = "macos") {
+        assert_eq!(enc.encoder(), "apple");
+    }
     for i in 0..n {
         enc.push_rgba(&frame(i, n)).unwrap();
     }
     assert_eq!(enc.frames(), n);
-    drop(enc.finish().unwrap());
+    enc.finish().unwrap();
 
-    let mut m = open_with(path.to_str().unwrap(), Backend::Portable).expect("open");
+    let backend = if cfg!(target_os = "macos") {
+        Backend::Native
+    } else {
+        Backend::Portable
+    };
+    let mut m = open_with(path.to_str().unwrap(), backend).expect("open");
     assert_eq!((m.width, m.height), (W, H));
     assert_eq!(m.frames.len(), n);
     assert!(

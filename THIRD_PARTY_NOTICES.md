@@ -88,7 +88,9 @@ binary distributions (an app bundle's licenses file / About box).
 - **What:** Cisco's OpenH264 codec, compiled from the source the
   `openh264-sys2` crate bundles, through the `openh264` Rust bindings. Used
   by `floret-video` to decode H.264 video files and to encode MP4 exports
-  (File → Export Video / GIF).
+  (File → Export Video / GIF) in the Windows and Linux builds. **The macOS
+  build doesn't include it**: there, video plays and exports through
+  Apple's AVFoundation / VideoToolbox, which macOS licenses for H.264.
 - **Copyright:** © Cisco Systems, Inc. (OpenH264); © Ralf Biedert and
   contributors (`openh264` crates)
 - **License:** BSD-2-Clause.
@@ -98,4 +100,6 @@ binary distributions (an app bundle's licenses file / About box).
 BSD-2-Clause asks for the copyright notice and disclaimer in binary
 distributions. Note: Cisco's royalty-free H.264 patent coverage applies to
 the prebuilt binaries Cisco distributes, not to OpenH264 compiled from
-source, as here; check H.264 patent licensing before a commercial release.
+source, as here. Before releasing the Windows / Linux builds, switch them
+to the OS's own codecs (Windows Media Foundation) or to Cisco's binary
+downloaded at runtime, or check H.264 patent licensing.

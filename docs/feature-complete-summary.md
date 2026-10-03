@@ -29,6 +29,8 @@ Xvfb + lavapipe. Nothing has run on a real Mac yet.
   - GIF colours look right in a browser.
   - Cancel mid-export.
   - 2× and 4K exports.
+  - MP4 export now uses Apple's encoder (never run yet): colours match the preview, the first export works, and a file can be overwritten.
+  - The `video-pixelate` sample, whose video is stored inside the patch, still plays (on Mac it goes through Apple's decoder now).
 - **Variations:**
   - Cmd+Shift+R and View → New Variation.
   - Cmd+Z after Vary, Recall and Morph.
@@ -78,10 +80,10 @@ Xvfb + lavapipe. Nothing has run on a real Mac yet.
 11. Should floret-engine get `opt-level = 1` in the dev profile? Simulations and the engine would run much faster in debug builds.
 
 **Licensing and toolchain**
-12. **H.264 patents:**
-    - OpenH264 is compiled from source, and the app now *encodes* as well as decodes.
-    - Cisco's royalty-free patent coverage only applies to Cisco's own prebuilt binaries.
-    - Check this before a commercial release (noted in THIRD_PARTY_NOTICES).
+12. **H.264 patents (decided: no royalties):**
+    - Cisco's royalty-free patent coverage only applies to Cisco's own prebuilt OpenH264 binaries, not to the copy Floret compiles from source.
+    - **macOS (done):** the Mac app no longer contains OpenH264. MP4s play and export through Apple's AVFoundation / VideoToolbox, which macOS licenses. Exports are tagged BT.709 for QuickTime and browsers.
+    - **Windows / Linux (later):** use Windows' own codecs (Media Foundation), and on Linux download Cisco's binary at runtime. Royalty-free AV1 / VP9 WebM export could be added alongside.
 13. **New dependencies:** `delaunator` (ISC), `i_overlay` (MIT / Apache-2.0) and `gif` (MIT / Apache-2.0). All are listed in THIRD_PARTY_NOTICES.
     - delaunator and i_overlay need Rust 1.88, while the workspace still declares `rust-version = "1.85"`.
     - Raising it turns on new clippy lints in existing code, so it was left as is. `./floret.sh` installs current Rust, so the Mac build isn't affected.

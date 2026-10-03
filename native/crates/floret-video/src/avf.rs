@@ -24,7 +24,7 @@ use objc2_core_video::{
     CVPixelBufferUnlockBaseAddress,
 };
 use objc2_foundation::{NSDictionary, NSError, NSNumber, NSString, NSURL};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 pub struct Avf {
     asset: Retained<AVURLAsset>,
@@ -52,8 +52,38 @@ fn rotation_of(a: f64, b: f64) -> u16 {
     ((deg / 90.0).round() as u16 % 4) * 90
 }
 
+/// AVFoundation reads files only: park an in-memory video (a `data:` URL)
+/// in the temporary folder, named by its contents so reopening reuses it.
+fn spill(reader: &mut dyn ReadSeek) -> Result<PathBuf, String> {
+    use std::hash::{Hash, Hasher};
+    use std::io::SeekFrom;
+    let mut bytes = Vec::new();
+    let io = |e: std::io::Error| e.to_string();
+    reader.seek(SeekFrom::Start(0)).map_err(io)?;
+    reader.read_to_end(&mut bytes).map_err(io)?;
+    reader.seek(SeekFrom::Start(0)).map_err(io)?;
+    let mut h = std::collections::hash_map::DefaultHasher::new();
+    bytes.hash(&mut h);
+    let dir = std::env::temp_dir().join("floret-video");
+    let path = dir.join(format!("{:016x}.mp4", h.finish()));
+    if std::fs::metadata(&path).map(|m| m.len()).ok() != Some(bytes.len() as u64) {
+        std::fs::create_dir_all(&dir).map_err(io)?;
+        let part = path.with_extension(format!("{}.part", std::process::id()));
+        std::fs::write(&part, &bytes).map_err(io)?;
+        std::fs::rename(&part, &path).map_err(io)?;
+    }
+    Ok(path)
+}
+
 pub fn open(path: Option<&Path>, reader: &mut dyn ReadSeek) -> Result<Media, String> {
-    let path = path.ok_or("AVFoundation reads files only")?;
+    let spilled;
+    let path = match path {
+        Some(p) => p,
+        None => {
+            spilled = spill(reader)?;
+            &spilled
+        }
+    };
     let url = NSURL::from_file_path(path).ok_or("not a file path")?;
     // SAFETY: plain AVFoundation calls with valid arguments; the deprecated
     // synchronous accessors load on this (background) thread.

@@ -11,53 +11,7 @@ use openh264::formats::{RgbSliceU8, RgbaSliceU8, YUVBuffer};
 use openh264::OpenH264API;
 use std::io::{Seek, Write};
 
-/// The largest frame OpenH264 encodes (level 5.2), either orientation.
-pub const MAX_SIZE: (u32, u32) = (3840, 2160);
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct H264Settings {
-    /// Frame size; both even (4:2:0 chroma), at most [`MAX_SIZE`].
-    pub width: u32,
-    pub height: u32,
-    pub fps: u32,
-    /// A keyframe every this many frames.
-    pub keyframe_every: u32,
-    /// Encoder quantiser range, 0 (best) ..= 51.
-    pub qp: (u8, u8),
-    /// Target bit rate, bits per second.
-    pub bitrate: u32,
-}
-
-impl H264Settings {
-    /// Export quality: a keyframe every two seconds and a generous bit
-    /// rate (about 0.2 bits per pixel), for crisp generative graphics.
-    pub fn export(width: u32, height: u32, fps: u32) -> H264Settings {
-        let px = u64::from(width) * u64::from(height) * u64::from(fps.max(1));
-        H264Settings {
-            width,
-            height,
-            fps: fps.max(1),
-            keyframe_every: fps.max(1) * 2,
-            qp: (4, 36),
-            bitrate: (px / 5).clamp(500_000, 80_000_000) as u32,
-        }
-    }
-
-    /// Why these settings can't be encoded, if they can't.
-    pub fn check(&self) -> Result<(), String> {
-        let (w, h) = (self.width, self.height);
-        if w == 0 || h == 0 || w % 2 == 1 || h % 2 == 1 {
-            return Err(format!("H.264 needs an even frame size, not {w} × {h}"));
-        }
-        if w.max(h) > MAX_SIZE.0 || w.min(h) > MAX_SIZE.1 {
-            return Err(format!(
-                "{w} × {h} is larger than H.264 allows here ({} × {})",
-                MAX_SIZE.0, MAX_SIZE.1
-            ));
-        }
-        Ok(())
-    }
-}
+pub use crate::export::{H264Settings, MAX_SIZE};
 
 /// Split an Annex B stream at its start codes.
 pub(crate) fn nal_units(stream: &[u8]) -> Vec<&[u8]> {
@@ -201,14 +155,5 @@ mod tests {
         ];
         let units = nal_units(&s);
         assert_eq!(units, vec![&[0x67, 1, 2][..], &[0x68, 3], &[0x65, 4, 0]]);
-    }
-
-    #[test]
-    fn checks_sizes() {
-        assert!(H264Settings::export(640, 360, 30).check().is_ok());
-        assert!(H264Settings::export(2160, 3840, 30).check().is_ok());
-        assert!(H264Settings::export(641, 360, 30).check().is_err());
-        assert!(H264Settings::export(4096, 2160, 30).check().is_err());
-        assert!(H264Settings::export(0, 2, 30).check().is_err());
     }
 }

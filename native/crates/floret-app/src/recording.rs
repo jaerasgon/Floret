@@ -1,4 +1,6 @@
-//! Recording loops (#27): MP4 (H.264), GIF and PNG-sequence export.
+//! Recording loops (#27): MP4 (H.264), GIF and PNG-sequence export. MP4s
+//! go through Apple's encoder on macOS and OpenH264 elsewhere
+//! (`floret_video::export`).
 //!
 //! The patch is re-run offline from a fresh start, frame by frame at a
 //! fixed dt, so a recording is smooth and comes out the same however fast
@@ -21,7 +23,7 @@ use floret_engine::patch::PatchFile;
 use floret_engine::scene::SceneNode;
 use floret_engine::{Engine, FrameCtx};
 use floret_render::{RenderClock, Renderer};
-use floret_video::encode::{H264Settings, Mp4Encoder};
+use floret_video::export::{H264Settings, Mp4File};
 use floret_video::gif_writer::{self, GifWriter};
 use std::fs::File;
 use std::io::BufWriter;
@@ -190,8 +192,7 @@ pub fn frame_file(stem: &str, i: usize, frames: usize) -> String {
 }
 
 enum Sink {
-    // Boxed: the encoder keeps a large bitstream descriptor inline.
-    Mp4(Box<Mp4Encoder<BufWriter<File>>>, PathBuf),
+    Mp4(Mp4File, PathBuf),
     Gif(GifWriter<BufWriter<File>>, PathBuf),
     Png {
         dir: PathBuf,
@@ -213,7 +214,7 @@ impl Sink {
         Ok(match spec.format {
             Format::Mp4 => {
                 let settings = H264Settings::export(size.0, size.1, spec.fps);
-                Sink::Mp4(Box::new(Mp4Encoder::new(create(&path)?, settings)?), path)
+                Sink::Mp4(Mp4File::create(&path, settings)?, path)
             }
             Format::Gif => {
                 let gif = GifWriter::new(create(&path)?, size.0, size.1, spec.fps)?;
@@ -257,7 +258,7 @@ impl Sink {
                 .map_or_else(String::new, |n| n.to_string_lossy().into_owned())
         };
         match self {
-            Sink::Mp4(enc, p) => enc.finish().map(|_| name(&p)),
+            Sink::Mp4(enc, p) => enc.finish().map(|()| name(&p)),
             Sink::Gif(gif, p) => gif.finish().map(|_| name(&p)),
             Sink::Png { written, .. } => Ok(match (written.first(), written.last()) {
                 (Some(a), Some(b)) if written.len() > 1 => format!("{} … {}", name(a), name(b)),

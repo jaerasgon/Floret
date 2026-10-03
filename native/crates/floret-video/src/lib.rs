@@ -16,17 +16,26 @@
 //! Audio tracks are ignored. Each playing node gets a [`session`]: a
 //! decoder thread with a small frame cache around the playhead.
 //!
-//! Writing (the app's video export): H.264 MP4 through OpenH264's encoder
-//! and a minimal MP4 muxer ([`encode`], [`mux`]), and animated GIF
+//! Writing (the app's video export): H.264 MP4 through [`export`], which
+//! uses Apple's encoder on macOS and OpenH264's encoder with a minimal MP4
+//! muxer ([`encode`], [`mux`]) elsewhere, and animated GIF
 //! ([`gif_writer`]).
+//!
+//! The app's macOS build leaves the `openh264` feature off: Apple's codecs
+//! are licensed for H.264 through the OS, while a self-built OpenH264
+//! isn't covered by Cisco's patent licence. There, AVFoundation plays every
+//! file (in-memory `data:` videos via a temporary file).
 
 pub mod demux;
+pub mod export;
 pub mod gif_writer;
 pub mod mux;
 mod session;
 
 #[cfg(target_os = "macos")]
 mod avf;
+#[cfg(target_os = "macos")]
+mod avf_write;
 #[cfg(feature = "openh264")]
 pub mod clip;
 #[cfg(feature = "openh264")]

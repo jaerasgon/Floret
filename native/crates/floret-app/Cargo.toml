@@ -19,7 +19,9 @@ floret-engine = { path = "../floret-engine" }
 floret-render = { path = "../floret-render" }
 floret-media = { path = "../floret-media" }
 floret-input = { path = "../floret-input" }
-floret-video = { path = "../floret-video" }
+# H.264 on macOS through Apple's licensed codecs only; OpenH264 elsewhere
+# (see floret-video's src/export.rs).
+floret-video = { path = "../floret-video", default-features = false }
 eframe = { version = "0.36", default-features = false, features = ["wgpu", "default_fonts", "accesskit", "wayland", "x11"] }
 serde_json.workspace = true
 indexmap.workspace = true
@@ -41,6 +43,9 @@ gif = "0.14"
 
 # Native menu bar (macOS, Windows). Linux uses an egui menu bar: muda needs
 # a GTK window there and winit doesn't create one.
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+floret-video = { path = "../floret-video", features = ["openh264"] }
+
 [target.'cfg(any(target_os = "macos", target_os = "windows"))'.dependencies]
 muda = { version = "0.21", default-features = false }
 raw-window-handle = "0.6"

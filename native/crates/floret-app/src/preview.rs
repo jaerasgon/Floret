@@ -246,6 +246,8 @@ pub struct PreviewPanel {
     key: String,
     key_pressed: bool,
     export: crate::export::Export,
+    /// A recording asked for from a view's Export menu: renderer, format.
+    record: Option<(String, crate::recording::Format)>,
     /// What exports are named after: the renderer's label, else this
     /// (the patch name).
     pub doc_name: String,
@@ -277,6 +279,7 @@ impl PreviewPanel {
             key: String::new(),
             key_pressed: false,
             export: crate::export::Export::default(),
+            record: None,
             doc_name: String::new(),
             clock: RenderClock::default(),
             transport: Transport::default(),
@@ -407,6 +410,8 @@ impl PreviewPanel {
             mouse_is_pressed: self.mouse_pressed,
             key: self.key.clone(),
             key_is_pressed: self.key_pressed,
+            // The engine fills in its patch's.
+            loop_length: 0.0,
         }
     }
 
@@ -432,6 +437,12 @@ impl PreviewPanel {
             }
             self.key_pressed = !i.keys_down.is_empty();
         });
+    }
+
+    /// A recording asked for from a view's Export menu since the last
+    /// call: the renderer and format.
+    pub fn take_record(&mut self) -> Option<(String, crate::recording::Format)> {
+        self.record.take()
     }
 
     /// Focus mode is on: the app shows only [`PreviewPanel::show_focus`].
@@ -517,6 +528,9 @@ impl PreviewPanel {
                         size,
                     },
                 );
+                if let Some(f) = self.export.take_record() {
+                    self.record = Some((id.clone(), f));
+                }
                 let live = self.output.as_ref().is_some_and(|o| o.renderer == id);
                 ui.menu_button(
                     RichText::new(if live { "● Output" } else { "Output…" }).small(),

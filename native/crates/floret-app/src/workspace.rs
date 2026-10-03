@@ -117,7 +117,7 @@ fn layout_path() -> Option<PathBuf> {
 /// What the app should do after the dock ran.
 pub enum ShellAction {
     LoadSample(usize),
-    LoadPatch(PatchFile),
+    LoadPatch(Box<PatchFile>),
 }
 
 /// Everything the panels read and edit this frame.

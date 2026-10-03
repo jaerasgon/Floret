@@ -28,6 +28,7 @@ pub enum Command {
     SaveAs,
     BrowseSamples,
     ExportPng,
+    ExportVideo,
     Quit,
     Undo,
     Redo,
@@ -75,6 +76,7 @@ impl Command {
             SaveAs => "Save As…",
             BrowseSamples => "Samples Library",
             ExportPng => "Export PNG…",
+            ExportVideo => "Export Video / GIF…",
             Quit => {
                 if cfg!(target_os = "windows") {
                     "Exit"
@@ -123,6 +125,7 @@ impl Command {
             SaveAs => cmd_shift(Key::S),
             BrowseSamples => cmd_shift(Key::O),
             ExportPng => cmd(Key::E),
+            ExportVideo => cmd_shift(Key::E),
             Quit if cfg!(target_os = "windows") => return None,
             Quit => cmd(Key::Q),
             Undo => cmd(Key::Z),
@@ -212,6 +215,7 @@ pub fn model(s: &MenuState) -> Vec<Section> {
         C(SaveAs),
         Sep,
         C(ExportPng),
+        C(ExportVideo),
     ];
     if !mac {
         file.extend([Sep, C(Preferences), Sep, C(Quit)]);
@@ -273,6 +277,8 @@ pub fn shortcuts(ctx: &egui::Context) -> Vec<Command> {
     let order = [
         SaveAs,
         BrowseSamples,
+        // Before the preview's Cmd+E (which ignores Shift) sees the key.
+        ExportVideo,
         New,
         Open,
         Save,
@@ -748,6 +754,15 @@ mod tests {
             got = shortcuts(ui.ctx());
         });
         assert_eq!(got, [Command::Save]);
+        // Cmd+Shift+E is the video export, taken before the preview's Cmd+E.
+        frame(
+            &ctx,
+            press(Modifiers::COMMAND | Modifiers::SHIFT, Key::E),
+            |ui| {
+                got = shortcuts(ui.ctx());
+            },
+        );
+        assert_eq!(got, [Command::ExportVideo]);
         // Plain keys are the canvas's.
         frame(&ctx, press(Modifiers::NONE, Key::S), |ui| {
             got = shortcuts(ui.ctx());

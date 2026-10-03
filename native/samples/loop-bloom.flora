@@ -1,0 +1,536 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Loop Bloom",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "lb_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -300
+      },
+      "params": {
+        "text": "A perfect loop\n\nTime's `loop` output runs 0 → 1 once per loop length (5 s here: File → Export Video / GIF… sets it, and saves it with the patch).\n\nEverything moving is a whole number of turns of `loop`: the ring's wave goes round once, the hues cycle once. So the last frame leads straight back into the first, and an export of one loop repeats seamlessly.",
+        "width": 420,
+        "height": 220
+      },
+      "portValues": {
+        "text": "A perfect loop\n\nTime's `loop` output runs 0 → 1 once per loop length (5 s here: File → Export Video / GIF… sets it, and saves it with the patch).\n\nEverything moving is a whole number of turns of `loop`: the ring's wave goes round once, the hues cycle once. So the last frame leads straight back into the first, and an export of one loop repeats seamlessly.",
+        "width": 420,
+        "height": 220
+      }
+    },
+    {
+      "id": "lb_range",
+      "defType": "spread/range",
+      "position": {
+        "x": 0,
+        "y": 230
+      },
+      "params": {
+        "count": 24
+      },
+      "portValues": {
+        "count": 24
+      }
+    },
+    {
+      "id": "lb_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 220,
+        "y": 0
+      },
+      "params": {
+        "width": 1660,
+        "height": 520,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "n",
+          "name": "n",
+          "type": "number",
+          "direction": "input",
+          "y": 250
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 250
+        }
+      ],
+      "width": 1660,
+      "height": 520
+    },
+    {
+      "id": "lb_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 80,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "lb_region"
+    },
+    {
+      "id": "lb_u",
+      "defType": "math/map",
+      "position": {
+        "x": 80,
+        "y": 180
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 24,
+        "outMin": 0,
+        "outMax": 1
+      },
+      "parentId": "lb_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 24,
+        "outMin": 0,
+        "outMax": 1
+      }
+    },
+    {
+      "id": "lb_ph",
+      "defType": "math/add",
+      "position": {
+        "x": 320,
+        "y": 20
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "lb_region"
+    },
+    {
+      "id": "lb_phf",
+      "defType": "math/fract",
+      "position": {
+        "x": 520,
+        "y": 30
+      },
+      "params": {},
+      "parentId": "lb_region"
+    },
+    {
+      "id": "lb_hue",
+      "defType": "math/map",
+      "position": {
+        "x": 700,
+        "y": 0
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 0,
+        "outMax": 360
+      },
+      "parentId": "lb_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 0,
+        "outMax": 360
+      }
+    },
+    {
+      "id": "lb_hsl",
+      "defType": "color/hsl",
+      "position": {
+        "x": 920,
+        "y": 0
+      },
+      "params": {
+        "s": 78,
+        "l": 64,
+        "a": 255
+      },
+      "parentId": "lb_region",
+      "portValues": {
+        "s": 78,
+        "l": 64,
+        "a": 255
+      }
+    },
+    {
+      "id": "lb_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1120,
+        "y": 20
+      },
+      "params": {},
+      "parentId": "lb_region"
+    },
+    {
+      "id": "lb_u3",
+      "defType": "math/mul",
+      "position": {
+        "x": 320,
+        "y": 200
+      },
+      "params": {
+        "b": 3,
+        "valueType": "number"
+      },
+      "parentId": "lb_region",
+      "portValues": {
+        "b": 3,
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "lb_wph",
+      "defType": "math/add",
+      "position": {
+        "x": 520,
+        "y": 200
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "lb_region"
+    },
+    {
+      "id": "lb_wang",
+      "defType": "math/map",
+      "position": {
+        "x": 700,
+        "y": 190
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 0,
+        "outMax": 6.283185307179586
+      },
+      "parentId": "lb_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 0,
+        "outMax": 6.283185307179586
+      }
+    },
+    {
+      "id": "lb_sin",
+      "defType": "math/sin",
+      "position": {
+        "x": 920,
+        "y": 230
+      },
+      "params": {},
+      "parentId": "lb_region"
+    },
+    {
+      "id": "lb_rad",
+      "defType": "math/map",
+      "position": {
+        "x": 1120,
+        "y": 170
+      },
+      "params": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 110,
+        "outMax": 200
+      },
+      "parentId": "lb_region",
+      "portValues": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 110,
+        "outMax": 200
+      }
+    },
+    {
+      "id": "lb_size",
+      "defType": "math/map",
+      "position": {
+        "x": 1120,
+        "y": 350
+      },
+      "params": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 34,
+        "outMax": 10
+      },
+      "parentId": "lb_region",
+      "portValues": {
+        "inMin": -1,
+        "inMax": 1,
+        "outMin": 34,
+        "outMax": 10
+      }
+    },
+    {
+      "id": "lb_ang",
+      "defType": "math/map",
+      "position": {
+        "x": 320,
+        "y": 340
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 0,
+        "outMax": 6.283185307179586
+      },
+      "parentId": "lb_region",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 0,
+        "outMax": 6.283185307179586
+      }
+    },
+    {
+      "id": "lb_pos",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 1300,
+        "y": 250
+      },
+      "params": {},
+      "parentId": "lb_region"
+    },
+    {
+      "id": "lb_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1480,
+        "y": 130
+      },
+      "params": {},
+      "parentId": "lb_region"
+    },
+    {
+      "id": "lb_bg",
+      "defType": "color/hsl",
+      "position": {
+        "x": 1940,
+        "y": 380
+      },
+      "params": {
+        "h": 235,
+        "s": 35,
+        "l": 9,
+        "a": 255
+      },
+      "portValues": {
+        "h": 235,
+        "s": 35,
+        "l": 9,
+        "a": 255
+      }
+    },
+    {
+      "id": "lb_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2140,
+        "y": 200
+      },
+      "params": {
+        "width": 540,
+        "height": 540,
+        "label": "Loop"
+      },
+      "portValues": {
+        "width": 540,
+        "height": 540
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "lb_range",
+      "target": "lb_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e2",
+      "source": "lb_region",
+      "target": "lb_u",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e3",
+      "source": "lb_u",
+      "target": "lb_ph",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e4",
+      "source": "lb_time",
+      "target": "lb_ph",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e5",
+      "source": "lb_ph",
+      "target": "lb_phf",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e6",
+      "source": "lb_phf",
+      "target": "lb_hue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e7",
+      "source": "lb_hue",
+      "target": "lb_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e8",
+      "source": "lb_hsl",
+      "target": "lb_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e9",
+      "source": "lb_u",
+      "target": "lb_u3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e10",
+      "source": "lb_u3",
+      "target": "lb_wph",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e11",
+      "source": "lb_time",
+      "target": "lb_wph",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e12",
+      "source": "lb_wph",
+      "target": "lb_wang",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e13",
+      "source": "lb_wang",
+      "target": "lb_sin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e14",
+      "source": "lb_sin",
+      "target": "lb_rad",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e15",
+      "source": "lb_sin",
+      "target": "lb_size",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e16",
+      "source": "lb_u",
+      "target": "lb_ang",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e17",
+      "source": "lb_ang",
+      "target": "lb_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e18",
+      "source": "lb_rad",
+      "target": "lb_pos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e19",
+      "source": "lb_pos",
+      "target": "lb_dot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e20",
+      "source": "lb_size",
+      "target": "lb_dot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e21",
+      "source": "lb_size",
+      "target": "lb_dot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e22",
+      "source": "lb_fill",
+      "target": "lb_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e23",
+      "source": "lb_dot",
+      "target": "lb_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e24",
+      "source": "lb_region",
+      "target": "lb_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e25",
+      "source": "lb_bg",
+      "target": "lb_renderer",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-background"
+    }
+  ],
+  "loopLength": 5
+}

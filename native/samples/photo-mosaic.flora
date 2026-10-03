@@ -1,6 +1,6 @@
 {
   "kind": "floret.patch",
-  "version": 2,
+  "version": 3,
   "appVersion": "0.0.1",
   "meta": {
     "name": "Photo Mosaic",
@@ -273,28 +273,6 @@
       },
       "params": {},
       "parentId": "pm_region"
-    },
-    {
-      "id": "pm_px",
-      "defType": "math/add",
-      "position": {
-        "x": 131,
-        "y": 102
-      },
-      "params": {
-        "b": {
-          "x": 250,
-          "y": 250
-        },
-        "valueType": "vec2"
-      },
-      "portValues": {
-        "b": {
-          "x": 250,
-          "y": 250
-        }
-      },
-      "parentId": "pm_region"
     }
   ],
   "edges": [
@@ -453,17 +431,10 @@
       "targetHandle": "in-c"
     },
     {
-      "id": "e_fix_1",
+      "id": "e_pm_region_pm_split",
       "source": "pm_region",
-      "target": "pm_px",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_fix_2",
-      "source": "pm_px",
       "target": "pm_split",
-      "sourceHandle": "out-result",
+      "sourceHandle": "out-p",
       "targetHandle": "in-v"
     }
   ]

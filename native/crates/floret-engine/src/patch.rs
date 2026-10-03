@@ -4,7 +4,7 @@
 use crate::spec::Params;
 use serde::{Deserialize, Serialize};
 
-pub const CURRENT_PATCH_VERSION: u32 = 2;
+pub const CURRENT_PATCH_VERSION: u32 = 3;
 pub const PATCH_KIND: &str = "floret.patch";
 /// Loop length (seconds) of a patch that doesn't set one.
 pub const DEFAULT_LOOP_LENGTH: f64 = 4.0;
@@ -201,6 +201,7 @@ pub fn migrate(mut patch: PatchFile) -> Result<PatchFile, LoadError> {
     while patch.version < CURRENT_PATCH_VERSION {
         patch = match patch.version {
             0 | 1 => v1_to_v2(patch),
+            2 => v2_to_v3(patch),
             v => unreachable!("no migration from v{v}"),
         };
     }
@@ -231,6 +232,29 @@ fn v1_to_v2(mut patch: PatchFile) -> PatchFile {
     patch
 }
 
+/// Nodes that read a position on an image: centre-origin from v3 on.
+pub const IMAGE_POSITION_NODES: &[&str] = &["image/sample", "image/sample-spread"];
+/// Hidden param on [`IMAGE_POSITION_NODES`]: `"top-left"` keeps the
+/// pre-v3 pixel coordinates; absent (or anything else) is centre-origin.
+pub const ORIGIN_PARAM: &str = "origin";
+pub const ORIGIN_TOP_LEFT: &str = "top-left";
+
+/// v2 → v3: image sampling became centre-origin like drawing (position
+/// (0, 0) reads the image's centre, y down). Nodes saved before that read
+/// top-left pixel coordinates, so they get `origin: "top-left"` and keep
+/// sampling the same pixels. New nodes don't carry the param.
+fn v2_to_v3(mut patch: PatchFile) -> PatchFile {
+    for n in &mut patch.nodes {
+        if IMAGE_POSITION_NODES.contains(&n.def_type.as_str())
+            && !n.params.contains_key(ORIGIN_PARAM)
+        {
+            n.params.insert(ORIGIN_PARAM.into(), ORIGIN_TOP_LEFT.into());
+        }
+    }
+    patch.version = 3;
+    patch
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -241,10 +265,64 @@ mod tests {
             {"id":"a","defType":"vec2/add","position":{"x":0,"y":0},"params":{}}],
             "edges":[{"id":"e","source":"a","target":"b","sourceHandle":"out-vector","targetHandle":"in-pos"}]}"#;
         let p = PatchFile::load(text).unwrap();
-        assert_eq!(p.version, 2);
+        assert_eq!(p.version, CURRENT_PATCH_VERSION);
         assert_eq!(p.nodes[0].def_type, "math/add");
         assert_eq!(p.nodes[0].params["valueType"], "vec2");
         assert_eq!(p.edges[0].source_handle.as_deref(), Some("out-result"));
+    }
+
+    #[test]
+    fn v2_image_sampling_keeps_its_top_left_origin() {
+        let nodes = r#"[
+            {"id":"s","defType":"image/sample","position":{"x":0,"y":0},"params":{}},
+            {"id":"p","defType":"image/sample-spread","position":{"x":0,"y":0}},
+            {"id":"c","defType":"image/crop","position":{"x":0,"y":0},"params":{}}]"#;
+        let file = |v: u32| {
+            format!(r#"{{"kind":"floret.patch","version":{v},"nodes":{nodes},"edges":[]}}"#)
+        };
+        // Saved before v3: the sampling nodes keep reading top-left pixels.
+        let old = PatchFile::load(&file(2)).unwrap();
+        assert_eq!(old.version, CURRENT_PATCH_VERSION);
+        assert_eq!(old.nodes[0].params[ORIGIN_PARAM], ORIGIN_TOP_LEFT);
+        assert_eq!(old.nodes[1].params[ORIGIN_PARAM], ORIGIN_TOP_LEFT);
+        assert!(!old.nodes[2].params.contains_key(ORIGIN_PARAM));
+        // Older still: the whole ladder runs.
+        let v1 = PatchFile::load(&file(1)).unwrap();
+        assert_eq!(v1.nodes[0].params[ORIGIN_PARAM], ORIGIN_TOP_LEFT);
+        // Saved and reopened: migrated once, the param round-trips.
+        let again = PatchFile::load(&old.to_json()).unwrap();
+        assert_eq!(again.nodes[0].params[ORIGIN_PARAM], ORIGIN_TOP_LEFT);
+        // Current files are centre-origin: nothing added.
+        let new = PatchFile::load(&file(3)).unwrap();
+        assert!(new
+            .nodes
+            .iter()
+            .all(|n| !n.params.contains_key(ORIGIN_PARAM)));
+    }
+
+    #[test]
+    fn library_samples_sample_images_centre_origin() {
+        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../samples");
+        let mut checked = 0;
+        for entry in std::fs::read_dir(dir).unwrap().flatten() {
+            let path = entry.path();
+            if path.extension().is_none_or(|x| x != "flora") {
+                continue;
+            }
+            let p = PatchFile::load(&std::fs::read_to_string(&path).unwrap()).unwrap();
+            for n in &p.nodes {
+                if IMAGE_POSITION_NODES.contains(&n.def_type.as_str()) {
+                    checked += 1;
+                    assert!(
+                        !n.params.contains_key(ORIGIN_PARAM),
+                        "{}: {} samples top-left (save it as v{CURRENT_PATCH_VERSION})",
+                        path.display(),
+                        n.id
+                    );
+                }
+            }
+        }
+        assert!(checked > 0, "no sample uses image sampling");
     }
 
     #[test]

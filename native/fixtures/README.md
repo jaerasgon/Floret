@@ -72,3 +72,12 @@ other value is still compared exactly:
   default black canvas. The parity test and the `draw` node cases
   (`nodes/draw/ts_cases.json`) run with `scene::ts_reference_line_default`
   on, which brings the black stroke back on that thread only.
+- **Image sampling is centre-origin.** `image/sample` and
+  `image/sample-spread` read position (x, y) at pixel (x + w/2, y + h/2),
+  like the canvas; TS read pixel (x, y). Patches saved before version 3,
+  including every frozen sample here, load with a hidden
+  `origin: "top-left"` param on those nodes (`patch::v2_to_v3`), so they
+  sample the same pixels as before. The `image` node cases
+  (`nodes/image/ts_cases.json`) run with that param. (No trace had a
+  ready image at those nodes, so the node and migration unit tests are
+  what check both origins.)

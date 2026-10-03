@@ -17,7 +17,9 @@
 //!
 //! Known divergences replayed here (see `fixtures/README.md`): unstyled
 //! lines stroke white natively but black in TS, so each sample runs with
-//! `scene::ts_reference_line_default` on.
+//! `scene::ts_reference_line_default` on; and image sampling is
+//! centre-origin natively, which the frozen (version 2) samples don't see:
+//! loading migrates their sampling nodes to the old top-left origin.
 
 use floret_engine::particles::{Handle, TypedArray};
 use floret_engine::{scene, tick::Outputs, Engine, FrameCtx, Value};

@@ -50,6 +50,8 @@ pub enum Command {
     Shortcuts,
     Welcome,
     About,
+    /// Re-roll the patch seed (`floret_engine::seed`).
+    NewVariation,
 }
 
 const fn cmd(key: Key) -> KeyboardShortcut {
@@ -112,6 +114,7 @@ impl Command {
             Shortcuts => "Keyboard Shortcuts",
             Welcome => "Welcome",
             About => "About Floret",
+            NewVariation => "New Variation",
         }
     }
 
@@ -150,6 +153,7 @@ impl Command {
             Restart => cmd(Key::R),
             Preferences => cmd(Key::Comma),
             Shortcuts => cmd(Key::Slash),
+            NewVariation => cmd_shift(Key::R),
             _ => return None,
         })
     }
@@ -244,6 +248,7 @@ pub fn model(s: &MenuState) -> Vec<Section> {
         Item::Theme,
         Sep,
         C(Restart),
+        C(NewVariation),
     ];
     let mut help = vec![C(Shortcuts), C(Welcome)];
     if !mac {
@@ -287,6 +292,7 @@ pub fn shortcuts(ctx: &egui::Context) -> Vec<Command> {
         ZoomIn,
         ZoomOut,
         ZoomReset,
+        NewVariation,
         Restart,
         Preferences,
         Shortcuts,
@@ -763,6 +769,19 @@ mod tests {
             },
         );
         assert_eq!(got, [Command::ExportVideo]);
+        // Cmd+Shift+R re-rolls the seed; Cmd+R alone still restarts.
+        frame(
+            &ctx,
+            press(Modifiers::COMMAND | Modifiers::SHIFT, Key::R),
+            |ui| {
+                got = shortcuts(ui.ctx());
+            },
+        );
+        assert_eq!(got, [Command::NewVariation]);
+        frame(&ctx, press(Modifiers::COMMAND, Key::R), |ui| {
+            got = shortcuts(ui.ctx());
+        });
+        assert_eq!(got, [Command::Restart]);
         // Plain keys are the canvas's.
         frame(&ctx, press(Modifiers::NONE, Key::S), |ui| {
             got = shortcuts(ui.ctx());

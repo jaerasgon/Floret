@@ -67,6 +67,8 @@ pub(crate) mod test_util {
             nodes,
             edges,
             loop_length: None,
+            seed: 0,
+            presets: Vec::new(),
         }
     }
 }

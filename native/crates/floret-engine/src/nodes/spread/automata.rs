@@ -134,11 +134,11 @@ pub fn gol_step(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
 }
 
 /// Random live cells (mulberry32 stream, `density` chance each).
-pub fn gol_seed(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
+pub fn gol_seed(inputs: &[Spread], cx: &mut EvalCtx) -> NodeResult {
     let cols = at_least_one(&first(inputs, 0), 16.0);
     let rows = at_least_one(&first(inputs, 1), 16.0);
     let density = js::max(0.0, js::min(1.0, num_d(&first(inputs, 2), 0.35)));
-    let mut s = js::to_int32(num_d(&first(inputs, 3), 1.0)) as u32;
+    let mut s = js::to_int32(cx.seed(num_d(&first(inputs, 3), 1.0))) as u32;
     if s == 0 {
         s = 1;
     }
@@ -156,11 +156,11 @@ pub fn gol_seed(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
 }
 
 /// Advance a vec2 trail by one hashed random-walk step.
-pub fn walk_step(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
+pub fn walk_step(inputs: &[Spread], cx: &mut EvalCtx) -> NodeResult {
     let trail = sp(inputs, 0);
     let t = num_d(&first(inputs, 1), 0.0);
     let step = num_d(&first(inputs, 2), 4.0);
-    let seed = int_d(&first(inputs, 3), 1.0);
+    let seed = cx.seed(int_d(&first(inputs, 3), 1.0));
     let bounds = js::max(1.0, num_d(&first(inputs, 4), 250.0));
     if trail.is_empty() {
         return ok(vec![vec![]]);

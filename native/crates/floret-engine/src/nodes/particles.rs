@@ -152,10 +152,10 @@ fn apply_collider(
 /// colliders → age + cull, every tick (effectful).
 fn emitter(_: &NodeInit) -> Box<dyn NodeImpl> {
     let mut state: Option<EmitterState> = None;
-    raw(move |inputs, _cx| {
+    raw(move |inputs, cx| {
         let max_count = js::max(1.0, num_or(&first(inputs, 8), 1000.0).floor());
         let replace_oldest = matches!(first(inputs, 9), Value::Str(s) if &*s == "replace-oldest");
-        let seed = num_or(&first(inputs, 10), 1.0).floor();
+        let seed = cx.seed(num_or(&first(inputs, 10), 1.0)).floor();
 
         let stale = match &state {
             None => true,
@@ -486,8 +486,11 @@ enum Sampling {
 /// the engine; until then text uses the TS bounding-box fallback (what TS
 /// itself does without `OffscreenCanvas`, and what the fixtures recorded).
 fn from_layer(_: &NodeInit) -> Box<dyn NodeImpl> {
-    let mut rng = Mulberry32::new(0x5eed);
-    raw(move |inputs, _cx| {
+    // Seeded on the first tick, where the patch seed is known.
+    let mut rng: Option<Mulberry32> = None;
+    raw(move |inputs, cx| {
+        let rng =
+            rng.get_or_insert_with(|| Mulberry32::new(js::to_uint32(cx.seed(f64::from(0x5eed)))));
         let layer = first(inputs, 0);
         let mode = match first(inputs, 1) {
             Value::Str(s) if &*s == "fill" => Sampling::Fill,

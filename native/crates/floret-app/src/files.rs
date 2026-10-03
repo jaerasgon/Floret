@@ -435,6 +435,39 @@ mod tests {
         }
     }
 
+    #[test]
+    fn saves_the_seed_and_presets() {
+        let mut p = sample_patch();
+        p.seed = 1234;
+        p.presets.push(floret_engine::preset::capture(
+            floret_engine::spec::Catalogue::builtin(),
+            &p,
+            "Mine",
+        ));
+        let text = to_flora(&p, None, "2026-10-01T00:00:00.000Z");
+        let v: Json = serde_json::from_str(&text).unwrap();
+        let keys: Vec<&str> = v.as_object().unwrap().keys().map(String::as_str).collect();
+        assert_eq!(
+            keys,
+            [
+                "kind",
+                "version",
+                "appVersion",
+                "meta",
+                "nodes",
+                "edges",
+                "seed",
+                "presets"
+            ]
+        );
+        let back = floret_engine::load_patch(&text).unwrap();
+        assert_eq!(back.seed, 1234);
+        assert_eq!(back.presets.len(), 1);
+        assert_eq!(back.presets[0].name, "Mine");
+        assert_eq!(back.presets[0].seed, 1234);
+        assert_eq!(back.presets[0].values.len(), p.presets[0].values.len());
+    }
+
     /// A file the web app wrote (`serializePatch` output) opens, and saving
     /// it again keeps every field the web app reads.
     #[test]

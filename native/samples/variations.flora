@@ -1,0 +1,671 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Variations & Presets",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "va_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -334
+      },
+      "params": {
+        "text": "Variations & presets\n\nA flow field of strokes: Perlin noise turns each one, a seeded random stretches it. Both draw from the patch seed.\n\n• Vary (toolbar, Ctrl/⌘+Shift+R) re-rolls the seed: same patch, a new picture.\n• Presets panel: recall Calm or Storm, or drag Morph between them; Save keeps the sliders and seed you like.",
+        "width": 430,
+        "height": 270
+      },
+      "portValues": {
+        "text": "Variations & presets\n\nA flow field of strokes: Perlin noise turns each one, a seeded random stretches it. Both draw from the patch seed.\n\n• Vary (toolbar, Ctrl/⌘+Shift+R) re-rolls the seed: same patch, a new picture.\n• Presets panel: recall Calm or Storm, or drag Morph between them; Save keeps the sliders and seed you like.",
+        "width": 430,
+        "height": 270
+      }
+    },
+    {
+      "id": "va_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 26,
+        "y": 0
+      },
+      "params": {
+        "cols": 28,
+        "rows": 28,
+        "w": 560,
+        "h": 560
+      },
+      "portValues": {
+        "cols": 28,
+        "rows": 28,
+        "w": 560,
+        "h": 560
+      }
+    },
+    {
+      "id": "va_idx",
+      "defType": "spread/range",
+      "position": {
+        "x": 24,
+        "y": 788
+      },
+      "params": {
+        "count": 784
+      },
+      "portValues": {
+        "count": 784
+      }
+    },
+    {
+      "id": "va_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 42,
+        "y": 182
+      },
+      "params": {}
+    },
+    {
+      "id": "va_zoom",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 284
+      },
+      "params": {
+        "value": 0.005,
+        "min": 0.001,
+        "max": 0.03
+      },
+      "portValues": {
+        "value": 0.005,
+        "min": 0.001,
+        "max": 0.03
+      }
+    },
+    {
+      "id": "va_len",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 410
+      },
+      "params": {
+        "value": 18,
+        "min": 4,
+        "max": 40
+      },
+      "portValues": {
+        "value": 18,
+        "min": 4,
+        "max": 40
+      }
+    },
+    {
+      "id": "va_hue",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 536
+      },
+      "params": {
+        "value": 190,
+        "min": 0,
+        "max": 360,
+        "step": 1
+      },
+      "portValues": {
+        "value": 190,
+        "min": 0,
+        "max": 360,
+        "step": 1
+      }
+    },
+    {
+      "id": "va_weight",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 662
+      },
+      "params": {
+        "value": 2,
+        "min": 0.5,
+        "max": 6
+      },
+      "portValues": {
+        "value": 2,
+        "min": 0.5,
+        "max": 6
+      }
+    },
+    {
+      "id": "va_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 303,
+        "y": 210
+      },
+      "params": {
+        "width": 2331,
+        "height": 470,
+        "label": "ForEach stroke"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input",
+          "y": 412
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 92
+        }
+      ],
+      "width": 2331,
+      "height": 470
+    },
+    {
+      "id": "va_scaled",
+      "defType": "vec2/scale",
+      "position": {
+        "x": 174,
+        "y": 92
+      },
+      "params": {},
+      "parentId": "va_region"
+    },
+    {
+      "id": "va_xy",
+      "defType": "vec2/split",
+      "position": {
+        "x": 445,
+        "y": 114
+      },
+      "params": {},
+      "parentId": "va_region"
+    },
+    {
+      "id": "va_slow",
+      "defType": "math/mul",
+      "position": {
+        "x": 132,
+        "y": 214
+      },
+      "params": {
+        "valueType": "number",
+        "b": 0.08
+      },
+      "parentId": "va_region",
+      "portValues": {
+        "b": 0.08
+      }
+    },
+    {
+      "id": "va_ydrift",
+      "defType": "math/add",
+      "position": {
+        "x": 672,
+        "y": 168
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "va_region"
+    },
+    {
+      "id": "va_noise",
+      "defType": "noise/perlin",
+      "position": {
+        "x": 940,
+        "y": 122
+      },
+      "params": {
+        "octaves": 3,
+        "falloff": 0.5
+      },
+      "parentId": "va_region",
+      "portValues": {
+        "octaves": 3,
+        "falloff": 0.5
+      }
+    },
+    {
+      "id": "va_angle",
+      "defType": "math/mul",
+      "position": {
+        "x": 1137,
+        "y": 111
+      },
+      "params": {
+        "valueType": "number",
+        "b": 12.566
+      },
+      "parentId": "va_region",
+      "portValues": {
+        "b": 12.566
+      }
+    },
+    {
+      "id": "va_rand",
+      "defType": "random/uniform",
+      "position": {
+        "x": 157,
+        "y": 336
+      },
+      "params": {
+        "min": 0.35,
+        "max": 1
+      },
+      "parentId": "va_region",
+      "portValues": {
+        "min": 0.35,
+        "max": 1
+      }
+    },
+    {
+      "id": "va_mag",
+      "defType": "math/mul",
+      "position": {
+        "x": 403,
+        "y": 289
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "va_region"
+    },
+    {
+      "id": "va_dir",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 1441,
+        "y": 120
+      },
+      "params": {},
+      "parentId": "va_region"
+    },
+    {
+      "id": "va_end",
+      "defType": "math/add",
+      "position": {
+        "x": 1673,
+        "y": 74
+      },
+      "params": {
+        "valueType": "vec2"
+      },
+      "parentId": "va_region"
+    },
+    {
+      "id": "va_hspread",
+      "defType": "math/mul",
+      "position": {
+        "x": 1137,
+        "y": 233
+      },
+      "params": {
+        "valueType": "number",
+        "b": 140
+      },
+      "parentId": "va_region",
+      "portValues": {
+        "b": 140
+      }
+    },
+    {
+      "id": "va_hsum",
+      "defType": "math/add",
+      "position": {
+        "x": 1406,
+        "y": 242
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "va_region"
+    },
+    {
+      "id": "va_col",
+      "defType": "color/color",
+      "position": {
+        "x": 1682,
+        "y": 196
+      },
+      "params": {
+        "mode": "hsl",
+        "s": 75,
+        "l": 62,
+        "a": 230
+      },
+      "parentId": "va_region",
+      "portValues": {
+        "s": 75,
+        "l": 62,
+        "a": 230
+      }
+    },
+    {
+      "id": "va_stroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 1945,
+        "y": 146
+      },
+      "params": {},
+      "parentId": "va_region"
+    },
+    {
+      "id": "va_line",
+      "defType": "draw/line",
+      "position": {
+        "x": 2135,
+        "y": 56
+      },
+      "params": {},
+      "parentId": "va_region"
+    },
+    {
+      "id": "va_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2730,
+        "y": 266
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.04,
+          "g": 0.04,
+          "b": 0.06,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.04,
+          "g": 0.04,
+          "b": 0.06,
+          "a": 1
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "va_e0",
+      "source": "va_grid",
+      "target": "va_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "va_e1",
+      "source": "va_idx",
+      "target": "va_region",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "va_e2",
+      "source": "va_region",
+      "target": "va_scaled",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "va_e3",
+      "source": "va_zoom",
+      "target": "va_scaled",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "va_e4",
+      "source": "va_scaled",
+      "target": "va_xy",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "va_e5",
+      "source": "va_time",
+      "target": "va_slow",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "va_e6",
+      "source": "va_xy",
+      "target": "va_ydrift",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "va_e7",
+      "source": "va_slow",
+      "target": "va_ydrift",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "va_e8",
+      "source": "va_xy",
+      "target": "va_noise",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "va_e9",
+      "source": "va_ydrift",
+      "target": "va_noise",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "va_e10",
+      "source": "va_noise",
+      "target": "va_angle",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "va_e11",
+      "source": "va_region",
+      "target": "va_rand",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-seed"
+    },
+    {
+      "id": "va_e12",
+      "source": "va_rand",
+      "target": "va_mag",
+      "sourceHandle": "out-sample",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "va_e13",
+      "source": "va_len",
+      "target": "va_mag",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "va_e14",
+      "source": "va_angle",
+      "target": "va_dir",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "va_e15",
+      "source": "va_mag",
+      "target": "va_dir",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "va_e16",
+      "source": "va_region",
+      "target": "va_end",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "va_e17",
+      "source": "va_dir",
+      "target": "va_end",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "va_e18",
+      "source": "va_noise",
+      "target": "va_hspread",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "va_e19",
+      "source": "va_hspread",
+      "target": "va_hsum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "va_e20",
+      "source": "va_hue",
+      "target": "va_hsum",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "va_e21",
+      "source": "va_hsum",
+      "target": "va_col",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "va_e22",
+      "source": "va_col",
+      "target": "va_stroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "va_e23",
+      "source": "va_weight",
+      "target": "va_stroke",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-width"
+    },
+    {
+      "id": "va_e24",
+      "source": "va_region",
+      "target": "va_line",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "va_e25",
+      "source": "va_end",
+      "target": "va_line",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "va_e26",
+      "source": "va_stroke",
+      "target": "va_line",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "va_e27",
+      "source": "va_line",
+      "target": "va_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "va_e28",
+      "source": "va_region",
+      "target": "va_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Calm",
+      "values": {
+        "va_zoom": {
+          "params": {
+            "value": 0.004
+          }
+        },
+        "va_len": {
+          "params": {
+            "value": 20
+          }
+        },
+        "va_hue": {
+          "params": {
+            "value": 190
+          }
+        },
+        "va_weight": {
+          "params": {
+            "value": 2
+          }
+        }
+      }
+    },
+    {
+      "name": "Storm",
+      "seed": 2718,
+      "values": {
+        "va_zoom": {
+          "params": {
+            "value": 0.018
+          }
+        },
+        "va_len": {
+          "params": {
+            "value": 34
+          }
+        },
+        "va_hue": {
+          "params": {
+            "value": 330
+          }
+        },
+        "va_weight": {
+          "params": {
+            "value": 3.5
+          }
+        }
+      }
+    }
+  ]
+}

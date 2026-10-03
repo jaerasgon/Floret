@@ -118,6 +118,8 @@ Booleans for `region/if` and conditional flow. Comparisons take numbers; logical
 
 Seeded, deterministic noise and PRNGs. Wire `time/frame` into `seed` for per-frame variation, or a `region/foreach` iteration index for one value per slot.
 
+**Patch seed** (native app): every seeded node — these, the spread shufflers / noise / Game of Life seed / random walk, Wind and Turbulence, Emitter and FromLayer, WalkerCluster and the LFO's random shapes — mixes the patch's seed into its own (`EvalCtx::seed`, `floret_engine::seed`). Seed 0, the default, leaves every node's seed as it is; **Vary** (Ctrl/⌘+Shift+R) re-rolls it for a new variation of the same patch. The seed and saved **presets** live in the `.flora` file (optional top-level `seed` / `presets`) and are edited in the Presets panel.
+
 | Label · type | Inputs → Outputs | Description |
 |---|---|---|
 | **Perlin** · `noise/perlin` | `x, y, seed, octaves, falloff: number` → `out: number` | 2D Perlin noise in [0, 1]. `octaves` > 1 yields fractal Brownian motion; `falloff` is the amplitude ratio between octaves (default 0.5). |

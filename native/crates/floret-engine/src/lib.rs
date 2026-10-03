@@ -24,8 +24,10 @@ pub mod node;
 pub mod nodes;
 pub mod particles;
 pub mod patch;
+pub mod preset;
 pub mod profile;
 pub mod scene;
+pub mod seed;
 pub mod shader;
 pub mod spec;
 pub mod text;
@@ -70,6 +72,7 @@ impl Engine {
         let result = compile(patch, Catalogue::builtin(), &params)?;
         let mut engine = Engine::new(result.graph, params);
         engine.loop_length = patch.loop_seconds();
+        engine.set_patch_seed(patch.seed);
         Ok((engine, result.warnings))
     }
 }

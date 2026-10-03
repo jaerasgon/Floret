@@ -152,9 +152,9 @@ pub fn sort(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
 }
 
 /// Deterministic shuffle by `hash32(i, 0, seed) % (i + 1)`.
-pub fn shuffle(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
+pub fn shuffle(inputs: &[Spread], cx: &mut EvalCtx) -> NodeResult {
     let mut out = sp(inputs, 0).to_vec();
-    let seed = f64::from(js::to_int32(num_d(&first(inputs, 1), 0.0)));
+    let seed = f64::from(js::to_int32(cx.seed(num_d(&first(inputs, 1), 0.0))));
     for i in (1..out.len()).rev() {
         let j = hash32(i as f64, 0.0, seed) as usize % (i + 1);
         out.swap(i, j);

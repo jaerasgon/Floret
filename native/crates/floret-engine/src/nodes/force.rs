@@ -173,19 +173,19 @@ fn vortex(_: &NodeInit) -> Box<dyn NodeImpl> {
 
 /// `force/turbulence`: Perlin vector field drifting with the force clock.
 fn turbulence(_: &NodeInit) -> Box<dyn NodeImpl> {
-    raw(|inputs, _cx| {
+    raw(|inputs, cx| {
         Ok(vec![force_spread(ForceKind::Turbulence {
             scale: num_or(&first(inputs, 0), 0.01),
             speed: num_or(&first(inputs, 1), 0.5),
             strength: num_or(&first(inputs, 2), 300.0),
-            seed: num_or(&first(inputs, 3), 0.0).floor(),
+            seed: cx.seed(num_or(&first(inputs, 3), 0.0)).floor(),
         })])
     })
 }
 
 /// `force/wind`: directional force with Perlin magnitude noise.
 fn wind(_: &NodeInit) -> Box<dyn NodeImpl> {
-    raw(|inputs, _cx| {
+    raw(|inputs, cx| {
         let dir = vec2_or(&first(inputs, 0), Vec2 { x: 1.0, y: 0.0 });
         let len = js_hypot(dir.x, dir.y);
         let len = if len == 0.0 || len.is_nan() { 1.0 } else { len };
@@ -194,7 +194,7 @@ fn wind(_: &NodeInit) -> Box<dyn NodeImpl> {
             dy: dir.y / len,
             strength: num_or(&first(inputs, 1), 150.0),
             noise_amp: num_or(&first(inputs, 2), 0.2),
-            seed: num_or(&first(inputs, 3), 0.0).floor(),
+            seed: cx.seed(num_or(&first(inputs, 3), 0.0)).floor(),
         })])
     })
 }

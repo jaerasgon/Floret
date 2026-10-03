@@ -8,6 +8,7 @@ use super::noise::perlin_2d;
 use super::Registrar;
 use crate::js::to_int32;
 use crate::node::{scalar, NodeImpl, NodeInit};
+use crate::seed;
 use crate::value::{Value, Vec2};
 
 pub fn register(r: &mut Registrar) {
@@ -37,7 +38,7 @@ pub(crate) fn hash_unit(x: f64, y: f64, seed: f64) -> f64 {
 fn uniform(init: &NodeInit) -> Box<dyn NodeImpl> {
     scalar(init, |a| {
         let (mn, mx) = (a[0].to_number(), a[1].to_number());
-        let s = f64::from(to_int32(a[2].to_number()));
+        let s = f64::from(to_int32(seed::mix(a[2].to_number())));
         Ok(vec![Value::Num(mn + hash_unit(s, 0.0, 0.0) * (mx - mn))])
     })
 }
@@ -45,7 +46,7 @@ fn uniform(init: &NodeInit) -> Box<dyn NodeImpl> {
 fn gaussian(init: &NodeInit) -> Box<dyn NodeImpl> {
     scalar(init, |a| {
         let (m, sd) = (a[0].to_number(), a[1].to_number());
-        let s = f64::from(to_int32(a[2].to_number()));
+        let s = f64::from(to_int32(seed::mix(a[2].to_number())));
         // Box–Muller; u1 is never NaN so a plain max matches Math.max.
         let u1 = hash_unit(s, 1.0, 0.0).max(1e-10);
         let u2 = hash_unit(s, 2.0, 0.0);
@@ -58,7 +59,7 @@ fn wanderer2d(init: &NodeInit) -> Box<dyn NodeImpl> {
     scalar(init, |a| {
         let tv = a[0].to_number() * a[1].to_number();
         let area = a[2].to_number();
-        let s = f64::from(to_int32(a[3].to_number()));
+        let s = f64::from(to_int32(seed::mix(a[3].to_number())));
         let x = (perlin_2d(tv, 0.0, s) - 0.5) * 2.0 * area;
         let y = (perlin_2d(tv, 1000.0, s) - 0.5) * 2.0 * area;
         Ok(vec![Value::Vec2(Vec2 { x, y })])

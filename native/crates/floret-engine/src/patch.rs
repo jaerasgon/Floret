@@ -25,6 +25,40 @@ pub struct PatchFile {
     /// files (and not written while unset): [`DEFAULT_LOOP_LENGTH`].
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loop_length: Option<f64>,
+    /// Patch seed mixed into every random / noise node (`crate::seed`).
+    /// 0 (the default, left out of the file) keeps each node's own seed.
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub seed: u32,
+    /// Saved parameter sets (the Presets panel, `crate::preset`).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub presets: Vec<Preset>,
+}
+
+fn is_zero(n: &u32) -> bool {
+    *n == 0
+}
+
+/// A named snapshot of the patch's editable values, to recall or morph
+/// between (see `crate::preset` for what it holds).
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct Preset {
+    pub name: String,
+    /// The patch seed when saved.
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub seed: u32,
+    /// Node id → its values.
+    #[serde(default)]
+    pub values: std::collections::BTreeMap<String, PresetValues>,
+}
+
+/// One node's values in a [`Preset`]: params by key, unwired input pins'
+/// constants (`portValues`) by port name.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct PresetValues {
+    #[serde(default, skip_serializing_if = "Params::is_empty")]
+    pub params: Params,
+    #[serde(default, skip_serializing_if = "Params::is_empty")]
+    pub ports: Params,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]

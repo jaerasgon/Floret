@@ -1,12 +1,13 @@
 //! The app shell's side dock (`src/editor/dock/*`): panels as tabs that
 //! split, stack, float as windows and hide — one Preview per renderer,
-//! Inspector, Help, Library, Shader and Profiler. The node canvas stays pinned in
+//! Inspector, Help, Library, Shader, Profiler and Presets. The node canvas stays pinned in
 //! the centre. A closed panel comes back from the tab bar's `+` menu; the
 //! layout is saved to the app data dir.
 
 use crate::canvas::View;
 use crate::library::{self, Library};
 use crate::node_help::HelpPanel;
+use crate::presets_panel::PresetsPanel;
 use crate::preview::PreviewPanel;
 use crate::shader_panel::ShaderPanel;
 use crate::{crash, theme, Sample};
@@ -29,15 +30,17 @@ pub enum Tab {
     Library,
     Shader,
     Profiler,
+    Presets,
 }
 
 /// Panels that can be closed and reopened.
-const PANELS: [Tab; 5] = [
+const PANELS: [Tab; 6] = [
     Tab::Inspector,
     Tab::Help,
     Tab::Library,
     Tab::Shader,
     Tab::Profiler,
+    Tab::Presets,
 ];
 
 fn title(tab: &Tab) -> &'static str {
@@ -48,6 +51,7 @@ fn title(tab: &Tab) -> &'static str {
         Tab::Library => "Library",
         Tab::Shader => "Shader",
         Tab::Profiler => "Profiler",
+        Tab::Presets => "Presets",
     }
 }
 
@@ -63,6 +67,7 @@ pub fn default_dock() -> DockState<Tab> {
             Tab::Library,
             Tab::Shader,
             Tab::Profiler,
+            Tab::Presets,
         ],
     );
     dock
@@ -138,6 +143,7 @@ pub struct Workspace {
     dock: DockState<Tab>,
     help: HelpPanel,
     library: Library,
+    presets: PresetsPanel,
     /// The layout as last saved.
     saved: String,
     /// Selected node last frame (a newly selected shader node brings the
@@ -161,6 +167,7 @@ impl Workspace {
             dock,
             help: HelpPanel::default(),
             library: Library::default(),
+            presets: PresetsPanel::default(),
             saved,
             last_selected: None,
             dragging: None,
@@ -203,6 +210,7 @@ impl Workspace {
             shell,
             help: &mut self.help,
             library: &mut self.library,
+            presets: &mut self.presets,
             renderers,
             selected,
             action: None,
@@ -368,6 +376,7 @@ struct Viewer<'s, 'a> {
     shell: &'s mut Shell<'a>,
     help: &'s mut HelpPanel,
     library: &'s mut Library,
+    presets: &'s mut PresetsPanel,
     /// (renderer id, title), in patch order.
     renderers: Vec<(String, String)>,
     selected: Option<String>,
@@ -405,7 +414,7 @@ impl TabViewer for Viewer<'_, '_> {
 
     fn scroll_bars(&self, tab: &Tab) -> [bool; 2] {
         match tab {
-            Tab::Inspector | Tab::Shader | Tab::Profiler => [false, true],
+            Tab::Inspector | Tab::Shader | Tab::Profiler | Tab::Presets => [false, true],
             _ => [false, false],
         }
     }
@@ -465,6 +474,7 @@ impl TabViewer for Viewer<'_, '_> {
                 let render_ms = sh.preview.render_ms();
                 crate::profiler::ui(ui, sh.engine, sh.patch, sh.view, render_ms);
             }
+            Tab::Presets => self.presets.ui(ui, sh.patch, sh.view),
             Tab::Shader => {
                 let runtime = sh.preview.shader_errors();
                 if sh

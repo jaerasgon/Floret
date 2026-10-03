@@ -485,6 +485,29 @@ impl View {
         self.history.push(patch, Some(key));
     }
 
+    /// Record a patch-level edit that doesn't touch the graph (a preset
+    /// saved, renamed or deleted): an undo step, no recompile.
+    pub fn commit_meta(&mut self, patch: &PatchFile) {
+        self.history.push(patch, None);
+    }
+
+    /// Record an edit of the patch seed. Rapid edits (dragging the seed
+    /// field) merge into one undo step; the engine is rebuilt.
+    pub fn commit_seed(&mut self, patch: &PatchFile) {
+        self.history.push(patch, Some("patch.seed"));
+        self.recompile = true;
+    }
+
+    /// Ask the app to rebuild the engine (no undo step).
+    pub fn request_recompile(&mut self) {
+        self.recompile = true;
+    }
+
+    /// Queue value edits for the running engine (no recompile).
+    pub fn push_live_edits(&mut self, edits: impl IntoIterator<Item = LiveEdit>) {
+        self.live_edits.extend(edits);
+    }
+
     /// The patch's undo revision: changes with every committed edit, undo
     /// and redo (the app's dirty tracking).
     pub fn revision(&self) -> u64 {

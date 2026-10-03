@@ -91,7 +91,8 @@ pub(crate) fn fbm_2d(x: f64, y: f64, seed: f64, octaves: f64, falloff: f64) -> f
 fn perlin(init: &NodeInit) -> Box<dyn NodeImpl> {
     scalar(init, |a| {
         let n: Vec<f64> = a.iter().map(Value::to_number).collect();
-        Ok(vec![Value::Num(fbm_2d(n[0], n[1], n[2], n[3], n[4]))])
+        let seed = crate::seed::mix(n[2]);
+        Ok(vec![Value::Num(fbm_2d(n[0], n[1], seed, n[3], n[4]))])
     })
 }
 
@@ -99,7 +100,8 @@ fn curl(init: &NodeInit) -> Box<dyn NodeImpl> {
     scalar(init, |a| {
         let p = to_vec2(&a[0]);
         let s = a[1].to_number();
-        let (sv, oct, fa) = (a[2].to_number(), a[3].to_number(), a[4].to_number());
+        let sv = crate::seed::mix(a[2].to_number());
+        let (oct, fa) = (a[3].to_number(), a[4].to_number());
         let x = p.x * s;
         let y = p.y * s;
         let eps = 1e-3;

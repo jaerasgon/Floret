@@ -5,10 +5,21 @@ product; the TypeScript web app is reference-only.
 
 ## Where things stand
 
-- **2026-10-03: all nine items below are merged** on
-  `claude/local-testing-setup-80hq09` (fmt, clippy, all tests pass). See
-  `docs/feature-complete-summary.md` for what's new, what to test on the Mac
-  and the decisions awaiting approval.
+- **2026-10-03: all nine items below are merged** on `main` (fmt, clippy,
+  all tests pass). See `docs/feature-complete-summary.md` for what's new,
+  what to test on the Mac, and the owner's decisions.
+- **2026-10-03: the owner approved every decision in the summary.** Done
+  since:
+  - The Presets tab comes right after Inspector in the default dock, and
+    opening a patch with presets brings it forward.
+  - A **Loop** field in the toolbar's transport group edits the patch's loop
+    length ("off" = not set), with undo.
+  - floret-engine and floret-render build at `opt-level = 1` in dev.
+  - `rust-version` is 1.95 (what the dependencies need), and the clippy lints
+    it turns on are fixed.
+  - Everything else is kept as implemented (Vary and Cmd+Shift+R, the extra
+    Palette / Lerp / Gradient rows, presets, seeds, the Noise / Expression
+    conventions, RGB Gradient Fill, `particles/simulation`).
 - `main` has the full native app: engine (every web-app node + video, type,
   LFO), wgpu renderer, editor, files / autosave / menus, sound, MIDI,
   camera and body tracking, shaders, profiler. Parity tests pass against
@@ -19,21 +30,20 @@ product; the TypeScript web app is reference-only.
 - **CI is manual-only** (Actions tab → native → Run workflow, Linux by
   default). GitHub Actions minutes ran out; macOS counts 10×, Windows 2×.
   Test locally before pushing; never trigger macOS/Windows runs casually.
-- **Samples:** slimmed from 1662 to 1266 nodes; NOC Fractal Tree is rebuilt
+- **Samples:** slimmed from 1662 to 1266 nodes; the fractal tree is built
   around one ForEach. Parity now reads frozen copies of the original samples
   in `native/fixtures/samples/`, so library samples can change freely
-  (`tests/all_samples.rs` checks they compile, run and draw).
-- **Open questions for the owner (not changed yet):**
-  - noc-fractal-tree and fractal-tree-spread are now the same patch; drop one
-    or make it different?
-  - Several samples draw shapes off-centre: their positions were written for
-    top-left anchors, but draw nodes now anchor at the centre (tut-01,
-    pixel-sort, datamosh). Fix them, which changes their pictures?
-  - Comments that were already wrong:
-    - tut-19 says "Move past 150px" but toggles on time.
-    - tut-20 says the subpatch is "used twice" (it's used once).
-    - tut-41 mentions a shuffle node that isn't in the patch.
-    - kaleidoscope's description says "mouse-controlled triangle".
+  (`tests/all_samples.rs` checks they compile, run and draw). As the owner
+  decided:
+  - `noc-fractal-tree` is removed from the Library: it was the same patch
+    as `fractal-tree-spread` ("Fractal Tree" now). Its frozen fixture and
+    trace stay for parity.
+  - Samples whose shapes were placed for top-left anchors (tut-01,
+    pixel-sort, datamosh and about twenty more) are centred.
+  - Wrong comments and descriptions are fixed (tut-19, tut-20, tut-41,
+    kaleidoscope and the others found by checking every sample against its
+    graph).
+  - The full list is in the summary's "Samples (done)" section.
 - **Deferred until feature complete:** the proper Floret.app bundle (icon,
   Finder double-click, signing / notarisation), port-name freeze (#78),
   README (#77), release (#81), QA (#82). Windows / Linux come later.

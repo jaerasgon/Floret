@@ -140,8 +140,8 @@
       "id": "t44_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1239,
-        "y": 246
+        "x": 626,
+        "y": 346
       },
       "params": {
         "color": {
@@ -164,30 +164,34 @@
       "id": "t44_text",
       "defType": "draw/text",
       "position": {
-        "x": 1470,
-        "y": 135
+        "x": 1250,
+        "y": 195
       },
       "params": {
         "string": "0",
-        "x": -60,
-        "y": 0,
         "size": 48,
-        "align": "left"
+        "align": "center",
+        "pos": {
+          "x": 0,
+          "y": 16
+        }
       },
       "portValues": {
         "string": "0",
-        "x": -60,
-        "y": 0,
         "size": 48,
-        "align": "left"
+        "align": "center",
+        "pos": {
+          "x": 0,
+          "y": 16
+        }
       }
     },
     {
       "id": "t44_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1665,
-        "y": 135
+        "x": 1432,
+        "y": 195
       },
       "params": {
         "width": 400,
@@ -196,22 +200,6 @@
       "portValues": {
         "width": 400,
         "height": 400
-      }
-    },
-    {
-      "id": "t44_text-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 1262,
-        "y": 124
-      },
-      "params": {
-        "x": -60,
-        "y": 0
-      },
-      "portValues": {
-        "x": -60,
-        "y": 0
       }
     }
   ],
@@ -266,13 +254,6 @@
       "targetHandle": "in-style"
     },
     {
-      "id": "e_371",
-      "source": "t44_write",
-      "target": "t44_text-xy0",
-      "sourceHandle": "out-final",
-      "targetHandle": "in-x"
-    },
-    {
       "id": "e_372",
       "source": "t44_text",
       "target": "t44_renderer",
@@ -280,11 +261,11 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_xy_t44_text-xy0",
-      "source": "t44_text-xy0",
+      "id": "e_fix_1",
+      "source": "t44_write",
       "target": "t44_text",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
+      "sourceHandle": "out-final",
+      "targetHandle": "in-string"
     }
   ]
 }

@@ -211,13 +211,17 @@ impl<'a> Loader<'a> {
             consts.push(match (ty, data) {
                 (_, Some(_)) if sp.is_some() => None,
                 (FLOAT32, Some(d)) => Some(Const::F32(
-                    d.chunks_exact(4)
-                        .map(|c| f32::from_le_bytes(c.try_into().unwrap()))
+                    d.as_chunks::<4>()
+                        .0
+                        .iter()
+                        .map(|c| f32::from_le_bytes(*c))
                         .collect(),
                 )),
                 (INT32, Some(d)) => Some(Const::I32(
-                    d.chunks_exact(4)
-                        .map(|c| i32::from_le_bytes(c.try_into().unwrap()))
+                    d.as_chunks::<4>()
+                        .0
+                        .iter()
+                        .map(|c| i32::from_le_bytes(*c))
                         .collect(),
                 )),
                 _ => None,
@@ -280,8 +284,10 @@ impl<'a> Loader<'a> {
                     let values: Vec<f32> = match ty {
                         FLOAT16 => half_floats(data).to_vec(),
                         FLOAT32 => data
-                            .chunks_exact(4)
-                            .map(|c| f32::from_le_bytes(c.try_into().unwrap()))
+                            .as_chunks::<4>()
+                            .0
+                            .iter()
+                            .map(|c| f32::from_le_bytes(*c))
                             .collect(),
                         _ => return Err(format!("op {i}: unsupported DENSIFY type {ty}")),
                     };
@@ -366,7 +372,9 @@ impl<'a> Loader<'a> {
                     let input = t_in(0)?;
                     let p = ints(t_in(1)?)?;
                     let pads = p
-                        .chunks_exact(2)
+                        .as_chunks::<2>()
+                        .0
+                        .iter()
                         .map(|c| (c[0].max(0) as usize, c[1].max(0) as usize))
                         .collect::<Vec<_>>();
                     if pads.len() != shape(input).len() {
@@ -445,8 +453,10 @@ fn to_indices(v: Vec<i32>) -> R<Vec<usize>> {
 }
 
 fn half_floats(data: &[u8]) -> Arc<[f32]> {
-    data.chunks_exact(2)
-        .map(|c| ops::f16_to_f32(u16::from_le_bytes([c[0], c[1]])))
+    data.as_chunks::<2>()
+        .0
+        .iter()
+        .map(|c| ops::f16_to_f32(u16::from_le_bytes(*c)))
         .collect()
 }
 

@@ -13,7 +13,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -290
+        "y": -284
       },
       "params": {
         "text": "L-system plant\n\nThe L-System node rewrites `X` five times by its rules, then a turtle draws the string: F steps forward, + and - turn by `angle`, [ and ] branch.\n\n`jitter` bends every turn a little at random (fixed by `seed`); an LFO sways `angle` like wind.",
@@ -30,8 +30,8 @@
       "id": "ls_lfo",
       "defType": "motion/lfo",
       "position": {
-        "x": 0,
-        "y": 40
+        "x": 5,
+        "y": 0
       },
       "params": {
         "shape": "sine",
@@ -51,7 +51,7 @@
       "defType": "style/stroke",
       "position": {
         "x": 0,
-        "y": 330
+        "y": 302
       },
       "params": {
         "width": 1.1,
@@ -76,8 +76,8 @@
       "id": "ls_plant",
       "defType": "geometry/lsystem",
       "position": {
-        "x": 280,
-        "y": 40
+        "x": 238,
+        "y": 21
       },
       "params": {},
       "portValues": {
@@ -99,8 +99,8 @@
       "id": "ls_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 600,
-        "y": 80
+        "x": 487,
+        "y": 21
       },
       "params": {
         "width": 520,

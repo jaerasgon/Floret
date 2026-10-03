@@ -13,15 +13,15 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -420
+        "y": -404
       },
       "params": {
-        "text": "Gradient fills and masks\n\nGradient Fill paints shapes with a linear, radial or conic gradient through a colour spread.\n\n\u2022 Sky: linear, in canvas units, top to bottom.\n\u2022 Sun: linear in shape units (-1..1 across its own box).\n\u2022 Stripes: a hard-edged gradient (positions 0, 0.6, 0.6, 1) repeated every 26 px, sliding down. It masks the sun by luminance: white shows, black hides. The plain rect keeps the top half whole.\n\u2022 Ring: a conic gradient on the stroke, turning.\n\nFlip `invert` on the Mask, or try mode `alpha`.",
+        "text": "Gradient fills and masks\n\nGradient Fill paints shapes with a linear, radial or conic gradient through a colour spread.\n\n• Sky: linear, in canvas units, top to bottom.\n• Sun: linear in shape units (-1..1 across its own box).\n• Stripes: a hard-edged gradient (positions 0, 0.6, 0.6, 1) repeated every 26 px, sliding down. It masks the sun by luminance: white shows, black hides. The plain rect keeps the top half whole.\n• Ring: a conic gradient on the stroke, turning.\n\nFlip `invert` on the Mask, or try mode `alpha`.",
         "width": 440,
         "height": 340
       },
       "portValues": {
-        "text": "Gradient fills and masks\n\nGradient Fill paints shapes with a linear, radial or conic gradient through a colour spread.\n\n\u2022 Sky: linear, in canvas units, top to bottom.\n\u2022 Sun: linear in shape units (-1..1 across its own box).\n\u2022 Stripes: a hard-edged gradient (positions 0, 0.6, 0.6, 1) repeated every 26 px, sliding down. It masks the sun by luminance: white shows, black hides. The plain rect keeps the top half whole.\n\u2022 Ring: a conic gradient on the stroke, turning.\n\nFlip `invert` on the Mask, or try mode `alpha`.",
+        "text": "Gradient fills and masks\n\nGradient Fill paints shapes with a linear, radial or conic gradient through a colour spread.\n\n• Sky: linear, in canvas units, top to bottom.\n• Sun: linear in shape units (-1..1 across its own box).\n• Stripes: a hard-edged gradient (positions 0, 0.6, 0.6, 1) repeated every 26 px, sliding down. It masks the sun by luminance: white shows, black hides. The plain rect keeps the top half whole.\n• Ring: a conic gradient on the stroke, turning.\n\nFlip `invert` on the Mask, or try mode `alpha`.",
         "width": 440,
         "height": 340
       }
@@ -30,7 +30,7 @@
       "id": "gs_sky_pal",
       "defType": "color/palette",
       "position": {
-        "x": 0,
+        "x": 854,
         "y": 0
       },
       "params": {
@@ -45,8 +45,8 @@
       "id": "gs_sky_grad",
       "defType": "style/gradient",
       "position": {
-        "x": 300,
-        "y": 0
+        "x": 1157,
+        "y": 48
       },
       "params": {
         "mode": "linear",
@@ -81,8 +81,8 @@
       "id": "gs_sky",
       "defType": "draw/rect",
       "position": {
-        "x": 600,
-        "y": 0
+        "x": 1468,
+        "y": 149
       },
       "params": {
         "w": 600,
@@ -97,8 +97,8 @@
       "id": "gs_sun_pal",
       "defType": "color/palette",
       "position": {
-        "x": 0,
-        "y": 260
+        "x": 573,
+        "y": 165
       },
       "params": {
         "stopCount": 3,
@@ -111,8 +111,8 @@
       "id": "gs_sun_grad",
       "defType": "style/gradient",
       "position": {
-        "x": 300,
-        "y": 260
+        "x": 864,
+        "y": 202
       },
       "params": {
         "mode": "linear",
@@ -147,8 +147,8 @@
       "id": "gs_sun",
       "defType": "draw/ellipse",
       "position": {
-        "x": 600,
-        "y": 260
+        "x": 1175,
+        "y": 310
       },
       "params": {
         "pos": {
@@ -172,7 +172,7 @@
       "defType": "color/palette",
       "position": {
         "x": 0,
-        "y": 520
+        "y": 464
       },
       "params": {
         "stopCount": 4,
@@ -186,8 +186,8 @@
       "id": "gs_stripe_pos",
       "defType": "data/csv-inline",
       "position": {
-        "x": 0,
-        "y": 760
+        "x": 3,
+        "y": 666
       },
       "params": {
         "data": "0, 0.6, 0.6, 1"
@@ -197,8 +197,8 @@
       "id": "gs_stripe_grad",
       "defType": "style/gradient",
       "position": {
-        "x": 300,
-        "y": 560
+        "x": 280,
+        "y": 525
       },
       "params": {
         "mode": "linear",
@@ -233,8 +233,8 @@
       "id": "gs_stripes",
       "defType": "draw/rect",
       "position": {
-        "x": 600,
-        "y": 560
+        "x": 598,
+        "y": 469
       },
       "params": {
         "pos": {
@@ -257,8 +257,8 @@
       "id": "gs_slide",
       "defType": "motion/lfo",
       "position": {
-        "x": 0,
-        "y": 880
+        "x": 297,
+        "y": 223
       },
       "params": {
         "shape": "saw",
@@ -277,8 +277,8 @@
       "id": "gs_slide_xy",
       "defType": "vec2/make",
       "position": {
-        "x": 300,
-        "y": 880
+        "x": 615,
+        "y": 347
       },
       "params": {
         "x": 0,
@@ -293,8 +293,8 @@
       "id": "gs_slide_tr",
       "defType": "transform/translate",
       "position": {
-        "x": 600,
-        "y": 860
+        "x": 894,
+        "y": 464
       },
       "params": {}
     },
@@ -302,8 +302,8 @@
       "id": "gs_top",
       "defType": "draw/rect",
       "position": {
-        "x": 600,
-        "y": 1000
+        "x": 876,
+        "y": 586
       },
       "params": {
         "pos": {
@@ -326,8 +326,8 @@
       "id": "gs_mask_layers",
       "defType": "transform/group",
       "position": {
-        "x": 900,
-        "y": 900
+        "x": 1147,
+        "y": 492
       },
       "params": {
         "slotCount": 2
@@ -337,8 +337,8 @@
       "id": "gs_mask",
       "defType": "transform/mask",
       "position": {
-        "x": 900,
-        "y": 560
+        "x": 1438,
+        "y": 364
       },
       "params": {
         "mode": "luminance",
@@ -353,8 +353,8 @@
       "id": "gs_ring_pal",
       "defType": "color/palette",
       "position": {
-        "x": 0,
-        "y": 1240
+        "x": 270,
+        "y": 787
       },
       "params": {
         "stopCount": 4,
@@ -368,8 +368,8 @@
       "id": "gs_turn",
       "defType": "motion/lfo",
       "position": {
-        "x": 0,
-        "y": 1480
+        "x": 297,
+        "y": 989
       },
       "params": {
         "shape": "saw",
@@ -388,8 +388,8 @@
       "id": "gs_ring_nofill",
       "defType": "style/no-fill",
       "position": {
-        "x": 300,
-        "y": 1240
+        "x": 42,
+        "y": 1311
       },
       "params": {}
     },
@@ -397,8 +397,8 @@
       "id": "gs_ring_weight",
       "defType": "style/stroke-weight",
       "position": {
-        "x": 300,
-        "y": 1340
+        "x": 298,
+        "y": 1291
       },
       "params": {
         "w": 5
@@ -411,8 +411,8 @@
       "id": "gs_ring_grad",
       "defType": "style/gradient",
       "position": {
-        "x": 300,
-        "y": 1460
+        "x": 583,
+        "y": 873
       },
       "params": {
         "mode": "conic",
@@ -441,8 +441,8 @@
       "id": "gs_ring",
       "defType": "draw/ellipse",
       "position": {
-        "x": 600,
-        "y": 1400
+        "x": 1465,
+        "y": 540
       },
       "params": {
         "pos": {
@@ -465,8 +465,8 @@
       "id": "gs_group",
       "defType": "transform/group",
       "position": {
-        "x": 1160,
-        "y": 300
+        "x": 1728,
+        "y": 331
       },
       "params": {
         "slotCount": 3
@@ -476,8 +476,8 @@
       "id": "gs_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1420,
-        "y": 300
+        "x": 1992,
+        "y": 331
       },
       "params": {
         "width": 600,

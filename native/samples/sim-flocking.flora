@@ -13,7 +13,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -290
+        "y": -284
       },
       "params": {
         "text": "Flocking\n\nThe Simulation node in flocking mode: 300 boids, each steering by the neighbours within `radius` — away from the closest (separation), along with their heading (alignment) and toward their centre (cohesion). The field wraps at its edges.\n\nThe sliders, top to bottom: separation, alignment, cohesion and attract. Drag them to change the flock's character as it flies; raise attract to herd it with the mouse. `colors` gives each boid its own shade of the palette.",
@@ -30,7 +30,7 @@
       "id": "fl_sep",
       "defType": "io/slider",
       "position": {
-        "x": 0,
+        "x": 180,
         "y": 0
       },
       "params": {
@@ -48,8 +48,8 @@
       "id": "fl_ali",
       "defType": "io/slider",
       "position": {
-        "x": 0,
-        "y": 90
+        "x": 180,
+        "y": 126
       },
       "params": {
         "value": 1.0,
@@ -66,8 +66,8 @@
       "id": "fl_coh",
       "defType": "io/slider",
       "position": {
-        "x": 0,
-        "y": 180
+        "x": 180,
+        "y": 252
       },
       "params": {
         "value": 0.9,
@@ -84,8 +84,8 @@
       "id": "fl_att",
       "defType": "io/slider",
       "position": {
-        "x": 0,
-        "y": 270
+        "x": 180,
+        "y": 500
       },
       "params": {
         "value": 0,
@@ -103,7 +103,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 0,
-        "y": 380
+        "y": 378
       },
       "params": {}
     },
@@ -111,8 +111,8 @@
       "id": "fl_mv",
       "defType": "vec2/make",
       "position": {
-        "x": 220,
-        "y": 380
+        "x": 222,
+        "y": 378
       },
       "params": {}
     },
@@ -120,8 +120,8 @@
       "id": "fl_pal",
       "defType": "color/palette",
       "position": {
-        "x": 220,
-        "y": 480
+        "x": 180,
+        "y": 626
       },
       "params": {
         "stopCount": 5,
@@ -144,8 +144,8 @@
       "id": "fl_sim",
       "defType": "particles/simulation",
       "position": {
-        "x": 470,
-        "y": 0
+        "x": 491,
+        "y": 190
       },
       "params": {
         "mode": "flocking"
@@ -167,8 +167,8 @@
       "id": "fl_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 760,
-        "y": 0
+        "x": 748,
+        "y": 190
       },
       "params": {
         "width": 600,

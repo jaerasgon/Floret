@@ -55,7 +55,7 @@
       "id": "pm_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2355,
+        "x": 2538,
         "y": 85
       },
       "params": {
@@ -87,7 +87,7 @@
         "y": 45
       },
       "params": {
-        "width": 1989,
+        "width": 2172,
         "height": 397,
         "label": "ForEach"
       },
@@ -97,7 +97,7 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 101
+          "y": 102
         },
         {
           "id": "dot",
@@ -107,15 +107,15 @@
           "y": 76
         }
       ],
-      "width": 1989,
+      "width": 2172,
       "height": 397
     },
     {
       "id": "pm_split",
       "defType": "vec2/split",
       "position": {
-        "x": 173,
-        "y": 104
+        "x": 398,
+        "y": 123
       },
       "params": {},
       "parentId": "pm_region"
@@ -124,8 +124,8 @@
       "id": "pm_sample",
       "defType": "image/sample",
       "position": {
-        "x": 399,
-        "y": 105
+        "x": 580,
+        "y": 114
       },
       "params": {},
       "parentId": "pm_region"
@@ -134,8 +134,8 @@
       "id": "pm_srgb",
       "defType": "color/split-rgb",
       "position": {
-        "x": 592,
-        "y": 51
+        "x": 774,
+        "y": 53
       },
       "params": {},
       "parentId": "pm_region"
@@ -144,8 +144,8 @@
       "id": "pm_rgb",
       "defType": "math/add",
       "position": {
-        "x": 773,
-        "y": 50
+        "x": 956,
+        "y": 51
       },
       "params": {
         "valueType": "number",
@@ -157,8 +157,8 @@
       "id": "pm_lum",
       "defType": "math/mul",
       "position": {
-        "x": 1038,
-        "y": 45
+        "x": 1221,
+        "y": 46
       },
       "params": {
         "b": 0.333,
@@ -173,7 +173,7 @@
       "id": "pm_sizeBase",
       "defType": "math/map",
       "position": {
-        "x": 1307,
+        "x": 1489,
         "y": 41
       },
       "params": {
@@ -195,7 +195,7 @@
       "defType": "math/mul",
       "position": {
         "x": 131,
-        "y": 226
+        "y": 224
       },
       "params": {
         "b": 1.8,
@@ -210,8 +210,8 @@
       "id": "pm_sinT",
       "defType": "math/sin",
       "position": {
-        "x": 1086,
-        "y": 224
+        "x": 1269,
+        "y": 223
       },
       "params": {},
       "parentId": "pm_region"
@@ -220,7 +220,7 @@
       "id": "pm_wobble",
       "defType": "math/map",
       "position": {
-        "x": 1303,
+        "x": 1485,
         "y": 223
       },
       "params": {
@@ -241,7 +241,7 @@
       "id": "pm_dotSize",
       "defType": "math/mul",
       "position": {
-        "x": 1507,
+        "x": 1690,
         "y": 68
       },
       "params": {
@@ -253,7 +253,7 @@
       "id": "pm_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1549,
+        "x": 1732,
         "y": 190
       },
       "params": {
@@ -268,10 +268,32 @@
       "id": "pm_ellipse",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1781,
+        "x": 1964,
         "y": 40
       },
       "params": {},
+      "parentId": "pm_region"
+    },
+    {
+      "id": "pm_px",
+      "defType": "math/add",
+      "position": {
+        "x": 131,
+        "y": 102
+      },
+      "params": {
+        "b": {
+          "x": 250,
+          "y": 250
+        },
+        "valueType": "vec2"
+      },
+      "portValues": {
+        "b": {
+          "x": 250,
+          "y": 250
+        }
+      },
       "parentId": "pm_region"
     }
   ],
@@ -282,13 +304,6 @@
       "target": "pm_region",
       "sourceHandle": "out-positions",
       "targetHandle": "in-p"
-    },
-    {
-      "id": "e_1460",
-      "source": "pm_region",
-      "target": "pm_split",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-v"
     },
     {
       "id": "e_1461",
@@ -436,6 +451,20 @@
       "target": "pm_rgb",
       "sourceHandle": "out-b",
       "targetHandle": "in-c"
+    },
+    {
+      "id": "e_fix_1",
+      "source": "pm_region",
+      "target": "pm_px",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fix_2",
+      "source": "pm_px",
+      "target": "pm_split",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
     }
   ]
 }

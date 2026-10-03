@@ -238,6 +238,9 @@ impl App {
         host::set_document(self.doc.path());
         self.recompile();
         self.restart();
+        if !self.patch.presets.is_empty() {
+            self.workspace.show_presets();
+        }
     }
 
     fn new_patch(&mut self) {
@@ -555,6 +558,14 @@ impl App {
             if tool(ui, "⟲", &shortcut_hint(&Command::Restart)).clicked() {
                 t.restart();
             }
+            // The patch's loop length (also in the Export window).
+            ui.label(RichText::new("Loop").color(theme::FG_2));
+            recording::loop_length_field(
+                ui,
+                &mut self.patch,
+                &mut self.view,
+                egui::vec2(52.0, TOOL_SIZE.y),
+            );
             cluster_gap(ui);
             // Variations: re-roll the patch seed.
             let tip = format!(

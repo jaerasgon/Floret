@@ -13,7 +13,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -300
+        "y": -294
       },
       "params": {
         "text": "Voronoi mosaic\n\nScatter lays points at least `distance` apart (Poisson disc). Cells turns them into Voronoi cells inside the canvas, `gap` apart, each filled from the palette. Path Ops smooths every cell's corners (Chaikin).\n\nChange the seed for a new mosaic; switch Cells to `delaunay` for triangles.",
@@ -31,7 +31,7 @@
       "defType": "geometry/scatter",
       "position": {
         "x": 0,
-        "y": 40
+        "y": 0
       },
       "params": {
         "mode": "poisson"
@@ -49,8 +49,8 @@
       "id": "vm_pal",
       "defType": "color/palette",
       "position": {
-        "x": 0,
-        "y": 300
+        "x": 15,
+        "y": 202
       },
       "params": {
         "stopCount": 5,
@@ -68,8 +68,8 @@
       "id": "vm_cells",
       "defType": "geometry/cells",
       "position": {
-        "x": 300,
-        "y": 60
+        "x": 312,
+        "y": 101
       },
       "params": {
         "mode": "voronoi"
@@ -86,8 +86,8 @@
       "id": "vm_smooth",
       "defType": "geometry/path-ops",
       "position": {
-        "x": 590,
-        "y": 60
+        "x": 569,
+        "y": 61
       },
       "params": {
         "mode": "smooth"
@@ -100,8 +100,8 @@
       "id": "vm_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 880,
-        "y": 80
+        "x": 832,
+        "y": 61
       },
       "params": {
         "width": 520,

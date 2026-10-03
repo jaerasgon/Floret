@@ -87,8 +87,8 @@
       "id": "t11_line",
       "defType": "draw/line",
       "position": {
-        "x": 809,
-        "y": 31
+        "x": 862,
+        "y": 82
       },
       "params": {}
     },
@@ -96,8 +96,8 @@
       "id": "t11_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 999,
-        "y": 31
+        "x": 1052,
+        "y": 82
       },
       "params": {
         "width": 400,
@@ -112,7 +112,7 @@
       "id": "t11_line-xy1",
       "defType": "vec2/make",
       "position": {
-        "x": 629,
+        "x": 652,
         "y": 51
       },
       "params": {
@@ -122,6 +122,32 @@
       "portValues": {
         "x": 0,
         "y": 0
+      }
+    },
+    {
+      "id": "t11_stroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 629,
+        "y": 173
+      },
+      "params": {
+        "width": 3,
+        "color": {
+          "r": 0.9,
+          "g": 0.94,
+          "b": 0.98,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "width": 3,
+        "color": {
+          "r": 0.9,
+          "g": 0.94,
+          "b": 0.98,
+          "a": 1
+        }
       }
     }
   ],
@@ -181,6 +207,13 @@
       "target": "t11_line",
       "sourceHandle": "out-vector",
       "targetHandle": "in-b"
+    },
+    {
+      "id": "e_fix_1",
+      "source": "t11_stroke",
+      "target": "t11_line",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
     }
   ]
 }

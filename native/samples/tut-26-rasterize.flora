@@ -16,12 +16,12 @@
         "y": -304
       },
       "params": {
-        "text": "Rasterising layers to bitmaps\n\n`image/from-layer` (Rasterize) draws a layer onto an offscreen canvas and outputs it as an image. Once you're in image-land you can sample, filter, blend, save, …\n\nHere: a fibonacci scatter rasterised at 256×256 and then displayed back via draw/image.",
+        "text": "Rasterising layers to bitmaps\n\n`image/from-layer` (Rasterize) draws a layer onto an offscreen canvas and outputs it as an image. Once you're in image-land you can sample, filter, blend, save, …\n\nHere: a Fibonacci spiral (an open polyline) rasterised at 256×256 and then displayed back via draw/image.",
         "width": 420,
         "height": 240
       },
       "portValues": {
-        "text": "Rasterising layers to bitmaps\n\n`image/from-layer` (Rasterize) draws a layer onto an offscreen canvas and outputs it as an image. Once you're in image-land you can sample, filter, blend, save, …\n\nHere: a fibonacci scatter rasterised at 256×256 and then displayed back via draw/image.",
+        "text": "Rasterising layers to bitmaps\n\n`image/from-layer` (Rasterize) draws a layer onto an offscreen canvas and outputs it as an image. Once you're in image-land you can sample, filter, blend, save, …\n\nHere: a Fibonacci spiral (an open polyline) rasterised at 256×256 and then displayed back via draw/image.",
         "width": 420,
         "height": 240
       }
@@ -45,8 +45,8 @@
       }
     },
     {
-      "id": "t26_fill",
-      "defType": "style/fill",
+      "id": "t26_stroke",
+      "defType": "style/stroke",
       "position": {
         "x": 1,
         "y": 142
@@ -57,7 +57,8 @@
           "g": 0.7843137254901961,
           "b": 0.23529411764705882,
           "a": 1
-        }
+        },
+        "width": 2
       },
       "portValues": {
         "color": {
@@ -65,7 +66,8 @@
           "g": 0.7843137254901961,
           "b": 0.23529411764705882,
           "a": 1
-        }
+        },
+        "width": 2
       }
     },
     {
@@ -141,7 +143,7 @@
     },
     {
       "id": "e_213",
-      "source": "t26_fill",
+      "source": "t26_stroke",
       "target": "t26_poly",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"

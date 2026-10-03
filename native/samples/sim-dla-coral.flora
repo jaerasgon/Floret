@@ -13,7 +13,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -290
+        "y": -284
       },
       "params": {
         "text": "DLA coral\n\nDiffusion-limited aggregation: random walkers wander in from outside and stick where they first touch the cluster, so the tips catch the most and it branches like coral, frost or lightning.\n\nEach line joins a particle to the one it stuck to; `colors` runs from the first particle to the newest. Lower `stickiness` lets walkers slip further in, for a denser growth (the slider). Click the Bang to grow it again.",
@@ -30,8 +30,8 @@
       "id": "dl_bang",
       "defType": "io/bang",
       "position": {
-        "x": 0,
-        "y": 0
+        "x": 209,
+        "y": 470
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "dl_stick",
       "defType": "io/slider",
       "position": {
-        "x": 0,
-        "y": 90
+        "x": 209,
+        "y": 0
       },
       "params": {
         "value": 1.0,
@@ -58,7 +58,7 @@
       "defType": "style/stroke-weight",
       "position": {
         "x": 0,
-        "y": 190
+        "y": 146
       },
       "params": {},
       "portValues": {
@@ -69,8 +69,8 @@
       "id": "dl_cap",
       "defType": "style/stroke-cap",
       "position": {
-        "x": 220,
-        "y": 190
+        "x": 238,
+        "y": 126
       },
       "params": {
         "cap": "round"
@@ -83,8 +83,8 @@
       "id": "dl_pal",
       "defType": "color/palette",
       "position": {
-        "x": 220,
-        "y": 300
+        "x": 209,
+        "y": 248
       },
       "params": {
         "stopCount": 5,
@@ -107,8 +107,8 @@
       "id": "dl_sim",
       "defType": "particles/simulation",
       "position": {
-        "x": 470,
-        "y": 0
+        "x": 501,
+        "y": 92
       },
       "params": {
         "mode": "dla"
@@ -129,8 +129,8 @@
       "id": "dl_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 760,
-        "y": 0
+        "x": 758,
+        "y": 92
       },
       "params": {
         "width": 600,

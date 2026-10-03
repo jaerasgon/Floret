@@ -13,7 +13,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -290
+        "y": -284
       },
       "params": {
         "text": "Cloth\n\nA Verlet spring mesh: 30 × 20 points joined by springs, hanging from its two top corners. Every step the points keep their speed, fall and catch the wind, then the springs pull them back toward their rest length.\n\nPress and drag on the canvas to grab the cloth. Pull hard and springs stretched past `tear` × their length snap (the lower slider). Springs colour by how far they're stretched. The upper slider blows wind in gusts.",
@@ -48,8 +48,8 @@
       "id": "cl_wv",
       "defType": "vec2/make",
       "position": {
-        "x": 220,
-        "y": 0
+        "x": 308,
+        "y": 4
       },
       "params": {},
       "portValues": {
@@ -60,8 +60,8 @@
       "id": "cl_tear",
       "defType": "io/slider",
       "position": {
-        "x": 0,
-        "y": 100
+        "x": 266,
+        "y": 126
       },
       "params": {
         "value": 2.5,
@@ -78,8 +78,8 @@
       "id": "cl_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 0,
-        "y": 200
+        "x": 42,
+        "y": 263
       },
       "params": {}
     },
@@ -87,8 +87,8 @@
       "id": "cl_mv",
       "defType": "vec2/make",
       "position": {
-        "x": 220,
-        "y": 200
+        "x": 308,
+        "y": 252
       },
       "params": {}
     },
@@ -96,8 +96,8 @@
       "id": "cl_weight",
       "defType": "style/stroke-weight",
       "position": {
-        "x": 0,
-        "y": 330
+        "x": 293,
+        "y": 374
       },
       "params": {},
       "portValues": {
@@ -108,8 +108,8 @@
       "id": "cl_pal",
       "defType": "color/palette",
       "position": {
-        "x": 220,
-        "y": 300
+        "x": 266,
+        "y": 496
       },
       "params": {
         "stopCount": 3,
@@ -128,8 +128,8 @@
       "id": "cl_sim",
       "defType": "particles/simulation",
       "position": {
-        "x": 470,
-        "y": 0
+        "x": 565,
+        "y": 38
       },
       "params": {
         "mode": "cloth",
@@ -161,8 +161,8 @@
       "id": "cl_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 760,
-        "y": 0
+        "x": 822,
+        "y": 38
       },
       "params": {
         "width": 600,

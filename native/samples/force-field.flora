@@ -42,7 +42,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 284
+        "y": 304
       },
       "params": {
         "value": 0.012,
@@ -60,7 +60,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 410
+        "y": 430
       },
       "params": {
         "value": 30,
@@ -77,11 +77,11 @@
       "id": "ff_region",
       "defType": "region/foreach",
       "position": {
-        "x": 295,
-        "y": 43
+        "x": 294,
+        "y": 59
       },
       "params": {
-        "width": 2484,
+        "width": 2315,
         "height": 438,
         "label": "ForEach"
       },
@@ -91,25 +91,25 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 200
+          "y": 176
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 168
+          "y": 148
         }
       ],
-      "width": 2484,
+      "width": 2315,
       "height": 438
     },
     {
       "id": "ff_tScaled",
       "defType": "math/mul",
       "position": {
-        "x": 128,
-        "y": 286
+        "x": 138,
+        "y": 212
       },
       "params": {
         "valueType": "number",
@@ -124,8 +124,8 @@
       "id": "ff_ySum",
       "defType": "math/add",
       "position": {
-        "x": 771,
-        "y": 229
+        "x": 593,
+        "y": 182
       },
       "params": {
         "valueType": "number"
@@ -136,8 +136,8 @@
       "id": "ff_perlin",
       "defType": "noise/perlin",
       "position": {
-        "x": 1039,
-        "y": 186
+        "x": 860,
+        "y": 143
       },
       "params": {
         "octaves": 2
@@ -151,8 +151,8 @@
       "id": "ff_angleMul",
       "defType": "math/mul",
       "position": {
-        "x": 1229,
-        "y": 252
+        "x": 1060,
+        "y": 274
       },
       "params": {
         "b": 6.2831853,
@@ -167,8 +167,8 @@
       "id": "ff_tipVec",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 1497,
-        "y": 278
+        "x": 1325,
+        "y": 283
       },
       "params": {},
       "parentId": "ff_region"
@@ -177,8 +177,8 @@
       "id": "ff_hueMul",
       "defType": "math/mul",
       "position": {
-        "x": 1229,
-        "y": 130
+        "x": 1060,
+        "y": 132
       },
       "params": {
         "b": 360,
@@ -193,8 +193,8 @@
       "id": "ff_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1504,
-        "y": 116
+        "x": 1332,
+        "y": 121
       },
       "params": {
         "s": 75,
@@ -212,8 +212,8 @@
       "id": "ff_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1745,
-        "y": 202
+        "x": 1592,
+        "y": 324
       },
       "params": {
         "mode": "color"
@@ -227,7 +227,7 @@
       "id": "ff_strokeC",
       "defType": "style/stroke",
       "position": {
-        "x": 1744,
+        "x": 1591,
         "y": 40
       },
       "params": {
@@ -242,8 +242,8 @@
       "id": "ff_line",
       "defType": "draw/line",
       "position": {
-        "x": 2008,
-        "y": 71
+        "x": 1839,
+        "y": 51
       },
       "params": {},
       "parentId": "ff_region"
@@ -252,8 +252,8 @@
       "id": "ff_tipDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 2002,
-        "y": 213
+        "x": 1833,
+        "y": 193
       },
       "params": {
         "w": 5,
@@ -269,8 +269,8 @@
       "id": "ff_group",
       "defType": "transform/group",
       "position": {
-        "x": 2204,
-        "y": 132
+        "x": 2035,
+        "y": 112
       },
       "params": {
         "slotCount": 2
@@ -281,8 +281,8 @@
       "id": "ff_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2875,
-        "y": 175
+        "x": 2705,
+        "y": 171
       },
       "params": {
         "width": 500,
@@ -302,28 +302,6 @@
           "g": 0.0784313725490196,
           "b": 0.11764705882352941,
           "a": 1
-        }
-      }
-    },
-    {
-      "id": "ff_start",
-      "defType": "math/add",
-      "position": {
-        "x": 128,
-        "y": 164
-      },
-      "params": {
-        "b": {
-          "x": 20,
-          "y": 20
-        },
-        "valueType": "vec2"
-      },
-      "parentId": "ff_region",
-      "portValues": {
-        "b": {
-          "x": 20,
-          "y": 20
         }
       }
     },
@@ -331,8 +309,8 @@
       "id": "ff_scaled",
       "defType": "vec2/scale",
       "position": {
-        "x": 401,
-        "y": 165
+        "x": 180,
+        "y": 90
       },
       "params": {},
       "parentId": "ff_region"
@@ -341,8 +319,8 @@
       "id": "ff_sxy",
       "defType": "vec2/split",
       "position": {
-        "x": 585,
-        "y": 178
+        "x": 407,
+        "y": 124
       },
       "params": {},
       "parentId": "ff_region"
@@ -351,8 +329,8 @@
       "id": "ff_tip",
       "defType": "math/add",
       "position": {
-        "x": 1703,
-        "y": 324
+        "x": 1550,
+        "y": 202
       },
       "params": {
         "valueType": "vec2"
@@ -460,20 +438,6 @@
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_ff_region_ff_start_a",
-      "source": "ff_region",
-      "target": "ff_start",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_ff_start_ff_scaled_v",
-      "source": "ff_start",
-      "target": "ff_scaled",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-v"
-    },
-    {
       "id": "e_ff_noiseScale_ff_scaled_s",
       "source": "ff_noiseScale",
       "target": "ff_scaled",
@@ -502,25 +466,11 @@
       "targetHandle": "in-a"
     },
     {
-      "id": "e_ff_start_ff_tip_a",
-      "source": "ff_start",
-      "target": "ff_tip",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_ff_tipVec_ff_tip_b",
       "source": "ff_tipVec",
       "target": "ff_tip",
       "sourceHandle": "out-vector",
       "targetHandle": "in-b"
-    },
-    {
-      "id": "e_ff_start_ff_line_a",
-      "source": "ff_start",
-      "target": "ff_line",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
     },
     {
       "id": "e_ff_tip_ff_line_b",
@@ -556,6 +506,27 @@
       "target": "ff_group",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_fix_1",
+      "source": "ff_region",
+      "target": "ff_scaled",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_fix_2",
+      "source": "ff_region",
+      "target": "ff_tip",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_fix_3",
+      "source": "ff_region",
+      "target": "ff_line",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
     }
   ]
 }

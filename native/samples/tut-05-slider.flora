@@ -31,7 +31,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 37
+        "y": 16
       },
       "params": {
         "value": 120,
@@ -42,87 +42,48 @@
         "value": 120,
         "min": 20,
         "max": 300
-      }
-    },
-    {
-      "id": "t05_halfW",
-      "defType": "math/mul",
-      "position": {
-        "x": 270,
-        "y": 0
-      },
-      "params": {
-        "b": -0.5,
-        "valueType": "number"
-      },
-      "portValues": {
-        "b": -0.5
       }
     },
     {
       "id": "t05_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 718,
-        "y": 28
+        "x": 264,
+        "y": 0
       },
       "params": {
-        "y": -50,
-        "h": 100
+        "h": 100,
+        "pos": {
+          "x": 0,
+          "y": 0
+        }
       },
       "portValues": {
-        "y": -50,
-        "h": 100
+        "h": 100,
+        "pos": {
+          "x": 0,
+          "y": 0
+        }
       }
     },
     {
       "id": "t05_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 910,
-        "y": 28
-      },
-      "params": {
-        "width": 400,
-        "height": 400
-      },
-      "portValues": {
-        "width": 400,
-        "height": 400
-      }
-    },
-    {
-      "id": "t05_rect-xy0",
-      "defType": "vec2/make",
-      "position": {
-        "x": 534,
+        "x": 466,
         "y": 0
       },
       "params": {
-        "x": 0,
-        "y": -50
+        "width": 400,
+        "height": 400
       },
       "portValues": {
-        "x": 0,
-        "y": -50
+        "width": 400,
+        "height": 400
       }
     }
   ],
   "edges": [
-    {
-      "id": "e_12",
-      "source": "t05_s",
-      "target": "t05_halfW",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_13",
-      "source": "t05_halfW",
-      "target": "t05_rect-xy0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
-    },
     {
       "id": "e_14",
       "source": "t05_s",
@@ -136,13 +97,6 @@
       "target": "t05_renderer",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
-    },
-    {
-      "id": "e_xy_t05_rect-xy0",
-      "source": "t05_rect-xy0",
-      "target": "t05_rect",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-pos"
     }
   ]
 }

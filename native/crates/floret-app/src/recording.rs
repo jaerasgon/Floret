@@ -9,7 +9,8 @@
 //! and can cancel, and the app keeps running meanwhile.
 //!
 //! Recordings are whole loops of the patch's loop length (a patch setting,
-//! edited in the export window; the Time node's `loop` output runs 0..1
+//! edited in the export window or the toolbar's loop field, see
+//! [`loop_length_field`]; the Time node's `loop` output runs 0..1
 //! over it). A loop is `N = round(loop × fps)` frames at `dt = loop / N`,
 //! so frame N would be frame 0 again: played on repeat, a one-loop
 //! recording joins seamlessly.
@@ -66,6 +67,82 @@ impl Format {
             _ => &[24, 25, 30, 50, 60],
         }
     }
+}
+
+/// The toolbar's loop-length field: the patch's loop length in seconds,
+/// shown as "off" while the patch doesn't set one (the Time node's `loop`
+/// output and exports then use the default). Typing a blank, "off" or 0
+/// clears the setting. Edits are undo steps, like the Export window's.
+pub fn loop_length_field(
+    ui: &mut egui::Ui,
+    patch: &mut PatchFile,
+    view: &mut crate::canvas::View,
+    size: egui::Vec2,
+) -> egui::Response {
+    let mut secs = loop_field_value(patch);
+    let drag = egui::DragValue::new(&mut secs)
+        .range(0.0..=600.0)
+        .speed(0.05)
+        .custom_formatter(|v, _| loop_field_text(v))
+        .custom_parser(parse_loop_field);
+    let tip = format!(
+        "Loop length: the Time node's loop output runs 0 → 1 over it, and video \
+         exports record whole loops. Saved with the patch. Off: not set ({} s \
+         default). Drag, or click to type; 0 or blank turns it off.",
+        floret_engine::patch::DEFAULT_LOOP_LENGTH
+    );
+    // An explicit id: the toolbar gains a widget (the unsaved-changes dot)
+    // on the first edit, which would otherwise change the field's id and end
+    // the typing after one key.
+    let fixed = egui::UiBuilder::new().id(egui::Id::new("floret-loop-length"));
+    let r = ui
+        .scope_builder(fixed, |ui| ui.add_sized(size, drag))
+        .inner
+        .on_hover_text(tip);
+    if r.changed() && set_loop_length(patch, secs) {
+        view.commit_setting(patch, "patch.loopLength");
+    }
+    r
+}
+
+/// The loop-length field's value: the patch's own loop length, 0 when unset.
+pub fn loop_field_value(patch: &PatchFile) -> f64 {
+    patch
+        .loop_length
+        .filter(|l| l.is_finite() && *l > 0.0)
+        .unwrap_or(0.0)
+}
+
+/// "off" for 0, else the seconds ("2.5 s").
+pub fn loop_field_text(secs: f64) -> String {
+    if secs > 0.0 {
+        let s = format!("{secs:.2}");
+        let s = s.trim_end_matches('0').trim_end_matches('.');
+        format!("{s} s")
+    } else {
+        "off".to_owned()
+    }
+}
+
+/// Typed text → seconds: blank or "off" is 0, a trailing "s" is allowed.
+pub fn parse_loop_field(text: &str) -> Option<f64> {
+    let t = text.trim();
+    let t = t.strip_suffix('s').unwrap_or(t).trim();
+    if t.is_empty() || t.eq_ignore_ascii_case("off") {
+        return Some(0.0);
+    }
+    t.parse::<f64>().ok().filter(|v| v.is_finite())
+}
+
+/// Set the patch's loop length from the field (0 or less clears it). True
+/// when that changed the patch.
+pub fn set_loop_length(patch: &mut PatchFile, secs: f64) -> bool {
+    let next = (secs.is_finite() && secs > 0.0).then_some(secs);
+    if next == patch.loop_length {
+        return false;
+    }
+    patch.loop_length = next;
+    true
 }
 
 /// How many frames a recording has, and the fixed time step between them.
@@ -797,6 +874,51 @@ mod tests {
     use super::*;
 
     const SAMPLE: &str = include_str!("../../../samples/loop-bloom.flora");
+
+    #[test]
+    fn the_loop_field_reads_and_writes_the_patch_setting() {
+        let mut patch = floret_engine::load_patch(SAMPLE).unwrap();
+        assert_eq!(loop_field_value(&patch), 5.0);
+        assert_eq!(loop_field_text(5.0), "5 s");
+        assert_eq!(loop_field_text(2.5), "2.5 s");
+        assert_eq!(loop_field_text(0.0), "off");
+        // Same value: no edit.
+        assert!(!set_loop_length(&mut patch, 5.0));
+        assert!(set_loop_length(&mut patch, 2.5));
+        assert_eq!(patch.loop_length, Some(2.5));
+        // 0 turns it off: unset, so the default applies again.
+        assert!(set_loop_length(&mut patch, 0.0));
+        assert_eq!(patch.loop_length, None);
+        assert_eq!(loop_field_value(&patch), 0.0);
+        assert_eq!(
+            patch.loop_seconds(),
+            floret_engine::patch::DEFAULT_LOOP_LENGTH
+        );
+        assert!(!set_loop_length(&mut patch, -1.0));
+    }
+
+    #[test]
+    fn the_loop_field_parses_seconds_off_and_blank() {
+        assert_eq!(parse_loop_field("3"), Some(3.0));
+        assert_eq!(parse_loop_field(" 2.5 s "), Some(2.5));
+        assert_eq!(parse_loop_field("4s"), Some(4.0));
+        assert_eq!(parse_loop_field(""), Some(0.0));
+        assert_eq!(parse_loop_field("off"), Some(0.0));
+        assert_eq!(parse_loop_field("Off"), Some(0.0));
+        assert_eq!(parse_loop_field("abc"), None);
+        assert_eq!(parse_loop_field("inf"), None);
+    }
+
+    #[test]
+    fn a_loop_field_edit_is_an_undo_step() {
+        let mut patch = floret_engine::load_patch(SAMPLE).unwrap();
+        let mut view = crate::canvas::View::default();
+        view.on_load(&mut patch);
+        let before = view.revision();
+        assert!(set_loop_length(&mut patch, 0.0));
+        view.commit_setting(&patch, "patch.loopLength");
+        assert_ne!(view.revision(), before);
+    }
 
     #[test]
     fn plans_whole_loops() {

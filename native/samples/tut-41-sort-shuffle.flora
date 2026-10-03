@@ -16,12 +16,12 @@
         "y": -284
       },
       "params": {
-        "text": "Reordering spreads\n\n`SortSpread` arranges numbers ascending/descending; `ShuffleSpread` permutes them deterministically by seed.\n\nA RandomSpread of 30 numbers, sorted, drawn as a bar chart. Try wiring the shuffle node back in instead.",
+        "text": "Reordering spreads\n\n`ShuffleSpread` (RandomizeSpread) permutes a spread deterministically by its seed; `SortSpread` arranges numbers ascending (or descending).\n\nHere 0…29 is shuffled, then sorted again, and drawn as a bar chart: a neat staircase. Wire the shuffle straight into the ForEach (skip Sort) to see the shuffled order.",
         "width": 440,
         "height": 220
       },
       "portValues": {
-        "text": "Reordering spreads\n\n`SortSpread` arranges numbers ascending/descending; `ShuffleSpread` permutes them deterministically by seed.\n\nA RandomSpread of 30 numbers, sorted, drawn as a bar chart. Try wiring the shuffle node back in instead.",
+        "text": "Reordering spreads\n\n`ShuffleSpread` (RandomizeSpread) permutes a spread deterministically by its seed; `SortSpread` arranges numbers ascending (or descending).\n\nHere 0…29 is shuffled, then sorted again, and drawn as a bar chart: a neat staircase. Wire the shuffle straight into the ForEach (skip Sort) to see the shuffled order.",
         "width": 440,
         "height": 220
       }
@@ -71,7 +71,7 @@
         "y": 22
       },
       "params": {
-        "width": 794,
+        "width": 782,
         "height": 336,
         "label": "ForEach"
       },
@@ -98,7 +98,7 @@
           "y": 169
         }
       ],
-      "width": 794,
+      "width": 782,
       "height": 336
     },
     {
@@ -109,12 +109,12 @@
         "y": 222
       },
       "params": {
-        "b": -8,
+        "b": 8,
         "valueType": "number"
       },
       "parentId": "t41_region",
       "portValues": {
-        "b": -8
+        "b": 8
       }
     },
     {
@@ -125,20 +125,20 @@
         "y": 133
       },
       "params": {
-        "y": 100,
-        "w": 8
+        "w": 8,
+        "anchor": "bl"
       },
       "parentId": "t41_region",
       "portValues": {
-        "y": 100,
-        "w": 8
+        "w": 8,
+        "anchor": "bl"
       }
     },
     {
       "id": "t41_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1560,
+        "x": 1548,
         "y": 155
       },
       "params": {
@@ -159,12 +159,12 @@
       },
       "params": {
         "x": 0,
-        "y": 100
+        "y": 116
       },
       "parentId": "t41_region",
       "portValues": {
         "x": 0,
-        "y": 100
+        "y": 116
       }
     },
     {
@@ -177,15 +177,15 @@
       "params": {
         "inMin": 0,
         "inMax": 29,
-        "outMin": -180,
-        "outMax": 168
+        "outMin": -178,
+        "outMax": 170
       },
       "parentId": "t41_region",
       "portValues": {
         "inMin": 0,
         "inMax": 29,
-        "outMin": -180,
-        "outMax": 168
+        "outMin": -178,
+        "outMax": 170
       }
     }
   ],

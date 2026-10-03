@@ -13,7 +13,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -290
+        "y": -284
       },
       "params": {
         "text": "Contour blobs\n\nSeven random circles, merged by Shape Boolean (union) into one blob. A second ForEach offsets that outline 18 times, from 36 px out to 66 px in (Path Ops, `offset`), each ring a little bluer.\n\nTry another scatter seed, or `miter` joins on Path Ops.",
@@ -31,7 +31,7 @@
       "defType": "geometry/scatter",
       "position": {
         "x": 0,
-        "y": 40
+        "y": 237
       },
       "params": {
         "mode": "random"
@@ -49,12 +49,12 @@
       "id": "cb_blobs",
       "defType": "region/foreach",
       "position": {
-        "x": 260,
-        "y": 20
+        "x": 294,
+        "y": 197
       },
       "params": {
-        "width": 330,
-        "height": 190,
+        "width": 336,
+        "height": 214,
         "label": "ForEach circle"
       },
       "ports": [
@@ -63,24 +63,24 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 70
+          "y": 76
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 70
+          "y": 76
         }
       ],
-      "width": 330,
-      "height": 190
+      "width": 336,
+      "height": 214
     },
     {
       "id": "cb_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 110,
+        "x": 128,
         "y": 40
       },
       "params": {
@@ -97,8 +97,8 @@
       "id": "cb_union",
       "defType": "geometry/boolean",
       "position": {
-        "x": 660,
-        "y": 40
+        "x": 726,
+        "y": 217
       },
       "params": {
         "mode": "union"
@@ -108,8 +108,8 @@
       "id": "cb_lin",
       "defType": "spread/linear",
       "position": {
-        "x": 660,
-        "y": 260
+        "x": 755,
+        "y": 75
       },
       "params": {
         "from": 36,
@@ -126,12 +126,12 @@
       "id": "cb_rings",
       "defType": "region/foreach",
       "position": {
-        "x": 940,
-        "y": 20
+        "x": 999,
+        "y": 22
       },
       "params": {
-        "width": 940,
-        "height": 300,
+        "width": 961,
+        "height": 332,
         "label": "ForEach ring"
       },
       "ports": [
@@ -140,25 +140,25 @@
           "name": "distance",
           "type": "number",
           "direction": "input",
-          "y": 150
+          "y": 154
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 120
+          "y": 92
         }
       ],
-      "width": 940,
-      "height": 300
+      "width": 961,
+      "height": 332
     },
     {
       "id": "cb_map",
       "defType": "math/map",
       "position": {
-        "x": 80,
-        "y": 150
+        "x": 138,
+        "y": 158
       },
       "params": {
         "outMin": 330,
@@ -174,8 +174,8 @@
       "id": "cb_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 290,
-        "y": 150
+        "x": 317,
+        "y": 163
       },
       "params": {
         "s": 70,
@@ -193,8 +193,8 @@
       "id": "cb_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 490,
-        "y": 150
+        "x": 498,
+        "y": 168
       },
       "params": {
         "width": 2
@@ -208,8 +208,8 @@
       "id": "cb_offset",
       "defType": "geometry/path-ops",
       "position": {
-        "x": 700,
-        "y": 30
+        "x": 681,
+        "y": 40
       },
       "params": {
         "mode": "offset"
@@ -223,8 +223,8 @@
       "id": "cb_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1960,
-        "y": 100
+        "x": 2056,
+        "y": 78
       },
       "params": {
         "width": 520,

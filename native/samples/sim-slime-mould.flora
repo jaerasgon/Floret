@@ -13,7 +13,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -290
+        "y": -284
       },
       "params": {
         "text": "Slime mould (physarum)\n\n20 000 agents on a 256² trail map. Each one smells the trail ahead and to either side, turns toward the strongest, steps and leaves trail behind; the map blurs and fades every step. Veins form, merge and reroute.\n\nThe map comes out as an image, coloured by the `colors` ramp from empty (first stop) to dense (last). The mouse keeps feeding trail where it is. The sliders set the sensor angle and the turn angle: drag them to reshape the network as it grows.",
@@ -30,7 +30,7 @@
       "id": "sm_sa",
       "defType": "io/slider",
       "position": {
-        "x": 0,
+        "x": 180,
         "y": 0
       },
       "params": {
@@ -48,8 +48,8 @@
       "id": "sm_ta",
       "defType": "io/slider",
       "position": {
-        "x": 0,
-        "y": 90
+        "x": 180,
+        "y": 126
       },
       "params": {
         "value": 45,
@@ -67,7 +67,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 0,
-        "y": 200
+        "y": 252
       },
       "params": {}
     },
@@ -75,8 +75,8 @@
       "id": "sm_mv",
       "defType": "vec2/make",
       "position": {
-        "x": 220,
-        "y": 200
+        "x": 222,
+        "y": 252
       },
       "params": {}
     },
@@ -84,8 +84,8 @@
       "id": "sm_pal",
       "defType": "color/palette",
       "position": {
-        "x": 220,
-        "y": 300
+        "x": 180,
+        "y": 374
       },
       "params": {
         "stopCount": 4,
@@ -106,8 +106,8 @@
       "id": "sm_sim",
       "defType": "particles/simulation",
       "position": {
-        "x": 470,
-        "y": 0
+        "x": 472,
+        "y": 50
       },
       "params": {
         "mode": "physarum"
@@ -132,8 +132,8 @@
       "id": "sm_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 760,
-        "y": 0
+        "x": 729,
+        "y": 50
       },
       "params": {
         "width": 600,

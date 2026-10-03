@@ -53,7 +53,9 @@ pub fn get_pixels(_: &NodeInit) -> Box<dyn NodeImpl> {
         };
         let px: Vec<Value> = img
             .rgba()
-            .chunks_exact(4)
+            .as_chunks::<4>()
+            .0
+            .iter()
             .map(|p| color_from([p[0], p[1], p[2], p[3]]))
             .collect();
         Ok(vec![
@@ -377,7 +379,12 @@ pub fn convolve(_: &NodeInit) -> Box<dyn NodeImpl> {
             let mut d = convolve_bytes(s, w, h, &mode)?;
             if amount < 1.0 {
                 let inv = 1.0 - amount;
-                for (dp, sp) in d.chunks_exact_mut(4).zip(s.chunks_exact(4)) {
+                for (dp, sp) in d
+                    .as_chunks_mut::<4>()
+                    .0
+                    .iter_mut()
+                    .zip(s.as_chunks::<4>().0)
+                {
                     for c in 0..3 {
                         dp[c] = clamp_u8(f64::from(sp[c]) * inv + f64::from(dp[c]) * amount);
                     }

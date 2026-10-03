@@ -123,7 +123,7 @@
       "id": "tut-19-if",
       "name": "19 · If Region (Conditional)",
       "category": "Tutorial",
-      "description": "region/if runs its body only when condition is true. Move past 150px from centre to reveal a rect.",
+      "description": "region/if runs its body only when its condition is true. sin(time) > 0 toggles it, so the rect blinks on and off.",
       "file": "tut-19-if.flora"
     },
     {
@@ -179,14 +179,14 @@
       "id": "tut-27-imgsample",
       "name": "27 · Image Sampling Grid",
       "category": "Tutorial",
-      "description": "image/sample-spread reads N colours at N points — recolour a 24×24 dot grid from a rasterised source.",
+      "description": "image/sample-spread reads N colours at N points — recolour a 24×24 grid of squares from a rasterised gradient.",
       "file": "tut-27-imgsample.flora"
     },
     {
       "id": "tut-28-audio-react",
       "name": "28 · Audio-Reactive Visual",
       "category": "Tutorial",
-      "description": "Mic → amplitude → drives circle size. Grant the browser microphone permission.",
+      "description": "Mic → amplitude → drives circle size. Allow microphone access when asked.",
       "file": "tut-28-audio-react.flora"
     },
     {
@@ -277,7 +277,7 @@
       "id": "tut-41-sort-shuffle",
       "name": "41 · Spread Sort + Shuffle",
       "category": "Tutorial",
-      "description": "SortSpread + ShuffleSpread reorder a Spread<number>; visualised as a bar chart.",
+      "description": "ShuffleSpread then SortSpread reorder a Spread<number>; visualised as a bar chart.",
       "file": "tut-41-sort-shuffle.flora"
     },
     {
@@ -347,7 +347,7 @@
       "id": "type-halo",
       "name": "Halo",
       "category": "Type",
-      "description": "Phrase laid around a circle; the whole ring spins. Hue cycles per character and per time for a chromatic chase.",
+      "description": "A phrase laid around three concentric rings that spin, the inner ones faster. Hue cycles per character and per time for a chromatic chase.",
       "file": "type-halo.flora"
     },
     {
@@ -368,7 +368,7 @@
       "id": "type-rain",
       "name": "Type Rain",
       "category": "Type",
-      "description": "Matrix-style falling characters — every column scrolls at its own noise-seeded speed; brightness fades head → tail down the column.",
+      "description": "Matrix-style falling characters — every column scrolls at its own noise-seeded speed, and letters dim as they fall down the canvas.",
       "file": "type-rain.flora"
     },
     {
@@ -438,7 +438,7 @@
       "id": "kaleidoscope",
       "name": "Kaleidoscope",
       "category": "Curves",
-      "description": "A mouse-controlled triangle mirrored 12 times around the centre. Hue cycles with time.",
+      "description": "A drifting window into a photo, drawn as 12 wedges around the centre with every other wedge mirrored. The window wanders with time.",
       "file": "kaleidoscope.flora"
     },
     {
@@ -568,17 +568,10 @@
       "file": "noc-flow-field.flora"
     },
     {
-      "id": "noc-fractal-tree",
+      "id": "fractal-tree-spread",
       "name": "Fractal Tree",
       "category": "Nature",
-      "description": "The Nature of Code recursive tree, four levels deep: each branch splits in two, ±0.5 rad and 0.7× as long. The recursion's 15 branches (start, end, stroke weight) sit in five number spreads, and one ForEach draws a line per branch. NOC §8.",
-      "file": "noc-fractal-tree.flora"
-    },
-    {
-      "id": "fractal-tree-spread",
-      "name": "Fractal Tree (spread)",
-      "category": "Nature",
-      "description": "The same fractal tree with zero node duplication: the recursion bakes its branch geometry into five data/csv-inline number spreads, zipped through ONE ForEach → one draw/line. Per-branch stroke weight preserved.",
+      "description": "The Nature of Code recursive tree, four levels deep: each branch splits in two, ±0.5 rad and 0.7× as long. The recursion's 15 branches (start, end, stroke weight) sit in five number spreads, zipped through one ForEach → one draw/line per branch. NOC §8.",
       "file": "fractal-tree-spread.flora"
     },
     {
@@ -620,7 +613,7 @@
       "id": "datamosh",
       "name": "Datamosh",
       "category": "Image",
-      "description": "Load an image, layer it 4× with RGB-tinted copies at time-driven offsets and blend modes (SCREEN / DIFFERENCE) for a chromatic-aberration glitch.",
+      "description": "Load an image, layer it 4× with RGB-tinted copies at time-driven offsets and blend modes (add / subtract) for a chromatic-aberration glitch.",
       "file": "datamosh.flora"
     },
     {

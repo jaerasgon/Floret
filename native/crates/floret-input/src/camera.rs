@@ -71,7 +71,7 @@ pub fn convert(
         FrameFormat::YUYV => {
             let src = data.get(..w * h * 2).ok_or_else(short)?;
             let mut out = Vec::with_capacity(w * h * 4);
-            for q in src.chunks_exact(4) {
+            for q in src.as_chunks::<4>().0 {
                 out.extend_from_slice(&yuv(q[0], q[1], q[3]));
                 out.extend_from_slice(&yuv(q[2], q[1], q[3]));
             }
@@ -95,7 +95,9 @@ pub fn convert(
         FrameFormat::RAWRGB | FrameFormat::RAWBGR => {
             let src = data.get(..w * h * 3).ok_or_else(short)?;
             let bgr = format == FrameFormat::RAWBGR;
-            src.chunks_exact(3)
+            src.as_chunks::<3>()
+                .0
+                .iter()
                 .flat_map(|p| {
                     if bgr {
                         [p[2], p[1], p[0], 255]

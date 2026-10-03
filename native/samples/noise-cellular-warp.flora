@@ -1,0 +1,298 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Cellular Warp",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "nz_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -274
+      },
+      "params": {
+        "text": "Noise — one node, five kinds\n\nNoise samples the whole 64×64 grid at once (spreads in, spreads out). Cellular mode, feature F2-F1, draws the cell walls; warp bends them with a second noise field, and y drifting with time makes the field flow.\n\nTry mode perlin / simplex / value, feature F1, or warp 0.",
+        "width": 460,
+        "height": 210
+      },
+      "portValues": {
+        "text": "Noise — one node, five kinds\n\nNoise samples the whole 64×64 grid at once (spreads in, spreads out). Cellular mode, feature F2-F1, draws the cell walls; warp bends them with a second noise field, and y drifting with time makes the field flow.\n\nTry mode perlin / simplex / value, feature F1, or warp 0.",
+        "width": 460,
+        "height": 210
+      }
+    },
+    {
+      "id": "nz_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 206,
+        "y": 94
+      },
+      "params": {
+        "cols": 64,
+        "rows": 64,
+        "w": 480,
+        "h": 480
+      },
+      "portValues": {
+        "cols": 64,
+        "rows": 64,
+        "w": 480,
+        "h": 480
+      }
+    },
+    {
+      "id": "nz_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 0,
+        "y": 322
+      },
+      "params": {}
+    },
+    {
+      "id": "nz_drift",
+      "defType": "math/mul",
+      "position": {
+        "x": 180,
+        "y": 322
+      },
+      "params": {
+        "b": 18,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 18
+      }
+    },
+    {
+      "id": "nz_noise",
+      "defType": "noise/noise",
+      "position": {
+        "x": 475,
+        "y": 262
+      },
+      "params": {
+        "mode": "cellular",
+        "feature": "F2-F1"
+      },
+      "portValues": {
+        "scale": 0.018,
+        "seed": 3,
+        "warp": 0.9,
+        "warpScale": 0.5
+      }
+    },
+    {
+      "id": "nz_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 472,
+        "y": 60
+      },
+      "params": {
+        "stopCount": 4,
+        "c0": "#0b1026",
+        "c1": "#1f6f8b",
+        "c2": "#99e1d9",
+        "c3": "#fff4e0"
+      }
+    },
+    {
+      "id": "nz_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 748,
+        "y": 22
+      },
+      "params": {
+        "width": 761,
+        "height": 253,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "pos",
+          "name": "pos",
+          "type": "vec2",
+          "direction": "input",
+          "y": 79
+        },
+        {
+          "id": "v",
+          "name": "v",
+          "type": "number",
+          "direction": "input",
+          "y": 195
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 76
+        }
+      ],
+      "width": 761,
+      "height": 253
+    },
+    {
+      "id": "nz_grad",
+      "defType": "color/gradient",
+      "position": {
+        "x": 128,
+        "y": 119
+      },
+      "params": {
+        "space": "oklab"
+      },
+      "parentId": "nz_region"
+    },
+    {
+      "id": "nz_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 373,
+        "y": 119
+      },
+      "params": {},
+      "parentId": "nz_region"
+    },
+    {
+      "id": "nz_rect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 553,
+        "y": 40
+      },
+      "params": {
+        "w": 8,
+        "h": 8
+      },
+      "parentId": "nz_region",
+      "portValues": {
+        "w": 8,
+        "h": 8
+      }
+    },
+    {
+      "id": "nz_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1605,
+        "y": 62
+      },
+      "params": {
+        "width": 500,
+        "height": 500,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.050980392156862744,
+          "b": 0.07058823529411765,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.050980392156862744,
+          "b": 0.07058823529411765,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "nz_grid",
+      "target": "nz_noise",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_2",
+      "source": "nz_time",
+      "target": "nz_drift",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_3",
+      "source": "nz_drift",
+      "target": "nz_noise",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_4",
+      "source": "nz_grid",
+      "target": "nz_region",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_5",
+      "source": "nz_noise",
+      "target": "nz_region",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_6",
+      "source": "nz_pal",
+      "target": "nz_grad",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_7",
+      "source": "nz_region",
+      "target": "nz_grad",
+      "sourceHandle": "out-v",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_8",
+      "source": "nz_grad",
+      "target": "nz_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_9",
+      "source": "nz_fill",
+      "target": "nz_rect",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_10",
+      "source": "nz_region",
+      "target": "nz_rect",
+      "sourceHandle": "out-pos",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_11",
+      "source": "nz_rect",
+      "target": "nz_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_12",
+      "source": "nz_region",
+      "target": "nz_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

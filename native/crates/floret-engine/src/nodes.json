@@ -228,7 +228,7 @@
    "type": "color/gradient",
    "category": "Color",
    "label": "Gradient",
-   "description": "Sample a gradient of color stops at t ∈ [0, 1].",
+   "description": "Sample a gradient of color stops at t ∈ [0, 1]. `space` picks how neighbouring stops blend: rgb, oklab (perceptually even) or oklch (round the hue wheel).",
    "inputs": [
     {
      "name": "colors",
@@ -251,8 +251,16 @@
    ],
    "eval": "raw",
    "dynamicInputs": false,
-   "defaultParams": null,
-   "paramOptions": null
+   "defaultParams": {
+    "space": "rgb"
+   },
+   "paramOptions": {
+    "space": [
+     "rgb",
+     "oklab",
+     "oklch"
+    ]
+   }
   },
   {
    "type": "color/hex",
@@ -328,7 +336,7 @@
    "type": "color/lerp",
    "category": "Color",
    "label": "Lerp",
-   "description": "Linear interpolation in RGB between a and b.",
+   "description": "Blend from a to b by t. `space` picks how: rgb mixes the channels (fast, but a blend between strong colours dips through grey); oklab blends perceptually, evenly and without muddy midpoints; oklch walks round the hue wheel, keeping colours vivid.",
    "inputs": [
     {
      "name": "a",
@@ -366,16 +374,24 @@
      "kind": "single"
     }
    ],
-   "eval": "scalar",
+   "eval": "raw",
    "dynamicInputs": false,
-   "defaultParams": null,
-   "paramOptions": null
+   "defaultParams": {
+    "space": "rgb"
+   },
+   "paramOptions": {
+    "space": [
+     "rgb",
+     "oklab",
+     "oklch"
+    ]
+   }
   },
   {
    "type": "color/palette",
    "category": "Color",
    "label": "Palette",
-   "description": "Author a list of colours by clicking swatches.",
+   "description": "A list of colours. `mode` stops: author them by clicking swatches. cosine: Inigo Quilez's a + b·cos(2π(c·t + d)) per channel, sampled `count` times round one cycle (a = centre, b = contrast, c = how many times each channel cycles, d = phase). complementary, analogous, triadic, split, tetradic: colour harmonies — the base colour and its hue turned round the colour wheel (analogous / split use `angle`).",
    "inputs": [
     {
      "name": "c0",
@@ -396,6 +412,7 @@
    "eval": "raw",
    "dynamicInputs": true,
    "defaultParams": {
+    "mode": "stops",
     "stopCount": 4,
     "c0": "#fed000",
     "c1": "#fc8405",
@@ -406,7 +423,17 @@
     "c6": "#06b4b0",
     "c7": "#4b8a5f"
    },
-   "paramOptions": null
+   "paramOptions": {
+    "mode": [
+     "stops",
+     "cosine",
+     "complementary",
+     "analogous",
+     "triadic",
+     "split",
+     "tetradic"
+    ]
+   }
   },
   {
    "type": "color/rgb",
@@ -4735,6 +4762,39 @@
    "paramOptions": null
   },
   {
+   "type": "math/expression",
+   "category": "Math",
+   "label": "Expression",
+   "description": "Type a formula, e.g. `sin(x * 3) + y * t`. Every name it uses becomes an input pin; wire spreads in and it runs once per element (shorter spreads cycle). Built in: `t` (seconds) and `frame`, `index` / `count` (the element), `pi`, `tau`, `e`. Values can be numbers, vec2s or colours (channels 0..1): `p.x`, `c.r` read a component (and give that pin a vec2 / colour type); + − * / work per component. Operators: + - * / % (wraps negatives) ^, comparisons, && || !, `c ? a : b`. Functions: sin cos tan asin acos atan atan2 sinh cosh tanh exp log log2 log10 sqrt pow abs sign floor ceil round fract trunc mod min max clamp mix step smoothstep map hypot radians degrees noise(x, y, seed) vec2(x, y) length distance dot normalize angle rgb(r, g, b, a) hsl(h, s, l, a). Mistakes show on the node.",
+   "inputs": [
+    {
+     "name": "x",
+     "type": "number",
+     "kind": "spread",
+     "default": 0
+    },
+    {
+     "name": "y",
+     "type": "number",
+     "kind": "spread",
+     "default": 0
+    }
+   ],
+   "outputs": [
+    {
+     "name": "value",
+     "type": "any",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "expr": "sin(x * 3) + y * t"
+   },
+   "paramOptions": null
+  },
+  {
    "type": "math/max",
    "category": "Math",
    "label": "Max",
@@ -5823,7 +5883,107 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
+  },
+  {
+   "type": "noise/noise",
+   "category": "Random",
+   "label": "Noise",
+   "description": "Smooth 2D noise at (pos + (x, y)) · scale, per element: wire spreads (a grid of positions, a list of seeds) into any pin for a spread of values. Modes: perlin, simplex, value, cellular (Worley — `feature` F1 = distance to the nearest cell point, F2 = to the second nearest, F2-F1 = cell edges) and curl (`flow` = the divergence-free curl of Perlin noise, for advecting things in swirls). `noise` is in [0, 1]. `octaves` > 1 adds finer layers (fBm), each `falloff` times as strong. `warp` pushes the sample point around by another noise field (`warp scale` = its frequency) for marbled, folded shapes. Perlin mode at default settings gives exactly what the old Perlin node gave.",
+   "inputs": [
+    {
+     "name": "pos",
+     "type": "vec2",
+     "kind": "spread",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "x",
+     "type": "number",
+     "kind": "spread",
+     "default": 0
+    },
+    {
+     "name": "y",
+     "type": "number",
+     "kind": "spread",
+     "default": 0
+    },
+    {
+     "name": "scale",
+     "type": "number",
+     "kind": "spread",
+     "default": 1
+    },
+    {
+     "name": "seed",
+     "type": "number",
+     "kind": "spread",
+     "default": 0,
+     "integer": true
+    },
+    {
+     "name": "octaves",
+     "type": "number",
+     "kind": "spread",
+     "default": 1,
+     "integer": true
+    },
+    {
+     "name": "falloff",
+     "type": "number",
+     "kind": "spread",
+     "default": 0.5
+    },
+    {
+     "name": "warp",
+     "type": "number",
+     "kind": "spread",
+     "default": 0
+    },
+    {
+     "name": "warpScale",
+     "type": "number",
+     "kind": "spread",
+     "default": 1,
+     "label": "warp scale"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "noise",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "flow",
+     "type": "vec2",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "perlin"
+   },
+   "paramOptions": {
+    "mode": [
+     "perlin",
+     "simplex",
+     "value",
+     "cellular",
+     "curl"
+    ],
+    "feature": [
+     "F1",
+     "F2",
+     "F2-F1"
+    ]
+   }
   },
   {
    "type": "noise/perlin",
@@ -5874,7 +6034,8 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "particles/bounds",

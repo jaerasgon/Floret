@@ -215,7 +215,12 @@ fn every_math_type_is_registered() {
         .collect();
     assert!(missing.is_empty(), "unimplemented: {missing:?}");
     let doc: J = serde_json::from_str(include_str!("ts_cases.json")).unwrap();
-    let count = cat.iter().filter(|s| s.ty.starts_with("math/")).count();
+    // Native-only math nodes have no TypeScript cases.
+    let native_only = ["math/expression"];
+    let count = cat
+        .iter()
+        .filter(|s| s.ty.starts_with("math/") && !native_only.contains(&s.ty.as_str()))
+        .count();
     assert_eq!(doc.as_object().unwrap().len(), count);
 }
 

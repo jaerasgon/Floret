@@ -29,6 +29,9 @@ pub enum Custom {
     Video,
     /// `text/font`: a font-file picker (stores the path).
     Font,
+    /// `math/expression`: the formula in a box across the node, above
+    /// the pins it makes.
+    Expression,
 }
 
 /// An arity stepper: which param it drives and its bounds.
@@ -72,6 +75,7 @@ pub fn custom_of(def_type: &str) -> Option<Custom> {
         "io/svg" => Custom::Svg,
         t if is_video(t) => Custom::Video,
         "text/font" => Custom::Font,
+        "math/expression" => Custom::Expression,
         "math/add" | "math/sub" | "math/mul" | "math/div" | "math/min" | "math/max"
         | "spread/merge" | "transform/group" => Custom::Slots(GROUP_SLOTS),
         _ => return None,
@@ -269,6 +273,15 @@ pub fn select_options(n: &PatchNode) -> Vec<String> {
 pub const DEFAULT_STOPS: [&str; 8] = [
     "#fed000", "#fc8405", "#ed361a", "#4464a1", "#cf3895", "#6d358a", "#06b4b0", "#4b8a5f",
 ];
+
+/// Whether a palette generates its colours (cosine / harmony modes)
+/// rather than showing its authored stops.
+pub fn palette_generates(n: &PatchNode) -> bool {
+    matches!(
+        param_str(n, "mode", "stops"),
+        "cosine" | "complementary" | "analogous" | "triadic" | "split" | "tetradic"
+    )
+}
 
 /// Stop `i`'s hex (the `c<i>` param, else the default seed).
 pub fn palette_stop(n: &PatchNode, i: usize) -> String {
@@ -675,6 +688,25 @@ mod tests {
         assert_eq!(palette_stop(&n, 0), "#fed000");
         assert_eq!(palette_stop(&n, 1), "#123456");
         assert_eq!(palette_stop(&n, 12), "#ffffff");
+    }
+
+    #[test]
+    fn generated_palettes_and_expressions() {
+        let mode = |m: serde_json::Value| with("color/palette", json!({ "mode": m }));
+        assert!(!palette_generates(&with("color/palette", json!({}))));
+        assert!(!palette_generates(&mode(json!("stops"))));
+        assert!(!palette_generates(&mode(json!("bogus"))));
+        for m in [
+            "cosine",
+            "complementary",
+            "analogous",
+            "triadic",
+            "split",
+            "tetradic",
+        ] {
+            assert!(palette_generates(&mode(json!(m))), "{m}");
+        }
+        assert_eq!(custom_of("math/expression"), Some(Custom::Expression));
     }
 
     #[test]

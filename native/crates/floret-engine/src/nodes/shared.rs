@@ -45,3 +45,25 @@ pub fn first(inputs: &[crate::value::Spread], i: usize) -> Value {
         .cloned()
         .unwrap_or(Value::Undefined)
 }
+
+/// Element count for a per-element evaluation over several spreads: the
+/// longest one (shorter ones cycle), or 0 when any of them is empty.
+pub fn cyclic_len<'a>(spreads: impl IntoIterator<Item = &'a crate::value::Spread>) -> usize {
+    let mut n = 0;
+    for s in spreads {
+        if s.is_empty() {
+            return 0;
+        }
+        n = n.max(s.len());
+    }
+    n
+}
+
+/// Element `i` of a spread, cycling (`s[i % len]`); `Undefined` when empty.
+pub fn cyclic(s: &crate::value::Spread, i: usize) -> Value {
+    if s.is_empty() {
+        Value::Undefined
+    } else {
+        s[i % s.len()].clone()
+    }
+}

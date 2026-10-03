@@ -146,6 +146,7 @@ pub fn groups() -> Vec<Section> {
             title: "Preview",
             rows: vec![
                 menu(Restart),
+                menu(NewVariation),
                 (Trigger::Text("Space over the preview"), "Pause / play"),
                 menu(ExportPng),
                 (keys(none, Key::Escape), "Leave focus mode / close output"),

@@ -89,6 +89,8 @@ pub struct Engine {
     /// Store version `param_versions` was read at.
     params_seen: Option<u64>,
     profile: Profile,
+    /// Mixed into every random / noise node's seed (see `crate::seed`).
+    patch_seed: u32,
 }
 
 impl Engine {
@@ -103,6 +105,7 @@ impl Engine {
             param_versions: Vec::new(),
             params_seen: None,
             profile: Profile::default(),
+            patch_seed: 0,
         }
     }
 
@@ -115,6 +118,19 @@ impl Engine {
     /// `crate::audio`).
     pub fn set_audio(&mut self, audio: Option<Arc<dyn crate::audio::AudioBackend>>) {
         self.audio = audio;
+    }
+
+    /// Set the patch seed (see `crate::seed`). A change forgets memoised
+    /// outputs, which may have been drawn with the old seed.
+    pub fn set_patch_seed(&mut self, seed: u32) {
+        if seed != self.patch_seed {
+            self.patch_seed = seed;
+            self.memo.clear();
+        }
+    }
+
+    pub fn patch_seed(&self) -> u32 {
+        self.patch_seed
     }
 
     /// Time every node from the next tick on (see [`Engine::profile`]).
@@ -130,6 +146,7 @@ impl Engine {
     pub fn tick(&mut self, frame: &FrameCtx) -> TickResult {
         let start = Instant::now();
         let _host = crate::host::install(self.host.clone());
+        let _seed = crate::seed::install(self.patch_seed);
         let _audio = crate::audio::begin(self.audio.clone(), self.sound_nodes());
         let n = self.graph.nodes.len();
         self.memo.resize_with(n, NodeMemo::default);

@@ -128,7 +128,7 @@ fn lfo(_: &NodeInit) -> Box<dyn NodeImpl> {
         let width = num(inputs, WIDTH, 0.5).clamp(0.0, 1.0);
         let count = num(inputs, COUNT, 1.0).round().clamp(1.0, MAX_COUNT as f64) as usize;
         let spread = num(inputs, SPREAD, 1.0);
-        let seed = num(inputs, SEED, 0.0) as i64 as u64;
+        let seed = cx.seed(num(inputs, SEED, 0.0)) as i64 as u64;
         let values: Vec<Value> = (0..count)
             .map(|i| {
                 let at = c + offset + spread * i as f64 / count as f64;

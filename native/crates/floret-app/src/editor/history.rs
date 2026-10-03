@@ -1,7 +1,7 @@
 //! Undo / redo. Port of `src/editor/history.ts`.
 //!
 //! An entry is a snapshot of the patch (nodes, edges, params — params live
-//! on the nodes here). Every committed mutation pushes one entry; live
+//! on the nodes here — plus the patch seed and presets). Every committed mutation pushes one entry; live
 //! scrubs don't push at all; a param commit on the same `(node, key)`
 //! within 250 ms of the previous one replaces that entry instead of
 //! stacking, so typing collapses into one step.
@@ -9,7 +9,7 @@
 //! Every entry has a unique id; the current entry's id is the patch's
 //! revision, which the app compares with the saved one for dirty tracking.
 
-use floret_engine::patch::{PatchEdge, PatchFile, PatchNode};
+use floret_engine::patch::{PatchEdge, PatchFile, PatchNode, Preset};
 use std::time::{Duration, Instant};
 
 pub const MAX_HISTORY: usize = 100;
@@ -19,6 +19,8 @@ pub const COALESCE: Duration = Duration::from_millis(250);
 struct Entry {
     nodes: Vec<PatchNode>,
     edges: Vec<PatchEdge>,
+    seed: u32,
+    presets: Vec<Preset>,
     at: Instant,
     /// `"<node>.<key>"` for param commits (coalescing key).
     param_key: Option<String>,
@@ -38,6 +40,8 @@ impl History {
         Entry {
             nodes: patch.nodes.clone(),
             edges: patch.edges.clone(),
+            seed: patch.seed,
+            presets: patch.presets.clone(),
             at,
             param_key,
             id: self.next_id,
@@ -117,6 +121,8 @@ impl History {
     fn apply(e: &Entry, patch: &mut PatchFile) {
         patch.nodes = e.nodes.clone();
         patch.edges = e.edges.clone();
+        patch.seed = e.seed;
+        patch.presets = e.presets.clone();
     }
 
     /// Number of undo states held (including the current one).
@@ -194,6 +200,28 @@ mod tests {
         assert_eq!(value(&p), 3.0);
         h.undo(&mut p);
         assert_eq!(value(&p), 2.0, "merged step lands on the last value");
+    }
+
+    #[test]
+    fn undo_covers_the_seed_and_presets() {
+        let mut p = patch(vec![node("a", "value/number")], vec![]);
+        let mut h = History::default();
+        h.reset(&p);
+        p.seed = 42;
+        h.push(&p, None);
+        p.presets.push(Preset {
+            name: "A".into(),
+            ..Preset::default()
+        });
+        h.push(&p, None);
+        h.undo(&mut p);
+        assert!(p.presets.is_empty());
+        assert_eq!(p.seed, 42);
+        h.undo(&mut p);
+        assert_eq!(p.seed, 0);
+        h.redo(&mut p);
+        h.redo(&mut p);
+        assert_eq!((p.seed, p.presets.len()), (42, 1));
     }
 
     #[test]

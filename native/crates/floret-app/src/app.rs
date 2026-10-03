@@ -451,6 +451,10 @@ impl App {
             Command::Shortcuts => self.show_shortcuts = true,
             Command::Welcome => self.welcome.show_home(),
             Command::About => self.show_about = true,
+            Command::NewVariation => {
+                crate::presets_panel::new_variation(&mut self.patch, &mut self.view);
+                self.notify(format!("Variation · seed {}", self.patch.seed), false);
+            }
             _ => {}
         }
     }
@@ -544,6 +548,16 @@ impl App {
             }
             if tool(ui, "⟲", &shortcut_hint(&Command::Restart)).clicked() {
                 t.restart();
+            }
+            cluster_gap(ui);
+            // Variations: re-roll the patch seed.
+            let tip = format!(
+                "{}: re-roll the patch seed (now {})",
+                shortcut_hint(&Command::NewVariation),
+                self.patch.seed
+            );
+            if tool(ui, "Vary", &tip).clicked() {
+                self.commands.push(Command::NewVariation);
             }
             ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                 if tool(ui, "⚙", &shortcut_hint(&Command::Preferences)).clicked() {
@@ -1125,5 +1139,7 @@ pub fn empty_patch() -> PatchFile {
         meta: None,
         nodes: Vec::new(),
         edges: Vec::new(),
+        seed: 0,
+        presets: Vec::new(),
     }
 }

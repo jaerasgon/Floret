@@ -108,7 +108,7 @@ pub fn compute(inputs: &[Spread]) -> Vec<Spread> {
     let size = js::max(1.0, num(inputs, 2, 140.0));
     let density = js::max(0.0, js::min(2.0, num(inputs, 3, 1.0)));
     let steps = js::max(1.0, num(inputs, 4, 200.0).floor());
-    let seed = js::to_uint32(num(inputs, 5, 0.0).floor());
+    let seed = js::to_uint32(crate::seed::mix(num(inputs, 5, 0.0)).floor());
 
     let mut rng = Mulberry32::new(seed);
     let spawn_prob = BASE_SPAWN_PROB * density;

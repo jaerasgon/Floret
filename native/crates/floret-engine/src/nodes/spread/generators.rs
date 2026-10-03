@@ -70,9 +70,9 @@ pub fn pick(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
 }
 
 /// Seeded Fisher–Yates over `hashUnit(i, 0, seed)`.
-pub fn randomize(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
+pub fn randomize(inputs: &[Spread], cx: &mut EvalCtx) -> NodeResult {
     let mut out = sp(inputs, 0).to_vec();
-    let seed = f64::from(js::to_int32(num_d(&first(inputs, 1), 0.0)));
+    let seed = f64::from(js::to_int32(cx.seed(num_d(&first(inputs, 1), 0.0))));
     for i in (1..out.len()).rev() {
         let fi = i as f64;
         let j = js::min(fi, (hash_unit(fi, 0.0, seed) * (fi + 1.0)).floor()) as usize;
@@ -117,11 +117,11 @@ pub fn geometric(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
 }
 
 /// 1-D Perlin noise in [0, 1].
-pub fn noise(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
+pub fn noise(inputs: &[Spread], cx: &mut EvalCtx) -> NodeResult {
     let count = int_count(&first(inputs, 0));
     let freq = num_d(&first(inputs, 1), 1.0);
     let phase = num_d(&first(inputs, 2), 0.0);
-    let seed = f64::from(js::to_int32(num_d(&first(inputs, 3), 0.0)));
+    let seed = f64::from(js::to_int32(cx.seed(num_d(&first(inputs, 3), 0.0))));
     if count == 0.0 {
         return ok(vec![vec![]]);
     }

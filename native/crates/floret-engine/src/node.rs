@@ -112,6 +112,13 @@ impl EvalCtx<'_> {
         crate::host::current()
     }
 
+    /// The node's own `seed` with the patch seed mixed in — the one place
+    /// every random / noise node gets its seed from (see [`crate::seed`]).
+    /// Returns `own` unchanged while the patch seed is 0.
+    pub fn seed(&self, own: f64) -> f64 {
+        crate::seed::mix(own)
+    }
+
     /// Report a problem on the node (shown like an error) while still
     /// returning normal outputs, e.g. a failed load.
     pub fn warn(&self, msg: impl Into<String>) {

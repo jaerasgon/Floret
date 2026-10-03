@@ -66,6 +66,8 @@ pub(crate) mod test_util {
             meta: None,
             nodes,
             edges,
+            seed: 0,
+            presets: Vec::new(),
         }
     }
 }

@@ -29,6 +29,7 @@ mod menu;
 mod node_help;
 mod palette;
 mod prefs;
+mod presets_panel;
 mod preview;
 mod profiler;
 mod recovery;

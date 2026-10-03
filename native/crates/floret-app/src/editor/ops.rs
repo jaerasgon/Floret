@@ -82,6 +82,8 @@ pub fn empty_like(like: &PatchFile) -> PatchFile {
         meta: None,
         nodes: Vec::new(),
         edges: Vec::new(),
+        seed: 0,
+        presets: Vec::new(),
     }
 }
 

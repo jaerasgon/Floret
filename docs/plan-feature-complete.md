@@ -5,6 +5,10 @@ product; the TypeScript web app is reference-only.
 
 ## Where things stand
 
+- **2026-10-03: all nine items below are merged** on
+  `claude/local-testing-setup-80hq09` (fmt, clippy, all tests pass). See
+  `docs/feature-complete-summary.md` for what's new, what to test on the Mac
+  and the decisions awaiting approval.
 - `main` has the full native app: engine (every web-app node + video, type,
   LFO), wgpu renderer, editor, files / autosave / menus, sound, MIDI,
   camera and body tracking, shaders, profiler. Parity tests pass against

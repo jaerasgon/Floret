@@ -1,0 +1,211 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Slime Mould",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "sm_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -290
+      },
+      "params": {
+        "text": "Slime mould (physarum)\n\n20 000 agents on a 256² trail map. Each one smells the trail ahead and to either side, turns toward the strongest, steps and leaves trail behind; the map blurs and fades every step. Veins form, merge and reroute.\n\nThe map comes out as an image, coloured by the `colors` ramp from empty (first stop) to dense (last). The mouse keeps feeding trail where it is. The sliders set the sensor angle and the turn angle: drag them to reshape the network as it grows.",
+        "width": 560,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Slime mould (physarum)\n\n20 000 agents on a 256² trail map. Each one smells the trail ahead and to either side, turns toward the strongest, steps and leaves trail behind; the map blurs and fades every step. Veins form, merge and reroute.\n\nThe map comes out as an image, coloured by the `colors` ramp from empty (first stop) to dense (last). The mouse keeps feeding trail where it is. The sliders set the sensor angle and the turn angle: drag them to reshape the network as it grows.",
+        "width": 560,
+        "height": 220
+      }
+    },
+    {
+      "id": "sm_sa",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {
+        "value": 22.5,
+        "min": 5,
+        "max": 90
+      },
+      "portValues": {
+        "value": 22.5,
+        "min": 5,
+        "max": 90
+      }
+    },
+    {
+      "id": "sm_ta",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 90
+      },
+      "params": {
+        "value": 45,
+        "min": 5,
+        "max": 90
+      },
+      "portValues": {
+        "value": 45,
+        "min": 5,
+        "max": 90
+      }
+    },
+    {
+      "id": "sm_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 0,
+        "y": 200
+      },
+      "params": {}
+    },
+    {
+      "id": "sm_mv",
+      "defType": "vec2/make",
+      "position": {
+        "x": 220,
+        "y": 200
+      },
+      "params": {}
+    },
+    {
+      "id": "sm_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 220,
+        "y": 300
+      },
+      "params": {
+        "stopCount": 4,
+        "c0": "#07070f",
+        "c1": "#163a5f",
+        "c2": "#1f9e89",
+        "c3": "#f4f1bb"
+      },
+      "portValues": {
+        "stopCount": 4,
+        "c0": "#07070f",
+        "c1": "#163a5f",
+        "c2": "#1f9e89",
+        "c3": "#f4f1bb"
+      }
+    },
+    {
+      "id": "sm_sim",
+      "defType": "particles/simulation",
+      "position": {
+        "x": 470,
+        "y": 0
+      },
+      "params": {
+        "mode": "physarum"
+      },
+      "portValues": {
+        "mode": "physarum",
+        "agents": 20000,
+        "size": {
+          "x": 600,
+          "y": 600
+        },
+        "resolution": 256,
+        "sensorDistance": 9,
+        "stepSize": 1,
+        "deposit": 0.3,
+        "decay": 0.08,
+        "diffuse": 0.5,
+        "seed": 1
+      }
+    },
+    {
+      "id": "sm_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 760,
+        "y": 0
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.027450980392156862,
+          "g": 0.027450980392156862,
+          "b": 0.058823529411764705,
+          "a": 1
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.027450980392156862,
+          "g": 0.027450980392156862,
+          "b": 0.058823529411764705,
+          "a": 1
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "sm_sa",
+      "target": "sm_sim",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-sensorAngle"
+    },
+    {
+      "id": "e_2",
+      "source": "sm_ta",
+      "target": "sm_sim",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-turnAngle"
+    },
+    {
+      "id": "e_3",
+      "source": "sm_mouse",
+      "target": "sm_mv",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_4",
+      "source": "sm_mouse",
+      "target": "sm_mv",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_5",
+      "source": "sm_mv",
+      "target": "sm_sim",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-food"
+    },
+    {
+      "id": "e_6",
+      "source": "sm_pal",
+      "target": "sm_sim",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_7",
+      "source": "sm_sim",
+      "target": "sm_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

@@ -464,3 +464,18 @@ All output a `collider` value plugged into a World's `colliders` input. Modes: `
 | **Circle** · `collider/circle` | `center, radius, mode (C), restitution, inverted (C)` → `collider` | Analytic circle. Cheap. |
 | **Rect** · `collider/rect` | `center, size, mode (C), restitution, inverted (C)` → `collider` | Axis-aligned rectangle. Cheap. |
 | **FromLayer** · `collider/from-layer` | `layer, mode (C), restitution, inverted (C)` → `collider` | Build a collider from any shape (rect / ellipse / triangle / polygon). Polygon bounce uses centroid-normal approximation. |
+
+### Simulation
+
+One stateful node with a `mode` dropdown; its pins follow the mode. It steps 60 times per second of frame time (at most 3 steps a frame), so the same seed and frame times give the same result. A rising edge on `reset` starts over; so does a new `seed` (and, per mode, a new size / count / grid). Native only. Samples: `sim-flocking`, `sim-slime-mould`, `sim-dla-coral`, `sim-cloth`.
+
+| Label · type | Inputs → Outputs | Description |
+|---|---|---|
+| **Simulation** · `particles/simulation` | per `mode` (below) → `layer, points*, values*, from*, to*, image` | `layer` draws the simulation; `points` / `values` / `from`, `to` are there to draw your own; `image` is the physarum trail map (1×1 placeholder otherwise). `colors*` ramps shapes along `values`. |
+
+| Mode | Inputs | Outputs |
+|---|---|---|
+| `flocking` | `count, size, maxSpeed, separation, alignment, cohesion, radius, target, attract, scale, style, colors*, seed, reset` | Boids on a wrapping `size` field: darts on `layer`; `values` = heading (radians); `from`→`to` = 0.1 s of velocity. |
+| `physarum` | `agents, size, resolution, sensorAngle, sensorDistance, turnAngle, stepSize, deposit, decay, diffuse, food*, colors*, seed, reset` | Slime-mould agents on a `resolution`-cell trail map (angles in degrees, distances in cells; trail saturates at 1). `image` and `layer` show the map: white→clear with no `colors`, one colour→that colour, several→a ramp from empty to dense. `food*` points keep the trail full. |
+| `dla` | `count, size, radius, rate, stickiness, seeds*, style, colors*, seed, reset` | Walkers stick to a cluster grown from `seeds*` (the origin if none), `rate` per second up to `count`. Lines from each particle to its parent; `values` = growth order 0..1. |
+| `cloth` | `cols, rows, size, pos, pin, gravity, wind, stiffness, iterations, damping, tear, pointer, grab, style, colors*, reset` | Verlet spring mesh; `pin` = top / corners / left / none (pins follow `pos`). `tear` > 0 breaks springs stretched past `tear` × rest. Holding `grab` drags the point nearest `pointer`. `values` = stretch; springs on `layer` and `from`→`to`. |

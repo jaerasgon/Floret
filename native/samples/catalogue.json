@@ -442,6 +442,13 @@
       "file": "kaleidoscope.flora"
     },
     {
+      "id": "expression-rose",
+      "name": "Expression Rose",
+      "category": "Curves",
+      "description": "A rose curve of 900 dots from three typed formulas — position, colour and size — each run once per value of a spread. The formulas' names become pins (petals comes from a slider) and t animates them.",
+      "file": "expression-rose.flora"
+    },
+    {
       "id": "grid-art",
       "name": "Grid Art",
       "category": "Curves",
@@ -496,6 +503,13 @@
       "category": "Fields",
       "description": "A grid of streaks aligned to a divergence-free curl-noise field that drifts with time — the classic swirling flow-field look.",
       "file": "curl-flow.flora"
+    },
+    {
+      "id": "noise-cellular-warp",
+      "name": "Cellular Warp",
+      "category": "Fields",
+      "description": "One Noise node samples a whole 64×64 grid at once: cellular (Worley) noise, F2−F1 for the cell walls, domain-warped by a second noise field and drifting with time, coloured through an OKLab gradient. Switch its mode to perlin, simplex or value.",
+      "file": "noise-cellular-warp.flora"
     },
     {
       "id": "ripple-field",
@@ -699,6 +713,13 @@
       "category": "Data",
       "description": "Noise bars where each lights green only if it is taller than BOTH neighbours — local-maximum detection with spread/neighbor inside a ForEach.",
       "file": "local-peaks.flora"
+    },
+    {
+      "id": "color-spaces",
+      "name": "Colour Spaces",
+      "category": "Color",
+      "description": "The same red → blue blend in RGB, OKLab and OKLCH (Lerp's space option), a cosine palette, and a tetradic harmony around a base colour whose hue turns with time (Palette's generator modes).",
+      "file": "color-spaces.flora"
     }
   ]
 }

@@ -1,0 +1,294 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Expression Rose",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ex_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -274
+      },
+      "params": {
+        "text": "Expression — type the maths\n\nEach formula's names become pins (u, petals). Fed a spread of 900 values, a formula runs once per value. vec2(…) builds positions, hsl(…) colours, and t is the clock.\n\nEdit a formula on its node: a typo shows its error on the node.",
+        "width": 460,
+        "height": 210
+      },
+      "portValues": {
+        "text": "Expression — type the maths\n\nEach formula's names become pins (u, petals). Fed a spread of 900 values, a formula runs once per value. vec2(…) builds positions, hsl(…) colours, and t is the clock.\n\nEdit a formula on its node: a typo shows its error on the node.",
+        "width": 460,
+        "height": 210
+      }
+    },
+    {
+      "id": "ex_u",
+      "defType": "spread/linear",
+      "position": {
+        "x": 29,
+        "y": 221
+      },
+      "params": {
+        "from": 0,
+        "to": 1,
+        "count": 900
+      },
+      "portValues": {
+        "from": 0,
+        "to": 1,
+        "count": 900
+      }
+    },
+    {
+      "id": "ex_petals",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 76
+      },
+      "params": {
+        "value": 7,
+        "min": 1,
+        "max": 12,
+        "step": 1
+      },
+      "portValues": {
+        "value": 7,
+        "min": 1,
+        "max": 12,
+        "step": 1
+      }
+    },
+    {
+      "id": "ex_pos",
+      "defType": "math/expression",
+      "position": {
+        "x": 288,
+        "y": 0
+      },
+      "params": {
+        "expr": "vec2(cos(u * tau), sin(u * tau)) * (50 + 170 * abs(cos(petals / 2 * u * tau + t / 3)))"
+      }
+    },
+    {
+      "id": "ex_col",
+      "defType": "math/expression",
+      "position": {
+        "x": 288,
+        "y": 333
+      },
+      "params": {
+        "expr": "hsl(fract(u * 2 + t / 20), 0.75, 0.62)"
+      }
+    },
+    {
+      "id": "ex_size",
+      "defType": "math/expression",
+      "position": {
+        "x": 288,
+        "y": 182
+      },
+      "params": {
+        "expr": "1.5 + 4 * (0.5 + 0.5 * sin(u * tau * 30 - t * 4))"
+      }
+    },
+    {
+      "id": "ex_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 568,
+        "y": 124
+      },
+      "params": {
+        "width": 521,
+        "height": 277,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "pos",
+          "name": "pos",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "col",
+          "name": "col",
+          "type": "color",
+          "direction": "input",
+          "y": 199
+        },
+        {
+          "id": "size",
+          "name": "size",
+          "type": "number",
+          "direction": "input",
+          "y": 123
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 92
+        }
+      ],
+      "width": 521,
+      "height": 277
+    },
+    {
+      "id": "ex_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 129,
+        "y": 163
+      },
+      "params": {},
+      "parentId": "ex_region"
+    },
+    {
+      "id": "ex_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 313,
+        "y": 56
+      },
+      "params": {},
+      "parentId": "ex_region"
+    },
+    {
+      "id": "ex_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1185,
+        "y": 180
+      },
+      "params": {
+        "width": 500,
+        "height": 500,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.050980392156862744,
+          "b": 0.07058823529411765,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.050980392156862744,
+          "b": 0.07058823529411765,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "ex_u",
+      "target": "ex_pos",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-u"
+    },
+    {
+      "id": "e_2",
+      "source": "ex_u",
+      "target": "ex_col",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-u"
+    },
+    {
+      "id": "e_3",
+      "source": "ex_u",
+      "target": "ex_size",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-u"
+    },
+    {
+      "id": "e_4",
+      "source": "ex_petals",
+      "target": "ex_pos",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-petals"
+    },
+    {
+      "id": "e_5",
+      "source": "ex_pos",
+      "target": "ex_region",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_6",
+      "source": "ex_col",
+      "target": "ex_region",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_7",
+      "source": "ex_size",
+      "target": "ex_region",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-size"
+    },
+    {
+      "id": "e_8",
+      "source": "ex_region",
+      "target": "ex_fill",
+      "sourceHandle": "out-col",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_9",
+      "source": "ex_fill",
+      "target": "ex_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_10",
+      "source": "ex_region",
+      "target": "ex_dot",
+      "sourceHandle": "out-pos",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_11",
+      "source": "ex_region",
+      "target": "ex_dot",
+      "sourceHandle": "out-size",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_12",
+      "source": "ex_region",
+      "target": "ex_dot",
+      "sourceHandle": "out-size",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_13",
+      "source": "ex_dot",
+      "target": "ex_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_14",
+      "source": "ex_region",
+      "target": "ex_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

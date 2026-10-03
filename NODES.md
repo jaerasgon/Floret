@@ -53,6 +53,7 @@ re-created when the node type changes or the editor node is deleted.
 | **Pow** · `math/pow` | `a, b: number` → `out: number` | aᵇ |
 | **Min** · `math/min` | `a, b: number` → `out: number` | `Math.min(a, b)` |
 | **Max** · `math/max` | `a, b: number` → `out: number` | `Math.max(a, b)` |
+| **Expression** · `math/expression` | one pin per name in the formula: `number*`, or `vec2*` / `color*` when read as `p.x` / `c.r` → `value: any` | Type a formula (`expr` param), e.g. `sin(x * 3) + y * t`. Runs once per element over spreads (shorter ones cycle). Built in: `t`, `frame`, `index`, `count`, `pi`, `tau`, `e`. Numbers, vec2s and colours (0..1 channels) with per-component arithmetic; `+ - * / % ^`, comparisons, `&& \|\| !`, `c ? a : b`; maths functions plus `noise`, `vec2`, `length`, `distance`, `dot`, `normalize`, `angle`, `rgb`, `hsl`. No loops or IO; errors show on the node. Native-only. |
 | **Sin** · `math/sin` | `x: number` → `out: number` | `Math.sin(x)` — radians in, −1..1 out |
 | **Cos** · `math/cos` | `x: number` → `out: number` | `Math.cos(x)` |
 | **Tan** · `math/tan` | `x: number` → `out: number` | `Math.tan(x)` |
@@ -120,7 +121,8 @@ Seeded, deterministic noise and PRNGs. Wire `time/frame` into `seed` for per-fra
 
 | Label · type | Inputs → Outputs | Description |
 |---|---|---|
-| **Perlin** · `noise/perlin` | `x, y, seed, octaves, falloff: number` → `out: number` | 2D Perlin noise in [0, 1]. `octaves` > 1 yields fractal Brownian motion; `falloff` is the amplitude ratio between octaves (default 0.5). |
+| **Noise** · `noise/noise` | `pos: vec2*`, `x, y, scale, seed, octaves, falloff, warp, warpScale: number*` (+ `feature: string` in cellular mode) → `noise: number`, `flow: vec2` | 2D noise at (pos + (x, y)) · scale, per element over spreads. `mode`: perlin, simplex, value, cellular (Worley; `feature` F1 / F2 / F2-F1) or curl (`flow` = curl of Perlin fBm). `octaves` > 1 = fBm, `falloff` = amplitude ratio; `warp` / `warpScale` domain-warp the point. Perlin mode at defaults equals the old Perlin node, curl mode the old CurlNoise. Native-only. |
+| **Perlin** · `noise/perlin` | `x, y, seed, octaves, falloff: number` → `out: number` | 2D Perlin noise in [0, 1]. `octaves` > 1 yields fractal Brownian motion; `falloff` is the amplitude ratio between octaves (default 0.5). Hidden from the palette: use Noise. |
 | **Uniform** · `random/uniform` | `min, max, seed: number` → `out: number` | Uniform random in [min, max). |
 | **Gaussian** · `random/gaussian` | `mean, sd, seed: number` → `out: number` | Gaussian (normal) random with the given mean and standard deviation. |
 | **Wanderer2D** · `random/wanderer2d` | `t, speed, area, seed: number` → `out: vec2` | A 2D point that drifts smoothly with Perlin noise, centred on (0, 0). Pure function of `t` — feed `time/seconds` for live drift. |
@@ -208,8 +210,9 @@ Channel conventions match the Fill node: r/g/b/a are 0..255 on node boundaries; 
 | **SplitRGB** · `color/split-rgb` | `color: color` → `r, g, b, a: number` | Decompose into r/g/b/a (0..255). |
 | **SplitHSL** · `color/split-hsl` | `color: color` → `h, s, l, a: number` | Decompose into h (0..360), s/l (0..100), a (0..255). |
 | **SetAlpha** · `color/set-alpha` | `color: color, a: number` → `out: color` | Replace the alpha channel (0..255). |
-| **Lerp** · `color/lerp` | `a, b: color, t: number` → `out: color` | Linear interpolation in RGB. |
-| **Palette** · `color/palette` | `colors: color*, t: number` → `out: color` | Multi-stop gradient lookup; stops are equally spaced and `t` is clamped to [0, 1]. |
+| **Lerp** · `color/lerp` | `a, b: color, t: number` → `out: color` | Blend a → b. `space` param: rgb (per channel, the default), oklab (perceptually even) or oklch (round the hue wheel). |
+| **Gradient** · `color/gradient` | `colors: color*, t: number` → `color: color` | Multi-stop gradient lookup; stops are equally spaced and `t` is clamped to [0, 1]. `space` param as on Lerp. |
+| **Palette** · `color/palette` | per mode → `colors: color*` | A list of colours. `mode`: stops (authored swatches, the default), cosine (`a + b·cos(2π(c·t + d))`, `stopCount` colours), or a harmony of a `base` colour — complementary, analogous, triadic, split, tetradic (HSL hue turns; analogous / split take `angle`). |
 
 ## Transform
 

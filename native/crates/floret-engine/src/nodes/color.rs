@@ -161,6 +161,165 @@ fn lerp_color(a: Color, b: Color, t: f64) -> Color {
     }
 }
 
+// ─── Colour spaces (native-only) ─────────────────────────────────────────────
+//
+// OKLab (Björn Ottosson, 2020) is a perceptual space: equal steps look
+// equally different, so blends through it stay bright and even where an
+// RGB blend goes muddy or dark in the middle. OKLCH is the same space in
+// polar form (lightness, chroma, hue), so a blend walks round the hue
+// wheel instead of cutting across it through grey.
+
+/// The space a blend is computed in (the `space` param; RGB when absent,
+/// which is what every node did before).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Space {
+    Rgb,
+    Oklab,
+    Oklch,
+}
+
+impl Space {
+    pub(crate) fn parse(v: Option<&serde_json::Value>) -> Space {
+        match v.and_then(serde_json::Value::as_str) {
+            Some("oklab") => Space::Oklab,
+            Some("oklch") => Space::Oklch,
+            _ => Space::Rgb,
+        }
+    }
+}
+
+/// sRGB transfer function → linear light (odd-extended for negatives).
+fn srgb_to_linear(c: f64) -> f64 {
+    let a = c.abs();
+    let l = if a <= 0.040_45 {
+        a / 12.92
+    } else {
+        ((a + 0.055) / 1.055).powf(2.4)
+    };
+    l.copysign(c)
+}
+
+fn linear_to_srgb(l: f64) -> f64 {
+    let a = l.abs();
+    let c = if a <= 0.003_130_8 {
+        a * 12.92
+    } else {
+        1.055 * a.powf(1.0 / 2.4) - 0.055
+    };
+    c.copysign(l)
+}
+
+type Mat3 = [[f64; 3]; 3];
+
+/// Linear sRGB → LMS cone response (Ottosson's M1).
+const RGB_TO_LMS: Mat3 = [
+    [0.412_221_470_8, 0.536_332_536_3, 0.051_445_992_9],
+    [0.211_903_498_2, 0.680_699_545_1, 0.107_396_956_6],
+    [0.088_302_461_9, 0.281_718_837_6, 0.629_978_700_5],
+];
+
+/// Cube-rooted LMS → OKLab (Ottosson's M2).
+const LMS_TO_LAB: Mat3 = [
+    [0.210_454_255_3, 0.793_617_785_0, -0.004_072_046_8],
+    [1.977_998_495_1, -2.428_592_205_0, 0.450_593_709_9],
+    [0.025_904_037_1, 0.782_771_766_2, -0.808_675_766_0],
+];
+
+fn mul(m: &Mat3, v: [f64; 3]) -> [f64; 3] {
+    m.map(|row| row[0] * v[0] + row[1] * v[1] + row[2] * v[2])
+}
+
+fn invert(m: &Mat3) -> Mat3 {
+    let c = |r: usize, k: usize| {
+        let (r1, r2) = ((r + 1) % 3, (r + 2) % 3);
+        let (k1, k2) = ((k + 1) % 3, (k + 2) % 3);
+        m[r1][k1] * m[r2][k2] - m[r1][k2] * m[r2][k1]
+    };
+    let det = m[0][0] * c(0, 0) + m[0][1] * c(0, 1) + m[0][2] * c(0, 2);
+    // The inverse is the transposed cofactor matrix over the determinant.
+    std::array::from_fn(|i| std::array::from_fn(|j| c(j, i) / det))
+}
+
+/// The two inverses, computed from the forward matrices (rather than
+/// Ottosson's 10-digit published ones) so a round trip is exact to f64
+/// precision.
+fn inverses() -> &'static (Mat3, Mat3) {
+    static INV: std::sync::OnceLock<(Mat3, Mat3)> = std::sync::OnceLock::new();
+    INV.get_or_init(|| (invert(&LMS_TO_LAB), invert(&RGB_TO_LMS)))
+}
+
+/// sRGB (0..1) → OKLab [L, a, b].
+pub(crate) fn to_oklab(c: Color) -> [f64; 3] {
+    let lin = [c.r, c.g, c.b].map(srgb_to_linear);
+    mul(&LMS_TO_LAB, mul(&RGB_TO_LMS, lin).map(f64::cbrt))
+}
+
+/// OKLab → sRGB (unclamped: may fall outside 0..1 when out of gamut).
+pub(crate) fn from_oklab(lab: [f64; 3], alpha: f64) -> Color {
+    let (lab_to_lms, lms_to_rgb) = inverses();
+    let lms = mul(lab_to_lms, lab).map(|x| x * x * x);
+    let [r, g, b] = mul(lms_to_rgb, lms).map(linear_to_srgb);
+    Color { r, g, b, a: alpha }
+}
+
+/// sRGB → OKLCH [L, C, h in degrees 0..360].
+pub(crate) fn to_oklch(c: Color) -> [f64; 3] {
+    let [l, a, b] = to_oklab(c);
+    let h = b.atan2(a).to_degrees();
+    [l, js::hypot(a, b), if h < 0.0 { h + 360.0 } else { h }]
+}
+
+pub(crate) fn from_oklch([l, c, h]: [f64; 3], alpha: f64) -> Color {
+    let (s, co) = h.to_radians().sin_cos();
+    from_oklab([l, c * co, c * s], alpha)
+}
+
+/// Below this chroma a colour is grey and its hue means nothing.
+const ACHROMATIC: f64 = 1e-4;
+
+fn clamp_rgb(c: Color) -> Color {
+    Color {
+        r: clamp01(c.r),
+        g: clamp01(c.g),
+        b: clamp01(c.b),
+        a: c.a,
+    }
+}
+
+/// Blend `a` → `b` by `t` in `space`. RGB is the plain per-channel lerp;
+/// the OK spaces convert, blend (OKLCH along the shorter way round the
+/// hue wheel) and clamp back into RGB. Alpha always blends linearly.
+pub(crate) fn mix(a: Color, b: Color, t: f64, space: Space) -> Color {
+    let alpha = a.a + (b.a - a.a) * t;
+    match space {
+        Space::Rgb => lerp_color(a, b, t),
+        Space::Oklab => {
+            let (p, q) = (to_oklab(a), to_oklab(b));
+            let at = |i: usize| p[i] + (q[i] - p[i]) * t;
+            clamp_rgb(from_oklab([at(0), at(1), at(2)], alpha))
+        }
+        Space::Oklch => {
+            let ([l1, c1, mut h1], [l2, c2, mut h2]) = (to_oklch(a), to_oklch(b));
+            // A grey end takes the other end's hue, so it doesn't swing
+            // through red on its way to a colour.
+            if c1 < ACHROMATIC {
+                h1 = h2;
+            }
+            if c2 < ACHROMATIC {
+                h2 = h1;
+            }
+            let mut dh = h2 - h1;
+            if dh > 180.0 {
+                dh -= 360.0;
+            } else if dh < -180.0 {
+                dh += 360.0;
+            }
+            let lch = [l1 + (l2 - l1) * t, c1 + (c2 - c1) * t, h1 + dh * t];
+            clamp_rgb(from_oklch(lch, alpha))
+        }
+    }
+}
+
 /// `inputs[i]?.[0] ?? fallback`.
 fn first_or(inputs: &[crate::value::Spread], i: usize, fallback: Value) -> Value {
     let v = first(inputs, i);
@@ -272,16 +431,20 @@ fn set_alpha(init: &NodeInit) -> Box<dyn NodeImpl> {
     })
 }
 
-fn lerp(init: &NodeInit) -> Box<dyn NodeImpl> {
-    scalar(init, |args| {
-        let pa = to_color(&args[0]);
-        let pb = to_color(&args[1]);
-        Ok(vec![Value::Color(lerp_color(pa, pb, args[2].to_number()))])
+/// Raw rather than scalar so it can read the `space` param.
+fn lerp(_: &NodeInit) -> Box<dyn NodeImpl> {
+    raw(|inputs, cx| {
+        let pa = to_color(&first(inputs, 0));
+        let pb = to_color(&first(inputs, 1));
+        let t = first(inputs, 2).to_number();
+        let space = Space::parse(cx.param("space"));
+        Ok(vec![one(Value::Color(mix(pa, pb, t, space)))])
     })
 }
 
 fn gradient(_: &NodeInit) -> Box<dyn NodeImpl> {
-    raw(|inputs, _| {
+    raw(|inputs, cx| {
+        let space = Space::parse(cx.param("space"));
         let stops: &[Value] = inputs.first().map(|s| &s[..]).unwrap_or(&[]);
         let t = first_or(inputs, 1, Value::Num(0.0)).to_number();
         let out = match stops.len() {
@@ -302,7 +465,7 @@ fn gradient(_: &NodeInit) -> Box<dyn NodeImpl> {
                         WHITE
                     }
                 };
-                lerp_color(at(lo), at(hi), f)
+                mix(at(lo), at(hi), f, space)
             }
         };
         Ok(vec![one(Value::Color(out))])
@@ -382,8 +545,103 @@ fn clamp_stops(n: &Value) -> usize {
     }
 }
 
-/// `buildStopPorts`: one colour pin per stop (`c0`, `c1`, …).
-fn build_stop_ports(params: &Params) -> Vec<PortSpec> {
+/// What the palette node makes: the authored stops (the `mode` param's
+/// default, and every palette saved before modes existed), a cosine
+/// palette, or a colour harmony around a base colour.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum PaletteMode {
+    Stops,
+    Cosine,
+    Harmony(Harmony),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Harmony {
+    Complementary,
+    Analogous,
+    Triadic,
+    Split,
+    Tetradic,
+}
+
+impl PaletteMode {
+    fn parse(v: Option<&serde_json::Value>) -> PaletteMode {
+        match v.and_then(serde_json::Value::as_str) {
+            Some("cosine") => PaletteMode::Cosine,
+            Some("complementary") => PaletteMode::Harmony(Harmony::Complementary),
+            Some("analogous") => PaletteMode::Harmony(Harmony::Analogous),
+            Some("triadic") => PaletteMode::Harmony(Harmony::Triadic),
+            Some("split") => PaletteMode::Harmony(Harmony::Split),
+            Some("tetradic") => PaletteMode::Harmony(Harmony::Tetradic),
+            _ => PaletteMode::Stops,
+        }
+    }
+}
+
+impl Harmony {
+    /// Whether the `angle` pin applies.
+    fn has_angle(self) -> bool {
+        matches!(self, Harmony::Analogous | Harmony::Split)
+    }
+
+    /// Hue offsets (degrees) from the base colour, base first.
+    fn offsets(self, angle: f64) -> Vec<f64> {
+        match self {
+            Harmony::Complementary => vec![0.0, 180.0],
+            Harmony::Analogous => vec![0.0, -angle, angle],
+            Harmony::Triadic => vec![0.0, 120.0, 240.0],
+            Harmony::Split => vec![0.0, 180.0 - angle, 180.0 + angle],
+            Harmony::Tetradic => vec![0.0, 90.0, 180.0, 270.0],
+        }
+    }
+}
+
+/// The colours of a harmony: the base, then the base's hue turned round
+/// the HSL colour wheel by each offset (saturation, lightness and alpha
+/// kept).
+pub(crate) fn harmony(base: Color, h: Harmony, angle: f64) -> Vec<Color> {
+    let [hue, s, l, a] = color01_to_hsl(base);
+    h.offsets(angle)
+        .into_iter()
+        .map(|off| {
+            if off == 0.0 {
+                base
+            } else {
+                hsl_to_color01(hue + off, s, l, a)
+            }
+        })
+        .collect()
+}
+
+/// Inigo Quilez's cosine palette `a + b·cos(2π(c·t + d))` per channel,
+/// clamped to 0..1.
+pub(crate) fn cosine_palette(a: Color, b: Color, c: Color, d: Color, t: f64) -> Color {
+    let ch = |a: f64, b: f64, c: f64, d: f64| {
+        clamp01(a + b * (std::f64::consts::TAU * (c * t + d)).cos())
+    };
+    Color {
+        r: ch(a.r, b.r, c.r, d.r),
+        g: ch(a.g, b.g, c.g, d.g),
+        b: ch(a.b, b.b, c.b, d.b),
+        a: 1.0,
+    }
+}
+
+fn gray(v: f64) -> Value {
+    Value::Color(Color {
+        r: v,
+        g: v,
+        b: v,
+        a: 1.0,
+    })
+}
+
+fn color_port(name: &str, default: Value) -> PortSpec {
+    PortSpec::new(name, PortType::Color).default(default)
+}
+
+/// `stopCount`, as `buildStopPorts` reads it.
+fn stop_count(params: &Params) -> usize {
     let raw = params
         .get("stopCount")
         .map(Value::from_json)
@@ -394,13 +652,46 @@ fn build_stop_ports(params: &Params) -> Vec<PortSpec> {
     } else {
         raw
     };
-    (0..clamp_stops(&Value::Num(count)))
-        .map(|i| {
-            PortSpec::new(format!("c{i}"), PortType::Color)
-                .label(format!("{}", i + 1))
-                .default(Value::Null)
-        })
-        .collect()
+    clamp_stops(&Value::Num(count))
+}
+
+/// `buildStopPorts`: one colour pin per stop (`c0`, `c1`, …), or the
+/// generator's pins in the other modes.
+fn build_stop_ports(params: &Params) -> Vec<PortSpec> {
+    match PaletteMode::parse(params.get("mode")) {
+        PaletteMode::Stops => (0..stop_count(params))
+            .map(|i| {
+                PortSpec::new(format!("c{i}"), PortType::Color)
+                    .label(format!("{}", i + 1))
+                    .default(Value::Null)
+            })
+            .collect(),
+        // The classic rainbow: a = b = ½ grey, c = 1, d = (0, ⅓, ⅔).
+        PaletteMode::Cosine => vec![
+            color_port("a", gray(0.5)),
+            color_port("b", gray(0.5)),
+            color_port("c", gray(1.0)),
+            color_port(
+                "d",
+                Value::Color(Color {
+                    r: 0.0,
+                    g: 0.33,
+                    b: 0.67,
+                    a: 1.0,
+                }),
+            ),
+        ],
+        PaletteMode::Harmony(h) => {
+            let mut ports = vec![color_port(
+                "base",
+                Value::Color(hex_to_color01(&Value::str(DEFAULT_STOPS[2]))),
+            )];
+            if h.has_angle() {
+                ports.push(PortSpec::new("angle", PortType::Number).default(Value::Num(30.0)));
+            }
+            ports
+        }
+    }
 }
 
 fn palette(_: &NodeInit) -> Box<dyn NodeImpl> {
@@ -410,27 +701,53 @@ fn palette(_: &NodeInit) -> Box<dyn NodeImpl> {
                 .map(Value::from_json)
                 .unwrap_or(Value::Num(DEFAULT_STOP_COUNT)),
         );
-        let stops: Vec<Value> = (0..count)
-            .map(|i| {
-                let wired = first(inputs, i);
-                // `wired && typeof wired === 'object' && 'r' in wired`.
-                let has_r = match &wired {
-                    Value::Color(_) => true,
-                    Value::Object(m) => m.contains_key("r"),
-                    _ => false,
-                };
-                if has_r {
-                    return Value::Color(to_color(&wired));
-                }
-                let hex = cx
-                    .param(&format!("c{i}"))
-                    .map(Value::from_json)
-                    .unwrap_or_else(|| Value::str(DEFAULT_STOPS.get(i).unwrap_or(&"#ffffff")));
-                Value::Color(hex_to_color01(&hex))
-            })
-            .collect();
-        Ok(vec![Arc::from(stops)])
+        let colors: Vec<Color> = match PaletteMode::parse(cx.param("mode")) {
+            PaletteMode::Stops => {
+                return Ok(vec![Arc::from(authored_stops(inputs, cx, count))]);
+            }
+            PaletteMode::Cosine => {
+                let [a, b, c, d] = [0, 1, 2, 3].map(|i| to_color(&first(inputs, i)));
+                // Evenly round one cycle (t = i / count), so a palette
+                // that repeats every cycle has no doubled colour.
+                (0..count)
+                    .map(|i| cosine_palette(a, b, c, d, i as f64 / count as f64))
+                    .collect()
+            }
+            PaletteMode::Harmony(h) => {
+                let base = to_color(&first(inputs, 0));
+                let angle = first_or(inputs, 1, Value::Num(30.0)).to_number();
+                harmony(base, h, angle)
+            }
+        };
+        Ok(vec![colors.into_iter().map(Value::Color).collect()])
     })
+}
+
+/// The stops mode: each wired colour, else its `c<i>` hex param.
+fn authored_stops(
+    inputs: &[crate::value::Spread],
+    cx: &crate::node::EvalCtx,
+    count: usize,
+) -> Vec<Value> {
+    (0..count)
+        .map(|i| {
+            let wired = first(inputs, i);
+            // `wired && typeof wired === 'object' && 'r' in wired`.
+            let has_r = match &wired {
+                Value::Color(_) => true,
+                Value::Object(m) => m.contains_key("r"),
+                _ => false,
+            };
+            if has_r {
+                return Value::Color(to_color(&wired));
+            }
+            let hex = cx
+                .param(&format!("c{i}"))
+                .map(Value::from_json)
+                .unwrap_or_else(|| Value::str(DEFAULT_STOPS.get(i).unwrap_or(&"#ffffff")));
+            Value::Color(hex_to_color01(&hex))
+        })
+        .collect()
 }
 
 #[cfg(test)]
@@ -849,5 +1166,229 @@ mod tests {
         assert_eq!(ports[9].label.as_deref(), Some("10"));
         assert_eq!(ports[9].ty, PortType::Color);
         assert!(matches!(ports[9].default, Some(Value::Null)));
+    }
+
+    // ─── Colour spaces, cosine palettes, harmonies (native-only) ─────────
+
+    fn rgb01(r: f64, g: f64, b: f64) -> Color {
+        Color { r, g, b, a: 1.0 }
+    }
+
+    fn near(a: f64, b: f64, eps: f64) -> bool {
+        (a - b).abs() <= eps
+    }
+
+    #[test]
+    fn oklab_matches_reference_values() {
+        // CSS Color 4 / Ottosson's reference conversions of the sRGB
+        // primaries, white and mid grey.
+        for (c, want) in [
+            (rgb01(1.0, 1.0, 1.0), [1.0, 0.0, 0.0]),
+            (rgb01(0.0, 0.0, 0.0), [0.0, 0.0, 0.0]),
+            (rgb01(1.0, 0.0, 0.0), [0.627_955, 0.224_863, 0.125_846]),
+            (rgb01(0.0, 1.0, 0.0), [0.866_440, -0.233_888, 0.179_498]),
+            (rgb01(0.0, 0.0, 1.0), [0.452_014, -0.032_457, -0.311_528]),
+            (
+                rgb01(128.0 / 255.0, 128.0 / 255.0, 128.0 / 255.0),
+                [0.599_871, 0.0, 0.0],
+            ),
+        ] {
+            let got = to_oklab(c);
+            assert!(
+                got.iter().zip(want).all(|(g, w)| near(*g, w, 2e-5)),
+                "{c:?}: {got:?} vs {want:?}"
+            );
+        }
+        // OKLCH hues of red and blue.
+        assert!(near(to_oklch(rgb01(1.0, 0.0, 0.0))[2], 29.2339, 1e-3));
+        assert!(near(to_oklch(rgb01(0.0, 0.0, 1.0))[2], 264.052, 1e-3));
+    }
+
+    #[test]
+    fn oklab_and_oklch_round_trip() {
+        for i in 0..=6 {
+            for j in 0..=6 {
+                for k in 0..=6 {
+                    let c = Color {
+                        r: f64::from(i) / 6.0,
+                        g: f64::from(j) / 6.0,
+                        b: f64::from(k) / 6.0,
+                        a: 0.25,
+                    };
+                    for back in [from_oklab(to_oklab(c), c.a), from_oklch(to_oklch(c), c.a)] {
+                        let ok = [(c.r, back.r), (c.g, back.g), (c.b, back.b), (c.a, back.a)]
+                            .iter()
+                            .all(|(a, b)| near(*a, *b, 1e-12));
+                        assert!(ok, "{c:?} came back as {back:?}");
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn lerp_and_gradient_spaces() {
+        let red = c(1.0, 0.0, 0.0, 1.0);
+        let blue = c(0.0, 0.0, 1.0, 0.0);
+        let lerp = |space: &str, t: f64| {
+            run(
+                "color/lerp",
+                json!({ "space": space }),
+                vec![one(red.clone()), one(blue.clone()), one(n(t))],
+            )[0][0]
+                .clone()
+        };
+        // RGB (and no space at all) is the old per-channel lerp.
+        assert_col(&lerp("rgb", 0.5), [0.5, 0.0, 0.5, 0.5]);
+        let none = run(
+            "color/lerp",
+            json!({}),
+            vec![one(red.clone()), one(blue.clone()), one(n(0.5))],
+        );
+        assert_col(&none[0][0], [0.5, 0.0, 0.5, 0.5]);
+        for space in ["oklab", "oklch"] {
+            assert_col(&lerp(space, 0.0), [1.0, 0.0, 0.0, 1.0]);
+            let Value::Color(end) = lerp(space, 1.0) else {
+                panic!()
+            };
+            assert!(near(end.b, 1.0, 1e-12) && near(end.r, 0.0, 1e-12) && end.a == 0.0);
+        }
+        // Black → white: OKLab's midpoint is perceptual mid grey (L = ½),
+        // darker in RGB terms than the channel average.
+        let mid = mix(
+            rgb01(0.0, 0.0, 0.0),
+            rgb01(1.0, 1.0, 1.0),
+            0.5,
+            Space::Oklab,
+        );
+        let want = 1.055 * 0.125_f64.powf(1.0 / 2.4) - 0.055;
+        assert!(near(mid.r, want, 1e-6) && near(mid.g, want, 1e-6) && near(mid.b, want, 1e-6));
+        // Red → blue in OKLCH keeps its chroma (vivid) instead of passing
+        // through RGB's dull purple, and takes the short way round (through
+        // magenta, hue ≈ 327°).
+        let lch = to_oklch(mix(
+            rgb01(1.0, 0.0, 0.0),
+            rgb01(0.0, 0.0, 1.0),
+            0.5,
+            Space::Oklch,
+        ));
+        let rgb = to_oklch(mix(
+            rgb01(1.0, 0.0, 0.0),
+            rgb01(0.0, 0.0, 1.0),
+            0.5,
+            Space::Rgb,
+        ));
+        assert!(lch[1] > rgb[1] + 0.05, "{lch:?} vs {rgb:?}");
+        assert!(near(lch[2], 326.6, 2.0), "{lch:?}");
+        // A grey end takes the other's hue: grey → red stays reddish.
+        let g = to_oklch(mix(
+            rgb01(0.5, 0.5, 0.5),
+            rgb01(1.0, 0.0, 0.0),
+            0.5,
+            Space::Oklch,
+        ));
+        assert!(near(g[2], 29.2, 3.0), "{g:?}");
+        // The gradient blends neighbouring stops in its space.
+        let stops: Spread = Arc::from(vec![red.clone(), blue.clone()]);
+        let grad = run(
+            "color/gradient",
+            json!({"space": "oklab"}),
+            vec![stops, one(n(0.5))],
+        );
+        let Value::Color(g) = &grad[0][0] else {
+            panic!()
+        };
+        let want = mix(to_color(&red), to_color(&blue), 0.5, Space::Oklab);
+        assert_eq!(*g, want);
+        assert_ne!(*g, lerp_color(to_color(&red), to_color(&blue), 0.5));
+    }
+
+    fn hue(c: &Value) -> f64 {
+        color01_to_hsl(to_color(c))[0]
+    }
+
+    #[test]
+    fn harmony_hues() {
+        // hsl(30°, 80%, 50%)
+        let base = Value::Color(hsl_to_color01(30.0, 80.0, 50.0, 1.0));
+        let hues = |mode: &str, angle: Option<f64>| -> Vec<f64> {
+            let mut ins = vec![one(base.clone())];
+            ins.extend(angle.map(|a| one(n(a))));
+            run("color/palette", json!({ "mode": mode }), ins)[0]
+                .iter()
+                .map(hue)
+                .collect()
+        };
+        let check = |got: Vec<f64>, want: &[f64]| {
+            assert!(
+                got.len() == want.len() && got.iter().zip(want).all(|(g, w)| near(*g, *w, 1e-6)),
+                "{got:?} vs {want:?}"
+            );
+        };
+        check(hues("complementary", None), &[30.0, 210.0]);
+        check(hues("analogous", Some(20.0)), &[30.0, 10.0, 50.0]);
+        check(hues("triadic", None), &[30.0, 150.0, 270.0]);
+        check(hues("split", Some(30.0)), &[30.0, 180.0, 240.0]);
+        check(hues("tetradic", None), &[30.0, 120.0, 210.0, 300.0]);
+        // Saturation and lightness stay the base's; the base comes first, as is.
+        let out = run(
+            "color/palette",
+            json!({"mode": "triadic"}),
+            vec![one(base.clone())],
+        );
+        assert!(matches!((&out[0][0], &base), (Value::Color(a), Value::Color(b)) if a == b));
+        for v in out[0].iter() {
+            let [_, s, l, _] = color01_to_hsl(to_color(v));
+            assert!(near(s, 80.0, 1e-6) && near(l, 50.0, 1e-6));
+        }
+        // Pins follow the mode.
+        let names = |mode: &str| -> Vec<String> {
+            build_stop_ports(json!({ "mode": mode }).as_object().unwrap())
+                .into_iter()
+                .map(|p| p.name)
+                .collect()
+        };
+        assert_eq!(names("complementary"), ["base"]);
+        assert_eq!(names("analogous"), ["base", "angle"]);
+        assert_eq!(names("split"), ["base", "angle"]);
+        assert_eq!(names("cosine"), ["a", "b", "c", "d"]);
+        assert_eq!(names("stops"), ["c0", "c1", "c2", "c3"]);
+    }
+
+    #[test]
+    fn cosine_palettes() {
+        let ports = build_stop_ports(json!({"mode": "cosine"}).as_object().unwrap());
+        let defaults: Vec<Spread> = ports
+            .iter()
+            .map(|p| one(p.default.clone().unwrap()))
+            .collect();
+        let out = run(
+            "color/palette",
+            json!({"mode": "cosine", "stopCount": 4}),
+            defaults.clone(),
+        );
+        assert_eq!(out[0].len(), 4);
+        // t = 0: ½ + ½·cos(2π·d) per channel.
+        let ch = |d: f64, t: f64| 0.5 + 0.5 * (std::f64::consts::TAU * (t + d)).cos();
+        for (i, v) in out[0].iter().enumerate() {
+            let t = i as f64 / 4.0;
+            assert_col(v, [ch(0.0, t), ch(0.33, t), ch(0.67, t), 1.0]);
+        }
+        let out = run(
+            "color/palette",
+            json!({"mode": "cosine", "stopCount": 7}),
+            defaults,
+        );
+        assert_eq!(out[0].len(), 7);
+        // Out-of-range results are clamped.
+        let big = cosine_palette(
+            rgb01(1.0, 1.0, 1.0),
+            rgb01(1.0, 1.0, 1.0),
+            rgb01(0.0, 0.0, 0.0),
+            rgb01(0.0, 0.5, 0.25),
+            0.0,
+        );
+        assert_eq!((big.r, big.g), (1.0, 0.0));
+        assert!(near(big.b, 1.0, 1e-12));
     }
 }

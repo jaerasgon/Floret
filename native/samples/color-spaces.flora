@@ -1,0 +1,1179 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Colour Spaces",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "cs_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -294
+      },
+      "params": {
+        "text": "Colour spaces and generated palettes\n\nTop: the same red → blue blend in rgb (dull and dark in the middle), oklab (even) and oklch (round the hue wheel) — Lerp's space option.\nMiddle: a cosine palette (Palette, mode cosine).\nBottom: a tetradic harmony around a base colour whose hue turns with time.",
+        "width": 480,
+        "height": 230
+      },
+      "portValues": {
+        "text": "Colour spaces and generated palettes\n\nTop: the same red → blue blend in rgb (dull and dark in the middle), oklab (even) and oklch (round the hue wheel) — Lerp's space option.\nMiddle: a cosine palette (Palette, mode cosine).\nBottom: a tetradic harmony around a base colour whose hue turns with time.",
+        "width": 480,
+        "height": 230
+      }
+    },
+    {
+      "id": "cs_a",
+      "defType": "color/color",
+      "position": {
+        "x": 0,
+        "y": 299
+      },
+      "params": {
+        "mode": "hex",
+        "hex": "#ff3b30"
+      },
+      "portValues": {
+        "mode": "hex",
+        "hex": "#ff3b30"
+      }
+    },
+    {
+      "id": "cs_b",
+      "defType": "color/color",
+      "position": {
+        "x": 0,
+        "y": 421
+      },
+      "params": {
+        "mode": "hex",
+        "hex": "#2a5cff"
+      },
+      "portValues": {
+        "mode": "hex",
+        "hex": "#2a5cff"
+      }
+    },
+    {
+      "id": "cs_t",
+      "defType": "spread/linear",
+      "position": {
+        "x": 20,
+        "y": 543
+      },
+      "params": {
+        "from": 0,
+        "to": 1,
+        "count": 24
+      },
+      "portValues": {
+        "from": 0,
+        "to": 1,
+        "count": 24
+      }
+    },
+    {
+      "id": "cs_bars",
+      "defType": "region/foreach",
+      "position": {
+        "x": 261,
+        "y": 22
+      },
+      "params": {
+        "width": 1119,
+        "height": 782,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "t",
+          "name": "t",
+          "type": "number",
+          "direction": "input",
+          "y": 456
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 321
+        }
+      ],
+      "width": 1119,
+      "height": 782
+    },
+    {
+      "id": "cs_x",
+      "defType": "math/map",
+      "position": {
+        "x": 180,
+        "y": 284
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": -223,
+        "outMax": 223
+      },
+      "parentId": "cs_bars",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": -223,
+        "outMax": 223
+      }
+    },
+    {
+      "id": "cs_lerp_rgb",
+      "defType": "color/lerp",
+      "position": {
+        "x": 148,
+        "y": 122
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "parentId": "cs_bars"
+    },
+    {
+      "id": "cs_fill_rgb",
+      "defType": "style/fill",
+      "position": {
+        "x": 430,
+        "y": 162
+      },
+      "params": {},
+      "parentId": "cs_bars"
+    },
+    {
+      "id": "cs_p_rgb",
+      "defType": "vec2/make",
+      "position": {
+        "x": 430,
+        "y": 40
+      },
+      "params": {
+        "y": -185
+      },
+      "parentId": "cs_bars",
+      "portValues": {
+        "y": -185
+      }
+    },
+    {
+      "id": "cs_r_rgb",
+      "defType": "draw/rect",
+      "position": {
+        "x": 622,
+        "y": 123
+      },
+      "params": {
+        "w": 18,
+        "h": 48
+      },
+      "parentId": "cs_bars",
+      "portValues": {
+        "w": 18,
+        "h": 48
+      }
+    },
+    {
+      "id": "cs_lerp_oklab",
+      "defType": "color/lerp",
+      "position": {
+        "x": 148,
+        "y": 466
+      },
+      "params": {
+        "space": "oklab"
+      },
+      "parentId": "cs_bars"
+    },
+    {
+      "id": "cs_fill_oklab",
+      "defType": "style/fill",
+      "position": {
+        "x": 430,
+        "y": 406
+      },
+      "params": {},
+      "parentId": "cs_bars"
+    },
+    {
+      "id": "cs_p_oklab",
+      "defType": "vec2/make",
+      "position": {
+        "x": 430,
+        "y": 284
+      },
+      "params": {
+        "y": -115
+      },
+      "parentId": "cs_bars",
+      "portValues": {
+        "y": -115
+      }
+    },
+    {
+      "id": "cs_r_oklab",
+      "defType": "draw/rect",
+      "position": {
+        "x": 622,
+        "y": 305
+      },
+      "params": {
+        "w": 18,
+        "h": 48
+      },
+      "parentId": "cs_bars",
+      "portValues": {
+        "w": 18,
+        "h": 48
+      }
+    },
+    {
+      "id": "cs_lerp_oklch",
+      "defType": "color/lerp",
+      "position": {
+        "x": 148,
+        "y": 628
+      },
+      "params": {
+        "space": "oklch"
+      },
+      "parentId": "cs_bars"
+    },
+    {
+      "id": "cs_fill_oklch",
+      "defType": "style/fill",
+      "position": {
+        "x": 430,
+        "y": 650
+      },
+      "params": {},
+      "parentId": "cs_bars"
+    },
+    {
+      "id": "cs_p_oklch",
+      "defType": "vec2/make",
+      "position": {
+        "x": 430,
+        "y": 528
+      },
+      "params": {
+        "y": -45
+      },
+      "parentId": "cs_bars",
+      "portValues": {
+        "y": -45
+      }
+    },
+    {
+      "id": "cs_r_oklch",
+      "defType": "draw/rect",
+      "position": {
+        "x": 622,
+        "y": 487
+      },
+      "params": {
+        "w": 18,
+        "h": 48
+      },
+      "parentId": "cs_bars",
+      "portValues": {
+        "w": 18,
+        "h": 48
+      }
+    },
+    {
+      "id": "cs_bars_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 839,
+        "y": 285
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "parentId": "cs_bars"
+    },
+    {
+      "id": "cs_cos",
+      "defType": "color/palette",
+      "position": {
+        "x": 1726,
+        "y": 570
+      },
+      "params": {
+        "mode": "cosine",
+        "stopCount": 10
+      },
+      "portValues": {
+        "a": {
+          "r": 0.5490196078431373,
+          "g": 0.5019607843137255,
+          "b": 0.45098039215686275,
+          "a": 1.0
+        },
+        "b": {
+          "r": 0.4980392156862745,
+          "g": 0.4,
+          "b": 0.34901960784313724,
+          "a": 1.0
+        },
+        "c": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "d": {
+          "r": 0.0,
+          "g": 0.2,
+          "b": 0.2980392156862745,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "cs_sw",
+      "defType": "region/foreach",
+      "position": {
+        "x": 2045,
+        "y": 348
+      },
+      "params": {
+        "width": 712,
+        "height": 336,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "c",
+          "name": "c",
+          "type": "color",
+          "direction": "input",
+          "y": 258
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 143
+        }
+      ],
+      "width": 712,
+      "height": 336
+    },
+    {
+      "id": "cs_sw_x",
+      "defType": "math/map",
+      "position": {
+        "x": 132,
+        "y": 40
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 9,
+        "outMin": -216,
+        "outMax": 216
+      },
+      "parentId": "cs_sw",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 9,
+        "outMin": -216,
+        "outMax": 216
+      }
+    },
+    {
+      "id": "cs_sw_p",
+      "defType": "vec2/make",
+      "position": {
+        "x": 319,
+        "y": 74
+      },
+      "params": {
+        "y": 50
+      },
+      "parentId": "cs_sw",
+      "portValues": {
+        "y": 50
+      }
+    },
+    {
+      "id": "cs_sw_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 133,
+        "y": 222
+      },
+      "params": {},
+      "parentId": "cs_sw"
+    },
+    {
+      "id": "cs_sw_r",
+      "defType": "draw/rect",
+      "position": {
+        "x": 504,
+        "y": 107
+      },
+      "params": {
+        "w": 42,
+        "h": 60
+      },
+      "parentId": "cs_sw",
+      "portValues": {
+        "w": 42,
+        "h": 60
+      }
+    },
+    {
+      "id": "cs_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 33,
+        "y": 1005
+      },
+      "params": {}
+    },
+    {
+      "id": "cs_hue",
+      "defType": "math/mul",
+      "position": {
+        "x": 737,
+        "y": 1005
+      },
+      "params": {
+        "b": 24,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 24
+      }
+    },
+    {
+      "id": "cs_base",
+      "defType": "color/color",
+      "position": {
+        "x": 1478,
+        "y": 987
+      },
+      "params": {
+        "mode": "hsl",
+        "h": 0,
+        "s": 80,
+        "l": 58,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "h": 0,
+        "s": 80,
+        "l": 58,
+        "a": 255
+      }
+    },
+    {
+      "id": "cs_harm",
+      "defType": "color/palette",
+      "position": {
+        "x": 1726,
+        "y": 971
+      },
+      "params": {
+        "mode": "tetradic",
+        "stopCount": 4
+      }
+    },
+    {
+      "id": "cs_hw",
+      "defType": "region/foreach",
+      "position": {
+        "x": 2045,
+        "y": 754
+      },
+      "params": {
+        "width": 712,
+        "height": 336,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "c",
+          "name": "c",
+          "type": "color",
+          "direction": "input",
+          "y": 258
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 143
+        }
+      ],
+      "width": 712,
+      "height": 336
+    },
+    {
+      "id": "cs_hw_x",
+      "defType": "math/map",
+      "position": {
+        "x": 132,
+        "y": 40
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 3,
+        "outMin": -174,
+        "outMax": 174
+      },
+      "parentId": "cs_hw",
+      "portValues": {
+        "inMin": 0,
+        "inMax": 3,
+        "outMin": -174,
+        "outMax": 174
+      }
+    },
+    {
+      "id": "cs_hw_p",
+      "defType": "vec2/make",
+      "position": {
+        "x": 319,
+        "y": 74
+      },
+      "params": {
+        "y": 180
+      },
+      "parentId": "cs_hw",
+      "portValues": {
+        "y": 180
+      }
+    },
+    {
+      "id": "cs_hw_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 133,
+        "y": 222
+      },
+      "params": {},
+      "parentId": "cs_hw"
+    },
+    {
+      "id": "cs_hw_r",
+      "defType": "draw/rect",
+      "position": {
+        "x": 504,
+        "y": 107
+      },
+      "params": {
+        "w": 108,
+        "h": 90
+      },
+      "parentId": "cs_hw",
+      "portValues": {
+        "w": 108,
+        "h": 90
+      }
+    },
+    {
+      "id": "cs_label_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1768,
+        "y": 1582
+      },
+      "params": {}
+    },
+    {
+      "id": "cs_label_col",
+      "defType": "color/color",
+      "position": {
+        "x": 1478,
+        "y": 1582
+      },
+      "params": {
+        "mode": "hex",
+        "hex": "#9a9cab"
+      },
+      "portValues": {
+        "mode": "hex",
+        "hex": "#9a9cab"
+      }
+    },
+    {
+      "id": "cs_l0",
+      "defType": "draw/text",
+      "position": {
+        "x": 2345,
+        "y": 1138
+      },
+      "params": {
+        "string": "rgb",
+        "size": 12,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "rgb",
+        "size": 12,
+        "align": "left",
+        "pos": {
+          "x": -232,
+          "y": -214
+        }
+      }
+    },
+    {
+      "id": "cs_l1",
+      "defType": "draw/text",
+      "position": {
+        "x": 2339,
+        "y": 1320
+      },
+      "params": {
+        "string": "oklab",
+        "size": 12,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "oklab",
+        "size": 12,
+        "align": "left",
+        "pos": {
+          "x": -232,
+          "y": -144
+        }
+      }
+    },
+    {
+      "id": "cs_l2",
+      "defType": "draw/text",
+      "position": {
+        "x": 2339,
+        "y": 1502
+      },
+      "params": {
+        "string": "oklch",
+        "size": 12,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "oklch",
+        "size": 12,
+        "align": "left",
+        "pos": {
+          "x": -232,
+          "y": -74
+        }
+      }
+    },
+    {
+      "id": "cs_l3",
+      "defType": "draw/text",
+      "position": {
+        "x": 2336,
+        "y": 1684
+      },
+      "params": {
+        "string": "cosine",
+        "size": 12,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "cosine",
+        "size": 12,
+        "align": "left",
+        "pos": {
+          "x": -232,
+          "y": 15
+        }
+      }
+    },
+    {
+      "id": "cs_l4",
+      "defType": "draw/text",
+      "position": {
+        "x": 2330,
+        "y": 1866
+      },
+      "params": {
+        "string": "tetradic",
+        "size": 12,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "tetradic",
+        "size": 12,
+        "align": "left",
+        "pos": {
+          "x": -232,
+          "y": 130
+        }
+      }
+    },
+    {
+      "id": "cs_all",
+      "defType": "transform/group",
+      "position": {
+        "x": 2965,
+        "y": 977
+      },
+      "params": {
+        "slotCount": 8
+      }
+    },
+    {
+      "id": "cs_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 3229,
+        "y": 977
+      },
+      "params": {
+        "width": 560,
+        "height": 560,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.050980392156862744,
+          "b": 0.07058823529411765,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 560,
+        "height": 560,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.050980392156862744,
+          "b": 0.07058823529411765,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "cs_a",
+      "target": "cs_lerp_rgb",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_2",
+      "source": "cs_b",
+      "target": "cs_lerp_rgb",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_3",
+      "source": "cs_bars",
+      "target": "cs_lerp_rgb",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_4",
+      "source": "cs_lerp_rgb",
+      "target": "cs_fill_rgb",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_5",
+      "source": "cs_fill_rgb",
+      "target": "cs_r_rgb",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_6",
+      "source": "cs_x",
+      "target": "cs_p_rgb",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_7",
+      "source": "cs_p_rgb",
+      "target": "cs_r_rgb",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_8",
+      "source": "cs_r_rgb",
+      "target": "cs_bars_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_9",
+      "source": "cs_a",
+      "target": "cs_lerp_oklab",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_10",
+      "source": "cs_b",
+      "target": "cs_lerp_oklab",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_11",
+      "source": "cs_bars",
+      "target": "cs_lerp_oklab",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_12",
+      "source": "cs_lerp_oklab",
+      "target": "cs_fill_oklab",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_13",
+      "source": "cs_fill_oklab",
+      "target": "cs_r_oklab",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_14",
+      "source": "cs_x",
+      "target": "cs_p_oklab",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_15",
+      "source": "cs_p_oklab",
+      "target": "cs_r_oklab",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_16",
+      "source": "cs_r_oklab",
+      "target": "cs_bars_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_17",
+      "source": "cs_a",
+      "target": "cs_lerp_oklch",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_18",
+      "source": "cs_b",
+      "target": "cs_lerp_oklch",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_19",
+      "source": "cs_bars",
+      "target": "cs_lerp_oklch",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_20",
+      "source": "cs_lerp_oklch",
+      "target": "cs_fill_oklch",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_21",
+      "source": "cs_fill_oklch",
+      "target": "cs_r_oklch",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_22",
+      "source": "cs_x",
+      "target": "cs_p_oklch",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_23",
+      "source": "cs_p_oklch",
+      "target": "cs_r_oklch",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_24",
+      "source": "cs_r_oklch",
+      "target": "cs_bars_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_25",
+      "source": "cs_bars",
+      "target": "cs_x",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_26",
+      "source": "cs_bars_group",
+      "target": "cs_bars",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_27",
+      "source": "cs_t",
+      "target": "cs_bars",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_28",
+      "source": "cs_cos",
+      "target": "cs_sw",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_29",
+      "source": "cs_sw",
+      "target": "cs_sw_x",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_30",
+      "source": "cs_sw_x",
+      "target": "cs_sw_p",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_31",
+      "source": "cs_sw_p",
+      "target": "cs_sw_r",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_32",
+      "source": "cs_sw",
+      "target": "cs_sw_fill",
+      "sourceHandle": "out-c",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_33",
+      "source": "cs_sw_fill",
+      "target": "cs_sw_r",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_34",
+      "source": "cs_sw_r",
+      "target": "cs_sw",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_35",
+      "source": "cs_time",
+      "target": "cs_hue",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_36",
+      "source": "cs_hue",
+      "target": "cs_base",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_37",
+      "source": "cs_base",
+      "target": "cs_harm",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_38",
+      "source": "cs_harm",
+      "target": "cs_hw",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_39",
+      "source": "cs_hw",
+      "target": "cs_hw_x",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_40",
+      "source": "cs_hw_x",
+      "target": "cs_hw_p",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_41",
+      "source": "cs_hw_p",
+      "target": "cs_hw_r",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_42",
+      "source": "cs_hw",
+      "target": "cs_hw_fill",
+      "sourceHandle": "out-c",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_43",
+      "source": "cs_hw_fill",
+      "target": "cs_hw_r",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_44",
+      "source": "cs_hw_r",
+      "target": "cs_hw",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_45",
+      "source": "cs_label_col",
+      "target": "cs_label_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_46",
+      "source": "cs_label_fill",
+      "target": "cs_l0",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_47",
+      "source": "cs_l0",
+      "target": "cs_all",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_48",
+      "source": "cs_label_fill",
+      "target": "cs_l1",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_49",
+      "source": "cs_l1",
+      "target": "cs_all",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_50",
+      "source": "cs_label_fill",
+      "target": "cs_l2",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_51",
+      "source": "cs_l2",
+      "target": "cs_all",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s6"
+    },
+    {
+      "id": "e_52",
+      "source": "cs_label_fill",
+      "target": "cs_l3",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_53",
+      "source": "cs_l3",
+      "target": "cs_all",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s7"
+    },
+    {
+      "id": "e_54",
+      "source": "cs_label_fill",
+      "target": "cs_l4",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_55",
+      "source": "cs_l4",
+      "target": "cs_all",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s8"
+    },
+    {
+      "id": "e_56",
+      "source": "cs_bars",
+      "target": "cs_all",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_57",
+      "source": "cs_sw",
+      "target": "cs_all",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_58",
+      "source": "cs_hw",
+      "target": "cs_all",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_59",
+      "source": "cs_all",
+      "target": "cs_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

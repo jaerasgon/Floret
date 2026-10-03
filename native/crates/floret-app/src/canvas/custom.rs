@@ -4,7 +4,9 @@
 //! zoom; text is dropped when it gets too small to read. The value maths
 //! is in `editor::widgets`.
 
-use super::geom::{row_box, row_y, Ctx, Field, NodeBox, PinGeom, Row, HEADER_H, NODE_W};
+use super::geom::{
+    row_box, row_y, Ctx, Field, NodeBox, PinGeom, Row, HEADER_H, LABEL_FONT, NODE_W, ROW_H,
+};
 use crate::editor::ports::{self, Side};
 use crate::editor::values::{self, EditKey, FieldKind};
 use crate::editor::widgets::{self, Custom, Pad, ProbeView, SliderState, Slots};
@@ -128,6 +130,7 @@ pub fn body_h(c: Custom, n: &PatchNode) -> f32 {
                 46.0
             }
         }
+        Custom::Expression => expression_box_h(n) + 10.0,
         Custom::Svg => match n.params.get("mode").and_then(Json::as_str) {
             Some("url") => 26.0,
             Some("markup") => 66.0,
@@ -142,7 +145,10 @@ pub fn rows(c: Custom, n: &PatchNode, _cat: &Catalogue) -> Option<usize> {
     match c {
         Custom::Slider => Some(0),
         Custom::Select => Some(2),
-        Custom::Palette => Some(widgets::slot_count(n, widgets::PALETTE_STOPS) as usize + 1),
+        // Generated palettes use the standard rows (mode, their pins).
+        Custom::Palette if widgets::palette_generates(n) => None,
+        // The mode, a row per stop, the output.
+        Custom::Palette => Some(widgets::slot_count(n, widgets::PALETTE_STOPS) as usize + 2),
         _ => None,
     }
 }
@@ -309,9 +315,36 @@ pub fn layout(
             row_box(cx, n, spec, wired, b);
             slots(cx, n, s, b);
         }
+        Custom::Palette if widgets::palette_generates(n) => {
+            row_box(cx, n, spec, wired, b);
+            // A cosine palette's colour count is `stopCount`, like the stops.
+            if n.params.get("mode").and_then(Json::as_str) == Some("cosine") {
+                slots(cx, n, widgets::PALETTE_STOPS, b);
+            }
+        }
         Custom::Palette => {
             palette(cx, n, spec, wired, b);
             slots(cx, n, widgets::PALETTE_STOPS, b);
+        }
+        Custom::Expression => {
+            b.fields.push(Field {
+                multiline: true,
+                ..param_field(
+                    n,
+                    spec,
+                    at(
+                        b,
+                        z,
+                        10.0,
+                        HEADER_H + 5.0,
+                        NODE_W - 20.0,
+                        expression_box_h(n),
+                    ),
+                    "expr",
+                    FieldKind::Text,
+                )
+            });
+            row_box(cx, n, spec, wired, b);
         }
         Custom::File | Custom::Svg => {
             let svg = c == Custom::Svg;
@@ -489,7 +522,19 @@ fn slots(cx: &Ctx, n: &PatchNode, s: Slots, b: &mut NodeBox) {
     }
 }
 
-/// Palette rows: one pin + hex swatch per stop, the spread output last.
+/// The expression node's formula box: tall enough for the formula
+/// wrapped at about 24 characters a line, 2 to 6 lines.
+fn expression_box_h(n: &PatchNode) -> f32 {
+    let len = n
+        .params
+        .get("expr")
+        .and_then(Json::as_str)
+        .map_or(0, |s| s.chars().count());
+    len.div_ceil(24).clamp(2, 6) as f32 * 11.0 + 6.0
+}
+
+/// Palette rows: the mode, then one pin + hex swatch per stop, the spread
+/// output last.
 fn palette(
     cx: &Ctx,
     n: &PatchNode,
@@ -510,8 +555,32 @@ fn palette(
         integer: false,
         output: None,
     };
+    // Row 0: the mode dropdown (stops, cosine, harmonies).
+    {
+        let y = row_y(b, 0, z);
+        let mut row = empty_row(y);
+        let label = "mode".to_owned();
+        // Placed like a generic node's param row (`row_box`).
+        let lw = cx.text_w(&label, LABEL_FONT);
+        row.label_rect = Rect::from_min_size(
+            pos2(b.rect.left() + 8.0 * z, y - ROW_H * z / 2.0),
+            vec2(lw + 4.0, ROW_H) * z,
+        );
+        row.label = Some(label);
+        let opts = spec.param_options.get("mode").cloned().unwrap_or_default();
+        let rel = (y - b.rect.top()) / z;
+        let x0 = 10.0 + lw + 6.0;
+        b.fields.push(param_field(
+            n,
+            spec,
+            at(b, z, x0, rel - 7.5, (NODE_W - 10.0 - x0).min(100.0), 15.0),
+            "mode",
+            FieldKind::Select(opts),
+        ));
+        b.rows.push(row);
+    }
     for (i, port) in inputs.iter().enumerate() {
-        let y = row_y(b, i, z);
+        let y = row_y(b, i + 1, z);
         let label = values::display_label(port, true);
         b.pins.push(PinGeom {
             side: Side::In,
@@ -537,7 +606,7 @@ fn palette(
         b.rows.push(row);
     }
     if let Some(out) = spec.outputs.first() {
-        let y = row_y(b, inputs.len(), z);
+        let y = row_y(b, inputs.len() + 1, z);
         b.pins.push(PinGeom {
             side: Side::Out,
             port: out.name.clone(),

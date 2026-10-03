@@ -534,7 +534,11 @@ pub fn field(p: &Painter, f: &Field, z: f32, hover: Option<Pos2>) {
         if z > 0.3 {
             let text = values::as_text(&f.value);
             let (text, color) = if text.trim().is_empty() {
-                ("<svg>…</svg>".to_owned(), FG_2)
+                let hint = match &f.key {
+                    values::EditKey::Param(k) if k == "expr" => "formula, e.g. sin(x * 3) + t",
+                    _ => "<svg>…</svg>",
+                };
+                (hint.to_owned(), FG_2)
             } else {
                 (text, FG_0)
             };

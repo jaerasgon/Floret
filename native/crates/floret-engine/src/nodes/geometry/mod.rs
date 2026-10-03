@@ -54,7 +54,11 @@ pub(crate) const MAX_POINTS: usize = 50_000;
 /// The random stream for a node's `seed`. Every geometry node draws its
 /// randomness from here, with the patch seed mixed in ([`crate::seed`]).
 pub(crate) fn rng(seed: f64) -> Mulberry32 {
-    Mulberry32::new(hash32(crate::seed::mix(seed), 0.0, f64::from(0x6765_6f6d_u32)))
+    Mulberry32::new(hash32(
+        crate::seed::mix(seed),
+        0.0,
+        f64::from(0x6765_6f6d_u32),
+    ))
 }
 
 // ─── Modes and pins ──────────────────────────────────────────────────────────

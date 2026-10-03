@@ -134,6 +134,8 @@ pub fn category_color(category: &str) -> Color32 {
     let (hue, sat) = match category.to_ascii_lowercase().as_str() {
         // Drawing and output: warm sand.
         "draw" | "style" | "text" | "color" | "transform" | "render" => (38.0, 0.30),
+        // Shape generators and operations sit with drawing.
+        "geometry" => (38.0, 0.30),
         // Numbers and lists: slate blue.
         "math" | "vec2" | "logic" | "convert" | "data" | "spread" | "string" | "random" => {
             (215.0, 0.22)

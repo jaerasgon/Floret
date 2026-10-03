@@ -12321,6 +12321,394 @@
    },
    "paramOptions": null,
    "effectful": true
+  },
+  {
+   "type": "geometry/scatter",
+   "category": "Geometry",
+   "label": "Scatter",
+   "description": "Scatter points over a rectangle (`center`, `size`) or inside a wired `shape`. Modes: `poisson` (no two points closer than `distance`), `random` (`count` uniform points), `jittered-grid` (one point per `spacing` cell, moved up to `jitter` of a cell), `halton` (`count` evenly spread low-discrepancy points). The same `seed` gives the same points.",
+   "inputs": [
+    {
+     "name": "center",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "size",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 400,
+      "y": 400
+     }
+    },
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "distance",
+     "type": "number",
+     "kind": "single",
+     "default": 24
+    },
+    {
+     "name": "seed",
+     "type": "number",
+     "kind": "single",
+     "default": 1,
+     "integer": true
+    }
+   ],
+   "outputs": [
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "poisson"
+   },
+   "paramOptions": {
+    "mode": [
+     "poisson",
+     "random",
+     "jittered-grid",
+     "halton"
+    ]
+   }
+  },
+  {
+   "type": "geometry/cells",
+   "category": "Geometry",
+   "label": "Cells",
+   "description": "Voronoi cells, Delaunay triangles or the convex hull of a points spread, as polygons. Voronoi cells are clipped to the `center` / `size` rectangle; `gap` leaves that much space between neighbours; `colors` fills polygon i with colour i (cycled). Outputs all polygons as one layer and one layer each (`cells`), their corners (`points`, flat) with `counts` per polygon (for `spread/at-group`), and each polygon's centre.",
+   "inputs": [
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "center",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "size",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 400,
+      "y": 400
+     }
+    },
+    {
+     "name": "gap",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "colors",
+     "type": "color",
+     "kind": "spread"
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "cells",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "counts",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "centers",
+     "type": "vec2",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "voronoi"
+   },
+   "paramOptions": {
+    "mode": [
+     "voronoi",
+     "delaunay",
+     "hull"
+    ]
+   }
+  },
+  {
+   "type": "geometry/path-ops",
+   "category": "Geometry",
+   "label": "Path Ops",
+   "description": "Reshape a point list (`points`, `closed`) or every outline of a wired `path` layer. Modes: `resample` (points evenly `spacing` apart), `smooth` (Chaikin corner cutting, `iterations` times), `subdivide` (insert midpoints, `iterations` times), `simplify` (drop points within `tolerance`), `offset` (grow by `distance`, shrink when negative; closed shapes get `join` corners, open paths shift sideways). Shapes from a layer keep their own style unless `style` is wired.",
+   "inputs": [
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "closed",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    },
+    {
+     "name": "path",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "spacing",
+     "type": "number",
+     "kind": "single",
+     "default": 10
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "layers",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "counts",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "resample"
+   },
+   "paramOptions": {
+    "mode": [
+     "resample",
+     "smooth",
+     "subdivide",
+     "simplify",
+     "offset"
+    ],
+    "join": [
+     "round",
+     "miter",
+     "bevel"
+    ]
+   }
+  },
+  {
+   "type": "geometry/boolean",
+   "category": "Geometry",
+   "label": "Shape Boolean",
+   "description": "Union, intersect, subtract (a \u2212 b) or xor the filled areas of two layers, as polygons (holes included). Closed shapes count (nonzero winding), lines don't; with only `a` wired, `union` merges its shapes. Drawn in the first shape's style unless `style` is wired.",
+   "inputs": [
+    {
+     "name": "a",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "b",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "layers",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "counts",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "mode": "union"
+   },
+   "paramOptions": {
+    "mode": [
+     "union",
+     "intersect",
+     "subtract",
+     "xor"
+    ]
+   }
+  },
+  {
+   "type": "geometry/lsystem",
+   "category": "Geometry",
+   "label": "L-System",
+   "description": "Grow a string from `axiom` by `rules` (e.g. `F=F[+F]F[-F]F`; separate rules with `;`), `iterations` times, and draw it with a turtle: `F` / `G` draw a step, `f` / `g` move, `+` / `-` turn by `angle` degrees, `|` turns round, `[` / `]` branch; other symbols only rewrite. `fit` > 0 scales the drawing into a `fit`-wide box centred on `position` (0: start at `position`, `step` per move). `heading` in degrees (\u221290 = up); `jitter` varies every turn by up to that many degrees.",
+   "inputs": [
+    {
+     "name": "axiom",
+     "type": "string",
+     "kind": "single",
+     "default": "F"
+    },
+    {
+     "name": "rules",
+     "type": "string",
+     "kind": "single",
+     "default": "F=F[+F]F[-F]F"
+    },
+    {
+     "name": "iterations",
+     "type": "number",
+     "kind": "single",
+     "default": 4,
+     "integer": true
+    },
+    {
+     "name": "angle",
+     "type": "number",
+     "kind": "single",
+     "default": 25.7
+    },
+    {
+     "name": "step",
+     "type": "number",
+     "kind": "single",
+     "default": 10
+    },
+    {
+     "name": "fit",
+     "type": "number",
+     "kind": "single",
+     "default": 400
+    },
+    {
+     "name": "position",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "heading",
+     "type": "number",
+     "kind": "single",
+     "default": -90
+    },
+    {
+     "name": "jitter",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "seed",
+     "type": "number",
+     "kind": "single",
+     "default": 1,
+     "integer": true
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "layers",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "counts",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": null,
+   "paramOptions": null
   }
  ]
 }

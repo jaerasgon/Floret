@@ -66,6 +66,7 @@ pub(crate) mod test_util {
             meta: None,
             nodes,
             edges,
+            loop_length: None,
         }
     }
 }

@@ -687,6 +687,7 @@ fn frame_from(j: &J) -> FrameCtx {
             .unwrap_or(false),
         key: j.get("key").and_then(J::as_str).unwrap_or("").to_owned(),
         key_is_pressed: j.get("keyIsPressed").and_then(J::as_bool).unwrap_or(false),
+        ..FrameCtx::default()
     }
 }
 
@@ -795,6 +796,10 @@ fn run_sample(id: &str) -> SampleReport {
     rep
 }
 
+/// Node types with native-only outputs appended after the TS ones (only the
+/// TS ports are compared).
+const NATIVE_EXTRA_OUTPUTS: &[&str] = &["time/seconds"];
+
 fn compare_frame(
     engine: &Engine,
     outputs: &Outputs,
@@ -830,7 +835,10 @@ fn compare_frame(
         }
         let res = match (&outputs[idx], ts_ports) {
             (None, _) => Err("rust produced no output".to_owned()),
-            (Some(rs), Fx::Arr(ts)) if rs.len() == ts.len() => {
+            (Some(rs), Fx::Arr(ts))
+                if rs.len() == ts.len()
+                    || (rs.len() > ts.len() && NATIVE_EXTRA_OUTPUTS.contains(&&*node.ty)) =>
+            {
                 let mut r = Ok(());
                 for (p, (rv, tv)) in rs.iter().zip(ts.iter()).enumerate() {
                     if let Err(e) = cmp.value(&Value::List(rv.clone()), tv, &format!("out[{p}]")) {

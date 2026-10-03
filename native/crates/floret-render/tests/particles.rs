@@ -48,6 +48,7 @@ fn particle_samples_draw_every_particle() {
                     mouse_is_pressed: false,
                     key: String::new(),
                     key_is_pressed: false,
+                    ..FrameCtx::default()
                 })
                 .outputs;
         }

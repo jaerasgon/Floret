@@ -89,6 +89,9 @@ pub struct Engine {
     /// Store version `param_versions` was read at.
     params_seen: Option<u64>,
     profile: Profile,
+    /// The patch's loop length in seconds, for frames that don't set one
+    /// (see [`FrameCtx::loop_length`]). Change it freely between ticks.
+    pub loop_length: f64,
 }
 
 impl Engine {
@@ -103,6 +106,7 @@ impl Engine {
             param_versions: Vec::new(),
             params_seen: None,
             profile: Profile::default(),
+            loop_length: crate::patch::DEFAULT_LOOP_LENGTH,
         }
     }
 
@@ -129,6 +133,16 @@ impl Engine {
 
     pub fn tick(&mut self, frame: &FrameCtx) -> TickResult {
         let start = Instant::now();
+        let looped;
+        let frame = if frame.loop_length > 0.0 {
+            frame
+        } else {
+            looped = FrameCtx {
+                loop_length: self.loop_length,
+                ..frame.clone()
+            };
+            &looped
+        };
         let _host = crate::host::install(self.host.clone());
         let _audio = crate::audio::begin(self.audio.clone(), self.sound_nodes());
         let n = self.graph.nodes.len();

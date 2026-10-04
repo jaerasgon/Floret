@@ -1089,6 +1089,7 @@ impl eframe::App for App {
 
 fn apply_editor_prefs(view: &mut canvas::View, p: &Prefs) {
     view.snap = p.snap_to_grid;
+    view.gravity = p.node_gravity;
     view.wire_flow = p.flow_animation;
     view.grid = f64::from(p.grid_size);
     view.show_grid = p.show_grid;

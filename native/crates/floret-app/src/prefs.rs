@@ -48,6 +48,8 @@ pub struct Prefs {
     /// carry over.)
     pub flow_animation: bool,
     pub snap_to_grid: bool,
+    /// Dragging a node pulls its wired and nearby neighbours along.
+    pub node_gravity: bool,
     /// Snap step and dot spacing, in canvas units.
     pub grid_size: u32,
     /// The dot grid on the canvas.
@@ -81,6 +83,7 @@ impl Default for Prefs {
             ui_scale: 1.0,
             flow_animation: false,
             snap_to_grid: false,
+            node_gravity: true,
             grid_size: crate::editor::ops::GRID as u32,
             show_grid: true,
             show_minimap: true,
@@ -340,6 +343,14 @@ impl PrefsWindow {
                     "Marching dashes along wires.",
                     |ui| {
                         ui.checkbox(&mut p.flow_animation, "");
+                    },
+                );
+                row(
+                    ui,
+                    "Node gravity",
+                    "Dragging a node gently pulls the nodes wired to it, and nearby ones, along.",
+                    |ui| {
+                        ui.checkbox(&mut p.node_gravity, "");
                     },
                 );
                 row(

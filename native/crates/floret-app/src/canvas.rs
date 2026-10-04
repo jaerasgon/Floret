@@ -11,6 +11,7 @@ mod anim;
 mod custom;
 mod draw;
 mod geom;
+mod gravity;
 mod live;
 mod minimap;
 #[cfg(test)]
@@ -67,6 +68,8 @@ enum Gesture {
         reparent: bool,
         /// The moved node under the pointer at press time.
         grabbed: String,
+        /// Node gravity: the other nodes the drag pulls along.
+        gravity: Option<gravity::Gravity>,
     },
     /// Dragging a new wire out of a pin; `alt` = Alt held while dragging
     /// (drop → probe).
@@ -267,6 +270,8 @@ pub struct View {
     pub wire_flow: bool,
     /// Grow a region while a child is dragged against its edge.
     pub auto_grow: bool,
+    /// Dragging nodes pulls their wired and nearby neighbours along.
+    pub gravity: bool,
     /// Entered subpatches, outermost first.
     stack: Vec<String>,
     /// Inputs whose inline editor is open: (node, port).
@@ -341,6 +346,7 @@ impl Default for View {
             reduce_motion: false,
             wire_flow: false,
             auto_grow: true,
+            gravity: true,
             stack: Vec::new(),
             expanded: HashSet::new(),
             favorites: Favorites::load(),
@@ -1079,6 +1085,14 @@ pub fn show(
                     }
                 }
                 let start_pos = ids.iter().map(|i| ops::absolute_pos(patch, i)).collect();
+                let gravity = (view.gravity && !duplicated).then(|| {
+                    let parent =
+                        ports::find_node(patch, &grabbed).and_then(|n| n.parent_id.clone());
+                    gravity::Gravity::start(patch, &ids, parent.as_deref(), |id| {
+                        let c = view.to_canvas(boxes.get(id)?.rect.center());
+                        Some((c.x, c.y))
+                    })
+                });
                 view.gesture = Gesture::Move {
                     ids,
                     start: start_pos,
@@ -1087,6 +1101,7 @@ pub fn show(
                     moved: false,
                     reparent: space,
                     grabbed,
+                    gravity,
                 };
             } else if let Some((id, dx, dy)) = hits.resize(start) {
                 if let Some(n) = ports::find_node(patch, &id) {
@@ -1119,6 +1134,7 @@ pub fn show(
     let mut hover_region: Option<String> = None;
     if resp.dragged() {
         let (snap, auto_grow) = (view.snap, view.auto_grow);
+        let reduce_motion = view.reduce_motion;
         let (grid, grid_origin) = (view.grid, view.grid_origin);
         let expanded = view.expanded.clone();
         match &mut view.gesture {
@@ -1134,12 +1150,20 @@ pub fn show(
                 moved,
                 reparent,
                 grabbed,
+                gravity,
                 ..
             } => {
                 *reparent |= space;
                 if let Some(p) = pointer {
                     let d = (p - *o) / z;
                     *moved = true;
+                    if let Some(g) = gravity {
+                        let dt = ui.input(|i| i.stable_dt);
+                        let delta = (f64::from(d.x), f64::from(d.y));
+                        if g.step(patch, delta, dt, reduce_motion) {
+                            ctx.request_repaint();
+                        }
+                    }
                     for (id, s) in ids.iter().zip(start.iter()) {
                         let mut t = Position {
                             x: s.x + f64::from(d.x),
@@ -1167,7 +1191,10 @@ pub fn show(
                             std::slice::from_ref(grabbed),
                         );
                     } else if auto_grow {
-                        for id in ids.iter() {
+                        let pulled: Vec<String> =
+                            gravity.iter().flat_map(|g| g.ids().cloned()).collect();
+                        let moving: Vec<String> = ids.iter().chain(&pulled).cloned().collect();
+                        for id in moving.iter() {
                             // Regions, and the entered subpatch's frame.
                             let in_frame = ports::find_node(patch, id)
                                 .and_then(|n| n.parent_id.as_deref())
@@ -1184,7 +1211,7 @@ pub fn show(
                                     geom::box_size_with(patch, n, cat, look, &expanded)
                                 })
                                 .unwrap_or_default();
-                            regions::auto_grow(patch, id, size, ids);
+                            regions::auto_grow(patch, id, size, &moving);
                         }
                     }
                 }
@@ -1330,8 +1357,13 @@ pub fn show(
                 moved,
                 reparent,
                 grabbed,
+                gravity,
                 ..
             } => {
+                if let Some(mut g) = gravity {
+                    let snap = view.snap.then_some((view.grid, view.grid_origin));
+                    g.settle(patch, snap);
+                }
                 // Like the web app, only the grabbed node changes region;
                 // the rest of the selection just moves.
                 if reparent && moved && !duplicated {

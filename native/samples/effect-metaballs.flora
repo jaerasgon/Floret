@@ -30,8 +30,8 @@
       "id": "mb_turn",
       "defType": "motion/lfo",
       "position": {
-        "x": 17,
-        "y": 0
+        "x": 0,
+        "y": 431
       },
       "params": {
         "shape": "saw",
@@ -50,8 +50,8 @@
       "id": "mb_breathe",
       "defType": "motion/lfo",
       "position": {
-        "x": 14,
-        "y": 302
+        "x": 240,
+        "y": 0
       },
       "params": {
         "shape": "sine",
@@ -70,8 +70,8 @@
       "id": "mb_back",
       "defType": "math/math",
       "position": {
-        "x": 0,
-        "y": 604
+        "x": 227,
+        "y": 324
       },
       "params": {
         "op": "negate",
@@ -82,8 +82,8 @@
       "id": "mb_outer",
       "defType": "spread/ring",
       "position": {
-        "x": 276,
-        "y": 46
+        "x": 239,
+        "y": 450
       },
       "params": {},
       "portValues": {
@@ -95,8 +95,8 @@
       "id": "mb_inner",
       "defType": "spread/ring",
       "position": {
-        "x": 276,
-        "y": 360
+        "x": 611,
+        "y": 183
       },
       "params": {},
       "portValues": {
@@ -107,8 +107,8 @@
       "id": "mb_fill",
       "defType": "style/fill",
       "position": {
-        "x": 271,
-        "y": 522
+        "x": 235,
+        "y": 620
       },
       "params": {
         "color": {
@@ -131,12 +131,12 @@
       "id": "mb_big",
       "defType": "region/foreach",
       "position": {
-        "x": 548,
-        "y": 111
+        "x": 503,
+        "y": 375
       },
       "params": {
-        "width": 336,
-        "height": 214,
+        "width": 339,
+        "height": 224,
         "label": "ForEach"
       },
       "ports": [
@@ -145,18 +145,18 @@
           "name": "pos",
           "type": "vec2",
           "direction": "input",
-          "y": 76
+          "y": 77
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 76
+          "y": 77
         }
       ],
-      "width": 336,
-      "height": 214
+      "width": 339,
+      "height": 224
     },
     {
       "id": "mb_big_dot",
@@ -176,12 +176,12 @@
       "id": "mb_small",
       "defType": "region/foreach",
       "position": {
-        "x": 548,
-        "y": 395
+        "x": 978,
+        "y": 403
       },
       "params": {
-        "width": 336,
-        "height": 214,
+        "width": 339,
+        "height": 224,
         "label": "ForEach"
       },
       "ports": [
@@ -190,18 +190,18 @@
           "name": "pos",
           "type": "vec2",
           "direction": "input",
-          "y": 76
+          "y": 77
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 76
+          "y": 77
         }
       ],
-      "width": 336,
-      "height": 214
+      "width": 339,
+      "height": 224
     },
     {
       "id": "mb_small_dot",
@@ -221,8 +221,8 @@
       "id": "mb_core",
       "defType": "draw/ellipse",
       "position": {
-        "x": 663,
-        "y": 657
+        "x": 1093,
+        "y": 675
       },
       "params": {},
       "portValues": {
@@ -234,8 +234,8 @@
       "id": "mb_group",
       "defType": "transform/group",
       "position": {
-        "x": 1016,
-        "y": 394
+        "x": 1444,
+        "y": 423
       },
       "params": {
         "slotCount": 3
@@ -245,8 +245,8 @@
       "id": "mb_blur",
       "defType": "gpu/effect",
       "position": {
-        "x": 1280,
-        "y": 372
+        "x": 1708,
+        "y": 399
       },
       "params": {
         "mode": "blur",
@@ -260,8 +260,8 @@
       "id": "mb_goo",
       "defType": "gpu/effect",
       "position": {
-        "x": 1543,
-        "y": 351
+        "x": 1973,
+        "y": 375
       },
       "params": {
         "mode": "threshold",
@@ -276,8 +276,8 @@
       "id": "mb_glow",
       "defType": "gpu/effect",
       "position": {
-        "x": 1807,
-        "y": 329
+        "x": 2239,
+        "y": 352
       },
       "params": {
         "mode": "glow"
@@ -297,8 +297,8 @@
       "id": "mb_shade",
       "defType": "gpu/effect",
       "position": {
-        "x": 2070,
-        "y": 308
+        "x": 2504,
+        "y": 329
       },
       "params": {
         "mode": "shadow"
@@ -323,8 +323,8 @@
       "id": "mb_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2333,
-        "y": 308
+        "x": 2769,
+        "y": 328
       },
       "params": {
         "width": 600,

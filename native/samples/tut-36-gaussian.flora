@@ -31,7 +31,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 153
+        "y": 158
       },
       "params": {
         "count": 200
@@ -44,12 +44,12 @@
       "id": "t36_region",
       "defType": "region/foreach",
       "position": {
-        "x": 216,
+        "x": 221,
         "y": 22
       },
       "params": {
-        "width": 997,
-        "height": 296,
+        "width": 1004,
+        "height": 306,
         "label": "ForEach"
       },
       "ports": [
@@ -58,25 +58,25 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 167
+          "y": 173
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 103
+          "y": 104
         }
       ],
-      "width": 997,
-      "height": 296
+      "width": 1004,
+      "height": 306
     },
     {
       "id": "t36_sy",
       "defType": "math/add",
       "position": {
         "x": 132,
-        "y": 182
+        "y": 188
       },
       "params": {
         "b": 1000,
@@ -91,7 +91,7 @@
       "id": "t36_gx",
       "defType": "random/gaussian",
       "position": {
-        "x": 161,
+        "x": 159,
         "y": 40
       },
       "params": {
@@ -109,7 +109,7 @@
       "defType": "random/gaussian",
       "position": {
         "x": 400,
-        "y": 115
+        "y": 117
       },
       "params": {
         "mean": 0,
@@ -125,7 +125,7 @@
       "id": "t36_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 789,
+        "x": 793,
         "y": 67
       },
       "params": {
@@ -142,7 +142,7 @@
       "id": "t36_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1309,
+        "x": 1321,
         "y": 89
       },
       "params": {
@@ -158,7 +158,7 @@
       "id": "t36_ell-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 609,
+        "x": 613,
         "y": 67
       },
       "params": {

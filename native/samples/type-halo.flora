@@ -31,7 +31,7 @@
       "defType": "value/string",
       "position": {
         "x": 0,
-        "y": 273
+        "y": 283
       },
       "params": {
         "value": "GENERATIVE FLORET TYPE STUDIO "
@@ -44,8 +44,8 @@
       "id": "th_split",
       "defType": "string/split",
       "position": {
-        "x": 500,
-        "y": 179
+        "x": 503,
+        "y": 185
       },
       "params": {}
     },
@@ -53,8 +53,8 @@
       "id": "th_len",
       "defType": "string/length",
       "position": {
-        "x": 266,
-        "y": 368
+        "x": 269,
+        "y": 380
       },
       "params": {}
     },
@@ -62,8 +62,8 @@
       "id": "th_total",
       "defType": "math/mul",
       "position": {
-        "x": 458,
-        "y": 301
+        "x": 461,
+        "y": 311
       },
       "params": {
         "b": 3,
@@ -77,8 +77,8 @@
       "id": "th_range",
       "defType": "spread/range",
       "position": {
-        "x": 733,
-        "y": 326
+        "x": 736,
+        "y": 339
       },
       "params": {}
     },
@@ -86,8 +86,8 @@
       "id": "th_tiled",
       "defType": "spread/repeat",
       "position": {
-        "x": 731,
-        "y": 120
+        "x": 734,
+        "y": 125
       },
       "params": {
         "count": 3
@@ -100,8 +100,8 @@
       "id": "th_time",
       "defType": "time/seconds",
       "position": {
-        "x": 747,
-        "y": 492
+        "x": 753,
+        "y": 507
       },
       "params": {}
     },
@@ -109,12 +109,12 @@
       "id": "th_region",
       "defType": "region/foreach",
       "position": {
-        "x": 953,
+        "x": 962,
         "y": 22
       },
       "params": {
-        "width": 1982,
-        "height": 887,
+        "width": 1989,
+        "height": 917,
         "label": "ForEach char"
       },
       "ports": [
@@ -123,32 +123,32 @@
           "name": "ch",
           "type": "string",
           "direction": "input",
-          "y": 76
+          "y": 79
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 412
+          "y": 426
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 216
+          "y": 221
         }
       ],
-      "width": 1982,
-      "height": 887
+      "width": 1989,
+      "height": 917
     },
     {
       "id": "th_ringF",
       "defType": "math/div",
       "position": {
-        "x": 153,
-        "y": 285
+        "x": 154,
+        "y": 295
       },
       "params": {
         "valueType": "number"
@@ -159,8 +159,8 @@
       "id": "th_ring",
       "defType": "math/floor",
       "position": {
-        "x": 476,
-        "y": 248
+        "x": 477,
+        "y": 258
       },
       "params": {},
       "parentId": "th_region"
@@ -169,8 +169,8 @@
       "id": "th_posIn",
       "defType": "math/mod",
       "position": {
-        "x": 201,
-        "y": 41
+        "x": 202,
+        "y": 43
       },
       "params": {},
       "parentId": "th_region"
@@ -179,8 +179,8 @@
       "id": "th_tBase",
       "defType": "math/mul",
       "position": {
-        "x": 153,
-        "y": 163
+        "x": 154,
+        "y": 169
       },
       "params": {
         "b": 0.3,
@@ -195,8 +195,8 @@
       "id": "th_r1",
       "defType": "math/add",
       "position": {
-        "x": 699,
-        "y": 196
+        "x": 701,
+        "y": 202
       },
       "params": {
         "b": 1,
@@ -211,8 +211,8 @@
       "id": "th_spin",
       "defType": "math/div",
       "position": {
-        "x": 969,
-        "y": 138
+        "x": 970,
+        "y": 143
       },
       "params": {},
       "parentId": "th_region"
@@ -221,8 +221,8 @@
       "id": "th_angle",
       "defType": "math/add",
       "position": {
-        "x": 1237,
-        "y": 93
+        "x": 1238,
+        "y": 94
       },
       "params": {
         "valueType": "number"
@@ -233,8 +233,8 @@
       "id": "th_wT",
       "defType": "math/mul",
       "position": {
-        "x": 153,
-        "y": 407
+        "x": 154,
+        "y": 421
       },
       "params": {
         "b": 2.5,
@@ -249,8 +249,8 @@
       "id": "th_wI",
       "defType": "math/mul",
       "position": {
-        "x": 153,
-        "y": 529
+        "x": 154,
+        "y": 547
       },
       "params": {
         "b": 0.7,
@@ -265,8 +265,8 @@
       "id": "th_wPh",
       "defType": "math/add",
       "position": {
-        "x": 428,
-        "y": 440
+        "x": 429,
+        "y": 455
       },
       "params": {
         "valueType": "number"
@@ -277,8 +277,8 @@
       "id": "th_wSin",
       "defType": "math/sin",
       "position": {
-        "x": 1285,
-        "y": 397
+        "x": 1286,
+        "y": 412
       },
       "params": {},
       "parentId": "th_region"
@@ -287,8 +287,8 @@
       "id": "th_hueI",
       "defType": "math/mul",
       "position": {
-        "x": 153,
-        "y": 651
+        "x": 154,
+        "y": 673
       },
       "params": {
         "b": 16,
@@ -303,8 +303,8 @@
       "id": "th_hueT",
       "defType": "math/mul",
       "position": {
-        "x": 153,
-        "y": 773
+        "x": 154,
+        "y": 799
       },
       "params": {
         "b": 30,
@@ -319,8 +319,8 @@
       "id": "th_hue",
       "defType": "math/add",
       "position": {
-        "x": 428,
-        "y": 685
+        "x": 429,
+        "y": 710
       },
       "params": {
         "valueType": "number"
@@ -332,7 +332,7 @@
       "defType": "color/color",
       "position": {
         "x": 978,
-        "y": 637
+        "y": 663
       },
       "params": {
         "mode": "hsl",
@@ -355,7 +355,7 @@
       "defType": "style/fill",
       "position": {
         "x": 1279,
-        "y": 615
+        "y": 643
       },
       "params": {},
       "parentId": "th_region"
@@ -364,8 +364,8 @@
       "id": "th_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 1520,
-        "y": 454
+        "x": 1522,
+        "y": 471
       },
       "params": {
         "font": "monospace",
@@ -387,8 +387,8 @@
       "id": "th_text",
       "defType": "draw/text",
       "position": {
-        "x": 1784,
-        "y": 181
+        "x": 1788,
+        "y": 184
       },
       "params": {
         "string": "?",
@@ -406,8 +406,8 @@
       "id": "th_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 3031,
-        "y": 202
+        "x": 3047,
+        "y": 206
       },
       "params": {
         "width": 560,
@@ -434,8 +434,8 @@
       "id": "th_pos",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 1540,
-        "y": 150
+        "x": 1542,
+        "y": 153
       },
       "params": {},
       "parentId": "th_region"
@@ -444,8 +444,8 @@
       "id": "th_radius",
       "defType": "math/map",
       "position": {
-        "x": 1280,
-        "y": 215
+        "x": 1281,
+        "y": 220
       },
       "params": {
         "inMin": 0,
@@ -465,8 +465,8 @@
       "id": "th_size",
       "defType": "math/map",
       "position": {
-        "x": 1551,
-        "y": 272
+        "x": 1554,
+        "y": 279
       },
       "params": {
         "inMin": -1,

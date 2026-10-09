@@ -31,7 +31,7 @@
       "defType": "motion/lfo",
       "position": {
         "x": 0,
-        "y": 556
+        "y": 580
       },
       "params": {
         "shape": "sine",
@@ -50,8 +50,8 @@
       "id": "np_pal",
       "defType": "color/palette",
       "position": {
-        "x": 280,
-        "y": 372
+        "x": 288,
+        "y": 383
       },
       "params": {
         "stopCount": 4,
@@ -69,7 +69,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 2,
-        "y": 36
+        "y": 26
       },
       "params": {},
       "portValues": {
@@ -87,8 +87,8 @@
       "id": "np_stripes_noise",
       "defType": "noise/noise",
       "position": {
-        "x": 282,
-        "y": 70
+        "x": 289,
+        "y": 59
       },
       "params": {
         "mode": "stripes"
@@ -105,12 +105,12 @@
       "id": "np_stripes_each",
       "defType": "region/foreach",
       "position": {
-        "x": 598,
+        "x": 608,
         "y": 22
       },
       "params": {
-        "width": 761,
-        "height": 253,
+        "width": 771,
+        "height": 266,
         "label": "ForEach"
       },
       "ports": [
@@ -119,32 +119,32 @@
           "name": "pos",
           "type": "vec2",
           "direction": "input",
-          "y": 79
+          "y": 80
         },
         {
           "id": "v",
           "name": "v",
           "type": "number",
           "direction": "input",
-          "y": 195
+          "y": 207
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 76
+          "y": 77
         }
       ],
-      "width": 761,
-      "height": 253
+      "width": 771,
+      "height": 266
     },
     {
       "id": "np_stripes_grad",
       "defType": "color/gradient",
       "position": {
         "x": 128,
-        "y": 119
+        "y": 126
       },
       "params": {
         "space": "oklab"
@@ -155,8 +155,8 @@
       "id": "np_stripes_fill",
       "defType": "style/fill",
       "position": {
-        "x": 373,
-        "y": 119
+        "x": 378,
+        "y": 127
       },
       "params": {},
       "parentId": "np_stripes_each"
@@ -165,7 +165,7 @@
       "id": "np_stripes_cells",
       "defType": "draw/rect",
       "position": {
-        "x": 553,
+        "x": 560,
         "y": 40
       },
       "params": {},
@@ -180,7 +180,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 2,
-        "y": 374
+        "y": 388
       },
       "params": {},
       "portValues": {
@@ -198,8 +198,8 @@
       "id": "np_rings_noise",
       "defType": "noise/noise",
       "position": {
-        "x": 282,
-        "y": 574
+        "x": 289,
+        "y": 597
       },
       "params": {
         "mode": "rings"
@@ -216,12 +216,12 @@
       "id": "np_rings_each",
       "defType": "region/foreach",
       "position": {
-        "x": 598,
-        "y": 345
+        "x": 608,
+        "y": 358
       },
       "params": {
-        "width": 761,
-        "height": 253,
+        "width": 771,
+        "height": 266,
         "label": "ForEach"
       },
       "ports": [
@@ -230,32 +230,32 @@
           "name": "pos",
           "type": "vec2",
           "direction": "input",
-          "y": 79
+          "y": 80
         },
         {
           "id": "v",
           "name": "v",
           "type": "number",
           "direction": "input",
-          "y": 195
+          "y": 207
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 76
+          "y": 77
         }
       ],
-      "width": 761,
-      "height": 253
+      "width": 771,
+      "height": 266
     },
     {
       "id": "np_rings_grad",
       "defType": "color/gradient",
       "position": {
         "x": 128,
-        "y": 119
+        "y": 126
       },
       "params": {
         "space": "oklab"
@@ -266,8 +266,8 @@
       "id": "np_rings_fill",
       "defType": "style/fill",
       "position": {
-        "x": 373,
-        "y": 119
+        "x": 378,
+        "y": 127
       },
       "params": {},
       "parentId": "np_rings_each"
@@ -276,7 +276,7 @@
       "id": "np_rings_cells",
       "defType": "draw/rect",
       "position": {
-        "x": 553,
+        "x": 560,
         "y": 40
       },
       "params": {},
@@ -291,7 +291,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 2,
-        "y": 858
+        "y": 904
       },
       "params": {},
       "portValues": {
@@ -309,8 +309,8 @@
       "id": "np_checker_noise",
       "defType": "noise/noise",
       "position": {
-        "x": 282,
-        "y": 856
+        "x": 289,
+        "y": 899
       },
       "params": {
         "mode": "checker"
@@ -327,12 +327,12 @@
       "id": "np_checker_each",
       "defType": "region/foreach",
       "position": {
-        "x": 598,
-        "y": 668
+        "x": 608,
+        "y": 694
       },
       "params": {
-        "width": 761,
-        "height": 253,
+        "width": 771,
+        "height": 266,
         "label": "ForEach"
       },
       "ports": [
@@ -341,32 +341,32 @@
           "name": "pos",
           "type": "vec2",
           "direction": "input",
-          "y": 79
+          "y": 80
         },
         {
           "id": "v",
           "name": "v",
           "type": "number",
           "direction": "input",
-          "y": 195
+          "y": 207
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 76
+          "y": 77
         }
       ],
-      "width": 761,
-      "height": 253
+      "width": 771,
+      "height": 266
     },
     {
       "id": "np_checker_grad",
       "defType": "color/gradient",
       "position": {
         "x": 128,
-        "y": 119
+        "y": 126
       },
       "params": {
         "space": "oklab"
@@ -377,8 +377,8 @@
       "id": "np_checker_fill",
       "defType": "style/fill",
       "position": {
-        "x": 373,
-        "y": 119
+        "x": 378,
+        "y": 127
       },
       "params": {},
       "parentId": "np_checker_each"
@@ -387,7 +387,7 @@
       "id": "np_checker_cells",
       "defType": "draw/rect",
       "position": {
-        "x": 553,
+        "x": 560,
         "y": 40
       },
       "params": {},
@@ -401,8 +401,8 @@
       "id": "np_panels",
       "defType": "transform/group",
       "position": {
-        "x": 1500,
-        "y": 364
+        "x": 1523,
+        "y": 375
       },
       "params": {
         "slotCount": 3
@@ -412,8 +412,8 @@
       "id": "np_smooth",
       "defType": "gpu/effect",
       "position": {
-        "x": 1765,
-        "y": 343
+        "x": 1787,
+        "y": 352
       },
       "params": {
         "mode": "blur",
@@ -427,8 +427,8 @@
       "id": "np_bands",
       "defType": "gpu/effect",
       "position": {
-        "x": 2028,
-        "y": 322
+        "x": 2052,
+        "y": 328
       },
       "params": {
         "mode": "posterize"
@@ -441,8 +441,8 @@
       "id": "np_lines",
       "defType": "gpu/effect",
       "position": {
-        "x": 2291,
-        "y": 301
+        "x": 2317,
+        "y": 305
       },
       "params": {
         "mode": "edges"
@@ -463,8 +463,8 @@
       "id": "np_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2554,
-        "y": 300
+        "x": 2582,
+        "y": 305
       },
       "params": {
         "width": 660,

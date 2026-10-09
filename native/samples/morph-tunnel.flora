@@ -46,7 +46,7 @@
       "id": "mt_star",
       "defType": "math/expression",
       "position": {
-        "x": 221,
+        "x": 225,
         "y": 159
       },
       "params": {
@@ -58,7 +58,7 @@
       "id": "mt_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 496,
+        "x": 502,
         "y": 197
       },
       "params": {},
@@ -70,8 +70,8 @@
       "id": "mt_circle",
       "defType": "draw/ellipse",
       "position": {
-        "x": 487,
-        "y": 359
+        "x": 493,
+        "y": 367
       },
       "params": {
         "w": 400,
@@ -86,8 +86,8 @@
       "id": "mt_t",
       "defType": "time/seconds",
       "position": {
-        "x": 498,
-        "y": 541
+        "x": 505,
+        "y": 559
       },
       "params": {}
     },
@@ -95,8 +95,8 @@
       "id": "mt_n",
       "defType": "spread/linear",
       "position": {
-        "x": 485,
-        "y": 55
+        "x": 489,
+        "y": 49
       },
       "params": {
         "from": 0,
@@ -113,12 +113,12 @@
       "id": "mt_each",
       "defType": "region/foreach",
       "position": {
-        "x": 732,
+        "x": 744,
         "y": 22
       },
       "params": {
-        "width": 1414,
-        "height": 729,
+        "width": 1423,
+        "height": 749,
         "label": "ForEach shape"
       },
       "ports": [
@@ -127,7 +127,7 @@
           "name": "f",
           "type": "number",
           "direction": "input",
-          "y": 344
+          "y": 350
         },
         {
           "id": "l",
@@ -137,15 +137,15 @@
           "y": 220
         }
       ],
-      "width": 1414,
-      "height": 729
+      "width": 1423,
+      "height": 749
     },
     {
       "id": "mt_tt",
       "defType": "math/expression",
       "position": {
-        "x": 145,
-        "y": 340
+        "x": 146,
+        "y": 346
       },
       "params": {
         "expr": "0.5 - 0.5 * cos(tau * (f + l))"
@@ -157,8 +157,8 @@
       "id": "mt_hue",
       "defType": "math/expression",
       "position": {
-        "x": 145,
-        "y": 500
+        "x": 146,
+        "y": 510
       },
       "params": {
         "expr": "190 + 150 * f"
@@ -170,8 +170,8 @@
       "id": "mt_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 419,
-        "y": 473
+        "x": 420,
+        "y": 483
       },
       "params": {
         "s": 75,
@@ -190,7 +190,7 @@
       "defType": "style/no-fill",
       "position": {
         "x": 419,
-        "y": 635
+        "y": 653
       },
       "params": {},
       "parentId": "mt_each"
@@ -199,8 +199,8 @@
       "id": "mt_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 612,
-        "y": 491
+        "x": 613,
+        "y": 503
       },
       "params": {
         "width": 2,
@@ -216,8 +216,8 @@
       "id": "mt_m",
       "defType": "geometry/morph",
       "position": {
-        "x": 803,
-        "y": 346
+        "x": 806,
+        "y": 350
       },
       "params": {},
       "portValues": {
@@ -229,8 +229,8 @@
       "id": "mt_size",
       "defType": "math/expression",
       "position": {
-        "x": 145,
-        "y": 200
+        "x": 146,
+        "y": 204
       },
       "params": {
         "expr": "1 - 0.92 * f"
@@ -242,8 +242,8 @@
       "id": "mt_scale",
       "defType": "transform/scale",
       "position": {
-        "x": 1030,
-        "y": 246
+        "x": 1037,
+        "y": 247
       },
       "params": {},
       "parentId": "mt_each"
@@ -252,7 +252,7 @@
       "id": "mt_spin",
       "defType": "math/expression",
       "position": {
-        "x": 145,
+        "x": 146,
         "y": 40
       },
       "params": {
@@ -265,8 +265,8 @@
       "id": "mt_rot",
       "defType": "transform/rotate",
       "position": {
-        "x": 1217,
-        "y": 184
+        "x": 1223,
+        "y": 183
       },
       "params": {},
       "parentId": "mt_each"
@@ -275,8 +275,8 @@
       "id": "mt_r",
       "defType": "render/renderer",
       "position": {
-        "x": 2242,
-        "y": 206
+        "x": 2263,
+        "y": 205
       },
       "params": {
         "width": 560,

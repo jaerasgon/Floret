@@ -30,7 +30,7 @@
       "id": "va_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 26,
+        "x": 24,
         "y": 0
       },
       "params": {
@@ -50,8 +50,8 @@
       "id": "va_idx",
       "defType": "spread/range",
       "position": {
-        "x": 24,
-        "y": 808
+        "x": 22,
+        "y": 822
       },
       "params": {
         "count": 784
@@ -65,7 +65,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 42,
-        "y": 182
+        "y": 192
       },
       "params": {}
     },
@@ -74,7 +74,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 304
+        "y": 318
       },
       "params": {
         "value": 0.005,
@@ -92,7 +92,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 430
+        "y": 444
       },
       "params": {
         "value": 18,
@@ -110,7 +110,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 556
+        "y": 570
       },
       "params": {
         "value": 190,
@@ -130,7 +130,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 682
+        "y": 696
       },
       "params": {
         "value": 2,
@@ -148,11 +148,11 @@
       "defType": "region/foreach",
       "position": {
         "x": 304,
-        "y": 224
+        "y": 229
       },
       "params": {
-        "width": 2331,
-        "height": 470,
+        "width": 2332,
+        "height": 484,
         "label": "ForEach stroke"
       },
       "ports": [
@@ -168,18 +168,18 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 412
+          "y": 425
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 92
+          "y": 91
         }
       ],
-      "width": 2331,
-      "height": 470
+      "width": 2332,
+      "height": 484
     },
     {
       "id": "va_scaled",
@@ -206,7 +206,7 @@
       "defType": "math/mul",
       "position": {
         "x": 132,
-        "y": 214
+        "y": 218
       },
       "params": {
         "valueType": "number",
@@ -222,7 +222,7 @@
       "defType": "math/add",
       "position": {
         "x": 672,
-        "y": 168
+        "y": 169
       },
       "params": {
         "valueType": "number"
@@ -234,7 +234,7 @@
       "defType": "noise/perlin",
       "position": {
         "x": 940,
-        "y": 122
+        "y": 121
       },
       "params": {
         "octaves": 3,
@@ -251,7 +251,7 @@
       "defType": "math/mul",
       "position": {
         "x": 1137,
-        "y": 111
+        "y": 112
       },
       "params": {
         "valueType": "number",
@@ -266,8 +266,8 @@
       "id": "va_rand",
       "defType": "random/uniform",
       "position": {
-        "x": 157,
-        "y": 336
+        "x": 155,
+        "y": 344
       },
       "params": {
         "min": 0.35,
@@ -284,7 +284,7 @@
       "defType": "math/mul",
       "position": {
         "x": 403,
-        "y": 289
+        "y": 297
       },
       "params": {
         "valueType": "number"
@@ -295,8 +295,8 @@
       "id": "va_dir",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 1441,
-        "y": 120
+        "x": 1440,
+        "y": 121
       },
       "params": {},
       "parentId": "va_region"
@@ -305,7 +305,7 @@
       "id": "va_end",
       "defType": "math/add",
       "position": {
-        "x": 1673,
+        "x": 1674,
         "y": 74
       },
       "params": {
@@ -318,7 +318,7 @@
       "defType": "math/mul",
       "position": {
         "x": 1137,
-        "y": 233
+        "y": 238
       },
       "params": {
         "valueType": "number",
@@ -334,7 +334,7 @@
       "defType": "math/add",
       "position": {
         "x": 1406,
-        "y": 242
+        "y": 247
       },
       "params": {
         "valueType": "number"
@@ -346,7 +346,7 @@
       "defType": "color/color",
       "position": {
         "x": 1682,
-        "y": 196
+        "y": 200
       },
       "params": {
         "mode": "hsl",
@@ -365,8 +365,8 @@
       "id": "va_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 1945,
-        "y": 146
+        "x": 1946,
+        "y": 149
       },
       "params": {},
       "parentId": "va_region"
@@ -375,8 +375,8 @@
       "id": "va_line",
       "defType": "draw/line",
       "position": {
-        "x": 2135,
-        "y": 56
+        "x": 2136,
+        "y": 54
       },
       "params": {},
       "parentId": "va_region"
@@ -385,8 +385,8 @@
       "id": "va_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2731,
-        "y": 280
+        "x": 2732,
+        "y": 283
       },
       "params": {
         "width": 600,

@@ -30,8 +30,8 @@
       "id": "nz_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 206,
-        "y": 94
+        "x": 204,
+        "y": 97
       },
       "params": {
         "cols": 64,
@@ -51,7 +51,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 322
+        "y": 339
       },
       "params": {}
     },
@@ -60,7 +60,7 @@
       "defType": "math/mul",
       "position": {
         "x": 180,
-        "y": 322
+        "y": 339
       },
       "params": {
         "b": 18,
@@ -75,7 +75,7 @@
       "defType": "noise/noise",
       "position": {
         "x": 475,
-        "y": 262
+        "y": 273
       },
       "params": {
         "mode": "cellular",
@@ -92,8 +92,8 @@
       "id": "nz_pal",
       "defType": "color/palette",
       "position": {
-        "x": 472,
-        "y": 60
+        "x": 474,
+        "y": 59
       },
       "params": {
         "stopCount": 4,
@@ -107,12 +107,12 @@
       "id": "nz_region",
       "defType": "region/foreach",
       "position": {
-        "x": 748,
+        "x": 750,
         "y": 22
       },
       "params": {
-        "width": 761,
-        "height": 253,
+        "width": 771,
+        "height": 266,
         "label": "ForEach"
       },
       "ports": [
@@ -121,32 +121,32 @@
           "name": "pos",
           "type": "vec2",
           "direction": "input",
-          "y": 79
+          "y": 80
         },
         {
           "id": "v",
           "name": "v",
           "type": "number",
           "direction": "input",
-          "y": 195
+          "y": 207
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 76
+          "y": 77
         }
       ],
-      "width": 761,
-      "height": 253
+      "width": 771,
+      "height": 266
     },
     {
       "id": "nz_grad",
       "defType": "color/gradient",
       "position": {
         "x": 128,
-        "y": 119
+        "y": 126
       },
       "params": {
         "space": "oklab"
@@ -157,8 +157,8 @@
       "id": "nz_fill",
       "defType": "style/fill",
       "position": {
-        "x": 373,
-        "y": 119
+        "x": 378,
+        "y": 127
       },
       "params": {},
       "parentId": "nz_region"
@@ -167,7 +167,7 @@
       "id": "nz_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 553,
+        "x": 560,
         "y": 40
       },
       "params": {
@@ -184,7 +184,7 @@
       "id": "nz_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1605,
+        "x": 1617,
         "y": 62
       },
       "params": {

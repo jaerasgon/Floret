@@ -30,8 +30,8 @@
       "id": "bt_cam",
       "defType": "input/camera",
       "position": {
-        "x": 270,
-        "y": 239
+        "x": 271,
+        "y": 244
       },
       "params": {
         "device": "",
@@ -47,7 +47,7 @@
       "defType": "io/toggle",
       "position": {
         "x": 0,
-        "y": 286
+        "y": 298
       },
       "params": {
         "value": true
@@ -60,8 +60,8 @@
       "id": "bt_lm",
       "defType": "input/landmarks",
       "position": {
-        "x": 538,
-        "y": 213
+        "x": 544,
+        "y": 214
       },
       "params": {
         "tracker": "hands",
@@ -80,8 +80,8 @@
       "id": "bt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1721,
-        "y": 212
+        "x": 1735,
+        "y": 216
       },
       "params": {
         "width": 520,
@@ -108,12 +108,12 @@
       "id": "bt_lines",
       "defType": "region/foreach",
       "position": {
-        "x": 821,
-        "y": 326
+        "x": 833,
+        "y": 338
       },
       "params": {
         "width": 512,
-        "height": 286,
+        "height": 294,
         "label": "ForEach edge"
       },
       "ports": [
@@ -136,18 +136,18 @@
           "name": "col",
           "type": "color",
           "direction": "input",
-          "y": 168
+          "y": 169
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 91
+          "y": 90
         }
       ],
       "width": 512,
-      "height": 286
+      "height": 294
     },
     {
       "id": "bt_lstroke",
@@ -169,7 +169,7 @@
       "defType": "draw/line",
       "position": {
         "x": 316,
-        "y": 55
+        "y": 53
       },
       "params": {},
       "parentId": "bt_lines"
@@ -178,12 +178,12 @@
       "id": "bt_points",
       "defType": "region/foreach",
       "position": {
-        "x": 819,
+        "x": 828,
         "y": 22
       },
       "params": {
-        "width": 516,
-        "height": 234,
+        "width": 521,
+        "height": 246,
         "label": "ForEach point"
       },
       "ports": [
@@ -192,32 +192,32 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 76
+          "y": 77
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
           "direction": "input",
-          "y": 156
+          "y": 165
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 76
+          "y": 77
         }
       ],
-      "width": 516,
-      "height": 234
+      "width": 521,
+      "height": 246
     },
     {
       "id": "bt_pfill",
       "defType": "style/fill",
       "position": {
         "x": 128,
-        "y": 120
+        "y": 128
       },
       "params": {
         "mode": "color"
@@ -231,7 +231,7 @@
       "id": "bt_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 308,
+        "x": 310,
         "y": 40
       },
       "params": {
@@ -248,8 +248,8 @@
       "id": "merge_1532",
       "defType": "spread/merge",
       "position": {
-        "x": 1457,
-        "y": 212
+        "x": 1471,
+        "y": 216
       },
       "params": {
         "slotCount": 2

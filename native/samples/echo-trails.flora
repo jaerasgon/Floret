@@ -30,8 +30,8 @@
       "id": "et_t",
       "defType": "time/seconds",
       "position": {
-        "x": 263,
-        "y": 42
+        "x": 267,
+        "y": 41
       },
       "params": {}
     },
@@ -40,7 +40,7 @@
       "defType": "spread/ring",
       "position": {
         "x": 0,
-        "y": 202
+        "y": 205
       },
       "params": {
         "count": 10,
@@ -55,8 +55,8 @@
       "id": "et_star",
       "defType": "math/expression",
       "position": {
-        "x": 221,
-        "y": 164
+        "x": 225,
+        "y": 167
       },
       "params": {
         "expr": "vec2(p.x, p.y) * (1 - 0.5 * (index % 2))"
@@ -67,8 +67,8 @@
       "id": "et_col",
       "defType": "style/fill",
       "position": {
-        "x": 240,
-        "y": 304
+        "x": 242,
+        "y": 309
       },
       "params": {
         "color": {
@@ -91,8 +91,8 @@
       "id": "et_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 535,
-        "y": 231
+        "x": 538,
+        "y": 234
       },
       "params": {},
       "portValues": {
@@ -103,8 +103,8 @@
       "id": "et_spin",
       "defType": "math/expression",
       "position": {
-        "x": 495,
-        "y": 91
+        "x": 499,
+        "y": 92
       },
       "params": {
         "expr": "tau * l * 2"
@@ -115,8 +115,8 @@
       "id": "et_rot",
       "defType": "transform/rotate",
       "position": {
-        "x": 809,
-        "y": 151
+        "x": 812,
+        "y": 153
       },
       "params": {}
     },
@@ -124,7 +124,7 @@
       "id": "et_path",
       "defType": "math/expression",
       "position": {
-        "x": 768,
+        "x": 772,
         "y": 0
       },
       "params": {
@@ -136,7 +136,7 @@
       "id": "et_move",
       "defType": "transform/translate",
       "position": {
-        "x": 1038,
+        "x": 1042,
         "y": 90
       },
       "params": {}
@@ -145,8 +145,8 @@
       "id": "et_echo",
       "defType": "gpu/echo",
       "position": {
-        "x": 1222,
-        "y": 50
+        "x": 1230,
+        "y": 46
       },
       "params": {
         "mode": "echo"
@@ -161,8 +161,8 @@
       "id": "et_r",
       "defType": "render/renderer",
       "position": {
-        "x": 1485,
-        "y": 50
+        "x": 1495,
+        "y": 46
       },
       "params": {
         "width": 640,

@@ -31,7 +31,7 @@
       "defType": "geometry/scatter",
       "position": {
         "x": 0,
-        "y": 237
+        "y": 247
       },
       "params": {
         "mode": "random"
@@ -49,12 +49,12 @@
       "id": "cb_blobs",
       "defType": "region/foreach",
       "position": {
-        "x": 294,
-        "y": 197
+        "x": 296,
+        "y": 207
       },
       "params": {
-        "width": 336,
-        "height": 214,
+        "width": 339,
+        "height": 224,
         "label": "ForEach circle"
       },
       "ports": [
@@ -63,18 +63,18 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 76
+          "y": 77
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 76
+          "y": 77
         }
       ],
-      "width": 336,
-      "height": 214
+      "width": 339,
+      "height": 224
     },
     {
       "id": "cb_ell",
@@ -97,8 +97,8 @@
       "id": "cb_union",
       "defType": "geometry/boolean",
       "position": {
-        "x": 726,
-        "y": 217
+        "x": 731,
+        "y": 225
       },
       "params": {
         "mode": "union"
@@ -108,8 +108,8 @@
       "id": "cb_lin",
       "defType": "spread/linear",
       "position": {
-        "x": 755,
-        "y": 75
+        "x": 758,
+        "y": 77
       },
       "params": {
         "from": 36,
@@ -126,12 +126,12 @@
       "id": "cb_rings",
       "defType": "region/foreach",
       "position": {
-        "x": 999,
+        "x": 1006,
         "y": 22
       },
       "params": {
-        "width": 961,
-        "height": 332,
+        "width": 990,
+        "height": 348,
         "label": "ForEach ring"
       },
       "ports": [
@@ -140,25 +140,25 @@
           "name": "distance",
           "type": "number",
           "direction": "input",
-          "y": 154
+          "y": 159
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 92
+          "y": 97
         }
       ],
-      "width": 961,
-      "height": 332
+      "width": 990,
+      "height": 348
     },
     {
       "id": "cb_map",
       "defType": "math/map",
       "position": {
-        "x": 138,
-        "y": 158
+        "x": 139,
+        "y": 164
       },
       "params": {
         "outMin": 330,
@@ -174,8 +174,8 @@
       "id": "cb_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 317,
-        "y": 163
+        "x": 319,
+        "y": 170
       },
       "params": {
         "s": 70,
@@ -193,8 +193,8 @@
       "id": "cb_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 498,
-        "y": 168
+        "x": 500,
+        "y": 177
       },
       "params": {
         "width": 2
@@ -208,7 +208,7 @@
       "id": "cb_offset",
       "defType": "geometry/path-ops",
       "position": {
-        "x": 681,
+        "x": 684,
         "y": 40
       },
       "params": {
@@ -223,8 +223,8 @@
       "id": "cb_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2056,
-        "y": 78
+        "x": 2092,
+        "y": 82
       },
       "params": {
         "width": 520,

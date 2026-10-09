@@ -41,7 +41,7 @@ pub fn world_rects(boxes: &IndexMap<String, NodeBox>, area: Rect, pan: Vec2, zoo
                 rect: Rect::from_min_max(to_canvas(r.min), to_canvas(r.max)),
                 color: match b.look {
                     Look::Region | Look::Frame => theme::FG_3.gamma_multiply(0.6),
-                    _ => theme::category_color(&b.category),
+                    _ => theme::category_color(&b.group),
                 },
             }
         })

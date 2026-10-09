@@ -119,7 +119,12 @@ const fn op(id: &'static str, label: &'static str, node: &'static str) -> Op {
     }
 }
 
-const fn sym(id: &'static str, label: &'static str, symbol: &'static str, node: &'static str) -> Op {
+const fn sym(
+    id: &'static str,
+    label: &'static str,
+    symbol: &'static str,
+    node: &'static str,
+) -> Op {
     Op {
         id,
         label,
@@ -267,7 +272,9 @@ pub fn superseded_by(ty: &str) -> Option<(&'static Family, &'static Op)> {
 
 /// `a xor b`: exactly one truthy (the truthiness of And / Or).
 fn xor(init: &NodeInit) -> Box<dyn NodeImpl> {
-    scalar(init, |a| Ok(vec![Value::Bool(a[0].truthy() != a[1].truthy())]))
+    scalar(init, |a| {
+        Ok(vec![Value::Bool(a[0].truthy() != a[1].truthy())])
+    })
 }
 
 pub fn register(r: &mut Registrar) {

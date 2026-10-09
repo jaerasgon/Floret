@@ -79,7 +79,7 @@ impl Live<'_> {
                 self.by_id(&synthetic_splicer_id(node, port, p.direction), 0)
             }
             None => {
-                let k = ports::resolved_outputs(spec, &n.params)
+                let k = ports::resolved_outputs(cat, spec, &n.params)
                     .iter()
                     .position(|p| p.name == port)?;
                 self.by_id(node, k)

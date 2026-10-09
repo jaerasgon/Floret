@@ -488,7 +488,10 @@ mod tests {
             .collect();
         assert!(stray.is_empty(), "nodes without a known group: {stray:?}");
         for g in GROUPS {
-            let n = cat.iter().filter(|s| !s.hidden && s.group == g.name).count();
+            let n = cat
+                .iter()
+                .filter(|s| !s.hidden && s.group == g.name)
+                .count();
             assert!(
                 (5..=40).contains(&n),
                 "group {} has {n} browsable nodes",

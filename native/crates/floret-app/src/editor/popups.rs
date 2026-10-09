@@ -3,7 +3,7 @@
 
 use super::favorites::Favorites;
 use super::ports::Side;
-use super::search::{search, Fit};
+use super::search::{self, search, Fit};
 use crate::theme::{self, BG_2, BG_3, BORDER, DANGER, FG_0, FG_1, FG_2, GOLD, GOLD_TEXT};
 use eframe::egui::{
     self, pos2, vec2, Align2, CornerRadius, FontId, Id, Key, Pos2, Rect, Sense, Stroke,
@@ -12,8 +12,10 @@ use floret_engine::patch::{PatchEdge, Position};
 use floret_engine::spec::Catalogue;
 
 const SEARCH_W: f32 = 300.0;
-const SEARCH_LIST_H: f32 = 300.0;
+const SEARCH_LIST_H: f32 = 380.0;
 const ROW_H: f32 = 24.0;
+/// A search result: name and type, then a line of description.
+const SEARCH_ROW_H: f32 = 38.0;
 const MENU_W: f32 = 210.0;
 
 /// Why the search is open: what to do with the picked node.
@@ -79,6 +81,13 @@ fn clamp(p: Pos2, size: egui::Vec2, bounds: Rect) -> Pos2 {
     )
 }
 
+/// `text` on one line, cut with "…" at `width`.
+fn one_line(text: &str, font: FontId, color: egui::Color32, width: f32) -> egui::text::LayoutJob {
+    let mut job = egui::text::LayoutJob::simple_singleline(text.to_owned(), font, color);
+    job.wrap = egui::text::TextWrapping::truncate_at_width(width.max(1.0));
+    job
+}
+
 /// A ★ / ☆ toggle at the right of a list row. Returns whether it was hit.
 fn star(ui: &egui::Ui, row: Rect, on: bool) -> bool {
     let r = Rect::from_center_size(row.right_center() - vec2(12.0, 0.0), vec2(18.0, 18.0));
@@ -138,7 +147,7 @@ pub fn search_popup(
             st.highlight = (st.highlight + n - 1) % n;
         }
         if enter {
-            return Outcome::Pick(results[st.highlight].ty.clone());
+            return Outcome::Pick(results[st.highlight].key());
         }
     }
     let pos = clamp(st.screen, vec2(SEARCH_W, SEARCH_LIST_H + 48.0), bounds);
@@ -187,9 +196,10 @@ pub fn search_popup(
                             if results.is_empty() {
                                 ui.label(egui::RichText::new("no matches").color(FG_2));
                             }
-                            for (i, s) in results.iter().enumerate() {
+                            for (i, e) in results.iter().enumerate() {
+                                let key = e.key();
                                 let (rect, resp) = ui.allocate_exact_size(
-                                    vec2(ui.available_width(), ROW_H),
+                                    vec2(ui.available_width(), SEARCH_ROW_H),
                                     Sense::click(),
                                 );
                                 if resp.hovered()
@@ -204,36 +214,58 @@ pub fn search_popup(
                                         resp.scroll_to_me(None);
                                     }
                                 }
+                                // Name and type on top, what it does below.
+                                let top = Rect::from_min_size(rect.min, vec2(rect.width(), ROW_H));
                                 let p = ui.painter();
                                 p.circle_filled(
-                                    rect.left_center() + vec2(9.0, 0.0),
+                                    top.left_center() + vec2(9.0, 0.0),
                                     3.0,
-                                    theme::category_color(&s.category),
+                                    theme::category_color(&e.spec.group),
                                 );
-                                p.text(
-                                    rect.left_center() + vec2(20.0, 0.0),
+                                let name = p.text(
+                                    top.left_center() + vec2(20.0, 0.0),
                                     Align2::LEFT_CENTER,
-                                    &s.label,
+                                    e.label(),
                                     FontId::proportional(13.0),
                                     if on { *GOLD_TEXT } else { *FG_0 },
                                 );
-                                p.text(
-                                    rect.right_center() - vec2(28.0, 0.0),
-                                    Align2::RIGHT_CENTER,
-                                    &s.ty,
-                                    FontId::monospace(10.5),
+                                // An op entry names the node it places.
+                                let (side, font) = match e.owner() {
+                                    Some(owner) => (owner, FontId::proportional(11.0)),
+                                    None => (e.spec.ty.as_str(), FontId::monospace(10.5)),
+                                };
+                                let side_w = (top.right() - 28.0 - name.right() - 10.0).max(0.0);
+                                let side = p.layout_job(one_line(side, font, *FG_2, side_w));
+                                p.galley(
+                                    top.right_center()
+                                        - vec2(28.0 + side.size().x, side.size().y / 2.0),
+                                    side,
                                     *FG_2,
                                 );
-                                if star(ui, rect, favs.contains(&s.ty)) {
-                                    favs.toggle(&s.ty);
+                                if let Some(d) = e.description(cat) {
+                                    let hint = one_line(
+                                        search::first_sentence(d),
+                                        FontId::proportional(11.0),
+                                        *FG_2,
+                                        rect.width() - 28.0,
+                                    );
+                                    let g = p.layout_job(hint);
+                                    p.galley(
+                                        pos2(rect.left() + 20.0, top.bottom() - 4.0),
+                                        g,
+                                        *FG_2,
+                                    );
+                                }
+                                if star(ui, top, favs.contains(&key)) {
+                                    favs.toggle(&key);
                                     continue;
                                 }
-                                let resp = match &s.description {
+                                let resp = match e.description(cat) {
                                     Some(d) => resp.on_hover_text(d),
                                     None => resp,
                                 };
                                 if resp.clicked() {
-                                    picked = Some(s.ty.clone());
+                                    picked = Some(key);
                                 }
                             }
                         });
@@ -277,8 +309,7 @@ pub fn favorites_popup(
     let defs: Vec<_> = favs
         .types()
         .iter()
-        .filter_map(|t| cat.get(t))
-        .filter(|s| !s.hidden)
+        .filter_map(|t| search::favorite(cat, t))
         .collect();
     let n = defs.len();
     if st.highlight >= n.max(1) {
@@ -300,7 +331,7 @@ pub fn favorites_popup(
         return Outcome::Close;
     }
     if let Some(d) = digit.and_then(|d| defs.get(d)) {
-        return Outcome::Pick(d.ty.clone());
+        return Outcome::Pick(d.key());
     }
     if n > 0 {
         if down {
@@ -310,7 +341,7 @@ pub fn favorites_popup(
             st.highlight = (st.highlight + n - 1) % n;
         }
         if enter {
-            return Outcome::Pick(defs[st.highlight].ty.clone());
+            return Outcome::Pick(defs[st.highlight].key());
         }
     }
     let w = 260.0;
@@ -368,24 +399,24 @@ pub fn favorites_popup(
                         p.circle_filled(
                             rect.left_center() + vec2(22.0, 0.0),
                             3.0,
-                            theme::category_color(&s.category),
+                            theme::category_color(&s.spec.group),
                         );
                         p.text(
                             rect.left_center() + vec2(32.0, 0.0),
                             Align2::LEFT_CENTER,
-                            &s.label,
+                            s.label(),
                             FontId::proportional(13.0),
                             if on { *GOLD_TEXT } else { *FG_0 },
                         );
                         p.text(
                             rect.right_center() - vec2(8.0, 0.0),
                             Align2::RIGHT_CENTER,
-                            &s.ty,
+                            s.owner().unwrap_or(&s.spec.ty),
                             FontId::monospace(10.5),
                             *FG_2,
                         );
                         if resp.clicked() {
-                            picked = Some(s.ty.clone());
+                            picked = Some(s.key());
                         }
                     }
                 });

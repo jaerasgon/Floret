@@ -82,6 +82,16 @@ pub fn custom_of(def_type: &str) -> Option<Custom> {
     })
 }
 
+/// The custom body a node shows: its type's, or for an op family (Math …)
+/// the selected op's node's — the `− n +` slot stepper while a Math node
+/// is set to add / multiply / min …, none while it's set to sin.
+pub fn custom_for(n: &PatchNode) -> Option<Custom> {
+    match floret_engine::nodes::family::family(&n.def_type) {
+        Some(f) => custom_of(f.op(&n.params).node),
+        None => custom_of(&n.def_type),
+    }
+}
+
 fn param_f64(n: &PatchNode, key: &str, default: f64) -> f64 {
     n.params
         .get(key)
@@ -594,6 +604,18 @@ mod tests {
         }
         assert_eq!(custom_of("math/pow"), None);
         assert_eq!(custom_of("math/add"), Some(Custom::Slots(GROUP_SLOTS)));
+        // A Math node steps its slots only in the variadic ops.
+        let slots = Some(Custom::Slots(GROUP_SLOTS));
+        assert_eq!(custom_for(&with("math/math", json!({}))), slots);
+        assert_eq!(
+            custom_for(&with("math/math", json!({"op": "multiply"}))),
+            slots
+        );
+        assert_eq!(custom_for(&with("math/math", json!({"op": "sin"}))), None);
+        assert_eq!(
+            custom_for(&with("io/slider", json!({}))),
+            custom_of("io/slider")
+        );
     }
 
     #[test]

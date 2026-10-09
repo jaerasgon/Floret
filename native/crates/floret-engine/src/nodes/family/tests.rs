@@ -187,7 +187,11 @@ fn every_op_matches_the_node_it_supersedes() {
 fn statistics_match_over_whole_spreads() {
     // The spread pin: every pool spread plus longer and degenerate ones.
     let mut pool = spreads();
-    pool.push((0..1000).map(|i| n(((i * 7919) % 1009) as f64 / 7.0)).collect());
+    pool.push(
+        (0..1000)
+            .map(|i| n(((i * 7919) % 1009) as f64 / 7.0))
+            .collect(),
+    );
     pool.push(vec![n(5.0); 4]);
     pool.push(vec![Value::Undefined, Value::Null]);
     for o in STATISTICS.ops {

@@ -97,16 +97,18 @@ pub fn fresh_edge_id(patch: &PatchFile) -> String {
 }
 
 /// `addNode`: a fresh node with the type's default params at `pos`
-/// (canvas coordinates, root scope). Returns its id.
+/// (canvas coordinates, root scope). Returns its id. `key` is a node type,
+/// or a search entry key presetting an op family's op (`math/math#sin`).
 pub fn add_node(
     patch: &mut PatchFile,
     cat: &Catalogue,
-    def_type: &str,
+    key: &str,
     pos: Position,
 ) -> Option<String> {
-    let spec = cat.get(def_type)?;
+    let e = super::search::entry(cat, key)?;
+    let (spec, def_type) = (e.spec, e.spec.ty.as_str());
     let id = fresh_node_id(patch, def_type);
-    let mut params = spec.default_params.clone();
+    let mut params = e.params();
     if def_type == "render/renderer" {
         let (w, h) = default_render_size();
         params.insert("width".into(), w.into());
@@ -302,7 +304,10 @@ pub fn place_node(
     at: Position,
     scope: Option<&str>,
 ) -> Option<String> {
-    let is_region = cat.get(def_type)?.region_kind.is_some();
+    let is_region = super::search::entry(cat, def_type)?
+        .spec
+        .region_kind
+        .is_some();
     let parent = if is_region {
         scope.map(str::to_owned)
     } else {
@@ -434,6 +439,21 @@ mod tests {
         let n = find_node(&p, &deep).unwrap();
         assert_eq!(n.parent_id.as_deref(), Some("sub"));
         assert_eq!(absolute_pos(&p, &deep), Position { x: 1010.0, y: 10.0 });
+    }
+
+    #[test]
+    fn a_search_key_places_a_node_preset_to_its_op() {
+        let cat = Catalogue::builtin();
+        let mut p = patch(vec![], vec![]);
+        let id = add_node(&mut p, cat, "math/math#sin", Position::default()).unwrap();
+        let n = find_node(&p, &id).unwrap();
+        assert_eq!(n.def_type, "math/math");
+        assert_eq!(n.params["op"], "sin");
+        assert_eq!(n.params["slotCount"], 2);
+        assert!(id.starts_with("math_math_"));
+        let plain = add_node(&mut p, cat, "math/math", Position::default()).unwrap();
+        assert_eq!(find_node(&p, &plain).unwrap().params["op"], "add");
+        assert!(add_node(&mut p, cat, "math/math#nope", Position::default()).is_none());
     }
 
     #[test]

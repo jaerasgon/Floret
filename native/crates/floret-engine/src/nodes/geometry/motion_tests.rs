@@ -830,3 +830,28 @@ fn contours_node_levels() {
         .collect();
     assert_eq!(statics, ins);
 }
+
+#[test]
+fn draw_text_layers_read_as_glyph_outlines() {
+    let style = Arc::new(ResolvedStyle {
+        font_size: 40.0,
+        ..(**default_style()).clone()
+    });
+    let text = Value::Scene(Arc::new(SceneNode::Text {
+        text: Arc::from("Ab"),
+        x: 0.0,
+        y: 0.0,
+        style: style.clone(),
+    }));
+    let contours = layer_contours(std::slice::from_ref(&text));
+    let glyphs = crate::nodes::text_animate::glyphs(&[text]);
+    let run = crate::scene::GlyphRun {
+        glyphs: glyphs.iter().map(|g| g.glyph).collect(),
+        size: 40.0,
+        style,
+    };
+    let want = crate::text::outline::run_contours(&run);
+    assert!(want.len() >= 3, "{}", want.len());
+    assert_eq!(contours.len(), want.len());
+    assert!(contours.iter().zip(&want).all(|(c, w)| near(&c.pts, w)));
+}

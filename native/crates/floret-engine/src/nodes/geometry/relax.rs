@@ -4,7 +4,7 @@
 //!
 //! Over a rectangle each point moves to the centroid of its exact Voronoi
 //! cell. Inside a shape the area is measured on a fine grid of samples
-//! (about 48 per point, at most 400 000), each given to its nearest point
+//! (about 32 per point, at most 400 000), each given to its nearest point
 //! through a uniform grid of the points; the samples shift a little every
 //! pass, so points never lock onto them. Points nothing is nearest to
 //! stay where they are.
@@ -15,7 +15,7 @@ use crate::value::Vec2;
 
 /// Most passes (each costs one nearest-point search per sample).
 pub(super) const MAX_ITERATIONS: f64 = 100.0;
-const SAMPLES_PER_POINT: usize = 48;
+const SAMPLES_PER_POINT: usize = 32;
 const MAX_SAMPLES: usize = 400_000;
 const MIN_SAMPLES: usize = 4096;
 

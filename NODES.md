@@ -493,7 +493,7 @@ One stateful node with a `mode` dropdown; its pins follow the mode. It steps 60 
 
 ## Geometry
 
-Native-only generators and shape operations. The polygon nodes share their outputs: `shape` (all polygons in one layer), one layer per polygon, `points` (every ring's corners, flat) and `counts` (corners per ring — pair them with **AtGroup** to pick one ring). Layers are read as outlines: polygons, paths, lines, rects, ellipses, arcs, triangles, quads and glyphs (`text/glyphs`), with group transforms applied. A dropdown picks the mode; the pins follow it.
+Native-only generators and shape operations. The polygon nodes share their outputs: `shape` (all polygons in one layer), one layer per polygon, `points` (every ring's corners, flat) and `counts` (corners per ring — pair them with **AtGroup** to pick one ring). Layers are read as outlines: polygons, paths, lines, rects, ellipses, arcs, triangles, quads, glyphs (`text/glyphs`) and text (`draw/text`), with group transforms applied. A dropdown picks the mode; the pins follow it.
 
 | Label · type | Inputs → Outputs | Description |
 |---|---|---|

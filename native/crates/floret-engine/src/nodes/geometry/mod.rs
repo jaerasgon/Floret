@@ -9,8 +9,8 @@
 //! one ring.
 //!
 //! Layers are read as contours (see [`layer_contours`]): polygons, paths,
-//! lines, rects, ellipses, arcs, triangles, quads and glyph outlines, with
-//! group transforms applied.
+//! lines, rects, ellipses, arcs, triangles, quads, glyph outlines and
+//! `draw/text` (laid out as it draws), with group transforms applied.
 //!
 //! Every random draw starts from [`rng`], the one place a patch-wide seed
 //! can be mixed in.
@@ -349,6 +349,31 @@ fn walk(node: &SceneNode, m: &Affine, source: &mut usize, out: &mut Vec<Contour>
                     true,
                     &run.style,
                 );
+            }
+        }
+        SceneNode::Text { text, x, y, style } => {
+            // `draw/text`: its glyphs, laid out as it draws them.
+            let Some(b) = crate::text::block(text, style, style.letter_spacing) else {
+                return;
+            };
+            let (ox, oy) = b.origin(style, *x, *y);
+            let run = scene::GlyphRun {
+                glyphs: b
+                    .glyphs
+                    .iter()
+                    .map(|g| scene::PlacedGlyph {
+                        face: g.glyph.face,
+                        id: g.glyph.id,
+                        x: ox + g.glyph.x,
+                        y: oy + g.glyph.y,
+                        angle: 0.0,
+                    })
+                    .collect(),
+                size: style.font_size,
+                style: style.clone(),
+            };
+            for c in crate::text::outline::run_contours(&run) {
+                push(c.into_iter().map(|p| apply(m, p)).collect(), true, style);
             }
         }
         _ => return,

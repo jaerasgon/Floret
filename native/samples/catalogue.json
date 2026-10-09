@@ -1021,6 +1021,111 @@
       "category": "Color",
       "description": "The Palette node's image mode: a photo's six dominant colours (k-means in OKLab), used to colour a Mondrian beside it.",
       "file": "palette-from-image.flora"
+    },
+    {
+      "id": "sys-ecosystem",
+      "name": "Ecosystem",
+      "category": "Systems",
+      "description": "Boids graze on food that regrows: each steers for its nearest ripe item (Simulation's `food`), meals grow the population and hunger thins it — boom and bust in a live chart. Hold the mouse to grow food; sliders for hunger, speed, regrowth, metabolism.",
+      "file": "sys-ecosystem.flora"
+    },
+    {
+      "id": "sys-epidemic",
+      "name": "Epidemic (SIR)",
+      "category": "Systems",
+      "description": "320 wanderers, susceptible → infected → recovered: each catches it from the nearest infected person (Lookup's `nearest` op) within a radius. Click to infect; sliders for radius, roaming, recovery, waning immunity; lockdown toggle; presets; live chart.",
+      "file": "sys-epidemic.flora"
+    },
+    {
+      "id": "sys-orbits",
+      "name": "Orbital Sandbox",
+      "category": "Systems",
+      "description": "Bodies orbiting a binary star, integrated in Read* / Write* state (symplectic Euler). Drag and release to slingshot new bodies in; time-warp and star-separation sliders; Echo trails.",
+      "file": "sys-orbits.flora"
+    },
+    {
+      "id": "sys-weather",
+      "name": "Weather Map",
+      "category": "Systems",
+      "description": "A drifting pressure field drawn as filled bands and isobars (Contours), with geostrophic wind feeding flow lines, 320 advected particles and a grid of arrows; H and L at the extremes. XY pad moves the storm; sliders for its depth and the wind.",
+      "file": "sys-weather.flora"
+    },
+    {
+      "id": "sys-clock",
+      "name": "Living Clock",
+      "category": "Systems",
+      "description": "The real time as a picture (the Clock node): second ticks, minute and hour arcs, the year's days on a spiral, the Moon's actual phase and the date spelled out, over a sky that follows the hour. Time-travel slider, 12/24-hour toggle.",
+      "file": "sys-clock.flora"
+    },
+    {
+      "id": "sys-rd-topo",
+      "name": "Topographic Reaction",
+      "category": "Systems",
+      "description": "Reaction–diffusion you paint with the mouse, read as terrain by Contours (filled elevation bands and isolines) and printed on grainy paper. Presets switch the chemistry; a toggle shows the raw chemicals.",
+      "file": "sys-rd-topo.flora"
+    },
+    {
+      "id": "sys-plotter",
+      "name": "Plotter Pipeline",
+      "category": "Systems",
+      "description": "Flow-field streamlines in three inks, drawn line after line by Trim Path with a pen riding the tip, on paper with a shadow and grain. Sliders for pen width, spacing, field scale and plot speed; Replot; a clean-output toggle for export.",
+      "file": "sys-plotter.flora"
+    },
+    {
+      "id": "sys-landscape",
+      "name": "Parallax Valley",
+      "category": "Systems",
+      "description": "Five noise ridges sliding past at parallax speeds, fading into the sky by distance, with fog bands, a sun and moon on an arc, stars at night and a small flock of birds. Time-of-day and travel sliders; move the mouse to look around.",
+      "file": "sys-landscape.flora"
+    },
+    {
+      "id": "sys-city",
+      "name": "Night City",
+      "category": "Systems",
+      "description": "A city from one subdivision: per-block heights, roofs and sun shadows in a ForEach, windows scattered on the roofs, cars as Trim Path pieces circling the blocks and lamps along the streets, blooming after dark. Time-of-day and density sliders; Vary.",
+      "file": "sys-city.flora"
+    },
+    {
+      "id": "sys-garden",
+      "name": "Seasons Garden",
+      "category": "Systems",
+      "description": "L-system plants that grow (Trim Path), sway in the wind and turn with the seasons; autumn leaves and winter snow fall from particle emitters in a windy world. Season and wind sliders, auto-year toggle, Replant.",
+      "file": "sys-garden.flora"
+    },
+    {
+      "id": "sys-tile-world",
+      "name": "Tile World",
+      "category": "Systems",
+      "description": "An island from noise elevation (coloured Cells), wave-function-collapse roads masked to land, Symmetry rosettes for forests and villages, drifting metaball clouds with shadows and a day/night cycle with village lights. Sea-level and time sliders; Vary.",
+      "file": "sys-tile-world.flora"
+    },
+    {
+      "id": "sys-data-story",
+      "name": "Data Story",
+      "category": "Systems",
+      "description": "An animated bar-chart race from inline CSV: Partition picks the year, two sorts give the ranks, state eases the bars, a ForEach sums each year for a line revealed by Trim Path, and captions animate in. Play toggle, year stepper, speed slider.",
+      "file": "sys-data-story.flora"
+    },
+    {
+      "id": "sys-music-viz",
+      "name": "Generative Band",
+      "category": "Systems",
+      "description": "A self-playing trio — noise-walk melody (MonoSynth, delay, reverb), sawtooth bass, noise hats — and the same numbers drawn: a 16-step ring, note bursts, the melody's spectrum and waveform, through trails and bloom. Sliders for bpm, density, volume; major/minor.",
+      "file": "sys-music-viz.flora"
+    },
+    {
+      "id": "sys-glitch-tracker",
+      "name": "Glitch Tracker",
+      "category": "Systems",
+      "description": "Generated footage tracked by optical flow (Point Tracker) with a HUD of boxes and links, while the picture goes through Echo slit-scan, chromatic aberration and displacement bursts. Hold the mouse to re-seed the trackers; glitch slider; slit-scan toggle.",
+      "file": "sys-glitch-tracker.flora"
+    },
+    {
+      "id": "sys-poster",
+      "name": "Generative Poster",
+      "category": "Systems",
+      "description": "A Swiss-style poster as rules: Layout grid modules picking shapes, turns and harmony colours from seeded noise, an animated title and a grain or halftone finish. Colour picker, columns slider (modules ease to the new grid), Vary, and presets to morph between.",
+      "file": "sys-poster.flora"
     }
   ]
 }

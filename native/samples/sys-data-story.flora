@@ -1,0 +1,1991 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Data Story",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ds_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -344
+      },
+      "params": {
+        "text": "Data story\n\nAn animated chart that tells a story year by year. The data is inline CSV (six made-up cities × eight years of daily bike trips); Partition and Lookup (`group-at`) pick the current year's row. Ranks come from two sorts (sort the cities by trips, then sort the order back: the inverse permutation), and Read* / Write* state eases every bar's length and place, so bars race past each other. A ForEach sums each year for the line chart, which Trim Path reveals up to the current year; the caption for the year comes from a list and animates in letter by letter (Text Animate) whenever the year changes.\n\n• Toggle: play.  • Stepper: pick a year (with play off).  • Slider into `interval`: seconds per year.",
+        "width": 560,
+        "height": 280
+      },
+      "portValues": {
+        "text": "Data story\n\nAn animated chart that tells a story year by year. The data is inline CSV (six made-up cities × eight years of daily bike trips); Partition and Lookup (`group-at`) pick the current year's row. Ranks come from two sorts (sort the cities by trips, then sort the order back: the inverse permutation), and Read* / Write* state eases every bar's length and place, so bars race past each other. A ForEach sums each year for the line chart, which Trim Path reveals up to the current year; the caption for the year comes from a list and animates in letter by letter (Text Animate) whenever the year changes.\n\n• Toggle: play.  • Stepper: pick a year (with play off).  • Slider into `interval`: seconds per year.",
+        "width": 560,
+        "height": 280
+      }
+    },
+    {
+      "id": "ds_play",
+      "defType": "io/toggle",
+      "position": {
+        "x": 0,
+        "y": 1855
+      },
+      "params": {
+        "value": true
+      },
+      "portValues": {
+        "value": true
+      }
+    },
+    {
+      "id": "ds_pickYear",
+      "defType": "io/stepper",
+      "position": {
+        "x": 773,
+        "y": 2112
+      },
+      "params": {
+        "value": 0,
+        "min": 0,
+        "max": 7,
+        "step": 1
+      },
+      "portValues": {
+        "value": 0,
+        "min": 0,
+        "max": 7,
+        "step": 1
+      }
+    },
+    {
+      "id": "ds_secondsPerYear",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 1993
+      },
+      "params": {
+        "value": 2.6,
+        "min": 1,
+        "max": 6
+      },
+      "portValues": {
+        "value": 2.6,
+        "min": 1,
+        "max": 6
+      }
+    },
+    {
+      "id": "ds_tick",
+      "defType": "io/metro",
+      "position": {
+        "x": 301,
+        "y": 1941
+      },
+      "params": {
+        "interval": 2.6
+      },
+      "portValues": {
+        "interval": 2.6
+      }
+    },
+    {
+      "id": "ds_yearCounter",
+      "defType": "io/counter",
+      "position": {
+        "x": 806,
+        "y": 1942
+      },
+      "params": {
+        "step": 1,
+        "start": 0
+      },
+      "portValues": {
+        "step": 1,
+        "start": 0
+      }
+    },
+    {
+      "id": "ds_year",
+      "defType": "math/expression",
+      "position": {
+        "x": 1344,
+        "y": 1906
+      },
+      "params": {
+        "expr": "p ? c % 8 : s"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_dt",
+      "defType": "time/delta",
+      "position": {
+        "x": 814,
+        "y": 2216
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "ds_easeRate",
+      "defType": "math/expression",
+      "position": {
+        "x": 1344,
+        "y": 1695
+      },
+      "params": {
+        "expr": "min(1, min(dt, 0.05) * 5)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_trips",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 1,
+        "y": 1408
+      },
+      "params": {
+        "data": "12, 9, 15, 4, 7, 10, 14, 11, 15, 6, 8, 11, 9, 8, 10, 5, 6, 7, 16, 14, 13, 9, 9, 12, 19, 18, 14, 13, 11, 13, 21, 23, 15, 18, 12, 15, 22, 26, 16, 24, 14, 16, 24, 28, 17, 31, 15, 18"
+      },
+      "portValues": {
+        "data": "12, 9, 15, 4, 7, 10, 14, 11, 15, 6, 8, 11, 9, 8, 10, 5, 6, 7, 16, 14, 13, 9, 9, 12, 19, 18, 14, 13, 11, 13, 21, 23, 15, 18, 12, 15, 22, 26, 16, 24, 14, 16, 24, 28, 17, 31, 15, 18"
+      }
+    },
+    {
+      "id": "ds_byYear",
+      "defType": "spread/partition",
+      "position": {
+        "x": 275,
+        "y": 1408
+      },
+      "params": {},
+      "portValues": {
+        "bin": 6
+      }
+    },
+    {
+      "id": "ds_thisYear",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1686,
+        "y": 1424
+      },
+      "params": {
+        "op": "group-at"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_cityIds",
+      "defType": "spread/range",
+      "position": {
+        "x": 788,
+        "y": 1546
+      },
+      "params": {
+        "count": 6
+      },
+      "portValues": {
+        "count": 6
+      }
+    },
+    {
+      "id": "ds_order",
+      "defType": "spread/reorder",
+      "position": {
+        "x": 2005,
+        "y": 1646
+      },
+      "params": {
+        "op": "sort-by-key"
+      },
+      "portValues": {
+        "descending": true
+      }
+    },
+    {
+      "id": "ds_rank",
+      "defType": "spread/reorder",
+      "position": {
+        "x": 2304,
+        "y": 1665
+      },
+      "params": {
+        "op": "sort-by-key"
+      },
+      "portValues": {
+        "descending": false
+      }
+    },
+    {
+      "id": "ds_zeros",
+      "defType": "math/expression",
+      "position": {
+        "x": 1344,
+        "y": 1259
+      },
+      "params": {
+        "expr": "i * 0"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_rlength",
+      "defType": "state/read-spread",
+      "position": {
+        "x": 1694,
+        "y": 1144
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "ds_rrow",
+      "defType": "state/read-spread",
+      "position": {
+        "x": 2316,
+        "y": 1539
+      },
+      "params": {
+        "slot": 2
+      },
+      "portValues": {
+        "slot": 2
+      }
+    },
+    {
+      "id": "ds_barLength",
+      "defType": "math/expression",
+      "position": {
+        "x": 2005,
+        "y": 974
+      },
+      "params": {
+        "expr": "l + (v - l) * k"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_barRow",
+      "defType": "math/expression",
+      "position": {
+        "x": 2594,
+        "y": 1677
+      },
+      "params": {
+        "expr": "r0 + (r - r0) * k"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_wlength",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 2338,
+        "y": 1000
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "ds_wrow",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 3547,
+        "y": 1868
+      },
+      "params": {
+        "slot": 2
+      },
+      "portValues": {
+        "slot": 2
+      }
+    },
+    {
+      "id": "ds_cityNames",
+      "defType": "string/split",
+      "position": {
+        "x": 2605,
+        "y": 369
+      },
+      "params": {
+        "text": "Aster,Birch,Cedar,Dune,Elm,Fern"
+      },
+      "portValues": {
+        "text": "Aster,Birch,Cedar,Dune,Elm,Fern",
+        "by": ","
+      }
+    },
+    {
+      "id": "ds_bars",
+      "defType": "region/foreach",
+      "position": {
+        "x": 2978,
+        "y": 214
+      },
+      "params": {
+        "width": 1239,
+        "height": 1266,
+        "label": "ForEach city"
+      },
+      "ports": [
+        {
+          "id": "len",
+          "name": "len",
+          "type": "number",
+          "direction": "input",
+          "y": 625
+        },
+        {
+          "id": "row",
+          "name": "row",
+          "type": "number",
+          "direction": "input",
+          "y": 291
+        },
+        {
+          "id": "name",
+          "name": "name",
+          "type": "string",
+          "direction": "input",
+          "y": 192
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 375
+        }
+      ],
+      "width": 1239,
+      "height": 1266
+    },
+    {
+      "id": "ds_rowY",
+      "defType": "math/expression",
+      "position": {
+        "x": 142,
+        "y": 216
+      },
+      "params": {
+        "expr": "-200 + r * 44"
+      },
+      "parentId": "ds_bars",
+      "portValues": {}
+    },
+    {
+      "id": "ds_barWidth",
+      "defType": "math/expression",
+      "position": {
+        "x": 142,
+        "y": 358
+      },
+      "params": {
+        "expr": "max(l, 0.01) * 11.25"
+      },
+      "parentId": "ds_bars",
+      "portValues": {}
+    },
+    {
+      "id": "ds_barPos",
+      "defType": "math/expression",
+      "position": {
+        "x": 448,
+        "y": 40
+      },
+      "params": {
+        "expr": "vec2(-250, y - 17.0)"
+      },
+      "parentId": "ds_bars",
+      "portValues": {}
+    },
+    {
+      "id": "ds_cityColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 142,
+        "y": 74
+      },
+      "params": {
+        "expr": "hsl(fract(0.55 + i * 0.13), 0.62, 0.58)"
+      },
+      "parentId": "ds_bars",
+      "portValues": {}
+    },
+    {
+      "id": "ds_barFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 489,
+        "y": 182
+      },
+      "params": {},
+      "parentId": "ds_bars",
+      "portValues": {}
+    },
+    {
+      "id": "ds_bar",
+      "defType": "draw/rect",
+      "position": {
+        "x": 745,
+        "y": 142
+      },
+      "params": {
+        "anchor": "tl"
+      },
+      "parentId": "ds_bars",
+      "portValues": {
+        "h": 34,
+        "anchor": "tl"
+      }
+    },
+    {
+      "id": "ds_labelParams",
+      "defType": "style/text-params",
+      "position": {
+        "x": 153,
+        "y": 500
+      },
+      "params": {
+        "align": "right",
+        "baseline": "middle"
+      },
+      "parentId": "ds_bars",
+      "portValues": {
+        "align": "right",
+        "baseline": "middle"
+      }
+    },
+    {
+      "id": "ds_labelFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 465,
+        "y": 614
+      },
+      "params": {},
+      "parentId": "ds_bars",
+      "portValues": {
+        "color": {
+          "r": 0.9137254901960784,
+          "g": 0.9254901960784314,
+          "b": 0.9490196078431372,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ds_labelPos",
+      "defType": "math/expression",
+      "position": {
+        "x": 448,
+        "y": 308
+      },
+      "params": {
+        "expr": "vec2(-260, y)"
+      },
+      "parentId": "ds_bars",
+      "portValues": {}
+    },
+    {
+      "id": "ds_label",
+      "defType": "draw/text",
+      "position": {
+        "x": 742,
+        "y": 341
+      },
+      "params": {
+        "size": 14,
+        "align": "right"
+      },
+      "parentId": "ds_bars",
+      "portValues": {
+        "size": 14,
+        "align": "right"
+      }
+    },
+    {
+      "id": "ds_tripsText",
+      "defType": "string/format-number",
+      "position": {
+        "x": 151,
+        "y": 758
+      },
+      "params": {
+        "mode": "number"
+      },
+      "parentId": "ds_bars",
+      "portValues": {
+        "decimals": 1,
+        "suffix": "k"
+      }
+    },
+    {
+      "id": "ds_valueParams",
+      "defType": "style/text-params",
+      "position": {
+        "x": 153,
+        "y": 1016
+      },
+      "params": {
+        "align": "left",
+        "baseline": "middle"
+      },
+      "parentId": "ds_bars",
+      "portValues": {
+        "align": "left",
+        "baseline": "middle"
+      }
+    },
+    {
+      "id": "ds_valueFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 465,
+        "y": 888
+      },
+      "params": {},
+      "parentId": "ds_bars",
+      "portValues": {
+        "color": {
+          "r": 0.6039215686274509,
+          "g": 0.6392156862745098,
+          "b": 0.7098039215686275,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ds_valuePos",
+      "defType": "math/expression",
+      "position": {
+        "x": 448,
+        "y": 450
+      },
+      "params": {
+        "expr": "vec2(-250 + w + 8, y)"
+      },
+      "parentId": "ds_bars",
+      "portValues": {}
+    },
+    {
+      "id": "ds_valueLabel",
+      "defType": "draw/text",
+      "position": {
+        "x": 742,
+        "y": 597
+      },
+      "params": {
+        "size": 12,
+        "align": "left"
+      },
+      "parentId": "ds_bars",
+      "portValues": {
+        "size": 12,
+        "align": "left"
+      }
+    },
+    {
+      "id": "ds_tripsOne",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 451,
+        "y": 740
+      },
+      "params": {
+        "op": "at"
+      },
+      "parentId": "ds_bars",
+      "portValues": {
+        "index": 0
+      }
+    },
+    {
+      "id": "ds_barParts",
+      "defType": "transform/group",
+      "position": {
+        "x": 959,
+        "y": 338
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "parentId": "ds_bars",
+      "portValues": {}
+    },
+    {
+      "id": "ds_yearIds",
+      "defType": "spread/range",
+      "position": {
+        "x": 281,
+        "y": 1304
+      },
+      "params": {
+        "count": 8
+      },
+      "portValues": {
+        "count": 8
+      }
+    },
+    {
+      "id": "ds_totals",
+      "defType": "region/foreach",
+      "position": {
+        "x": 539,
+        "y": 1234
+      },
+      "params": {
+        "width": 636,
+        "height": 224,
+        "label": "ForEach year"
+      },
+      "ports": [
+        {
+          "id": "y",
+          "name": "y",
+          "type": "number",
+          "direction": "input",
+          "y": 165
+        },
+        {
+          "id": "s",
+          "name": "sum",
+          "type": "number",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 636,
+      "height": 224
+    },
+    {
+      "id": "ds_yearRow",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 128,
+        "y": 62
+      },
+      "params": {
+        "op": "group-at"
+      },
+      "parentId": "ds_totals",
+      "portValues": {}
+    },
+    {
+      "id": "ds_yearSum",
+      "defType": "math/statistics",
+      "position": {
+        "x": 386,
+        "y": 40
+      },
+      "params": {
+        "op": "sum"
+      },
+      "parentId": "ds_totals",
+      "portValues": {}
+    },
+    {
+      "id": "ds_linePoints",
+      "defType": "math/expression",
+      "position": {
+        "x": 2005,
+        "y": 1160
+      },
+      "params": {
+        "expr": "vec2(110 + index * 31, 208 - (s - 40) * 1.35)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_rshownYear",
+      "defType": "state/read",
+      "position": {
+        "x": 1355,
+        "y": 1569
+      },
+      "params": {
+        "slot": 3,
+        "init": 0
+      },
+      "portValues": {
+        "slot": 3,
+        "init": 0
+      }
+    },
+    {
+      "id": "ds_shownYear",
+      "defType": "math/expression",
+      "position": {
+        "x": 1683,
+        "y": 1626
+      },
+      "params": {
+        "expr": "y0 + (y - y0) * k"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_wshownYear",
+      "defType": "state/write",
+      "position": {
+        "x": 2042,
+        "y": 1816
+      },
+      "params": {
+        "slot": 3
+      },
+      "portValues": {
+        "slot": 3
+      }
+    },
+    {
+      "id": "ds_reveal",
+      "defType": "math/expression",
+      "position": {
+        "x": 2005,
+        "y": 1302
+      },
+      "params": {
+        "expr": "max(0.001, y / 7)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_lineStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 2022,
+        "y": 1444
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8196078431372549,
+          "b": 0.4,
+          "a": 1.0
+        },
+        "width": 2.5
+      }
+    },
+    {
+      "id": "ds_lineSoFar",
+      "defType": "geometry/trim",
+      "position": {
+        "x": 2307,
+        "y": 1281
+      },
+      "params": {
+        "mode": "each"
+      },
+      "portValues": {
+        "start": 0
+      }
+    },
+    {
+      "id": "ds_lineHeadFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2611,
+        "y": 1551
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8196078431372549,
+          "b": 0.4,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ds_lineHead",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 2597,
+        "y": 1403
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      }
+    },
+    {
+      "id": "ds_lineHeadDot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 3548,
+        "y": 1676
+      },
+      "params": {},
+      "portValues": {
+        "w": 9,
+        "h": 9
+      }
+    },
+    {
+      "id": "ds_axisStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 2611,
+        "y": 1233
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.22745098039215686,
+          "g": 0.2549019607843137,
+          "b": 0.3411764705882353,
+          "a": 1.0
+        },
+        "width": 1
+      }
+    },
+    {
+      "id": "ds_axis",
+      "defType": "draw/line",
+      "position": {
+        "x": 3538,
+        "y": 1528
+      },
+      "params": {},
+      "portValues": {
+        "a": {
+          "x": 110,
+          "y": 212
+        },
+        "b": {
+          "x": 340,
+          "y": 212
+        }
+      }
+    },
+    {
+      "id": "ds_chartTitleFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2611,
+        "y": 1990
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.6039215686274509,
+          "g": 0.6392156862745098,
+          "b": 0.7098039215686275,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ds_chartTitle",
+      "defType": "draw/text",
+      "position": {
+        "x": 3520,
+        "y": 1994
+      },
+      "params": {
+        "string": "all six cities",
+        "size": 12,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "all six cities",
+        "size": 12,
+        "align": "left",
+        "pos": {
+          "x": 112,
+          "y": 232
+        }
+      }
+    },
+    {
+      "id": "ds_calendarYear",
+      "defType": "math/expression",
+      "position": {
+        "x": 1683,
+        "y": 1980
+      },
+      "params": {
+        "expr": "2018 + y"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_yearText",
+      "defType": "string/format-number",
+      "position": {
+        "x": 2014,
+        "y": 1942
+      },
+      "params": {
+        "mode": "number"
+      },
+      "portValues": {
+        "decimals": 0,
+        "separator": ""
+      }
+    },
+    {
+      "id": "ds_yearParams",
+      "defType": "style/text-params",
+      "position": {
+        "x": 2016,
+        "y": 2200
+      },
+      "params": {
+        "bold": true,
+        "align": "right",
+        "baseline": "alphabetic"
+      },
+      "portValues": {
+        "bold": true,
+        "align": "right",
+        "baseline": "alphabetic"
+      }
+    },
+    {
+      "id": "ds_yearFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2315,
+        "y": 2191
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.9
+        }
+      }
+    },
+    {
+      "id": "ds_bigYear",
+      "defType": "draw/text",
+      "position": {
+        "x": 2628,
+        "y": 2116
+      },
+      "params": {
+        "size": 64,
+        "align": "right"
+      },
+      "portValues": {
+        "size": 64,
+        "align": "right",
+        "pos": {
+          "x": 350,
+          "y": -150
+        }
+      }
+    },
+    {
+      "id": "ds_yearOne",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 2307,
+        "y": 2018
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      }
+    },
+    {
+      "id": "ds_captions",
+      "defType": "string/split",
+      "position": {
+        "x": 1354,
+        "y": 2132
+      },
+      "params": {
+        "text": "2018 · Cedar leads on its old river path network.|2019 · Steady growth everywhere; Aster catches Cedar.|2020 · Trips fall in every city during the shutdowns.|2021 · The rebound: Aster opens its protected lanes.|2022 · Birch adds bike share and climbs fast.|2023 · Birch takes the lead; Dune doubles in two years.|2024 · Dune's new bridge makes it the fastest riser.|2025 · Dune tops the table, ahead of Birch and Aster."
+      },
+      "portValues": {
+        "text": "2018 · Cedar leads on its old river path network.|2019 · Steady growth everywhere; Aster catches Cedar.|2020 · Trips fall in every city during the shutdowns.|2021 · The rebound: Aster opens its protected lanes.|2022 · Birch adds bike share and climbs fast.|2023 · Birch takes the lead; Dune doubles in two years.|2024 · Dune's new bridge makes it the fastest riser.|2025 · Dune tops the table, ahead of Birch and Aster.",
+        "by": "|"
+      }
+    },
+    {
+      "id": "ds_caption",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1686,
+        "y": 2134
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_rprevYear",
+      "defType": "state/read",
+      "position": {
+        "x": 1355,
+        "y": 2258
+      },
+      "params": {
+        "slot": 4,
+        "init": -1
+      },
+      "portValues": {
+        "slot": 4,
+        "init": -1
+      }
+    },
+    {
+      "id": "ds_rsince",
+      "defType": "state/read",
+      "position": {
+        "x": 1355,
+        "y": 2384
+      },
+      "params": {
+        "slot": 5,
+        "init": 0
+      },
+      "portValues": {
+        "slot": 5,
+        "init": 0
+      }
+    },
+    {
+      "id": "ds_sinceChange",
+      "defType": "math/expression",
+      "position": {
+        "x": 1683,
+        "y": 2408
+      },
+      "params": {
+        "expr": "y != p ? 0 : s + min(dt, 0.05)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_wprevYear",
+      "defType": "state/write",
+      "position": {
+        "x": 1720,
+        "y": 1854
+      },
+      "params": {
+        "slot": 4
+      },
+      "portValues": {
+        "slot": 4
+      }
+    },
+    {
+      "id": "ds_wsince",
+      "defType": "state/write",
+      "position": {
+        "x": 2042,
+        "y": 2792
+      },
+      "params": {
+        "slot": 5
+      },
+      "portValues": {
+        "slot": 5
+      }
+    },
+    {
+      "id": "ds_captionProgress",
+      "defType": "math/expression",
+      "position": {
+        "x": 2005,
+        "y": 2650
+      },
+      "params": {
+        "expr": "min(1, s * 1.4)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_captionFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1700,
+        "y": 2282
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.9137254901960784,
+          "g": 0.9254901960784314,
+          "b": 0.9490196078431372,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ds_captionText",
+      "defType": "draw/text",
+      "position": {
+        "x": 2039,
+        "y": 2458
+      },
+      "params": {
+        "size": 15,
+        "align": "left"
+      },
+      "portValues": {
+        "size": 15,
+        "align": "left",
+        "pos": {
+          "x": -330,
+          "y": 196
+        }
+      }
+    },
+    {
+      "id": "ds_captionIn",
+      "defType": "text/animate",
+      "position": {
+        "x": 2313,
+        "y": 2413
+      },
+      "params": {
+        "mode": "in",
+        "order": "forward",
+        "ease": "outCubic"
+      },
+      "portValues": {
+        "stagger": 0.6,
+        "order": "forward",
+        "ease": "outCubic",
+        "offset": {
+          "x": 0,
+          "y": 14
+        },
+        "rotate": 0,
+        "scale": 1,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "ds_headFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2611,
+        "y": 88
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.4235294117647059,
+          "g": 0.4549019607843137,
+          "b": 0.5333333333333333,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ds_heading",
+      "defType": "draw/text",
+      "position": {
+        "x": 3520,
+        "y": 0
+      },
+      "params": {
+        "string": "Daily bike trips (thousands) · six made-up cities",
+        "size": 13,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "Daily bike trips (thousands) · six made-up cities",
+        "size": 13,
+        "align": "left",
+        "pos": {
+          "x": -330,
+          "y": -236
+        }
+      }
+    },
+    {
+      "id": "ds_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 4433,
+        "y": 1507
+      },
+      "params": {
+        "slotCount": 8
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ds_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 4698,
+        "y": 1508
+      },
+      "params": {
+        "width": 760,
+        "height": 520,
+        "background": {
+          "r": 0.08627450980392157,
+          "g": 0.10196078431372549,
+          "b": 0.14901960784313725,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 760,
+        "height": 520,
+        "background": {
+          "r": 0.08627450980392157,
+          "g": 0.10196078431372549,
+          "b": 0.14901960784313725,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "ds_secondsPerYear",
+      "target": "ds_tick",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-interval"
+    },
+    {
+      "id": "e_2",
+      "source": "ds_play",
+      "target": "ds_tick",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-run"
+    },
+    {
+      "id": "e_3",
+      "source": "ds_tick",
+      "target": "ds_yearCounter",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-inc"
+    },
+    {
+      "id": "e_4",
+      "source": "ds_play",
+      "target": "ds_year",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_5",
+      "source": "ds_yearCounter",
+      "target": "ds_year",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_6",
+      "source": "ds_pickYear",
+      "target": "ds_year",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_7",
+      "source": "ds_dt",
+      "target": "ds_easeRate",
+      "sourceHandle": "out-dt",
+      "targetHandle": "in-dt"
+    },
+    {
+      "id": "e_8",
+      "source": "ds_trips",
+      "target": "ds_byYear",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_9",
+      "source": "ds_byYear",
+      "target": "ds_thisYear",
+      "sourceHandle": "out-flat",
+      "targetHandle": "in-flat"
+    },
+    {
+      "id": "e_10",
+      "source": "ds_byYear",
+      "target": "ds_thisYear",
+      "sourceHandle": "out-groupSize",
+      "targetHandle": "in-groupSize"
+    },
+    {
+      "id": "e_11",
+      "source": "ds_year",
+      "target": "ds_thisYear",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_12",
+      "source": "ds_cityIds",
+      "target": "ds_order",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_13",
+      "source": "ds_thisYear",
+      "target": "ds_order",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-keys"
+    },
+    {
+      "id": "e_14",
+      "source": "ds_cityIds",
+      "target": "ds_rank",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_15",
+      "source": "ds_order",
+      "target": "ds_rank",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-keys"
+    },
+    {
+      "id": "e_16",
+      "source": "ds_cityIds",
+      "target": "ds_zeros",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_17",
+      "source": "ds_zeros",
+      "target": "ds_rlength",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_18",
+      "source": "ds_cityIds",
+      "target": "ds_rrow",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_19",
+      "source": "ds_rlength",
+      "target": "ds_barLength",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_20",
+      "source": "ds_thisYear",
+      "target": "ds_barLength",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_21",
+      "source": "ds_easeRate",
+      "target": "ds_barLength",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_22",
+      "source": "ds_rrow",
+      "target": "ds_barRow",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-r0"
+    },
+    {
+      "id": "e_23",
+      "source": "ds_rank",
+      "target": "ds_barRow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_24",
+      "source": "ds_easeRate",
+      "target": "ds_barRow",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_25",
+      "source": "ds_barLength",
+      "target": "ds_wlength",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_26",
+      "source": "ds_barRow",
+      "target": "ds_wrow",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_27",
+      "source": "ds_barLength",
+      "target": "ds_bars",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-len"
+    },
+    {
+      "id": "e_28",
+      "source": "ds_barRow",
+      "target": "ds_bars",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-row"
+    },
+    {
+      "id": "e_29",
+      "source": "ds_cityNames",
+      "target": "ds_bars",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-name"
+    },
+    {
+      "id": "e_30",
+      "source": "ds_bars",
+      "target": "ds_rowY",
+      "sourceHandle": "out-row",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_31",
+      "source": "ds_bars",
+      "target": "ds_barWidth",
+      "sourceHandle": "out-len",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_32",
+      "source": "ds_rowY",
+      "target": "ds_barPos",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_33",
+      "source": "ds_bars",
+      "target": "ds_cityColour",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_34",
+      "source": "ds_cityColour",
+      "target": "ds_barFill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_35",
+      "source": "ds_barPos",
+      "target": "ds_bar",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_36",
+      "source": "ds_barWidth",
+      "target": "ds_bar",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_37",
+      "source": "ds_barFill",
+      "target": "ds_bar",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_38",
+      "source": "ds_labelParams",
+      "target": "ds_labelFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_39",
+      "source": "ds_rowY",
+      "target": "ds_labelPos",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_40",
+      "source": "ds_bars",
+      "target": "ds_label",
+      "sourceHandle": "out-name",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_41",
+      "source": "ds_labelPos",
+      "target": "ds_label",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_42",
+      "source": "ds_labelFill",
+      "target": "ds_label",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_43",
+      "source": "ds_bars",
+      "target": "ds_tripsText",
+      "sourceHandle": "out-len",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_44",
+      "source": "ds_valueParams",
+      "target": "ds_valueFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_45",
+      "source": "ds_barWidth",
+      "target": "ds_valuePos",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_46",
+      "source": "ds_rowY",
+      "target": "ds_valuePos",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_47",
+      "source": "ds_tripsText",
+      "target": "ds_tripsOne",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_48",
+      "source": "ds_tripsOne",
+      "target": "ds_valueLabel",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_49",
+      "source": "ds_valuePos",
+      "target": "ds_valueLabel",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_50",
+      "source": "ds_valueFill",
+      "target": "ds_valueLabel",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_51",
+      "source": "ds_bar",
+      "target": "ds_barParts",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_52",
+      "source": "ds_label",
+      "target": "ds_barParts",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_53",
+      "source": "ds_valueLabel",
+      "target": "ds_barParts",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_54",
+      "source": "ds_barParts",
+      "target": "ds_bars",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_55",
+      "source": "ds_yearIds",
+      "target": "ds_totals",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_56",
+      "source": "ds_byYear",
+      "target": "ds_yearRow",
+      "sourceHandle": "out-flat",
+      "targetHandle": "in-flat"
+    },
+    {
+      "id": "e_57",
+      "source": "ds_byYear",
+      "target": "ds_yearRow",
+      "sourceHandle": "out-groupSize",
+      "targetHandle": "in-groupSize"
+    },
+    {
+      "id": "e_58",
+      "source": "ds_totals",
+      "target": "ds_yearRow",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_59",
+      "source": "ds_yearRow",
+      "target": "ds_yearSum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_60",
+      "source": "ds_yearSum",
+      "target": "ds_totals",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_61",
+      "source": "ds_totals",
+      "target": "ds_linePoints",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_62",
+      "source": "ds_rshownYear",
+      "target": "ds_shownYear",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-y0"
+    },
+    {
+      "id": "e_63",
+      "source": "ds_year",
+      "target": "ds_shownYear",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_64",
+      "source": "ds_easeRate",
+      "target": "ds_shownYear",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_65",
+      "source": "ds_shownYear",
+      "target": "ds_wshownYear",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_66",
+      "source": "ds_shownYear",
+      "target": "ds_reveal",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_67",
+      "source": "ds_linePoints",
+      "target": "ds_lineSoFar",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_68",
+      "source": "ds_reveal",
+      "target": "ds_lineSoFar",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-end"
+    },
+    {
+      "id": "e_69",
+      "source": "ds_lineStroke",
+      "target": "ds_lineSoFar",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_70",
+      "source": "ds_lineSoFar",
+      "target": "ds_lineHead",
+      "sourceHandle": "out-heads",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_71",
+      "source": "ds_lineHead",
+      "target": "ds_lineHeadDot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_72",
+      "source": "ds_lineHeadFill",
+      "target": "ds_lineHeadDot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_73",
+      "source": "ds_axisStroke",
+      "target": "ds_axis",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_74",
+      "source": "ds_chartTitleFill",
+      "target": "ds_chartTitle",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_75",
+      "source": "ds_year",
+      "target": "ds_calendarYear",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_76",
+      "source": "ds_calendarYear",
+      "target": "ds_yearText",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_77",
+      "source": "ds_yearParams",
+      "target": "ds_yearFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_78",
+      "source": "ds_yearText",
+      "target": "ds_yearOne",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_79",
+      "source": "ds_yearOne",
+      "target": "ds_bigYear",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_80",
+      "source": "ds_yearFill",
+      "target": "ds_bigYear",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_81",
+      "source": "ds_captions",
+      "target": "ds_caption",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_82",
+      "source": "ds_year",
+      "target": "ds_caption",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_83",
+      "source": "ds_year",
+      "target": "ds_sinceChange",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_84",
+      "source": "ds_rprevYear",
+      "target": "ds_sinceChange",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_85",
+      "source": "ds_rsince",
+      "target": "ds_sinceChange",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_86",
+      "source": "ds_dt",
+      "target": "ds_sinceChange",
+      "sourceHandle": "out-dt",
+      "targetHandle": "in-dt"
+    },
+    {
+      "id": "e_87",
+      "source": "ds_year",
+      "target": "ds_wprevYear",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_88",
+      "source": "ds_sinceChange",
+      "target": "ds_wsince",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_89",
+      "source": "ds_sinceChange",
+      "target": "ds_captionProgress",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_90",
+      "source": "ds_caption",
+      "target": "ds_captionText",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_91",
+      "source": "ds_captionFill",
+      "target": "ds_captionText",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_92",
+      "source": "ds_captionText",
+      "target": "ds_captionIn",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-text"
+    },
+    {
+      "id": "e_93",
+      "source": "ds_captionProgress",
+      "target": "ds_captionIn",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-progress"
+    },
+    {
+      "id": "e_94",
+      "source": "ds_headFill",
+      "target": "ds_heading",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_95",
+      "source": "ds_heading",
+      "target": "ds_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_96",
+      "source": "ds_bars",
+      "target": "ds_scene",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_97",
+      "source": "ds_axis",
+      "target": "ds_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_98",
+      "source": "ds_lineSoFar",
+      "target": "ds_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_99",
+      "source": "ds_lineHeadDot",
+      "target": "ds_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_100",
+      "source": "ds_chartTitle",
+      "target": "ds_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s6"
+    },
+    {
+      "id": "e_101",
+      "source": "ds_bigYear",
+      "target": "ds_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s7"
+    },
+    {
+      "id": "e_102",
+      "source": "ds_captionIn",
+      "target": "ds_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s8"
+    },
+    {
+      "id": "e_103",
+      "source": "ds_scene",
+      "target": "ds_r",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

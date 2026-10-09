@@ -1,0 +1,1388 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Glitch Tracker",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "glt_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -344
+      },
+      "params": {
+        "text": "Glitch tracker\n\nA video pipeline without a camera. 1 · Footage: five textured discs dance on Lissajous paths over a dotted field. 2 · Tracking: Rasterize turns each frame into pixels and Point Tracker follows the discs by optical flow alone, never seeing the motion numbers; a HUD boxes each track (colour = confidence) and joins them with Connect Points. 3 · Glitch: the footage you see goes through Echo's slit-scan (each row from a different moment), then chromatic aberration and noise displacement that burst now and then.\n\n• Press and hold on the canvas: re-seed the trackers on a grid round the cursor; let go and they follow whatever is there.\n• Slider into `glitch`: how hard the bursts hit.  • Toggle: slit-scan on / off.",
+        "width": 560,
+        "height": 280
+      },
+      "portValues": {
+        "text": "Glitch tracker\n\nA video pipeline without a camera. 1 · Footage: five textured discs dance on Lissajous paths over a dotted field. 2 · Tracking: Rasterize turns each frame into pixels and Point Tracker follows the discs by optical flow alone, never seeing the motion numbers; a HUD boxes each track (colour = confidence) and joins them with Connect Points. 3 · Glitch: the footage you see goes through Echo's slit-scan (each row from a different moment), then chromatic aberration and noise displacement that burst now and then.\n\n• Press and hold on the canvas: re-seed the trackers on a grid round the cursor; let go and they follow whatever is there.\n• Slider into `glitch`: how hard the bursts hit.  • Toggle: slit-scan on / off.",
+        "width": 560,
+        "height": 280
+      }
+    },
+    {
+      "id": "glt_glitch",
+      "defType": "io/slider",
+      "position": {
+        "x": 2320,
+        "y": 454
+      },
+      "params": {
+        "value": 0.6,
+        "min": 0,
+        "max": 1.5
+      },
+      "portValues": {
+        "value": 0.6,
+        "min": 0,
+        "max": 1.5
+      }
+    },
+    {
+      "id": "glt_slitScan",
+      "defType": "io/toggle",
+      "position": {
+        "x": 2631,
+        "y": 63
+      },
+      "params": {
+        "value": true
+      },
+      "portValues": {
+        "value": true
+      }
+    },
+    {
+      "id": "glt_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 53,
+        "y": 1081
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "glt_mpos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 616,
+        "y": 941
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "glt_fieldDots",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {
+        "mode": "poisson"
+      },
+      "portValues": {
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "x": 680,
+          "y": 520
+        },
+        "distance": 22,
+        "seed": 6
+      }
+    },
+    {
+      "id": "glt_dots",
+      "defType": "region/foreach",
+      "position": {
+        "x": 351,
+        "y": 61
+      },
+      "params": {
+        "width": 615,
+        "height": 224,
+        "label": "ForEach dot"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 615,
+      "height": 224
+    },
+    {
+      "id": "glt_dotSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 133,
+        "y": 68
+      },
+      "params": {
+        "expr": "2 + 3 * fract(p.x * 0.131 + p.y * 0.071)"
+      },
+      "parentId": "glt_dots",
+      "portValues": {}
+    },
+    {
+      "id": "glt_dotFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 33,
+        "y": 236
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.3686274509803922,
+          "g": 0.35294117647058826,
+          "b": 0.47843137254901963,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "glt_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 404,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "glt_dots",
+      "portValues": {}
+    },
+    {
+      "id": "glt_blobIds",
+      "defType": "spread/range",
+      "position": {
+        "x": 31,
+        "y": 760
+      },
+      "params": {
+        "count": 5
+      },
+      "portValues": {
+        "count": 5
+      }
+    },
+    {
+      "id": "glt_blobPaths",
+      "defType": "math/expression",
+      "position": {
+        "x": 575,
+        "y": 333
+      },
+      "params": {
+        "expr": "vec2(sin(t * (0.3 + i * 0.07) + i * 1.7) * 230, cos(t * (0.22 + i * 0.06) + i * 0.9) * 160)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_blobStarts",
+      "defType": "math/expression",
+      "position": {
+        "x": 575,
+        "y": 1067
+      },
+      "params": {
+        "expr": "vec2(sin(0 * (0.3 + i * 0.07) + i * 1.7) * 230, cos(0 * (0.22 + i * 0.06) + i * 0.9) * 160)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_discs",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1081,
+        "y": 276
+      },
+      "params": {
+        "width": 1122,
+        "height": 508,
+        "label": "ForEach disc"
+      },
+      "ports": [
+        {
+          "id": "c",
+          "name": "c",
+          "type": "vec2",
+          "direction": "input",
+          "y": 175
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 197
+        }
+      ],
+      "width": 1122,
+      "height": 508
+    },
+    {
+      "id": "glt_discColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 149,
+        "y": 40
+      },
+      "params": {
+        "expr": "hsl(fract(0.08 + k * 0.19), 0.75, 0.6)"
+      },
+      "parentId": "glt_discs",
+      "portValues": {}
+    },
+    {
+      "id": "glt_discFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 435,
+        "y": 109
+      },
+      "params": {},
+      "parentId": "glt_discs",
+      "portValues": {}
+    },
+    {
+      "id": "glt_disc",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 631,
+        "y": 52
+      },
+      "params": {},
+      "parentId": "glt_discs",
+      "portValues": {
+        "w": 54,
+        "h": 54
+      }
+    },
+    {
+      "id": "glt_ringFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 592,
+        "y": 497
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.0784313725490196,
+          "g": 0.07058823529411765,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "glt_discRing",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 183,
+        "y": 182
+      },
+      "params": {},
+      "parentId": "glt_discs",
+      "portValues": {
+        "w": 30,
+        "h": 30
+      }
+    },
+    {
+      "id": "glt_eyePos",
+      "defType": "math/expression",
+      "position": {
+        "x": 149,
+        "y": 374
+      },
+      "params": {
+        "expr": "c + vec2(6, -5)"
+      },
+      "parentId": "glt_discs",
+      "portValues": {}
+    },
+    {
+      "id": "glt_eyeFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 592,
+        "y": 623
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "glt_discEye",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 428,
+        "y": 308
+      },
+      "params": {},
+      "parentId": "glt_discs",
+      "portValues": {
+        "w": 10,
+        "h": 10
+      }
+    },
+    {
+      "id": "glt_discParts",
+      "defType": "transform/group",
+      "position": {
+        "x": 842,
+        "y": 160
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "parentId": "glt_discs",
+      "portValues": {}
+    },
+    {
+      "id": "glt_footage",
+      "defType": "transform/group",
+      "position": {
+        "x": 2320,
+        "y": 328
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_rasterize",
+      "defType": "image/from-layer",
+      "position": {
+        "x": 2660,
+        "y": 639
+      },
+      "params": {},
+      "portValues": {
+        "w": 640,
+        "h": 480
+      }
+    },
+    {
+      "id": "glt_seedGrid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 596,
+        "y": 749
+      },
+      "params": {},
+      "portValues": {
+        "cols": 3,
+        "rows": 3,
+        "w": 60,
+        "h": 60
+      }
+    },
+    {
+      "id": "glt_mouseSeeds",
+      "defType": "math/expression",
+      "position": {
+        "x": 1558,
+        "y": 832
+      },
+      "params": {
+        "expr": "g + m"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_mouseSeedCount",
+      "defType": "math/expression",
+      "position": {
+        "x": 1558,
+        "y": 996
+      },
+      "params": {
+        "expr": "p ? 9 : 0"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_startSeedCount",
+      "defType": "math/expression",
+      "position": {
+        "x": 575,
+        "y": 1231
+      },
+      "params": {
+        "expr": "p ? 0 : 5"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_useMouseSeeds",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 2323,
+        "y": 951
+      },
+      "params": {
+        "op": "take"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_useStartSeeds",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 1561,
+        "y": 1138
+      },
+      "params": {
+        "op": "take"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_seeds",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2634,
+        "y": 993
+      },
+      "params": {
+        "op": "concat"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_tracker",
+      "defType": "image/track-points",
+      "position": {
+        "x": 2959,
+        "y": 950
+      },
+      "params": {
+        "window": 48
+      },
+      "portValues": {
+        "window": 48
+      }
+    },
+    {
+      "id": "glt_hudBoxes",
+      "defType": "region/foreach",
+      "position": {
+        "x": 3269,
+        "y": 809
+      },
+      "params": {
+        "width": 1367,
+        "height": 697,
+        "label": "ForEach track"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 402
+        },
+        {
+          "id": "q",
+          "name": "q",
+          "type": "number",
+          "direction": "input",
+          "y": 515
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 325
+        }
+      ],
+      "width": 1367,
+      "height": 697
+    },
+    {
+      "id": "glt_trackColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 133,
+        "y": 440
+      },
+      "params": {
+        "expr": "mix(rgb(1, 0.25, 0.3), rgb(0.3, 1, 0.6), q)"
+      },
+      "parentId": "glt_hudBoxes",
+      "portValues": {}
+    },
+    {
+      "id": "glt_boxStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 449,
+        "y": 535
+      },
+      "params": {},
+      "parentId": "glt_hudBoxes",
+      "portValues": {
+        "width": 1.5
+      }
+    },
+    {
+      "id": "glt_boxNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 690,
+        "y": 491
+      },
+      "params": {},
+      "parentId": "glt_hudBoxes",
+      "portValues": {}
+    },
+    {
+      "id": "glt_box",
+      "defType": "draw/rect",
+      "position": {
+        "x": 881,
+        "y": 360
+      },
+      "params": {
+        "anchor": "center"
+      },
+      "parentId": "glt_hudBoxes",
+      "portValues": {
+        "w": 30,
+        "h": 30,
+        "anchor": "center"
+      }
+    },
+    {
+      "id": "glt_labelPos",
+      "defType": "math/expression",
+      "position": {
+        "x": 133,
+        "y": 298
+      },
+      "params": {
+        "expr": "p + vec2(17, -12)"
+      },
+      "parentId": "glt_hudBoxes",
+      "portValues": {}
+    },
+    {
+      "id": "glt_trackName",
+      "defType": "string/format-number",
+      "position": {
+        "x": 142,
+        "y": 40
+      },
+      "params": {
+        "mode": "number"
+      },
+      "parentId": "glt_hudBoxes",
+      "portValues": {
+        "decimals": 0,
+        "prefix": "#"
+      }
+    },
+    {
+      "id": "glt_trackNameOne",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 414,
+        "y": 131
+      },
+      "params": {
+        "op": "at"
+      },
+      "parentId": "glt_hudBoxes",
+      "portValues": {
+        "index": 0
+      }
+    },
+    {
+      "id": "glt_labelFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 452,
+        "y": 409
+      },
+      "params": {},
+      "parentId": "glt_hudBoxes",
+      "portValues": {}
+    },
+    {
+      "id": "glt_label",
+      "defType": "draw/text",
+      "position": {
+        "x": 689,
+        "y": 245
+      },
+      "params": {
+        "size": 10,
+        "align": "left"
+      },
+      "parentId": "glt_hudBoxes",
+      "portValues": {
+        "size": 10,
+        "align": "left"
+      }
+    },
+    {
+      "id": "glt_trackMark",
+      "defType": "transform/group",
+      "position": {
+        "x": 1087,
+        "y": 288
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "parentId": "glt_hudBoxes",
+      "portValues": {}
+    },
+    {
+      "id": "glt_linkStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 2953,
+        "y": 683
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.49019607843137253,
+          "g": 0.9764705882352941,
+          "b": 1.0,
+          "a": 0.6
+        },
+        "width": 1
+      }
+    },
+    {
+      "id": "glt_links",
+      "defType": "geometry/connect",
+      "position": {
+        "x": 3871,
+        "y": 507
+      },
+      "params": {
+        "mode": "distance"
+      },
+      "portValues": {
+        "distance": 260,
+        "maxLinks": 3,
+        "fade": 0.8
+      }
+    },
+    {
+      "id": "glt_slitScanFx",
+      "defType": "gpu/echo",
+      "position": {
+        "x": 2630,
+        "y": 201
+      },
+      "params": {
+        "mode": "slit-scan",
+        "direction": "down"
+      },
+      "portValues": {
+        "frames": 40,
+        "direction": "down"
+      }
+    },
+    {
+      "id": "glt_footageView",
+      "defType": "logic/select",
+      "position": {
+        "x": 2973,
+        "y": 196
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "glt_burst",
+      "defType": "math/expression",
+      "position": {
+        "x": 2631,
+        "y": 393
+      },
+      "params": {
+        "expr": "g * (noise(t * 2.3, 4.1) > 0.62 ? 1 : 0.15)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_aberration",
+      "defType": "math/expression",
+      "position": {
+        "x": 2942,
+        "y": 344
+      },
+      "params": {
+        "expr": "2 + b * 14"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_chromatic",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 3868,
+        "y": 217
+      },
+      "params": {
+        "mode": "chromatic"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_displaceAmount",
+      "defType": "math/expression",
+      "position": {
+        "x": 3869,
+        "y": 365
+      },
+      "params": {
+        "expr": "b * 18"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_displace",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 4763,
+        "y": 399
+      },
+      "params": {
+        "mode": "displace"
+      },
+      "portValues": {
+        "scale": 0.02,
+        "speed": 3,
+        "seed": 2
+      }
+    },
+    {
+      "id": "glt_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 5065,
+        "y": 645
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {}
+    },
+    {
+      "id": "glt_grain",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 5329,
+        "y": 622
+      },
+      "params": {
+        "mode": "grain"
+      },
+      "portValues": {
+        "amount": 0.08,
+        "size": 1.5
+      }
+    },
+    {
+      "id": "glt_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 5594,
+        "y": 622
+      },
+      "params": {
+        "width": 640,
+        "height": 480,
+        "background": {
+          "r": 0.0784313725490196,
+          "g": 0.07058823529411765,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 640,
+        "height": 480,
+        "background": {
+          "r": 0.0784313725490196,
+          "g": 0.07058823529411765,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "glt_mouse",
+      "target": "glt_mpos",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_2",
+      "source": "glt_mouse",
+      "target": "glt_mpos",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_3",
+      "source": "glt_fieldDots",
+      "target": "glt_dots",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_4",
+      "source": "glt_dots",
+      "target": "glt_dotSize",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_5",
+      "source": "glt_dots",
+      "target": "glt_dot",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_6",
+      "source": "glt_dotSize",
+      "target": "glt_dot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_7",
+      "source": "glt_dotSize",
+      "target": "glt_dot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_8",
+      "source": "glt_dotFill",
+      "target": "glt_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_9",
+      "source": "glt_dot",
+      "target": "glt_dots",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_10",
+      "source": "glt_blobIds",
+      "target": "glt_blobPaths",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_11",
+      "source": "glt_blobIds",
+      "target": "glt_blobStarts",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_12",
+      "source": "glt_blobPaths",
+      "target": "glt_discs",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_13",
+      "source": "glt_discs",
+      "target": "glt_discColour",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_14",
+      "source": "glt_discColour",
+      "target": "glt_discFill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_15",
+      "source": "glt_discs",
+      "target": "glt_disc",
+      "sourceHandle": "out-c",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_16",
+      "source": "glt_discFill",
+      "target": "glt_disc",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_17",
+      "source": "glt_discs",
+      "target": "glt_discRing",
+      "sourceHandle": "out-c",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_18",
+      "source": "glt_ringFill",
+      "target": "glt_discRing",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_19",
+      "source": "glt_discs",
+      "target": "glt_eyePos",
+      "sourceHandle": "out-c",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_20",
+      "source": "glt_eyePos",
+      "target": "glt_discEye",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_21",
+      "source": "glt_eyeFill",
+      "target": "glt_discEye",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_22",
+      "source": "glt_disc",
+      "target": "glt_discParts",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_23",
+      "source": "glt_discRing",
+      "target": "glt_discParts",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_24",
+      "source": "glt_discEye",
+      "target": "glt_discParts",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_25",
+      "source": "glt_discParts",
+      "target": "glt_discs",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_26",
+      "source": "glt_dots",
+      "target": "glt_footage",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_27",
+      "source": "glt_discs",
+      "target": "glt_footage",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_28",
+      "source": "glt_footage",
+      "target": "glt_rasterize",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_29",
+      "source": "glt_seedGrid",
+      "target": "glt_mouseSeeds",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_30",
+      "source": "glt_mpos",
+      "target": "glt_mouseSeeds",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_31",
+      "source": "glt_mouse",
+      "target": "glt_mouseSeedCount",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_32",
+      "source": "glt_mouse",
+      "target": "glt_startSeedCount",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_33",
+      "source": "glt_mouseSeeds",
+      "target": "glt_useMouseSeeds",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_34",
+      "source": "glt_mouseSeedCount",
+      "target": "glt_useMouseSeeds",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_35",
+      "source": "glt_blobStarts",
+      "target": "glt_useStartSeeds",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_36",
+      "source": "glt_startSeedCount",
+      "target": "glt_useStartSeeds",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_37",
+      "source": "glt_useMouseSeeds",
+      "target": "glt_seeds",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_38",
+      "source": "glt_useStartSeeds",
+      "target": "glt_seeds",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_39",
+      "source": "glt_rasterize",
+      "target": "glt_tracker",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_40",
+      "source": "glt_seeds",
+      "target": "glt_tracker",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_41",
+      "source": "glt_mouse",
+      "target": "glt_tracker",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-reset"
+    },
+    {
+      "id": "e_42",
+      "source": "glt_tracker",
+      "target": "glt_hudBoxes",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_43",
+      "source": "glt_tracker",
+      "target": "glt_hudBoxes",
+      "sourceHandle": "out-confidence",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_44",
+      "source": "glt_hudBoxes",
+      "target": "glt_trackColour",
+      "sourceHandle": "out-q",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_45",
+      "source": "glt_trackColour",
+      "target": "glt_boxStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_46",
+      "source": "glt_boxStroke",
+      "target": "glt_boxNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_47",
+      "source": "glt_hudBoxes",
+      "target": "glt_box",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_48",
+      "source": "glt_boxNoFill",
+      "target": "glt_box",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_49",
+      "source": "glt_hudBoxes",
+      "target": "glt_labelPos",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_50",
+      "source": "glt_hudBoxes",
+      "target": "glt_trackName",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_51",
+      "source": "glt_trackName",
+      "target": "glt_trackNameOne",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_52",
+      "source": "glt_trackColour",
+      "target": "glt_labelFill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_53",
+      "source": "glt_trackNameOne",
+      "target": "glt_label",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_54",
+      "source": "glt_labelPos",
+      "target": "glt_label",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_55",
+      "source": "glt_labelFill",
+      "target": "glt_label",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_56",
+      "source": "glt_box",
+      "target": "glt_trackMark",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_57",
+      "source": "glt_label",
+      "target": "glt_trackMark",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_58",
+      "source": "glt_trackMark",
+      "target": "glt_hudBoxes",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_59",
+      "source": "glt_tracker",
+      "target": "glt_links",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_60",
+      "source": "glt_linkStroke",
+      "target": "glt_links",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_61",
+      "source": "glt_footage",
+      "target": "glt_slitScanFx",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_62",
+      "source": "glt_slitScan",
+      "target": "glt_footageView",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_63",
+      "source": "glt_slitScanFx",
+      "target": "glt_footageView",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_64",
+      "source": "glt_footage",
+      "target": "glt_footageView",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_65",
+      "source": "glt_glitch",
+      "target": "glt_burst",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_66",
+      "source": "glt_burst",
+      "target": "glt_aberration",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_67",
+      "source": "glt_footageView",
+      "target": "glt_chromatic",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_68",
+      "source": "glt_aberration",
+      "target": "glt_chromatic",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-amount"
+    },
+    {
+      "id": "e_69",
+      "source": "glt_burst",
+      "target": "glt_displaceAmount",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_70",
+      "source": "glt_chromatic",
+      "target": "glt_displace",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_71",
+      "source": "glt_displaceAmount",
+      "target": "glt_displace",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-amount"
+    },
+    {
+      "id": "e_72",
+      "source": "glt_displace",
+      "target": "glt_scene",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_73",
+      "source": "glt_links",
+      "target": "glt_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_74",
+      "source": "glt_hudBoxes",
+      "target": "glt_scene",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_75",
+      "source": "glt_scene",
+      "target": "glt_grain",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_76",
+      "source": "glt_grain",
+      "target": "glt_r",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

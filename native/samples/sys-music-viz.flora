@@ -1,0 +1,1690 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Generative Band",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "band_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -394
+      },
+      "params": {
+        "text": "Generative band\n\nA self-playing trio, heard and seen. The clock is the time itself: each eighth note is one step of 30 / bpm seconds. Melody: noise walks a pentatonic scale (Lookup into a list of intervals), some steps rest, and a MonoSynth plays the rest through a Delay and a Reverb. Bass: a sawtooth on the chord of the bar (four bars round), shaped by an Envelope and a Filter. Hats: filtered noise on every step. Three Outputs sum into the speakers.\n\nThe picture uses the same numbers: the ring of 16 steps (lit: notes, dim: rests), a burst for each note coloured by its pitch, and the melody's FFT spectrum round the centre and waveform along the bottom, all through Echo trails and bloom.\n\n• Sliders: `bpm`, `density` (how few rests), `volume`.  • Toggle: major / minor.",
+        "width": 560,
+        "height": 330
+      },
+      "portValues": {
+        "text": "Generative band\n\nA self-playing trio, heard and seen. The clock is the time itself: each eighth note is one step of 30 / bpm seconds. Melody: noise walks a pentatonic scale (Lookup into a list of intervals), some steps rest, and a MonoSynth plays the rest through a Delay and a Reverb. Bass: a sawtooth on the chord of the bar (four bars round), shaped by an Envelope and a Filter. Hats: filtered noise on every step. Three Outputs sum into the speakers.\n\nThe picture uses the same numbers: the ring of 16 steps (lit: notes, dim: rests), a burst for each note coloured by its pitch, and the melody's FFT spectrum round the centre and waveform along the bottom, all through Echo trails and bloom.\n\n• Sliders: `bpm`, `density` (how few rests), `volume`.  • Toggle: major / minor.",
+        "width": 560,
+        "height": 330
+      }
+    },
+    {
+      "id": "band_bpm",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 640
+      },
+      "params": {
+        "value": 104,
+        "min": 60,
+        "max": 168
+      },
+      "portValues": {
+        "value": 104,
+        "min": 60,
+        "max": 168
+      }
+    },
+    {
+      "id": "band_density",
+      "defType": "io/slider",
+      "position": {
+        "x": 578,
+        "y": 1385
+      },
+      "params": {
+        "value": 0.7,
+        "min": 0.2,
+        "max": 1
+      },
+      "portValues": {
+        "value": 0.7,
+        "min": 0.2,
+        "max": 1
+      }
+    },
+    {
+      "id": "band_volume",
+      "defType": "io/slider",
+      "position": {
+        "x": 2707,
+        "y": 437
+      },
+      "params": {
+        "value": 0.35,
+        "min": 0,
+        "max": 1
+      },
+      "portValues": {
+        "value": 0.35,
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "band_major",
+      "defType": "io/toggle",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {
+        "value": false
+      },
+      "portValues": {
+        "value": false
+      }
+    },
+    {
+      "id": "band_stepLength",
+      "defType": "math/expression",
+      "position": {
+        "x": 276,
+        "y": 605
+      },
+      "params": {
+        "expr": "30 / b"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_step",
+      "defType": "math/expression",
+      "position": {
+        "x": 578,
+        "y": 798
+      },
+      "params": {
+        "expr": "floor(t / s)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_stepPhase",
+      "defType": "math/expression",
+      "position": {
+        "x": 578,
+        "y": 450
+      },
+      "params": {
+        "expr": "fract(t / s)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_minorScale",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 1,
+        "y": 242
+      },
+      "params": {
+        "data": "0, 3, 5, 7, 10, 12, 15, 17"
+      },
+      "portValues": {
+        "data": "0, 3, 5, 7, 10, 12, 15, 17"
+      }
+    },
+    {
+      "id": "band_majorScale",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 1,
+        "y": 138
+      },
+      "params": {
+        "data": "0, 2, 4, 7, 9, 12, 14, 16"
+      },
+      "portValues": {
+        "data": "0, 2, 4, 7, 9, 12, 14, 16"
+      }
+    },
+    {
+      "id": "band_scale",
+      "defType": "math/expression",
+      "position": {
+        "x": 276,
+        "y": 78
+      },
+      "params": {
+        "expr": "m ? a : b"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_degree",
+      "defType": "math/expression",
+      "position": {
+        "x": 1635,
+        "y": 578
+      },
+      "params": {
+        "expr": "clamp(floor((noise(n * 0.29, 2.2) - 0.22) / 0.56 * 8), 0, 7)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_interval",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 2710,
+        "y": 563
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_note",
+      "defType": "math/expression",
+      "position": {
+        "x": 3007,
+        "y": 692
+      },
+      "params": {
+        "expr": "57 + i + (fract(sin(n * 4.13) * 9631.7) < 0.15 ? 12 : 0)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_playsNote",
+      "defType": "math/expression",
+      "position": {
+        "x": 2707,
+        "y": 958
+      },
+      "params": {
+        "expr": "fract(sin(n * 78.233) * 43758.5453) < d"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_gate",
+      "defType": "math/expression",
+      "position": {
+        "x": 3007,
+        "y": 869
+      },
+      "params": {
+        "expr": "p && f < 0.55"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_melodySynth",
+      "defType": "sound/mono-synth",
+      "position": {
+        "x": 3363,
+        "y": 876
+      },
+      "params": {},
+      "portValues": {
+        "velocity": 0.8,
+        "attack": 0.01,
+        "decay": 0.22,
+        "sustain": 0.25,
+        "release": 0.4
+      }
+    },
+    {
+      "id": "band_echoTime",
+      "defType": "math/expression",
+      "position": {
+        "x": 3340,
+        "y": 1112
+      },
+      "params": {
+        "expr": "s * 3"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_melodyDelay",
+      "defType": "sound/delay",
+      "position": {
+        "x": 3690,
+        "y": 958
+      },
+      "params": {},
+      "portValues": {
+        "feedback": 0.35,
+        "filter": 2600
+      }
+    },
+    {
+      "id": "band_melodyReverb",
+      "defType": "sound/reverb",
+      "position": {
+        "x": 3960,
+        "y": 832
+      },
+      "params": {
+        "reverse": false
+      },
+      "portValues": {
+        "seconds": 2.5,
+        "decay": 2.2,
+        "wet": 0.3
+      }
+    },
+    {
+      "id": "band_melodyOut",
+      "defType": "sound/output",
+      "position": {
+        "x": 4275,
+        "y": 570
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "band_bassNote",
+      "defType": "math/expression",
+      "position": {
+        "x": 1635,
+        "y": 731
+      },
+      "params": {
+        "expr": "33 + (floor(n / 8) % 4 == 0 ? 0 : (floor(n / 8) % 4 == 1 ? -4 : (floor(n / 8) % 4 == 2 ? 5 : 7)))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_bassFreq",
+      "defType": "sound/midi-to-freq",
+      "position": {
+        "x": 2731,
+        "y": 751
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "band_bassOsc",
+      "defType": "sound/oscillator",
+      "position": {
+        "x": 3011,
+        "y": 544
+      },
+      "params": {
+        "type": "sawtooth"
+      },
+      "portValues": {
+        "amp": 0.5
+      }
+    },
+    {
+      "id": "band_bassGate",
+      "defType": "math/expression",
+      "position": {
+        "x": 3007,
+        "y": 46
+      },
+      "params": {
+        "expr": "fract(t / (s * 2)) < 0.8"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_bassEnvelope",
+      "defType": "sound/envelope",
+      "position": {
+        "x": 3370,
+        "y": 84
+      },
+      "params": {},
+      "portValues": {
+        "attack": 0.01,
+        "decay": 0.25,
+        "sustain": 0.5,
+        "release": 0.1,
+        "level": 0.5
+      }
+    },
+    {
+      "id": "band_bassCutoff",
+      "defType": "math/expression",
+      "position": {
+        "x": 3340,
+        "y": 320
+      },
+      "params": {
+        "expr": "300 + 500 * (0.5 + 0.5 * sin(t * 0.4))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_bassFilter",
+      "defType": "sound/filter",
+      "position": {
+        "x": 3660,
+        "y": 243
+      },
+      "params": {
+        "type": "lowpass"
+      },
+      "portValues": {
+        "res": 4
+      }
+    },
+    {
+      "id": "band_bassOut",
+      "defType": "sound/output",
+      "position": {
+        "x": 3973,
+        "y": 352
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "band_hatNoise",
+      "defType": "sound/noise",
+      "position": {
+        "x": 588,
+        "y": 192
+      },
+      "params": {
+        "type": "white"
+      },
+      "portValues": {
+        "amp": 0.4
+      }
+    },
+    {
+      "id": "band_hatFilter",
+      "defType": "sound/filter",
+      "position": {
+        "x": 1639,
+        "y": 170
+      },
+      "params": {
+        "type": "highpass"
+      },
+      "portValues": {
+        "freq": 7000,
+        "res": 1
+      }
+    },
+    {
+      "id": "band_hatGate",
+      "defType": "math/expression",
+      "position": {
+        "x": 1635,
+        "y": 372
+      },
+      "params": {
+        "expr": "f < 0.08"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_hatEnvelope",
+      "defType": "sound/envelope",
+      "position": {
+        "x": 2737,
+        "y": 201
+      },
+      "params": {},
+      "portValues": {
+        "attack": 0.001,
+        "decay": 0.05,
+        "sustain": 0,
+        "release": 0.03,
+        "level": 0.6
+      }
+    },
+    {
+      "id": "band_hatOut",
+      "defType": "sound/output",
+      "position": {
+        "x": 3044,
+        "y": 310
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "band_spectrum",
+      "defType": "sound/fft",
+      "position": {
+        "x": 4239,
+        "y": 808
+      },
+      "params": {
+        "bins": "128"
+      },
+      "portValues": {
+        "smoothing": 0.7
+      }
+    },
+    {
+      "id": "band_ringSteps",
+      "defType": "spread/range",
+      "position": {
+        "x": 593,
+        "y": 1197
+      },
+      "params": {
+        "count": 16
+      },
+      "portValues": {
+        "count": 16
+      }
+    },
+    {
+      "id": "band_stepRing",
+      "defType": "region/foreach",
+      "position": {
+        "x": 898,
+        "y": 992
+      },
+      "params": {
+        "width": 1642,
+        "height": 500,
+        "label": "ForEach step"
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input",
+          "y": 242
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 177
+        }
+      ],
+      "width": 1642,
+      "height": 500
+    },
+    {
+      "id": "band_stepAt",
+      "defType": "math/expression",
+      "position": {
+        "x": 137,
+        "y": 261
+      },
+      "params": {
+        "expr": "n - n % 16 + i"
+      },
+      "parentId": "band_stepRing",
+      "portValues": {}
+    },
+    {
+      "id": "band_stepPlays",
+      "defType": "math/expression",
+      "position": {
+        "x": 419,
+        "y": 137
+      },
+      "params": {
+        "expr": "fract(sin(s * 78.233) * 43758.5453) < d"
+      },
+      "parentId": "band_stepRing",
+      "portValues": {}
+    },
+    {
+      "id": "band_stepDegree",
+      "defType": "math/expression",
+      "position": {
+        "x": 419,
+        "y": 301
+      },
+      "params": {
+        "expr": "clamp(floor((noise(s * 0.29, 2.2) - 0.22) / 0.56 * 8), 0, 7)"
+      },
+      "parentId": "band_stepRing",
+      "portValues": {}
+    },
+    {
+      "id": "band_spokeDir",
+      "defType": "math/expression",
+      "position": {
+        "x": 137,
+        "y": 40
+      },
+      "params": {
+        "expr": "vec2(cos(i / 16 * tau - pi / 2), sin(i / 16 * tau - pi / 2))"
+      },
+      "parentId": "band_stepRing",
+      "portValues": {}
+    },
+    {
+      "id": "band_spokeIn",
+      "defType": "math/expression",
+      "position": {
+        "x": 1175,
+        "y": 59
+      },
+      "params": {
+        "expr": "u * 205"
+      },
+      "parentId": "band_stepRing",
+      "portValues": {}
+    },
+    {
+      "id": "band_spokeOut",
+      "defType": "math/expression",
+      "position": {
+        "x": 706,
+        "y": 114
+      },
+      "params": {
+        "expr": "u * (205 + (p ? 12 + g * 9 : 1))"
+      },
+      "parentId": "band_stepRing",
+      "portValues": {}
+    },
+    {
+      "id": "band_spokeColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 706,
+        "y": 300
+      },
+      "params": {
+        "expr": "hsl(fract(g / 8 * 0.5 + 0.55), 0.8, 0.62, s == n ? 1 : (s < n ? 0.55 : 0.22))"
+      },
+      "parentId": "band_stepRing",
+      "portValues": {}
+    },
+    {
+      "id": "band_spokeStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 978,
+        "y": 309
+      },
+      "params": {},
+      "parentId": "band_stepRing",
+      "portValues": {
+        "width": 7
+      }
+    },
+    {
+      "id": "band_spokeCap",
+      "defType": "style/stroke-cap",
+      "position": {
+        "x": 1200,
+        "y": 236
+      },
+      "params": {},
+      "parentId": "band_stepRing",
+      "portValues": {
+        "cap": "round"
+      }
+    },
+    {
+      "id": "band_spoke",
+      "defType": "draw/line",
+      "position": {
+        "x": 1446,
+        "y": 140
+      },
+      "params": {},
+      "parentId": "band_stepRing",
+      "portValues": {}
+    },
+    {
+      "id": "band_burstColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 3340,
+        "y": 526
+      },
+      "params": {
+        "expr": "hsl(fract((k - 57) / 24 + 0.55), 0.85, 0.6, p ? (1 - f) : 0)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_burstSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 3936,
+        "y": 130
+      },
+      "params": {
+        "expr": "60 + f * 360"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_burstStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 3693,
+        "y": 498
+      },
+      "params": {},
+      "portValues": {
+        "width": 4
+      }
+    },
+    {
+      "id": "band_burstNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 3976,
+        "y": 503
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "band_burst",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 4268,
+        "y": 208
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": "band_coreColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 3340,
+        "y": 723
+      },
+      "params": {
+        "expr": "hsl(fract((k - 57) / 24 + 0.55), 0.7, 0.55, 0.85)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_coreFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 3697,
+        "y": 832
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "band_coreSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 3656,
+        "y": 668
+      },
+      "params": {
+        "expr": "40 + 26 * (g ? 1 - f : 0)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_core",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 3966,
+        "y": 640
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": "band_spectrumBars",
+      "defType": "region/foreach",
+      "position": {
+        "x": 4537,
+        "y": 485
+      },
+      "params": {
+        "width": 884,
+        "height": 338,
+        "label": "ForEach bin"
+      },
+      "ports": [
+        {
+          "id": "m",
+          "name": "m",
+          "type": "number",
+          "direction": "input",
+          "y": 280
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 176
+        }
+      ],
+      "width": 884,
+      "height": 338
+    },
+    {
+      "id": "band_binDir",
+      "defType": "math/expression",
+      "position": {
+        "x": 140,
+        "y": 109
+      },
+      "params": {
+        "expr": "vec2(cos(k / 128 * tau), sin(k / 128 * tau))"
+      },
+      "parentId": "band_spectrumBars",
+      "portValues": {}
+    },
+    {
+      "id": "band_binIn",
+      "defType": "math/expression",
+      "position": {
+        "x": 415,
+        "y": 40
+      },
+      "params": {
+        "expr": "u * 70"
+      },
+      "parentId": "band_spectrumBars",
+      "portValues": {}
+    },
+    {
+      "id": "band_binOut",
+      "defType": "math/expression",
+      "position": {
+        "x": 415,
+        "y": 182
+      },
+      "params": {
+        "expr": "u * (72 + m * 0.55)"
+      },
+      "parentId": "band_spectrumBars",
+      "portValues": {}
+    },
+    {
+      "id": "band_spectrumStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 4250,
+        "y": 400
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.803921568627451,
+          "g": 0.7058823529411765,
+          "b": 1.0,
+          "a": 0.85
+        },
+        "width": 2
+      }
+    },
+    {
+      "id": "band_binBar",
+      "defType": "draw/line",
+      "position": {
+        "x": 688,
+        "y": 138
+      },
+      "params": {},
+      "parentId": "band_spectrumBars",
+      "portValues": {}
+    },
+    {
+      "id": "band_wavePoints",
+      "defType": "math/expression",
+      "position": {
+        "x": 4895,
+        "y": 871
+      },
+      "params": {
+        "expr": "vec2(-300 + index / count * 600, 285 + w * 30)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_waveStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 4906,
+        "y": 1013
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.4823529411764706,
+          "g": 0.8745098039215686,
+          "b": 0.9490196078431372,
+          "a": 0.8
+        },
+        "width": 1.5
+      }
+    },
+    {
+      "id": "band_wave",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 5571,
+        "y": 910
+      },
+      "params": {},
+      "portValues": {
+        "closed": false
+      }
+    },
+    {
+      "id": "band_glowing",
+      "defType": "transform/group",
+      "position": {
+        "x": 5539,
+        "y": 437
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_trails",
+      "defType": "gpu/echo",
+      "position": {
+        "x": 5835,
+        "y": 604
+      },
+      "params": {
+        "mode": "trails"
+      },
+      "portValues": {
+        "decay": 0.9
+      }
+    },
+    {
+      "id": "band_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 6131,
+        "y": 816
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {}
+    },
+    {
+      "id": "band_bloom",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 6397,
+        "y": 786
+      },
+      "params": {
+        "mode": "bloom"
+      },
+      "portValues": {
+        "threshold": 0.35,
+        "radius": 14,
+        "intensity": 1.2
+      }
+    },
+    {
+      "id": "band_chromatic",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 6663,
+        "y": 756
+      },
+      "params": {
+        "mode": "chromatic"
+      },
+      "portValues": {
+        "amount": 3
+      }
+    },
+    {
+      "id": "band_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 6928,
+        "y": 753
+      },
+      "params": {
+        "width": 640,
+        "height": 640,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.03137254901960784,
+          "b": 0.0784313725490196,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 640,
+        "height": 640,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.03137254901960784,
+          "b": 0.0784313725490196,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "band_bpm",
+      "target": "band_stepLength",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_2",
+      "source": "band_stepLength",
+      "target": "band_step",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_3",
+      "source": "band_stepLength",
+      "target": "band_stepPhase",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_4",
+      "source": "band_major",
+      "target": "band_scale",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_5",
+      "source": "band_majorScale",
+      "target": "band_scale",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_6",
+      "source": "band_minorScale",
+      "target": "band_scale",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_7",
+      "source": "band_step",
+      "target": "band_degree",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_8",
+      "source": "band_scale",
+      "target": "band_interval",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_9",
+      "source": "band_degree",
+      "target": "band_interval",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_10",
+      "source": "band_interval",
+      "target": "band_note",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_11",
+      "source": "band_step",
+      "target": "band_note",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_12",
+      "source": "band_step",
+      "target": "band_playsNote",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_13",
+      "source": "band_density",
+      "target": "band_playsNote",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_14",
+      "source": "band_playsNote",
+      "target": "band_gate",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_15",
+      "source": "band_stepPhase",
+      "target": "band_gate",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_16",
+      "source": "band_note",
+      "target": "band_melodySynth",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-note"
+    },
+    {
+      "id": "e_17",
+      "source": "band_gate",
+      "target": "band_melodySynth",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-trigger"
+    },
+    {
+      "id": "e_18",
+      "source": "band_stepLength",
+      "target": "band_echoTime",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_19",
+      "source": "band_melodySynth",
+      "target": "band_melodyDelay",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_20",
+      "source": "band_echoTime",
+      "target": "band_melodyDelay",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_21",
+      "source": "band_melodyDelay",
+      "target": "band_melodyReverb",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_22",
+      "source": "band_melodyReverb",
+      "target": "band_melodyOut",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_23",
+      "source": "band_volume",
+      "target": "band_melodyOut",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-volume"
+    },
+    {
+      "id": "e_24",
+      "source": "band_step",
+      "target": "band_bassNote",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_25",
+      "source": "band_bassNote",
+      "target": "band_bassFreq",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-midi"
+    },
+    {
+      "id": "e_26",
+      "source": "band_bassFreq",
+      "target": "band_bassOsc",
+      "sourceHandle": "out-freq",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_27",
+      "source": "band_stepLength",
+      "target": "band_bassGate",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_28",
+      "source": "band_bassOsc",
+      "target": "band_bassEnvelope",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_29",
+      "source": "band_bassGate",
+      "target": "band_bassEnvelope",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-trigger"
+    },
+    {
+      "id": "e_30",
+      "source": "band_bassEnvelope",
+      "target": "band_bassFilter",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_31",
+      "source": "band_bassCutoff",
+      "target": "band_bassFilter",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_32",
+      "source": "band_bassFilter",
+      "target": "band_bassOut",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_33",
+      "source": "band_volume",
+      "target": "band_bassOut",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-volume"
+    },
+    {
+      "id": "e_34",
+      "source": "band_hatNoise",
+      "target": "band_hatFilter",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_35",
+      "source": "band_stepPhase",
+      "target": "band_hatGate",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_36",
+      "source": "band_hatFilter",
+      "target": "band_hatEnvelope",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_37",
+      "source": "band_hatGate",
+      "target": "band_hatEnvelope",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-trigger"
+    },
+    {
+      "id": "e_38",
+      "source": "band_hatEnvelope",
+      "target": "band_hatOut",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_39",
+      "source": "band_volume",
+      "target": "band_hatOut",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-volume"
+    },
+    {
+      "id": "e_40",
+      "source": "band_melodyReverb",
+      "target": "band_spectrum",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_41",
+      "source": "band_ringSteps",
+      "target": "band_stepRing",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_42",
+      "source": "band_step",
+      "target": "band_stepAt",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_43",
+      "source": "band_stepRing",
+      "target": "band_stepAt",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_44",
+      "source": "band_stepAt",
+      "target": "band_stepPlays",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_45",
+      "source": "band_density",
+      "target": "band_stepPlays",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_46",
+      "source": "band_stepAt",
+      "target": "band_stepDegree",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_47",
+      "source": "band_stepRing",
+      "target": "band_spokeDir",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_48",
+      "source": "band_spokeDir",
+      "target": "band_spokeIn",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-u"
+    },
+    {
+      "id": "e_49",
+      "source": "band_spokeDir",
+      "target": "band_spokeOut",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-u"
+    },
+    {
+      "id": "e_50",
+      "source": "band_stepPlays",
+      "target": "band_spokeOut",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_51",
+      "source": "band_stepDegree",
+      "target": "band_spokeOut",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_52",
+      "source": "band_stepDegree",
+      "target": "band_spokeColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_53",
+      "source": "band_stepAt",
+      "target": "band_spokeColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_54",
+      "source": "band_step",
+      "target": "band_spokeColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_55",
+      "source": "band_spokeColour",
+      "target": "band_spokeStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_56",
+      "source": "band_spokeStroke",
+      "target": "band_spokeCap",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_57",
+      "source": "band_spokeIn",
+      "target": "band_spoke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_58",
+      "source": "band_spokeOut",
+      "target": "band_spoke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_59",
+      "source": "band_spokeCap",
+      "target": "band_spoke",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_60",
+      "source": "band_spoke",
+      "target": "band_stepRing",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_61",
+      "source": "band_note",
+      "target": "band_burstColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_62",
+      "source": "band_playsNote",
+      "target": "band_burstColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_63",
+      "source": "band_stepPhase",
+      "target": "band_burstColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_64",
+      "source": "band_stepPhase",
+      "target": "band_burstSize",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_65",
+      "source": "band_burstColour",
+      "target": "band_burstStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_66",
+      "source": "band_burstStroke",
+      "target": "band_burstNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_67",
+      "source": "band_burstSize",
+      "target": "band_burst",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_68",
+      "source": "band_burstSize",
+      "target": "band_burst",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_69",
+      "source": "band_burstNoFill",
+      "target": "band_burst",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_70",
+      "source": "band_note",
+      "target": "band_coreColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_71",
+      "source": "band_coreColour",
+      "target": "band_coreFill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_72",
+      "source": "band_gate",
+      "target": "band_coreSize",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_73",
+      "source": "band_stepPhase",
+      "target": "band_coreSize",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_74",
+      "source": "band_coreSize",
+      "target": "band_core",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_75",
+      "source": "band_coreSize",
+      "target": "band_core",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_76",
+      "source": "band_coreFill",
+      "target": "band_core",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_77",
+      "source": "band_spectrum",
+      "target": "band_spectrumBars",
+      "sourceHandle": "out-spectrum",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_78",
+      "source": "band_spectrumBars",
+      "target": "band_binDir",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_79",
+      "source": "band_binDir",
+      "target": "band_binIn",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-u"
+    },
+    {
+      "id": "e_80",
+      "source": "band_binDir",
+      "target": "band_binOut",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-u"
+    },
+    {
+      "id": "e_81",
+      "source": "band_spectrumBars",
+      "target": "band_binOut",
+      "sourceHandle": "out-m",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_82",
+      "source": "band_binIn",
+      "target": "band_binBar",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_83",
+      "source": "band_binOut",
+      "target": "band_binBar",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_84",
+      "source": "band_spectrumStroke",
+      "target": "band_binBar",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_85",
+      "source": "band_binBar",
+      "target": "band_spectrumBars",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_86",
+      "source": "band_spectrum",
+      "target": "band_wavePoints",
+      "sourceHandle": "out-waveform",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_87",
+      "source": "band_wavePoints",
+      "target": "band_wave",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_88",
+      "source": "band_waveStroke",
+      "target": "band_wave",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_89",
+      "source": "band_burst",
+      "target": "band_glowing",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_90",
+      "source": "band_core",
+      "target": "band_glowing",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_91",
+      "source": "band_spectrumBars",
+      "target": "band_glowing",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_92",
+      "source": "band_glowing",
+      "target": "band_trails",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_93",
+      "source": "band_trails",
+      "target": "band_scene",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_94",
+      "source": "band_stepRing",
+      "target": "band_scene",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_95",
+      "source": "band_wave",
+      "target": "band_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_96",
+      "source": "band_scene",
+      "target": "band_bloom",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_97",
+      "source": "band_bloom",
+      "target": "band_chromatic",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_98",
+      "source": "band_chromatic",
+      "target": "band_r",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

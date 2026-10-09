@@ -1,0 +1,1436 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Generative Poster",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "pst_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -354
+      },
+      "params": {
+        "text": "Generative poster\n\nA Swiss-style poster as a system of rules. Layout lays out a grid of modules (and eases them to their new places when the column count changes); each module picks a shape — disc, quarter, half, triangle or nothing — a turn and a colour from noise that follows the patch seed, so Vary re-composes the whole poster. The colours are a harmony of one base colour (the Palette node's harmony modes), the title animates in letter by letter and waves, and the print finish is grain or a halftone.\n\n• Colour picker: the base colour.  • Slider into `cols`: columns (watch the modules move).\n• Toggle: halftone print.  • Vary: a new composition.\n• Presets panel: Bauhaus, Swiss, Night (harmony, colour, columns and seed together; drag Morph between them).",
+        "width": 560,
+        "height": 290
+      },
+      "portValues": {
+        "text": "Generative poster\n\nA Swiss-style poster as a system of rules. Layout lays out a grid of modules (and eases them to their new places when the column count changes); each module picks a shape — disc, quarter, half, triangle or nothing — a turn and a colour from noise that follows the patch seed, so Vary re-composes the whole poster. The colours are a harmony of one base colour (the Palette node's harmony modes), the title animates in letter by letter and waves, and the print finish is grain or a halftone.\n\n• Colour picker: the base colour.  • Slider into `cols`: columns (watch the modules move).\n• Toggle: halftone print.  • Vary: a new composition.\n• Presets panel: Bauhaus, Swiss, Night (harmony, colour, columns and seed together; drag Morph between them).",
+        "width": 560,
+        "height": 290
+      }
+    },
+    {
+      "id": "pst_baseColour",
+      "defType": "io/color-picker",
+      "position": {
+        "x": 7,
+        "y": 689
+      },
+      "params": {
+        "hex": "#d1495b"
+      },
+      "portValues": {
+        "hex": "#d1495b"
+      }
+    },
+    {
+      "id": "pst_columns",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 1020
+      },
+      "params": {
+        "value": 5,
+        "min": 3,
+        "max": 7
+      },
+      "portValues": {
+        "value": 5,
+        "min": 3,
+        "max": 7
+      }
+    },
+    {
+      "id": "pst_halftone",
+      "defType": "io/toggle",
+      "position": {
+        "x": 4189,
+        "y": 951
+      },
+      "params": {
+        "value": false
+      },
+      "portValues": {
+        "value": false
+      }
+    },
+    {
+      "id": "pst_harmony",
+      "defType": "color/palette",
+      "position": {
+        "x": 264,
+        "y": 667
+      },
+      "params": {
+        "mode": "split"
+      },
+      "portValues": {
+        "mode": "split"
+      }
+    },
+    {
+      "id": "pst_paperInk",
+      "defType": "color/palette",
+      "position": {
+        "x": 280,
+        "y": 815
+      },
+      "params": {
+        "stopCount": 2,
+        "c0": "#f1ece2",
+        "c1": "#1b1b1f"
+      },
+      "portValues": {
+        "stopCount": 2,
+        "c0": "#f1ece2",
+        "c1": "#1b1b1f"
+      }
+    },
+    {
+      "id": "pst_allColours",
+      "defType": "spread/combine",
+      "position": {
+        "x": 580,
+        "y": 756
+      },
+      "params": {
+        "op": "concat"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pst_cols",
+      "defType": "math/expression",
+      "position": {
+        "x": 280,
+        "y": 985
+      },
+      "params": {
+        "expr": "round(c)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pst_moduleCount",
+      "defType": "math/expression",
+      "position": {
+        "x": 859,
+        "y": 977
+      },
+      "params": {
+        "expr": "c * round(420 / (380 / c))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pst_moduleSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 577,
+        "y": 1001
+      },
+      "params": {
+        "expr": "380 / c"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pst_moduleSpacing",
+      "defType": "math/expression",
+      "position": {
+        "x": 859,
+        "y": 1119
+      },
+      "params": {
+        "expr": "vec2(s, s)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pst_grid",
+      "defType": "geometry/layout",
+      "position": {
+        "x": 1134,
+        "y": 994
+      },
+      "params": {
+        "mode": "grid",
+        "easing": "inOutCubic"
+      },
+      "portValues": {
+        "center": {
+          "x": 0,
+          "y": 40
+        },
+        "duration": 0.9,
+        "stagger": 0.5,
+        "easing": "inOutCubic"
+      }
+    },
+    {
+      "id": "pst_modules",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1473,
+        "y": 214
+      },
+      "params": {
+        "width": 2223,
+        "height": 1444,
+        "label": "ForEach module"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 355
+        },
+        {
+          "id": "k",
+          "name": "k",
+          "type": "number",
+          "direction": "input",
+          "y": 1108
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 372
+        }
+      ],
+      "width": 2223,
+      "height": 1444
+    },
+    {
+      "id": "pst_shapeKind",
+      "defType": "math/expression",
+      "position": {
+        "x": 178,
+        "y": 616
+      },
+      "params": {
+        "expr": "floor(noise(i * 0.618 + 0.31, 7.7) * 7 - 0.5)"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_turn",
+      "defType": "math/expression",
+      "position": {
+        "x": 178,
+        "y": 40
+      },
+      "params": {
+        "expr": "floor(noise(i * 0.37 + 0.11, 3.3) * 8) * pi / 2"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_colourIndex",
+      "defType": "math/expression",
+      "position": {
+        "x": 178,
+        "y": 182
+      },
+      "params": {
+        "expr": "floor(noise(i * 0.29 + 0.77, 9.1) * 9) % 5"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_colour",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 556,
+        "y": 91
+      },
+      "params": {
+        "op": "at"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_moduleFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 968,
+        "y": 760
+      },
+      "params": {},
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_half",
+      "defType": "math/expression",
+      "position": {
+        "x": 178,
+        "y": 1011
+      },
+      "params": {
+        "expr": "s * k * 0.46"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_discSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 927,
+        "y": 596
+      },
+      "params": {
+        "expr": "kd == 1 ? h * 2 : 0"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_disc",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1256,
+        "y": 642
+      },
+      "params": {},
+      "parentId": "pst_modules",
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": "pst_quarterAngles",
+      "defType": "spread/linear",
+      "position": {
+        "x": 1152,
+        "y": 846
+      },
+      "params": {},
+      "portValues": {
+        "from": 0,
+        "to": 1.5707963,
+        "count": 16
+      }
+    },
+    {
+      "id": "pst_quarterArc",
+      "defType": "math/expression",
+      "position": {
+        "x": 553,
+        "y": 435
+      },
+      "params": {
+        "expr": "(vec2(-1, -1) + vec2(cos(a), sin(a)) * 2) * h * (kd == 2 ? 1 : 0)"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_quarterCorner",
+      "defType": "math/expression",
+      "position": {
+        "x": 553,
+        "y": 271
+      },
+      "params": {
+        "expr": "vec2(-h, -h) * (kd == 2 ? 1 : 0)"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_quarterPoints",
+      "defType": "spread/combine",
+      "position": {
+        "x": 930,
+        "y": 400
+      },
+      "params": {
+        "op": "prepend"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_quarter",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 1259,
+        "y": 472
+      },
+      "params": {},
+      "parentId": "pst_modules",
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "pst_halfWidth",
+      "defType": "math/expression",
+      "position": {
+        "x": 553,
+        "y": 632
+      },
+      "params": {
+        "expr": "kd == 3 ? h * 2 : 0"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_halfHeight",
+      "defType": "math/expression",
+      "position": {
+        "x": 553,
+        "y": 796
+      },
+      "params": {
+        "expr": "kd == 3 ? h : 0"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_halfPos",
+      "defType": "math/expression",
+      "position": {
+        "x": 927,
+        "y": 1229
+      },
+      "params": {
+        "expr": "vec2(0, h / 2)"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_halfRect",
+      "defType": "draw/rect",
+      "position": {
+        "x": 1261,
+        "y": 834
+      },
+      "params": {
+        "anchor": "center"
+      },
+      "parentId": "pst_modules",
+      "portValues": {
+        "anchor": "center"
+      }
+    },
+    {
+      "id": "pst_triA",
+      "defType": "math/expression",
+      "position": {
+        "x": 553,
+        "y": 960
+      },
+      "params": {
+        "expr": "kd == 4 ? vec2(-h, h) : vec2(0, 0)"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_triB",
+      "defType": "math/expression",
+      "position": {
+        "x": 553,
+        "y": 1124
+      },
+      "params": {
+        "expr": "kd == 4 ? vec2(h, h) : vec2(0, 0)"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_triC",
+      "defType": "math/expression",
+      "position": {
+        "x": 553,
+        "y": 1288
+      },
+      "params": {
+        "expr": "kd == 4 ? vec2(-h, -h) : vec2(0, 0)"
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_triangle",
+      "defType": "draw/triangle",
+      "position": {
+        "x": 1259,
+        "y": 1026
+      },
+      "params": {},
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_moduleShape",
+      "defType": "transform/group",
+      "position": {
+        "x": 1507,
+        "y": 650
+      },
+      "params": {
+        "slotCount": 4
+      },
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_turnModule",
+      "defType": "transform/rotate",
+      "position": {
+        "x": 1808,
+        "y": 384
+      },
+      "params": {},
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_placeModule",
+      "defType": "transform/translate",
+      "position": {
+        "x": 2001,
+        "y": 335
+      },
+      "params": {},
+      "parentId": "pst_modules",
+      "portValues": {}
+    },
+    {
+      "id": "pst_titleFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 297,
+        "y": 1646
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.10588235294117647,
+          "g": 0.10588235294117647,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "pst_titleParams",
+      "defType": "style/text-params",
+      "position": {
+        "x": 11,
+        "y": 1668
+      },
+      "params": {
+        "bold": true,
+        "align": "left",
+        "baseline": "alphabetic"
+      },
+      "portValues": {
+        "bold": true,
+        "align": "left",
+        "baseline": "alphabetic"
+      }
+    },
+    {
+      "id": "pst_title",
+      "defType": "draw/text",
+      "position": {
+        "x": 592,
+        "y": 1559
+      },
+      "params": {
+        "string": "SYSTEMS",
+        "size": 64,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "SYSTEMS",
+        "size": 64,
+        "align": "left",
+        "pos": {
+          "x": -200,
+          "y": -260
+        }
+      }
+    },
+    {
+      "id": "pst_titleIn",
+      "defType": "math/expression",
+      "position": {
+        "x": 577,
+        "y": 1751
+      },
+      "params": {
+        "expr": "min(1, t / 2.2)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pst_titleAnimate",
+      "defType": "text/animate",
+      "position": {
+        "x": 868,
+        "y": 1642
+      },
+      "params": {
+        "mode": "in",
+        "order": "forward",
+        "ease": "outCubic"
+      },
+      "portValues": {
+        "stagger": 0.7,
+        "order": "forward",
+        "ease": "outCubic",
+        "offset": {
+          "x": 0,
+          "y": 40
+        },
+        "rotate": 0.4,
+        "scale": 0.3,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "pst_subFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1148,
+        "y": 1890
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.10588235294117647,
+          "g": 0.10588235294117647,
+          "b": 0.12156862745098039,
+          "a": 0.75
+        }
+      }
+    },
+    {
+      "id": "pst_subtitle",
+      "defType": "draw/text",
+      "position": {
+        "x": 2507,
+        "y": 1706
+      },
+      "params": {
+        "string": "rules · noise · seed · harmony",
+        "size": 13,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "rules · noise · seed · harmony",
+        "size": 13,
+        "align": "left",
+        "pos": {
+          "x": -198,
+          "y": -232
+        }
+      }
+    },
+    {
+      "id": "pst_footer",
+      "defType": "draw/text",
+      "position": {
+        "x": 2507,
+        "y": 1898
+      },
+      "params": {
+        "string": "FLORET  ·  GENERATIVE POSTER  ·  PRESS VARY",
+        "size": 11,
+        "align": "left"
+      },
+      "portValues": {
+        "string": "FLORET  ·  GENERATIVE POSTER  ·  PRESS VARY",
+        "size": 11,
+        "align": "left",
+        "pos": {
+          "x": -198,
+          "y": 318
+        }
+      }
+    },
+    {
+      "id": "pst_paperFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1154,
+        "y": 88
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.9450980392156862,
+          "g": 0.9254901960784314,
+          "b": 0.8862745098039215,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "pst_paper",
+      "defType": "draw/rect",
+      "position": {
+        "x": 2530,
+        "y": 0
+      },
+      "params": {
+        "anchor": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 0
+        },
+        "w": 500,
+        "h": 700,
+        "anchor": "center"
+      }
+    },
+    {
+      "id": "pst_poster",
+      "defType": "transform/group",
+      "position": {
+        "x": 3912,
+        "y": 1196
+      },
+      "params": {
+        "slotCount": 5
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pst_grain",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 4188,
+        "y": 1259
+      },
+      "params": {
+        "mode": "grain"
+      },
+      "portValues": {
+        "amount": 0.07,
+        "size": 1.3
+      }
+    },
+    {
+      "id": "pst_halftoneFx",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 4188,
+        "y": 1089
+      },
+      "params": {
+        "mode": "halftone"
+      },
+      "portValues": {
+        "size": 6,
+        "angle": 0.4
+      }
+    },
+    {
+      "id": "pst_finish",
+      "defType": "logic/select",
+      "position": {
+        "x": 4472,
+        "y": 1089
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "pst_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 4673,
+        "y": 1089
+      },
+      "params": {
+        "width": 500,
+        "height": 700,
+        "background": {
+          "r": 0.9450980392156862,
+          "g": 0.9254901960784314,
+          "b": 0.8862745098039215,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 500,
+        "height": 700,
+        "background": {
+          "r": 0.9450980392156862,
+          "g": 0.9254901960784314,
+          "b": 0.8862745098039215,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "pst_baseColour",
+      "target": "pst_harmony",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_2",
+      "source": "pst_harmony",
+      "target": "pst_allColours",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_3",
+      "source": "pst_paperInk",
+      "target": "pst_allColours",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_4",
+      "source": "pst_columns",
+      "target": "pst_cols",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_5",
+      "source": "pst_cols",
+      "target": "pst_moduleCount",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_6",
+      "source": "pst_cols",
+      "target": "pst_moduleSize",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_7",
+      "source": "pst_moduleSize",
+      "target": "pst_moduleSpacing",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_8",
+      "source": "pst_moduleCount",
+      "target": "pst_grid",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_9",
+      "source": "pst_cols",
+      "target": "pst_grid",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cols"
+    },
+    {
+      "id": "e_10",
+      "source": "pst_moduleSpacing",
+      "target": "pst_grid",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spacing"
+    },
+    {
+      "id": "e_11",
+      "source": "pst_grid",
+      "target": "pst_modules",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_12",
+      "source": "pst_grid",
+      "target": "pst_modules",
+      "sourceHandle": "out-scales",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_13",
+      "source": "pst_modules",
+      "target": "pst_shapeKind",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_14",
+      "source": "pst_modules",
+      "target": "pst_turn",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_15",
+      "source": "pst_modules",
+      "target": "pst_colourIndex",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_16",
+      "source": "pst_allColours",
+      "target": "pst_colour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_17",
+      "source": "pst_colourIndex",
+      "target": "pst_colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_18",
+      "source": "pst_colour",
+      "target": "pst_moduleFill",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_19",
+      "source": "pst_moduleSize",
+      "target": "pst_half",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_20",
+      "source": "pst_modules",
+      "target": "pst_half",
+      "sourceHandle": "out-k",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_21",
+      "source": "pst_half",
+      "target": "pst_discSize",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_22",
+      "source": "pst_shapeKind",
+      "target": "pst_discSize",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-kd"
+    },
+    {
+      "id": "e_23",
+      "source": "pst_discSize",
+      "target": "pst_disc",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_24",
+      "source": "pst_discSize",
+      "target": "pst_disc",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_25",
+      "source": "pst_moduleFill",
+      "target": "pst_disc",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_26",
+      "source": "pst_quarterAngles",
+      "target": "pst_quarterArc",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_27",
+      "source": "pst_half",
+      "target": "pst_quarterArc",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_28",
+      "source": "pst_shapeKind",
+      "target": "pst_quarterArc",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-kd"
+    },
+    {
+      "id": "e_29",
+      "source": "pst_half",
+      "target": "pst_quarterCorner",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_30",
+      "source": "pst_shapeKind",
+      "target": "pst_quarterCorner",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-kd"
+    },
+    {
+      "id": "e_31",
+      "source": "pst_quarterCorner",
+      "target": "pst_quarterPoints",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-head"
+    },
+    {
+      "id": "e_32",
+      "source": "pst_quarterArc",
+      "target": "pst_quarterPoints",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_33",
+      "source": "pst_quarterPoints",
+      "target": "pst_quarter",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_34",
+      "source": "pst_moduleFill",
+      "target": "pst_quarter",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_35",
+      "source": "pst_half",
+      "target": "pst_halfWidth",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_36",
+      "source": "pst_shapeKind",
+      "target": "pst_halfWidth",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-kd"
+    },
+    {
+      "id": "e_37",
+      "source": "pst_half",
+      "target": "pst_halfHeight",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_38",
+      "source": "pst_shapeKind",
+      "target": "pst_halfHeight",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-kd"
+    },
+    {
+      "id": "e_39",
+      "source": "pst_half",
+      "target": "pst_halfPos",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_40",
+      "source": "pst_halfPos",
+      "target": "pst_halfRect",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_41",
+      "source": "pst_halfWidth",
+      "target": "pst_halfRect",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_42",
+      "source": "pst_halfHeight",
+      "target": "pst_halfRect",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_43",
+      "source": "pst_moduleFill",
+      "target": "pst_halfRect",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_44",
+      "source": "pst_half",
+      "target": "pst_triA",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_45",
+      "source": "pst_shapeKind",
+      "target": "pst_triA",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-kd"
+    },
+    {
+      "id": "e_46",
+      "source": "pst_half",
+      "target": "pst_triB",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_47",
+      "source": "pst_shapeKind",
+      "target": "pst_triB",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-kd"
+    },
+    {
+      "id": "e_48",
+      "source": "pst_half",
+      "target": "pst_triC",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_49",
+      "source": "pst_shapeKind",
+      "target": "pst_triC",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-kd"
+    },
+    {
+      "id": "e_50",
+      "source": "pst_triA",
+      "target": "pst_triangle",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_51",
+      "source": "pst_triB",
+      "target": "pst_triangle",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_52",
+      "source": "pst_triC",
+      "target": "pst_triangle",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_53",
+      "source": "pst_moduleFill",
+      "target": "pst_triangle",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_54",
+      "source": "pst_disc",
+      "target": "pst_moduleShape",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_55",
+      "source": "pst_quarter",
+      "target": "pst_moduleShape",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_56",
+      "source": "pst_halfRect",
+      "target": "pst_moduleShape",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_57",
+      "source": "pst_triangle",
+      "target": "pst_moduleShape",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_58",
+      "source": "pst_turn",
+      "target": "pst_turnModule",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_59",
+      "source": "pst_moduleShape",
+      "target": "pst_turnModule",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_60",
+      "source": "pst_modules",
+      "target": "pst_placeModule",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_61",
+      "source": "pst_turnModule",
+      "target": "pst_placeModule",
+      "sourceHandle": "out-rotated",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_62",
+      "source": "pst_placeModule",
+      "target": "pst_modules",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_63",
+      "source": "pst_titleParams",
+      "target": "pst_titleFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_64",
+      "source": "pst_titleFill",
+      "target": "pst_title",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_65",
+      "source": "pst_title",
+      "target": "pst_titleAnimate",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-text"
+    },
+    {
+      "id": "e_66",
+      "source": "pst_titleIn",
+      "target": "pst_titleAnimate",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-progress"
+    },
+    {
+      "id": "e_67",
+      "source": "pst_subFill",
+      "target": "pst_subtitle",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_68",
+      "source": "pst_subFill",
+      "target": "pst_footer",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_69",
+      "source": "pst_paperFill",
+      "target": "pst_paper",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_70",
+      "source": "pst_paper",
+      "target": "pst_poster",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_71",
+      "source": "pst_modules",
+      "target": "pst_poster",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_72",
+      "source": "pst_titleAnimate",
+      "target": "pst_poster",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_73",
+      "source": "pst_subtitle",
+      "target": "pst_poster",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_74",
+      "source": "pst_footer",
+      "target": "pst_poster",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_75",
+      "source": "pst_poster",
+      "target": "pst_grain",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_76",
+      "source": "pst_poster",
+      "target": "pst_halftoneFx",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_77",
+      "source": "pst_halftone",
+      "target": "pst_finish",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_78",
+      "source": "pst_halftoneFx",
+      "target": "pst_finish",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_79",
+      "source": "pst_grain",
+      "target": "pst_finish",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_80",
+      "source": "pst_finish",
+      "target": "pst_r",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-layers"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bauhaus",
+      "seed": 0,
+      "values": {
+        "pst_harmony": {
+          "params": {
+            "mode": "tetradic"
+          }
+        },
+        "pst_baseColour": {
+          "params": {
+            "hex": "#e63946"
+          }
+        },
+        "pst_columns": {
+          "params": {
+            "value": 4
+          }
+        }
+      }
+    },
+    {
+      "name": "Swiss",
+      "seed": 17,
+      "values": {
+        "pst_harmony": {
+          "params": {
+            "mode": "complementary"
+          }
+        },
+        "pst_baseColour": {
+          "params": {
+            "hex": "#1d4ed8"
+          }
+        },
+        "pst_columns": {
+          "params": {
+            "value": 5
+          }
+        }
+      }
+    },
+    {
+      "name": "Night",
+      "seed": 42,
+      "values": {
+        "pst_harmony": {
+          "params": {
+            "mode": "analogous"
+          }
+        },
+        "pst_baseColour": {
+          "params": {
+            "hex": "#7c3aed"
+          }
+        },
+        "pst_columns": {
+          "params": {
+            "value": 6
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1561 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Orbital Sandbox",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "orb_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -364
+      },
+      "params": {
+        "text": "Orbital sandbox\n\nBodies orbit a pair of stars that circle each other, so no orbit quite repeats: a three-body system you can play with. Every frame each body's velocity takes the pull of both stars (G·m / r², softened up close) and its position takes the new velocity — positions and velocities live in Read* / Write* state. Bodies that fall into a star or fly off are dropped.\n\n• Drag on the canvas and let go to launch a body: it flies from where you pressed, away from the cursor, faster the longer the pull.\n• Slider into `warp`: time warp (0.25× – 3×).\n• Slider into `sep`: the stars' separation (small = one star, steady Kepler orbits; wide = chaos).\n• Toggle: orbit trails (Echo).",
+        "width": 560,
+        "height": 300
+      },
+      "portValues": {
+        "text": "Orbital sandbox\n\nBodies orbit a pair of stars that circle each other, so no orbit quite repeats: a three-body system you can play with. Every frame each body's velocity takes the pull of both stars (G·m / r², softened up close) and its position takes the new velocity — positions and velocities live in Read* / Write* state. Bodies that fall into a star or fly off are dropped.\n\n• Drag on the canvas and let go to launch a body: it flies from where you pressed, away from the cursor, faster the longer the pull.\n• Slider into `warp`: time warp (0.25× – 3×).\n• Slider into `sep`: the stars' separation (small = one star, steady Kepler orbits; wide = chaos).\n• Toggle: orbit trails (Echo).",
+        "width": 560,
+        "height": 300
+      }
+    },
+    {
+      "id": "orb_warp",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 771
+      },
+      "params": {
+        "value": 1,
+        "min": 0.25,
+        "max": 3
+      },
+      "portValues": {
+        "value": 1,
+        "min": 0.25,
+        "max": 3
+      }
+    },
+    {
+      "id": "orb_sep",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 390
+      },
+      "params": {
+        "value": 70,
+        "min": 20,
+        "max": 200
+      },
+      "portValues": {
+        "value": 70,
+        "min": 20,
+        "max": 200
+      }
+    },
+    {
+      "id": "orb_trails",
+      "defType": "io/toggle",
+      "position": {
+        "x": 1795,
+        "y": 0
+      },
+      "params": {
+        "value": true
+      },
+      "portValues": {
+        "value": true
+      }
+    },
+    {
+      "id": "orb_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 37,
+        "y": 1074
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "orb_mpos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 355,
+        "y": 906
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "orb_dt",
+      "defType": "time/delta",
+      "position": {
+        "x": 41,
+        "y": 516
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "orb_h",
+      "defType": "math/expression",
+      "position": {
+        "x": 313,
+        "y": 447
+      },
+      "params": {
+        "expr": "min(dt, 0.05) * warp"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_ids",
+      "defType": "spread/range",
+      "position": {
+        "x": 15,
+        "y": 667
+      },
+      "params": {
+        "count": 7
+      },
+      "portValues": {
+        "count": 7
+      }
+    },
+    {
+      "id": "orb_p0",
+      "defType": "math/expression",
+      "position": {
+        "x": 313,
+        "y": 764
+      },
+      "params": {
+        "expr": "vec2(cos(i * 2.4), sin(i * 2.4)) * (95 + i * 38)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_v0",
+      "defType": "math/expression",
+      "position": {
+        "x": 313,
+        "y": 611
+      },
+      "params": {
+        "expr": "vec2(-sin(i * 2.4), cos(i * 2.4)) * sqrt(2000000 / (95 + i * 38))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_rpos",
+      "defType": "state/read-spread",
+      "position": {
+        "x": 629,
+        "y": 740
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "orb_rvel",
+      "defType": "state/read-spread",
+      "position": {
+        "x": 629,
+        "y": 614
+      },
+      "params": {
+        "slot": 2
+      },
+      "portValues": {
+        "slot": 2
+      }
+    },
+    {
+      "id": "orb_rphase",
+      "defType": "state/read",
+      "position": {
+        "x": 12,
+        "y": 264
+      },
+      "params": {
+        "slot": 3,
+        "init": 0
+      },
+      "portValues": {
+        "slot": 3,
+        "init": 0
+      }
+    },
+    {
+      "id": "orb_star1",
+      "defType": "math/expression",
+      "position": {
+        "x": 313,
+        "y": 218
+      },
+      "params": {
+        "expr": "vec2(cos(ph), sin(ph)) * d / 2"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_star2",
+      "defType": "math/expression",
+      "position": {
+        "x": 618,
+        "y": 254
+      },
+      "params": {
+        "expr": "-s"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_phase",
+      "defType": "math/expression",
+      "position": {
+        "x": 618,
+        "y": 396
+      },
+      "params": {
+        "expr": "ph + sqrt(2000000 / pow(d, 3)) * h"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_wphase",
+      "defType": "state/write",
+      "position": {
+        "x": 969,
+        "y": 303
+      },
+      "params": {
+        "slot": 3
+      },
+      "portValues": {
+        "slot": 3
+      }
+    },
+    {
+      "id": "orb_gravity",
+      "defType": "math/expression",
+      "position": {
+        "x": 932,
+        "y": 429
+      },
+      "params": {
+        "expr": "v + ((a - p) / pow(dot(a - p, a - p) + 225, 1.5) + (b - p) / pow(dot(b - p, b - p) + 225, 1.5)) * 1000000 * h"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_move",
+      "defType": "math/expression",
+      "position": {
+        "x": 1225,
+        "y": 537
+      },
+      "params": {
+        "expr": "p + v * h"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_alive",
+      "defType": "math/expression",
+      "position": {
+        "x": 1510,
+        "y": 414
+      },
+      "params": {
+        "expr": "distance(p, a) > 12 && distance(p, b) > 12 && length(p) < 1400"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_keepP",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 1798,
+        "y": 557
+      },
+      "params": {
+        "op": "keep-where"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_keepV",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 1798,
+        "y": 409
+      },
+      "params": {
+        "op": "keep-where"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_press",
+      "defType": "io/edge",
+      "position": {
+        "x": 351,
+        "y": 1174
+      },
+      "params": {
+        "mode": "rising",
+        "threshold": 0.5
+      },
+      "portValues": {
+        "mode": "rising",
+        "threshold": 0.5
+      }
+    },
+    {
+      "id": "orb_release",
+      "defType": "io/edge",
+      "position": {
+        "x": 348,
+        "y": 1448
+      },
+      "params": {
+        "mode": "falling",
+        "threshold": 0.5
+      },
+      "portValues": {
+        "mode": "falling",
+        "threshold": 0.5
+      }
+    },
+    {
+      "id": "orb_ranchor",
+      "defType": "state/read",
+      "position": {
+        "x": 325,
+        "y": 1322
+      },
+      "params": {
+        "slot": 4,
+        "init": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "portValues": {
+        "slot": 4,
+        "init": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": "orb_anchor",
+      "defType": "math/expression",
+      "position": {
+        "x": 618,
+        "y": 1113
+      },
+      "params": {
+        "expr": "r ? m : a"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_wanchor",
+      "defType": "state/write",
+      "position": {
+        "x": 969,
+        "y": 1129
+      },
+      "params": {
+        "slot": 4
+      },
+      "portValues": {
+        "slot": 4
+      }
+    },
+    {
+      "id": "orb_launchVel",
+      "defType": "math/expression",
+      "position": {
+        "x": 932,
+        "y": 965
+      },
+      "params": {
+        "expr": "(a - m) * 2.2"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_newCount",
+      "defType": "math/expression",
+      "position": {
+        "x": 618,
+        "y": 1320
+      },
+      "params": {
+        "expr": "f ? 1 : 0"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_takeP",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 935,
+        "y": 1255
+      },
+      "params": {
+        "op": "take"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_takeV",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 1228,
+        "y": 1102
+      },
+      "params": {
+        "op": "take"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_addP",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2468,
+        "y": 857
+      },
+      "params": {
+        "op": "concat"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_addV",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2468,
+        "y": 679
+      },
+      "params": {
+        "op": "concat"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_count",
+      "defType": "spread/count",
+      "position": {
+        "x": 3126,
+        "y": 903
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "orb_extra",
+      "defType": "math/expression",
+      "position": {
+        "x": 3398,
+        "y": 782
+      },
+      "params": {
+        "expr": "max(0, n - 60)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_capP",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 3679,
+        "y": 808
+      },
+      "params": {
+        "op": "skip"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_capV",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 3679,
+        "y": 660
+      },
+      "params": {
+        "op": "skip"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_wpos",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 3984,
+        "y": 744
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "orb_wvel",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 3984,
+        "y": 618
+      },
+      "params": {
+        "slot": 2
+      },
+      "portValues": {
+        "slot": 2
+      }
+    },
+    {
+      "id": "orb_each",
+      "defType": "region/foreach",
+      "position": {
+        "x": 2110,
+        "y": 172
+      },
+      "params": {
+        "width": 877,
+        "height": 355,
+        "label": "ForEach body"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "v",
+          "name": "v",
+          "type": "vec2",
+          "direction": "input",
+          "y": 273
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 120
+        }
+      ],
+      "width": 877,
+      "height": 355
+    },
+    {
+      "id": "orb_hue",
+      "defType": "math/expression",
+      "position": {
+        "x": 128,
+        "y": 187
+      },
+      "params": {
+        "expr": "hsl(0.62 - min(length(v) / 600, 0.55), 0.85, 0.62)"
+      },
+      "parentId": "orb_each",
+      "portValues": {}
+    },
+    {
+      "id": "orb_size",
+      "defType": "math/expression",
+      "position": {
+        "x": 393,
+        "y": 95
+      },
+      "params": {
+        "expr": "5 + 4 * fract(sin(index * 12.9898) * 43758.55)"
+      },
+      "parentId": "orb_each",
+      "portValues": {}
+    },
+    {
+      "id": "orb_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 434,
+        "y": 237
+      },
+      "params": {},
+      "parentId": "orb_each",
+      "portValues": {}
+    },
+    {
+      "id": "orb_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 666,
+        "y": 83
+      },
+      "params": {},
+      "parentId": "orb_each",
+      "portValues": {}
+    },
+    {
+      "id": "orb_decay",
+      "defType": "math/expression",
+      "position": {
+        "x": 2465,
+        "y": 8
+      },
+      "params": {
+        "expr": "on ? 0.965 : 0"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_trails_fx",
+      "defType": "gpu/echo",
+      "position": {
+        "x": 3110,
+        "y": 158
+      },
+      "params": {
+        "mode": "trails"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_starfill",
+      "defType": "style/fill",
+      "position": {
+        "x": 330,
+        "y": 51
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.9450980392156862,
+          "b": 0.788235294117647,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "orb_starA",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 652,
+        "y": 62
+      },
+      "params": {},
+      "portValues": {
+        "w": 18,
+        "h": 18
+      }
+    },
+    {
+      "id": "orb_starB",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 966,
+        "y": 79
+      },
+      "params": {},
+      "portValues": {
+        "w": 18,
+        "h": 18
+      }
+    },
+    {
+      "id": "orb_stars",
+      "defType": "transform/group",
+      "position": {
+        "x": 1225,
+        "y": 43
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_starglow",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 3950,
+        "y": 158
+      },
+      "params": {
+        "mode": "glow",
+        "blend": "add"
+      },
+      "portValues": {
+        "radius": 26,
+        "color": {
+          "r": 1.0,
+          "g": 0.7019607843137254,
+          "b": 0.2784313725490196,
+          "a": 1.0
+        },
+        "intensity": 2.2
+      }
+    },
+    {
+      "id": "orb_slingColor",
+      "defType": "math/expression",
+      "position": {
+        "x": 313,
+        "y": 1032
+      },
+      "params": {
+        "expr": "rgb(1, 1, 1, p ? 0.8 : 0)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_slingStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 655,
+        "y": 943
+      },
+      "params": {},
+      "portValues": {
+        "width": 1.5
+      }
+    },
+    {
+      "id": "orb_sling",
+      "defType": "draw/line",
+      "position": {
+        "x": 974,
+        "y": 817
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "orb_bodies",
+      "defType": "spread/count",
+      "position": {
+        "x": 2480,
+        "y": 575
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "orb_fmtBodies",
+      "defType": "string/format-number",
+      "position": {
+        "x": 3119,
+        "y": 387
+      },
+      "params": {
+        "mode": "number"
+      },
+      "portValues": {
+        "decimals": 0,
+        "prefix": "",
+        "suffix": " bodies"
+      }
+    },
+    {
+      "id": "orb_fmtWarp",
+      "defType": "string/format-number",
+      "position": {
+        "x": 3119,
+        "y": 645
+      },
+      "params": {
+        "mode": "number"
+      },
+      "portValues": {
+        "decimals": 2,
+        "prefix": "time ×",
+        "suffix": ""
+      }
+    },
+    {
+      "id": "orb_hudParts",
+      "defType": "spread/merge",
+      "position": {
+        "x": 3398,
+        "y": 473
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "orb_hudText",
+      "defType": "string/concat",
+      "position": {
+        "x": 3701,
+        "y": 408
+      },
+      "params": {
+        "separator": "   ·   "
+      },
+      "portValues": {
+        "separator": "   ·   "
+      }
+    },
+    {
+      "id": "orb_hudFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 3693,
+        "y": 534
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.6039215686274509,
+          "g": 0.6549019607843137,
+          "b": 0.7803921568627451,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "orb_hud",
+      "defType": "draw/text",
+      "position": {
+        "x": 3982,
+        "y": 426
+      },
+      "params": {
+        "size": 13,
+        "align": "left"
+      },
+      "portValues": {
+        "size": 13,
+        "align": "left",
+        "pos": {
+          "x": -300,
+          "y": -296
+        }
+      }
+    },
+    {
+      "id": "orb_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 4265,
+        "y": 410
+      },
+      "params": {
+        "slotCount": 5
+      },
+      "portValues": {}
+    },
+    {
+      "id": "orb_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 4529,
+        "y": 410
+      },
+      "params": {
+        "width": 640,
+        "height": 640,
+        "background": {
+          "r": 0.027450980392156862,
+          "g": 0.03529411764705882,
+          "b": 0.07058823529411765,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 640,
+        "height": 640,
+        "background": {
+          "r": 0.027450980392156862,
+          "g": 0.03529411764705882,
+          "b": 0.07058823529411765,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "orb_mouse",
+      "target": "orb_mpos",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_2",
+      "source": "orb_mouse",
+      "target": "orb_mpos",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_3",
+      "source": "orb_dt",
+      "target": "orb_h",
+      "sourceHandle": "out-dt",
+      "targetHandle": "in-dt"
+    },
+    {
+      "id": "e_4",
+      "source": "orb_warp",
+      "target": "orb_h",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-warp"
+    },
+    {
+      "id": "e_5",
+      "source": "orb_ids",
+      "target": "orb_p0",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_6",
+      "source": "orb_ids",
+      "target": "orb_v0",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_7",
+      "source": "orb_p0",
+      "target": "orb_rpos",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_8",
+      "source": "orb_v0",
+      "target": "orb_rvel",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_9",
+      "source": "orb_rphase",
+      "target": "orb_star1",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-ph"
+    },
+    {
+      "id": "e_10",
+      "source": "orb_sep",
+      "target": "orb_star1",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_11",
+      "source": "orb_star1",
+      "target": "orb_star2",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_12",
+      "source": "orb_rphase",
+      "target": "orb_phase",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-ph"
+    },
+    {
+      "id": "e_13",
+      "source": "orb_sep",
+      "target": "orb_phase",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_14",
+      "source": "orb_h",
+      "target": "orb_phase",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_15",
+      "source": "orb_phase",
+      "target": "orb_wphase",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_16",
+      "source": "orb_rvel",
+      "target": "orb_gravity",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_17",
+      "source": "orb_rpos",
+      "target": "orb_gravity",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_18",
+      "source": "orb_star1",
+      "target": "orb_gravity",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_19",
+      "source": "orb_star2",
+      "target": "orb_gravity",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_20",
+      "source": "orb_h",
+      "target": "orb_gravity",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_21",
+      "source": "orb_rpos",
+      "target": "orb_move",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_22",
+      "source": "orb_gravity",
+      "target": "orb_move",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_23",
+      "source": "orb_h",
+      "target": "orb_move",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_24",
+      "source": "orb_move",
+      "target": "orb_alive",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_25",
+      "source": "orb_star1",
+      "target": "orb_alive",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_26",
+      "source": "orb_star2",
+      "target": "orb_alive",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_27",
+      "source": "orb_move",
+      "target": "orb_keepP",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_28",
+      "source": "orb_alive",
+      "target": "orb_keepP",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_29",
+      "source": "orb_gravity",
+      "target": "orb_keepV",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_30",
+      "source": "orb_alive",
+      "target": "orb_keepV",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_31",
+      "source": "orb_mouse",
+      "target": "orb_press",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_32",
+      "source": "orb_mouse",
+      "target": "orb_release",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_33",
+      "source": "orb_press",
+      "target": "orb_anchor",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_34",
+      "source": "orb_mpos",
+      "target": "orb_anchor",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_35",
+      "source": "orb_ranchor",
+      "target": "orb_anchor",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_36",
+      "source": "orb_anchor",
+      "target": "orb_wanchor",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_37",
+      "source": "orb_anchor",
+      "target": "orb_launchVel",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_38",
+      "source": "orb_mpos",
+      "target": "orb_launchVel",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_39",
+      "source": "orb_release",
+      "target": "orb_newCount",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_40",
+      "source": "orb_anchor",
+      "target": "orb_takeP",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_41",
+      "source": "orb_newCount",
+      "target": "orb_takeP",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_42",
+      "source": "orb_launchVel",
+      "target": "orb_takeV",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_43",
+      "source": "orb_newCount",
+      "target": "orb_takeV",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_44",
+      "source": "orb_keepP",
+      "target": "orb_addP",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_45",
+      "source": "orb_takeP",
+      "target": "orb_addP",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_46",
+      "source": "orb_keepV",
+      "target": "orb_addV",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_47",
+      "source": "orb_takeV",
+      "target": "orb_addV",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_48",
+      "source": "orb_addP",
+      "target": "orb_count",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_49",
+      "source": "orb_count",
+      "target": "orb_extra",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_50",
+      "source": "orb_addP",
+      "target": "orb_capP",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_51",
+      "source": "orb_extra",
+      "target": "orb_capP",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_52",
+      "source": "orb_addV",
+      "target": "orb_capV",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_53",
+      "source": "orb_extra",
+      "target": "orb_capV",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_54",
+      "source": "orb_capP",
+      "target": "orb_wpos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_55",
+      "source": "orb_capV",
+      "target": "orb_wvel",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_56",
+      "source": "orb_keepP",
+      "target": "orb_each",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_57",
+      "source": "orb_keepV",
+      "target": "orb_each",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_58",
+      "source": "orb_each",
+      "target": "orb_hue",
+      "sourceHandle": "out-v",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_59",
+      "source": "orb_hue",
+      "target": "orb_fill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_60",
+      "source": "orb_each",
+      "target": "orb_dot",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_61",
+      "source": "orb_size",
+      "target": "orb_dot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_62",
+      "source": "orb_size",
+      "target": "orb_dot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_63",
+      "source": "orb_fill",
+      "target": "orb_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_64",
+      "source": "orb_dot",
+      "target": "orb_each",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_65",
+      "source": "orb_trails",
+      "target": "orb_decay",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-on"
+    },
+    {
+      "id": "e_66",
+      "source": "orb_each",
+      "target": "orb_trails_fx",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_67",
+      "source": "orb_decay",
+      "target": "orb_trails_fx",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-decay"
+    },
+    {
+      "id": "e_68",
+      "source": "orb_star1",
+      "target": "orb_starA",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_69",
+      "source": "orb_star2",
+      "target": "orb_starB",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_70",
+      "source": "orb_starfill",
+      "target": "orb_starA",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_71",
+      "source": "orb_starfill",
+      "target": "orb_starB",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_72",
+      "source": "orb_starA",
+      "target": "orb_stars",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_73",
+      "source": "orb_starB",
+      "target": "orb_stars",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_74",
+      "source": "orb_stars",
+      "target": "orb_starglow",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_75",
+      "source": "orb_mouse",
+      "target": "orb_slingColor",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_76",
+      "source": "orb_slingColor",
+      "target": "orb_slingStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_77",
+      "source": "orb_anchor",
+      "target": "orb_sling",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_78",
+      "source": "orb_mpos",
+      "target": "orb_sling",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_79",
+      "source": "orb_slingStroke",
+      "target": "orb_sling",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_80",
+      "source": "orb_keepP",
+      "target": "orb_bodies",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_81",
+      "source": "orb_bodies",
+      "target": "orb_fmtBodies",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_82",
+      "source": "orb_warp",
+      "target": "orb_fmtWarp",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_83",
+      "source": "orb_fmtBodies",
+      "target": "orb_hudParts",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_84",
+      "source": "orb_fmtWarp",
+      "target": "orb_hudParts",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_85",
+      "source": "orb_hudParts",
+      "target": "orb_hudText",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-parts"
+    },
+    {
+      "id": "e_86",
+      "source": "orb_hudText",
+      "target": "orb_hud",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_87",
+      "source": "orb_hudFill",
+      "target": "orb_hud",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_88",
+      "source": "orb_trails_fx",
+      "target": "orb_scene",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_89",
+      "source": "orb_each",
+      "target": "orb_scene",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_90",
+      "source": "orb_starglow",
+      "target": "orb_scene",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_91",
+      "source": "orb_sling",
+      "target": "orb_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_92",
+      "source": "orb_hud",
+      "target": "orb_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_93",
+      "source": "orb_scene",
+      "target": "orb_r",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

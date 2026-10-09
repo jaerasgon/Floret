@@ -1281,8 +1281,8 @@ struct Trail<'a> {
 /// A capsule per trail segment of every live particle, newest → oldest,
 /// stopping at the first missing (NaN) sample. Segment k (1-based) fades
 /// to alpha × (1 − (k − ½)/segments) and tapers to width ×
-/// (1 − (k − ½)/segments × (1 − tail_width)), as the TS canvas / SVG
-/// renderers did (TS's GL path draws trails flat).
+/// (1 − (k − ½)/segments × (1 − tail_width)), as the TS canvas renderer
+/// did (TS's GL path draws trails flat).
 fn particle_trails(
     fb: &mut FrameBuilder,
     buf: &ParticleBuffer,

@@ -191,8 +191,8 @@ fixture generator until phase 8 is green, then gets archived.
 ## 7. Decisions
 
 - **No vector output** (decided 2026-10-01). Everything renders to GPU
-  textures: no SVG export, no `io/save-svg` node, no plotter/print-vector
-  path. Export is raster (PNG). SVG *files* can still be loaded, rasterised
+  textures. Export is raster (PNG, and video). Old patches' `io/save-svg`
+  nodes are dropped on load, with a notice. SVG *files* can still be loaded, rasterised
   to a texture. The scene stays retained-mode (it's how the renderer batches),
   but nothing walks it to emit vectors.
 - Share links removed; body tracking fully ported; download page deferred

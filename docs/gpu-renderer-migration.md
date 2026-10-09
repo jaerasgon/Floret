@@ -21,8 +21,6 @@ the shader vocabulary (feedback buffers, post-FX) that Canvas2D cannot express.
 
 **What stays:**
 - `SceneNode` IR (`scene.ts`) — the declarative scene description.
-- SVG/vector export (`scene-svg.ts`) — a separate IR visitor; keeps plotter /
-  print-vector output and reproducible editions.
 - Determinism at the IR level (seeded PRNG).
 
 **Single solution, not a mix:** GL is the *only* rasterizer. Where a 2D canvas
@@ -58,10 +56,8 @@ main thread and produce pixels the graph (or the bus) consumes.
 ## 3. Target architecture
 
 ```
-SceneNode IR ──┬─► scene-to-batches (walk + bake transforms) ─► FrameBuilder
-               │        (commands: sdf | fill | tex | pushLayer/popLayer)
-               │
-               └─► scene-svg.ts  (unchanged vector export)
+SceneNode IR ───► scene-to-batches (walk + bake transforms) ─► FrameBuilder
+                        (commands: sdf | fill | tex | pushLayer/popLayer)
 
 FrameBuilder ─► GlRenderer ─► WebGL2
    pipelines:  A. SDF instances     rect / ellipse(exact) / capsule

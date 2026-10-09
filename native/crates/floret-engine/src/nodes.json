@@ -1,5 +1,5 @@
 {
- "count": 357,
+ "count": 356,
  "nodes": [
   {
    "type": "collider/circle",
@@ -3839,46 +3839,6 @@
    "compact": true
   },
   {
-   "type": "io/save-svg",
-   "category": "IO",
-   "group": "Draw",
-   "label": "SaveSVG",
-   "description": "Export wired layers as an SVG file when `save` rises.",
-   "inputs": [
-    {
-     "name": "layers",
-     "type": "layer",
-     "kind": "spread"
-    },
-    {
-     "name": "save",
-     "type": "boolean",
-     "kind": "single",
-     "default": false
-    },
-    {
-     "name": "background",
-     "type": "color",
-     "kind": "single"
-    }
-   ],
-   "outputs": [
-    {
-     "name": "layers",
-     "type": "layer",
-     "kind": "spread"
-    }
-   ],
-   "eval": "raw",
-   "dynamicInputs": false,
-   "defaultParams": {
-    "width": 500,
-    "height": 500,
-    "filename": "drawing"
-   },
-   "paramOptions": null
-  },
-  {
    "type": "io/select",
    "category": "IO",
    "group": "Source",
@@ -3954,7 +3914,7 @@
    "category": "IO",
    "group": "Source",
    "label": "SVG",
-   "description": "Load an SVG as vector layers. Pick a file, give a URL, or paste markup.",
+   "description": "Load an SVG and draw it as an image layer, rasterised crisply at the size it's drawn. Pick a file, give a URL, or paste markup.",
    "inputs": [
     {
      "name": "position",

@@ -35,8 +35,14 @@ pub fn data_dir() -> PathBuf {
 /// Read and migrate a patch file (versions, then the web app's legacy
 /// fix-ups), like opening one in the web app.
 pub fn read(path: &Path) -> Result<PatchFile, String> {
+    read_noting(path).map(|(patch, _)| patch)
+}
+
+/// [`read`], plus a line for each change the load made that the user
+/// should hear about (a node type Floret no longer has, dropped).
+pub fn read_noting(path: &Path) -> Result<(PatchFile, Vec<String>), String> {
     let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
-    floret_engine::load_patch(&text).map_err(|e| e.to_string())
+    floret_engine::load_patch_noting(&text).map_err(|e| e.to_string())
 }
 
 /// The file's JSON, as the web app writes it (`serializePatch` +

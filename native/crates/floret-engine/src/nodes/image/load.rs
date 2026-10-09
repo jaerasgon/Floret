@@ -6,10 +6,9 @@
 //! (`crate::host`); `data:` URLs, `file://` URLs and local paths are read
 //! directly.
 //!
-//! `io/svg` differs from TS by design: TS flattened the SVG into vector
-//! polygons; Floret has no vector output, so the SVG is rasterised (resvg)
-//! and drawn as an image, re-rasterised at a power-of-two multiple of its
-//! scale so it stays crisp. A wired style still replaces the SVG's own
+//! `io/svg` rasterises the SVG (resvg) into a texture and draws it as an
+//! image (TS flattened it into polygons), re-rasterised at a power-of-two
+//! multiple of its scale so it stays crisp. A wired style still replaces the SVG's own
 //! paint: it becomes an `!important` stylesheet applied while rasterising.
 
 use super::{param_str, Key, Memo};

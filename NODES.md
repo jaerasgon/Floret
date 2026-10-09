@@ -37,7 +37,7 @@ old category names and type ids.
 | Group | What's in it |
 |---|---|
 | Source | Values, controls and files: Number, String, Slider, Toggle, XY Pad, Select, Stepper, Bang, Button, File, Image URL, SVG, Video File / Frame, CSV. |
-| Draw | Shapes and images as layers (Rect, Ellipse, Line, Path, Polygon, Image …), the Renderer, Save SVG. |
+| Draw | Shapes and images as layers (Rect, Ellipse, Line, Path, Polygon, Image …) and the Renderer. |
 | Text | Text, Glyphs, Text on Path, Text Outline, Font, Text Params, Font Variations; string Concat / Length / Split / Word Indices. |
 | Color & Style | Color, Split Color, Gradient, Lerp (colour), Palette, Set Alpha, Color Picker; Fill, Stroke, Gradient Fill and the other styles. |
 | Shape Ops | Translate, Rotate, Scale, Shear, Apply Matrix; Group, Blend, Mask, Cache; Path Ops, Shape Boolean. |

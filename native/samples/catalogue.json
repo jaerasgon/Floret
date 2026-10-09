@@ -613,7 +613,7 @@
       "id": "shader-reaction-diffusion",
       "name": "Shader · Reaction-Diffusion",
       "category": "Shaders",
-      "description": "Gray-Scott reaction-diffusion on a multi-buffer shader: Buffer A holds the chemical field (reads its own previous frame), the Image pass colour-maps it. The canonical multi-pass GPU case — give it a few seconds to bloom.",
+      "description": "Gray-Scott reaction-diffusion on a multi-buffer shader: Buffers A–D each advance the chemical field one step (A reads D’s previous frame, so four steps a frame), the Image pass colour-maps it. The canonical multi-pass GPU case — give it a few seconds to bloom.",
       "file": "shader-reaction-diffusion.flora"
     },
     {

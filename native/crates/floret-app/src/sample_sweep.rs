@@ -404,7 +404,7 @@ fn save_png(path: &std::path::Path, w: u32, h: u32, px: &[u8]) {
 fn ink(px: &[u8], w: u32, bg: [f64; 4]) -> (Option<[u32; 4]>, f64) {
     let bg = bg.map(|c| (c.clamp(0.0, 1.0) * 255.0).round() as i32);
     let (mut bb, mut n) = (None::<[u32; 4]>, 0usize);
-    for (i, p) in px.chunks_exact(4).enumerate() {
+    for (i, p) in px.as_chunks::<4>().0.iter().enumerate() {
         let d = (0..3)
             .map(|c| (i32::from(p[c]) - bg[c]).abs())
             .max()

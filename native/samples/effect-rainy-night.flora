@@ -1,0 +1,594 @@
+{
+  "kind": "floret.patch",
+  "version": 3,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Rainy Night",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "rn_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -314
+      },
+      "params": {
+        "text": "Lens, motion and barrel\n\nCity lights: scattered dots through Effect · blur, kind lens — a disc kernel, so each light opens into a bokeh disc, `highlights` brightening them like a real lens. Rain: small dots falling (two copies, a screen apart, so it loops) through blur kind motion along the fall angle, which streaks them. Barrel bulges the whole frame like a wide lens.",
+        "width": 460,
+        "height": 250
+      },
+      "portValues": {
+        "text": "Lens, motion and barrel\n\nCity lights: scattered dots through Effect · blur, kind lens — a disc kernel, so each light opens into a bokeh disc, `highlights` brightening them like a real lens. Rain: small dots falling (two copies, a screen apart, so it loops) through blur kind motion along the fall angle, which streaks them. Barrel bulges the whole frame like a wide lens.",
+        "width": 460,
+        "height": 250
+      }
+    },
+    {
+      "id": "rn_lights",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 0,
+        "y": 202
+      },
+      "params": {
+        "mode": "random"
+      },
+      "portValues": {
+        "size": {
+          "x": 640,
+          "y": 440
+        },
+        "center": {
+          "x": 0,
+          "y": 30
+        },
+        "count": 60,
+        "seed": 7
+      }
+    },
+    {
+      "id": "rn_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 15,
+        "y": 0
+      },
+      "params": {
+        "stopCount": 4,
+        "c0": "#ffb347",
+        "c1": "#ff6f61",
+        "c2": "#ffe9a8",
+        "c3": "#7fd1ff"
+      },
+      "portValues": {
+        "stopCount": 4
+      }
+    },
+    {
+      "id": "rn_dots",
+      "defType": "region/foreach",
+      "position": {
+        "x": 307,
+        "y": 66
+      },
+      "params": {
+        "width": 772,
+        "height": 241,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "pos",
+          "name": "pos",
+          "type": "vec2",
+          "direction": "input",
+          "y": 121
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 76
+        }
+      ],
+      "width": 772,
+      "height": 241
+    },
+    {
+      "id": "rn_dots_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 564,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "rn_dots",
+      "portValues": {
+        "w": 16,
+        "h": 16
+      }
+    },
+    {
+      "id": "rn_dots_grad",
+      "defType": "color/gradient",
+      "position": {
+        "x": 137,
+        "y": 107
+      },
+      "params": {
+        "space": "oklab"
+      },
+      "parentId": "rn_dots"
+    },
+    {
+      "id": "rn_dots_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 383,
+        "y": 113
+      },
+      "params": {},
+      "parentId": "rn_dots"
+    },
+    {
+      "id": "rn_bokeh",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1952,
+        "y": 257
+      },
+      "params": {
+        "mode": "blur",
+        "kind": "lens"
+      },
+      "portValues": {
+        "radius": 16,
+        "highlights": 1.0
+      }
+    },
+    {
+      "id": "rn_drops",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 0,
+        "y": 634
+      },
+      "params": {
+        "mode": "random"
+      },
+      "portValues": {
+        "size": {
+          "x": 700,
+          "y": 600
+        },
+        "count": 120,
+        "seed": 3
+      }
+    },
+    {
+      "id": "rn_drop_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 34,
+        "y": 836
+      },
+      "params": {
+        "color": {
+          "r": 0.8627450980392157,
+          "g": 0.9254901960784314,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.8627450980392157,
+          "g": 0.9254901960784314,
+          "b": 1.0,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "rn_rain",
+      "defType": "region/foreach",
+      "position": {
+        "x": 525,
+        "y": 679
+      },
+      "params": {
+        "width": 336,
+        "height": 214,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "pos",
+          "name": "pos",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 76
+        }
+      ],
+      "width": 336,
+      "height": 214
+    },
+    {
+      "id": "rn_rain_dot",
+      "defType": "draw/rect",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "rn_rain",
+      "portValues": {
+        "w": 2,
+        "h": 18
+      }
+    },
+    {
+      "id": "rn_fall",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 636,
+        "y": 355
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 0.8,
+        "min": 0,
+        "max": 600
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 0.8,
+        "min": 0,
+        "max": 600
+      }
+    },
+    {
+      "id": "rn_fall2",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 636,
+        "y": 941
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 0.8,
+        "min": -600,
+        "max": 0
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 0.8,
+        "min": -600,
+        "max": 0
+      }
+    },
+    {
+      "id": "rn_fall_xy",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1236,
+        "y": 439
+      },
+      "params": {}
+    },
+    {
+      "id": "rn_fall2_xy",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1236,
+        "y": 795
+      },
+      "params": {}
+    },
+    {
+      "id": "rn_down",
+      "defType": "transform/translate",
+      "position": {
+        "x": 1477,
+        "y": 543
+      },
+      "params": {}
+    },
+    {
+      "id": "rn_down2",
+      "defType": "transform/translate",
+      "position": {
+        "x": 1477,
+        "y": 668
+      },
+      "params": {}
+    },
+    {
+      "id": "rn_rain_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 1675,
+        "y": 553
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "rn_streak",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1952,
+        "y": 447
+      },
+      "params": {
+        "mode": "blur",
+        "kind": "motion"
+      },
+      "portValues": {
+        "amount": 24,
+        "angle": 1.75
+      }
+    },
+    {
+      "id": "rn_frame",
+      "defType": "transform/group",
+      "position": {
+        "x": 2228,
+        "y": 342
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "rn_lens",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 2492,
+        "y": 322
+      },
+      "params": {
+        "mode": "barrel"
+      },
+      "portValues": {
+        "amount": 0.18,
+        "zoom": 1.08
+      }
+    },
+    {
+      "id": "rn_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2755,
+        "y": 322
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.043137254901960784,
+          "g": 0.058823529411764705,
+          "b": 0.11764705882352941,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.043137254901960784,
+          "g": 0.058823529411764705,
+          "b": 0.11764705882352941,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "rn_rain_all",
+      "defType": "transform/group",
+      "position": {
+        "x": 1194,
+        "y": 657
+      },
+      "params": {
+        "slotCount": 1
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_rn_lights_rn_dots_pos",
+      "source": "rn_lights",
+      "target": "rn_dots",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_rn_dots_rn_dots_dot_pos",
+      "source": "rn_dots",
+      "target": "rn_dots_dot",
+      "sourceHandle": "out-pos",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_rn_dots_dot_rn_dots_layer",
+      "source": "rn_dots_dot",
+      "target": "rn_dots",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_rn_pal_rn_dots_grad_colors",
+      "source": "rn_pal",
+      "target": "rn_dots_grad",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_rn_dots_rn_dots_grad_t",
+      "source": "rn_dots",
+      "target": "rn_dots_grad",
+      "sourceHandle": "out-__loopvar_fraction",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_rn_dots_grad_rn_dots_fill_color",
+      "source": "rn_dots_grad",
+      "target": "rn_dots_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_rn_dots_fill_rn_dots_dot_style",
+      "source": "rn_dots_fill",
+      "target": "rn_dots_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_rn_drops_rn_rain_pos",
+      "source": "rn_drops",
+      "target": "rn_rain",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_rn_rain_rn_rain_dot_pos",
+      "source": "rn_rain",
+      "target": "rn_rain_dot",
+      "sourceHandle": "out-pos",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_rn_rain_dot_rn_rain_layer",
+      "source": "rn_rain_dot",
+      "target": "rn_rain",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_rn_drop_fill_rn_rain_dot_style",
+      "source": "rn_drop_fill",
+      "target": "rn_rain_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_rn_dots_rn_bokeh_input",
+      "source": "rn_dots",
+      "target": "rn_bokeh",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_rn_fall_rn_fall_xy_y",
+      "source": "rn_fall",
+      "target": "rn_fall_xy",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_rn_fall2_rn_fall2_xy_y",
+      "source": "rn_fall2",
+      "target": "rn_fall2_xy",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_rn_fall_xy_rn_down_by",
+      "source": "rn_fall_xy",
+      "target": "rn_down",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_rn_fall2_xy_rn_down2_by",
+      "source": "rn_fall2_xy",
+      "target": "rn_down2",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_rn_rain_rn_rain_all_s1",
+      "source": "rn_rain",
+      "target": "rn_rain_all",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_rn_rain_all_rn_down_layer",
+      "source": "rn_rain_all",
+      "target": "rn_down",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_rn_rain_all_rn_down2_layer",
+      "source": "rn_rain_all",
+      "target": "rn_down2",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_rn_down_rn_rain_group_s1",
+      "source": "rn_down",
+      "target": "rn_rain_group",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_rn_down2_rn_rain_group_s2",
+      "source": "rn_down2",
+      "target": "rn_rain_group",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_rn_rain_group_rn_streak_input",
+      "source": "rn_rain_group",
+      "target": "rn_streak",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_rn_bokeh_rn_frame_s1",
+      "source": "rn_bokeh",
+      "target": "rn_frame",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_rn_streak_rn_frame_s2",
+      "source": "rn_streak",
+      "target": "rn_frame",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_rn_frame_rn_lens_input",
+      "source": "rn_frame",
+      "target": "rn_lens",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_rn_lens_rn_renderer_layers",
+      "source": "rn_lens",
+      "target": "rn_renderer",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

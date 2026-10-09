@@ -995,3 +995,84 @@ fn neon_bloom_sample_draws() {
     let halo = px_at(&a, w, h, 30, 0);
     assert!(halo.iter().any(|c| *c > 40), "halo {halo:?}");
 }
+
+#[test]
+fn metaballs_sample_draws() {
+    let Some(mut g) = gpu() else { return };
+    let (px, w, h) = draw_sample(&mut g, "effect-metaballs", 30);
+    // The core blob is solid coral, the corners the dark background.
+    let core = px_at(&px, w, h, 0, 0);
+    assert!(core[0] > 200 && core[1] < 150, "core {core:?}");
+    let corner = px_at(&px, w, h, -290, -290);
+    assert!(corner.iter().all(|c| *c < 40), "corner {corner:?}");
+    // Thresholded: no half-transparent fuzz far from the blobs, but a glow
+    // just outside them.
+    let lit = px.chunks(4).filter(|p| p[0] > 200).count();
+    assert!(lit > 2000, "lit {lit}");
+}
+
+#[test]
+fn colour_grade_sample_draws() {
+    let Some(mut g) = gpu() else { return };
+    let (px, w, h) = draw_sample(&mut g, "effect-colour-grade", 30);
+    // No green left from the backdrop: the graded sky shows instead.
+    let sky = px_at(&px, w, h, -280, -280);
+    assert!(sky[2] > sky[1] && sky[2] > 40, "sky {sky:?}");
+    let greenish = px
+        .chunks(4)
+        .filter(|p| p[1] > 150 && p[0] < 100 && p[2] < 100)
+        .count();
+    assert!(greenish < 50, "green left: {greenish}");
+    // The core is still there (purple, lifted by the grade).
+    let core = px_at(&px, w, h, 0, 0);
+    assert!(core[2] > core[1], "core {core:?}");
+}
+
+#[test]
+fn rainy_night_sample_draws() {
+    let Some(mut g) = gpu() else { return };
+    let (px, ..) = draw_sample(&mut g, "effect-rainy-night", 30);
+    // Soft lights: many mid-bright warm pixels, few hard dots.
+    let warm = px.chunks(4).filter(|p| p[0] > 60 && p[0] > p[2]).count();
+    assert!(warm > 5000, "warm {warm}");
+    assert!(mean(&px) > 15.0, "mean {}", mean(&px));
+}
+
+#[test]
+fn warp_speed_sample_draws() {
+    let Some(mut g) = gpu() else { return };
+    let (px, ..) = draw_sample(&mut g, "effect-warp-speed", 30);
+    let lit = px.chunks(4).filter(|p| p[0] > 20).count();
+    // Streaked stars cover far more pixels than 260 4-px dots would.
+    assert!(lit > 260 * 16, "lit {lit}");
+}
+
+#[test]
+fn noise_patterns_sample_draws() {
+    let Some(mut g) = gpu() else { return };
+    let (px, w, h) = draw_sample(&mut g, "noise-patterns", 10);
+    // Three panels, each banded with dark contour lines.
+    for x in [-210, 0, 210] {
+        let row: Vec<[u8; 3]> = (-90..90).map(|y| px_at(&px, w, h, x, y)).collect();
+        let dark = row.iter().filter(|p| p[0] < 60).count();
+        assert!(dark > 0, "panel {x}: no contour lines");
+        let distinct: std::collections::BTreeSet<u8> = row.iter().map(|p| p[0] / 16).collect();
+        assert!(distinct.len() >= 3, "panel {x}: {distinct:?}");
+    }
+    // The gaps between panels are the background.
+    let gap = px_at(&px, w, h, 105, 0);
+    assert!(gap[0] > 220, "gap {gap:?}");
+}
+
+#[test]
+fn path_ops_sample_draws() {
+    let Some(mut g) = gpu() else { return };
+    let (px, w, h) = draw_sample(&mut g, "path-ops-shapes", 30);
+    // Every motif draws something near its centre.
+    for (x, y) in [(-190, -80), (190, -95), (-190, 95), (0, 95)] {
+        let c = px_at(&px, w, h, x, y);
+        assert!(c.iter().any(|v| *v > 100), "motif at ({x},{y}): {c:?}");
+    }
+    let lit = px.chunks(4).filter(|p| p[0] > 100 || p[1] > 100).count();
+    assert!(lit > 15_000, "lit {lit}");
+}

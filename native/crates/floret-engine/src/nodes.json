@@ -13307,6 +13307,107 @@
    }
   },
   {
+   "type": "geometry/contours",
+   "category": "Geometry",
+   "label": "Contours",
+   "description": "Isolines of a field as closed outlines (marching squares): topographic lines, metaballs, image outlines. Modes: `field` (a spread of `values`, `cols` a row, over `center` / `size` — e.g. noise on Grid positions), `points` (metaballs: Σ radius² / distance² of the `points`, sampled every `cell` units), `image` (brightness × alpha, 0..1, centred on `center` at `size`, 0 = pixel size). Draws `levels` contours at `threshold`, `threshold + step`, …; each level fills as one polygon with its holes (outside the field counts as low, so every contour closes). `levels` out: each contour's level.",
+   "inputs": [
+    {
+     "name": "values",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "cols",
+     "type": "number",
+     "kind": "single",
+     "default": 16,
+     "integer": true
+    },
+    {
+     "name": "center",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "size",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 400,
+      "y": 400
+     }
+    },
+    {
+     "name": "threshold",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "levels",
+     "type": "number",
+     "kind": "single",
+     "default": 1,
+     "integer": true
+    },
+    {
+     "name": "step",
+     "type": "number",
+     "kind": "single",
+     "default": 0.1
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "layers",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "counts",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "levels",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "field"
+   },
+   "paramOptions": {
+    "mode": [
+     "field",
+     "points",
+     "image"
+    ]
+   }
+  },
+  {
    "type": "particles/simulation",
    "category": "Particles",
    "label": "Simulation",

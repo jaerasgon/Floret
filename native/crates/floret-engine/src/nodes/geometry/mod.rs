@@ -18,6 +18,7 @@
 mod boolean;
 mod cells;
 mod connect;
+mod contours;
 mod lsystem;
 mod measure;
 pub(crate) use measure::fade_paint;
@@ -57,6 +58,8 @@ pub fn register(r: &mut Registrar) {
     r.node("geometry/connect", connect::connect);
     r.dynamic("geometry/connect", connect::inputs);
     r.node("geometry/morph", morph::morph);
+    r.node("geometry/contours", contours::contours);
+    r.dynamic("geometry/contours", contours::inputs);
 }
 
 /// Most points / vertices a geometry node emits (it warns when it stops).

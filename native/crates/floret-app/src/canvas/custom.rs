@@ -56,6 +56,17 @@ pub enum WidgetKind {
     Clear,
     /// A comment's resize corner.
     Grip,
+    /// The header's bypass button: whether the node is bypassed.
+    Bypass(bool),
+    /// A text pin's `…` file button: the pin.
+    Browse(String),
+    /// The Effect node's curve editor (drag a point; double-click resets).
+    Curve(widgets::Curves),
+    /// A channel tab over the curve editor (0 = RGB).
+    CurveChannel {
+        channel: u8,
+        on: bool,
+    },
 }
 
 impl WidgetKind {
@@ -67,7 +78,11 @@ impl WidgetKind {
     pub fn drags(&self) -> bool {
         matches!(
             self,
-            WidgetKind::Slider(_) | WidgetKind::Pad(_) | WidgetKind::Hold | WidgetKind::Grip
+            WidgetKind::Slider(_)
+                | WidgetKind::Pad(_)
+                | WidgetKind::Hold
+                | WidgetKind::Grip
+                | WidgetKind::Curve(_)
         )
     }
 }
@@ -131,6 +146,7 @@ pub fn body_h(c: Custom, n: &PatchNode) -> f32 {
             }
         }
         Custom::Expression => expression_box_h(n) + 10.0,
+        Custom::Curves => CURVES_BODY,
         Custom::Svg => match n.params.get("mode").and_then(Json::as_str) {
             Some("url") => 26.0,
             Some("markup") => 66.0,
@@ -384,7 +400,165 @@ pub fn layout(
             font_body(n, HEADER_H + 5.0, z, b);
             row_box(cx, n, spec, wired, b);
         }
+        Custom::Curves => {
+            curves_body(cx, n, spec, wired, b);
+            row_box(cx, n, spec, wired, b);
+        }
         Custom::Probe => {}
+    }
+}
+
+/// The curve editor's body: channel tabs over the graph.
+pub const CURVES_BODY: f32 = 116.0;
+const CURVE_TAB_H: f32 = 15.0;
+const CURVE_GRAPH_H: f32 = 84.0;
+
+/// `gpu/effect` in curves mode: RGB / R / G / B tabs, then the curve
+/// graph over the five colour points (their pins stay below as rows).
+fn curves_body(
+    cx: &Ctx,
+    n: &PatchNode,
+    spec: &NodeSpec,
+    wired: &HashSet<(&str, &str)>,
+    b: &mut NodeBox,
+) {
+    let z = cx.zoom;
+    let channel = cx.decor.curve_channels.get(&n.id).copied().unwrap_or(0);
+    let inputs = cx.cat.resolved_inputs(spec, &n.params);
+    let mut c = widgets::Curves {
+        channel,
+        points: [[0.0; 3]; 5],
+        wired: [false; 5],
+    };
+    for (i, name) in widgets::CURVE_PORTS.iter().enumerate() {
+        let port = inputs.iter().find(|p| p.name == *name);
+        let v = values::current(n, spec, &EditKey::Port((*name).to_owned()), port);
+        let [r, g, bl, _] = values::as_rgba(&v);
+        c.points[i] = [r, g, bl];
+        c.wired[i] = wired.contains(&(n.id.as_str(), *name));
+    }
+    let w = b.rect.width() / z - 20.0;
+    let top = HEADER_H + 6.0;
+    let mut x = 10.0;
+    for ch in 0..widgets::CURVE_CHANNELS.len() {
+        let tw = if ch == 0 { 32.0 } else { 20.0 };
+        b.widgets.push(Widget {
+            rect: at(b, z, x, top, tw, CURVE_TAB_H),
+            node: n.id.clone(),
+            kind: WidgetKind::CurveChannel {
+                channel: ch as u8,
+                on: ch as u8 == channel,
+            },
+        });
+        x += tw + 2.0;
+    }
+    b.widgets.push(Widget {
+        rect: at(b, z, 10.0, top + CURVE_TAB_H + 5.0, w, CURVE_GRAPH_H),
+        node: n.id.clone(),
+        kind: WidgetKind::Curve(c),
+    });
+}
+
+/// A curve point's position in the graph `r` (screen space).
+pub fn curve_point(r: Rect, i: usize, level: f64) -> Pos2 {
+    pos2(
+        r.left() + r.width() * widgets::Curves::x(i) as f32,
+        r.bottom() - r.height() * level as f32,
+    )
+}
+
+/// The draggable point nearest `p` in the graph `r`, if one is close
+/// (wired points don't move).
+pub fn curve_hit(c: &widgets::Curves, r: Rect, p: Pos2, z: f32) -> Option<usize> {
+    (0..5)
+        .filter(|&i| !c.wired[i])
+        .map(|i| (i, curve_point(r, i, c.level(i)).distance(p)))
+        .filter(|(_, d)| *d <= 12.0 * z.max(0.5))
+        .min_by(|a, b| a.1.total_cmp(&b.1))
+        .map(|(i, _)| i)
+}
+
+/// Channel ink: red, green, blue (deeper on the light theme).
+fn channel_color(c: usize) -> Color32 {
+    match c {
+        0 => *theme::CURVE_RED,
+        1 => *theme::CURVE_GREEN,
+        _ => *theme::CURVE_BLUE,
+    }
+}
+
+/// The curve graph: quarter grid, the identity line, each channel's
+/// curve (the selected tab's bold), and the five points.
+fn draw_curves(p: &Painter, r: Rect, c: &widgets::Curves, st: &BodyState, z: f32) {
+    p.rect(
+        r,
+        3.0 * z,
+        BG_0,
+        Stroke::new(1.0, BORDER),
+        StrokeKind::Inside,
+    );
+    let grid = Stroke::new(1.0, BORDER.gamma_multiply(0.7));
+    for k in 1..4 {
+        let t = k as f32 / 4.0;
+        let x = r.left() + r.width() * t;
+        let y = r.top() + r.height() * t;
+        p.line_segment([pos2(x, r.top()), pos2(x, r.bottom())], grid);
+        p.line_segment([pos2(r.left(), y), pos2(r.right(), y)], grid);
+    }
+    p.line_segment(
+        [r.left_bottom(), r.right_top()],
+        Stroke::new(1.0, theme::FG_3.gamma_multiply(0.6)),
+    );
+    let clip = p.with_clip_rect(r.expand(7.0 * z.max(0.6)));
+    let path = |ys: [f64; 5]| -> Vec<Pos2> {
+        (0..=48)
+            .map(|k| {
+                let x = f64::from(k) / 48.0;
+                pos2(
+                    r.left() + r.width() * x as f32,
+                    r.bottom() - r.height() * widgets::curve_at(ys, x) as f32,
+                )
+            })
+            .collect()
+    };
+    let selected = c.channels();
+    for ch in 0..3 {
+        let ys = std::array::from_fn(|i| c.points[i][ch]);
+        let on = c.channel == 0 || selected.contains(&ch);
+        let (w, a) = if c.channel == 0 {
+            (1.5, 0.85)
+        } else if on {
+            (2.0, 1.0)
+        } else {
+            (1.0, 0.3)
+        };
+        clip.line(
+            path(ys),
+            Stroke::new(w * z.max(0.6), channel_color(ch).gamma_multiply(a)),
+        );
+    }
+    if c.channel == 0 {
+        // The RGB tab's handles sit on the mean of the three.
+        let ys = std::array::from_fn(|i| c.level(i));
+        clip.line(
+            path(ys),
+            Stroke::new(1.0 * z.max(0.6), FG_1.gamma_multiply(0.5)),
+        );
+    }
+    let hot = st.hover.and_then(|h| curve_hit(c, r, h, z));
+    for i in 0..5 {
+        let at = curve_point(r, i, c.level(i));
+        let ink = if c.channel == 0 {
+            *FG_0
+        } else {
+            channel_color(usize::from(c.channel - 1))
+        };
+        let rad = if hot == Some(i) { 5.0 } else { 4.0 } * z.max(0.6);
+        if c.wired[i] {
+            clip.circle(at, rad, BG_0, Stroke::new(1.5, ink.gamma_multiply(0.6)));
+        } else {
+            clip.circle(at, rad, ink, Stroke::new(1.5 * z.max(0.6), BG_0));
+        }
     }
 }
 
@@ -507,7 +681,7 @@ fn slots(cx: &Ctx, n: &PatchNode, s: Slots, b: &mut NodeBox) {
         .layout_no_wrap(b.label.clone(), font, Color32::WHITE)
         .size()
         .x;
-    let x = 22.0 + label_w + 8.0;
+    let x = super::draw::TITLE_X + label_w + 8.0;
     let y = (HEADER_H - 16.0) / 2.0;
     b.notes.push(Note {
         rect: at(b, z, x, y, 46.0, 16.0),
@@ -973,7 +1147,64 @@ pub fn draw_body(p: &Painter, b: &NodeBox, st: &BodyState, z: f32) {
                     );
                 }
             }
-            WidgetKind::Grip => {}
+            WidgetKind::Browse(_) => {
+                p.rect(
+                    r,
+                    3.0 * z,
+                    if hot { *BG_3 } else { *BG_1 },
+                    Stroke::new(1.0, if hot { *theme::FG_3 } else { *BORDER }),
+                    StrokeKind::Inside,
+                );
+                if text {
+                    p.text(
+                        r.center(),
+                        Align2::CENTER_CENTER,
+                        "…",
+                        FontId::proportional(11.0 * z),
+                        if hot { *FG_0 } else { *FG_1 },
+                    );
+                }
+            }
+            WidgetKind::Curve(c) => draw_curves(p, r, c, st, z),
+            WidgetKind::CurveChannel { channel, on } => {
+                let (fill, ink) = if *on {
+                    (GOLD.gamma_multiply(0.22), *FG_0)
+                } else if hot {
+                    (*BG_3, *FG_0)
+                } else {
+                    (Color32::TRANSPARENT, *FG_1)
+                };
+                p.rect(
+                    r,
+                    3.0 * z,
+                    fill,
+                    Stroke::new(
+                        1.0,
+                        if *on {
+                            GOLD.gamma_multiply(0.6)
+                        } else {
+                            *BORDER
+                        },
+                    ),
+                    StrokeKind::Inside,
+                );
+                if text {
+                    let ch = usize::from(*channel);
+                    let ink = if ch == 0 || !*on {
+                        ink
+                    } else {
+                        channel_color(ch - 1)
+                    };
+                    p.text(
+                        r.center(),
+                        Align2::CENTER_CENTER,
+                        widgets::CURVE_CHANNELS[ch],
+                        theme::medium(9.5 * z),
+                        ink,
+                    );
+                }
+            }
+            WidgetKind::Grip | WidgetKind::Bypass(_) => {}
         }
     }
     if st.drop {
@@ -1198,19 +1429,36 @@ pub fn draw_comment(p: &Painter, b: &NodeBox, st: &BodyState, z: f32) {
 
 /// A dashed rectangle outline (egui has none built in).
 fn dashed_rect(p: &Painter, r: Rect, stroke: Stroke, z: f32) {
-    let pts = [
-        r.left_top(),
-        r.right_top(),
-        r.right_bottom(),
-        r.left_bottom(),
-        r.left_top(),
-    ];
+    let pts = rounded_outline(r, f32::from(radius(z).nw));
     p.extend(eframe::egui::Shape::dashed_line(
         &pts,
         stroke,
         (4.0 * z).max(2.0),
         (3.0 * z).max(1.5),
     ));
+}
+
+/// A closed outline of `r` with corners rounded by `radius` (a quarter
+/// circle each), clockwise from the top edge.
+fn rounded_outline(r: Rect, radius: f32) -> Vec<Pos2> {
+    use std::f32::consts::FRAC_PI_2;
+    let rad = radius.min(r.width() / 2.0).min(r.height() / 2.0).max(0.0);
+    let corners = [
+        (pos2(r.right() - rad, r.top() + rad), -FRAC_PI_2),
+        (pos2(r.right() - rad, r.bottom() - rad), 0.0),
+        (pos2(r.left() + rad, r.bottom() - rad), FRAC_PI_2),
+        (pos2(r.left() + rad, r.top() + rad), 2.0 * FRAC_PI_2),
+    ];
+    let steps = 6;
+    let mut pts = vec![pos2(r.left() + rad, r.top())];
+    for (c, start) in corners {
+        for k in 0..=steps {
+            let a = start + FRAC_PI_2 * k as f32 / steps as f32;
+            pts.push(c + vec2(a.cos(), a.sin()) * rad);
+        }
+    }
+    pts.push(pos2(r.left() + rad, r.top()));
+    pts
 }
 
 /// Card corner radius for nodes, probes and comments, clamped for egui.

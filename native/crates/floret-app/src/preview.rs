@@ -816,13 +816,19 @@ fn controls(
             .layout(Layout::top_down(Align::Center)),
     );
     stack.spacing_mut().item_spacing.y = 2.0;
+    // Phosphor icons, except "1:1": no glyph says "actual pixels" as
+    // plainly as the ratio itself.
     let items: [(&str, &str); 5] = [
-        ("+", "Zoom in"),
-        ("−", "Zoom out"),
-        ("⛶", "Fit in view"),
+        (icons::PLUS, "Zoom in"),
+        (icons::MINUS, "Zoom out"),
+        (icons::FRAME_CORNERS, "Fit in view"),
         ("1:1", "Actual pixels"),
         (
-            if cam.locked { "🔒" } else { "🔓" },
+            if cam.locked {
+                icons::LOCK_SIMPLE
+            } else {
+                icons::LOCK_SIMPLE_OPEN
+            },
             if cam.locked {
                 "Unlock view (allow pinch / pan)"
             } else {
@@ -832,10 +838,16 @@ fn controls(
     ];
     for (i, (label, tip)) in items.iter().enumerate() {
         let on = (i == 4 && cam.locked) || (i == 3 && (texel - 1.0).abs() < 0.01);
+        let color = if on { theme::GOLD_TEXT } else { theme::FG_1 };
+        let text = if i == 3 {
+            RichText::new(*label).font(theme::medium(10.5)).color(color)
+        } else {
+            theme::icon(label, 13.0, color)
+        };
         let resp = stack
             .add_sized(
                 vec2(w, 20.0),
-                egui::Button::new(RichText::new(*label).small())
+                egui::Button::new(text)
                     .selected(on)
                     .wrap_mode(egui::TextWrapMode::Extend)
                     .fill(theme::BG_1.gamma_multiply(0.92)),

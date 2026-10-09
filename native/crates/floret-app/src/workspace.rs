@@ -505,7 +505,7 @@ impl TabViewer for Viewer<'_, '_> {
                     .selected
                     .as_deref()
                     .and_then(|id| sh.patch.nodes.iter().find(|n| n.id == id))
-                    .map(|n| n.def_type.clone());
+                    .map(crate::node_help::key_for);
                 self.help.ui(ui, cat, ty.as_deref());
             }
             Tab::Library => match self.library.ui(ui, sh.samples, sh.sample, sh.patch, sh.rs) {
@@ -546,7 +546,11 @@ fn inspector(ui: &mut egui::Ui, sh: &mut Shell) {
         return;
     };
     let spec = Catalogue::builtin().get(&n.def_type);
-    ui.label(RichText::new(spec.map_or(n.def_type.as_str(), |s| s.label.as_str())).strong());
+    ui.label(
+        RichText::new(spec.map_or(n.def_type.as_str(), |s| s.label.as_str()))
+            .strong()
+            .font(theme::medium(14.0)),
+    );
     ui.label(RichText::new(&n.def_type).color(theme::FG_2).monospace());
     if let Some(d) = spec.and_then(|s| s.description.as_ref()) {
         ui.label(RichText::new(d).color(theme::FG_1));

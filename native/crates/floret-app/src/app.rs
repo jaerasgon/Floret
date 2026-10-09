@@ -794,7 +794,7 @@ impl App {
             ui.label(
                 RichText::new(format!("Save changes to “{}”?", self.doc.name))
                     .strong()
-                    .size(15.0),
+                    .font(theme::medium(15.0)),
             );
             ui.add_space(4.0);
             ui.label(
@@ -848,7 +848,11 @@ impl App {
         let mut later = false;
         egui::Modal::new(egui::Id::new("floret-recovery")).show(ctx, |ui| {
             ui.set_width(480.0);
-            ui.label(RichText::new("Restore unsaved work?").strong().size(15.0));
+            ui.label(
+                RichText::new("Restore unsaved work?")
+                    .strong()
+                    .font(theme::medium(15.0)),
+            );
             ui.add_space(4.0);
             ui.label(
                 RichText::new(
@@ -1180,21 +1184,11 @@ fn shortcut_hint(c: &Command) -> String {
 
 /// Centred hint on an empty canvas.
 fn empty_hint(ui: &mut egui::Ui) {
-    let rect = ui.max_rect();
-    let p = ui.painter();
-    p.text(
-        rect.center() - egui::vec2(0.0, 12.0),
-        egui::Align2::CENTER_CENTER,
+    theme::paint_empty_state(
+        ui,
+        ui.max_rect(),
         "Empty patch",
-        egui::FontId::proportional(16.0),
-        theme::FG_2.get(),
-    );
-    p.text(
-        rect.center() + egui::vec2(0.0, 12.0),
-        egui::Align2::CENTER_CENTER,
         "Double-click or press Tab to add a node · ? for shortcuts · Library for samples",
-        egui::FontId::proportional(12.0),
-        theme::FG_2.get(),
     );
 }
 

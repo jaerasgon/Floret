@@ -39,6 +39,8 @@ pub struct Export {
     /// A recording (video / GIF / PNG sequence) picked from the menu, for
     /// the app to open its export window with.
     record: Option<Format>,
+    /// Where the button sat last frame (its hover tint).
+    rect: Option<egui::Rect>,
 }
 
 impl Default for Export {
@@ -48,6 +50,7 @@ impl Default for Export {
             status: None,
             done: None,
             record: None,
+            rect: None,
         }
     }
 }
@@ -100,10 +103,16 @@ impl Export {
             } else {
                 egui::Button::new(text)
             };
-            b.fill(theme::GOLD).stroke(egui::Stroke::NONE)
+            let hovered = self.rect.is_some_and(|r| ui.rect_contains_pointer(r));
+            let fill = if hovered {
+                theme::GOLD_FILL_HOVER
+            } else {
+                theme::GOLD_FILL
+            };
+            b.fill(fill).stroke(egui::Stroke::NONE)
         };
         ui.add_enabled_ui(rs.is_some(), |ui| {
-            egui::containers::menu::MenuButton::from_button(button)
+            let resp = egui::containers::menu::MenuButton::from_button(button)
                 .ui(ui, |ui| {
                     for s in SCALES {
                         let (w, h) = (frame.size.0 * s, frame.size.1 * s);
@@ -135,6 +144,7 @@ impl Export {
                 })
                 .0
                 .on_hover_text(hover);
+            self.rect = Some(resp.rect);
         });
         if let (Some(scale), Some(rs)) = (pick, rs) {
             self.scale = scale;

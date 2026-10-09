@@ -99,14 +99,25 @@ impl<'a> Entry<'a> {
             .or(self.spec.description.as_deref())
     }
 
-    /// The names a query's tokens are matched against: label, type id,
-    /// category and group. An op entry is named by its op and the node it
-    /// supersedes (label, type id, category), not by its family's, so
-    /// "math" lists the Math node rather than all 28 of its ops.
+    /// The names a query's tokens are matched against: label (also with
+    /// its spaces closed up, the old CamelCase spelling: "Sine Spread" is
+    /// still "SineSpread"), type id, category and group. An op entry is
+    /// named by its op and the node it supersedes (label, type id,
+    /// category), not by its family's, so "math" lists the Math node
+    /// rather than all 28 of its ops. Case is kept: CamelCase marks word
+    /// starts (see [`word_match`]).
     fn names(&self, cat: &Catalogue) -> String {
         let s = self.spec;
-        let hay = match self.op {
-            None => format!("{} {} {} {}", s.label, s.ty, s.category, s.group),
+        let closed = |l: &str| l.replace(' ', "");
+        match self.op {
+            None => format!(
+                "{} {} {} {} {}",
+                s.label,
+                closed(&s.label),
+                s.ty,
+                s.category,
+                s.group
+            ),
             Some((_, o)) => {
                 let legacy = self.legacy(cat);
                 format!(
@@ -119,17 +130,45 @@ impl<'a> Entry<'a> {
                     legacy.map_or("", |l| l.category.as_str()),
                 )
             }
-        };
-        hay.to_lowercase()
+        }
     }
 
     /// Names plus (for a node type) its description.
     fn haystack(&self, cat: &Catalogue) -> String {
         match (self.op, &self.spec.description) {
-            (None, Some(d)) => format!("{} {}", self.names(cat), d.to_lowercase()),
+            (None, Some(d)) => format!("{} {d}", self.names(cat)),
             _ => self.names(cat),
         }
     }
+}
+
+/// Whether lowercase `token` starts at a word start in `hay`: the start of
+/// the text, after anything not a letter or digit ("math/mul", "to-string"),
+/// at a CamelCase hump ("SineSpread", "CAGrid"), or where digits begin. So
+/// "mul" finds Multiply but not accumulator, "spread" finds SineSpread.
+pub fn word_match(hay: &str, token: &str) -> bool {
+    if token.is_empty() {
+        return true;
+    }
+    let chars: Vec<char> = hay.chars().collect();
+    let lower: Vec<char> = chars
+        .iter()
+        .map(|c| c.to_lowercase().next().unwrap_or(*c))
+        .collect();
+    let want: Vec<char> = token.chars().collect();
+    (0..chars.len()).any(|i| {
+        let start = i == 0 || {
+            let (prev, cur) = (chars[i - 1], chars[i]);
+            let next = chars.get(i + 1).copied();
+            !prev.is_alphanumeric()
+                || (prev.is_lowercase() && cur.is_uppercase())
+                || (prev.is_uppercase()
+                    && cur.is_uppercase()
+                    && next.is_some_and(char::is_lowercase))
+                || (!prev.is_ascii_digit() && cur.is_ascii_digit())
+        };
+        start && lower[i..].starts_with(&want)
+    })
 }
 
 /// The entry a key names (hidden node types too: favourites and drags of
@@ -240,7 +279,7 @@ pub fn matching<'a>(cat: &'a Catalogue, query: &str, fit: &Fit) -> Vec<Entry<'a>
         .chain(ops)
         .filter(|e| {
             let hay = e.haystack(cat);
-            tokens.iter().all(|t| hay.contains(t))
+            tokens.iter().all(|t| word_match(&hay, t))
         })
         .filter(|e| fits(cat, e, fit))
         .collect()
@@ -251,12 +290,11 @@ pub fn search<'a>(cat: &'a Catalogue, query: &str, fit: &Fit) -> Vec<Entry<'a>> 
     let mut matches = matching(cat, query, fit);
     // An exact label first ("sin" → Sin before SineSpread), then label
     // prefixes, then entries whose names (not just their description)
-    // match ("mul" → Multiply before AccRead's "accumulator"); nodes
-    // before ops; then by label.
+    // match; nodes before ops; then by label.
     let tokens: Vec<&str> = q.split_whitespace().collect();
     let by_name = |e: &Entry| {
         let names = e.names(cat);
-        !tokens.iter().all(|t| names.contains(t))
+        !tokens.iter().all(|t| word_match(&names, t))
     };
     matches.sort_by_cached_key(|e| {
         let label = e.label().to_lowercase();
@@ -329,7 +367,7 @@ mod tests {
         assert!(r.iter().any(|e| e.spec.ty == "spread/ring"));
         for e in &r {
             let h = e.haystack(cat);
-            assert!(h.contains("spread") && h.contains("ring"));
+            assert!(word_match(&h, "spread") && word_match(&h, "ring"));
         }
         // Label-prefix matches first, then nodes alphabetically by label.
         let r = search(cat, "ring", &Fit::Any);
@@ -342,7 +380,7 @@ mod tests {
             .iter()
             .all(|e| !e.label().to_lowercase().starts_with("ring")));
         // … name matches before description-only ones, each by label.
-        let named = |e: &Entry| e.names(cat).contains("ring");
+        let named = |e: &Entry| word_match(&e.names(cat), "ring");
         let tail = &r[first_other..];
         let split = tail.iter().position(|e| !named(e)).unwrap_or(tail.len());
         assert!(tail[split..].iter().all(|e| !named(e)));
@@ -356,13 +394,10 @@ mod tests {
             sorted.sort();
             assert_eq!(labels, sorted);
         }
-        // "mul" ranks Multiply above "accumulator" description hits.
+        // "mul" matches at word starts: Multiply, never "accumulator".
         let r = search(cat, "mul", &Fit::Any);
-        let acc = r
-            .iter()
-            .position(|e| e.spec.ty.contains("accumulator"))
-            .unwrap();
-        assert!(r[..acc].iter().any(|e| e.key() == "math/math#multiply"));
+        assert_eq!(r[0].key(), "math/math#multiply");
+        assert!(r.iter().all(|e| !e.spec.ty.contains("accumulator")));
         assert!(search(cat, "", &Fit::Any).len() <= MAX_RESULTS);
         // An empty query lists node types only.
         assert!(search(cat, "", &Fit::Any).iter().all(|e| e.op.is_none()));
@@ -396,6 +431,31 @@ mod tests {
         assert!(nodes >= 5, "{nodes}");
         // Hidden single-op nodes never show up themselves.
         assert!(search(cat, "mul", &Fit::Any).iter().all(|e| !e.spec.hidden));
+    }
+
+    #[test]
+    fn tokens_match_at_word_starts() {
+        assert!(word_match("Multiply", "mul"));
+        assert!(!word_match("region/accumulator-read", "mul"));
+        assert!(word_match("region/accumulator-read", "read"));
+        assert!(word_match("math/mul", "math/mul"));
+        assert!(word_match("convert/to-string", "to-string"));
+        assert!(word_match("SineSpread", "spread"));
+        assert!(word_match("CAGridSeedSpread", "grid"));
+        assert!(word_match("vec2", "2"));
+        assert!(!word_match("Ring", "ing"));
+        assert!(word_match("anything", ""));
+    }
+
+    #[test]
+    fn renamed_labels_are_still_found_by_their_old_names() {
+        let cat = Catalogue::builtin();
+        let has = |q: &str, key: &str| matching(cat, q, &Fit::Any).iter().any(|e| e.key() == key);
+        assert!(has("sinespread", "spread/sine"));
+        assert!(has("sine spread", "spread/sine"));
+        assert!(has("SineSpread", "spread/sine"));
+        assert!(has("render", "particles/render-as"));
+        assert!(has("particle shapes", "particles/render-as"));
     }
 
     #[test]

@@ -127,6 +127,18 @@ pub fn left_items(cat: &Catalogue, spec: &NodeSpec, n: &PatchNode) -> Vec<LeftIt
 
 /// The inline editor for an input (`editorMode`): none when wired or the
 /// type has no editor.
+/// Text pins that name a file: a `…` button beside the row picks one
+/// (the pin stores its path). The file dialog's filter: name, extensions.
+pub fn browse_filter(
+    def_type: &str,
+    port: &str,
+) -> Option<(&'static str, &'static [&'static str])> {
+    match (def_type, port) {
+        ("gpu/effect", "lut") => Some(("Cube LUT", &["cube"])),
+        _ => None,
+    }
+}
+
 pub fn input_editor(spec: &NodeSpec, port: &PortSpec, wired: bool) -> Option<(EditKey, FieldKind)> {
     if wired {
         return None;
@@ -434,7 +446,10 @@ fn tooltip_value(v: &Value) -> String {
         Value::Null => "null".into(),
         Value::Num(n) => num(*n, 3),
         Value::Bool(b) => b.to_string(),
-        Value::Str(s) => format!("\"{s}\""),
+        Value::Str(s) => match data_url_summary(s) {
+            Some(summary) => summary,
+            None => format!("\"{}\"", clip(s, TOOLTIP_TEXT_MAX)),
+        },
         Value::Vec2(p) => format!("vec2({}, {})", num(p.x, 3), num(p.y, 3)),
         Value::Color(c) => hex([c.r, c.g, c.b, 1.0]),
         Value::List(items) if items.is_empty() => "[ ]".into(),
@@ -455,13 +470,48 @@ fn tooltip_value(v: &Value) -> String {
     }
 }
 
-/// `ValueTooltip`: a spread shows its head and `(1 of N)`.
+/// `ValueTooltip`: a spread shows its head and `(1 of N)`. Long text is
+/// cut short and a `data:` URL (a File node's contents) is summarised, so
+/// the tooltip stays a few lines.
 pub fn tooltip(s: &Spread) -> String {
-    match s.len() {
+    let text = match s.len() {
         0 => "[ ]".into(),
         1 => tooltip_value(&s[0]),
         n => format!("{}  (1 of {n})", tooltip_value(&s[0])),
+    };
+    clip(&text, TOOLTIP_MAX)
+}
+
+/// Longest string value a tooltip quotes, and longest tooltip, in chars.
+const TOOLTIP_TEXT_MAX: usize = 120;
+const TOOLTIP_MAX: usize = 240;
+
+/// `s`, cut to `max` chars with an ellipsis.
+fn clip(s: &str, max: usize) -> String {
+    if s.chars().count() <= max {
+        return s.to_owned();
     }
+    let mut out: String = s.chars().take(max.saturating_sub(1)).collect();
+    out.push('…');
+    out
+}
+
+/// `data:image/png · 1.2 MB` for a `data:` URL: its media type and the
+/// size of what it holds.
+pub fn data_url_summary(s: &str) -> Option<String> {
+    let rest = s.strip_prefix("data:")?;
+    let (head, body) = rest.split_once(',')?;
+    let mime = head.split(';').next().filter(|m| !m.is_empty());
+    let size = if head.ends_with(";base64") {
+        super::widgets::data_url_size(s)
+    } else {
+        body.len()
+    };
+    Some(format!(
+        "data:{} · {}",
+        mime.unwrap_or("text/plain"),
+        super::widgets::format_bytes(size)
+    ))
 }
 
 /// A pin's display label (`withCanonicalLabels`): an explicit label wins;
@@ -587,6 +637,27 @@ mod tests {
     use super::*;
     use crate::editor::test_util::{node, patch};
     use floret_engine::value::{Color, Vec2};
+
+    #[test]
+    fn tooltips_summarise_data_urls_and_cap_long_text() {
+        let one = |v: Value| tooltip(&floret_engine::value::one(v));
+        // A File node's 1.5 MB picture: its type and size, not the bytes.
+        let url = format!("data:image/png;base64,{}", "A".repeat(2_097_152));
+        assert_eq!(one(Value::str(&url)), "data:image/png · 1.5 MB");
+        assert_eq!(
+            data_url_summary("data:,hello").as_deref(),
+            Some("data:text/plain · 5 B")
+        );
+        assert_eq!(data_url_summary("not a url"), None);
+        // Long text is cut short; short text is quoted whole.
+        let long = one(Value::str(&"x".repeat(5_000)));
+        assert!(long.chars().count() <= 125, "{}", long.len());
+        assert!(long.ends_with("…\""));
+        assert_eq!(one(Value::str("hi")), "\"hi\"");
+        // Spreads of data URLs stay short too.
+        let many: Spread = std::sync::Arc::from(vec![Value::str(&url); 3]);
+        assert_eq!(tooltip(&many), "data:image/png · 1.5 MB  (1 of 3)");
+    }
 
     #[test]
     fn rows_put_dropdown_params_first() {

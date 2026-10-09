@@ -343,6 +343,9 @@ pub fn node_width(
         crate::theme::medium(12.5)
     };
     let mut header = super::draw::TITLE_X + text_width(&title, title_font) + 12.0;
+    if look == Look::Node && floret_engine::bypass::can_bypass(spec) {
+        header += BYPASS_ROOM;
+    }
     if let Some(slot) = n.params.get("slot").filter(|_| look == Look::Node) {
         let text = format!("#{}", values::short(slot));
         header += 6.0 + text_width(&text, FontId::monospace(10.0)) + 8.0;
@@ -376,6 +379,9 @@ pub fn node_width(
                     let mut w = text_width(&values::display_label(port, true), label_font.clone());
                     if port.constant {
                         w += 10.0;
+                    }
+                    if values::browse_filter(&n.def_type, &port.name).is_some() {
+                        w += BROWSE_W + 4.0;
                     }
                     let open = expanded.contains(&(n.id.clone(), port.name.clone()));
                     let wired = wired.contains(port.name.as_str());
@@ -557,6 +563,8 @@ pub struct NodeBox {
     pub notes: Vec<super::custom::Note>,
     /// A probe's readout.
     pub probe: Option<ProbeView>,
+    /// Whether the node is bypassed; `None` for nodes that can't be.
+    pub bypass: Option<bool>,
 }
 
 impl NodeBox {
@@ -581,6 +589,8 @@ pub struct Decor {
     pub badges: HashMap<String, (String, String, bool)>,
     /// Probe id → what it reads.
     pub probes: HashMap<String, ProbeView>,
+    /// Curve-editor node → its channel tab (absent: RGB).
+    pub curve_channels: HashMap<String, u8>,
 }
 
 pub struct Ctx<'a> {
@@ -699,6 +709,7 @@ pub fn layout(
             header_value: None,
             notes: Vec::new(),
             probe: None,
+            bypass: None,
         };
         match look {
             Look::Region | Look::Frame => frame_box(cx, n, spec, (w, h), &mut b),
@@ -710,10 +721,32 @@ pub fn layout(
             Look::Probe => super::custom::probe_box(cx, n, &mut b),
             Look::Comment => super::custom::comment_box(cx, n, &mut b),
         }
+        if look == Look::Node && floret_engine::bypass::can_bypass(spec) {
+            b.bypass = Some(n.bypassed);
+            b.widgets.push(super::custom::Widget {
+                rect: bypass_rect(b.header, z),
+                node: n.id.clone(),
+                kind: super::custom::WidgetKind::Bypass(n.bypassed),
+            });
+        }
         chips(cx, n, &mut b);
         boxes.insert(n.id.clone(), b);
     }
     boxes
+}
+
+/// Width of a row's `…` file button (canvas units).
+pub const BROWSE_W: f32 = 18.0;
+
+/// Header room the bypass button takes at the right end (canvas units).
+pub const BYPASS_ROOM: f32 = 18.0;
+
+/// The bypass button in a node header (screen space).
+pub fn bypass_rect(header: Rect, z: f32) -> Rect {
+    Rect::from_center_size(
+        header.right_center() - vec2(13.0 * z, 0.0),
+        vec2(16.0, 16.0) * z,
+    )
 }
 
 /// Header chips: region badge, then the warning chip.
@@ -733,7 +766,13 @@ fn chips(cx: &Ctx, n: &PatchNode, b: &mut NodeBox) {
             b.warning = Some((r, text.clone()));
         }
     } else if let Some(text) = cx.decor.warnings.get(&n.id) {
-        let r = Rect::from_center_size(b.header.right_center() - vec2(18.0 * z, 0.0), size);
+        // Left of the bypass button, when there is one.
+        let inset = if b.bypass.is_some() {
+            18.0 + BYPASS_ROOM
+        } else {
+            18.0
+        };
+        let r = Rect::from_center_size(b.header.right_center() - vec2(inset * z, 0.0), size);
         b.warning = Some((r, text.clone()));
     }
 }
@@ -888,6 +927,8 @@ pub fn row_box(
         };
         // (key, kind, value) of the editor shown on this row.
         let mut editor: Option<(EditKey, FieldKind, Json)> = None;
+        // A `…` file button sits at the row's right end.
+        let mut browse = false;
         match items.get(i) {
             None => {}
             Some(LeftItem::Param { key, kind }) => {
@@ -910,6 +951,20 @@ pub fn row_box(
                 row.label = Some(values::display_label(port, true));
                 row.constant = port.constant;
                 row.integer = port.integer && port.ty == PortType::Number;
+                if !is_wired
+                    && outs.get(i).is_none()
+                    && values::browse_filter(&n.def_type, &port.name).is_some()
+                {
+                    browse = true;
+                    b.widgets.push(super::custom::Widget {
+                        rect: Rect::from_center_size(
+                            pos2(b.rect.right() - (10.0 + BROWSE_W / 2.0) * z, y),
+                            vec2(BROWSE_W, FIELD_H) * z,
+                        ),
+                        node: n.id.clone(),
+                        kind: super::custom::WidgetKind::Browse(port.name.clone()),
+                    });
+                }
                 if let Some((key, kind)) = values::input_editor(spec, port, is_wired) {
                     row.toggle = Some(port.name.clone());
                     row.expanded = cx.expanded.contains(&(n.id.clone(), port.name.clone()));
@@ -944,6 +999,7 @@ pub fn row_box(
                         let out = text_width(&label, FontId::proportional(LABEL_FONT));
                         width - 10.0 - out - 14.0
                     }
+                    None if browse => width - 10.0 - BROWSE_W - 4.0,
                     None => width - 10.0,
                 };
                 let w = field_width(&kind).min(right - x0);

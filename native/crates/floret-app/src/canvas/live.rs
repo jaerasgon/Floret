@@ -210,6 +210,7 @@ impl Live<'_> {
             warnings: warn.into_iter().map(|(k, v)| (k, v.join("\n"))).collect(),
             badges,
             probes,
+            curve_channels: HashMap::new(),
         }
     }
 }

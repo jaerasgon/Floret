@@ -56,6 +56,8 @@ pub struct PortDoc {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Doc {
     pub label: String,
+    /// For an op family node: the op it's set to ("Multiply").
+    pub op: Option<String>,
     pub ty: String,
     /// The browser group (Source, Draw …).
     pub group: String,
@@ -86,9 +88,25 @@ fn port_doc(p: &PortSpec, with_default: bool) -> PortDoc {
     }
 }
 
-/// The docs for `ty`, rendered against default params (dynamic ports
-/// show their default arity, as in TS).
-pub fn doc(cat: &Catalogue, ty: &str) -> Option<Doc> {
+/// The docs a node shows in the panel: its type's, or for an op family
+/// node (Math, Vector Math, Compare, Logic, Statistics, Convert) those of
+/// the op it's set to — keyed like a search entry (`math/math#multiply`).
+pub fn key_for(n: &floret_engine::patch::PatchNode) -> String {
+    match floret_engine::nodes::family::family(&n.def_type) {
+        Some(f) => format!("{}#{}", n.def_type, f.op(&n.params).id),
+        None => n.def_type.clone(),
+    }
+}
+
+/// The docs for `key`: a node type rendered against default params
+/// (dynamic ports show their default arity, as in TS), or an op family
+/// node set to an op (`math/math#multiply`): that op's own pins and
+/// description.
+pub fn doc(cat: &Catalogue, key: &str) -> Option<Doc> {
+    let (ty, op) = crate::editor::search::split_key(key);
+    if op.is_some() {
+        return op_doc(cat, key);
+    }
     let spec = cat.get(ty)?;
     let notes = nodes_md()
         .get(ty)
@@ -104,6 +122,7 @@ pub fn doc(cat: &Catalogue, ty: &str) -> Option<Doc> {
         });
     Some(Doc {
         label: spec.label.clone(),
+        op: None,
         ty: spec.ty.clone(),
         group: spec.group.clone(),
         legacy: floret_engine::nodes::family::superseded_by(ty).map(|(f, o)| {
@@ -130,6 +149,44 @@ pub fn doc(cat: &Catalogue, ty: &str) -> Option<Doc> {
     })
 }
 
+/// [`doc`] for a family node set to an op: the op's pins (its node's
+/// inputs for these params, the family's `result`) and description.
+fn op_doc(cat: &Catalogue, key: &str) -> Option<Doc> {
+    let e = crate::editor::search::entry(cat, key)?;
+    let (_, op) = e.op?;
+    let spec = e.spec;
+    let params = e.params();
+    let notes = op
+        .legacy()
+        .and_then(|t| nodes_md().get(t))
+        .map(|(_, d)| d.clone())
+        .filter(|d| {
+            !d.is_empty()
+                && e.description(cat)
+                    .is_none_or(|c| !d.starts_with(c.trim_end_matches('.')))
+        });
+    Some(Doc {
+        label: spec.label.clone(),
+        op: Some(op.label.to_owned()),
+        ty: spec.ty.clone(),
+        group: spec.group.clone(),
+        legacy: None,
+        description: e.description(cat).map(str::to_owned),
+        notes,
+        inputs: cat
+            .resolved_inputs(spec, &params)
+            .iter()
+            .map(|p| port_doc(p, true))
+            .collect(),
+        outputs: cat
+            .resolved_outputs(spec, &params)
+            .iter()
+            .map(|p| port_doc(p, false))
+            .collect(),
+        region: None,
+    })
+}
+
 /// `formatDefault`.
 pub fn format_default(v: &Value) -> String {
     match v {
@@ -152,8 +209,9 @@ pub fn format_default(v: &Value) -> String {
     }
 }
 
-/// The search box's matches: label / type / category containing the
-/// query, label-prefix matches first, then alphabetical.
+/// The search box's matches: label / type / category with the query at a
+/// word start (as the node search), label-prefix matches first, then
+/// alphabetical.
 pub fn search<'a>(cat: &'a Catalogue, query: &str) -> Vec<&'a NodeSpec> {
     let q = query.trim().to_lowercase();
     if q.is_empty() {
@@ -163,9 +221,15 @@ pub fn search<'a>(cat: &'a Catalogue, query: &str) -> Vec<&'a NodeSpec> {
         .iter()
         .filter(|s| !s.hidden)
         .filter(|s| {
-            format!("{} {} {} {}", s.ty, s.label, s.category, s.group)
-                .to_lowercase()
-                .contains(&q)
+            let hay = format!(
+                "{} {} {} {} {}",
+                s.ty,
+                s.label,
+                s.label.replace(' ', ""),
+                s.category,
+                s.group
+            );
+            crate::editor::search::word_match(&hay, &q)
         })
         .collect();
     out.sort_by(|a, b| {
@@ -287,6 +351,13 @@ fn show_doc(ui: &mut egui::Ui, d: &Doc) {
                 .strong()
                 .size(15.0),
         );
+        if let Some(op) = &d.op {
+            ui.label(
+                RichText::new(format!("· {op}"))
+                    .color(theme::FG_1)
+                    .size(15.0),
+            );
+        }
         ui.label(RichText::new(&d.ty).color(theme::FG_2).monospace().small());
     });
     ui.label(
@@ -401,6 +472,29 @@ mod tests {
         );
         let math = doc(cat, "math/math").expect("math");
         assert_eq!((math.group.as_str(), math.legacy), ("Math", None));
+        // A Math node set to an op shows that op's own pins and text.
+        let mul = doc(cat, "math/math#multiply").expect("multiply");
+        assert_eq!(mul.op.as_deref(), Some("Multiply"));
+        assert_eq!(mul.label, "Math");
+        assert_eq!(
+            mul.description,
+            cat.get("math/mul").unwrap().description.clone()
+        );
+        assert_eq!(mul.outputs.len(), 1);
+        assert_eq!(mul.outputs[0].name, "result");
+        let sin = doc(cat, "math/math#sin").expect("sin");
+        assert_eq!(sin.inputs.len(), 1);
+        assert_ne!(sin.description, mul.description);
+        let cmp = doc(cat, "logic/compare#less").expect("less");
+        assert_eq!(cmp.outputs[0].ty, "boolean");
+        assert!(doc(cat, "math/math#nope").is_none());
+        let mut n = crate::editor::test_util::node("m", "math/math");
+        n.params.insert("op".into(), "sin".into());
+        assert_eq!(key_for(&n), "math/math#sin");
+        assert_eq!(
+            key_for(&crate::editor::test_util::node("s", "io/slider")),
+            "io/slider"
+        );
         let foreach = doc(cat, "region/foreach").expect("foreach");
         assert_eq!(foreach.region, Some("foreach"));
         assert!(doc(cat, "nope/nope").is_none());

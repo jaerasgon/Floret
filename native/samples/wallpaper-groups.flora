@@ -1,0 +1,345 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Wallpaper Groups",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "wp_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Wallpaper groups\n\nThe Symmetry node in `wallpaper` mode repeats a motif by one of the 17 plane symmetry groups — here p6m: six-fold turns and mirrors on a hexagonal lattice of `cell`-wide cells. The motif, two petals and a dot drawn near the origin, turns slowly, so the whole pattern breathes.\n\nPick another `group` (p4g, pgg, p31m …) to see the same motif obey a different symmetry.",
+        "width": 520,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Wallpaper groups\n\nThe Symmetry node in `wallpaper` mode repeats a motif by one of the 17 plane symmetry groups — here p6m: six-fold turns and mirrors on a hexagonal lattice of `cell`-wide cells. The motif, two petals and a dot drawn near the origin, turns slowly, so the whole pattern breathes.\n\nPick another `group` (p4g, pgg, p31m …) to see the same motif obey a different symmetry.",
+        "width": 520,
+        "height": 200
+      }
+    },
+    {
+      "id": "wp_fa",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 242
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.36470588235294116,
+          "b": 0.5607843137254902,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.36470588235294116,
+          "b": 0.5607843137254902,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "wp_fb",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 626
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8392156862745098,
+          "b": 0.4392156862745098,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8392156862745098,
+          "b": 0.4392156862745098,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "wp_fc",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 434
+      },
+      "params": {
+        "color": {
+          "r": 0.4392156862745098,
+          "g": 0.8392156862745098,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.4392156862745098,
+          "g": 0.8392156862745098,
+          "b": 1.0,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "wp_petal",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 236,
+        "y": 154
+      },
+      "params": {
+        "pos": {
+          "x": 32,
+          "y": 9
+        },
+        "w": 38,
+        "h": 10
+      },
+      "portValues": {
+        "pos": {
+          "x": 32,
+          "y": 9
+        },
+        "w": 38,
+        "h": 10
+      }
+    },
+    {
+      "id": "wp_petal2",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 233,
+        "y": 346
+      },
+      "params": {
+        "pos": {
+          "x": 14,
+          "y": 30
+        },
+        "w": 10,
+        "h": 30
+      },
+      "portValues": {
+        "pos": {
+          "x": 14,
+          "y": 30
+        },
+        "w": 10,
+        "h": 30
+      }
+    },
+    {
+      "id": "wp_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 230,
+        "y": 538
+      },
+      "params": {
+        "pos": {
+          "x": 42,
+          "y": -16
+        },
+        "w": 9,
+        "h": 9
+      },
+      "portValues": {
+        "pos": {
+          "x": 42,
+          "y": -16
+        },
+        "w": 9,
+        "h": 9
+      }
+    },
+    {
+      "id": "wp_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 479,
+        "y": 324
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "wp_spin",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 504,
+        "y": 0
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 0.05,
+        "min": 0,
+        "max": 6.283185
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 0.05,
+        "min": 0,
+        "max": 6.283185
+      }
+    },
+    {
+      "id": "wp_rot",
+      "defType": "transform/rotate",
+      "position": {
+        "x": 765,
+        "y": 151
+      },
+      "params": {}
+    },
+    {
+      "id": "wp_sym",
+      "defType": "transform/symmetry",
+      "position": {
+        "x": 954,
+        "y": 129
+      },
+      "params": {
+        "mode": "wallpaper",
+        "group": "p6m",
+        "cell": 90,
+        "size": {
+          "x": 600,
+          "y": 600
+        },
+        "clip": true
+      },
+      "portValues": {
+        "group": "p6m",
+        "cell": 90,
+        "size": {
+          "x": 600,
+          "y": 600
+        },
+        "clip": true,
+        "mode": "wallpaper"
+      }
+    },
+    {
+      "id": "wp_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1237,
+        "y": 129
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.13333333333333333,
+          "g": 0.13333333333333333,
+          "b": 0.23137254901960785,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.13333333333333333,
+          "g": 0.13333333333333333,
+          "b": 0.23137254901960785,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "wp_fa",
+      "target": "wp_petal",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_2",
+      "source": "wp_fc",
+      "target": "wp_petal2",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_3",
+      "source": "wp_fb",
+      "target": "wp_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_4",
+      "source": "wp_petal",
+      "target": "wp_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_5",
+      "source": "wp_petal2",
+      "target": "wp_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_6",
+      "source": "wp_dot",
+      "target": "wp_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_7",
+      "source": "wp_spin",
+      "target": "wp_rot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_8",
+      "source": "wp_group",
+      "target": "wp_rot",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_9",
+      "source": "wp_rot",
+      "target": "wp_sym",
+      "sourceHandle": "out-rotated",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_10",
+      "source": "wp_sym",
+      "target": "wp_r",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

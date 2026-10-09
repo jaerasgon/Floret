@@ -1,0 +1,160 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Truchet Tiles",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "tr_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Truchet tiles\n\nThe Tiles node in `truchet` mode: every cell holds two quarter circles (the `arcs` set), turned one of two ways. With `noise` above 0 the turns follow Perlin noise instead of a coin toss, so they clump into regions and the arcs join into long meandering loops. Each turn takes its own colour.\n\nTry the `diagonals` and `triangles` sets, or `noise` 0.",
+        "width": 520,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Truchet tiles\n\nThe Tiles node in `truchet` mode: every cell holds two quarter circles (the `arcs` set), turned one of two ways. With `noise` above 0 the turns follow Perlin noise instead of a coin toss, so they clump into regions and the arcs join into long meandering loops. Each turn takes its own colour.\n\nTry the `diagonals` and `triangles` sets, or `noise` 0.",
+        "width": 520,
+        "height": 200
+      }
+    },
+    {
+      "id": "tr_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 230,
+        "y": 69
+      },
+      "params": {
+        "stopCount": 2,
+        "c0": "#ffb703",
+        "c1": "#8ecae6"
+      },
+      "portValues": {
+        "stopCount": 2,
+        "c0": "#ffb703",
+        "c1": "#8ecae6"
+      }
+    },
+    {
+      "id": "tr_w",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 0,
+        "y": 261
+      },
+      "params": {
+        "w": 7
+      },
+      "portValues": {
+        "w": 7
+      }
+    },
+    {
+      "id": "tr_cap",
+      "defType": "style/stroke-cap",
+      "position": {
+        "x": 256,
+        "y": 239
+      },
+      "params": {
+        "cap": "round"
+      },
+      "portValues": {
+        "cap": "round"
+      }
+    },
+    {
+      "id": "tr_tiles",
+      "defType": "geometry/tiles",
+      "position": {
+        "x": 500,
+        "y": 0
+      },
+      "params": {
+        "mode": "truchet",
+        "tiles": "arcs",
+        "cols": 14,
+        "rows": 14,
+        "size": 38,
+        "noise": 0.35,
+        "seed": 2
+      },
+      "portValues": {
+        "cols": 14,
+        "rows": 14,
+        "size": 38,
+        "tiles": "arcs",
+        "noise": 0.35,
+        "seed": 2,
+        "mode": "truchet"
+      }
+    },
+    {
+      "id": "tr_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 753,
+        "y": 0
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.00784313725490196,
+          "g": 0.18823529411764706,
+          "b": 0.2784313725490196,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.00784313725490196,
+          "g": 0.18823529411764706,
+          "b": 0.2784313725490196,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "tr_w",
+      "target": "tr_cap",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_2",
+      "source": "tr_cap",
+      "target": "tr_tiles",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_3",
+      "source": "tr_pal",
+      "target": "tr_tiles",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_4",
+      "source": "tr_tiles",
+      "target": "tr_r",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

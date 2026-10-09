@@ -1,0 +1,136 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Mondrian Splits",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "mo_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Mondrian splits\n\nCells' `subdivide` mode cuts the square in two, then keeps cutting the parts — each with probability `chance`, down to `depth` levels, never thinner than `minSize`. `gap` leaves black lines between the rectangles, and each one takes a colour from the palette at random: white is listed four times, so it wins most often.\n\nChange `seed` for a new composition; turn on `quad` for a quadtree.",
+        "width": 520,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Mondrian splits\n\nCells' `subdivide` mode cuts the square in two, then keeps cutting the parts — each with probability `chance`, down to `depth` levels, never thinner than `minSize`. `gap` leaves black lines between the rectangles, and each one takes a colour from the palette at random: white is listed four times, so it wins most often.\n\nChange `seed` for a new composition; turn on `quad` for a quadtree.",
+        "width": 520,
+        "height": 200
+      }
+    },
+    {
+      "id": "mo_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 66
+      },
+      "params": {
+        "stopCount": 7,
+        "c0": "#f2efe6",
+        "c1": "#f2efe6",
+        "c2": "#f2efe6",
+        "c3": "#f2efe6",
+        "c4": "#d62828",
+        "c5": "#1d4e89",
+        "c6": "#f6bd60"
+      },
+      "portValues": {
+        "stopCount": 7,
+        "c0": "#f2efe6",
+        "c1": "#f2efe6",
+        "c2": "#f2efe6",
+        "c3": "#f2efe6",
+        "c4": "#d62828",
+        "c5": "#1d4e89",
+        "c6": "#f6bd60"
+      }
+    },
+    {
+      "id": "mo_cells",
+      "defType": "geometry/cells",
+      "position": {
+        "x": 264,
+        "y": 0
+      },
+      "params": {
+        "mode": "subdivide",
+        "size": {
+          "x": 540,
+          "y": 540
+        },
+        "depth": 6,
+        "chance": 0.75,
+        "minSize": 34,
+        "ratio": 0.5,
+        "seed": 7,
+        "gap": 10
+      },
+      "portValues": {
+        "size": {
+          "x": 540,
+          "y": 540
+        },
+        "depth": 6,
+        "chance": 0.75,
+        "minSize": 34,
+        "ratio": 0.5,
+        "seed": 7,
+        "gap": 10,
+        "mode": "subdivide"
+      }
+    },
+    {
+      "id": "mo_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 529,
+        "y": 0
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.06666666666666667,
+          "g": 0.06666666666666667,
+          "b": 0.06666666666666667,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.06666666666666667,
+          "g": 0.06666666666666667,
+          "b": 0.06666666666666667,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "mo_pal",
+      "target": "mo_cells",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_2",
+      "source": "mo_cells",
+      "target": "mo_r",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

@@ -31,7 +31,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 640
+        "y": 643
       },
       "params": {
         "value": 104,
@@ -48,8 +48,8 @@
       "id": "band_density",
       "defType": "io/slider",
       "position": {
-        "x": 578,
-        "y": 1385
+        "x": 581,
+        "y": 1305
       },
       "params": {
         "value": 0.7,
@@ -66,8 +66,8 @@
       "id": "band_volume",
       "defType": "io/slider",
       "position": {
-        "x": 2707,
-        "y": 437
+        "x": 2697,
+        "y": 268
       },
       "params": {
         "value": 0.35,
@@ -85,7 +85,7 @@
       "defType": "io/toggle",
       "position": {
         "x": 0,
-        "y": 0
+        "y": 57
       },
       "params": {
         "value": false
@@ -99,7 +99,7 @@
       "defType": "math/expression",
       "position": {
         "x": 276,
-        "y": 605
+        "y": 608
       },
       "params": {
         "expr": "30 / b"
@@ -110,8 +110,8 @@
       "id": "band_step",
       "defType": "math/expression",
       "position": {
-        "x": 578,
-        "y": 798
+        "x": 581,
+        "y": 737
       },
       "params": {
         "expr": "floor(t / s)"
@@ -122,8 +122,8 @@
       "id": "band_stepPhase",
       "defType": "math/expression",
       "position": {
-        "x": 578,
-        "y": 450
+        "x": 581,
+        "y": 339
       },
       "params": {
         "expr": "fract(t / s)"
@@ -135,7 +135,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 1,
-        "y": 242
+        "y": 299
       },
       "params": {
         "data": "0, 3, 5, 7, 10, 12, 15, 17"
@@ -149,7 +149,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 1,
-        "y": 138
+        "y": 195
       },
       "params": {
         "data": "0, 2, 4, 7, 9, 12, 14, 16"
@@ -163,7 +163,7 @@
       "defType": "math/expression",
       "position": {
         "x": 276,
-        "y": 78
+        "y": 135
       },
       "params": {
         "expr": "m ? a : b"
@@ -174,8 +174,8 @@
       "id": "band_degree",
       "defType": "math/expression",
       "position": {
-        "x": 1635,
-        "y": 578
+        "x": 1634,
+        "y": 499
       },
       "params": {
         "expr": "clamp(floor((noise(n * 0.29, 2.2) - 0.22) / 0.56 * 8), 0, 7)"
@@ -186,8 +186,8 @@
       "id": "band_interval",
       "defType": "spread/lookup",
       "position": {
-        "x": 2710,
-        "y": 563
+        "x": 2700,
+        "y": 394
       },
       "params": {
         "op": "at"
@@ -198,8 +198,8 @@
       "id": "band_note",
       "defType": "math/expression",
       "position": {
-        "x": 3007,
-        "y": 692
+        "x": 2998,
+        "y": 392
       },
       "params": {
         "expr": "57 + i + (fract(sin(n * 4.13) * 9631.7) < 0.15 ? 12 : 0)"
@@ -210,8 +210,8 @@
       "id": "band_playsNote",
       "defType": "math/expression",
       "position": {
-        "x": 2707,
-        "y": 958
+        "x": 2697,
+        "y": 927
       },
       "params": {
         "expr": "fract(sin(n * 78.233) * 43758.5453) < d"
@@ -222,8 +222,8 @@
       "id": "band_gate",
       "defType": "math/expression",
       "position": {
-        "x": 3007,
-        "y": 869
+        "x": 2998,
+        "y": 709
       },
       "params": {
         "expr": "p && f < 0.55"
@@ -234,8 +234,8 @@
       "id": "band_melodySynth",
       "defType": "sound/mono-synth",
       "position": {
-        "x": 3363,
-        "y": 876
+        "x": 3373,
+        "y": 651
       },
       "params": {},
       "portValues": {
@@ -250,8 +250,8 @@
       "id": "band_echoTime",
       "defType": "math/expression",
       "position": {
-        "x": 3340,
-        "y": 1112
+        "x": 3350,
+        "y": 1123
       },
       "params": {
         "expr": "s * 3"
@@ -262,8 +262,8 @@
       "id": "band_melodyDelay",
       "defType": "sound/delay",
       "position": {
-        "x": 3690,
-        "y": 958
+        "x": 3741,
+        "y": 877
       },
       "params": {},
       "portValues": {
@@ -275,8 +275,8 @@
       "id": "band_melodyReverb",
       "defType": "sound/reverb",
       "position": {
-        "x": 3960,
-        "y": 832
+        "x": 4013,
+        "y": 744
       },
       "params": {
         "reverse": false
@@ -291,8 +291,8 @@
       "id": "band_melodyOut",
       "defType": "sound/output",
       "position": {
-        "x": 4275,
-        "y": 570
+        "x": 4330,
+        "y": 472
       },
       "params": {},
       "portValues": {}
@@ -301,8 +301,8 @@
       "id": "band_bassNote",
       "defType": "math/expression",
       "position": {
-        "x": 1635,
-        "y": 731
+        "x": 1634,
+        "y": 652
       },
       "params": {
         "expr": "33 + (floor(n / 8) % 4 == 0 ? 0 : (floor(n / 8) % 4 == 1 ? -4 : (floor(n / 8) % 4 == 2 ? 5 : 7)))"
@@ -313,8 +313,8 @@
       "id": "band_bassFreq",
       "defType": "sound/midi-to-freq",
       "position": {
-        "x": 2731,
-        "y": 751
+        "x": 2721,
+        "y": 651
       },
       "params": {},
       "portValues": {}
@@ -323,8 +323,8 @@
       "id": "band_bassOsc",
       "defType": "sound/oscillator",
       "position": {
-        "x": 3011,
-        "y": 544
+        "x": 3002,
+        "y": 873
       },
       "params": {
         "type": "sawtooth"
@@ -337,8 +337,8 @@
       "id": "band_bassGate",
       "defType": "math/expression",
       "position": {
-        "x": 3007,
-        "y": 46
+        "x": 2998,
+        "y": 567
       },
       "params": {
         "expr": "fract(t / (s * 2)) < 0.8"
@@ -349,8 +349,8 @@
       "id": "band_bassEnvelope",
       "defType": "sound/envelope",
       "position": {
-        "x": 3370,
-        "y": 84
+        "x": 3380,
+        "y": 887
       },
       "params": {},
       "portValues": {
@@ -365,8 +365,8 @@
       "id": "band_bassCutoff",
       "defType": "math/expression",
       "position": {
-        "x": 3340,
-        "y": 320
+        "x": 3350,
+        "y": 159
       },
       "params": {
         "expr": "300 + 500 * (0.5 + 0.5 * sin(t * 0.4))"
@@ -377,8 +377,8 @@
       "id": "band_bassFilter",
       "defType": "sound/filter",
       "position": {
-        "x": 3660,
-        "y": 243
+        "x": 3711,
+        "y": 247
       },
       "params": {
         "type": "lowpass"
@@ -391,8 +391,8 @@
       "id": "band_bassOut",
       "defType": "sound/output",
       "position": {
-        "x": 3973,
-        "y": 352
+        "x": 4026,
+        "y": 184
       },
       "params": {},
       "portValues": {}
@@ -401,8 +401,8 @@
       "id": "band_hatNoise",
       "defType": "sound/noise",
       "position": {
-        "x": 588,
-        "y": 192
+        "x": 591,
+        "y": 23
       },
       "params": {
         "type": "white"
@@ -415,8 +415,8 @@
       "id": "band_hatFilter",
       "defType": "sound/filter",
       "position": {
-        "x": 1639,
-        "y": 170
+        "x": 1638,
+        "y": 1
       },
       "params": {
         "type": "highpass"
@@ -430,8 +430,8 @@
       "id": "band_hatGate",
       "defType": "math/expression",
       "position": {
-        "x": 1635,
-        "y": 372
+        "x": 1634,
+        "y": 229
       },
       "params": {
         "expr": "f < 0.08"
@@ -442,8 +442,8 @@
       "id": "band_hatEnvelope",
       "defType": "sound/envelope",
       "position": {
-        "x": 2737,
-        "y": 201
+        "x": 2727,
+        "y": 0
       },
       "params": {},
       "portValues": {
@@ -458,8 +458,8 @@
       "id": "band_hatOut",
       "defType": "sound/output",
       "position": {
-        "x": 3044,
-        "y": 310
+        "x": 3034,
+        "y": 130
       },
       "params": {},
       "portValues": {}
@@ -468,8 +468,8 @@
       "id": "band_spectrum",
       "defType": "sound/fft",
       "position": {
-        "x": 4239,
-        "y": 808
+        "x": 4294,
+        "y": 722
       },
       "params": {
         "bins": "128"
@@ -482,8 +482,8 @@
       "id": "band_ringSteps",
       "defType": "spread/range",
       "position": {
-        "x": 593,
-        "y": 1197
+        "x": 596,
+        "y": 1118
       },
       "params": {
         "count": 16
@@ -496,8 +496,8 @@
       "id": "band_stepRing",
       "defType": "region/foreach",
       "position": {
-        "x": 898,
-        "y": 992
+        "x": 897,
+        "y": 913
       },
       "params": {
         "width": 1642,
@@ -655,8 +655,8 @@
       "id": "band_burstColour",
       "defType": "math/expression",
       "position": {
-        "x": 3340,
-        "y": 526
+        "x": 3350,
+        "y": 301
       },
       "params": {
         "expr": "hsl(fract((k - 57) / 24 + 0.55), 0.85, 0.6, p ? (1 - f) : 0)"
@@ -667,8 +667,8 @@
       "id": "band_burstSize",
       "defType": "math/expression",
       "position": {
-        "x": 3936,
-        "y": 130
+        "x": 3989,
+        "y": 42
       },
       "params": {
         "expr": "60 + f * 360"
@@ -679,8 +679,8 @@
       "id": "band_burstStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 3693,
-        "y": 498
+        "x": 3744,
+        "y": 417
       },
       "params": {},
       "portValues": {
@@ -691,8 +691,8 @@
       "id": "band_burstNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 3976,
-        "y": 503
+        "x": 4029,
+        "y": 370
       },
       "params": {},
       "portValues": {}
@@ -701,8 +701,8 @@
       "id": "band_burst",
       "defType": "draw/ellipse",
       "position": {
-        "x": 4268,
-        "y": 208
+        "x": 4323,
+        "y": 110
       },
       "params": {},
       "portValues": {
@@ -716,8 +716,8 @@
       "id": "band_coreColour",
       "defType": "math/expression",
       "position": {
-        "x": 3340,
-        "y": 723
+        "x": 3350,
+        "y": 498
       },
       "params": {
         "expr": "hsl(fract((k - 57) / 24 + 0.55), 0.7, 0.55, 0.85)"
@@ -728,8 +728,8 @@
       "id": "band_coreFill",
       "defType": "style/fill",
       "position": {
-        "x": 3697,
-        "y": 832
+        "x": 3748,
+        "y": 751
       },
       "params": {},
       "portValues": {}
@@ -738,8 +738,8 @@
       "id": "band_coreSize",
       "defType": "math/expression",
       "position": {
-        "x": 3656,
-        "y": 668
+        "x": 3707,
+        "y": 587
       },
       "params": {
         "expr": "40 + 26 * (g ? 1 - f : 0)"
@@ -750,8 +750,8 @@
       "id": "band_core",
       "defType": "draw/ellipse",
       "position": {
-        "x": 3966,
-        "y": 640
+        "x": 4019,
+        "y": 552
       },
       "params": {},
       "portValues": {
@@ -765,8 +765,8 @@
       "id": "band_spectrumBars",
       "defType": "region/foreach",
       "position": {
-        "x": 4537,
-        "y": 485
+        "x": 4591,
+        "y": 400
       },
       "params": {
         "width": 884,
@@ -835,8 +835,8 @@
       "id": "band_spectrumStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 4250,
-        "y": 400
+        "x": 4304,
+        "y": 302
       },
       "params": {},
       "portValues": {
@@ -864,8 +864,8 @@
       "id": "band_wavePoints",
       "defType": "math/expression",
       "position": {
-        "x": 4895,
-        "y": 871
+        "x": 4949,
+        "y": 786
       },
       "params": {
         "expr": "vec2(-300 + index / count * 600, 285 + w * 30)"
@@ -876,8 +876,8 @@
       "id": "band_waveStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 4906,
-        "y": 1013
+        "x": 4960,
+        "y": 928
       },
       "params": {},
       "portValues": {
@@ -894,8 +894,8 @@
       "id": "band_wave",
       "defType": "draw/polygon",
       "position": {
-        "x": 5571,
-        "y": 910
+        "x": 5626,
+        "y": 827
       },
       "params": {},
       "portValues": {
@@ -906,8 +906,8 @@
       "id": "band_glowing",
       "defType": "transform/group",
       "position": {
-        "x": 5539,
-        "y": 437
+        "x": 5593,
+        "y": 350
       },
       "params": {
         "slotCount": 3
@@ -918,8 +918,8 @@
       "id": "band_trails",
       "defType": "gpu/echo",
       "position": {
-        "x": 5835,
-        "y": 604
+        "x": 5889,
+        "y": 519
       },
       "params": {
         "mode": "trails"
@@ -932,8 +932,8 @@
       "id": "band_scene",
       "defType": "transform/group",
       "position": {
-        "x": 6131,
-        "y": 816
+        "x": 6186,
+        "y": 733
       },
       "params": {
         "slotCount": 3
@@ -944,8 +944,8 @@
       "id": "band_bloom",
       "defType": "gpu/effect",
       "position": {
-        "x": 6397,
-        "y": 786
+        "x": 6451,
+        "y": 703
       },
       "params": {
         "mode": "bloom"
@@ -960,8 +960,8 @@
       "id": "band_chromatic",
       "defType": "gpu/effect",
       "position": {
-        "x": 6663,
-        "y": 756
+        "x": 6717,
+        "y": 674
       },
       "params": {
         "mode": "chromatic"
@@ -974,8 +974,8 @@
       "id": "band_r",
       "defType": "render/renderer",
       "position": {
-        "x": 6928,
-        "y": 753
+        "x": 6983,
+        "y": 671
       },
       "params": {
         "width": 640,

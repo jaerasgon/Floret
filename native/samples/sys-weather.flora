@@ -31,7 +31,7 @@
       "defType": "io/xy-pad",
       "position": {
         "x": 0,
-        "y": 1252
+        "y": 1214
       },
       "params": {
         "x": 0.3,
@@ -46,8 +46,8 @@
       "id": "wx_stormDepth",
       "defType": "io/slider",
       "position": {
-        "x": 303,
-        "y": 1220
+        "x": 289,
+        "y": 1182
       },
       "params": {
         "value": 26,
@@ -64,8 +64,8 @@
       "id": "wx_windSpeed",
       "defType": "io/slider",
       "position": {
-        "x": 303,
-        "y": 1094
+        "x": 289,
+        "y": 1056
       },
       "params": {
         "value": 500,
@@ -82,8 +82,8 @@
       "id": "wx_stormCentre",
       "defType": "math/expression",
       "position": {
-        "x": 303,
-        "y": 1346
+        "x": 289,
+        "y": 1308
       },
       "params": {
         "expr": "vec2((x - 0.5) * 720, (y - 0.5) * 540)"
@@ -94,8 +94,8 @@
       "id": "wx_dt",
       "defType": "time/delta",
       "position": {
-        "x": 728,
-        "y": 1686
+        "x": 714,
+        "y": 1790
       },
       "params": {},
       "portValues": {}
@@ -104,7 +104,7 @@
       "id": "wx_h",
       "defType": "math/expression",
       "position": {
-        "x": 1071,
+        "x": 1057,
         "y": 1978
       },
       "params": {
@@ -116,8 +116,8 @@
       "id": "wx_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 324,
-        "y": 1866
+        "x": 310,
+        "y": 1970
       },
       "params": {},
       "portValues": {
@@ -135,8 +135,8 @@
       "id": "wx_pressure",
       "defType": "math/expression",
       "position": {
-        "x": 687,
-        "y": 1790
+        "x": 673,
+        "y": 1894
       },
       "params": {
         "expr": "(1013 + 26 * (noise((q.x) * 0.0032 + t * 0.02, (q.y) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x) * 0.0075 - t * 0.013, (q.y) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x) - c.x) ^ 2 + ((q.y) - c.y) ^ 2) / 16000))"
@@ -147,8 +147,8 @@
       "id": "wx_windField",
       "defType": "math/expression",
       "position": {
-        "x": 687,
-        "y": 790
+        "x": 673,
+        "y": 768
       },
       "params": {
         "expr": "vec2(-((1013 + 26 * (noise((q.x) * 0.0032 + t * 0.02, (q.y + 7) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x) * 0.0075 - t * 0.013, (q.y + 7) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x) - c.x) ^ 2 + ((q.y + 7) - c.y) ^ 2) / 16000)) - (1013 + 26 * (noise((q.x) * 0.0032 + t * 0.02, (q.y - 7) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x) * 0.0075 - t * 0.013, (q.y - 7) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x) - c.x) ^ 2 + ((q.y - 7) - c.y) ^ 2) / 16000))), ((1013 + 26 * (noise((q.x + 7) * 0.0032 + t * 0.02, (q.y) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x + 7) * 0.0075 - t * 0.013, (q.y) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x + 7) - c.x) ^ 2 + ((q.y) - c.y) ^ 2) / 16000)) - (1013 + 26 * (noise((q.x - 7) * 0.0032 + t * 0.02, (q.y) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x - 7) * 0.0075 - t * 0.013, (q.y) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x - 7) - c.x) ^ 2 + ((q.y) - c.y) ^ 2) / 16000)))) * k / 14"
@@ -159,7 +159,7 @@
       "id": "wx_bandColours",
       "defType": "color/palette",
       "position": {
-        "x": 687,
+        "x": 673,
         "y": 44
       },
       "params": {
@@ -183,7 +183,7 @@
       "id": "wx_bands",
       "defType": "geometry/contours",
       "position": {
-        "x": 1080,
+        "x": 1066,
         "y": 0
       },
       "params": {
@@ -208,7 +208,7 @@
       "id": "wx_isoStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 314,
+        "x": 300,
         "y": 500
       },
       "params": {},
@@ -226,7 +226,7 @@
       "id": "wx_isoNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 727,
+        "x": 713,
         "y": 500
       },
       "params": {},
@@ -236,7 +236,7 @@
       "id": "wx_isobars",
       "defType": "geometry/contours",
       "position": {
-        "x": 1080,
+        "x": 1066,
         "y": 302
       },
       "params": {
@@ -261,8 +261,8 @@
       "id": "wx_flowStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 698,
-        "y": 1042
+        "x": 684,
+        "y": 1020
       },
       "params": {},
       "portValues": {
@@ -279,7 +279,7 @@
       "id": "wx_flowLines",
       "defType": "geometry/contours",
       "position": {
-        "x": 1080,
+        "x": 1066,
         "y": 604
       },
       "params": {
@@ -306,7 +306,7 @@
       "defType": "spread/range",
       "position": {
         "x": 15,
-        "y": 1833
+        "y": 1699
       },
       "params": {
         "count": 320
@@ -319,8 +319,8 @@
       "id": "wx_p0",
       "defType": "math/expression",
       "position": {
-        "x": 303,
-        "y": 1510
+        "x": 289,
+        "y": 1472
       },
       "params": {
         "expr": "vec2((fract(i * 0.6180339) - 0.5) * 720, (fract(i * 0.7548776) - 0.5) * 540)"
@@ -331,8 +331,8 @@
       "id": "wx_age0",
       "defType": "math/expression",
       "position": {
-        "x": 303,
-        "y": 2058
+        "x": 289,
+        "y": 1828
       },
       "params": {
         "expr": "fract(i * 0.37) * 3"
@@ -343,8 +343,8 @@
       "id": "wx_rpart",
       "defType": "state/read-spread",
       "position": {
-        "x": 699,
-        "y": 1276
+        "x": 685,
+        "y": 1254
       },
       "params": {
         "slot": 1
@@ -357,8 +357,8 @@
       "id": "wx_rage",
       "defType": "state/read-spread",
       "position": {
-        "x": 699,
-        "y": 2083
+        "x": 685,
+        "y": 1664
       },
       "params": {
         "slot": 2
@@ -371,7 +371,7 @@
       "id": "wx_windAtParticles",
       "defType": "math/expression",
       "position": {
-        "x": 1071,
+        "x": 1057,
         "y": 1038
       },
       "params": {
@@ -383,7 +383,7 @@
       "id": "wx_respawn",
       "defType": "math/expression",
       "position": {
-        "x": 1071,
+        "x": 1057,
         "y": 1814
       },
       "params": {
@@ -395,8 +395,8 @@
       "id": "wx_advect",
       "defType": "math/expression",
       "position": {
-        "x": 1824,
-        "y": 1138
+        "x": 1820,
+        "y": 1105
       },
       "params": {
         "expr": "r ? vec2((fract(sin(index * 13.9898 + frame * 81.233) * 43758.5453) - 0.5) * 720, (fract(sin(index * 14.9898 + frame * 84.233) * 43758.5453) - 0.5) * 540) : p + v * h"
@@ -407,8 +407,8 @@
       "id": "wx_ageing",
       "defType": "math/expression",
       "position": {
-        "x": 1824,
-        "y": 2044
+        "x": 1820,
+        "y": 1979
       },
       "params": {
         "expr": "r ? 0 : a + h"
@@ -419,8 +419,8 @@
       "id": "wx_wpart",
       "defType": "state/write-spread",
       "position": {
-        "x": 2622,
-        "y": 1198
+        "x": 2632,
+        "y": 1165
       },
       "params": {
         "slot": 1
@@ -433,8 +433,8 @@
       "id": "wx_wage",
       "defType": "state/write-spread",
       "position": {
-        "x": 2622,
-        "y": 2054
+        "x": 2632,
+        "y": 1647
       },
       "params": {
         "slot": 2
@@ -447,8 +447,8 @@
       "id": "wx_tail",
       "defType": "math/expression",
       "position": {
-        "x": 1824,
-        "y": 974
+        "x": 1820,
+        "y": 941
       },
       "params": {
         "expr": "p - v * 0.06"
@@ -459,8 +459,8 @@
       "id": "wx_particleStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 1835,
-        "y": 804
+        "x": 1831,
+        "y": 771
       },
       "params": {},
       "portValues": {
@@ -477,8 +477,8 @@
       "id": "wx_streaks",
       "defType": "region/foreach",
       "position": {
-        "x": 2511,
-        "y": 912
+        "x": 2521,
+        "y": 886
       },
       "params": {
         "width": 324,
@@ -526,8 +526,8 @@
       "id": "wx_particleTrails",
       "defType": "gpu/echo",
       "position": {
-        "x": 3298,
-        "y": 1287
+        "x": 3305,
+        "y": 1283
       },
       "params": {
         "mode": "trails"
@@ -540,8 +540,8 @@
       "id": "wx_arrowGrid",
       "defType": "spread/grid",
       "position": {
-        "x": 324,
-        "y": 1674
+        "x": 310,
+        "y": 1636
       },
       "params": {},
       "portValues": {
@@ -559,8 +559,8 @@
       "id": "wx_windAtArrows",
       "defType": "math/expression",
       "position": {
-        "x": 687,
-        "y": 1402
+        "x": 673,
+        "y": 1380
       },
       "params": {
         "expr": "vec2(-((1013 + 26 * (noise((q.x) * 0.0032 + t * 0.02, (q.y + 7) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x) * 0.0075 - t * 0.013, (q.y + 7) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x) - c.x) ^ 2 + ((q.y + 7) - c.y) ^ 2) / 16000)) - (1013 + 26 * (noise((q.x) * 0.0032 + t * 0.02, (q.y - 7) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x) * 0.0075 - t * 0.013, (q.y - 7) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x) - c.x) ^ 2 + ((q.y - 7) - c.y) ^ 2) / 16000))), ((1013 + 26 * (noise((q.x + 7) * 0.0032 + t * 0.02, (q.y) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x + 7) * 0.0075 - t * 0.013, (q.y) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x + 7) - c.x) ^ 2 + ((q.y) - c.y) ^ 2) / 16000)) - (1013 + 26 * (noise((q.x - 7) * 0.0032 + t * 0.02, (q.y) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x - 7) * 0.0075 - t * 0.013, (q.y) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x - 7) - c.x) ^ 2 + ((q.y) - c.y) ^ 2) / 16000)))) * k / 14"
@@ -571,7 +571,7 @@
       "id": "wx_arrowTip",
       "defType": "math/expression",
       "position": {
-        "x": 1071,
+        "x": 1057,
         "y": 1354
       },
       "params": {
@@ -583,11 +583,11 @@
       "id": "wx_arrows",
       "defType": "region/foreach",
       "position": {
-        "x": 1445,
-        "y": 1412
+        "x": 1436,
+        "y": 1379
       },
       "params": {
-        "width": 927,
+        "width": 937,
         "height": 552,
         "label": "ForEach arrow"
       },
@@ -604,24 +604,24 @@
           "name": "tip",
           "type": "vec2",
           "direction": "input",
-          "y": 237
+          "y": 177
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 146
+          "y": 113
         }
       ],
-      "width": 927,
+      "width": 937,
       "height": 552
     },
     {
       "id": "wx_headLeft",
       "defType": "math/expression",
       "position": {
-        "x": 146,
+        "x": 150,
         "y": 188
       },
       "params": {
@@ -634,7 +634,7 @@
       "id": "wx_headRight",
       "defType": "math/expression",
       "position": {
-        "x": 146,
+        "x": 150,
         "y": 374
       },
       "params": {
@@ -647,7 +647,7 @@
       "id": "wx_arrowStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 1088,
+        "x": 1074,
         "y": 1518
       },
       "params": {},
@@ -665,7 +665,7 @@
       "id": "wx_shaft",
       "defType": "draw/line",
       "position": {
-        "x": 188,
+        "x": 192,
         "y": 40
       },
       "params": {},
@@ -676,7 +676,7 @@
       "id": "wx_arrowFill",
       "defType": "style/fill",
       "position": {
-        "x": 1088,
+        "x": 1074,
         "y": 1688
       },
       "params": {},
@@ -693,8 +693,8 @@
       "id": "wx_head",
       "defType": "draw/triangle",
       "position": {
-        "x": 438,
-        "y": 200
+        "x": 452,
+        "y": 134
       },
       "params": {},
       "parentId": "wx_arrows",
@@ -704,8 +704,8 @@
       "id": "wx_arrow",
       "defType": "transform/group",
       "position": {
-        "x": 647,
-        "y": 109
+        "x": 657,
+        "y": 76
       },
       "params": {
         "slotCount": 2
@@ -717,7 +717,7 @@
       "id": "wx_minPressure",
       "defType": "math/statistics",
       "position": {
-        "x": 1086,
+        "x": 1072,
         "y": 2120
       },
       "params": {
@@ -729,8 +729,8 @@
       "id": "wx_minIndex",
       "defType": "spread/lookup",
       "position": {
-        "x": 1827,
-        "y": 2230
+        "x": 1823,
+        "y": 2197
       },
       "params": {
         "op": "index-of"
@@ -741,8 +741,8 @@
       "id": "wx_minWhere",
       "defType": "spread/lookup",
       "position": {
-        "x": 2592,
-        "y": 1906
+        "x": 2602,
+        "y": 2031
       },
       "params": {
         "op": "at"
@@ -753,8 +753,8 @@
       "id": "wx_minTextParams",
       "defType": "style/text-params",
       "position": {
-        "x": 1835,
-        "y": 2378
+        "x": 1831,
+        "y": 2345
       },
       "params": {
         "bold": true,
@@ -771,8 +771,8 @@
       "id": "wx_minFill",
       "defType": "style/fill",
       "position": {
-        "x": 2606,
-        "y": 2180
+        "x": 2616,
+        "y": 2179
       },
       "params": {},
       "portValues": {
@@ -788,8 +788,8 @@
       "id": "wx_minLetter",
       "defType": "draw/text",
       "position": {
-        "x": 3019,
-        "y": 1779
+        "x": 3025,
+        "y": 1803
       },
       "params": {
         "string": "L",
@@ -806,8 +806,8 @@
       "id": "wx_minBelow",
       "defType": "math/expression",
       "position": {
-        "x": 2985,
-        "y": 1971
+        "x": 2991,
+        "y": 1995
       },
       "params": {
         "expr": "p + vec2(0, 24)"
@@ -818,8 +818,8 @@
       "id": "wx_minFmt",
       "defType": "string/format-number",
       "position": {
-        "x": 2597,
-        "y": 1648
+        "x": 2607,
+        "y": 1773
       },
       "params": {
         "mode": "number"
@@ -832,8 +832,8 @@
       "id": "wx_minValue",
       "defType": "draw/text",
       "position": {
-        "x": 3338,
-        "y": 1809
+        "x": 3345,
+        "y": 1826
       },
       "params": {
         "size": 12,
@@ -848,8 +848,8 @@
       "id": "wx_minText",
       "defType": "spread/lookup",
       "position": {
-        "x": 2988,
-        "y": 1631
+        "x": 2994,
+        "y": 1655
       },
       "params": {
         "op": "at"
@@ -862,8 +862,8 @@
       "id": "wx_maxPressure",
       "defType": "math/statistics",
       "position": {
-        "x": 1086,
-        "y": 2310
+        "x": 1072,
+        "y": 2320
       },
       "params": {
         "op": "max"
@@ -874,8 +874,8 @@
       "id": "wx_maxIndex",
       "defType": "spread/lookup",
       "position": {
-        "x": 1827,
-        "y": 2668
+        "x": 1823,
+        "y": 2635
       },
       "params": {
         "op": "index-of"
@@ -886,8 +886,8 @@
       "id": "wx_maxWhere",
       "defType": "spread/lookup",
       "position": {
-        "x": 2592,
-        "y": 2564
+        "x": 2602,
+        "y": 2563
       },
       "params": {
         "op": "at"
@@ -898,8 +898,8 @@
       "id": "wx_maxTextParams",
       "defType": "style/text-params",
       "position": {
-        "x": 1835,
-        "y": 2816
+        "x": 1831,
+        "y": 2783
       },
       "params": {
         "bold": true,
@@ -916,8 +916,8 @@
       "id": "wx_maxFill",
       "defType": "style/fill",
       "position": {
-        "x": 2606,
-        "y": 2712
+        "x": 2616,
+        "y": 2711
       },
       "params": {},
       "portValues": {
@@ -933,8 +933,8 @@
       "id": "wx_maxLetter",
       "defType": "draw/text",
       "position": {
-        "x": 3019,
-        "y": 2261
+        "x": 3025,
+        "y": 2285
       },
       "params": {
         "string": "H",
@@ -951,8 +951,8 @@
       "id": "wx_maxBelow",
       "defType": "math/expression",
       "position": {
-        "x": 2985,
-        "y": 2453
+        "x": 2991,
+        "y": 2477
       },
       "params": {
         "expr": "p + vec2(0, 24)"
@@ -963,8 +963,8 @@
       "id": "wx_maxFmt",
       "defType": "string/format-number",
       "position": {
-        "x": 2597,
-        "y": 2306
+        "x": 2607,
+        "y": 2305
       },
       "params": {
         "mode": "number"
@@ -977,8 +977,8 @@
       "id": "wx_maxValue",
       "defType": "draw/text",
       "position": {
-        "x": 3338,
-        "y": 2216
+        "x": 3345,
+        "y": 2236
       },
       "params": {
         "size": 12,
@@ -993,8 +993,8 @@
       "id": "wx_maxText",
       "defType": "spread/lookup",
       "position": {
-        "x": 2988,
-        "y": 2113
+        "x": 2994,
+        "y": 2137
       },
       "params": {
         "op": "at"
@@ -1007,8 +1007,8 @@
       "id": "wx_scene",
       "defType": "transform/group",
       "position": {
-        "x": 3654,
-        "y": 1431
+        "x": 3663,
+        "y": 1435
       },
       "params": {
         "slotCount": 9
@@ -1019,8 +1019,8 @@
       "id": "wx_r",
       "defType": "render/renderer",
       "position": {
-        "x": 3918,
-        "y": 1431
+        "x": 3927,
+        "y": 1434
       },
       "params": {
         "width": 720,

@@ -31,7 +31,7 @@
       "defType": "io/toggle",
       "position": {
         "x": 0,
-        "y": 1855
+        "y": 1918
       },
       "params": {
         "value": true
@@ -45,7 +45,7 @@
       "defType": "io/stepper",
       "position": {
         "x": 773,
-        "y": 2112
+        "y": 2176
       },
       "params": {
         "value": 0,
@@ -65,7 +65,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 1993
+        "y": 2056
       },
       "params": {
         "value": 2.6,
@@ -83,7 +83,7 @@
       "defType": "io/metro",
       "position": {
         "x": 301,
-        "y": 1941
+        "y": 2003
       },
       "params": {
         "interval": 2.6
@@ -97,7 +97,7 @@
       "defType": "io/counter",
       "position": {
         "x": 806,
-        "y": 1942
+        "y": 2006
       },
       "params": {
         "step": 1,
@@ -112,8 +112,8 @@
       "id": "ds_year",
       "defType": "math/expression",
       "position": {
-        "x": 1344,
-        "y": 1906
+        "x": 1340,
+        "y": 1968
       },
       "params": {
         "expr": "p ? c % 8 : s"
@@ -125,7 +125,7 @@
       "defType": "time/delta",
       "position": {
         "x": 814,
-        "y": 2216
+        "y": 2280
       },
       "params": {},
       "portValues": {}
@@ -134,8 +134,8 @@
       "id": "ds_easeRate",
       "defType": "math/expression",
       "position": {
-        "x": 1344,
-        "y": 1695
+        "x": 1340,
+        "y": 1786
       },
       "params": {
         "expr": "min(1, min(dt, 0.05) * 5)"
@@ -147,7 +147,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 1,
-        "y": 1408
+        "y": 1429
       },
       "params": {
         "data": "12, 9, 15, 4, 7, 10, 14, 11, 15, 6, 8, 11, 9, 8, 10, 5, 6, 7, 16, 14, 13, 9, 9, 12, 19, 18, 14, 13, 11, 13, 21, 23, 15, 18, 12, 15, 22, 26, 16, 24, 14, 16, 24, 28, 17, 31, 15, 18"
@@ -161,7 +161,7 @@
       "defType": "spread/partition",
       "position": {
         "x": 275,
-        "y": 1408
+        "y": 1429
       },
       "params": {},
       "portValues": {
@@ -172,8 +172,8 @@
       "id": "ds_thisYear",
       "defType": "spread/lookup",
       "position": {
-        "x": 1686,
-        "y": 1424
+        "x": 1680,
+        "y": 1479
       },
       "params": {
         "op": "group-at"
@@ -185,7 +185,7 @@
       "defType": "spread/range",
       "position": {
         "x": 788,
-        "y": 1546
+        "y": 1558
       },
       "params": {
         "count": 6
@@ -198,8 +198,8 @@
       "id": "ds_order",
       "defType": "spread/reorder",
       "position": {
-        "x": 2005,
-        "y": 1646
+        "x": 2035,
+        "y": 1682
       },
       "params": {
         "op": "sort-by-key"
@@ -212,8 +212,8 @@
       "id": "ds_rank",
       "defType": "spread/reorder",
       "position": {
-        "x": 2304,
-        "y": 1665
+        "x": 2335,
+        "y": 1683
       },
       "params": {
         "op": "sort-by-key"
@@ -226,8 +226,8 @@
       "id": "ds_zeros",
       "defType": "math/expression",
       "position": {
-        "x": 1344,
-        "y": 1259
+        "x": 1340,
+        "y": 1289
       },
       "params": {
         "expr": "i * 0"
@@ -238,8 +238,8 @@
       "id": "ds_rlength",
       "defType": "state/read-spread",
       "position": {
-        "x": 1694,
-        "y": 1144
+        "x": 1688,
+        "y": 1177
       },
       "params": {
         "slot": 1
@@ -252,8 +252,8 @@
       "id": "ds_rrow",
       "defType": "state/read-spread",
       "position": {
-        "x": 2316,
-        "y": 1539
+        "x": 2347,
+        "y": 1557
       },
       "params": {
         "slot": 2
@@ -266,8 +266,8 @@
       "id": "ds_barLength",
       "defType": "math/expression",
       "position": {
-        "x": 2005,
-        "y": 974
+        "x": 2035,
+        "y": 1010
       },
       "params": {
         "expr": "l + (v - l) * k"
@@ -278,8 +278,8 @@
       "id": "ds_barRow",
       "defType": "math/expression",
       "position": {
-        "x": 2594,
-        "y": 1677
+        "x": 2623,
+        "y": 1679
       },
       "params": {
         "expr": "r0 + (r - r0) * k"
@@ -290,8 +290,8 @@
       "id": "ds_wlength",
       "defType": "state/write-spread",
       "position": {
-        "x": 2338,
-        "y": 1000
+        "x": 2369,
+        "y": 1027
       },
       "params": {
         "slot": 1
@@ -304,7 +304,7 @@
       "id": "ds_wrow",
       "defType": "state/write-spread",
       "position": {
-        "x": 3547,
+        "x": 3576,
         "y": 1868
       },
       "params": {
@@ -318,7 +318,7 @@
       "id": "ds_cityNames",
       "defType": "string/split",
       "position": {
-        "x": 2605,
+        "x": 2634,
         "y": 369
       },
       "params": {
@@ -333,7 +333,7 @@
       "id": "ds_bars",
       "defType": "region/foreach",
       "position": {
-        "x": 2978,
+        "x": 3007,
         "y": 214
       },
       "params": {
@@ -632,7 +632,7 @@
       "defType": "spread/range",
       "position": {
         "x": 281,
-        "y": 1304
+        "y": 1325
       },
       "params": {
         "count": 8
@@ -646,7 +646,7 @@
       "defType": "region/foreach",
       "position": {
         "x": 539,
-        "y": 1234
+        "y": 1254
       },
       "params": {
         "width": 636,
@@ -702,8 +702,8 @@
       "id": "ds_linePoints",
       "defType": "math/expression",
       "position": {
-        "x": 2005,
-        "y": 1160
+        "x": 2035,
+        "y": 1196
       },
       "params": {
         "expr": "vec2(110 + index * 31, 208 - (s - 40) * 1.35)"
@@ -714,8 +714,8 @@
       "id": "ds_rshownYear",
       "defType": "state/read",
       "position": {
-        "x": 1355,
-        "y": 1569
+        "x": 1351,
+        "y": 1660
       },
       "params": {
         "slot": 3,
@@ -730,8 +730,8 @@
       "id": "ds_shownYear",
       "defType": "math/expression",
       "position": {
-        "x": 1683,
-        "y": 1626
+        "x": 1677,
+        "y": 1726
       },
       "params": {
         "expr": "y0 + (y - y0) * k"
@@ -742,8 +742,8 @@
       "id": "ds_wshownYear",
       "defType": "state/write",
       "position": {
-        "x": 2042,
-        "y": 1816
+        "x": 2072,
+        "y": 2368
       },
       "params": {
         "slot": 3
@@ -756,8 +756,8 @@
       "id": "ds_reveal",
       "defType": "math/expression",
       "position": {
-        "x": 2005,
-        "y": 1302
+        "x": 2035,
+        "y": 1338
       },
       "params": {
         "expr": "max(0.001, y / 7)"
@@ -768,8 +768,8 @@
       "id": "ds_lineStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 2022,
-        "y": 1444
+        "x": 2052,
+        "y": 1480
       },
       "params": {},
       "portValues": {
@@ -786,8 +786,8 @@
       "id": "ds_lineSoFar",
       "defType": "geometry/trim",
       "position": {
-        "x": 2307,
-        "y": 1281
+        "x": 2338,
+        "y": 1299
       },
       "params": {
         "mode": "each"
@@ -800,8 +800,8 @@
       "id": "ds_lineHeadFill",
       "defType": "style/fill",
       "position": {
-        "x": 2611,
-        "y": 1551
+        "x": 2640,
+        "y": 1553
       },
       "params": {},
       "portValues": {
@@ -817,8 +817,8 @@
       "id": "ds_lineHead",
       "defType": "spread/lookup",
       "position": {
-        "x": 2597,
-        "y": 1403
+        "x": 2626,
+        "y": 1405
       },
       "params": {
         "op": "at"
@@ -831,7 +831,7 @@
       "id": "ds_lineHeadDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 3548,
+        "x": 3577,
         "y": 1676
       },
       "params": {},
@@ -844,8 +844,8 @@
       "id": "ds_axisStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 2611,
-        "y": 1233
+        "x": 2640,
+        "y": 1235
       },
       "params": {},
       "portValues": {
@@ -862,7 +862,7 @@
       "id": "ds_axis",
       "defType": "draw/line",
       "position": {
-        "x": 3538,
+        "x": 3567,
         "y": 1528
       },
       "params": {},
@@ -881,8 +881,8 @@
       "id": "ds_chartTitleFill",
       "defType": "style/fill",
       "position": {
-        "x": 2611,
-        "y": 1990
+        "x": 2640,
+        "y": 1968
       },
       "params": {},
       "portValues": {
@@ -898,7 +898,7 @@
       "id": "ds_chartTitle",
       "defType": "draw/text",
       "position": {
-        "x": 3520,
+        "x": 3549,
         "y": 1994
       },
       "params": {
@@ -920,8 +920,8 @@
       "id": "ds_calendarYear",
       "defType": "math/expression",
       "position": {
-        "x": 1683,
-        "y": 1980
+        "x": 1677,
+        "y": 2038
       },
       "params": {
         "expr": "2018 + y"
@@ -932,8 +932,8 @@
       "id": "ds_yearText",
       "defType": "string/format-number",
       "position": {
-        "x": 2014,
-        "y": 1942
+        "x": 2043,
+        "y": 1852
       },
       "params": {
         "mode": "number"
@@ -947,8 +947,8 @@
       "id": "ds_yearParams",
       "defType": "style/text-params",
       "position": {
-        "x": 2016,
-        "y": 2200
+        "x": 2046,
+        "y": 2110
       },
       "params": {
         "bold": true,
@@ -965,8 +965,8 @@
       "id": "ds_yearFill",
       "defType": "style/fill",
       "position": {
-        "x": 2315,
-        "y": 2191
+        "x": 2346,
+        "y": 2135
       },
       "params": {},
       "portValues": {
@@ -982,8 +982,8 @@
       "id": "ds_bigYear",
       "defType": "draw/text",
       "position": {
-        "x": 2628,
-        "y": 2116
+        "x": 2657,
+        "y": 2094
       },
       "params": {
         "size": 64,
@@ -1002,8 +1002,8 @@
       "id": "ds_yearOne",
       "defType": "spread/lookup",
       "position": {
-        "x": 2307,
-        "y": 2018
+        "x": 2338,
+        "y": 1962
       },
       "params": {
         "op": "at"
@@ -1016,8 +1016,8 @@
       "id": "ds_captions",
       "defType": "string/split",
       "position": {
-        "x": 1354,
-        "y": 2132
+        "x": 1350,
+        "y": 2184
       },
       "params": {
         "text": "2018 · Cedar leads on its old river path network.|2019 · Steady growth everywhere; Aster catches Cedar.|2020 · Trips fall in every city during the shutdowns.|2021 · The rebound: Aster opens its protected lanes.|2022 · Birch adds bike share and climbs fast.|2023 · Birch takes the lead; Dune doubles in two years.|2024 · Dune's new bridge makes it the fastest riser.|2025 · Dune tops the table, ahead of Birch and Aster."
@@ -1031,8 +1031,8 @@
       "id": "ds_caption",
       "defType": "spread/lookup",
       "position": {
-        "x": 1686,
-        "y": 2134
+        "x": 1680,
+        "y": 2182
       },
       "params": {
         "op": "at"
@@ -1043,8 +1043,8 @@
       "id": "ds_rprevYear",
       "defType": "state/read",
       "position": {
-        "x": 1355,
-        "y": 2258
+        "x": 1351,
+        "y": 2310
       },
       "params": {
         "slot": 4,
@@ -1059,8 +1059,8 @@
       "id": "ds_rsince",
       "defType": "state/read",
       "position": {
-        "x": 1355,
-        "y": 2384
+        "x": 1351,
+        "y": 2436
       },
       "params": {
         "slot": 5,
@@ -1075,8 +1075,8 @@
       "id": "ds_sinceChange",
       "defType": "math/expression",
       "position": {
-        "x": 1683,
-        "y": 2408
+        "x": 1677,
+        "y": 2456
       },
       "params": {
         "expr": "y != p ? 0 : s + min(dt, 0.05)"
@@ -1087,8 +1087,8 @@
       "id": "ds_wprevYear",
       "defType": "state/write",
       "position": {
-        "x": 1720,
-        "y": 1854
+        "x": 1714,
+        "y": 1912
       },
       "params": {
         "slot": 4
@@ -1101,8 +1101,8 @@
       "id": "ds_wsince",
       "defType": "state/write",
       "position": {
-        "x": 2042,
-        "y": 2792
+        "x": 2072,
+        "y": 2828
       },
       "params": {
         "slot": 5
@@ -1115,8 +1115,8 @@
       "id": "ds_captionProgress",
       "defType": "math/expression",
       "position": {
-        "x": 2005,
-        "y": 2650
+        "x": 2035,
+        "y": 2686
       },
       "params": {
         "expr": "min(1, s * 1.4)"
@@ -1127,8 +1127,8 @@
       "id": "ds_captionFill",
       "defType": "style/fill",
       "position": {
-        "x": 1700,
-        "y": 2282
+        "x": 1694,
+        "y": 2330
       },
       "params": {},
       "portValues": {
@@ -1144,8 +1144,8 @@
       "id": "ds_captionText",
       "defType": "draw/text",
       "position": {
-        "x": 2039,
-        "y": 2458
+        "x": 2069,
+        "y": 2494
       },
       "params": {
         "size": 15,
@@ -1164,8 +1164,8 @@
       "id": "ds_captionIn",
       "defType": "text/animate",
       "position": {
-        "x": 2313,
-        "y": 2413
+        "x": 2344,
+        "y": 2437
       },
       "params": {
         "mode": "in",
@@ -1189,7 +1189,7 @@
       "id": "ds_headFill",
       "defType": "style/fill",
       "position": {
-        "x": 2611,
+        "x": 2640,
         "y": 88
       },
       "params": {},
@@ -1206,7 +1206,7 @@
       "id": "ds_heading",
       "defType": "draw/text",
       "position": {
-        "x": 3520,
+        "x": 3549,
         "y": 0
       },
       "params": {
@@ -1228,7 +1228,7 @@
       "id": "ds_scene",
       "defType": "transform/group",
       "position": {
-        "x": 4433,
+        "x": 4462,
         "y": 1507
       },
       "params": {
@@ -1240,7 +1240,7 @@
       "id": "ds_r",
       "defType": "render/renderer",
       "position": {
-        "x": 4698,
+        "x": 4726,
         "y": 1508
       },
       "params": {

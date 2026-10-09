@@ -121,6 +121,17 @@ impl AudioSystem {
         }
     }
 
+    /// For rendering a patch's sound into a file (video export): offline,
+    /// and sound files load as the tick that first plays them is submitted
+    /// rather than in the background, so the result never depends on how
+    /// fast a file happened to load. Render each frame's share with
+    /// [`AudioSystem::render_into`] right after ticking it.
+    pub fn for_export(sample_rate: f32) -> AudioSystem {
+        let sys = AudioSystem::offline(sample_rate);
+        lock(&sys.shared.control).set_blocking_loads(true);
+        sys
+    }
+
     /// Render `frames` stereo frames (offline use; with devices running
     /// this steals their audio).
     pub fn render(&self, frames: usize) -> Vec<[f32; 2]> {

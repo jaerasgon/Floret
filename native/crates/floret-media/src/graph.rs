@@ -201,6 +201,12 @@ impl Control {
         self.host = host;
     }
 
+    /// Load sound files on the control thread, before the tick's graph
+    /// goes out (see [`Samples::blocking`]).
+    pub fn set_blocking_loads(&mut self, on: bool) {
+        self.samples.blocking = on;
+    }
+
     /// Start over on a new audio thread (another device / sample rate):
     /// every DSP is rebuilt on the next program.
     pub fn reset(&mut self, sample_rate: f32) -> Ends {

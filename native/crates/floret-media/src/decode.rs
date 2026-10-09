@@ -146,6 +146,15 @@ type Slot = Arc<Mutex<Option<Result<Arc<SampleData>, String>>>>;
 #[derive(Default)]
 pub struct Samples {
     entries: HashMap<Arc<str>, Slot>,
+    /// Load on the caller's thread instead (offline export: the file must
+    /// be there on the tick that first asks for it, every run).
+    pub blocking: bool,
+}
+
+fn load(src: &str, host: Option<&dyn Host>) -> Result<Arc<SampleData>, String> {
+    floret_engine::image::read_source(src, host)
+        .and_then(decode)
+        .map(Arc::new)
 }
 
 impl Samples {
@@ -154,15 +163,19 @@ impl Samples {
         if self.entries.contains_key(url) {
             return;
         }
+        if self.blocking {
+            let r = load(url, host.as_deref());
+            self.entries
+                .insert(url.clone(), Arc::new(Mutex::new(Some(r))));
+            return;
+        }
         let slot: Slot = Arc::default();
         let shared = slot.clone();
         let src = url.to_string();
         let spawned = std::thread::Builder::new()
             .name("floret audio load".into())
             .spawn(move || {
-                let r = floret_engine::image::read_source(&src, host.as_deref())
-                    .and_then(decode)
-                    .map(Arc::new);
+                let r = load(&src, host.as_deref());
                 *shared.lock().unwrap_or_else(|e| e.into_inner()) = Some(r);
             });
         if let Err(e) = spawned {

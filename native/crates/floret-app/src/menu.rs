@@ -29,6 +29,8 @@ pub enum Command {
     BrowseSamples,
     ExportPng,
     ExportVideo,
+    /// The Export Variations window (`crate::variations`).
+    ExportVariations,
     Quit,
     Undo,
     Redo,
@@ -79,6 +81,7 @@ impl Command {
             BrowseSamples => "Samples Library",
             ExportPng => "Export PNG…",
             ExportVideo => "Export Video / GIF…",
+            ExportVariations => "Export Variations…",
             Quit => {
                 if cfg!(target_os = "windows") {
                     "Exit"
@@ -220,6 +223,7 @@ pub fn model(s: &MenuState) -> Vec<Section> {
         Sep,
         C(ExportPng),
         C(ExportVideo),
+        C(ExportVariations),
     ];
     if !mac {
         file.extend([Sep, C(Preferences), Sep, C(Quit)]);

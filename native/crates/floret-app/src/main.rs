@@ -41,6 +41,7 @@ mod sample_sweep;
 mod shader_panel;
 mod theme;
 mod thumbs;
+mod variations;
 mod welcome;
 mod workspace;
 

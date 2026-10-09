@@ -249,6 +249,8 @@ pub struct PreviewPanel {
     export: crate::export::Export,
     /// A recording asked for from a view's Export menu: renderer, format.
     record: Option<(String, crate::recording::Format)>,
+    /// Export Variations asked for from a view's Export menu: renderer.
+    variations: Option<String>,
     /// What exports are named after: the renderer's label, else this
     /// (the patch name).
     pub doc_name: String,
@@ -281,6 +283,7 @@ impl PreviewPanel {
             key_pressed: false,
             export: crate::export::Export::default(),
             record: None,
+            variations: None,
             doc_name: String::new(),
             clock: RenderClock::default(),
             transport: Transport::default(),
@@ -446,6 +449,12 @@ impl PreviewPanel {
         self.record.take()
     }
 
+    /// Export Variations asked for from a view's Export menu since the
+    /// last call: the renderer.
+    pub fn take_variations(&mut self) -> Option<String> {
+        self.variations.take()
+    }
+
     /// Focus mode is on: the app shows only [`PreviewPanel::show_focus`].
     pub fn focused(&self) -> bool {
         self.focus.is_some()
@@ -531,6 +540,9 @@ impl PreviewPanel {
                 );
                 if let Some(f) = self.export.take_record() {
                     self.record = Some((id.clone(), f));
+                }
+                if self.export.take_variations() {
+                    self.variations = Some(id.clone());
                 }
                 let live = self.output.as_ref().is_some_and(|o| o.renderer == id);
                 let output = quiet_button(

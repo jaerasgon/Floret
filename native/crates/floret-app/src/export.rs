@@ -39,6 +39,8 @@ pub struct Export {
     /// A recording (video / GIF / PNG sequence) picked from the menu, for
     /// the app to open its export window with.
     record: Option<Format>,
+    /// "Variations…" was picked from the menu.
+    variations: bool,
     /// Where the button sat last frame (its hover tint).
     rect: Option<egui::Rect>,
 }
@@ -50,6 +52,7 @@ impl Default for Export {
             status: None,
             done: None,
             record: None,
+            variations: false,
             rect: None,
         }
     }
@@ -141,6 +144,15 @@ impl Export {
                             ui.close();
                         }
                     }
+                    ui.separator();
+                    if ui
+                        .button("Variations…")
+                        .on_hover_text("Render many seeds or presets at once, with a contact sheet")
+                        .clicked()
+                    {
+                        self.variations = true;
+                        ui.close();
+                    }
                 })
                 .0
                 .on_hover_text(hover);
@@ -155,6 +167,11 @@ impl Export {
     /// A recording picked from the menu since the last call.
     pub fn take_record(&mut self) -> Option<Format> {
         self.record.take()
+    }
+
+    /// "Variations…" picked from the menu since the last call.
+    pub fn take_variations(&mut self) -> bool {
+        std::mem::take(&mut self.variations)
     }
 
     fn export(&mut self, rs: &egui_wgpu::RenderState, name: &str, frame: Frame<'_>, scale: u32) {

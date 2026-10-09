@@ -78,6 +78,19 @@ from the repo folder.
   - [ ] PNG sequence: a folder of numbered frames.
   - [ ] Cancel during an export stops it and leaves no broken file.
   - [ ] Export over an existing file replaces it.
+- [ ] Export Video with `fft-bloom` (a patch with sound) as MP4: the Export window shows **Include sound**, ticked.
+  - [ ] The MP4 plays with the patch's sound in QuickTime and Safari, in sync with the pictures (the bloom pulses with the sound), and the sound track is exactly as long as the video (QuickTime → Window → Show Movie Inspector).
+  - [ ] Export it twice: both files sound the same.
+  - [ ] Untick Include sound: the MP4 has no sound track.
+  - [ ] With `tone-surface` (1 loop), loop the MP4 in QuickTime (View → Loop): the sound repeats without a click if the patch's sound repeats over the loop.
+  - [ ] Export while the app's volume is muted: the file still has sound (exports don't follow the volume control).
+- [ ] File → Export Variations… with `variations` (also in each preview's Export menu as "Variations…"):
+  - [ ] Seed → Random, 12, Still at 2 s, Contact sheet on: choose a folder. A new `variations-variations` folder appears with 12 PNGs named `variations-seed-<n>.png` and `variations-contact-sheet.png`; Export again makes `…-variations-2`.
+  - [ ] The contact sheet shows every variation in a grid with readable "seed <n>" labels, and each matches its PNG.
+  - [ ] Turn on Presets as well (Calm + Storm): 24 files named `variations-calm-seed-<n>.png` / `variations-storm-seed-<n>.png`; labels read "Calm · seed <n>".
+  - [ ] Loop (GIF): one GIF per variation, each looping.
+  - [ ] Progress and Cancel work, the app stays responsive, and a cancelled export leaves no folder behind.
+  - [ ] Click a thumbnail under Results: the patch takes that preset and seed (Presets panel shows the seed), the preview matches the thumbnail, and Cmd+Z goes back. Typing a seed from the contact sheet into the Presets panel's Seed field gives the same picture.
 - [ ] The toolbar's Loop field: drag it, type a value, type 0 for "off", then Cmd+Z.
 
 ## Presets and variations

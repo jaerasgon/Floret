@@ -108,6 +108,20 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   and Cancel while the app keeps running.
 - On macOS, MP4 export and video playback use Apple's AVFoundation /
   VideoToolbox (which macOS licenses); the Mac app contains no OpenH264.
+- **Sound in MP4s (macOS):** a patch's sound goes into its exported MP4
+  ("Include sound", on by default for patches with a sound Output node). The
+  sound is rendered offline with the frames, deterministic and exactly as
+  long as the video, and encoded as AAC by Apple's encoder alongside the
+  H.264 pictures. Patches with sound nodes also get their own audio engine
+  in every export, so audio-reactive visuals (FFT, amplitude) move in GIFs,
+  PNG sequences and variations as they do live. Other platforms export
+  MP4s without sound for now (no royalty-free AAC encoder to ship).
+- **Export Variations:** render many seeds (a range, or N random seeds
+  from a base) and/or presets at once, as stills at a chosen time or
+  one-loop GIFs, into a new folder of files named by preset and seed
+  (`<patch>-seed-1234.png`) plus a labelled contact sheet. Progress and
+  Cancel; the app keeps running. Clicking a result puts its preset and
+  seed into the patch (one undo step).
 
 ### Platform notes
 

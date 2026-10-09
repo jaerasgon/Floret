@@ -12,7 +12,7 @@ use crate::menu::{self, Command, MenuState};
 use crate::prefs::{Prefs, PrefsWindow, Startup};
 use crate::{
     audio, canvas, crash, devices, editor, help, host, palette, preview, recording, recovery,
-    shader_panel, theme, welcome, workspace, SAMPLES,
+    shader_panel, theme, variations, welcome, workspace, SAMPLES,
 };
 use eframe::egui::{self, Align, Layout, RichText};
 use egui_phosphor::regular as icons;
@@ -81,6 +81,7 @@ pub struct App {
     preview: preview::PreviewPanel,
     /// The Export Video window and any recording in progress.
     recorder: recording::Recorder,
+    variations: variations::Variations,
     /// When the monitor list for the output window was last read.
     monitors_read: Option<Instant>,
     query: String,
@@ -158,6 +159,7 @@ impl App {
             view,
             preview: preview::PreviewPanel::new(cc.wgpu_render_state.as_ref()),
             recorder: recording::Recorder::default(),
+            variations: variations::Variations::default(),
             monitors_read: None,
             query: String::new(),
             crash: crash::Guard::default(),
@@ -457,6 +459,7 @@ impl App {
             }
             Command::BrowseSamples => self.workspace.show_library(),
             Command::ExportVideo => self.recorder.open(None, None),
+            Command::ExportVariations => self.variations.open(None, &self.patch),
             Command::Quit => self.request(ctx, After::Quit),
             Command::ToggleNodes => self.prefs.palette_visible ^= true,
             Command::ZoomIn => self.prefs.step_scale(1),
@@ -721,6 +724,9 @@ impl App {
         }
         if let Some((renderer, format)) = self.preview.take_record() {
             self.recorder.open(Some(renderer), Some(format));
+        }
+        if let Some(renderer) = self.preview.take_variations() {
+            self.variations.open(Some(renderer), &self.patch);
         }
         match action {
             Some(workspace::ShellAction::LoadSample(i)) => self.request(ui.ctx(), After::Sample(i)),
@@ -1112,6 +1118,14 @@ impl eframe::App for App {
         help::shortcuts_window(&ctx, &mut self.show_shortcuts);
         help::about_window(&ctx, &mut self.show_about, &self.gpu_name);
         self.recorder.show(
+            &ctx,
+            rs,
+            &mut self.patch,
+            &mut self.view,
+            &self.preview.renderers(),
+            &self.doc.name,
+        );
+        self.variations.show(
             &ctx,
             rs,
             &mut self.patch,

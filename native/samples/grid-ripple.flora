@@ -12,8 +12,8 @@
       "id": "gr_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 3047,
-        "y": 102
+        "x": 3069,
+        "y": 101
       },
       "params": {
         "width": 500,
@@ -29,7 +29,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 266,
-        "y": 165
+        "y": 168
       },
       "params": {}
     },
@@ -37,8 +37,8 @@
       "id": "gr_palette",
       "defType": "color/palette",
       "position": {
-        "x": 487,
-        "y": 138
+        "x": 493,
+        "y": 137
       },
       "params": {
         "stopCount": 4,
@@ -67,8 +67,8 @@
       "id": "gr_count",
       "defType": "spread/count",
       "position": {
-        "x": 516,
-        "y": 340
+        "x": 520,
+        "y": 351
       },
       "params": {}
     },
@@ -76,8 +76,8 @@
       "id": "gr_cycle",
       "defType": "spread/cycle",
       "position": {
-        "x": 758,
-        "y": 283
+        "x": 764,
+        "y": 293
       },
       "params": {}
     },
@@ -85,8 +85,8 @@
       "id": "gr_randomize",
       "defType": "spread/randomize",
       "position": {
-        "x": 975,
-        "y": 292
+        "x": 986,
+        "y": 301
       },
       "params": {}
     },
@@ -95,7 +95,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 171
+        "y": 176
       },
       "params": {
         "value": 14.2,
@@ -112,8 +112,8 @@
       "id": "gr_size",
       "defType": "io/slider",
       "position": {
-        "x": 960,
-        "y": 166
+        "x": 974,
+        "y": 175
       },
       "params": {
         "value": 25.7,
@@ -130,7 +130,7 @@
       "id": "gr_delay",
       "defType": "value/number",
       "position": {
-        "x": 974,
+        "x": 986,
         "y": 0
       },
       "params": {
@@ -144,12 +144,12 @@
       "id": "gr_region",
       "defType": "region/foreach",
       "position": {
-        "x": 1228,
-        "y": 24
+        "x": 1242,
+        "y": 25
       },
       "params": {
-        "width": 1723,
-        "height": 398,
+        "width": 1731,
+        "height": 413,
         "label": "ForEach"
       },
       "ports": [
@@ -165,25 +165,25 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 114
+          "y": 113
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
           "direction": "input",
-          "y": 280
+          "y": 288
         }
       ],
-      "width": 1723,
-      "height": 398
+      "width": 1731,
+      "height": 413
     },
     {
       "id": "gr_mag",
       "defType": "vec2/mag",
       "position": {
-        "x": 131,
-        "y": 71
+        "x": 132,
+        "y": 70
       },
       "params": {},
       "parentId": "gr_region"
@@ -192,7 +192,7 @@
       "id": "gr_phaseMul",
       "defType": "math/mul",
       "position": {
-        "x": 314,
+        "x": 315,
         "y": 61
       },
       "params": {
@@ -210,8 +210,8 @@
       "id": "gr_time",
       "defType": "time/seconds",
       "position": {
-        "x": 356,
-        "y": 183
+        "x": 357,
+        "y": 187
       },
       "params": {},
       "parentId": "gr_region"
@@ -220,7 +220,7 @@
       "id": "gr_phaseAdd",
       "defType": "math/add",
       "position": {
-        "x": 586,
+        "x": 587,
         "y": 111
       },
       "params": {
@@ -236,8 +236,8 @@
       "id": "gr_sin",
       "defType": "math/sin",
       "position": {
-        "x": 852,
-        "y": 110
+        "x": 854,
+        "y": 111
       },
       "params": {},
       "parentId": "gr_region"
@@ -246,8 +246,8 @@
       "id": "gr_offset",
       "defType": "vec2/scale",
       "position": {
-        "x": 1023,
-        "y": 90
+        "x": 1024,
+        "y": 89
       },
       "params": {
         "v": {
@@ -267,8 +267,8 @@
       "id": "gr_pos",
       "defType": "math/add",
       "position": {
-        "x": 1247,
-        "y": 51
+        "x": 1252,
+        "y": 49
       },
       "params": {
         "valueType": "vec2"
@@ -283,7 +283,7 @@
       "defType": "style/stroke",
       "position": {
         "x": 130,
-        "y": 244
+        "y": 251
       },
       "params": {},
       "parentId": "gr_region"
@@ -292,8 +292,8 @@
       "id": "gr_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 1515,
-        "y": 78
+        "x": 1520,
+        "y": 76
       },
       "params": {},
       "parentId": "gr_region"

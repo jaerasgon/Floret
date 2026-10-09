@@ -13,7 +13,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 0,
-        "y": 85
+        "y": 88
       },
       "params": {}
     },
@@ -22,7 +22,7 @@
       "defType": "math/map",
       "position": {
         "x": 223,
-        "y": 105
+        "y": 110
       },
       "params": {
         "inMin": -250,
@@ -42,7 +42,7 @@
       "defType": "io/slider",
       "position": {
         "x": 180,
-        "y": 287
+        "y": 302
       },
       "params": {
         "value": 0.25,
@@ -59,8 +59,8 @@
       "id": "fb_osc",
       "defType": "sound/oscillator",
       "position": {
-        "x": 456,
-        "y": 168
+        "x": 457,
+        "y": 174
       },
       "params": {
         "type": "sawtooth"
@@ -73,8 +73,8 @@
       "id": "fb_out",
       "defType": "sound/output",
       "position": {
-        "x": 761,
-        "y": 97
+        "x": 766,
+        "y": 100
       },
       "params": {}
     },
@@ -82,8 +82,8 @@
       "id": "fb_fft",
       "defType": "sound/fft",
       "position": {
-        "x": 721,
-        "y": 219
+        "x": 724,
+        "y": 226
       },
       "params": {
         "bins": "64"
@@ -96,8 +96,8 @@
       "id": "fb_idxs",
       "defType": "spread/range",
       "position": {
-        "x": 746,
-        "y": 361
+        "x": 748,
+        "y": 374
       },
       "params": {
         "count": 64
@@ -110,12 +110,12 @@
       "id": "fb_region",
       "defType": "region/foreach",
       "position": {
-        "x": 989,
+        "x": 996,
         "y": 22
       },
       "params": {
-        "width": 1027,
-        "height": 640,
+        "width": 1037,
+        "height": 668,
         "label": "ForEach"
       },
       "ports": [
@@ -124,31 +124,31 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 319
+          "y": 332
         },
         {
           "id": "v",
           "name": "v",
           "type": "number",
           "direction": "input",
-          "y": 289
+          "y": 299
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 305
+          "y": 315
         }
       ],
-      "width": 1027,
-      "height": 640
+      "width": 1037,
+      "height": 668
     },
     {
       "id": "fb_angleMul",
       "defType": "math/mul",
       "position": {
-        "x": 146,
+        "x": 147,
         "y": 40
       },
       "params": {
@@ -164,8 +164,8 @@
       "id": "fb_fromAng",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 427,
-        "y": 150
+        "x": 428,
+        "y": 154
       },
       "params": {},
       "parentId": "fb_region"
@@ -174,8 +174,8 @@
       "id": "fb_hueMul",
       "defType": "math/mul",
       "position": {
-        "x": 146,
-        "y": 526
+        "x": 147,
+        "y": 550
       },
       "params": {
         "b": 5.625,
@@ -190,8 +190,8 @@
       "id": "fb_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 434,
-        "y": 467
+        "x": 437,
+        "y": 489
       },
       "params": {
         "s": 80,
@@ -209,8 +209,8 @@
       "id": "fb_fill",
       "defType": "style/fill",
       "position": {
-        "x": 630,
-        "y": 408
+        "x": 635,
+        "y": 427
       },
       "params": {
         "mode": "color"
@@ -224,8 +224,8 @@
       "id": "fb_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 819,
-        "y": 269
+        "x": 826,
+        "y": 278
       },
       "params": {},
       "parentId": "fb_region"
@@ -234,8 +234,8 @@
       "id": "fb_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2112,
-        "y": 291
+        "x": 2129,
+        "y": 300
       },
       "params": {
         "width": 500,
@@ -262,8 +262,8 @@
       "id": "fb_radius",
       "defType": "math/map",
       "position": {
-        "x": 189,
-        "y": 162
+        "x": 190,
+        "y": 166
       },
       "params": {
         "inMin": 0,
@@ -284,7 +284,7 @@
       "defType": "math/map",
       "position": {
         "x": 193,
-        "y": 344
+        "y": 358
       },
       "params": {
         "inMin": 0,

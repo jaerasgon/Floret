@@ -31,7 +31,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 282
+        "y": 293
       },
       "params": {
         "count": 1024
@@ -44,12 +44,12 @@
       "id": "t43_seed",
       "defType": "region/foreach",
       "position": {
-        "x": 223,
-        "y": 202
+        "x": 227,
+        "y": 209
       },
       "params": {
-        "width": 520,
-        "height": 174,
+        "width": 523,
+        "height": 180,
         "label": "seed"
       },
       "ports": [
@@ -58,18 +58,18 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 116
+          "y": 121
         },
         {
           "id": "b",
           "name": "b",
           "type": "boolean",
           "direction": "output",
-          "y": 76
+          "y": 77
         }
       ],
-      "width": 520,
-      "height": 174
+      "width": 523,
+      "height": 180
     },
     {
       "id": "t43_u",
@@ -92,7 +92,7 @@
       "id": "t43_lt",
       "defType": "logic/lt",
       "position": {
-        "x": 324,
+        "x": 327,
         "y": 40
       },
       "params": {
@@ -107,8 +107,8 @@
       "id": "t43_rState",
       "defType": "state/read-spread",
       "position": {
-        "x": 839,
-        "y": 222
+        "x": 846,
+        "y": 227
       },
       "params": {
         "slot": 1
@@ -121,8 +121,8 @@
       "id": "t43_step",
       "defType": "spread/gol-step",
       "position": {
-        "x": 1333,
-        "y": 299
+        "x": 1341,
+        "y": 307
       },
       "params": {
         "cols": 32,
@@ -137,8 +137,8 @@
       "id": "t43_wState",
       "defType": "state/write-spread",
       "position": {
-        "x": 1843,
-        "y": 279
+        "x": 1859,
+        "y": 285
       },
       "params": {
         "slot": 1
@@ -151,12 +151,12 @@
       "id": "t43_draw",
       "defType": "region/foreach",
       "position": {
-        "x": 1093,
+        "x": 1103,
         "y": 22
       },
       "params": {
-        "width": 604,
-        "height": 229,
+        "width": 607,
+        "height": 237,
         "label": "draw"
       },
       "ports": [
@@ -165,7 +165,7 @@
           "name": "b",
           "type": "boolean",
           "direction": "input",
-          "y": 136
+          "y": 137
         },
         {
           "id": "p",
@@ -179,11 +179,11 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 91
+          "y": 90
         }
       ],
-      "width": 604,
-      "height": 229
+      "width": 607,
+      "height": 237
     },
     {
       "id": "t43_sz",
@@ -206,7 +206,7 @@
       "defType": "draw/rect",
       "position": {
         "x": 396,
-        "y": 55
+        "y": 53
       },
       "params": {},
       "parentId": "t43_draw"
@@ -215,8 +215,8 @@
       "id": "t43_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1793,
-        "y": 77
+        "x": 1806,
+        "y": 75
       },
       "params": {
         "width": 500,
@@ -231,8 +231,8 @@
       "id": "t43_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 853,
-        "y": 40
+        "x": 858,
+        "y": 35
       },
       "params": {
         "cols": 32,

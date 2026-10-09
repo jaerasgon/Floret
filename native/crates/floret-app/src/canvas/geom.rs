@@ -22,7 +22,7 @@ pub const MIN_W: f32 = 84.0;
 pub const MATH_MIN_W: f32 = 72.0;
 pub const MAX_W: f32 = 360.0;
 pub const HEADER_H: f32 = 26.0;
-pub const ROW_H: f32 = 20.0;
+pub const ROW_H: f32 = 22.0;
 pub const PIN_R: f32 = 4.5;
 /// Pointer distance (screen px) that counts as "on" a pin / wire.
 pub const PIN_HIT: f32 = 9.0;
@@ -340,7 +340,7 @@ pub fn node_width(
     let title_font = if math.is_some() {
         FontId::monospace(13.0)
     } else {
-        FontId::proportional(12.5)
+        crate::theme::medium(12.5)
     };
     let mut header = super::draw::TITLE_X + text_width(&title, title_font) + 12.0;
     if let Some(slot) = n.params.get("slot").filter(|_| look == Look::Node) {

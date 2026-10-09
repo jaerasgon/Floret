@@ -31,7 +31,7 @@
       "defType": "geometry/scatter",
       "position": {
         "x": 0,
-        "y": 202
+        "y": 214
       },
       "params": {
         "mode": "random"
@@ -53,7 +53,7 @@
       "id": "rn_pal",
       "defType": "color/palette",
       "position": {
-        "x": 15,
+        "x": 16,
         "y": 0
       },
       "params": {
@@ -71,12 +71,12 @@
       "id": "rn_dots",
       "defType": "region/foreach",
       "position": {
-        "x": 307,
-        "y": 66
+        "x": 311,
+        "y": 74
       },
       "params": {
-        "width": 772,
-        "height": 241,
+        "width": 784,
+        "height": 250,
         "label": "ForEach"
       },
       "ports": [
@@ -85,24 +85,24 @@
           "name": "pos",
           "type": "vec2",
           "direction": "input",
-          "y": 121
+          "y": 126
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 76
+          "y": 77
         }
       ],
-      "width": 772,
-      "height": 241
+      "width": 784,
+      "height": 250
     },
     {
       "id": "rn_dots_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 564,
+        "x": 573,
         "y": 40
       },
       "params": {},
@@ -116,8 +116,8 @@
       "id": "rn_dots_grad",
       "defType": "color/gradient",
       "position": {
-        "x": 137,
-        "y": 107
+        "x": 138,
+        "y": 110
       },
       "params": {
         "space": "oklab"
@@ -128,8 +128,8 @@
       "id": "rn_dots_fill",
       "defType": "style/fill",
       "position": {
-        "x": 383,
-        "y": 113
+        "x": 389,
+        "y": 119
       },
       "params": {},
       "parentId": "rn_dots"
@@ -138,8 +138,8 @@
       "id": "rn_bokeh",
       "defType": "gpu/effect",
       "position": {
-        "x": 1952,
-        "y": 257
+        "x": 1975,
+        "y": 269
       },
       "params": {
         "mode": "blur",
@@ -155,7 +155,7 @@
       "defType": "geometry/scatter",
       "position": {
         "x": 0,
-        "y": 634
+        "y": 657
       },
       "params": {
         "mode": "random"
@@ -173,8 +173,8 @@
       "id": "rn_drop_fill",
       "defType": "style/fill",
       "position": {
-        "x": 34,
-        "y": 836
+        "x": 33,
+        "y": 893
       },
       "params": {
         "color": {
@@ -197,12 +197,12 @@
       "id": "rn_rain",
       "defType": "region/foreach",
       "position": {
-        "x": 525,
-        "y": 679
+        "x": 534,
+        "y": 718
       },
       "params": {
-        "width": 336,
-        "height": 214,
+        "width": 339,
+        "height": 224,
         "label": "ForEach"
       },
       "ports": [
@@ -211,18 +211,18 @@
           "name": "pos",
           "type": "vec2",
           "direction": "input",
-          "y": 76
+          "y": 77
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 76
+          "y": 77
         }
       ],
-      "width": 336,
-      "height": 214
+      "width": 339,
+      "height": 224
     },
     {
       "id": "rn_rain_dot",
@@ -242,8 +242,8 @@
       "id": "rn_fall",
       "defType": "motion/lfo",
       "position": {
-        "x": 636,
-        "y": 355
+        "x": 644,
+        "y": 372
       },
       "params": {
         "shape": "saw",
@@ -262,8 +262,8 @@
       "id": "rn_fall2",
       "defType": "motion/lfo",
       "position": {
-        "x": 636,
-        "y": 941
+        "x": 644,
+        "y": 990
       },
       "params": {
         "shape": "saw",
@@ -282,8 +282,8 @@
       "id": "rn_fall_xy",
       "defType": "vec2/make",
       "position": {
-        "x": 1236,
-        "y": 439
+        "x": 1252,
+        "y": 460
       },
       "params": {}
     },
@@ -291,8 +291,8 @@
       "id": "rn_fall2_xy",
       "defType": "vec2/make",
       "position": {
-        "x": 1236,
-        "y": 795
+        "x": 1252,
+        "y": 835
       },
       "params": {}
     },
@@ -300,8 +300,8 @@
       "id": "rn_down",
       "defType": "transform/translate",
       "position": {
-        "x": 1477,
-        "y": 543
+        "x": 1495,
+        "y": 570
       },
       "params": {}
     },
@@ -309,8 +309,8 @@
       "id": "rn_down2",
       "defType": "transform/translate",
       "position": {
-        "x": 1477,
-        "y": 668
+        "x": 1495,
+        "y": 702
       },
       "params": {}
     },
@@ -318,8 +318,8 @@
       "id": "rn_rain_group",
       "defType": "transform/group",
       "position": {
-        "x": 1675,
-        "y": 553
+        "x": 1698,
+        "y": 580
       },
       "params": {
         "slotCount": 2
@@ -329,8 +329,8 @@
       "id": "rn_streak",
       "defType": "gpu/effect",
       "position": {
-        "x": 1952,
-        "y": 447
+        "x": 1975,
+        "y": 469
       },
       "params": {
         "mode": "blur",
@@ -345,8 +345,8 @@
       "id": "rn_frame",
       "defType": "transform/group",
       "position": {
-        "x": 2228,
-        "y": 342
+        "x": 2254,
+        "y": 358
       },
       "params": {
         "slotCount": 2
@@ -356,8 +356,8 @@
       "id": "rn_lens",
       "defType": "gpu/effect",
       "position": {
-        "x": 2492,
-        "y": 322
+        "x": 2518,
+        "y": 336
       },
       "params": {
         "mode": "barrel"
@@ -371,8 +371,8 @@
       "id": "rn_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2755,
-        "y": 322
+        "x": 2783,
+        "y": 336
       },
       "params": {
         "width": 600,
@@ -399,8 +399,8 @@
       "id": "rn_rain_all",
       "defType": "transform/group",
       "position": {
-        "x": 1194,
-        "y": 657
+        "x": 1211,
+        "y": 691
       },
       "params": {
         "slotCount": 1

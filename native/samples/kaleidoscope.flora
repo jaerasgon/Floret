@@ -13,7 +13,7 @@
       "defType": "io/image-url",
       "position": {
         "x": 626,
-        "y": 115
+        "y": 119
       },
       "params": {
         "url": "https://picsum.photos/seed/floret-kaleido/500/500"
@@ -27,7 +27,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 368
+        "y": 385
       },
       "params": {}
     },
@@ -36,7 +36,7 @@
       "defType": "math/mul",
       "position": {
         "x": 180,
-        "y": 368
+        "y": 385
       },
       "params": {
         "b": 0.3,
@@ -51,7 +51,7 @@
       "defType": "math/sin",
       "position": {
         "x": 452,
-        "y": 317
+        "y": 333
       },
       "params": {}
     },
@@ -60,7 +60,7 @@
       "defType": "math/cos",
       "position": {
         "x": 452,
-        "y": 419
+        "y": 437
       },
       "params": {}
     },
@@ -68,8 +68,8 @@
       "id": "ks_imgRegion",
       "defType": "draw/image-region",
       "position": {
-        "x": 906,
-        "y": 264
+        "x": 910,
+        "y": 274
       },
       "params": {
         "sw": 200,
@@ -92,7 +92,7 @@
       "id": "ks_angles",
       "defType": "spread/ring",
       "position": {
-        "x": 899,
+        "x": 903,
         "y": 0
       },
       "params": {
@@ -106,8 +106,8 @@
       "id": "ks_idxs",
       "defType": "spread/range",
       "position": {
-        "x": 904,
-        "y": 162
+        "x": 908,
+        "y": 170
       },
       "params": {
         "count": 12
@@ -120,12 +120,12 @@
       "id": "ks_region",
       "defType": "region/foreach",
       "position": {
-        "x": 1134,
-        "y": 69
+        "x": 1142,
+        "y": 75
       },
       "params": {
-        "width": 849,
-        "height": 272,
+        "width": 853,
+        "height": 282,
         "label": "ForEach Wedge"
       },
       "ports": [
@@ -141,7 +141,7 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 135
+          "y": 136
         },
         {
           "id": "out",
@@ -151,8 +151,8 @@
           "y": 87
         }
       ],
-      "width": 849,
-      "height": 272
+      "width": 853,
+      "height": 282
     },
     {
       "id": "ks_iMod",
@@ -173,7 +173,7 @@
       "id": "ks_scaled",
       "defType": "transform/scale",
       "position": {
-        "x": 468,
+        "x": 469,
         "y": 98
       },
       "params": {
@@ -188,8 +188,8 @@
       "id": "ks_rotated",
       "defType": "transform/rotate",
       "position": {
-        "x": 652,
-        "y": 51
+        "x": 653,
+        "y": 50
       },
       "params": {},
       "parentId": "ks_region"
@@ -198,8 +198,8 @@
       "id": "ks_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2079,
-        "y": 120
+        "x": 2091,
+        "y": 125
       },
       "params": {
         "width": 500,
@@ -226,8 +226,8 @@
       "id": "ks_sx",
       "defType": "math/map",
       "position": {
-        "x": 662,
-        "y": 277
+        "x": 663,
+        "y": 289
       },
       "params": {
         "inMin": -1,
@@ -246,8 +246,8 @@
       "id": "ks_sy",
       "defType": "math/map",
       "position": {
-        "x": 662,
-        "y": 459
+        "x": 663,
+        "y": 481
       },
       "params": {
         "inMin": -1,

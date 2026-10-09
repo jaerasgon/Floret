@@ -610,3 +610,126 @@ fn review_samples() {
     }
     std::fs::write(out_dir.join("review.tsv"), tsv).expect("write review.tsv");
 }
+
+/// Controls [`review_controls`] can't see change anything here: (node,
+/// why).
+const QUIET_CONTROLS: &[(&str, &str)] = &[
+    ("wm_start", "starts the camera (none here)"),
+    ("bt_tog", "starts the camera and tracker (none here)"),
+    ("cs_on", "starts the camera; the stand-in shows without one"),
+    ("fb_amp", "scales the analysed sound (no audio engine here)"),
+    ("cl_tear", "matters only while the mouse pulls the cloth"),
+    (
+        "t39_sz",
+        "changes the image's pixels, which the scene doesn't show",
+    ),
+    (
+        "ps_lo",
+        "changes the image's pixels, which the scene doesn't show",
+    ),
+    (
+        "ps_hi",
+        "changes the image's pixels, which the scene doesn't show",
+    ),
+];
+
+/// `cargo test -p floret-app -- --ignored review_controls --nocapture`:
+/// every Slider, Toggle and Bang in a Library sample changes what the
+/// Renderer gets. Two copies of the sample run in step; at frame 30 one
+/// has the control moved (a slider to the end of its range further from
+/// its value, a toggle flipped, a bang fired) as the editor does it, and
+/// the scenes are compared at frames 60 and 120.
+#[test]
+#[ignore = "slow: runs every sample with a control twice"]
+fn review_controls() {
+    use floret_engine::{Engine, FrameCtx};
+    let mut dead = Vec::new();
+    let mut checked = 0;
+    let only = std::env::var("FLORET_SAMPLES_ONLY").ok();
+    floret_video::install();
+    let host: std::sync::Arc<dyn floret_engine::host::Host> =
+        match std::env::var_os("FLORET_REVIEW_IMAGE") {
+            Some(p) => std::sync::Arc::new(StandIn(
+                crate::host::shared(),
+                std::fs::read(p).expect("FLORET_REVIEW_IMAGE"),
+            )),
+            None => crate::host::shared(),
+        };
+    for s in SAMPLES {
+        if only
+            .as_deref()
+            .is_some_and(|o| !o.split(',').any(|p| s.id.starts_with(p)))
+        {
+            continue;
+        }
+        let patch = floret_engine::load_patch(s.flora).expect("sample loads");
+        let controls: Vec<_> = patch
+            .nodes
+            .iter()
+            .filter(|n| matches!(n.def_type.as_str(), "io/slider" | "io/toggle" | "io/bang"))
+            .map(|n| (n.id.clone(), n.def_type.clone(), n.params.clone()))
+            .collect();
+        for (id, ty, params) in controls {
+            let run = |moved: bool| -> Vec<String> {
+                let _wait = floret_engine::video::wait_for_frames();
+                let (mut e, _) = Engine::from_patch(&patch).expect("compiles");
+                e.set_host(Some(host.clone()));
+                let r = e.graph.renderer().expect("renderer");
+                let mut seen = Vec::new();
+                for f in 0..121u32 {
+                    if moved && f == 30 {
+                        let num =
+                            |k: &str, d: f64| params.get(k).and_then(Json::as_f64).unwrap_or(d);
+                        match ty.as_str() {
+                            "io/slider" => {
+                                let (v, lo, hi) =
+                                    (num("value", 0.5), num("min", 0.0), num("max", 1.0));
+                                let to = if v - lo > hi - v { lo } else { hi };
+                                e.params.set(&id, "value", Json::from(to));
+                            }
+                            "io/toggle" => {
+                                let on =
+                                    params.get("value").and_then(Json::as_bool).unwrap_or(false);
+                                e.params.set(&id, "value", Json::Bool(!on));
+                            }
+                            _ => e.params.set(&id, "bang", Json::Bool(true)),
+                        }
+                    }
+                    let ctx = FrameCtx {
+                        t: f64::from(f) / 60.0,
+                        dt: 1.0 / 60.0,
+                        frame_count: f64::from(f),
+                        width: 600.0,
+                        height: 600.0,
+                        ..Default::default()
+                    };
+                    let res = e.tick(&ctx);
+                    if f == 60 || f == 120 {
+                        let out = res.outputs.get(r).cloned().flatten().unwrap_or_default();
+                        // The layers in full (a group's value is a summary).
+                        let layers = out.first().map(|sp| floret_render::flatten_layers(sp));
+                        seen.push(format!("{layers:?}"));
+                    }
+                }
+                seen
+            };
+            checked += 1;
+            let (a, b) = (run(false), run(true));
+            let effect = a != b;
+            eprintln!(
+                "{}\t{id}\t{ty}\t{}",
+                s.id,
+                if effect { "changes" } else { "NO EFFECT" }
+            );
+            if !effect && !QUIET_CONTROLS.iter().any(|(c, _)| *c == id) {
+                dead.push(format!("{}: {id} ({ty})", s.id));
+            }
+        }
+    }
+    eprintln!("{checked} controls checked");
+    assert!(
+        dead.is_empty(),
+        "controls with no effect:\n{}",
+        dead.join("\n")
+    );
+}

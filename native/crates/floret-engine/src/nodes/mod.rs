@@ -16,6 +16,7 @@ pub mod color;
 pub mod convert;
 pub mod data;
 pub mod draw;
+pub mod echo;
 pub mod effect;
 pub mod expr;
 pub mod force;
@@ -74,6 +75,7 @@ fn registry() -> &'static Registrar {
         convert::register(&mut r);
         data::register(&mut r);
         draw::register(&mut r);
+        echo::register(&mut r);
         effect::register(&mut r);
         expr::register(&mut r);
         force::register(&mut r);

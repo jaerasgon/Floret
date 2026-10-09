@@ -32,6 +32,10 @@ use std::sync::Arc;
 const PASS_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Rgba8Unorm;
 /// Drop a compiled program after this many frames unused.
 const PROGRAM_TTL_FRAMES: u64 = 600;
+/// Most memory one draw's frame history may take (`gpu/echo`), and most
+/// frames it keeps whatever the size.
+const HISTORY_BYTES: u64 = 256 << 20;
+const HISTORY_FRAMES: u32 = 240;
 const UNIFORM_BLOCK: &str = "FloretUniforms";
 
 /// A compile error, `line` in the user's source (0 = not tied to a line).
@@ -90,6 +94,9 @@ const BUILTIN_MEMBERS: &str = "    float iTime;
     int iFrame;
     vec3 iResolution;
     vec4 iMouse;
+    int iHistoryHead;
+    int iHistoryCount;
+    int iHistorySize;
 ";
 
 const RESOURCES: &str = "layout(set = 0, binding = 1) uniform sampler floret_sampler;
@@ -102,6 +109,8 @@ layout(location = 0) out vec4 floret_fragColor;
 #define iChannel1 sampler2D(floret_channel1, floret_sampler)
 #define iChannel2 sampler2D(floret_channel2, floret_sampler)
 #define iChannel3 sampler2D(floret_channel3, floret_sampler)
+layout(set = 0, binding = 6) uniform texture2DArray floret_history;
+#define iHistory sampler2DArray(floret_history, floret_sampler)
 ";
 
 const EPILOGUE: &str = "
@@ -451,6 +460,24 @@ struct Target {
     bind: wgpu::BindGroup,
 }
 
+/// A draw's ring of past input frames (`ShaderShape::history`): layer
+/// `head` holds this frame, `head - 1` (wrapping) the one before.
+struct History {
+    texture: wgpu::Texture,
+    view: wgpu::TextureView,
+    size: u32,
+    head: u32,
+    count: u32,
+    used: bool,
+}
+
+/// Frames a history keeps on a `size` canvas when `wanted` are asked for.
+pub(crate) fn history_frames(wanted: u32, size: (u32, u32)) -> u32 {
+    let frame = u64::from(size.0.max(1)) * u64::from(size.1.max(1)) * 4;
+    let fit = (HISTORY_BYTES / frame).min(u64::from(HISTORY_FRAMES)) as u32;
+    wanted.clamp(1, fit.max(2))
+}
+
 /// Persistent ping-pong buffers for one `nodeId:buf`.
 struct Feedback {
     read: usize,
@@ -478,6 +505,8 @@ struct DrawPlan {
     output: Option<usize>,
     /// The target holding the map layer ([`ShaderChannel::Map`]).
     map: Option<usize>,
+    /// The history (node id) and layer this frame's input goes to.
+    history: Option<(Arc<str>, u32)>,
 }
 
 /// Compiles, caches and runs `gpu/shader` draws for one [`crate::Renderer`].
@@ -492,15 +521,20 @@ pub struct ShaderRunner {
     tex_layout: wgpu::BindGroupLayout,
     sampler: wgpu::Sampler,
     transparent: wgpu::TextureView,
+    /// A one-layer transparent array for draws without a history.
+    transparent_array: wgpu::TextureView,
     programs: HashMap<String, CacheEntry>,
     fallback: Option<Arc<Program>>,
     fallback_tried: bool,
     size: (u32, u32),
     input: Option<wgpu::TextureView>,
+    /// The texture behind `input` (copied into histories).
+    input_texture: Option<wgpu::Texture>,
     targets: Vec<Target>,
     /// Targets not owned by a feedback pair (reused across draws).
     free: Vec<usize>,
     feedback: HashMap<String, Feedback>,
+    histories: HashMap<Arc<str>, History>,
     uniforms: Vec<wgpu::Buffer>,
     plans: Vec<DrawPlan>,
     errors: Vec<(Arc<str>, ShaderBuffer, Vec<ShaderError>)>,
@@ -589,6 +623,16 @@ impl ShaderRunner {
                 tex_entry(3),
                 tex_entry(4),
                 tex_entry(5),
+                wgpu::BindGroupLayoutEntry {
+                    binding: 6,
+                    visibility: wgpu::ShaderStages::FRAGMENT,
+                    ty: wgpu::BindingType::Texture {
+                        sample_type: wgpu::TextureSampleType::Float { filterable: true },
+                        view_dimension: wgpu::TextureViewDimension::D2Array,
+                        multisampled: false,
+                    },
+                    count: None,
+                },
             ],
         });
         let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
@@ -696,6 +740,25 @@ impl ShaderRunner {
             );
             t.create_view(&Default::default())
         };
+        let transparent_array = device
+            .create_texture(&wgpu::TextureDescriptor {
+                label: Some("floret shader no history"),
+                size: wgpu::Extent3d {
+                    width: 1,
+                    height: 1,
+                    depth_or_array_layers: 1,
+                },
+                mip_level_count: 1,
+                sample_count: 1,
+                dimension: wgpu::TextureDimension::D2,
+                format: PASS_FORMAT,
+                usage: wgpu::TextureUsages::TEXTURE_BINDING,
+                view_formats: &[],
+            })
+            .create_view(&wgpu::TextureViewDescriptor {
+                dimension: Some(wgpu::TextureViewDimension::D2Array),
+                ..Default::default()
+            });
         ShaderRunner {
             pass_layout,
             pipeline_layout,
@@ -705,14 +768,17 @@ impl ShaderRunner {
             tex_layout: tex_layout.clone(),
             sampler,
             transparent,
+            transparent_array,
             programs: HashMap::new(),
             fallback: None,
             fallback_tried: false,
             size: (0, 0),
             input: None,
+            input_texture: None,
             targets: Vec::new(),
             free: Vec::new(),
             feedback: HashMap::new(),
+            histories: HashMap::new(),
             uniforms: Vec::new(),
             plans: Vec::new(),
             errors: Vec::new(),
@@ -784,7 +850,76 @@ impl ShaderRunner {
         self.targets.clear();
         self.free.clear();
         self.feedback.clear();
-        self.input = Some(self.texture(device, "floret shader input").0);
+        self.histories.clear();
+        let input = device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("floret shader input"),
+            size: wgpu::Extent3d {
+                width: size.0,
+                height: size.1,
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: PASS_FORMAT,
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT
+                | wgpu::TextureUsages::TEXTURE_BINDING
+                | wgpu::TextureUsages::COPY_SRC,
+            view_formats: &[],
+        });
+        self.input = Some(input.create_view(&Default::default()));
+        self.input_texture = Some(input);
+    }
+
+    /// The draw's history ring, advanced to this frame: `(head, count,
+    /// size)`, `head` being the layer this frame's input goes to.
+    fn history(
+        &mut self,
+        device: &wgpu::Device,
+        node: &Arc<str>,
+        h: floret_engine::shader::ShaderHistory,
+    ) -> (u32, u32, u32) {
+        let layers = history_frames(h.frames, self.size);
+        let fits = self.histories.get(node).is_some_and(|e| e.size == layers);
+        if !fits {
+            let texture = device.create_texture(&wgpu::TextureDescriptor {
+                label: Some("floret shader history"),
+                size: wgpu::Extent3d {
+                    width: self.size.0,
+                    height: self.size.1,
+                    depth_or_array_layers: layers,
+                },
+                mip_level_count: 1,
+                sample_count: 1,
+                dimension: wgpu::TextureDimension::D2,
+                format: PASS_FORMAT,
+                usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+                view_formats: &[],
+            });
+            let view = texture.create_view(&wgpu::TextureViewDescriptor {
+                dimension: Some(wgpu::TextureViewDimension::D2Array),
+                ..Default::default()
+            });
+            self.histories.insert(
+                node.clone(),
+                History {
+                    texture,
+                    view,
+                    size: layers,
+                    head: layers - 1,
+                    count: 0,
+                    used: true,
+                },
+            );
+        }
+        let e = self.histories.get_mut(node).expect("just made");
+        e.used = true;
+        if h.reset {
+            e.count = 0;
+        }
+        e.head = (e.head + 1) % e.size;
+        e.count = (e.count + 1).min(e.size);
+        (e.head, e.count, e.size)
     }
 
     fn texture(&self, device: &wgpu::Device, label: &str) -> (wgpu::TextureView, wgpu::BindGroup) {
@@ -888,6 +1023,9 @@ impl ShaderRunner {
         for f in self.feedback.values_mut() {
             f.used = false;
         }
+        for h in self.histories.values_mut() {
+            h.used = false;
+        }
         // Targets free for transient use this frame: everything not held by
         // a feedback pair. Recomputed per frame (pairs may have been dropped).
         let mut uniform_slot = 0;
@@ -898,6 +1036,7 @@ impl ShaderRunner {
         // Drop feedback buffers whose node didn't draw this frame (their
         // targets become free).
         self.feedback.retain(|_, f| f.used);
+        self.histories.retain(|_, h| h.used);
         self.programs
             .retain(|_, e| e.last_used + PROGRAM_TTL_FRAMES >= self.frame);
     }
@@ -930,6 +1069,7 @@ impl ShaderRunner {
             .map
             .as_ref()
             .map(|_| self.owned_target(device, format!("{}:map", sh.node_id)));
+        let history = sh.history.map(|h| self.history(device, &sh.node_id, h));
         // Transient targets: any target not owned by a live pair.
         let owned: Vec<usize> = self
             .feedback
@@ -991,8 +1131,18 @@ impl ShaderRunner {
             };
             let buffer = self.uniform_buffer(device, *uniform_slot, program.layout.size);
             *uniform_slot += 1;
-            queue.write_buffer(&buffer, 0, &uniform_bytes(&program.layout, sh, size, clock));
-            let bind = self.pass_bind_group(device, &buffer, sources);
+            let mut bytes = uniform_bytes(&program.layout, sh, size, clock);
+            if let Some((head, count, layers)) = history {
+                let put = |b: &mut [u8], k: &str, v: u32| program.layout.put(b, k, &[f64::from(v)]);
+                put(&mut bytes, "iHistoryHead", head);
+                put(&mut bytes, "iHistoryCount", count);
+                put(&mut bytes, "iHistorySize", layers);
+            }
+            queue.write_buffer(&buffer, 0, &bytes);
+            let array = history
+                .and_then(|_| self.histories.get(&sh.node_id))
+                .map(|h| &h.view);
+            let bind = self.pass_bind_group(device, &buffer, sources, array);
             passes.push(PassPlan {
                 program,
                 target,
@@ -1013,6 +1163,7 @@ impl ShaderRunner {
             passes,
             output,
             map,
+            history: history.map(|(head, _, _)| (sh.node_id.clone(), head)),
         }
     }
 
@@ -1032,6 +1183,7 @@ impl ShaderRunner {
         device: &wgpu::Device,
         uniforms: &wgpu::Buffer,
         sources: [Source; 4],
+        history: Option<&wgpu::TextureView>,
     ) -> wgpu::BindGroup {
         let views = sources.map(|s| match s {
             Source::Transparent => &self.transparent,
@@ -1054,6 +1206,12 @@ impl ShaderRunner {
                 resource: wgpu::BindingResource::TextureView(v),
             });
         }
+        entries.push(wgpu::BindGroupEntry {
+            binding: 6,
+            resource: wgpu::BindingResource::TextureView(
+                history.unwrap_or(&self.transparent_array),
+            ),
+        });
         device.create_bind_group(&wgpu::BindGroupDescriptor {
             label: Some("floret shader pass"),
             layout: &self.pass_layout,
@@ -1099,6 +1257,34 @@ impl ShaderRunner {
             pass.set_pipeline(&self.flip_pipe);
             pass.set_bind_group(0, src, &[]);
             pass.draw(0..3, 0..1);
+        }
+        // This frame's input joins the history before the passes read it.
+        if let (Some((node, layer)), Some(src)) = (&plan.history, &self.input_texture) {
+            if let Some(h) = self.histories.get(node) {
+                encoder.copy_texture_to_texture(
+                    wgpu::TexelCopyTextureInfo {
+                        texture: src,
+                        mip_level: 0,
+                        origin: wgpu::Origin3d::ZERO,
+                        aspect: wgpu::TextureAspect::All,
+                    },
+                    wgpu::TexelCopyTextureInfo {
+                        texture: &h.texture,
+                        mip_level: 0,
+                        origin: wgpu::Origin3d {
+                            x: 0,
+                            y: 0,
+                            z: *layer,
+                        },
+                        aspect: wgpu::TextureAspect::All,
+                    },
+                    wgpu::Extent3d {
+                        width: self.size.0,
+                        height: self.size.1,
+                        depth_or_array_layers: 1,
+                    },
+                );
+            }
         }
         for p in &plan.passes {
             let Some(t) = self.targets.get(p.target) else {
@@ -1279,8 +1465,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         assert_eq!(m["iFrame"].scalar, Scalar::Sint);
         assert_eq!(m["iResolution"].offset, 16);
         assert_eq!(m["iMouse"].offset, 32);
-        assert_eq!(m["scale"].offset, 48);
-        assert!(c.layout.size >= 52);
+        // The history ring's ints (`gpu/echo`), then the user's.
+        assert_eq!(m["iHistoryHead"].offset, 48);
+        assert_eq!(m["iHistorySize"].offset, 56);
+        assert_eq!(m["scale"].offset, 60);
+        assert!(c.layout.size >= 64);
     }
 
     #[test]
@@ -1303,6 +1492,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         }
         assert_eq!(check(FALLBACK_SOURCE), Ok(()));
         assert_eq!(check(floret_engine::nodes::gpu::DEFAULT_SOURCE), Ok(()));
+    }
+
+    #[test]
+    fn histories_are_capped_by_memory() {
+        // 256 MB of 1920 × 1080 frames is 32.
+        assert_eq!(history_frames(1000, (1920, 1080)), 32);
+        assert_eq!(history_frames(1000, (100, 100)), HISTORY_FRAMES);
+        assert_eq!(history_frames(5, (100, 100)), 5);
+        assert_eq!(history_frames(0, (100, 100)), 1);
+        // A huge canvas still keeps two.
+        assert_eq!(history_frames(60, (20_000, 20_000)), 2);
     }
 
     #[test]
@@ -1359,6 +1559,7 @@ void mainImage(out vec4 c, in vec2 f) { c = col * k * float(n); }";
             ]),
             input: None,
             map: None,
+            history: None,
         };
         let clock = RenderClock {
             time: 1.5,

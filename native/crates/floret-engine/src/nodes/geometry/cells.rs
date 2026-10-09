@@ -119,6 +119,14 @@ pub(super) fn delaunay(pts: &[Vec2]) -> Vec<Vec<Vec2>> {
 /// bisectors with its Delaunay neighbours (sites whose cell is empty, e.g.
 /// duplicates or sites outside the bounds, are left out).
 pub(super) fn voronoi(pts: &[Vec2], center: Vec2, size: Vec2) -> Vec<Vec<Vec2>> {
+    voronoi_cells(pts, center, size)
+        .into_iter()
+        .flatten()
+        .collect()
+}
+
+/// [`voronoi`], one entry per site (`None`: its cell is empty).
+pub(super) fn voronoi_cells(pts: &[Vec2], center: Vec2, size: Vec2) -> Vec<Option<Vec<Vec2>>> {
     let (hw, hh) = (size.x.abs() / 2.0, size.y.abs() / 2.0);
     let bounds = vec![
         Vec2 {
@@ -140,7 +148,7 @@ pub(super) fn voronoi(pts: &[Vec2], center: Vec2, size: Vec2) -> Vec<Vec<Vec2>> 
     ];
     let n = pts.len();
     if n == 1 {
-        return vec![bounds];
+        return vec![Some(bounds)];
     }
     let t = triangulate(pts);
     let mut neighbours: Vec<Vec<usize>> = vec![Vec::new(); n];
@@ -162,6 +170,7 @@ pub(super) fn voronoi(pts: &[Vec2], center: Vec2, size: Vec2) -> Vec<Vec<Vec2>> 
     let mut out = Vec::new();
     for (i, ns) in neighbours.iter_mut().enumerate() {
         if ns.is_empty() {
+            out.push(None);
             continue;
         }
         ns.sort_unstable();
@@ -180,9 +189,7 @@ pub(super) fn voronoi(pts: &[Vec2], center: Vec2, size: Vec2) -> Vec<Vec<Vec2>> 
                 break;
             }
         }
-        if cell.len() >= 3 && signed_area(&cell).abs() > 1e-9 {
-            out.push(cell);
-        }
+        out.push((cell.len() >= 3 && signed_area(&cell).abs() > 1e-9).then_some(cell));
     }
     out
 }

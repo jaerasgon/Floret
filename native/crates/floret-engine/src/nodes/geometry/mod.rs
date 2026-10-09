@@ -1,5 +1,6 @@
 //! `geometry/*` nodes (native-only): point scattering, Voronoi / Delaunay /
-//! hull cells, path operations, shape booleans and L-systems.
+//! hull cells, path operations, shape booleans, L-systems, trimming,
+//! morphing and connecting points.
 //!
 //! The polygon-producing nodes share one output shape: `shape` (every
 //! polygon in one group layer), `layers` (one layer per polygon; `cells`
@@ -16,11 +17,18 @@
 
 mod boolean;
 mod cells;
+mod connect;
 mod lsystem;
+mod measure;
+mod morph;
+#[cfg(test)]
+mod motion_tests;
 mod path_ops;
+mod relax;
 mod scatter;
 #[cfg(test)]
 mod tests;
+mod trim;
 
 use super::random::hash32;
 use super::shared::to_vec2;
@@ -44,6 +52,10 @@ pub fn register(r: &mut Registrar) {
     r.dynamic("geometry/path-ops", path_ops::inputs);
     r.node("geometry/boolean", boolean::boolean);
     r.node("geometry/lsystem", lsystem::lsystem);
+    r.node("geometry/trim", trim::trim);
+    r.node("geometry/connect", connect::connect);
+    r.dynamic("geometry/connect", connect::inputs);
+    r.node("geometry/morph", morph::morph);
 }
 
 /// Most points / vertices a geometry node emits (it warns when it stops).

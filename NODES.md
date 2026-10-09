@@ -49,13 +49,14 @@ old category names and type ids.
 | Particles & Physics | Emitter, Simulation, World, Bounds, Trail, Particle Shapes, forces, colliders, Walker Cluster. |
 | Input & Sound | Mouse, Keyboard, MIDI, Camera, Landmarks, Point Tracker; audio in, analysis (FFT, Amplitude …) and synthesis. |
 | Math | Math, Vector Math, Compare, Logic, Statistics, Convert, Map, Norm, Lerp, Clamp, Wrap, Step, Smoothstep, Expression, Cumulative, Delta, Histogram, Vec2 / Split / FromAngle / ToPolar, Select. |
-| Lists | Building, reordering, slicing and combining spreads. |
+| Lists | Lookup, Sublist, Reorder, Combine (op dropdowns); Count, Count Where, Repeat, Cycle, Resample, Merge, Neighbor; Cross Product, Pairwise, Partition, Windows, Uninterleave, Ungroup. |
 | Structure | ForEach, If, Cache regions and their accumulators; State, Read / Write; Subpatch, Comment, Probe. |
 
 **Op families.** Math, Vector Math, Compare, Logic, Statistics and
-Convert are one node each with an `op` (Convert: `to`) dropdown; the
-pins follow the op. They replace 58 single-op nodes (`math/mul`,
-`vec2/dot`, `logic/lt`, `convert/to-int` …), which stay loadable and
+Convert, and in Lists Lookup, Sublist, Reorder and Combine, are one node
+each with an `op` (Convert: `to`) dropdown; the pins follow the op. They
+replace 82 single-op nodes (`math/mul`, `vec2/dot`, `logic/lt`,
+`convert/to-int`, `spread/take` …), which stay loadable and
 compute identically but are hidden from the browser — see each
 section's *Legacy single-op nodes*. A search for an op's name ("mul",
 "normalize", "xor") offers it directly and places the family node set
@@ -194,8 +195,14 @@ Seeded, deterministic noise and PRNGs. Wire `time/frame` into `seed` for per-fra
 
 ## Spread
 
+The Lists group. **Lookup**, **Sublist**, **Reorder** and **Combine** are one node each with an `op` dropdown whose pins follow the op; they replace 24 single-op nodes (see *Legacy single-op nodes* below). Kept as nodes of their own: Count and Count Where (one number from a list), Repeat, Cycle and Resample (lists of a given length), Merge (any number of wires into one pin, with its own slot count), Neighbor (its own `edges` dropdown) and the nodes with two or more outputs (Cross Product, Pairwise, Partition, Windows, Uninterleave, Ungroup).
+
 | Label · type | Inputs → Outputs | Description |
 |---|---|---|
+| **Lookup** · `spread/lookup` | `op` picks the pins: `spread, index` (at), `source, indices` (pick), `flat, groupSize, index` (group-at), `spread, value` (index-of, indices-of) → `result` | Read from a list: the item at an index (negative from the end, out of range → `null`), the items at an index spread (wrapping), the Nth group of a flat + groupSize pair, or the first index (−1 if missing) / every index where a value occurs. Each op computes exactly as the node it replaced (the legacy rows below). Native-only. |
+| **Sublist** · `spread/sublist` | `op` picks the pins: `spread, count` (take, skip), `spread, start, end` (slice), `spread, index, count` (remove), `spread, keep: boolean*` (keep-where), `spread` (unique) → `result: T*` | Keep part of a list, in order: the first N, all but the first N, a `start..end` slice (`end` ≤ 0 counts from the end), everything but a removed range, the items whose parallel boolean is true, or each value once (first occurrence). Native-only. |
+| **Reorder** · `spread/reorder` | `op` picks the pins: `spread` (reverse), `spread, shift` (rotate), `spread, descending` (sort), `spread, keys, descending` (sort-by-key), `spread, indices` (permute), `spread, i, j` (swap) → `result: T*` | The same items in a new order: reversed, rotated by N (negative shifts left), sorted numerically, sorted by a parallel key spread, permuted by an index spread (out of range → `null`), or with two items swapped. Native-only. |
+| **Combine** · `spread/combine` | `op` picks the pins: `spread, tail` (append), `head, spread` (prepend), `a, b` (concat, interleave), `spread, index, insertion` (insert), `spread, index, replacement` (replace), `spread, marks, count` (inject) → `result: T*` | Put lists together: append or prepend one value, concatenate two lists, interleave them (`a0, b0, a1, b1 …`, to the shorter length), insert a list at an index, replace the item at an index with a list, or inject `marks` at N evenly spaced positions. Native-only. |
 | **Linear Spread** · `spread/linear` | `from, to, count: number` → `spread: number*` | A spread from `from` to `to`, of length `count` (inclusive endpoints). |
 | **Range** · `spread/range` | `count: number` → `spread: number*` | Integers `0 .. count-1`. |
 | **Repeat** · `spread/repeat` | `value, count: number` → `spread: number*` | Repeat a value N times. |
@@ -205,39 +212,52 @@ Seeded, deterministic noise and PRNGs. Wire `time/frame` into `seed` for per-fra
 | **Spiral** · `spread/spiral` | `count, turns, radius, phase: number` → `spread: vec2*` | Archimedean spiral — `count` points across `turns` rotations, radius growing `0 → radius`. |
 | **Fibonacci** · `spread/fibonacci` | `count, scale, phase: number` → `spread: vec2*` | Phyllotaxis / sunflower spiral — points at golden-angle increments, radius = `scale · √i`. |
 | **Count** · `spread/count` | `spread: number*` → `count: number` | Length of a spread. |
-| **Reverse** · `spread/reverse` | `spread: number*` → `spread: number*` | Reverse element order. |
-| **Sort** · `spread/sort` | `spread: number*, descending: boolean` → `spread: number*` | Numeric sort. `descending` flips order. |
 | **Shuffle** · `spread/shuffle` | `spread: number*, seed: number` → `spread: number*` | Fisher–Yates shuffle, deterministic per seed. |
-| **Take** · `spread/take` | `spread: number*, n: number` → `spread: number*` | First N elements. `Take(0)` yields an empty spread. |
-| **Skip** · `spread/skip` | `spread: number*, n: number` → `spread: number*` | Drop the first N elements. |
-| **Slice** · `spread/slice` | `spread: number*, start, end: number` → `spread: number*` | Elements `[start..end)`. Negative `end` means count-from-end. |
-| **Stack** · `spread/stack` | `a: number*, b: number*` → `spread: number*` | Concatenate two spreads: `a ++ b`. |
 | **Resample** · `spread/resample` | `spread: number*, count: number` → `spread: number*` | Resample a spread to length `count` (linear interpolation). |
 | **Sine Spread** · `spread/sine` | `count, amplitude, frequency, phase, offset: number` → `spread: number*` | `count` samples of `offset + amplitude · sin(2π · frequency · i/count + phase)`. |
 | **Geometric Spread** · `spread/geometric` | `start, ratio, count: number` → `spread: number*` | Geometric progression `start, start·ratio, start·ratio², …`. |
 | **Noise Spread** · `spread/noise` | `count, frequency, phase, seed: number` → `spread: number*` | 1-D Perlin noise sampled at regular intervals, in [0, 1]. |
-| **SetSlice** · `spread/set-slice` | `spread: T*, index: number, replacement: T*` → `out: T*` | Replace the element at `index` with the replacement spread (length grows when replacement > 1). |
-| **InsertSlice** · `spread/insert-slice` | `spread: T*, index: number, insertion: T*` → `out: T*` | Insert a spread at `index` without overwriting. |
-| **RemoveSlice** · `spread/remove-slice` | `spread: T*, index, count: number` → `out: T*` | Delete `count` elements starting at `index`. |
-| **Swap** · `spread/swap` | `spread: T*, i, j: number` → `out: T*` | Swap two elements by index. |
-| **Interleave** · `spread/interleave` | `a: T*, b: T*` → `out: T*` | `[a0,b0,a1,b1,…]`, truncated to the shorter input. |
 | **Uninterleave** · `spread/uninterleave` | `spread: T*` → `even, odd: T*` | Split into even- and odd-indexed elements. |
 | **CrossProduct** · `spread/cross` | `a: T*, b: U*` → `a: T*, b: U*` | Cartesian product as two parallel spreads of length `|a|·|b|`. |
-| **Cons** · `spread/cons` | `head: T, spread: T*` → `out: T*` | Prepend a single value. |
-| **Append** · `spread/append` | `spread: T*, tail: T` → `out: T*` | Append a single value. |
-| **Inject** · `spread/inject` | `spread: T*, marks: T*, count: number` → `out: T*` | Insert `marks` at `count` evenly-spaced positions in `spread`. |
-| **Sift** · `spread/sift` | `spread: T*, keep: boolean*` → `out: T*` | Keep elements where the parallel boolean is true. |
-| **Unique** · `spread/unique` | `spread: T*` → `out: T*` | Deduplicate, preserving first occurrence. |
-| **IndexOf** · `spread/index-of` | `spread: T*, value: T` → `index: number` | First index of `value`, or `-1` if missing. |
 | **CountWhere** · `spread/count-where` | `keep: boolean*` → `count: number` | Number of `true` entries. |
-| **IndicesByValue** · `spread/indices-by-value` | `spread: T*, value: T` → `out: number*` | All indices matching `value`. |
-| **Rotate** · `spread/rotate` | `spread: T*, shift: number` → `out: T*` | Cyclic shift by `shift` positions; negative shifts left. |
-| **Permute** · `spread/permute` | `spread: T*, indices: number*` → `out: T*` | Reorder by an index spread; out-of-range yields `null`. |
-| **SortByKey** · `spread/sort-by-key` | `spread: T*, keys: number*, descending: boolean` → `out: T*` | Sort the value spread by a parallel number spread. |
-| **Partition** · `spread/partition` | `spread: T*, bin: number` → `flat: T*, groupSize: number*` | Chunk into fixed-size groups; pair with `AtGroup` to access a single group. |
-| **AtGroup** · `spread/at-group` | `flat: T*, groupSize: number*, index: number` → `out: T*` | Pick the Nth group as a sub-spread; negative index counts from the end. |
+| **Partition** · `spread/partition` | `spread: T*, bin: number` → `flat: T*, groupSize: number*` | Chunk into fixed-size groups; pair with Lookup set to group-at to read a single group. |
 | **Pairwise** · `spread/pairwise` | `spread: T*` → `a: T*, b: T*` | Adjacent pairs: `(s[0..n-1], s[1..n])` for line-segment patterns. |
 | **Windows** · `spread/windows` | `spread: T*, size: number` → `flat: T*, windowSize: number*` | Sliding windows of length `size`, stride 1. |
+| **Cycle** · `spread/cycle` | `spread: T*, count: number` → `values: T*` | Repeat the spread cyclically until it has `count` elements. |
+| **Merge** · `spread/merge` | `s1 … sN: T*` → `merged: T*` | Concatenate every numbered slot in order (the header's `− n +` sets how many). Feeds several wires into one input pin. |
+| **Neighbor** · `spread/neighbor` | `spread: T*, index, offset: number` → `value: T` | `spread[index + offset]`; the `edges` dropdown says what happens past the ends: clamp, wrap or zero (`null`). Inside a ForEach, wire the region's `index`. |
+| **Ungroup** · `spread/ungroup` | `groups: T**` → `out1 … outN: T*` | One output pin per sub-spread (`count` sets how many); missing groups are empty. |
+
+### Legacy single-op nodes
+
+Each is now an op of **Lookup**, **Sublist**, **Reorder** or **Combine**: `spread/take` is Sublist set to take, `spread/stack` Combine set to concat, `spread/sift` Sublist set to keep-where, `spread/at` Lookup set to at … Hidden from the node browser; old patches load and run unchanged. Searching an old name ("take", "spread/sift") offers the op.
+
+| Label · type | Inputs → Outputs | Description |
+|---|---|---|
+| **At** · `spread/at` | `spread: T*, index: number` → `value: T` | One element by index; negative counts from the end; out of range or empty → `null`. |
+| **Pick** · `spread/pick` | `source: T*, indices: number*` → `values: T*` | `source[indices[i] mod n]` for each index; out-of-range indices wrap. |
+| **AtGroup** · `spread/at-group` | `flat: T*, groupSize: number*, index: number` → `out: T*` | Pick the Nth group as a sub-spread; negative index counts from the end. |
+| **IndexOf** · `spread/index-of` | `spread: T*, value: T` → `index: number` | First index of `value`, or `-1` if missing. |
+| **IndicesByValue** · `spread/indices-by-value` | `spread: T*, value: T` → `out: number*` | All indices matching `value`. |
+| **Take** · `spread/take` | `spread: number*, n: number` → `spread: number*` | First N elements. `Take(0)` yields an empty spread. |
+| **Skip** · `spread/skip` | `spread: number*, n: number` → `spread: number*` | Drop the first N elements. |
+| **Slice** · `spread/slice` | `spread: number*, start, end: number` → `spread: number*` | Elements `[start..end)`. Negative `end` means count-from-end. |
+| **RemoveSlice** · `spread/remove-slice` | `spread: T*, index, count: number` → `out: T*` | Delete `count` elements starting at `index`. |
+| **Sift** · `spread/sift` | `spread: T*, keep: boolean*` → `out: T*` | Keep elements where the parallel boolean is true. |
+| **Unique** · `spread/unique` | `spread: T*` → `out: T*` | Deduplicate, preserving first occurrence. |
+| **Reverse** · `spread/reverse` | `spread: number*` → `spread: number*` | Reverse element order. |
+| **Rotate** · `spread/rotate` | `spread: T*, shift: number` → `out: T*` | Cyclic shift by `shift` positions; negative shifts left. |
+| **Sort** · `spread/sort` | `spread: number*, descending: boolean` → `spread: number*` | Numeric sort. `descending` flips order. |
+| **SortByKey** · `spread/sort-by-key` | `spread: T*, keys: number*, descending: boolean` → `out: T*` | Sort the value spread by a parallel number spread. |
+| **Permute** · `spread/permute` | `spread: T*, indices: number*` → `out: T*` | Reorder by an index spread; out-of-range yields `null`. |
+| **Swap** · `spread/swap` | `spread: T*, i, j: number` → `out: T*` | Swap two elements by index. |
+| **Append** · `spread/append` | `spread: T*, tail: T` → `out: T*` | Append a single value. |
+| **Cons** · `spread/cons` | `head: T, spread: T*` → `out: T*` | Prepend a single value. |
+| **Stack** · `spread/stack` | `a: number*, b: number*` → `spread: number*` | Concatenate two spreads: `a ++ b`. |
+| **Interleave** · `spread/interleave` | `a: T*, b: T*` → `out: T*` | `[a0,b0,a1,b1,…]`, truncated to the shorter input. |
+| **InsertSlice** · `spread/insert-slice` | `spread: T*, index: number, insertion: T*` → `out: T*` | Insert a spread at `index` without overwriting. |
+| **SetSlice** · `spread/set-slice` | `spread: T*, index: number, replacement: T*` → `out: T*` | Replace the element at `index` with the replacement spread (length grows when replacement > 1). |
+| **Inject** · `spread/inject` | `spread: T*, marks: T*, count: number` → `out: T*` | Insert `marks` at `count` evenly-spaced positions in `spread`. |
 
 ## Vec2
 

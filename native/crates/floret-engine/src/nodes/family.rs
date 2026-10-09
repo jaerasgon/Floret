@@ -1,6 +1,7 @@
 //! Operator families: one node per concept with an op dropdown — Math,
-//! Vector Math, Compare, Logic, Statistics and Convert — in place of one
-//! node per operator.
+//! Vector Math, Compare, Logic, Statistics and Convert, and the list
+//! families Lookup, Sublist, Reorder and Combine — in place of one node per
+//! operator.
 //!
 //! Each op *is* the single-op node it supersedes (`math/mul`, `vec2/dot`,
 //! `logic/lt` …): its pins are that node's (dynamic) inputs, its output
@@ -252,8 +253,79 @@ pub static CONVERT: Family = Family {
     adaptive: &[],
 };
 
+/// Read from a list: by index, or where a value is.
+pub static LOOKUP: Family = Family {
+    ty: "spread/lookup",
+    param: "op",
+    ops: &[
+        op("at", "Item At", "spread/at"),
+        op("pick", "Items At", "spread/pick"),
+        op("group-at", "Group At", "spread/at-group"),
+        op("index-of", "Index Of", "spread/index-of"),
+        op("indices-of", "Indices Of", "spread/indices-by-value"),
+    ],
+    adaptive: &[],
+};
+
+/// Keep part of a list, in order.
+pub static SUBLIST: Family = Family {
+    ty: "spread/sublist",
+    param: "op",
+    ops: &[
+        op("take", "Take", "spread/take"),
+        op("skip", "Skip", "spread/skip"),
+        op("slice", "Slice", "spread/slice"),
+        op("remove", "Remove Range", "spread/remove-slice"),
+        op("keep-where", "Keep Where", "spread/sift"),
+        op("unique", "Unique", "spread/unique"),
+    ],
+    adaptive: &[],
+};
+
+/// The same items in a new order.
+pub static REORDER: Family = Family {
+    ty: "spread/reorder",
+    param: "op",
+    ops: &[
+        op("reverse", "Reverse", "spread/reverse"),
+        op("rotate", "Rotate List", "spread/rotate"),
+        op("sort", "Sort", "spread/sort"),
+        op("sort-by-key", "Sort By Key", "spread/sort-by-key"),
+        op("permute", "Permute", "spread/permute"),
+        op("swap", "Swap", "spread/swap"),
+    ],
+    adaptive: &[],
+};
+
+/// Put items or lists together.
+pub static COMBINE: Family = Family {
+    ty: "spread/combine",
+    param: "op",
+    ops: &[
+        op("append", "Append", "spread/append"),
+        op("prepend", "Prepend", "spread/cons"),
+        op("concat", "Concatenate", "spread/stack"),
+        op("interleave", "Interleave", "spread/interleave"),
+        op("insert", "Insert", "spread/insert-slice"),
+        op("replace", "Replace At", "spread/set-slice"),
+        op("inject", "Inject", "spread/inject"),
+    ],
+    adaptive: &[],
+};
+
 /// Every family, in browser order.
-pub static FAMILIES: [&Family; 6] = [&MATH, &VECTOR, &COMPARE, &LOGIC, &STATISTICS, &CONVERT];
+pub static FAMILIES: [&Family; 10] = [
+    &MATH,
+    &VECTOR,
+    &COMPARE,
+    &LOGIC,
+    &STATISTICS,
+    &CONVERT,
+    &LOOKUP,
+    &SUBLIST,
+    &REORDER,
+    &COMBINE,
+];
 
 /// The family a node type is, if any.
 pub fn family(ty: &str) -> Option<&'static Family> {
@@ -304,6 +376,22 @@ pub fn register(r: &mut Registrar) {
     r.node("convert/convert", |i| CONVERT.build(i));
     r.dynamic("convert/convert", |p| CONVERT.inputs(p));
     r.dynamic_outputs("convert/convert", |p| CONVERT.outputs(p));
+
+    r.node("spread/lookup", |i| LOOKUP.build(i));
+    r.dynamic("spread/lookup", |p| LOOKUP.inputs(p));
+    r.dynamic_outputs("spread/lookup", |p| LOOKUP.outputs(p));
+
+    r.node("spread/sublist", |i| SUBLIST.build(i));
+    r.dynamic("spread/sublist", |p| SUBLIST.inputs(p));
+    r.dynamic_outputs("spread/sublist", |p| SUBLIST.outputs(p));
+
+    r.node("spread/reorder", |i| REORDER.build(i));
+    r.dynamic("spread/reorder", |p| REORDER.inputs(p));
+    r.dynamic_outputs("spread/reorder", |p| REORDER.outputs(p));
+
+    r.node("spread/combine", |i| COMBINE.build(i));
+    r.dynamic("spread/combine", |p| COMBINE.inputs(p));
+    r.dynamic_outputs("spread/combine", |p| COMBINE.outputs(p));
 }
 
 #[cfg(test)]

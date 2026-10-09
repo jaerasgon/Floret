@@ -7,7 +7,7 @@
 //! as unimplemented.
 
 use crate::node::Factory;
-use crate::spec::DynamicInputsFn;
+use crate::spec::{AdaptiveFn, DynamicInputsFn};
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
@@ -18,6 +18,7 @@ pub mod data;
 pub mod draw;
 pub mod effect;
 pub mod expr;
+pub mod family;
 pub mod force;
 pub mod geometry;
 pub mod gpu;
@@ -52,6 +53,8 @@ pub mod video;
 pub struct Registrar {
     factories: HashMap<&'static str, Factory>,
     dynamic: Vec<(&'static str, DynamicInputsFn)>,
+    dynamic_outputs: Vec<(&'static str, DynamicInputsFn)>,
+    adaptive: Vec<(&'static str, AdaptiveFn)>,
 }
 
 impl Registrar {
@@ -62,6 +65,16 @@ impl Registrar {
 
     pub fn dynamic(&mut self, ty: &'static str, f: DynamicInputsFn) {
         self.dynamic.push((ty, f));
+    }
+
+    /// Output ports whose types depend on params (names stay static).
+    pub fn dynamic_outputs(&mut self, ty: &'static str, f: DynamicInputsFn) {
+        self.dynamic_outputs.push((ty, f));
+    }
+
+    /// For an `adaptiveType` node that only adapts in some modes.
+    pub fn adaptive_when(&mut self, ty: &'static str, f: AdaptiveFn) {
+        self.adaptive.push((ty, f));
     }
 }
 
@@ -76,6 +89,7 @@ fn registry() -> &'static Registrar {
         draw::register(&mut r);
         effect::register(&mut r);
         expr::register(&mut r);
+        family::register(&mut r);
         force::register(&mut r);
         geometry::register(&mut r);
         image::register(&mut r);
@@ -116,6 +130,16 @@ pub fn factory(ty: &str) -> Option<Factory> {
 /// Every registered dynamic-inputs function.
 pub fn dynamic_inputs() -> Vec<(&'static str, DynamicInputsFn)> {
     registry().dynamic.clone()
+}
+
+/// Every registered dynamic-outputs function.
+pub fn dynamic_outputs() -> Vec<(&'static str, DynamicInputsFn)> {
+    registry().dynamic_outputs.clone()
+}
+
+/// Every registered adaptive-mode predicate.
+pub fn adaptive_when() -> Vec<(&'static str, AdaptiveFn)> {
+    registry().adaptive.clone()
 }
 
 /// Number of node types with an implementation.

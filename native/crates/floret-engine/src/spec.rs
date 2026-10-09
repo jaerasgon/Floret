@@ -130,6 +130,9 @@ pub enum RegionRole {
 pub struct NodeSpec {
     pub ty: String,
     pub category: String,
+    /// The node browser group (one of [`GROUPS`]); the category when the
+    /// catalogue doesn't give one.
+    pub group: String,
     pub label: String,
     pub description: Option<String>,
     pub inputs: Vec<PortSpec>,
@@ -153,10 +156,90 @@ pub struct NodeSpec {
 
 pub type DynamicInputsFn = fn(&Params) -> Vec<PortSpec>;
 
+/// Whether a node's pins adapt to `valueType` (number / vec2 / colour) for
+/// these params. Registered for node types that only adapt in some modes.
+pub type AdaptiveFn = fn(&Params) -> bool;
+
+/// A node browser group: what the nodes in it are *for*, in roughly the
+/// order a patch is built (see [`GROUPS`]).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Group {
+    pub name: &'static str,
+    /// One line for the browser's tooltip.
+    pub blurb: &'static str,
+}
+
+/// The node browser groups, in display order. Every node in `nodes.json`
+/// names one (`group`); the type ids and categories are unaffected.
+pub const GROUPS: &[Group] = &[
+    Group {
+        name: "Source",
+        blurb: "Values, controls and files: numbers, sliders, toggles, images, SVG, video, CSV.",
+    },
+    Group {
+        name: "Draw",
+        blurb: "Shapes and images as layers, and the Renderer that shows them.",
+    },
+    Group {
+        name: "Text",
+        blurb: "Type: text, glyphs, text on a path, outlines, fonts and strings.",
+    },
+    Group {
+        name: "Color & Style",
+        blurb: "Colours, gradients and palettes; fill, stroke and other styles.",
+    },
+    Group {
+        name: "Shape Ops",
+        blurb: "Transform, group, blend and mask layers; boolean and path operations.",
+    },
+    Group {
+        name: "Patterns",
+        blurb: "Point layouts and sequences: grids, rings, spirals, scatter, Voronoi, L-systems, cellular automata.",
+    },
+    Group {
+        name: "Noise & Random",
+        blurb: "Noise fields, random numbers and shuffles.",
+    },
+    Group {
+        name: "Animate",
+        blurb: "Time, oscillators, easing, smoothing, springs, triggers and counters.",
+    },
+    Group {
+        name: "Image",
+        blurb: "Rasterize, crop, resize, sample and edit pixels.",
+    },
+    Group {
+        name: "Effects",
+        blurb: "Post effects and shaders, filters, blur, pixelate, pixel sort.",
+    },
+    Group {
+        name: "Particles & Physics",
+        blurb: "Emitters, simulations, forces and colliders.",
+    },
+    Group {
+        name: "Input & Sound",
+        blurb: "Mouse, keyboard, MIDI, camera and tracking; audio in, analysis and synthesis.",
+    },
+    Group {
+        name: "Math",
+        blurb: "Math, vector math, comparisons, logic, mapping, statistics and conversions.",
+    },
+    Group {
+        name: "Lists",
+        blurb: "Build, reorder, slice and combine spreads.",
+    },
+    Group {
+        name: "Structure",
+        blurb: "ForEach, If and Cache regions, state across frames, subpatches, comments and probes.",
+    },
+];
+
 /// All node specs, keyed by type, in catalogue order.
 pub struct Catalogue {
     specs: IndexMap<String, NodeSpec>,
     dynamic: HashMap<&'static str, DynamicInputsFn>,
+    dynamic_outputs: HashMap<&'static str, DynamicInputsFn>,
+    adaptive: HashMap<&'static str, AdaptiveFn>,
 }
 
 impl Catalogue {
@@ -168,6 +251,12 @@ impl Catalogue {
                 .expect("built-in nodes.json is valid");
             for (ty, f) in crate::nodes::dynamic_inputs() {
                 cat.dynamic.insert(ty, f);
+            }
+            for (ty, f) in crate::nodes::dynamic_outputs() {
+                cat.dynamic_outputs.insert(ty, f);
+            }
+            for (ty, f) in crate::nodes::adaptive_when() {
+                cat.adaptive.insert(ty, f);
             }
             cat
         })
@@ -183,6 +272,8 @@ impl Catalogue {
         Ok(Catalogue {
             specs,
             dynamic: HashMap::new(),
+            dynamic_outputs: HashMap::new(),
+            adaptive: HashMap::new(),
         })
     }
 
@@ -208,6 +299,35 @@ impl Catalogue {
             Some(f) => f(params),
             None => spec.inputs.clone(),
         }
+    }
+
+    /// The node's output ports for these params. Names never change (the
+    /// compiler indexes the static outputs); types may: a registered
+    /// dynamic-outputs function's, or an adaptive node's latched
+    /// `valueType`.
+    pub fn resolved_outputs(&self, spec: &NodeSpec, params: &Params) -> Vec<PortSpec> {
+        let mut outs = match self.dynamic_outputs.get(spec.ty.as_str()) {
+            Some(f) => f(params),
+            None => spec.outputs.clone(),
+        };
+        if self.is_adaptive(spec, params) {
+            let ty = crate::nodes::math::adaptive::port_type_for_value_type(params);
+            for p in &mut outs {
+                p.ty = ty;
+            }
+        }
+        outs
+    }
+
+    /// Whether the node's pins currently follow the `valueType` latch: an
+    /// adaptive type, in a mode that adapts (a Math node set to `add` does,
+    /// one set to `sin` doesn't).
+    pub fn is_adaptive(&self, spec: &NodeSpec, params: &Params) -> bool {
+        spec.adaptive_type
+            && self
+                .adaptive
+                .get(spec.ty.as_str())
+                .is_none_or(|f| f(params))
     }
 
     /// Whether a dynamic-input function is implemented for this type.
@@ -249,6 +369,7 @@ struct RawNode {
     #[serde(rename = "type")]
     ty: String,
     category: String,
+    group: Option<String>,
     label: String,
     description: Option<String>,
     inputs: Vec<RawPort>,
@@ -308,6 +429,7 @@ impl RawNode {
         };
         Ok(NodeSpec {
             ty: self.ty,
+            group: self.group.unwrap_or_else(|| self.category.clone()),
             category: self.category,
             label: self.label,
             description: self.description,
@@ -348,6 +470,39 @@ mod tests {
         let w = cat.get("physics/world").unwrap();
         assert!(matches!(w.inputs[3].default, Some(Value::Null)));
         assert!(w.inputs[4].default.is_none());
+    }
+
+    #[test]
+    fn every_node_has_a_browser_group_and_no_group_is_empty() {
+        let cat = Catalogue::builtin();
+        let names: Vec<&str> = GROUPS.iter().map(|g| g.name).collect();
+        let mut unique = names.clone();
+        unique.sort_unstable();
+        unique.dedup();
+        assert_eq!(unique.len(), names.len(), "duplicate group");
+        // Hidden legacy nodes too: old patches colour them by group.
+        let stray: Vec<_> = cat
+            .iter()
+            .filter(|s| !names.contains(&s.group.as_str()))
+            .map(|s| (s.ty.clone(), s.group.clone()))
+            .collect();
+        assert!(stray.is_empty(), "nodes without a known group: {stray:?}");
+        for g in GROUPS {
+            let n = cat.iter().filter(|s| !s.hidden && s.group == g.name).count();
+            assert!(
+                (5..=40).contains(&n),
+                "group {} has {n} browsable nodes",
+                g.name
+            );
+        }
+        assert_eq!(cat.get("math/math").unwrap().group, "Math");
+        assert_eq!(cat.get("render/renderer").unwrap().group, "Draw");
+        // A catalogue without groups falls back to the category.
+        let c = Catalogue::from_json(
+            r#"{"nodes":[{"type":"a/b","category":"Thing","label":"B","inputs":[],"outputs":[],"eval":"raw"}]}"#,
+        )
+        .unwrap();
+        assert_eq!(c.get("a/b").unwrap().group, "Thing");
     }
 
     #[test]

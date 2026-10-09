@@ -11,9 +11,31 @@ fn shared() -> &'static Arc<InputDevices> {
     DEVICES.get_or_init(floret_input::install)
 }
 
-/// Install the devices as the engine's provider.
+/// Install the devices as the engine's provider, and the local time zone
+/// for the Clock node.
 pub fn install() {
     shared();
+    #[cfg(unix)]
+    floret_engine::nodes::time::install_local_offset(local_offset);
+}
+
+/// The local time zone's offset from UTC at a Unix time, in seconds
+/// (`localtime_r`, so daylight saving and `TZ` count). Other platforms
+/// read `local` as UTC; the Clock's `offset` pin moves it.
+#[cfg(unix)]
+// `time_t` and `c_long` are i64 on 64-bit targets but not everywhere.
+#[allow(clippy::unnecessary_cast, clippy::useless_conversion)]
+fn local_offset(unix_seconds: i64) -> i64 {
+    let t = unix_seconds as libc::time_t;
+    // SAFETY: `tm` is plain data that `localtime_r` fills in; both
+    // pointers are valid for the call and it keeps neither.
+    let mut tm: libc::tm = unsafe { std::mem::zeroed() };
+    let r = unsafe { libc::localtime_r(&t, &mut tm) };
+    if r.is_null() {
+        0
+    } else {
+        i64::from(tm.tm_gmtoff)
+    }
 }
 
 /// Choices for a device node's `device` param: `""` (the default camera /

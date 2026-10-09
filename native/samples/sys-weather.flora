@@ -1,0 +1,1786 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Weather Map",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "wx_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -344
+      },
+      "params": {
+        "text": "Weather map\n\nA pressure field — two octaves of slowly drifting noise plus a storm's low — drawn the way a forecaster would. Contours traces it twice: filled bands and the isobars every 3 hPa. The wind is geostrophic: it blows along the isobars (round the low, out of the highs), faster where they crowd, computed from the field's slope in an Expression. That wind feeds three layers: Contours' flow lines, 320 drifting particles (Read* / Write* state, Echo trails) and a grid of arrows. H and L mark the highest and lowest pressure on the map.\n\n• XY pad: where the storm sits.  • Slider into `s`: the storm's depth (hPa).\n• Slider into `k`: wind speed.  • Vary: a new weather pattern.",
+        "width": 560,
+        "height": 280
+      },
+      "portValues": {
+        "text": "Weather map\n\nA pressure field — two octaves of slowly drifting noise plus a storm's low — drawn the way a forecaster would. Contours traces it twice: filled bands and the isobars every 3 hPa. The wind is geostrophic: it blows along the isobars (round the low, out of the highs), faster where they crowd, computed from the field's slope in an Expression. That wind feeds three layers: Contours' flow lines, 320 drifting particles (Read* / Write* state, Echo trails) and a grid of arrows. H and L mark the highest and lowest pressure on the map.\n\n• XY pad: where the storm sits.  • Slider into `s`: the storm's depth (hPa).\n• Slider into `k`: wind speed.  • Vary: a new weather pattern.",
+        "width": 560,
+        "height": 280
+      }
+    },
+    {
+      "id": "wx_stormPad",
+      "defType": "io/xy-pad",
+      "position": {
+        "x": 0,
+        "y": 1214
+      },
+      "params": {
+        "x": 0.3,
+        "y": 0.4
+      },
+      "portValues": {
+        "x": 0.3,
+        "y": 0.4
+      }
+    },
+    {
+      "id": "wx_stormDepth",
+      "defType": "io/slider",
+      "position": {
+        "x": 289,
+        "y": 1182
+      },
+      "params": {
+        "value": 26,
+        "min": 0,
+        "max": 50
+      },
+      "portValues": {
+        "value": 26,
+        "min": 0,
+        "max": 50
+      }
+    },
+    {
+      "id": "wx_windSpeed",
+      "defType": "io/slider",
+      "position": {
+        "x": 289,
+        "y": 1056
+      },
+      "params": {
+        "value": 500,
+        "min": 100,
+        "max": 1500
+      },
+      "portValues": {
+        "value": 500,
+        "min": 100,
+        "max": 1500
+      }
+    },
+    {
+      "id": "wx_stormCentre",
+      "defType": "math/expression",
+      "position": {
+        "x": 289,
+        "y": 1308
+      },
+      "params": {
+        "expr": "vec2((x - 0.5) * 720, (y - 0.5) * 540)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_dt",
+      "defType": "time/delta",
+      "position": {
+        "x": 714,
+        "y": 1790
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "wx_h",
+      "defType": "math/expression",
+      "position": {
+        "x": 1057,
+        "y": 1978
+      },
+      "params": {
+        "expr": "min(dt, 0.05)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 310,
+        "y": 1970
+      },
+      "params": {},
+      "portValues": {
+        "cols": 40,
+        "rows": 30,
+        "w": 720,
+        "h": 540,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": "wx_pressure",
+      "defType": "math/expression",
+      "position": {
+        "x": 673,
+        "y": 1894
+      },
+      "params": {
+        "expr": "(1013 + 26 * (noise((q.x) * 0.0032 + t * 0.02, (q.y) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x) * 0.0075 - t * 0.013, (q.y) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x) - c.x) ^ 2 + ((q.y) - c.y) ^ 2) / 16000))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_windField",
+      "defType": "math/expression",
+      "position": {
+        "x": 673,
+        "y": 768
+      },
+      "params": {
+        "expr": "vec2(-((1013 + 26 * (noise((q.x) * 0.0032 + t * 0.02, (q.y + 7) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x) * 0.0075 - t * 0.013, (q.y + 7) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x) - c.x) ^ 2 + ((q.y + 7) - c.y) ^ 2) / 16000)) - (1013 + 26 * (noise((q.x) * 0.0032 + t * 0.02, (q.y - 7) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x) * 0.0075 - t * 0.013, (q.y - 7) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x) - c.x) ^ 2 + ((q.y - 7) - c.y) ^ 2) / 16000))), ((1013 + 26 * (noise((q.x + 7) * 0.0032 + t * 0.02, (q.y) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x + 7) * 0.0075 - t * 0.013, (q.y) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x + 7) - c.x) ^ 2 + ((q.y) - c.y) ^ 2) / 16000)) - (1013 + 26 * (noise((q.x - 7) * 0.0032 + t * 0.02, (q.y) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x - 7) * 0.0075 - t * 0.013, (q.y) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x - 7) - c.x) ^ 2 + ((q.y) - c.y) ^ 2) / 16000)))) * k / 14"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_bandColours",
+      "defType": "color/palette",
+      "position": {
+        "x": 673,
+        "y": 44
+      },
+      "params": {
+        "stopCount": 5,
+        "c0": "#2b2d63",
+        "c1": "#2f6690",
+        "c2": "#3a7d6b",
+        "c3": "#c9a227",
+        "c4": "#b5523b"
+      },
+      "portValues": {
+        "stopCount": 5,
+        "c0": "#2b2d63",
+        "c1": "#2f6690",
+        "c2": "#3a7d6b",
+        "c3": "#c9a227",
+        "c4": "#b5523b"
+      }
+    },
+    {
+      "id": "wx_bands",
+      "defType": "geometry/contours",
+      "position": {
+        "x": 1066,
+        "y": 0
+      },
+      "params": {
+        "mode": "field"
+      },
+      "portValues": {
+        "cols": 40,
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "x": 720,
+          "y": 540
+        },
+        "threshold": 984,
+        "levels": 14,
+        "step": 4
+      }
+    },
+    {
+      "id": "wx_isoStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 300,
+        "y": 500
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.55
+        },
+        "width": 1.2
+      }
+    },
+    {
+      "id": "wx_isoNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 713,
+        "y": 500
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "wx_isobars",
+      "defType": "geometry/contours",
+      "position": {
+        "x": 1066,
+        "y": 302
+      },
+      "params": {
+        "mode": "field"
+      },
+      "portValues": {
+        "cols": 40,
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "x": 720,
+          "y": 540
+        },
+        "threshold": 980,
+        "levels": 22,
+        "step": 3
+      }
+    },
+    {
+      "id": "wx_flowStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 684,
+        "y": 1020
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.9098039215686274,
+          "g": 0.9450980392156862,
+          "b": 1.0,
+          "a": 0.18
+        },
+        "width": 1
+      }
+    },
+    {
+      "id": "wx_flowLines",
+      "defType": "geometry/contours",
+      "position": {
+        "x": 1066,
+        "y": 604
+      },
+      "params": {
+        "mode": "flow"
+      },
+      "portValues": {
+        "cols": 40,
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "x": 720,
+          "y": 540
+        },
+        "spacing": 30,
+        "step": 4,
+        "maxLength": 260,
+        "minLength": 30
+      }
+    },
+    {
+      "id": "wx_ids",
+      "defType": "spread/range",
+      "position": {
+        "x": 15,
+        "y": 1699
+      },
+      "params": {
+        "count": 320
+      },
+      "portValues": {
+        "count": 320
+      }
+    },
+    {
+      "id": "wx_p0",
+      "defType": "math/expression",
+      "position": {
+        "x": 289,
+        "y": 1472
+      },
+      "params": {
+        "expr": "vec2((fract(i * 0.6180339) - 0.5) * 720, (fract(i * 0.7548776) - 0.5) * 540)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_age0",
+      "defType": "math/expression",
+      "position": {
+        "x": 289,
+        "y": 1828
+      },
+      "params": {
+        "expr": "fract(i * 0.37) * 3"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_rpart",
+      "defType": "state/read-spread",
+      "position": {
+        "x": 685,
+        "y": 1254
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "wx_rage",
+      "defType": "state/read-spread",
+      "position": {
+        "x": 685,
+        "y": 1664
+      },
+      "params": {
+        "slot": 2
+      },
+      "portValues": {
+        "slot": 2
+      }
+    },
+    {
+      "id": "wx_windAtParticles",
+      "defType": "math/expression",
+      "position": {
+        "x": 1057,
+        "y": 1038
+      },
+      "params": {
+        "expr": "vec2(-((1013 + 26 * (noise((p.x) * 0.0032 + t * 0.02, (p.y + 7) * 0.0032 + 3.1) - 0.5) + 11 * (noise((p.x) * 0.0075 - t * 0.013, (p.y + 7) * 0.0075 + 9.4) - 0.5) - s * exp(-(((p.x) - c.x) ^ 2 + ((p.y + 7) - c.y) ^ 2) / 16000)) - (1013 + 26 * (noise((p.x) * 0.0032 + t * 0.02, (p.y - 7) * 0.0032 + 3.1) - 0.5) + 11 * (noise((p.x) * 0.0075 - t * 0.013, (p.y - 7) * 0.0075 + 9.4) - 0.5) - s * exp(-(((p.x) - c.x) ^ 2 + ((p.y - 7) - c.y) ^ 2) / 16000))), ((1013 + 26 * (noise((p.x + 7) * 0.0032 + t * 0.02, (p.y) * 0.0032 + 3.1) - 0.5) + 11 * (noise((p.x + 7) * 0.0075 - t * 0.013, (p.y) * 0.0075 + 9.4) - 0.5) - s * exp(-(((p.x + 7) - c.x) ^ 2 + ((p.y) - c.y) ^ 2) / 16000)) - (1013 + 26 * (noise((p.x - 7) * 0.0032 + t * 0.02, (p.y) * 0.0032 + 3.1) - 0.5) + 11 * (noise((p.x - 7) * 0.0075 - t * 0.013, (p.y) * 0.0075 + 9.4) - 0.5) - s * exp(-(((p.x - 7) - c.x) ^ 2 + ((p.y) - c.y) ^ 2) / 16000)))) * k / 14"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_respawn",
+      "defType": "math/expression",
+      "position": {
+        "x": 1057,
+        "y": 1814
+      },
+      "params": {
+        "expr": "a > 3 || abs(p.x) > 360.0 || abs(p.y) > 270.0"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_advect",
+      "defType": "math/expression",
+      "position": {
+        "x": 1820,
+        "y": 1105
+      },
+      "params": {
+        "expr": "r ? vec2((fract(sin(index * 13.9898 + frame * 81.233) * 43758.5453) - 0.5) * 720, (fract(sin(index * 14.9898 + frame * 84.233) * 43758.5453) - 0.5) * 540) : p + v * h"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_ageing",
+      "defType": "math/expression",
+      "position": {
+        "x": 1820,
+        "y": 1979
+      },
+      "params": {
+        "expr": "r ? 0 : a + h"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_wpart",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 2632,
+        "y": 1165
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "wx_wage",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 2632,
+        "y": 1647
+      },
+      "params": {
+        "slot": 2
+      },
+      "portValues": {
+        "slot": 2
+      }
+    },
+    {
+      "id": "wx_tail",
+      "defType": "math/expression",
+      "position": {
+        "x": 1820,
+        "y": 941
+      },
+      "params": {
+        "expr": "p - v * 0.06"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_particleStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 1831,
+        "y": 771
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.85
+        },
+        "width": 1.4
+      }
+    },
+    {
+      "id": "wx_streaks",
+      "defType": "region/foreach",
+      "position": {
+        "x": 2521,
+        "y": 886
+      },
+      "params": {
+        "width": 324,
+        "height": 180,
+        "label": "ForEach particle"
+      },
+      "ports": [
+        {
+          "id": "a",
+          "name": "a",
+          "type": "vec2",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "b",
+          "name": "b",
+          "type": "vec2",
+          "direction": "input",
+          "y": 99
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 324,
+      "height": 180
+    },
+    {
+      "id": "wx_streak",
+      "defType": "draw/line",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "wx_streaks",
+      "portValues": {}
+    },
+    {
+      "id": "wx_particleTrails",
+      "defType": "gpu/echo",
+      "position": {
+        "x": 3305,
+        "y": 1283
+      },
+      "params": {
+        "mode": "trails"
+      },
+      "portValues": {
+        "decay": 0.86
+      }
+    },
+    {
+      "id": "wx_arrowGrid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 310,
+        "y": 1636
+      },
+      "params": {},
+      "portValues": {
+        "cols": 12,
+        "rows": 9,
+        "w": 660,
+        "h": 480,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": "wx_windAtArrows",
+      "defType": "math/expression",
+      "position": {
+        "x": 673,
+        "y": 1380
+      },
+      "params": {
+        "expr": "vec2(-((1013 + 26 * (noise((q.x) * 0.0032 + t * 0.02, (q.y + 7) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x) * 0.0075 - t * 0.013, (q.y + 7) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x) - c.x) ^ 2 + ((q.y + 7) - c.y) ^ 2) / 16000)) - (1013 + 26 * (noise((q.x) * 0.0032 + t * 0.02, (q.y - 7) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x) * 0.0075 - t * 0.013, (q.y - 7) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x) - c.x) ^ 2 + ((q.y - 7) - c.y) ^ 2) / 16000))), ((1013 + 26 * (noise((q.x + 7) * 0.0032 + t * 0.02, (q.y) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x + 7) * 0.0075 - t * 0.013, (q.y) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x + 7) - c.x) ^ 2 + ((q.y) - c.y) ^ 2) / 16000)) - (1013 + 26 * (noise((q.x - 7) * 0.0032 + t * 0.02, (q.y) * 0.0032 + 3.1) - 0.5) + 11 * (noise((q.x - 7) * 0.0075 - t * 0.013, (q.y) * 0.0075 + 9.4) - 0.5) - s * exp(-(((q.x - 7) - c.x) ^ 2 + ((q.y) - c.y) ^ 2) / 16000)))) * k / 14"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_arrowTip",
+      "defType": "math/expression",
+      "position": {
+        "x": 1057,
+        "y": 1354
+      },
+      "params": {
+        "expr": "q + normalize(v) * min(8 + length(v) * 0.12, 26)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_arrows",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1436,
+        "y": 1379
+      },
+      "params": {
+        "width": 937,
+        "height": 552,
+        "label": "ForEach arrow"
+      },
+      "ports": [
+        {
+          "id": "q",
+          "name": "q",
+          "type": "vec2",
+          "direction": "input",
+          "y": 292
+        },
+        {
+          "id": "tip",
+          "name": "tip",
+          "type": "vec2",
+          "direction": "input",
+          "y": 177
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 113
+        }
+      ],
+      "width": 937,
+      "height": 552
+    },
+    {
+      "id": "wx_headLeft",
+      "defType": "math/expression",
+      "position": {
+        "x": 150,
+        "y": 188
+      },
+      "params": {
+        "expr": "tp - normalize(tp - q) * 6 + vec2(-(tp - q).y, (tp - q).x) / max(length(tp - q), 0.001) * 3.5"
+      },
+      "parentId": "wx_arrows",
+      "portValues": {}
+    },
+    {
+      "id": "wx_headRight",
+      "defType": "math/expression",
+      "position": {
+        "x": 150,
+        "y": 374
+      },
+      "params": {
+        "expr": "tp - normalize(tp - q) * 6 - vec2(-(tp - q).y, (tp - q).x) / max(length(tp - q), 0.001) * 3.5"
+      },
+      "parentId": "wx_arrows",
+      "portValues": {}
+    },
+    {
+      "id": "wx_arrowStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 1074,
+        "y": 1518
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.9568627450980393,
+          "b": 0.8392156862745098,
+          "a": 1.0
+        },
+        "width": 1.6
+      }
+    },
+    {
+      "id": "wx_shaft",
+      "defType": "draw/line",
+      "position": {
+        "x": 192,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "wx_arrows",
+      "portValues": {}
+    },
+    {
+      "id": "wx_arrowFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1074,
+        "y": 1688
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.9568627450980393,
+          "b": 0.8392156862745098,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "wx_head",
+      "defType": "draw/triangle",
+      "position": {
+        "x": 452,
+        "y": 134
+      },
+      "params": {},
+      "parentId": "wx_arrows",
+      "portValues": {}
+    },
+    {
+      "id": "wx_arrow",
+      "defType": "transform/group",
+      "position": {
+        "x": 657,
+        "y": 76
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "parentId": "wx_arrows",
+      "portValues": {}
+    },
+    {
+      "id": "wx_minPressure",
+      "defType": "math/statistics",
+      "position": {
+        "x": 1072,
+        "y": 2120
+      },
+      "params": {
+        "op": "min"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_minIndex",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1823,
+        "y": 2197
+      },
+      "params": {
+        "op": "index-of"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_minWhere",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 2602,
+        "y": 2031
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_minTextParams",
+      "defType": "style/text-params",
+      "position": {
+        "x": 1831,
+        "y": 2345
+      },
+      "params": {
+        "bold": true,
+        "align": "center",
+        "baseline": "middle"
+      },
+      "portValues": {
+        "bold": true,
+        "align": "center",
+        "baseline": "middle"
+      }
+    },
+    {
+      "id": "wx_minFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2616,
+        "y": 2179
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.4196078431372549,
+          "b": 0.4196078431372549,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "wx_minLetter",
+      "defType": "draw/text",
+      "position": {
+        "x": 3025,
+        "y": 1803
+      },
+      "params": {
+        "string": "L",
+        "size": 30,
+        "align": "center"
+      },
+      "portValues": {
+        "string": "L",
+        "size": 30,
+        "align": "center"
+      }
+    },
+    {
+      "id": "wx_minBelow",
+      "defType": "math/expression",
+      "position": {
+        "x": 2991,
+        "y": 1995
+      },
+      "params": {
+        "expr": "p + vec2(0, 24)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_minFmt",
+      "defType": "string/format-number",
+      "position": {
+        "x": 2607,
+        "y": 1773
+      },
+      "params": {
+        "mode": "number"
+      },
+      "portValues": {
+        "decimals": 0,
+        "separator": ""
+      }
+    },
+    {
+      "id": "wx_minValue",
+      "defType": "draw/text",
+      "position": {
+        "x": 3345,
+        "y": 1826
+      },
+      "params": {
+        "size": 12,
+        "align": "center"
+      },
+      "portValues": {
+        "size": 12,
+        "align": "center"
+      }
+    },
+    {
+      "id": "wx_minText",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 2994,
+        "y": 1655
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      }
+    },
+    {
+      "id": "wx_maxPressure",
+      "defType": "math/statistics",
+      "position": {
+        "x": 1072,
+        "y": 2320
+      },
+      "params": {
+        "op": "max"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_maxIndex",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1823,
+        "y": 2635
+      },
+      "params": {
+        "op": "index-of"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_maxWhere",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 2602,
+        "y": 2563
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_maxTextParams",
+      "defType": "style/text-params",
+      "position": {
+        "x": 1831,
+        "y": 2783
+      },
+      "params": {
+        "bold": true,
+        "align": "center",
+        "baseline": "middle"
+      },
+      "portValues": {
+        "bold": true,
+        "align": "center",
+        "baseline": "middle"
+      }
+    },
+    {
+      "id": "wx_maxFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2616,
+        "y": 2711
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.4549019607843137,
+          "g": 0.7529411764705882,
+          "b": 0.9882352941176471,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "wx_maxLetter",
+      "defType": "draw/text",
+      "position": {
+        "x": 3025,
+        "y": 2285
+      },
+      "params": {
+        "string": "H",
+        "size": 30,
+        "align": "center"
+      },
+      "portValues": {
+        "string": "H",
+        "size": 30,
+        "align": "center"
+      }
+    },
+    {
+      "id": "wx_maxBelow",
+      "defType": "math/expression",
+      "position": {
+        "x": 2991,
+        "y": 2477
+      },
+      "params": {
+        "expr": "p + vec2(0, 24)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_maxFmt",
+      "defType": "string/format-number",
+      "position": {
+        "x": 2607,
+        "y": 2305
+      },
+      "params": {
+        "mode": "number"
+      },
+      "portValues": {
+        "decimals": 0,
+        "separator": ""
+      }
+    },
+    {
+      "id": "wx_maxValue",
+      "defType": "draw/text",
+      "position": {
+        "x": 3345,
+        "y": 2236
+      },
+      "params": {
+        "size": 12,
+        "align": "center"
+      },
+      "portValues": {
+        "size": 12,
+        "align": "center"
+      }
+    },
+    {
+      "id": "wx_maxText",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 2994,
+        "y": 2137
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      }
+    },
+    {
+      "id": "wx_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 3663,
+        "y": 1435
+      },
+      "params": {
+        "slotCount": 9
+      },
+      "portValues": {}
+    },
+    {
+      "id": "wx_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 3927,
+        "y": 1434
+      },
+      "params": {
+        "width": 720,
+        "height": 540,
+        "background": {
+          "r": 0.0784313725490196,
+          "g": 0.10196078431372549,
+          "b": 0.1803921568627451,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 720,
+        "height": 540,
+        "background": {
+          "r": 0.0784313725490196,
+          "g": 0.10196078431372549,
+          "b": 0.1803921568627451,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "wx_stormPad",
+      "target": "wx_stormCentre",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_2",
+      "source": "wx_stormPad",
+      "target": "wx_stormCentre",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_3",
+      "source": "wx_dt",
+      "target": "wx_h",
+      "sourceHandle": "out-dt",
+      "targetHandle": "in-dt"
+    },
+    {
+      "id": "e_4",
+      "source": "wx_grid",
+      "target": "wx_pressure",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_5",
+      "source": "wx_stormDepth",
+      "target": "wx_pressure",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_6",
+      "source": "wx_stormCentre",
+      "target": "wx_pressure",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_7",
+      "source": "wx_grid",
+      "target": "wx_windField",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_8",
+      "source": "wx_stormDepth",
+      "target": "wx_windField",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_9",
+      "source": "wx_stormCentre",
+      "target": "wx_windField",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_10",
+      "source": "wx_windSpeed",
+      "target": "wx_windField",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_11",
+      "source": "wx_pressure",
+      "target": "wx_bands",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-values"
+    },
+    {
+      "id": "e_12",
+      "source": "wx_bandColours",
+      "target": "wx_bands",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_13",
+      "source": "wx_isoStroke",
+      "target": "wx_isoNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_14",
+      "source": "wx_pressure",
+      "target": "wx_isobars",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-values"
+    },
+    {
+      "id": "e_15",
+      "source": "wx_isoNoFill",
+      "target": "wx_isobars",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_16",
+      "source": "wx_windField",
+      "target": "wx_flowLines",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-vectors"
+    },
+    {
+      "id": "e_17",
+      "source": "wx_flowStroke",
+      "target": "wx_flowLines",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_18",
+      "source": "wx_ids",
+      "target": "wx_p0",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_19",
+      "source": "wx_ids",
+      "target": "wx_age0",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_20",
+      "source": "wx_p0",
+      "target": "wx_rpart",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_21",
+      "source": "wx_age0",
+      "target": "wx_rage",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_22",
+      "source": "wx_rpart",
+      "target": "wx_windAtParticles",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_23",
+      "source": "wx_stormDepth",
+      "target": "wx_windAtParticles",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_24",
+      "source": "wx_stormCentre",
+      "target": "wx_windAtParticles",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_25",
+      "source": "wx_windSpeed",
+      "target": "wx_windAtParticles",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_26",
+      "source": "wx_rage",
+      "target": "wx_respawn",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_27",
+      "source": "wx_rpart",
+      "target": "wx_respawn",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_28",
+      "source": "wx_respawn",
+      "target": "wx_advect",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_29",
+      "source": "wx_rpart",
+      "target": "wx_advect",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_30",
+      "source": "wx_windAtParticles",
+      "target": "wx_advect",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_31",
+      "source": "wx_h",
+      "target": "wx_advect",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_32",
+      "source": "wx_respawn",
+      "target": "wx_ageing",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_33",
+      "source": "wx_rage",
+      "target": "wx_ageing",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_34",
+      "source": "wx_h",
+      "target": "wx_ageing",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_35",
+      "source": "wx_advect",
+      "target": "wx_wpart",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_36",
+      "source": "wx_ageing",
+      "target": "wx_wage",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_37",
+      "source": "wx_rpart",
+      "target": "wx_tail",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_38",
+      "source": "wx_windAtParticles",
+      "target": "wx_tail",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_39",
+      "source": "wx_rpart",
+      "target": "wx_streaks",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_40",
+      "source": "wx_tail",
+      "target": "wx_streaks",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_41",
+      "source": "wx_streaks",
+      "target": "wx_streak",
+      "sourceHandle": "out-a",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_42",
+      "source": "wx_streaks",
+      "target": "wx_streak",
+      "sourceHandle": "out-b",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_43",
+      "source": "wx_particleStroke",
+      "target": "wx_streak",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_44",
+      "source": "wx_streak",
+      "target": "wx_streaks",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_45",
+      "source": "wx_streaks",
+      "target": "wx_particleTrails",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_46",
+      "source": "wx_arrowGrid",
+      "target": "wx_windAtArrows",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_47",
+      "source": "wx_stormDepth",
+      "target": "wx_windAtArrows",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_48",
+      "source": "wx_stormCentre",
+      "target": "wx_windAtArrows",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_49",
+      "source": "wx_windSpeed",
+      "target": "wx_windAtArrows",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_50",
+      "source": "wx_arrowGrid",
+      "target": "wx_arrowTip",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_51",
+      "source": "wx_windAtArrows",
+      "target": "wx_arrowTip",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_52",
+      "source": "wx_arrowGrid",
+      "target": "wx_arrows",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_53",
+      "source": "wx_arrowTip",
+      "target": "wx_arrows",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-tip"
+    },
+    {
+      "id": "e_54",
+      "source": "wx_arrows",
+      "target": "wx_headLeft",
+      "sourceHandle": "out-tip",
+      "targetHandle": "in-tp"
+    },
+    {
+      "id": "e_55",
+      "source": "wx_arrows",
+      "target": "wx_headLeft",
+      "sourceHandle": "out-q",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_56",
+      "source": "wx_arrows",
+      "target": "wx_headRight",
+      "sourceHandle": "out-tip",
+      "targetHandle": "in-tp"
+    },
+    {
+      "id": "e_57",
+      "source": "wx_arrows",
+      "target": "wx_headRight",
+      "sourceHandle": "out-q",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_58",
+      "source": "wx_arrows",
+      "target": "wx_shaft",
+      "sourceHandle": "out-q",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_59",
+      "source": "wx_arrows",
+      "target": "wx_shaft",
+      "sourceHandle": "out-tip",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_60",
+      "source": "wx_arrowStroke",
+      "target": "wx_shaft",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_61",
+      "source": "wx_arrows",
+      "target": "wx_head",
+      "sourceHandle": "out-tip",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_62",
+      "source": "wx_headLeft",
+      "target": "wx_head",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_63",
+      "source": "wx_headRight",
+      "target": "wx_head",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_64",
+      "source": "wx_arrowFill",
+      "target": "wx_head",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_65",
+      "source": "wx_shaft",
+      "target": "wx_arrow",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_66",
+      "source": "wx_head",
+      "target": "wx_arrow",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_67",
+      "source": "wx_arrow",
+      "target": "wx_arrows",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_68",
+      "source": "wx_pressure",
+      "target": "wx_minPressure",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_69",
+      "source": "wx_pressure",
+      "target": "wx_minIndex",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_70",
+      "source": "wx_minPressure",
+      "target": "wx_minIndex",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_71",
+      "source": "wx_grid",
+      "target": "wx_minWhere",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_72",
+      "source": "wx_minIndex",
+      "target": "wx_minWhere",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_73",
+      "source": "wx_minTextParams",
+      "target": "wx_minFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_74",
+      "source": "wx_minWhere",
+      "target": "wx_minLetter",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_75",
+      "source": "wx_minFill",
+      "target": "wx_minLetter",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_76",
+      "source": "wx_minWhere",
+      "target": "wx_minBelow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_77",
+      "source": "wx_minPressure",
+      "target": "wx_minFmt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_78",
+      "source": "wx_minFmt",
+      "target": "wx_minText",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_79",
+      "source": "wx_minText",
+      "target": "wx_minValue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_80",
+      "source": "wx_minBelow",
+      "target": "wx_minValue",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_81",
+      "source": "wx_minFill",
+      "target": "wx_minValue",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_82",
+      "source": "wx_pressure",
+      "target": "wx_maxPressure",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_83",
+      "source": "wx_pressure",
+      "target": "wx_maxIndex",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_84",
+      "source": "wx_maxPressure",
+      "target": "wx_maxIndex",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_85",
+      "source": "wx_grid",
+      "target": "wx_maxWhere",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_86",
+      "source": "wx_maxIndex",
+      "target": "wx_maxWhere",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_87",
+      "source": "wx_maxTextParams",
+      "target": "wx_maxFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_88",
+      "source": "wx_maxWhere",
+      "target": "wx_maxLetter",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_89",
+      "source": "wx_maxFill",
+      "target": "wx_maxLetter",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_90",
+      "source": "wx_maxWhere",
+      "target": "wx_maxBelow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_91",
+      "source": "wx_maxPressure",
+      "target": "wx_maxFmt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_92",
+      "source": "wx_maxFmt",
+      "target": "wx_maxText",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_93",
+      "source": "wx_maxText",
+      "target": "wx_maxValue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_94",
+      "source": "wx_maxBelow",
+      "target": "wx_maxValue",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_95",
+      "source": "wx_maxFill",
+      "target": "wx_maxValue",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_96",
+      "source": "wx_bands",
+      "target": "wx_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_97",
+      "source": "wx_isobars",
+      "target": "wx_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_98",
+      "source": "wx_flowLines",
+      "target": "wx_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_99",
+      "source": "wx_particleTrails",
+      "target": "wx_scene",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_100",
+      "source": "wx_arrows",
+      "target": "wx_scene",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_101",
+      "source": "wx_minLetter",
+      "target": "wx_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s6"
+    },
+    {
+      "id": "e_102",
+      "source": "wx_minValue",
+      "target": "wx_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s7"
+    },
+    {
+      "id": "e_103",
+      "source": "wx_maxLetter",
+      "target": "wx_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s8"
+    },
+    {
+      "id": "e_104",
+      "source": "wx_maxValue",
+      "target": "wx_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s9"
+    },
+    {
+      "id": "e_105",
+      "source": "wx_scene",
+      "target": "wx_r",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

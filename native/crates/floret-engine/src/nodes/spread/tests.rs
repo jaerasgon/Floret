@@ -163,6 +163,8 @@ fn every_spread_type_is_covered() {
         .iter()
         // The list families run these nodes' own factories (family tests).
         .filter(|s| s.ty.starts_with("spread/") && crate::nodes::family::family(&s.ty).is_none())
+        // Native-only, no TS reference: tested in `nearest.rs`.
+        .filter(|s| s.ty != "spread/nearest")
         .map(|s| s.ty.as_str())
         .collect();
     assert_eq!(spread_types.len(), 56);

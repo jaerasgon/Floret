@@ -1,0 +1,1738 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Parallax Valley",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "lnd_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -324
+      },
+      "params": {
+        "text": "Parallax valley\n\nA day in a mountain valley. Five ridges (noise along a line, closed into polygons) slide past at different speeds, nearer ones faster — parallax — and each is mixed toward the sky's horizon colour by its distance, so far ridges fade into the air (atmospheric perspective), with fog bands between them. The sun and moon cross on an arc; the sky gradient, the ridge colours and the stars all follow the sun's height. Birds are the Simulation node's flocking boids, tiny.\n\n• Slider into `tod`: the time of day (with the toggle off).  • Toggle: let the day run by itself (a minute a day).\n• Slider into `speed`: how fast you travel.  • Move the mouse sideways: look around (parallax).",
+        "width": 560,
+        "height": 260
+      },
+      "portValues": {
+        "text": "Parallax valley\n\nA day in a mountain valley. Five ridges (noise along a line, closed into polygons) slide past at different speeds, nearer ones faster — parallax — and each is mixed toward the sky's horizon colour by its distance, so far ridges fade into the air (atmospheric perspective), with fog bands between them. The sun and moon cross on an arc; the sky gradient, the ridge colours and the stars all follow the sun's height. Birds are the Simulation node's flocking boids, tiny.\n\n• Slider into `tod`: the time of day (with the toggle off).  • Toggle: let the day run by itself (a minute a day).\n• Slider into `speed`: how fast you travel.  • Move the mouse sideways: look around (parallax).",
+        "width": 560,
+        "height": 260
+      }
+    },
+    {
+      "id": "lnd_timeOfDay",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 583
+      },
+      "params": {
+        "value": 0.3,
+        "min": 0,
+        "max": 1
+      },
+      "portValues": {
+        "value": 0.3,
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "lnd_autoDay",
+      "defType": "io/toggle",
+      "position": {
+        "x": 0,
+        "y": 445
+      },
+      "params": {
+        "value": true
+      },
+      "portValues": {
+        "value": true
+      }
+    },
+    {
+      "id": "lnd_travel",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 1362
+      },
+      "params": {
+        "value": 40,
+        "min": 0,
+        "max": 200
+      },
+      "portValues": {
+        "value": 40,
+        "min": 0,
+        "max": 200
+      }
+    },
+    {
+      "id": "lnd_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 315,
+        "y": 1377
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "lnd_dt",
+      "defType": "time/delta",
+      "position": {
+        "x": 41,
+        "y": 1258
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "lnd_tod",
+      "defType": "math/expression",
+      "position": {
+        "x": 279,
+        "y": 483
+      },
+      "params": {
+        "expr": "a ? fract(s + t / 60) : s"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_sunHeight",
+      "defType": "math/expression",
+      "position": {
+        "x": 587,
+        "y": 781
+      },
+      "params": {
+        "expr": "sin((d - 0.25) * tau)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_daylight",
+      "defType": "math/expression",
+      "position": {
+        "x": 964,
+        "y": 1019
+      },
+      "params": {
+        "expr": "smoothstep(-0.25, 0.3, ev)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_dusk",
+      "defType": "math/expression",
+      "position": {
+        "x": 964,
+        "y": 1161
+      },
+      "params": {
+        "expr": "clamp(1 - abs(ev) * 3.2, 0, 1)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_rcam",
+      "defType": "state/read",
+      "position": {
+        "x": 12,
+        "y": 1132
+      },
+      "params": {
+        "slot": 1,
+        "init": 0
+      },
+      "portValues": {
+        "slot": 1,
+        "init": 0
+      }
+    },
+    {
+      "id": "lnd_camera",
+      "defType": "math/expression",
+      "position": {
+        "x": 279,
+        "y": 1191
+      },
+      "params": {
+        "expr": "c + min(dt, 0.05) * v"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_wcam",
+      "defType": "state/write",
+      "position": {
+        "x": 624,
+        "y": 1085
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "lnd_look",
+      "defType": "math/expression",
+      "position": {
+        "x": 587,
+        "y": 1315
+      },
+      "params": {
+        "expr": "c + mx * 0.6"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_skyTop",
+      "defType": "math/expression",
+      "position": {
+        "x": 1688,
+        "y": 0
+      },
+      "params": {
+        "expr": "mix(rgb(0.03, 0.04, 0.12), rgb(0.24, 0.48, 0.82), d)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_skyHorizon",
+      "defType": "math/expression",
+      "position": {
+        "x": 1688,
+        "y": 1076
+      },
+      "params": {
+        "expr": "mix(mix(rgb(0.08, 0.09, 0.2), rgb(0.72, 0.84, 0.95), d), rgb(0.98, 0.55, 0.38), k * 0.85)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_skyStops",
+      "defType": "spread/merge",
+      "position": {
+        "x": 2393,
+        "y": 335
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "lnd_skyGradient",
+      "defType": "style/gradient",
+      "position": {
+        "x": 3190,
+        "y": 170
+      },
+      "params": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "canvas",
+        "extend": "pad"
+      },
+      "portValues": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "canvas",
+        "extend": "pad",
+        "start": {
+          "x": 0,
+          "y": -240.0
+        },
+        "end": {
+          "x": 0,
+          "y": 120
+        }
+      }
+    },
+    {
+      "id": "lnd_sky",
+      "defType": "draw/rect",
+      "position": {
+        "x": 3517,
+        "y": 326
+      },
+      "params": {
+        "anchor": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 0
+        },
+        "w": 760,
+        "h": 480,
+        "anchor": "center"
+      }
+    },
+    {
+      "id": "lnd_starPoints",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 948,
+        "y": 22
+      },
+      "params": {
+        "mode": "halton"
+      },
+      "portValues": {
+        "center": {
+          "x": 0,
+          "y": -110
+        },
+        "size": {
+          "x": 760,
+          "y": 260
+        },
+        "count": 170,
+        "seed": 2
+      }
+    },
+    {
+      "id": "lnd_stars",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1364,
+        "y": 175
+      },
+      "params": {
+        "width": 816,
+        "height": 349,
+        "label": "ForEach star"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 118
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 80
+        }
+      ],
+      "width": 816,
+      "height": 349
+    },
+    {
+      "id": "lnd_twinkle",
+      "defType": "math/expression",
+      "position": {
+        "x": 141,
+        "y": 40
+      },
+      "params": {
+        "expr": "rgb(1, 1, 1, (1 - d) * (0.35 + 0.65 * noise(p.x * 0.5 + 0.17, t * 1.5)))"
+      },
+      "parentId": "lnd_stars",
+      "portValues": {}
+    },
+    {
+      "id": "lnd_starSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 141,
+        "y": 215
+      },
+      "params": {
+        "expr": "1 + 1.6 * fract(p.y * 13.17)"
+      },
+      "parentId": "lnd_stars",
+      "portValues": {}
+    },
+    {
+      "id": "lnd_starStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 420,
+        "y": 128
+      },
+      "params": {},
+      "parentId": "lnd_stars",
+      "portValues": {}
+    },
+    {
+      "id": "lnd_star",
+      "defType": "draw/point",
+      "position": {
+        "x": 619,
+        "y": 43
+      },
+      "params": {},
+      "parentId": "lnd_stars",
+      "portValues": {}
+    },
+    {
+      "id": "lnd_sunPos",
+      "defType": "math/expression",
+      "position": {
+        "x": 1688,
+        "y": 572
+      },
+      "params": {
+        "expr": "vec2(-cos((d - 0.25) * tau) * 330, 140 - sin((d - 0.25) * tau) * 360)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_moonPos",
+      "defType": "math/expression",
+      "position": {
+        "x": 587,
+        "y": 260
+      },
+      "params": {
+        "expr": "vec2(cos((d - 0.25) * tau) * 330, 140 + sin((d - 0.25) * tau) * 360)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_sunColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 964,
+        "y": 450
+      },
+      "params": {
+        "expr": "mix(rgb(1, 0.55, 0.3), rgb(1, 0.96, 0.85), clamp(ev * 2, 0, 1))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_sunFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1729,
+        "y": 725
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "lnd_sun",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 2428,
+        "y": 493
+      },
+      "params": {},
+      "portValues": {
+        "w": 46,
+        "h": 46
+      }
+    },
+    {
+      "id": "lnd_sunGlow",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 3487,
+        "y": 550
+      },
+      "params": {
+        "mode": "glow",
+        "blend": "add"
+      },
+      "portValues": {
+        "radius": 40,
+        "color": {
+          "r": 1.0,
+          "g": 0.7019607843137254,
+          "b": 0.4196078431372549,
+          "a": 1.0
+        },
+        "intensity": 1.6
+      }
+    },
+    {
+      "id": "lnd_moonFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 604,
+        "y": 413
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.9098039215686274,
+          "g": 0.9254901960784314,
+          "b": 0.9607843137254902,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "lnd_moon",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 999,
+        "y": 258
+      },
+      "params": {},
+      "portValues": {
+        "w": 26,
+        "h": 26
+      }
+    },
+    {
+      "id": "lnd_birdFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2907,
+        "y": 583
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.12549019607843137,
+          "g": 0.12549019607843137,
+          "b": 0.16470588235294117,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "lnd_birds",
+      "defType": "particles/simulation",
+      "position": {
+        "x": 3184,
+        "y": 514
+      },
+      "params": {
+        "mode": "flocking"
+      },
+      "portValues": {
+        "mode": "flocking",
+        "count": 28,
+        "size": {
+          "x": 760,
+          "y": 180
+        },
+        "maxSpeed": 70,
+        "radius": 50,
+        "scale": 3.5,
+        "seed": 3
+      }
+    },
+    {
+      "id": "lnd_birdsUp",
+      "defType": "transform/translate",
+      "position": {
+        "x": 3511,
+        "y": 786
+      },
+      "params": {},
+      "portValues": {
+        "by": {
+          "x": 0,
+          "y": -140
+        }
+      }
+    },
+    {
+      "id": "lnd_ridgeX",
+      "defType": "spread/range",
+      "position": {
+        "x": 602,
+        "y": 1211
+      },
+      "params": {
+        "count": 102
+      },
+      "portValues": {
+        "count": 102
+      }
+    },
+    {
+      "id": "lnd_ridge0Points",
+      "defType": "math/expression",
+      "position": {
+        "x": 964,
+        "y": 603
+      },
+      "params": {
+        "expr": "index == 100 ? vec2(400.0, 260.0) : (index == 101 ? vec2(-400.0, 260.0) : vec2(-400.0 + i * 8.080808080808081, 40 - 150 * (noise((-400.0 + i * 8.080808080808081 + c * 0.12) * 0.0028, 0.5) + 0.35 * noise((-400.0 + i * 8.080808080808081 + c * 0.12) * 0.00868, 9.2))))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge0Colour",
+      "defType": "math/expression",
+      "position": {
+        "x": 2393,
+        "y": 685
+      },
+      "params": {
+        "expr": "mix(mix(rgb(0.110, 0.137, 0.251), rgb(0.490, 0.576, 0.710), d), h, 0.63)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge0Fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2684,
+        "y": 743
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge0",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 2923,
+        "y": 709
+      },
+      "params": {},
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "lnd_ridge1Points",
+      "defType": "math/expression",
+      "position": {
+        "x": 964,
+        "y": 811
+      },
+      "params": {
+        "expr": "index == 100 ? vec2(400.0, 260.0) : (index == 101 ? vec2(-400.0, 260.0) : vec2(-400.0 + i * 8.080808080808081, 80 - 120 * (noise((-400.0 + i * 8.080808080808081 + c * 0.25) * 0.004, 7.8) + 0.35 * noise((-400.0 + i * 8.080808080808081 + c * 0.25) * 0.012400000000000001, 12.299999999999999))))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge1Colour",
+      "defType": "math/expression",
+      "position": {
+        "x": 2393,
+        "y": 860
+      },
+      "params": {
+        "expr": "mix(mix(rgb(0.090, 0.114, 0.212), rgb(0.373, 0.478, 0.612), d), h, 0.49250000000000005)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge1Fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2684,
+        "y": 869
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge1",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 2923,
+        "y": 879
+      },
+      "params": {},
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "lnd_fog1Colour",
+      "defType": "math/expression",
+      "position": {
+        "x": 2393,
+        "y": 1046
+      },
+      "params": {
+        "expr": "mix(h, rgb(1, 1, 1), 0.15)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_fog1Clear",
+      "defType": "color/set-alpha",
+      "position": {
+        "x": 2672,
+        "y": 995
+      },
+      "params": {},
+      "portValues": {
+        "a": 0
+      }
+    },
+    {
+      "id": "lnd_fog1Mist",
+      "defType": "color/set-alpha",
+      "position": {
+        "x": 2672,
+        "y": 1121
+      },
+      "params": {},
+      "portValues": {
+        "a": 150
+      }
+    },
+    {
+      "id": "lnd_fog1Stops",
+      "defType": "spread/merge",
+      "position": {
+        "x": 2890,
+        "y": 1049
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "lnd_fog1Gradient",
+      "defType": "style/gradient",
+      "position": {
+        "x": 3190,
+        "y": 980
+      },
+      "params": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "canvas",
+        "extend": "pad"
+      },
+      "portValues": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "canvas",
+        "extend": "pad",
+        "start": {
+          "x": 0,
+          "y": 20
+        },
+        "end": {
+          "x": 0,
+          "y": 140
+        }
+      }
+    },
+    {
+      "id": "lnd_fog1",
+      "defType": "draw/rect",
+      "position": {
+        "x": 3511,
+        "y": 944
+      },
+      "params": {
+        "anchor": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 120
+        },
+        "w": 760,
+        "h": 200,
+        "anchor": "center"
+      }
+    },
+    {
+      "id": "lnd_ridge2Points",
+      "defType": "math/expression",
+      "position": {
+        "x": 964,
+        "y": 1303
+      },
+      "params": {
+        "expr": "index == 100 ? vec2(400.0, 260.0) : (index == 101 ? vec2(-400.0, 260.0) : vec2(-400.0 + i * 8.080808080808081, 125 - 95 * (noise((-400.0 + i * 8.080808080808081 + c * 0.45) * 0.0058, 15.1) + 0.35 * noise((-400.0 + i * 8.080808080808081 + c * 0.45) * 0.01798, 15.399999999999999))))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge2Colour",
+      "defType": "math/expression",
+      "position": {
+        "x": 2393,
+        "y": 1188
+      },
+      "params": {
+        "expr": "mix(mix(rgb(0.071, 0.090, 0.188), rgb(0.278, 0.396, 0.522), d), h, 0.35500000000000004)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge2Fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2684,
+        "y": 1247
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge2",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 2923,
+        "y": 1175
+      },
+      "params": {},
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "lnd_ridge3Points",
+      "defType": "math/expression",
+      "position": {
+        "x": 964,
+        "y": 1511
+      },
+      "params": {
+        "expr": "index == 100 ? vec2(400.0, 260.0) : (index == 101 ? vec2(-400.0, 260.0) : vec2(-400.0 + i * 8.080808080808081, 170 - 80 * (noise((-400.0 + i * 8.080808080808081 + c * 0.7) * 0.008, 22.4) + 0.35 * noise((-400.0 + i * 8.080808080808081 + c * 0.7) * 0.024800000000000003, 18.5))))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge3Colour",
+      "defType": "math/expression",
+      "position": {
+        "x": 2393,
+        "y": 1374
+      },
+      "params": {
+        "expr": "mix(mix(rgb(0.051, 0.067, 0.149), rgb(0.184, 0.290, 0.361), d), h, 0.21750000000000003)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge3Fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2684,
+        "y": 1373
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge3",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 2923,
+        "y": 1345
+      },
+      "params": {},
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "lnd_fog3Colour",
+      "defType": "math/expression",
+      "position": {
+        "x": 2393,
+        "y": 1560
+      },
+      "params": {
+        "expr": "mix(h, rgb(1, 1, 1), 0.15)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_fog3Clear",
+      "defType": "color/set-alpha",
+      "position": {
+        "x": 2672,
+        "y": 1499
+      },
+      "params": {},
+      "portValues": {
+        "a": 0
+      }
+    },
+    {
+      "id": "lnd_fog3Mist",
+      "defType": "color/set-alpha",
+      "position": {
+        "x": 2672,
+        "y": 1625
+      },
+      "params": {},
+      "portValues": {
+        "a": 150
+      }
+    },
+    {
+      "id": "lnd_fog3Stops",
+      "defType": "spread/merge",
+      "position": {
+        "x": 2890,
+        "y": 1515
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "lnd_fog3Gradient",
+      "defType": "style/gradient",
+      "position": {
+        "x": 3190,
+        "y": 1292
+      },
+      "params": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "canvas",
+        "extend": "pad"
+      },
+      "portValues": {
+        "mode": "linear",
+        "target": "fill",
+        "units": "canvas",
+        "extend": "pad",
+        "start": {
+          "x": 0,
+          "y": 110
+        },
+        "end": {
+          "x": 0,
+          "y": 230
+        }
+      }
+    },
+    {
+      "id": "lnd_fog3",
+      "defType": "draw/rect",
+      "position": {
+        "x": 3511,
+        "y": 1168
+      },
+      "params": {
+        "anchor": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 210
+        },
+        "w": 760,
+        "h": 200,
+        "anchor": "center"
+      }
+    },
+    {
+      "id": "lnd_ridge4Points",
+      "defType": "math/expression",
+      "position": {
+        "x": 964,
+        "y": 1719
+      },
+      "params": {
+        "expr": "index == 100 ? vec2(400.0, 260.0) : (index == 101 ? vec2(-400.0, 260.0) : vec2(-400.0 + i * 8.080808080808081, 215 - 70 * (noise((-400.0 + i * 8.080808080808081 + c * 1.0) * 0.011, 29.7) + 0.35 * noise((-400.0 + i * 8.080808080808081 + c * 1.0) * 0.0341, 21.6))))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge4Colour",
+      "defType": "math/expression",
+      "position": {
+        "x": 2393,
+        "y": 1702
+      },
+      "params": {
+        "expr": "mix(mix(rgb(0.031, 0.043, 0.102), rgb(0.118, 0.188, 0.220), d), h, 0.08)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge4Fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 2684,
+        "y": 1751
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "lnd_ridge4",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 2923,
+        "y": 1641
+      },
+      "params": {},
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "lnd_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 3811,
+        "y": 722
+      },
+      "params": {
+        "slotCount": 12
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lnd_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 4075,
+        "y": 722
+      },
+      "params": {
+        "width": 760,
+        "height": 480,
+        "background": {
+          "r": 0.043137254901960784,
+          "g": 0.050980392156862744,
+          "b": 0.10980392156862745,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 760,
+        "height": 480,
+        "background": {
+          "r": 0.043137254901960784,
+          "g": 0.050980392156862744,
+          "b": 0.10980392156862745,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "lnd_autoDay",
+      "target": "lnd_tod",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_2",
+      "source": "lnd_timeOfDay",
+      "target": "lnd_tod",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_3",
+      "source": "lnd_tod",
+      "target": "lnd_sunHeight",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_4",
+      "source": "lnd_sunHeight",
+      "target": "lnd_daylight",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-ev"
+    },
+    {
+      "id": "e_5",
+      "source": "lnd_sunHeight",
+      "target": "lnd_dusk",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-ev"
+    },
+    {
+      "id": "e_6",
+      "source": "lnd_rcam",
+      "target": "lnd_camera",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_7",
+      "source": "lnd_dt",
+      "target": "lnd_camera",
+      "sourceHandle": "out-dt",
+      "targetHandle": "in-dt"
+    },
+    {
+      "id": "e_8",
+      "source": "lnd_travel",
+      "target": "lnd_camera",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_9",
+      "source": "lnd_camera",
+      "target": "lnd_wcam",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_10",
+      "source": "lnd_camera",
+      "target": "lnd_look",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_11",
+      "source": "lnd_mouse",
+      "target": "lnd_look",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-mx"
+    },
+    {
+      "id": "e_12",
+      "source": "lnd_daylight",
+      "target": "lnd_skyTop",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_13",
+      "source": "lnd_daylight",
+      "target": "lnd_skyHorizon",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_14",
+      "source": "lnd_dusk",
+      "target": "lnd_skyHorizon",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_15",
+      "source": "lnd_skyTop",
+      "target": "lnd_skyStops",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_16",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_skyStops",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_17",
+      "source": "lnd_skyStops",
+      "target": "lnd_skyGradient",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_18",
+      "source": "lnd_skyGradient",
+      "target": "lnd_sky",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_19",
+      "source": "lnd_starPoints",
+      "target": "lnd_stars",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_20",
+      "source": "lnd_daylight",
+      "target": "lnd_twinkle",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_21",
+      "source": "lnd_stars",
+      "target": "lnd_twinkle",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_22",
+      "source": "lnd_stars",
+      "target": "lnd_starSize",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_23",
+      "source": "lnd_twinkle",
+      "target": "lnd_starStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_24",
+      "source": "lnd_starSize",
+      "target": "lnd_starStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-width"
+    },
+    {
+      "id": "e_25",
+      "source": "lnd_stars",
+      "target": "lnd_star",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_26",
+      "source": "lnd_starStroke",
+      "target": "lnd_star",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_27",
+      "source": "lnd_star",
+      "target": "lnd_stars",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_28",
+      "source": "lnd_tod",
+      "target": "lnd_sunPos",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_29",
+      "source": "lnd_tod",
+      "target": "lnd_moonPos",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_30",
+      "source": "lnd_sunHeight",
+      "target": "lnd_sunColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-ev"
+    },
+    {
+      "id": "e_31",
+      "source": "lnd_sunColour",
+      "target": "lnd_sunFill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_32",
+      "source": "lnd_sunPos",
+      "target": "lnd_sun",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_33",
+      "source": "lnd_sunFill",
+      "target": "lnd_sun",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_34",
+      "source": "lnd_sun",
+      "target": "lnd_sunGlow",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_35",
+      "source": "lnd_moonPos",
+      "target": "lnd_moon",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_36",
+      "source": "lnd_moonFill",
+      "target": "lnd_moon",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_37",
+      "source": "lnd_birdFill",
+      "target": "lnd_birds",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_38",
+      "source": "lnd_birds",
+      "target": "lnd_birdsUp",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_39",
+      "source": "lnd_ridgeX",
+      "target": "lnd_ridge0Points",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_40",
+      "source": "lnd_look",
+      "target": "lnd_ridge0Points",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_41",
+      "source": "lnd_daylight",
+      "target": "lnd_ridge0Colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_42",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_ridge0Colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_43",
+      "source": "lnd_ridge0Colour",
+      "target": "lnd_ridge0Fill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_44",
+      "source": "lnd_ridge0Points",
+      "target": "lnd_ridge0",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_45",
+      "source": "lnd_ridge0Fill",
+      "target": "lnd_ridge0",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_46",
+      "source": "lnd_ridgeX",
+      "target": "lnd_ridge1Points",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_47",
+      "source": "lnd_look",
+      "target": "lnd_ridge1Points",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_48",
+      "source": "lnd_daylight",
+      "target": "lnd_ridge1Colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_49",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_ridge1Colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_50",
+      "source": "lnd_ridge1Colour",
+      "target": "lnd_ridge1Fill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_51",
+      "source": "lnd_ridge1Points",
+      "target": "lnd_ridge1",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_52",
+      "source": "lnd_ridge1Fill",
+      "target": "lnd_ridge1",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_53",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_fog1Colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_54",
+      "source": "lnd_fog1Colour",
+      "target": "lnd_fog1Clear",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_55",
+      "source": "lnd_fog1Colour",
+      "target": "lnd_fog1Mist",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_56",
+      "source": "lnd_fog1Clear",
+      "target": "lnd_fog1Stops",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_57",
+      "source": "lnd_fog1Mist",
+      "target": "lnd_fog1Stops",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_58",
+      "source": "lnd_fog1Stops",
+      "target": "lnd_fog1Gradient",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_59",
+      "source": "lnd_fog1Gradient",
+      "target": "lnd_fog1",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_60",
+      "source": "lnd_ridgeX",
+      "target": "lnd_ridge2Points",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_61",
+      "source": "lnd_look",
+      "target": "lnd_ridge2Points",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_62",
+      "source": "lnd_daylight",
+      "target": "lnd_ridge2Colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_63",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_ridge2Colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_64",
+      "source": "lnd_ridge2Colour",
+      "target": "lnd_ridge2Fill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_65",
+      "source": "lnd_ridge2Points",
+      "target": "lnd_ridge2",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_66",
+      "source": "lnd_ridge2Fill",
+      "target": "lnd_ridge2",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_67",
+      "source": "lnd_ridgeX",
+      "target": "lnd_ridge3Points",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_68",
+      "source": "lnd_look",
+      "target": "lnd_ridge3Points",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_69",
+      "source": "lnd_daylight",
+      "target": "lnd_ridge3Colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_70",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_ridge3Colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_71",
+      "source": "lnd_ridge3Colour",
+      "target": "lnd_ridge3Fill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_72",
+      "source": "lnd_ridge3Points",
+      "target": "lnd_ridge3",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_73",
+      "source": "lnd_ridge3Fill",
+      "target": "lnd_ridge3",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_74",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_fog3Colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_75",
+      "source": "lnd_fog3Colour",
+      "target": "lnd_fog3Clear",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_76",
+      "source": "lnd_fog3Colour",
+      "target": "lnd_fog3Mist",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_77",
+      "source": "lnd_fog3Clear",
+      "target": "lnd_fog3Stops",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_78",
+      "source": "lnd_fog3Mist",
+      "target": "lnd_fog3Stops",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_79",
+      "source": "lnd_fog3Stops",
+      "target": "lnd_fog3Gradient",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_80",
+      "source": "lnd_fog3Gradient",
+      "target": "lnd_fog3",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_81",
+      "source": "lnd_ridgeX",
+      "target": "lnd_ridge4Points",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_82",
+      "source": "lnd_look",
+      "target": "lnd_ridge4Points",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_83",
+      "source": "lnd_daylight",
+      "target": "lnd_ridge4Colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_84",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_ridge4Colour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_85",
+      "source": "lnd_ridge4Colour",
+      "target": "lnd_ridge4Fill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_86",
+      "source": "lnd_ridge4Points",
+      "target": "lnd_ridge4",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_87",
+      "source": "lnd_ridge4Fill",
+      "target": "lnd_ridge4",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_88",
+      "source": "lnd_sky",
+      "target": "lnd_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_89",
+      "source": "lnd_stars",
+      "target": "lnd_scene",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_90",
+      "source": "lnd_moon",
+      "target": "lnd_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_91",
+      "source": "lnd_sunGlow",
+      "target": "lnd_scene",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_92",
+      "source": "lnd_birdsUp",
+      "target": "lnd_scene",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_93",
+      "source": "lnd_ridge0",
+      "target": "lnd_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s6"
+    },
+    {
+      "id": "e_94",
+      "source": "lnd_ridge1",
+      "target": "lnd_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s7"
+    },
+    {
+      "id": "e_95",
+      "source": "lnd_fog1",
+      "target": "lnd_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s8"
+    },
+    {
+      "id": "e_96",
+      "source": "lnd_ridge2",
+      "target": "lnd_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s9"
+    },
+    {
+      "id": "e_97",
+      "source": "lnd_ridge3",
+      "target": "lnd_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s10"
+    },
+    {
+      "id": "e_98",
+      "source": "lnd_fog3",
+      "target": "lnd_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s11"
+    },
+    {
+      "id": "e_99",
+      "source": "lnd_ridge4",
+      "target": "lnd_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s12"
+    },
+    {
+      "id": "e_100",
+      "source": "lnd_scene",
+      "target": "lnd_r",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

@@ -1,0 +1,1322 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Night City",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "cty_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -334
+      },
+      "params": {
+        "text": "Night city\n\nA city from above, from one subdivision. Cells (`subdivide`) splits the ground into blocks with streets between them (`gap`). A ForEach visits every block: a height (tall downtown, low at the edges, a few parks), a roof from Path Ops (`offset`), its shadow thrown along the sun's direction by that height, and lit windows scattered on the roof. Cars are Trim Path pieces running round every block's street (`each`, `offset` driven by time), street lamps sit at even steps along them, and after dark everything that glows goes through bloom.\n\n• Slider into `tod`: time of day (with the toggle off).  • Toggle: run the clock (a day in 40 s).\n• Slider into `depth`: how finely the city divides.  • Vary: a new city.",
+        "width": 560,
+        "height": 270
+      },
+      "portValues": {
+        "text": "Night city\n\nA city from above, from one subdivision. Cells (`subdivide`) splits the ground into blocks with streets between them (`gap`). A ForEach visits every block: a height (tall downtown, low at the edges, a few parks), a roof from Path Ops (`offset`), its shadow thrown along the sun's direction by that height, and lit windows scattered on the roof. Cars are Trim Path pieces running round every block's street (`each`, `offset` driven by time), street lamps sit at even steps along them, and after dark everything that glows goes through bloom.\n\n• Slider into `tod`: time of day (with the toggle off).  • Toggle: run the clock (a day in 40 s).\n• Slider into `depth`: how finely the city divides.  • Vary: a new city.",
+        "width": 560,
+        "height": 270
+      }
+    },
+    {
+      "id": "cty_timeOfDay",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 244
+      },
+      "params": {
+        "value": 0.4,
+        "min": 0,
+        "max": 1
+      },
+      "portValues": {
+        "value": 0.4,
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "cty_autoDay",
+      "defType": "io/toggle",
+      "position": {
+        "x": 0,
+        "y": 106
+      },
+      "params": {
+        "value": true
+      },
+      "portValues": {
+        "value": true
+      }
+    },
+    {
+      "id": "cty_depth",
+      "defType": "io/slider",
+      "position": {
+        "x": 544,
+        "y": 703
+      },
+      "params": {
+        "value": 7,
+        "min": 3,
+        "max": 9
+      },
+      "portValues": {
+        "value": 7,
+        "min": 3,
+        "max": 9
+      }
+    },
+    {
+      "id": "cty_tod",
+      "defType": "math/expression",
+      "position": {
+        "x": 270,
+        "y": 144
+      },
+      "params": {
+        "expr": "a ? fract(s + t / 40) : s"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_sunHeight",
+      "defType": "math/expression",
+      "position": {
+        "x": 544,
+        "y": 210
+      },
+      "params": {
+        "expr": "sin((d - 0.25) * tau)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_daylight",
+      "defType": "math/expression",
+      "position": {
+        "x": 820,
+        "y": 278
+      },
+      "params": {
+        "expr": "smoothstep(-0.2, 0.25, ev)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_night",
+      "defType": "math/expression",
+      "position": {
+        "x": 2094,
+        "y": 705
+      },
+      "params": {
+        "expr": "1 - d"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_shadowDir",
+      "defType": "math/expression",
+      "position": {
+        "x": 820,
+        "y": 92
+      },
+      "params": {
+        "expr": "vec2(cos(d * tau), sin(d * tau) * 0.6) * (ev > 0 ? min(1.6, 0.35 / max(ev, 0.12)) : 0)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_blocks",
+      "defType": "geometry/cells",
+      "position": {
+        "x": 819,
+        "y": 618
+      },
+      "params": {
+        "mode": "subdivide"
+      },
+      "portValues": {
+        "mode": "subdivide",
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "x": 610,
+          "y": 610
+        },
+        "chance": 0.93,
+        "minSize": 30,
+        "ratio": 0.5,
+        "seed": 11,
+        "gap": 14
+      }
+    },
+    {
+      "id": "cty_each",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1148,
+        "y": 80
+      },
+      "params": {
+        "width": 2060,
+        "height": 577,
+        "label": "ForEach block"
+      },
+      "ports": [
+        {
+          "id": "cell",
+          "name": "cell",
+          "type": "layer",
+          "direction": "input",
+          "y": 437
+        },
+        {
+          "id": "c",
+          "name": "c",
+          "type": "vec2",
+          "direction": "input",
+          "y": 485
+        },
+        {
+          "id": "sh",
+          "name": "shadow",
+          "type": "layer",
+          "direction": "output",
+          "y": 272
+        },
+        {
+          "id": "roof",
+          "name": "roof",
+          "type": "layer",
+          "direction": "output",
+          "y": 329
+        },
+        {
+          "id": "lot",
+          "name": "building",
+          "type": "layer",
+          "direction": "output",
+          "y": 207
+        }
+      ],
+      "width": 2060,
+      "height": 577
+    },
+    {
+      "id": "cty_rand",
+      "defType": "math/expression",
+      "position": {
+        "x": 141,
+        "y": 125
+      },
+      "params": {
+        "expr": "fract(sin(i * 12.9898 + 4.1) * 43758.5453)"
+      },
+      "parentId": "cty_each",
+      "portValues": {}
+    },
+    {
+      "id": "cty_isPark",
+      "defType": "math/expression",
+      "position": {
+        "x": 413,
+        "y": 68
+      },
+      "params": {
+        "expr": "r < 0.1"
+      },
+      "parentId": "cty_each",
+      "portValues": {}
+    },
+    {
+      "id": "cty_height",
+      "defType": "math/expression",
+      "position": {
+        "x": 724,
+        "y": 152
+      },
+      "params": {
+        "expr": "p ? 0 : 6 + 64 * exp(-dot(c, c) / 50000) * (0.35 + 0.65 * r)"
+      },
+      "parentId": "cty_each",
+      "portValues": {}
+    },
+    {
+      "id": "cty_roofColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 1020,
+        "y": 46
+      },
+      "params": {
+        "expr": "p ? mix(rgb(0.05, 0.09, 0.07), rgb(0.36, 0.55, 0.33), d) : mix(rgb(0.09, 0.09, 0.13), mix(rgb(0.62, 0.62, 0.6), rgb(0.86, 0.84, 0.8), clamp(h / 60, 0, 1)), d)"
+      },
+      "parentId": "cty_each",
+      "portValues": {}
+    },
+    {
+      "id": "cty_roofFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1307,
+        "y": 202
+      },
+      "params": {},
+      "parentId": "cty_each",
+      "portValues": {}
+    },
+    {
+      "id": "cty_roof",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 1535,
+        "y": 291
+      },
+      "params": {
+        "mode": "offset"
+      },
+      "parentId": "cty_each",
+      "portValues": {
+        "distance": -1,
+        "join": "miter"
+      }
+    },
+    {
+      "id": "cty_shadowColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 141,
+        "y": 280
+      },
+      "params": {
+        "expr": "rgb(0, 0, 0.05, 0.38 * d)"
+      },
+      "parentId": "cty_each",
+      "portValues": {}
+    },
+    {
+      "id": "cty_shadowFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 454,
+        "y": 318
+      },
+      "params": {},
+      "parentId": "cty_each",
+      "portValues": {}
+    },
+    {
+      "id": "cty_shadowShape",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 711,
+        "y": 349
+      },
+      "params": {
+        "mode": "offset"
+      },
+      "parentId": "cty_each",
+      "portValues": {
+        "distance": -1,
+        "join": "miter"
+      }
+    },
+    {
+      "id": "cty_shadowOffset",
+      "defType": "math/expression",
+      "position": {
+        "x": 1020,
+        "y": 276
+      },
+      "params": {
+        "expr": "s * h"
+      },
+      "parentId": "cty_each",
+      "portValues": {}
+    },
+    {
+      "id": "cty_castShadow",
+      "defType": "transform/translate",
+      "position": {
+        "x": 1295,
+        "y": 328
+      },
+      "params": {},
+      "parentId": "cty_each",
+      "portValues": {}
+    },
+    {
+      "id": "cty_parkAway",
+      "defType": "math/expression",
+      "position": {
+        "x": 1547,
+        "y": 40
+      },
+      "params": {
+        "expr": "p ? vec2(9000, 9000) : vec2(0, 0)"
+      },
+      "parentId": "cty_each",
+      "portValues": {}
+    },
+    {
+      "id": "cty_buildingOnly",
+      "defType": "transform/translate",
+      "position": {
+        "x": 1838,
+        "y": 170
+      },
+      "params": {},
+      "parentId": "cty_each",
+      "portValues": {}
+    },
+    {
+      "id": "cty_windowSpots",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 3397,
+        "y": 412
+      },
+      "params": {
+        "mode": "random"
+      },
+      "portValues": {
+        "count": 650,
+        "seed": 3
+      }
+    },
+    {
+      "id": "cty_windows",
+      "defType": "region/foreach",
+      "position": {
+        "x": 3750,
+        "y": 188
+      },
+      "params": {
+        "width": 801,
+        "height": 301,
+        "label": "ForEach window"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 247
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 204
+        }
+      ],
+      "width": 801,
+      "height": 301
+    },
+    {
+      "id": "cty_windowLight",
+      "defType": "math/expression",
+      "position": {
+        "x": 138,
+        "y": 40
+      },
+      "params": {
+        "expr": "rgb(1, 0.82, 0.45, n * (fract(sin(indexv * 7.31) * 9137.1) < 0.65 ? 1 : 0.12))"
+      },
+      "parentId": "cty_windows",
+      "portValues": {}
+    },
+    {
+      "id": "cty_windowStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 402,
+        "y": 101
+      },
+      "params": {},
+      "parentId": "cty_windows",
+      "portValues": {
+        "width": 3
+      }
+    },
+    {
+      "id": "cty_window",
+      "defType": "draw/point",
+      "position": {
+        "x": 604,
+        "y": 167
+      },
+      "params": {},
+      "parentId": "cty_windows",
+      "portValues": {}
+    },
+    {
+      "id": "cty_streetLines",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 3400,
+        "y": 790
+      },
+      "params": {
+        "mode": "offset"
+      },
+      "portValues": {
+        "distance": 8,
+        "join": "round"
+      }
+    },
+    {
+      "id": "cty_lampSpots",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 4054,
+        "y": 537
+      },
+      "params": {
+        "mode": "resample"
+      },
+      "portValues": {
+        "spacing": 46
+      }
+    },
+    {
+      "id": "cty_lampLight",
+      "defType": "math/expression",
+      "position": {
+        "x": 3413,
+        "y": 648
+      },
+      "params": {
+        "expr": "rgb(1, 0.75, 0.4, n * 0.9)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_lampStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 4104,
+        "y": 751
+      },
+      "params": {},
+      "portValues": {
+        "width": 3
+      }
+    },
+    {
+      "id": "cty_lamps",
+      "defType": "region/foreach",
+      "position": {
+        "x": 4671,
+        "y": 600
+      },
+      "params": {
+        "width": 325,
+        "height": 158,
+        "label": "ForEach lamp"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "l",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 325,
+      "height": 158
+    },
+    {
+      "id": "cty_lamp",
+      "defType": "draw/point",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "cty_lamps",
+      "portValues": {}
+    },
+    {
+      "id": "cty_traffic",
+      "defType": "math/expression",
+      "position": {
+        "x": 3413,
+        "y": 1179
+      },
+      "params": {
+        "expr": "fract(t * 0.035)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_headlightColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 3413,
+        "y": 1026
+      },
+      "params": {
+        "expr": "mix(rgb(0.25, 0.25, 0.28), rgb(1, 0.97, 0.85), n)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_taillightColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 3413,
+        "y": 1321
+      },
+      "params": {
+        "expr": "mix(rgb(0.25, 0.25, 0.28), rgb(1, 0.2, 0.25), n)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_headStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 4104,
+        "y": 1063
+      },
+      "params": {},
+      "portValues": {
+        "width": 2.2
+      }
+    },
+    {
+      "id": "cty_headOffset",
+      "defType": "math/expression",
+      "position": {
+        "x": 4067,
+        "y": 921
+      },
+      "params": {
+        "expr": "fract(m + 0.0)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_headlights",
+      "defType": "geometry/trim",
+      "position": {
+        "x": 4752,
+        "y": 806
+      },
+      "params": {
+        "mode": "each"
+      },
+      "portValues": {
+        "start": 0,
+        "end": 0.035
+      }
+    },
+    {
+      "id": "cty_tailStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 4104,
+        "y": 1375
+      },
+      "params": {},
+      "portValues": {
+        "width": 2.2
+      }
+    },
+    {
+      "id": "cty_tailOffset",
+      "defType": "math/expression",
+      "position": {
+        "x": 4067,
+        "y": 1233
+      },
+      "params": {
+        "expr": "fract(m + 0.5)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_taillights",
+      "defType": "geometry/trim",
+      "position": {
+        "x": 4752,
+        "y": 1064
+      },
+      "params": {
+        "mode": "each"
+      },
+      "portValues": {
+        "start": 0,
+        "end": 0.035
+      }
+    },
+    {
+      "id": "cty_groundColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 4749,
+        "y": 0
+      },
+      "params": {
+        "expr": "mix(rgb(0.035, 0.035, 0.06), rgb(0.33, 0.33, 0.35), d)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_groundFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 5187,
+        "y": 84
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "cty_ground",
+      "defType": "draw/rect",
+      "position": {
+        "x": 5468,
+        "y": 50
+      },
+      "params": {
+        "anchor": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 0
+        },
+        "w": 640,
+        "h": 640,
+        "anchor": "center"
+      }
+    },
+    {
+      "id": "cty_lights",
+      "defType": "transform/group",
+      "position": {
+        "x": 5146,
+        "y": 637
+      },
+      "params": {
+        "slotCount": 4
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_bloom",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 5438,
+        "y": 430
+      },
+      "params": {
+        "mode": "bloom"
+      },
+      "portValues": {
+        "threshold": 0.45,
+        "radius": 10,
+        "intensity": 1.4
+      }
+    },
+    {
+      "id": "cty_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 5730,
+        "y": 179
+      },
+      "params": {
+        "slotCount": 4
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cty_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 5994,
+        "y": 179
+      },
+      "params": {
+        "width": 640,
+        "height": 640,
+        "background": {
+          "r": 0.03529411764705882,
+          "g": 0.03529411764705882,
+          "b": 0.058823529411764705,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 640,
+        "height": 640,
+        "background": {
+          "r": 0.03529411764705882,
+          "g": 0.03529411764705882,
+          "b": 0.058823529411764705,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "cty_autoDay",
+      "target": "cty_tod",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_2",
+      "source": "cty_timeOfDay",
+      "target": "cty_tod",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_3",
+      "source": "cty_tod",
+      "target": "cty_sunHeight",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_4",
+      "source": "cty_sunHeight",
+      "target": "cty_daylight",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-ev"
+    },
+    {
+      "id": "e_5",
+      "source": "cty_daylight",
+      "target": "cty_night",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_6",
+      "source": "cty_tod",
+      "target": "cty_shadowDir",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_7",
+      "source": "cty_sunHeight",
+      "target": "cty_shadowDir",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-ev"
+    },
+    {
+      "id": "e_8",
+      "source": "cty_depth",
+      "target": "cty_blocks",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-depth"
+    },
+    {
+      "id": "e_9",
+      "source": "cty_blocks",
+      "target": "cty_each",
+      "sourceHandle": "out-cells",
+      "targetHandle": "in-cell"
+    },
+    {
+      "id": "e_10",
+      "source": "cty_blocks",
+      "target": "cty_each",
+      "sourceHandle": "out-centers",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_11",
+      "source": "cty_each",
+      "target": "cty_rand",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_12",
+      "source": "cty_rand",
+      "target": "cty_isPark",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_13",
+      "source": "cty_isPark",
+      "target": "cty_height",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_14",
+      "source": "cty_each",
+      "target": "cty_height",
+      "sourceHandle": "out-c",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_15",
+      "source": "cty_rand",
+      "target": "cty_height",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_16",
+      "source": "cty_isPark",
+      "target": "cty_roofColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_17",
+      "source": "cty_daylight",
+      "target": "cty_roofColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_18",
+      "source": "cty_height",
+      "target": "cty_roofColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_19",
+      "source": "cty_roofColour",
+      "target": "cty_roofFill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_20",
+      "source": "cty_each",
+      "target": "cty_roof",
+      "sourceHandle": "out-cell",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_21",
+      "source": "cty_roofFill",
+      "target": "cty_roof",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_22",
+      "source": "cty_daylight",
+      "target": "cty_shadowColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_23",
+      "source": "cty_shadowColour",
+      "target": "cty_shadowFill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_24",
+      "source": "cty_each",
+      "target": "cty_shadowShape",
+      "sourceHandle": "out-cell",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_25",
+      "source": "cty_shadowFill",
+      "target": "cty_shadowShape",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_26",
+      "source": "cty_shadowDir",
+      "target": "cty_shadowOffset",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_27",
+      "source": "cty_height",
+      "target": "cty_shadowOffset",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_28",
+      "source": "cty_shadowOffset",
+      "target": "cty_castShadow",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_29",
+      "source": "cty_shadowShape",
+      "target": "cty_castShadow",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_30",
+      "source": "cty_isPark",
+      "target": "cty_parkAway",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_31",
+      "source": "cty_parkAway",
+      "target": "cty_buildingOnly",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_32",
+      "source": "cty_roof",
+      "target": "cty_buildingOnly",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_33",
+      "source": "cty_castShadow",
+      "target": "cty_each",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-sh"
+    },
+    {
+      "id": "e_34",
+      "source": "cty_roof",
+      "target": "cty_each",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-roof"
+    },
+    {
+      "id": "e_35",
+      "source": "cty_buildingOnly",
+      "target": "cty_each",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-lot"
+    },
+    {
+      "id": "e_36",
+      "source": "cty_each",
+      "target": "cty_windowSpots",
+      "sourceHandle": "out-lot",
+      "targetHandle": "in-shape"
+    },
+    {
+      "id": "e_37",
+      "source": "cty_windowSpots",
+      "target": "cty_windows",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_38",
+      "source": "cty_night",
+      "target": "cty_windowLight",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_39",
+      "source": "cty_windows",
+      "target": "cty_windowLight",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-indexv"
+    },
+    {
+      "id": "e_40",
+      "source": "cty_windowLight",
+      "target": "cty_windowStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_41",
+      "source": "cty_windows",
+      "target": "cty_window",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_42",
+      "source": "cty_windowStroke",
+      "target": "cty_window",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_43",
+      "source": "cty_window",
+      "target": "cty_windows",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_44",
+      "source": "cty_blocks",
+      "target": "cty_streetLines",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_45",
+      "source": "cty_streetLines",
+      "target": "cty_lampSpots",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_46",
+      "source": "cty_night",
+      "target": "cty_lampLight",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_47",
+      "source": "cty_lampLight",
+      "target": "cty_lampStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_48",
+      "source": "cty_lampSpots",
+      "target": "cty_lamps",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_49",
+      "source": "cty_lamps",
+      "target": "cty_lamp",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_50",
+      "source": "cty_lampStroke",
+      "target": "cty_lamp",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_51",
+      "source": "cty_lamp",
+      "target": "cty_lamps",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_52",
+      "source": "cty_night",
+      "target": "cty_headlightColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_53",
+      "source": "cty_night",
+      "target": "cty_taillightColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_54",
+      "source": "cty_headlightColour",
+      "target": "cty_headStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_55",
+      "source": "cty_traffic",
+      "target": "cty_headOffset",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_56",
+      "source": "cty_streetLines",
+      "target": "cty_headlights",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_57",
+      "source": "cty_headOffset",
+      "target": "cty_headlights",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-offset"
+    },
+    {
+      "id": "e_58",
+      "source": "cty_headStroke",
+      "target": "cty_headlights",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_59",
+      "source": "cty_taillightColour",
+      "target": "cty_tailStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_60",
+      "source": "cty_traffic",
+      "target": "cty_tailOffset",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_61",
+      "source": "cty_streetLines",
+      "target": "cty_taillights",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_62",
+      "source": "cty_tailOffset",
+      "target": "cty_taillights",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-offset"
+    },
+    {
+      "id": "e_63",
+      "source": "cty_tailStroke",
+      "target": "cty_taillights",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_64",
+      "source": "cty_daylight",
+      "target": "cty_groundColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_65",
+      "source": "cty_groundColour",
+      "target": "cty_groundFill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_66",
+      "source": "cty_groundFill",
+      "target": "cty_ground",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_67",
+      "source": "cty_windows",
+      "target": "cty_lights",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_68",
+      "source": "cty_lamps",
+      "target": "cty_lights",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_69",
+      "source": "cty_headlights",
+      "target": "cty_lights",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_70",
+      "source": "cty_taillights",
+      "target": "cty_lights",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_71",
+      "source": "cty_lights",
+      "target": "cty_bloom",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_72",
+      "source": "cty_ground",
+      "target": "cty_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_73",
+      "source": "cty_each",
+      "target": "cty_scene",
+      "sourceHandle": "out-sh",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_74",
+      "source": "cty_each",
+      "target": "cty_scene",
+      "sourceHandle": "out-roof",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_75",
+      "source": "cty_bloom",
+      "target": "cty_scene",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_76",
+      "source": "cty_scene",
+      "target": "cty_r",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

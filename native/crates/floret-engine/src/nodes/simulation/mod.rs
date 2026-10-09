@@ -123,6 +123,7 @@ fn sim_inputs(params: &Params) -> Vec<PortSpec> {
             num("cohesion", 0.9),
             num("radius", 40.0),
             vec2("target", 0.0, 0.0),
+            spread("food", PortType::Vec2),
             num("attract", 0.0),
             num("scale", 7.0),
             style(),

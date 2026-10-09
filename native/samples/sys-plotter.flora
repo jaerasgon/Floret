@@ -1,0 +1,839 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Plotter Pipeline",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "plt_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -334
+      },
+      "params": {
+        "text": "Plotter pipeline\n\nGenerative plotter art, stage by stage. 1 · Contours' flow mode lays evenly spaced streamlines through a noise field, each line in one of three inks. 2 · Trim Path (`sequence`) draws them one after another as a pen would, the pen riding the drawing end (`heads`). A State number is the plot's progress; it runs at the plotter's speed and starts over on Replot. 3 · Paper: a sheet with a soft shadow on the desk and film grain.\n\n• Sliders: `pen` width, line `spacing`, field `scale`, plot `speed`.  • Bang: Replot.\n• Toggle: clean output — just the finished lines on white, ready for File → Export PNG.\n• Vary: a new field.",
+        "width": 560,
+        "height": 270
+      },
+      "portValues": {
+        "text": "Plotter pipeline\n\nGenerative plotter art, stage by stage. 1 · Contours' flow mode lays evenly spaced streamlines through a noise field, each line in one of three inks. 2 · Trim Path (`sequence`) draws them one after another as a pen would, the pen riding the drawing end (`heads`). A State number is the plot's progress; it runs at the plotter's speed and starts over on Replot. 3 · Paper: a sheet with a soft shadow on the desk and film grain.\n\n• Sliders: `pen` width, line `spacing`, field `scale`, plot `speed`.  • Bang: Replot.\n• Toggle: clean output — just the finished lines on white, ready for File → Export PNG.\n• Vary: a new field.",
+        "width": 560,
+        "height": 270
+      }
+    },
+    {
+      "id": "plt_pen",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 497
+      },
+      "params": {
+        "value": 1.4,
+        "min": 0.4,
+        "max": 4
+      },
+      "portValues": {
+        "value": 1.4,
+        "min": 0.4,
+        "max": 4
+      }
+    },
+    {
+      "id": "plt_spacing",
+      "defType": "io/slider",
+      "position": {
+        "x": 616,
+        "y": 184
+      },
+      "params": {
+        "value": 11,
+        "min": 5,
+        "max": 30
+      },
+      "portValues": {
+        "value": 11,
+        "min": 5,
+        "max": 30
+      }
+    },
+    {
+      "id": "plt_fieldScale",
+      "defType": "io/slider",
+      "position": {
+        "x": 616,
+        "y": 58
+      },
+      "params": {
+        "value": 0.004,
+        "min": 0.001,
+        "max": 0.012
+      },
+      "portValues": {
+        "value": 0.004,
+        "min": 0.001,
+        "max": 0.012
+      }
+    },
+    {
+      "id": "plt_plotSpeed",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 957
+      },
+      "params": {
+        "value": 0.05,
+        "min": 0.01,
+        "max": 0.3
+      },
+      "portValues": {
+        "value": 0.05,
+        "min": 0.01,
+        "max": 0.3
+      }
+    },
+    {
+      "id": "plt_replot",
+      "defType": "io/bang",
+      "position": {
+        "x": 0,
+        "y": 623
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "plt_clean",
+      "defType": "io/toggle",
+      "position": {
+        "x": 285,
+        "y": 186
+      },
+      "params": {
+        "value": false
+      },
+      "portValues": {
+        "value": false
+      }
+    },
+    {
+      "id": "plt_dt",
+      "defType": "time/delta",
+      "position": {
+        "x": 41,
+        "y": 853
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "plt_inks",
+      "defType": "color/palette",
+      "position": {
+        "x": 616,
+        "y": 310
+      },
+      "params": {
+        "stopCount": 3,
+        "c0": "#1d3557",
+        "c1": "#1d3557",
+        "c2": "#e63946"
+      },
+      "portValues": {
+        "stopCount": 3,
+        "c0": "#1d3557",
+        "c1": "#1d3557",
+        "c2": "#e63946"
+      }
+    },
+    {
+      "id": "plt_penWidth",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 302,
+        "y": 512
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "plt_penCap",
+      "defType": "style/stroke-cap",
+      "position": {
+        "x": 641,
+        "y": 502
+      },
+      "params": {},
+      "portValues": {
+        "cap": "round"
+      }
+    },
+    {
+      "id": "plt_flowLines",
+      "defType": "geometry/contours",
+      "position": {
+        "x": 923,
+        "y": 135
+      },
+      "params": {
+        "mode": "flow",
+        "field": "angle"
+      },
+      "portValues": {
+        "field": "angle",
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "size": {
+          "x": 380,
+          "y": 520
+        },
+        "seed": 7,
+        "step": 2,
+        "maxLength": 700,
+        "minLength": 24
+      }
+    },
+    {
+      "id": "plt_rprogress",
+      "defType": "state/read",
+      "position": {
+        "x": 12,
+        "y": 727
+      },
+      "params": {
+        "slot": 1,
+        "init": 0
+      },
+      "portValues": {
+        "slot": 1,
+        "init": 0
+      }
+    },
+    {
+      "id": "plt_progress",
+      "defType": "math/expression",
+      "position": {
+        "x": 285,
+        "y": 717
+      },
+      "params": {
+        "expr": "r ? 0 : min(1, p + min(dt, 0.05) * s)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "plt_wprogress",
+      "defType": "state/write",
+      "position": {
+        "x": 653,
+        "y": 824
+      },
+      "params": {
+        "slot": 1
+      },
+      "portValues": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "plt_shown",
+      "defType": "math/expression",
+      "position": {
+        "x": 616,
+        "y": 628
+      },
+      "params": {
+        "expr": "c ? 1 : p"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "plt_plot",
+      "defType": "geometry/trim",
+      "position": {
+        "x": 1218,
+        "y": 318
+      },
+      "params": {
+        "mode": "sequence"
+      },
+      "portValues": {
+        "start": 0
+      }
+    },
+    {
+      "id": "plt_nib",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1515,
+        "y": 425
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      }
+    },
+    {
+      "id": "plt_nibColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 1215,
+        "y": 753
+      },
+      "params": {
+        "expr": "rgb(0.15, 0.15, 0.2, p < 1 ? 0.9 : 0)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "plt_nibFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1553,
+        "y": 731
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "plt_nibDot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1835,
+        "y": 584
+      },
+      "params": {},
+      "portValues": {
+        "w": 9,
+        "h": 9
+      }
+    },
+    {
+      "id": "plt_ringColour",
+      "defType": "math/expression",
+      "position": {
+        "x": 914,
+        "y": 643
+      },
+      "params": {
+        "expr": "rgb(0.15, 0.15, 0.2, p < 1 ? 0.35 : 0)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "plt_ringStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 1253,
+        "y": 583
+      },
+      "params": {},
+      "portValues": {
+        "width": 1
+      }
+    },
+    {
+      "id": "plt_ringNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 1552,
+        "y": 573
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "plt_nibRing",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1835,
+        "y": 392
+      },
+      "params": {},
+      "portValues": {
+        "w": 26,
+        "h": 26
+      }
+    },
+    {
+      "id": "plt_paperFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1232,
+        "y": 192
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.9686274509803922,
+          "g": 0.9529411764705882,
+          "b": 0.9176470588235294,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "plt_paper",
+      "defType": "draw/rect",
+      "position": {
+        "x": 1542,
+        "y": 202
+      },
+      "params": {
+        "anchor": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 0
+        },
+        "w": 440,
+        "h": 580,
+        "anchor": "center"
+      }
+    },
+    {
+      "id": "plt_paperShadow",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1800,
+        "y": 156
+      },
+      "params": {
+        "mode": "shadow"
+      },
+      "portValues": {
+        "offset": {
+          "x": 6,
+          "y": 10
+        },
+        "radius": 18,
+        "color": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        },
+        "opacity": 0.45
+      }
+    },
+    {
+      "id": "plt_sheet",
+      "defType": "transform/group",
+      "position": {
+        "x": 2095,
+        "y": 317
+      },
+      "params": {
+        "slotCount": 4
+      },
+      "portValues": {}
+    },
+    {
+      "id": "plt_grain",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 2368,
+        "y": 238
+      },
+      "params": {
+        "mode": "grain"
+      },
+      "portValues": {
+        "amount": 0.06,
+        "size": 1.2
+      }
+    },
+    {
+      "id": "plt_desk",
+      "defType": "transform/group",
+      "position": {
+        "x": 2641,
+        "y": 182
+      },
+      "params": {
+        "slotCount": 1
+      },
+      "portValues": {}
+    },
+    {
+      "id": "plt_whiteFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 931,
+        "y": 9
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "plt_white",
+      "defType": "draw/rect",
+      "position": {
+        "x": 1245,
+        "y": 0
+      },
+      "params": {
+        "anchor": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 0
+        },
+        "w": 620,
+        "h": 740,
+        "anchor": "center"
+      }
+    },
+    {
+      "id": "plt_cleanSheet",
+      "defType": "transform/group",
+      "position": {
+        "x": 1512,
+        "y": 76
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {}
+    },
+    {
+      "id": "plt_output",
+      "defType": "logic/select",
+      "position": {
+        "x": 2914,
+        "y": 81
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "plt_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 3115,
+        "y": 81
+      },
+      "params": {
+        "width": 560,
+        "height": 700,
+        "background": {
+          "r": 0.23137254901960785,
+          "g": 0.22745098039215686,
+          "b": 0.24705882352941178,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 560,
+        "height": 700,
+        "background": {
+          "r": 0.23137254901960785,
+          "g": 0.22745098039215686,
+          "b": 0.24705882352941178,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "plt_pen",
+      "target": "plt_penWidth",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_2",
+      "source": "plt_penWidth",
+      "target": "plt_penCap",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_3",
+      "source": "plt_spacing",
+      "target": "plt_flowLines",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-spacing"
+    },
+    {
+      "id": "e_4",
+      "source": "plt_fieldScale",
+      "target": "plt_flowLines",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_5",
+      "source": "plt_inks",
+      "target": "plt_flowLines",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_6",
+      "source": "plt_penCap",
+      "target": "plt_flowLines",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_7",
+      "source": "plt_replot",
+      "target": "plt_progress",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_8",
+      "source": "plt_rprogress",
+      "target": "plt_progress",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_9",
+      "source": "plt_dt",
+      "target": "plt_progress",
+      "sourceHandle": "out-dt",
+      "targetHandle": "in-dt"
+    },
+    {
+      "id": "e_10",
+      "source": "plt_plotSpeed",
+      "target": "plt_progress",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_11",
+      "source": "plt_progress",
+      "target": "plt_wprogress",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_12",
+      "source": "plt_clean",
+      "target": "plt_shown",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_13",
+      "source": "plt_progress",
+      "target": "plt_shown",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_14",
+      "source": "plt_flowLines",
+      "target": "plt_plot",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_15",
+      "source": "plt_shown",
+      "target": "plt_plot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-end"
+    },
+    {
+      "id": "e_16",
+      "source": "plt_plot",
+      "target": "plt_nib",
+      "sourceHandle": "out-heads",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_17",
+      "source": "plt_progress",
+      "target": "plt_nibColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_18",
+      "source": "plt_nibColour",
+      "target": "plt_nibFill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_19",
+      "source": "plt_nib",
+      "target": "plt_nibDot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_20",
+      "source": "plt_nibFill",
+      "target": "plt_nibDot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_21",
+      "source": "plt_progress",
+      "target": "plt_ringColour",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_22",
+      "source": "plt_ringColour",
+      "target": "plt_ringStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_23",
+      "source": "plt_ringStroke",
+      "target": "plt_ringNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_24",
+      "source": "plt_nib",
+      "target": "plt_nibRing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_25",
+      "source": "plt_ringNoFill",
+      "target": "plt_nibRing",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_26",
+      "source": "plt_paperFill",
+      "target": "plt_paper",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_27",
+      "source": "plt_paper",
+      "target": "plt_paperShadow",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_28",
+      "source": "plt_paperShadow",
+      "target": "plt_sheet",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_29",
+      "source": "plt_plot",
+      "target": "plt_sheet",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_30",
+      "source": "plt_nibRing",
+      "target": "plt_sheet",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_31",
+      "source": "plt_nibDot",
+      "target": "plt_sheet",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_32",
+      "source": "plt_sheet",
+      "target": "plt_grain",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_33",
+      "source": "plt_grain",
+      "target": "plt_desk",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_34",
+      "source": "plt_whiteFill",
+      "target": "plt_white",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_35",
+      "source": "plt_white",
+      "target": "plt_cleanSheet",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_36",
+      "source": "plt_plot",
+      "target": "plt_cleanSheet",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_37",
+      "source": "plt_clean",
+      "target": "plt_output",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_38",
+      "source": "plt_cleanSheet",
+      "target": "plt_output",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_39",
+      "source": "plt_desk",
+      "target": "plt_output",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_40",
+      "source": "plt_output",
+      "target": "plt_r",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

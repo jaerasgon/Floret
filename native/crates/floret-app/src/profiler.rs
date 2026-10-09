@@ -21,7 +21,11 @@ pub fn ui(
     render_ms: f32,
 ) {
     let Some(engine) = engine else {
-        ui.label(RichText::new("No patch running.").color(*theme::FG_2));
+        theme::empty_state(
+            ui,
+            "No patch running",
+            "Node timings show here while a patch runs",
+        );
         return;
     };
     let p = engine.profile();

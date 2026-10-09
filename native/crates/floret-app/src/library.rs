@@ -796,7 +796,7 @@ impl Library {
                 .auto_shrink([false, false])
                 .show(&mut cols[1], |ui| {
                     let Some(f) = self.folder.clone() else {
-                        hint(ui, "Pick a folder");
+                        theme::empty_state(ui, "No folder picked", "Pick one on the left");
                         return;
                     };
                     for (_, r, name, n) in rows.in_folder.iter().filter(|x| x.0 == f) {
@@ -818,7 +818,7 @@ impl Library {
                 .max_height(height)
                 .auto_shrink([false, false])
                 .show(&mut cols[2], |ui| match &self.library {
-                    None => hint(ui, "Pick a library"),
+                    None => theme::empty_state(ui, "No library picked", "Pick one on the left"),
                     Some(LibRef::Category(c)) => {
                         for (i, s) in samples.iter().enumerate().filter(|(_, s)| s.category == c) {
                             if pick_row(ui, current == Some(i), s.name, s.description).clicked() {
@@ -828,7 +828,11 @@ impl Library {
                     }
                     Some(LibRef::Mine) => {
                         if self.entries.is_empty() {
-                            hint(ui, "Empty library.");
+                            theme::empty_state(
+                                ui,
+                                "Empty library",
+                                "Use “Save to library…” to add a patch",
+                            );
                         }
                         for e in &self.entries {
                             if pick_row(ui, false, &e.name, &e.description).clicked() {
@@ -840,7 +844,11 @@ impl Library {
                         let lib = self.libs.iter().find(|l| &l.slug == slug);
                         let entries = lib.map(|l| l.library.patches.as_slice()).unwrap_or(&[]);
                         if entries.is_empty() {
-                            hint(ui, "Empty library.");
+                            theme::empty_state(
+                                ui,
+                                "Empty library",
+                                "Use “Save to library…” to add a patch",
+                            );
                         }
                         for e in entries {
                             let desc = e.description.as_deref().unwrap_or("");
@@ -892,7 +900,7 @@ impl Library {
             }
         }
         if hits.is_empty() {
-            hint(ui, "No patches match.");
+            theme::empty_state(ui, "No patches match", "Try another name or keyword");
             return None;
         }
         let n = hits.len();

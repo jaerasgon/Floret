@@ -83,6 +83,9 @@ pub const GOLD: Token = Token::new(0xf4c542, 0xa87c10);
 /// The accent as small text (values, readouts, headings): the web app's
 /// `--accent-dim` on the light theme.
 pub const GOLD_TEXT: Token = Token::new(0xf4c542, 0x836006);
+/// Text on a [`GOLD`] fill (the primary button): near-black in both
+/// themes, ≥ 4.5:1 on either gold.
+pub const ON_GOLD: Token = Token::new(0x191919, 0x14120d);
 pub const DANGER: Token = Token::new(0xff7a7a, 0xc93c3c);
 
 pub const AMBER: Token = Token::new(0xffc864, 0x8c5a00);
@@ -176,29 +179,93 @@ fn hsl(h: f32, s: f32, l: f32) -> Color32 {
     Color32::from_rgb(to(r), to(g), to(b))
 }
 
-/// Install both themes' styles and follow `pref` (dark / light / system).
-/// egui's default fonts plus DejaVu Sans Mono (bundled with the engine)
+/// The interface fonts. Proportional text is Inter (bundled, OFL), with
+/// the Phosphor icon font right behind it so icons mix into labels, then
+/// egui's defaults (emoji) and DejaVu Sans Mono (bundled with the engine)
 /// as a last fallback, so arrows and other symbols in comments and labels
-/// ("→", "×", "≤" …) draw instead of a box. Call once at startup.
+/// ("→", "×", "≤" …) draw instead of a box. Monospace stays egui's Hack.
+/// [`MEDIUM`] is Inter Medium, for titles and emphasis. Call once at
+/// startup.
 pub fn install_fonts(ctx: &egui::Context) {
+    ctx.set_fonts(font_definitions());
+}
+
+/// The font family for titles and emphasis: Inter Medium, with the same
+/// fallbacks as proportional text.
+pub const MEDIUM: &str = "medium";
+
+/// Inter Medium at `size`.
+pub fn medium(size: f32) -> FontId {
+    FontId::new(size, FontFamily::Name(MEDIUM.into()))
+}
+
+/// The Phosphor icon font's family (icons only, no text).
+const ICONS: &str = "icons";
+
+/// A Phosphor icon (`egui_phosphor::regular::*`) at `size`, in `color`.
+/// Put text beside it as a separate atom or label: this family has no
+/// letters.
+pub fn icon(glyph: &str, size: f32, color: impl Into<Color32>) -> egui::RichText {
+    egui::RichText::new(glyph)
+        .family(FontFamily::Name(ICONS.into()))
+        .size(size)
+        .color(color)
+}
+
+/// The fonts [`install_fonts`] installs (tests measure text with them).
+pub fn font_definitions() -> egui::FontDefinitions {
+    const INTER: &str = "inter";
     const FALLBACK: &str = "dejavu-fallback";
     let mut fonts = egui::FontDefinitions::default();
-    fonts.font_data.insert(
-        FALLBACK.to_owned(),
-        std::sync::Arc::new(egui::FontData::from_static(include_bytes!(
-            "../../floret-engine/fonts/DejaVuSansMono.ttf"
-        ))),
-    );
-    for family in [egui::FontFamily::Proportional, egui::FontFamily::Monospace] {
+    for (name, bytes) in [
+        (
+            INTER,
+            &include_bytes!("../assets/fonts/Inter-Regular.ttf")[..],
+        ),
+        (
+            MEDIUM,
+            &include_bytes!("../assets/fonts/Inter-Medium.ttf")[..],
+        ),
+        (
+            FALLBACK,
+            &include_bytes!("../../floret-engine/fonts/DejaVuSansMono.ttf")[..],
+        ),
+    ] {
+        fonts.font_data.insert(
+            name.to_owned(),
+            std::sync::Arc::new(egui::FontData::from_static(bytes)),
+        );
+    }
+    fonts
+        .families
+        .entry(FontFamily::Proportional)
+        .or_default()
+        .insert(0, INTER.to_owned());
+    // Icons second: behind Inter, ahead of egui's emoji fonts.
+    egui_phosphor::add_to_fonts(&mut fonts, egui_phosphor::Variant::Regular);
+    // Inter maps glyphs of its own to hundreds of the private-use
+    // codepoints Phosphor uses, so icons are drawn in a family with
+    // Phosphor first ([`icon`]); only Phosphor, as its blank a–z would
+    // hide any text.
+    fonts
+        .families
+        .insert(FontFamily::Name(ICONS.into()), vec!["phosphor".to_owned()]);
+    for family in [FontFamily::Proportional, FontFamily::Monospace] {
         fonts
             .families
             .entry(family)
             .or_default()
             .push(FALLBACK.to_owned());
     }
-    ctx.set_fonts(fonts);
+    let mut medium = fonts.families[&FontFamily::Proportional].clone();
+    medium[0] = MEDIUM.to_owned();
+    fonts
+        .families
+        .insert(FontFamily::Name(MEDIUM.into()), medium);
+    fonts
 }
 
+/// Install both themes' styles and follow `pref` (dark / light / system).
 pub fn apply(ctx: &egui::Context, pref: egui::ThemePreference) {
     for theme in [egui::Theme::Dark, egui::Theme::Light] {
         ctx.style_mut_of(theme, |style| style_for(style, theme == egui::Theme::Light));
@@ -218,17 +285,14 @@ fn style_for(style: &mut egui::Style, light: bool) {
     style.text_styles = [
         (
             TextStyle::Small,
-            FontId::new(11.0, FontFamily::Proportional),
+            FontId::new(10.5, FontFamily::Proportional),
         ),
-        (TextStyle::Body, FontId::new(13.0, FontFamily::Proportional)),
+        (TextStyle::Body, FontId::new(12.5, FontFamily::Proportional)),
         (
             TextStyle::Button,
-            FontId::new(13.0, FontFamily::Proportional),
+            FontId::new(12.5, FontFamily::Proportional),
         ),
-        (
-            TextStyle::Heading,
-            FontId::new(15.0, FontFamily::Proportional),
-        ),
+        (TextStyle::Heading, medium(14.0)),
         (
             TextStyle::Monospace,
             FontId::new(12.0, FontFamily::Monospace),
@@ -278,6 +342,78 @@ fn style_for(style: &mut egui::Style, light: bool) {
         state.bg_stroke = Stroke::new(1.0, pick(BORDER));
     }
     w.hovered.bg_stroke = Stroke::new(1.0, pick(FG_3));
+}
+
+/// A panel's empty state, filling the rest of `ui`: a short title
+/// ([`FG_1`], body) over a one-line hint ([`FG_2`], small), centred and
+/// wrapped to fit narrow panels.
+pub fn empty_state(ui: &mut egui::Ui, title: &str, hint: &str) {
+    let width = ui.available_width();
+    let mut height = ui.available_height();
+    if !height.is_finite() || height > 10_000.0 {
+        // Inside a scroll area: what's left of the visible part.
+        height = ui.clip_rect().bottom() - ui.cursor().top();
+    }
+    let (t, h) = empty_state_galleys(ui, title, hint, width);
+    let need = t.size().y + EMPTY_GAP + h.size().y + 24.0;
+    let (rect, _) =
+        ui.allocate_exact_size(egui::vec2(width, height.max(need)), egui::Sense::hover());
+    paint_empty_state(ui, rect, title, hint);
+}
+
+const EMPTY_GAP: f32 = 3.0;
+
+/// [`empty_state`] painted centred in `rect` (for views that draw their
+/// own background).
+pub fn paint_empty_state(ui: &egui::Ui, rect: egui::Rect, title: &str, hint: &str) {
+    let (t, h) = empty_state_galleys(ui, title, hint, rect.width());
+    let total = t.size().y + EMPTY_GAP + h.size().y;
+    let top = rect.center().y - total / 2.0;
+    let x = rect.center().x;
+    let painter = ui.painter();
+    let hint_top = top + t.size().y + EMPTY_GAP;
+    painter.galley(egui::pos2(x, top), t, *FG_1);
+    painter.galley(egui::pos2(x, hint_top), h, *FG_2);
+}
+
+fn empty_state_galleys(
+    ui: &egui::Ui,
+    title: &str,
+    hint: &str,
+    width: f32,
+) -> (std::sync::Arc<egui::Galley>, std::sync::Arc<egui::Galley>) {
+    let wrap = (width - 24.0).clamp(60.0, 300.0);
+    let layout = |text: &str, style: TextStyle, color: Color32| {
+        let mut job =
+            egui::text::LayoutJob::simple(text.to_owned(), style.resolve(ui.style()), color, wrap);
+        job.halign = egui::Align::Center;
+        ui.painter().layout_job(job)
+    };
+    (
+        layout(title, TextStyle::Body, *FG_1),
+        layout(hint, TextStyle::Small, *FG_2),
+    )
+}
+
+/// Floret's sunflower mark (`macos/icon.svg`): 13 petals around a disc,
+/// `size` points across.
+pub fn paint_logo(painter: &egui::Painter, center: egui::Pos2, size: f32, color: Color32) {
+    use std::f32::consts::TAU;
+    // The mark's own units: a 24-unit box, petals 1.5 × 3.5 centred 7.7
+    // out, a disc of radius 4.
+    let s = size / 22.4;
+    for i in 0..13 {
+        let (sin, cos) = (i as f32 * TAU / 13.0).sin_cos();
+        let petal = (0..20)
+            .map(|k| {
+                let (ps, pc) = (k as f32 * TAU / 20.0).sin_cos();
+                let (x, y) = (1.5 * pc, -7.7 + 3.5 * ps);
+                center + egui::vec2(x * cos - y * sin, x * sin + y * cos) * s
+            })
+            .collect();
+        painter.add(egui::Shape::convex_polygon(petal, color, Stroke::NONE));
+    }
+    painter.circle_filled(center, 4.0 * s, color);
 }
 
 #[cfg(test)]
@@ -352,6 +488,65 @@ mod tests {
                 assert!(contrast(t(fg), t(BG_2)) >= 4.5, "{fg:?}");
             }
         }
+    }
+
+    /// `over` (premultiplied, possibly translucent) composited on `bg`.
+    fn blend(over: Color32, bg: Color32) -> Color32 {
+        let a = f32::from(over.a()) / 255.0;
+        let mix = |o: u8, b: u8| (f32::from(o) + f32::from(b) * (1.0 - a)).round() as u8;
+        Color32::from_rgb(
+            mix(over.r(), bg.r()),
+            mix(over.g(), bg.g()),
+            mix(over.b(), bg.b()),
+        )
+    }
+
+    #[test]
+    fn chrome_text_is_legible_in_both_themes() {
+        for light in [false, true] {
+            let t = |tok: Token| if light { tok.light } else { tok.dark };
+            let mut style = egui::Style::default();
+            style_for(&mut style, light);
+            // The primary (Export) button: dark text on gold.
+            let c = contrast(t(ON_GOLD), t(GOLD));
+            assert!(c >= 4.5, "text on the gold button: {c:.2} (light: {light})");
+            // Dock tab titles: active / focused on the tab fill, inactive
+            // and hovered on the tab bar.
+            for (fg, bg) in [(FG_1, BG_2), (FG_0, BG_2), (FG_2, BG_1), (FG_1, BG_1)] {
+                let c = contrast(t(fg), t(bg));
+                assert!(c >= 4.5, "tab title {fg:?} on {bg:?}: {c:.2}");
+            }
+            // Toolbar toggles: the gold icon on the selected fill (an
+            // icon, so WCAG's 3:1 for graphics), and the selected text
+            // colour egui uses for selected buttons.
+            let selected = blend(style.visuals.selection.bg_fill, t(BG_1));
+            let c = contrast(t(GOLD_TEXT), selected);
+            assert!(c >= 3.0, "gold icon on the selected fill: {c:.2}");
+            assert_eq!(style.visuals.selection.stroke.color, t(GOLD_TEXT));
+            // Empty states and chips: FG_1 titles, FG_2 hints and chips on
+            // panels; the preview's empty state on the canvas colour.
+            for bg in [BG_1, BG_2] {
+                assert!(contrast(t(FG_1), t(bg)) >= 4.5);
+                assert!(contrast(t(FG_2), t(bg)) >= 4.5);
+            }
+            assert!(contrast(t(FG_1), t(BG_0)) >= 4.5);
+            assert!(contrast(t(FG_2), t(BG_0)) >= 3.8);
+        }
+    }
+
+    #[test]
+    fn fonts_include_inter_icons_and_fallbacks() {
+        let fonts = font_definitions();
+        let prop = &fonts.families[&FontFamily::Proportional];
+        assert_eq!(prop[0], "inter");
+        assert!(prop.contains(&"phosphor".to_owned()));
+        assert_eq!(prop.last().map(String::as_str), Some("dejavu-fallback"));
+        assert_eq!(fonts.families[&FontFamily::Monospace][0], "Hack");
+        assert_eq!(fonts.families[&FontFamily::Name(MEDIUM.into())][0], MEDIUM);
+        assert_eq!(
+            fonts.families[&FontFamily::Name(ICONS.into())],
+            vec!["phosphor".to_owned()]
+        );
     }
 
     #[test]

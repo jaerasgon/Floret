@@ -103,3 +103,38 @@ the prebuilt binaries Cisco distributes, not to OpenH264 compiled from
 source, as here. Before releasing the Windows / Linux builds, switch them
 to the OS's own codecs (Windows Media Foundation) or to Cisco's binary
 downloaded at runtime, or check H.264 patent licensing.
+
+---
+
+## Inter (interface font)
+
+- **What:** the Inter typeface, Regular and Medium weights, used for the
+  native app's interface text (`native/crates/floret-app/src/theme.rs`).
+- **Files vendored:** `native/crates/floret-app/assets/fonts/Inter-Regular.ttf`
+  and `Inter-Medium.ttf` — Inter 4.001, the static TTFs as published in the
+  `@expo-google-fonts/inter` npm package (0.4.2; the Google Fonts build of
+  Inter), unmodified.
+- **Copyright:** © 2016 The Inter Project Authors
+- **License:** SIL Open Font License 1.1 — full text in
+  [`native/crates/floret-app/assets/fonts/LICENSE-Inter.txt`](native/crates/floret-app/assets/fonts/LICENSE-Inter.txt).
+- **Project:** https://github.com/rsms/inter
+
+The OFL allows bundling the fonts with software; the obligation met here is
+keeping the copyright notice and license with them. The fonts aren't sold on
+their own.
+
+---
+
+## Phosphor Icons via the `egui-phosphor` crate
+
+- **What:** the Phosphor icon font (Regular weight), compiled into the native
+  app through the `egui-phosphor` crate for the toolbar, preview header and
+  status bar icons. No files vendored.
+- **Copyright:** © Phosphor Icons (the icons and font); © 2023 Romet
+  Tagobert (`egui-phosphor`)
+- **License:** Phosphor Icons: MIT. `egui-phosphor`: MIT OR Apache-2.0.
+- **Project:** https://github.com/phosphor-icons/core ·
+  https://github.com/amPerl/egui-phosphor
+
+The MIT terms are met by keeping the copyright and permission notice with
+binary distributions (an app bundle's licenses file / About box).

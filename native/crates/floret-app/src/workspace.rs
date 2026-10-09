@@ -57,6 +57,30 @@ fn title(tab: &Tab) -> &'static str {
     }
 }
 
+/// A tab's title: small spaced-out monospace capitals. Its colour is left
+/// to the dock style (active / inactive), so it isn't set here.
+fn tab_label(text: &str) -> egui::WidgetText {
+    let mut job = egui::text::LayoutJob::default();
+    job.append(
+        &text.to_uppercase(),
+        0.0,
+        egui::TextFormat {
+            font_id: egui::FontId::monospace(10.5),
+            extra_letter_spacing: 0.8,
+            color: egui::Color32::PLACEHOLDER,
+            valign: egui::Align::Center,
+            ..Default::default()
+        },
+    );
+    job.into()
+}
+
+/// Whether a tab can be closed: a preview goes away with its renderer
+/// node, never by hand.
+fn closeable(tab: &Tab) -> bool {
+    !matches!(tab, Tab::Preview(_))
+}
+
 /// The default layout: previews on top, the other panels tabbed below.
 pub fn default_dock() -> DockState<Tab> {
     let mut dock = DockState::new(vec![Tab::Preview(0)]);
@@ -218,6 +242,7 @@ impl Workspace {
                 .cloned()
                 .collect(),
             reset: false,
+            close: None,
             profiling: false,
         };
         // A tab dragged off the dock (onto the canvas) floats as a card
@@ -244,10 +269,14 @@ impl Workspace {
             .show_add_popup(true)
             .show_leaf_collapse_buttons(false)
             .show_leaf_close_all_buttons(false)
+            .show_close_buttons(false)
             // Tabs dragged out float anywhere over the window, as cards.
             .window_bounds(ui.ctx().content_rect())
             .show_inside(ui, &mut viewer);
         let (action, add, reset) = (viewer.action.take(), viewer.add.take(), viewer.reset);
+        if let Some(p) = viewer.close.take().and_then(|t| self.dock.find_tab(&t)) {
+            self.dock.remove_tab(p);
+        }
         if let (Some((tab, from)), Some(p)) = (dropped, pointer) {
             if float_drop(&self.dock, &tab, from, dock_rect, p) {
                 self.dock.detach_tab(
@@ -349,14 +378,16 @@ fn style(base: &egui::Style) -> egui_dock::Style {
     s.tab_bar.bg_fill = *theme::BG_1;
     s.tab_bar.hline_color = *theme::BORDER;
     s.tab_bar.height = 26.0;
-    s.separator.color_idle = *theme::BORDER;
+    // Wide canvas-coloured gutters, so the panels read as separate cards.
+    s.separator.width = 3.0;
+    s.separator.color_idle = *theme::BG_0;
     s.separator.color_hovered = *theme::FG_3;
     s.separator.color_dragged = *theme::GOLD;
     s.tab.tab_body.bg_fill = *theme::BG_1;
     s.tab.tab_body.stroke = egui::Stroke::NONE;
     s.tab.tab_body.inner_margin = egui::Margin::same(8);
     s.tab.active.bg_fill = *theme::BG_2;
-    s.tab.active.text_color = *theme::FG_0;
+    s.tab.active.text_color = *theme::FG_1;
     s.tab.focused.bg_fill = *theme::BG_2;
     s.tab.focused.text_color = *theme::FG_0;
     s.tab.inactive.bg_fill = *theme::BG_1;
@@ -383,6 +414,8 @@ struct Viewer<'s, 'a> {
     /// Panels currently in the dock.
     open: Vec<Tab>,
     reset: bool,
+    /// A panel closed from its tab (context menu, middle click).
+    close: Option<Tab>,
     profiling: bool,
 }
 
@@ -395,18 +428,32 @@ impl TabViewer for Viewer<'_, '_> {
 
     fn title(&mut self, tab: &mut Tab) -> egui::WidgetText {
         match tab {
-            Tab::Preview(i) => self
-                .renderers
-                .get(*i)
-                .map_or_else(|| "Preview".to_owned(), |(_, t)| t.clone())
-                .into(),
-            other => title(other).into(),
+            Tab::Preview(i) => tab_label(
+                self.renderers
+                    .get(*i)
+                    .map_or("Preview", |(_, t)| t.as_str()),
+            ),
+            other => tab_label(title(other)),
         }
     }
 
     fn is_closeable(&self, tab: &Tab) -> bool {
-        // A preview goes away with its renderer node, never by hand.
-        !matches!(tab, Tab::Preview(_))
+        closeable(tab)
+    }
+
+    /// Tabs have no × (the dock hides close buttons): a closeable panel
+    /// closes from its right-click menu or with a middle click.
+    fn context_menu(&mut self, ui: &mut egui::Ui, tab: &mut Tab, _path: NodePath) {
+        if closeable(tab) && ui.button("Close").clicked() {
+            self.close = Some(tab.clone());
+            ui.close();
+        }
+    }
+
+    fn on_tab_button(&mut self, tab: &mut Tab, response: &egui::Response) {
+        if closeable(tab) && response.middle_clicked() {
+            self.close = Some(tab.clone());
+        }
     }
 
     fn scroll_bars(&self, tab: &Tab) -> [bool; 2] {
@@ -488,7 +535,11 @@ impl TabViewer for Viewer<'_, '_> {
 /// The selected node: type, description and live output values.
 fn inspector(ui: &mut egui::Ui, sh: &mut Shell) {
     let Some(id) = sh.view.primary() else {
-        ui.label(RichText::new("Select a node to inspect it.").color(theme::FG_2));
+        theme::empty_state(
+            ui,
+            "No node selected",
+            "Click a node, or press Tab to add one",
+        );
         return;
     };
     let Some(n) = sh.patch.nodes.iter().find(|n| &n.id == id) else {

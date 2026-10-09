@@ -21,7 +21,7 @@
         "height": 240
       },
       "portValues": {
-        "text": "Trails: state + spread\n\nThe Write* / Read* pair stash a SPREAD between frames. Read* emits last frame's spread; we append today's mouse vec2 to it (Stack), then Write* keeps the new spread for tomorrow.\n\nDraw the buffer as a Path → the line trails the cursor.",
+        "text": "Trails: state + spread\n\nThe Write* / Read* pair stash a SPREAD between frames. Read* emits last frame's spread; we append today's mouse vec2 to it (Combine, set to concat), then Write* keeps the new spread for tomorrow.\n\nDraw the buffer as a Path → the line trails the cursor.",
         "width": 420,
         "height": 240
       }

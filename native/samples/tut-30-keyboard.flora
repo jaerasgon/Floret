@@ -21,7 +21,7 @@
         "height": 240
       },
       "portValues": {
-        "text": "Branching on keyboard input\n\n`input/keyboard.key` outputs the last key pressed (e.g. \"a\", \"ArrowLeft\"). `logic/eq` checks equality against a constant string. Wire the result into a `region/if` and you get key-driven branches.\n\nPress R for red rect, B for blue ellipse — others draw nothing.",
+        "text": "Branching on keyboard input\n\n`input/keyboard.key` outputs the last key pressed (e.g. \"a\", \"ArrowLeft\"). Compare set to `equal` checks it against a constant string. Wire the result into a `region/if` and you get key-driven branches.\n\nPress R for red rect, B for blue ellipse — others draw nothing.",
         "width": 440,
         "height": 240
       }

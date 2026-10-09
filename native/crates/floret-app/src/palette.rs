@@ -96,7 +96,7 @@ pub fn show(ui: &mut egui::Ui, query: &mut String, view: &mut View, patch: &mut 
             }
             let groups = grouped(cat, &q);
             if groups.is_empty() {
-                ui.label(RichText::new("No nodes match").color(FG_2));
+                crate::theme::empty_state(ui, "No nodes match", "Try another name or keyword");
             }
             for (g, entries) in groups {
                 let header = RichText::new(format!("{g}  ·  {}", entries.len())).color(*FG_1);

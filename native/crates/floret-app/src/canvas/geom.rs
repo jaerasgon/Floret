@@ -249,6 +249,7 @@ pub fn measuring_painter() -> Painter {
         .and_then(|m| m.clone())
         .unwrap_or_else(|| {
             let ctx = egui::Context::default();
+            crate::theme::install_fonts(&ctx);
             ctx.run_ui(egui::RawInput::default(), |_| {})
                 .textures_delta
                 .clear();

@@ -15,6 +15,7 @@ use crate::{
     shader_panel, theme, welcome, workspace, SAMPLES,
 };
 use eframe::egui::{self, Align, Layout, RichText};
+use egui_phosphor::regular as icons;
 use floret_engine::patch::PatchFile;
 use floret_engine::spec::Catalogue;
 use floret_engine::tick::{Outputs, RegionStats};
@@ -500,12 +501,15 @@ impl App {
                         self.commands.push(c);
                     }
                 });
-                ui.separator();
+                cluster_gap(ui);
             }
             // Document.
-            ui.label(RichText::new("✿").color(theme::GOLD).size(16.0));
+            let (logo, _) = ui.allocate_exact_size(egui::vec2(16.0, 16.0), egui::Sense::hover());
+            theme::paint_logo(ui.painter(), logo.center(), 16.0, *theme::GOLD);
             let dirty = self.dirty();
-            let name = RichText::new(&self.doc.name).color(theme::FG_0).strong();
+            let name = RichText::new(&self.doc.name)
+                .color(theme::FG_0)
+                .font(theme::medium(12.5));
             let hover = match &self.doc.origin {
                 Origin::File(p) => p.display().to_string(),
                 Origin::Sample(_) => "Built-in sample — Save As to keep your changes".into(),
@@ -520,42 +524,52 @@ impl App {
             toggle(
                 ui,
                 &mut self.prefs.palette_visible,
-                "Nodes",
+                icons::SIDEBAR_SIMPLE,
                 &shortcut_hint(&Command::ToggleNodes),
             );
-            if tool(ui, "Fit", &shortcut_hint(&Command::FitView)).clicked() {
+            if tool(ui, icons::FRAME_CORNERS, &shortcut_hint(&Command::FitView)).clicked() {
                 self.view.request_fit();
             }
-            if tool(ui, "Arrange", "Auto-arrange the patch left → right (undo with Ctrl/⌘+Z)")
-                .clicked()
+            if tool(
+                ui,
+                icons::TREE_STRUCTURE,
+                "Arrange: auto-arrange the patch left → right (undo with Ctrl/⌘+Z)",
+            )
+            .clicked()
             {
                 self.view.request_arrange();
             }
             cluster_gap(ui);
             // Canvas toggles.
             let snap_tip = format!("Snap nodes to the {} px grid", self.view.grid);
-            toggle(ui, &mut self.view.snap, "Snap", &snap_tip);
+            toggle(ui, &mut self.view.snap, icons::MAGNET, &snap_tip);
             toggle(
                 ui,
                 &mut self.view.wire_flow,
-                "Flow",
-                "Animate data flowing along wires",
+                icons::FLOW_ARROW,
+                "Flow: animate data flowing along wires",
             );
             cluster_gap(ui);
             // Transport: the whole patch's clock.
             let t = &mut self.preview.transport;
-            let (icon, tip) = if t.paused {
-                ("▶", "Play (Space over the preview)")
+            let (glyph, tip) = if t.paused {
+                (icons::PLAY, "Play (Space over the preview)")
             } else {
-                ("⏸", "Pause: time stops (Space over the preview)")
+                (icons::PAUSE, "Pause: time stops (Space over the preview)")
             };
-            if tool(ui, icon, tip).clicked() {
+            if tool(ui, glyph, tip).clicked() {
                 t.toggle();
             }
-            if tool(ui, "⏭", "Step one frame (pauses)").clicked() {
+            if tool(ui, icons::SKIP_FORWARD, "Step one frame (pauses)").clicked() {
                 t.step();
             }
-            if tool(ui, "⟲", &shortcut_hint(&Command::Restart)).clicked() {
+            if tool(
+                ui,
+                icons::ARROW_COUNTER_CLOCKWISE,
+                &shortcut_hint(&Command::Restart),
+            )
+            .clicked()
+            {
                 t.restart();
             }
             // The patch's loop length (also in the Export window).
@@ -573,14 +587,22 @@ impl App {
                 shortcut_hint(&Command::NewVariation),
                 self.patch.seed
             );
-            if tool(ui, "Vary", &tip).clicked() {
+            let vary = egui::Button::new((icon(icons::DICE_FIVE, *theme::FG_1), "Vary"))
+                .min_size(TOOL_SIZE)
+                .frame_when_inactive(false);
+            if ui.add(vary).on_hover_text(tip).clicked() {
                 self.commands.push(Command::NewVariation);
             }
             ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                if tool(ui, "⚙", &shortcut_hint(&Command::Preferences)).clicked() {
+                if tool(ui, icons::GEAR_SIX, &shortcut_hint(&Command::Preferences)).clicked() {
                     self.prefs_window.open = true;
                 }
-                toggle(ui, &mut self.shortcuts_overlay, "?", "Keyboard shortcuts (?)");
+                toggle(
+                    ui,
+                    &mut self.shortcuts_overlay,
+                    icons::QUESTION,
+                    "Keyboard shortcuts (?)",
+                );
                 ui.add_space(4.0);
                 ui.label(RichText::new(format!("{:.0} fps", self.fps)).color(theme::FG_2).monospace());
                 if let Some(engine) = &self.engine {
@@ -605,21 +627,23 @@ impl App {
             };
             dot(ui, *dot_color);
             ui.label(RichText::new(text).color(theme::FG_1).small());
-            ui.label(
-                RichText::new(format!("frame {}", self.frame))
-                    .color(theme::FG_2)
-                    .small()
-                    .monospace(),
-            );
-            ui.label(
-                RichText::new(format!("{} nodes", self.patch.nodes.len()))
-                    .color(theme::FG_2)
-                    .small(),
-            );
+            for segment in [
+                format!("frame {}", self.frame),
+                format!("{} nodes", self.patch.nodes.len()),
+            ] {
+                ui.label(
+                    RichText::new(segment)
+                        .color(theme::FG_2)
+                        .font(egui::FontId::monospace(10.5)),
+                );
+            }
             if !warnings.is_empty() {
-                let label = RichText::new(format!("⚠ {} warnings", warnings.len()))
-                    .color(theme::DANGER)
-                    .small();
+                let label = (
+                    theme::icon(icons::WARNING, 12.0, theme::DANGER),
+                    RichText::new(format!("{} warnings", warnings.len()))
+                        .color(theme::DANGER)
+                        .small(),
+                );
                 ui.menu_button(label, |ui| {
                     ui.set_max_width(420.0);
                     for (w, nodes) in warnings {
@@ -1100,30 +1124,44 @@ fn apply_editor_prefs(view: &mut canvas::View, p: &Prefs) {
 }
 
 /// Toolbar buttons share one size so the clusters line up.
-const TOOL_SIZE: egui::Vec2 = egui::vec2(28.0, 24.0);
+const TOOL_SIZE: egui::Vec2 = egui::vec2(26.0, 24.0);
 
-/// A toolbar button.
-fn tool(ui: &mut egui::Ui, label: &str, tip: &str) -> egui::Response {
-    ui.add(egui::Button::new(label).min_size(TOOL_SIZE))
-        .on_hover_text(tip)
+/// A Phosphor icon at the toolbar's size.
+fn icon(glyph: &str, color: egui::Color32) -> RichText {
+    theme::icon(glyph, 16.0, color)
 }
 
-/// A toolbar on/off button (highlighted while on).
-fn toggle(ui: &mut egui::Ui, on: &mut bool, label: &str, tip: &str) -> egui::Response {
-    let r = ui
-        .add(egui::Button::new(label).selected(*on).min_size(TOOL_SIZE))
-        .on_hover_text(tip);
+/// A toolbar icon button (framed while hovered or pressed).
+fn tool(ui: &mut egui::Ui, glyph: &str, tip: &str) -> egui::Response {
+    let b = egui::Button::new(icon(glyph, *theme::FG_1))
+        .min_size(TOOL_SIZE)
+        .frame_when_inactive(false);
+    ui.add(b).on_hover_text(tip)
+}
+
+/// A toolbar on/off icon button: a gold icon on the selected fill while
+/// on.
+fn toggle(ui: &mut egui::Ui, on: &mut bool, glyph: &str, tip: &str) -> egui::Response {
+    let color = if *on { theme::GOLD_TEXT } else { theme::FG_1 };
+    let b = egui::Button::new(icon(glyph, *color))
+        .selected(*on)
+        .min_size(TOOL_SIZE)
+        .frame_when_inactive(*on);
+    let r = ui.add(b).on_hover_text(tip);
     if r.clicked() {
         *on = !*on;
     }
     r
 }
 
-/// The divider between toolbar clusters.
+/// The divider between toolbar clusters: a short hairline.
 fn cluster_gap(ui: &mut egui::Ui) {
-    ui.add_space(4.0);
-    ui.separator();
-    ui.add_space(4.0);
+    let (rect, _) = ui.allocate_exact_size(egui::vec2(9.0, 16.0), egui::Sense::hover());
+    ui.painter().vline(
+        rect.center().x.round() + 0.5,
+        rect.y_range(),
+        egui::Stroke::new(1.0, theme::BORDER),
+    );
 }
 
 /// A small status dot.

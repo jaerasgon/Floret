@@ -33,6 +33,8 @@ pollster = "1"
 ureq = { version = "3", default-features = false, features = ["rustls", "platform-verifier"] }
 # Dockable side panels (workspace.rs) and their saved layout.
 egui_dock = { version = "0.21", features = ["serde"] }
+# Interface icons (the Phosphor icon font; see THIRD_PARTY_NOTICES.md).
+egui-phosphor = "0.14"
 serde.workspace = true
 # Paste from the Edit menu (already in the tree through egui-winit).
 arboard = { version = "3", default-features = false }

@@ -173,12 +173,11 @@ impl ShaderPanel {
         runtime: &RuntimeErrors,
     ) -> bool {
         let Some(id) = Self::shader_id(patch, selected) else {
-            ui.add_space(16.0);
-            ui.vertical_centered(|ui| {
-                ui.label(
-                    RichText::new("Select a GPU Shader node to edit its GLSL.").color(theme::FG_2),
-                );
-            });
+            theme::empty_state(
+                ui,
+                "No shader selected",
+                "Select a GPU Shader node to edit its GLSL",
+            );
             return false;
         };
         let mut edited = false;

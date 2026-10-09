@@ -18,6 +18,7 @@ fn real_fonts() {
     static CTX: std::sync::OnceLock<egui::Context> = std::sync::OnceLock::new();
     geom::set_measure(CTX.get_or_init(|| {
         let ctx = egui::Context::default();
+        crate::theme::install_fonts(&ctx);
         ctx.run_ui(egui::RawInput::default(), |_| {})
             .textures_delta
             .clear();

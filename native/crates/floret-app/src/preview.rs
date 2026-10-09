@@ -19,6 +19,7 @@
 use crate::theme;
 use eframe::egui::{self, pos2, vec2, Align, Color32, Layout, Pos2, Rect, RichText, Vec2};
 use eframe::egui_wgpu::{self, wgpu};
+use egui_phosphor::regular as icons;
 use floret_engine::patch::PatchFile;
 use floret_engine::scene::SceneNode;
 use floret_engine::tick::Outputs;
@@ -532,9 +533,17 @@ impl PreviewPanel {
                     self.record = Some((id.clone(), f));
                 }
                 let live = self.output.as_ref().is_some_and(|o| o.renderer == id);
-                ui.menu_button(
-                    RichText::new(if live { "● Output" } else { "Output…" }).small(),
-                    |ui| {
+                let output = quiet_button(
+                    if live {
+                        icons::MONITOR_PLAY
+                    } else {
+                        icons::MONITOR
+                    },
+                    "Output",
+                    live,
+                );
+                egui::containers::menu::MenuButton::from_button(output)
+                    .ui(ui, |ui| {
                         ui.label(RichText::new("Fullscreen on display").small());
                         let labels: Vec<String> = if self.monitors.is_empty() {
                             (0..DISPLAYS)
@@ -558,33 +567,29 @@ impl PreviewPanel {
                                 self.output = None;
                             }
                         }
-                    },
-                )
-                .response
-                .on_hover_text("Show this renderer fullscreen on a display (Esc closes it)");
+                    })
+                    .0
+                    .on_hover_text("Show this renderer fullscreen on a display (Esc closes it)");
                 if ui
-                    .small_button("⛶ Focus")
+                    .add(quiet_button(icons::CORNERS_OUT, "Focus", false))
                     .on_hover_text("Focus mode: this preview alone (Esc exits)")
                     .clicked()
                 {
                     self.focus = Some(id.clone());
                 }
-                let mut info = format!("{}×{}", size.0, size.1);
+                let mut info = vec![format!("{}×{}", size.0, size.1)];
                 if let Some(p) = &self.views[&id].gpu {
                     let s = p.stats;
-                    info.push_str(&format!(
-                        " · {} shapes · {:.1}ms",
-                        s.sdf_instances + s.poly_fills + s.text_quads + s.image_quads,
-                        p.encode_ms
-                    ));
+                    let shapes = s.sdf_instances + s.poly_fills + s.text_quads + s.image_quads;
+                    info.push(format!("{shapes} shapes"));
+                    info.push(format!("{:.1}ms", p.encode_ms));
                 }
                 ui.with_layout(Layout::left_to_right(Align::Center), |ui| {
-                    ui.add(
-                        egui::Label::new(
-                            RichText::new(info).color(theme::FG_2).small().monospace(),
-                        )
-                        .truncate(),
-                    );
+                    // Chips that don't fit are cut off at the buttons.
+                    ui.set_clip_rect(ui.max_rect().intersect(ui.clip_rect()));
+                    for text in info {
+                        chip(ui, &text);
+                    }
                 });
             });
         });
@@ -857,6 +862,35 @@ fn controls(
     }
 }
 
+/// A quiet header button: an icon and a short label, framed only while
+/// hovered (the icon turns gold while `on`).
+fn quiet_button<'a>(glyph: &'a str, label: &'a str, on: bool) -> egui::Button<'a> {
+    let color = if on { theme::GOLD_TEXT } else { theme::FG_1 };
+    egui::Button::new((
+        theme::icon(glyph, 13.0, color),
+        RichText::new(label).small().color(theme::FG_1),
+    ))
+    .frame_when_inactive(false)
+}
+
+/// A small monospace readout in a hairline box.
+fn chip(ui: &mut egui::Ui, text: &str) {
+    egui::Frame::new()
+        .stroke(egui::Stroke::new(1.0, theme::BORDER))
+        .corner_radius(4)
+        .inner_margin(egui::Margin::symmetric(5, 1))
+        .show(ui, |ui| {
+            ui.add(
+                egui::Label::new(
+                    RichText::new(text)
+                        .color(theme::FG_2)
+                        .font(egui::FontId::monospace(10.5)),
+                )
+                .extend(),
+            );
+        });
+}
+
 /// `PreviewOverlay`: what to say when there's nothing to show.
 fn empty(ui: &mut egui::Ui, engine: Option<&Engine>, h: f32) {
     let (area, _) = ui.allocate_exact_size(vec2(ui.available_width(), h), egui::Sense::hover());
@@ -864,32 +898,19 @@ fn empty(ui: &mut egui::Ui, engine: Option<&Engine>, h: f32) {
         .rect_filled(area, egui::CornerRadius::same(6), theme::BG_0);
     let (title, line) = match engine {
         None => (
-            "compile error",
+            "Compile error",
             "The patch didn't compile — see the status bar.",
         ),
         Some(e) if e.graph.nodes.is_empty() => (
-            "empty canvas",
+            "Empty canvas",
             "Drag nodes from the palette, or pick a sample.",
         ),
         Some(_) => (
-            "no Renderer",
+            "No Renderer",
             "Add a Renderer and wire your drawing into its layers port.",
         ),
     };
-    ui.painter().text(
-        area.center() - vec2(0.0, 9.0),
-        egui::Align2::CENTER_CENTER,
-        title,
-        egui::FontId::monospace(11.0),
-        *theme::GOLD_TEXT,
-    );
-    ui.painter().text(
-        area.center() + vec2(0.0, 9.0),
-        egui::Align2::CENTER_CENTER,
-        line,
-        egui::FontId::proportional(11.5),
-        *theme::FG_1,
-    );
+    theme::paint_empty_state(ui, area, title, line);
 }
 
 /// A renderer's scene: its layers (first output, flattened) and

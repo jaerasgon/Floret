@@ -79,47 +79,62 @@ impl Export {
             .status
             .as_ref()
             .filter(|(_, at)| at.elapsed() < Duration::from_secs(3));
-        let (label, col, hover) = match (&self.done, recent) {
-            (Some(_), _) => ("Exporting…", theme::FG_1, "Writing the PNG…".to_owned()),
-            (None, Some((Ok(m), _))) => ("✓ Saved", theme::GOLD_TEXT, m.clone()),
-            (None, Some((Err(e), _))) => ("Export failed", theme::DANGER, e.clone()),
-            (None, None) => ("Export", theme::FG_1, tooltip(&shortcut, self.scale)),
+        // The preview's one primary button: dark text on gold, except
+        // after a failed export (red text, no fill).
+        let (label, saved, failed, hover) = match (&self.done, recent) {
+            (Some(_), _) => ("Exporting…", false, false, "Writing the PNG…".to_owned()),
+            (None, Some((Ok(m), _))) => ("Saved", true, false, m.clone()),
+            (None, Some((Err(e), _))) => ("Export failed", false, true, e.clone()),
+            (None, None) => ("Export", false, false, tooltip(&shortcut, self.scale)),
         };
         if recent.is_some() || self.done.is_some() {
             ui.ctx().request_repaint_after(Duration::from_millis(250));
         }
+        let button = if failed {
+            egui::Button::new(RichText::new(label).small().color(theme::DANGER))
+        } else {
+            let text = RichText::new(label).small().color(theme::ON_GOLD);
+            let b = if saved {
+                let check = theme::icon(egui_phosphor::regular::CHECK, 12.0, theme::ON_GOLD);
+                egui::Button::new((check, text))
+            } else {
+                egui::Button::new(text)
+            };
+            b.fill(theme::GOLD).stroke(egui::Stroke::NONE)
+        };
         ui.add_enabled_ui(rs.is_some(), |ui| {
-            ui.menu_button(RichText::new(label).small().color(col), |ui| {
-                for s in SCALES {
-                    let (w, h) = (frame.size.0 * s, frame.size.1 * s);
-                    let mut b = egui::Button::new(format!("PNG · {s}×   {w} × {h}"));
-                    if s == self.scale {
-                        b = b.shortcut_text(ui.ctx().format_shortcut(&shortcut));
+            egui::containers::menu::MenuButton::from_button(button)
+                .ui(ui, |ui| {
+                    for s in SCALES {
+                        let (w, h) = (frame.size.0 * s, frame.size.1 * s);
+                        let mut b = egui::Button::new(format!("PNG · {s}×   {w} × {h}"));
+                        if s == self.scale {
+                            b = b.shortcut_text(ui.ctx().format_shortcut(&shortcut));
+                        }
+                        let r = ui.add_enabled(fits(s), b);
+                        let r = if fits(s) {
+                            r
+                        } else {
+                            r.on_disabled_hover_text(format!(
+                                "Larger than this GPU's {max} px texture limit"
+                            ))
+                        };
+                        if r.clicked() {
+                            pick = Some(s);
+                            ui.close();
+                        }
                     }
-                    let r = ui.add_enabled(fits(s), b);
-                    let r = if fits(s) {
-                        r
-                    } else {
-                        r.on_disabled_hover_text(format!(
-                            "Larger than this GPU's {max} px texture limit"
-                        ))
-                    };
-                    if r.clicked() {
-                        pick = Some(s);
-                        ui.close();
+                    // Recordings: the export window takes it from here.
+                    ui.separator();
+                    for f in Format::ALL {
+                        if ui.button(f.menu_label()).clicked() {
+                            self.record = Some(f);
+                            ui.close();
+                        }
                     }
-                }
-                // Recordings: the export window takes it from here.
-                ui.separator();
-                for f in Format::ALL {
-                    if ui.button(f.menu_label()).clicked() {
-                        self.record = Some(f);
-                        ui.close();
-                    }
-                }
-            })
-            .response
-            .on_hover_text(hover);
+                })
+                .0
+                .on_hover_text(hover);
         });
         if let (Some(scale), Some(rs)) = (pick, rs) {
             self.scale = scale;

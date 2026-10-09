@@ -84,12 +84,10 @@ impl PresetsPanel {
             });
         });
         if patch.presets.is_empty() {
-            ui.label(
-                RichText::new(
-                    "Save the values you like as a preset, then recall it or morph between two.",
-                )
-                .color(*theme::FG_2)
-                .small(),
+            theme::empty_state(
+                ui,
+                "No presets yet",
+                "Save the values you like, then recall them or morph between two",
             );
             return;
         }

@@ -241,23 +241,11 @@ impl HelpPanel {
                 } else {
                     match self.shown.as_deref().and_then(|t| doc(cat, t)) {
                         Some(d) => show_doc(ui, &d),
-                        None => {
-                            ui.add_space(24.0);
-                            ui.vertical_centered(|ui| {
-                                ui.label(
-                                    RichText::new("Select a node to read its docs")
-                                        .color(theme::FG_0),
-                                );
-                                ui.label(
-                                    RichText::new(
-                                        "Pick any node on the canvas — or search above — and its \
-                                         inputs, outputs and description show up here.",
-                                    )
-                                    .color(theme::FG_2)
-                                    .small(),
-                                );
-                            });
-                        }
+                        None => theme::empty_state(
+                            ui,
+                            "No node selected",
+                            "Select a node, or search above, to read its docs",
+                        ),
                     }
                 }
             });

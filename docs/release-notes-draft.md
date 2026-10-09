@@ -1,7 +1,7 @@
 # Floret 0.2.0 (draft release notes)
 
-*Draft for the first release of the native app. The version number is a
-proposal; see the "Unreleased" entry in `CHANGELOG.md`.*
+*Draft for the first release of the native app (not published yet); the
+full list is the 0.2.0 entry in `CHANGELOG.md`.*
 
 Floret is a node-based tool for generative art: wire shapes, motion,
 noise, particles, text, images, sound and live input together, and watch
@@ -16,11 +16,16 @@ native Mac app.
   along.
 - **Live GPU preview** of every Renderer in your patch, with focus mode and
   a fullscreen output window for a second display.
-- **About 250 nodes**: shapes and paths, typography with variable fonts,
+- **About 240 nodes**: shapes and paths, typography with variable fonts,
   noise and formulas, palettes, particles and simulations (flocking, slime
-  mould, coral growth, cloth), shaders and post-effects, images and video,
-  sound, MIDI, camera and body tracking.
-- **127 samples**, including 48 short tutorials, in the Library
+  mould, coral growth, cloth, differential growth, reaction-diffusion),
+  shaders and post-effects (including ASCII art), images, video and image
+  sequences, point tracking, sound, MIDI, camera and body tracking.
+- **Classic generative techniques built in:** flow-field lines, Mondrian
+  subdivision, Truchet and wave-function-collapse tiles, wallpaper
+  symmetry, stippling, plexus lines, contour maps, layouts that animate.
+- **Bypass** any node to compare with and without it (B).
+- **146 samples**, including 48 short tutorials, in the Library
   (File → Samples Library, Cmd+Shift+O).
 - **Variations and presets:** roll a new variation with Cmd+Shift+R, save
   the ones you like as presets, and morph between them.

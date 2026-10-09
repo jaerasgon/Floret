@@ -7,15 +7,14 @@ individual changes (file additions, fixes, behavior shifts).
 
 ---
 
-## Unreleased — the native app's first release (proposed 0.2.0)
+## 0.2.0 — the native app's first release (unreleased)
 
 Floret is now a native desktop app written in Rust (`native/`), replacing
 the TypeScript web app at the repo root, which stays in the repository as a
 reference only. Patches (`.flora`) written by the web app open in the
 native app, and the native app writes the same format.
 
-**Version.** The crates are still at 0.1.0; a later step bumps them. The
-proposal is **0.2.0**: the first release of a new implementation, not yet
+**Version.** The crates are at **0.2.0**: the first release of a new implementation, not yet
 run end to end on a real Mac, and unsigned. A 0.x version says plainly that
 things may still change, without the promises a 1.0 (even a 1.0 beta)
 makes about stability and file-format freezes. 1.0 can follow once the
@@ -30,7 +29,7 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   wiring with drop-to-search, inline values you can type or scrub, regions
   (ForEach, If, Cache …) and subpatches, undo for everything, node gravity
   (dragging a node gently pulls its neighbours along) and auto-arrange.
-- **127 built-in samples** in the Library, including 48 step-by-step
+- **146 built-in samples** in the Library, including 48 step-by-step
   tutorials, each opening fitted and centred with a tidy layout.
 - **Export:** PNG at 1×/2×/4×, and MP4 (H.264), GIF or PNG sequences of
   seamless loops, rendered offline at a fixed frame rate.
@@ -41,7 +40,7 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
 
 ### Nodes
 
-- 351 node types, about 257 of them in the Nodes browser (the rest are
+- 358 node types, 240 of them in the Nodes browser (the rest are
   older versions kept hidden so old patches still load). The browser groups
   them by role: Source, Draw, Text, Color & Style, Shape Ops, Patterns,
   Animate, Noise & Random, Math, Lists, Structure, Particles & Physics,
@@ -50,7 +49,13 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   strokes, Gradient Fill (linear / radial / conic), masks, blend groups.
 - **Generative geometry:** Scatter (poisson / random / jittered grid /
   halton, relax), Cells (voronoi / delaunay / hull), Path Ops, Shape
-  Boolean, Shape Morph, Trim Path, Connect Points, Contours, L-System.
+  Boolean, Shape Morph, Trim Path, Connect Points, Contours, L-System,
+  Layout (grid / ring / spiral / path with animated transitions), Tiles
+  (Truchet and wave-function-collapse) and Symmetry (rotate, kaleidoscope,
+  all 17 wallpaper groups). Classic techniques as modes: flow-field lines
+  (evenly spaced streamlines) on Contours, plus contour rings around
+  shapes; recursive (Mondrian / quadtree) subdivision on Cells; image-
+  weighted stippling on Scatter.
 - **Noise and maths:** one Noise node (perlin, simplex, value, cellular,
   curl, plus patterns), an Expression node (type a formula, its names
   become pins), Math / Vector Math / Compare / Logic / Statistics /
@@ -58,18 +63,21 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
 - **Lists:** Lookup, Sublist, Reorder and Combine families (take, slice,
   sort, concatenate … in one dropdown each), Count, Merge, Neighbor,
   Partition and the other list nodes.
-- **Colour:** palettes with harmony modes, OKLab / OKLCH mixing.
+- **Colour:** palettes with harmony modes and colours extracted from an image, OKLab / OKLCH mixing.
 - **Particles and simulations:** emitters, forces, colliders and worlds;
-  a Simulation node for flocking, slime mould (physarum), DLA growth and
-  cloth.
+  a Simulation node for flocking, slime mould (physarum), DLA growth,
+  cloth, differential growth and reaction-diffusion (Gray–Scott presets).
 - **Typography:** installed and loaded fonts (variable-font axes), text on
   a path, glyphs, outlines and Text Animate.
 - **GPU:** a ShaderToy-style Shader node with buffer passes and a side
   panel editor; an Effect node with bloom, blur, glow, grain, displace,
   dither, halftone, chromatic aberration, vignette, levels, curves, LUTs,
-  keying and more.
+  keying, ASCII art and more; Shader nodes can read past frames, and Echo
+  makes trails, delays, freeze frames and slit-scans.
 - **Images and video:** image adjust / pixelate / pixel sort / sampling;
-  Video File and Video Frame At play MP4 / MOV clips as images.
+  Video File and Video Frame At play MP4 / MOV clips and numbered image
+  sequences as images; Point Tracker follows points through video or
+  camera frames.
 - **Input and sound:** mouse and keyboard, MIDI CC and notes, Camera,
   Landmarks (hand / face / pose tracking), microphone input, FFT and
   amplitude analysis, and a sound engine with oscillators, filters,
@@ -86,6 +94,8 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   libraries.
 - Preview: zoom and pan with a pixel grid, pause / step / restart, focus
   mode, and a fullscreen output window on any display.
+- Bypass any node (header button or B) to pass its input straight through;
+  a curve editor for Effect → curves; a file picker for LUTs.
 - Minimap, dot grid and snapping, a shortcuts overlay (`?`), tooltips on
   pins and wires, compile warnings on the nodes that cause them, value
   probes (Alt + drop a wire).

@@ -89,7 +89,7 @@ fn port_doc(p: &PortSpec, with_default: bool) -> PortDoc {
 }
 
 /// The docs a node shows in the panel: its type's, or for an op family
-/// node (Math, Vector Math, Compare, Logic, Statistics, Convert) those of
+/// node (Math, Vector Math, … Lookup, Sublist, Reorder, Combine) those of
 /// the op it's set to — keyed like a search entry (`math/math#multiply`).
 pub fn key_for(n: &floret_engine::patch::PatchNode) -> String {
     match floret_engine::nodes::family::family(&n.def_type) {

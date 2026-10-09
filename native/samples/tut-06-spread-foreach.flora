@@ -31,7 +31,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 64
+        "y": 106
       },
       "params": {
         "count": 12
@@ -44,11 +44,11 @@
       "id": "t06_region",
       "defType": "region/foreach",
       "position": {
-        "x": 215,
+        "x": 234,
         "y": 22
       },
       "params": {
-        "width": 1047,
+        "width": 1048,
         "height": 224,
         "label": "ForEach"
       },
@@ -58,7 +58,7 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 79
+          "y": 121
         },
         {
           "id": "layer",
@@ -68,17 +68,18 @@
           "y": 77
         }
       ],
-      "width": 1047,
+      "width": 1048,
       "height": 224
     },
     {
       "id": "t06_spaceX",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 128,
-        "y": 42
+        "y": 62
       },
       "params": {
+        "op": "multiply",
         "b": 32,
         "valueType": "number"
       },
@@ -89,12 +90,13 @@
     },
     {
       "id": "t06_offX",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
         "x": 392,
-        "y": 41
+        "y": 40
       },
       "params": {
+        "op": "add",
         "b": -176,
         "valueType": "number"
       },
@@ -107,7 +109,7 @@
       "id": "t06_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 836,
+        "x": 837,
         "y": 40
       },
       "params": {
@@ -124,7 +126,7 @@
       "id": "t06_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1358,
+        "x": 1378,
         "y": 62
       },
       "params": {

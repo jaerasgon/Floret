@@ -21,7 +21,7 @@
       "id": "ts_freqMap",
       "defType": "math/map",
       "position": {
-        "x": 249,
+        "x": 262,
         "y": 0
       },
       "params": {
@@ -41,7 +41,7 @@
       "id": "ts_ampMap",
       "defType": "math/map",
       "position": {
-        "x": 250,
+        "x": 263,
         "y": 192
       },
       "params": {
@@ -61,7 +61,7 @@
       "id": "ts_osc",
       "defType": "sound/oscillator",
       "position": {
-        "x": 1017,
+        "x": 1088,
         "y": 63
       },
       "params": {
@@ -75,7 +75,7 @@
       "id": "ts_out",
       "defType": "sound/output",
       "position": {
-        "x": 1893,
+        "x": 2013,
         "y": 63
       },
       "params": {}
@@ -84,7 +84,7 @@
       "id": "ts_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 230,
+        "x": 241,
         "y": 384
       },
       "params": {
@@ -104,12 +104,12 @@
       "id": "ts_region",
       "defType": "region/foreach",
       "position": {
-        "x": 459,
-        "y": 352
+        "x": 475,
+        "y": 349
       },
       "params": {
-        "width": 1276,
-        "height": 417,
+        "width": 1386,
+        "height": 416,
         "label": "ForEach"
       },
       "ports": [
@@ -118,7 +118,7 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 121
+          "y": 128
         },
         {
           "id": "layer",
@@ -128,15 +128,15 @@
           "y": 77
         }
       ],
-      "width": 1276,
-      "height": 417
+      "width": 1386,
+      "height": 416
     },
     {
       "id": "ts_lClamp",
       "defType": "math/clamp",
       "position": {
-        "x": 512,
-        "y": 277
+        "x": 608,
+        "y": 276
       },
       "params": {
         "min": 10,
@@ -152,7 +152,7 @@
       "id": "ts_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 699,
+        "x": 809,
         "y": 152
       },
       "params": {
@@ -169,7 +169,7 @@
       "id": "ts_fill",
       "defType": "style/fill",
       "position": {
-        "x": 881,
+        "x": 991,
         "y": 140
       },
       "params": {
@@ -184,7 +184,7 @@
       "id": "ts_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1065,
+        "x": 1175,
         "y": 40
       },
       "params": {
@@ -201,8 +201,8 @@
       "id": "ts_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1831,
-        "y": 392
+        "x": 1957,
+        "y": 389
       },
       "params": {
         "width": 500,
@@ -217,27 +217,29 @@
       "id": "ts_mv",
       "defType": "vec2/make",
       "position": {
-        "x": 248,
+        "x": 261,
         "y": 576
       },
       "params": {}
     },
     {
       "id": "ts_dist",
-      "defType": "vec2/dist",
+      "defType": "vec2/math",
       "position": {
-        "x": 131,
-        "y": 124
+        "x": 132,
+        "y": 123
       },
-      "params": {},
+      "params": {
+        "op": "distance"
+      },
       "parentId": "ts_region"
     },
     {
       "id": "ts_hue",
       "defType": "math/map",
       "position": {
-        "x": 508,
-        "y": 85
+        "x": 613,
+        "y": 84
       },
       "params": {
         "inMin": 0,
@@ -257,7 +259,7 @@
       "id": "ts_lit",
       "defType": "math/map",
       "position": {
-        "x": 323,
+        "x": 420,
         "y": 200
       },
       "params": {
@@ -378,7 +380,7 @@
       "id": "e_ts_dist_ts_hue_x",
       "source": "ts_dist",
       "target": "ts_hue",
-      "sourceHandle": "out-distance",
+      "sourceHandle": "out-result",
       "targetHandle": "in-x"
     },
     {
@@ -392,7 +394,7 @@
       "id": "e_ts_dist_ts_lit_x",
       "source": "ts_dist",
       "target": "ts_lit",
-      "sourceHandle": "out-distance",
+      "sourceHandle": "out-result",
       "targetHandle": "in-x"
     },
     {

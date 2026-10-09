@@ -30,8 +30,8 @@
       "id": "ww_t",
       "defType": "time/seconds",
       "position": {
-        "x": 17,
-        "y": 386
+        "x": 27,
+        "y": 400
       },
       "params": {}
     },
@@ -40,7 +40,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 282
+        "y": 296
       },
       "params": {},
       "portValues": {
@@ -51,12 +51,12 @@
       "id": "ww_reg",
       "defType": "region/foreach",
       "position": {
-        "x": 218,
+        "x": 241,
         "y": 22
       },
       "params": {
-        "width": 1635,
-        "height": 735,
+        "width": 1717,
+        "height": 733,
         "label": "ForEach row"
       },
       "ports": [
@@ -65,27 +65,28 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 331
+          "y": 360
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 118
+          "y": 113
         }
       ],
-      "width": 1635,
-      "height": 735
+      "width": 1717,
+      "height": 733
     },
     {
       "id": "ww_pt",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 147,
+        "x": 149,
         "y": 232
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 2.2
       },
@@ -96,12 +97,13 @@
     },
     {
       "id": "ww_pi",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 147,
-        "y": 358
+        "x": 149,
+        "y": 380
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 0.55
       },
@@ -112,42 +114,47 @@
     },
     {
       "id": "ww_ph",
-      "defType": "math/sub",
+      "defType": "math/math",
       "position": {
-        "x": 423,
-        "y": 255
+        "x": 426,
+        "y": 253
       },
       "params": {
+        "op": "subtract",
         "valueType": "number"
       },
       "parentId": "ww_reg"
     },
     {
       "id": "ww_sin",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
-        "x": 706,
-        "y": 174
+        "x": 702,
+        "y": 149
       },
-      "params": {},
+      "params": {
+        "op": "sin"
+      },
       "parentId": "ww_reg"
     },
     {
       "id": "ww_cos",
-      "defType": "math/cos",
+      "defType": "math/math",
       "position": {
-        "x": 706,
-        "y": 278
+        "x": 702,
+        "y": 275
       },
-      "params": {},
+      "params": {
+        "op": "cos"
+      },
       "parentId": "ww_reg"
     },
     {
       "id": "ww_pos",
       "defType": "vec2/make",
       "position": {
-        "x": 1172,
-        "y": 46
+        "x": 1245,
+        "y": 41
       },
       "params": {},
       "portValues": {
@@ -159,8 +166,8 @@
       "id": "ww_col",
       "defType": "color/color",
       "position": {
-        "x": 431,
-        "y": 521
+        "x": 434,
+        "y": 549
       },
       "params": {
         "mode": "hsl",
@@ -182,8 +189,8 @@
       "id": "ww_fill",
       "defType": "style/fill",
       "position": {
-        "x": 699,
-        "y": 580
+        "x": 734,
+        "y": 591
       },
       "params": {},
       "parentId": "ww_reg"
@@ -192,8 +199,8 @@
       "id": "ww_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 892,
-        "y": 485
+        "x": 956,
+        "y": 480
       },
       "params": {
         "font": "Roboto Flex",
@@ -219,8 +226,8 @@
       "id": "ww_fv",
       "defType": "style/font-variations",
       "position": {
-        "x": 1154,
-        "y": 223
+        "x": 1217,
+        "y": 219
       },
       "params": {
         "axis": ""
@@ -231,8 +238,8 @@
       "id": "ww_txt",
       "defType": "draw/text",
       "position": {
-        "x": 1380,
-        "y": 80
+        "x": 1462,
+        "y": 75
       },
       "params": {
         "string": "VARIABLE",
@@ -250,8 +257,8 @@
       "id": "ww_out",
       "defType": "render/renderer",
       "position": {
-        "x": 1949,
-        "y": 103
+        "x": 2054,
+        "y": 98
       },
       "params": {
         "width": 720,
@@ -278,8 +285,8 @@
       "id": "ww_w",
       "defType": "math/map",
       "position": {
-        "x": 924,
-        "y": 101
+        "x": 987,
+        "y": 96
       },
       "params": {
         "inMin": -1,
@@ -299,8 +306,8 @@
       "id": "ww_wd",
       "defType": "math/map",
       "position": {
-        "x": 925,
-        "y": 293
+        "x": 988,
+        "y": 288
       },
       "params": {
         "inMin": -1,
@@ -320,7 +327,7 @@
       "id": "ww_y",
       "defType": "math/map",
       "position": {
-        "x": 188,
+        "x": 190,
         "y": 40
       },
       "params": {
@@ -341,8 +348,8 @@
       "id": "ww_hue",
       "defType": "math/map",
       "position": {
-        "x": 190,
-        "y": 484
+        "x": 192,
+        "y": 528
       },
       "params": {
         "inMin": 0,

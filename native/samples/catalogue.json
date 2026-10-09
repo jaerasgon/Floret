@@ -18,7 +18,7 @@
       "id": "tut-03-animate",
       "name": "03 · Animate with Time",
       "category": "Tutorial",
-      "description": "Drive a shape's position with time/seconds → sin → multiply.",
+      "description": "Drive a shape's position with time/seconds → Math (sin) → Math (multiply).",
       "file": "tut-03-animate.flora"
     },
     {
@@ -207,14 +207,14 @@
       "id": "tut-31-vec2math",
       "name": "31 · Vec2 Math",
       "category": "Tutorial",
-      "description": "Operate on vec2 as one unit with vec2/add, vec2/scale — no splitting and recombining.",
+      "description": "Operate on vec2 as one unit with Vector Math (scale) — no splitting and recombining.",
       "file": "tut-31-vec2math.flora"
     },
     {
       "id": "tut-32-normalize",
       "name": "32 · Normalize + Polar",
       "category": "Tutorial",
-      "description": "vec2/normalize gives a unit-vector direction; scale it to any length.",
+      "description": "Vector Math's normalize gives a unit-vector direction; scale it to any length.",
       "file": "tut-32-normalize.flora"
     },
     {
@@ -277,7 +277,7 @@
       "id": "tut-41-sort-shuffle",
       "name": "41 · Spread Sort + Shuffle",
       "category": "Tutorial",
-      "description": "Shuffle Spread then Sort Spread reorder a Spread<number>; visualised as a bar chart.",
+      "description": "Shuffle Spread, then Reorder set to sort, reorder a Spread<number>; visualised as a bar chart.",
       "file": "tut-41-sort-shuffle.flora"
     },
     {
@@ -620,7 +620,7 @@
       "id": "fractal-tree-generative",
       "name": "Fractal Tree (generative)",
       "category": "Nature",
-      "description": "The recursion lives IN the graph — no baked coordinates. One ForEach walks 8 root-to-tip paths × 4 levels with three scalar accumulators (angle, x, y) as a turtle: back to the root at each trunk, turning ±0.5 rad by the path's bits, 0.7× shorter per level. A Sift keeps each of the 15 branches once. Edit the turn (Map), the shrink (0.7) or the trunk (140) and the tree reshapes.",
+      "description": "The recursion lives IN the graph — no baked coordinates. One ForEach walks 8 root-to-tip paths × 4 levels with three scalar accumulators (angle, x, y) as a turtle: back to the root at each trunk, turning ±0.5 rad by the path's bits, 0.7× shorter per level. A Sublist set to keep-where keeps each of the 15 branches once. Edit the turn (Map), the shrink (0.7) or the trunk (140) and the tree reshapes.",
       "file": "fractal-tree-generative.flora"
     },
     {

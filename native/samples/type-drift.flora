@@ -31,7 +31,7 @@
       "defType": "string/split",
       "position": {
         "x": 0,
-        "y": 24
+        "y": 52
       },
       "params": {
         "text": "It was the best of times,       it was the worst of times,      it was the age of wisdom,       it was the age of foolishness,  it was the epoch of belief,     it was the epoch of incredulity,it was the season of Light,     it was the season of Darkness.  "
@@ -45,7 +45,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 32,
-        "y": 342
+        "y": 370
       },
       "params": {}
     },
@@ -53,12 +53,12 @@
       "id": "tdr_region",
       "defType": "region/foreach",
       "position": {
-        "x": 253,
+        "x": 249,
         "y": 22
       },
       "params": {
-        "width": 2567,
-        "height": 620,
+        "width": 2615,
+        "height": 708,
         "label": "ForEach letter"
       },
       "ports": [
@@ -67,34 +67,35 @@
           "name": "ch",
           "type": "string",
           "direction": "input",
-          "y": 104
+          "y": 106
         },
         {
           "id": "p",
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 192
+          "y": 215
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 85
+          "y": 77
         }
       ],
-      "width": 2567,
-      "height": 620
+      "width": 2615,
+      "height": 708
     },
     {
       "id": "tdr_tDisp",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 144,
-        "y": 249
+        "x": 154,
+        "y": 272
       },
       "params": {
+        "op": "multiply",
         "b": 0.3,
         "valueType": "number"
       },
@@ -105,24 +106,26 @@
     },
     {
       "id": "tdr_gsyT",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 603,
-        "y": 214
+        "x": 620,
+        "y": 219
       },
       "params": {
+        "op": "add",
         "valueType": "number"
       },
       "parentId": "tdr_region"
     },
     {
       "id": "tdr_tMask",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 144,
-        "y": 501
+        "x": 154,
+        "y": 568
       },
       "params": {
+        "op": "multiply",
         "b": 0.15,
         "valueType": "number"
       },
@@ -133,12 +136,13 @@
     },
     {
       "id": "tdr_msyT",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 603,
-        "y": 472
+        "x": 620,
+        "y": 502
       },
       "params": {
+        "op": "add",
         "valueType": "number"
       },
       "parentId": "tdr_region"
@@ -147,8 +151,8 @@
       "id": "tdr_nX",
       "defType": "noise/perlin",
       "position": {
-        "x": 888,
-        "y": 52
+        "x": 904,
+        "y": 59
       },
       "params": {
         "seed": 7
@@ -162,8 +166,8 @@
       "id": "tdr_nY",
       "defType": "noise/perlin",
       "position": {
-        "x": 888,
-        "y": 244
+        "x": 904,
+        "y": 251
       },
       "params": {
         "seed": 23
@@ -177,8 +181,8 @@
       "id": "tdr_mN",
       "defType": "noise/perlin",
       "position": {
-        "x": 888,
-        "y": 436
+        "x": 904,
+        "y": 460
       },
       "params": {
         "seed": 99
@@ -192,8 +196,8 @@
       "id": "tdr_mask",
       "defType": "math/smoothstep",
       "position": {
-        "x": 1073,
-        "y": 424
+        "x": 1092,
+        "y": 433
       },
       "params": {
         "edge0": 0.55,
@@ -209,8 +213,8 @@
       "id": "tdr_dxM",
       "defType": "math/map",
       "position": {
-        "x": 1096,
-        "y": 40
+        "x": 1115,
+        "y": 49
       },
       "params": {
         "inMin": 0.3,
@@ -230,8 +234,8 @@
       "id": "tdr_dyM",
       "defType": "math/map",
       "position": {
-        "x": 1096,
-        "y": 232
+        "x": 1115,
+        "y": 241
       },
       "params": {
         "inMin": 0.3,
@@ -249,12 +253,13 @@
     },
     {
       "id": "tdr_hueM",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 1312,
-        "y": 374
+        "x": 1333,
+        "y": 370
       },
       "params": {
+        "op": "multiply",
         "b": 220,
         "valueType": "number"
       },
@@ -265,12 +270,13 @@
     },
     {
       "id": "tdr_satM",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 1312,
-        "y": 500
+        "x": 1333,
+        "y": 518
       },
       "params": {
+        "op": "multiply",
         "b": 90,
         "valueType": "number"
       },
@@ -283,8 +289,8 @@
       "id": "tdr_hsl",
       "defType": "color/color",
       "position": {
-        "x": 1588,
-        "y": 386
+        "x": 1623,
+        "y": 392
       },
       "params": {
         "mode": "hsl",
@@ -306,7 +312,7 @@
       "id": "tdr_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1891,
+        "x": 1938,
         "y": 354
       },
       "params": {},
@@ -316,8 +322,8 @@
       "id": "tdr_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 2119,
-        "y": 168
+        "x": 2167,
+        "y": 164
       },
       "params": {
         "font": "Menlo, Consolas, monospace",
@@ -339,8 +345,8 @@
       "id": "tdr_text",
       "defType": "draw/text",
       "position": {
-        "x": 2366,
-        "y": 49
+        "x": 2414,
+        "y": 40
       },
       "params": {
         "string": "?",
@@ -358,8 +364,8 @@
       "id": "tdr_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2916,
-        "y": 70
+        "x": 2960,
+        "y": 62
       },
       "params": {
         "width": 560,
@@ -386,8 +392,8 @@
       "id": "tdr_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 13,
-        "y": 150
+        "x": 11,
+        "y": 178
       },
       "params": {
         "cols": 32,
@@ -406,42 +412,46 @@
       "id": "tdr_disp",
       "defType": "vec2/make",
       "position": {
-        "x": 1354,
-        "y": 153
+        "x": 1374,
+        "y": 161
       },
       "params": {},
       "parentId": "tdr_region"
     },
     {
       "id": "tdr_dispM",
-      "defType": "vec2/scale",
+      "defType": "vec2/math",
       "position": {
-        "x": 1622,
-        "y": 211
+        "x": 1609,
+        "y": 195
       },
-      "params": {},
+      "params": {
+        "op": "scale"
+      },
       "parentId": "tdr_region"
     },
     {
       "id": "tdr_pos",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 1850,
-        "y": 90
+        "x": 1897,
+        "y": 70
       },
       "params": {
+        "op": "add",
         "valueType": "vec2"
       },
       "parentId": "tdr_region"
     },
     {
       "id": "tdr_gs",
-      "defType": "vec2/scale",
+      "defType": "vec2/math",
       "position": {
-        "x": 186,
-        "y": 123
+        "x": 148,
+        "y": 124
       },
       "params": {
+        "op": "scale",
         "s": 0.012
       },
       "parentId": "tdr_region",
@@ -453,20 +463,21 @@
       "id": "tdr_gsxy",
       "defType": "vec2/split",
       "position": {
-        "x": 414,
-        "y": 134
+        "x": 428,
+        "y": 143
       },
       "params": {},
       "parentId": "tdr_region"
     },
     {
       "id": "tdr_ms",
-      "defType": "vec2/scale",
+      "defType": "vec2/math",
       "position": {
-        "x": 186,
-        "y": 375
+        "x": 148,
+        "y": 420
       },
       "params": {
+        "op": "scale",
         "s": 0.022
       },
       "parentId": "tdr_region",
@@ -478,8 +489,8 @@
       "id": "tdr_msxy",
       "defType": "vec2/split",
       "position": {
-        "x": 414,
-        "y": 411
+        "x": 428,
+        "y": 451
       },
       "params": {},
       "parentId": "tdr_region"
@@ -679,7 +690,7 @@
       "id": "e_tdr_dispM_tdr_pos_b",
       "source": "tdr_dispM",
       "target": "tdr_pos",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
@@ -700,7 +711,7 @@
       "id": "e_tdr_gs_tdr_gsxy_v",
       "source": "tdr_gs",
       "target": "tdr_gsxy",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-v"
     },
     {
@@ -714,7 +725,7 @@
       "id": "e_tdr_ms_tdr_msxy_v",
       "source": "tdr_ms",
       "target": "tdr_msxy",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-v"
     },
     {

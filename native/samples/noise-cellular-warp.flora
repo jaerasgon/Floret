@@ -30,7 +30,7 @@
       "id": "nz_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 204,
+        "x": 201,
         "y": 97
       },
       "params": {
@@ -51,18 +51,19 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 339
+        "y": 361
       },
       "params": {}
     },
     {
       "id": "nz_drift",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 180,
         "y": 339
       },
       "params": {
+        "op": "multiply",
         "b": 18,
         "valueType": "number"
       },

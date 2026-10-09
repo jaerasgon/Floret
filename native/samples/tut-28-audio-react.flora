@@ -31,7 +31,7 @@
       "defType": "sound/audio-in",
       "position": {
         "x": 0,
-        "y": 33
+        "y": 77
       },
       "params": {
         "amp": 1,
@@ -46,8 +46,8 @@
       "id": "t28_amp",
       "defType": "sound/amplitude",
       "position": {
-        "x": 194,
-        "y": 33
+        "x": 196,
+        "y": 77
       },
       "params": {
         "smoothing": 0.7
@@ -58,12 +58,13 @@
     },
     {
       "id": "t28_sz",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 389,
-        "y": 33
+        "x": 407,
+        "y": 55
       },
       "params": {
+        "op": "multiply",
         "b": 400,
         "valueType": "number"
       },
@@ -73,12 +74,13 @@
     },
     {
       "id": "t28_szO",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 653,
+        "x": 671,
         "y": 33
       },
       "params": {
+        "op": "add",
         "b": 30,
         "valueType": "number"
       },
@@ -90,7 +92,7 @@
       "id": "t28_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 919,
+        "x": 937,
         "y": 0
       },
       "params": {}
@@ -99,7 +101,7 @@
       "id": "t28_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1124,
+        "x": 1142,
         "y": 0
       },
       "params": {

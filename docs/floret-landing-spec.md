@@ -78,7 +78,7 @@ Full-width white background band. Three alternating rows (visual ↔ copy, ~620�
 
 **Mini-grid** (4 equal tiles, bg-1 fill, 16px radius, colored 12px dot + 16.5px title + 13.5px body):
 1. **Sound-reactive** — *"Beats, FFT bands, and mic level — wire music straight into anything."*
-2. **Print-quality export** — *"Freeze any frame as crisp SVG or high-res PNG, ready for the printer."*
+2. **Print-quality export** — *"Freeze any frame as a high-res PNG, or record a seamless loop as video."*
 3. **Feedback & trails** — *"Let frames melt into each other for smoke, ghosts, and long-exposure looks."*
 4. **Remix anything** — *"Every gallery piece opens as a patch. See how it works, make it yours."*
 
@@ -116,5 +116,5 @@ Reproduce these faithfully — they're the product:
 
 ## 5. Voice checklist
 - Say "blocks," "snap together," "dials," "wire" — never "nodes API," "parameters," "GLSL," "compile."
-- Name the technology only when it earns trust (MediaPipe, SVG export, ShaderToy compatibility) and immediately translate it into an outcome.
+- Name the technology only when it earns trust (MediaPipe, ShaderToy compatibility) and immediately translate it into an outcome.
 - Emphasize: free, in the browser, no install, no code, remix culture, art in physical space.

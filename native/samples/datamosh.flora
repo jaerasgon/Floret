@@ -13,27 +13,30 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 422
+        "y": 502
       },
       "params": {}
     },
     {
       "id": "imd_sinT",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
         "x": 444,
-        "y": 422
+        "y": 459
       },
-      "params": {}
+      "params": {
+        "op": "sin"
+      }
     },
     {
       "id": "imd_tSpeed",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 180,
-        "y": 422
+        "y": 480
       },
       "params": {
+        "op": "multiply",
         "b": 1.2,
         "valueType": "number"
       },
@@ -45,8 +48,8 @@
       "id": "imd_img",
       "defType": "io/image-url",
       "position": {
-        "x": 847,
-        "y": 357
+        "x": 996,
+        "y": 360
       },
       "params": {
         "url": "https://picsum.photos/seed/floret/500/500"
@@ -59,7 +62,7 @@
       "id": "imd_drawBase",
       "defType": "draw/image",
       "position": {
-        "x": 1159,
+        "x": 1308,
         "y": 0
       },
       "params": {
@@ -83,7 +86,7 @@
       "id": "imd_drawR",
       "defType": "draw/image",
       "position": {
-        "x": 1159,
+        "x": 1308,
         "y": 214
       },
       "params": {
@@ -111,7 +114,7 @@
       "id": "imd_drawG",
       "defType": "draw/image",
       "position": {
-        "x": 1159,
+        "x": 1308,
         "y": 428
       },
       "params": {
@@ -147,7 +150,7 @@
       "id": "imd_drawB",
       "defType": "draw/image",
       "position": {
-        "x": 1159,
+        "x": 1308,
         "y": 642
       },
       "params": {
@@ -175,7 +178,7 @@
       "id": "imd_blendBase",
       "defType": "transform/blend",
       "position": {
-        "x": 1383,
+        "x": 1532,
         "y": 110
       },
       "params": {
@@ -189,7 +192,7 @@
       "id": "imd_blendR",
       "defType": "transform/blend",
       "position": {
-        "x": 1389,
+        "x": 1538,
         "y": 236
       },
       "params": {
@@ -203,7 +206,7 @@
       "id": "imd_blendG",
       "defType": "transform/blend",
       "position": {
-        "x": 1374,
+        "x": 1523,
         "y": 362
       },
       "params": {
@@ -217,7 +220,7 @@
       "id": "imd_blendB",
       "defType": "transform/blend",
       "position": {
-        "x": 1389,
+        "x": 1538,
         "y": 488
       },
       "params": {
@@ -231,7 +234,7 @@
       "id": "imd_finalGroup",
       "defType": "transform/group",
       "position": {
-        "x": 1636,
+        "x": 1785,
         "y": 266
       },
       "params": {
@@ -243,7 +246,7 @@
       "id": "imd_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1900,
+        "x": 2049,
         "y": 266
       },
       "params": {
@@ -269,12 +272,13 @@
     },
     {
       "id": "imd_offset",
-      "defType": "vec2/scale",
+      "defType": "vec2/math",
       "position": {
-        "x": 612,
-        "y": 400
+        "x": 690,
+        "y": 415
       },
       "params": {
+        "op": "scale",
         "v": {
           "x": 22,
           "y": 0
@@ -289,12 +293,13 @@
     },
     {
       "id": "imd_posR",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 841,
-        "y": 231
+        "x": 990,
+        "y": 212
       },
       "params": {
+        "op": "add",
         "a": {
           "x": 0,
           "y": 0
@@ -310,12 +315,13 @@
     },
     {
       "id": "imd_posB",
-      "defType": "math/sub",
+      "defType": "math/math",
       "position": {
-        "x": 841,
-        "y": 527
+        "x": 990,
+        "y": 530
       },
       "params": {
+        "op": "subtract",
         "a": {
           "x": 0,
           "y": 0
@@ -419,14 +425,14 @@
       "id": "e_imd_offset_imd_posR_b",
       "source": "imd_offset",
       "target": "imd_posR",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
       "id": "e_imd_offset_imd_posB_b",
       "source": "imd_offset",
       "target": "imd_posB",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {

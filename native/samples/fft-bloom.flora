@@ -13,7 +13,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 0,
-        "y": 88
+        "y": 115
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "fb_freqMap",
       "defType": "math/map",
       "position": {
-        "x": 223,
-        "y": 110
+        "x": 234,
+        "y": 137
       },
       "params": {
         "inMin": -250,
@@ -41,8 +41,8 @@
       "id": "fb_amp",
       "defType": "io/slider",
       "position": {
-        "x": 180,
-        "y": 302
+        "x": 191,
+        "y": 329
       },
       "params": {
         "value": 0.25,
@@ -59,8 +59,8 @@
       "id": "fb_osc",
       "defType": "sound/oscillator",
       "position": {
-        "x": 457,
-        "y": 174
+        "x": 468,
+        "y": 202
       },
       "params": {
         "type": "sawtooth"
@@ -73,8 +73,8 @@
       "id": "fb_out",
       "defType": "sound/output",
       "position": {
-        "x": 766,
-        "y": 100
+        "x": 771,
+        "y": 128
       },
       "params": {}
     },
@@ -82,8 +82,8 @@
       "id": "fb_fft",
       "defType": "sound/fft",
       "position": {
-        "x": 724,
-        "y": 226
+        "x": 735,
+        "y": 254
       },
       "params": {
         "bins": "64"
@@ -96,8 +96,8 @@
       "id": "fb_idxs",
       "defType": "spread/range",
       "position": {
-        "x": 748,
-        "y": 374
+        "x": 750,
+        "y": 402
       },
       "params": {
         "count": 64
@@ -110,12 +110,12 @@
       "id": "fb_region",
       "defType": "region/foreach",
       "position": {
-        "x": 996,
+        "x": 1006,
         "y": 22
       },
       "params": {
-        "width": 1037,
-        "height": 668,
+        "width": 1058,
+        "height": 712,
         "label": "ForEach"
       },
       "ports": [
@@ -124,34 +124,35 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 332
+          "y": 365
         },
         {
           "id": "v",
           "name": "v",
           "type": "number",
           "direction": "input",
-          "y": 299
+          "y": 321
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 315
+          "y": 334
         }
       ],
-      "width": 1037,
-      "height": 668
+      "width": 1058,
+      "height": 712
     },
     {
       "id": "fb_angleMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 147,
+        "x": 148,
         "y": 40
       },
       "params": {
+        "op": "multiply",
         "b": 0.09817477042468103,
         "valueType": "number"
       },
@@ -164,20 +165,21 @@
       "id": "fb_fromAng",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 428,
-        "y": 154
+        "x": 431,
+        "y": 168
       },
       "params": {},
       "parentId": "fb_region"
     },
     {
       "id": "fb_hueMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 147,
-        "y": 550
+        "x": 148,
+        "y": 572
       },
       "params": {
+        "op": "multiply",
         "b": 5.625,
         "valueType": "number"
       },
@@ -190,8 +192,8 @@
       "id": "fb_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 437,
-        "y": 489
+        "x": 449,
+        "y": 510
       },
       "params": {
         "s": 80,
@@ -209,8 +211,8 @@
       "id": "fb_fill",
       "defType": "style/fill",
       "position": {
-        "x": 635,
-        "y": 427
+        "x": 656,
+        "y": 447
       },
       "params": {
         "mode": "color"
@@ -224,8 +226,8 @@
       "id": "fb_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 826,
-        "y": 278
+        "x": 847,
+        "y": 297
       },
       "params": {},
       "parentId": "fb_region"
@@ -234,8 +236,8 @@
       "id": "fb_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2129,
-        "y": 300
+        "x": 2160,
+        "y": 319
       },
       "params": {
         "width": 500,
@@ -263,7 +265,7 @@
       "defType": "math/map",
       "position": {
         "x": 190,
-        "y": 166
+        "y": 188
       },
       "params": {
         "inMin": 0,
@@ -283,8 +285,8 @@
       "id": "fb_size",
       "defType": "math/map",
       "position": {
-        "x": 193,
-        "y": 358
+        "x": 191,
+        "y": 380
       },
       "params": {
         "inMin": 0,

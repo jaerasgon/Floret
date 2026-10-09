@@ -1,5 +1,5 @@
 {
- "count": 353,
+ "count": 356,
  "nodes": [
   {
    "type": "collider/circle",
@@ -3839,46 +3839,6 @@
    "compact": true
   },
   {
-   "type": "io/save-svg",
-   "category": "IO",
-   "group": "Draw",
-   "label": "SaveSVG",
-   "description": "Export wired layers as an SVG file when `save` rises.",
-   "inputs": [
-    {
-     "name": "layers",
-     "type": "layer",
-     "kind": "spread"
-    },
-    {
-     "name": "save",
-     "type": "boolean",
-     "kind": "single",
-     "default": false
-    },
-    {
-     "name": "background",
-     "type": "color",
-     "kind": "single"
-    }
-   ],
-   "outputs": [
-    {
-     "name": "layers",
-     "type": "layer",
-     "kind": "spread"
-    }
-   ],
-   "eval": "raw",
-   "dynamicInputs": false,
-   "defaultParams": {
-    "width": 500,
-    "height": 500,
-    "filename": "drawing"
-   },
-   "paramOptions": null
-  },
-  {
    "type": "io/select",
    "category": "IO",
    "group": "Source",
@@ -3954,7 +3914,7 @@
    "category": "IO",
    "group": "Source",
    "label": "SVG",
-   "description": "Load an SVG as vector layers. Pick a file, give a URL, or paste markup.",
+   "description": "Load an SVG and draw it as an image layer, rasterised crisply at the size it's drawn. Pick a file, give a URL, or paste markup.",
    "inputs": [
     {
      "name": "position",
@@ -8906,6 +8866,174 @@
    "paramOptions": null
   },
   {
+   "type": "spread/lookup",
+   "category": "Spread",
+   "group": "Lists",
+   "label": "Lookup",
+   "description": "Read from a list: the item at an index (negative counts from the end), the items at an index spread (wrapping), the Nth group of a flat + groupSize pair, or the first / every index where a value occurs. Pick `op` and the pins follow.",
+   "inputs": [
+    {
+     "name": "spread",
+     "type": "any",
+     "kind": "spread"
+    },
+    {
+     "name": "index",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "integer": true
+    }
+   ],
+   "outputs": [
+    {
+     "name": "result",
+     "type": "any",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "op": "at"
+   },
+   "paramOptions": {
+    "op": [
+     "at",
+     "pick",
+     "group-at",
+     "index-of",
+     "indices-of"
+    ]
+   },
+   "dynamicOutputs": true
+  },
+  {
+   "type": "spread/sublist",
+   "category": "Spread",
+   "group": "Lists",
+   "label": "Sublist",
+   "description": "Keep part of a list, in order: the first N (take), all but the first N (skip), a start..end slice, everything but a removed range, the items whose parallel boolean is true (keep where), or each value once (unique). Pick `op` and the pins follow.",
+   "inputs": [
+    {
+     "name": "spread",
+     "type": "any",
+     "kind": "spread"
+    },
+    {
+     "name": "count",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "integer": true
+    }
+   ],
+   "outputs": [
+    {
+     "name": "result",
+     "type": "any",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "op": "take"
+   },
+   "paramOptions": {
+    "op": [
+     "take",
+     "skip",
+     "slice",
+     "remove",
+     "keep-where",
+     "unique"
+    ]
+   },
+   "dynamicOutputs": true
+  },
+  {
+   "type": "spread/reorder",
+   "category": "Spread",
+   "group": "Lists",
+   "label": "Reorder",
+   "description": "The same items in a new order: reversed, rotated by N, sorted numerically, sorted by a parallel key spread, permuted by an index spread, or with two items swapped. Pick `op` and the pins follow.",
+   "inputs": [
+    {
+     "name": "spread",
+     "type": "any",
+     "kind": "spread"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "result",
+     "type": "any",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "op": "reverse"
+   },
+   "paramOptions": {
+    "op": [
+     "reverse",
+     "rotate",
+     "sort",
+     "sort-by-key",
+     "permute",
+     "swap"
+    ]
+   },
+   "dynamicOutputs": true
+  },
+  {
+   "type": "spread/combine",
+   "category": "Spread",
+   "group": "Lists",
+   "label": "Combine",
+   "description": "Put lists together: append or prepend one value, concatenate or interleave two lists, insert a list at an index, replace the item at an index with a list, or inject marks at N evenly spaced positions. Pick `op` and the pins follow.",
+   "inputs": [
+    {
+     "name": "spread",
+     "type": "any",
+     "kind": "spread"
+    },
+    {
+     "name": "tail",
+     "type": "any",
+     "kind": "single",
+     "default": 0
+    }
+   ],
+   "outputs": [
+    {
+     "name": "result",
+     "type": "any",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "op": "append"
+   },
+   "paramOptions": {
+    "op": [
+     "append",
+     "prepend",
+     "concat",
+     "interleave",
+     "insert",
+     "replace",
+     "inject"
+    ]
+   },
+   "dynamicOutputs": true
+  },
+  {
    "type": "spread/append",
    "category": "Spread",
    "group": "Lists",
@@ -8935,7 +9063,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/at",
@@ -8968,7 +9097,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/at-group",
@@ -9006,7 +9136,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/ca-grid-seed",
@@ -9113,7 +9244,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/count",
@@ -9516,7 +9648,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "spread/indices-by-value",
@@ -9547,7 +9680,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "spread/inject",
@@ -9585,7 +9719,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/insert-slice",
@@ -9623,7 +9758,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/interleave",
@@ -9654,7 +9790,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/last-row",
@@ -9953,7 +10090,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/pick",
@@ -9984,7 +10122,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/randomize",
@@ -10085,7 +10224,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/repeat",
@@ -10176,7 +10316,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "spread/ring",
@@ -10262,7 +10403,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/scroll-up",
@@ -10337,7 +10479,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/shuffle",
@@ -10400,7 +10543,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/sine",
@@ -10484,7 +10628,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/slice",
@@ -10524,7 +10669,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/sort",
@@ -10555,7 +10701,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "spread/sort-by-key",
@@ -10592,7 +10739,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/spiral",
@@ -10668,7 +10816,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/swap",
@@ -10708,7 +10857,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/take",
@@ -10741,7 +10891,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/ungroup",
@@ -10839,7 +10990,8 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "spread/walk-step",

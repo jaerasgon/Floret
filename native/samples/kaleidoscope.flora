@@ -12,8 +12,8 @@
       "id": "ks_url",
       "defType": "io/image-url",
       "position": {
-        "x": 626,
-        "y": 119
+        "x": 704,
+        "y": 15
       },
       "params": {
         "url": "https://picsum.photos/seed/floret-kaleido/500/500"
@@ -27,18 +27,19 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 385
+        "y": 325
       },
       "params": {}
     },
     {
       "id": "ks_tScale",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 180,
-        "y": 385
+        "y": 303
       },
       "params": {
+        "op": "multiply",
         "b": 0.3,
         "valueType": "number"
       },
@@ -48,28 +49,32 @@
     },
     {
       "id": "ks_sinT",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
-        "x": 452,
-        "y": 333
+        "x": 453,
+        "y": 218
       },
-      "params": {}
+      "params": {
+        "op": "sin"
+      }
     },
     {
       "id": "ks_cosT",
-      "defType": "math/cos",
+      "defType": "math/math",
       "position": {
-        "x": 452,
-        "y": 437
+        "x": 453,
+        "y": 344
       },
-      "params": {}
+      "params": {
+        "op": "cos"
+      }
     },
     {
       "id": "ks_imgRegion",
       "defType": "draw/image-region",
       "position": {
-        "x": 910,
-        "y": 274
+        "x": 984,
+        "y": 170
       },
       "params": {
         "sw": 200,
@@ -92,7 +97,7 @@
       "id": "ks_angles",
       "defType": "spread/ring",
       "position": {
-        "x": 903,
+        "x": 985,
         "y": 0
       },
       "params": {
@@ -106,8 +111,8 @@
       "id": "ks_idxs",
       "defType": "spread/range",
       "position": {
-        "x": 908,
-        "y": 170
+        "x": 981,
+        "y": 472
       },
       "params": {
         "count": 12
@@ -120,11 +125,11 @@
       "id": "ks_region",
       "defType": "region/foreach",
       "position": {
-        "x": 1142,
-        "y": 75
+        "x": 1247,
+        "y": 133
       },
       "params": {
-        "width": 853,
+        "width": 943,
         "height": 282,
         "label": "ForEach Wedge"
       },
@@ -141,7 +146,7 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 136
+          "y": 158
         },
         {
           "id": "out",
@@ -151,17 +156,18 @@
           "y": 87
         }
       ],
-      "width": 853,
+      "width": 943,
       "height": 282
     },
     {
       "id": "ks_iMod",
-      "defType": "math/mod",
+      "defType": "math/math",
       "position": {
         "x": 128,
         "y": 99
       },
       "params": {
+        "op": "mod",
         "b": 2
       },
       "parentId": "ks_region",
@@ -173,7 +179,7 @@
       "id": "ks_scaled",
       "defType": "transform/scale",
       "position": {
-        "x": 469,
+        "x": 551,
         "y": 98
       },
       "params": {
@@ -188,7 +194,7 @@
       "id": "ks_rotated",
       "defType": "transform/rotate",
       "position": {
-        "x": 653,
+        "x": 738,
         "y": 50
       },
       "params": {},
@@ -198,8 +204,8 @@
       "id": "ks_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2091,
-        "y": 125
+        "x": 2286,
+        "y": 183
       },
       "params": {
         "width": 500,
@@ -226,8 +232,8 @@
       "id": "ks_sx",
       "defType": "math/map",
       "position": {
-        "x": 663,
-        "y": 289
+        "x": 741,
+        "y": 185
       },
       "params": {
         "inMin": -1,
@@ -246,8 +252,8 @@
       "id": "ks_sy",
       "defType": "math/map",
       "position": {
-        "x": 663,
-        "y": 481
+        "x": 741,
+        "y": 377
       },
       "params": {
         "inMin": -1,
@@ -266,7 +272,7 @@
       "id": "ks_sign",
       "defType": "math/map",
       "position": {
-        "x": 296,
+        "x": 374,
         "y": 98
       },
       "params": {

@@ -31,7 +31,7 @@
       "defType": "value/string",
       "position": {
         "x": 0,
-        "y": 372
+        "y": 418
       },
       "params": {
         "value": "I LOVE FLORET"
@@ -44,8 +44,8 @@
       "id": "kt_split",
       "defType": "string/split",
       "position": {
-        "x": 613,
-        "y": 222
+        "x": 614,
+        "y": 266
       },
       "params": {
         "by": ""
@@ -58,8 +58,8 @@
       "id": "kt_len",
       "defType": "string/length",
       "position": {
-        "x": 333,
-        "y": 328
+        "x": 328,
+        "y": 375
       },
       "params": {}
     },
@@ -67,8 +67,8 @@
       "id": "kt_tile",
       "defType": "spread/repeat",
       "position": {
-        "x": 849,
-        "y": 157
+        "x": 852,
+        "y": 180
       },
       "params": {
         "count": 40
@@ -79,12 +79,13 @@
     },
     {
       "id": "kt_total",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 571,
-        "y": 427
+        "x": 572,
+        "y": 461
       },
       "params": {
+        "op": "multiply",
         "b": 40,
         "valueType": "number"
       },
@@ -96,8 +97,8 @@
       "id": "kt_range",
       "defType": "spread/range",
       "position": {
-        "x": 851,
-        "y": 525
+        "x": 854,
+        "y": 569
       },
       "params": {}
     },
@@ -105,8 +106,8 @@
       "id": "kt_time",
       "defType": "time/seconds",
       "position": {
-        "x": 868,
-        "y": 399
+        "x": 881,
+        "y": 443
       },
       "params": {}
     },
@@ -114,12 +115,12 @@
       "id": "kt_region",
       "defType": "region/foreach",
       "position": {
-        "x": 1088,
+        "x": 1103,
         "y": 22
       },
       "params": {
-        "width": 2410,
-        "height": 728,
+        "width": 2507,
+        "height": 794,
         "label": "ForEach (row × char)"
       },
       "ports": [
@@ -128,39 +129,39 @@
           "name": "ch",
           "type": "string",
           "direction": "input",
-          "y": 106
+          "y": 109
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 395
+          "y": 513
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
           "direction": "input",
-          "y": 647
+          "y": 713
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 197
+          "y": 207
         }
       ],
-      "width": 2410,
-      "height": 728
+      "width": 2507,
+      "height": 794
     },
     {
       "id": "kt_palette",
       "defType": "color/palette",
       "position": {
         "x": 292,
-        "y": 432
+        "y": 479
       },
       "params": {
         "stopCount": 3,
@@ -179,8 +180,8 @@
       "id": "kt_widx",
       "defType": "string/word-indices",
       "position": {
-        "x": 320,
-        "y": 624
+        "x": 311,
+        "y": 671
       },
       "params": {
         "by": " "
@@ -191,19 +192,21 @@
     },
     {
       "id": "kt_perChar",
-      "defType": "spread/pick",
+      "defType": "spread/lookup",
       "position": {
-        "x": 602,
-        "y": 584
+        "x": 575,
+        "y": 615
       },
-      "params": {}
+      "params": {
+        "op": "pick"
+      }
     },
     {
       "id": "kt_tileC",
       "defType": "spread/repeat",
       "position": {
-        "x": 849,
-        "y": 629
+        "x": 852,
+        "y": 673
       },
       "params": {
         "count": 40
@@ -214,56 +217,63 @@
     },
     {
       "id": "kt_charIdxOff",
-      "defType": "math/mod",
+      "defType": "math/math",
       "position": {
-        "x": 185,
-        "y": 232
+        "x": 144,
+        "y": 380
       },
-      "params": {},
+      "params": {
+        "op": "mod"
+      },
       "parentId": "kt_region"
     },
     {
       "id": "kt_rowDiv",
-      "defType": "math/div",
+      "defType": "math/math",
       "position": {
-        "x": 137,
-        "y": 484
+        "x": 135,
+        "y": 528
       },
       "params": {
+        "op": "divide",
         "valueType": "number"
       },
       "parentId": "kt_region"
     },
     {
       "id": "kt_rowIdx",
-      "defType": "math/floor",
+      "defType": "math/math",
       "position": {
-        "x": 466,
-        "y": 455
+        "x": 439,
+        "y": 499
       },
-      "params": {},
+      "params": {
+        "op": "floor"
+      },
       "parentId": "kt_region"
     },
     {
       "id": "kt_charOff",
-      "defType": "math/sub",
+      "defType": "math/math",
       "position": {
-        "x": 418,
-        "y": 120
+        "x": 430,
+        "y": 149
       },
       "params": {
+        "op": "subtract",
         "valueType": "number"
       },
       "parentId": "kt_region"
     },
     {
       "id": "kt_tSpeed",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 137,
-        "y": 358
+        "x": 135,
+        "y": 232
       },
       "params": {
+        "op": "multiply",
         "b": 1.6,
         "valueType": "number"
       },
@@ -274,12 +284,13 @@
     },
     {
       "id": "kt_charPhase",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 690,
-        "y": 277
+        "x": 701,
+        "y": 284
       },
       "params": {
+        "op": "multiply",
         "b": 0.55,
         "valueType": "number"
       },
@@ -290,12 +301,13 @@
     },
     {
       "id": "kt_rowDelay",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 690,
-        "y": 403
+        "x": 701,
+        "y": 432
       },
       "params": {
+        "op": "multiply",
         "b": -0.22,
         "valueType": "number"
       },
@@ -306,34 +318,38 @@
     },
     {
       "id": "kt_waveAdd",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 969,
-        "y": 258
+        "x": 981,
+        "y": 257
       },
       "params": {
+        "op": "add",
         "slotCount": 3
       },
       "parentId": "kt_region"
     },
     {
       "id": "kt_waveSin",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
-        "x": 1240,
-        "y": 253
+        "x": 1253,
+        "y": 263
       },
-      "params": {},
+      "params": {
+        "op": "sin"
+      },
       "parentId": "kt_region"
     },
     {
       "id": "kt_xWave",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 1414,
-        "y": 250
+        "x": 1506,
+        "y": 270
       },
       "params": {
+        "op": "multiply",
         "b": 26,
         "valueType": "number"
       },
@@ -344,12 +360,13 @@
     },
     {
       "id": "kt_xBase",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 1414,
-        "y": 124
+        "x": 1506,
+        "y": 122
       },
       "params": {
+        "op": "multiply",
         "b": 24
       },
       "parentId": "kt_region",
@@ -359,12 +376,13 @@
     },
     {
       "id": "kt_xOut",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 1686,
-        "y": 175
+        "x": 1781,
+        "y": 174
       },
       "params": {
+        "op": "add",
         "valueType": "number"
       },
       "parentId": "kt_region"
@@ -373,8 +391,8 @@
       "id": "kt_fill",
       "defType": "style/fill",
       "position": {
-        "x": 178,
-        "y": 610
+        "x": 176,
+        "y": 676
       },
       "params": {},
       "parentId": "kt_region"
@@ -383,8 +401,8 @@
       "id": "kt_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 1962,
-        "y": 320
+        "x": 2059,
+        "y": 333
       },
       "params": {
         "font": "monospace",
@@ -410,8 +428,8 @@
       "id": "kt_text",
       "defType": "draw/text",
       "position": {
-        "x": 2209,
-        "y": 161
+        "x": 2306,
+        "y": 171
       },
       "params": {
         "string": "?",
@@ -433,8 +451,8 @@
       "id": "kt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 3594,
-        "y": 182
+        "x": 3706,
+        "y": 192
       },
       "params": {
         "width": 380,
@@ -461,8 +479,8 @@
       "id": "kt_text-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1990,
-        "y": 194
+        "x": 2087,
+        "y": 207
       },
       "params": {
         "x": 0,
@@ -478,7 +496,7 @@
       "id": "kt_charCenter",
       "defType": "math/map",
       "position": {
-        "x": 185,
+        "x": 178,
         "y": 40
       },
       "params": {
@@ -499,8 +517,8 @@
       "id": "kt_y",
       "defType": "math/map",
       "position": {
-        "x": 1727,
-        "y": 301
+        "x": 1822,
+        "y": 322
       },
       "params": {
         "inMin": 0,
@@ -578,7 +596,7 @@
       "id": "e_419",
       "source": "kt_perChar",
       "target": "kt_tileC",
-      "sourceHandle": "out-values",
+      "sourceHandle": "out-result",
       "targetHandle": "in-source"
     },
     {

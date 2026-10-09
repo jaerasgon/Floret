@@ -161,7 +161,8 @@ fn every_spread_type_is_covered() {
     let cat = Catalogue::builtin();
     let spread_types: Vec<&str> = cat
         .iter()
-        .filter(|s| s.ty.starts_with("spread/"))
+        // The list families run these nodes' own factories (family tests).
+        .filter(|s| s.ty.starts_with("spread/") && crate::nodes::family::family(&s.ty).is_none())
         .map(|s| s.ty.as_str())
         .collect();
     assert_eq!(spread_types.len(), 56);

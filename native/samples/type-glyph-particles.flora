@@ -31,24 +31,26 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 480
+        "y": 487
       },
       "params": {}
     },
     {
       "id": "gp_ws",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
-        "x": 199,
-        "y": 350
+        "x": 198,
+        "y": 343
       },
-      "params": {}
+      "params": {
+        "op": "sin"
+      }
     },
     {
       "id": "gp_tp",
       "defType": "style/text-params",
       "position": {
-        "x": 387,
+        "x": 463,
         "y": 413
       },
       "params": {
@@ -74,7 +76,7 @@
       "id": "gp_fv",
       "defType": "style/font-variations",
       "position": {
-        "x": 634,
+        "x": 710,
         "y": 258
       },
       "params": {
@@ -91,7 +93,7 @@
       "id": "gp_ol",
       "defType": "text/outline",
       "position": {
-        "x": 863,
+        "x": 957,
         "y": 170
       },
       "params": {
@@ -120,7 +122,7 @@
       "id": "gp_turb",
       "defType": "force/turbulence",
       "position": {
-        "x": 636,
+        "x": 719,
         "y": 494
       },
       "params": {
@@ -140,7 +142,7 @@
       "id": "gp_world",
       "defType": "physics/world",
       "position": {
-        "x": 862,
+        "x": 955,
         "y": 406
       },
       "params": {
@@ -164,7 +166,7 @@
       "id": "gp_em",
       "defType": "particles/emitter",
       "position": {
-        "x": 1216,
+        "x": 1310,
         "y": 284
       },
       "params": {
@@ -210,7 +212,7 @@
       "id": "gp_ra",
       "defType": "particles/render-as",
       "position": {
-        "x": 1549,
+        "x": 1644,
         "y": 234
       },
       "params": {
@@ -226,7 +228,7 @@
       "id": "gp_gf",
       "defType": "style/stroke",
       "position": {
-        "x": 859,
+        "x": 953,
         "y": 0
       },
       "params": {
@@ -253,11 +255,11 @@
       "id": "gp_dots",
       "defType": "region/foreach",
       "position": {
-        "x": 1122,
+        "x": 1215,
         "y": 70
       },
       "params": {
-        "width": 324,
+        "width": 325,
         "height": 158,
         "label": "ForEach point"
       },
@@ -277,7 +279,7 @@
           "y": 77
         }
       ],
-      "width": 324,
+      "width": 325,
       "height": 158
     },
     {
@@ -294,7 +296,7 @@
       "id": "gp_g",
       "defType": "transform/group",
       "position": {
-        "x": 1792,
+        "x": 1896,
         "y": 161
       },
       "params": {
@@ -305,7 +307,7 @@
       "id": "gp_out",
       "defType": "render/renderer",
       "position": {
-        "x": 2056,
+        "x": 2160,
         "y": 161
       },
       "params": {
@@ -333,7 +335,7 @@
       "id": "gp_w",
       "defType": "math/map",
       "position": {
-        "x": 418,
+        "x": 494,
         "y": 221
       },
       "params": {

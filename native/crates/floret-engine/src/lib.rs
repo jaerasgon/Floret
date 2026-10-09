@@ -48,9 +48,15 @@ pub use value::{Color, Spread, Value, Vec2};
 /// then the web app's legacy fix-ups (old port names, draw x/y → vec2,
 /// dead wires). Use this, not `PatchFile::load`, for user files.
 pub fn load_patch(text: &str) -> Result<PatchFile, patch::LoadError> {
+    load_patch_noting(text).map(|(patch, _)| patch)
+}
+
+/// [`load_patch`], plus a one-line notice for each fix-up the user should
+/// hear about (nodes Floret no longer has, dropped on load).
+pub fn load_patch_noting(text: &str) -> Result<(PatchFile, Vec<String>), patch::LoadError> {
     let mut patch = PatchFile::load(text)?;
-    legacy::normalize(&mut patch, Catalogue::builtin());
-    Ok(patch)
+    let notes = legacy::normalize(&mut patch, Catalogue::builtin());
+    Ok((patch, notes))
 }
 
 impl Engine {

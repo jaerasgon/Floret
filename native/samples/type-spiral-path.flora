@@ -31,7 +31,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 25,
-        "y": 532
+        "y": 545
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "sp_spiral",
       "defType": "spread/spiral",
       "position": {
-        "x": 544,
-        "y": 22
+        "x": 547,
+        "y": 15
       },
       "params": {},
       "portValues": {
@@ -54,8 +54,8 @@
       "id": "sp_ring",
       "defType": "spread/ring",
       "position": {
-        "x": 269,
-        "y": 514
+        "x": 272,
+        "y": 522
       },
       "params": {},
       "portValues": {
@@ -70,12 +70,13 @@
     },
     {
       "id": "sp_off",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 527,
-        "y": 428
+        "x": 530,
+        "y": 421
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": -46
       },
@@ -85,12 +86,13 @@
     },
     {
       "id": "sp_roff",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 253,
-        "y": 684
+        "x": 255,
+        "y": 692
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 30
       },
@@ -102,7 +104,7 @@
       "id": "sp_path",
       "defType": "draw/path",
       "position": {
-        "x": 851,
+        "x": 855,
         "y": 0
       },
       "params": {
@@ -129,7 +131,7 @@
       "defType": "style/fill",
       "position": {
         "x": 0,
-        "y": 406
+        "y": 418
       },
       "params": {
         "color": {
@@ -152,8 +154,8 @@
       "id": "sp_tp1",
       "defType": "style/text-params",
       "position": {
-        "x": 264,
-        "y": 256
+        "x": 266,
+        "y": 264
       },
       "params": {
         "font": "Roboto Flex",
@@ -178,8 +180,8 @@
       "id": "sp_fv1",
       "defType": "style/font-variations",
       "position": {
-        "x": 550,
-        "y": 192
+        "x": 544,
+        "y": 185
       },
       "params": {
         "axis": ""
@@ -196,7 +198,7 @@
       "id": "sp_s1",
       "defType": "text/on-path",
       "position": {
-        "x": 821,
+        "x": 825,
         "y": 192
       },
       "params": {
@@ -219,7 +221,7 @@
       "defType": "style/fill",
       "position": {
         "x": 0,
-        "y": 964
+        "y": 994
       },
       "params": {
         "color": {
@@ -242,8 +244,8 @@
       "id": "sp_tp2",
       "defType": "style/text-params",
       "position": {
-        "x": 264,
-        "y": 810
+        "x": 266,
+        "y": 840
       },
       "params": {
         "font": "Roboto Flex",
@@ -268,8 +270,8 @@
       "id": "sp_s2",
       "defType": "text/on-path",
       "position": {
-        "x": 534,
-        "y": 554
+        "x": 537,
+        "y": 569
       },
       "params": {
         "string": "AROUND AND AROUND — TEXT ON A CLOSED RING — ",
@@ -290,7 +292,7 @@
       "id": "sp_g",
       "defType": "transform/group",
       "position": {
-        "x": 1107,
+        "x": 1112,
         "y": 237
       },
       "params": {
@@ -301,7 +303,7 @@
       "id": "sp_out",
       "defType": "render/renderer",
       "position": {
-        "x": 1371,
+        "x": 1376,
         "y": 237
       },
       "params": {

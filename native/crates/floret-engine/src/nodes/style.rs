@@ -9,7 +9,7 @@ use super::convert::js_string;
 use super::shared::{first, to_color, to_vec2};
 use super::Registrar;
 use crate::js;
-use crate::node::{raw, scalar, EvalCtx, NodeImpl, NodeInit};
+use crate::node::{raw, scalar, NodeImpl, NodeInit};
 use crate::scene::{
     Gradient, GradientExtend, GradientShape, GradientStop, GradientUnits, Paint, Style, StyleOp,
 };
@@ -101,31 +101,62 @@ fn chained(args: &[Value], base: usize, ops: Vec<StyleOp>) -> Vec<Value> {
 
 /// `params.param<number>(key, fallback)`, coerced by the arithmetic that
 /// consumes it.
-fn param_num(cx: &EvalCtx, key: &str, fallback: f64) -> f64 {
-    cx.param(key)
-        .map_or(Value::Num(fallback), Value::from_json)
-        .to_number()
+fn param_num(param: ParamFn, key: &str, fallback: f64) -> f64 {
+    param(key).unwrap_or(Value::Num(fallback)).to_number()
 }
 
+/// A node's params by key, as values (live at eval time, or a saved node's
+/// in the editor).
+type ParamFn<'a> = &'a dyn Fn(&str) -> Option<Value>;
+
 /// `deriveLegacyColor`: the pre-Color-node Fill modes.
-fn legacy_color(mode: &str, cx: &EvalCtx) -> Color {
+fn legacy_color(mode: &str, param: ParamFn) -> Color {
     match mode {
         "hsl" => hsl_to_color01(
-            param_num(cx, "h", 0.0),
-            param_num(cx, "s", 50.0),
-            param_num(cx, "l", 50.0),
+            param_num(param, "h", 0.0),
+            param_num(param, "s", 50.0),
+            param_num(param, "l", 50.0),
             1.0,
         ),
-        "hex" => hex_to_color01(
-            &cx.param("hex")
-                .map_or(Value::str("#ffffff"), Value::from_json),
-        ),
+        "hex" => hex_to_color01(&param("hex").unwrap_or_else(|| Value::str("#ffffff"))),
         _ => Color {
-            r: param_num(cx, "r", 255.0) / 255.0,
-            g: param_num(cx, "g", 255.0) / 255.0,
-            b: param_num(cx, "b", 255.0) / 255.0,
-            a: param_num(cx, "a", 255.0) / 255.0,
+            r: param_num(param, "r", 255.0) / 255.0,
+            g: param_num(param, "g", 255.0) / 255.0,
+            b: param_num(param, "b", 255.0) / 255.0,
+            a: param_num(param, "a", 255.0) / 255.0,
         },
+    }
+}
+
+/// The colour a Fill paints while nothing sets its `color` pin: a legacy
+/// multi-mode Fill (`params.mode` set) replays its old colour, any other
+/// paints white.
+fn fill_color(param: ParamFn) -> Color {
+    match param("mode") {
+        Some(m) if m.truthy() => {
+            let m = match &m {
+                Value::Str(s) => s.to_string(),
+                _ => String::new(),
+            };
+            legacy_color(&m, param)
+        }
+        _ => Color::WHITE,
+    }
+}
+
+/// Stroke's colour while its `color` pin is unset.
+const STROKE_DEFAULT: Color = Color::BLACK;
+
+/// What an unwired colour pin with no value of its own paints with, for
+/// the style nodes whose `color` declares no default: Fill's white (or a
+/// legacy Fill's old colour), Stroke's black. The editor shows this in the
+/// pin's row, so the row and the picture agree. `None` for any other pin.
+pub fn unwired_color(def_type: &str, port: &str, params: &Params) -> Option<Color> {
+    let param = |k: &str| params.get(k).map(Value::from_json);
+    match (def_type, port) {
+        ("style/fill", "color") => Some(fill_color(&param)),
+        ("style/stroke", "color") => Some(STROKE_DEFAULT),
+        _ => None,
     }
 }
 
@@ -136,18 +167,7 @@ fn fill(_: &NodeInit) -> Box<dyn NodeImpl> {
         let paint = if wired.truthy() {
             paint_of(&wired)?
         } else {
-            // A legacy multi-mode Fill (params.mode set) replays its colour.
-            let mode = cx.param("mode").map(Value::from_json);
-            match mode {
-                Some(m) if m.truthy() => {
-                    let m = match &m {
-                        Value::Str(s) => s.to_string(),
-                        _ => String::new(),
-                    };
-                    Paint::from_color(legacy_color(&m, cx))
-                }
-                _ => Paint::from_color(Color::WHITE),
-            }
+            Paint::from_color(fill_color(&|k| cx.param(k).map(Value::from_json)))
         };
         let style = Style::chain(style_arg(&base), [StyleOp::Fill(Some(paint))]);
         Ok(vec![one(Value::Style(style))])
@@ -159,7 +179,7 @@ fn fill(_: &NodeInit) -> Box<dyn NodeImpl> {
 fn stroke(init: &NodeInit) -> Box<dyn NodeImpl> {
     scalar(init, |args| {
         let paint = if args[0].is_nullish() {
-            Paint::from_color(Color::BLACK)
+            Paint::from_color(STROKE_DEFAULT)
         } else {
             paint_of(&args[0])?
         };
@@ -534,5 +554,49 @@ mod tests {
             unreachable!()
         };
         assert!(resolve_style(Some(s), default_style()).stroke.is_some());
+    }
+
+    /// The colour the editor shows for an unset `color` pin is the one the
+    /// node paints with.
+    #[test]
+    fn unwired_colour_is_what_fill_and_stroke_paint() {
+        let cases = [
+            ("style/fill", json!({})),
+            ("style/fill", json!({"mode": "color"})),
+            (
+                "style/fill",
+                json!({"mode": "rgb", "r": 220, "g": 100, "b": 80, "a": 255}),
+            ),
+            ("style/fill", json!({"mode": "hsl", "h": 200, "l": 30})),
+            ("style/fill", json!({"mode": "hex", "hex": "#336699"})),
+            ("style/stroke", json!({})),
+            ("style/stroke", json!({"align": "inside"})),
+        ];
+        for (ty, params) in cases {
+            let p: Params = serde_json::from_value(params.clone()).unwrap();
+            let want = Paint::from_color(unwired_color(ty, "color", &p).unwrap());
+            let pins = Catalogue::builtin().get(ty).unwrap().inputs.len();
+            let out = node(ty, params)
+                .eval(vec![vec![Value::Undefined]; pins])
+                .unwrap();
+            let st = resolved(&out[0][0]);
+            let got = if ty == "style/fill" {
+                st.fill
+            } else {
+                st.stroke
+            };
+            assert_eq!(
+                format!("{got:?}"),
+                format!("{:?}", Some(want)),
+                "{ty} {p:?}"
+            );
+        }
+        let white = unwired_color("style/fill", "color", &Params::new());
+        assert_eq!(white, Some(Color::WHITE));
+        let black = unwired_color("style/stroke", "color", &Params::new());
+        assert_eq!(black, Some(Color::BLACK));
+        // Pins whose unset value means "none" (an image tint) show none.
+        assert!(unwired_color("draw/image", "tint", &Params::new()).is_none());
+        assert!(unwired_color("style/stroke", "width", &Params::new()).is_none());
     }
 }

@@ -13,7 +13,7 @@
       "defType": "spread/noise",
       "position": {
         "x": 0,
-        "y": 419
+        "y": 428
       },
       "params": {
         "count": 40,
@@ -30,12 +30,12 @@
       "id": "lp_region",
       "defType": "region/foreach",
       "position": {
-        "x": 243,
+        "x": 252,
         "y": 22
       },
       "params": {
-        "width": 1772,
-        "height": 722,
+        "width": 1505,
+        "height": 744,
         "label": "ForEach"
       },
       "ports": [
@@ -44,18 +44,18 @@
           "name": "h",
           "type": "number",
           "direction": "input",
-          "y": 579
+          "y": 584
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 359
+          "y": 360
         }
       ],
-      "width": 1772,
-      "height": 722
+      "width": 1505,
+      "height": 744
     },
     {
       "id": "lp_nbL",
@@ -112,39 +112,29 @@
       "parentId": "lp_region"
     },
     {
-      "id": "lp_peak",
-      "defType": "math/mul",
-      "position": {
-        "x": 642,
-        "y": 420
-      },
-      "params": {
-        "valueType": "number"
-      },
-      "parentId": "lp_region"
-    },
-    {
       "id": "lp_sat",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 912,
+        "x": 641,
         "y": 402
       },
       "params": {
+        "op": "multiply",
         "b": 95,
-        "valueType": "number"
+        "valueType": "number",
+        "slotCount": 3
       },
       "parentId": "lp_region",
       "portValues": {
-        "b": 95
+        "c": 95
       }
     },
     {
       "id": "lp_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1182,
-        "y": 363
+        "x": 912,
+        "y": 372
       },
       "params": {
         "h": 135,
@@ -162,20 +152,21 @@
       "id": "lp_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1382,
-        "y": 449
+        "x": 1112,
+        "y": 454
       },
       "params": {},
       "parentId": "lp_region"
     },
     {
       "id": "lp_hMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 162,
         "y": 604
       },
       "params": {
+        "op": "multiply",
         "b": 210,
         "valueType": "number"
       },
@@ -188,8 +179,8 @@
       "id": "lp_pos",
       "defType": "vec2/make",
       "position": {
-        "x": 1383,
-        "y": 241
+        "x": 1113,
+        "y": 229
       },
       "params": {
         "y": 75
@@ -203,8 +194,8 @@
       "id": "lp_bar",
       "defType": "draw/rect",
       "position": {
-        "x": 1576,
-        "y": 322
+        "x": 1309,
+        "y": 323
       },
       "params": {
         "w": 11,
@@ -220,8 +211,8 @@
       "id": "lp_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2111,
-        "y": 344
+        "x": 1853,
+        "y": 345
       },
       "params": {
         "width": 500,
@@ -321,23 +312,16 @@
     {
       "id": "e_1678",
       "source": "lp_gtL",
-      "target": "lp_peak",
+      "target": "lp_sat",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
       "id": "e_1679",
       "source": "lp_gtR",
-      "target": "lp_peak",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_1680",
-      "source": "lp_peak",
       "target": "lp_sat",
       "sourceHandle": "out-result",
-      "targetHandle": "in-a"
+      "targetHandle": "in-b"
     },
     {
       "id": "e_1681",

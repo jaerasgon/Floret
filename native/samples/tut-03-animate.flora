@@ -16,7 +16,7 @@
         "y": -264
       },
       "params": {
-        "text": "Animation = time → shape\n\n`time/seconds` outputs the time elapsed in seconds. Run it through `sin` and you get a smooth oscillation between -1 and 1. Multiply to scale the motion to pixels.\n\nThis ellipse swings left-right with sin(t)·150.",
+        "text": "Animation = time → shape\n\n`time/seconds` outputs the time elapsed in seconds. Run it through a Math node set to `sin` and you get a smooth oscillation between -1 and 1. A second Math node set to `multiply` scales the motion to pixels.\n\nThis ellipse swings left-right with sin(t)·150.",
         "width": 360,
         "height": 200
       },
@@ -31,27 +31,30 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 0
+        "y": 44
       },
       "params": {}
     },
     {
       "id": "t03_sin",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
         "x": 180,
-        "y": 0
+        "y": 22
       },
-      "params": {}
+      "params": {
+        "op": "sin"
+      }
     },
     {
       "id": "t03_amp",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 348,
+        "x": 426,
         "y": 0
       },
       "params": {
+        "op": "multiply",
         "b": 150,
         "valueType": "number"
       },
@@ -63,7 +66,7 @@
       "id": "t03_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 792,
+        "x": 871,
         "y": 0
       },
       "params": {
@@ -81,7 +84,7 @@
       "id": "t03_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 987,
+        "x": 1066,
         "y": 0
       },
       "params": {
@@ -97,7 +100,7 @@
       "id": "t03_ell-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 612,
+        "x": 690,
         "y": 0
       },
       "params": {

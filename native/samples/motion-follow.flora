@@ -13,18 +13,19 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 359
+        "y": 425
       },
       "params": {}
     },
     {
       "id": "mf_tscale",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 180,
-        "y": 359
+        "y": 403
       },
       "params": {
+        "op": "multiply",
         "b": 2,
         "valueType": "number"
       },
@@ -34,21 +35,24 @@
     },
     {
       "id": "mf_sin",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
         "x": 444,
-        "y": 359
+        "y": 381
       },
-      "params": {}
+      "params": {
+        "op": "sin"
+      }
     },
     {
       "id": "mf_targetX",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 612,
+        "x": 690,
         "y": 359
       },
       "params": {
+        "op": "multiply",
         "b": 165,
         "valueType": "number"
       },
@@ -60,7 +64,7 @@
       "id": "mf_gTop",
       "defType": "vec2/make",
       "position": {
-        "x": 955,
+        "x": 1032,
         "y": 0
       },
       "params": {
@@ -74,7 +78,7 @@
       "id": "mf_gBot",
       "defType": "vec2/make",
       "position": {
-        "x": 955,
+        "x": 1032,
         "y": 126
       },
       "params": {
@@ -88,7 +92,7 @@
       "id": "mf_gStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 930,
+        "x": 1008,
         "y": 252
       },
       "params": {
@@ -114,7 +118,7 @@
       "id": "mf_gLine",
       "defType": "draw/line",
       "position": {
-        "x": 1213,
+        "x": 1291,
         "y": 103
       },
       "params": {}
@@ -123,7 +127,7 @@
       "id": "mf_refPos",
       "defType": "vec2/make",
       "position": {
-        "x": 1213,
+        "x": 1290,
         "y": 251
       },
       "params": {
@@ -137,7 +141,7 @@
       "id": "mf_refDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1433,
+        "x": 1511,
         "y": 241
       },
       "params": {
@@ -153,7 +157,7 @@
       "id": "mf_smooth",
       "defType": "motion/smooth",
       "position": {
-        "x": 952,
+        "x": 1024,
         "y": 422
       },
       "params": {
@@ -168,7 +172,7 @@
       "id": "mf_smPos",
       "defType": "vec2/make",
       "position": {
-        "x": 1213,
+        "x": 1290,
         "y": 377
       },
       "params": {
@@ -182,7 +186,7 @@
       "id": "mf_smFill",
       "defType": "style/fill",
       "position": {
-        "x": 1188,
+        "x": 1266,
         "y": 503
       },
       "params": {
@@ -206,7 +210,7 @@
       "id": "mf_smDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1433,
+        "x": 1511,
         "y": 433
       },
       "params": {
@@ -222,7 +226,7 @@
       "id": "mf_spring",
       "defType": "motion/spring",
       "position": {
-        "x": 952,
+        "x": 1028,
         "y": 548
       },
       "params": {
@@ -239,7 +243,7 @@
       "id": "mf_spPos",
       "defType": "vec2/make",
       "position": {
-        "x": 1213,
+        "x": 1290,
         "y": 629
       },
       "params": {
@@ -253,7 +257,7 @@
       "id": "mf_spFill",
       "defType": "style/fill",
       "position": {
-        "x": 1188,
+        "x": 1266,
         "y": 755
       },
       "params": {
@@ -277,7 +281,7 @@
       "id": "mf_spDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1433,
+        "x": 1511,
         "y": 625
       },
       "params": {
@@ -293,7 +297,7 @@
       "id": "mf_delay",
       "defType": "motion/delay-line",
       "position": {
-        "x": 949,
+        "x": 1018,
         "y": 696
       },
       "params": {
@@ -308,7 +312,7 @@
       "id": "mf_dlPos",
       "defType": "vec2/make",
       "position": {
-        "x": 1213,
+        "x": 1290,
         "y": 881
       },
       "params": {
@@ -322,7 +326,7 @@
       "id": "mf_dlFill",
       "defType": "style/fill",
       "position": {
-        "x": 1188,
+        "x": 1266,
         "y": 1007
       },
       "params": {
@@ -346,7 +350,7 @@
       "id": "mf_dlDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1433,
+        "x": 1511,
         "y": 817
       },
       "params": {
@@ -362,7 +366,7 @@
       "id": "mf_group",
       "defType": "transform/group",
       "position": {
-        "x": 1681,
+        "x": 1759,
         "y": 376
       },
       "params": {
@@ -376,7 +380,7 @@
       "id": "mf_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1945,
+        "x": 2023,
         "y": 376
       },
       "params": {

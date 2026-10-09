@@ -56,7 +56,8 @@ Run `./floret.sh install` again at any time to update.
   built it. macOS may ask again for camera or microphone access after an
   update.
 - Mac only for now. Windows and Linux versions come later.
-- The SVG export of the web version isn't in this release.
+- Patches from the web version open as they were, except that a Save SVG
+  node is left out (a notice says so); save pictures with Export PNG.
 
 Something not working? Note the sample or patch, what you did and what
 happened, and send it along with a screenshot.

@@ -31,36 +31,41 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 63
+        "y": 118
       },
       "params": {}
     },
     {
       "id": "t11_cos",
-      "defType": "math/cos",
+      "defType": "math/math",
       "position": {
-        "x": 188,
-        "y": 11
+        "x": 189,
+        "y": 33
       },
-      "params": {}
+      "params": {
+        "op": "cos"
+      }
     },
     {
       "id": "t11_sin",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
-        "x": 188,
-        "y": 115
+        "x": 189,
+        "y": 159
       },
-      "params": {}
+      "params": {
+        "op": "sin"
+      }
     },
     {
       "id": "t11_rx",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 357,
+        "x": 437,
         "y": 0
       },
       "params": {
+        "op": "multiply",
         "b": 180,
         "valueType": "number"
       },
@@ -70,12 +75,13 @@
     },
     {
       "id": "t11_ry",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 357,
-        "y": 126
+        "x": 437,
+        "y": 148
       },
       "params": {
+        "op": "multiply",
         "b": 180,
         "valueType": "number"
       },
@@ -87,8 +93,8 @@
       "id": "t11_line",
       "defType": "draw/line",
       "position": {
-        "x": 867,
-        "y": 82
+        "x": 948,
+        "y": 93
       },
       "params": {}
     },
@@ -96,8 +102,8 @@
       "id": "t11_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1059,
-        "y": 82
+        "x": 1140,
+        "y": 93
       },
       "params": {
         "width": 400,
@@ -112,8 +118,8 @@
       "id": "t11_line-xy1",
       "defType": "vec2/make",
       "position": {
-        "x": 654,
-        "y": 52
+        "x": 735,
+        "y": 63
       },
       "params": {
         "x": 0,
@@ -128,8 +134,8 @@
       "id": "t11_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 629,
-        "y": 178
+        "x": 711,
+        "y": 189
       },
       "params": {
         "width": 3,

@@ -13,7 +13,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 0,
-        "y": 290
+        "y": 312
       },
       "params": {
         "data": "12, 45, 22, 67, 38, 91, 54, 73, 29, 60, 84, 19, 41, 77, 33, 55"
@@ -26,8 +26,8 @@
       "id": "csv_idx",
       "defType": "spread/range",
       "position": {
-        "x": 24,
-        "y": 186
+        "x": 15,
+        "y": 207
       },
       "params": {
         "count": 16
@@ -44,8 +44,8 @@
         "y": 22
       },
       "params": {
-        "width": 982,
-        "height": 482,
+        "width": 986,
+        "height": 520,
         "label": "ForEach"
       },
       "ports": [
@@ -54,34 +54,35 @@
           "name": "v",
           "type": "number",
           "direction": "input",
-          "y": 269
+          "y": 291
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 236
+          "y": 258
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 194
+          "y": 199
         }
       ],
-      "width": 982,
-      "height": 482
+      "width": 986,
+      "height": 520
     },
     {
       "id": "csv_hMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 140,
+        "x": 142,
         "y": 232
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 4
       },
@@ -92,12 +93,13 @@
     },
     {
       "id": "csv_hueMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 140,
-        "y": 358
+        "x": 142,
+        "y": 380
       },
       "params": {
+        "op": "multiply",
         "b": 22,
         "valueType": "number"
       },
@@ -110,8 +112,8 @@
       "id": "csv_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 410,
-        "y": 320
+        "x": 412,
+        "y": 337
       },
       "params": {
         "s": 80,
@@ -129,8 +131,8 @@
       "id": "csv_fill",
       "defType": "style/fill",
       "position": {
-        "x": 595,
-        "y": 283
+        "x": 599,
+        "y": 293
       },
       "params": {
         "mode": "color"
@@ -144,8 +146,8 @@
       "id": "csv_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 786,
-        "y": 157
+        "x": 790,
+        "y": 162
       },
       "params": {
         "w": 26,
@@ -161,8 +163,8 @@
       "id": "csv_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1346,
-        "y": 179
+        "x": 1350,
+        "y": 184
       },
       "params": {
         "width": 500,
@@ -189,8 +191,8 @@
       "id": "csv_rect-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 596,
-        "y": 98
+        "x": 599,
+        "y": 101
       },
       "params": {
         "x": 0,
@@ -206,7 +208,7 @@
       "id": "csv_x",
       "defType": "math/map",
       "position": {
-        "x": 181,
+        "x": 183,
         "y": 40
       },
       "params": {

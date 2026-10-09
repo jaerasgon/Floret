@@ -30,8 +30,8 @@
       "id": "t44_range",
       "defType": "spread/range",
       "position": {
-        "x": 13,
-        "y": 210
+        "x": 3,
+        "y": 226
       },
       "params": {
         "count": 10
@@ -45,7 +45,7 @@
       "defType": "value/number",
       "position": {
         "x": 0,
-        "y": 106
+        "y": 122
       },
       "params": {
         "value": 0
@@ -58,12 +58,12 @@
       "id": "t44_region",
       "defType": "region/foreach",
       "position": {
-        "x": 243,
+        "x": 242,
         "y": 22
       },
       "params": {
         "width": 905,
-        "height": 284,
+        "height": 306,
         "label": "sum"
       },
       "ports": [
@@ -72,11 +72,11 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 203
+          "y": 225
         }
       ],
       "width": 905,
-      "height": 284
+      "height": 306
     },
     {
       "id": "t44_read",
@@ -95,12 +95,13 @@
     },
     {
       "id": "t44_inc",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
         "x": 128,
         "y": 166
       },
       "params": {
+        "op": "add",
         "b": 1,
         "valueType": "number"
       },
@@ -111,12 +112,13 @@
     },
     {
       "id": "t44_sum",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
         "x": 400,
-        "y": 92
+        "y": 70
       },
       "params": {
+        "op": "add",
         "valueType": "number"
       },
       "parentId": "t44_region"
@@ -126,7 +128,7 @@
       "defType": "region/accumulator-write/number",
       "position": {
         "x": 664,
-        "y": 70
+        "y": 48
       },
       "params": {
         "slot": 1
@@ -140,8 +142,8 @@
       "id": "t44_fill",
       "defType": "style/fill",
       "position": {
-        "x": 629,
-        "y": 354
+        "x": 628,
+        "y": 376
       },
       "params": {
         "color": {
@@ -165,7 +167,7 @@
       "defType": "draw/text",
       "position": {
         "x": 1255,
-        "y": 196
+        "y": 213
       },
       "params": {
         "string": "0",
@@ -191,7 +193,7 @@
       "defType": "render/renderer",
       "position": {
         "x": 1440,
-        "y": 196
+        "y": 213
       },
       "params": {
         "width": 400,

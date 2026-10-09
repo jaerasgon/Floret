@@ -31,7 +31,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 416
+        "y": 440
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "nc_ease",
       "defType": "math/expression",
       "position": {
-        "x": 194,
-        "y": 303
+        "x": 195,
+        "y": 323
       },
       "params": {
         "expr": "smoothstep(0.0, 0.7, x)"
@@ -51,8 +51,8 @@
       "id": "nc_money_v",
       "defType": "math/expression",
       "position": {
-        "x": 487,
-        "y": 111
+        "x": 488,
+        "y": 128
       },
       "params": {
         "expr": "84250.75 * x"
@@ -63,7 +63,7 @@
       "id": "nc_money",
       "defType": "string/format-number",
       "position": {
-        "x": 770,
+        "x": 780,
         "y": 0
       },
       "params": {
@@ -79,8 +79,8 @@
       "id": "nc_pct",
       "defType": "string/format-number",
       "position": {
-        "x": 496,
-        "y": 253
+        "x": 497,
+        "y": 270
       },
       "params": {
         "mode": "percent"
@@ -93,8 +93,8 @@
       "id": "nc_big_v",
       "defType": "math/expression",
       "position": {
-        "x": 487,
-        "y": 467
+        "x": 488,
+        "y": 484
       },
       "params": {
         "expr": "12345 * x"
@@ -105,8 +105,8 @@
       "id": "nc_big",
       "defType": "string/format-number",
       "position": {
-        "x": 770,
-        "y": 510
+        "x": 780,
+        "y": 532
       },
       "params": {
         "mode": "compact"
@@ -120,8 +120,8 @@
       "id": "nc_secs",
       "defType": "math/expression",
       "position": {
-        "x": 194,
-        "y": 496
+        "x": 195,
+        "y": 526
       },
       "params": {
         "expr": "x * 6"
@@ -132,8 +132,8 @@
       "id": "nc_clock",
       "defType": "string/format-number",
       "position": {
-        "x": 496,
-        "y": 609
+        "x": 497,
+        "y": 644
       },
       "params": {
         "mode": "time"
@@ -144,19 +144,21 @@
     },
     {
       "id": "nc_money_at",
-      "defType": "spread/at",
+      "defType": "spread/lookup",
       "position": {
-        "x": 1041,
-        "y": 28
+        "x": 1037,
+        "y": 13
       },
-      "params": {}
+      "params": {
+        "op": "at"
+      }
     },
     {
       "id": "nc_money_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1023,
-        "y": 154
+        "x": 1051,
+        "y": 161
       },
       "params": {
         "color": {
@@ -179,8 +181,8 @@
       "id": "nc_money_txt",
       "defType": "draw/text",
       "position": {
-        "x": 1273,
-        "y": 156
+        "x": 1317,
+        "y": 158
       },
       "params": {
         "size": 64,
@@ -197,19 +199,21 @@
     },
     {
       "id": "nc_pct_at",
-      "defType": "spread/at",
+      "defType": "spread/lookup",
       "position": {
-        "x": 797,
+        "x": 774,
         "y": 258
       },
-      "params": {}
+      "params": {
+        "op": "at"
+      }
     },
     {
       "id": "nc_pct_fill",
       "defType": "style/fill",
       "position": {
-        "x": 779,
-        "y": 384
+        "x": 788,
+        "y": 406
       },
       "params": {
         "color": {
@@ -232,8 +236,8 @@
       "id": "nc_pct_txt",
       "defType": "draw/text",
       "position": {
-        "x": 1046,
-        "y": 280
+        "x": 1074,
+        "y": 287
       },
       "params": {
         "size": 40,
@@ -250,19 +254,21 @@
     },
     {
       "id": "nc_big_at",
-      "defType": "spread/at",
+      "defType": "spread/lookup",
       "position": {
-        "x": 1041,
-        "y": 472
+        "x": 1037,
+        "y": 479
       },
-      "params": {}
+      "params": {
+        "op": "at"
+      }
     },
     {
       "id": "nc_big_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1023,
-        "y": 598
+        "x": 1051,
+        "y": 627
       },
       "params": {
         "color": {
@@ -285,8 +291,8 @@
       "id": "nc_big_txt",
       "defType": "draw/text",
       "position": {
-        "x": 1273,
-        "y": 458
+        "x": 1317,
+        "y": 477
       },
       "params": {
         "size": 40,
@@ -303,19 +309,21 @@
     },
     {
       "id": "nc_clock_at",
-      "defType": "spread/at",
+      "defType": "spread/lookup",
       "position": {
-        "x": 797,
-        "y": 702
+        "x": 774,
+        "y": 724
       },
-      "params": {}
+      "params": {
+        "op": "at"
+      }
     },
     {
       "id": "nc_clock_fill",
       "defType": "style/fill",
       "position": {
-        "x": 779,
-        "y": 828
+        "x": 788,
+        "y": 872
       },
       "params": {
         "color": {
@@ -338,8 +346,8 @@
       "id": "nc_clock_txt",
       "defType": "draw/text",
       "position": {
-        "x": 1046,
-        "y": 724
+        "x": 1074,
+        "y": 753
       },
       "params": {
         "size": 28,
@@ -358,8 +366,8 @@
       "id": "nc_group",
       "defType": "transform/group",
       "position": {
-        "x": 1491,
-        "y": 375
+        "x": 1537,
+        "y": 388
       },
       "params": {
         "slotCount": 4
@@ -370,8 +378,8 @@
       "id": "nc_r",
       "defType": "render/renderer",
       "position": {
-        "x": 1755,
-        "y": 375
+        "x": 1801,
+        "y": 388
       },
       "params": {
         "width": 560,
@@ -407,7 +415,7 @@
       "id": "e_nc_money_at_nc_money_txt_string",
       "source": "nc_money_at",
       "target": "nc_money_txt",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-string"
     },
     {
@@ -428,7 +436,7 @@
       "id": "e_nc_pct_at_nc_pct_txt_string",
       "source": "nc_pct_at",
       "target": "nc_pct_txt",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-string"
     },
     {
@@ -449,7 +457,7 @@
       "id": "e_nc_big_at_nc_big_txt_string",
       "source": "nc_big_at",
       "target": "nc_big_txt",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-string"
     },
     {
@@ -470,7 +478,7 @@
       "id": "e_nc_clock_at_nc_clock_txt_string",
       "source": "nc_clock_at",
       "target": "nc_clock_txt",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-string"
     },
     {

@@ -30,8 +30,8 @@
       "id": "t24_range",
       "defType": "spread/range",
       "position": {
-        "x": 180,
-        "y": 158
+        "x": 186,
+        "y": 169
       },
       "params": {
         "count": 12
@@ -44,12 +44,12 @@
       "id": "t24_region",
       "defType": "region/foreach",
       "position": {
-        "x": 395,
+        "x": 426,
         "y": 22
       },
       "params": {
-        "width": 1044,
-        "height": 350,
+        "width": 1120,
+        "height": 372,
         "label": "ForEach"
       },
       "ports": [
@@ -58,27 +58,28 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 173
+          "y": 184
         },
         {
           "id": "p",
           "name": "p",
           "type": "vec2",
           "direction": "output",
-          "y": 134
+          "y": 119
         }
       ],
-      "width": 1044,
-      "height": 350
+      "width": 1120,
+      "height": 372
     },
     {
       "id": "t24_yIn",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 135,
+        "x": 136,
         "y": 232
       },
       "params": {
+        "op": "multiply",
         "b": 0.7,
         "valueType": "number"
       },
@@ -89,22 +90,25 @@
     },
     {
       "id": "t24_ySin",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
-        "x": 405,
-        "y": 194
+        "x": 404,
+        "y": 182
       },
-      "params": {},
+      "params": {
+        "op": "sin"
+      },
       "parentId": "t24_region"
     },
     {
       "id": "t24_yMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 579,
-        "y": 156
+        "x": 654,
+        "y": 132
       },
       "params": {
+        "op": "multiply",
         "b": 80,
         "valueType": "number"
       },
@@ -117,8 +121,8 @@
       "id": "t24_mkVec",
       "defType": "vec2/make",
       "position": {
-        "x": 848,
-        "y": 97
+        "x": 923,
+        "y": 82
       },
       "params": {},
       "parentId": "t24_region"
@@ -128,25 +132,27 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 420
+        "y": 464
       },
       "params": {}
     },
     {
       "id": "t24_tSin",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
-        "x": 204,
-        "y": 420
+        "x": 180,
+        "y": 442
       },
-      "params": {}
+      "params": {
+        "op": "sin"
+      }
     },
     {
       "id": "t24_path",
       "defType": "draw/path",
       "position": {
-        "x": 1553,
-        "y": 237
+        "x": 1662,
+        "y": 240
       },
       "params": {
         "strokeWidth": 4,
@@ -171,8 +177,8 @@
       "id": "t24_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1744,
-        "y": 237
+        "x": 1853,
+        "y": 240
       },
       "params": {
         "width": 500,
@@ -187,7 +193,7 @@
       "id": "t24_x",
       "defType": "math/map",
       "position": {
-        "x": 176,
+        "x": 177,
         "y": 40
       },
       "params": {
@@ -208,8 +214,8 @@
       "id": "t24_tension",
       "defType": "math/map",
       "position": {
-        "x": 876,
-        "y": 420
+        "x": 945,
+        "y": 442
       },
       "params": {
         "inMin": -1,

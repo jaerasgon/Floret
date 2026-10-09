@@ -8,11 +8,49 @@ use crate::patch::{parse_handle, Handle, PatchEdge, PatchFile, PatchNode, Positi
 use crate::spec::{Catalogue, Params};
 use std::collections::HashMap;
 
-/// Apply all fix-ups in the web app's order.
-pub fn normalize(patch: &mut PatchFile, cat: &Catalogue) {
+/// Apply all fix-ups in the web app's order, then drop node types Floret
+/// no longer has. Returns one line per change the user should hear about.
+pub fn normalize(patch: &mut PatchFile, cat: &Catalogue) -> Vec<String> {
     migrate_legacy_edges(patch, cat);
     migrate_legacy_draw_coords(patch);
     prune_dead_edges(patch, cat);
+    drop_removed_nodes(patch)
+}
+
+/// Node types that are gone, by type: (type, label, why). Files that still
+/// have one lose it and its wires on load.
+const REMOVED_NODES: &[(&str, &str, &str)] = &[(
+    "io/save-svg",
+    "Save SVG",
+    "Floret no longer exports SVG (File → Export PNG… or Export Video / GIF… save the picture)",
+)];
+
+/// Remove [`REMOVED_NODES`] and every wire to or from them. One notice per
+/// type found ("Removed 2 Save SVG nodes: …").
+pub fn drop_removed_nodes(patch: &mut PatchFile) -> Vec<String> {
+    let mut notes = Vec::new();
+    for (ty, label, why) in REMOVED_NODES {
+        let gone: std::collections::HashSet<String> = patch
+            .nodes
+            .iter()
+            .filter(|n| n.def_type == *ty)
+            .map(|n| n.id.clone())
+            .collect();
+        if gone.is_empty() {
+            continue;
+        }
+        patch.nodes.retain(|n| !gone.contains(&n.id));
+        patch
+            .edges
+            .retain(|e| !gone.contains(&e.source) && !gone.contains(&e.target));
+        for p in &mut patch.presets {
+            p.values.retain(|id, _| !gone.contains(id));
+        }
+        let n = gone.len();
+        let s = if n == 1 { "" } else { "s" };
+        notes.push(format!("Removed {n} {label} node{s}: {why}."));
+    }
+    notes
 }
 
 /// Explicit input renames, by node type: old name → new name.
@@ -257,14 +295,63 @@ mod tests {
                 let text = std::fs::read_to_string(&path).unwrap();
                 let before = PatchFile::load(&text).unwrap();
                 let mut after = before.clone();
-                normalize(&mut after, Catalogue::builtin());
+                let notes = normalize(&mut after, Catalogue::builtin());
                 assert_eq!(
                     after.to_json(),
                     before.to_json(),
                     "{} changed",
                     path.display()
                 );
+                assert!(notes.is_empty(), "{}: {notes:?}", path.display());
             }
         }
+    }
+
+    #[test]
+    fn save_svg_nodes_and_their_wires_are_dropped_with_a_notice() {
+        let text = r#"{"kind":"floret.patch","version":2,"nodes":[
+              {"id":"r","defType":"draw/rect","position":{"x":0,"y":0},"params":{}},
+              {"id":"b","defType":"io/bang","position":{"x":0,"y":0},"params":{}},
+              {"id":"svg","defType":"io/save-svg","position":{"x":0,"y":0},"params":{}},
+              {"id":"svg2","defType":"io/save-svg","position":{"x":0,"y":0},"params":{}},
+              {"id":"out","defType":"render/renderer","position":{"x":0,"y":0},"params":{}}],
+             "edges":[
+              {"id":"e1","source":"r","target":"svg","sourceHandle":"out-layer","targetHandle":"in-layers"},
+              {"id":"e2","source":"b","target":"svg","sourceHandle":"out-out","targetHandle":"in-save"},
+              {"id":"e3","source":"svg","target":"out","sourceHandle":"out-layers","targetHandle":"in-layers"},
+              {"id":"e4","source":"r","target":"out","sourceHandle":"out-layer","targetHandle":"in-layers"}],
+             "presets":[{"name":"p","values":{"svg":{"params":{"x":1}},"r":{"params":{"x":2}}}}]}"#;
+        let mut p = PatchFile::load(text).unwrap();
+        let notes = normalize(&mut p, Catalogue::builtin());
+        assert_eq!(
+            p.nodes.iter().map(|n| n.id.as_str()).collect::<Vec<_>>(),
+            ["r", "b", "out"]
+        );
+        assert_eq!(
+            p.edges.iter().map(|e| e.id.as_str()).collect::<Vec<_>>(),
+            ["e4"]
+        );
+        assert_eq!(
+            p.presets[0]
+                .values
+                .keys()
+                .map(String::as_str)
+                .collect::<Vec<_>>(),
+            ["r"]
+        );
+        assert_eq!(notes.len(), 1);
+        assert!(
+            notes[0].starts_with("Removed 2 Save SVG nodes: "),
+            "{notes:?}"
+        );
+        assert!(!notes[0].contains('\n'));
+        // Loading again finds nothing more to do; the patch still compiles.
+        assert!(normalize(&mut p, Catalogue::builtin()).is_empty());
+        assert!(crate::Engine::from_patch(&p).is_ok());
+        // The app's loader reports it.
+        let (q, notes) = crate::load_patch_noting(text).unwrap();
+        assert_eq!(q.nodes.len(), 3);
+        assert_eq!(notes.len(), 1);
+        assert!(Catalogue::builtin().get("io/save-svg").is_none());
     }
 }

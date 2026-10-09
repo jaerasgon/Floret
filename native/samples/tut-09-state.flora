@@ -31,7 +31,7 @@
       "defType": "state/value",
       "position": {
         "x": 0,
-        "y": 74
+        "y": 96
       },
       "params": {
         "init": 0
@@ -42,12 +42,13 @@
     },
     {
       "id": "t09_step",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
         "x": 194,
         "y": 0
       },
       "params": {
+        "op": "add",
         "b": 1
       },
       "portValues": {
@@ -59,7 +60,7 @@
       "defType": "color/color",
       "position": {
         "x": 202,
-        "y": 126
+        "y": 148
       },
       "params": {
         "mode": "hsl",
@@ -79,7 +80,7 @@
       "defType": "style/fill",
       "position": {
         "x": 458,
-        "y": 126
+        "y": 148
       },
       "params": {}
     },
@@ -88,7 +89,7 @@
       "defType": "draw/ellipse",
       "position": {
         "x": 640,
-        "y": 38
+        "y": 60
       },
       "params": {
         "w": 160,
@@ -104,7 +105,7 @@
       "defType": "render/renderer",
       "position": {
         "x": 845,
-        "y": 38
+        "y": 60
       },
       "params": {
         "width": 400,

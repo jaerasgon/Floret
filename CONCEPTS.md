@@ -200,8 +200,7 @@ input is wired and the values vary. The polyline is walked, perpendicular
 offsets at each vertex are sampled from the widths curve, and a closed
 polygon is emitted by stitching the left bank forward + the right bank
 backwards. The downstream renderer FILLS that polygon — no `ctx.stroke()`
-at all. That's what gives smooth tapers, gradient ribbons, and clean SVG
-export as `<path fill="…" />`.
+at all. That's what gives smooth tapers and gradient ribbons.
 
 - Width sampling: `widths` shorter than the polyline becomes a curve
   sampled evenly across t ∈ [0, 1] with linear interpolation; equal
@@ -229,15 +228,14 @@ through to the existing Canvas2D stroke path (fast, single
 
 Draw nodes don't mutate a canvas — they return a tree of `SceneNode`
 data describing what to draw. The renderer walks the tree and emits
-Canvas2D calls; the SVG emitter walks the same tree to emit XML.
+Canvas2D calls (the native app's GPU renderer walks the same tree).
 
 - Tree types in [src/runtime/scene.ts](src/runtime/scene.ts)
 - Renderer in [src/runtime/scene-renderer.ts](src/runtime/scene-renderer.ts)
-- SVG emitter in [src/runtime/scene-svg.ts](src/runtime/scene-svg.ts)
 
 Three reasons retained > immediate:
-1. **Vector export** — SVG/PDF is one extra visitor, not a per-node
-   double implementation.
+1. **One description, any renderer** — swapping Canvas2D for the GPU
+   renderer is one new visitor, not a per-node double implementation.
 2. **Hit-testing** — "which shape did the user click?" is a tree walk.
 3. **Smart rendering** — GPU batching, worker offload, occlusion all
    easier when the renderer sees the whole scene declaratively.

@@ -16,7 +16,7 @@
         "y": -284
       },
       "params": {
-        "text": "Vec2 math (no splitting)\n\n`vec2/*` nodes operate on vec2 as one unit. Add, Scale, Length, Normalize all take vec2 inputs and produce vec2 outputs — much cleaner than splitting and recombining.\n\nScale a base vec2 (150, 0) by sin(time) and draw an ellipse there: vec2 in, vec2 out, no split.",
+        "text": "Vec2 math (no splitting)\n\nMath (add, subtract …) and Vector Math (scale, length, normalize …) work on a vec2 as one unit — much cleaner than splitting and recombining.\n\nScale a base vec2 (150, 0) by sin(time) and draw an ellipse there: vec2 in, vec2 out, no split.",
         "width": 420,
         "height": 220
       },
@@ -31,27 +31,30 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 22
+        "y": 66
       },
       "params": {}
     },
     {
       "id": "t31_s",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
         "x": 180,
-        "y": 22
+        "y": 44
       },
-      "params": {}
+      "params": {
+        "op": "sin"
+      }
     },
     {
       "id": "t31_sc",
-      "defType": "vec2/scale",
+      "defType": "vec2/math",
       "position": {
-        "x": 348,
+        "x": 426,
         "y": 0
       },
       "params": {
+        "op": "scale",
         "v": {
           "x": 150,
           "y": 0
@@ -68,7 +71,7 @@
       "id": "t31_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 561,
+        "x": 702,
         "y": 0
       },
       "params": {
@@ -84,7 +87,7 @@
       "id": "t31_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 756,
+        "x": 897,
         "y": 0
       },
       "params": {
@@ -123,7 +126,7 @@
       "id": "e_xy_t31_ell-xy0",
       "source": "t31_sc",
       "target": "t31_ell",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-pos"
     }
   ]

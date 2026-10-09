@@ -124,18 +124,19 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 208
+        "y": 230
       },
       "params": {}
     },
     {
       "id": "t20_hueSpeed",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 180,
         "y": 208
       },
       "params": {
+        "op": "multiply",
         "b": 40,
         "valueType": "number"
       },

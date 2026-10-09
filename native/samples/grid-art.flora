@@ -13,7 +13,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 207
+        "y": 218
       },
       "params": {
         "value": 0,
@@ -32,8 +32,8 @@
       "id": "ga_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 27,
-        "y": 15
+        "x": 21,
+        "y": 26
       },
       "params": {
         "cols": 6,
@@ -52,8 +52,8 @@
       "id": "ga_idx",
       "defType": "spread/range",
       "position": {
-        "x": 25,
-        "y": 333
+        "x": 15,
+        "y": 344
       },
       "params": {
         "count": 36
@@ -66,8 +66,8 @@
       "id": "ga_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1890,
-        "y": 117
+        "x": 1916,
+        "y": 119
       },
       "params": {
         "width": 720,
@@ -94,12 +94,12 @@
       "id": "ga_region",
       "defType": "region/foreach",
       "position": {
-        "x": 282,
+        "x": 281,
         "y": 22
       },
       "params": {
-        "width": 1331,
-        "height": 426,
+        "width": 1350,
+        "height": 445,
         "label": "ForEach cells"
       },
       "ports": [
@@ -115,27 +115,28 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 239
+          "y": 260
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 132
+          "y": 134
         }
       ],
-      "width": 1331,
-      "height": 426
+      "width": 1350,
+      "height": 445
     },
     {
       "id": "ga_seedSum",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
         "x": 130,
-        "y": 202
+        "y": 201
       },
       "params": {
+        "op": "add",
         "valueType": "number"
       },
       "parentId": "ga_region"
@@ -163,8 +164,8 @@
       "id": "ga_noFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 172,
-        "y": 330
+        "x": 170,
+        "y": 349
       },
       "params": {},
       "parentId": "ga_region"
@@ -173,8 +174,8 @@
       "id": "ga_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 418,
-        "y": 264
+        "x": 404,
+        "y": 278
       },
       "params": {
         "width": 2
@@ -188,8 +189,8 @@
       "id": "ga_rectMode",
       "defType": "style/rect-mode",
       "position": {
-        "x": 621,
-        "y": 242
+        "x": 639,
+        "y": 251
       },
       "params": {
         "mode": "center"
@@ -203,8 +204,8 @@
       "id": "ga_border",
       "defType": "draw/rect",
       "position": {
-        "x": 851,
-        "y": 155
+        "x": 869,
+        "y": 158
       },
       "params": {
         "w": 110,
@@ -220,8 +221,8 @@
       "id": "ga_group",
       "defType": "transform/group",
       "position": {
-        "x": 1051,
-        "y": 95
+        "x": 1070,
+        "y": 97
       },
       "params": {
         "slotCount": 2
@@ -235,8 +236,8 @@
       "id": "ga_cache",
       "defType": "transform/cache",
       "position": {
-        "x": 1709,
-        "y": 117
+        "x": 1727,
+        "y": 119
       },
       "params": {}
     }

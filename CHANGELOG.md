@@ -55,6 +55,9 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   curl, plus patterns), an Expression node (type a formula, its names
   become pins), Math / Vector Math / Compare / Logic / Statistics /
   Convert families, LFO, easing and springs.
+- **Lists:** Lookup, Sublist, Reorder and Combine families (take, slice,
+  sort, concatenate … in one dropdown each), Count, Merge, Neighbor,
+  Partition and the other list nodes.
 - **Colour:** palettes with harmony modes, OKLab / OKLCH mixing.
 - **Particles and simulations:** emitters, forces, colliders and worlds;
   a Simulation node for flocking, slime mould (physarum), DLA growth and
@@ -99,6 +102,9 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   Finder (or Open With → Floret, or dropping it on the Dock icon) opens it,
   whether Floret is running or not. `floret <file.flora>` on the command
   line opens a file on every platform.
+- Web-app patches open as they were, except that a Save SVG node is left
+  out (with a notice): Floret renders everything on the GPU and saves
+  pictures with Export.
 
 ### Export
 
@@ -142,8 +148,6 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   Media Foundation on Windows, Cisco's OpenH264 binary on Linux) come later.
 - Most of the app has been tested under Linux with a software GPU; the Mac
   checklist in `docs/qa-checklist-mac.md` hasn't been run end to end yet.
-- The web app's SVG export is gone: the SaveSVG node still loads but passes
-  its layers through without saving a file.
 - One patch per window, one window.
 
 ---

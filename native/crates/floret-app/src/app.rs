@@ -269,12 +269,17 @@ impl App {
     }
 
     fn open_path(&mut self, path: &Path) {
-        match files::read(path) {
-            Ok(p) => {
+        match files::read_noting(path) {
+            Ok((p, notes)) => {
                 let path = path.canonicalize().unwrap_or_else(|_| path.to_owned());
                 self.recent.push(&path);
-                self.set_patch(p, |rev| Document::file(path, rev));
+                self.set_patch(p, |rev| Document::file(path.clone(), rev));
                 self.welcome.open = false;
+                if !notes.is_empty() {
+                    let text = notes.join(" ");
+                    eprintln!("floret: {}: {text}", path.display());
+                    self.notify(text, false);
+                }
             }
             Err(e) => {
                 if !path.exists() {

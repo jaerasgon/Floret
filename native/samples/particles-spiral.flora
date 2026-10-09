@@ -31,7 +31,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 27,
-        "y": 509
+        "y": 516
       },
       "params": {}
     },
@@ -97,7 +97,7 @@
       "id": "ps_world",
       "defType": "physics/world",
       "position": {
-        "x": 528,
+        "x": 526,
         "y": 8
       },
       "params": {
@@ -119,12 +119,13 @@
     },
     {
       "id": "ps_tHue",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 248,
-        "y": 465
+        "y": 451
       },
       "params": {
+        "op": "multiply",
         "b": 720,
         "valueType": "number"
       },
@@ -136,7 +137,7 @@
       "id": "ps_hsl",
       "defType": "color/color",
       "position": {
-        "x": 517,
+        "x": 515,
         "y": 414
       },
       "params": {
@@ -158,7 +159,7 @@
       "id": "ps_ring",
       "defType": "spread/ring",
       "position": {
-        "x": 528,
+        "x": 526,
         "y": 244
       },
       "params": {
@@ -174,7 +175,7 @@
       "id": "ps_em",
       "defType": "particles/emitter",
       "position": {
-        "x": 796,
+        "x": 794,
         "y": 215
       },
       "params": {
@@ -208,7 +209,7 @@
       "id": "ps_render",
       "defType": "particles/render-as",
       "position": {
-        "x": 1085,
+        "x": 1083,
         "y": 330
       },
       "params": {
@@ -224,7 +225,7 @@
       "id": "ps_trailW",
       "defType": "style/stroke-weight",
       "position": {
-        "x": 824,
+        "x": 813,
         "y": 89
       },
       "params": {
@@ -238,7 +239,7 @@
       "id": "ps_trail",
       "defType": "particles/trail",
       "position": {
-        "x": 1085,
+        "x": 1088,
         "y": 72
       },
       "params": {
@@ -260,7 +261,7 @@
       "id": "ps_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1602,
+        "x": 1609,
         "y": 190
       },
       "params": {
@@ -302,7 +303,7 @@
       "id": "merge_707",
       "defType": "spread/merge",
       "position": {
-        "x": 1338,
+        "x": 1345,
         "y": 190
       },
       "params": {

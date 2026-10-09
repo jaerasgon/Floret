@@ -271,14 +271,262 @@ fn catalogue_entries_agree_with_the_tables() {
                 assert_eq!(superseded_by(legacy).map(|(_, o2)| o2.id), Some(o.id));
             }
             assert_eq!(old.outputs.len(), 1, "{}", o.node);
-            // Statistics read a whole spread; the rest are per-value.
+            // Statistics and the list families read whole spreads; the
+            // rest are per-value.
             let spread_in = old.inputs.iter().any(|p| p.kind == PortKind::Spread);
-            assert_eq!(spread_in, f.ty == "math/statistics", "{}", o.node);
+            assert_eq!(spread_in, reads_spreads(f), "{}", o.node);
         }
         assert!(f.adaptive.iter().all(|a| f.op_by_id(a).is_some()));
     }
     assert_eq!(family("math/math").map(|f| f.ops.len()), Some(28));
     assert!(family("math/lerp").is_none());
+    // Every list family sits in the Lists group; nodes kept separate stay
+    // visible.
+    for f in LIST_FAMILIES {
+        assert_eq!(cat.get(f.ty).unwrap().group, "Lists", "{}", f.ty);
+    }
+    for ty in [
+        "spread/count",
+        "spread/merge",
+        "spread/neighbor",
+        "spread/repeat",
+        "spread/cycle",
+        "spread/cross",
+        "spread/partition",
+    ] {
+        assert!(!cat.get(ty).unwrap().hidden, "{ty} stays in the browser");
+        assert!(superseded_by(ty).is_none());
+    }
+}
+
+/// The families whose ops take whole spreads.
+fn reads_spreads(f: &Family) -> bool {
+    f.ty == "math/statistics" || LIST_FAMILIES.iter().any(|l| l.ty == f.ty)
+}
+
+const LIST_FAMILIES: [&Family; 4] = [&LOOKUP, &SUBLIST, &REORDER, &COMBINE];
+
+/// Whole spreads for a list pin: empty, short, long, mixed types, NaN,
+/// ±0, duplicates, booleans (masks), indices in and out of range.
+fn list_spreads() -> Vec<Vec<Value>> {
+    let mixed = vec![
+        n(3.0),
+        s("a"),
+        Value::Null,
+        Value::Undefined,
+        Value::Bool(true),
+        Value::Vec2(Vec2 { x: 1.0, y: -2.0 }),
+        Value::Color(Color {
+            r: 0.1,
+            g: 0.2,
+            b: 0.3,
+            a: 1.0,
+        }),
+        n(f64::NAN),
+        n(-0.0),
+        list(&[n(1.0), n(2.0)]),
+        obj(&[("x", n(1.0))]),
+    ];
+    vec![
+        vec![],
+        vec![n(7.0)],
+        vec![n(5.0), n(1.0), n(4.0), n(2.0), n(3.0)],
+        (0..37).map(|i| n(f64::from(i * 13 % 17) - 8.0)).collect(),
+        mixed,
+        vec![
+            n(1.0),
+            n(1.0),
+            n(2.0),
+            n(f64::NAN),
+            n(f64::NAN),
+            n(-0.0),
+            n(0.0),
+            s("1"),
+            Value::Null,
+            Value::Null,
+        ],
+        vec![n(f64::INFINITY), n(f64::NEG_INFINITY), n(f64::NAN), n(0.5)],
+        vec![
+            Value::Bool(true),
+            Value::Bool(false),
+            Value::Bool(true),
+            n(0.0),
+            s(""),
+            s("x"),
+        ],
+        vec![
+            n(-1.0),
+            n(10.0),
+            n(2.5),
+            n(-6.0),
+            n(0.0),
+            n(f64::NAN),
+            s("2"),
+        ],
+        vec![s("b"), s("a"), s("c"), s("a")],
+    ]
+}
+
+/// Values for a single-value list pin (index, count, shift, flag, the item
+/// to add or find), each alone, plus empty and multi-element spreads (the
+/// ops read slot 0).
+fn list_singles() -> Vec<Vec<Value>> {
+    let mut out: Vec<Vec<Value>> = [
+        n(0.0),
+        n(1.0),
+        n(2.0),
+        n(3.0),
+        n(-1.0),
+        n(-3.0),
+        n(4.5),
+        n(-0.5),
+        n(100.0),
+        n(-100.0),
+        n(f64::NAN),
+        n(f64::INFINITY),
+        n(f64::NEG_INFINITY),
+        n(-0.0),
+        s("2"),
+        s("a"),
+        Value::Null,
+        Value::Undefined,
+        Value::Bool(true),
+        Value::Bool(false),
+        Value::Vec2(Vec2 { x: 1.0, y: -2.0 }),
+    ]
+    .into_iter()
+    .map(|v| vec![v])
+    .collect();
+    out.push(vec![]);
+    out.push(vec![n(2.0), n(9.0)]);
+    out
+}
+
+/// Each list op, against the node it supersedes, over every combination
+/// of [`list_spreads`] / [`list_singles`] on its pins (the full product:
+/// every op has fewer than 30 000; sampled beyond that).
+#[test]
+fn list_ops_match_the_nodes_they_supersede() {
+    let cat = Catalogue::builtin();
+    let mut checked = 0usize;
+    for f in LIST_FAMILIES {
+        for o in f.ops {
+            let legacy = o.legacy().expect("list ops are all legacy nodes");
+            let pins = cat.resolved_inputs(cat.get(legacy).unwrap(), &Params::new());
+            let pools: Vec<Vec<Vec<Value>>> = pins
+                .iter()
+                .map(|p| match p.kind {
+                    PortKind::Spread => list_spreads(),
+                    _ => list_singles(),
+                })
+                .collect();
+            let total: usize = pools.iter().map(Vec::len).product();
+            let step = total.div_ceil(30_000).max(1);
+            let mut fam = node(f.ty, json!({ f.param: o.id }));
+            let mut old = node(legacy, json!({}));
+            let mut i = 0;
+            while i < total {
+                let mut rest = i;
+                let args: Vec<Vec<Value>> = pools
+                    .iter()
+                    .map(|pool| {
+                        let v = pool[rest % pool.len()].clone();
+                        rest /= pool.len();
+                        v
+                    })
+                    .collect();
+                match (fam.eval(args.clone()), old.eval(args.clone())) {
+                    (Ok(a), Ok(b)) => assert_eq!(
+                        canon(&a),
+                        canon(&b),
+                        "{} {} vs {legacy} on {args:?}",
+                        f.ty,
+                        o.id
+                    ),
+                    (Err(a), Err(b)) => assert_eq!(a, b),
+                    (a, b) => panic!("{} {}: {a:?} vs {b:?} on {args:?}", f.ty, o.id),
+                }
+                checked += 1;
+                i += step;
+            }
+        }
+    }
+    assert!(checked > 25_000, "only {checked} cases");
+}
+
+/// Out-of-range and degenerate cases give what the old nodes documented.
+#[test]
+fn list_ops_edge_cases() {
+    let eval = |ty: &str, op: &str, args: Vec<Vec<Value>>| -> String {
+        let f = family(ty).unwrap();
+        canon(&node(ty, json!({ f.param: op })).eval(args).unwrap())
+    };
+    let abc = vec![s("a"), s("b"), s("c")];
+    // Item At: negative from the end, out of range and empty → null.
+    assert_eq!(
+        eval("spread/lookup", "at", vec![abc.clone(), vec![n(-1.0)]]),
+        canon(&[vec![s("c")]])
+    );
+    assert_eq!(
+        eval("spread/lookup", "at", vec![abc.clone(), vec![n(3.0)]]),
+        canon(&[vec![Value::Null]])
+    );
+    assert_eq!(
+        eval("spread/lookup", "at", vec![vec![], vec![n(0.0)]]),
+        canon(&[vec![Value::Null]])
+    );
+    // Items At wraps.
+    assert_eq!(
+        eval(
+            "spread/lookup",
+            "pick",
+            vec![abc.clone(), vec![n(4.0), n(-1.0)]]
+        ),
+        canon(&[vec![s("b"), s("c")]])
+    );
+    assert_eq!(
+        eval("spread/lookup", "index-of", vec![abc.clone(), vec![s("z")]]),
+        canon(&[vec![n(-1.0)]])
+    );
+    // Take 0 and Skip past the end are empty; Take NaN too.
+    for (op, k) in [("take", 0.0), ("skip", 9.0), ("take", f64::NAN)] {
+        assert_eq!(
+            eval("spread/sublist", op, vec![abc.clone(), vec![n(k)]]),
+            canon(&[Vec::<Value>::new()])
+        );
+    }
+    assert_eq!(
+        eval(
+            "spread/sublist",
+            "unique",
+            vec![vec![n(f64::NAN), n(f64::NAN), n(-0.0), n(0.0)]]
+        ),
+        canon(&[vec![n(f64::NAN), n(-0.0)]])
+    );
+    assert_eq!(
+        eval("spread/reorder", "rotate", vec![abc.clone(), vec![n(-1.0)]]),
+        canon(&[vec![s("b"), s("c"), s("a")]])
+    );
+    assert_eq!(
+        eval("spread/reorder", "reverse", vec![vec![]]),
+        canon(&[Vec::<Value>::new()])
+    );
+    assert_eq!(
+        eval(
+            "spread/combine",
+            "insert",
+            vec![abc.clone(), vec![n(99.0)], vec![s("z")]]
+        ),
+        canon(&[vec![s("a"), s("b"), s("c"), s("z")]])
+    );
+    // A length JavaScript can't allocate is the same error as before.
+    let mut inject = node("spread/combine", json!({"op": "inject"}));
+    assert_eq!(
+        inject
+            .eval(vec![abc, vec![s("m")], vec![n(f64::INFINITY)]])
+            .unwrap_err(),
+        "RangeError: Invalid array length"
+    );
 }
 
 #[test]
@@ -333,6 +581,19 @@ fn patches_compute_the_same_through_the_compiler() {
     let pv = json!({"a": 7, "b": -3, "x": 0.25, "y": 2, "x1": 1, "y1": 1, "x2": 4, "y2": 5,
                     "v": {"x": 3, "y": 4}, "angle": 0.5, "mag": 2, "max": 1.5, "s": 2,
                     "normal": {"x": 0, "y": 1}, "in": "12.6", "deg": 90});
+    // List families: their spread pins take one-element portValues.
+    let pv = {
+        let mut pv = pv;
+        let extra = json!({"spread": 4, "index": 0, "count": 2, "start": 0, "end": 0,
+                           "shift": 1, "i": 0, "j": 1, "tail": 9, "head": 8, "value": 4,
+                           "descending": true, "source": 5, "insertion": 6,
+                           "replacement": 7, "marks": 1, "keep": true, "keys": 3,
+                           "indices": 0, "flat": 2, "groupSize": 1});
+        pv.as_object_mut()
+            .unwrap()
+            .extend(extra.as_object().unwrap().clone());
+        pv
+    };
     for f in FAMILIES.iter().filter(|f| f.ty != "math/statistics") {
         for o in f.ops {
             let Some(legacy) = o.legacy() else { continue };

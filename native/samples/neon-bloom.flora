@@ -30,7 +30,7 @@
       "id": "nb_bg_fill",
       "defType": "style/fill",
       "position": {
-        "x": 503,
+        "x": 506,
         "y": 0
       },
       "params": {
@@ -54,7 +54,7 @@
       "id": "nb_bg",
       "defType": "draw/rect",
       "position": {
-        "x": 774,
+        "x": 777,
         "y": 14
       },
       "params": {
@@ -71,7 +71,7 @@
       "defType": "motion/lfo",
       "position": {
         "x": 0,
-        "y": 249
+        "y": 253
       },
       "params": {
         "shape": "saw",
@@ -88,18 +88,20 @@
     },
     {
       "id": "nb_turn_back",
-      "defType": "math/neg",
+      "defType": "math/math",
       "position": {
-        "x": 271,
-        "y": 305
+        "x": 232,
+        "y": 292
       },
-      "params": {}
+      "params": {
+        "op": "negate"
+      }
     },
     {
       "id": "nb_outer",
       "defType": "spread/ring",
       "position": {
-        "x": 508,
+        "x": 510,
         "y": 126
       },
       "params": {
@@ -115,7 +117,7 @@
       "id": "nb_inner",
       "defType": "spread/ring",
       "position": {
-        "x": 509,
+        "x": 510,
         "y": 296
       },
       "params": {
@@ -132,7 +134,7 @@
       "defType": "color/palette",
       "position": {
         "x": 223,
-        "y": 414
+        "y": 418
       },
       "params": {
         "stopCount": 5,
@@ -147,8 +149,8 @@
       "id": "nb_nofill",
       "defType": "style/no-fill",
       "position": {
-        "x": 17,
-        "y": 672
+        "x": 15,
+        "y": 676
       },
       "params": {}
     },
@@ -156,8 +158,8 @@
       "id": "nb_weight",
       "defType": "style/stroke-weight",
       "position": {
-        "x": 249,
-        "y": 650
+        "x": 240,
+        "y": 654
       },
       "params": {
         "w": 6
@@ -170,7 +172,7 @@
       "id": "nb_grad",
       "defType": "style/gradient",
       "position": {
-        "x": 495,
+        "x": 498,
         "y": 466
       },
       "params": {
@@ -200,7 +202,7 @@
       "id": "nb_outer_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 783,
+        "x": 780,
         "y": 206
       },
       "params": {}
@@ -209,7 +211,7 @@
       "id": "nb_inner_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 783,
+        "x": 780,
         "y": 376
       },
       "params": {}
@@ -218,7 +220,7 @@
       "id": "nb_core",
       "defType": "draw/ellipse",
       "position": {
-        "x": 774,
+        "x": 777,
         "y": 546
       },
       "params": {
@@ -234,7 +236,7 @@
       "id": "nb_group",
       "defType": "transform/group",
       "position": {
-        "x": 1015,
+        "x": 1018,
         "y": 252
       },
       "params": {
@@ -245,7 +247,7 @@
       "id": "nb_bloom",
       "defType": "gpu/effect",
       "position": {
-        "x": 1279,
+        "x": 1282,
         "y": 230
       },
       "params": {
@@ -265,8 +267,8 @@
       "id": "nb_chroma",
       "defType": "gpu/effect",
       "position": {
-        "x": 1544,
-        "y": 208
+        "x": 1547,
+        "y": 207
       },
       "params": {
         "mode": "chromatic",
@@ -281,7 +283,7 @@
       "id": "nb_grain",
       "defType": "gpu/effect",
       "position": {
-        "x": 1809,
+        "x": 1812,
         "y": 185
       },
       "params": {
@@ -301,7 +303,7 @@
       "id": "nb_vignette",
       "defType": "gpu/effect",
       "position": {
-        "x": 2074,
+        "x": 2077,
         "y": 163
       },
       "params": {
@@ -333,7 +335,7 @@
       "id": "nb_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2339,
+        "x": 2342,
         "y": 163
       },
       "params": {

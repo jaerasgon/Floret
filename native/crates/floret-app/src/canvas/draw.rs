@@ -45,7 +45,19 @@ pub fn mix(a: Color32, b: Color32, t: f32) -> Color32 {
     Color32::from_rgb(l(a.r(), b.r()), l(a.g(), b.g()), l(a.b(), b.b()))
 }
 
-pub fn pin(p: &Painter, g: &PinGeom, look: PinLook, pulse: f32, z: f32) {
+/// How a pin sits this frame, apart from the wire-drag looks.
+#[derive(Clone, Copy, Default)]
+pub struct PinState {
+    /// A wire is plugged in.
+    pub connected: bool,
+    /// Under the pointer.
+    pub hovered: bool,
+}
+
+/// A pin: a filled dot when wired, a hollow ring in its type colour when
+/// not; a touch bigger under the pointer. While a wire is dragged, the
+/// pins it can reach light up and the rest dim.
+pub fn pin(p: &Painter, g: &PinGeom, look: PinLook, st: PinState, pulse: f32, z: f32) {
     let pos = g.pos;
     let mut color = if g.spread {
         *SPREAD_PIN
@@ -72,7 +84,14 @@ pub fn pin(p: &Painter, g: &PinGeom, look: PinLook, pulse: f32, z: f32) {
             p.circle(pos, (PIN_R + 1.0) * z, GOLD, Stroke::new(1.5, BG_2));
         }
         PinLook::Normal => {
-            p.circle(pos, PIN_R * z, color, Stroke::new(1.5, BG_2));
+            let r = PIN_R * z + if st.hovered { 1.0 } else { 0.0 };
+            if st.connected {
+                p.circle(pos, r, color, Stroke::new(1.5, BG_2));
+            } else {
+                // The ring's outer edge where a wired dot's fill ends.
+                let w = (1.75 * z).clamp(1.0, 3.0);
+                p.circle(pos, r - w / 2.0, BG_2, Stroke::new(w, color));
+            }
         }
     }
 }
@@ -235,7 +254,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
         Look::Comment => return super::custom::draw_comment(p, b, &st.body, z),
         _ => {}
     }
-    let r = CornerRadius::same((6.0 * z).min(255.0) as u8);
+    let r = super::custom::radius(z);
     let hovered = st.body.hover.is_some_and(|h| b.rect.contains(h));
     super::custom::lift(p, b.rect, hovered, z);
     let accent = if b.look == Look::Collapsed {
@@ -245,27 +264,32 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     };
     if st.selected {
         // Soft gold glow (the web app's --glow-gold) that slowly breathes
-        // (`node-breathe`), not a second ring.
+        // (`node-breathe`) around the crisp gold border.
         let glow = egui::Shadow {
             offset: [0, 0],
             blur: (14.0 + 6.0 * st.breathe) as u8,
             spread: 0,
-            color: GOLD.gamma_multiply(0.22 + 0.1 * st.breathe),
+            color: GOLD.gamma_multiply(0.12 + 0.06 * st.breathe),
         };
         p.add(glow.as_shape(b.rect, r));
     }
     let border = if st.selected {
-        GOLD.gamma_multiply(0.85)
+        Stroke::new(1.5, *GOLD)
     } else if b.warning.is_some() {
-        DANGER.gamma_multiply(0.6)
+        Stroke::new(1.0, DANGER.gamma_multiply(0.6))
     } else if hovered {
         // The hover ring takes the category accent.
-        mix(accent, *BORDER, 0.55)
+        Stroke::new(1.0, mix(accent, *BORDER, 0.55))
     } else {
-        *BORDER
+        Stroke::new(1.0, *BORDER)
     };
-    faceplate(p, b, z);
-    p.rect_stroke(b.rect, r, Stroke::new(1.0, border), StrokeKind::Inside);
+    // A flat card: header and rows share the fill, split by a hairline.
+    p.rect_filled(b.rect, r, *BG_2);
+    if z > 0.2 {
+        let y = p.round_to_pixel_center(b.rect.top() + HEADER_H * z);
+        p.hline(b.rect.x_range(), y, Stroke::new(1.0, *BORDER));
+    }
+    p.rect_stroke(b.rect, r, border, StrokeKind::Inside);
     let header = Rect::from_min_size(b.rect.min, vec2(b.rect.width(), HEADER_H * z));
     p.circle_filled(header.left_center() + vec2(14.0 * z, 0.0), 3.2 * z, accent);
     if z > 0.25 {
@@ -278,7 +302,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
         let font = if b.math {
             FontId::monospace(13.0 * z)
         } else {
-            FontId::proportional(12.5 * z)
+            theme::medium(12.5 * z)
         };
         let galley = p.layout_no_wrap(title, font, *FG_0);
         let mut x = header.left() + TITLE_X * z + galley.size().x + 6.0 * z;
@@ -333,13 +357,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     let font = FontId::proportional(LABEL_FONT * z);
     for row in &b.rows {
         if let Some(label) = &row.label {
-            let color = if row.expanded {
-                *GOLD_TEXT
-            } else if row.toggle.is_some() {
-                *FG_1
-            } else {
-                mix(*FG_1, *FG_2, 0.6)
-            };
+            let color = if row.expanded { *GOLD_TEXT } else { *FG_1 };
             let g = p.layout_no_wrap(label.clone(), font.clone(), color);
             let mut x = b.rect.left() + 10.0 * z;
             let w = g.size().x;
@@ -401,99 +419,6 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
 
 /// Where a node's title starts (after the category lamp), canvas units.
 pub const TITLE_X: f32 = 24.0;
-
-/// The "modular rack" face (`.node`, `.node-header`): an anodised plate
-/// that catches light from above, an engraved name-plate strip across
-/// the top fastened with two screws. Math chips get a plain dashed seam
-/// instead of a plate.
-fn faceplate(p: &Painter, b: &NodeBox, z: f32) {
-    let rad = 6.0 * z;
-    let base = *BG_2;
-    p.add(gradient_rrect(b.rect, [rad; 4], |t| {
-        if t < 0.42 {
-            mix(base, Color32::WHITE, 1.0 - 0.05 * (1.0 - t / 0.42))
-        } else {
-            mix(base, Color32::BLACK, 1.0 - 0.10 * (t - 0.42) / 0.58)
-        }
-    }));
-    let header = Rect::from_min_size(b.rect.min, vec2(b.rect.width(), HEADER_H * z));
-    let seam_y = header.bottom();
-    if b.math {
-        p.extend(egui::Shape::dashed_line(
-            &[pos2(header.left(), seam_y), pos2(header.right(), seam_y)],
-            Stroke::new(1.0, BORDER.gamma_multiply(0.6)),
-            3.0 * z,
-            2.0 * z,
-        ));
-        return;
-    }
-    let plate = header.shrink(1.0);
-    let (top, bottom) = (
-        mix(*BG_3, Color32::WHITE, 0.96),
-        mix(*BG_3, Color32::BLACK, 0.94),
-    );
-    p.add(gradient_rrect(
-        plate,
-        [rad - 1.0, rad - 1.0, 0.0, 0.0],
-        |t| mix(bottom, top, t),
-    ));
-    // Inset seam at the plate's base: a dark line over a faint lip.
-    p.line_segment(
-        [
-            pos2(header.left(), seam_y - 0.5),
-            pos2(header.right(), seam_y - 0.5),
-        ],
-        Stroke::new(1.0, Color32::from_black_alpha(86)),
-    );
-    p.line_segment(
-        [pos2(header.left(), seam_y), pos2(header.right(), seam_y)],
-        Stroke::new(1.0, BORDER.gamma_multiply(0.7)),
-    );
-    if z > 0.35 {
-        for x in [header.left() + 6.0 * z, header.right() - 6.0 * z] {
-            screw(p, pos2(x, header.center().y), 2.0 * z);
-        }
-    }
-}
-
-/// A machined fastener (`--rack-screw`).
-fn screw(p: &Painter, c: Pos2, r: f32) {
-    p.circle_filled(c + vec2(0.0, r * 0.5), r, Color32::from_black_alpha(110));
-    p.circle_filled(c, r, mix(*BG_0, Color32::BLACK, 0.82));
-    p.circle_filled(c - vec2(r, r) * 0.16, r * 0.7, mix(*FG_1, *BG_3, 0.58));
-}
-
-/// A rounded rect filled with a vertical gradient: `color(t)` for t from
-/// 0 (top) to 1 (bottom). Corner radii are nw, ne, se, sw.
-pub fn gradient_rrect(r: Rect, radii: [f32; 4], color: impl Fn(f32) -> Color32) -> egui::Shape {
-    let mut mesh = egui::Mesh::default();
-    if !r.is_positive() {
-        return egui::Shape::Noop;
-    }
-    let max = r.width().min(r.height()) / 2.0;
-    let rad = radii.map(|x| x.clamp(0.0, max));
-    let t_of = |y: f32| ((y - r.top()) / r.height()).clamp(0.0, 1.0);
-    mesh.colored_vertex(r.center(), color(t_of(r.center().y)));
-    // Corner centres and their start angles, clockwise from the nw corner.
-    let corners = [
-        (pos2(r.left() + rad[0], r.top() + rad[0]), rad[0], 180.0_f32),
-        (pos2(r.right() - rad[1], r.top() + rad[1]), rad[1], 270.0),
-        (pos2(r.right() - rad[2], r.bottom() - rad[2]), rad[2], 0.0),
-        (pos2(r.left() + rad[3], r.bottom() - rad[3]), rad[3], 90.0),
-    ];
-    for (c, cr, a0) in corners {
-        for i in 0..=4 {
-            let a = (a0 + 22.5 * i as f32).to_radians();
-            let p = c + vec2(a.cos(), a.sin()) * cr;
-            mesh.colored_vertex(p, color(t_of(p.y)));
-        }
-    }
-    let n = mesh.vertices.len() as u32 - 1;
-    for i in 1..=n {
-        mesh.add_triangle(0, i, if i == n { 1 } else { i + 1 });
-    }
-    egui::Shape::mesh(mesh)
-}
 
 pub fn field(p: &Painter, f: &Field, z: f32, hover: Option<Pos2>) {
     let r = f.rect;

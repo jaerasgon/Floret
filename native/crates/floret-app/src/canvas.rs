@@ -1851,10 +1851,34 @@ pub fn show(
             }
         }
     };
+    // Wired pins (node, side, port), region frame ports included: filled
+    // dots; the rest are hollow rings.
+    let connected: HashSet<(&str, Side, &str)> = patch
+        .edges
+        .iter()
+        .flat_map(|e| {
+            [
+                (e.source.as_str(), e.source_handle.as_deref()),
+                (e.target.as_str(), e.target_handle.as_deref()),
+            ]
+        })
+        .filter_map(|(node, h)| ports::split_handle(h).map(|(side, port)| (node, side, port)))
+        .collect();
+    let hovered_pin = match (&view.gesture, pointer) {
+        (Gesture::None, Some(p)) if resp.hovered() => hits.pin(p, PIN_HIT, None),
+        _ => None,
+    };
+    let pin_state = |node: &str, g: &geom::PinGeom| draw::PinState {
+        connected: connected.contains(&(node, g.side, g.port.as_str())),
+        hovered: hovered_pin
+            .as_ref()
+            .is_some_and(|h| h.node == node && h.side == g.side && h.port == g.port),
+    };
     let pulse = 0.5 + 0.5 * (flow_t * std::f32::consts::TAU / 1.2).sin();
     for id in &frame_ids {
         for g in &boxes[id.as_str()].pins {
-            draw::pin(&painter, g, pin_look(id, g.side, &g.port), pulse, z);
+            let look = pin_look(id, g.side, &g.port);
+            draw::pin(&painter, g, look, pin_state(id, g), pulse, z);
         }
     }
     let editing_field = match &view.editing {
@@ -1937,7 +1961,8 @@ pub fn show(
             z,
         );
         for g in &b.pins {
-            draw::pin(&np, g, pin_look(id, g.side, &g.port), pulse, z);
+            let look = pin_look(id, g.side, &g.port);
+            draw::pin(&np, g, look, pin_state(id, g), pulse, z);
         }
         if let (Some(first), Some((_, dy, scale))) = (first, settle) {
             let last = painter.add(Shape::Noop);

@@ -204,7 +204,7 @@ fn sample_nodes_fit_their_text() {
             let title = if b.math {
                 egui::FontId::monospace(13.0)
             } else {
-                egui::FontId::proportional(12.5)
+                crate::theme::medium(12.5)
             };
             let mut head = draw::TITLE_X + w(&b.label, title);
             if let Some(slot) = &b.slot {

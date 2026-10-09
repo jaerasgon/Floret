@@ -497,11 +497,16 @@ fn file_body(n: &PatchNode, svg: bool, top: f32, z: f32, b: &mut NodeBox) {
 fn slots(cx: &Ctx, n: &PatchNode, s: Slots, b: &mut NodeBox) {
     let z = cx.zoom;
     let count = widgets::slot_count(n, s);
-    let label_w = if b.math {
-        cx.text_w(&b.label, 13.0)
+    let font = if b.math {
+        FontId::monospace(13.0)
     } else {
-        cx.text_w(&b.label, 12.5)
+        theme::medium(12.5)
     };
+    let label_w = cx
+        .painter
+        .layout_no_wrap(b.label.clone(), font, Color32::WHITE)
+        .size()
+        .x;
     let x = 22.0 + label_w + 8.0;
     let y = (HEADER_H - 16.0) / 2.0;
     b.notes.push(Note {
@@ -1009,9 +1014,9 @@ pub fn draw_probe(p: &Painter, b: &NodeBox, st: &BodyState, z: f32) {
     } else {
         Color32::from_rgba_unmultiplied(16, 19, 24, 184)
     };
-    p.rect_filled(r, 5.0 * z, card);
+    p.rect_filled(r, radius(z), card);
     if st.selected {
-        p.rect_stroke(r, 5.0 * z, Stroke::new(1.0, edge), StrokeKind::Inside);
+        p.rect_stroke(r, radius(z), Stroke::new(1.0, edge), StrokeKind::Inside);
     } else {
         dashed_rect(p, r.shrink(0.5), Stroke::new(1.0, edge), z);
     }
@@ -1142,13 +1147,13 @@ pub fn draw_comment(p: &Painter, b: &NodeBox, st: &BodyState, z: f32) {
     if st.selected {
         p.rect(
             r,
-            4.0 * z,
+            radius(z),
             COMMENT.gamma_multiply(0.12),
             Stroke::new(1.0, COMMENT.gamma_multiply(0.7)),
             StrokeKind::Inside,
         );
     } else {
-        p.rect_filled(r, 4.0 * z, COMMENT.gamma_multiply(0.08));
+        p.rect_filled(r, radius(z), COMMENT.gamma_multiply(0.08));
         dashed_rect(
             p,
             r.shrink(0.5),
@@ -1208,18 +1213,19 @@ fn dashed_rect(p: &Painter, r: Rect, stroke: Stroke, z: f32) {
     ));
 }
 
-/// Card corner radius for the TS rack nodes, clamped for egui.
+/// Card corner radius for nodes, probes and comments, clamped for egui.
 pub fn radius(z: f32) -> CornerRadius {
     CornerRadius::same((6.0 * z).min(255.0) as u8)
 }
 
-/// Hover lift: a soft drop shadow under a node (stronger when hovered).
+/// Hover lift: a soft drop shadow under a node (a little deeper when
+/// hovered).
 pub fn lift(p: &Painter, r: Rect, hovered: bool, z: f32) {
     let shadow = eframe::egui::Shadow {
-        offset: [0, if hovered { 4 } else { 2 }],
-        blur: if hovered { 14 } else { 8 },
+        offset: [0, if hovered { 3 } else { 1 }],
+        blur: if hovered { 12 } else { 6 },
         spread: 0,
-        color: Color32::from_black_alpha(if hovered { 90 } else { 60 }),
+        color: Color32::from_black_alpha(if hovered { 64 } else { 36 }),
     };
     p.add(shadow.as_shape(r, radius(z)));
 }

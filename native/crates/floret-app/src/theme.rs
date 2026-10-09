@@ -111,6 +111,11 @@ pub const SPREAD_PIN: Token = Token::new(0xf0d800, 0xa08600);
 
 /// Wire / pin colour per port type (light: darker, ≥ 3:1 on the canvas).
 pub fn port_color(ty: &str) -> Color32 {
+    *port_token(ty)
+}
+
+/// [`port_color`] in both themes.
+fn port_token(ty: &str) -> Token {
     let (dark, light) = match ty {
         "number" => (0xd8d4cc, 0x7a7568),
         "vec2" => (0xffd47c, 0x9a7316),
@@ -126,7 +131,7 @@ pub fn port_color(ty: &str) -> Color32 {
         "particle" => (0xb890ff, 0x8a5fd6),
         _ => (0x888c95, 0x6b6f78),
     };
-    *Token::new(dark, light)
+    Token::new(dark, light)
 }
 
 /// Accent for a node browser group (or, for catalogues without groups, a
@@ -563,5 +568,29 @@ mod tests {
             }
         }
         LIGHT.store(false, Ordering::Relaxed);
+    }
+
+    /// Node cards: the title and row labels on the flat card, and the
+    /// pins (an unwired pin is a ring in its type colour on the card).
+    #[test]
+    fn node_cards_are_legible_in_both_themes() {
+        let types = [
+            "number", "vec2", "color", "layer", "boolean", "style", "audio", "image", "world",
+            "force", "collider", "particle", "other",
+        ];
+        let themes: [fn(Token) -> Color32; 2] = [|t| t.dark, |t| t.light];
+        for t in themes {
+            let card = t(BG_2);
+            for fg in [FG_0, FG_1, GOLD_TEXT] {
+                let c = contrast(t(fg), card);
+                assert!(c >= 4.5, "{fg:?} on a node: {c:.2}");
+            }
+            for ty in types {
+                let c = contrast(t(port_token(ty)), card);
+                assert!(c >= 3.0, "{ty} pin: {c:.2}");
+            }
+            let c = contrast(t(SPREAD_PIN), card);
+            assert!(c >= 3.0, "spread pin: {c:.2}");
+        }
     }
 }

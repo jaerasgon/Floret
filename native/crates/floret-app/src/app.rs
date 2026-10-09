@@ -123,6 +123,14 @@ impl App {
         let mut view = canvas::View::default();
         apply_editor_prefs(&mut view, &prefs);
         let scripted = launch.sample.is_some();
+        // Files Finder sends while we run: bring the window forward to
+        // open them (`ui` takes them from the queue).
+        let ctx = cc.egui_ctx.clone();
+        floret_open_files::set_waker(move || {
+            ctx.send_viewport_cmd(egui::ViewportCommand::Minimized(false));
+            ctx.send_viewport_cmd(egui::ViewportCommand::Focus);
+            ctx.request_repaint();
+        });
         let mut app = App {
             patch: empty_patch(),
             doc: Document::untitled(0),
@@ -175,8 +183,8 @@ impl App {
         app
     }
 
-    /// The first document: a file from the command line, `FLORET_SAMPLE`,
-    /// else the startup preference.
+    /// The first document: a file from the command line or the one Finder
+    /// launched us to open, `FLORET_SAMPLE`, else the startup preference.
     fn startup(&mut self, launch: Launch) {
         self.new_patch();
         if let Some(id) = &launch.sample {
@@ -184,7 +192,9 @@ impl App {
             self.load_sample(i);
             return;
         }
-        if let Some(path) = launch.file {
+        // The newest one when Finder sends several (one patch at a time).
+        let file = launch.file.or_else(|| floret_open_files::take().pop());
+        if let Some(path) = file {
             self.open_path(&path);
         } else {
             match self.prefs.startup_patch {
@@ -944,6 +954,13 @@ impl eframe::App for App {
         }
         for c in std::mem::take(&mut self.commands) {
             self.run(&ctx, c);
+        }
+        // Files from Finder (double-click, Open With), like File → Open:
+        // asks about unsaved changes first; the newest when several came.
+        if self.confirm.is_none() {
+            if let Some(path) = floret_open_files::take().pop() {
+                self.request(&ctx, After::Open(Some(path)));
+            }
         }
         // `?` toggles the shortcuts overlay; Esc closes it before the
         // canvas sees the key.

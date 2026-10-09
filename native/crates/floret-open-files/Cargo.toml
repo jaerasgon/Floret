@@ -1,0 +1,15 @@
+[package]
+name = "floret-open-files"
+description = "Patch files the operating system asks Floret to open (Finder double-click / Open With on macOS)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+rust-version.workspace = true
+
+# Only Objective-C runtime crates (already in the tree through floret-video
+# and winit), so `cargo check --target aarch64-apple-darwin -p
+# floret-open-files` works without a macOS SDK.
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSAppleEventDescriptor", "NSAppleEventManager", "NSNotification", "NSObject", "NSString", "NSURL"] }

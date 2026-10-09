@@ -19,6 +19,8 @@ floret-engine = { path = "../floret-engine" }
 floret-render = { path = "../floret-render" }
 floret-media = { path = "../floret-media" }
 floret-input = { path = "../floret-input" }
+# Finder double-click / Open With (macOS open-documents events).
+floret-open-files = { path = "../floret-open-files" }
 # H.264 on macOS through Apple's licensed codecs only; OpenH264 elsewhere
 # (see floret-video's src/export.rs).
 floret-video = { path = "../floret-video", default-features = false }

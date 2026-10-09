@@ -1,6 +1,8 @@
 //! Floret desktop app.
 //!
 //! `floret [file.flora]` opens the app, with a patch file if one is given.
+//! On macOS, Finder passes files (double-click, Open With) as Apple Events
+//! instead, while launching and later; `floret_open_files` catches those.
 //! The window and everything in it is [`app::App`]; the built-in samples
 //! are embedded at build time ([`SAMPLES`]).
 //!
@@ -54,6 +56,8 @@ include!(concat!(env!("OUT_DIR"), "/samples.rs"));
 
 fn main() -> eframe::Result {
     crash::install_hook();
+    // Before eframe creates NSApp, so the file that launched us is caught.
+    floret_open_files::install();
     let launch = app::Launch {
         file: files::path_from_args(std::env::args_os()),
         sample: std::env::var("FLORET_SAMPLE").ok(),

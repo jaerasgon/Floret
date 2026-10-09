@@ -20,5 +20,44 @@
 	<string>Floret uses the camera for the Camera and Landmarks nodes in your patches. Video stays on this computer.</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<!-- .flora patches: Finder shows them as Floret documents and opens
+	     them in Floret on double-click (the app handles the resulting
+	     open-documents Apple Event, see the floret-open-files crate). -->
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Floret Patch</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>app.floret.patch</string>
+			</array>
+		</dict>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>app.floret.patch</string>
+			<key>UTTypeDescription</key>
+			<string>Floret Patch</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.json</string>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>flora</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>

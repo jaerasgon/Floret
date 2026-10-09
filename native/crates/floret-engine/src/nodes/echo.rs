@@ -293,6 +293,7 @@ fn echo(_: &NodeInit) -> Box<dyn NodeImpl> {
             input: as_layer(inputs.first().map(|s| &s[..])),
             map: None,
             history,
+            lut: None,
         };
         Ok(vec![one(Value::Scene(Arc::new(SceneNode::Shader(
             Arc::new(shape),

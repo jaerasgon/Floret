@@ -26,7 +26,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 42,
-        "y": 229
+        "y": 162
       },
       "params": {}
     },
@@ -35,7 +35,7 @@
       "defType": "time/delta",
       "position": {
         "x": 360,
-        "y": 828
+        "y": 761
       },
       "params": {}
     },
@@ -44,7 +44,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 37,
-        "y": 355
+        "y": 288
       },
       "params": {}
     },
@@ -53,7 +53,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 361,
-        "y": 576
+        "y": 509
       },
       "params": {}
     },
@@ -62,7 +62,7 @@
       "defType": "input/keyboard",
       "position": {
         "x": 0,
-        "y": 707
+        "y": 640
       },
       "params": {
         "mode": "keys"
@@ -76,7 +76,7 @@
       "defType": "io/bang",
       "position": {
         "x": 0,
-        "y": 1096
+        "y": 1029
       },
       "params": {
         "label": "New tune"
@@ -87,7 +87,7 @@
       "defType": "math/expression",
       "position": {
         "x": 319,
-        "y": 1058
+        "y": 991
       },
       "params": {
         "expr": "b || (hit && k == 0)"
@@ -98,7 +98,7 @@
       "defType": "math/expression",
       "position": {
         "x": 319,
-        "y": 412
+        "y": 345
       },
       "params": {
         "expr": "hit && k == 1 ? 1 : 0"
@@ -109,7 +109,7 @@
       "defType": "io/slider",
       "position": {
         "x": 319,
-        "y": 932
+        "y": 865
       },
       "params": {
         "value": 0.35,
@@ -123,7 +123,7 @@
       "defType": "state/value",
       "position": {
         "x": 360,
-        "y": 1244
+        "y": 1177
       },
       "params": {},
       "portValues": {
@@ -135,7 +135,7 @@
       "defType": "math/expression",
       "position": {
         "x": 721,
-        "y": 949
+        "y": 883
       },
       "params": {
         "expr": "a + min(d, 0.1) * s"
@@ -146,7 +146,7 @@
       "defType": "spread/range",
       "position": {
         "x": 736,
-        "y": 681
+        "y": 615
       },
       "params": {},
       "portValues": {
@@ -158,7 +158,7 @@
       "defType": "state/value",
       "position": {
         "x": 360,
-        "y": 702
+        "y": 635
       },
       "params": {},
       "portValues": {
@@ -170,7 +170,7 @@
       "defType": "math/expression",
       "position": {
         "x": 721,
-        "y": 785
+        "y": 719
       },
       "params": {
         "expr": "n ? fract(t * 0.137) * 100 : s"
@@ -181,7 +181,7 @@
       "defType": "math/expression",
       "position": {
         "x": 1145,
-        "y": 716
+        "y": 651
       },
       "params": {
         "expr": "vec2(k / 64 * tau, round(noise(k * 0.21, s) * 21 - 3))"
@@ -192,7 +192,7 @@
       "defType": "math/expression",
       "position": {
         "x": 1428,
-        "y": 700
+        "y": 637
       },
       "params": {
         "expr": "noise(k * 0.77 + 9.1, s * 1.3) > 0.47 && q.y >= 0 && q.y < 15 ? 1 : 0"
@@ -203,7 +203,7 @@
       "defType": "spread/sublist",
       "position": {
         "x": 1702,
-        "y": 654
+        "y": 592
       },
       "params": {
         "op": "keep-where"
@@ -213,8 +213,8 @@
       "id": "mx_pins",
       "defType": "state/spread",
       "position": {
-        "x": 1995,
-        "y": 821
+        "x": 1994,
+        "y": 756
       },
       "params": {}
     },
@@ -222,8 +222,8 @@
       "id": "mx_pinAt",
       "defType": "math/expression",
       "position": {
-        "x": 2286,
-        "y": 837
+        "x": 2283,
+        "y": 765
       },
       "params": {
         "expr": "vec2(cos(q.x + a), sin(q.x + a)) * (62 + q.y * 12.5)"
@@ -234,7 +234,7 @@
       "defType": "state/value",
       "position": {
         "x": 360,
-        "y": 286
+        "y": 219
       },
       "params": {},
       "portValues": {
@@ -246,7 +246,7 @@
       "defType": "math/expression",
       "position": {
         "x": 721,
-        "y": 267
+        "y": 201
       },
       "params": {
         "expr": "p && !was"
@@ -256,8 +256,8 @@
       "id": "mx_pinDist",
       "defType": "math/expression",
       "position": {
-        "x": 2632,
-        "y": 611
+        "x": 2621,
+        "y": 561
       },
       "params": {
         "expr": "distance(q, m)"
@@ -267,8 +267,8 @@
       "id": "mx_nearest",
       "defType": "math/statistics",
       "position": {
-        "x": 2968,
-        "y": 435
+        "x": 2954,
+        "y": 395
       },
       "params": {
         "op": "min"
@@ -279,7 +279,7 @@
       "defType": "math/expression",
       "position": {
         "x": 721,
-        "y": 539
+        "y": 473
       },
       "params": {
         "expr": "round((length(m) - 62) / 12.5)"
@@ -290,7 +290,7 @@
       "defType": "math/expression",
       "position": {
         "x": 1145,
-        "y": 466
+        "y": 401
       },
       "params": {
         "expr": "vec2(atan2(m.y, m.x) - a, l)"
@@ -300,8 +300,8 @@
       "id": "mx_withNew",
       "defType": "spread/combine",
       "position": {
-        "x": 2289,
-        "y": 431
+        "x": 2286,
+        "y": 376
       },
       "params": {
         "op": "append"
@@ -311,8 +311,8 @@
       "id": "mx_pinCount",
       "defType": "spread/count",
       "position": {
-        "x": 2968,
-        "y": 331
+        "x": 2954,
+        "y": 291
       },
       "params": {}
     },
@@ -320,8 +320,8 @@
       "id": "mx_keepPin",
       "defType": "math/expression",
       "position": {
-        "x": 3443,
-        "y": 222
+        "x": 3426,
+        "y": 192
       },
       "params": {
         "expr": "c ? 0 : (index < n ? (click && d < 10 && distance(q, m) < 10 ? 0 : 1) : (click && (n == 0 || !(d < 10)) && l >= 0 && l < 15 ? 1 : 0))"
@@ -331,8 +331,8 @@
       "id": "mx_withNewAt",
       "defType": "math/expression",
       "position": {
-        "x": 2632,
-        "y": 436
+        "x": 2621,
+        "y": 386
       },
       "params": {
         "expr": "vec2(cos(q.x + a), sin(q.x + a)) * (62 + q.y * 12.5)"
@@ -342,7 +342,7 @@
       "id": "mx_edited",
       "defType": "spread/sublist",
       "position": {
-        "x": 3954,
+        "x": 3939,
         "y": 67
       },
       "params": {
@@ -353,7 +353,7 @@
       "id": "mx_pinsNextBoth",
       "defType": "spread/combine",
       "position": {
-        "x": 4426,
+        "x": 4412,
         "y": 0
       },
       "params": {
@@ -364,7 +364,7 @@
       "id": "mx_pinsNextFirstCount",
       "defType": "spread/count",
       "position": {
-        "x": 4438,
+        "x": 4424,
         "y": 148
       },
       "params": {}
@@ -373,8 +373,8 @@
       "id": "mx_pinsNextPart",
       "defType": "math/expression",
       "position": {
-        "x": 4925,
-        "y": 66
+        "x": 4882,
+        "y": 65
       },
       "params": {
         "expr": "q.x * 0 + ((index < n) == (c > 0.5) ? 1 : 0)"
@@ -384,8 +384,8 @@
       "id": "mx_pinsNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 5221,
-        "y": 9
+        "x": 5194,
+        "y": 8
       },
       "params": {
         "op": "keep-where"
@@ -395,8 +395,8 @@
       "id": "mx_plucked",
       "defType": "math/expression",
       "position": {
-        "x": 2286,
-        "y": 1320
+        "x": 2283,
+        "y": 1240
       },
       "params": {
         "expr": "fract((q.x + a) / tau + 0.25) < fract((q.x + b) / tau + 0.25)"
@@ -406,8 +406,8 @@
       "id": "mx_lanes",
       "defType": "math/expression",
       "position": {
-        "x": 2286,
-        "y": 1178
+        "x": 2283,
+        "y": 1098
       },
       "params": {
         "expr": "q.y"
@@ -417,8 +417,8 @@
       "id": "mx_scaleSel",
       "defType": "io/select",
       "position": {
-        "x": 2286,
-        "y": 1052
+        "x": 2283,
+        "y": 972
       },
       "params": {
         "options": "major,pentatonic,lydian,dorian,minor,harmonic-minor",
@@ -430,8 +430,8 @@
       "id": "mx_scale",
       "defType": "sound/scale",
       "position": {
-        "x": 2636,
-        "y": 1196
+        "x": 2625,
+        "y": 1115
       },
       "params": {
         "mode": "degree",
@@ -445,8 +445,8 @@
       "id": "mx_pluckFreqs",
       "defType": "spread/sublist",
       "position": {
-        "x": 2956,
-        "y": 895
+        "x": 2942,
+        "y": 859
       },
       "params": {
         "op": "keep-where"
@@ -456,8 +456,8 @@
       "id": "mx_pluckLanes",
       "defType": "spread/sublist",
       "position": {
-        "x": 2635,
-        "y": 1743
+        "x": 2624,
+        "y": 1609
       },
       "params": {
         "op": "keep-where"
@@ -467,8 +467,8 @@
       "id": "mx_pluckCount",
       "defType": "spread/count",
       "position": {
-        "x": 3458,
-        "y": 955
+        "x": 3442,
+        "y": 942
       },
       "params": {}
     },
@@ -476,8 +476,8 @@
       "id": "mx_bells",
       "defType": "sound/mix",
       "position": {
-        "x": 6032,
-        "y": 805
+        "x": 6024,
+        "y": 797
       },
       "params": {
         "slotCount": 3
@@ -490,7 +490,7 @@
       "id": "mx_f0",
       "defType": "spread/lookup",
       "position": {
-        "x": 3954,
+        "x": 3939,
         "y": 247
       },
       "params": {
@@ -504,7 +504,7 @@
       "id": "mx_hit0",
       "defType": "math/expression",
       "position": {
-        "x": 3951,
+        "x": 3936,
         "y": 521
       },
       "params": {
@@ -515,7 +515,7 @@
       "id": "mx_held0",
       "defType": "state/value",
       "position": {
-        "x": 3991,
+        "x": 3977,
         "y": 395
       },
       "params": {},
@@ -527,8 +527,8 @@
       "id": "mx_freq0",
       "defType": "math/expression",
       "position": {
-        "x": 4423,
-        "y": 371
+        "x": 4409,
+        "y": 370
       },
       "params": {
         "expr": "h ? f : old"
@@ -538,8 +538,8 @@
       "id": "mx_over0",
       "defType": "math/expression",
       "position": {
-        "x": 4925,
-        "y": 467
+        "x": 4882,
+        "y": 465
       },
       "params": {
         "expr": "f * 2.76"
@@ -549,8 +549,8 @@
       "id": "mx_fund0",
       "defType": "sound/oscillator",
       "position": {
-        "x": 5222,
-        "y": 398
+        "x": 5195,
+        "y": 394
       },
       "params": {
         "type": "sine"
@@ -563,8 +563,8 @@
       "id": "mx_part0",
       "defType": "sound/oscillator",
       "position": {
-        "x": 5222,
-        "y": 546
+        "x": 5195,
+        "y": 542
       },
       "params": {
         "type": "sine"
@@ -577,8 +577,8 @@
       "id": "mx_tone0",
       "defType": "sound/mix",
       "position": {
-        "x": 5518,
-        "y": 504
+        "x": 5491,
+        "y": 499
       },
       "params": {
         "slotCount": 2
@@ -588,8 +588,8 @@
       "id": "mx_env0",
       "defType": "sound/envelope",
       "position": {
-        "x": 5795,
-        "y": 591
+        "x": 5787,
+        "y": 583
       },
       "params": {},
       "portValues": {
@@ -604,7 +604,7 @@
       "id": "mx_f1",
       "defType": "spread/lookup",
       "position": {
-        "x": 3954,
+        "x": 3939,
         "y": 663
       },
       "params": {
@@ -618,7 +618,7 @@
       "id": "mx_hit1",
       "defType": "math/expression",
       "position": {
-        "x": 3951,
+        "x": 3936,
         "y": 937
       },
       "params": {
@@ -629,7 +629,7 @@
       "id": "mx_held1",
       "defType": "state/value",
       "position": {
-        "x": 3991,
+        "x": 3977,
         "y": 811
       },
       "params": {},
@@ -641,8 +641,8 @@
       "id": "mx_freq1",
       "defType": "math/expression",
       "position": {
-        "x": 4423,
-        "y": 761
+        "x": 4409,
+        "y": 760
       },
       "params": {
         "expr": "h ? f : old"
@@ -652,8 +652,8 @@
       "id": "mx_over1",
       "defType": "math/expression",
       "position": {
-        "x": 4925,
-        "y": 832
+        "x": 4882,
+        "y": 829
       },
       "params": {
         "expr": "f * 2.76"
@@ -663,8 +663,8 @@
       "id": "mx_fund1",
       "defType": "sound/oscillator",
       "position": {
-        "x": 5222,
-        "y": 737
+        "x": 5195,
+        "y": 732
       },
       "params": {
         "type": "sine"
@@ -677,8 +677,8 @@
       "id": "mx_part1",
       "defType": "sound/oscillator",
       "position": {
-        "x": 5222,
-        "y": 885
+        "x": 5195,
+        "y": 880
       },
       "params": {
         "type": "sine"
@@ -691,8 +691,8 @@
       "id": "mx_tone1",
       "defType": "sound/mix",
       "position": {
-        "x": 5518,
-        "y": 809
+        "x": 5491,
+        "y": 803
       },
       "params": {
         "slotCount": 2
@@ -702,8 +702,8 @@
       "id": "mx_env1",
       "defType": "sound/envelope",
       "position": {
-        "x": 5795,
-        "y": 827
+        "x": 5787,
+        "y": 819
       },
       "params": {},
       "portValues": {
@@ -718,7 +718,7 @@
       "id": "mx_f2",
       "defType": "spread/lookup",
       "position": {
-        "x": 3954,
+        "x": 3939,
         "y": 1079
       },
       "params": {
@@ -732,7 +732,7 @@
       "id": "mx_hit2",
       "defType": "math/expression",
       "position": {
-        "x": 3951,
+        "x": 3936,
         "y": 1353
       },
       "params": {
@@ -743,7 +743,7 @@
       "id": "mx_held2",
       "defType": "state/value",
       "position": {
-        "x": 3991,
+        "x": 3977,
         "y": 1227
       },
       "params": {},
@@ -755,8 +755,8 @@
       "id": "mx_freq2",
       "defType": "math/expression",
       "position": {
-        "x": 4423,
-        "y": 1147
+        "x": 4409,
+        "y": 1144
       },
       "params": {
         "expr": "h ? f : old"
@@ -766,8 +766,8 @@
       "id": "mx_over2",
       "defType": "math/expression",
       "position": {
-        "x": 4925,
-        "y": 1188
+        "x": 4882,
+        "y": 1181
       },
       "params": {
         "expr": "f * 2.76"
@@ -777,8 +777,8 @@
       "id": "mx_fund2",
       "defType": "sound/oscillator",
       "position": {
-        "x": 5222,
-        "y": 1063
+        "x": 5195,
+        "y": 1053
       },
       "params": {
         "type": "sine"
@@ -791,8 +791,8 @@
       "id": "mx_part2",
       "defType": "sound/oscillator",
       "position": {
-        "x": 5222,
-        "y": 1211
+        "x": 5195,
+        "y": 1201
       },
       "params": {
         "type": "sine"
@@ -805,8 +805,8 @@
       "id": "mx_tone2",
       "defType": "sound/mix",
       "position": {
-        "x": 5518,
-        "y": 1105
+        "x": 5491,
+        "y": 1096
       },
       "params": {
         "slotCount": 2
@@ -816,8 +816,8 @@
       "id": "mx_env2",
       "defType": "sound/envelope",
       "position": {
-        "x": 5795,
-        "y": 1063
+        "x": 5787,
+        "y": 1055
       },
       "params": {},
       "portValues": {
@@ -832,8 +832,8 @@
       "id": "mx_reverb",
       "defType": "sound/reverb",
       "position": {
-        "x": 6296,
-        "y": 784
+        "x": 6288,
+        "y": 776
       },
       "params": {},
       "portValues": {
@@ -846,8 +846,8 @@
       "id": "mx_out",
       "defType": "sound/output",
       "position": {
-        "x": 6512,
-        "y": 785
+        "x": 6504,
+        "y": 776
       },
       "params": {},
       "portValues": {
@@ -859,7 +859,7 @@
       "defType": "spread/range",
       "position": {
         "x": 15,
-        "y": 1607
+        "y": 1526
       },
       "params": {},
       "portValues": {
@@ -870,8 +870,8 @@
       "id": "mx_lane0",
       "defType": "spread/lookup",
       "position": {
-        "x": 2956,
-        "y": 1799
+        "x": 2942,
+        "y": 1647
       },
       "params": {
         "op": "at"
@@ -884,8 +884,8 @@
       "id": "mx_lane1",
       "defType": "spread/lookup",
       "position": {
-        "x": 2956,
-        "y": 1947
+        "x": 2942,
+        "y": 1795
       },
       "params": {
         "op": "at"
@@ -898,8 +898,8 @@
       "id": "mx_lane2",
       "defType": "spread/lookup",
       "position": {
-        "x": 2956,
-        "y": 2095
+        "x": 2942,
+        "y": 1943
       },
       "params": {
         "op": "at"
@@ -912,8 +912,8 @@
       "id": "mx_toothTimes",
       "defType": "state/spread",
       "position": {
-        "x": 2980,
-        "y": 2243
+        "x": 2966,
+        "y": 2091
       },
       "params": {}
     },
@@ -921,8 +921,8 @@
       "id": "mx_toothInit",
       "defType": "math/expression",
       "position": {
-        "x": 2632,
-        "y": 2069
+        "x": 2621,
+        "y": 1935
       },
       "params": {
         "expr": "k * 0 - 10"
@@ -932,8 +932,8 @@
       "id": "mx_toothNext",
       "defType": "math/expression",
       "position": {
-        "x": 3443,
-        "y": 1975
+        "x": 3426,
+        "y": 1816
       },
       "params": {
         "expr": "k == a || k == b || k == c ? t : old"
@@ -943,8 +943,8 @@
       "id": "mx_toothAt",
       "defType": "math/expression",
       "position": {
-        "x": 3951,
-        "y": 1933
+        "x": 3936,
+        "y": 1719
       },
       "params": {
         "expr": "vec2(l / 2 + 4, -(62 + k * 12.5) + 2.5 * exp(-(t - p) * 5) * sin((t - p) * 70))"
@@ -954,8 +954,8 @@
       "id": "mx_toothCol",
       "defType": "math/expression",
       "position": {
-        "x": 3951,
-        "y": 2141
+        "x": 3936,
+        "y": 1927
       },
       "params": {
         "expr": "mix(rgb(0.72, 0.62, 0.42), rgb(1, 0.95, 0.75), exp(-(t - p) * 3))"
@@ -965,8 +965,8 @@
       "id": "mx_toothLen",
       "defType": "math/expression",
       "position": {
-        "x": 3443,
-        "y": 1833
+        "x": 3426,
+        "y": 1674
       },
       "params": {
         "expr": "150 - k * 4"
@@ -976,8 +976,8 @@
       "id": "mx_toothLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 4246,
-        "y": 2081
+        "x": 4232,
+        "y": 1860
       },
       "params": {
         "width": 522,
@@ -1041,11 +1041,84 @@
       "parentId": "mx_toothLoop"
     },
     {
+      "id": "mx_combBackX",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 1,
+        "y": 1788
+      },
+      "params": {
+        "data": "154,98,132,188"
+      }
+    },
+    {
+      "id": "mx_combBackY",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 1,
+        "y": 1892
+      },
+      "params": {
+        "data": "-55,-244.0,-244.0,-55"
+      }
+    },
+    {
+      "id": "mx_combBackPts",
+      "defType": "math/expression",
+      "position": {
+        "x": 319,
+        "y": 1791
+      },
+      "params": {
+        "expr": "vec2(x, y)"
+      }
+    },
+    {
+      "id": "mx_combBackFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 336,
+        "y": 1955
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.6588235294117647,
+          "g": 0.5294117647058824,
+          "b": 0.35294117647058826,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "mx_combBack",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 754,
+        "y": 1891
+      },
+      "params": {},
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "mx_comb",
+      "defType": "transform/group",
+      "position": {
+        "x": 4882,
+        "y": 2024
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
       "id": "mx_discFill",
       "defType": "style/gradient",
       "position": {
-        "x": 3959,
-        "y": 1495
+        "x": 4417,
+        "y": 1400
       },
       "params": {
         "mode": "radial",
@@ -1056,8 +1129,8 @@
       "id": "mx_discCols",
       "defType": "color/palette",
       "position": {
-        "x": 3443,
-        "y": 1290
+        "x": 3936,
+        "y": 1495
       },
       "params": {
         "stopCount": 3,
@@ -1070,8 +1143,8 @@
       "id": "mx_disc",
       "defType": "draw/ellipse",
       "position": {
-        "x": 4452,
-        "y": 1439
+        "x": 4911,
+        "y": 1404
       },
       "params": {},
       "portValues": {
@@ -1084,7 +1157,7 @@
       "defType": "math/expression",
       "position": {
         "x": 319,
-        "y": 1370
+        "y": 1303
       },
       "params": {
         "expr": "(62 + k * 12.5) * 2"
@@ -1095,7 +1168,7 @@
       "defType": "style/stroke",
       "position": {
         "x": 11,
-        "y": 1437
+        "y": 1356
       },
       "params": {},
       "portValues": {
@@ -1113,7 +1186,7 @@
       "defType": "style/no-fill",
       "position": {
         "x": 359,
-        "y": 1512
+        "y": 1445
       },
       "params": {}
     },
@@ -1122,7 +1195,7 @@
       "defType": "region/foreach",
       "position": {
         "x": 630,
-        "y": 1288
+        "y": 1220
       },
       "params": {
         "width": 350,
@@ -1162,8 +1235,8 @@
       "id": "mx_pinCol",
       "defType": "math/expression",
       "position": {
-        "x": 2953,
-        "y": 1495
+        "x": 2939,
+        "y": 1378
       },
       "params": {
         "expr": "hsl(fract(0.08 + i / 7 * 0.5), 0.7, h ? 0.85 : 0.6)"
@@ -1173,19 +1246,19 @@
       "id": "mx_pinSize",
       "defType": "math/expression",
       "position": {
-        "x": 2953,
-        "y": 1353
+        "x": 2939,
+        "y": 1236
       },
       "params": {
-        "expr": "h ? 16 : 9"
+        "expr": "h ? 17 : 11"
       }
     },
     {
       "id": "mx_pinLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 3264,
-        "y": 1504
+        "x": 3247,
+        "y": 1345
       },
       "params": {
         "width": 526,
@@ -1249,8 +1322,8 @@
       "id": "mx_pinGlow",
       "defType": "gpu/effect",
       "position": {
-        "x": 4422,
-        "y": 1631
+        "x": 4881,
+        "y": 1596
       },
       "params": {
         "mode": "glow"
@@ -1264,8 +1337,8 @@
       "id": "mx_hubFill",
       "defType": "style/fill",
       "position": {
-        "x": 3968,
-        "y": 1807
+        "x": 4426,
+        "y": 1712
       },
       "params": {},
       "portValues": {
@@ -1281,8 +1354,8 @@
       "id": "mx_hub",
       "defType": "draw/ellipse",
       "position": {
-        "x": 4452,
-        "y": 1867
+        "x": 4911,
+        "y": 1832
       },
       "params": {},
       "portValues": {
@@ -1295,7 +1368,7 @@
       "defType": "value/string",
       "position": {
         "x": 5,
-        "y": 1990
+        "y": 2073
       },
       "params": {
         "value": "click the disc to add or remove pins · N new tune · C clear"
@@ -1306,7 +1379,7 @@
       "defType": "style/fill",
       "position": {
         "x": 11,
-        "y": 2094
+        "y": 2177
       },
       "params": {},
       "portValues": {
@@ -1323,7 +1396,7 @@
       "defType": "draw/text",
       "position": {
         "x": 359,
-        "y": 1998
+        "y": 2081
       },
       "params": {
         "size": 13,
@@ -1340,8 +1413,8 @@
       "id": "mx_scene",
       "defType": "transform/group",
       "position": {
-        "x": 4925,
-        "y": 1797
+        "x": 5191,
+        "y": 1705
       },
       "params": {
         "slotCount": 6
@@ -1351,8 +1424,8 @@
       "id": "mx_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 5199,
-        "y": 1798
+        "x": 5471,
+        "y": 1706
       },
       "params": {
         "width": 640,
@@ -2323,223 +2396,265 @@
     },
     {
       "id": "e_137",
+      "source": "mx_combBackX",
+      "target": "mx_combBackPts",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_138",
+      "source": "mx_combBackY",
+      "target": "mx_combBackPts",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_139",
+      "source": "mx_combBackPts",
+      "target": "mx_combBack",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_140",
+      "source": "mx_combBackFill",
+      "target": "mx_combBack",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_141",
+      "source": "mx_toothLoop",
+      "target": "mx_comb",
+      "sourceHandle": "out-tooth",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_142",
+      "source": "mx_combBack",
+      "target": "mx_comb",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_143",
       "source": "mx_discCols",
       "target": "mx_discFill",
       "sourceHandle": "out-colors",
       "targetHandle": "in-colors"
     },
     {
-      "id": "e_138",
+      "id": "e_144",
       "source": "mx_discFill",
       "target": "mx_disc",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_139",
+      "id": "e_145",
       "source": "mx_teeth",
       "target": "mx_ringSizes",
       "sourceHandle": "out-indices",
       "targetHandle": "in-k"
     },
     {
-      "id": "e_140",
+      "id": "e_146",
       "source": "mx_ringStroke",
       "target": "mx_ringNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_141",
+      "id": "e_147",
       "source": "mx_ringSizes",
       "target": "mx_ringLoop",
       "sourceHandle": "out-value",
       "targetHandle": "in-d"
     },
     {
-      "id": "e_142",
+      "id": "e_148",
       "source": "mx_ringLoop",
       "target": "mx_ring",
       "sourceHandle": "out-d",
       "targetHandle": "in-w"
     },
     {
-      "id": "e_143",
+      "id": "e_149",
       "source": "mx_ringLoop",
       "target": "mx_ring",
       "sourceHandle": "out-d",
       "targetHandle": "in-h"
     },
     {
-      "id": "e_144",
+      "id": "e_150",
       "source": "mx_ringNoFill",
       "target": "mx_ring",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_145",
+      "id": "e_151",
       "source": "mx_ring",
       "target": "mx_ringLoop",
       "sourceHandle": "out-shape",
       "targetHandle": "in-ring"
     },
     {
-      "id": "e_146",
+      "id": "e_152",
       "source": "mx_scale",
       "target": "mx_pinCol",
       "sourceHandle": "out-index",
       "targetHandle": "in-i"
     },
     {
-      "id": "e_147",
+      "id": "e_153",
       "source": "mx_plucked",
       "target": "mx_pinCol",
       "sourceHandle": "out-value",
       "targetHandle": "in-h"
     },
     {
-      "id": "e_148",
+      "id": "e_154",
       "source": "mx_plucked",
       "target": "mx_pinSize",
       "sourceHandle": "out-value",
       "targetHandle": "in-h"
     },
     {
-      "id": "e_149",
+      "id": "e_155",
       "source": "mx_pinAt",
       "target": "mx_pinLoop",
       "sourceHandle": "out-value",
       "targetHandle": "in-at"
     },
     {
-      "id": "e_150",
+      "id": "e_156",
       "source": "mx_pinCol",
       "target": "mx_pinLoop",
       "sourceHandle": "out-value",
       "targetHandle": "in-col"
     },
     {
-      "id": "e_151",
+      "id": "e_157",
       "source": "mx_pinSize",
       "target": "mx_pinLoop",
       "sourceHandle": "out-value",
       "targetHandle": "in-d"
     },
     {
-      "id": "e_152",
+      "id": "e_158",
       "source": "mx_pinLoop",
       "target": "mx_pinFill",
       "sourceHandle": "out-col",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_153",
+      "id": "e_159",
       "source": "mx_pinLoop",
       "target": "mx_pin",
       "sourceHandle": "out-at",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_154",
+      "id": "e_160",
       "source": "mx_pinLoop",
       "target": "mx_pin",
       "sourceHandle": "out-d",
       "targetHandle": "in-w"
     },
     {
-      "id": "e_155",
+      "id": "e_161",
       "source": "mx_pinLoop",
       "target": "mx_pin",
       "sourceHandle": "out-d",
       "targetHandle": "in-h"
     },
     {
-      "id": "e_156",
+      "id": "e_162",
       "source": "mx_pinFill",
       "target": "mx_pin",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_157",
+      "id": "e_163",
       "source": "mx_pin",
       "target": "mx_pinLoop",
       "sourceHandle": "out-shape",
       "targetHandle": "in-pin"
     },
     {
-      "id": "e_158",
+      "id": "e_164",
       "source": "mx_pinLoop",
       "target": "mx_pinGlow",
       "sourceHandle": "out-pin",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_159",
+      "id": "e_165",
       "source": "mx_hubFill",
       "target": "mx_hub",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_160",
+      "id": "e_166",
       "source": "mx_help",
       "target": "mx_statusText",
       "sourceHandle": "out-text",
       "targetHandle": "in-string"
     },
     {
-      "id": "e_161",
+      "id": "e_167",
       "source": "mx_statusFill",
       "target": "mx_statusText",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_162",
+      "id": "e_168",
       "source": "mx_disc",
       "target": "mx_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_163",
+      "id": "e_169",
       "source": "mx_ringLoop",
       "target": "mx_scene",
       "sourceHandle": "out-ring",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_164",
+      "id": "e_170",
       "source": "mx_pinGlow",
       "target": "mx_scene",
       "sourceHandle": "out-out",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_165",
+      "id": "e_171",
       "source": "mx_hub",
       "target": "mx_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_166",
-      "source": "mx_toothLoop",
+      "id": "e_172",
+      "source": "mx_comb",
       "target": "mx_scene",
-      "sourceHandle": "out-tooth",
+      "sourceHandle": "out-grouped",
       "targetHandle": "in-s5"
     },
     {
-      "id": "e_167",
+      "id": "e_173",
       "source": "mx_statusText",
       "target": "mx_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s6"
     },
     {
-      "id": "e_168",
+      "id": "e_174",
       "source": "mx_scene",
       "target": "mx_renderer",
       "sourceHandle": "out-grouped",

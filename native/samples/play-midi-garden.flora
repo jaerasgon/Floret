@@ -26,7 +26,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 751,
-        "y": 869
+        "y": 1547
       },
       "params": {}
     },
@@ -61,7 +61,7 @@
       "defType": "math/expression",
       "position": {
         "x": 325,
-        "y": 40
+        "y": 2
       },
       "params": {
         "expr": "raw > 0 ? cc : s"
@@ -98,7 +98,7 @@
       "defType": "math/expression",
       "position": {
         "x": 325,
-        "y": 232
+        "y": 314
       },
       "params": {
         "expr": "raw > 0 ? cc : s"
@@ -135,7 +135,7 @@
       "defType": "math/expression",
       "position": {
         "x": 325,
-        "y": 544
+        "y": 500
       },
       "params": {
         "expr": "raw > 0 ? cc : s"
@@ -145,8 +145,8 @@
       "id": "mg_brightCC",
       "defType": "input/midi-cc",
       "position": {
-        "x": 1063,
-        "y": 295
+        "x": 1021,
+        "y": 277
       },
       "params": {
         "cc": 24,
@@ -157,8 +157,8 @@
       "id": "mg_brightSlider",
       "defType": "io/slider",
       "position": {
-        "x": 1061,
-        "y": 443
+        "x": 1019,
+        "y": 425
       },
       "params": {
         "value": 0.6,
@@ -171,8 +171,8 @@
       "id": "mg_bright",
       "defType": "math/expression",
       "position": {
-        "x": 1379,
-        "y": 352
+        "x": 1346,
+        "y": 355
       },
       "params": {
         "expr": "raw > 0 ? cc : s"
@@ -183,7 +183,7 @@
       "defType": "input/midi-note",
       "position": {
         "x": 0,
-        "y": 870
+        "y": 826
       },
       "params": {
         "channel": 0
@@ -194,7 +194,7 @@
       "defType": "input/keyboard",
       "position": {
         "x": 1,
-        "y": 1040
+        "y": 996
       },
       "params": {
         "mode": "keys"
@@ -208,7 +208,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 38,
-        "y": 1254
+        "y": 1210
       },
       "params": {}
     },
@@ -217,7 +217,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 367,
-        "y": 1145
+        "y": 1101
       },
       "params": {}
     },
@@ -226,7 +226,7 @@
       "defType": "math/expression",
       "position": {
         "x": 325,
-        "y": 1271
+        "y": 1227
       },
       "params": {
         "expr": "m || k >= 0 || c"
@@ -237,7 +237,7 @@
       "defType": "math/expression",
       "position": {
         "x": 325,
-        "y": 894
+        "y": 850
       },
       "params": {
         "expr": "m ? n : (k >= 0 ? 60 + k : 48 + round(clamp(0.5 - y / 640, 0, 1) * 36))"
@@ -248,7 +248,7 @@
       "defType": "math/expression",
       "position": {
         "x": 325,
-        "y": 730
+        "y": 686
       },
       "params": {
         "expr": "m ? v : 0.75"
@@ -259,7 +259,7 @@
       "defType": "state/value",
       "position": {
         "x": 750,
-        "y": 1247
+        "y": 1147
       },
       "params": {},
       "portValues": {
@@ -271,7 +271,7 @@
       "defType": "state/value",
       "position": {
         "x": 750,
-        "y": 743
+        "y": 769
       },
       "params": {},
       "portValues": {
@@ -282,8 +282,8 @@
       "id": "mg_noteOn",
       "defType": "math/expression",
       "position": {
-        "x": 1061,
-        "y": 930
+        "x": 1019,
+        "y": 904
       },
       "params": {
         "expr": "p && (!was || n != last)"
@@ -294,7 +294,7 @@
       "defType": "state/value",
       "position": {
         "x": 366,
-        "y": 418
+        "y": 188
       },
       "params": {},
       "portValues": {
@@ -305,8 +305,8 @@
       "id": "mg_plantedNext",
       "defType": "math/expression",
       "position": {
-        "x": 1379,
-        "y": 631
+        "x": 1346,
+        "y": 574
       },
       "params": {
         "expr": "n + on"
@@ -317,7 +317,7 @@
       "defType": "math/expression",
       "position": {
         "x": 709,
-        "y": 995
+        "y": 895
       },
       "params": {
         "expr": "c && !m && k < 0 ? q : vec2(cos(n * 2.39996), sin(n * 2.39996)) * (40 + 21 * sqrt(n % 60))"
@@ -328,7 +328,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 2,
-        "y": 1555
+        "y": 1511
       },
       "params": {
         "data": "60,64,67,71,74"
@@ -339,7 +339,7 @@
       "defType": "math/expression",
       "position": {
         "x": 325,
-        "y": 1583
+        "y": 1539
       },
       "params": {
         "expr": "vec2(cos((index + 1) * 2.39996), sin((index + 1) * 2.39996)) * (40 + 21 * sqrt(index + 1)) + n * 0"
@@ -350,7 +350,7 @@
       "defType": "state/spread",
       "position": {
         "x": 737,
-        "y": 1521
+        "y": 1421
       },
       "params": {}
     },
@@ -358,8 +358,8 @@
       "id": "mg_wherePlus",
       "defType": "spread/combine",
       "position": {
-        "x": 1064,
-        "y": 1333
+        "x": 1022,
+        "y": 1163
       },
       "params": {
         "op": "append"
@@ -369,8 +369,8 @@
       "id": "mg_whereKept",
       "defType": "spread/sublist",
       "position": {
-        "x": 1693,
-        "y": 1091
+        "x": 1663,
+        "y": 947
       },
       "params": {
         "op": "keep-where"
@@ -381,7 +381,7 @@
       "defType": "state/spread",
       "position": {
         "x": 737,
-        "y": 1795
+        "y": 1821
       },
       "params": {}
     },
@@ -390,7 +390,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 326,
-        "y": 1884
+        "y": 2032
       },
       "params": {
         "data": "-3,-3.6,-4.2,-4.8,-5.4"
@@ -400,8 +400,8 @@
       "id": "mg_bornPlus",
       "defType": "spread/combine",
       "position": {
-        "x": 1064,
-        "y": 1185
+        "x": 1022,
+        "y": 1494
       },
       "params": {
         "op": "append"
@@ -411,8 +411,8 @@
       "id": "mg_bornKept",
       "defType": "spread/sublist",
       "position": {
-        "x": 1693,
-        "y": 943
+        "x": 1663,
+        "y": 1407
       },
       "params": {
         "op": "keep-where"
@@ -423,7 +423,7 @@
       "defType": "state/spread",
       "position": {
         "x": 353,
-        "y": 1457
+        "y": 1413
       },
       "params": {}
     },
@@ -432,7 +432,7 @@
       "defType": "spread/combine",
       "position": {
         "x": 712,
-        "y": 1373
+        "y": 1273
       },
       "params": {
         "op": "append"
@@ -442,8 +442,8 @@
       "id": "mg_pitchKept",
       "defType": "spread/sublist",
       "position": {
-        "x": 1693,
-        "y": 1403
+        "x": 1663,
+        "y": 1095
       },
       "params": {
         "op": "keep-where"
@@ -454,7 +454,7 @@
       "defType": "state/spread",
       "position": {
         "x": 353,
-        "y": 1758
+        "y": 1714
       },
       "params": {}
     },
@@ -463,7 +463,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 2,
-        "y": 1758
+        "y": 1714
       },
       "params": {
         "data": "0.6,0.8,0.7,0.9,0.75"
@@ -474,7 +474,7 @@
       "defType": "spread/combine",
       "position": {
         "x": 712,
-        "y": 1647
+        "y": 1673
       },
       "params": {
         "op": "append"
@@ -484,8 +484,8 @@
       "id": "mg_loudKept",
       "defType": "spread/sublist",
       "position": {
-        "x": 1693,
-        "y": 1551
+        "x": 1663,
+        "y": 1555
       },
       "params": {
         "op": "keep-where"
@@ -495,8 +495,8 @@
       "id": "mg_gardenSize",
       "defType": "spread/count",
       "position": {
-        "x": 1077,
-        "y": 1571
+        "x": 1035,
+        "y": 1674
       },
       "params": {}
     },
@@ -504,8 +504,8 @@
       "id": "mg_keepNew",
       "defType": "math/expression",
       "position": {
-        "x": 1379,
-        "y": 1245
+        "x": 1346,
+        "y": 1280
       },
       "params": {
         "expr": "b * 0 + (index < n || on ? 1 : 0)"
@@ -515,8 +515,8 @@
       "id": "mg_overflow",
       "defType": "math/expression",
       "position": {
-        "x": 1690,
-        "y": 1239
+        "x": 1660,
+        "y": 1243
       },
       "params": {
         "expr": "max(0, n + on - 28)"
@@ -526,8 +526,8 @@
       "id": "mg_whereNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 2003,
-        "y": 1079
+        "x": 1984,
+        "y": 856
       },
       "params": {
         "op": "skip"
@@ -537,8 +537,8 @@
       "id": "mg_bornNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 2003,
-        "y": 931
+        "x": 1984,
+        "y": 1256
       },
       "params": {
         "op": "skip"
@@ -548,8 +548,8 @@
       "id": "mg_pitchNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 2003,
-        "y": 1227
+        "x": 1984,
+        "y": 1108
       },
       "params": {
         "op": "skip"
@@ -559,8 +559,8 @@
       "id": "mg_loudNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 2003,
-        "y": 1375
+        "x": 1984,
+        "y": 1404
       },
       "params": {
         "op": "skip"
@@ -570,8 +570,8 @@
       "id": "mg_curve",
       "defType": "spread/range",
       "position": {
-        "x": 2015,
-        "y": 827
+        "x": 1996,
+        "y": 1004
       },
       "params": {},
       "portValues": {
@@ -582,8 +582,8 @@
       "id": "mg_petalCount",
       "defType": "math/expression",
       "position": {
-        "x": 2000,
-        "y": 685
+        "x": 1981,
+        "y": 714
       },
       "params": {
         "expr": "2 + round(k * 7)"
@@ -593,8 +593,8 @@
       "id": "mg_flowers",
       "defType": "region/foreach",
       "position": {
-        "x": 2344,
-        "y": 372
+        "x": 2307,
+        "y": 390
       },
       "params": {
         "width": 1395,
@@ -782,8 +782,8 @@
       "id": "mg_garden",
       "defType": "transform/group",
       "position": {
-        "x": 3877,
-        "y": 733
+        "x": 3840,
+        "y": 750
       },
       "params": {
         "slotCount": 2
@@ -793,8 +793,8 @@
       "id": "mg_glow",
       "defType": "gpu/effect",
       "position": {
-        "x": 4170,
-        "y": 907
+        "x": 4133,
+        "y": 920
       },
       "params": {
         "mode": "bloom"
@@ -809,8 +809,8 @@
       "id": "mg_gate",
       "defType": "math/expression",
       "position": {
-        "x": 1379,
-        "y": 1046
+        "x": 1346,
+        "y": 1034
       },
       "params": {
         "expr": "p && !on"
@@ -820,8 +820,8 @@
       "id": "mg_voice",
       "defType": "sound/mono-synth",
       "position": {
-        "x": 1713,
-        "y": 707
+        "x": 1682,
+        "y": 711
       },
       "params": {},
       "portValues": {
@@ -835,8 +835,8 @@
       "id": "mg_cutoff",
       "defType": "math/expression",
       "position": {
-        "x": 1690,
-        "y": 480
+        "x": 1660,
+        "y": 496
       },
       "params": {
         "expr": "300 + b * b * 6000"
@@ -846,8 +846,8 @@
       "id": "mg_filter",
       "defType": "sound/filter",
       "position": {
-        "x": 2004,
-        "y": 515
+        "x": 1985,
+        "y": 544
       },
       "params": {
         "type": "lowpass"
@@ -860,8 +860,8 @@
       "id": "mg_delay",
       "defType": "sound/delay",
       "position": {
-        "x": 2992,
-        "y": 180
+        "x": 2955,
+        "y": 198
       },
       "params": {},
       "portValues": {
@@ -874,8 +874,8 @@
       "id": "mg_reverb",
       "defType": "sound/reverb",
       "position": {
-        "x": 3901,
-        "y": 157
+        "x": 3864,
+        "y": 175
       },
       "params": {},
       "portValues": {
@@ -888,8 +888,8 @@
       "id": "mg_out",
       "defType": "sound/output",
       "position": {
-        "x": 4207,
-        "y": 157
+        "x": 4170,
+        "y": 175
       },
       "params": {},
       "portValues": {
@@ -901,7 +901,7 @@
       "defType": "value/string",
       "position": {
         "x": 6,
-        "y": 1980
+        "y": 1832
       },
       "params": {
         "value": "MIDI notes & CC 21–24 · or keys A–K, click, sliders"
@@ -912,7 +912,7 @@
       "defType": "style/fill",
       "position": {
         "x": 12,
-        "y": 2084
+        "y": 1936
       },
       "params": {},
       "portValues": {
@@ -929,7 +929,7 @@
       "defType": "draw/text",
       "position": {
         "x": 365,
-        "y": 1988
+        "y": 1840
       },
       "params": {
         "size": 13,
@@ -946,8 +946,8 @@
       "id": "mg_scene",
       "defType": "transform/group",
       "position": {
-        "x": 4465,
-        "y": 1103
+        "x": 4427,
+        "y": 1113
       },
       "params": {
         "slotCount": 2
@@ -957,8 +957,8 @@
       "id": "mg_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 4729,
-        "y": 1102
+        "x": 4691,
+        "y": 1113
       },
       "params": {
         "width": 640,

@@ -16,7 +16,7 @@
         "y": -324
       },
       "params": {
-        "text": "Brush Studio\n\nDrag on the preview to paint. Keys 1–4 pick a brush: 1 ink (thins as you speed up), 2 ribbon (a calligraphy nib held at 45°), 3 spray, 4 rainbow. M mirrors every stroke eight ways round the centre (or flip the Mirror toggle). C or the Clear bang wipes the paper; Size and Colour are on the canvas.\n\nHow it works: the paper is a picture fed back to itself — Read holds last frame's paper, the new stroke (a segment from where the pen was to where it is) is laid on top, and From Layer turns both into this frame's paper, which Write keeps for the next. Until you first touch it, a demo pen paints a mirrored doodle by itself.",
+        "text": "Brush Studio\n\nDrag on the preview to paint. Keys 1–4 pick a brush: 1 ink (thins as you speed up), 2 ribbon (a calligraphy nib held at 45°), 3 spray, 4 rainbow. M mirrors every stroke eight ways round the centre (or flip the Mirror toggle). C or the Clear bang wipes the paper; Size and Colour are on the canvas.\n\nHow it works: the paper is a picture fed back to itself — Read holds last frame's paper, the new stroke (a segment from where the pen was to where it is) is laid on top, and From Layer turns both into this frame's paper, which Write keeps for the next. Until you first touch it, a demo pen paints a mirrored doodle for a few seconds.",
         "width": 460,
         "height": 260
       }
@@ -99,7 +99,7 @@
         "y": 1249
       },
       "params": {
-        "expr": "pressed || !touched"
+        "expr": "pressed || (!touched && t < 7)"
       }
     },
     {

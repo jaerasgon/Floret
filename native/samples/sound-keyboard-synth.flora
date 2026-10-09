@@ -26,7 +26,7 @@
       "defType": "input/keyboard",
       "position": {
         "x": 0,
-        "y": 990
+        "y": 893
       },
       "params": {
         "mode": "keys"
@@ -40,7 +40,7 @@
       "defType": "input/keyboard",
       "position": {
         "x": 0,
-        "y": 0
+        "y": 231
       },
       "params": {
         "mode": "keys"
@@ -54,7 +54,7 @@
       "defType": "state/value",
       "position": {
         "x": 41,
-        "y": 214
+        "y": 515
       },
       "params": {},
       "portValues": {
@@ -65,8 +65,8 @@
       "id": "ks_octaveNext",
       "defType": "math/expression",
       "position": {
-        "x": 330,
-        "y": 70
+        "x": 384,
+        "y": 259
       },
       "params": {
         "expr": "hit ? clamp(o + (k == 1 ? 1 : -1), 1, 7) : o"
@@ -77,7 +77,7 @@
       "defType": "io/toggle",
       "position": {
         "x": 0,
-        "y": 1320
+        "y": 1107
       },
       "params": {
         "value": false,
@@ -88,8 +88,8 @@
       "id": "ks_arpRate",
       "defType": "io/slider",
       "position": {
-        "x": 684,
-        "y": 1867
+        "x": 768,
+        "y": 1188
       },
       "params": {
         "value": 8,
@@ -103,7 +103,7 @@
       "defType": "spread/range",
       "position": {
         "x": 15,
-        "y": 1216
+        "y": 1245
       },
       "params": {},
       "portValues": {
@@ -114,8 +114,8 @@
       "id": "ks_held",
       "defType": "spread/sublist",
       "position": {
-        "x": 333,
-        "y": 1131
+        "x": 387,
+        "y": 935
       },
       "params": {
         "op": "keep-where"
@@ -125,8 +125,8 @@
       "id": "ks_heldCount",
       "defType": "spread/count",
       "position": {
-        "x": 700,
-        "y": 1121
+        "x": 784,
+        "y": 854
       },
       "params": {}
     },
@@ -134,8 +134,8 @@
       "id": "ks_dt",
       "defType": "time/delta",
       "position": {
-        "x": 725,
-        "y": 1447
+        "x": 809,
+        "y": 1084
       },
       "params": {}
     },
@@ -143,8 +143,8 @@
       "id": "ks_arpPhase",
       "defType": "state/value",
       "position": {
-        "x": 725,
-        "y": 1321
+        "x": 809,
+        "y": 958
       },
       "params": {},
       "portValues": {
@@ -155,8 +155,8 @@
       "id": "ks_arpPhaseNext",
       "defType": "math/expression",
       "position": {
-        "x": 1068,
-        "y": 1419
+        "x": 1077,
+        "y": 975
       },
       "params": {
         "expr": "n > 0 ? ph + min(dt, 0.1) * rate : 0"
@@ -166,8 +166,8 @@
       "id": "ks_arpStep",
       "defType": "math/expression",
       "position": {
-        "x": 1626,
-        "y": 1184
+        "x": 1595,
+        "y": 1109
       },
       "params": {
         "expr": "n > 0 ? floor(ph) % n : 0"
@@ -177,8 +177,8 @@
       "id": "ks_arpSemi",
       "defType": "spread/lookup",
       "position": {
-        "x": 2137,
-        "y": 1149
+        "x": 2174,
+        "y": 1002
       },
       "params": {
         "op": "at"
@@ -188,8 +188,8 @@
       "id": "ks_playing",
       "defType": "math/expression",
       "position": {
-        "x": 2449,
-        "y": 1026
+        "x": 2451,
+        "y": 859
       },
       "params": {
         "expr": "arp ? (n > 0 ? a : -1) : k"
@@ -199,8 +199,8 @@
       "id": "ks_gate",
       "defType": "math/expression",
       "position": {
-        "x": 1626,
-        "y": 954
+        "x": 1595,
+        "y": 815
       },
       "params": {
         "expr": "arp ? n > 0 && fract(ph) < 0.6 : k >= 0 && !hit"
@@ -210,8 +210,8 @@
       "id": "ks_lastSemi",
       "defType": "state/value",
       "position": {
-        "x": 2490,
-        "y": 1234
+        "x": 2491,
+        "y": 1067
       },
       "params": {},
       "portValues": {
@@ -222,8 +222,8 @@
       "id": "ks_lastSemiNext",
       "defType": "math/expression",
       "position": {
-        "x": 2731,
-        "y": 1141
+        "x": 2739,
+        "y": 847
       },
       "params": {
         "expr": "s >= 0 ? s : last"
@@ -233,8 +233,8 @@
       "id": "ks_note",
       "defType": "math/expression",
       "position": {
-        "x": 3078,
-        "y": 563
+        "x": 3067,
+        "y": 559
       },
       "params": {
         "expr": "12 * (o + 1) + s"
@@ -244,8 +244,8 @@
       "id": "ks_subNote",
       "defType": "math/expression",
       "position": {
-        "x": 3427,
-        "y": 447
+        "x": 3451,
+        "y": 236
       },
       "params": {
         "expr": "n - 12"
@@ -256,7 +256,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 37,
-        "y": 842
+        "y": 745
       },
       "params": {}
     },
@@ -264,8 +264,8 @@
       "id": "ks_cutoff",
       "defType": "math/expression",
       "position": {
-        "x": 330,
-        "y": 741
+        "x": 384,
+        "y": 697
       },
       "params": {
         "expr": "300 * pow(20, clamp(0.5 - y / 480, 0, 1))"
@@ -275,8 +275,8 @@
       "id": "ks_lead",
       "defType": "sound/mono-synth",
       "position": {
-        "x": 3450,
-        "y": 873
+        "x": 3474,
+        "y": 0
       },
       "params": {},
       "portValues": {
@@ -291,8 +291,8 @@
       "id": "ks_sub",
       "defType": "sound/mono-synth",
       "position": {
-        "x": 3828,
-        "y": 421
+        "x": 3771,
+        "y": 172
       },
       "params": {},
       "portValues": {
@@ -307,8 +307,8 @@
       "id": "ks_mix",
       "defType": "sound/mix",
       "position": {
-        "x": 4104,
-        "y": 643
+        "x": 4020,
+        "y": 124
       },
       "params": {
         "slotCount": 2
@@ -321,8 +321,8 @@
       "id": "ks_filter",
       "defType": "sound/filter",
       "position": {
-        "x": 4396,
-        "y": 446
+        "x": 4299,
+        "y": 201
       },
       "params": {
         "type": "lowpass"
@@ -335,8 +335,8 @@
       "id": "ks_delay",
       "defType": "sound/delay",
       "position": {
-        "x": 4708,
-        "y": 564
+        "x": 4601,
+        "y": 200
       },
       "params": {},
       "portValues": {
@@ -349,8 +349,8 @@
       "id": "ks_reverb",
       "defType": "sound/reverb",
       "position": {
-        "x": 5054,
-        "y": 539
+        "x": 4920,
+        "y": 177
       },
       "params": {},
       "portValues": {
@@ -363,8 +363,8 @@
       "id": "ks_out",
       "defType": "sound/output",
       "position": {
-        "x": 5350,
-        "y": 538
+        "x": 5216,
+        "y": 176
       },
       "params": {},
       "portValues": {
@@ -375,8 +375,8 @@
       "id": "ks_hue",
       "defType": "math/expression",
       "position": {
-        "x": 330,
-        "y": 1311
+        "x": 384,
+        "y": 1083
       },
       "params": {
         "expr": "hsl(fract(s / 12 * 0.8 + 0.55), 0.85, 0.6)"
@@ -387,7 +387,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 1,
-        "y": 738
+        "y": 641
       },
       "params": {
         "data": "0,2,4,5,7,9,11,12"
@@ -397,8 +397,8 @@
       "id": "ks_whiteDown",
       "defType": "spread/lookup",
       "position": {
-        "x": 333,
-        "y": 593
+        "x": 387,
+        "y": 549
       },
       "params": {
         "op": "pick"
@@ -408,8 +408,8 @@
       "id": "ks_whiteHue",
       "defType": "spread/lookup",
       "position": {
-        "x": 687,
-        "y": 909
+        "x": 771,
+        "y": 610
       },
       "params": {
         "op": "pick"
@@ -419,8 +419,8 @@
       "id": "ks_whiteX",
       "defType": "data/csv-inline",
       "position": {
-        "x": 331,
-        "y": 489
+        "x": 385,
+        "y": 445
       },
       "params": {
         "data": "-203,-145,-87,-29,29,87,145,203"
@@ -430,8 +430,8 @@
       "id": "ks_whitePos",
       "defType": "math/expression",
       "position": {
-        "x": 684,
-        "y": 489
+        "x": 768,
+        "y": 446
       },
       "params": {
         "expr": "vec2(x, 120 + (d ? 3 : 0))"
@@ -441,8 +441,8 @@
       "id": "ks_whiteCol",
       "defType": "math/expression",
       "position": {
-        "x": 1068,
-        "y": 564
+        "x": 1077,
+        "y": 496
       },
       "params": {
         "expr": "d ? c : rgb(0.91, 0.9, 0.86)"
@@ -452,8 +452,8 @@
       "id": "ks_whiteLetters",
       "defType": "string/split",
       "position": {
-        "x": 1079,
-        "y": 728
+        "x": 1087,
+        "y": 660
       },
       "params": {
         "text": "A,S,D,F,G,H,J,K",
@@ -464,8 +464,8 @@
       "id": "ks_whiteLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 1395,
-        "y": 384
+        "x": 1364,
+        "y": 309
       },
       "params": {
         "width": 629,
@@ -566,7 +566,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 1,
-        "y": 1686
+        "y": 1559
       },
       "params": {
         "data": "1,3,6,8,10"
@@ -576,8 +576,8 @@
       "id": "ks_blackDown",
       "defType": "spread/lookup",
       "position": {
-        "x": 333,
-        "y": 1453
+        "x": 387,
+        "y": 1493
       },
       "params": {
         "op": "pick"
@@ -587,8 +587,8 @@
       "id": "ks_blackHue",
       "defType": "spread/lookup",
       "position": {
-        "x": 687,
-        "y": 1583
+        "x": 771,
+        "y": 1574
       },
       "params": {
         "op": "pick"
@@ -598,8 +598,8 @@
       "id": "ks_blackX",
       "defType": "data/csv-inline",
       "position": {
-        "x": 331,
-        "y": 2031
+        "x": 385,
+        "y": 1389
       },
       "params": {
         "data": "-174,-116,0,58,116"
@@ -609,8 +609,8 @@
       "id": "ks_blackPos",
       "defType": "math/expression",
       "position": {
-        "x": 684,
-        "y": 1993
+        "x": 768,
+        "y": 1410
       },
       "params": {
         "expr": "vec2(x, 87.0 + (d ? 3 : 0))"
@@ -620,8 +620,8 @@
       "id": "ks_blackCol",
       "defType": "math/expression",
       "position": {
-        "x": 1068,
-        "y": 1627
+        "x": 1077,
+        "y": 1495
       },
       "params": {
         "expr": "d ? c : rgb(0.1, 0.1, 0.13)"
@@ -631,8 +631,8 @@
       "id": "ks_blackLetters",
       "defType": "string/split",
       "position": {
-        "x": 1082,
-        "y": 2050
+        "x": 1090,
+        "y": 1659
       },
       "params": {
         "text": "W,E,T,Y,U",
@@ -643,8 +643,8 @@
       "id": "ks_blackLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 1395,
-        "y": 1771
+        "x": 1364,
+        "y": 1359
       },
       "params": {
         "width": 629,
@@ -780,8 +780,8 @@
       "id": "ks_time",
       "defType": "time/seconds",
       "position": {
-        "x": 3120,
-        "y": 1812
+        "x": 3109,
+        "y": 1397
       },
       "params": {}
     },
@@ -789,8 +789,8 @@
       "id": "ks_keyTops",
       "defType": "math/expression",
       "position": {
-        "x": 330,
-        "y": 1601
+        "x": 384,
+        "y": 1225
       },
       "params": {
         "expr": "vec2(x, y)"
@@ -801,7 +801,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 1,
-        "y": 1478
+        "y": 1349
       },
       "params": {
         "data": "-203,-174,-145,-116,-87,-29,0,29,58,87,116,145,203"
@@ -812,7 +812,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 1,
-        "y": 1582
+        "y": 1453
       },
       "params": {
         "data": "41,41,41,41,41,41,41,41,41,41,41,41,41"
@@ -822,8 +822,8 @@
       "id": "ks_sparkAt",
       "defType": "spread/lookup",
       "position": {
-        "x": 3081,
-        "y": 1664
+        "x": 3070,
+        "y": 959
       },
       "params": {
         "op": "at"
@@ -833,8 +833,8 @@
       "id": "ks_sparkCol",
       "defType": "spread/lookup",
       "position": {
-        "x": 3081,
-        "y": 1516
+        "x": 3070,
+        "y": 1249
       },
       "params": {
         "op": "at"
@@ -844,8 +844,8 @@
       "id": "ks_sparkRate",
       "defType": "math/expression",
       "position": {
-        "x": 3078,
-        "y": 1226
+        "x": 3067,
+        "y": 1107
       },
       "params": {
         "expr": "g ? 140 : 0"
@@ -855,8 +855,8 @@
       "id": "ks_world",
       "defType": "physics/world",
       "position": {
-        "x": 3092,
-        "y": 990
+        "x": 3081,
+        "y": 723
       },
       "params": {},
       "portValues": {
@@ -871,8 +871,8 @@
       "id": "ks_sparks",
       "defType": "particles/emitter",
       "position": {
-        "x": 3444,
-        "y": 1405
+        "x": 3468,
+        "y": 864
       },
       "params": {
         "maxCount": 900,
@@ -892,8 +892,8 @@
       "id": "ks_sparkTrail",
       "defType": "particles/trail",
       "position": {
-        "x": 4688,
-        "y": 1162
+        "x": 4581,
+        "y": 774
       },
       "params": {
         "segments": 10
@@ -907,8 +907,8 @@
       "id": "ks_sparkDots",
       "defType": "particles/render-as",
       "position": {
-        "x": 4683,
-        "y": 1420
+        "x": 4577,
+        "y": 1128
       },
       "params": {}
     },
@@ -916,8 +916,8 @@
       "id": "ks_env",
       "defType": "motion/smooth",
       "position": {
-        "x": 3112,
-        "y": 864
+        "x": 3101,
+        "y": 1523
       },
       "params": {},
       "portValues": {
@@ -928,8 +928,8 @@
       "id": "ks_scopeX",
       "defType": "spread/range",
       "position": {
-        "x": 3093,
-        "y": 317
+        "x": 3082,
+        "y": 307
       },
       "params": {},
       "portValues": {
@@ -940,8 +940,8 @@
       "id": "ks_scope",
       "defType": "math/expression",
       "position": {
-        "x": 3427,
-        "y": 195
+        "x": 3451,
+        "y": 410
       },
       "params": {
         "expr": "vec2(-280 + i * 560 / 239, -78 - clamp(g, 0, 1) * 44 * (fract(i / 239 * 3 * pow(2, (n - 60) / 12) + t * 0.5) * 2 - 1) * (0.35 + 0.65 * clamp(c / 3000, 0, 1)))"
@@ -951,8 +951,8 @@
       "id": "ks_scopeCol",
       "defType": "spread/lookup",
       "position": {
-        "x": 3081,
-        "y": 1368
+        "x": 3070,
+        "y": 411
       },
       "params": {
         "op": "at"
@@ -962,8 +962,8 @@
       "id": "ks_scopeStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 3465,
-        "y": 1235
+        "x": 3489,
+        "y": 662
       },
       "params": {},
       "portValues": {
@@ -974,8 +974,8 @@
       "id": "ks_scopeLine",
       "defType": "draw/polygon",
       "position": {
-        "x": 3838,
-        "y": 1063
+        "x": 3781,
+        "y": 555
       },
       "params": {},
       "portValues": {
@@ -986,8 +986,8 @@
       "id": "ks_scopeGlow",
       "defType": "gpu/effect",
       "position": {
-        "x": 4673,
-        "y": 734
+        "x": 4566,
+        "y": 538
       },
       "params": {
         "mode": "glow"
@@ -1002,8 +1002,8 @@
       "id": "ks_noteNames",
       "defType": "string/split",
       "position": {
-        "x": 3438,
-        "y": 1109
+        "x": 3462,
+        "y": 1264
       },
       "params": {
         "text": "C,C♯,D,D♯,E,F,F♯,G,G♯,A,A♯,B",
@@ -1014,8 +1014,8 @@
       "id": "ks_pitchClass",
       "defType": "math/expression",
       "position": {
-        "x": 3427,
-        "y": 731
+        "x": 3451,
+        "y": 1390
       },
       "params": {
         "expr": "n % 12"
@@ -1025,8 +1025,8 @@
       "id": "ks_noteName",
       "defType": "spread/lookup",
       "position": {
-        "x": 3809,
-        "y": 915
+        "x": 3752,
+        "y": 1283
       },
       "params": {
         "op": "at"
@@ -1036,8 +1036,8 @@
       "id": "ks_noteOct",
       "defType": "math/expression",
       "position": {
-        "x": 3427,
-        "y": 589
+        "x": 3451,
+        "y": 1532
       },
       "params": {
         "expr": "floor(n / 12) - 1"
@@ -1047,8 +1047,8 @@
       "id": "ks_noteOctText",
       "defType": "string/format-number",
       "position": {
-        "x": 3814,
-        "y": 657
+        "x": 3757,
+        "y": 1431
       },
       "params": {},
       "portValues": {
@@ -1059,8 +1059,8 @@
       "id": "ks_nameParts",
       "defType": "spread/merge",
       "position": {
-        "x": 4104,
-        "y": 792
+        "x": 4020,
+        "y": 1344
       },
       "params": {
         "slotCount": 2
@@ -1070,8 +1070,8 @@
       "id": "ks_nameStr",
       "defType": "string/concat",
       "position": {
-        "x": 4427,
-        "y": 828
+        "x": 4330,
+        "y": 1343
       },
       "params": {
         "separator": ""
@@ -1081,8 +1081,8 @@
       "id": "ks_nameCol",
       "defType": "math/expression",
       "position": {
-        "x": 4104,
-        "y": 1110
+        "x": 4020,
+        "y": 1531
       },
       "params": {
         "expr": "rgba(1, 1, 1, 0.25 + 0.75 * g)"
@@ -1092,8 +1092,8 @@
       "id": "ks_nameFill",
       "defType": "style/fill",
       "position": {
-        "x": 4433,
-        "y": 1103
+        "x": 4336,
+        "y": 1484
       },
       "params": {}
     },
@@ -1101,8 +1101,8 @@
       "id": "ks_nameText",
       "defType": "draw/text",
       "position": {
-        "x": 4713,
-        "y": 970
+        "x": 4606,
+        "y": 1342
       },
       "params": {
         "size": 44,
@@ -1119,8 +1119,8 @@
       "id": "ks_octText",
       "defType": "string/format-number",
       "position": {
-        "x": 693,
-        "y": 231
+        "x": 777,
+        "y": 1722
       },
       "params": {},
       "portValues": {
@@ -1132,8 +1132,8 @@
       "id": "ks_cutText",
       "defType": "string/format-number",
       "position": {
-        "x": 693,
-        "y": 717
+        "x": 777,
+        "y": 1980
       },
       "params": {
         "mode": "compact"
@@ -1149,7 +1149,7 @@
       "defType": "value/string",
       "position": {
         "x": 5,
-        "y": 1790
+        "y": 1663
       },
       "params": {
         "value": "arp on"
@@ -1160,7 +1160,7 @@
       "defType": "value/string",
       "position": {
         "x": 5,
-        "y": 1894
+        "y": 1767
       },
       "params": {
         "value": "arp off"
@@ -1170,8 +1170,8 @@
       "id": "ks_arpTxt",
       "defType": "logic/select",
       "position": {
-        "x": 362,
-        "y": 1765
+        "x": 416,
+        "y": 1673
       },
       "params": {}
     },
@@ -1179,8 +1179,8 @@
       "id": "ks_help",
       "defType": "value/string",
       "position": {
-        "x": 689,
-        "y": 1763
+        "x": 773,
+        "y": 2172
       },
       "params": {
         "value": "keys A–K play · Z X octave · mouse ↕ filter"
@@ -1190,8 +1190,8 @@
       "id": "ks_statusParts",
       "defType": "spread/merge",
       "position": {
-        "x": 1068,
-        "y": 1217
+        "x": 1077,
+        "y": 1904
       },
       "params": {
         "slotCount": 4
@@ -1201,8 +1201,8 @@
       "id": "ks_status",
       "defType": "string/concat",
       "position": {
-        "x": 1651,
-        "y": 1348
+        "x": 1620,
+        "y": 1865
       },
       "params": {
         "separator": "   ·   "
@@ -1212,8 +1212,8 @@
       "id": "ks_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 1637,
-        "y": 1474
+        "x": 1606,
+        "y": 1991
       },
       "params": {},
       "portValues": {
@@ -1229,8 +1229,8 @@
       "id": "ks_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 2173,
-        "y": 1297
+        "x": 2210,
+        "y": 1846
       },
       "params": {
         "size": 13,
@@ -1247,8 +1247,8 @@
       "id": "ks_scene",
       "defType": "transform/group",
       "position": {
-        "x": 5030,
-        "y": 1070
+        "x": 4896,
+        "y": 970
       },
       "params": {
         "slotCount": 9
@@ -1258,8 +1258,8 @@
       "id": "ks_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 5294,
-        "y": 1069
+        "x": 5160,
+        "y": 970
       },
       "params": {
         "width": 720,

@@ -20,6 +20,7 @@ mod cells;
 mod connect;
 mod lsystem;
 mod measure;
+pub(crate) use measure::fade_paint;
 mod morph;
 #[cfg(test)]
 mod motion_tests;

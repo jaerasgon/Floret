@@ -393,6 +393,20 @@
       "file": "type-glyph-particles.flora"
     },
     {
+      "id": "trim-write-on",
+      "name": "Write-On Lettering",
+      "category": "Type",
+      "description": "Trim Path (sequence) writes a word's glyph outlines one after another, with a pen nib riding the drawing end.",
+      "file": "trim-write-on.flora"
+    },
+    {
+      "id": "kinetic-type",
+      "name": "Kinetic Type",
+      "category": "Type",
+      "description": "Text Animate: letters rise, turn and fade in one after another; a second line rides a rolling sine wave. No ForEach.",
+      "file": "kinetic-type.flora"
+    },
+    {
       "id": "particles-fountain",
       "name": "Fountain",
       "category": "Particles",
@@ -680,6 +694,13 @@
       "file": "paint-trail.flora"
     },
     {
+      "id": "echo-trails",
+      "name": "Echo Trails",
+      "category": "Feedback",
+      "description": "Echo keeps the last frames on the GPU: a swinging star leaves ten fading copies. Try trails, delay, slit-scan, freeze.",
+      "file": "echo-trails.flora"
+    },
+    {
       "id": "csv-bar-chart",
       "name": "CSV Bar Chart",
       "category": "Data",
@@ -692,6 +713,13 @@
       "category": "Data",
       "description": "Noise bars where each lights green only if it is taller than BOTH neighbours — local-maximum detection with spread/neighbor inside a ForEach.",
       "file": "local-peaks.flora"
+    },
+    {
+      "id": "number-counters",
+      "name": "Number Counters",
+      "category": "Data",
+      "description": "Format Number: an eased count-up as money, percent and compact 12.3k, and a m:ss.ff clock.",
+      "file": "number-counters.flora"
     },
     {
       "id": "voronoi-mosaic",
@@ -713,6 +741,27 @@
       "category": "Geometry",
       "description": "Random circles merged by Shape Boolean, then offset in and out by Path Ops inside a ForEach — topographic rings around one blob.",
       "file": "contour-blobs.flora"
+    },
+    {
+      "id": "plexus",
+      "name": "Plexus",
+      "category": "Geometry",
+      "description": "Connect Points joins nearby boids with lines that fade and thin as they stretch, a few links per bird.",
+      "file": "plexus.flora"
+    },
+    {
+      "id": "morph-tunnel",
+      "name": "Morph Tunnel",
+      "category": "Geometry",
+      "description": "Shape Morph blends a circle into a star; 22 copies at rolling t, shrinking and turning, breathe from round to spiky.",
+      "file": "morph-tunnel.flora"
+    },
+    {
+      "id": "relaxed-cells",
+      "name": "Relaxed Cells",
+      "category": "Geometry",
+      "description": "The same random points before and after Scatter's relax (Lloyd relaxation): clumps and gaps become an even mosaic.",
+      "file": "relaxed-cells.flora"
     },
     {
       "id": "loop-bloom",

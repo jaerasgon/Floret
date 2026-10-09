@@ -806,6 +806,77 @@
    "paramOptions": null
   },
   {
+   "type": "string/format-number",
+   "category": "Convert",
+   "label": "Format Number",
+   "description": "Numbers as text, for labels, counters and charts — every element of a spread. Modes: `number` (`decimals`, thousands `separator`, zero `pad` to that many integer digits, `sign` always shows + / −), `percent` (0.25 → 25%), `compact` (1.2k, 3.4M, 5.6B), `time` (seconds as m:ss, h:mm:ss from an hour, with `decimals` of a second). `prefix` / `suffix` add units or currency.",
+   "inputs": [
+    {
+     "name": "value",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "decimals",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "integer": true
+    },
+    {
+     "name": "separator",
+     "type": "string",
+     "kind": "single",
+     "default": ","
+    },
+    {
+     "name": "pad",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "integer": true
+    },
+    {
+     "name": "sign",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    },
+    {
+     "name": "prefix",
+     "type": "string",
+     "kind": "single",
+     "default": ""
+    },
+    {
+     "name": "suffix",
+     "type": "string",
+     "kind": "single",
+     "default": ""
+    }
+   ],
+   "outputs": [
+    {
+     "name": "text",
+     "type": "string",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "number"
+   },
+   "paramOptions": {
+    "mode": [
+     "number",
+     "percent",
+     "compact",
+     "time"
+    ]
+   }
+  },
+  {
    "type": "data/csv-inline",
    "category": "Data",
    "label": "CSVInline",
@@ -2050,6 +2121,128 @@
     "mode": [
      "outline",
      "fill"
+    ]
+   }
+  },
+  {
+   "type": "text/animate",
+   "category": "Text",
+   "label": "Text Animate",
+   "description": "Animate text glyph by glyph, no ForEach needed. Wire `draw/text`, Glyphs or Text on Path into `text`. `in`: each glyph eases (`ease`) from its start state — moved by `offset`, turned by `rotate` (radians), at `scale` and `opacity` — to its place as `progress` runs 0 → 1; `stagger` 0 moves all together, 1 one after another, in `order` (forward, backward, center, edges, random by `seed`). Run `progress` 1 → 0 to animate out. `wave`: `progress` is a phase (loop it 0..1); glyphs swing by `offset` / `rotate` and towards `scale` / `opacity`, `stagger` cycles apart. Glyphs turn and scale about their centres. `amounts`: each glyph's eased progress (or wave, −1..1).",
+   "inputs": [
+    {
+     "name": "text",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "progress",
+     "type": "number",
+     "kind": "single",
+     "default": 0.5
+    },
+    {
+     "name": "stagger",
+     "type": "number",
+     "kind": "single",
+     "default": 0.6
+    },
+    {
+     "name": "order",
+     "type": "string",
+     "kind": "single",
+     "default": "forward",
+     "param": "order"
+    },
+    {
+     "name": "ease",
+     "type": "string",
+     "kind": "single",
+     "default": "outCubic",
+     "param": "ease"
+    },
+    {
+     "name": "offset",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 40
+     }
+    },
+    {
+     "name": "rotate",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "scale",
+     "type": "number",
+     "kind": "single",
+     "default": 1
+    },
+    {
+     "name": "opacity",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "seed",
+     "type": "number",
+     "kind": "single",
+     "default": 1,
+     "integer": true
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "glyphs",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "amounts",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "in",
+    "order": "forward",
+    "ease": "outCubic"
+   },
+   "paramOptions": {
+    "mode": [
+     "in",
+     "wave"
+    ],
+    "order": [
+     "forward",
+     "backward",
+     "center",
+     "edges",
+     "random"
+    ],
+    "ease": [
+     "linear",
+     "inQuad",
+     "outQuad",
+     "inOutQuad",
+     "inCubic",
+     "outCubic",
+     "inOutCubic",
+     "inElastic",
+     "outElastic",
+     "inOutElastic"
     ]
    }
   },

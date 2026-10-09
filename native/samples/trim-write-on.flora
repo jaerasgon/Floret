@@ -1,0 +1,313 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Write-On Lettering",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "tri_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -294
+      },
+      "params": {
+        "text": "Write-on lettering\n\nGlyphs lays out the word; Trim Path (`sequence`) reveals its outlines one after another as `end` runs from 0 to 1, so the letters are written in order. The pen nib sits on `heads`.\n\nTry `each` (every outline at once), or animate `offset` with a short `end` for a travelling dash.",
+        "width": 460,
+        "height": 230
+      },
+      "portValues": {
+        "text": "Write-on lettering\n\nGlyphs lays out the word; Trim Path (`sequence`) reveals its outlines one after another as `end` runs from 0 to 1, so the letters are written in order. The pen nib sits on `heads`.\n\nTry `each` (every outline at once), or animate `offset` with a short `end` for a travelling dash.",
+        "width": 460,
+        "height": 230
+      }
+    },
+    {
+      "id": "tw_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 29,
+        "y": 221
+      },
+      "params": {}
+    },
+    {
+      "id": "tw_ease",
+      "defType": "math/expression",
+      "position": {
+        "x": 238,
+        "y": 202
+      },
+      "params": {
+        "expr": "smoothstep(0.0, 0.8, x)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "tw_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 99
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.06
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.06
+        }
+      }
+    },
+    {
+      "id": "tw_text",
+      "defType": "text/glyphs",
+      "position": {
+        "x": 250,
+        "y": 0
+      },
+      "params": {
+        "string": "floret",
+        "size": 170,
+        "align": "center"
+      },
+      "portValues": {
+        "string": "floret",
+        "size": 170,
+        "align": "center",
+        "pos": {
+          "x": 0,
+          "y": 55
+        }
+      }
+    },
+    {
+      "id": "tw_line",
+      "defType": "style/stroke",
+      "position": {
+        "x": 257,
+        "y": 342
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.5411764705882353,
+          "b": 0.3568627450980392,
+          "a": 1.0
+        },
+        "width": 2.5,
+        "align": "center"
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.5411764705882353,
+          "b": 0.3568627450980392,
+          "a": 1.0
+        },
+        "width": 2.5,
+        "align": "center"
+      }
+    },
+    {
+      "id": "tw_trim",
+      "defType": "geometry/trim",
+      "position": {
+        "x": 524,
+        "y": 83
+      },
+      "params": {
+        "mode": "sequence"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "tw_head",
+      "defType": "spread/at",
+      "position": {
+        "x": 802,
+        "y": 139
+      },
+      "params": {}
+    },
+    {
+      "id": "tw_nib_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 784,
+        "y": 261
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8784313725490196,
+          "b": 0.5411764705882353,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8784313725490196,
+          "b": 0.5411764705882353,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "tw_nib",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1016,
+        "y": 142
+      },
+      "params": {
+        "w": 11,
+        "h": 11
+      },
+      "portValues": {
+        "w": 11,
+        "h": 11
+      }
+    },
+    {
+      "id": "tw_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 1214,
+        "y": 64
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {}
+    },
+    {
+      "id": "tw_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1478,
+        "y": 64
+      },
+      "params": {
+        "width": 720,
+        "height": 360,
+        "background": {
+          "r": 0.054901960784313725,
+          "g": 0.050980392156862744,
+          "b": 0.0784313725490196,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 720,
+        "height": 360,
+        "background": {
+          "r": 0.054901960784313725,
+          "g": 0.050980392156862744,
+          "b": 0.0784313725490196,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_tw_t_tw_ease_x",
+      "source": "tw_t",
+      "target": "tw_ease",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_tw_fill_tw_text_style",
+      "source": "tw_fill",
+      "target": "tw_text",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_tw_text_tw_trim_path",
+      "source": "tw_text",
+      "target": "tw_trim",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_tw_ease_tw_trim_end",
+      "source": "tw_ease",
+      "target": "tw_trim",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-end"
+    },
+    {
+      "id": "e_tw_line_tw_trim_style",
+      "source": "tw_line",
+      "target": "tw_trim",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_tw_trim_tw_head_spread",
+      "source": "tw_trim",
+      "target": "tw_head",
+      "sourceHandle": "out-heads",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_tw_head_tw_nib_pos",
+      "source": "tw_head",
+      "target": "tw_nib",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_tw_nib_fill_tw_nib_style",
+      "source": "tw_nib_fill",
+      "target": "tw_nib",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_tw_text_tw_group_s1",
+      "source": "tw_text",
+      "target": "tw_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_tw_trim_tw_group_s2",
+      "source": "tw_trim",
+      "target": "tw_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_tw_nib_tw_group_s3",
+      "source": "tw_nib",
+      "target": "tw_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_tw_group_tw_r_layers",
+      "source": "tw_group",
+      "target": "tw_r",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ],
+  "loopLength": 5
+}

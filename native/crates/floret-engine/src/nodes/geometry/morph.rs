@@ -43,9 +43,12 @@ pub(super) struct Pair {
     pub hole: bool,
 }
 
+/// The last inputs (`a`, `b`, `points`) and the pairs made from them.
+type Prepared = (Vec<Value>, Vec<Value>, usize, Vec<Pair>);
+
 pub(super) fn morph(init: &NodeInit) -> Box<dyn NodeImpl> {
     let pins = Pins::new(init);
-    let mut cache: Option<(Vec<Value>, Vec<Value>, usize, Vec<Pair>)> = None;
+    let mut cache: Option<Prepared> = None;
     raw(move |inputs, _| {
         let sa = spread_of(&pins, inputs, "a");
         let sb = spread_of(&pins, inputs, "b");

@@ -1,0 +1,269 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Echo Trails",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ech_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -284
+      },
+      "params": {
+        "text": "Echo trails\n\nA star swings round a Lissajous path. Echo (`echo` mode) keeps the last frames on the GPU and draws ten earlier ones under it, three frames apart, each fainter.\n\nTry `trails` (a fading smear), `delay`, `slit-scan` (each row from a different moment) or `freeze`.",
+        "width": 460,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Echo trails\n\nA star swings round a Lissajous path. Echo (`echo` mode) keeps the last frames on the GPU and draws ten earlier ones under it, three frames apart, each fainter.\n\nTry `trails` (a fading smear), `delay`, `slit-scan` (each row from a different moment) or `freeze`.",
+        "width": 460,
+        "height": 220
+      }
+    },
+    {
+      "id": "et_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 263,
+        "y": 42
+      },
+      "params": {}
+    },
+    {
+      "id": "et_ring",
+      "defType": "spread/ring",
+      "position": {
+        "x": 0,
+        "y": 202
+      },
+      "params": {
+        "count": 10,
+        "radius": 46
+      },
+      "portValues": {
+        "count": 10,
+        "radius": 46
+      }
+    },
+    {
+      "id": "et_star",
+      "defType": "math/expression",
+      "position": {
+        "x": 221,
+        "y": 164
+      },
+      "params": {
+        "expr": "vec2(p.x, p.y) * (1 - 0.5 * (index % 2))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "et_col",
+      "defType": "style/fill",
+      "position": {
+        "x": 240,
+        "y": 304
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8117647058823529,
+          "b": 0.3607843137254902,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8117647058823529,
+          "b": 0.3607843137254902,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "et_poly",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 535,
+        "y": 231
+      },
+      "params": {},
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "et_spin",
+      "defType": "math/expression",
+      "position": {
+        "x": 495,
+        "y": 91
+      },
+      "params": {
+        "expr": "tau * l * 2"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "et_rot",
+      "defType": "transform/rotate",
+      "position": {
+        "x": 809,
+        "y": 151
+      },
+      "params": {}
+    },
+    {
+      "id": "et_path",
+      "defType": "math/expression",
+      "position": {
+        "x": 768,
+        "y": 0
+      },
+      "params": {
+        "expr": "vec2(190 * sin(tau * l * 3), 110 * sin(tau * l * 4))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "et_move",
+      "defType": "transform/translate",
+      "position": {
+        "x": 1038,
+        "y": 90
+      },
+      "params": {}
+    },
+    {
+      "id": "et_echo",
+      "defType": "gpu/echo",
+      "position": {
+        "x": 1222,
+        "y": 50
+      },
+      "params": {
+        "mode": "echo"
+      },
+      "portValues": {
+        "copies": 10,
+        "spacing": 3,
+        "decay": 0.78
+      }
+    },
+    {
+      "id": "et_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1485,
+        "y": 50
+      },
+      "params": {
+        "width": 640,
+        "height": 400,
+        "background": {
+          "r": 0.07058823529411765,
+          "g": 0.0392156862745098,
+          "b": 0.11764705882352941,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 640,
+        "height": 400,
+        "background": {
+          "r": 0.07058823529411765,
+          "g": 0.0392156862745098,
+          "b": 0.11764705882352941,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_et_t_et_spin_l",
+      "source": "et_t",
+      "target": "et_spin",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_et_t_et_path_l",
+      "source": "et_t",
+      "target": "et_path",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_et_ring_et_star_p",
+      "source": "et_ring",
+      "target": "et_star",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_et_star_et_poly_points",
+      "source": "et_star",
+      "target": "et_poly",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_et_col_et_poly_style",
+      "source": "et_col",
+      "target": "et_poly",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_et_spin_et_rot_angle",
+      "source": "et_spin",
+      "target": "et_rot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_et_poly_et_rot_layer",
+      "source": "et_poly",
+      "target": "et_rot",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_et_path_et_move_by",
+      "source": "et_path",
+      "target": "et_move",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_et_rot_et_move_layer",
+      "source": "et_rot",
+      "target": "et_move",
+      "sourceHandle": "out-rotated",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_et_move_et_echo_input",
+      "source": "et_move",
+      "target": "et_echo",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_et_echo_et_r_layers",
+      "source": "et_echo",
+      "target": "et_r",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ],
+  "loopLength": 8
+}

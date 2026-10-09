@@ -16,12 +16,12 @@
         "y": -264
       },
       "params": {
-        "text": "Wave function collapse\n\nThe Tiles node in `wfc` mode fills the grid with tiles whose edges must match: `sockets` lists each tile as four characters for its north, east, south and west edges (`0` = nothing, `1` = a pipe), and `*3` makes one three times as likely. Every tile is tried in its four turns. Cell by cell, the most constrained one is settled and its neighbours narrowed down — and with `closed` on, every pipe closes into a circuit.\n\nEach kind of tile takes its own colour. Change `seed`, or edit the sockets (try removing the tees `1110`).",
+        "text": "Wave function collapse\n\nThe Tiles node in `wfc` mode fills the grid with tiles whose edges must match: `sockets` lists each tile as four characters for its north, east, south and west edges (`0` = nothing, `1` = a pipe), and `*3` makes one three times as likely. Every tile is tried in its four turns. Cell by cell, the most constrained one is settled and its neighbours narrowed down — and with `closed` on, no pipe runs off the grid (`1000`, a dead end, is the only way to stop short).\n\nEach kind of tile takes its own colour. Change `seed`, or edit the sockets (try removing the tees `1110`).",
         "width": 520,
         "height": 200
       },
       "portValues": {
-        "text": "Wave function collapse\n\nThe Tiles node in `wfc` mode fills the grid with tiles whose edges must match: `sockets` lists each tile as four characters for its north, east, south and west edges (`0` = nothing, `1` = a pipe), and `*3` makes one three times as likely. Every tile is tried in its four turns. Cell by cell, the most constrained one is settled and its neighbours narrowed down — and with `closed` on, every pipe closes into a circuit.\n\nEach kind of tile takes its own colour. Change `seed`, or edit the sockets (try removing the tees `1110`).",
+        "text": "Wave function collapse\n\nThe Tiles node in `wfc` mode fills the grid with tiles whose edges must match: `sockets` lists each tile as four characters for its north, east, south and west edges (`0` = nothing, `1` = a pipe), and `*3` makes one three times as likely. Every tile is tried in its four turns. Cell by cell, the most constrained one is settled and its neighbours narrowed down — and with `closed` on, no pipe runs off the grid (`1000`, a dead end, is the only way to stop short).\n\nEach kind of tile takes its own colour. Change `seed`, or edit the sockets (try removing the tees `1110`).",
         "width": 520,
         "height": 200
       }

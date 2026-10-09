@@ -13972,7 +13972,7 @@
    "category": "Geometry",
    "group": "Patterns",
    "label": "Tiles",
-   "description": "A `cols` × `rows` grid of `size`-wide tiles centred on `center`, each turned or chosen so the pattern reads as one. truchet: every cell takes one turn of a `tiles` set — `arcs` (two quarter circles: meandering loops), `diagonals` (the 10 PRINT maze) or `triangles` (half-square triangles) — at random, or with `noise` > 0 following Perlin noise at that scale per cell, so the turns clump. wfc: wave function collapse over edge-matched tiles: `sockets` lists them, four characters each for what the north, east, south and west edges carry (`0` = nothing; `1100` is a corner), `*weight` makes one likelier (`1100*3`); every tile comes in its four turns, neighbours must carry the same thing where they meet, and `closed` keeps the outer edges empty so every path closes. Tiles are drawn as pipes (straight, round a corner, to the middle with a dot for a dead end); at most 64 a side. Same `seed`, same pattern. `colors`: colour k for tile k of the set (its turn in truchet), cycled. Outputs: all tiles, one layer per cell, cell `centers`, `tiles` (which tile of the set) and `angles` (its turn, radians clockwise) — for a ForEach to draw its own tiles.",
+   "description": "A `cols` × `rows` grid of `size`-wide tiles centred on `center`, each turned or chosen so the pattern reads as one. truchet: every cell takes one turn of a `tiles` set — `arcs` (two quarter circles: meandering loops), `diagonals` (the 10 PRINT maze) or `triangles` (half-square triangles) — at random, or with `noise` > 0 following Perlin noise at that scale per cell, so the turns clump. wfc: wave function collapse over edge-matched tiles: `sockets` lists them, four characters each for what the north, east, south and west edges carry (`0` = nothing; `1100` is a corner), `*weight` makes one likelier (`1100*3`); every tile comes in its four turns, neighbours must carry the same thing where they meet, and `closed` keeps the outer edges empty so no path runs off the grid. Tiles are drawn as pipes (straight, round a corner, to the middle with a dot for a dead end); at most 64 a side. Same `seed`, same pattern. `colors`: colour k for tile k of the set (its turn in truchet), cycled. Outputs: all tiles, one layer per cell, cell `centers`, `tiles` (which tile of the set) and `angles` (its turn, radians clockwise) — for a ForEach to draw its own tiles.",
    "inputs": [
     {
      "name": "cols",
@@ -14064,8 +14064,7 @@
    "eval": "raw",
    "dynamicInputs": true,
    "defaultParams": {
-    "mode": "truchet",
-    "tiles": "arcs"
+    "mode": "truchet"
    },
    "paramOptions": {
     "mode": [
@@ -14414,8 +14413,7 @@
    "eval": "raw",
    "dynamicInputs": true,
    "defaultParams": {
-    "mode": "kaleidoscope",
-    "group": "p4m"
+    "mode": "kaleidoscope"
    },
    "paramOptions": {
     "mode": [

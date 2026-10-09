@@ -13,7 +13,7 @@
 //!   two neighbours must carry the same thing where they meet. Every tile
 //!   comes in its four turns (repeats dropped); `*weight` after a tile
 //!   makes it likelier (`1100*3`). `closed` makes the outer edges carry
-//!   nothing, so every path closes. A tile is drawn as pipes from its
+//!   nothing, so no path runs off the grid. A tile is drawn as pipes from its
 //!   carrying edges: straight across, a quarter circle round a corner, to
 //!   the middle (with a dot for a dead end) otherwise. A contradiction
 //!   restarts the collapse (at most [`ATTEMPTS`] times).

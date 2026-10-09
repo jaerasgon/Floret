@@ -31,6 +31,10 @@ const MAY_BE_BLANK: &[(&str, &str)] = &[
         "draws the video's frames (no video decoder installed in this test)",
     ),
     (
+        "flipbook-sequence",
+        "draws the image sequence's frames (no video decoder installed in this test)",
+    ),
+    (
         "tut-49-fft",
         "draws the microphone's spectrum (no microphone here)",
     ),

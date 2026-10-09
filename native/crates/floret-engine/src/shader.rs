@@ -322,6 +322,21 @@ pub struct ShaderShape {
     /// A second layer for [`ShaderChannel::Map`] (`gpu/effect`'s
     /// displacement map); `gpu/shader` never sets it.
     pub map: Option<Arc<crate::scene::SceneNode>>,
+    /// Keep the input's last frames for the passes (`gpu/echo`); `None`
+    /// for every other draw.
+    pub history: Option<ShaderHistory>,
+}
+
+/// A ring of the input's past frames the renderer keeps for one draw: the
+/// passes read it as `iHistory` (a `sampler2DArray`), with `iHistoryHead`
+/// (this frame's layer), `iHistoryCount` (frames held) and `iHistorySize`
+/// (layers in the ring).
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ShaderHistory {
+    /// Frames wanted, this one included (the renderer caps it by memory).
+    pub frames: u32,
+    /// Forget the frames held (they refill from this one).
+    pub reset: bool,
 }
 
 impl ShaderShape {
@@ -393,6 +408,15 @@ impl ShaderShape {
         // Native-only, so absent unless set (keeps the TS traces comparable).
         if let Some(map) = &self.map {
             m.insert("map".into(), Value::Scene(map.clone()));
+        }
+        if let Some(h) = &self.history {
+            m.insert(
+                "history".into(),
+                obj(vec![
+                    ("frames", Value::Num(f64::from(h.frames))),
+                    ("reset", Value::Bool(h.reset)),
+                ]),
+            );
         }
     }
 }

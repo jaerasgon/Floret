@@ -389,6 +389,7 @@ fn effect(_: &NodeInit) -> Box<dyn NodeImpl> {
             uniforms: Arc::from(uniforms),
             input: as_layer(inputs.first().map(|s| &s[..])),
             map,
+            history: None,
         };
         Ok(vec![one(Value::Scene(Arc::new(SceneNode::Shader(
             Arc::new(shape),

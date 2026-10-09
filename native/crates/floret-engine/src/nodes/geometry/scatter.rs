@@ -2,8 +2,13 @@
 //!
 //! Modes: `poisson` (Bridson's Poisson-disc sampling: no two points closer
 //! than `distance`), `random` (uniform), `jittered-grid` (one point per
-//! grid cell, nudged by up to `jitter` of a cell) and `halton` (the 2-3
-//! Halton low-discrepancy sequence, shifted by the seed).
+//! grid cell, nudged by up to `jitter` of a cell), `halton` (the 2-3
+//! Halton low-discrepancy sequence, shifted by the seed) and `relax` (the
+//! wired `points`, spread out over the area).
+//!
+//! Every mode takes `relax`: that many passes of Lloyd relaxation (see
+//! [`super::relax`]), which evens the points out over the area — random
+//! points become an even, organic spread with an exact count.
 
 use super::{
     int_pin, layer_contours, live_mode, num_pin, param_str, rng, vec2_pin, Pins, MAX_POINTS,
@@ -34,8 +39,14 @@ pub(super) fn inputs(params: &Params) -> Vec<PortSpec> {
             v.push(num_pin("spacing", SPACING));
             v.push(num_pin("jitter", 1.0));
         }
+        "relax" => {
+            v.push(PortSpec::new("points", PortType::Vec2).kind(PortKind::Spread));
+            v.push(int_pin("relax", 10.0));
+            return v;
+        }
         _ => v.push(num_pin("distance", DISTANCE)),
     }
+    v.push(int_pin("relax", 0.0));
     v.push(int_pin("seed", 1.0));
     v
 }
@@ -79,12 +90,17 @@ impl Area {
         })
     }
 
-    fn w(&self) -> f64 {
+    pub fn w(&self) -> f64 {
         self.max.x - self.min.x
     }
 
-    fn h(&self) -> f64 {
+    pub fn h(&self) -> f64 {
         self.max.y - self.min.y
+    }
+
+    /// No shape: the whole rectangle.
+    pub fn is_rect(&self) -> bool {
+        self.shape.is_none()
     }
 
     pub fn contains(&self, p: Vec2) -> bool {
@@ -138,8 +154,14 @@ pub(super) fn scatter(init: &NodeInit) -> Box<dyn NodeImpl> {
                 let jitter = pins.num(inputs, "jitter", 1.0).clamp(0.0, 1.0);
                 jittered_grid(&area, spacing, jitter, seed)
             }
+            "relax" => (pins.points(inputs, "points"), false),
             _ => poisson(&area, pins.num(inputs, "distance", DISTANCE), seed),
         };
+        let fallback = if mode == "relax" { 10.0 } else { 0.0 };
+        let passes = pins
+            .num(inputs, "relax", fallback)
+            .clamp(0.0, super::relax::MAX_ITERATIONS) as usize;
+        let pts = super::relax::lloyd(&area, pts, passes);
         if capped {
             cx.warn(format!("Stopped at {MAX_POINTS} points."));
         }

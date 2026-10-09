@@ -1,0 +1,304 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Kinetic Type",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "kin_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -304
+      },
+      "params": {
+        "text": "Kinetic type\n\nText Animate moves text glyph by glyph, no ForEach needed. The top line comes in (`in` mode): each letter rises, turns and fades in after the one before as `progress` runs 0 → 1, and leaves the same way. The bottom line rides a sine (`wave` mode) that rolls through it as `progress` loops.\n\nTry the `order` (center, random) and `ease` dropdowns.",
+        "width": 470,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Kinetic type\n\nText Animate moves text glyph by glyph, no ForEach needed. The top line comes in (`in` mode): each letter rises, turns and fades in after the one before as `progress` runs 0 → 1, and leaves the same way. The bottom line rides a sine (`wave` mode) that rolls through it as `progress` loops.\n\nTry the `order` (center, random) and `ease` dropdowns.",
+        "width": 470,
+        "height": 240
+      }
+    },
+    {
+      "id": "kt_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 23,
+        "y": 343
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_p",
+      "defType": "math/expression",
+      "position": {
+        "x": 246,
+        "y": 182
+      },
+      "params": {
+        "expr": "smoothstep(0.0, 0.45, x) - smoothstep(0.65, 0.95, x)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "kt_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 80
+      },
+      "params": {
+        "color": {
+          "r": 0.9568627450980393,
+          "g": 0.9450980392156862,
+          "b": 0.8705882352941177,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.9568627450980393,
+          "g": 0.9450980392156862,
+          "b": 0.8705882352941177,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "kt_text",
+      "defType": "draw/text",
+      "position": {
+        "x": 265,
+        "y": 0
+      },
+      "params": {
+        "string": "SPRING",
+        "size": 110,
+        "align": "center"
+      },
+      "portValues": {
+        "string": "SPRING",
+        "size": 110,
+        "align": "center",
+        "pos": {
+          "x": 0,
+          "y": -10
+        }
+      }
+    },
+    {
+      "id": "kt_in",
+      "defType": "text/animate",
+      "position": {
+        "x": 547,
+        "y": 70
+      },
+      "params": {
+        "mode": "in",
+        "order": "forward",
+        "ease": "outCubic"
+      },
+      "portValues": {
+        "stagger": 0.7,
+        "order": "forward",
+        "ease": "outCubic",
+        "offset": {
+          "x": 0,
+          "y": 70
+        },
+        "rotate": -0.6,
+        "scale": 0.4,
+        "opacity": 0
+      }
+    },
+    {
+      "id": "kt_fill2",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 465
+      },
+      "params": {
+        "color": {
+          "r": 0.8784313725490196,
+          "g": 0.47843137254901963,
+          "b": 0.37254901960784315,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.8784313725490196,
+          "g": 0.47843137254901963,
+          "b": 0.37254901960784315,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "kt_text2",
+      "defType": "draw/text",
+      "position": {
+        "x": 253,
+        "y": 333
+      },
+      "params": {
+        "string": "is in the air",
+        "size": 44,
+        "align": "center"
+      },
+      "portValues": {
+        "string": "is in the air",
+        "size": 44,
+        "align": "center",
+        "pos": {
+          "x": 0,
+          "y": 80
+        }
+      }
+    },
+    {
+      "id": "kt_wave",
+      "defType": "text/animate",
+      "position": {
+        "x": 528,
+        "y": 372
+      },
+      "params": {
+        "mode": "wave",
+        "order": "forward"
+      },
+      "portValues": {
+        "stagger": 1,
+        "order": "forward",
+        "offset": {
+          "x": 0,
+          "y": 10
+        },
+        "rotate": 0.15,
+        "scale": 1.15,
+        "opacity": 0.55
+      }
+    },
+    {
+      "id": "kt_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 832,
+        "y": 211
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {}
+    },
+    {
+      "id": "kt_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1096,
+        "y": 211
+      },
+      "params": {
+        "width": 640,
+        "height": 320,
+        "background": {
+          "r": 0.11372549019607843,
+          "g": 0.13333333333333333,
+          "b": 0.20784313725490197,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 640,
+        "height": 320,
+        "background": {
+          "r": 0.11372549019607843,
+          "g": 0.13333333333333333,
+          "b": 0.20784313725490197,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_kt_t_kt_p_x",
+      "source": "kt_t",
+      "target": "kt_p",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_kt_p_kt_in_progress",
+      "source": "kt_p",
+      "target": "kt_in",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-progress"
+    },
+    {
+      "id": "e_kt_fill_kt_text_style",
+      "source": "kt_fill",
+      "target": "kt_text",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_kt_text_kt_in_text",
+      "source": "kt_text",
+      "target": "kt_in",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-text"
+    },
+    {
+      "id": "e_kt_fill2_kt_text2_style",
+      "source": "kt_fill2",
+      "target": "kt_text2",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_kt_text2_kt_wave_text",
+      "source": "kt_text2",
+      "target": "kt_wave",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-text"
+    },
+    {
+      "id": "e_kt_t_kt_wave_progress",
+      "source": "kt_t",
+      "target": "kt_wave",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-progress"
+    },
+    {
+      "id": "e_kt_in_kt_group_s1",
+      "source": "kt_in",
+      "target": "kt_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_kt_wave_kt_group_s2",
+      "source": "kt_wave",
+      "target": "kt_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_kt_group_kt_r_layers",
+      "source": "kt_group",
+      "target": "kt_r",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ],
+  "loopLength": 6
+}

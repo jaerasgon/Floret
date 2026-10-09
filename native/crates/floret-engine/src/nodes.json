@@ -1,5 +1,5 @@
 {
- "count": 344,
+ "count": 351,
  "nodes": [
   {
    "type": "collider/circle",
@@ -2096,6 +2096,129 @@
     "mode": [
      "outline",
      "fill"
+    ]
+   }
+  },
+  {
+   "type": "text/animate",
+   "category": "Text",
+   "group": "Text",
+   "label": "Text Animate",
+   "description": "Animate text glyph by glyph, no ForEach needed. Wire `draw/text`, Glyphs or Text on Path into `text`. `in`: each glyph eases (`ease`) from its start state — moved by `offset`, turned by `rotate` (radians), at `scale` and `opacity` — to its place as `progress` runs 0 → 1; `stagger` 0 moves all together, 1 one after another, in `order` (forward, backward, center, edges, random by `seed`). Run `progress` 1 → 0 to animate out. `wave`: `progress` is a phase (loop it 0..1); glyphs swing by `offset` / `rotate` and towards `scale` / `opacity`, `stagger` cycles apart. Glyphs turn and scale about their centres. `amounts`: each glyph's eased progress (or wave, −1..1).",
+   "inputs": [
+    {
+     "name": "text",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "progress",
+     "type": "number",
+     "kind": "single",
+     "default": 0.5
+    },
+    {
+     "name": "stagger",
+     "type": "number",
+     "kind": "single",
+     "default": 0.6
+    },
+    {
+     "name": "order",
+     "type": "string",
+     "kind": "single",
+     "default": "forward",
+     "param": "order"
+    },
+    {
+     "name": "ease",
+     "type": "string",
+     "kind": "single",
+     "default": "outCubic",
+     "param": "ease"
+    },
+    {
+     "name": "offset",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 40
+     }
+    },
+    {
+     "name": "rotate",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "scale",
+     "type": "number",
+     "kind": "single",
+     "default": 1
+    },
+    {
+     "name": "opacity",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "seed",
+     "type": "number",
+     "kind": "single",
+     "default": 1,
+     "integer": true
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "glyphs",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "amounts",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "in",
+    "order": "forward",
+    "ease": "outCubic"
+   },
+   "paramOptions": {
+    "mode": [
+     "in",
+     "wave"
+    ],
+    "order": [
+     "forward",
+     "backward",
+     "center",
+     "edges",
+     "random"
+    ],
+    "ease": [
+     "linear",
+     "inQuad",
+     "outQuad",
+     "inOutQuad",
+     "inCubic",
+     "outCubic",
+     "inOutCubic",
+     "inElastic",
+     "outElastic",
+     "inOutElastic"
     ]
    }
   },
@@ -12884,7 +13007,7 @@
    "category": "Geometry",
    "group": "Patterns",
    "label": "Scatter",
-   "description": "Scatter points over a rectangle (`center`, `size`) or inside a wired `shape`. Modes: `poisson` (no two points closer than `distance`), `random` (`count` uniform points), `jittered-grid` (one point per `spacing` cell, moved up to `jitter` of a cell), `halton` (`count` evenly spread low-discrepancy points). The same `seed` gives the same points.",
+   "description": "Scatter points over a rectangle (`center`, `size`) or inside a wired `shape`. Modes: `poisson` (no two points closer than `distance`), `random` (`count` uniform points), `jittered-grid` (one point per `spacing` cell, moved up to `jitter` of a cell), `halton` (`count` evenly spread low-discrepancy points). The same `seed` gives the same points. Every mode takes `relax`: that many passes of Lloyd relaxation, spreading the points evenly over the area (random points become an even, organic spread with an exact count); mode `relax` spreads out wired `points` instead.",
    "inputs": [
     {
      "name": "center",
@@ -12916,6 +13039,13 @@
      "default": 24
     },
     {
+     "name": "relax",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "integer": true
+    },
+    {
      "name": "seed",
      "type": "number",
      "kind": "single",
@@ -12940,7 +13070,8 @@
      "poisson",
      "random",
      "jittered-grid",
-     "halton"
+     "halton",
+     "relax"
     ]
    }
   },
@@ -13273,6 +13404,339 @@
    "paramOptions": null
   },
   {
+   "type": "geometry/trim",
+   "category": "Geometry",
+   "group": "Shape Ops",
+   "label": "Trim Path",
+   "description": "Draw-on / write-on: only the part of each outline between `start` and `end` (0..1 of its length), slid round by `offset` (wraps; animate it to run a dash round a loop). Reads a point list (`points`, `closed`) or every outline of a wired `path` layer (shapes, paths, glyph outlines). Modes: `each` trims every outline at once; `sequence` lays them end to end and trims the whole run, so they draw one after another (handwriting). Pieces come out as lines (a filled shape strokes in its fill colour unless `style` is wired). `heads` / `angles`: where each drawing end is and which way it heads, for a pen tip or an arrowhead.",
+   "inputs": [
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "closed",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    },
+    {
+     "name": "path",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "start",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "end",
+     "type": "number",
+     "kind": "single",
+     "default": 1
+    },
+    {
+     "name": "offset",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "layers",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "counts",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "heads",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "angles",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "mode": "each"
+   },
+   "paramOptions": {
+    "mode": [
+     "each",
+     "sequence"
+    ]
+   }
+  },
+  {
+   "type": "geometry/morph",
+   "category": "Geometry",
+   "group": "Shape Ops",
+   "label": "Shape Morph",
+   "description": "Blend the outlines of layer `a` into layer `b` by `t` (0 = a, 1 = b): shapes, paths or glyph outlines. Both are resampled to the same number of `points` (0 = automatic) and lined up so the blend doesn't twist; outer shapes pair with outer shapes and holes with holes, in order, and a contour with no partner shrinks to its centre. Fill / stroke colours and stroke weight blend too, unless `style` is wired.",
+   "inputs": [
+    {
+     "name": "a",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "b",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "t",
+     "type": "number",
+     "kind": "single",
+     "default": 0.5
+    },
+    {
+     "name": "points",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "integer": true
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "layers",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "counts",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": null,
+   "paramOptions": null
+  },
+  {
+   "type": "geometry/connect",
+   "category": "Geometry",
+   "group": "Patterns",
+   "label": "Connect Points",
+   "description": "Lines between nearby points (the plexus look). Modes: `distance` joins every pair closer than `distance` (each point keeps at most `maxLinks`, shortest first; 0 = no limit); `nearest` joins each point to its `neighbours` nearest (within `distance` when > 0). A line's `strength` falls from 1 (touching) to 0 (at the reach); `fade` takes that much off its alpha and `taper` off its width. Fast for thousands of points. Outputs the lines as one layer, and each line's ends and strength.",
+   "inputs": [
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "distance",
+     "type": "number",
+     "kind": "single",
+     "default": 80
+    },
+    {
+     "name": "maxLinks",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "integer": true
+    },
+    {
+     "name": "fade",
+     "type": "number",
+     "kind": "single",
+     "default": 1
+    },
+    {
+     "name": "taper",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "from",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "to",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "strength",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "distance"
+   },
+   "paramOptions": {
+    "mode": [
+     "distance",
+     "nearest"
+    ]
+   }
+  },
+  {
+   "type": "geometry/contours",
+   "category": "Geometry",
+   "group": "Patterns",
+   "label": "Contours",
+   "description": "Isolines of a field as closed outlines (marching squares): topographic lines, metaballs, image outlines. Modes: `field` (a spread of `values`, `cols` a row, over `center` / `size` — e.g. noise on Grid positions), `points` (metaballs: Σ radius² / distance² of the `points`, sampled every `cell` units), `image` (brightness × alpha, 0..1, centred on `center` at `size`, 0 = pixel size). Draws `levels` contours at `threshold`, `threshold + step`, …; each level fills as one polygon with its holes (outside the field counts as low, so every contour closes). `levels` out: each contour's level.",
+   "inputs": [
+    {
+     "name": "values",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "cols",
+     "type": "number",
+     "kind": "single",
+     "default": 16,
+     "integer": true
+    },
+    {
+     "name": "center",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "size",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 400,
+      "y": 400
+     }
+    },
+    {
+     "name": "threshold",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "levels",
+     "type": "number",
+     "kind": "single",
+     "default": 1,
+     "integer": true
+    },
+    {
+     "name": "step",
+     "type": "number",
+     "kind": "single",
+     "default": 0.1
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "layers",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "counts",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "levels",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "field"
+   },
+   "paramOptions": {
+    "mode": [
+     "field",
+     "points",
+     "image"
+    ]
+   }
+  },
+  {
    "type": "particles/simulation",
    "category": "Particles",
    "group": "Particles & Physics",
@@ -13600,6 +14064,60 @@
    }
   },
   {
+   "type": "gpu/echo",
+   "category": "Render",
+   "group": "Effects",
+   "label": "Echo",
+   "description": "Time effects on a layer, on the GPU. `trails`: each frame drawn over the last, which fades by `decay`. `echo`: `copies` earlier frames, `spacing` frames apart, each fainter by `decay`, under the live one. `delay`: the layer as it was `frames` frames ago. `freeze`: while `freeze` is on, hold the last frame shown. `slit-scan`: each row (or column) from a different moment — the edge `direction` points away from is now, the far edge `frames` ago. `reset` forgets the past. Past frames are kept at canvas size, at most 256 MB (240 frames).",
+   "inputs": [
+    {
+     "name": "input",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "decay",
+     "type": "number",
+     "kind": "single",
+     "default": 0.92
+    },
+    {
+     "name": "reset",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    }
+   ],
+   "outputs": [
+    {
+     "name": "out",
+     "type": "layer",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "trails",
+    "direction": "down"
+   },
+   "paramOptions": {
+    "mode": [
+     "trails",
+     "echo",
+     "delay",
+     "freeze",
+     "slit-scan"
+    ],
+    "direction": [
+     "down",
+     "up",
+     "right",
+     "left"
+    ]
+   }
+  },
+  {
    "type": "math/math",
    "category": "Math",
    "group": "Math",
@@ -13871,6 +14389,78 @@
     ]
    },
    "dynamicOutputs": true
+  },
+  {
+   "type": "string/format-number",
+   "category": "Convert",
+   "group": "Text",
+   "label": "Format Number",
+   "description": "Numbers as text, for labels, counters and charts — every element of a spread. Modes: `number` (`decimals`, thousands `separator`, zero `pad` to that many integer digits, `sign` always shows + / −), `percent` (0.25 → 25%), `compact` (1.2k, 3.4M, 5.6B), `time` (seconds as m:ss, h:mm:ss from an hour, with `decimals` of a second). `prefix` / `suffix` add units or currency.",
+   "inputs": [
+    {
+     "name": "value",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "decimals",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "integer": true
+    },
+    {
+     "name": "separator",
+     "type": "string",
+     "kind": "single",
+     "default": ","
+    },
+    {
+     "name": "pad",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "integer": true
+    },
+    {
+     "name": "sign",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    },
+    {
+     "name": "prefix",
+     "type": "string",
+     "kind": "single",
+     "default": ""
+    },
+    {
+     "name": "suffix",
+     "type": "string",
+     "kind": "single",
+     "default": ""
+    }
+   ],
+   "outputs": [
+    {
+     "name": "text",
+     "type": "string",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "number"
+   },
+   "paramOptions": {
+    "mode": [
+     "number",
+     "percent",
+     "compact",
+     "time"
+    ]
+   }
   }
  ]
 }

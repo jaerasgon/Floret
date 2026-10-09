@@ -1,5 +1,6 @@
 //! `geometry/*` nodes (native-only): point scattering, Voronoi / Delaunay /
-//! hull cells, path operations, shape booleans and L-systems.
+//! hull cells, path operations, shape booleans, L-systems, trimming,
+//! morphing and connecting points.
 //!
 //! The polygon-producing nodes share one output shape: `shape` (every
 //! polygon in one group layer), `layers` (one layer per polygon; `cells`
@@ -8,19 +9,28 @@
 //! one ring.
 //!
 //! Layers are read as contours (see [`layer_contours`]): polygons, paths,
-//! lines, rects, ellipses, arcs, triangles, quads and glyph outlines, with
-//! group transforms applied.
+//! lines, rects, ellipses, arcs, triangles, quads, glyph outlines and
+//! `draw/text` (laid out as it draws), with group transforms applied.
 //!
 //! Every random draw starts from [`rng`], the one place a patch-wide seed
 //! can be mixed in.
 
 mod boolean;
 mod cells;
+mod connect;
+mod contours;
 mod lsystem;
+mod measure;
+pub(crate) use measure::fade_paint;
+mod morph;
+#[cfg(test)]
+mod motion_tests;
 mod path_ops;
+mod relax;
 mod scatter;
 #[cfg(test)]
 mod tests;
+mod trim;
 
 use super::random::hash32;
 use super::shared::to_vec2;
@@ -44,6 +54,12 @@ pub fn register(r: &mut Registrar) {
     r.dynamic("geometry/path-ops", path_ops::inputs);
     r.node("geometry/boolean", boolean::boolean);
     r.node("geometry/lsystem", lsystem::lsystem);
+    r.node("geometry/trim", trim::trim);
+    r.node("geometry/connect", connect::connect);
+    r.dynamic("geometry/connect", connect::inputs);
+    r.node("geometry/morph", morph::morph);
+    r.node("geometry/contours", contours::contours);
+    r.dynamic("geometry/contours", contours::inputs);
 }
 
 /// Most points / vertices a geometry node emits (it warns when it stops).
@@ -333,6 +349,31 @@ fn walk(node: &SceneNode, m: &Affine, source: &mut usize, out: &mut Vec<Contour>
                     true,
                     &run.style,
                 );
+            }
+        }
+        SceneNode::Text { text, x, y, style } => {
+            // `draw/text`: its glyphs, laid out as it draws them.
+            let Some(b) = crate::text::block(text, style, style.letter_spacing) else {
+                return;
+            };
+            let (ox, oy) = b.origin(style, *x, *y);
+            let run = scene::GlyphRun {
+                glyphs: b
+                    .glyphs
+                    .iter()
+                    .map(|g| scene::PlacedGlyph {
+                        face: g.glyph.face,
+                        id: g.glyph.id,
+                        x: ox + g.glyph.x,
+                        y: oy + g.glyph.y,
+                        angle: 0.0,
+                    })
+                    .collect(),
+                size: style.font_size,
+                style: style.clone(),
+            };
+            for c in crate::text::outline::run_contours(&run) {
+                push(c.into_iter().map(|p| apply(m, p)).collect(), true, style);
             }
         }
         _ => return,

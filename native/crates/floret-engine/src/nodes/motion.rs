@@ -177,7 +177,7 @@ const C4: f64 = (2.0 * PI) / 3.0;
 const C5: f64 = (2.0 * PI) / 4.5;
 
 /// The `EASING` table; unknown names fall back to linear.
-fn ease_fn(name: &str, t: f64) -> f64 {
+pub(crate) fn ease_fn(name: &str, t: f64) -> f64 {
     match name {
         "inQuad" => t * t,
         "outQuad" => 1.0 - (1.0 - t) * (1.0 - t),

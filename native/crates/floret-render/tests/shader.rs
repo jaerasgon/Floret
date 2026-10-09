@@ -46,6 +46,7 @@ fn shader(
         uniforms: uniforms.iter().map(|(_, _, v)| *v).collect(),
         input,
         map: None,
+        history: None,
     })))
 }
 

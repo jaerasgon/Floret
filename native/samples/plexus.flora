@@ -1,0 +1,172 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Plexus",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ple_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -284
+      },
+      "params": {
+        "text": "Plexus\n\nA flock of boids (Simulation) wanders the canvas. Connect Points joins every pair closer than `distance`: lines fade (`fade`) and thin (`taper`) as they stretch, and `maxLinks` keeps each bird to its few nearest.\n\nSwitch Connect Points to `nearest` so no bird is ever alone.",
+        "width": 460,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Plexus\n\nA flock of boids (Simulation) wanders the canvas. Connect Points joins every pair closer than `distance`: lines fade (`fade`) and thin (`taper`) as they stretch, and `maxLinks` keeps each bird to its few nearest.\n\nSwitch Connect Points to `nearest` so no bird is ever alone.",
+        "width": 460,
+        "height": 220
+      }
+    },
+    {
+      "id": "px_sim",
+      "defType": "particles/simulation",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {
+        "mode": "flocking"
+      },
+      "portValues": {
+        "count": 160,
+        "size": {
+          "x": 680,
+          "y": 440
+        },
+        "maxSpeed": 70,
+        "scale": 4
+      }
+    },
+    {
+      "id": "px_col",
+      "defType": "style/stroke",
+      "position": {
+        "x": 16,
+        "y": 382
+      },
+      "params": {
+        "color": {
+          "r": 0.4980392156862745,
+          "g": 0.8470588235294118,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "width": 1.6,
+        "align": "center"
+      },
+      "portValues": {
+        "color": {
+          "r": 0.4980392156862745,
+          "g": 0.8470588235294118,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "width": 1.6,
+        "align": "center"
+      }
+    },
+    {
+      "id": "px_link",
+      "defType": "geometry/connect",
+      "position": {
+        "x": 281,
+        "y": 101
+      },
+      "params": {
+        "mode": "distance"
+      },
+      "portValues": {
+        "distance": 95,
+        "maxLinks": 6,
+        "fade": 1,
+        "taper": 0.6
+      }
+    },
+    {
+      "id": "px_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 547,
+        "y": 40
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {}
+    },
+    {
+      "id": "px_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 811,
+        "y": 40
+      },
+      "params": {
+        "width": 720,
+        "height": 480,
+        "background": {
+          "r": 0.023529411764705882,
+          "g": 0.06274509803921569,
+          "b": 0.10196078431372549,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 720,
+        "height": 480,
+        "background": {
+          "r": 0.023529411764705882,
+          "g": 0.06274509803921569,
+          "b": 0.10196078431372549,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_px_sim_px_link_points",
+      "source": "px_sim",
+      "target": "px_link",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_px_col_px_link_style",
+      "source": "px_col",
+      "target": "px_link",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_px_link_px_group_s1",
+      "source": "px_link",
+      "target": "px_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_px_sim_px_group_s2",
+      "source": "px_sim",
+      "target": "px_group",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_px_group_px_r_layers",
+      "source": "px_group",
+      "target": "px_r",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

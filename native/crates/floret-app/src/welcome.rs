@@ -101,7 +101,17 @@ impl Welcome {
         let mut ui_rail = ui.new_child(UiBuilder::new().max_rect(rail.shrink(20.0)));
         let ui = &mut ui_rail;
         ui.spacing_mut().item_spacing = vec2(6.0, 6.0);
-        ui.label(RichText::new("✿ Floret").color(GOLD).strong().size(22.0));
+        // The sunflower mark (as in the toolbar) beside the name.
+        ui.horizontal(|ui| {
+            ui.spacing_mut().item_spacing.x = 8.0;
+            let (logo, _) = ui.allocate_exact_size(vec2(24.0, 24.0), Sense::hover());
+            crate::theme::paint_logo(ui.painter(), logo.center(), 24.0, *GOLD);
+            ui.label(
+                RichText::new("Floret")
+                    .color(GOLD)
+                    .font(crate::theme::medium(22.0)),
+            );
+        });
         ui.label(RichText::new("Wire shapes, motion, sound and data together.").color(FG_1));
         ui.add_space(14.0);
         let wide =
@@ -149,7 +159,11 @@ impl Welcome {
         let ui = &mut ui_body;
         ui.spacing_mut().item_spacing = vec2(8.0, 6.0);
         let lessons = SAMPLES.iter().filter(|s| s.category == "Tutorial").count();
-        ui.label(RichText::new("Start here").strong().size(16.0));
+        ui.label(
+            RichText::new("Start here")
+                .strong()
+                .font(crate::theme::medium(16.0)),
+        );
         ui.label(
             RichText::new(format!(
                 "{lessons} tutorial lessons build up from a single rectangle to \

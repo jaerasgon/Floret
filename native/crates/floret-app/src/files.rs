@@ -519,6 +519,7 @@ mod tests {
             }]),
             width: Some(200.0),
             height: Some(100.0),
+            bypassed: false,
         });
         p.edges.push(PatchEdge {
             id: "dangling".into(),

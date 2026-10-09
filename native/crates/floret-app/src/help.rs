@@ -101,6 +101,10 @@ pub fn groups() -> Vec<Section> {
                 menu(Duplicate),
                 (keys(none, Key::Delete), "Delete selection"),
                 (keys(none, Key::Backspace), "Delete selection"),
+                (
+                    keys(none, Key::B),
+                    "Bypass the selected nodes (or turn them back on)",
+                ),
                 (Trigger::Text("Alt + drag a node"), "Drag out a duplicate"),
             ],
         },
@@ -331,7 +335,11 @@ pub fn about_window(ctx: &egui::Context, open: &mut bool, gpu: &str) {
             ui.set_width(340.0);
             ui.vertical_centered(|ui| {
                 ui.label(RichText::new("✿").size(40.0).color(GOLD));
-                ui.label(RichText::new("Floret").size(20.0).strong());
+                ui.label(
+                    RichText::new("Floret")
+                        .strong()
+                        .font(crate::theme::medium(20.0)),
+                );
                 ui.label(
                     RichText::new(format!("Version {}", env!("CARGO_PKG_VERSION"))).color(FG_1),
                 );

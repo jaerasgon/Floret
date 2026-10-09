@@ -167,8 +167,7 @@ impl Guard {
             ui.label(
                 RichText::new("Something went wrong")
                     .color(theme::DANGER)
-                    .strong()
-                    .size(16.0),
+                    .font(theme::medium(16.0)),
             );
             ui.add_space(4.0);
             let text = match report.stage {

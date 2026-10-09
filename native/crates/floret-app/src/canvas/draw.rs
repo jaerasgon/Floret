@@ -9,7 +9,7 @@ use crate::theme::{
 };
 use eframe::egui::{
     self, pos2, vec2, Align2, Color32, CornerRadius, FontId, Id, LayerId, Order, Painter, Pos2,
-    Rect, Stroke, StrokeKind,
+    Rect, Stroke, StrokeKind, Vec2,
 };
 use floret_engine::spec::RegionKind;
 
@@ -54,8 +54,11 @@ pub struct PinState {
     pub hovered: bool,
 }
 
+/// Below this zoom unwired pins draw filled too.
+pub const FILL_PINS_BELOW: f32 = 0.3;
+
 /// A pin: a filled dot when wired, a hollow ring in its type colour when
-/// not; a touch bigger under the pointer. While a wire is dragged, the
+/// not (filled too when zoomed far out); a touch bigger under the pointer. While a wire is dragged, the
 /// pins it can reach light up and the rest dim.
 pub fn pin(p: &Painter, g: &PinGeom, look: PinLook, st: PinState, pulse: f32, z: f32) {
     let pos = g.pos;
@@ -85,7 +88,8 @@ pub fn pin(p: &Painter, g: &PinGeom, look: PinLook, st: PinState, pulse: f32, z:
         }
         PinLook::Normal => {
             let r = PIN_R * z + if st.hovered { 1.0 } else { 0.0 };
-            if st.connected {
+            // Far out a ring is a speck: every pin is a filled dot.
+            if st.connected || z < FILL_PINS_BELOW {
                 p.circle(pos, r, color, Stroke::new(1.5, BG_2));
             } else {
                 // The ring's outer edge where a wired dot's fill ends.
@@ -187,11 +191,12 @@ pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
     if let Some((r, _)) = &b.warning {
         chip(p, *r);
     }
-    // Top-left stack: static inputs and loop variables.
+    // Top-left stack: static inputs and loop variables, as small flat
+    // cards (card fill, hairline, the cards' corner rounding).
     for t in &b.top {
         p.rect(
             t.rect,
-            t.rect.height() / 2.0,
+            4.0 * z,
             BG_2,
             Stroke::new(1.0, BORDER),
             StrokeKind::Inside,
@@ -249,6 +254,44 @@ pub struct NodeState<'a> {
 }
 
 pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
+    node_card(p, b, st, z);
+    if let Some(on) = b.bypass {
+        bypass(p, b, st, on, z);
+    }
+}
+
+/// A bypassed node is dimmed under its lit bypass button; the button
+/// shows on the others while hovered or selected.
+fn bypass(p: &Painter, b: &NodeBox, st: &NodeState, on: bool, z: f32) {
+    let r = super::custom::radius(z);
+    if on {
+        p.rect_filled(b.rect.shrink(1.0), r, BG_2.gamma_multiply(0.6));
+    }
+    let node_hot = st.body.hover.is_some_and(|h| b.rect.contains(h));
+    if z <= 0.25 || !(on || node_hot || st.selected) {
+        return;
+    }
+    let rect = super::geom::bypass_rect(b.header, z);
+    let hot = st.body.hover.is_some_and(|h| rect.contains(h));
+    let ink = if on {
+        p.rect_filled(rect, 4.0 * z, theme::AMBER.gamma_multiply(0.22));
+        *theme::AMBER
+    } else if hot {
+        p.rect_filled(rect, 4.0 * z, *BG_3);
+        *FG_0
+    } else {
+        *FG_2
+    };
+    p.text(
+        rect.center(),
+        Align2::CENTER_CENTER,
+        egui_phosphor::regular::POWER,
+        theme::icon_font(12.0 * z),
+        ink,
+    );
+}
+
+fn node_card(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     match b.look {
         Look::Probe => return super::custom::draw_probe(p, b, &st.body, z),
         Look::Comment => return super::custom::draw_comment(p, b, &st.body, z),
@@ -327,6 +370,8 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
         let right = if let Some((r, _)) = &b.warning {
             chip(p, *r);
             r.left() - 4.0 * z
+        } else if b.bypass.is_some() {
+            header.right() - (12.0 + super::geom::BYPASS_ROOM) * z
         } else {
             header.right() - 12.0 * z
         };
@@ -635,26 +680,49 @@ pub fn region_preview(p: &Painter, r: Rect, kind: Option<RegionKind>, label: &st
     );
 }
 
-/// The ghost of a palette node being dragged over the canvas.
-pub fn drop_ghost(p: &Painter, at: Pos2, label: &str, group: &str, z: f32) {
-    let r = Rect::from_min_size(at, vec2(super::geom::NODE_W, HEADER_H + 8.0) * z);
+/// The ghost of a palette node being dragged over the canvas: the card's
+/// own size, title (`math`: a header symbol, in the monospace font) and
+/// lamp, so it lands exactly where it's shown.
+pub fn drop_ghost(
+    p: &Painter,
+    at: Pos2,
+    size: Vec2,
+    (label, math): (&str, bool),
+    group: &str,
+    z: f32,
+) {
+    let r = Rect::from_min_size(at, size * z);
+    let radius = super::custom::radius(z);
     p.rect(
         r,
-        6.0 * z,
+        radius,
         BG_2.gamma_multiply(0.85),
         Stroke::new(1.0, GOLD.gamma_multiply(0.7)),
         StrokeKind::Inside,
     );
+    if r.height() > HEADER_H * z + 2.0 {
+        let y = p.round_to_pixel_center(r.top() + HEADER_H * z);
+        p.hline(
+            r.x_range(),
+            y,
+            Stroke::new(1.0, BORDER.gamma_multiply(0.85)),
+        );
+    }
     p.circle_filled(
-        r.left_top() + vec2(12.0, HEADER_H / 2.0) * z,
+        r.left_top() + vec2(14.0, HEADER_H / 2.0) * z,
         3.2 * z,
         theme::category_color(group),
     );
+    let font = if math {
+        FontId::monospace(13.0 * z)
+    } else {
+        theme::medium(12.5 * z)
+    };
     p.text(
-        r.left_top() + vec2(22.0, HEADER_H / 2.0) * z,
+        r.left_top() + vec2(TITLE_X, HEADER_H / 2.0) * z,
         Align2::LEFT_CENTER,
         label,
-        FontId::proportional(12.5 * z),
+        font,
         *FG_0,
     );
 }

@@ -32,6 +32,9 @@ pub enum Custom {
     /// `math/expression`: the formula in a box across the node, above
     /// the pins it makes.
     Expression,
+    /// `gpu/effect` in `curves` mode: a curve editor over its five colour
+    /// points.
+    Curves,
 }
 
 /// An arity stepper: which param it drives and its bounds.
@@ -86,6 +89,9 @@ pub fn custom_of(def_type: &str) -> Option<Custom> {
 /// the selected op's node's — the `− n +` slot stepper while a Math node
 /// is set to add / multiply / min …, none while it's set to sin.
 pub fn custom_for(n: &PatchNode) -> Option<Custom> {
+    if is_curves(n) {
+        return Some(Custom::Curves);
+    }
     match floret_engine::nodes::family::family(&n.def_type) {
         Some(f) => custom_of(f.op(&n.params).node),
         None => custom_of(&n.def_type),
@@ -556,6 +562,117 @@ pub fn video_name(n: &PatchNode) -> Option<String> {
     }
 }
 
+// ─── Curves ─────────────────────────────────────────────────────────────────
+
+/// The Effect node's curve points, in order along the curve (x = 0, ¼, ½,
+/// ¾, 1); each is a colour pin whose r / g / b are that channel's level.
+pub const CURVE_PORTS: [&str; 5] = ["black", "shadows", "midtones", "highlights", "white"];
+
+/// The channel tabs over the curve editor: all three together, or one.
+pub const CURVE_CHANNELS: [&str; 4] = ["RGB", "R", "G", "B"];
+
+/// An Effect node set to `curves`.
+pub fn is_curves(n: &PatchNode) -> bool {
+    n.def_type == "gpu/effect" && param_str(n, "mode", "bloom") == "curves"
+}
+
+/// What the curve editor shows and edits.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Curves {
+    /// 0 = RGB (all three), 1–3 = R, G, B.
+    pub channel: u8,
+    /// Per point, its r, g, b levels.
+    pub points: [[f64; 3]; 5],
+    /// Points driven by a wire (not draggable).
+    pub wired: [bool; 5],
+}
+
+impl Curves {
+    /// The x of point `i` (0–1).
+    pub fn x(i: usize) -> f64 {
+        i as f64 * 0.25
+    }
+
+    /// Point `i`'s default level: the identity curve.
+    pub fn default_level(i: usize) -> f64 {
+        Self::x(i)
+    }
+
+    /// The channels the selected tab edits.
+    pub fn channels(&self) -> std::ops::Range<usize> {
+        match self.channel {
+            1..=3 => usize::from(self.channel - 1)..usize::from(self.channel),
+            _ => 0..3,
+        }
+    }
+
+    /// Point `i`'s level in the selected tab (RGB: the mean).
+    pub fn level(&self, i: usize) -> f64 {
+        let ch = self.channels();
+        let n = ch.len() as f64;
+        ch.map(|c| self.points[i][c]).sum::<f64>() / n
+    }
+
+    /// Point `i`'s r / g / b after dragging its level (in the selected
+    /// tab) from where it was at press (`start`) to `level`: one channel is
+    /// set; RGB moves all three by the same amount, keeping their spread.
+    pub fn dragged(&self, start: [f64; 3], level: f64) -> [f64; 3] {
+        let ch = self.channels();
+        let n = ch.len() as f64;
+        let from = ch.clone().map(|c| start[c]).sum::<f64>() / n;
+        let mut out = start;
+        for c in ch {
+            out[c] = (start[c] + level - from).clamp(0.0, 1.0);
+        }
+        out
+    }
+
+    /// Point `i` back on the identity line in the selected tab's channels.
+    pub fn reset(&self, i: usize) -> [f64; 3] {
+        let mut out = self.points[i];
+        for c in self.channels() {
+            out[c] = Self::default_level(i);
+        }
+        out
+    }
+}
+
+/// The curve through five levels at x = 0, ¼, ½, ¾, 1, at `x`: the
+/// Effect shader's monotone cubic (`CURVES` in `nodes/effect.rs`), so
+/// the editor draws exactly what the grade does.
+pub fn curve_at(ys: [f64; 5], x: f64) -> f64 {
+    let slope = |a: f64, b: f64| {
+        if a * b > 0.0 {
+            2.0 * a * b / (a + b)
+        } else {
+            0.0
+        }
+    };
+    let d = [
+        (ys[1] - ys[0]) * 4.0,
+        (ys[2] - ys[1]) * 4.0,
+        (ys[3] - ys[2]) * 4.0,
+        (ys[4] - ys[3]) * 4.0,
+    ];
+    let m = [
+        d[0],
+        slope(d[0], d[1]),
+        slope(d[1], d[2]),
+        slope(d[2], d[3]),
+        d[3],
+    ];
+    let x = x.clamp(0.0, 1.0);
+    let k = (x * 4.0).floor().min(3.0) as usize;
+    let t = x * 4.0 - k as f64;
+    let (ya, yb, ma, mb) = (ys[k], ys[k + 1], m[k], m[k + 1]);
+    let (t2, t3) = (t * t, t * t * t);
+    ((2.0 * t3 - 3.0 * t2 + 1.0) * ya
+        + (t3 - 2.0 * t2 + t) * 0.25 * ma
+        + (-2.0 * t3 + 3.0 * t2) * yb
+        + (t3 - t2) * 0.25 * mb)
+        .clamp(0.0, 1.0)
+}
+
 // ─── Comment ────────────────────────────────────────────────────────────────
 
 pub const COMMENT_MIN: (f64, f64) = (120.0, 48.0);
@@ -574,6 +691,55 @@ mod tests {
     use crate::editor::test_util::node;
     use floret_engine::value::one;
     use std::sync::Arc;
+
+    #[test]
+    fn curves_edit_the_effect_colour_points() {
+        assert!(is_curves(&with("gpu/effect", json!({"mode": "curves"}))));
+        assert!(!is_curves(&with("gpu/effect", json!({"mode": "levels"}))));
+        assert!(!is_curves(&with("gpu/effect", json!({}))));
+        assert_eq!(
+            custom_for(&with("gpu/effect", json!({"mode": "curves"}))),
+            Some(Custom::Curves)
+        );
+        assert_eq!(custom_for(&with("gpu/effect", json!({}))), None);
+        // The identity curve is the identity.
+        let id = [0.0, 0.25, 0.5, 0.75, 1.0];
+        for k in 0..=20 {
+            let x = f64::from(k) / 20.0;
+            assert!((curve_at(id, x) - x).abs() < 1e-9, "{x}");
+        }
+        // It passes through its points and never overshoots them.
+        let ys = [0.0, 0.1, 0.8, 0.85, 1.0];
+        for (i, y) in ys.iter().enumerate() {
+            assert!((curve_at(ys, Curves::x(i)) - y).abs() < 1e-9);
+        }
+        for k in 0..=100 {
+            let x = f64::from(k) / 100.0;
+            let seg = ((x * 4.0).floor() as usize).min(3);
+            let y = curve_at(ys, x);
+            assert!(y >= ys[seg] - 1e-9 && y <= ys[seg + 1] + 1e-9, "{x}: {y}");
+        }
+        let mut c = Curves {
+            channel: 0,
+            points: [[0.0; 3], [0.2, 0.25, 0.3], [0.5; 3], [0.75; 3], [1.0; 3]],
+            wired: [false; 5],
+        };
+        // RGB moves all three channels together, keeping their spread.
+        assert!((c.level(1) - 0.25).abs() < 1e-9);
+        let moved = c.dragged(c.points[1], 0.35);
+        for (m, p) in moved.iter().zip(c.points[1]) {
+            assert!((m - (p + 0.1)).abs() < 1e-9);
+        }
+        // … clamped to 0–1.
+        assert_eq!(c.dragged([0.9, 0.95, 1.0], 1.5), [1.0, 1.0, 1.0]);
+        // One channel moves only itself.
+        c.channel = 2;
+        assert_eq!(c.channels(), 1..2);
+        assert_eq!(c.dragged(c.points[1], 0.6), [0.2, 0.6, 0.3]);
+        assert_eq!(c.reset(1), [0.2, 0.25, 0.3]);
+        c.channel = 0;
+        assert_eq!(c.reset(1), [0.25; 3]);
+    }
 
     fn with(ty: &str, params: Json) -> PatchNode {
         let mut n = node("n", ty);

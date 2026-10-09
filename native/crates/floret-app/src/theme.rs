@@ -86,6 +86,12 @@ pub const GOLD_TEXT: Token = Token::new(0xf4c542, 0x836006);
 /// Text on a [`GOLD`] fill (the primary button): near-black in both
 /// themes, ≥ 4.5:1 on either gold.
 pub const ON_GOLD: Token = Token::new(0x191919, 0x14120d);
+/// The primary (Export) button's fill: the brand gold; on the light
+/// theme a lighter, cleaner gold than [`GOLD`]'s deep hairline tone.
+pub const GOLD_FILL: Token = Token::new(0xf4c542, 0xf3c94f);
+/// [`GOLD_FILL`] under the pointer: a touch lighter on dark, a touch
+/// deeper on light.
+pub const GOLD_FILL_HOVER: Token = Token::new(0xf8d470, 0xe9b934);
 pub const DANGER: Token = Token::new(0xff7a7a, 0xc93c3c);
 
 pub const AMBER: Token = Token::new(0xffc864, 0x8c5a00);
@@ -105,6 +111,11 @@ pub const PROBE_EDGE: Token = Token::new(0x565c66, 0xa9adb4);
 pub const SYNTAX_KEYWORD: Token = Token::new(0xc68af0, 0x8a3fc0);
 pub const SYNTAX_TYPE: Token = Token::new(0x6cc4f0, 0x1f6fa0);
 pub const SYNTAX_NUMBER: Token = Token::new(0xf0a86c, 0xa8541a);
+
+/// The curve editor's channel curves (red, green, blue) on its graph.
+pub const CURVE_RED: Token = Token::new(0xff7a7a, 0xc93c3c);
+pub const CURVE_GREEN: Token = Token::new(0x6fd88a, 0x2e8a4a);
+pub const CURVE_BLUE: Token = Token::new(0x7ca8ff, 0x2f6db8);
 
 /// Pins of spread ports.
 pub const SPREAD_PIN: Token = Token::new(0xf0d800, 0xa08600);
@@ -215,6 +226,11 @@ pub fn icon(glyph: &str, size: f32, color: impl Into<Color32>) -> egui::RichText
         .family(FontFamily::Name(ICONS.into()))
         .size(size)
         .color(color)
+}
+
+/// The Phosphor icon font at `size`, for painting an icon directly.
+pub fn icon_font(size: f32) -> FontId {
+    FontId::new(size, FontFamily::Name(ICONS.into()))
 }
 
 /// The fonts [`install_fonts`] installs (tests measure text with them).
@@ -513,8 +529,18 @@ mod tests {
             let mut style = egui::Style::default();
             style_for(&mut style, light);
             // The primary (Export) button: dark text on gold.
-            let c = contrast(t(ON_GOLD), t(GOLD));
-            assert!(c >= 4.5, "text on the gold button: {c:.2} (light: {light})");
+            for fill in [GOLD, GOLD_FILL, GOLD_FILL_HOVER] {
+                let c = contrast(t(ON_GOLD), t(fill));
+                assert!(c >= 4.5, "text on the gold button: {c:.2} (light: {light})");
+            }
+            // The hover tint is visibly different from the resting fill,
+            // and the light theme's button is lighter than its hairline
+            // gold.
+            assert_ne!(t(GOLD_FILL), t(GOLD_FILL_HOVER));
+            if light {
+                let lum = |c: Color32| u32::from(c.r()) + u32::from(c.g()) + u32::from(c.b());
+                assert!(lum(t(GOLD_FILL)) > lum(t(GOLD)));
+            }
             // Dock tab titles: active / focused on the tab fill, inactive
             // and hovered on the tab bar.
             for (fg, bg) in [(FG_1, BG_2), (FG_0, BG_2), (FG_2, BG_1), (FG_1, BG_1)] {
@@ -591,6 +617,15 @@ mod tests {
             }
             let c = contrast(t(SPREAD_PIN), card);
             assert!(c >= 3.0, "spread pin: {c:.2}");
+            // The lit bypass icon on a (dimmed) card, and the curve
+            // editor's channel curves on its graph (the canvas colour).
+            let dimmed = blend(t(BG_2).gamma_multiply(0.6), card);
+            let c = contrast(t(AMBER), dimmed);
+            assert!(c >= 3.0, "bypass icon: {c:.2}");
+            for ch in [CURVE_RED, CURVE_GREEN, CURVE_BLUE] {
+                let c = contrast(t(ch), t(BG_0));
+                assert!(c >= 3.0, "{ch:?} curve: {c:.2}");
+            }
         }
     }
 }

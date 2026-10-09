@@ -127,6 +127,9 @@ enum WidgetDrag {
     Hold,
     /// A comment's corner, from its size at press time.
     Grip((f64, f64)),
+    /// A curve point (`None`: the press missed every point), with the
+    /// editor and the point's r / g / b at press time.
+    Curve(widgets::Curves, Option<(usize, [f64; 3])>),
 }
 
 #[derive(Clone, Debug)]
@@ -216,10 +219,25 @@ enum Action {
     },
     /// Open the OS file picker for an `io/file` / `io/svg` node.
     PickFile(String),
+    /// Pick a file for a text pin (its `…` button): the pin stores the path.
+    BrowseFile {
+        node: String,
+        port: String,
+    },
     /// Fire a bang (live param only: nothing to save or undo).
     Bang(String),
     /// Edit a comment's text in place.
     EditComment(String),
+    /// Show one channel (1–3) of a curve editor, or all (0). View state only.
+    CurveChannel(String, u8),
+    /// Several pins' values of one node in one undo step (curve resets).
+    SetPorts {
+        node: String,
+        values: Vec<(String, Json)>,
+    },
+    /// Bypass the nodes (or, if all already are, turn them back on): one
+    /// undo step.
+    ToggleBypass(Vec<String>),
     Undo,
     Redo,
     Arrange,
@@ -320,6 +338,8 @@ pub struct View {
     flashes: HashMap<String, f64>,
     /// Probe list scroll offsets (canvas units).
     probe_scroll: HashMap<String, f32>,
+    /// Curve editors' channel tabs (node → 1–3 for R / G / B; absent: RGB).
+    curve_channels: HashMap<String, u8>,
     /// Last frame's scrollable probe bodies: (node, rect, max scroll).
     probe_areas: Vec<(String, Rect, f32)>,
     /// Probe pictures by node id, set by the app each frame.
@@ -377,6 +397,7 @@ impl Default for View {
             settle_until: 0.0,
             flashes: HashMap::new(),
             probe_scroll: HashMap::new(),
+            curve_channels: HashMap::new(),
             probe_areas: Vec::new(),
             thumbs: HashMap::new(),
             time: 0.0,
@@ -907,7 +928,8 @@ pub fn show(
 
     let z = view.zoom;
     let scope = view.scope().map(str::to_owned);
-    let decor = live.decor(patch, cat, &visible);
+    let mut decor = live.decor(patch, cat, &visible);
+    decor.curve_channels = view.curve_channels.clone();
     let boxes = {
         let gx = geom::Ctx {
             patch,
@@ -970,6 +992,10 @@ pub fn show(
                 WidgetKind::Slider(st) => Some(WidgetDrag::Slider(*st)),
                 WidgetKind::Pad(pad) => Some(WidgetDrag::Pad(*pad)),
                 WidgetKind::Hold => Some(WidgetDrag::Hold),
+                WidgetKind::Curve(c) => {
+                    let hit = pointer.and_then(|p| custom::curve_hit(c, w.rect, p, z));
+                    Some(WidgetDrag::Curve(*c, hit.map(|i| (i, c.points[i]))))
+                }
                 WidgetKind::Grip => ports::find_node(patch, &w.node).map(|n| {
                     let size = geom::box_size(patch, n, cat, Look::Comment);
                     WidgetDrag::Grip(size)
@@ -1014,6 +1040,11 @@ pub fn show(
                     view.live(&node, &EditKey::Param("value".into()), Json::Bool(false));
                 }
                 WidgetDrag::Grip(_) => view.history.push(patch, None),
+                WidgetDrag::Curve(_, Some((i, _))) => {
+                    let key = EditKey::Port(widgets::CURVE_PORTS[i].into());
+                    view.commit_value(patch, cat, &node, &key);
+                }
+                WidgetDrag::Curve(_, None) => {}
             }
         }
     }
@@ -1499,7 +1530,7 @@ pub fn show(
             let at = view.to_canvas(p);
             if let Some(w) = hits.widget(p) {
                 // Double-click a slider / pad to reset it.
-                if let Some(a) = widget_reset(patch, cat, &w.node, &w.kind) {
+                if let Some(a) = widget_reset(patch, cat, w, p, z) {
                     actions.push(a);
                 }
             } else if let Some((region, port)) = hits.pill(p) {
@@ -1576,6 +1607,7 @@ pub fn show(
             _ => None,
         };
         let in_subpatch = !view.stack.is_empty();
+        let bypass_ids = view.selection.clone();
         let mut escape = false;
         ui.input_mut(|i| {
             let cmd_shift = Modifiers::COMMAND | Modifiers::SHIFT;
@@ -1608,6 +1640,9 @@ pub fn show(
             }
             if i.consume_key(Modifiers::NONE, Key::F) {
                 actions.push(Action::Fit);
+            }
+            if !bypass_ids.is_empty() && i.consume_key(Modifiers::NONE, Key::B) {
+                actions.push(Action::ToggleBypass(bypass_ids.clone()));
             }
             if i.consume_key(Modifiers::NONE, Key::Tab) {
                 actions.push(Action::OpenSearch {
@@ -1661,6 +1696,7 @@ pub fn show(
                     WidgetDrag::Pad(_) => CursorIcon::Crosshair,
                     WidgetDrag::Grip(_) => CursorIcon::ResizeNwSe,
                     WidgetDrag::Hold => CursorIcon::PointingHand,
+                    WidgetDrag::Curve(..) => CursorIcon::Grabbing,
                 })
             } else if matches!(view.gesture, Gesture::None) {
                 if hits.pin(p, PIN_HIT, None).is_some() {
@@ -1670,6 +1706,10 @@ pub fn show(
                         WidgetKind::Slider(_) => CursorIcon::ResizeHorizontal,
                         WidgetKind::Pad(_) => CursorIcon::Crosshair,
                         WidgetKind::Grip => CursorIcon::ResizeNwSe,
+                        WidgetKind::Curve(c) => match custom::curve_hit(&c, w.rect, p, z) {
+                            Some(_) => CursorIcon::Grab,
+                            None => CursorIcon::Default,
+                        },
                         _ => CursorIcon::PointingHand,
                     })
                 } else if hits
@@ -2008,7 +2048,31 @@ pub fn show(
     }
     if let (Some(drag), Some(p)) = (&palette_hover, pointer) {
         if let Some(e) = search::entry(cat, &drag.0) {
-            draw::drop_ghost(&painter, p, e.label(), &e.spec.group, z);
+            // Measured like the card it will become.
+            let n = floret_engine::patch::PatchNode {
+                id: "ghost".into(),
+                def_type: e.spec.ty.clone(),
+                position: Position::default(),
+                params: e.params(),
+                parent_id: None,
+                port_values: None,
+                ports: None,
+                width: None,
+                height: None,
+                bypassed: false,
+            };
+            let (size, title) = match geom::look_of(&n, cat, None) {
+                Look::Node => {
+                    let (w, h) = geom::box_size(&crate::app::empty_patch(), &n, cat, Look::Node);
+                    let symbol = values::header_symbol(&n);
+                    (
+                        vec2(w as f32, h as f32),
+                        (symbol.unwrap_or(&e.spec.label), symbol.is_some()),
+                    )
+                }
+                _ => (vec2(NODE_W, geom::HEADER_H + 8.0), (e.label(), false)),
+            };
+            draw::drop_ghost(&painter, p, size, title, &e.spec.group, z);
         }
     }
 
@@ -2019,6 +2083,31 @@ pub fn show(
                 draw::tooltip(&ctx, p, "Warning", "click to focus", text);
             } else if let Some(hint) = hits.badge(p).filter(|h| !h.is_empty()) {
                 draw::tooltip(&ctx, p, "Iterations", "", hint);
+            } else if let Some(on) = hits.widget(p).and_then(|w| match w.kind {
+                WidgetKind::Bypass(on) => Some(on),
+                _ => None,
+            }) {
+                let (title, body) = if on {
+                    (
+                        "Bypassed",
+                        "Outputs pass the inputs through. Click to turn back on.",
+                    )
+                } else {
+                    (
+                        "Bypass",
+                        "Pass the inputs straight through instead of computing.",
+                    )
+                };
+                draw::tooltip(&ctx, p, title, "B", body);
+            } else if let Some(filter) = hits.widget(p).and_then(|w| match &w.kind {
+                WidgetKind::Browse(port) => ports::find_node(patch, &w.node)
+                    .and_then(|n| values::browse_filter(&n.def_type, port)),
+                _ => None,
+            }) {
+                let (name, exts) = filter;
+                let kind = exts.iter().map(|e| format!(".{e}")).collect::<Vec<_>>();
+                let body = format!("Choose a {name} file; the pin keeps its path.");
+                draw::tooltip(&ctx, p, "Choose file…", &kind.join(" "), &body);
             } else if let Some(pin) = hits.pin(p, PIN_HIT, None) {
                 pin_tooltip(&ctx, patch, cat, live, &boxes, &pin, p);
             } else if hits.node(p).is_none() {
@@ -3061,6 +3150,27 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 }
             }
         }
+        Action::BrowseFile { node, port } => {
+            let Some(n) = ports::find_node(patch, &node) else {
+                return;
+            };
+            let Some((name, exts)) = values::browse_filter(&n.def_type, &port) else {
+                return;
+            };
+            let picked = rfd::FileDialog::new()
+                .set_title(format!("Choose a {name} file"))
+                .add_filter(name, exts)
+                .pick_file();
+            if let Some(path) = picked {
+                let key = browse_key(patch, cat, &node, &port);
+                let a = Action::SetValue {
+                    node,
+                    key,
+                    value: Json::String(path.to_string_lossy().into_owned()),
+                };
+                apply(a, patch, cat, view);
+            }
+        }
         Action::Bang(node) => {
             view.live(
                 &node,
@@ -3102,6 +3212,31 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 rect,
                 first: true,
             });
+        }
+        Action::CurveChannel(node, channel) => {
+            if channel == 0 {
+                view.curve_channels.remove(&node);
+            } else {
+                view.curve_channels.insert(node, channel);
+            }
+        }
+        Action::SetPorts { node, values: list } => {
+            let mut changed = None;
+            for (k, v) in list {
+                let key = EditKey::Port(k);
+                if values::set(patch, &node, &key, v.clone()) {
+                    view.live(&node, &key, v);
+                    changed = Some(key);
+                }
+            }
+            if let Some(key) = changed {
+                view.commit_value(patch, cat, &node, &key);
+            }
+        }
+        Action::ToggleBypass(ids) => {
+            if ops::toggle_bypass(patch, cat, &ids) {
+                view.commit(patch);
+            }
         }
         Action::Undo => {
             if view.history.undo(patch) {
@@ -3293,7 +3428,23 @@ fn widget_drag(
             set(view, "width", serde_json::json!(w));
             set(view, "height", serde_json::json!(h));
         }
-        WidgetDrag::Hold => {}
+        WidgetDrag::Hold | WidgetDrag::Curve(_, None) => {}
+        WidgetDrag::Curve(c, Some((i, start))) => {
+            // The level under the pointer; Shift moves a tenth as far.
+            let at = f64::from((rect.bottom() - p.y) / rect.height());
+            let level = if fine {
+                let from = f64::from((rect.bottom() - origin.y) / rect.height());
+                c.level(*i) + (at - from) * 0.1
+            } else {
+                at
+            };
+            let [r, g, b] = c.dragged(*start, level.clamp(0.0, 1.0));
+            let key = EditKey::Port(widgets::CURVE_PORTS[*i].into());
+            let v = values::rgba_json([r, g, b, 1.0]);
+            if values::set(patch, node, &key, v.clone()) {
+                view.live(node, &key, v);
+            }
+        }
     }
 }
 
@@ -3315,6 +3466,15 @@ fn widget_click(patch: &PatchFile, node: &str, kind: &WidgetKind) -> Option<Acti
             node: node.to_owned(),
             values: widgets::clear_file_params(&n.def_type),
         }),
+        WidgetKind::Bypass(_) => Some(Action::ToggleBypass(vec![node.to_owned()])),
+        WidgetKind::CurveChannel { channel, .. } => {
+            Some(Action::CurveChannel(node.to_owned(), *channel))
+        }
+        WidgetKind::Curve(_) => None,
+        WidgetKind::Browse(port) => Some(Action::BrowseFile {
+            node: node.to_owned(),
+            port: port.clone(),
+        }),
         WidgetKind::Slider(_) | WidgetKind::Pad(_) | WidgetKind::Hold | WidgetKind::Grip => None,
     }
 }
@@ -3323,12 +3483,36 @@ fn widget_click(patch: &PatchFile, node: &str, kind: &WidgetKind) -> Option<Acti
 fn widget_reset(
     patch: &PatchFile,
     cat: &Catalogue,
-    node: &str,
-    kind: &WidgetKind,
+    w: &custom::Widget,
+    at: Pos2,
+    z: f32,
 ) -> Option<Action> {
+    let node = w.node.as_str();
     let n = ports::find_node(patch, node)?;
     let spec = cat.get(&n.def_type)?;
-    let keys: &[&str] = match kind {
+    if let WidgetKind::Curve(c) = &w.kind {
+        // The point under the pointer, else the whole curve, back on the
+        // identity line in the shown channel(s).
+        let points: Vec<usize> = match custom::curve_hit(c, w.rect, at, z) {
+            Some(i) => vec![i],
+            None => (0..5).filter(|&i| !c.wired[i]).collect(),
+        };
+        let values = points
+            .into_iter()
+            .map(|i| {
+                let [r, g, b] = c.reset(i);
+                (
+                    widgets::CURVE_PORTS[i].to_owned(),
+                    values::rgba_json([r, g, b, 1.0]),
+                )
+            })
+            .collect();
+        return Some(Action::SetPorts {
+            node: node.to_owned(),
+            values,
+        });
+    }
+    let keys: &[&str] = match &w.kind {
         WidgetKind::Slider(_) => &["value"],
         WidgetKind::Pad(_) => &["x", "y"],
         _ => return None,
@@ -3353,6 +3537,22 @@ fn clamp_slider(view: &mut View, patch: &mut PatchFile, node: &str) {
         values::set(patch, node, &key, serde_json::json!(v));
         view.live(node, &key, serde_json::json!(v));
     }
+}
+
+/// Where a text pin's picked file path is stored: its param when the pin
+/// is param-backed, else its `portValues` entry (what the inline field
+/// edits).
+fn browse_key(patch: &PatchFile, cat: &Catalogue, node: &str, port: &str) -> EditKey {
+    ports::find_node(patch, node)
+        .and_then(|n| {
+            let spec = cat.get(&n.def_type)?;
+            let p = cat
+                .resolved_inputs(spec, &n.params)
+                .into_iter()
+                .find(|p| p.name == port)?;
+            values::input_editor(spec, &p, false).map(|(k, _)| k)
+        })
+        .unwrap_or_else(|| EditKey::Port(port.to_owned()))
 }
 
 /// Nodes that take a picked / dropped file.
@@ -3402,4 +3602,77 @@ fn ingest_file(
         node: node.to_owned(),
         values,
     })
+}
+
+#[cfg(test)]
+mod edit_tests {
+    use super::*;
+    use crate::editor::test_util::node;
+
+    fn setup(ty: &str) -> (PatchFile, View) {
+        let mut patch = crate::app::empty_patch();
+        patch.nodes.push(node("n", ty));
+        let mut view = View::default();
+        view.on_load(&mut patch);
+        (patch, view)
+    }
+
+    #[test]
+    fn bypass_is_one_undo_step_and_recompiles() {
+        let cat = Catalogue::builtin();
+        let (mut patch, mut view) = setup("gpu/effect");
+        let toggle = || Action::ToggleBypass(vec!["n".into()]);
+        apply(toggle(), &mut patch, cat, &mut view);
+        assert!(patch.nodes[0].bypassed);
+        assert!(view.take_recompile());
+        apply(Action::Undo, &mut patch, cat, &mut view);
+        assert!(!patch.nodes[0].bypassed);
+        assert!(view.take_recompile());
+        apply(Action::Redo, &mut patch, cat, &mut view);
+        assert!(patch.nodes[0].bypassed);
+        // Not for the Renderer: nothing changes, nothing to rebuild.
+        let (mut patch, mut view) = setup("render/renderer");
+        view.take_recompile();
+        apply(toggle(), &mut patch, cat, &mut view);
+        assert!(!patch.nodes[0].bypassed && !view.take_recompile());
+    }
+
+    #[test]
+    fn curve_resets_write_the_colour_pins_in_one_step() {
+        let cat = Catalogue::builtin();
+        let (mut patch, mut view) = setup("gpu/effect");
+        patch.nodes[0].params.insert("mode".into(), "curves".into());
+        view.on_load(&mut patch);
+        let grey = |v: f64| values::rgba_json([v, v, v, 1.0]);
+        let list = vec![
+            ("shadows".to_owned(), grey(0.1)),
+            ("highlights".to_owned(), grey(0.9)),
+        ];
+        let set = Action::SetPorts {
+            node: "n".into(),
+            values: list,
+        };
+        apply(set, &mut patch, cat, &mut view);
+        let pv = patch.nodes[0].port_values.clone().unwrap();
+        assert_eq!(pv["shadows"], grey(0.1));
+        assert_eq!(pv["highlights"], grey(0.9));
+        apply(Action::Undo, &mut patch, cat, &mut view);
+        let pv = patch.nodes[0].port_values.clone().unwrap_or_default();
+        assert!(pv.get("shadows").is_none() && pv.get("highlights").is_none());
+        // Channel tabs are view state, not edits.
+        apply(
+            Action::CurveChannel("n".into(), 2),
+            &mut patch,
+            cat,
+            &mut view,
+        );
+        assert_eq!(view.curve_channels.get("n"), Some(&2));
+        apply(
+            Action::CurveChannel("n".into(), 0),
+            &mut patch,
+            cat,
+            &mut view,
+        );
+        assert!(view.curve_channels.is_empty());
+    }
 }

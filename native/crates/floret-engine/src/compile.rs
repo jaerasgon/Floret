@@ -43,6 +43,7 @@ struct NodeRef {
     parent: Option<String>,
     ports: Vec<RegionPort>,
     port_values: Option<Params>,
+    bypassed: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -89,6 +90,7 @@ pub fn compile(
             parent: n.parent_id.clone(),
             ports: n.ports.clone().unwrap_or_default(),
             port_values: n.port_values.clone(),
+            bypassed: n.bypassed,
         })
         .collect();
     let mut edges = Vec::new();
@@ -762,6 +764,14 @@ fn to_runtime_node(
         }
     }
 
+    if n.bypassed && crate::bypass::can_bypass(spec) {
+        let outputs = cat.resolved_outputs(spec, &n.params);
+        node.imp = Some(Box::new(crate::bypass::Bypass::new(&resolved, &outputs)));
+        node.is_context = false;
+        node.memoise = false;
+        node.unimplemented = false;
+    }
+
     node.role = spec.region_role;
     if matches!(
         spec.region_role,
@@ -880,6 +890,7 @@ fn expand_region_ports(
                 parent: Some(n.id.clone()),
                 ports: Vec::new(),
                 port_values: None,
+                bypassed: false,
             });
         }
         ports_by_region.insert(n.id.clone(), map);
@@ -932,6 +943,7 @@ fn expand_region_ports(
                 parent: Some(region.clone()),
                 ports: Vec::new(),
                 port_values: None,
+                bypassed: false,
             });
         }
     }

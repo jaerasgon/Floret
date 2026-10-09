@@ -603,3 +603,37 @@ fn patches_compute_the_same_through_the_compiler() {
         }
     }
 }
+
+#[test]
+fn an_unknown_op_warns_and_runs_the_default() {
+    use crate::node::FrameCtx;
+    use crate::Engine;
+    let patch = |ty: &str, params: Json| {
+        json!({
+            "kind": "floret.patch", "version": 2,
+            "nodes": [{"id": "m", "defType": ty, "position": {"x": 0, "y": 0},
+                       "params": params, "portValues": {"a": 3, "b": 2}}],
+            "edges": [],
+        })
+        .to_string()
+    };
+    let (mut e, w) = Engine::load_with_warnings(&patch("math/math", json!({"op": "mul"}))).unwrap();
+    assert_eq!(w.len(), 1, "{w:?}");
+    assert_eq!(w[0].node_ids, vec!["m".to_string()]);
+    assert!(w[0].message.contains("\"mul\""), "{}", w[0].message);
+    // It still loads, and runs the default op (add).
+    let r = e.tick(&FrameCtx::default());
+    let out = r.outputs[e.graph.idx("m").unwrap()].clone().unwrap();
+    assert!(matches!(out[0][0], Value::Num(x) if x == 5.0), "{out:?}");
+    // Every real op, and none at all, compiles without a warning.
+    for f in FAMILIES {
+        for o in f.ops {
+            let (_, w) =
+                Engine::load_with_warnings(&patch(f.ty, params_with(&json!({}), f.param, o.id)))
+                    .unwrap();
+            assert!(w.is_empty(), "{} {}: {w:?}", f.ty, o.id);
+        }
+        let (_, w) = Engine::load_with_warnings(&patch(f.ty, json!({}))).unwrap();
+        assert!(w.is_empty(), "{}: {w:?}", f.ty);
+    }
+}

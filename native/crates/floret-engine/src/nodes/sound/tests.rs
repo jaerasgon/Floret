@@ -292,3 +292,136 @@ fn engine_submits_the_patch_graph() {
         Some(AudioNode::Output { input: Some(i), .. }) if &**i == "t47_env"
     ));
 }
+
+#[test]
+fn mix_sums_its_wired_inputs() {
+    let (out, g) = with_backend(AudioFeedback::default(), || {
+        let mut m = node("sound/mix", json!({"slotCount": 3}));
+        // in1, in2, in3 (the first chain again: counted once), level.
+        m.eval(vec![
+            vec![up("a")],
+            vec![up("b")],
+            vec![up("a")],
+            vec![Value::Num(5.0)],
+        ])
+    });
+    let out = out.expect("mix");
+    assert_eq!(audio_ref(&out[0][0]), Some(("n1", "mix")));
+    assert_eq!(
+        g.declared["n1"],
+        Some(AudioNode::Mix {
+            inputs: vec![Arc::from("a"), Arc::from("b")],
+            level: 2.0,
+        })
+    );
+    let mix = g.declared["n1"].clone().unwrap();
+    let sources: Vec<&str> = mix.sources().map(|s| &**s).collect();
+    assert_eq!(sources, ["a", "b"]);
+    // Pins follow slotCount.
+    let cat = crate::spec::Catalogue::builtin();
+    let spec = cat.get("sound/mix").unwrap();
+    let p: crate::spec::Params = serde_json::from_value(json!({"slotCount": 4})).unwrap();
+    let names: Vec<String> = cat
+        .resolved_inputs(spec, &p)
+        .into_iter()
+        .map(|p| p.name)
+        .collect();
+    assert_eq!(names, ["in1", "in2", "in3", "in4", "level"]);
+    // No AudioContext: fails like every sound node.
+    assert!(node("sound/mix", json!({})).eval(vec![vec![]; 3]).is_err());
+}
+
+fn nums(v: &[f64]) -> Vec<Value> {
+    v.iter().map(|x| Value::Num(*x)).collect()
+}
+
+fn scale_out(params: serde_json::Value, inputs: Vec<Vec<Value>>) -> Vec<Vec<f64>> {
+    let mut s = node("sound/scale", params);
+    s.eval(inputs)
+        .expect("scale")
+        .into_iter()
+        .map(|o| o.iter().map(num).collect())
+        .collect()
+}
+
+#[test]
+fn scale_counts_degrees_up_and_down() {
+    // C major from middle C: degrees up, an octave, below the root.
+    let out = scale_out(
+        json!({"mode": "degree", "scale": "major"}),
+        vec![
+            nums(&[0.0, 1.0, 2.0, 6.0, 7.0, -1.0, 14.0]),
+            nums(&[60.0]),
+            nums(&[0.0]),
+        ],
+    );
+    assert_eq!(out[0], [60.0, 62.0, 64.0, 71.0, 72.0, 59.0, 84.0]);
+    assert_eq!(out[2], [0.0, 1.0, 2.0, 6.0, 0.0, 6.0, 0.0]);
+    assert!((out[1][0] - 261.625_565).abs() < 1e-3);
+    // Octave shift, and the scale wired in as a string.
+    let out = scale_out(
+        json!({"mode": "degree"}),
+        vec![
+            nums(&[0.0, 1.0, 5.0]),
+            nums(&[57.0]),
+            nums(&[1.0]),
+            vec![Value::str("minor-pentatonic")],
+        ],
+    );
+    assert_eq!(out[0], [69.0, 72.0, 81.0]);
+}
+
+#[test]
+fn scale_quantizes_and_ranges() {
+    // Nearest note of D dorian; a tie goes up.
+    let out = scale_out(
+        json!({"mode": "quantize", "scale": "dorian"}),
+        vec![nums(&[61.0, 63.4, 66.0, 49.6]), nums(&[62.0])],
+    );
+    assert_eq!(out[0], [62.0, 64.0, 67.0, 50.0]);
+    // 0..1 over two octaves of the pentatonic scale: 11 notes, root to root.
+    let out = scale_out(
+        json!({"mode": "range", "scale": "pentatonic"}),
+        vec![
+            nums(&[0.0, 0.5, 0.999, 1.0, 2.0]),
+            nums(&[48.0]),
+            nums(&[2.0]),
+        ],
+    );
+    assert_eq!(out[0], [48.0, 60.0, 72.0, 72.0, 72.0]);
+    // A custom scale, folded into the octave and sorted.
+    let out = scale_out(
+        json!({"mode": "degree", "scale": "custom"}),
+        vec![
+            nums(&[0.0, 1.0, 2.0, 3.0]),
+            nums(&[60.0]),
+            nums(&[0.0]),
+            vec![Value::str("custom")],
+            vec![Value::str("7, 0 15")],
+        ],
+    );
+    assert_eq!(out[0], [60.0, 63.0, 67.0, 72.0]);
+    // Element by element; a non-number gives NaN.
+    let out = scale_out(json!({}), vec![vec![Value::str("x"), Value::Num(2.0)]]);
+    assert!(out[0][0].is_nan());
+    assert_eq!(out[0][1], 64.0);
+    // Pins follow the mode; `steps` only for a custom scale.
+    let cat = crate::spec::Catalogue::builtin();
+    let spec = cat.get("sound/scale").unwrap();
+    let pins = |p: serde_json::Value| -> Vec<String> {
+        let p: crate::spec::Params = serde_json::from_value(p).unwrap();
+        cat.resolved_inputs(spec, &p)
+            .into_iter()
+            .map(|p| p.name)
+            .collect()
+    };
+    assert_eq!(pins(json!({})), ["degree", "root", "octave", "scale"]);
+    assert_eq!(pins(json!({"mode": "quantize"})), ["note", "root", "scale"]);
+    assert_eq!(
+        pins(json!({"mode": "range", "scale": "custom"})),
+        ["amount", "root", "octaves", "scale", "steps"]
+    );
+    // The catalogue's static pins are degree mode's.
+    let names: Vec<&str> = spec.inputs.iter().map(|p| p.name.as_str()).collect();
+    assert_eq!(names, ["degree", "root", "octave", "scale"]);
+}

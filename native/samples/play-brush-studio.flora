@@ -1,0 +1,1709 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.2.0",
+  "meta": {
+    "name": "Brush Studio",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "bs_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -324
+      },
+      "params": {
+        "text": "Brush Studio\n\nDrag on the preview to paint. Keys 1–4 pick a brush: 1 ink (thins as you speed up), 2 ribbon (a calligraphy nib held at 45°), 3 spray, 4 rainbow. M mirrors every stroke eight ways round the centre (or flip the Mirror toggle). C or the Clear bang wipes the paper; Size and Colour are on the canvas.\n\nHow it works: the paper is a picture fed back to itself — Read holds last frame's paper, the new stroke (a segment from where the pen was to where it is) is laid on top, and From Layer turns both into this frame's paper, which Write keeps for the next. Until you first touch it, a demo pen paints a mirrored doodle for a few seconds.",
+        "width": 460,
+        "height": 260
+      }
+    },
+    {
+      "id": "bs_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 37,
+        "y": 1292
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_mpos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 396,
+        "y": 1413
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 42,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_touched",
+      "defType": "state/value",
+      "position": {
+        "x": 41,
+        "y": 1064
+      },
+      "params": {},
+      "portValues": {
+        "init": false
+      }
+    },
+    {
+      "id": "bs_touchedNext",
+      "defType": "logic/logic",
+      "position": {
+        "x": 369,
+        "y": 1101
+      },
+      "params": {
+        "op": "or"
+      }
+    },
+    {
+      "id": "bs_demo",
+      "defType": "math/expression",
+      "position": {
+        "x": 354,
+        "y": 1777
+      },
+      "params": {
+        "expr": "vec2(190 * sin(t * 1.3) + 50 * sin(t * 3.7), 160 * sin(t * 1.9 + 1) + 40 * cos(t * 2.9))"
+      }
+    },
+    {
+      "id": "bs_pen",
+      "defType": "logic/select",
+      "position": {
+        "x": 776,
+        "y": 1446
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_penDown",
+      "defType": "math/expression",
+      "position": {
+        "x": 354,
+        "y": 1249
+      },
+      "params": {
+        "expr": "pressed || (!touched && t < 7)"
+      }
+    },
+    {
+      "id": "bs_prevPen",
+      "defType": "state/value",
+      "position": {
+        "x": 1091,
+        "y": 1448
+      },
+      "params": {},
+      "portValues": {
+        "init": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": "bs_prevDown",
+      "defType": "state/value",
+      "position": {
+        "x": 785,
+        "y": 1320
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "bs_drawing",
+      "defType": "math/expression",
+      "position": {
+        "x": 1050,
+        "y": 1116
+      },
+      "params": {
+        "expr": "now && before"
+      }
+    },
+    {
+      "id": "bs_kb",
+      "defType": "input/keyboard",
+      "position": {
+        "x": 0,
+        "y": 230
+      },
+      "params": {
+        "mode": "last"
+      }
+    },
+    {
+      "id": "bs_brushKeys",
+      "defType": "string/split",
+      "position": {
+        "x": 20,
+        "y": 800
+      },
+      "params": {
+        "text": "1,2,3,4",
+        "by": ","
+      }
+    },
+    {
+      "id": "bs_keyIdx",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 357,
+        "y": 767
+      },
+      "params": {
+        "op": "index-of"
+      }
+    },
+    {
+      "id": "bs_brush",
+      "defType": "state/value",
+      "position": {
+        "x": 41,
+        "y": 1988
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "bs_brushNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 745,
+        "y": 1014
+      },
+      "params": {
+        "expr": "i >= 0 ? i : b"
+      }
+    },
+    {
+      "id": "bs_mKey",
+      "defType": "value/string",
+      "position": {
+        "x": 5,
+        "y": 126
+      },
+      "params": {
+        "value": "m"
+      }
+    },
+    {
+      "id": "bs_isM",
+      "defType": "logic/compare",
+      "position": {
+        "x": 348,
+        "y": 143
+      },
+      "params": {
+        "op": "equal"
+      }
+    },
+    {
+      "id": "bs_mirrorKey",
+      "defType": "state/value",
+      "position": {
+        "x": 41,
+        "y": 674
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "bs_mirrorKeyNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 745,
+        "y": 203
+      },
+      "params": {
+        "expr": "hit && m ? 1 - s : s"
+      }
+    },
+    {
+      "id": "bs_mirrorToggle",
+      "defType": "io/toggle",
+      "position": {
+        "x": 0,
+        "y": 926
+      },
+      "params": {
+        "value": false,
+        "label": "Mirror"
+      }
+    },
+    {
+      "id": "bs_mirror",
+      "defType": "math/expression",
+      "position": {
+        "x": 354,
+        "y": 915
+      },
+      "params": {
+        "expr": "(tg != (k > 0.5)) || !touched"
+      }
+    },
+    {
+      "id": "bs_cKey",
+      "defType": "value/string",
+      "position": {
+        "x": 5,
+        "y": 444
+      },
+      "params": {
+        "value": "c"
+      }
+    },
+    {
+      "id": "bs_isC",
+      "defType": "logic/compare",
+      "position": {
+        "x": 348,
+        "y": 323
+      },
+      "params": {
+        "op": "equal"
+      }
+    },
+    {
+      "id": "bs_clearBang",
+      "defType": "io/bang",
+      "position": {
+        "x": 354,
+        "y": 663
+      },
+      "params": {
+        "label": "Clear"
+      }
+    },
+    {
+      "id": "bs_clear",
+      "defType": "math/expression",
+      "position": {
+        "x": 745,
+        "y": 603
+      },
+      "params": {
+        "expr": "hit && c || bang || (touched && !was)"
+      }
+    },
+    {
+      "id": "bs_size",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 1539
+      },
+      "params": {
+        "value": 14,
+        "min": 2,
+        "max": 60,
+        "label": "Size"
+      }
+    },
+    {
+      "id": "bs_colour",
+      "defType": "io/color-picker",
+      "position": {
+        "x": 751,
+        "y": 833
+      },
+      "params": {
+        "hex": "#ffb347",
+        "label": "Colour"
+      }
+    },
+    {
+      "id": "bs_speed",
+      "defType": "math/expression",
+      "position": {
+        "x": 1480,
+        "y": 1447
+      },
+      "params": {
+        "expr": "distance(a, b)"
+      }
+    },
+    {
+      "id": "bs_inkW",
+      "defType": "math/expression",
+      "position": {
+        "x": 1908,
+        "y": 1584
+      },
+      "params": {
+        "expr": "s * (0.35 + 0.65 * clamp(1 - v / 45, 0, 1))"
+      }
+    },
+    {
+      "id": "bs_inkStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 2237,
+        "y": 1168
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_inkCap",
+      "defType": "style/stroke-cap",
+      "position": {
+        "x": 2447,
+        "y": 1226
+      },
+      "params": {
+        "cap": "round"
+      }
+    },
+    {
+      "id": "bs_ink",
+      "defType": "draw/line",
+      "position": {
+        "x": 2728,
+        "y": 1359
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_corners",
+      "defType": "spread/range",
+      "position": {
+        "x": 1065,
+        "y": 1344
+      },
+      "params": {},
+      "portValues": {
+        "count": 4
+      }
+    },
+    {
+      "id": "bs_nib",
+      "defType": "math/expression",
+      "position": {
+        "x": 1480,
+        "y": 1611
+      },
+      "params": {
+        "expr": "(k == 0 || k == 3 ? a : b) + vec2(1, -1) * s * 0.5 * (k < 2 ? 1 : -1)"
+      }
+    },
+    {
+      "id": "bs_ribbonFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1521,
+        "y": 717
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_ribbon",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 1940,
+        "y": 1139
+      },
+      "params": {},
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "bs_drops",
+      "defType": "spread/range",
+      "position": {
+        "x": 760,
+        "y": 1595
+      },
+      "params": {},
+      "portValues": {
+        "count": 26
+      }
+    },
+    {
+      "id": "bs_sprayPos",
+      "defType": "math/expression",
+      "position": {
+        "x": 1050,
+        "y": 1638
+      },
+      "params": {
+        "expr": "c + vec2(cos(noise(k * 1.731, frame * 0.917) * 25), sin(noise(k * 1.731, frame * 0.917) * 25)) * s * 1.6 * noise(k * 0.613 + 40.5, frame * 1.29)"
+      }
+    },
+    {
+      "id": "bs_sprayFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1091,
+        "y": 820
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_sprayLoop",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1395,
+        "y": 1143
+      },
+      "params": {
+        "width": 339,
+        "height": 224,
+        "label": "Spray dots"
+      },
+      "ports": [
+        {
+          "id": "at",
+          "name": "at",
+          "type": "vec2",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "dot",
+          "name": "dot",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 339,
+      "height": 224
+    },
+    {
+      "id": "bs_sprayDot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {},
+      "portValues": {
+        "w": 2.5,
+        "h": 2.5
+      },
+      "parentId": "bs_sprayLoop"
+    },
+    {
+      "id": "bs_rainbowCol",
+      "defType": "math/expression",
+      "position": {
+        "x": 354,
+        "y": 2149
+      },
+      "params": {
+        "expr": "hsl(fract(t * 0.35), 0.9, 0.62)"
+      }
+    },
+    {
+      "id": "bs_rainbowW",
+      "defType": "math/expression",
+      "position": {
+        "x": 354,
+        "y": 1635
+      },
+      "params": {
+        "expr": "s * (0.75 + 0.35 * sin(t * 14))"
+      }
+    },
+    {
+      "id": "bs_rainbowStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 782,
+        "y": 2055
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_rainbowCap",
+      "defType": "style/stroke-cap",
+      "position": {
+        "x": 1076,
+        "y": 2108
+      },
+      "params": {
+        "cap": "round"
+      }
+    },
+    {
+      "id": "bs_rainbow",
+      "defType": "draw/line",
+      "position": {
+        "x": 1522,
+        "y": 1830
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_sprayGroup",
+      "defType": "transform/group",
+      "position": {
+        "x": 2686,
+        "y": 1255
+      },
+      "params": {
+        "slotCount": 1
+      }
+    },
+    {
+      "id": "bs_brushes",
+      "defType": "spread/merge",
+      "position": {
+        "x": 2971,
+        "y": 1279
+      },
+      "params": {
+        "slotCount": 4
+      }
+    },
+    {
+      "id": "bs_stroke",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 3259,
+        "y": 1263
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "bs_mirrored",
+      "defType": "transform/symmetry",
+      "position": {
+        "x": 3546,
+        "y": 1049
+      },
+      "params": {
+        "mode": "rotate"
+      },
+      "portValues": {
+        "count": 8,
+        "clip": false
+      }
+    },
+    {
+      "id": "bs_styled",
+      "defType": "logic/select",
+      "position": {
+        "x": 3851,
+        "y": 1014
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_ifDrawing",
+      "defType": "logic/select",
+      "position": {
+        "x": 4067,
+        "y": 887
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_read",
+      "defType": "state/read",
+      "position": {
+        "x": 12,
+        "y": 548
+      },
+      "params": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "bs_prevCopy",
+      "defType": "image/crop",
+      "position": {
+        "x": 389,
+        "y": 471
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_prevPaper",
+      "defType": "draw/image",
+      "position": {
+        "x": 779,
+        "y": 389
+      },
+      "params": {},
+      "portValues": {
+        "w": 640,
+        "h": 640
+      }
+    },
+    {
+      "id": "bs_keep",
+      "defType": "logic/select",
+      "position": {
+        "x": 1082,
+        "y": 518
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_layers",
+      "defType": "spread/combine",
+      "position": {
+        "x": 4279,
+        "y": 774
+      },
+      "params": {
+        "op": "concat"
+      }
+    },
+    {
+      "id": "bs_paper",
+      "defType": "image/from-layer",
+      "position": {
+        "x": 4545,
+        "y": 793
+      },
+      "params": {},
+      "portValues": {
+        "w": 640,
+        "h": 640
+      }
+    },
+    {
+      "id": "bs_write",
+      "defType": "state/write",
+      "position": {
+        "x": 4772,
+        "y": 900
+      },
+      "params": {
+        "slot": 1
+      }
+    },
+    {
+      "id": "bs_show",
+      "defType": "draw/image",
+      "position": {
+        "x": 4770,
+        "y": 686
+      },
+      "params": {},
+      "portValues": {
+        "w": 640,
+        "h": 640
+      }
+    },
+    {
+      "id": "bs_ringCol",
+      "defType": "math/expression",
+      "position": {
+        "x": 745,
+        "y": 1178
+      },
+      "params": {
+        "expr": "rgba(1, 1, 1, down ? 0.75 : 0.35)"
+      }
+    },
+    {
+      "id": "bs_ringStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 1088,
+        "y": 946
+      },
+      "params": {},
+      "portValues": {
+        "width": 1.5
+      }
+    },
+    {
+      "id": "bs_ringNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 1520,
+        "y": 843
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_ringSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 1480,
+        "y": 979
+      },
+      "params": {
+        "expr": "max(s, 6) + 6"
+      }
+    },
+    {
+      "id": "bs_ring",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1942,
+        "y": 947
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_names",
+      "defType": "string/split",
+      "position": {
+        "x": 11,
+        "y": 2313
+      },
+      "params": {
+        "text": "ink,ribbon,spray,rainbow",
+        "by": ","
+      }
+    },
+    {
+      "id": "bs_brushName",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 357,
+        "y": 2291
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "bs_mirrorOn",
+      "defType": "value/string",
+      "position": {
+        "x": 359,
+        "y": 1941
+      },
+      "params": {
+        "value": "mirror ×8"
+      }
+    },
+    {
+      "id": "bs_mirrorOff",
+      "defType": "value/string",
+      "position": {
+        "x": 359,
+        "y": 2045
+      },
+      "params": {
+        "value": "no mirror"
+      }
+    },
+    {
+      "id": "bs_mirrorTxt",
+      "defType": "logic/select",
+      "position": {
+        "x": 776,
+        "y": 1763
+      },
+      "params": {}
+    },
+    {
+      "id": "bs_hint",
+      "defType": "value/string",
+      "position": {
+        "x": 750,
+        "y": 1951
+      },
+      "params": {
+        "value": "drag to paint   1–4 brush   M mirror   C clear"
+      }
+    },
+    {
+      "id": "bs_statusParts",
+      "defType": "spread/merge",
+      "position": {
+        "x": 1050,
+        "y": 1960
+      },
+      "params": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "bs_status",
+      "defType": "string/concat",
+      "position": {
+        "x": 1505,
+        "y": 1978
+      },
+      "params": {
+        "separator": "   ·   "
+      }
+    },
+    {
+      "id": "bs_statusFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1491,
+        "y": 2104
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.55
+        }
+      }
+    },
+    {
+      "id": "bs_statusText",
+      "defType": "draw/text",
+      "position": {
+        "x": 1947,
+        "y": 1884
+      },
+      "params": {
+        "size": 13,
+        "align": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 302.0
+        }
+      }
+    },
+    {
+      "id": "bs_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 4996,
+        "y": 889
+      },
+      "params": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "bs_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 5260,
+        "y": 887
+      },
+      "params": {
+        "width": 640,
+        "height": 640
+      },
+      "portValues": {
+        "background": {
+          "r": 0.08627450980392157,
+          "g": 0.0784313725490196,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "bs_mouse",
+      "target": "bs_mpos",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_2",
+      "source": "bs_mouse",
+      "target": "bs_mpos",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_3",
+      "source": "bs_touched",
+      "target": "bs_touchedNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_4",
+      "source": "bs_mouse",
+      "target": "bs_touchedNext",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_5",
+      "source": "bs_touchedNext",
+      "target": "bs_touched",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_6",
+      "source": "bs_touched",
+      "target": "bs_pen",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_7",
+      "source": "bs_mpos",
+      "target": "bs_pen",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_8",
+      "source": "bs_demo",
+      "target": "bs_pen",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_9",
+      "source": "bs_mouse",
+      "target": "bs_penDown",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_10",
+      "source": "bs_touched",
+      "target": "bs_penDown",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-touched"
+    },
+    {
+      "id": "e_11",
+      "source": "bs_pen",
+      "target": "bs_prevPen",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_12",
+      "source": "bs_penDown",
+      "target": "bs_prevDown",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_13",
+      "source": "bs_penDown",
+      "target": "bs_drawing",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-now"
+    },
+    {
+      "id": "e_14",
+      "source": "bs_prevDown",
+      "target": "bs_drawing",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-before"
+    },
+    {
+      "id": "e_15",
+      "source": "bs_brushKeys",
+      "target": "bs_keyIdx",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_16",
+      "source": "bs_kb",
+      "target": "bs_keyIdx",
+      "sourceHandle": "out-key",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_17",
+      "source": "bs_keyIdx",
+      "target": "bs_brushNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_18",
+      "source": "bs_brush",
+      "target": "bs_brushNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_19",
+      "source": "bs_brushNext",
+      "target": "bs_brush",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_20",
+      "source": "bs_kb",
+      "target": "bs_isM",
+      "sourceHandle": "out-key",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_21",
+      "source": "bs_mKey",
+      "target": "bs_isM",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_22",
+      "source": "bs_kb",
+      "target": "bs_mirrorKeyNext",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_23",
+      "source": "bs_isM",
+      "target": "bs_mirrorKeyNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_24",
+      "source": "bs_mirrorKey",
+      "target": "bs_mirrorKeyNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_25",
+      "source": "bs_mirrorKeyNext",
+      "target": "bs_mirrorKey",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_26",
+      "source": "bs_mirrorToggle",
+      "target": "bs_mirror",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-tg"
+    },
+    {
+      "id": "e_27",
+      "source": "bs_mirrorKey",
+      "target": "bs_mirror",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_28",
+      "source": "bs_touched",
+      "target": "bs_mirror",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-touched"
+    },
+    {
+      "id": "e_29",
+      "source": "bs_kb",
+      "target": "bs_isC",
+      "sourceHandle": "out-key",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_30",
+      "source": "bs_cKey",
+      "target": "bs_isC",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_31",
+      "source": "bs_kb",
+      "target": "bs_clear",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_32",
+      "source": "bs_isC",
+      "target": "bs_clear",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_33",
+      "source": "bs_clearBang",
+      "target": "bs_clear",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-bang"
+    },
+    {
+      "id": "e_34",
+      "source": "bs_touchedNext",
+      "target": "bs_clear",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-touched"
+    },
+    {
+      "id": "e_35",
+      "source": "bs_touched",
+      "target": "bs_clear",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-was"
+    },
+    {
+      "id": "e_36",
+      "source": "bs_prevPen",
+      "target": "bs_speed",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_37",
+      "source": "bs_pen",
+      "target": "bs_speed",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_38",
+      "source": "bs_size",
+      "target": "bs_inkW",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_39",
+      "source": "bs_speed",
+      "target": "bs_inkW",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_40",
+      "source": "bs_colour",
+      "target": "bs_inkStroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_41",
+      "source": "bs_inkW",
+      "target": "bs_inkStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-width"
+    },
+    {
+      "id": "e_42",
+      "source": "bs_inkStroke",
+      "target": "bs_inkCap",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_43",
+      "source": "bs_prevPen",
+      "target": "bs_ink",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_44",
+      "source": "bs_pen",
+      "target": "bs_ink",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_45",
+      "source": "bs_inkCap",
+      "target": "bs_ink",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_46",
+      "source": "bs_corners",
+      "target": "bs_nib",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_47",
+      "source": "bs_prevPen",
+      "target": "bs_nib",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_48",
+      "source": "bs_pen",
+      "target": "bs_nib",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_49",
+      "source": "bs_size",
+      "target": "bs_nib",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_50",
+      "source": "bs_colour",
+      "target": "bs_ribbonFill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_51",
+      "source": "bs_nib",
+      "target": "bs_ribbon",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_52",
+      "source": "bs_ribbonFill",
+      "target": "bs_ribbon",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_53",
+      "source": "bs_drops",
+      "target": "bs_sprayPos",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_54",
+      "source": "bs_pen",
+      "target": "bs_sprayPos",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_55",
+      "source": "bs_size",
+      "target": "bs_sprayPos",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_56",
+      "source": "bs_colour",
+      "target": "bs_sprayFill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_57",
+      "source": "bs_sprayPos",
+      "target": "bs_sprayLoop",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_58",
+      "source": "bs_sprayLoop",
+      "target": "bs_sprayDot",
+      "sourceHandle": "out-at",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_59",
+      "source": "bs_sprayFill",
+      "target": "bs_sprayDot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_60",
+      "source": "bs_sprayDot",
+      "target": "bs_sprayLoop",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-dot"
+    },
+    {
+      "id": "e_61",
+      "source": "bs_size",
+      "target": "bs_rainbowW",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_62",
+      "source": "bs_rainbowCol",
+      "target": "bs_rainbowStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_63",
+      "source": "bs_rainbowW",
+      "target": "bs_rainbowStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-width"
+    },
+    {
+      "id": "e_64",
+      "source": "bs_rainbowStroke",
+      "target": "bs_rainbowCap",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_65",
+      "source": "bs_prevPen",
+      "target": "bs_rainbow",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_66",
+      "source": "bs_pen",
+      "target": "bs_rainbow",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_67",
+      "source": "bs_rainbowCap",
+      "target": "bs_rainbow",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_68",
+      "source": "bs_sprayLoop",
+      "target": "bs_sprayGroup",
+      "sourceHandle": "out-dot",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_69",
+      "source": "bs_ink",
+      "target": "bs_brushes",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_70",
+      "source": "bs_ribbon",
+      "target": "bs_brushes",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_71",
+      "source": "bs_sprayGroup",
+      "target": "bs_brushes",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_72",
+      "source": "bs_rainbow",
+      "target": "bs_brushes",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_73",
+      "source": "bs_brushes",
+      "target": "bs_stroke",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_74",
+      "source": "bs_brush",
+      "target": "bs_stroke",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_75",
+      "source": "bs_stroke",
+      "target": "bs_mirrored",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_76",
+      "source": "bs_mirror",
+      "target": "bs_styled",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_77",
+      "source": "bs_mirrored",
+      "target": "bs_styled",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_78",
+      "source": "bs_stroke",
+      "target": "bs_styled",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_79",
+      "source": "bs_drawing",
+      "target": "bs_ifDrawing",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_80",
+      "source": "bs_styled",
+      "target": "bs_ifDrawing",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_81",
+      "source": "bs_read",
+      "target": "bs_prevCopy",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_82",
+      "source": "bs_prevCopy",
+      "target": "bs_prevPaper",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_83",
+      "source": "bs_clear",
+      "target": "bs_keep",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_84",
+      "source": "bs_prevPaper",
+      "target": "bs_keep",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_85",
+      "source": "bs_keep",
+      "target": "bs_layers",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_86",
+      "source": "bs_ifDrawing",
+      "target": "bs_layers",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_87",
+      "source": "bs_layers",
+      "target": "bs_paper",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_88",
+      "source": "bs_paper",
+      "target": "bs_write",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_89",
+      "source": "bs_paper",
+      "target": "bs_show",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_90",
+      "source": "bs_penDown",
+      "target": "bs_ringCol",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-down"
+    },
+    {
+      "id": "e_91",
+      "source": "bs_ringCol",
+      "target": "bs_ringStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_92",
+      "source": "bs_ringStroke",
+      "target": "bs_ringNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_93",
+      "source": "bs_size",
+      "target": "bs_ringSize",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_94",
+      "source": "bs_pen",
+      "target": "bs_ring",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_95",
+      "source": "bs_ringSize",
+      "target": "bs_ring",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_96",
+      "source": "bs_ringSize",
+      "target": "bs_ring",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_97",
+      "source": "bs_ringNoFill",
+      "target": "bs_ring",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_98",
+      "source": "bs_names",
+      "target": "bs_brushName",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_99",
+      "source": "bs_brush",
+      "target": "bs_brushName",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_100",
+      "source": "bs_mirror",
+      "target": "bs_mirrorTxt",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_101",
+      "source": "bs_mirrorOn",
+      "target": "bs_mirrorTxt",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_102",
+      "source": "bs_mirrorOff",
+      "target": "bs_mirrorTxt",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_103",
+      "source": "bs_brushName",
+      "target": "bs_statusParts",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_104",
+      "source": "bs_mirrorTxt",
+      "target": "bs_statusParts",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_105",
+      "source": "bs_hint",
+      "target": "bs_statusParts",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_106",
+      "source": "bs_statusParts",
+      "target": "bs_status",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-parts"
+    },
+    {
+      "id": "e_107",
+      "source": "bs_status",
+      "target": "bs_statusText",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_108",
+      "source": "bs_statusFill",
+      "target": "bs_statusText",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_109",
+      "source": "bs_show",
+      "target": "bs_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_110",
+      "source": "bs_ring",
+      "target": "bs_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_111",
+      "source": "bs_statusText",
+      "target": "bs_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_112",
+      "source": "bs_scene",
+      "target": "bs_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

@@ -806,7 +806,7 @@ fn run_sample(id: &str) -> SampleReport {
 
 /// Node types with native-only outputs appended after the TS ones (only the
 /// TS ports are compared).
-const NATIVE_EXTRA_OUTPUTS: &[&str] = &["time/seconds"];
+const NATIVE_EXTRA_OUTPUTS: &[&str] = &["time/seconds", "input/keyboard"];
 
 fn compare_frame(
     engine: &Engine,

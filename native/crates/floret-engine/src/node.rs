@@ -22,6 +22,13 @@ pub struct FrameCtx {
     /// Last key pressed (lowercase), empty if none.
     pub key: String,
     pub key_is_pressed: bool,
+    /// Every key held down now, named like `key` (lowercase letters and
+    /// digits, `" "` for the space bar, `ArrowLeft`, `Enter` …).
+    pub keys_down: Vec<String>,
+    /// Text typed since the previous frame, in order: the characters
+    /// (case and punctuation as typed), `'\n'` for Enter and `'\u{8}'`
+    /// for Backspace.
+    pub typed: String,
     /// The patch's loop length in seconds (the time node's `loop` phase).
     /// 0 when the caller leaves it to the engine, which fills in its
     /// patch's (see [`crate::Engine::loop_length`]).

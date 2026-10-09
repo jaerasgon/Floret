@@ -4,17 +4,20 @@
 //! camera and landmarks read the app's devices (`crate::devices`); with
 //! none installed they emit what the TS nodes did without browser media.
 
+use super::shared::first;
 use super::Registrar;
 use crate::devices::{self, CameraRequest, LandmarkLayer, LandmarksRequest};
 use crate::landmarks::Tracker;
-use crate::node::{raw, EvalCtx, NodeImpl, NodeInit};
+use crate::node::{raw, CarriedState, EvalCtx, NodeImpl, NodeInit, NodeResult};
 use crate::scene::{line_default_style, resolve_style, Paint, ResolvedStyle, SceneNode};
+use crate::spec::{Params, PortSpec, PortType};
 use crate::value::{one, Color, Spread, Value, Vec2};
 use std::sync::Arc;
 
 pub fn register(r: &mut Registrar) {
     r.node("input/mouse", mouse);
     r.node("input/keyboard", keyboard);
+    r.dynamic("input/keyboard", keyboard_inputs);
     r.node("input/midi-cc", midi_cc);
     r.node("input/midi-note", midi_note);
     r.node("input/camera", camera);
@@ -32,14 +35,201 @@ fn mouse(_: &NodeInit) -> Box<dyn NodeImpl> {
     })
 }
 
-fn keyboard(_: &NodeInit) -> Box<dyn NodeImpl> {
-    raw(|_, cx| {
+// ─── input/keyboard ──────────────────────────────────────────────────────────
+
+/// `input/keyboard`'s `mode`: what the node listens for.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum KeyMode {
+    /// The last key pressed and whether any key is down (the original
+    /// node; no pins).
+    Last,
+    /// Which of a list of keys are held (`keys`), for instruments and games.
+    Keys,
+    /// The text typed so far (`clear`, `max`), for type toys.
+    Text,
+}
+
+impl KeyMode {
+    fn of(params: &Params) -> KeyMode {
+        match params.get("mode").and_then(|v| v.as_str()) {
+            Some("keys") => KeyMode::Keys,
+            Some("text") => KeyMode::Text,
+            _ => KeyMode::Last,
+        }
+    }
+}
+
+/// The keys a new Keyboard node listens for in `keys` mode: a row of a
+/// piano laid on the home row.
+const DEFAULT_KEYS: &str = "awsedftgyhujk";
+/// Text mode keeps at most this many characters unless `max` says.
+const DEFAULT_MAX_TEXT: f64 = 64.0;
+
+/// The pins for the node's `mode` (`DynamicInputsFn`).
+fn keyboard_inputs(params: &Params) -> Vec<PortSpec> {
+    match KeyMode::of(params) {
+        KeyMode::Last => Vec::new(),
+        KeyMode::Keys => {
+            vec![PortSpec::new("keys", PortType::String).default(Value::str(DEFAULT_KEYS))]
+        }
+        KeyMode::Text => {
+            let mut max =
+                PortSpec::new("max", PortType::Number).default(Value::Num(DEFAULT_MAX_TEXT));
+            max.integer = true;
+            vec![
+                PortSpec::new("clear", PortType::Boolean).default(Value::Bool(false)),
+                max,
+            ]
+        }
+    }
+}
+
+/// A key name as the preview reports it, for comparing: lowercase, and
+/// `space` read as the space bar (`" "`).
+fn key_name(name: &str) -> String {
+    let n = name.to_lowercase();
+    if n == "space" {
+        " ".to_owned()
+    } else {
+        n
+    }
+}
+
+/// The keys listed on the `keys` pin: one per character (`"asdf"`), or,
+/// when the list has commas or spaces between names, one per name
+/// (`"ArrowLeft, ArrowRight, space"`).
+fn key_list(spec: &str) -> Vec<String> {
+    let t = spec.trim();
+    if t.chars().count() > 1 && t.contains([',', ' ']) {
+        t.split([',', ' ', '\t', '\n'])
+            .filter(|s| !s.is_empty())
+            .map(key_name)
+            .collect()
+    } else {
+        spec.chars().map(|c| key_name(&c.to_string())).collect()
+    }
+}
+
+/// What a Keyboard node remembers between frames.
+#[derive(Default)]
+struct KeyState {
+    /// Keys down last frame (names as reported).
+    down: Vec<String>,
+    /// Keys still held, oldest press first.
+    order: Vec<String>,
+    /// Text mode's text.
+    text: String,
+    pressed: bool,
+    clear: bool,
+}
+
+/// The text a Keyboard node in text mode carries through an edit of the
+/// patch.
+struct CarriedText(String);
+
+struct Keyboard {
+    mode: KeyMode,
+    st: KeyState,
+}
+
+fn keyboard(init: &NodeInit) -> Box<dyn NodeImpl> {
+    Box::new(Keyboard {
+        mode: KeyMode::of(init.params),
+        st: KeyState::default(),
+    })
+}
+
+impl NodeImpl for Keyboard {
+    fn eval(&mut self, inputs: &[Spread], cx: &mut EvalCtx) -> NodeResult {
         let f = cx.frame;
+        let st = &mut self.st;
+        // Presses since last frame, in the order the preview lists them.
+        let new: Vec<&String> = f
+            .keys_down
+            .iter()
+            .filter(|k| !st.down.contains(k))
+            .collect();
+        st.order.retain(|k| f.keys_down.contains(k));
+        st.order.extend(new.iter().map(|k| (*k).clone()));
+        let any_new = !new.is_empty() || (f.key_is_pressed && !st.pressed);
+        st.down.clone_from(&f.keys_down);
+        st.pressed = f.key_is_pressed;
+
+        let mut down = Vec::new();
+        let mut index = -1.0;
+        let hit;
+        match self.mode {
+            KeyMode::Last => hit = any_new,
+            KeyMode::Keys => {
+                let keys = first(inputs, 0);
+                let list = key_list(&super::convert::js_string_or_empty(&keys));
+                let held: Vec<String> = st.order.iter().map(|k| key_name(k)).collect();
+                down = list.iter().map(|k| Value::Bool(held.contains(k))).collect();
+                // The latest press still held that is one of ours.
+                index = held
+                    .iter()
+                    .rev()
+                    .find_map(|h| list.iter().position(|k| k == h))
+                    .map_or(-1.0, |i| i as f64);
+                hit = new.iter().any(|k| list.contains(&key_name(k)));
+            }
+            KeyMode::Text => {
+                let clear = first(inputs, 0).truthy();
+                let max = first(inputs, 1).to_number();
+                let max = if max.is_finite() && max >= 1.0 {
+                    max.min(100_000.0) as usize
+                } else {
+                    DEFAULT_MAX_TEXT as usize
+                };
+                for c in f.typed.chars() {
+                    match c {
+                        '\u{8}' => {
+                            st.text.pop();
+                        }
+                        '\n' => {
+                            if st.text.chars().count() < max {
+                                st.text.push('\n');
+                            }
+                        }
+                        c if c.is_control() => {}
+                        c => {
+                            if st.text.chars().count() < max {
+                                st.text.push(c);
+                            }
+                        }
+                    }
+                }
+                hit = !f.typed.is_empty();
+                if clear && !st.clear {
+                    st.text.clear();
+                }
+                st.clear = clear;
+            }
+        }
         Ok(vec![
             one(Value::Bool(f.key_is_pressed)),
             one(Value::str(&f.key)),
+            Arc::from(down),
+            num(index),
+            one(Value::str(&st.text)),
+            one(Value::Bool(hit)),
         ])
-    })
+    }
+
+    fn memoise(&self) -> bool {
+        false
+    }
+
+    fn carry(&mut self) -> Option<CarriedState> {
+        (self.mode == KeyMode::Text)
+            .then(|| Box::new(CarriedText(std::mem::take(&mut self.st.text))) as CarriedState)
+    }
+
+    fn adopt(&mut self, state: CarriedState) {
+        if let (KeyMode::Text, Ok(t)) = (self.mode, state.downcast::<CarriedText>()) {
+            self.st.text = t.0;
+        }
+    }
 }
 
 /// `params.param<string>(key, '')` for a device id.
@@ -386,6 +576,111 @@ mod tests {
         let out = k.eval1(&[]);
         assert!(matches!(out[0], Value::Bool(false)));
         assert!(matches!(&out[1], Value::Str(s) if &**s == "a"));
+    }
+
+    fn press(k: &mut crate::nodes::value::harness::Harness, down: &[&str]) {
+        k.frame.keys_down = down.iter().map(|s| (*s).to_owned()).collect();
+        k.frame.key_is_pressed = !down.is_empty();
+        if let Some(last) = down.last() {
+            k.frame.key = (*last).to_owned();
+        }
+    }
+
+    fn bools(v: &[Value]) -> Vec<bool> {
+        v.iter().map(Value::truthy).collect()
+    }
+
+    #[test]
+    fn keyboard_keys_mode_reports_held_keys_and_the_latest() {
+        let mut k = node("input/keyboard", serde_json::json!({"mode": "keys"}));
+        let keys = || vec![vec![Value::str("asdf")]];
+        let out = k.eval(keys()).unwrap();
+        assert_eq!(bools(&out[2]), [false; 4]);
+        assert_eq!(num(&out[3][0]), -1.0);
+        assert!(!out[5][0].truthy());
+        // Press s, then d while s is held: d is the latest; each press hits once.
+        press(&mut k, &["s"]);
+        let out = k.eval(keys()).unwrap();
+        assert_eq!(bools(&out[2]), [false, true, false, false]);
+        assert_eq!(num(&out[3][0]), 1.0);
+        assert!(out[5][0].truthy());
+        let out = k.eval(keys()).unwrap();
+        assert!(!out[5][0].truthy(), "a held key hits once");
+        press(&mut k, &["d", "s"]);
+        let out = k.eval(keys()).unwrap();
+        assert_eq!(bools(&out[2]), [false, true, true, false]);
+        assert_eq!(num(&out[3][0]), 2.0);
+        assert!(out[5][0].truthy());
+        // Let go of d: back to s. A key not in the list doesn't hit.
+        press(&mut k, &["s", "q"]);
+        let out = k.eval(keys()).unwrap();
+        assert_eq!(num(&out[3][0]), 1.0);
+        assert!(!out[5][0].truthy());
+        // Named keys, split on commas / spaces; `space` is the space bar.
+        let mut k = node("input/keyboard", serde_json::json!({"mode": "keys"}));
+        press(&mut k, &["ArrowLeft", " "]);
+        let out = k
+            .eval(vec![vec![Value::str("ArrowLeft, arrowright space")]])
+            .unwrap();
+        assert_eq!(bools(&out[2]), [true, false, true]);
+    }
+
+    #[test]
+    fn keyboard_text_mode_edits_a_string() {
+        let mut k = node("input/keyboard", serde_json::json!({"mode": "text"}));
+        let run = |k: &mut crate::nodes::value::harness::Harness, typed: &str, clear: bool| {
+            k.frame.typed = typed.to_owned();
+            let out = k
+                .eval(vec![vec![Value::Bool(clear)], vec![Value::Num(5.0)]])
+                .unwrap();
+            (out[4][0].clone(), out[5][0].truthy())
+        };
+        let (t, hit) = run(&mut k, "Hi!", false);
+        assert!(matches!(&t, Value::Str(s) if &**s == "Hi!"));
+        assert!(hit);
+        let (_, hit) = run(&mut k, "", false);
+        assert!(!hit);
+        // Backspace deletes, Enter starts a line, control keys are ignored,
+        // and typing stops at `max` characters.
+        let (t, _) = run(&mut k, "\u{8}\u{8}\n\tabc", false);
+        assert!(matches!(&t, Value::Str(s) if &**s == "H\nabc"), "{t:?}");
+        let (t, _) = run(&mut k, "xyz", false);
+        assert!(matches!(&t, Value::Str(s) if &**s == "H\nabc"));
+        // A rising `clear` empties it (holding it doesn't keep clearing).
+        let (t, _) = run(&mut k, "", true);
+        assert!(matches!(&t, Value::Str(s) if s.is_empty()));
+        let (t, _) = run(&mut k, "ok", true);
+        assert!(matches!(&t, Value::Str(s) if &**s == "ok"));
+        // The text survives an edit of the patch.
+        let carried = k.carry().expect("text mode carries its text");
+        let mut again = node("input/keyboard", serde_json::json!({"mode": "text"}));
+        again.adopt(carried);
+        let (t, _) = run(&mut again, "!", false);
+        assert!(matches!(&t, Value::Str(s) if &**s == "ok!"));
+    }
+
+    #[test]
+    fn keyboard_pins_follow_the_mode() {
+        let cat = crate::spec::Catalogue::builtin();
+        let spec = cat.get("input/keyboard").unwrap();
+        let pins = |p: serde_json::Value| -> Vec<String> {
+            let p: Params = serde_json::from_value(p).unwrap();
+            cat.resolved_inputs(spec, &p)
+                .into_iter()
+                .map(|p| p.name)
+                .collect()
+        };
+        assert!(pins(serde_json::json!({})).is_empty());
+        assert_eq!(pins(serde_json::json!({"mode": "keys"})), ["keys"]);
+        assert_eq!(pins(serde_json::json!({"mode": "text"})), ["clear", "max"]);
+        // Last mode: `hit` on a new press.
+        let mut k = node("input/keyboard", serde_json::json!({}));
+        let out = k.eval1(&[]);
+        assert!(!out[5].truthy());
+        press(&mut k, &["x"]);
+        let out = k.eval1(&[]);
+        assert!(out[5].truthy());
+        assert!(matches!(&out[1], Value::Str(s) if &**s == "x"));
     }
 
     // Unit tests run without a device provider (the fake-provider test is

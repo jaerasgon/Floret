@@ -188,6 +188,16 @@ impl Camera {
 
 /// Pointer position in canvas pixels, centre origin (the engine's mouse
 /// convention), if it's over the image.
+/// A key as the patch sees it (`FrameCtx::key`): letters lowercase, `" "`
+/// for the space bar, other keys by name (`ArrowLeft`, `Enter` …).
+fn key_name(key: egui::Key) -> String {
+    match key.name() {
+        "Space" => " ".to_owned(),
+        n if n.chars().count() == 1 => n.to_lowercase(),
+        n => n.to_owned(),
+    }
+}
+
 fn canvas_mouse(image: Rect, size: (u32, u32), pos: Pos2) -> Option<(f64, f64)> {
     if !image.contains(pos) || image.width() <= 0.0 || image.height() <= 0.0 {
         return None;
@@ -246,6 +256,10 @@ pub struct PreviewPanel {
     mouse_pressed: bool,
     key: String,
     key_pressed: bool,
+    /// Keys held now and text typed this frame (`FrameCtx::keys_down`,
+    /// `FrameCtx::typed`).
+    keys_down: Vec<String>,
+    typed: String,
     export: crate::export::Export,
     /// A recording asked for from a view's Export menu: renderer, format.
     record: Option<(String, crate::recording::Format)>,
@@ -281,6 +295,8 @@ impl PreviewPanel {
             mouse_pressed: false,
             key: String::new(),
             key_pressed: false,
+            keys_down: Vec::new(),
+            typed: String::new(),
             export: crate::export::Export::default(),
             record: None,
             variations: None,
@@ -414,32 +430,50 @@ impl PreviewPanel {
             mouse_is_pressed: self.mouse_pressed,
             key: self.key.clone(),
             key_is_pressed: self.key_pressed,
+            keys_down: self.keys_down.clone(),
+            typed: std::mem::take(&mut self.typed),
             // The engine fills in its patch's.
             loop_length: 0.0,
         }
     }
 
-    /// Keyboard state for the patch (`key` / `keyIsPressed`), unless a
-    /// text field has focus. Names follow DOM `KeyboardEvent.key`.
+    /// Keyboard state for the patch (`key` / `keyIsPressed`, the keys
+    /// held and the text typed), unless a text field has focus. Names
+    /// follow DOM `KeyboardEvent.key`.
     fn read_keys(&mut self, ctx: &egui::Context) {
+        self.typed.clear();
         if ctx.egui_wants_keyboard_input() {
             self.key_pressed = false;
+            self.keys_down.clear();
             return;
         }
         ctx.input(|i| {
             for e in &i.events {
-                if let egui::Event::Key {
-                    key, pressed: true, ..
-                } = e
-                {
-                    self.key = match key.name() {
-                        "Space" => " ".to_owned(),
-                        n if n.chars().count() == 1 => n.to_lowercase(),
-                        n => n.to_owned(),
-                    };
+                match e {
+                    egui::Event::Key {
+                        key, pressed: true, ..
+                    } => {
+                        self.key = key_name(*key);
+                        match key {
+                            egui::Key::Backspace => self.typed.push('\u{8}'),
+                            egui::Key::Enter => self.typed.push('\n'),
+                            _ => {}
+                        }
+                    }
+                    egui::Event::Text(t) => self.typed.push_str(t),
+                    _ => {}
                 }
             }
             self.key_pressed = !i.keys_down.is_empty();
+            self.keys_down
+                .retain(|k| i.keys_down.iter().any(|d| key_name(*d) == *k));
+            let mut held: Vec<String> = i.keys_down.iter().map(|k| key_name(*k)).collect();
+            held.sort();
+            for k in held {
+                if !self.keys_down.contains(&k) {
+                    self.keys_down.push(k);
+                }
+            }
         });
     }
 

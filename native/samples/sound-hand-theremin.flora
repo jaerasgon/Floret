@@ -1,0 +1,1782 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.2.0",
+  "meta": {
+    "name": "Hand Theremin",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "th_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -334
+      },
+      "params": {
+        "text": "Hand Theremin\n\nPlay it with your hand: switch Camera on and raise one hand to the webcam — left and right is pitch, up and down is loudness, and the tone sounds while your hand is in view. No camera? Hold the mouse button down over the preview and move instead. Snap on keeps you in the Scale (choose one on the canvas); off, it glides through every pitch like a real theremin, with vibrato.\n\nHow it works: Landmarks (hands) gives 21 points per hand; point 8 is the index fingertip. Select takes it while a hand is detected, else the mouse. Scale in range mode turns left–right into a note, Smooth glides between notes, an LFO adds vibrato. Two oscillators (an octave apart) → Mix → Gain (the volume) → filter → delay → reverb. The rings pulse at a rate that follows the pitch.",
+        "width": 470,
+        "height": 270
+      }
+    },
+    {
+      "id": "th_camOn",
+      "defType": "io/toggle",
+      "position": {
+        "x": 0,
+        "y": 408
+      },
+      "params": {
+        "value": false,
+        "label": "Camera"
+      }
+    },
+    {
+      "id": "th_camera",
+      "defType": "input/camera",
+      "position": {
+        "x": 296,
+        "y": 187
+      },
+      "params": {
+        "mirror": true
+      }
+    },
+    {
+      "id": "th_hands",
+      "defType": "input/landmarks",
+      "position": {
+        "x": 597,
+        "y": 340
+      },
+      "params": {
+        "tracker": "hands",
+        "mirror": true,
+        "count": 1
+      },
+      "portValues": {
+        "size": 720,
+        "guides": true
+      }
+    },
+    {
+      "id": "th_tip",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 913,
+        "y": 686
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 8
+      }
+    },
+    {
+      "id": "th_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 37,
+        "y": 682
+      },
+      "params": {}
+    },
+    {
+      "id": "th_mpos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 338,
+        "y": 725
+      },
+      "params": {}
+    },
+    {
+      "id": "th_hand",
+      "defType": "logic/select",
+      "position": {
+        "x": 1214,
+        "y": 674
+      },
+      "params": {}
+    },
+    {
+      "id": "th_sounding",
+      "defType": "math/expression",
+      "position": {
+        "x": 1183,
+        "y": 487
+      },
+      "params": {
+        "expr": "h || p"
+      }
+    },
+    {
+      "id": "th_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 42,
+        "y": 134
+      },
+      "params": {}
+    },
+    {
+      "id": "th_across",
+      "defType": "math/expression",
+      "position": {
+        "x": 1477,
+        "y": 798
+      },
+      "params": {
+        "expr": "clamp(q.x / 720 + 0.5, 0, 1)"
+      }
+    },
+    {
+      "id": "th_scaleSel",
+      "defType": "io/select",
+      "position": {
+        "x": 0,
+        "y": 556
+      },
+      "params": {
+        "options": "pentatonic,minor-pentatonic,blues,major,dorian,chromatic",
+        "value": "pentatonic",
+        "label": "Scale"
+      }
+    },
+    {
+      "id": "th_snap",
+      "defType": "io/toggle",
+      "position": {
+        "x": 2036,
+        "y": 762
+      },
+      "params": {
+        "value": true,
+        "label": "Snap"
+      }
+    },
+    {
+      "id": "th_scale",
+      "defType": "sound/scale",
+      "position": {
+        "x": 1774,
+        "y": 596
+      },
+      "params": {
+        "mode": "range",
+        "scale": "pentatonic"
+      },
+      "portValues": {
+        "root": 48,
+        "octaves": 2
+      }
+    },
+    {
+      "id": "th_snapNote",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 2039,
+        "y": 608
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      }
+    },
+    {
+      "id": "th_pitch",
+      "defType": "math/expression",
+      "position": {
+        "x": 2330,
+        "y": 749
+      },
+      "params": {
+        "expr": "s ? n : 48 + a * 24"
+      }
+    },
+    {
+      "id": "th_glide",
+      "defType": "motion/smooth",
+      "position": {
+        "x": 2825,
+        "y": 856
+      },
+      "params": {},
+      "portValues": {
+        "rate": 9
+      }
+    },
+    {
+      "id": "th_vibrato",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 2813,
+        "y": 1335
+      },
+      "params": {
+        "shape": "sine"
+      },
+      "portValues": {
+        "rate": 5.5,
+        "min": -0.12,
+        "max": 0.12
+      }
+    },
+    {
+      "id": "th_freq",
+      "defType": "math/expression",
+      "position": {
+        "x": 3329,
+        "y": 1275
+      },
+      "params": {
+        "expr": "440 * pow(2, (n + v - 69) / 12)"
+      }
+    },
+    {
+      "id": "th_subFreq",
+      "defType": "math/expression",
+      "position": {
+        "x": 3713,
+        "y": 1689
+      },
+      "params": {
+        "expr": "f / 2"
+      }
+    },
+    {
+      "id": "th_loud",
+      "defType": "math/expression",
+      "position": {
+        "x": 1477,
+        "y": 634
+      },
+      "params": {
+        "expr": "s ? clamp(0.5 - q.y / 540, 0.05, 1) : 0"
+      }
+    },
+    {
+      "id": "th_level",
+      "defType": "motion/smooth",
+      "position": {
+        "x": 2825,
+        "y": 730
+      },
+      "params": {},
+      "portValues": {
+        "rate": 12
+      }
+    },
+    {
+      "id": "th_tone",
+      "defType": "sound/oscillator",
+      "position": {
+        "x": 4027,
+        "y": 1562
+      },
+      "params": {
+        "type": "triangle"
+      },
+      "portValues": {
+        "amp": 0.6
+      }
+    },
+    {
+      "id": "th_body",
+      "defType": "sound/oscillator",
+      "position": {
+        "x": 4027,
+        "y": 1710
+      },
+      "params": {
+        "type": "sine"
+      },
+      "portValues": {
+        "amp": 0.45
+      }
+    },
+    {
+      "id": "th_mix",
+      "defType": "sound/mix",
+      "position": {
+        "x": 4610,
+        "y": 1650
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "th_volume",
+      "defType": "sound/gain",
+      "position": {
+        "x": 5217,
+        "y": 1700
+      },
+      "params": {}
+    },
+    {
+      "id": "th_filter",
+      "defType": "sound/filter",
+      "position": {
+        "x": 5472,
+        "y": 1660
+      },
+      "params": {
+        "type": "lowpass"
+      },
+      "portValues": {
+        "freq": 2600,
+        "res": 1
+      }
+    },
+    {
+      "id": "th_delay",
+      "defType": "sound/delay",
+      "position": {
+        "x": 5811,
+        "y": 1643
+      },
+      "params": {},
+      "portValues": {
+        "time": 0.33,
+        "feedback": 0.3,
+        "filter": 1800
+      }
+    },
+    {
+      "id": "th_reverb",
+      "defType": "sound/reverb",
+      "position": {
+        "x": 6083,
+        "y": 1609
+      },
+      "params": {},
+      "portValues": {
+        "seconds": 3,
+        "decay": 2.5,
+        "wet": 0.35
+      }
+    },
+    {
+      "id": "th_out",
+      "defType": "sound/output",
+      "position": {
+        "x": 6343,
+        "y": 1603
+      },
+      "params": {},
+      "portValues": {
+        "volume": 0.6
+      }
+    },
+    {
+      "id": "th_camTint",
+      "defType": "math/expression",
+      "position": {
+        "x": 296,
+        "y": 45
+      },
+      "params": {
+        "expr": "rgba(1, 1, 1, 0.22)"
+      }
+    },
+    {
+      "id": "th_camImage",
+      "defType": "draw/image",
+      "position": {
+        "x": 630,
+        "y": 0
+      },
+      "params": {},
+      "portValues": {
+        "w": 720,
+        "h": 540
+      }
+    },
+    {
+      "id": "th_probe",
+      "defType": "spread/linear",
+      "position": {
+        "x": 15,
+        "y": 260
+      },
+      "params": {},
+      "portValues": {
+        "from": 0,
+        "to": 1,
+        "count": 400
+      }
+    },
+    {
+      "id": "th_probeScale",
+      "defType": "sound/scale",
+      "position": {
+        "x": 300,
+        "y": 357
+      },
+      "params": {
+        "mode": "range",
+        "scale": "pentatonic"
+      },
+      "portValues": {
+        "root": 48,
+        "octaves": 2
+      }
+    },
+    {
+      "id": "th_laneNotes",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 598,
+        "y": 214
+      },
+      "params": {
+        "op": "unique"
+      }
+    },
+    {
+      "id": "th_lanes",
+      "defType": "spread/count",
+      "position": {
+        "x": 925,
+        "y": 329
+      },
+      "params": {}
+    },
+    {
+      "id": "th_laneAt",
+      "defType": "math/expression",
+      "position": {
+        "x": 1183,
+        "y": 222
+      },
+      "params": {
+        "expr": "vec2(((index + 0.5) / n - 0.5) * 720, 240.0 + k * 0)"
+      }
+    },
+    {
+      "id": "th_laneCol",
+      "defType": "math/expression",
+      "position": {
+        "x": 2330,
+        "y": 347
+      },
+      "params": {
+        "expr": "k == p && s ? hsl(fract(index / n * 0.7 + 0.55), 0.9, 0.65) : rgba(1, 1, 1, 0.12 + (k % 12 == 0 ? 0.2 : 0))"
+      }
+    },
+    {
+      "id": "th_laneW",
+      "defType": "math/expression",
+      "position": {
+        "x": 2330,
+        "y": 205
+      },
+      "params": {
+        "expr": "720 / n - 4"
+      }
+    },
+    {
+      "id": "th_laneLoop",
+      "defType": "region/foreach",
+      "position": {
+        "x": 2615,
+        "y": 155
+      },
+      "params": {
+        "width": 521,
+        "height": 246,
+        "label": "Lanes"
+      },
+      "ports": [
+        {
+          "id": "at",
+          "name": "at",
+          "type": "vec2",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "col",
+          "name": "col",
+          "type": "color",
+          "direction": "input",
+          "y": 165
+        },
+        {
+          "id": "lane",
+          "name": "lane",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 521,
+      "height": 246
+    },
+    {
+      "id": "th_laneFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 128,
+        "y": 128
+      },
+      "params": {},
+      "parentId": "th_laneLoop"
+    },
+    {
+      "id": "th_lane",
+      "defType": "draw/rect",
+      "position": {
+        "x": 310,
+        "y": 40
+      },
+      "params": {},
+      "portValues": {
+        "h": 26
+      },
+      "parentId": "th_laneLoop"
+    },
+    {
+      "id": "th_rings",
+      "defType": "spread/range",
+      "position": {
+        "x": 3344,
+        "y": 452
+      },
+      "params": {},
+      "portValues": {
+        "count": 7
+      }
+    },
+    {
+      "id": "th_ringPhase",
+      "defType": "math/expression",
+      "position": {
+        "x": 3713,
+        "y": 283
+      },
+      "params": {
+        "expr": "fract(t * f / 330 + i / 7)"
+      }
+    },
+    {
+      "id": "th_ringSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 4023,
+        "y": 182
+      },
+      "params": {
+        "expr": "30 + ph * (120 + 380 * l)"
+      }
+    },
+    {
+      "id": "th_ringCol",
+      "defType": "math/expression",
+      "position": {
+        "x": 4023,
+        "y": 346
+      },
+      "params": {
+        "expr": "hsl(fract(0.55 + (n - 48) / 24 * 0.6), 0.85, 0.6, (1 - ph) * (0.15 + 0.85 * l))"
+      }
+    },
+    {
+      "id": "th_ringLoop",
+      "defType": "region/foreach",
+      "position": {
+        "x": 4336,
+        "y": 279
+      },
+      "params": {
+        "width": 716,
+        "height": 308,
+        "label": "Rings"
+      },
+      "ports": [
+        {
+          "id": "d",
+          "name": "d",
+          "type": "number",
+          "direction": "input",
+          "y": 106
+        },
+        {
+          "id": "col",
+          "name": "col",
+          "type": "color",
+          "direction": "input",
+          "y": 183
+        },
+        {
+          "id": "ring",
+          "name": "ring",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 716,
+      "height": 308
+    },
+    {
+      "id": "th_ringStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 129,
+        "y": 146
+      },
+      "params": {},
+      "portValues": {
+        "width": 2.5
+      },
+      "parentId": "th_ringLoop"
+    },
+    {
+      "id": "th_ringNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 318,
+        "y": 146
+      },
+      "params": {},
+      "parentId": "th_ringLoop"
+    },
+    {
+      "id": "th_ring",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 505,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "th_ringLoop"
+    },
+    {
+      "id": "th_orbCol",
+      "defType": "math/expression",
+      "position": {
+        "x": 3329,
+        "y": 652
+      },
+      "params": {
+        "expr": "hsl(fract(0.55 + (n - 48) / 24 * 0.6), 0.9, 0.6 + 0.3 * l)"
+      }
+    },
+    {
+      "id": "th_orbFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 3754,
+        "y": 653
+      },
+      "params": {}
+    },
+    {
+      "id": "th_orbSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 3713,
+        "y": 511
+      },
+      "params": {
+        "expr": "18 + 30 * l"
+      }
+    },
+    {
+      "id": "th_orb",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 4058,
+        "y": 554
+      },
+      "params": {}
+    },
+    {
+      "id": "th_stringX",
+      "defType": "spread/linear",
+      "position": {
+        "x": 3344,
+        "y": 827
+      },
+      "params": {},
+      "portValues": {
+        "from": -360.0,
+        "to": 360.0,
+        "count": 260
+      }
+    },
+    {
+      "id": "th_string",
+      "defType": "math/expression",
+      "position": {
+        "x": 3713,
+        "y": 949
+      },
+      "params": {
+        "expr": "vec2(x, q.y + (6 + 46 * l) * exp(-((x - q.x) / 170) ^ 2) * sin(x * f / 4200 - t * 14))"
+      }
+    },
+    {
+      "id": "th_stringStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 3750,
+        "y": 779
+      },
+      "params": {},
+      "portValues": {
+        "width": 2
+      }
+    },
+    {
+      "id": "th_stringLine",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 4056,
+        "y": 772
+      },
+      "params": {},
+      "portValues": {
+        "closed": false
+      }
+    },
+    {
+      "id": "th_glowing",
+      "defType": "transform/group",
+      "position": {
+        "x": 5179,
+        "y": 529
+      },
+      "params": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "th_glow",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 5468,
+        "y": 469
+      },
+      "params": {
+        "mode": "bloom"
+      },
+      "portValues": {
+        "threshold": 0.3,
+        "radius": 22,
+        "intensity": 1.2
+      }
+    },
+    {
+      "id": "th_antennaFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 5190,
+        "y": 124
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.5607843137254902,
+          "g": 0.5882352941176471,
+          "b": 0.7019607843137254,
+          "a": 0.7
+        }
+      }
+    },
+    {
+      "id": "th_antenna",
+      "defType": "draw/rect",
+      "position": {
+        "x": 5486,
+        "y": 85
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": 320.0,
+          "y": -40
+        },
+        "w": 6,
+        "h": 360
+      }
+    },
+    {
+      "id": "th_loopStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 4621,
+        "y": 87
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.5607843137254902,
+          "g": 0.5882352941176471,
+          "b": 0.7019607843137254,
+          "a": 0.7
+        },
+        "width": 6
+      }
+    },
+    {
+      "id": "th_loopNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 5219,
+        "y": 250
+      },
+      "params": {}
+    },
+    {
+      "id": "th_loopAntenna",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 5483,
+        "y": 277
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": -290.0,
+          "y": 120
+        },
+        "w": 90,
+        "h": 40
+      }
+    },
+    {
+      "id": "th_noteNames",
+      "defType": "string/split",
+      "position": {
+        "x": 3339,
+        "y": 1007
+      },
+      "params": {
+        "text": "C,C♯,D,D♯,E,F,F♯,G,G♯,A,A♯,B",
+        "by": ","
+      }
+    },
+    {
+      "id": "th_rounded",
+      "defType": "math/expression",
+      "position": {
+        "x": 3329,
+        "y": 1133
+      },
+      "params": {
+        "expr": "round(n) % 12"
+      }
+    },
+    {
+      "id": "th_noteName",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 3716,
+        "y": 1179
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "th_hzText",
+      "defType": "string/format-number",
+      "position": {
+        "x": 3721,
+        "y": 1327
+      },
+      "params": {},
+      "portValues": {
+        "decimals": 0,
+        "suffix": " Hz"
+      }
+    },
+    {
+      "id": "th_help",
+      "defType": "value/string",
+      "position": {
+        "x": 3718,
+        "y": 1585
+      },
+      "params": {
+        "value": "hold the mouse and move · or Camera on and raise a hand"
+      }
+    },
+    {
+      "id": "th_statusParts",
+      "defType": "spread/merge",
+      "position": {
+        "x": 4023,
+        "y": 1233
+      },
+      "params": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "th_status",
+      "defType": "string/concat",
+      "position": {
+        "x": 4635,
+        "y": 907
+      },
+      "params": {
+        "separator": "   ·   "
+      }
+    },
+    {
+      "id": "th_statusFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 4621,
+        "y": 1033
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.8470588235294118,
+          "g": 0.8627450980392157,
+          "b": 0.9411764705882353,
+          "a": 0.6
+        }
+      }
+    },
+    {
+      "id": "th_statusText",
+      "defType": "draw/text",
+      "position": {
+        "x": 5219,
+        "y": 763
+      },
+      "params": {
+        "size": 13,
+        "align": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": -246.0
+        }
+      }
+    },
+    {
+      "id": "th_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 5773,
+        "y": 198
+      },
+      "params": {
+        "slotCount": 7
+      }
+    },
+    {
+      "id": "th_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 6039,
+        "y": 198
+      },
+      "params": {
+        "width": 720,
+        "height": 540
+      },
+      "portValues": {
+        "background": {
+          "r": 0.027450980392156862,
+          "g": 0.027450980392156862,
+          "b": 0.050980392156862744,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "th_camOn",
+      "target": "th_camera",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_2",
+      "source": "th_camera",
+      "target": "th_hands",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_3",
+      "source": "th_camOn",
+      "target": "th_hands",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_4",
+      "source": "th_hands",
+      "target": "th_tip",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_5",
+      "source": "th_mouse",
+      "target": "th_mpos",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_6",
+      "source": "th_mouse",
+      "target": "th_mpos",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_7",
+      "source": "th_hands",
+      "target": "th_hand",
+      "sourceHandle": "out-detected",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_8",
+      "source": "th_tip",
+      "target": "th_hand",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_9",
+      "source": "th_mpos",
+      "target": "th_hand",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_10",
+      "source": "th_hands",
+      "target": "th_sounding",
+      "sourceHandle": "out-detected",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_11",
+      "source": "th_mouse",
+      "target": "th_sounding",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_12",
+      "source": "th_hand",
+      "target": "th_across",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_13",
+      "source": "th_across",
+      "target": "th_scale",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-amount"
+    },
+    {
+      "id": "e_14",
+      "source": "th_scaleSel",
+      "target": "th_scale",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_15",
+      "source": "th_scale",
+      "target": "th_snapNote",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_16",
+      "source": "th_snap",
+      "target": "th_pitch",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_17",
+      "source": "th_snapNote",
+      "target": "th_pitch",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_18",
+      "source": "th_across",
+      "target": "th_pitch",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_19",
+      "source": "th_pitch",
+      "target": "th_glide",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_20",
+      "source": "th_glide",
+      "target": "th_freq",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_21",
+      "source": "th_vibrato",
+      "target": "th_freq",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_22",
+      "source": "th_freq",
+      "target": "th_subFreq",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_23",
+      "source": "th_sounding",
+      "target": "th_loud",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_24",
+      "source": "th_hand",
+      "target": "th_loud",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_25",
+      "source": "th_loud",
+      "target": "th_level",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_26",
+      "source": "th_freq",
+      "target": "th_tone",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_27",
+      "source": "th_subFreq",
+      "target": "th_body",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_28",
+      "source": "th_tone",
+      "target": "th_mix",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in1"
+    },
+    {
+      "id": "e_29",
+      "source": "th_body",
+      "target": "th_mix",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in2"
+    },
+    {
+      "id": "e_30",
+      "source": "th_mix",
+      "target": "th_volume",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_31",
+      "source": "th_level",
+      "target": "th_volume",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-level"
+    },
+    {
+      "id": "e_32",
+      "source": "th_volume",
+      "target": "th_filter",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_33",
+      "source": "th_filter",
+      "target": "th_delay",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_34",
+      "source": "th_delay",
+      "target": "th_reverb",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_35",
+      "source": "th_reverb",
+      "target": "th_out",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_36",
+      "source": "th_camera",
+      "target": "th_camImage",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_37",
+      "source": "th_camTint",
+      "target": "th_camImage",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-tint"
+    },
+    {
+      "id": "e_38",
+      "source": "th_probe",
+      "target": "th_probeScale",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-amount"
+    },
+    {
+      "id": "e_39",
+      "source": "th_scaleSel",
+      "target": "th_probeScale",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_40",
+      "source": "th_probeScale",
+      "target": "th_laneNotes",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_41",
+      "source": "th_laneNotes",
+      "target": "th_lanes",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_42",
+      "source": "th_laneNotes",
+      "target": "th_laneAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_43",
+      "source": "th_lanes",
+      "target": "th_laneAt",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_44",
+      "source": "th_laneNotes",
+      "target": "th_laneCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_45",
+      "source": "th_snapNote",
+      "target": "th_laneCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_46",
+      "source": "th_sounding",
+      "target": "th_laneCol",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_47",
+      "source": "th_lanes",
+      "target": "th_laneCol",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_48",
+      "source": "th_lanes",
+      "target": "th_laneW",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_49",
+      "source": "th_laneAt",
+      "target": "th_laneLoop",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_50",
+      "source": "th_laneCol",
+      "target": "th_laneLoop",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_51",
+      "source": "th_laneLoop",
+      "target": "th_laneFill",
+      "sourceHandle": "out-col",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_52",
+      "source": "th_laneLoop",
+      "target": "th_lane",
+      "sourceHandle": "out-at",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_53",
+      "source": "th_laneW",
+      "target": "th_lane",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_54",
+      "source": "th_laneFill",
+      "target": "th_lane",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_55",
+      "source": "th_lane",
+      "target": "th_laneLoop",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-lane"
+    },
+    {
+      "id": "e_56",
+      "source": "th_freq",
+      "target": "th_ringPhase",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_57",
+      "source": "th_rings",
+      "target": "th_ringPhase",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_58",
+      "source": "th_ringPhase",
+      "target": "th_ringSize",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-ph"
+    },
+    {
+      "id": "e_59",
+      "source": "th_level",
+      "target": "th_ringSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_60",
+      "source": "th_ringPhase",
+      "target": "th_ringCol",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-ph"
+    },
+    {
+      "id": "e_61",
+      "source": "th_glide",
+      "target": "th_ringCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_62",
+      "source": "th_level",
+      "target": "th_ringCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_63",
+      "source": "th_ringSize",
+      "target": "th_ringLoop",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_64",
+      "source": "th_ringCol",
+      "target": "th_ringLoop",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_65",
+      "source": "th_ringLoop",
+      "target": "th_ringStroke",
+      "sourceHandle": "out-col",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_66",
+      "source": "th_ringStroke",
+      "target": "th_ringNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_67",
+      "source": "th_hand",
+      "target": "th_ring",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_68",
+      "source": "th_ringLoop",
+      "target": "th_ring",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_69",
+      "source": "th_ringLoop",
+      "target": "th_ring",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_70",
+      "source": "th_ringNoFill",
+      "target": "th_ring",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_71",
+      "source": "th_ring",
+      "target": "th_ringLoop",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-ring"
+    },
+    {
+      "id": "e_72",
+      "source": "th_glide",
+      "target": "th_orbCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_73",
+      "source": "th_level",
+      "target": "th_orbCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_74",
+      "source": "th_orbCol",
+      "target": "th_orbFill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_75",
+      "source": "th_level",
+      "target": "th_orbSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_76",
+      "source": "th_hand",
+      "target": "th_orb",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_77",
+      "source": "th_orbSize",
+      "target": "th_orb",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_78",
+      "source": "th_orbSize",
+      "target": "th_orb",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_79",
+      "source": "th_orbFill",
+      "target": "th_orb",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_80",
+      "source": "th_stringX",
+      "target": "th_string",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_81",
+      "source": "th_hand",
+      "target": "th_string",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_82",
+      "source": "th_level",
+      "target": "th_string",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_83",
+      "source": "th_freq",
+      "target": "th_string",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_84",
+      "source": "th_orbCol",
+      "target": "th_stringStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_85",
+      "source": "th_string",
+      "target": "th_stringLine",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_86",
+      "source": "th_stringStroke",
+      "target": "th_stringLine",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_87",
+      "source": "th_stringLine",
+      "target": "th_glowing",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_88",
+      "source": "th_ringLoop",
+      "target": "th_glowing",
+      "sourceHandle": "out-ring",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_89",
+      "source": "th_orb",
+      "target": "th_glowing",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_90",
+      "source": "th_glowing",
+      "target": "th_glow",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_91",
+      "source": "th_antennaFill",
+      "target": "th_antenna",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_92",
+      "source": "th_loopStroke",
+      "target": "th_loopNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_93",
+      "source": "th_loopNoFill",
+      "target": "th_loopAntenna",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_94",
+      "source": "th_glide",
+      "target": "th_rounded",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_95",
+      "source": "th_noteNames",
+      "target": "th_noteName",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_96",
+      "source": "th_rounded",
+      "target": "th_noteName",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_97",
+      "source": "th_freq",
+      "target": "th_hzText",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_98",
+      "source": "th_noteName",
+      "target": "th_statusParts",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_99",
+      "source": "th_hzText",
+      "target": "th_statusParts",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_100",
+      "source": "th_help",
+      "target": "th_statusParts",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_101",
+      "source": "th_statusParts",
+      "target": "th_status",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-parts"
+    },
+    {
+      "id": "e_102",
+      "source": "th_status",
+      "target": "th_statusText",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_103",
+      "source": "th_statusFill",
+      "target": "th_statusText",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_104",
+      "source": "th_camImage",
+      "target": "th_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_105",
+      "source": "th_hands",
+      "target": "th_scene",
+      "sourceHandle": "out-guides",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_106",
+      "source": "th_antenna",
+      "target": "th_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_107",
+      "source": "th_loopAntenna",
+      "target": "th_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_108",
+      "source": "th_laneLoop",
+      "target": "th_scene",
+      "sourceHandle": "out-lane",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_109",
+      "source": "th_glow",
+      "target": "th_scene",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s6"
+    },
+    {
+      "id": "e_110",
+      "source": "th_statusText",
+      "target": "th_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s7"
+    },
+    {
+      "id": "e_111",
+      "source": "th_scene",
+      "target": "th_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

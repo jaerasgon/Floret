@@ -179,10 +179,27 @@ pub enum AudioNode {
         input: Option<Arc<str>>,
         volume: f64,
     },
+    /// Sums several inputs, × `level` (`sound/mix`): one chain for many
+    /// voices, so they can share an effect or an analyser.
+    Mix {
+        inputs: Vec<Arc<str>>,
+        level: f64,
+    },
 }
 
 impl AudioNode {
-    /// The upstream node this one reads, if any.
+    /// Every upstream node this one reads: [`AudioNode::input`], or a
+    /// Mix's inputs.
+    pub fn sources(&self) -> impl Iterator<Item = &Arc<str>> {
+        let mix: &[Arc<str>] = match self {
+            AudioNode::Mix { inputs, .. } => inputs,
+            _ => &[],
+        };
+        self.input().into_iter().chain(mix)
+    }
+
+    /// The single upstream node this one reads, if any (a Mix reads
+    /// several: see [`AudioNode::sources`]).
     pub fn input(&self) -> Option<&Arc<str>> {
         use AudioNode::*;
         match self {
@@ -200,7 +217,8 @@ impl AudioNode {
             | Noise { .. }
             | MonoSynth { .. }
             | SoundFile { .. }
-            | AudioIn { .. } => None,
+            | AudioIn { .. }
+            | Mix { .. } => None,
         }
     }
 }

@@ -1,0 +1,1028 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.2.0",
+  "meta": {
+    "name": "Preset Morph",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "pm_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -334
+      },
+      "params": {
+        "text": "Preset Morph\n\nA spirograph instrument to perform with. Open the Presets panel: click a preset (Nebula, Clockwork, Urchin, Lace, Ember, Tide) to jump to it, or pick two under Morph and drag the slider between them — every slider glides at once and the drawing melts from one into the other. Vary (Ctrl/⌘+Shift+R) re-rolls the seed, which shifts each layer's phase. Drag the XY pad for zoom (left–right) and wobble (up–down), or drag on the preview to fan the layers apart and swell them, and tweak any slider, then save your own preset.\n\nHow it works: each layer is a hypotrochoid — a pen on a wheel of radius r rolling inside a ring of radius R — computed by one Expression over 1400 steps and drawn by a ForEach as a polygon. Presets store the sliders' values (and the seed) in the file; morphing interpolates them.",
+        "width": 470,
+        "height": 270
+      }
+    },
+    {
+      "id": "pm_bigR",
+      "defType": "io/slider",
+      "position": {
+        "x": 549,
+        "y": 142
+      },
+      "params": {
+        "value": 190,
+        "min": 60,
+        "max": 260,
+        "label": "Ring R"
+      }
+    },
+    {
+      "id": "pm_smallR",
+      "defType": "io/slider",
+      "position": {
+        "x": 549,
+        "y": 520
+      },
+      "params": {
+        "value": 73,
+        "min": 8,
+        "max": 200,
+        "label": "Wheel r"
+      }
+    },
+    {
+      "id": "pm_pen",
+      "defType": "io/slider",
+      "position": {
+        "x": 549,
+        "y": 646
+      },
+      "params": {
+        "value": 120,
+        "min": 0,
+        "max": 220,
+        "label": "Pen d"
+      }
+    },
+    {
+      "id": "pm_laps",
+      "defType": "io/slider",
+      "position": {
+        "x": 549,
+        "y": 772
+      },
+      "params": {
+        "value": 22,
+        "min": 1,
+        "max": 40,
+        "label": "Laps",
+        "step": 1
+      }
+    },
+    {
+      "id": "pm_spin",
+      "defType": "io/slider",
+      "position": {
+        "x": 549,
+        "y": 898
+      },
+      "params": {
+        "value": 0.15,
+        "min": -1,
+        "max": 1,
+        "label": "Spin"
+      }
+    },
+    {
+      "id": "pm_hue",
+      "defType": "io/slider",
+      "position": {
+        "x": 549,
+        "y": 1024
+      },
+      "params": {
+        "value": 0.6,
+        "min": 0,
+        "max": 1,
+        "label": "Hue"
+      }
+    },
+    {
+      "id": "pm_hueSpread",
+      "defType": "io/slider",
+      "position": {
+        "x": 549,
+        "y": 1150
+      },
+      "params": {
+        "value": 0.12,
+        "min": 0,
+        "max": 0.5,
+        "label": "Hue spread"
+      }
+    },
+    {
+      "id": "pm_width",
+      "defType": "io/slider",
+      "position": {
+        "x": 549,
+        "y": 1276
+      },
+      "params": {
+        "value": 1.4,
+        "min": 0.3,
+        "max": 5,
+        "label": "Line"
+      }
+    },
+    {
+      "id": "pm_layers",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 63
+      },
+      "params": {
+        "value": 3,
+        "min": 1,
+        "max": 6,
+        "label": "Layers",
+        "step": 1
+      }
+    },
+    {
+      "id": "pm_glow",
+      "defType": "io/slider",
+      "position": {
+        "x": 1303,
+        "y": 1134
+      },
+      "params": {
+        "value": 0.9,
+        "min": 0,
+        "max": 2,
+        "label": "Glow"
+      }
+    },
+    {
+      "id": "pm_pad",
+      "defType": "io/xy-pad",
+      "position": {
+        "x": 549,
+        "y": 1402
+      },
+      "params": {
+        "x": 0.5,
+        "y": 0.2,
+        "label": "Zoom · Wobble"
+      }
+    },
+    {
+      "id": "pm_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 42,
+        "y": 189
+      },
+      "params": {}
+    },
+    {
+      "id": "pm_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 37,
+        "y": 315
+      },
+      "params": {}
+    },
+    {
+      "id": "pm_twistTarget",
+      "defType": "math/expression",
+      "position": {
+        "x": 280,
+        "y": 211
+      },
+      "params": {
+        "expr": "p ? x / 320 : 0"
+      }
+    },
+    {
+      "id": "pm_twist",
+      "defType": "motion/smooth",
+      "position": {
+        "x": 582,
+        "y": 268
+      },
+      "params": {},
+      "portValues": {
+        "rate": 4
+      }
+    },
+    {
+      "id": "pm_swellTarget",
+      "defType": "math/expression",
+      "position": {
+        "x": 280,
+        "y": 375
+      },
+      "params": {
+        "expr": "p ? -y / 320 : 0"
+      }
+    },
+    {
+      "id": "pm_swell",
+      "defType": "motion/smooth",
+      "position": {
+        "x": 582,
+        "y": 394
+      },
+      "params": {},
+      "portValues": {
+        "rate": 4
+      }
+    },
+    {
+      "id": "pm_layerIdx",
+      "defType": "spread/range",
+      "position": {
+        "x": 295,
+        "y": 66
+      },
+      "params": {}
+    },
+    {
+      "id": "pm_phase",
+      "defType": "math/expression",
+      "position": {
+        "x": 549,
+        "y": 0
+      },
+      "params": {
+        "expr": "noise(k * 1.73 + 0.37, 4.21) * tau"
+      }
+    },
+    {
+      "id": "pm_steps",
+      "defType": "spread/range",
+      "position": {
+        "x": 564,
+        "y": 1660
+      },
+      "params": {},
+      "portValues": {
+        "count": 1400
+      }
+    },
+    {
+      "id": "pm_layerLoop",
+      "defType": "region/foreach",
+      "position": {
+        "x": 933,
+        "y": 500
+      },
+      "params": {
+        "width": 909,
+        "height": 586,
+        "label": "Layers"
+      },
+      "ports": [
+        {
+          "id": "k",
+          "name": "k",
+          "type": "number",
+          "direction": "input",
+          "y": 290
+        },
+        {
+          "id": "phase",
+          "name": "phase",
+          "type": "number",
+          "direction": "input",
+          "y": 270
+        },
+        {
+          "id": "line",
+          "name": "line",
+          "type": "layer",
+          "direction": "output",
+          "y": 288
+        }
+      ],
+      "width": 909,
+      "height": 586
+    },
+    {
+      "id": "pm_curve",
+      "defType": "math/expression",
+      "position": {
+        "x": 410,
+        "y": 40
+      },
+      "params": {
+        "expr": "(vec2((R * (1 - k * 0.11) - r) * cos(i / 1400 * L * tau + a) + d * cos((R * (1 - k * 0.11) - r) / r * i / 1400 * L * tau - a), (R * (1 - k * 0.11) - r) * sin(i / 1400 * L * tau + a) - d * sin((R * (1 - k * 0.11) - r) / r * i / 1400 * L * tau - a))) * (250 * (0.5 + z * 0.8) / (abs(R - r) + d + 1)) * (1 + w * 0.08 * sin(i / 23 + t * 2)) * (1 + sw * 0.45)"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_angle",
+      "defType": "math/expression",
+      "position": {
+        "x": 144,
+        "y": 196
+      },
+      "params": {
+        "expr": "ph + t * s * (1 + k * 0.3) + k * tw * 1.2"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_lineCol",
+      "defType": "math/expression",
+      "position": {
+        "x": 144,
+        "y": 404
+      },
+      "params": {
+        "expr": "hsl(fract(h + k * s), 0.85, 0.6, 0.85)"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_lineStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 448,
+        "y": 424
+      },
+      "params": {},
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_line",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 694,
+        "y": 251
+      },
+      "params": {},
+      "portValues": {
+        "closed": false
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_bloom",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1962,
+        "y": 889
+      },
+      "params": {
+        "mode": "bloom"
+      },
+      "portValues": {
+        "threshold": 0.35,
+        "radius": 18
+      }
+    },
+    {
+      "id": "pm_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2227,
+        "y": 889
+      },
+      "params": {
+        "width": 640,
+        "height": 640
+      },
+      "portValues": {
+        "background": {
+          "r": 0.0196078431372549,
+          "g": 0.0196078431372549,
+          "b": 0.0392156862745098,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "pm_mouse",
+      "target": "pm_twistTarget",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_2",
+      "source": "pm_mouse",
+      "target": "pm_twistTarget",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_3",
+      "source": "pm_twistTarget",
+      "target": "pm_twist",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_4",
+      "source": "pm_mouse",
+      "target": "pm_swellTarget",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_5",
+      "source": "pm_mouse",
+      "target": "pm_swellTarget",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_6",
+      "source": "pm_swellTarget",
+      "target": "pm_swell",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_7",
+      "source": "pm_layers",
+      "target": "pm_layerIdx",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_8",
+      "source": "pm_layerIdx",
+      "target": "pm_phase",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_9",
+      "source": "pm_layerIdx",
+      "target": "pm_layerLoop",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_10",
+      "source": "pm_phase",
+      "target": "pm_layerLoop",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_11",
+      "source": "pm_steps",
+      "target": "pm_curve",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_12",
+      "source": "pm_bigR",
+      "target": "pm_curve",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-R"
+    },
+    {
+      "id": "e_13",
+      "source": "pm_smallR",
+      "target": "pm_curve",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_14",
+      "source": "pm_pen",
+      "target": "pm_curve",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_15",
+      "source": "pm_laps",
+      "target": "pm_curve",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-L"
+    },
+    {
+      "id": "e_16",
+      "source": "pm_layerLoop",
+      "target": "pm_curve",
+      "sourceHandle": "out-k",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_17",
+      "source": "pm_layerLoop",
+      "target": "pm_angle",
+      "sourceHandle": "out-phase",
+      "targetHandle": "in-ph"
+    },
+    {
+      "id": "e_18",
+      "source": "pm_spin",
+      "target": "pm_angle",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_19",
+      "source": "pm_twist",
+      "target": "pm_angle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-tw"
+    },
+    {
+      "id": "e_20",
+      "source": "pm_layerLoop",
+      "target": "pm_angle",
+      "sourceHandle": "out-k",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_21",
+      "source": "pm_angle",
+      "target": "pm_curve",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_22",
+      "source": "pm_pad",
+      "target": "pm_curve",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-z"
+    },
+    {
+      "id": "e_23",
+      "source": "pm_pad",
+      "target": "pm_curve",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_24",
+      "source": "pm_swell",
+      "target": "pm_curve",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-sw"
+    },
+    {
+      "id": "e_25",
+      "source": "pm_hue",
+      "target": "pm_lineCol",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_26",
+      "source": "pm_hueSpread",
+      "target": "pm_lineCol",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_27",
+      "source": "pm_layerLoop",
+      "target": "pm_lineCol",
+      "sourceHandle": "out-k",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_28",
+      "source": "pm_lineCol",
+      "target": "pm_lineStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_29",
+      "source": "pm_width",
+      "target": "pm_lineStroke",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-width"
+    },
+    {
+      "id": "e_30",
+      "source": "pm_curve",
+      "target": "pm_line",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_31",
+      "source": "pm_lineStroke",
+      "target": "pm_line",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_32",
+      "source": "pm_line",
+      "target": "pm_layerLoop",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-line"
+    },
+    {
+      "id": "e_33",
+      "source": "pm_layerLoop",
+      "target": "pm_bloom",
+      "sourceHandle": "out-line",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_34",
+      "source": "pm_glow",
+      "target": "pm_bloom",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-intensity"
+    },
+    {
+      "id": "e_35",
+      "source": "pm_bloom",
+      "target": "pm_renderer",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Nebula",
+      "values": {
+        "pm_bigR": {
+          "params": {
+            "value": 190
+          }
+        },
+        "pm_smallR": {
+          "params": {
+            "value": 73
+          }
+        },
+        "pm_pen": {
+          "params": {
+            "value": 120
+          }
+        },
+        "pm_laps": {
+          "params": {
+            "value": 22
+          }
+        },
+        "pm_spin": {
+          "params": {
+            "value": 0.15
+          }
+        },
+        "pm_hue": {
+          "params": {
+            "value": 0.6
+          }
+        },
+        "pm_hueSpread": {
+          "params": {
+            "value": 0.12
+          }
+        },
+        "pm_width": {
+          "params": {
+            "value": 1.4
+          }
+        },
+        "pm_layers": {
+          "params": {
+            "value": 3
+          }
+        },
+        "pm_glow": {
+          "params": {
+            "value": 0.9
+          }
+        },
+        "pm_pad": {
+          "params": {
+            "x": 0.5,
+            "y": 0.2
+          }
+        }
+      }
+    },
+    {
+      "name": "Clockwork",
+      "values": {
+        "pm_bigR": {
+          "params": {
+            "value": 240
+          }
+        },
+        "pm_smallR": {
+          "params": {
+            "value": 60
+          }
+        },
+        "pm_pen": {
+          "params": {
+            "value": 60
+          }
+        },
+        "pm_laps": {
+          "params": {
+            "value": 4
+          }
+        },
+        "pm_spin": {
+          "params": {
+            "value": 0.4
+          }
+        },
+        "pm_hue": {
+          "params": {
+            "value": 0.1
+          }
+        },
+        "pm_hueSpread": {
+          "params": {
+            "value": 0.05
+          }
+        },
+        "pm_width": {
+          "params": {
+            "value": 3
+          }
+        },
+        "pm_layers": {
+          "params": {
+            "value": 5
+          }
+        },
+        "pm_glow": {
+          "params": {
+            "value": 0.6
+          }
+        },
+        "pm_pad": {
+          "params": {
+            "x": 0.45,
+            "y": 0.0
+          }
+        }
+      },
+      "seed": 7
+    },
+    {
+      "name": "Urchin",
+      "values": {
+        "pm_bigR": {
+          "params": {
+            "value": 250
+          }
+        },
+        "pm_smallR": {
+          "params": {
+            "value": 13
+          }
+        },
+        "pm_pen": {
+          "params": {
+            "value": 180
+          }
+        },
+        "pm_laps": {
+          "params": {
+            "value": 13
+          }
+        },
+        "pm_spin": {
+          "params": {
+            "value": -0.1
+          }
+        },
+        "pm_hue": {
+          "params": {
+            "value": 0.92
+          }
+        },
+        "pm_hueSpread": {
+          "params": {
+            "value": 0.2
+          }
+        },
+        "pm_width": {
+          "params": {
+            "value": 0.8
+          }
+        },
+        "pm_layers": {
+          "params": {
+            "value": 2
+          }
+        },
+        "pm_glow": {
+          "params": {
+            "value": 1.4
+          }
+        },
+        "pm_pad": {
+          "params": {
+            "x": 0.6,
+            "y": 0.0
+          }
+        }
+      },
+      "seed": 31
+    },
+    {
+      "name": "Lace",
+      "values": {
+        "pm_bigR": {
+          "params": {
+            "value": 200
+          }
+        },
+        "pm_smallR": {
+          "params": {
+            "value": 111
+          }
+        },
+        "pm_pen": {
+          "params": {
+            "value": 96
+          }
+        },
+        "pm_laps": {
+          "params": {
+            "value": 37
+          }
+        },
+        "pm_spin": {
+          "params": {
+            "value": 0.05
+          }
+        },
+        "pm_hue": {
+          "params": {
+            "value": 0.48
+          }
+        },
+        "pm_hueSpread": {
+          "params": {
+            "value": 0.08
+          }
+        },
+        "pm_width": {
+          "params": {
+            "value": 0.6
+          }
+        },
+        "pm_layers": {
+          "params": {
+            "value": 4
+          }
+        },
+        "pm_glow": {
+          "params": {
+            "value": 1.1
+          }
+        },
+        "pm_pad": {
+          "params": {
+            "x": 0.55,
+            "y": 0.1
+          }
+        }
+      },
+      "seed": 5
+    },
+    {
+      "name": "Ember",
+      "values": {
+        "pm_bigR": {
+          "params": {
+            "value": 160
+          }
+        },
+        "pm_smallR": {
+          "params": {
+            "value": 47
+          }
+        },
+        "pm_pen": {
+          "params": {
+            "value": 200
+          }
+        },
+        "pm_laps": {
+          "params": {
+            "value": 30
+          }
+        },
+        "pm_spin": {
+          "params": {
+            "value": -0.35
+          }
+        },
+        "pm_hue": {
+          "params": {
+            "value": 0.02
+          }
+        },
+        "pm_hueSpread": {
+          "params": {
+            "value": 0.06
+          }
+        },
+        "pm_width": {
+          "params": {
+            "value": 1.8
+          }
+        },
+        "pm_layers": {
+          "params": {
+            "value": 3
+          }
+        },
+        "pm_glow": {
+          "params": {
+            "value": 1.8
+          }
+        },
+        "pm_pad": {
+          "params": {
+            "x": 0.4,
+            "y": 0.7
+          }
+        }
+      },
+      "seed": 12
+    },
+    {
+      "name": "Tide",
+      "values": {
+        "pm_bigR": {
+          "params": {
+            "value": 120
+          }
+        },
+        "pm_smallR": {
+          "params": {
+            "value": 90
+          }
+        },
+        "pm_pen": {
+          "params": {
+            "value": 40
+          }
+        },
+        "pm_laps": {
+          "params": {
+            "value": 9
+          }
+        },
+        "pm_spin": {
+          "params": {
+            "value": 0.6
+          }
+        },
+        "pm_hue": {
+          "params": {
+            "value": 0.55
+          }
+        },
+        "pm_hueSpread": {
+          "params": {
+            "value": 0.3
+          }
+        },
+        "pm_width": {
+          "params": {
+            "value": 4.2
+          }
+        },
+        "pm_layers": {
+          "params": {
+            "value": 6
+          }
+        },
+        "pm_glow": {
+          "params": {
+            "value": 0.5
+          }
+        },
+        "pm_pad": {
+          "params": {
+            "x": 0.65,
+            "y": 1.0
+          }
+        }
+      },
+      "seed": 99
+    }
+  ]
+}

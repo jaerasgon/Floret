@@ -183,7 +183,8 @@ pub fn value_to_json(v: &Value) -> Json {
 }
 
 /// The value an editor shows: the stored param / port value, else the
-/// declared default.
+/// declared default, else — for the colour pins with no declared default
+/// (Fill, Stroke) — the colour the node paints while the pin is unset.
 pub fn current(n: &PatchNode, spec: &NodeSpec, key: &EditKey, port: Option<&PortSpec>) -> Json {
     let stored = match key {
         EditKey::Param(k) => n.params.get(k).or_else(|| spec.default_params.get(k)),
@@ -192,9 +193,14 @@ pub fn current(n: &PatchNode, spec: &NodeSpec, key: &EditKey, port: Option<&Port
     if let Some(v) = stored {
         return v.clone();
     }
-    port.and_then(|p| p.default.as_ref())
-        .map(value_to_json)
-        .unwrap_or(Json::Null)
+    let Some(port) = port else {
+        return Json::Null;
+    };
+    match &port.default {
+        Some(d) if !d.is_nullish() => value_to_json(d),
+        _ => floret_engine::nodes::style::unwired_color(&n.def_type, &port.name, &n.params)
+            .map_or(Json::Null, |c| value_to_json(&Value::Color(c))),
+    }
 }
 
 /// Write an edit into the patch. Returns whether the value changed.
@@ -657,6 +663,40 @@ mod tests {
         // Spreads of data URLs stay short too.
         let many: Spread = std::sync::Arc::from(vec![Value::str(&url); 3]);
         assert_eq!(tooltip(&many), "data:image/png · 1.5 MB  (1 of 3)");
+    }
+
+    /// A new Fill's colour row shows the white it paints (not black); a
+    /// Stroke's the black it paints; a legacy Fill's its old colour; a
+    /// picked colour wins.
+    #[test]
+    fn unset_colour_rows_show_what_is_drawn() {
+        let cat = Catalogue::builtin();
+        let row = |n: &PatchNode| {
+            let spec = cat.get(&n.def_type).unwrap();
+            let port = spec.inputs.iter().find(|p| p.name == "color").unwrap();
+            hex(as_rgba(&current(
+                n,
+                spec,
+                &EditKey::Port("color".into()),
+                Some(port),
+            )))
+        };
+        let mut fill = node("f", "style/fill");
+        assert_eq!(row(&fill), "#ffffff");
+        assert_eq!(row(&node("s", "style/stroke")), "#000000");
+        fill.params =
+            serde_json::from_value(json!({"mode": "rgb", "r": 220, "g": 100, "b": 80, "a": 255}))
+                .unwrap();
+        assert_eq!(row(&fill), "#dc6450");
+        fill.port_values = Some(
+            serde_json::from_value(json!({"color": rgba_json([0.0, 0.0, 1.0, 1.0])})).unwrap(),
+        );
+        assert_eq!(row(&fill), "#0000ff");
+        // Pins whose unset value means "none" still show nothing.
+        let img = node("i", "draw/image");
+        let spec = cat.get("draw/image").unwrap();
+        let tint = spec.inputs.iter().find(|p| p.name == "tint").unwrap();
+        assert!(current(&img, spec, &EditKey::Port("tint".into()), Some(tint)).is_null());
     }
 
     #[test]

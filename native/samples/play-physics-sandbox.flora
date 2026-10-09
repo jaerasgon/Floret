@@ -1433,314 +1433,307 @@
     },
     {
       "id": "e_64",
-      "source": "ps_time",
-      "target": "ps_balls",
-      "sourceHandle": "out-t",
-      "targetHandle": "in-time"
-    },
-    {
-      "id": "e_65",
       "source": "ps_balls",
       "target": "ps_ballTrails",
       "sourceHandle": "out-particles",
       "targetHandle": "in-particles"
     },
     {
-      "id": "e_66",
+      "id": "e_65",
       "source": "ps_balls",
       "target": "ps_ballDots",
       "sourceHandle": "out-particles",
       "targetHandle": "in-particles"
     },
     {
-      "id": "e_67",
+      "id": "e_66",
       "source": "ps_bumperX",
       "target": "ps_bumperPos",
       "sourceHandle": "out-values",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_68",
+      "id": "e_67",
       "source": "ps_bumperY",
       "target": "ps_bumperPos",
       "sourceHandle": "out-values",
       "targetHandle": "in-y"
     },
     {
-      "id": "e_69",
+      "id": "e_68",
       "source": "ps_bumperFill",
       "target": "ps_bumperRing",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_70",
+      "id": "e_69",
       "source": "ps_bumperPos",
       "target": "ps_bumperLoop",
       "sourceHandle": "out-value",
       "targetHandle": "in-at"
     },
     {
-      "id": "e_71",
+      "id": "e_70",
       "source": "ps_bumperR",
       "target": "ps_bumperLoop",
       "sourceHandle": "out-values",
       "targetHandle": "in-d"
     },
     {
-      "id": "e_72",
+      "id": "e_71",
       "source": "ps_bumperLoop",
       "target": "ps_bumper",
       "sourceHandle": "out-at",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_73",
+      "id": "e_72",
       "source": "ps_bumperLoop",
       "target": "ps_bumper",
       "sourceHandle": "out-d",
       "targetHandle": "in-w"
     },
     {
-      "id": "e_74",
+      "id": "e_73",
       "source": "ps_bumperLoop",
       "target": "ps_bumper",
       "sourceHandle": "out-d",
       "targetHandle": "in-h"
     },
     {
-      "id": "e_75",
+      "id": "e_74",
       "source": "ps_bumperRing",
       "target": "ps_bumper",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_76",
+      "id": "e_75",
       "source": "ps_bumper",
       "target": "ps_bumperLoop",
       "sourceHandle": "out-shape",
       "targetHandle": "in-bumper"
     },
     {
-      "id": "e_77",
+      "id": "e_76",
       "source": "ps_bumperLoop",
       "target": "ps_bumperGlow",
       "sourceHandle": "out-bumper",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_78",
+      "id": "e_77",
       "source": "ps_anchorNext",
       "target": "ps_band",
       "sourceHandle": "out-value",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_79",
+      "id": "e_78",
       "source": "ps_mpos",
       "target": "ps_band",
       "sourceHandle": "out-vector",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_80",
+      "id": "e_79",
       "source": "ps_bandStroke",
       "target": "ps_band",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_81",
+      "id": "e_80",
       "source": "ps_arcSteps",
       "target": "ps_arc",
       "sourceHandle": "out-indices",
       "targetHandle": "in-i"
     },
     {
-      "id": "e_82",
+      "id": "e_81",
       "source": "ps_anchorNext",
       "target": "ps_arc",
       "sourceHandle": "out-value",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_83",
+      "id": "e_82",
       "source": "ps_pull",
       "target": "ps_arc",
       "sourceHandle": "out-value",
       "targetHandle": "in-v"
     },
     {
-      "id": "e_84",
+      "id": "e_83",
       "source": "ps_gravity",
       "target": "ps_arc",
       "sourceHandle": "out-value",
       "targetHandle": "in-g"
     },
     {
-      "id": "e_85",
+      "id": "e_84",
       "source": "ps_arc",
       "target": "ps_arcLoop",
       "sourceHandle": "out-value",
       "targetHandle": "in-at"
     },
     {
-      "id": "e_86",
+      "id": "e_85",
       "source": "ps_arcLoop",
       "target": "ps_arcDot",
       "sourceHandle": "out-at",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_87",
+      "id": "e_86",
       "source": "ps_arcFill",
       "target": "ps_arcDot",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_88",
+      "id": "e_87",
       "source": "ps_arcDot",
       "target": "ps_arcLoop",
       "sourceHandle": "out-shape",
       "targetHandle": "in-dot"
     },
     {
-      "id": "e_89",
+      "id": "e_88",
       "source": "ps_band",
       "target": "ps_aimGroup",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_90",
+      "id": "e_89",
       "source": "ps_arcLoop",
       "target": "ps_aimGroup",
       "sourceHandle": "out-dot",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_91",
+      "id": "e_90",
       "source": "ps_mouse",
       "target": "ps_aim",
       "sourceHandle": "out-pressed",
       "targetHandle": "in-cond"
     },
     {
-      "id": "e_92",
+      "id": "e_91",
       "source": "ps_aimGroup",
       "target": "ps_aim",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_93",
+      "id": "e_92",
       "source": "ps_gravNames",
       "target": "ps_gravName",
       "sourceHandle": "out-parts",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_94",
+      "id": "e_93",
       "source": "ps_gravityNext",
       "target": "ps_gravName",
       "sourceHandle": "out-value",
       "targetHandle": "in-index"
     },
     {
-      "id": "e_95",
+      "id": "e_94",
       "source": "ps_wallNames",
       "target": "ps_wallName",
       "sourceHandle": "out-parts",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_96",
+      "id": "e_95",
       "source": "ps_wrapNext",
       "target": "ps_wallName",
       "sourceHandle": "out-value",
       "targetHandle": "in-index"
     },
     {
-      "id": "e_97",
+      "id": "e_96",
       "source": "ps_gravName",
       "target": "ps_statusParts",
       "sourceHandle": "out-result",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_98",
+      "id": "e_97",
       "source": "ps_wallName",
       "target": "ps_statusParts",
       "sourceHandle": "out-result",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_99",
+      "id": "e_98",
       "source": "ps_help",
       "target": "ps_statusParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_100",
+      "id": "e_99",
       "source": "ps_statusParts",
       "target": "ps_status",
       "sourceHandle": "out-merged",
       "targetHandle": "in-parts"
     },
     {
-      "id": "e_101",
+      "id": "e_100",
       "source": "ps_status",
       "target": "ps_statusText",
       "sourceHandle": "out-text",
       "targetHandle": "in-string"
     },
     {
-      "id": "e_102",
+      "id": "e_101",
       "source": "ps_statusFill",
       "target": "ps_statusText",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_103",
+      "id": "e_102",
       "source": "ps_bumperGlow",
       "target": "ps_scene",
       "sourceHandle": "out-out",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_104",
+      "id": "e_103",
       "source": "ps_ballTrails",
       "target": "ps_scene",
       "sourceHandle": "out-layer",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_105",
+      "id": "e_104",
       "source": "ps_ballDots",
       "target": "ps_scene",
       "sourceHandle": "out-layer",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_106",
+      "id": "e_105",
       "source": "ps_aim",
       "target": "ps_scene",
       "sourceHandle": "out-selected",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_107",
+      "id": "e_106",
       "source": "ps_statusText",
       "target": "ps_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s5"
     },
     {
-      "id": "e_108",
+      "id": "e_107",
       "source": "ps_scene",
       "target": "ps_renderer",
       "sourceHandle": "out-grouped",

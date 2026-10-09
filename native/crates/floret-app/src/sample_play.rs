@@ -105,17 +105,16 @@ fn keyboard_synth(f: u32) -> Input {
     }
 }
 
-/// Two slingshot shots, then gravity off.
+/// Five slingshot shots from round the arena, then gravity off.
 fn physics_sandbox(f: u32) -> Input {
-    match f {
-        20 => drag(0.0, 200.0),
-        21..=40 => drag(-f64::from(f - 20) * 4.0, 200.0 + f64::from(f - 20) * 3.0),
-        60 => drag(-200.0, -200.0),
-        61..=75 => drag(
-            -200.0 - f64::from(f - 60) * 4.0,
-            -200.0 + f64::from(f - 60) * 5.0,
-        ),
-        90 => keys(&["g"]),
+    let shot = f / 22;
+    let (x, y) = round(shot, 180.0, 1.3);
+    match (f % 22, shot) {
+        (0..=11, 0..=4) => {
+            let pull = f64::from(f % 22) * 6.0;
+            drag(x + pull * 0.5, y + pull)
+        }
+        (_, 6) if f % 22 == 0 => keys(&["g"]),
         _ => at(-260.0, 260.0),
     }
 }

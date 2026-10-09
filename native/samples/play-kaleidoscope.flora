@@ -788,174 +788,167 @@
     },
     {
       "id": "e_34",
-      "source": "kt_time",
-      "target": "kt_beads",
-      "sourceHandle": "out-t",
-      "targetHandle": "in-time"
-    },
-    {
-      "id": "e_35",
       "source": "kt_beads",
       "target": "kt_beadLook",
       "sourceHandle": "out-particles",
       "targetHandle": "in-particles"
     },
     {
-      "id": "e_36",
+      "id": "e_35",
       "source": "kt_beadStroke",
       "target": "kt_beadLook",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_37",
+      "id": "e_36",
       "source": "kt_beads",
       "target": "kt_shards",
       "sourceHandle": "out-particles",
       "targetHandle": "in-particles"
     },
     {
-      "id": "e_38",
+      "id": "e_37",
       "source": "kt_turnNext",
       "target": "kt_shardTurn",
       "sourceHandle": "out-value",
       "targetHandle": "in-angle"
     },
     {
-      "id": "e_39",
+      "id": "e_38",
       "source": "kt_shards",
       "target": "kt_shardTurn",
       "sourceHandle": "out-layer",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_40",
+      "id": "e_39",
       "source": "kt_shardTurn",
       "target": "kt_shardScale",
       "sourceHandle": "out-rotated",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_41",
+      "id": "e_40",
       "source": "kt_beadLook",
       "target": "kt_glass",
       "sourceHandle": "out-layer",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_42",
+      "id": "e_41",
       "source": "kt_shardScale",
       "target": "kt_glass",
       "sourceHandle": "out-scaled",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_43",
+      "id": "e_42",
       "source": "kt_glass",
       "target": "kt_mirrored",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_44",
+      "id": "e_43",
       "source": "kt_mirrorsNext",
       "target": "kt_mirrored",
       "sourceHandle": "out-value",
       "targetHandle": "in-count"
     },
     {
-      "id": "e_45",
+      "id": "e_44",
       "source": "kt_turnNext",
       "target": "kt_mirrored",
       "sourceHandle": "out-value",
       "targetHandle": "in-angle"
     },
     {
-      "id": "e_46",
+      "id": "e_45",
       "source": "kt_mirrored",
       "target": "kt_round",
       "sourceHandle": "out-out",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_47",
+      "id": "e_46",
       "source": "kt_lens",
       "target": "kt_round",
       "sourceHandle": "out-shape",
       "targetHandle": "in-mask"
     },
     {
-      "id": "e_48",
+      "id": "e_47",
       "source": "kt_round",
       "target": "kt_bloom",
       "sourceHandle": "out-masked",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_49",
+      "id": "e_48",
       "source": "kt_rimStroke",
       "target": "kt_rimNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_50",
+      "id": "e_49",
       "source": "kt_rimNoFill",
       "target": "kt_rim",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_51",
+      "id": "e_50",
       "source": "kt_mirrorsNext",
       "target": "kt_mirrorText",
       "sourceHandle": "out-value",
       "targetHandle": "in-value"
     },
     {
-      "id": "e_52",
+      "id": "e_51",
       "source": "kt_mirrorText",
       "target": "kt_statusStr",
       "sourceHandle": "out-text",
       "targetHandle": "in-parts"
     },
     {
-      "id": "e_53",
+      "id": "e_52",
       "source": "kt_statusStr",
       "target": "kt_statusText",
       "sourceHandle": "out-text",
       "targetHandle": "in-string"
     },
     {
-      "id": "e_54",
+      "id": "e_53",
       "source": "kt_statusFill",
       "target": "kt_statusText",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_55",
+      "id": "e_54",
       "source": "kt_bloom",
       "target": "kt_scene",
       "sourceHandle": "out-out",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_56",
+      "id": "e_55",
       "source": "kt_rim",
       "target": "kt_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_57",
+      "id": "e_56",
       "source": "kt_statusText",
       "target": "kt_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_58",
+      "id": "e_57",
       "source": "kt_scene",
       "target": "kt_renderer",
       "sourceHandle": "out-grouped",

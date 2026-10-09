@@ -16,6 +16,10 @@
 //! Audio tracks are ignored. Each playing node gets a [`session`]: a
 //! decoder thread with a small frame cache around the playhead.
 //!
+//! Numbered PNG / JPEG frames (a folder, one frame of a run, a pattern or
+//! a list) play the same way as a video at the node's `fps`: see
+//! [`sequence`].
+//!
 //! Writing (the app's video export): H.264 MP4 through [`export`], which
 //! uses Apple's encoder on macOS and OpenH264's encoder with a minimal MP4
 //! muxer ([`encode`], [`mux`]) elsewhere, and animated GIF
@@ -30,6 +34,7 @@ pub mod demux;
 pub mod export;
 pub mod gif_writer;
 pub mod mux;
+pub mod sequence;
 mod session;
 
 #[cfg(target_os = "macos")]
@@ -98,7 +103,7 @@ enum Source {
     Memory(Vec<u8>),
 }
 
-fn percent_decode(s: &str) -> String {
+pub(crate) fn percent_decode(s: &str) -> String {
     let b = s.as_bytes();
     let mut out = Vec::with_capacity(b.len());
     let mut i = 0;
@@ -154,6 +159,15 @@ pub enum Backend {
     Native,
     /// MP4 demux + OpenH264 only.
     Portable,
+}
+
+/// Open a video or an image sequence ([`sequence`]; played at `fps`).
+pub fn open_at(source: &str, fps: f64) -> Result<Media, String> {
+    if sequence::is_sequence(source) {
+        sequence::open(source, fps)
+    } else {
+        open(source)
+    }
 }
 
 /// Open a video: a file path, `file://` URL or `data:` URL.
@@ -258,10 +272,15 @@ impl Videos for VideoPlayer {
         let session = {
             let mut sessions = self.sessions.lock().unwrap_or_else(|e| e.into_inner());
             sessions.retain(|_, s| !s.stale());
-            let key = (node.to_owned(), source_key(req.source));
+            // A sequence's frame rate is part of what it is.
+            let fps = sequence::is_sequence(req.source).then(|| sequence::rate(req.fps));
+            let key = (
+                node.to_owned(),
+                source_key(req.source) ^ fps.map_or(0, f64::to_bits),
+            );
             sessions
                 .entry(key)
-                .or_insert_with(|| Arc::new(Session::spawn(req.source)))
+                .or_insert_with(|| Arc::new(Session::spawn(req.source, req.fps)))
                 .clone()
         };
         // Outside the lock: a blocking poll mustn't hold up other nodes.

@@ -8,11 +8,21 @@
 //! `fade` takes that much of it off the line's alpha and `taper` off its
 //! width. Neighbours are found through a uniform grid, so a few thousand
 //! points cost about as much as their links.
+//!
+//! A wired `colors` spread colours the lines: `colorBy` `points` gives
+//! point i colour i (cycled) and each line a gradient between its ends'
+//! colours; `length` runs the colours as a palette from the shortest
+//! lines (first colour) to those at the reach (last).
 
 use super::measure::fade_paint;
-use super::{int_pin, live_mode, num_pin, param_str, pin_style, style_pin, Pins, MAX_POINTS};
+use super::{
+    flat, int_pin, live_mode, num_pin, param_str, pin_style, ramp, style_pin, Pins, MAX_POINTS,
+};
 use crate::node::{raw, NodeImpl, NodeInit};
-use crate::scene::{ResolvedStyle, SceneNode};
+use crate::scene::{
+    Gradient, GradientExtend, GradientShape, GradientStop, GradientUnits, Paint, ResolvedStyle,
+    SceneNode,
+};
 use crate::spec::{Params, PortKind, PortSpec, PortType};
 use crate::value::{Spread, Value, Vec2};
 use std::collections::HashMap;
@@ -24,6 +34,8 @@ const DISTANCE: f64 = 80.0;
 pub(super) const MAX_LINKS: usize = 100_000;
 /// Alpha / width levels the styles are shared at.
 const LEVELS: f64 = 64.0;
+/// `colorBy` options, in dropdown order.
+pub const COLOR_BY: [&str; 2] = ["points", "length"];
 
 pub(super) fn inputs(params: &Params) -> Vec<PortSpec> {
     let mut v = vec![PortSpec::new("points", PortType::Vec2).kind(PortKind::Spread)];
@@ -36,8 +48,54 @@ pub(super) fn inputs(params: &Params) -> Vec<PortSpec> {
     }
     v.push(num_pin("fade", 1.0));
     v.push(num_pin("taper", 0.0));
+    v.push(PortSpec::new("colors", PortType::Color).kind(PortKind::Spread));
+    let mut by = PortSpec::new("colorBy", PortType::String).default(Value::str(COLOR_BY[0]));
+    by.param = Some("colorBy".into());
+    v.push(by);
     v.push(style_pin());
     v
+}
+
+/// How the lines take the `colors` spread.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum ColorBy {
+    /// Point i has colour i; a line blends between its ends.
+    Points,
+    /// A palette from short (first colour) to long (last).
+    Length,
+}
+
+/// A line's stroke paint before fading: the style's own, or one from the
+/// `colors` spread.
+fn line_paint(
+    colors: &[[f64; 4]],
+    by: ColorBy,
+    l: &Link,
+    level: f64,
+    (p, q): (Vec2, Vec2),
+) -> Option<Paint> {
+    if colors.is_empty() {
+        return None;
+    }
+    Some(match by {
+        ColorBy::Length => flat(ramp(colors, 1.0 - level)?),
+        ColorBy::Points => {
+            let (a, b) = (colors[l.a % colors.len()], colors[l.b % colors.len()]);
+            if a == b {
+                flat(a)
+            } else {
+                Paint::gradient(Gradient {
+                    shape: GradientShape::Linear { start: p, end: q },
+                    stops: Arc::from(vec![
+                        GradientStop { pos: 0.0, rgba: a },
+                        GradientStop { pos: 1.0, rgba: b },
+                    ]),
+                    units: GradientUnits::Scene,
+                    extend: GradientExtend::Pad,
+                })
+            }
+        }
+    })
 }
 
 /// A line between points `a` and `b` (indices), `d` long.
@@ -92,7 +150,13 @@ pub(super) fn connect(init: &NodeInit) -> Box<dyn NodeImpl> {
                 1.0
             }
         };
-        let mut styles: HashMap<u32, Arc<ResolvedStyle>> = HashMap::new();
+        let colors = pins.colors(inputs, "colors");
+        let by = match pins.value(inputs, "colorBy") {
+            Value::Str(s) if &*s == "length" => ColorBy::Length,
+            _ => ColorBy::Points,
+        };
+        // Styles shared by level (and colour, for flat lines).
+        let mut styles: HashMap<(u32, usize, usize), Arc<ResolvedStyle>> = HashMap::new();
         let mut lines = Vec::with_capacity(links.len());
         let (mut from, mut to, mut strengths) = (
             Vec::with_capacity(links.len()),
@@ -108,11 +172,25 @@ pub(super) fn connect(init: &NodeInit) -> Box<dyn NodeImpl> {
             if alpha <= 0.0 || width <= 0.0 {
                 continue;
             }
-            let style = styles
-                .entry(level)
-                .or_insert_with(|| line_style(&base, alpha, width))
-                .clone();
             let (p, q) = (pts[l.a], pts[l.b]);
+            let n = colors.len().max(1);
+            let key = match by {
+                _ if colors.is_empty() => Some((level, 0, 0)),
+                ColorBy::Length => Some((level, n, n)),
+                // Flat when both ends have the same colour.
+                ColorBy::Points if colors[l.a % n] == colors[l.b % n] => {
+                    Some((level, l.a % n, l.a % n))
+                }
+                ColorBy::Points => None,
+            };
+            let make = || {
+                let paint = line_paint(&colors, by, l, f64::from(level) / LEVELS, (p, q));
+                line_style(&base, paint, alpha, width)
+            };
+            let style = match key {
+                Some(k) => styles.entry(k).or_insert_with(make).clone(),
+                None => make(),
+            };
             lines.push(Arc::new(SceneNode::Line {
                 x1: p.x,
                 y1: p.y,
@@ -133,11 +211,21 @@ pub(super) fn connect(init: &NodeInit) -> Box<dyn NodeImpl> {
     })
 }
 
-fn line_style(base: &Arc<ResolvedStyle>, alpha: f64, width: f64) -> Arc<ResolvedStyle> {
-    if alpha >= 1.0 && width >= 1.0 {
+/// `base` with its stroke replaced by `paint` (when given), faded by
+/// `alpha` and thinned by `width`.
+fn line_style(
+    base: &Arc<ResolvedStyle>,
+    paint: Option<Paint>,
+    alpha: f64,
+    width: f64,
+) -> Arc<ResolvedStyle> {
+    if alpha >= 1.0 && width >= 1.0 && paint.is_none() {
         return base.clone();
     }
     let mut st = (**base).clone();
+    if let (Some(p), Some(_)) = (paint, &st.stroke) {
+        st.stroke = Some(p);
+    }
     st.stroke = st.stroke.as_ref().map(|p| fade_paint(p, alpha));
     st.fill = None;
     st.stroke_weight *= width;

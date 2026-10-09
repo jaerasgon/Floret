@@ -888,6 +888,69 @@
       "category": "Geometry",
       "description": "Six Path Ops modes: round corners, thicken (a spiral stroke outlined), wave, noise and twist deformers (phases looping with Time), and explode (a hexagon's edges pushed apart).",
       "file": "path-ops-shapes.flora"
+    },
+    {
+      "id": "flipbook-sequence",
+      "name": "Flipbook Sequence",
+      "category": "Image",
+      "description": "Video plays image sequences too: 16 PNG frames of a flower, carried inside the patch, loop at 12 fps, onion-skinned by Echo. Pick one frame of your own numbered run (Floret's PNG-sequence export, say) to play the lot.",
+      "file": "flipbook-sequence.flora"
+    },
+    {
+      "id": "layout-bloom",
+      "name": "Layout Bloom",
+      "category": "Motion",
+      "description": "Layout arranges a sunflower spiral whose count steps every 1.8 s: the seeds ease to their new places, new ones grow in and the extra ones shrink away, staggered from the centre out.",
+      "file": "layout-bloom.flora"
+    },
+    {
+      "id": "point-tracker",
+      "name": "Point Tracker",
+      "category": "Image",
+      "description": "Point Tracker follows three points across a drifting field of dots, frame by frame (pyramidal Lucas–Kanade), from the picture alone; each marker's colour is its confidence, and Echo trails show the paths.",
+      "file": "point-tracker.flora"
+    },
+    {
+      "id": "plexus-colours",
+      "name": "Plexus Colours",
+      "category": "Geometry",
+      "description": "Connect Points colours each line from its two birds: every boid takes a hue from where it flies, and a line blends from one end's colour to the other's.",
+      "file": "plexus-colours.flora"
+    },
+    {
+      "id": "topo-type",
+      "name": "Topo Type",
+      "category": "Type",
+      "description": "Contours in `shape` mode: rings at even distances round a word, filled like the bands of a contour map, each level its own colour from a palette.",
+      "file": "topo-type.flora"
+    },
+    {
+      "id": "stippled-sphere",
+      "name": "Stippled Sphere",
+      "category": "Geometry",
+      "description": "Scatter's `stipple` mode shades a lit sphere and its shadow with 2600 ink dots: they gather where the picture is dark and relax into an even, hand-stippled grain.",
+      "file": "stippled-sphere.flora"
+    },
+    {
+      "id": "shader-time-smear",
+      "name": "Time Smear",
+      "category": "Shaders",
+      "description": "A Shader with `history` on reads the input's past frames: each band of the picture shows a spinning star as it was a different moment ago, a rolling datamosh time smear.",
+      "file": "shader-time-smear.flora"
+    },
+    {
+      "id": "neon-orbits",
+      "name": "Neon Orbits",
+      "category": "Shaders",
+      "description": "Effect's glow with `blend` add: three neon orbits cross over a dark grid, and where their halos overlap the light adds up instead of covering what's beneath.",
+      "file": "neon-orbits.flora"
+    },
+    {
+      "id": "camera-slit-scan",
+      "name": "Camera Slit-Scan",
+      "category": "Image",
+      "description": "The webcam through Echo's slit-scan: each row of the picture comes from a moment further back, so anything that moves stretches and bends. Without a camera, a swinging stand-in shows the effect.",
+      "file": "camera-slit-scan.flora"
     }
   ]
 }

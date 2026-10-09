@@ -1,0 +1,603 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Neon Orbits",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "no_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -284
+      },
+      "params": {
+        "text": "Neon orbits\n\nThree ellipse outlines turn at different speeds over a faint grid. Effect in `glow` mode lights their coverage; with `blend` `add` the glow is light: it brightens the lines themselves and the grid under the halo, and where halos cross they add up. (`normal` lays the glow underneath and covers what's behind it.)",
+        "width": 460,
+        "height": 220
+      },
+      "portValues": {
+        "text": "Neon orbits\n\nThree ellipse outlines turn at different speeds over a faint grid. Effect in `glow` mode lights their coverage; with `blend` `add` the glow is light: it brightens the lines themselves and the grid under the halo, and where halos cross they add up. (`normal` lays the glow underneath and covers what's behind it.)",
+        "width": 460,
+        "height": 220
+      }
+    },
+    {
+      "id": "no_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 231,
+        "y": 350
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "no_st0",
+      "defType": "style/stroke",
+      "position": {
+        "x": 0,
+        "y": 230
+      },
+      "params": {
+        "width": 3,
+        "color": {
+          "r": 1.0,
+          "g": 0.30980392156862746,
+          "b": 0.6392156862745098,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 3,
+        "color": {
+          "r": 1.0,
+          "g": 0.30980392156862746,
+          "b": 0.6392156862745098,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "no_nf0",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 230,
+        "y": 230
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "no_el0",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 491,
+        "y": 142
+      },
+      "params": {},
+      "portValues": {
+        "w": 420,
+        "h": 150
+      }
+    },
+    {
+      "id": "no_ang0",
+      "defType": "math/expression",
+      "position": {
+        "x": 461,
+        "y": 0
+      },
+      "params": {
+        "expr": "tau * l * 1 + 0.0"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "no_rot0",
+      "defType": "transform/rotate",
+      "position": {
+        "x": 747,
+        "y": 183
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "no_st1",
+      "defType": "style/stroke",
+      "position": {
+        "x": 0,
+        "y": 564
+      },
+      "params": {
+        "width": 3,
+        "color": {
+          "r": 0.24313725490196078,
+          "g": 0.8784313725490196,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 3,
+        "color": {
+          "r": 0.24313725490196078,
+          "g": 0.8784313725490196,
+          "b": 1.0,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "no_nf1",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 230,
+        "y": 564
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "no_el1",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 491,
+        "y": 476
+      },
+      "params": {},
+      "portValues": {
+        "w": 370,
+        "h": 175
+      }
+    },
+    {
+      "id": "no_ang1",
+      "defType": "math/expression",
+      "position": {
+        "x": 461,
+        "y": 334
+      },
+      "params": {
+        "expr": "tau * l * -2 + 1.05"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "no_rot1",
+      "defType": "transform/rotate",
+      "position": {
+        "x": 747,
+        "y": 413
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "no_st2",
+      "defType": "style/stroke",
+      "position": {
+        "x": 0,
+        "y": 898
+      },
+      "params": {
+        "width": 3,
+        "color": {
+          "r": 0.7137254901960784,
+          "g": 1.0,
+          "b": 0.30980392156862746,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 3,
+        "color": {
+          "r": 0.7137254901960784,
+          "g": 1.0,
+          "b": 0.30980392156862746,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "no_nf2",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 230,
+        "y": 898
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "no_el2",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 491,
+        "y": 810
+      },
+      "params": {},
+      "portValues": {
+        "w": 320,
+        "h": 200
+      }
+    },
+    {
+      "id": "no_ang2",
+      "defType": "math/expression",
+      "position": {
+        "x": 461,
+        "y": 668
+      },
+      "params": {
+        "expr": "tau * l * 3 + 2.1"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "no_rot2",
+      "defType": "transform/rotate",
+      "position": {
+        "x": 747,
+        "y": 643
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "no_orbits",
+      "defType": "transform/group",
+      "position": {
+        "x": 962,
+        "y": 391
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {}
+    },
+    {
+      "id": "no_glow",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1426,
+        "y": 369
+      },
+      "params": {
+        "mode": "glow",
+        "blend": "add"
+      },
+      "portValues": {
+        "blend": "add",
+        "radius": 18,
+        "color": {
+          "r": 0.4980392156862745,
+          "g": 0.5490196078431373,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "intensity": 2.2,
+        "inner": false
+      }
+    },
+    {
+      "id": "no_grid",
+      "defType": "spread/grid",
+      "position": {
+        "x": 986,
+        "y": 115
+      },
+      "params": {
+        "cols": 13,
+        "rows": 9,
+        "w": 600,
+        "h": 400
+      },
+      "portValues": {
+        "cols": 13,
+        "rows": 9,
+        "w": 600,
+        "h": 400
+      }
+    },
+    {
+      "id": "no_each",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1226,
+        "y": 75
+      },
+      "params": {
+        "width": 569,
+        "height": 246,
+        "label": "ForEach grid dot"
+      },
+      "ports": [
+        {
+          "id": "g",
+          "name": "g",
+          "type": "vec2",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "d",
+          "name": "d",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 569,
+      "height": 246
+    },
+    {
+      "id": "no_dotfill",
+      "defType": "style/fill",
+      "parentId": "no_each",
+      "position": {
+        "x": 128,
+        "y": 128
+      },
+      "params": {
+        "color": {
+          "r": 0.2901960784313726,
+          "g": 0.2784313725490196,
+          "b": 0.4,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.2901960784313726,
+          "g": 0.2784313725490196,
+          "b": 0.4,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "no_dot",
+      "defType": "draw/ellipse",
+      "parentId": "no_each",
+      "position": {
+        "x": 358,
+        "y": 40
+      },
+      "params": {},
+      "portValues": {
+        "w": 5,
+        "h": 5
+      }
+    },
+    {
+      "id": "no_all",
+      "defType": "transform/group",
+      "position": {
+        "x": 1908,
+        "y": 231
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {}
+    },
+    {
+      "id": "no_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2172,
+        "y": 231
+      },
+      "params": {
+        "width": 640,
+        "height": 420,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.03529411764705882,
+          "b": 0.0784313725490196,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 640,
+        "height": 420,
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.03529411764705882,
+          "b": 0.0784313725490196,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_no_st0_no_nf0_base",
+      "source": "no_st0",
+      "target": "no_nf0",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_no_nf0_no_el0_style",
+      "source": "no_nf0",
+      "target": "no_el0",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_no_t_no_ang0_l",
+      "source": "no_t",
+      "target": "no_ang0",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_no_ang0_no_rot0_angle",
+      "source": "no_ang0",
+      "target": "no_rot0",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_no_el0_no_rot0_layer",
+      "source": "no_el0",
+      "target": "no_rot0",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_no_st1_no_nf1_base",
+      "source": "no_st1",
+      "target": "no_nf1",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_no_nf1_no_el1_style",
+      "source": "no_nf1",
+      "target": "no_el1",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_no_t_no_ang1_l",
+      "source": "no_t",
+      "target": "no_ang1",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_no_ang1_no_rot1_angle",
+      "source": "no_ang1",
+      "target": "no_rot1",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_no_el1_no_rot1_layer",
+      "source": "no_el1",
+      "target": "no_rot1",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_no_st2_no_nf2_base",
+      "source": "no_st2",
+      "target": "no_nf2",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_no_nf2_no_el2_style",
+      "source": "no_nf2",
+      "target": "no_el2",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_no_t_no_ang2_l",
+      "source": "no_t",
+      "target": "no_ang2",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_no_ang2_no_rot2_angle",
+      "source": "no_ang2",
+      "target": "no_rot2",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_no_el2_no_rot2_layer",
+      "source": "no_el2",
+      "target": "no_rot2",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_no_rot0_no_orbits_s1",
+      "source": "no_rot0",
+      "target": "no_orbits",
+      "sourceHandle": "out-rotated",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_no_rot1_no_orbits_s2",
+      "source": "no_rot1",
+      "target": "no_orbits",
+      "sourceHandle": "out-rotated",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_no_rot2_no_orbits_s3",
+      "source": "no_rot2",
+      "target": "no_orbits",
+      "sourceHandle": "out-rotated",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_no_orbits_no_glow_input",
+      "source": "no_orbits",
+      "target": "no_glow",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_no_grid_no_each_g",
+      "source": "no_grid",
+      "target": "no_each",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_no_each_no_dot_pos",
+      "source": "no_each",
+      "target": "no_dot",
+      "sourceHandle": "out-g",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_no_dotfill_no_dot_style",
+      "source": "no_dotfill",
+      "target": "no_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_no_dot_no_each_d",
+      "source": "no_dot",
+      "target": "no_each",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_no_each_no_all_s1",
+      "source": "no_each",
+      "target": "no_all",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_no_glow_no_all_s2",
+      "source": "no_glow",
+      "target": "no_all",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_no_all_no_r_layers",
+      "source": "no_all",
+      "target": "no_r",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

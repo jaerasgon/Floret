@@ -291,6 +291,33 @@ fn effect(mode: &str, values: serde_json::Value) -> ShaderShape {
 /// The shape for `params` (the mode and its sub-choice) with `values` on
 /// its pins; `lut`: tick until the lookup table has loaded.
 fn effect_patch(params: serde_json::Value, values: serde_json::Value, lut: bool) -> ShaderShape {
+    let mut tick = effect_engine(params, values);
+    let start = std::time::Instant::now();
+    loop {
+        let out = tick();
+        let sh = shader_in(&out).unwrap_or_else(|| panic!("no shader: {out:?}"));
+        if !lut || sh.lut.is_some() || start.elapsed().as_secs() > 10 {
+            return sh;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(5));
+    }
+}
+
+/// The first shader draw in a layer (an additive glow wraps its own).
+fn shader_in(n: &SceneNode) -> Option<ShaderShape> {
+    match n {
+        SceneNode::Shader(sh) => Some((**sh).clone()),
+        SceneNode::Group { children, .. } => children.iter().find_map(|c| shader_in(c)),
+        _ => None,
+    }
+}
+
+/// A patch of a `gpu/effect` with `params` and `values` (its input: a
+/// placeholder rect); each call ticks it and returns the node's layer.
+fn effect_engine(
+    params: serde_json::Value,
+    values: serde_json::Value,
+) -> impl FnMut() -> Arc<SceneNode> {
     let patch = json!({
         "kind": "floret.patch",
         "version": 2,
@@ -314,28 +341,39 @@ fn effect_patch(params: serde_json::Value, values: serde_json::Value, lut: bool)
     });
     let mut engine = Engine::load(&patch.to_string()).expect("patch loads");
     let renderer = engine.graph.renderer().expect("a renderer");
-    let start = std::time::Instant::now();
-    loop {
+    move || {
         let r = engine.tick(&FrameCtx::default());
         assert!(r.errors.is_empty(), "{:?}", r.errors);
-        let layers = r.layers(renderer);
-        let sh = match layers.first() {
-            Some(Value::Scene(n)) => match &**n {
-                SceneNode::Shader(sh) => (**sh).clone(),
-                other => panic!("not a shader: {other:?}"),
-            },
+        match r.layers(renderer).first() {
+            Some(Value::Scene(n)) => n.clone(),
             other => panic!("no layer: {other:?}"),
-        };
-        if !lut || sh.lut.is_some() || start.elapsed().as_secs() > 10 {
-            return sh;
         }
-        std::thread::sleep(std::time::Duration::from_millis(5));
     }
 }
 
 fn with_input(mut sh: ShaderShape, input: Arc<SceneNode>) -> Arc<SceneNode> {
     sh.input = Some(input);
     Arc::new(SceneNode::Shader(Arc::new(sh)))
+}
+
+/// A node's whole output with `input` for the placeholder rect: as the
+/// shaders' input, and wherever the node draws the layer itself.
+fn with_layer(out: &Arc<SceneNode>, input: &Arc<SceneNode>) -> Arc<SceneNode> {
+    match &**out {
+        SceneNode::Shader(sh) => with_input((**sh).clone(), input.clone()),
+        SceneNode::Group {
+            children,
+            transform,
+            blend_mode,
+            clip,
+        } => Arc::new(SceneNode::Group {
+            children: children.iter().map(|c| with_layer(c, input)).collect(),
+            transform: *transform,
+            blend_mode: blend_mode.clone(),
+            clip: *clip,
+        }),
+        _ => input.clone(),
+    }
 }
 
 fn mean(px: &[u8]) -> f64 {
@@ -526,6 +564,7 @@ fn every_kind_and_channel_compiles() {
     );
     cases.push(json!({ "mode": "shadow" }));
     cases.push(json!({ "mode": "glow" }));
+    cases.push(json!({ "mode": "glow", "blend": "add" }));
     for params in cases {
         let sh = effect_with(params.clone(), json!({}));
         for p in sh.passes.iter() {
@@ -696,6 +735,56 @@ fn glow_rings_the_coverage() {
         json!({ "radius": 12.0, "color": blue, "intensity": 2.0, "inner": true }),
     );
     let px = render(&mut g, &[with_input(sh, sq)]);
+    assert!(at(&px, 28, 0)[2] > 80);
+    assert_px(&px, 0, 0, [32, 32, 32], 3);
+    assert_px(&px, 34, 0, [0, 0, 0], 1);
+}
+
+#[test]
+fn additive_glow_lights_the_layer_too() {
+    let Some(mut g) = gpu() else { return };
+    let sq = rect(0.0, 0.0, 60.0, 60.0, solid("#202020"));
+    let blue = json!({ "r": 0.0, "g": 0.4, "b": 1.0, "a": 1.0 });
+    // The node's whole output (the additive glow draws the layer too).
+    let glow = |params: serde_json::Value, inner: bool| {
+        let out = effect_engine(
+            params,
+            json!({ "radius": 12.0, "color": blue, "intensity": 2.0, "inner": inner }),
+        )();
+        with_layer(&out, &sq)
+    };
+    // `normal` is the default: the same picture as no blend at all.
+    let plain = render(&mut g, &[glow(json!({ "mode": "glow" }), false)]);
+    let normal = render(
+        &mut g,
+        &[glow(json!({ "mode": "glow", "blend": "normal" }), false)],
+    );
+    assert_eq!(plain, normal);
+    assert_px(&plain, 0, 0, [32, 32, 32], 2);
+    // `add`: the halo is there, and the shape itself is lit too.
+    let add = || glow(json!({ "mode": "glow", "blend": "add" }), false);
+    let px = render(&mut g, &[add()]);
+    let halo = at(&px, 34, 0);
+    assert!(halo[2] > 40 && halo[0] < 5, "halo {halo:?}");
+    let inside = at(&px, 0, 0);
+    assert!(
+        inside[2] > 200 && inside[1] > 100 && inside[0].abs_diff(32) <= 2,
+        "inside {inside:?}"
+    );
+    assert_px(&px, 80, 0, [0, 0, 0], 2);
+    // Over a grey background the light adds to what's under the halo
+    // (a normal glow covers it).
+    let bg = [0.5, 0.5, 0.5, 1.0];
+    let over = g.render(&[add()], W, H, bg);
+    let near = at(&over, 34, 0);
+    assert!(near[2] > 170 && near[0].abs_diff(128) <= 2, "{near:?}");
+    let covered = g.render(&[glow(json!({ "mode": "glow" }), false)], W, H, bg);
+    assert!(at(&covered, 34, 0)[0] < 120);
+    // Inner add: lit along the inside of the edge only.
+    let px = render(
+        &mut g,
+        &[glow(json!({ "mode": "glow", "blend": "add" }), true)],
+    );
     assert!(at(&px, 28, 0)[2] > 80);
     assert_px(&px, 0, 0, [32, 32, 32], 3);
     assert_px(&px, 34, 0, [0, 0, 0], 1);

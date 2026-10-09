@@ -1,6 +1,6 @@
 //! `geometry/*` nodes (native-only): point scattering, Voronoi / Delaunay /
 //! hull cells, path operations, shape booleans, L-systems, trimming,
-//! morphing and connecting points.
+//! morphing, connecting points, contours and animated layouts.
 //!
 //! The polygon-producing nodes share one output shape: `shape` (every
 //! polygon in one group layer), `layers` (one layer per polygon; `cells`
@@ -19,6 +19,7 @@ mod boolean;
 mod cells;
 mod connect;
 mod contours;
+mod layout;
 mod lsystem;
 mod measure;
 pub(crate) use measure::fade_paint;
@@ -60,6 +61,8 @@ pub fn register(r: &mut Registrar) {
     r.node("geometry/morph", morph::morph);
     r.node("geometry/contours", contours::contours);
     r.dynamic("geometry/contours", contours::inputs);
+    r.node("geometry/layout", layout::layout);
+    r.dynamic("geometry/layout", layout::inputs);
 }
 
 /// Most points / vertices a geometry node emits (it warns when it stops).
@@ -155,6 +158,18 @@ impl Pins {
             v @ (Value::Vec2(_) | Value::Object(_)) => to_vec2(&v),
             _ => fallback,
         }
+    }
+
+    /// The colours of a colour spread (`toColor` per item).
+    pub fn colors(&self, inputs: &[Spread], name: &str) -> Vec<[f64; 4]> {
+        self.spread(inputs, name)
+            .iter()
+            .filter(|v| !v.is_nullish())
+            .map(|v| {
+                let c = super::shared::to_color(v);
+                [c.r, c.g, c.b, c.a]
+            })
+            .collect()
     }
 
     pub fn bool(&self, inputs: &[Spread], name: &str, fallback: bool) -> bool {
@@ -489,6 +504,44 @@ fn poly_layer(p: &Poly) -> Option<Arc<SceneNode>> {
             Some(Arc::new(SceneNode::group(parts)))
         }
     }
+}
+
+// ─── Colours ─────────────────────────────────────────────────────────────────
+
+/// The colour `t` (0..1) of the way along `colors` spaced evenly, blended
+/// like a gradient (premultiplied); one colour is flat. `None` when empty.
+pub(crate) fn ramp(colors: &[[f64; 4]], t: f64) -> Option<[f64; 4]> {
+    let n = colors.len();
+    match n {
+        0 => None,
+        1 => Some(colors[0]),
+        _ => {
+            let stops: Vec<scene::GradientStop> = colors
+                .iter()
+                .enumerate()
+                .map(|(i, c)| scene::GradientStop {
+                    pos: i as f64 / (n - 1) as f64,
+                    rgba: *c,
+                })
+                .collect();
+            let g = scene::Gradient {
+                shape: scene::GradientShape::Linear {
+                    start: Vec2::default(),
+                    end: Vec2 { x: 1.0, y: 0.0 },
+                },
+                stops: Arc::from(stops),
+                units: scene::GradientUnits::Scene,
+                extend: scene::GradientExtend::Pad,
+            };
+            Some(g.sample(if t.is_finite() { t } else { 0.0 }))
+        }
+    }
+}
+
+/// A flat paint of `rgba`.
+pub(crate) fn flat(rgba: [f64; 4]) -> scene::Paint {
+    let [r, g, b, a] = rgba;
+    scene::Paint::from_color(crate::value::Color { r, g, b, a })
 }
 
 // ─── Shared maths ────────────────────────────────────────────────────────────

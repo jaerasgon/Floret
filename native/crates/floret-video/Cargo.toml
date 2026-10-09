@@ -21,6 +21,11 @@ re_mp4 = "0.5"
 gif = "0.14"
 openh264 = { version = "0.9", optional = true }
 
+[dev-dependencies]
+# Writing PNG / JPEG frames for the image-sequence tests (already in the
+# tree through floret-engine).
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+
 [[example]]
 name = "sample_clip"
 required-features = ["openh264"]

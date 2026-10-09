@@ -347,7 +347,7 @@ fn connect_edge_cases() {
 fn connect_node_fades_long_lines() {
     let mut n = node("geometry/connect", json!({ "mode": "distance" }));
     let red = Style::chain(None, [StyleOp::Stroke(Some(Paint::css("#ff0000")))]);
-    // points, distance, maxLinks, fade, taper, style
+    // points, distance, maxLinks, fade, taper, colors, colorBy, style
     let pts = vec![
         Value::Vec2(v(0.0, 0.0)),
         Value::Vec2(v(10.0, 0.0)),
@@ -361,6 +361,8 @@ fn connect_node_fades_long_lines() {
             vec![],
             vec![Value::Num(1.0)],
             vec![Value::Num(0.5)],
+            vec![],
+            vec![],
             vec![Value::Style(red)],
         ])
         .unwrap();
@@ -395,9 +397,116 @@ fn connect_node_fades_long_lines() {
         .collect();
     assert_eq!(
         names,
-        ["points", "neighbours", "distance", "fade", "taper", "style"]
+        [
+            "points",
+            "neighbours",
+            "distance",
+            "fade",
+            "taper",
+            "colors",
+            "colorBy",
+            "style"
+        ]
     );
-    assert_eq!(spec.inputs.len(), 6);
+    assert_eq!(spec.inputs.len(), 8);
+    let statics: Vec<&str> = spec.inputs.iter().map(|p| &*p.name).collect();
+    let ins: Vec<String> = cat
+        .resolved_inputs(spec, &Params::new())
+        .into_iter()
+        .map(|p| p.name)
+        .collect();
+    assert_eq!(statics, ins);
+}
+
+/// The Connect Points lines for `pts` (all within reach) with `colors`
+/// and `colorBy`; no fade or taper.
+fn coloured_lines(pts: &[Vec2], colors: Vec<Value>, by: &str) -> Vec<Arc<ResolvedStyle>> {
+    let mut n = node(
+        "geometry/connect",
+        json!({ "mode": "distance", "colorBy": by }),
+    );
+    let out = n
+        .eval(vec![
+            pts.iter().map(|p| Value::Vec2(*p)).collect(),
+            vec![Value::Num(100.0)],
+            vec![],
+            vec![Value::Num(0.0)],
+            vec![Value::Num(0.0)],
+            colors,
+            vec![Value::str(by)],
+            vec![],
+        ])
+        .unwrap();
+    let Value::Scene(g) = &out[0][0] else {
+        panic!()
+    };
+    let SceneNode::Group { children, .. } = &**g else {
+        panic!()
+    };
+    children
+        .iter()
+        .map(|c| match &**c {
+            SceneNode::Line { style, .. } => style.clone(),
+            other => panic!("{other:?}"),
+        })
+        .collect()
+}
+
+fn col(r: f64, g: f64, b: f64) -> Value {
+    Value::Color(crate::value::Color { r, g, b, a: 1.0 })
+}
+
+#[test]
+fn connect_colours_lines_by_their_points() {
+    let pts = [v(0.0, 0.0), v(10.0, 0.0), v(20.0, 0.0)];
+    // Unwired: the style's own colour (white), as before.
+    let plain = coloured_lines(&pts, vec![], "points");
+    assert!(plain
+        .iter()
+        .all(|s| s.stroke.as_ref().unwrap().rgba == [1.0, 1.0, 1.0, 1.0]));
+    // Point colours (cycled): lines between different colours get a
+    // gradient from one end to the other; same colours stay flat.
+    let styles = coloured_lines(&pts, vec![col(1.0, 0.0, 0.0), col(0.0, 0.0, 1.0)], "points");
+    // Lines in order: (0,1), (0,2), (1,2): red–blue, red–red, blue–red.
+    let g = styles[0].stroke.as_ref().unwrap().gradient.clone().unwrap();
+    assert_eq!(g.stops[0].rgba, [1.0, 0.0, 0.0, 1.0]);
+    assert_eq!(g.stops[1].rgba, [0.0, 0.0, 1.0, 1.0]);
+    assert_eq!(
+        g.shape,
+        crate::scene::GradientShape::Linear {
+            start: v(0.0, 0.0),
+            end: v(10.0, 0.0)
+        }
+    );
+    assert_eq!(g.sample(0.5), [0.5, 0.0, 0.5, 1.0]);
+    let flat = styles[1].stroke.as_ref().unwrap();
+    assert!(flat.gradient.is_none());
+    assert_eq!(flat.rgba, [1.0, 0.0, 0.0, 1.0]);
+    let back = styles[2].stroke.as_ref().unwrap().gradient.clone().unwrap();
+    assert_eq!(back.stops[0].rgba, [0.0, 0.0, 1.0, 1.0]);
+    // One colour: every line flat in it.
+    let one = coloured_lines(&pts, vec![col(0.0, 1.0, 0.0)], "points");
+    assert!(one.iter().all(|s| {
+        let p = s.stroke.as_ref().unwrap();
+        p.gradient.is_none() && p.rgba == [0.0, 1.0, 0.0, 1.0]
+    }));
+}
+
+#[test]
+fn connect_colours_lines_by_length() {
+    // Lines 0, 50 and 100 long against a reach of 100 (the last is cut).
+    let pts = [v(0.0, 0.0), v(0.0, 0.0), v(50.0, 0.0)];
+    let styles = coloured_lines(&pts, vec![col(1.0, 0.0, 0.0), col(0.0, 0.0, 1.0)], "length");
+    let rgba = |i: usize| styles[i].stroke.as_ref().unwrap().rgba;
+    // Touching: the first colour; halfway to the reach: the blend.
+    assert_eq!(rgba(0), [1.0, 0.0, 0.0, 1.0]);
+    let mid = rgba(1);
+    assert!(
+        (mid[0] - 0.5).abs() < 0.02 && (mid[2] - 0.5).abs() < 0.02,
+        "{mid:?}"
+    );
+    // Lines of the same length share a style.
+    assert!(Arc::ptr_eq(&styles[1], &styles[2]));
 }
 
 // ─── Shape Morph ─────────────────────────────────────────────────────────────
@@ -854,4 +963,243 @@ fn draw_text_layers_read_as_glyph_outlines() {
     assert!(want.len() >= 3, "{}", want.len());
     assert_eq!(contours.len(), want.len());
     assert!(contours.iter().zip(&want).all(|(c, w)| near(&c.pts, w)));
+}
+
+// ─── Contours: colours and shape distance ────────────────────────────────────
+
+use super::contours::shape_field;
+
+fn square_layer(half: f64) -> Value {
+    let pts = vec![
+        v(-half, -half),
+        v(half, -half),
+        v(half, half),
+        v(-half, half),
+    ];
+    poly_layer_of(pts, default_style().clone())
+}
+
+#[test]
+fn shape_field_is_signed_distance() {
+    let sq = square_layer(50.0);
+    let f = shape_field(std::slice::from_ref(&sq), v(0.0, 0.0), v(400.0, 400.0), 4.0).unwrap();
+    let at = |x: f64, y: f64| {
+        let i = ((x - f.origin.x) / f.dx).round() as usize;
+        let j = ((y - f.origin.y) / f.dy).round() as usize;
+        f.values[j * f.cols + i]
+    };
+    // Inside positive, outside negative, by distance to the nearest edge.
+    assert!((at(0.0, 0.0) - 50.0).abs() < 1e-6, "{}", at(0.0, 0.0));
+    assert!((at(100.0, 0.0) + 50.0).abs() < 0.5, "{}", at(100.0, 0.0));
+    assert!((at(48.0, 0.0) - 2.0).abs() < 0.5);
+    // Round a corner: the distance to the corner point.
+    let corner = at(100.0, 100.0);
+    assert!((corner + 50.0 * 2f64.sqrt()).abs() < 1.0, "{corner}");
+    // Far corner of the grid (reached by dead reckoning) stays accurate.
+    let far = at(-200.0, 200.0);
+    assert!((far + 150.0 * 2f64.sqrt()).abs() < 1.0, "{far}");
+    // Nothing to measure from: no field.
+    assert!(shape_field(&[], v(0.0, 0.0), v(100.0, 100.0), 4.0).is_none());
+    // Open paths: distance only, never inside.
+    let line = line_layer(0.0);
+    let f = shape_field(&[line], v(0.0, 0.0), v(100.0, 100.0), 2.0).unwrap();
+    assert!(f.values.iter().all(|d| *d <= 1e-9));
+}
+
+#[test]
+fn contours_shape_mode_rings_round_outlines() {
+    // shape, center, size, cell, threshold, levels, step, colors, style
+    let mut n = node("geometry/contours", json!({ "mode": "shape" }));
+    let out = n
+        .eval(vec![
+            vec![square_layer(40.0)],
+            vec![],
+            vec![Value::Vec2(v(400.0, 400.0))],
+            vec![Value::Num(2.0)],
+            vec![Value::Num(0.0)],
+            vec![Value::Num(3.0)],
+            vec![Value::Num(20.0)],
+            vec![col(1.0, 0.0, 0.0), col(0.0, 0.0, 1.0)],
+            vec![],
+        ])
+        .unwrap();
+    // Three rings: the square, then 20 and 40 out; the outer ones first
+    // (underneath), each level in its colour.
+    let levels: Vec<f64> = out[4].iter().map(Value::to_number).collect();
+    assert_eq!(levels, [40.0, 20.0, 0.0]);
+    let fills: Vec<[f64; 4]> = out[1]
+        .iter()
+        .map(|l| match l {
+            Value::Scene(s) => match &**s {
+                SceneNode::Polygon { style, .. } => style.fill.as_ref().unwrap().rgba,
+                other => panic!("{other:?}"),
+            },
+            other => panic!("{other:?}"),
+        })
+        .collect();
+    assert_eq!(fills[0], [0.0, 0.0, 1.0, 1.0]);
+    assert_eq!(fills[2], [1.0, 0.0, 0.0, 1.0]);
+    assert!((fills[1][0] - 0.5).abs() < 0.01);
+    // The 20-out ring: about the square grown by 20 (round corners).
+    let ring_pts: Vec<Vec2> = match &out[1][1] {
+        Value::Scene(s) => match &**s {
+            SceneNode::Polygon { points, .. } => points.to_vec(),
+            _ => panic!(),
+        },
+        _ => panic!(),
+    };
+    let max_x = ring_pts.iter().map(|p| p.x).fold(f64::MIN, f64::max);
+    assert!((max_x - 60.0).abs() < 1.0, "{max_x}");
+    // Nothing wired: nothing drawn.
+    let out = n.eval(vec![vec![]; 9]).unwrap();
+    assert!(out[1].is_empty());
+}
+
+#[test]
+fn contours_colour_levels_in_every_mode() {
+    // values, cols, center, size, threshold, levels, step, colors, style
+    let mut n = node("geometry/contours", json!({ "mode": "field" }));
+    let cone = sampled(21, |x, y| 100.0 - x.hypot(y));
+    let out = n
+        .eval(vec![
+            cone.values.iter().map(|x| Value::Num(*x)).collect(),
+            vec![Value::Num(21.0)],
+            vec![],
+            vec![Value::Vec2(v(200.0, 200.0))],
+            vec![Value::Num(20.0)],
+            vec![Value::Num(2.0)],
+            vec![Value::Num(25.0)],
+            vec![col(0.0, 1.0, 0.0)],
+            vec![Value::Style(Style::chain(
+                None,
+                [
+                    StyleOp::Fill(None),
+                    StyleOp::Stroke(Some(Paint::css("#ffffff"))),
+                ],
+            ))],
+        ])
+        .unwrap();
+    // No fill: the stroke takes the level's colour (one colour: all).
+    for l in out[1].iter() {
+        let Value::Scene(s) = l else { panic!() };
+        let SceneNode::Polygon { style, .. } = &**s else {
+            panic!()
+        };
+        assert!(style.fill.is_none());
+        assert_eq!(style.stroke.as_ref().unwrap().rgba, [0.0, 1.0, 0.0, 1.0]);
+    }
+    assert_eq!(out[1].len(), 2);
+}
+
+// ─── Scatter: stipple ────────────────────────────────────────────────────────
+
+/// A `w × h` image, black left of `split` (0..1 across) and white right.
+fn half_black(w: u32, h: u32, split: f64) -> Value {
+    let mut px = Vec::with_capacity((w * h * 4) as usize);
+    for _ in 0..h {
+        for i in 0..w {
+            let v = if f64::from(i) < split * f64::from(w) {
+                0
+            } else {
+                255
+            };
+            px.extend([v, v, v, 255]);
+        }
+    }
+    Value::Image(Arc::new(crate::image::Image::new(w, h, px)))
+}
+
+/// Stipple points: center, size, shape, density, count, gamma, invert,
+/// relax, seed.
+fn stipple(
+    n: &mut crate::nodes::value::harness::Harness,
+    density: Vec<Value>,
+    count: f64,
+    invert: bool,
+    relax: f64,
+) -> Vec<Value> {
+    let out = n
+        .eval(vec![
+            vec![],
+            vec![Value::Vec2(v(200.0, 100.0))],
+            vec![],
+            density,
+            vec![Value::Num(count)],
+            vec![],
+            vec![Value::Bool(invert)],
+            vec![Value::Num(relax)],
+            vec![Value::Num(3.0)],
+        ])
+        .unwrap();
+    out[0].clone()
+}
+
+#[test]
+fn stipple_gathers_points_where_the_image_is_dark() {
+    let mut n = node("geometry/scatter", json!({ "mode": "stipple" }));
+    let img = half_black(40, 20, 0.25);
+    let pts = vecs(&stipple(&mut n, vec![img.clone()], 300.0, false, 10.0));
+    assert_eq!(pts.len(), 300);
+    // Dark: the left quarter of the 200-wide area (x < -50).
+    let left = pts.iter().filter(|p| p.x < -50.0).count();
+    assert!(left > 285, "{left} of 300 on the dark side");
+    assert!(pts.iter().all(|p| p.x.abs() <= 100.0 && p.y.abs() <= 50.0));
+    // Relaxed: no two on top of each other.
+    assert!(min_gap(&pts) > 1.0, "{}", min_gap(&pts));
+    // `invert`: the light side instead.
+    let mut m = node("geometry/scatter", json!({ "mode": "stipple" }));
+    let inv = vecs(&stipple(&mut m, vec![img.clone()], 300.0, true, 10.0));
+    assert!(inv.iter().filter(|p| p.x > -50.0).count() > 285);
+    // No image: spread evenly, all of them.
+    let mut m = node("geometry/scatter", json!({ "mode": "stipple" }));
+    let even = vecs(&stipple(&mut m, vec![], 300.0, false, 10.0));
+    assert_eq!(even.len(), 300);
+    let l = even.iter().filter(|p| p.x < 0.0).count();
+    assert!((120..180).contains(&l), "{l}");
+    // A blank (white) image: uniform too, never stuck.
+    let mut m = node("geometry/scatter", json!({ "mode": "stipple" }));
+    let blank = vecs(&stipple(
+        &mut m,
+        vec![half_black(8, 8, 0.0)],
+        50.0,
+        false,
+        5.0,
+    ));
+    assert_eq!(blank.len(), 50);
+    // Zero points; deterministic.
+    assert!(stipple(&mut m, vec![img.clone()], 0.0, false, 5.0).is_empty());
+    let mut a = node("geometry/scatter", json!({ "mode": "stipple" }));
+    let mut b = node("geometry/scatter", json!({ "mode": "stipple" }));
+    assert_eq!(
+        vecs(&stipple(&mut a, vec![img.clone()], 100.0, false, 3.0)),
+        vecs(&stipple(&mut b, vec![img.clone()], 100.0, false, 3.0))
+    );
+}
+
+#[test]
+fn stipple_follows_its_inputs() {
+    let mut n = node("geometry/scatter", json!({ "mode": "stipple" }));
+    let img = half_black(20, 20, 0.5);
+    let a = stipple(&mut n, vec![img.clone()], 120.0, false, 5.0);
+    let b = stipple(&mut n, vec![img.clone()], 120.0, false, 5.0);
+    assert_eq!(vecs(&a), vecs(&b), "same inputs: the same points");
+    let c = stipple(&mut n, vec![img.clone()], 121.0, false, 5.0);
+    assert_eq!(c.len(), 121);
+    // A different picture moves them.
+    let d = stipple(&mut n, vec![half_black(20, 20, 0.9)], 121.0, false, 5.0);
+    assert_ne!(vecs(&c), vecs(&d));
+    // Stipple pins.
+    let cat = crate::spec::Catalogue::builtin();
+    let spec = cat.get("geometry/scatter").unwrap();
+    let mut p = Params::new();
+    p.insert("mode".into(), json!("stipple"));
+    let names: Vec<String> = cat
+        .resolved_inputs(spec, &p)
+        .into_iter()
+        .map(|p| p.name)
+        .collect();
+    assert_eq!(
+        names,
+        ["center", "size", "shape", "density", "count", "gamma", "invert", "relax", "seed"]
+    );
 }

@@ -9,8 +9,8 @@ use super::Registrar;
 use crate::node::{raw, EvalCtx, NodeImpl, NodeInit};
 use crate::scene::SceneNode;
 use crate::shader::{
-    parse_uniforms, uniform_port_type, ShaderBuffer, ShaderChannel, ShaderPass, ShaderShape,
-    UniformDecl, UniformValue,
+    parse_uniforms, uniform_port_type, ShaderBuffer, ShaderChannel, ShaderHistory, ShaderPass,
+    ShaderShape, UniformDecl, UniformValue,
 };
 use crate::spec::{Params, PortKind, PortSpec, PortType};
 use crate::value::{one, Value};
@@ -168,6 +168,24 @@ pub(crate) fn as_layer(v: Option<&[Value]>) -> Option<Arc<SceneNode>> {
     }
 }
 
+/// Most frames the `history` param asks for (the renderer caps it by
+/// memory too: 256 MB of canvas-sized frames).
+pub const MAX_HISTORY: f64 = 240.0;
+
+/// The `history` param: frames of the input the passes can read back
+/// through `iHistory` / `iHistoryFrame` (this one included); 0 = none.
+fn history_of(frames: f64) -> Option<ShaderHistory> {
+    let frames = if frames.is_finite() {
+        frames.floor().min(MAX_HISTORY)
+    } else {
+        0.0
+    };
+    (frames >= 1.0).then_some(ShaderHistory {
+        frames: frames as u32,
+        reset: false,
+    })
+}
+
 fn shader(_: &NodeInit) -> Box<dyn NodeImpl> {
     raw(|inputs, cx: &mut EvalCtx| {
         let pp = PassParams::from(|k| cx.param(k));
@@ -201,7 +219,7 @@ fn shader(_: &NodeInit) -> Box<dyn NodeImpl> {
             uniforms: Arc::from(uniforms),
             input: as_layer(inputs.first().map(|s| &s[..])),
             map: None,
-            history: None,
+            history: history_of(param_or(cx, "history", Value::Num(0.0)).to_number()),
             lut: None,
         };
         Ok(vec![one(Value::Scene(Arc::new(SceneNode::Shader(
@@ -315,5 +333,22 @@ mod tests {
             ]
         );
         assert!(sh.uniform_decls.is_empty());
+        assert_eq!(sh.history, None, "no history unless asked");
+    }
+
+    #[test]
+    fn history_param_keeps_input_frames() {
+        let frames = |p: serde_json::Value| {
+            let mut h = node("gpu/shader", json!({ "history": p }));
+            let out = h.eval(vec![vec![]]).unwrap();
+            shape(&out[0][0]).history.map(|h| h.frames)
+        };
+        assert_eq!(frames(json!(0)), None);
+        assert_eq!(frames(json!(-3)), None);
+        assert_eq!(frames(json!(0.5)), None);
+        assert_eq!(frames(json!("nope")), None);
+        assert_eq!(frames(json!(12)), Some(12));
+        assert_eq!(frames(json!(12.9)), Some(12));
+        assert_eq!(frames(json!(10_000)), Some(MAX_HISTORY as u32));
     }
 }

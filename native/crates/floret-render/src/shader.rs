@@ -113,6 +113,18 @@ layout(set = 0, binding = 6) uniform texture2DArray floret_history;
 #define iHistory sampler2DArray(floret_history, floret_sampler)
 ";
 
+/// Built-in helpers: `iHistoryFrame(ago, uv)` reads the input as it was
+/// `ago` frames back (0 = this frame; older than the ring holds reads the
+/// oldest; premultiplied, like `iChannel0`'s input). Only a draw with a
+/// history (`gpu/shader`'s `history` param, `gpu/echo`) has frames there;
+/// otherwise it reads transparent.
+const HELPERS: &str = "vec4 iHistoryFrame(int ago, vec2 uv) {
+    int size = max(iHistorySize, 1);
+    int k = clamp(ago, 0, max(iHistoryCount, 1) - 1);
+    return texture(iHistory, vec3(uv, float((iHistoryHead - k + size) % size)));
+}
+";
+
 const EPILOGUE: &str = "
 void main() { mainImage(floret_fragColor, gl_FragCoord.xy); }
 ";
@@ -175,7 +187,7 @@ pub fn wrap(source: &str) -> Wrapped {
         }
     }
     let preamble = format!(
-        "#version 450 core\nlayout(set = 0, binding = 0, std140) uniform {UNIFORM_BLOCK} {{\n{BUILTIN_MEMBERS}{members}}};\n{RESOURCES}{samplers}"
+        "#version 450 core\nlayout(set = 0, binding = 0, std140) uniform {UNIFORM_BLOCK} {{\n{BUILTIN_MEMBERS}{members}}};\n{RESOURCES}{HELPERS}{samplers}"
     );
     let preamble_lines = preamble.matches('\n').count() as u32;
     // Blanking only touched whole ASCII statements.

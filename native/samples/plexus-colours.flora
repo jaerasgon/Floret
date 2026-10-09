@@ -1,0 +1,172 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Plexus Colours",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "pc_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -294
+      },
+      "params": {
+        "text": "Plexus colours\n\nA flock (Simulation) wanders the canvas. An Expression gives each bird a colour from its position, and Connect Points, with `colors` wired and `colorBy` `points`, draws every line as a gradient from one end's colour to the other's.\n\nSet `colorBy` to `length` to run the colours from the shortest lines (first colour) to the longest instead.",
+        "width": 460,
+        "height": 230
+      },
+      "portValues": {
+        "text": "Plexus colours\n\nA flock (Simulation) wanders the canvas. An Expression gives each bird a colour from its position, and Connect Points, with `colors` wired and `colorBy` `points`, draws every line as a gradient from one end's colour to the other's.\n\nSet `colorBy` to `length` to run the colours from the shortest lines (first colour) to the longest instead.",
+        "width": 460,
+        "height": 230
+      }
+    },
+    {
+      "id": "pc_sim",
+      "defType": "particles/simulation",
+      "position": {
+        "x": 0,
+        "y": 23
+      },
+      "params": {
+        "mode": "flocking"
+      },
+      "portValues": {
+        "count": 170,
+        "size": {
+          "x": 700,
+          "y": 460
+        },
+        "maxSpeed": 75,
+        "scale": 0
+      }
+    },
+    {
+      "id": "pc_hue",
+      "defType": "math/expression",
+      "position": {
+        "x": 269,
+        "y": 73
+      },
+      "params": {
+        "expr": "hsl(0.52 + 0.4 * (p.x / 700 + 0.5), 0.85, 0.6)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pc_st",
+      "defType": "style/stroke",
+      "position": {
+        "x": 286,
+        "y": 215
+      },
+      "params": {
+        "width": 1.8,
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 1.8,
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "pc_link",
+      "defType": "geometry/connect",
+      "position": {
+        "x": 539,
+        "y": 0
+      },
+      "params": {
+        "mode": "distance",
+        "colorBy": "points"
+      },
+      "portValues": {
+        "distance": 100,
+        "maxLinks": 6,
+        "fade": 0.9,
+        "taper": 0.5,
+        "colorBy": "points"
+      }
+    },
+    {
+      "id": "pc_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 798,
+        "y": 0
+      },
+      "params": {
+        "width": 720,
+        "height": 480,
+        "background": {
+          "r": 0.043137254901960784,
+          "g": 0.050980392156862744,
+          "b": 0.09411764705882353,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 720,
+        "height": 480,
+        "background": {
+          "r": 0.043137254901960784,
+          "g": 0.050980392156862744,
+          "b": 0.09411764705882353,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_pc_sim_pc_hue_p",
+      "source": "pc_sim",
+      "target": "pc_hue",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_pc_sim_pc_link_points",
+      "source": "pc_sim",
+      "target": "pc_link",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_pc_hue_pc_link_colors",
+      "source": "pc_hue",
+      "target": "pc_link",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_pc_st_pc_link_style",
+      "source": "pc_st",
+      "target": "pc_link",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_pc_link_pc_r_layers",
+      "source": "pc_link",
+      "target": "pc_r",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

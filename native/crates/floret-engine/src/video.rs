@@ -29,7 +29,9 @@ pub enum Seek {
 /// What a video node asks for this tick.
 #[derive(Clone, Debug, PartialEq)]
 pub struct VideoRequest<'a> {
-    /// A file path, `file://` URL or `data:` URL.
+    /// A file path, `file://` URL or `data:` URL; or an image sequence: a
+    /// folder, one numbered frame, a `name_####.png` pattern or a list of
+    /// frames, one per line.
     pub source: &'a str,
     pub play: bool,
     pub looping: bool,
@@ -42,6 +44,9 @@ pub struct VideoRequest<'a> {
     pub restart: bool,
     /// Block until the playhead's frame is decoded ([`wait_for_frames`]).
     pub wait: bool,
+    /// Frames per second when the source is an image sequence (numbered
+    /// PNG / JPEG frames); videos keep their own timing.
+    pub fps: f64,
 }
 
 #[derive(Clone, Debug)]
@@ -186,6 +191,7 @@ mod tests {
             dt,
             restart: false,
             wait: false,
+            fps: 30.0,
         }
     }
 

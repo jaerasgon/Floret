@@ -76,11 +76,16 @@ pub const BLUR_KINDS: [&str; 5] = ["gaussian", "lens", "motion", "zoom", "spin"]
 /// Threshold's `channel`s, in dropdown order.
 pub const THRESHOLD_CHANNELS: [&str; 2] = ["luma", "alpha"];
 
+/// Glow's `blend`s, in dropdown order: `normal` lays the glow under the
+/// layer; `add` adds it as light, over the layer too.
+pub const GLOW_BLENDS: [&str; 2] = ["normal", "add"];
+
 /// The mode's sub-choice param (a dropdown pin) and its options.
 fn choice_of(mode: &str) -> Option<(&'static str, &'static [&'static str])> {
     match mode {
         "blur" => Some(("kind", &BLUR_KINDS)),
         "threshold" => Some(("channel", &THRESHOLD_CHANNELS)),
+        "glow" => Some(("blend", &GLOW_BLENDS)),
         _ => None,
     }
 }
@@ -606,6 +611,22 @@ void mainImage(out vec4 o, in vec2 fc) {
 }
 ";
 
+/// Glow `blend` add: the glow alone (`color` at the blurred coverage),
+/// which the node lays over the layer with additive blending, so it
+/// lights the layer and whatever lies under the halo instead of covering
+/// them. `inner` keeps it inside the layer's coverage.
+const GLOW_ADD_IMAGE: &str = "
+uniform float intensity;
+uniform float inner;
+uniform vec4 color;
+void mainImage(out vec4 o, in vec2 fc) {
+  vec2 uv = fc / iResolution.xy;
+  float s = fetch(1, uv).a * max(intensity, 0.0) * clamp(color.a, 0.0, 1.0);
+  if (inner > 0.5) s *= fetch(0, uv).a;
+  o = vec4(clamp(color.rgb, 0.0, 1.0), clamp(s, 0.0, 1.0));
+}
+";
+
 // ─── Distort / detect ────────────────────────────────────────────────────────
 
 /// Radial lens distortion: positive `amount` bulges (barrel), negative
@@ -855,6 +876,7 @@ pub fn mode_passes(mode: &str, sub: &str, map: bool, lut: bool) -> Vec<ShaderPas
             ],
         },
         "shadow" => coverage(SHIFT_OFFSET, SHADOW_IMAGE),
+        "glow" if sub == "add" => coverage(SHIFT_NONE, GLOW_ADD_IMAGE),
         "glow" => coverage(SHIFT_NONE, GLOW_IMAGE),
         "barrel" => vec![image(BARREL, input)],
         "edges" => vec![image(EDGES, input)],
@@ -937,9 +959,10 @@ fn effect(init: &NodeInit) -> Box<dyn NodeImpl> {
                 .and_then(|s| s.first())
         };
         // A wired / typed sub-choice wins over the saved param.
-        if let (Some((_, options)), Some(Value::Str(s))) =
-            (choice_of(mode), pin("kind").or(pin("channel")))
-        {
+        if let (Some((_, options)), Some(Value::Str(s))) = (
+            choice_of(mode),
+            pin("kind").or(pin("channel")).or(pin("blend")),
+        ) {
             if let Some(o) = options.iter().find(|o| **o == &**s) {
                 sub = o;
             }
@@ -971,19 +994,32 @@ fn effect(init: &NodeInit) -> Box<dyn NodeImpl> {
                 },
             })
             .collect();
+        let input = as_layer(inputs.first().map(|s| &s[..]));
         let shape = ShaderShape {
             node_id: Arc::from(cx.node_id),
             passes: Arc::from(passes),
             uniform_decls: Arc::from(decls),
             uniforms: Arc::from(uniforms),
-            input: as_layer(inputs.first().map(|s| &s[..])),
+            input: input.clone(),
             map,
             history: None,
             lut,
         };
-        Ok(vec![one(Value::Scene(Arc::new(SceneNode::Shader(
-            Arc::new(shape),
-        ))))])
+        let shader = Arc::new(SceneNode::Shader(Arc::new(shape)));
+        let out = match (mode, sub, input) {
+            // Additive glow: the layer, then the glow added over it.
+            ("glow", "add", Some(layer)) => Arc::new(SceneNode::group(vec![
+                layer,
+                Arc::new(SceneNode::Group {
+                    children: Arc::from(vec![shader]),
+                    transform: None,
+                    blend_mode: Some(Arc::from("lighter")),
+                    clip: None,
+                }),
+            ])),
+            _ => shader,
+        };
+        Ok(vec![one(Value::Scene(out))])
     });
     // The table loads off the tick: poll it every frame (like the file
     // nodes). Every other mode is memoised as before.
@@ -1413,7 +1449,11 @@ mod tests {
         );
         assert_eq!(
             pins("glow", none.clone()),
-            ["input", "radius", "color", "intensity", "inner"]
+            ["input", "blend", "radius", "color", "intensity", "inner"]
+        );
+        assert_eq!(
+            pins("glow", json!({ "blend": "add" })),
+            pins("glow", none.clone())
         );
         assert_eq!(pins("barrel", none.clone()), ["input", "amount", "zoom"]);
         assert_eq!(

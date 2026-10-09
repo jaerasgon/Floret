@@ -769,9 +769,15 @@ impl App {
         if let Some(engine) = self.engine.as_mut() {
             editor::values::apply_live(engine, cat, &self.patch, edits);
         }
-        // Structural edits (wires, nodes, undo) rebuild the engine.
+        // Structural edits (wires, nodes, undo) rebuild the engine; nodes
+        // that keep state across edits (Layout's transitions, Point
+        // Tracker's tracks) carry it over.
         if self.view.take_recompile() {
+            let mut old = self.engine.take();
             self.recompile();
+            if let (Some(new), Some(old)) = (self.engine.as_mut(), old.as_mut()) {
+                new.adopt_state(old);
+            }
         }
         if self.patch.nodes.is_empty() && !self.welcome.open {
             empty_hint(ui);

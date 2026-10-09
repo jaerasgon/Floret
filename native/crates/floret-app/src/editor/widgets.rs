@@ -529,6 +529,10 @@ pub fn is_video(def_type: &str) -> bool {
 /// What the video file picker offers.
 pub const VIDEO_EXTENSIONS: &[&str] = &["mp4", "m4v", "mov"];
 
+/// Frames the video picker offers as an image sequence (one frame picks
+/// its whole numbered run).
+pub const SEQUENCE_EXTENSIONS: &[&str] = &["png", "jpg", "jpeg"];
+
 /// The params a picked / dropped video writes: its path (videos are too
 /// big to copy into the patch), or a data URL when there's no path.
 pub fn video_params(
@@ -548,8 +552,14 @@ pub fn video_params(
 /// "embedded video" for a data URL.
 pub fn video_name(n: &PatchNode) -> Option<String> {
     let url = param_str(n, "url", "").trim();
+    let lines = url.lines().filter(|l| !l.trim().is_empty()).count();
     if url.is_empty() {
         None
+    } else if lines > 1 {
+        // An image sequence listed frame by frame.
+        Some(format!("{lines} frames"))
+    } else if url.starts_with("data:image/") {
+        Some("embedded picture".into())
     } else if url.starts_with("data:") {
         Some("embedded video".into())
     } else {
@@ -959,6 +969,13 @@ mod tests {
         let v = with("video/file", json!({ "url": "data:video/mp4;base64,AAAA" }));
         assert_eq!(video_name(&v).as_deref(), Some("embedded video"));
         assert_eq!(video_name(&with("video/file", json!({}))), None);
+        let v = with(
+            "video/file",
+            json!({ "url": "data:image/png;base64,AA\n\ndata:image/png;base64,BB\n/x/c.png" }),
+        );
+        assert_eq!(video_name(&v).as_deref(), Some("3 frames"));
+        let v = with("video/file", json!({ "url": "/shots/loop-0001.png" }));
+        assert_eq!(video_name(&v).as_deref(), Some("loop-0001.png"));
         let p = video_params(Some(std::path::Path::new("/a/b.mp4")), None, "").unwrap();
         assert_eq!(p[0].1, json!("/a/b.mp4"));
         let p = video_params(None, Some(b"x"), "b.mp4").unwrap();

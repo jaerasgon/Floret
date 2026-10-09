@@ -119,7 +119,8 @@ impl Drop for Session {
 }
 
 impl Session {
-    pub fn spawn(source: &str) -> Session {
+    /// Start playing `source` (`fps`: an image sequence's frame rate).
+    pub fn spawn(source: &str, fps: f64) -> Session {
         let shared = Arc::new(Shared {
             state: Mutex::new(State {
                 playhead: Playhead::default(),
@@ -141,7 +142,7 @@ impl Session {
             .name("floret-video".into())
             .spawn(move || {
                 let run = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                    decode_loop(&s, &src)
+                    decode_loop(&s, &src, fps)
                 }));
                 match run {
                     Ok(Ok(())) => {
@@ -223,8 +224,8 @@ impl Session {
     }
 }
 
-fn decode_loop(sh: &Shared, source: &str) -> Result<(), String> {
-    let mut media = crate::open(source)?;
+fn decode_loop(sh: &Shared, source: &str, fps: f64) -> Result<(), String> {
+    let mut media = crate::open_at(source, fps)?;
     let frames = Arc::new(media.frames.clone());
     let n = frames.len();
     if n == 0 {

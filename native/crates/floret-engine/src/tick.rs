@@ -203,6 +203,27 @@ impl Engine {
 }
 
 impl Engine {
+    /// Carry node state over from the engine this one replaces (a
+    /// recompile after an edit): every node that keeps state across edits
+    /// ([`crate::node::NodeImpl::carry`]) hands it to the node with the
+    /// same id and type here. A restart builds a fresh engine instead.
+    pub fn adopt_state(&mut self, old: &mut Engine) {
+        for node in &mut self.graph.nodes {
+            let Some(imp) = node.imp.as_mut() else {
+                continue;
+            };
+            let Some(prev) = old.graph.idx(&node.id).map(|i| &mut old.graph.nodes[i]) else {
+                continue;
+            };
+            if prev.ty != node.ty {
+                continue;
+            }
+            if let Some(state) = prev.imp.as_mut().and_then(|p| p.carry()) {
+                imp.adopt(state);
+            }
+        }
+    }
+
     fn sound_nodes(&self) -> Vec<Arc<str>> {
         if self.audio.is_none() {
             return Vec::new();

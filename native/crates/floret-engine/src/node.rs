@@ -166,7 +166,25 @@ pub trait NodeImpl: Send {
     fn memoise(&self) -> bool {
         true
     }
+
+    /// State worth keeping across an edit of the patch: the app recompiles
+    /// on every structural edit (a wire, a mode, a typed pin value), and
+    /// hands what this returns to the rebuilt node of the same id and type
+    /// through [`NodeImpl::adopt`] (see [`crate::Engine::adopt_state`]).
+    /// Most nodes start fresh instead (`None`).
+    fn carry(&mut self) -> Option<CarriedState> {
+        None
+    }
+
+    /// Take over the state a node of the same id and type [`carry`]-ed
+    /// out of the previous engine.
+    ///
+    /// [`carry`]: NodeImpl::carry
+    fn adopt(&mut self, _state: CarriedState) {}
 }
+
+/// A node's state handed from one compile of a patch to the next.
+pub type CarriedState = Box<dyn std::any::Any + Send>;
 
 /// Everything a factory needs to build a node instance.
 pub struct NodeInit<'a> {

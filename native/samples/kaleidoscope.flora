@@ -13,7 +13,7 @@
       "defType": "io/image-url",
       "position": {
         "x": 704,
-        "y": 15
+        "y": 0
       },
       "params": {
         "url": "https://picsum.photos/seed/floret-kaleido/500/500"
@@ -27,7 +27,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 325
+        "y": 310
       },
       "params": {}
     },
@@ -36,7 +36,7 @@
       "defType": "math/math",
       "position": {
         "x": 180,
-        "y": 303
+        "y": 288
       },
       "params": {
         "op": "multiply",
@@ -52,7 +52,7 @@
       "defType": "math/math",
       "position": {
         "x": 453,
-        "y": 218
+        "y": 203
       },
       "params": {
         "op": "sin"
@@ -63,7 +63,7 @@
       "defType": "math/math",
       "position": {
         "x": 453,
-        "y": 344
+        "y": 329
       },
       "params": {
         "op": "cos"
@@ -73,139 +73,50 @@
       "id": "ks_imgRegion",
       "defType": "draw/image-region",
       "position": {
-        "x": 984,
-        "y": 170
-      },
-      "params": {
-        "sw": 200,
-        "sh": 200,
-        "dx": 30,
-        "dy": -100,
-        "dw": 200,
-        "dh": 200
-      },
-      "portValues": {
-        "sw": 200,
-        "sh": 200,
-        "dx": 30,
-        "dy": -100,
-        "dw": 200,
-        "dh": 200
-      }
-    },
-    {
-      "id": "ks_angles",
-      "defType": "spread/ring",
-      "position": {
-        "x": 985,
-        "y": 0
-      },
-      "params": {
-        "count": 12
-      },
-      "portValues": {
-        "count": 12
-      }
-    },
-    {
-      "id": "ks_idxs",
-      "defType": "spread/range",
-      "position": {
         "x": 981,
-        "y": 472
+        "y": 155
       },
       "params": {
-        "count": 12
+        "sw": 200,
+        "sh": 200,
+        "dx": 0,
+        "dy": -180,
+        "dw": 360,
+        "dh": 360
       },
       "portValues": {
-        "count": 12
+        "sw": 200,
+        "sh": 200,
+        "dx": 0,
+        "dy": -180,
+        "dw": 360,
+        "dh": 360
       }
     },
     {
-      "id": "ks_region",
-      "defType": "region/foreach",
+      "id": "ks_sym",
+      "defType": "transform/symmetry",
       "position": {
-        "x": 1247,
+        "x": 1209,
         "y": 133
       },
       "params": {
-        "width": 943,
-        "height": 282,
-        "label": "ForEach Wedge"
+        "mode": "kaleidoscope",
+        "count": 6,
+        "clip": true
       },
-      "ports": [
-        {
-          "id": "angle",
-          "name": "angle",
-          "type": "number",
-          "direction": "input",
-          "y": 76
-        },
-        {
-          "id": "i",
-          "name": "i",
-          "type": "number",
-          "direction": "input",
-          "y": 158
-        },
-        {
-          "id": "out",
-          "name": "out",
-          "type": "layer",
-          "direction": "output",
-          "y": 87
-        }
-      ],
-      "width": 943,
-      "height": 282
-    },
-    {
-      "id": "ks_iMod",
-      "defType": "math/math",
-      "position": {
-        "x": 128,
-        "y": 99
-      },
-      "params": {
-        "op": "mod",
-        "b": 2
-      },
-      "parentId": "ks_region",
       "portValues": {
-        "b": 2
+        "count": 6,
+        "clip": true,
+        "mode": "kaleidoscope"
       }
-    },
-    {
-      "id": "ks_scaled",
-      "defType": "transform/scale",
-      "position": {
-        "x": 551,
-        "y": 98
-      },
-      "params": {
-        "sy": 1
-      },
-      "parentId": "ks_region",
-      "portValues": {
-        "sy": 1
-      }
-    },
-    {
-      "id": "ks_rotated",
-      "defType": "transform/rotate",
-      "position": {
-        "x": 738,
-        "y": 50
-      },
-      "params": {},
-      "parentId": "ks_region"
     },
     {
       "id": "ks_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2286,
-        "y": 183
+        "x": 1492,
+        "y": 133
       },
       "params": {
         "width": 500,
@@ -233,7 +144,7 @@
       "defType": "math/map",
       "position": {
         "x": 741,
-        "y": 185
+        "y": 170
       },
       "params": {
         "inMin": -1,
@@ -253,7 +164,7 @@
       "defType": "math/map",
       "position": {
         "x": 741,
-        "y": 377
+        "y": 362
       },
       "params": {
         "inMin": -1,
@@ -266,27 +177,6 @@
         "inMax": 1,
         "outMin": 80,
         "outMax": 320
-      }
-    },
-    {
-      "id": "ks_sign",
-      "defType": "math/map",
-      "position": {
-        "x": 374,
-        "y": 98
-      },
-      "params": {
-        "inMin": 0,
-        "inMax": 1,
-        "outMin": 1,
-        "outMax": -1
-      },
-      "parentId": "ks_region",
-      "portValues": {
-        "inMin": 0,
-        "inMax": 1,
-        "outMin": 1,
-        "outMax": -1
       }
     }
   ],
@@ -320,62 +210,6 @@
       "targetHandle": "in-image"
     },
     {
-      "id": "e_753",
-      "source": "ks_angles",
-      "target": "ks_region",
-      "sourceHandle": "out-angles",
-      "targetHandle": "in-angle"
-    },
-    {
-      "id": "e_754",
-      "source": "ks_idxs",
-      "target": "ks_region",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_755",
-      "source": "ks_region",
-      "target": "ks_iMod",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_758",
-      "source": "ks_imgRegion",
-      "target": "ks_scaled",
-      "sourceHandle": "out-shape",
-      "targetHandle": "in-layer"
-    },
-    {
-      "id": "e_760",
-      "source": "ks_scaled",
-      "target": "ks_rotated",
-      "sourceHandle": "out-scaled",
-      "targetHandle": "in-layer"
-    },
-    {
-      "id": "e_761",
-      "source": "ks_region",
-      "target": "ks_rotated",
-      "sourceHandle": "out-angle",
-      "targetHandle": "in-angle"
-    },
-    {
-      "id": "e_762",
-      "source": "ks_rotated",
-      "target": "ks_region",
-      "sourceHandle": "out-rotated",
-      "targetHandle": "in-out"
-    },
-    {
-      "id": "e_763",
-      "source": "ks_region",
-      "target": "ks_renderer",
-      "sourceHandle": "out-out",
-      "targetHandle": "in-layers"
-    },
-    {
       "id": "e_ks_sinT_ks_sx_x",
       "source": "ks_sinT",
       "target": "ks_sx",
@@ -404,18 +238,18 @@
       "targetHandle": "in-sy"
     },
     {
-      "id": "e_ks_iMod_ks_sign_x",
-      "source": "ks_iMod",
-      "target": "ks_sign",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-x"
+      "id": "e_ks_sym_in",
+      "source": "ks_imgRegion",
+      "target": "ks_sym",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
     },
     {
-      "id": "e_ks_sign_ks_scaled_sx",
-      "source": "ks_sign",
-      "target": "ks_scaled",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-sx"
+      "id": "e_ks_sym_out",
+      "source": "ks_sym",
+      "target": "ks_renderer",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
     }
   ]
 }

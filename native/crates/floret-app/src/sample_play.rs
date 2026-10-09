@@ -114,7 +114,7 @@ fn physics_sandbox(f: u32) -> Input {
             let pull = f64::from(f % 22) * 6.0;
             drag(x + pull * 0.5, y + pull)
         }
-        (_, 6) if f % 22 == 0 => keys(&["g"]),
+        (_, 6) if f.is_multiple_of(22) => keys(&["g"]),
         _ => at(-260.0, 260.0),
     }
 }

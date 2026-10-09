@@ -1,13 +1,24 @@
 //! `geometry/cells`: the Voronoi cells, Delaunay triangles or convex hull
-//! of a points spread, as polygons.
+//! of a points spread, as polygons, or a rectangle split recursively.
 //!
 //! Voronoi cells are clipped to the `center` / `size` rectangle. `gap`
 //! shrinks every polygon by half its value on each side, so neighbouring
 //! cells end up `gap` apart. `colors` (cycled) fills polygon i with colour
 //! i, over the wired `style`.
+//!
+//! `subdivide` splits the `center` / `size` rectangle in two (across its
+//! longer side more often than not) or in four (`quad`), then splits the
+//! parts again, down to `depth` levels: past the first split each part
+//! splits with probability `chance`, and never into parts thinner than
+//! `minSize`. `ratio` (0..1) is how far from the middle a cut may land.
+//! With `points` wired, a part splits while it holds more than one of them
+//! instead (a k-d tree / quadtree of the points: small cells where they
+//! crowd). Colours are picked per rectangle at random (repeat a colour to
+//! make it likelier), and `depth` out gives each one's level: a Mondrian,
+//! a quadtree or a city plan from one seed.
 
 use super::{
-    clip_half_plane, inset_convex, live_mode, num_pin, param_str, pin_style, poly_outputs,
+    clip_half_plane, inset_convex, int_pin, live_mode, num_pin, param_str, pin_style, poly_outputs,
     signed_area, style_pin, sub, vec2_pin, Pins, Poly,
 };
 use crate::node::{raw, NodeImpl, NodeInit};
@@ -19,11 +30,25 @@ use std::sync::Arc;
 const MODE: &str = "voronoi";
 const SIZE: Vec2 = Vec2 { x: 400.0, y: 400.0 };
 
+/// Most levels `subdivide` goes down.
+const MAX_DEPTH: f64 = 16.0;
+/// Most rectangles `subdivide` makes.
+pub(super) const MAX_RECTS: usize = 20_000;
+
 pub(super) fn inputs(params: &Params) -> Vec<PortSpec> {
     let mut v = vec![PortSpec::new("points", PortType::Vec2).kind(PortKind::Spread)];
-    if param_str(params, "mode", MODE) == "voronoi" {
+    let mode = param_str(params, "mode", MODE);
+    if matches!(mode, "voronoi" | "subdivide") {
         v.push(vec2_pin("center", 0.0, 0.0));
         v.push(vec2_pin("size", SIZE.x, SIZE.y));
+    }
+    if mode == "subdivide" {
+        v.push(int_pin("depth", 5.0));
+        v.push(num_pin("chance", 0.7));
+        v.push(num_pin("minSize", 16.0));
+        v.push(num_pin("ratio", 0.6));
+        v.push(PortSpec::new("quad", PortType::Boolean).default(Value::Bool(false)));
+        v.push(int_pin("seed", 1.0));
     }
     v.push(num_pin("gap", 0.0));
     v.push(PortSpec::new("colors", PortType::Color).kind(PortKind::Spread));
@@ -37,7 +62,29 @@ pub(super) fn cells(init: &NodeInit) -> Box<dyn NodeImpl> {
         let mode = live_mode(cx, MODE);
         let pts = pins.points(inputs, "points");
         let gap = pins.num(inputs, "gap", 0.0).max(0.0);
+        let mut depths: Vec<f64> = Vec::new();
+        let mut picks: Option<Vec<f64>> = None;
         let rings: Vec<Vec<Vec2>> = match mode.as_str() {
+            "subdivide" => {
+                let opts = Split {
+                    depth: pins.num(inputs, "depth", 5.0).clamp(0.0, MAX_DEPTH) as usize,
+                    chance: pins.num(inputs, "chance", 0.7).clamp(0.0, 1.0),
+                    min_size: pins.num(inputs, "minSize", 16.0).max(0.0),
+                    ratio: pins.num(inputs, "ratio", 0.6).clamp(0.0, 1.0),
+                    quad: pins.bool(inputs, "quad", false),
+                };
+                let center = pins.vec2(inputs, "center", Vec2::default());
+                let size = pins.vec2(inputs, "size", SIZE);
+                let seed = pins.num(inputs, "seed", 1.0);
+                let (rects, capped) = subdivide(center, size, &pts, &opts, seed);
+                if capped {
+                    cx.warn(format!("Stopped at {MAX_RECTS} rectangles."));
+                }
+                let mut r = super::rng_salted(seed, 1.0);
+                picks = Some(rects.iter().map(|_| r.next_f64()).collect());
+                depths = rects.iter().map(|c| c.depth as f64).collect();
+                rects.into_iter().map(|c| c.ring()).collect()
+            }
             "delaunay" => delaunay(&pts),
             "hull" => {
                 let h = convex_hull(&pts);
@@ -53,10 +100,18 @@ pub(super) fn cells(init: &NodeInit) -> Box<dyn NodeImpl> {
                 voronoi(&pts, center, size)
             }
         };
+        // Cells a gap swallows drop out (with their depth and colour).
+        let mut kept = Vec::with_capacity(rings.len());
         let rings: Vec<Vec<Vec2>> = rings
             .into_iter()
-            .map(|r| inset_convex(&r, gap / 2.0))
-            .filter(|r| r.len() >= 3)
+            .enumerate()
+            .filter_map(|(i, r)| {
+                let r = inset_convex(&r, gap / 2.0);
+                (r.len() >= 3).then(|| {
+                    kept.push(i);
+                    r
+                })
+            })
             .collect();
 
         let style_v = pins.value(inputs, "style");
@@ -76,7 +131,13 @@ pub(super) fn cells(init: &NodeInit) -> Box<dyn NodeImpl> {
                 style: if colors.is_empty() {
                     base.clone()
                 } else {
-                    let fill = StyleOp::Fill(Some(colors[i % colors.len()].clone()));
+                    // Subdivide picks at random; the others cycle.
+                    let n = colors.len();
+                    let k = match &picks {
+                        Some(p) => ((p[kept[i]] * n as f64) as usize).min(n - 1),
+                        None => i % n,
+                    };
+                    let fill = StyleOp::Fill(Some(colors[k].clone()));
                     resolve_style(
                         Some(&Style::chain(wired, [fill])),
                         crate::scene::default_style(),
@@ -89,6 +150,11 @@ pub(super) fn cells(init: &NodeInit) -> Box<dyn NodeImpl> {
             rings
                 .iter()
                 .map(|r| Value::Vec2(super::centroid(r)))
+                .collect::<Vec<_>>(),
+        ));
+        out.push(Arc::from(
+            kept.iter()
+                .map(|&i| Value::Num(depths.get(i).copied().unwrap_or(0.0)))
                 .collect::<Vec<_>>(),
         ));
         Ok(out)
@@ -218,4 +284,134 @@ pub(super) fn convex_hull(pts: &[Vec2]) -> Vec<Vec2> {
         hull.pop();
     }
     hull
+}
+
+// ─── Subdivide ───────────────────────────────────────────────────────────────
+
+/// How `subdivide` splits.
+pub(super) struct Split {
+    pub depth: usize,
+    pub chance: f64,
+    pub min_size: f64,
+    pub ratio: f64,
+    pub quad: bool,
+}
+
+/// One rectangle of a subdivision: its top-left corner, size and level.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(super) struct Cell {
+    pub x: f64,
+    pub y: f64,
+    pub w: f64,
+    pub h: f64,
+    pub depth: usize,
+}
+
+impl Cell {
+    fn new(x: f64, y: f64, w: f64, h: f64, depth: usize) -> Cell {
+        Cell { x, y, w, h, depth }
+    }
+
+    /// Clockwise on screen from the top-left corner.
+    pub fn ring(&self) -> Vec<Vec2> {
+        let (x, y, w, h) = (self.x, self.y, self.w, self.h);
+        vec![
+            Vec2 { x, y },
+            Vec2 { x: x + w, y },
+            Vec2 { x: x + w, y: y + h },
+            Vec2 { x, y: y + h },
+        ]
+    }
+
+    fn holds(&self, p: Vec2) -> bool {
+        p.x >= self.x && p.x < self.x + self.w && p.y >= self.y && p.y < self.y + self.h
+    }
+}
+
+/// The rectangle `center` / `size` split recursively (depth first, so
+/// neighbours in the list are neighbours on the canvas), and whether it
+/// stopped at [`MAX_RECTS`]. With `points`, a part splits while it holds
+/// more than one of them; without, by `chance` (the first split always
+/// happens). Deterministic for a seed.
+pub(super) fn subdivide(
+    center: Vec2,
+    size: Vec2,
+    points: &[Vec2],
+    o: &Split,
+    seed: f64,
+) -> (Vec<Cell>, bool) {
+    let (w, h) = (size.x.abs(), size.y.abs());
+    if !(w.is_finite() && h.is_finite() && center.x.is_finite() && center.y.is_finite())
+        || w <= 0.0
+        || h <= 0.0
+    {
+        return (Vec::new(), false);
+    }
+    let mut rng = super::rng(seed);
+    let root = Cell::new(center.x - w / 2.0, center.y - h / 2.0, w, h, 0);
+    let mut out = Vec::new();
+    // Last in, first out, children pushed in reverse: depth-first order.
+    let mut stack = vec![root];
+    let mut capped = false;
+    // A cut lands within ±ratio/2 of the middle (5%..95% at most).
+    let at = |u: f64| 0.5 + (u - 0.5) * o.ratio.min(0.9);
+    while let Some(c) = stack.pop() {
+        // Every part draws the same four numbers whatever is decided.
+        let (roll, ua, ub, dir) = (
+            rng.next_f64(),
+            rng.next_f64(),
+            rng.next_f64(),
+            rng.next_f64(),
+        );
+        let wants = if points.is_empty() {
+            c.depth == 0 || roll < o.chance
+        } else {
+            points.iter().filter(|p| c.holds(**p)).take(2).count() > 1
+        };
+        let (fa, fb) = (at(ua), at(ub));
+        let can_x = c.w * fa.min(1.0 - fa) >= o.min_size;
+        let can_y = c.h * fb.min(1.0 - fb) >= o.min_size;
+        if c.depth >= o.depth || !wants || !(can_x || can_y) {
+            out.push(c);
+            continue;
+        }
+        if out.len() + stack.len() + 4 > MAX_RECTS {
+            capped = true;
+            out.push(c);
+            continue;
+        }
+        let d = c.depth + 1;
+        let kids: Vec<Cell> = if o.quad && can_x && can_y {
+            let (sx, sy) = (c.w * fa, c.h * fb);
+            vec![
+                Cell::new(c.x, c.y, sx, sy, d),
+                Cell::new(c.x + sx, c.y, c.w - sx, sy, d),
+                Cell::new(c.x, c.y + sy, sx, c.h - sy, d),
+                Cell::new(c.x + sx, c.y + sy, c.w - sx, c.h - sy, d),
+            ]
+        } else {
+            // Across the longer side more often: a vertical cut with
+            // probability w / (w + h).
+            let vertical = if can_x && can_y {
+                dir < c.w / (c.w + c.h)
+            } else {
+                can_x
+            };
+            if vertical {
+                let s = c.w * fa;
+                vec![
+                    Cell::new(c.x, c.y, s, c.h, d),
+                    Cell::new(c.x + s, c.y, c.w - s, c.h, d),
+                ]
+            } else {
+                let s = c.h * fb;
+                vec![
+                    Cell::new(c.x, c.y, c.w, s, d),
+                    Cell::new(c.x, c.y + s, c.w, c.h - s, d),
+                ]
+            }
+        };
+        stack.extend(kids.into_iter().rev());
+    }
+    (out, capped)
 }

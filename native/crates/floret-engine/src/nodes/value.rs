@@ -100,6 +100,16 @@ pub(crate) mod harness {
                 .map(|out| out.into_iter().map(|s| s.to_vec()).collect())
         }
 
+        /// The node's state for a rebuilt node (see `NodeImpl::carry`).
+        pub fn carry(&mut self) -> Option<crate::node::CarriedState> {
+            self.imp.carry()
+        }
+
+        /// Take over a previous node's state (see `NodeImpl::adopt`).
+        pub fn adopt(&mut self, state: crate::node::CarriedState) {
+            self.imp.adopt(state);
+        }
+
         /// Evaluate with one value per input port; returns slot 0 of each
         /// output (`Undefined` when empty).
         pub fn eval1(&mut self, args: &[Value]) -> Vec<Value> {

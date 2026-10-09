@@ -290,12 +290,12 @@ pub const DEFAULT_STOPS: [&str; 8] = [
     "#fed000", "#fc8405", "#ed361a", "#4464a1", "#cf3895", "#6d358a", "#06b4b0", "#4b8a5f",
 ];
 
-/// Whether a palette generates its colours (cosine / harmony modes)
+/// Whether a palette generates its colours (cosine / harmony / image modes)
 /// rather than showing its authored stops.
 pub fn palette_generates(n: &PatchNode) -> bool {
     matches!(
         param_str(n, "mode", "stops"),
-        "cosine" | "complementary" | "analogous" | "triadic" | "split" | "tetradic"
+        "cosine" | "complementary" | "analogous" | "triadic" | "split" | "tetradic" | "image"
     )
 }
 
@@ -901,6 +901,7 @@ mod tests {
             "triadic",
             "split",
             "tetradic",
+            "image",
         ] {
             assert!(palette_generates(&mode(json!(m))), "{m}");
         }

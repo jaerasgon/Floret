@@ -333,8 +333,12 @@ pub fn layout(
         }
         Custom::Palette if widgets::palette_generates(n) => {
             row_box(cx, n, spec, wired, b);
-            // A cosine palette's colour count is `stopCount`, like the stops.
-            if n.params.get("mode").and_then(Json::as_str) == Some("cosine") {
+            // A cosine or image palette's colour count is `stopCount`, like
+            // the stops.
+            if matches!(
+                n.params.get("mode").and_then(Json::as_str),
+                Some("cosine" | "image")
+            ) {
                 slots(cx, n, widgets::PALETTE_STOPS, b);
             }
         }

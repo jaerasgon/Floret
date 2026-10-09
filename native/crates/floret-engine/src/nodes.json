@@ -1,5 +1,5 @@
 {
- "count": 353,
+ "count": 355,
  "nodes": [
   {
    "type": "collider/circle",
@@ -400,7 +400,7 @@
    "category": "Color",
    "group": "Color & Style",
    "label": "Palette",
-   "description": "A list of colours. `mode` stops: author them by clicking swatches. cosine: Inigo Quilez's a + b·cos(2π(c·t + d)) per channel, sampled `count` times round one cycle (a = centre, b = contrast, c = how many times each channel cycles, d = phase). complementary, analogous, triadic, split, tetradic: colour harmonies — the base colour and its hue turned round the colour wheel (analogous / split use `angle`).",
+   "description": "A list of colours. `mode` stops: author them by clicking swatches. cosine: Inigo Quilez's a + b·cos(2π(c·t + d)) per channel, sampled `count` times round one cycle (a = centre, b = contrast, c = how many times each channel cycles, d = phase). complementary, analogous, triadic, split, tetradic: colour harmonies — the base colour and its hue turned round the colour wheel (analogous / split use `angle`). image: the `stopCount` dominant colours of a wired `image` (k-means in OKLab over its opaque pixels; the same picture always gives the same palette), sorted by `sort`: `lightness` (darkest first), `frequency` (most of the picture first) or `hue` (greys first, then round the wheel from red).",
    "inputs": [
     {
      "name": "c0",
@@ -440,7 +440,13 @@
      "analogous",
      "triadic",
      "split",
-     "tetradic"
+     "tetradic",
+     "image"
+    ],
+    "sort": [
+     "lightness",
+     "frequency",
+     "hue"
     ]
    }
   },
@@ -13145,7 +13151,7 @@
    "category": "Geometry",
    "group": "Patterns",
    "label": "Cells",
-   "description": "Voronoi cells, Delaunay triangles or the convex hull of a points spread, as polygons. Voronoi cells are clipped to the `center` / `size` rectangle; `gap` leaves that much space between neighbours; `colors` fills polygon i with colour i (cycled). Outputs all polygons as one layer and one layer each (`cells`), their corners (`points`, flat) with `counts` per polygon (for `spread/at-group`), and each polygon's centre.",
+   "description": "Voronoi cells, Delaunay triangles or the convex hull of a points spread, as polygons. Voronoi cells are clipped to the `center` / `size` rectangle; `gap` leaves that much space between neighbours; `colors` fills polygon i with colour i (cycled). Outputs all polygons as one layer and one layer each (`cells`), their corners (`points`, flat) with `counts` per polygon (for `spread/at-group`), and each polygon's centre. subdivide: the `center` / `size` rectangle split in two (a cut across the longer side, more often than not) or in four (`quad`), and the parts split again down to `depth` levels — each with probability `chance`, never thinner than `minSize`, cuts landing up to `ratio` (0..1) away from the middle; with `points` wired, a part splits while it holds more than one of them instead (a quadtree / k-d tree of the points). Same `seed`, same splits. In this mode `colors` are picked per rectangle at random (repeat one to make it likelier), and `depth` out gives each rectangle's level (0 in the other modes).",
    "inputs": [
     {
      "name": "points",
@@ -13212,6 +13218,11 @@
      "name": "centers",
      "type": "vec2",
      "kind": "spread"
+    },
+    {
+     "name": "depth",
+     "type": "number",
+     "kind": "spread"
     }
    ],
    "eval": "raw",
@@ -13223,7 +13234,8 @@
     "mode": [
      "voronoi",
      "delaunay",
-     "hull"
+     "hull",
+     "subdivide"
     ]
    }
   },
@@ -13732,7 +13744,7 @@
    "category": "Geometry",
    "group": "Patterns",
    "label": "Contours",
-   "description": "Isolines of a field as closed outlines (marching squares): topographic lines, metaballs, image outlines. Modes: `field` (a spread of `values`, `cols` a row, over `center` / `size` — e.g. noise on Grid positions), `points` (metaballs: Σ radius² / distance² of the `points`, sampled every `cell` units), `image` (brightness × alpha, 0..1, centred on `center` at `size`, 0 = pixel size), `shape` (distance from the outlines of a wired `shape`, sampled every `cell`: levels are distances, 0 = the outline, outward positive — rings round text or shapes, outer ones underneath). Draws `levels` contours at `threshold`, `threshold + step`, …; each level fills as one polygon with its holes (outside the field counts as low, so every contour closes). `levels` out: each contour's level. Wire `colors` to colour the levels (fill, else stroke): a palette from the first level to the last.",
+   "description": "Isolines of a field as closed outlines (marching squares): topographic lines, metaballs, image outlines. Modes: `field` (a spread of `values`, `cols` a row, over `center` / `size` — e.g. noise on Grid positions), `points` (metaballs: Σ radius² / distance² of the `points`, sampled every `cell` units), `image` (brightness × alpha, 0..1, centred on `center` at `size`, 0 = pixel size), `shape` (distance from the outlines of a wired `shape`, sampled every `cell`: levels are distances, 0 = the outline, outward positive — rings round text or shapes, outer ones underneath). Draws `levels` contours at `threshold`, `threshold + step`, …; each level fills as one polygon with its holes (outside the field counts as low, so every contour closes). `levels` out: each contour's level. Wire `colors` to colour the levels (fill, else stroke): a palette from the first level to the last. flow: streamlines of a vector field instead (flow-field lines for plotter art): a wired `vectors` spread, `cols` a row over the rectangle (e.g. Noise in curl mode on Grid positions), or unwired a built-in `field` — `angle` (Perlin noise turned into directions: lines that gather into rivers) or `curl` (swirls that never cross) at `scale` and `seed`; `turn` (radians) turns every direction. Lines start from `seeds`, or unwired are spaced evenly (Jobard–Lefer: each line seeds new ones `spacing` to either side, then a shuffled grid fills the gaps), run both ways in `step`s until they leave the rectangle, reach `maxLength` or come within half a `spacing` of another line (`spacing` 0: they cross), and are dropped under `minLength`. `colors` are picked per line at random; `levels` out gives each line's length.",
    "inputs": [
     {
      "name": "values",
@@ -13831,7 +13843,12 @@
      "field",
      "points",
      "image",
-     "shape"
+     "shape",
+     "flow"
+    ],
+    "field": [
+     "angle",
+     "curl"
     ]
    }
   },
@@ -13951,11 +13968,123 @@
    "effectful": true
   },
   {
+   "type": "geometry/tiles",
+   "category": "Geometry",
+   "group": "Patterns",
+   "label": "Tiles",
+   "description": "A `cols` × `rows` grid of `size`-wide tiles centred on `center`, each turned or chosen so the pattern reads as one. truchet: every cell takes one turn of a `tiles` set — `arcs` (two quarter circles: meandering loops), `diagonals` (the 10 PRINT maze) or `triangles` (half-square triangles) — at random, or with `noise` > 0 following Perlin noise at that scale per cell, so the turns clump. wfc: wave function collapse over edge-matched tiles: `sockets` lists them, four characters each for what the north, east, south and west edges carry (`0` = nothing; `1100` is a corner), `*weight` makes one likelier (`1100*3`); every tile comes in its four turns, neighbours must carry the same thing where they meet, and `closed` keeps the outer edges empty so every path closes. Tiles are drawn as pipes (straight, round a corner, to the middle with a dot for a dead end); at most 64 a side. Same `seed`, same pattern. `colors`: colour k for tile k of the set (its turn in truchet), cycled. Outputs: all tiles, one layer per cell, cell `centers`, `tiles` (which tile of the set) and `angles` (its turn, radians clockwise) — for a ForEach to draw its own tiles.",
+   "inputs": [
+    {
+     "name": "cols",
+     "type": "number",
+     "kind": "single",
+     "default": 12,
+     "integer": true
+    },
+    {
+     "name": "rows",
+     "type": "number",
+     "kind": "single",
+     "default": 12,
+     "integer": true
+    },
+    {
+     "name": "size",
+     "type": "number",
+     "kind": "single",
+     "default": 40
+    },
+    {
+     "name": "center",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "tiles",
+     "type": "string",
+     "kind": "single",
+     "default": "arcs",
+     "param": "tiles"
+    },
+    {
+     "name": "noise",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "seed",
+     "type": "number",
+     "kind": "single",
+     "default": 1,
+     "integer": true
+    },
+    {
+     "name": "colors",
+     "type": "color",
+     "kind": "spread"
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "layers",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "centers",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "tiles",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "angles",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "truchet",
+    "tiles": "arcs"
+   },
+   "paramOptions": {
+    "mode": [
+     "truchet",
+     "wfc"
+    ],
+    "tiles": [
+     "arcs",
+     "diagonals",
+     "triangles"
+    ]
+   }
+  },
+  {
    "type": "particles/simulation",
    "category": "Particles",
    "group": "Particles & Physics",
    "label": "Simulation",
-   "description": "A running simulation; pick it with `mode` and the pins follow. flocking: boids that separate, align and cohere on a wrapping field (`attract` pulls them to `target`). physarum: slime-mould agents following and laying a trail map, which comes out as `image` (angles in degrees, distances in grid cells; `food` points keep feeding the trail). dla: walkers sticking to a growing cluster from `seeds`, `rate` particles a second up to `count`. cloth: a Verlet spring mesh hanging from its `pin`s, with wind, tearing (`tear` × rest length) and `grab` to drag the point nearest `pointer`. `layer` draws it (shapes take `style`; `colors` ramps along `values`); `points`, `values` (heading, growth order or stretch) and the `from` / `to` line segments are there to draw your own. Steps 60 times per second of frame time, so the same seed and frames give the same result. A rising edge on `reset` starts over.",
+   "description": "A running simulation; pick it with `mode` and the pins follow. flocking: boids that separate, align and cohere on a wrapping field (`attract` pulls them to `target`). physarum: slime-mould agents following and laying a trail map, which comes out as `image` (angles in degrees, distances in grid cells; `food` points keep feeding the trail). dla: walkers sticking to a growing cluster from `seeds`, `rate` particles a second up to `count`. cloth: a Verlet spring mesh hanging from its `pin`s, with wind, tearing (`tear` × rest length) and `grab` to drag the point nearest `pointer`. `layer` draws it (shapes take `style`; `colors` ramps along `values`); `points`, `values` (heading, growth order or stretch) and the `from` / `to` line segments are there to draw your own. Steps 60 times per second of frame time, so the same seed and frames give the same result. A rising edge on `reset` starts over. growth: differential growth — a curve (the first outline of `shape`, or a circle of `radius`) whose nodes push apart within `repel` (× `force`), pull `align` of the way to their neighbours' middle and move at most `speed` a step, while `grow` new nodes a second go in on random edges and edges longer than `maxEdge` split, up to `maxNodes`: it folds like coral or a brain; `values` is each node's age, `colors` ramps the edges by it. reaction: Gray–Scott reaction–diffusion on a grid `resolution` cells across `size` (CPU, as an image): a `preset` pattern (coral, mitosis, fingerprints, worms, maze, spots, waves) or `custom` `feed` / `kill`, diffusion `rateA` / `rateB`, `speed` iterations a step; B starts where `seed image` is bright (or in a few random spots) and `paint` points keep adding it. Growth and reaction keep running through edits of the patch.",
    "inputs": [
     {
      "name": "count",
@@ -14091,13 +14220,25 @@
      "flocking",
      "physarum",
      "dla",
-     "cloth"
+     "cloth",
+     "growth",
+     "reaction"
     ],
     "pin": [
      "top",
      "corners",
      "left",
      "none"
+    ],
+    "preset": [
+     "coral",
+     "mitosis",
+     "fingerprints",
+     "worms",
+     "maze",
+     "spots",
+     "waves",
+     "custom"
     ]
    },
    "effectful": true
@@ -14223,11 +14364,92 @@
    }
   },
   {
+   "type": "transform/symmetry",
+   "category": "Transform",
+   "group": "Shape Ops",
+   "label": "Symmetry",
+   "description": "Repeat a layer by a symmetry. rotate: `count` copies turned evenly round `center`, the first at `angle` (radians). kaleidoscope: the same with `count` mirrors through `center`, every other copy reflected. wallpaper: one of the 17 plane `group`s (p1, p2, pm, pg, cm, pmm, pmg, pgg, cmm, p4, p4m, p4g, p3, p3m1, p31m, p6, p6m) over a lattice of `cell`-wide cells (hexagonal for the p3 / p6 groups), turned by `angle`, filling `size` round `center`; its mirrors and rotation centres pass through `center`, so draw the motif near it, about a cell across. `clip`: in rotate / kaleidoscope each copy shows only its wedge (between `angle` and the next turn or mirror), so the copies meet edge to edge like a real kaleidoscope (on by default there); in wallpaper the pattern is cut to `size`.",
+   "inputs": [
+    {
+     "name": "layer",
+     "type": "layer",
+     "kind": "spread"
+    },
+    {
+     "name": "count",
+     "type": "number",
+     "kind": "single",
+     "default": 6,
+     "integer": true
+    },
+    {
+     "name": "center",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "angle",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "clip",
+     "type": "boolean",
+     "kind": "single",
+     "default": true
+    }
+   ],
+   "outputs": [
+    {
+     "name": "out",
+     "type": "layer",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "kaleidoscope",
+    "group": "p4m"
+   },
+   "paramOptions": {
+    "mode": [
+     "kaleidoscope",
+     "rotate",
+     "wallpaper"
+    ],
+    "group": [
+     "p1",
+     "p2",
+     "pm",
+     "pg",
+     "cm",
+     "pmm",
+     "pmg",
+     "pgg",
+     "cmm",
+     "p4",
+     "p4m",
+     "p4g",
+     "p3",
+     "p3m1",
+     "p31m",
+     "p6",
+     "p6m"
+    ]
+   }
+  },
+  {
    "type": "gpu/effect",
    "category": "Render",
    "group": "Effects",
    "label": "Effect",
-   "description": "A post-effect on a layer, on the GPU. Pick the `mode`; the pins follow it. Sizes are in pixels, angles in radians. Light and texture: bloom (bright parts glow), film grain (animates by itself), displacement (by noise, or by a `map` layer: red pushes right, green down), ordered dither, colour halftone dots, chromatic aberration, vignette. Blur: `kind` gaussian, lens (bokeh discs; `highlights` opens bright points), motion (along `angle`), zoom (streaks towards `center`) or spin (round it). Shape: drop shadow and glow of the layer's coverage (`inner` puts them inside; glow `blend` add makes it light that adds, over the layer too), barrel / pincushion distortion, Sobel edges. Colour: posterize, threshold (by brightness into `low` / `high`, or `channel` alpha cuts the coverage — blur first for gooey metaballs), levels, curves (each colour pin is a point of the curve at black, ¼, ½, ¾ and white, per channel), lut (a `.cube` file: wire a File node's `url`, type a path or pick one with the pin's … button), chroma key (with spill suppression).",
+   "description": "A post-effect on a layer, on the GPU. Pick the `mode`; the pins follow it. Sizes are in pixels, angles in radians. Light and texture: bloom (bright parts glow), film grain (animates by itself), displacement (by noise, or by a `map` layer: red pushes right, green down), ordered dither, colour halftone dots, chromatic aberration, vignette. Blur: `kind` gaussian, lens (bokeh discs; `highlights` opens bright points), motion (along `angle`), zoom (streaks towards `center`) or spin (round it). Shape: drop shadow and glow of the layer's coverage (`inner` puts them inside; glow `blend` add makes it light that adds, over the layer too), barrel / pincushion distortion, Sobel edges. Colour: posterize, threshold (by brightness into `low` / `high`, or `channel` alpha cuts the coverage — blur first for gooey metaballs), levels, curves (each colour pin is a point of the curve at black, ¼, ½, ¾ and white, per channel), lut (a `.cube` file: wire a File node's `url`, type a path or pick one with the pin's … button), chroma key (with spill suppression). Text: ascii (the layer as characters in cells `size` pixels tall and half as wide, each cell's brightness picking one of `chars`, darkest first; `colored` takes each character's colour from the layer, else `color`; `background` behind them).",
    "inputs": [
     {
      "name": "input",
@@ -14284,7 +14506,8 @@
      "levels",
      "curves",
      "lut",
-     "key"
+     "key",
+     "ascii"
     ],
     "kind": [
      "gaussian",

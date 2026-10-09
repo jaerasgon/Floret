@@ -1,0 +1,293 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Time Smear",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ts_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -314
+      },
+      "params": {
+        "text": "Time smear\n\nA star spins and swings across the canvas. The Shader's `history` is 48: it keeps the input's last 48 frames on the GPU, and the GLSL reads them back with iHistoryFrame(ago, uv) (0 = now). Each band of rows shows a different moment, the delay rolling down the picture in a wave, and now and then a block jumps further back: the motion smears and tears like a datamoshed video.\n\nOpen the Shader panel to edit it; `bands`, `glitch` and `background` are uniforms.",
+        "width": 480,
+        "height": 250
+      },
+      "portValues": {
+        "text": "Time smear\n\nA star spins and swings across the canvas. The Shader's `history` is 48: it keeps the input's last 48 frames on the GPU, and the GLSL reads them back with iHistoryFrame(ago, uv) (0 = now). Each band of rows shows a different moment, the delay rolling down the picture in a wave, and now and then a block jumps further back: the motion smears and tears like a datamoshed video.\n\nOpen the Shader panel to edit it; `bands`, `glitch` and `background` are uniforms.",
+        "width": 480,
+        "height": 250
+      }
+    },
+    {
+      "id": "ts_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 311,
+        "y": 30
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "ts_ring",
+      "defType": "spread/ring",
+      "position": {
+        "x": 20,
+        "y": 162
+      },
+      "params": {
+        "count": 14,
+        "radius": 110
+      },
+      "portValues": {
+        "count": 14,
+        "radius": 110
+      }
+    },
+    {
+      "id": "ts_star",
+      "defType": "math/expression",
+      "position": {
+        "x": 269,
+        "y": 156
+      },
+      "params": {
+        "expr": "vec2(p.x, p.y) * (1 - 0.55 * (index % 2))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ts_grad",
+      "defType": "style/gradient",
+      "position": {
+        "x": 277,
+        "y": 299
+      },
+      "params": {
+        "mode": "radial",
+        "units": "shape"
+      },
+      "portValues": {
+        "radius": 1.0
+      }
+    },
+    {
+      "id": "ts_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 332
+      },
+      "params": {
+        "stopCount": 3,
+        "c0": "#fff3c4",
+        "c1": "#ff7a59",
+        "c2": "#7b2ff7"
+      },
+      "portValues": {
+        "stopCount": 3
+      }
+    },
+    {
+      "id": "ts_poly",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 581,
+        "y": 223
+      },
+      "params": {},
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "ts_spin",
+      "defType": "math/expression",
+      "position": {
+        "x": 543,
+        "y": 81
+      },
+      "params": {
+        "expr": "tau * l"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ts_rot",
+      "defType": "transform/rotate",
+      "position": {
+        "x": 856,
+        "y": 142
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "ts_path",
+      "defType": "math/expression",
+      "position": {
+        "x": 816,
+        "y": 0
+      },
+      "params": {
+        "expr": "vec2(140 * sin(tau * l), 45 * sin(tau * l * 2))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ts_move",
+      "defType": "transform/translate",
+      "position": {
+        "x": 1086,
+        "y": 79
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "ts_shader",
+      "defType": "gpu/shader",
+      "position": {
+        "x": 1274,
+        "y": 35
+      },
+      "params": {
+        "source": "// Time smear: each band of rows shows the input as it was a\n// different number of frames ago, the delay rolling down the picture\n// like a wave, with blocky glitches now and then. `history` on the\n// node keeps the last 48 frames; iHistoryFrame(ago, uv) reads one.\nuniform float bands;\nuniform float glitch;\nuniform vec4 background;\n\nfloat hash(vec2 p) {\n  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);\n}\n\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord) {\n  vec2 uv = fragCoord / iResolution.xy;\n  float band = floor(fragCoord.y / max(bands, 1.0));\n  // A wave of delay down the rows.\n  float lag = 0.5 + 0.5 * sin(band * 0.21 - iTime * 2.3);\n  // Now and then a block jumps further back.\n  vec2 cell = floor(fragCoord / 32.0);\n  float beat = floor(iTime * 4.0);\n  if (hash(cell + beat) < glitch) lag = hash(cell - beat);\n  int ago = int(lag * float(iHistoryCount - 1));\n  vec4 c = iHistoryFrame(ago, uv);\n  // Premultiplied over the background.\n  fragColor = vec4(c.rgb + background.rgb * (1.0 - c.a), 1.0);\n}",
+        "feedback": false,
+        "history": 48
+      },
+      "portValues": {
+        "bands": 6,
+        "glitch": 0.06,
+        "background": {
+          "r": 0.07058823529411765,
+          "g": 0.050980392156862744,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ts_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1501,
+        "y": 35
+      },
+      "params": {
+        "width": 600,
+        "height": 400,
+        "background": {
+          "r": 0.07058823529411765,
+          "g": 0.050980392156862744,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 400,
+        "background": {
+          "r": 0.07058823529411765,
+          "g": 0.050980392156862744,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_ts_ring_ts_star_p",
+      "source": "ts_ring",
+      "target": "ts_star",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_ts_pal_ts_grad_colors",
+      "source": "ts_pal",
+      "target": "ts_grad",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_ts_star_ts_poly_points",
+      "source": "ts_star",
+      "target": "ts_poly",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_ts_grad_ts_poly_style",
+      "source": "ts_grad",
+      "target": "ts_poly",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ts_t_ts_spin_l",
+      "source": "ts_t",
+      "target": "ts_spin",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_ts_spin_ts_rot_angle",
+      "source": "ts_spin",
+      "target": "ts_rot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_ts_poly_ts_rot_layer",
+      "source": "ts_poly",
+      "target": "ts_rot",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_ts_t_ts_path_l",
+      "source": "ts_t",
+      "target": "ts_path",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_ts_path_ts_move_by",
+      "source": "ts_path",
+      "target": "ts_move",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_ts_rot_ts_move_layer",
+      "source": "ts_rot",
+      "target": "ts_move",
+      "sourceHandle": "out-rotated",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_ts_move_ts_shader_input",
+      "source": "ts_move",
+      "target": "ts_shader",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_ts_shader_ts_r_layers",
+      "source": "ts_shader",
+      "target": "ts_r",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

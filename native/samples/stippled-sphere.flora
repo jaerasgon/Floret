@@ -1,0 +1,424 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Stippled Sphere",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ss_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -304
+      },
+      "params": {
+        "text": "Stippled sphere\n\nA grey sphere and its shadow are drawn, then Rasterized into an image. Scatter in `stipple` mode places `count` points with a density that follows the image's darkness (stretched over the area; `invert` for light), then relaxes them by weighted Lloyd passes (`relax`): Secord's stippling. `gamma` > 1 deepens the contrast.\n\nAny image works: a photo, a camera frame, text.",
+        "width": 460,
+        "height": 240
+      },
+      "portValues": {
+        "text": "Stippled sphere\n\nA grey sphere and its shadow are drawn, then Rasterized into an image. Scatter in `stipple` mode places `count` points with a density that follows the image's darkness (stretched over the area; `invert` for light), then relaxes them by weighted Lloyd passes (`relax`): Secord's stippling. `gamma` > 1 deepens the contrast.\n\nAny image works: a photo, a camera frame, text.",
+        "width": 460,
+        "height": 240
+      }
+    },
+    {
+      "id": "ss_paper",
+      "defType": "draw/rect",
+      "position": {
+        "x": 523,
+        "y": 0
+      },
+      "params": {},
+      "portValues": {
+        "w": 520,
+        "h": 520
+      }
+    },
+    {
+      "id": "ss_white",
+      "defType": "style/fill",
+      "position": {
+        "x": 273,
+        "y": 88
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ss_shade",
+      "defType": "style/gradient",
+      "position": {
+        "x": 264,
+        "y": 472
+      },
+      "params": {
+        "mode": "radial",
+        "units": "shape"
+      },
+      "portValues": {
+        "center": {
+          "x": -0.45,
+          "y": -0.5
+        },
+        "radius": 1.6
+      }
+    },
+    {
+      "id": "ss_ramp",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 472
+      },
+      "params": {
+        "stopCount": 3,
+        "c0": "#ffffff",
+        "c1": "#7d7d7d",
+        "c2": "#050505"
+      },
+      "portValues": {
+        "stopCount": 3
+      }
+    },
+    {
+      "id": "ss_ball",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 511,
+        "y": 384
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": -20,
+          "y": -30
+        },
+        "w": 300,
+        "h": 300
+      }
+    },
+    {
+      "id": "ss_shadowfill",
+      "defType": "style/fill",
+      "position": {
+        "x": 11,
+        "y": 302
+      },
+      "params": {
+        "color": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.55
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.55
+        }
+      }
+    },
+    {
+      "id": "ss_soft",
+      "defType": "style/blur",
+      "position": {
+        "x": 282,
+        "y": 280
+      },
+      "params": {},
+      "portValues": {
+        "amount": 14
+      }
+    },
+    {
+      "id": "ss_shadow",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 514,
+        "y": 192
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": 40,
+          "y": 150
+        },
+        "w": 330,
+        "h": 70
+      }
+    },
+    {
+      "id": "ss_pic",
+      "defType": "transform/group",
+      "position": {
+        "x": 766,
+        "y": 170
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {}
+    },
+    {
+      "id": "ss_img",
+      "defType": "image/from-layer",
+      "position": {
+        "x": 1030,
+        "y": 170
+      },
+      "params": {},
+      "portValues": {
+        "w": 520,
+        "h": 520
+      }
+    },
+    {
+      "id": "ss_dots",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 1218,
+        "y": 82
+      },
+      "params": {
+        "mode": "stipple"
+      },
+      "portValues": {
+        "size": {
+          "x": 520,
+          "y": 520
+        },
+        "count": 2600,
+        "gamma": 1.2,
+        "relax": 25,
+        "seed": 2
+      }
+    },
+    {
+      "id": "ss_each",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1514,
+        "y": 42
+      },
+      "params": {
+        "width": 569,
+        "height": 246,
+        "label": "ForEach dot"
+      },
+      "ports": [
+        {
+          "id": "q",
+          "name": "q",
+          "type": "vec2",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "d",
+          "name": "d",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 569,
+      "height": 246
+    },
+    {
+      "id": "ss_ink",
+      "defType": "style/fill",
+      "parentId": "ss_each",
+      "position": {
+        "x": 128,
+        "y": 128
+      },
+      "params": {
+        "color": {
+          "r": 0.11372549019607843,
+          "g": 0.10196078431372549,
+          "b": 0.16862745098039217,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.11372549019607843,
+          "g": 0.10196078431372549,
+          "b": 0.16862745098039217,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ss_dot",
+      "defType": "draw/ellipse",
+      "parentId": "ss_each",
+      "position": {
+        "x": 358,
+        "y": 40
+      },
+      "params": {},
+      "portValues": {
+        "w": 3.6,
+        "h": 3.6
+      }
+    },
+    {
+      "id": "ss_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2179,
+        "y": 82
+      },
+      "params": {
+        "width": 520,
+        "height": 520,
+        "background": {
+          "r": 0.9529411764705882,
+          "g": 0.9333333333333333,
+          "b": 0.8941176470588236,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 520,
+        "height": 520,
+        "background": {
+          "r": 0.9529411764705882,
+          "g": 0.9333333333333333,
+          "b": 0.8941176470588236,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_ss_white_ss_paper_style",
+      "source": "ss_white",
+      "target": "ss_paper",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ss_ramp_ss_shade_colors",
+      "source": "ss_ramp",
+      "target": "ss_shade",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_ss_shade_ss_ball_style",
+      "source": "ss_shade",
+      "target": "ss_ball",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ss_shadowfill_ss_soft_base",
+      "source": "ss_shadowfill",
+      "target": "ss_soft",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_ss_soft_ss_shadow_style",
+      "source": "ss_soft",
+      "target": "ss_shadow",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ss_paper_ss_pic_s1",
+      "source": "ss_paper",
+      "target": "ss_pic",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_ss_shadow_ss_pic_s2",
+      "source": "ss_shadow",
+      "target": "ss_pic",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_ss_ball_ss_pic_s3",
+      "source": "ss_ball",
+      "target": "ss_pic",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_ss_pic_ss_img_layer",
+      "source": "ss_pic",
+      "target": "ss_img",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_ss_img_ss_dots_density",
+      "source": "ss_img",
+      "target": "ss_dots",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-density"
+    },
+    {
+      "id": "e_ss_dots_ss_each_q",
+      "source": "ss_dots",
+      "target": "ss_each",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_ss_each_ss_dot_pos",
+      "source": "ss_each",
+      "target": "ss_dot",
+      "sourceHandle": "out-q",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_ss_ink_ss_dot_style",
+      "source": "ss_ink",
+      "target": "ss_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ss_dot_ss_each_d",
+      "source": "ss_dot",
+      "target": "ss_each",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_ss_each_ss_r_layers",
+      "source": "ss_each",
+      "target": "ss_r",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

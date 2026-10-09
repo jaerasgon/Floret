@@ -1,0 +1,610 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Point Tracker",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "pt_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -324
+      },
+      "params": {
+        "text": "Point tracker\n\nA field of dots drifts round a Lissajous path. Rasterize turns it into an image each frame, as a camera or video would be, and Point Tracker follows three points across it from the pixels alone (pyramidal Lucas–Kanade optical flow): it never sees the motion numbers. Each ring's colour is its `confidence` (green = locked on). Echo `trails` draw the paths.\n\nWire a Camera's image instead and set `points` on something with texture; `reset` starts again from `points`.",
+        "width": 500,
+        "height": 260
+      },
+      "portValues": {
+        "text": "Point tracker\n\nA field of dots drifts round a Lissajous path. Rasterize turns it into an image each frame, as a camera or video would be, and Point Tracker follows three points across it from the pixels alone (pyramidal Lucas–Kanade optical flow): it never sees the motion numbers. Each ring's colour is its `confidence` (green = locked on). Echo `trails` draw the paths.\n\nWire a Camera's image instead and set `points` on something with texture; `reset` starts again from `points`.",
+        "width": 500,
+        "height": 260
+      }
+    },
+    {
+      "id": "pt_dots",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 0,
+        "y": 142
+      },
+      "params": {
+        "mode": "poisson"
+      },
+      "portValues": {
+        "size": {
+          "x": 1000,
+          "y": 760
+        },
+        "distance": 13,
+        "seed": 4
+      }
+    },
+    {
+      "id": "pt_each",
+      "defType": "region/foreach",
+      "position": {
+        "x": 296,
+        "y": 102
+      },
+      "params": {
+        "width": 620,
+        "height": 312,
+        "label": "ForEach dot"
+      },
+      "ports": [
+        {
+          "id": "q",
+          "name": "q",
+          "type": "vec2",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "d",
+          "name": "d",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 620,
+      "height": 312
+    },
+    {
+      "id": "pt_r",
+      "defType": "math/expression",
+      "parentId": "pt_each",
+      "position": {
+        "x": 135,
+        "y": 52
+      },
+      "params": {
+        "expr": "3 + 5 * fract(sin(i * 12.9898) * 43758.5453)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pt_dotfill",
+      "defType": "style/fill",
+      "parentId": "pt_each",
+      "position": {
+        "x": 146,
+        "y": 194
+      },
+      "params": {
+        "color": {
+          "r": 0.788235294117647,
+          "g": 0.7647058823529411,
+          "b": 0.9019607843137255,
+          "a": 0.85
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.788235294117647,
+          "g": 0.7647058823529411,
+          "b": 0.9019607843137255,
+          "a": 0.85
+        }
+      }
+    },
+    {
+      "id": "pt_dot",
+      "defType": "draw/ellipse",
+      "parentId": "pt_each",
+      "position": {
+        "x": 409,
+        "y": 40
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "pt_path",
+      "defType": "math/expression",
+      "position": {
+        "x": 1012,
+        "y": 0
+      },
+      "params": {
+        "expr": "vec2(150 * sin(t * 0.9), 90 * sin(t * 1.4))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pt_field",
+      "defType": "transform/group",
+      "position": {
+        "x": 1012,
+        "y": 142
+      },
+      "params": {
+        "slotCount": 1
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pt_move",
+      "defType": "transform/translate",
+      "position": {
+        "x": 1295,
+        "y": 79
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "pt_img",
+      "defType": "image/from-layer",
+      "position": {
+        "x": 1541,
+        "y": 130
+      },
+      "params": {},
+      "portValues": {
+        "w": 640,
+        "h": 440
+      }
+    },
+    {
+      "id": "pt_ids",
+      "defType": "spread/range",
+      "position": {
+        "x": 1282,
+        "y": 316
+      },
+      "params": {
+        "count": 3
+      },
+      "portValues": {
+        "count": 3
+      }
+    },
+    {
+      "id": "pt_seeds",
+      "defType": "math/expression",
+      "position": {
+        "x": 1503,
+        "y": 278
+      },
+      "params": {
+        "expr": "vec2(-140 + 140 * i, 50 * cos(i * 2.2))"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pt_track",
+      "defType": "image/track-points",
+      "position": {
+        "x": 1783,
+        "y": 237
+      },
+      "params": {},
+      "portValues": {
+        "window": 40
+      }
+    },
+    {
+      "id": "pt_marks",
+      "defType": "region/foreach",
+      "position": {
+        "x": 2019,
+        "y": 86
+      },
+      "params": {
+        "width": 1010,
+        "height": 478,
+        "label": "ForEach point"
+      },
+      "ports": [
+        {
+          "id": "m",
+          "name": "m",
+          "type": "vec2",
+          "direction": "input",
+          "y": 136
+        },
+        {
+          "id": "c",
+          "name": "c",
+          "type": "number",
+          "direction": "input",
+          "y": 312
+        },
+        {
+          "id": "k",
+          "name": "k",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        },
+        {
+          "id": "z",
+          "name": "z",
+          "type": "layer",
+          "direction": "output",
+          "y": 251
+        }
+      ],
+      "width": 1010,
+      "height": 478
+    },
+    {
+      "id": "pt_col",
+      "defType": "math/expression",
+      "parentId": "pt_marks",
+      "position": {
+        "x": 129,
+        "y": 237
+      },
+      "params": {
+        "expr": "hsl(0.02 + 0.3 * c, 0.9, 0.58)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pt_ringst",
+      "defType": "style/stroke",
+      "parentId": "pt_marks",
+      "position": {
+        "x": 406,
+        "y": 190
+      },
+      "params": {
+        "width": 3
+      },
+      "portValues": {
+        "width": 3
+      }
+    },
+    {
+      "id": "pt_nofill",
+      "defType": "style/no-fill",
+      "parentId": "pt_marks",
+      "position": {
+        "x": 609,
+        "y": 110
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "pt_ring",
+      "defType": "draw/ellipse",
+      "parentId": "pt_marks",
+      "position": {
+        "x": 799,
+        "y": 40
+      },
+      "params": {},
+      "portValues": {
+        "w": 30,
+        "h": 30
+      }
+    },
+    {
+      "id": "pt_fill",
+      "defType": "style/fill",
+      "parentId": "pt_marks",
+      "position": {
+        "x": 407,
+        "y": 360
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "pt_mid",
+      "defType": "draw/ellipse",
+      "parentId": "pt_marks",
+      "position": {
+        "x": 602,
+        "y": 214
+      },
+      "params": {},
+      "portValues": {
+        "w": 5,
+        "h": 5
+      }
+    },
+    {
+      "id": "pt_trail",
+      "defType": "gpu/echo",
+      "position": {
+        "x": 3152,
+        "y": 75
+      },
+      "params": {
+        "mode": "trails"
+      },
+      "portValues": {
+        "decay": 0.985
+      }
+    },
+    {
+      "id": "pt_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 3430,
+        "y": 81
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {}
+    },
+    {
+      "id": "pt_out",
+      "defType": "render/renderer",
+      "position": {
+        "x": 3694,
+        "y": 81
+      },
+      "params": {
+        "width": 640,
+        "height": 440,
+        "background": {
+          "r": 0.0784313725490196,
+          "g": 0.07058823529411765,
+          "b": 0.10980392156862745,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 640,
+        "height": 440,
+        "background": {
+          "r": 0.0784313725490196,
+          "g": 0.07058823529411765,
+          "b": 0.10980392156862745,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_pt_dots_pt_each_q",
+      "source": "pt_dots",
+      "target": "pt_each",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_pt_each_pt_r_i",
+      "source": "pt_each",
+      "target": "pt_r",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_pt_each_pt_dot_pos",
+      "source": "pt_each",
+      "target": "pt_dot",
+      "sourceHandle": "out-q",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_pt_r_pt_dot_w",
+      "source": "pt_r",
+      "target": "pt_dot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_pt_r_pt_dot_h",
+      "source": "pt_r",
+      "target": "pt_dot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_pt_dotfill_pt_dot_style",
+      "source": "pt_dotfill",
+      "target": "pt_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_pt_dot_pt_each_d",
+      "source": "pt_dot",
+      "target": "pt_each",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_pt_each_pt_field_s1",
+      "source": "pt_each",
+      "target": "pt_field",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_pt_path_pt_move_by",
+      "source": "pt_path",
+      "target": "pt_move",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_pt_field_pt_move_layer",
+      "source": "pt_field",
+      "target": "pt_move",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_pt_move_pt_img_layer",
+      "source": "pt_move",
+      "target": "pt_img",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_pt_ids_pt_seeds_i",
+      "source": "pt_ids",
+      "target": "pt_seeds",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_pt_img_pt_track_image",
+      "source": "pt_img",
+      "target": "pt_track",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_pt_seeds_pt_track_points",
+      "source": "pt_seeds",
+      "target": "pt_track",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_pt_track_pt_marks_m",
+      "source": "pt_track",
+      "target": "pt_marks",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_pt_track_pt_marks_c",
+      "source": "pt_track",
+      "target": "pt_marks",
+      "sourceHandle": "out-confidence",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_pt_marks_pt_col_c",
+      "source": "pt_marks",
+      "target": "pt_col",
+      "sourceHandle": "out-c",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_pt_col_pt_ringst_color",
+      "source": "pt_col",
+      "target": "pt_ringst",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_pt_ringst_pt_nofill_base",
+      "source": "pt_ringst",
+      "target": "pt_nofill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_pt_marks_pt_ring_pos",
+      "source": "pt_marks",
+      "target": "pt_ring",
+      "sourceHandle": "out-m",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_pt_nofill_pt_ring_style",
+      "source": "pt_nofill",
+      "target": "pt_ring",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_pt_col_pt_fill_color",
+      "source": "pt_col",
+      "target": "pt_fill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_pt_marks_pt_mid_pos",
+      "source": "pt_marks",
+      "target": "pt_mid",
+      "sourceHandle": "out-m",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_pt_fill_pt_mid_style",
+      "source": "pt_fill",
+      "target": "pt_mid",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_pt_ring_pt_marks_k",
+      "source": "pt_ring",
+      "target": "pt_marks",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_pt_mid_pt_marks_z",
+      "source": "pt_mid",
+      "target": "pt_marks",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-z"
+    },
+    {
+      "id": "e_pt_marks_pt_trail_input",
+      "source": "pt_marks",
+      "target": "pt_trail",
+      "sourceHandle": "out-z",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_pt_move_pt_group_s1",
+      "source": "pt_move",
+      "target": "pt_group",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_pt_trail_pt_group_s2",
+      "source": "pt_trail",
+      "target": "pt_group",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_pt_marks_pt_group_s3",
+      "source": "pt_marks",
+      "target": "pt_group",
+      "sourceHandle": "out-k",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_pt_group_pt_out_layers",
+      "source": "pt_group",
+      "target": "pt_out",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

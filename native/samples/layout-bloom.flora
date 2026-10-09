@@ -1,0 +1,260 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Layout Bloom",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "lb_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -314
+      },
+      "params": {
+        "text": "Layout bloom\n\nLayout places `count` items in a grid, a ring, a phyllotaxis spiral or along a path, and gives each a position, an angle and a scale. When the count, the mode or a grid's `cols` changes (or you edit the node), every item eases to its new place over `duration`: new ones grow in, removed ones shrink away. `stagger` starts later items later.\n\nHere an Expression steps the count 12 → 42 → 72 → 102 every 1.8 s. Switch the mode to `grid` or `ring` and watch the seeds travel.",
+        "width": 480,
+        "height": 250
+      },
+      "portValues": {
+        "text": "Layout bloom\n\nLayout places `count` items in a grid, a ring, a phyllotaxis spiral or along a path, and gives each a position, an angle and a scale. When the count, the mode or a grid's `cols` changes (or you edit the node), every item eases to its new place over `duration`: new ones grow in, removed ones shrink away. `stagger` starts later items later.\n\nHere an Expression steps the count 12 → 42 → 72 → 102 every 1.8 s. Switch the mode to `grid` or `ring` and watch the seeds travel.",
+        "width": 480,
+        "height": 250
+      }
+    },
+    {
+      "id": "lb_count",
+      "defType": "math/expression",
+      "position": {
+        "x": 0,
+        "y": 59
+      },
+      "params": {
+        "expr": "12 + 30 * (floor(t / 1.8) % 4)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lb_lay",
+      "defType": "geometry/layout",
+      "position": {
+        "x": 264,
+        "y": 75
+      },
+      "params": {
+        "mode": "spiral",
+        "easing": "inOutCubic"
+      },
+      "portValues": {
+        "spacing": 17,
+        "duration": 1.1,
+        "stagger": 0.55,
+        "easing": "inOutCubic"
+      }
+    },
+    {
+      "id": "lb_each",
+      "defType": "region/foreach",
+      "position": {
+        "x": 535,
+        "y": 22
+      },
+      "params": {
+        "width": 814,
+        "height": 317,
+        "label": "ForEach seed"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 102
+        },
+        {
+          "id": "s",
+          "name": "s",
+          "type": "number",
+          "direction": "input",
+          "y": 122
+        },
+        {
+          "id": "l",
+          "name": "l",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 814,
+      "height": 317
+    },
+    {
+      "id": "lb_size",
+      "defType": "math/expression",
+      "parentId": "lb_each",
+      "position": {
+        "x": 143,
+        "y": 41
+      },
+      "params": {
+        "expr": "18 * s"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lb_hue",
+      "defType": "math/expression",
+      "parentId": "lb_each",
+      "position": {
+        "x": 143,
+        "y": 183
+      },
+      "params": {
+        "expr": "hsl(0.97 - 0.42 * f, 0.78, 0.6)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "lb_fill",
+      "defType": "style/fill",
+      "parentId": "lb_each",
+      "position": {
+        "x": 414,
+        "y": 175
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "lb_dot",
+      "defType": "draw/ellipse",
+      "parentId": "lb_each",
+      "position": {
+        "x": 603,
+        "y": 40
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "lb_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1445,
+        "y": 62
+      },
+      "params": {
+        "width": 520,
+        "height": 520,
+        "background": {
+          "r": 0.07058823529411765,
+          "g": 0.058823529411764705,
+          "b": 0.10980392156862745,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 520,
+        "height": 520,
+        "background": {
+          "r": 0.07058823529411765,
+          "g": 0.058823529411764705,
+          "b": 0.10980392156862745,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_lb_count_lb_lay_count",
+      "source": "lb_count",
+      "target": "lb_lay",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_lb_lay_lb_each_p",
+      "source": "lb_lay",
+      "target": "lb_each",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_lb_lay_lb_each_s",
+      "source": "lb_lay",
+      "target": "lb_each",
+      "sourceHandle": "out-scales",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_lb_each_lb_size_s",
+      "source": "lb_each",
+      "target": "lb_size",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_lb_each_lb_hue_f",
+      "source": "lb_each",
+      "target": "lb_hue",
+      "sourceHandle": "out-__loopvar_fraction",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_lb_hue_lb_fill_color",
+      "source": "lb_hue",
+      "target": "lb_fill",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_lb_each_lb_dot_pos",
+      "source": "lb_each",
+      "target": "lb_dot",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_lb_size_lb_dot_w",
+      "source": "lb_size",
+      "target": "lb_dot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_lb_size_lb_dot_h",
+      "source": "lb_size",
+      "target": "lb_dot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_lb_fill_lb_dot_style",
+      "source": "lb_fill",
+      "target": "lb_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_lb_dot_lb_each_l",
+      "source": "lb_dot",
+      "target": "lb_each",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_lb_each_lb_r_layers",
+      "source": "lb_each",
+      "target": "lb_r",
+      "sourceHandle": "out-l",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

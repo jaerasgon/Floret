@@ -1,0 +1,447 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Camera Slit-Scan",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "cs_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -314
+      },
+      "params": {
+        "text": "Camera slit-scan\n\nThe Toggle opens the camera. Echo in `slit-scan` mode keeps the last 90 frames and builds the picture from all of them: the top row is now, each row lower is a frame older (`direction` turns it). Move your hand, or tilt your head, and it stretches into ribbons.\n\nUntil the camera is ready (or with none at all), Select shows a stand-in: a bar and two dots swinging, so the smear is there to see.",
+        "width": 480,
+        "height": 250
+      },
+      "portValues": {
+        "text": "Camera slit-scan\n\nThe Toggle opens the camera. Echo in `slit-scan` mode keeps the last 90 frames and builds the picture from all of them: the top row is now, each row lower is a frame older (`direction` turns it). Move your hand, or tilt your head, and it stretches into ribbons.\n\nUntil the camera is ready (or with none at all), Select shows a stand-in: a bar and two dots swinging, so the smear is there to see.",
+        "width": 480,
+        "height": 250
+      }
+    },
+    {
+      "id": "cs_on",
+      "defType": "io/toggle",
+      "position": {
+        "x": 483,
+        "y": 67
+      },
+      "params": {
+        "value": true
+      },
+      "portValues": {
+        "value": true
+      }
+    },
+    {
+      "id": "cs_cam",
+      "defType": "input/camera",
+      "position": {
+        "x": 761,
+        "y": 57
+      },
+      "params": {
+        "device": "",
+        "mirror": true
+      },
+      "portValues": {
+        "device": "",
+        "mirror": true
+      }
+    },
+    {
+      "id": "cs_feed",
+      "defType": "draw/image",
+      "position": {
+        "x": 1039,
+        "y": 0
+      },
+      "params": {},
+      "portValues": {
+        "w": 640,
+        "h": 480
+      }
+    },
+    {
+      "id": "cs_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 252,
+        "y": 217
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "cs_barfill",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 431
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8117647058823529,
+          "b": 0.3607843137254902,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8117647058823529,
+          "b": 0.3607843137254902,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "cs_bar",
+      "defType": "draw/rect",
+      "position": {
+        "x": 239,
+        "y": 343
+      },
+      "params": {},
+      "portValues": {
+        "w": 46,
+        "h": 300
+      }
+    },
+    {
+      "id": "cs_dotfill",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 623
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.37254901960784315,
+          "b": 0.5607843137254902,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.37254901960784315,
+          "b": 0.5607843137254902,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "cs_dot1",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 230,
+        "y": 535
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": -150
+        },
+        "w": 70,
+        "h": 70
+      }
+    },
+    {
+      "id": "cs_dot2fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 815
+      },
+      "params": {
+        "color": {
+          "r": 0.37254901960784315,
+          "g": 0.8313725490196079,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.37254901960784315,
+          "g": 0.8313725490196079,
+          "b": 1.0,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "cs_dot2",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 233,
+        "y": 727
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 150
+        },
+        "w": 70,
+        "h": 70
+      }
+    },
+    {
+      "id": "cs_shape",
+      "defType": "transform/group",
+      "position": {
+        "x": 483,
+        "y": 482
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cs_swing",
+      "defType": "math/expression",
+      "position": {
+        "x": 483,
+        "y": 297
+      },
+      "params": {
+        "expr": "0.9 * sin(tau * l * 2)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cs_rot",
+      "defType": "transform/rotate",
+      "position": {
+        "x": 801,
+        "y": 369
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "cs_slide",
+      "defType": "math/expression",
+      "position": {
+        "x": 761,
+        "y": 227
+      },
+      "params": {
+        "expr": "vec2(170 * sin(tau * l), 0)"
+      },
+      "portValues": {}
+    },
+    {
+      "id": "cs_move",
+      "defType": "transform/translate",
+      "position": {
+        "x": 1042,
+        "y": 260
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "cs_pick",
+      "defType": "logic/select",
+      "position": {
+        "x": 1256,
+        "y": 125
+      },
+      "params": {},
+      "portValues": {}
+    },
+    {
+      "id": "cs_scan",
+      "defType": "gpu/echo",
+      "position": {
+        "x": 1457,
+        "y": 103
+      },
+      "params": {
+        "mode": "slit-scan",
+        "direction": "down"
+      },
+      "portValues": {
+        "frames": 90,
+        "direction": "down"
+      }
+    },
+    {
+      "id": "cs_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1722,
+        "y": 103
+      },
+      "params": {
+        "width": 640,
+        "height": 480,
+        "background": {
+          "r": 0.06274509803921569,
+          "g": 0.06274509803921569,
+          "b": 0.09411764705882353,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 640,
+        "height": 480,
+        "background": {
+          "r": 0.06274509803921569,
+          "g": 0.06274509803921569,
+          "b": 0.09411764705882353,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_cs_on_cs_cam_start",
+      "source": "cs_on",
+      "target": "cs_cam",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_cs_cam_cs_feed_image",
+      "source": "cs_cam",
+      "target": "cs_feed",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_cs_barfill_cs_bar_style",
+      "source": "cs_barfill",
+      "target": "cs_bar",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_cs_dotfill_cs_dot1_style",
+      "source": "cs_dotfill",
+      "target": "cs_dot1",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_cs_dot2fill_cs_dot2_style",
+      "source": "cs_dot2fill",
+      "target": "cs_dot2",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_cs_bar_cs_shape_s1",
+      "source": "cs_bar",
+      "target": "cs_shape",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_cs_dot1_cs_shape_s2",
+      "source": "cs_dot1",
+      "target": "cs_shape",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_cs_dot2_cs_shape_s3",
+      "source": "cs_dot2",
+      "target": "cs_shape",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_cs_t_cs_swing_l",
+      "source": "cs_t",
+      "target": "cs_swing",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_cs_swing_cs_rot_angle",
+      "source": "cs_swing",
+      "target": "cs_rot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_cs_shape_cs_rot_layer",
+      "source": "cs_shape",
+      "target": "cs_rot",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_cs_t_cs_slide_l",
+      "source": "cs_t",
+      "target": "cs_slide",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_cs_slide_cs_move_by",
+      "source": "cs_slide",
+      "target": "cs_move",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_cs_rot_cs_move_layer",
+      "source": "cs_rot",
+      "target": "cs_move",
+      "sourceHandle": "out-rotated",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_cs_cam_cs_pick_cond",
+      "source": "cs_cam",
+      "target": "cs_pick",
+      "sourceHandle": "out-ready",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_cs_feed_cs_pick_a",
+      "source": "cs_feed",
+      "target": "cs_pick",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_cs_move_cs_pick_b",
+      "source": "cs_move",
+      "target": "cs_pick",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_cs_pick_cs_scan_input",
+      "source": "cs_pick",
+      "target": "cs_scan",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_cs_scan_cs_r_layers",
+      "source": "cs_scan",
+      "target": "cs_r",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

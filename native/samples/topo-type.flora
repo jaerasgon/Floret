@@ -1,0 +1,207 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Topo Type",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "tt_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -314
+      },
+      "params": {
+        "text": "Topo type\n\nContours' `shape` mode measures the distance from the outlines of a wired shape — here the glyphs of a word — and draws rings at `threshold`, `threshold + step`, … units out (negative goes inside). The outer rings go underneath, so filled rings stack into the bands of a contour map.\n\nWire a Palette into `colors`: the levels take its colours from the first (the word) to the last (the outermost ring). The thin dark stroke keeps the bands apart.",
+        "width": 480,
+        "height": 250
+      },
+      "portValues": {
+        "text": "Topo type\n\nContours' `shape` mode measures the distance from the outlines of a wired shape — here the glyphs of a word — and draws rings at `threshold`, `threshold + step`, … units out (negative goes inside). The outer rings go underneath, so filled rings stack into the bands of a contour map.\n\nWire a Palette into `colors`: the levels take its colours from the first (the word) to the last (the outermost ring). The thin dark stroke keeps the bands apart.",
+        "width": 480,
+        "height": 250
+      }
+    },
+    {
+      "id": "tt_word",
+      "defType": "text/glyphs",
+      "position": {
+        "x": 238,
+        "y": 0
+      },
+      "params": {
+        "string": "floret",
+        "size": 150,
+        "align": "center"
+      },
+      "portValues": {
+        "string": "floret",
+        "size": 150,
+        "align": "center",
+        "pos": {
+          "x": 0,
+          "y": 40
+        }
+      }
+    },
+    {
+      "id": "tt_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 230,
+        "y": 214
+      },
+      "params": {
+        "stopCount": 5,
+        "c0": "#fff1b8",
+        "c1": "#ffb35c",
+        "c2": "#f2566e",
+        "c3": "#8a3fa6",
+        "c4": "#2b2059"
+      },
+      "portValues": {
+        "stopCount": 5
+      }
+    },
+    {
+      "id": "tt_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 516
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "tt_line",
+      "defType": "style/stroke",
+      "position": {
+        "x": 247,
+        "y": 450
+      },
+      "params": {
+        "width": 1.4,
+        "color": {
+          "r": 0.0784313725490196,
+          "g": 0.058823529411764705,
+          "b": 0.1411764705882353,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 1.4,
+        "color": {
+          "r": 0.0784313725490196,
+          "g": 0.058823529411764705,
+          "b": 0.1411764705882353,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "tt_topo",
+      "defType": "geometry/contours",
+      "position": {
+        "x": 517,
+        "y": 133
+      },
+      "params": {
+        "mode": "shape"
+      },
+      "portValues": {
+        "size": {
+          "x": 700,
+          "y": 420
+        },
+        "cell": 2,
+        "threshold": 0,
+        "levels": 9,
+        "step": 13
+      }
+    },
+    {
+      "id": "tt_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 764,
+        "y": 133
+      },
+      "params": {
+        "width": 680,
+        "height": 400,
+        "background": {
+          "r": 0.0784313725490196,
+          "g": 0.058823529411764705,
+          "b": 0.1411764705882353,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 680,
+        "height": 400,
+        "background": {
+          "r": 0.0784313725490196,
+          "g": 0.058823529411764705,
+          "b": 0.1411764705882353,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_tt_fill_tt_line_base",
+      "source": "tt_fill",
+      "target": "tt_line",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_tt_word_tt_topo_shape",
+      "source": "tt_word",
+      "target": "tt_topo",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-shape"
+    },
+    {
+      "id": "e_tt_pal_tt_topo_colors",
+      "source": "tt_pal",
+      "target": "tt_topo",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_tt_line_tt_topo_style",
+      "source": "tt_line",
+      "target": "tt_topo",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_tt_topo_tt_r_layers",
+      "source": "tt_topo",
+      "target": "tt_r",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

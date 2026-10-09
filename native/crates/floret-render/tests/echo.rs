@@ -249,3 +249,71 @@ fn slit_scan_spreads_time_down_the_rows() {
     near(rgb(&px, -w, 0), [0, 0, 255], 48);
     near(rgb(&px, w - 1, 0), [255, 0, 0], 48);
 }
+
+// ─── Frame history in user shaders (`gpu/shader`'s `history`) ───────────────
+
+/// A `gpu/shader` (node id `id`) whose Image pass shows the input `ago`
+/// frames back through `iHistoryFrame`, keeping `history` frames.
+fn history_shader(id: &str, history: u32, ago: u32) -> ShaderShape {
+    let source = format!(
+        "void mainImage(out vec4 o, in vec2 fc) {{\n  vec4 c = iHistoryFrame({ago}, fc / iResolution.xy);\n  o = vec4(c.a > 0.0 ? c.rgb / c.a : vec3(0.0), c.a);\n}}"
+    );
+    let patch = json!({
+        "kind": "floret.patch",
+        "version": 2,
+        "nodes": [
+            { "id": "r", "defType": "draw/rect", "position": {"x": 0, "y": 0} },
+            {
+                "id": id, "defType": "gpu/shader", "position": {"x": 200, "y": 0},
+                "params": { "source": source, "history": history },
+            },
+            {
+                "id": "out", "defType": "render/renderer", "position": {"x": 400, "y": 0},
+                "params": { "width": W, "height": H },
+            },
+        ],
+        "edges": [
+            { "id": "e1", "source": "r", "target": id, "sourceHandle": "out-shape", "targetHandle": "in-input" },
+            { "id": "e2", "source": id, "target": "out", "sourceHandle": "out-out", "targetHandle": "in-layers" },
+        ],
+    });
+    let mut engine = Engine::load(&patch.to_string()).expect("patch loads");
+    let renderer = engine.graph.renderer().expect("a renderer");
+    let r = engine.tick(&FrameCtx::default());
+    assert!(r.errors.is_empty(), "{:?}", r.errors);
+    match r.layers(renderer).first() {
+        Some(Value::Scene(n)) => match &**n {
+            SceneNode::Shader(sh) => (**sh).clone(),
+            other => panic!("not a shader: {other:?}"),
+        },
+        other => panic!("no layer: {other:?}"),
+    }
+}
+
+#[test]
+fn user_shaders_read_past_frames_with_history() {
+    let Some(mut g) = gpu() else { return };
+    // Three frames back: the square from frame f − 3.
+    let sh = history_shader("hist", 8, 3);
+    for p in sh.passes.iter() {
+        floret_render::shader::check(&p.source).unwrap();
+    }
+    let xs = [-40.0, -20.0, 0.0, 20.0, 40.0];
+    let mut last = Vec::new();
+    for (f, x) in xs.iter().enumerate() {
+        last = frame(&mut g, f as u32, &sh, square(*x));
+    }
+    assert!(g.renderer.shader_errors().is_empty());
+    // Frame 4 shows frame 1's square (x = −20), not the live one (40).
+    assert_eq!(red(&last, -20, 0), 255);
+    assert_eq!(red(&last, 40, 0), 0);
+    // Before the ring fills, older-than-held reads the oldest frame.
+    let sh = history_shader("young", 8, 3);
+    let px = frame(&mut g, 0, &sh, square(30.0));
+    assert_eq!(red(&px, 30, 0), 255);
+    // history 0 (the default): nothing kept, iHistoryFrame reads clear.
+    let sh = history_shader("none", 0, 0);
+    assert!(sh.history.is_none());
+    let px = frame(&mut g, 0, &sh, square(0.0));
+    assert_eq!(rgb(&px, 0, 0), [0, 0, 0]);
+}

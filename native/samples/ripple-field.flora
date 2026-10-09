@@ -12,8 +12,8 @@
       "id": "rf_time",
       "defType": "time/seconds",
       "position": {
-        "x": 19,
-        "y": 218
+        "x": 21,
+        "y": 225
       },
       "params": {}
     },
@@ -22,7 +22,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 0,
-        "y": 26
+        "y": 33
       },
       "params": {
         "cols": 25,
@@ -41,12 +41,12 @@
       "id": "rf_region",
       "defType": "region/foreach",
       "position": {
-        "x": 224,
+        "x": 231,
         "y": 22
       },
       "params": {
-        "width": 1888,
-        "height": 370,
+        "width": 1986,
+        "height": 367,
         "label": "ForEach"
       },
       "ports": [
@@ -55,7 +55,7 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 89
+          "y": 105
         },
         {
           "id": "layer",
@@ -65,17 +65,18 @@
           "y": 77
         }
       ],
-      "width": 1888,
-      "height": 370
+      "width": 1986,
+      "height": 367
     },
     {
       "id": "rf_dScaled",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 398,
-        "y": 108
+        "x": 414,
+        "y": 115
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 0.05
       },
@@ -86,12 +87,13 @@
     },
     {
       "id": "rf_tScaled",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 131,
-        "y": 189
+        "x": 138,
+        "y": 222
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 3
       },
@@ -102,32 +104,35 @@
     },
     {
       "id": "rf_wavePhase",
-      "defType": "math/sub",
+      "defType": "math/math",
       "position": {
-        "x": 666,
-        "y": 134
+        "x": 685,
+        "y": 137
       },
       "params": {
+        "op": "subtract",
         "valueType": "number"
       },
       "parentId": "rf_region"
     },
     {
       "id": "rf_ripple",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
-        "x": 931,
-        "y": 126
+        "x": 950,
+        "y": 117
       },
-      "params": {},
+      "params": {
+        "op": "sin"
+      },
       "parentId": "rf_region"
     },
     {
       "id": "rf_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1290,
-        "y": 208
+        "x": 1388,
+        "y": 205
       },
       "params": {
         "s": 80,
@@ -145,8 +150,8 @@
       "id": "rf_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1476,
-        "y": 250
+        "x": 1574,
+        "y": 249
       },
       "params": {
         "mode": "color"
@@ -160,7 +165,7 @@
       "id": "rf_ellipse",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1677,
+        "x": 1775,
         "y": 40
       },
       "params": {},
@@ -170,7 +175,7 @@
       "id": "rf_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2208,
+        "x": 2313,
         "y": 62
       },
       "params": {
@@ -184,20 +189,22 @@
     },
     {
       "id": "rf_dist",
-      "defType": "vec2/mag",
+      "defType": "vec2/math",
       "position": {
-        "x": 173,
-        "y": 85
+        "x": 132,
+        "y": 96
       },
-      "params": {},
+      "params": {
+        "op": "length"
+      },
       "parentId": "rf_region"
     },
     {
       "id": "rf_size",
       "defType": "math/map",
       "position": {
-        "x": 1481,
-        "y": 58
+        "x": 1577,
+        "y": 57
       },
       "params": {
         "inMin": -1,
@@ -217,8 +224,8 @@
       "id": "rf_hue",
       "defType": "math/map",
       "position": {
-        "x": 1105,
-        "y": 166
+        "x": 1202,
+        "y": 161
       },
       "params": {
         "inMin": -1,
@@ -303,7 +310,7 @@
       "id": "e_rf_dist_rf_dScaled_a",
       "source": "rf_dist",
       "target": "rf_dScaled",
-      "sourceHandle": "out-length",
+      "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {

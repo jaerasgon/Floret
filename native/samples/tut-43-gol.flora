@@ -31,7 +31,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 293
+        "y": 324
       },
       "params": {
         "count": 1024
@@ -44,12 +44,12 @@
       "id": "t43_seed",
       "defType": "region/foreach",
       "position": {
-        "x": 227,
-        "y": 209
+        "x": 234,
+        "y": 218
       },
       "params": {
-        "width": 523,
-        "height": 180,
+        "width": 620,
+        "height": 202,
         "label": "seed"
       },
       "ports": [
@@ -58,7 +58,7 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 121
+          "y": 143
         },
         {
           "id": "b",
@@ -68,15 +68,15 @@
           "y": 77
         }
       ],
-      "width": 523,
-      "height": 180
+      "width": 620,
+      "height": 202
     },
     {
       "id": "t43_u",
       "defType": "random/uniform",
       "position": {
         "x": 128,
-        "y": 40
+        "y": 62
       },
       "params": {
         "min": 0,
@@ -90,12 +90,13 @@
     },
     {
       "id": "t43_lt",
-      "defType": "logic/lt",
+      "defType": "logic/compare",
       "position": {
         "x": 327,
         "y": 40
       },
       "params": {
+        "op": "less",
         "b": 0.35
       },
       "parentId": "t43_seed",
@@ -107,8 +108,8 @@
       "id": "t43_rState",
       "defType": "state/read-spread",
       "position": {
-        "x": 846,
-        "y": 227
+        "x": 950,
+        "y": 236
       },
       "params": {
         "slot": 1
@@ -121,8 +122,8 @@
       "id": "t43_step",
       "defType": "spread/gol-step",
       "position": {
-        "x": 1341,
-        "y": 307
+        "x": 1432,
+        "y": 310
       },
       "params": {
         "cols": 32,
@@ -137,8 +138,8 @@
       "id": "t43_wState",
       "defType": "state/write-spread",
       "position": {
-        "x": 1859,
-        "y": 285
+        "x": 1961,
+        "y": 288
       },
       "params": {
         "slot": 1
@@ -151,12 +152,12 @@
       "id": "t43_draw",
       "defType": "region/foreach",
       "position": {
-        "x": 1103,
+        "x": 1205,
         "y": 22
       },
       "params": {
         "width": 607,
-        "height": 237,
+        "height": 240,
         "label": "draw"
       },
       "ports": [
@@ -165,7 +166,7 @@
           "name": "b",
           "type": "boolean",
           "direction": "input",
-          "y": 137
+          "y": 159
         },
         {
           "id": "p",
@@ -183,16 +184,17 @@
         }
       ],
       "width": 607,
-      "height": 237
+      "height": 240
     },
     {
       "id": "t43_sz",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 128,
         "y": 100
       },
       "params": {
+        "op": "multiply",
         "b": 12,
         "valueType": "number"
       },
@@ -215,7 +217,7 @@
       "id": "t43_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1806,
+        "x": 1908,
         "y": 75
       },
       "params": {
@@ -231,8 +233,8 @@
       "id": "t43_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 858,
-        "y": 35
+        "x": 960,
+        "y": 44
       },
       "params": {
         "cols": 32,

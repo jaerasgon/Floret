@@ -85,7 +85,7 @@
       "defType": "input/camera",
       "position": {
         "x": 264,
-        "y": 112
+        "y": 131
       },
       "params": {
         "device": "",
@@ -101,7 +101,7 @@
       "defType": "io/toggle",
       "position": {
         "x": 0,
-        "y": 122
+        "y": 141
       },
       "params": {
         "value": true
@@ -114,8 +114,8 @@
       "id": "wm_resize",
       "defType": "image/resize",
       "position": {
-        "x": 541,
-        "y": 112
+        "x": 543,
+        "y": 131
       },
       "params": {
         "w": 500,
@@ -131,7 +131,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 529,
-        "y": 260
+        "y": 279
       },
       "params": {
         "cols": 36,
@@ -150,8 +150,8 @@
       "id": "wm_colors",
       "defType": "image/sample-spread",
       "position": {
-        "x": 759,
-        "y": 154
+        "x": 764,
+        "y": 172
       },
       "params": {}
     },
@@ -159,8 +159,8 @@
       "id": "wm_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2398,
-        "y": 224
+        "x": 2530,
+        "y": 233
       },
       "params": {
         "width": 500,
@@ -187,12 +187,12 @@
       "id": "wm_region",
       "defType": "region/foreach",
       "position": {
-        "x": 985,
+        "x": 1012,
         "y": 22
       },
       "params": {
-        "width": 1317,
-        "height": 914,
+        "width": 1422,
+        "height": 936,
         "label": "④ ForEach cell"
       },
       "ports": [
@@ -201,32 +201,32 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 318
+          "y": 340
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
           "direction": "input",
-          "y": 126
+          "y": 141
         },
         {
           "id": "dot",
           "name": "dot",
           "type": "layer",
           "direction": "output",
-          "y": 239
+          "y": 248
         }
       ],
-      "width": 1317,
-      "height": 914
+      "width": 1422,
+      "height": 936
     },
     {
       "id": "wm_n_pos",
       "defType": "meta/comment",
       "position": {
         "x": 133,
-        "y": 610
+        "y": 632
       },
       "params": {
         "text": "a · POSITION\nWhere this cell sits on the centred canvas: the grid point goes straight into both shapes.",
@@ -245,7 +245,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 517,
-        "y": 610
+        "y": 632
       },
       "params": {
         "text": "b · BRIGHTNESS\nAverage the pixel's R, G, B (0–255). Greater than 128 (mid-grey) → \"light\".",
@@ -263,20 +263,21 @@
       "id": "wm_srgb",
       "defType": "color/split-rgb",
       "position": {
-        "x": 155,
-        "y": 52
+        "x": 146,
+        "y": 73
       },
       "params": {},
       "parentId": "wm_region"
     },
     {
       "id": "wm_rgb",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
         "x": 368,
         "y": 40
       },
       "params": {
+        "op": "add",
         "valueType": "number",
         "slotCount": 3
       },
@@ -284,12 +285,13 @@
     },
     {
       "id": "wm_lum",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 640,
-        "y": 93
+        "x": 643,
+        "y": 89
       },
       "params": {
+        "op": "multiply",
         "b": 0.333,
         "valueType": "number"
       },
@@ -300,12 +302,13 @@
     },
     {
       "id": "wm_isLight",
-      "defType": "logic/gt",
+      "defType": "logic/compare",
       "position": {
-        "x": 912,
-        "y": 146
+        "x": 917,
+        "y": 138
       },
       "params": {
+        "op": "greater",
         "b": 128
       },
       "parentId": "wm_region",
@@ -317,8 +320,8 @@
       "id": "wm_n_shapes",
       "defType": "meta/comment",
       "position": {
-        "x": 497,
-        "y": 744
+        "x": 133,
+        "y": 826
       },
       "params": {
         "text": "c · TWO SHAPES\nBoth are built every cell: a yellow circle and a blue square.",
@@ -337,7 +340,7 @@
       "defType": "style/fill",
       "position": {
         "x": 133,
-        "y": 279
+        "y": 301
       },
       "params": {
         "mode": "color",
@@ -364,7 +367,7 @@
       "defType": "draw/ellipse",
       "position": {
         "x": 403,
-        "y": 188
+        "y": 210
       },
       "params": {
         "w": 13,
@@ -381,7 +384,7 @@
       "defType": "style/fill",
       "position": {
         "x": 133,
-        "y": 468
+        "y": 490
       },
       "params": {
         "mode": "color",
@@ -408,7 +411,7 @@
       "defType": "draw/rect",
       "position": {
         "x": 403,
-        "y": 380
+        "y": 402
       },
       "params": {
         "w": 12,
@@ -424,8 +427,8 @@
       "id": "wm_n_pick",
       "defType": "meta/comment",
       "position": {
-        "x": 133,
-        "y": 744
+        "x": 1001,
+        "y": 632
       },
       "params": {
         "text": "d · SELECT\nlight → yellow circle\ndark → blue square\nOnly the picked shape is emitted.",
@@ -443,8 +446,8 @@
       "id": "wm_pick",
       "defType": "logic/select",
       "position": {
-        "x": 1100,
-        "y": 202
+        "x": 1205,
+        "y": 212
       },
       "params": {},
       "parentId": "wm_region"

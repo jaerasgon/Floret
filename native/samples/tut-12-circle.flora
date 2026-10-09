@@ -31,7 +31,7 @@
       "defType": "spread/ring",
       "position": {
         "x": 0,
-        "y": 103
+        "y": 158
       },
       "params": {
         "count": 24,
@@ -50,8 +50,8 @@
         "y": 22
       },
       "params": {
-        "width": 964,
-        "height": 284,
+        "width": 1046,
+        "height": 328,
         "label": "ForEach"
       },
       "ports": [
@@ -60,47 +60,52 @@
           "name": "angle",
           "type": "number",
           "direction": "input",
-          "y": 140
+          "y": 195
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 129
+          "y": 140
         }
       ],
-      "width": 964,
-      "height": 284
+      "width": 1046,
+      "height": 328
     },
     {
       "id": "t12_cos",
-      "defType": "math/cos",
+      "defType": "math/math",
       "position": {
-        "x": 132,
-        "y": 51
+        "x": 133,
+        "y": 73
       },
-      "params": {},
+      "params": {
+        "op": "cos"
+      },
       "parentId": "t12_region"
     },
     {
       "id": "t12_sin",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
-        "x": 132,
-        "y": 155
+        "x": 133,
+        "y": 199
       },
-      "params": {},
+      "params": {
+        "op": "sin"
+      },
       "parentId": "t12_region"
     },
     {
       "id": "t12_mulX",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 302,
+        "x": 380,
         "y": 40
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 150
       },
@@ -111,12 +116,13 @@
     },
     {
       "id": "t12_mulY",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 302,
-        "y": 166
+        "x": 380,
+        "y": 188
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 150
       },
@@ -129,8 +135,8 @@
       "id": "t12_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 753,
-        "y": 92
+        "x": 835,
+        "y": 103
       },
       "params": {
         "w": 18,
@@ -146,8 +152,8 @@
       "id": "t12_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1285,
-        "y": 114
+        "x": 1367,
+        "y": 125
       },
       "params": {
         "width": 400,
@@ -162,8 +168,8 @@
       "id": "t12_ell-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 573,
-        "y": 92
+        "x": 654,
+        "y": 103
       },
       "params": {
         "x": 0,

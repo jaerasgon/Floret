@@ -30,7 +30,7 @@
       "id": "va_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 24,
+        "x": 21,
         "y": 0
       },
       "params": {
@@ -50,7 +50,7 @@
       "id": "va_idx",
       "defType": "spread/range",
       "position": {
-        "x": 22,
+        "x": 15,
         "y": 822
       },
       "params": {
@@ -148,11 +148,11 @@
       "defType": "region/foreach",
       "position": {
         "x": 304,
-        "y": 229
+        "y": 206
       },
       "params": {
-        "width": 2332,
-        "height": 484,
+        "width": 2367,
+        "height": 528,
         "label": "ForEach stroke"
       },
       "ports": [
@@ -161,54 +161,57 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 76
+          "y": 79
         },
         {
           "id": "i",
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 425
+          "y": 469
         },
         {
           "id": "layer",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 91
+          "y": 77
         }
       ],
-      "width": 2332,
-      "height": 484
+      "width": 2367,
+      "height": 528
     },
     {
       "id": "va_scaled",
-      "defType": "vec2/scale",
+      "defType": "vec2/math",
       "position": {
-        "x": 174,
+        "x": 133,
         "y": 92
       },
-      "params": {},
+      "params": {
+        "op": "scale"
+      },
       "parentId": "va_region"
     },
     {
       "id": "va_xy",
       "defType": "vec2/split",
       "position": {
-        "x": 445,
-        "y": 114
+        "x": 459,
+        "y": 126
       },
       "params": {},
       "parentId": "va_region"
     },
     {
       "id": "va_slow",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 132,
-        "y": 218
+        "x": 139,
+        "y": 240
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 0.08
       },
@@ -219,12 +222,13 @@
     },
     {
       "id": "va_ydrift",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 672,
-        "y": 169
+        "x": 689,
+        "y": 178
       },
       "params": {
+        "op": "add",
         "valueType": "number"
       },
       "parentId": "va_region"
@@ -233,8 +237,8 @@
       "id": "va_noise",
       "defType": "noise/perlin",
       "position": {
-        "x": 940,
-        "y": 121
+        "x": 956,
+        "y": 136
       },
       "params": {
         "octaves": 3,
@@ -248,12 +252,13 @@
     },
     {
       "id": "va_angle",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 1137,
-        "y": 112
+        "x": 1162,
+        "y": 103
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 12.566
       },
@@ -266,8 +271,8 @@
       "id": "va_rand",
       "defType": "random/uniform",
       "position": {
-        "x": 155,
-        "y": 344
+        "x": 163,
+        "y": 388
       },
       "params": {
         "min": 0.35,
@@ -281,12 +286,13 @@
     },
     {
       "id": "va_mag",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 403,
-        "y": 297
+        "x": 417,
+        "y": 316
       },
       "params": {
+        "op": "multiply",
         "valueType": "number"
       },
       "parentId": "va_region"
@@ -295,32 +301,34 @@
       "id": "va_dir",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 1440,
-        "y": 121
+        "x": 1457,
+        "y": 123
       },
       "params": {},
       "parentId": "va_region"
     },
     {
       "id": "va_end",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 1674,
-        "y": 74
+        "x": 1700,
+        "y": 55
       },
       "params": {
+        "op": "add",
         "valueType": "vec2"
       },
       "parentId": "va_region"
     },
     {
       "id": "va_hspread",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 1137,
-        "y": 238
+        "x": 1162,
+        "y": 251
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 140
       },
@@ -331,12 +339,13 @@
     },
     {
       "id": "va_hsum",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 1406,
-        "y": 247
+        "x": 1433,
+        "y": 249
       },
       "params": {
+        "op": "add",
         "valueType": "number"
       },
       "parentId": "va_region"
@@ -345,8 +354,8 @@
       "id": "va_col",
       "defType": "color/color",
       "position": {
-        "x": 1682,
-        "y": 200
+        "x": 1708,
+        "y": 203
       },
       "params": {
         "mode": "hsl",
@@ -365,8 +374,8 @@
       "id": "va_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 1946,
-        "y": 149
+        "x": 1973,
+        "y": 143
       },
       "params": {},
       "parentId": "va_region"
@@ -375,8 +384,8 @@
       "id": "va_line",
       "defType": "draw/line",
       "position": {
-        "x": 2136,
-        "y": 54
+        "x": 2171,
+        "y": 40
       },
       "params": {},
       "parentId": "va_region"
@@ -385,8 +394,8 @@
       "id": "va_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2732,
-        "y": 283
+        "x": 2767,
+        "y": 246
       },
       "params": {
         "width": 600,
@@ -443,7 +452,7 @@
       "id": "va_e4",
       "source": "va_scaled",
       "target": "va_xy",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-v"
     },
     {

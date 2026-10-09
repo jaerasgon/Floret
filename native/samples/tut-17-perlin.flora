@@ -31,7 +31,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 140
+        "y": 156
       },
       "params": {
         "count": 40
@@ -44,8 +44,8 @@
       "id": "t17_t",
       "defType": "time/seconds",
       "position": {
-        "x": 18,
-        "y": 244
+        "x": 27,
+        "y": 260
       },
       "params": {}
     },
@@ -53,12 +53,12 @@
       "id": "t17_region",
       "defType": "region/foreach",
       "position": {
-        "x": 218,
+        "x": 236,
         "y": 22
       },
       "params": {
-        "width": 1527,
-        "height": 476,
+        "width": 1536,
+        "height": 520,
         "label": "ForEach"
       },
       "ports": [
@@ -67,27 +67,28 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 176
+          "y": 186
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 169
+          "y": 171
         }
       ],
-      "width": 1527,
-      "height": 476
+      "width": 1536,
+      "height": 520
     },
     {
       "id": "t17_noiseX",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 135,
+        "x": 136,
         "y": 232
       },
       "params": {
+        "op": "multiply",
         "b": 0.01,
         "valueType": "number"
       },
@@ -98,12 +99,13 @@
     },
     {
       "id": "t17_noiseT",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 135,
-        "y": 358
+        "x": 136,
+        "y": 380
       },
       "params": {
+        "op": "multiply",
         "b": 0.3,
         "valueType": "number"
       },
@@ -116,20 +118,21 @@
       "id": "t17_n",
       "defType": "noise/perlin",
       "position": {
-        "x": 411,
-        "y": 261
+        "x": 413,
+        "y": 272
       },
       "params": {},
       "parentId": "t17_region"
     },
     {
       "id": "t17_hue",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 608,
-        "y": 334
+        "x": 617,
+        "y": 335
       },
       "params": {
+        "op": "multiply",
         "b": 360,
         "valueType": "number"
       },
@@ -142,8 +145,8 @@
       "id": "t17_col",
       "defType": "color/color",
       "position": {
-        "x": 877,
-        "y": 281
+        "x": 886,
+        "y": 282
       },
       "params": {
         "mode": "hsl",
@@ -163,8 +166,8 @@
       "id": "t17_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1130,
-        "y": 251
+        "x": 1139,
+        "y": 252
       },
       "params": {},
       "parentId": "t17_region"
@@ -173,8 +176,8 @@
       "id": "t17_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1316,
-        "y": 132
+        "x": 1325,
+        "y": 134
       },
       "params": {
         "w": 12,
@@ -190,8 +193,8 @@
       "id": "t17_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1841,
-        "y": 154
+        "x": 1868,
+        "y": 156
       },
       "params": {
         "width": 400,
@@ -206,8 +209,8 @@
       "id": "t17_ell-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 911,
-        "y": 103
+        "x": 920,
+        "y": 104
       },
       "params": {
         "x": 0,
@@ -223,7 +226,7 @@
       "id": "t17_x",
       "defType": "math/map",
       "position": {
-        "x": 176,
+        "x": 177,
         "y": 40
       },
       "params": {
@@ -244,8 +247,8 @@
       "id": "t17_y",
       "defType": "math/map",
       "position": {
-        "x": 649,
-        "y": 142
+        "x": 658,
+        "y": 143
       },
       "params": {
         "inMin": 0,

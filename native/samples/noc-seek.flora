@@ -12,8 +12,8 @@
       "id": "sk_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 10,
-        "y": 119
+        "x": 4,
+        "y": 140
       },
       "params": {}
     },
@@ -21,8 +21,8 @@
       "id": "sk_maxSpeed",
       "defType": "io/slider",
       "position": {
-        "x": 624,
-        "y": 506
+        "x": 753,
+        "y": 510
       },
       "params": {
         "value": 6,
@@ -39,8 +39,8 @@
       "id": "sk_maxForce",
       "defType": "io/slider",
       "position": {
-        "x": 1213,
-        "y": 466
+        "x": 1351,
+        "y": 508
       },
       "params": {
         "value": 0.4,
@@ -58,7 +58,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 0,
-        "y": 267
+        "y": 288
       },
       "params": {
         "x": -100,
@@ -73,8 +73,8 @@
       "id": "sk_initVel",
       "defType": "vec2/make",
       "position": {
-        "x": 665,
-        "y": 276
+        "x": 794,
+        "y": 258
       },
       "params": {
         "x": 0,
@@ -89,8 +89,8 @@
       "id": "sk_pos",
       "defType": "state/value",
       "position": {
-        "x": 201,
-        "y": 252
+        "x": 223,
+        "y": 284
       },
       "params": {}
     },
@@ -98,8 +98,8 @@
       "id": "sk_vel",
       "defType": "state/value",
       "position": {
-        "x": 956,
-        "y": 308
+        "x": 1092,
+        "y": 283
       },
       "params": {}
     },
@@ -107,89 +107,109 @@
       "id": "sk_mv",
       "defType": "vec2/make",
       "position": {
-        "x": 203,
-        "y": 126
+        "x": 224,
+        "y": 142
       },
       "params": {}
     },
     {
       "id": "sk_diff",
-      "defType": "vec2/sub",
+      "defType": "math/math",
       "position": {
-        "x": 409,
-        "y": 218
+        "x": 451,
+        "y": 192
       },
-      "params": {}
+      "params": {
+        "op": "subtract",
+        "valueType": "vec2"
+      }
     },
     {
       "id": "sk_dir",
-      "defType": "vec2/normalize",
+      "defType": "vec2/math",
       "position": {
-        "x": 659,
-        "y": 402
+        "x": 747,
+        "y": 384
       },
-      "params": {}
+      "params": {
+        "op": "normalize"
+      }
     },
     {
       "id": "sk_desired",
-      "defType": "vec2/scale",
+      "defType": "vec2/math",
       "position": {
-        "x": 957,
-        "y": 434
+        "x": 1045,
+        "y": 409
       },
-      "params": {}
+      "params": {
+        "op": "scale"
+      }
     },
     {
       "id": "sk_steerRaw",
-      "defType": "vec2/sub",
+      "defType": "math/math",
       "position": {
-        "x": 1255,
-        "y": 340
+        "x": 1351,
+        "y": 347
       },
-      "params": {}
+      "params": {
+        "op": "subtract",
+        "valueType": "vec2"
+      }
     },
     {
       "id": "sk_steer",
-      "defType": "vec2/limit",
+      "defType": "vec2/math",
       "position": {
-        "x": 1487,
-        "y": 380
+        "x": 1631,
+        "y": 364
       },
-      "params": {}
+      "params": {
+        "op": "limit"
+      }
     },
     {
       "id": "sk_velAdd",
-      "defType": "vec2/add",
+      "defType": "math/math",
       "position": {
-        "x": 1675,
-        "y": 331
+        "x": 1912,
+        "y": 311
       },
-      "params": {}
+      "params": {
+        "op": "add",
+        "valueType": "vec2"
+      }
     },
     {
       "id": "sk_velCap",
-      "defType": "vec2/limit",
+      "defType": "vec2/math",
       "position": {
-        "x": 1862,
-        "y": 357
+        "x": 2183,
+        "y": 332
       },
-      "params": {}
+      "params": {
+        "op": "limit"
+      }
     },
     {
       "id": "sk_posAdd",
-      "defType": "vec2/add",
+      "defType": "math/math",
       "position": {
-        "x": 2053,
-        "y": 261
+        "x": 2463,
+        "y": 258
       },
-      "params": {}
+      "params": {
+        "op": "add",
+        "valueType": "vec2"
+      }
     },
     {
       "id": "sk_tFill",
       "defType": "style/fill",
       "position": {
-        "x": 202,
-        "y": 0
+        "x": 200,
+        "y": 16
       },
       "params": {
         "mode": "rgb",
@@ -210,8 +230,8 @@
       "id": "sk_target",
       "defType": "draw/ellipse",
       "position": {
-        "x": 401,
-        "y": 26
+        "x": 485,
+        "y": 0
       },
       "params": {
         "w": 18,
@@ -226,8 +246,8 @@
       "id": "sk_vFill",
       "defType": "style/fill",
       "position": {
-        "x": 202,
-        "y": 432
+        "x": 200,
+        "y": 428
       },
       "params": {
         "mode": "rgb",
@@ -248,8 +268,8 @@
       "id": "sk_vehicle",
       "defType": "draw/ellipse",
       "position": {
-        "x": 401,
-        "y": 344
+        "x": 485,
+        "y": 340
       },
       "params": {
         "w": 22,
@@ -264,8 +284,8 @@
       "id": "sk_grp",
       "defType": "transform/group",
       "position": {
-        "x": 624,
-        "y": 150
+        "x": 753,
+        "y": 132
       },
       "params": {
         "slotCount": 2
@@ -278,8 +298,8 @@
       "id": "sk_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 896,
-        "y": 138
+        "x": 1032,
+        "y": 110
       },
       "params": {
         "width": 500,
@@ -350,14 +370,14 @@
       "id": "e_1232",
       "source": "sk_diff",
       "target": "sk_dir",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-v"
     },
     {
       "id": "e_1233",
       "source": "sk_dir",
       "target": "sk_desired",
-      "sourceHandle": "out-normalized",
+      "sourceHandle": "out-result",
       "targetHandle": "in-v"
     },
     {
@@ -371,7 +391,7 @@
       "id": "e_1235",
       "source": "sk_desired",
       "target": "sk_steerRaw",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
@@ -385,7 +405,7 @@
       "id": "e_1237",
       "source": "sk_steerRaw",
       "target": "sk_steer",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-v"
     },
     {
@@ -406,14 +426,14 @@
       "id": "e_1240",
       "source": "sk_steer",
       "target": "sk_velAdd",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
       "id": "e_1241",
       "source": "sk_velAdd",
       "target": "sk_velCap",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-v"
     },
     {
@@ -434,21 +454,21 @@
       "id": "e_1244",
       "source": "sk_velCap",
       "target": "sk_posAdd",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
       "id": "e_1245",
       "source": "sk_posAdd",
       "target": "sk_pos",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {
       "id": "e_1246",
       "source": "sk_velCap",
       "target": "sk_vel",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {

@@ -16,7 +16,7 @@
         "y": -304
       },
       "params": {
-        "text": "Spring physics with state\n\nA position chases the mouse with Hooke + damping. Two state slots (vec2): position and velocity. Each frame, with vec2 maths:\n  • vel ← vel · damp + (mouse − pos) · k\n  • pos ← pos + vel\nThe two Scale nodes hold k (0.05) and damp (0.85).\n\nWrite/Read are used twice — one for pos, one for vel.",
+        "text": "Spring physics with state\n\nA position chases the mouse with Hooke + damping. Two state slots (vec2): position and velocity. Each frame, with vec2 maths:\n  • vel ← vel · damp + (mouse − pos) · k\n  • pos ← pos + vel\nThe two Vector Math nodes set to scale hold k (0.05) and damp (0.85).\n\nWrite/Read are used twice — one for pos, one for vel.",
         "width": 440,
         "height": 240
       },
@@ -31,7 +31,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 0,
-        "y": 72
+        "y": 121
       },
       "params": {}
     },
@@ -39,8 +39,8 @@
       "id": "t25_mVec",
       "defType": "vec2/make",
       "position": {
-        "x": 211,
-        "y": 72
+        "x": 221,
+        "y": 121
       },
       "params": {}
     },
@@ -48,8 +48,8 @@
       "id": "t25_posR",
       "defType": "state/read",
       "position": {
-        "x": 180,
-        "y": 198
+        "x": 191,
+        "y": 247
       },
       "params": {
         "slot": 1,
@@ -70,8 +70,8 @@
       "id": "t25_velR",
       "defType": "state/read",
       "position": {
-        "x": 429,
-        "y": 0
+        "x": 452,
+        "y": 22
       },
       "params": {
         "slot": 2,
@@ -92,8 +92,8 @@
       "id": "t25_posW",
       "defType": "state/write",
       "position": {
-        "x": 1255,
-        "y": 70
+        "x": 1552,
+        "y": 68
       },
       "params": {
         "slot": 1
@@ -106,8 +106,8 @@
       "id": "t25_velW",
       "defType": "state/write",
       "position": {
-        "x": 1055,
-        "y": 18
+        "x": 1315,
+        "y": 16
       },
       "params": {
         "slot": 2
@@ -120,8 +120,8 @@
       "id": "t25_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1253,
-        "y": 196
+        "x": 1550,
+        "y": 194
       },
       "params": {
         "w": 30,
@@ -136,8 +136,8 @@
       "id": "t25_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1448,
-        "y": 196
+        "x": 1745,
+        "y": 194
       },
       "params": {
         "width": 400,
@@ -150,21 +150,25 @@
     },
     {
       "id": "t25_diff",
-      "defType": "vec2/sub",
+      "defType": "math/math",
       "position": {
-        "x": 460,
-        "y": 126
+        "x": 440,
+        "y": 155
       },
-      "params": {}
+      "params": {
+        "op": "subtract",
+        "valueType": "vec2"
+      }
     },
     {
       "id": "t25_acc",
-      "defType": "vec2/scale",
+      "defType": "vec2/math",
       "position": {
-        "x": 670,
-        "y": 128
+        "x": 707,
+        "y": 148
       },
       "params": {
+        "op": "scale",
         "s": 0.05
       },
       "portValues": {
@@ -173,12 +177,13 @@
     },
     {
       "id": "t25_drag",
-      "defType": "vec2/scale",
+      "defType": "vec2/math",
       "position": {
-        "x": 670,
-        "y": 2
+        "x": 707,
+        "y": 0
       },
       "params": {
+        "op": "scale",
         "s": 0.85
       },
       "portValues": {
@@ -187,21 +192,27 @@
     },
     {
       "id": "t25_nV",
-      "defType": "vec2/add",
+      "defType": "math/math",
       "position": {
-        "x": 862,
-        "y": 79
+        "x": 997,
+        "y": 77
       },
-      "params": {}
+      "params": {
+        "op": "add",
+        "valueType": "vec2"
+      }
     },
     {
       "id": "t25_nP",
-      "defType": "vec2/add",
+      "defType": "math/math",
       "position": {
-        "x": 1060,
-        "y": 144
+        "x": 1278,
+        "y": 142
       },
-      "params": {}
+      "params": {
+        "op": "add",
+        "valueType": "vec2"
+      }
     }
   ],
   "edges": [
@@ -244,7 +255,7 @@
       "id": "e_t25_diff_t25_acc_v",
       "source": "t25_diff",
       "target": "t25_acc",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-v"
     },
     {
@@ -258,14 +269,14 @@
       "id": "e_t25_drag_t25_nV_a",
       "source": "t25_drag",
       "target": "t25_nV",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
       "id": "e_t25_acc_t25_nV_b",
       "source": "t25_acc",
       "target": "t25_nV",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
@@ -279,28 +290,28 @@
       "id": "e_t25_nV_t25_nP_b",
       "source": "t25_nV",
       "target": "t25_nP",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
       "id": "e_t25_nP_t25_posW_next",
       "source": "t25_nP",
       "target": "t25_posW",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {
       "id": "e_t25_nV_t25_velW_next",
       "source": "t25_nV",
       "target": "t25_velW",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {
       "id": "e_t25_nP_t25_ell_pos",
       "source": "t25_nP",
       "target": "t25_ell",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-result",
       "targetHandle": "in-pos"
     }
   ]

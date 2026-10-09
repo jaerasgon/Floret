@@ -13,7 +13,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 11
+        "y": 47
       },
       "params": {
         "value": 3,
@@ -31,7 +31,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 137
+        "y": 173
       },
       "params": {
         "value": 5,
@@ -49,7 +49,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 42,
-        "y": 263
+        "y": 299
       },
       "params": {}
     },
@@ -57,8 +57,8 @@
       "id": "lj_range",
       "defType": "spread/range",
       "position": {
-        "x": 22,
-        "y": 389
+        "x": 15,
+        "y": 425
       },
       "params": {
         "count": 240
@@ -71,12 +71,12 @@
       "id": "lj_region",
       "defType": "region/foreach",
       "position": {
-        "x": 294,
+        "x": 292,
         "y": 22
       },
       "params": {
-        "width": 1779,
-        "height": 454,
+        "width": 1859,
+        "height": 498,
         "label": "ForEach"
       },
       "ports": [
@@ -85,27 +85,28 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 235
+          "y": 328
         },
         {
           "id": "p",
           "name": "p",
           "type": "layer",
           "direction": "output",
-          "y": 177
+          "y": 202
         }
       ],
-      "width": 1779,
-      "height": 454
+      "width": 1859,
+      "height": 498
     },
     {
       "id": "lj_tMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 133,
-        "y": 135
+        "x": 134,
+        "y": 195
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 0.02617993877991494
       },
@@ -116,80 +117,89 @@
     },
     {
       "id": "lj_axMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 407,
-        "y": 64
+        "x": 409,
+        "y": 101
       },
       "params": {
+        "op": "multiply",
         "valueType": "number"
       },
       "parentId": "lj_region"
     },
     {
       "id": "lj_ayMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 407,
-        "y": 190
+        "x": 409,
+        "y": 249
       },
       "params": {
+        "op": "multiply",
         "valueType": "number"
       },
       "parentId": "lj_region"
     },
     {
       "id": "lj_axAdd",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
         "x": 673,
-        "y": 56
+        "y": 80
       },
       "params": {
+        "op": "add",
         "valueType": "number"
       },
       "parentId": "lj_region"
     },
     {
       "id": "lj_ayAdd",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
         "x": 673,
-        "y": 182
+        "y": 228
       },
       "params": {
+        "op": "add",
         "valueType": "number"
       },
       "parentId": "lj_region"
     },
     {
       "id": "lj_cosX",
-      "defType": "math/cos",
+      "defType": "math/math",
       "position": {
-        "x": 938,
-        "y": 48
+        "x": 937,
+        "y": 60
       },
-      "params": {},
+      "params": {
+        "op": "cos"
+      },
       "parentId": "lj_region"
     },
     {
       "id": "lj_sinY",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
-        "x": 938,
-        "y": 174
+        "x": 937,
+        "y": 208
       },
-      "params": {},
+      "params": {
+        "op": "sin"
+      },
       "parentId": "lj_region"
     },
     {
       "id": "lj_rX",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 1107,
+        "x": 1184,
         "y": 40
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 200
       },
@@ -200,12 +210,13 @@
     },
     {
       "id": "lj_rY",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 1107,
-        "y": 166
+        "x": 1184,
+        "y": 188
       },
       "params": {
+        "op": "multiply",
         "valueType": "number",
         "b": 200
       },
@@ -216,12 +227,13 @@
     },
     {
       "id": "lj_hueMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 133,
-        "y": 261
+        "x": 134,
+        "y": 343
       },
       "params": {
+        "op": "multiply",
         "b": 1.5,
         "valueType": "number"
       },
@@ -234,8 +246,8 @@
       "id": "lj_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 1149,
-        "y": 292
+        "x": 1226,
+        "y": 336
       },
       "params": {
         "s": 75,
@@ -253,8 +265,8 @@
       "id": "lj_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1381,
-        "y": 260
+        "x": 1460,
+        "y": 295
       },
       "params": {
         "mode": "color"
@@ -268,8 +280,8 @@
       "id": "lj_dot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1568,
-        "y": 140
+        "x": 1648,
+        "y": 165
       },
       "params": {
         "w": 4,
@@ -285,8 +297,8 @@
       "id": "lj_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2169,
-        "y": 162
+        "x": 2247,
+        "y": 187
       },
       "params": {
         "width": 500,
@@ -301,8 +313,8 @@
       "id": "lj_dot-xy0",
       "defType": "vec2/make",
       "position": {
-        "x": 1382,
-        "y": 108
+        "x": 1461,
+        "y": 124
       },
       "params": {
         "x": 0,

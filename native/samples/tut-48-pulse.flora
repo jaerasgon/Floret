@@ -31,27 +31,30 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 107
+        "y": 151
       },
       "params": {}
     },
     {
       "id": "t48_s",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
         "x": 180,
-        "y": 107
+        "y": 129
       },
-      "params": {}
+      "params": {
+        "op": "sin"
+      }
     },
     {
       "id": "t48_half",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 348,
+        "x": 426,
         "y": 107
       },
       "params": {
+        "op": "multiply",
         "b": 0.9,
         "valueType": "number"
       },
@@ -63,7 +66,7 @@
       "id": "t48_pulse",
       "defType": "sound/pulse",
       "position": {
-        "x": 612,
+        "x": 690,
         "y": 63
       },
       "params": {
@@ -81,7 +84,7 @@
       "id": "t48_out",
       "defType": "sound/output",
       "position": {
-        "x": 833,
+        "x": 913,
         "y": 0
       },
       "params": {
@@ -95,7 +98,7 @@
       "id": "t48_amp",
       "defType": "sound/amplitude",
       "position": {
-        "x": 825,
+        "x": 903,
         "y": 126
       },
       "params": {
@@ -107,12 +110,13 @@
     },
     {
       "id": "t48_sz",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 1020,
-        "y": 126
+        "x": 1115,
+        "y": 104
       },
       "params": {
+        "op": "multiply",
         "b": 500,
         "valueType": "number"
       },
@@ -122,12 +126,13 @@
     },
     {
       "id": "t48_szO",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 1284,
-        "y": 126
+        "x": 1379,
+        "y": 82
       },
       "params": {
+        "op": "add",
         "b": 30,
         "valueType": "number"
       },
@@ -139,8 +144,8 @@
       "id": "t48_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1550,
-        "y": 93
+        "x": 1644,
+        "y": 49
       },
       "params": {}
     },
@@ -148,8 +153,8 @@
       "id": "t48_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1755,
-        "y": 93
+        "x": 1849,
+        "y": 49
       },
       "params": {
         "width": 400,

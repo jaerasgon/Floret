@@ -31,7 +31,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 129
+        "y": 143
       },
       "params": {
         "count": 60
@@ -44,12 +44,12 @@
       "id": "t42_region",
       "defType": "region/foreach",
       "position": {
-        "x": 227,
-        "y": 171
+        "x": 249,
+        "y": 178
       },
       "params": {
-        "width": 324,
-        "height": 158,
+        "width": 421,
+        "height": 180,
         "label": "seedRow"
       },
       "ports": [
@@ -58,7 +58,7 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 77
+          "y": 99
         },
         {
           "id": "b",
@@ -68,17 +68,18 @@
           "y": 77
         }
       ],
-      "width": 324,
-      "height": 158
+      "width": 421,
+      "height": 180
     },
     {
       "id": "t42_eq",
-      "defType": "logic/eq",
+      "defType": "logic/compare",
       "position": {
         "x": 128,
         "y": 40
       },
       "params": {
+        "op": "equal",
         "b": 30
       },
       "parentId": "t42_region",
@@ -90,8 +91,8 @@
       "id": "t42_rule",
       "defType": "spread/elementary-ca",
       "position": {
-        "x": 651,
-        "y": 232
+        "x": 770,
+        "y": 247
       },
       "params": {
         "rule": 90
@@ -104,12 +105,12 @@
       "id": "t42_draw",
       "defType": "region/foreach",
       "position": {
-        "x": 914,
+        "x": 1059,
         "y": 22
       },
       "params": {
-        "width": 798,
-        "height": 350,
+        "width": 799,
+        "height": 372,
         "label": "drawRow"
       },
       "ports": [
@@ -118,7 +119,7 @@
           "name": "b",
           "type": "boolean",
           "direction": "input",
-          "y": 269
+          "y": 291
         },
         {
           "id": "i",
@@ -135,17 +136,18 @@
           "y": 174
         }
       ],
-      "width": 798,
-      "height": 350
+      "width": 799,
+      "height": 372
     },
     {
       "id": "t42_hScale",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 128,
         "y": 232
       },
       "params": {
+        "op": "multiply",
         "b": 20,
         "valueType": "number"
       },
@@ -158,7 +160,7 @@
       "id": "t42_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 587,
+        "x": 588,
         "y": 137
       },
       "params": {
@@ -173,7 +175,7 @@
       "id": "t42_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1808,
+        "x": 1954,
         "y": 159
       },
       "params": {

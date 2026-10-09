@@ -39,7 +39,7 @@
       "id": "t29_freq",
       "defType": "math/map",
       "position": {
-        "x": 180,
+        "x": 191,
         "y": 85
       },
       "params": {
@@ -59,7 +59,7 @@
       "id": "t29_osc",
       "defType": "sound/oscillator",
       "position": {
-        "x": 359,
+        "x": 370,
         "y": 63
       },
       "params": {
@@ -75,7 +75,7 @@
       "id": "t29_out",
       "defType": "sound/output",
       "position": {
-        "x": 632,
+        "x": 645,
         "y": 0
       },
       "params": {
@@ -89,7 +89,7 @@
       "id": "t29_amp",
       "defType": "sound/amplitude",
       "position": {
-        "x": 624,
+        "x": 635,
         "y": 126
       },
       "params": {
@@ -101,12 +101,13 @@
     },
     {
       "id": "t29_sz",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 819,
-        "y": 126
+        "x": 846,
+        "y": 104
       },
       "params": {
+        "op": "multiply",
         "b": 600,
         "valueType": "number"
       },
@@ -116,12 +117,13 @@
     },
     {
       "id": "t29_szO",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 1083,
-        "y": 126
+        "x": 1110,
+        "y": 82
       },
       "params": {
+        "op": "add",
         "b": 40,
         "valueType": "number"
       },
@@ -133,8 +135,8 @@
       "id": "t29_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1349,
-        "y": 93
+        "x": 1376,
+        "y": 49
       },
       "params": {}
     },
@@ -142,8 +144,8 @@
       "id": "t29_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1554,
-        "y": 93
+        "x": 1581,
+        "y": 49
       },
       "params": {
         "width": 400,

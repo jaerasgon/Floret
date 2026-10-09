@@ -30,7 +30,7 @@
       "id": "t14_colA",
       "defType": "color/color",
       "position": {
-        "x": 620,
+        "x": 698,
         "y": 0
       },
       "params": {
@@ -52,7 +52,7 @@
       "id": "t14_colB",
       "defType": "color/color",
       "position": {
-        "x": 620,
+        "x": 698,
         "y": 192
       },
       "params": {
@@ -75,27 +75,30 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 384
+        "y": 450
       },
       "params": {}
     },
     {
       "id": "t14_sin",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
         "x": 180,
-        "y": 384
+        "y": 428
       },
-      "params": {}
+      "params": {
+        "op": "sin"
+      }
     },
     {
       "id": "t14_half",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 348,
-        "y": 384
+        "x": 426,
+        "y": 406
       },
       "params": {
+        "op": "multiply",
         "b": 0.5,
         "valueType": "number"
       },
@@ -105,12 +108,13 @@
     },
     {
       "id": "t14_off",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 612,
+        "x": 690,
         "y": 384
       },
       "params": {
+        "op": "add",
         "b": 0.5,
         "valueType": "number"
       },
@@ -122,7 +126,7 @@
       "id": "t14_lerp",
       "defType": "color/lerp",
       "position": {
-        "x": 902,
+        "x": 980,
         "y": 148
       },
       "params": {}
@@ -131,7 +135,7 @@
       "id": "t14_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1152,
+        "x": 1230,
         "y": 148
       },
       "params": {}
@@ -140,7 +144,7 @@
       "id": "t14_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 1334,
+        "x": 1412,
         "y": 60
       },
       "params": {
@@ -164,7 +168,7 @@
       "id": "t14_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1539,
+        "x": 1617,
         "y": 60
       },
       "params": {

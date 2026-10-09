@@ -31,7 +31,7 @@
       "defType": "sound/audio-in",
       "position": {
         "x": 0,
-        "y": 276
+        "y": 298
       },
       "params": {
         "amp": 1,
@@ -46,8 +46,8 @@
       "id": "t49_fft",
       "defType": "sound/fft",
       "position": {
-        "x": 194,
-        "y": 254
+        "x": 196,
+        "y": 276
       },
       "params": {
         "smoothing": 0.7
@@ -60,7 +60,7 @@
       "id": "t49_idx",
       "defType": "spread/range",
       "position": {
-        "x": 215,
+        "x": 211,
         "y": 66
       },
       "params": {
@@ -74,12 +74,12 @@
       "id": "t49_region",
       "defType": "region/foreach",
       "position": {
-        "x": 457,
+        "x": 459,
         "y": 22
       },
       "params": {
-        "width": 783,
-        "height": 350,
+        "width": 784,
+        "height": 372,
         "label": "bars"
       },
       "ports": [
@@ -88,7 +88,7 @@
           "name": "bin",
           "type": "number",
           "direction": "input",
-          "y": 269
+          "y": 291
         },
         {
           "id": "i",
@@ -105,17 +105,18 @@
           "y": 174
         }
       ],
-      "width": 783,
-      "height": 350
+      "width": 784,
+      "height": 372
     },
     {
       "id": "t49_hScale",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 128,
         "y": 232
       },
       "params": {
+        "op": "multiply",
         "b": 400,
         "valueType": "number"
       },
@@ -128,7 +129,7 @@
       "id": "t49_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 587,
+        "x": 588,
         "y": 137
       },
       "params": {
@@ -145,7 +146,7 @@
       "id": "t49_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1336,
+        "x": 1339,
         "y": 159
       },
       "params": {

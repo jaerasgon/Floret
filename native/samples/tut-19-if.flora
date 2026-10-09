@@ -31,27 +31,30 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 0
+        "y": 44
       },
       "params": {}
     },
     {
       "id": "t19_sin",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
         "x": 180,
-        "y": 0
+        "y": 22
       },
-      "params": {}
+      "params": {
+        "op": "sin"
+      }
     },
     {
       "id": "t19_gt",
-      "defType": "logic/gt",
+      "defType": "logic/compare",
       "position": {
-        "x": 348,
+        "x": 426,
         "y": 0
       },
       "params": {
+        "op": "greater",
         "b": 0
       },
       "portValues": {
@@ -62,7 +65,7 @@
       "id": "t19_region",
       "defType": "region/if",
       "position": {
-        "x": 528,
+        "x": 703,
         "y": 25
       },
       "params": {
@@ -136,7 +139,7 @@
       "id": "t19_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1203,
+        "x": 1378,
         "y": 65
       },
       "params": {

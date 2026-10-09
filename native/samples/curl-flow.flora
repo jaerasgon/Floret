@@ -12,7 +12,7 @@
       "id": "cf_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1950,
+        "x": 2144,
         "y": 62
       },
       "params": {
@@ -29,7 +29,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 0,
-        "y": 70
+        "y": 88
       },
       "params": {
         "cols": 26,
@@ -56,12 +56,12 @@
       "id": "cf_region",
       "defType": "region/foreach",
       "position": {
-        "x": 217,
+        "x": 222,
         "y": 22
       },
       "params": {
-        "width": 1637,
-        "height": 344,
+        "width": 1826,
+        "height": 360,
         "label": "ForEach"
       },
       "ports": [
@@ -70,7 +70,7 @@
           "name": "pos",
           "type": "vec2",
           "direction": "input",
-          "y": 85
+          "y": 103
         },
         {
           "id": "layer",
@@ -80,27 +80,28 @@
           "y": 77
         }
       ],
-      "width": 1637,
-      "height": 344
+      "width": 1826,
+      "height": 360
     },
     {
       "id": "cf_time",
       "defType": "time/seconds",
       "position": {
         "x": 130,
-        "y": 166
+        "y": 216
       },
       "params": {},
       "parentId": "cf_region"
     },
     {
       "id": "cf_drift",
-      "defType": "vec2/scale",
+      "defType": "vec2/math",
       "position": {
-        "x": 311,
-        "y": 144
+        "x": 313,
+        "y": 172
       },
       "params": {
+        "op": "scale",
         "v": {
           "x": 18,
           "y": 0
@@ -116,12 +117,13 @@
     },
     {
       "id": "cf_sampleP",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 522,
-        "y": 100
+        "x": 592,
+        "y": 112
       },
       "params": {
+        "op": "add",
         "slotCount": 2,
         "valueType": "vec2"
       },
@@ -135,8 +137,8 @@
       "id": "cf_curl",
       "defType": "noise/curl",
       "position": {
-        "x": 786,
-        "y": 101
+        "x": 858,
+        "y": 124
       },
       "params": {
         "scale": 0.012,
@@ -154,12 +156,13 @@
     },
     {
       "id": "cf_flowScale",
-      "defType": "vec2/scale",
+      "defType": "vec2/math",
       "position": {
-        "x": 979,
-        "y": 102
+        "x": 1070,
+        "y": 115
       },
       "params": {
+        "op": "scale",
         "s": 16
       },
       "parentId": "cf_region",
@@ -169,12 +172,13 @@
     },
     {
       "id": "cf_endP",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 1162,
-        "y": 56
+        "x": 1349,
+        "y": 50
       },
       "params": {
+        "op": "add",
         "slotCount": 2,
         "valueType": "vec2"
       },
@@ -188,8 +192,8 @@
       "id": "cf_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 1179,
-        "y": 182
+        "x": 1366,
+        "y": 198
       },
       "params": {
         "width": 2,
@@ -215,7 +219,7 @@
       "id": "cf_line",
       "defType": "draw/line",
       "position": {
-        "x": 1441,
+        "x": 1630,
         "y": 40
       },
       "params": {},
@@ -241,7 +245,7 @@
       "id": "e_929",
       "source": "cf_drift",
       "target": "cf_sampleP",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
@@ -269,7 +273,7 @@
       "id": "e_933",
       "source": "cf_flowScale",
       "target": "cf_endP",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {

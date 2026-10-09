@@ -21,8 +21,8 @@
       "id": "pt_time",
       "defType": "time/seconds",
       "position": {
-        "x": 0,
-        "y": 369
+        "x": 6,
+        "y": 390
       },
       "params": {}
     },
@@ -30,7 +30,7 @@
       "id": "pt_read",
       "defType": "state/read",
       "position": {
-        "x": 444,
+        "x": 455,
         "y": 0
       },
       "params": {
@@ -44,7 +44,7 @@
       "id": "pt_prevCopy",
       "defType": "image/crop",
       "position": {
-        "x": 720,
+        "x": 731,
         "y": 0
       },
       "params": {
@@ -64,7 +64,7 @@
       "id": "pt_drawPrev",
       "defType": "draw/image",
       "position": {
-        "x": 959,
+        "x": 970,
         "y": 0
       },
       "params": {
@@ -78,12 +78,13 @@
     },
     {
       "id": "pt_hueMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 180,
-        "y": 369
+        "x": 191,
+        "y": 368
       },
       "params": {
+        "op": "multiply",
         "b": 50,
         "valueType": "number"
       },
@@ -95,7 +96,7 @@
       "id": "pt_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 475,
+        "x": 486,
         "y": 369
       },
       "params": {
@@ -113,7 +114,7 @@
       "id": "pt_fill",
       "defType": "style/fill",
       "position": {
-        "x": 726,
+        "x": 737,
         "y": 369
       },
       "params": {
@@ -127,7 +128,7 @@
       "id": "pt_size",
       "defType": "io/slider",
       "position": {
-        "x": 685,
+        "x": 696,
         "y": 243
       },
       "params": {
@@ -145,26 +146,28 @@
       "id": "pt_brush",
       "defType": "draw/ellipse",
       "position": {
-        "x": 959,
+        "x": 970,
         "y": 214
       },
       "params": {}
     },
     {
       "id": "pt_stack",
-      "defType": "spread/stack",
+      "defType": "spread/combine",
       "position": {
-        "x": 1168,
-        "y": 96
+        "x": 1179,
+        "y": 74
       },
-      "params": {}
+      "params": {
+        "op": "concat"
+      }
     },
     {
       "id": "pt_fromLayer",
       "defType": "image/from-layer",
       "position": {
-        "x": 1378,
-        "y": 97
+        "x": 1438,
+        "y": 75
       },
       "params": {
         "w": 500,
@@ -179,8 +182,8 @@
       "id": "pt_write",
       "defType": "state/write",
       "position": {
-        "x": 1576,
-        "y": 23
+        "x": 1654,
+        "y": 1
       },
       "params": {
         "slot": 1
@@ -193,8 +196,8 @@
       "id": "pt_display",
       "defType": "draw/image",
       "position": {
-        "x": 1573,
-        "y": 149
+        "x": 1651,
+        "y": 127
       },
       "params": {
         "w": 500,
@@ -209,8 +212,8 @@
       "id": "pt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1768,
-        "y": 149
+        "x": 1846,
+        "y": 127
       },
       "params": {
         "width": 500,
@@ -225,7 +228,7 @@
       "id": "pt_brush-xy1",
       "defType": "vec2/make",
       "position": {
-        "x": 222,
+        "x": 233,
         "y": 182
       },
       "params": {
@@ -327,7 +330,7 @@
       "id": "e_1642",
       "source": "pt_stack",
       "target": "pt_fromLayer",
-      "sourceHandle": "out-values",
+      "sourceHandle": "out-result",
       "targetHandle": "in-layer"
     },
     {

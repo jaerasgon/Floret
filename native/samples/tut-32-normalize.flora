@@ -16,7 +16,7 @@
         "y": -284
       },
       "params": {
-        "text": "Unit vectors\n\n`vec2/normalize` divides by length so the result has magnitude 1. Useful for \"give me the DIRECTION but not the SIZE\", then scale by whatever length you want.\n\nA unit vector from origin to mouse, then scaled to a fixed radius — an arrow that always reaches the same distance.",
+        "text": "Unit vectors\n\nVector Math set to `normalize` divides by the length so the result has magnitude 1. Useful for \"give me the DIRECTION but not the SIZE\", then scale by whatever length you want.\n\nA unit vector from origin to mouse, then scaled to a fixed radius — an arrow that always reaches the same distance.",
         "width": 420,
         "height": 220
       },
@@ -31,7 +31,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 0,
-        "y": 0
+        "y": 44
       },
       "params": {}
     },
@@ -39,28 +39,31 @@
       "id": "t32_mv",
       "defType": "vec2/make",
       "position": {
-        "x": 180,
-        "y": 0
+        "x": 191,
+        "y": 44
       },
       "params": {}
     },
     {
       "id": "t32_n",
-      "defType": "vec2/normalize",
+      "defType": "vec2/math",
       "position": {
-        "x": 360,
-        "y": 0
+        "x": 372,
+        "y": 22
       },
-      "params": {}
+      "params": {
+        "op": "normalize"
+      }
     },
     {
       "id": "t32_sc",
-      "defType": "vec2/scale",
+      "defType": "vec2/math",
       "position": {
-        "x": 579,
+        "x": 648,
         "y": 0
       },
       "params": {
+        "op": "scale",
         "s": 180
       },
       "portValues": {
@@ -71,8 +74,8 @@
       "id": "t32_line",
       "defType": "draw/line",
       "position": {
-        "x": 792,
-        "y": 30
+        "x": 933,
+        "y": 41
       },
       "params": {}
     },
@@ -80,8 +83,8 @@
       "id": "t32_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 984,
-        "y": 30
+        "x": 1125,
+        "y": 41
       },
       "params": {
         "width": 400,
@@ -96,8 +99,8 @@
       "id": "t32_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 554,
-        "y": 126
+        "x": 671,
+        "y": 148
       },
       "params": {
         "width": 3,
@@ -145,7 +148,7 @@
       "id": "e_274",
       "source": "t32_n",
       "target": "t32_sc",
-      "sourceHandle": "out-normalized",
+      "sourceHandle": "out-result",
       "targetHandle": "in-v"
     },
     {
@@ -159,7 +162,7 @@
       "id": "e_xy_t32_line-xy1",
       "source": "t32_sc",
       "target": "t32_line",
-      "sourceHandle": "out-scaled",
+      "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {

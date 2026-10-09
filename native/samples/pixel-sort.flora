@@ -12,7 +12,7 @@
       "id": "ps_img",
       "defType": "io/image-url",
       "position": {
-        "x": 890,
+        "x": 968,
         "y": 0
       },
       "params": {
@@ -27,7 +27,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 368
+        "y": 456
       },
       "params": {}
     },
@@ -35,7 +35,7 @@
       "id": "ps_lo",
       "defType": "io/slider",
       "position": {
-        "x": 884,
+        "x": 962,
         "y": 170
       },
       "params": {
@@ -53,8 +53,8 @@
       "id": "ps_hi",
       "defType": "io/slider",
       "position": {
-        "x": 612,
-        "y": 242
+        "x": 690,
+        "y": 264
       },
       "params": {
         "value": 0.85,
@@ -69,12 +69,13 @@
     },
     {
       "id": "ps_tMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 180,
-        "y": 368
+        "y": 434
       },
       "params": {
+        "op": "multiply",
         "b": 0.6,
         "valueType": "number"
       },
@@ -84,21 +85,24 @@
     },
     {
       "id": "ps_sinT",
-      "defType": "math/sin",
+      "defType": "math/math",
       "position": {
         "x": 444,
-        "y": 368
+        "y": 412
       },
-      "params": {}
+      "params": {
+        "op": "sin"
+      }
     },
     {
       "id": "ps_wobMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
-        "x": 612,
-        "y": 368
+        "x": 690,
+        "y": 390
       },
       "params": {
+        "op": "multiply",
         "b": 0.05,
         "valueType": "number"
       },
@@ -108,12 +112,13 @@
     },
     {
       "id": "ps_hiFinal",
-      "defType": "math/add",
+      "defType": "math/math",
       "position": {
-        "x": 884,
+        "x": 962,
         "y": 296
       },
       "params": {
+        "op": "add",
         "valueType": "number"
       }
     },
@@ -121,7 +126,7 @@
       "id": "ps_sort",
       "defType": "pixel/sort",
       "position": {
-        "x": 1168,
+        "x": 1246,
         "y": 68
       },
       "params": {
@@ -139,7 +144,7 @@
       "id": "ps_draw",
       "defType": "draw/image",
       "position": {
-        "x": 1414,
+        "x": 1492,
         "y": 68
       },
       "params": {
@@ -163,7 +168,7 @@
       "id": "ps_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1609,
+        "x": 1687,
         "y": 68
       },
       "params": {

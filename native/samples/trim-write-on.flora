@@ -135,19 +135,21 @@
     },
     {
       "id": "tw_head",
-      "defType": "spread/at",
+      "defType": "spread/lookup",
       "position": {
-        "x": 810,
-        "y": 142
+        "x": 790,
+        "y": 135
       },
-      "params": {}
+      "params": {
+        "op": "at"
+      }
     },
     {
       "id": "tw_nib_fill",
       "defType": "style/fill",
       "position": {
-        "x": 792,
-        "y": 268
+        "x": 804,
+        "y": 283
       },
       "params": {
         "color": {
@@ -170,8 +172,8 @@
       "id": "tw_nib",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1027,
-        "y": 143
+        "x": 1056,
+        "y": 145
       },
       "params": {
         "w": 11,
@@ -186,8 +188,8 @@
       "id": "tw_group",
       "defType": "transform/group",
       "position": {
-        "x": 1228,
-        "y": 63
+        "x": 1256,
+        "y": 61
       },
       "params": {
         "slotCount": 3
@@ -198,8 +200,8 @@
       "id": "tw_r",
       "defType": "render/renderer",
       "position": {
-        "x": 1492,
-        "y": 63
+        "x": 1520,
+        "y": 61
       },
       "params": {
         "width": 720,
@@ -270,7 +272,7 @@
       "id": "e_tw_head_tw_nib_pos",
       "source": "tw_head",
       "target": "tw_nib",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-pos"
     },
     {

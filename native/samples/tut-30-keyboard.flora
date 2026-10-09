@@ -16,7 +16,7 @@
         "y": -304
       },
       "params": {
-        "text": "Branching on keyboard input\n\n`input/keyboard.key` outputs the last key pressed (e.g. \"a\", \"ArrowLeft\"). `logic/eq` checks equality against a constant string. Wire the result into a `region/if` and you get key-driven branches.\n\nPress R for red rect, B for blue ellipse — others draw nothing.",
+        "text": "Branching on keyboard input\n\n`input/keyboard.key` outputs the last key pressed (e.g. \"a\", \"ArrowLeft\"). Compare set to `equal` checks it against a constant string. Wire the result into a `region/if` and you get key-driven branches.\n\nPress R for red rect, B for blue ellipse — others draw nothing.",
         "width": 440,
         "height": 240
       },
@@ -30,8 +30,8 @@
       "id": "t30_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 32,
-        "y": 66
+        "x": 23,
+        "y": 88
       },
       "params": {}
     },
@@ -40,7 +40,7 @@
       "defType": "value/string",
       "position": {
         "x": 0,
-        "y": 192
+        "y": 214
       },
       "params": {
         "value": "r"
@@ -54,7 +54,7 @@
       "defType": "value/string",
       "position": {
         "x": 0,
-        "y": 296
+        "y": 318
       },
       "params": {
         "value": "b"
@@ -65,27 +65,31 @@
     },
     {
       "id": "t30_isR",
-      "defType": "logic/eq",
+      "defType": "logic/compare",
       "position": {
         "x": 275,
-        "y": 85
+        "y": 81
       },
-      "params": {}
+      "params": {
+        "op": "equal"
+      }
     },
     {
       "id": "t30_isB",
-      "defType": "logic/eq",
+      "defType": "logic/compare",
       "position": {
         "x": 275,
-        "y": 225
+        "y": 229
       },
-      "params": {}
+      "params": {
+        "op": "equal"
+      }
     },
     {
       "id": "t30_R",
       "defType": "region/if",
       "position": {
-        "x": 468,
+        "x": 565,
         "y": 22
       },
       "params": {
@@ -159,7 +163,7 @@
       "id": "t30_B",
       "defType": "region/if",
       "position": {
-        "x": 468,
+        "x": 565,
         "y": 338
       },
       "params": {
@@ -225,7 +229,7 @@
       "id": "t30_grp",
       "defType": "transform/group",
       "position": {
-        "x": 1165,
+        "x": 1262,
         "y": 209
       },
       "params": {
@@ -239,7 +243,7 @@
       "id": "t30_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1429,
+        "x": 1526,
         "y": 209
       },
       "params": {

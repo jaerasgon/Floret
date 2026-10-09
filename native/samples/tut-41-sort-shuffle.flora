@@ -16,7 +16,7 @@
         "y": -284
       },
       "params": {
-        "text": "Reordering spreads\n\n`Shuffle Spread` (Randomize Spread) permutes a spread deterministically by its seed; `Sort Spread` arranges numbers ascending (or descending).\n\nHere 0…29 is shuffled, then sorted again, and drawn as a bar chart: a neat staircase. Wire the shuffle straight into the ForEach (skip Sort) to see the shuffled order.",
+        "text": "Reordering spreads\n\n`Shuffle Spread` (Randomize Spread) permutes a spread deterministically by its seed; Reorder set to `sort` arranges numbers ascending (or descending).\n\nHere 0…29 is shuffled, then sorted again, and drawn as a bar chart: a neat staircase. Wire the shuffle straight into the ForEach (skip the Reorder) to see the shuffled order.",
         "width": 440,
         "height": 220
       },
@@ -31,7 +31,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 129
+        "y": 143
       },
       "params": {
         "count": 30
@@ -44,8 +44,8 @@
       "id": "t41_shuf",
       "defType": "spread/randomize",
       "position": {
-        "x": 221,
-        "y": 170
+        "x": 242,
+        "y": 195
       },
       "params": {
         "seed": 7
@@ -56,23 +56,25 @@
     },
     {
       "id": "t41_sort",
-      "defType": "spread/sort",
+      "defType": "spread/reorder",
       "position": {
-        "x": 469,
-        "y": 212
+        "x": 512,
+        "y": 224
       },
-      "params": {}
+      "params": {
+        "op": "sort"
+      }
     },
     {
       "id": "t41_region",
       "defType": "region/foreach",
       "position": {
-        "x": 688,
+        "x": 784,
         "y": 22
       },
       "params": {
-        "width": 783,
-        "height": 350,
+        "width": 784,
+        "height": 372,
         "label": "ForEach"
       },
       "ports": [
@@ -81,7 +83,7 @@
           "name": "v",
           "type": "number",
           "direction": "input",
-          "y": 269
+          "y": 291
         },
         {
           "id": "i",
@@ -98,17 +100,18 @@
           "y": 174
         }
       ],
-      "width": 783,
-      "height": 350
+      "width": 784,
+      "height": 372
     },
     {
       "id": "t41_hMul",
-      "defType": "math/mul",
+      "defType": "math/math",
       "position": {
         "x": 128,
         "y": 232
       },
       "params": {
+        "op": "multiply",
         "b": 8,
         "valueType": "number"
       },
@@ -121,7 +124,7 @@
       "id": "t41_rect",
       "defType": "draw/rect",
       "position": {
-        "x": 587,
+        "x": 588,
         "y": 137
       },
       "params": {
@@ -138,7 +141,7 @@
       "id": "t41_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1567,
+        "x": 1664,
         "y": 159
       },
       "params": {
@@ -208,7 +211,7 @@
       "id": "e_316",
       "source": "t41_sort",
       "target": "t41_region",
-      "sourceHandle": "out-values",
+      "sourceHandle": "out-result",
       "targetHandle": "in-v"
     },
     {

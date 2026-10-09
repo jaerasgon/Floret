@@ -1,5 +1,5 @@
 {
- "count": 358,
+ "count": 360,
  "nodes": [
   {
    "type": "collider/circle",
@@ -8876,7 +8876,7 @@
    "category": "Spread",
    "group": "Lists",
    "label": "Lookup",
-   "description": "Read from a list: the item at an index (negative counts from the end), the items at an index spread (wrapping), the Nth group of a flat + groupSize pair, or the first / every index where a value occurs. Pick `op` and the pins follow.",
+   "description": "Read from a list: the item at an index (negative counts from the end), the items at an index spread (wrapping), the Nth group of a flat + groupSize pair, the first / every index where a value occurs, or for each of `points` the index of the nearest point in `spread` (`nearest`). Pick `op` and the pins follow.",
    "inputs": [
     {
      "name": "spread",
@@ -8909,7 +8909,8 @@
      "pick",
      "group-at",
      "index-of",
-     "indices-of"
+     "indices-of",
+     "nearest"
     ]
    },
    "dynamicOutputs": true
@@ -9674,6 +9675,37 @@
      "type": "any",
      "kind": "single",
      "default": 0
+    }
+   ],
+   "outputs": [
+    {
+     "name": "indices",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": null,
+   "paramOptions": null,
+   "hidden": true
+  },
+  {
+   "type": "spread/nearest",
+   "category": "Spread",
+   "group": "Lists",
+   "label": "Nearest Spread",
+   "description": "For each of `points`, the index of the nearest point in `spread` (ties: the lower index; −1 when it has none). Lookup's `nearest` op.",
+   "inputs": [
+    {
+     "name": "spread",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
     }
    ],
    "outputs": [
@@ -11918,6 +11950,87 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null
+  },
+  {
+   "type": "time/clock",
+   "category": "Time",
+   "group": "Animate",
+   "label": "Clock",
+   "description": "The wall clock: the time of day and the date now, in the computer's time `zone` (`local`) or `utc`, moved by `offset` hours. `hours` 0..24, `minutes` and `seconds` 0..60 run on smoothly (14:30:45 gives hours 14.51, minutes 30.75, seconds 45 and the fraction); `day` 1..31, `month` 1..12, `year`, `weekday` 0 (Monday) .. 6 (Sunday), `yearPhase` 0..1 through the year, `days` since 1 January 1970. Effectful: it reads the clock every frame.",
+   "inputs": [
+    {
+     "name": "offset",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "zone",
+     "type": "string",
+     "kind": "single",
+     "default": "local",
+     "param": "zone"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "hours",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "minutes",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "seconds",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "day",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "month",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "year",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "weekday",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "yearPhase",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "days",
+     "type": "number",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "zone": "local"
+   },
+   "paramOptions": {
+    "zone": [
+     "local",
+     "utc"
+    ]
+   },
+   "effectful": true
   },
   {
    "type": "time/frame",
@@ -14235,7 +14348,7 @@
    "category": "Particles",
    "group": "Particles & Physics",
    "label": "Simulation",
-   "description": "A running simulation; pick it with `mode` and the pins follow. flocking: boids that separate, align and cohere on a wrapping field (`attract` pulls them to `target`). physarum: slime-mould agents following and laying a trail map, which comes out as `image` (angles in degrees, distances in grid cells; `food` points keep feeding the trail). dla: walkers sticking to a growing cluster from `seeds`, `rate` particles a second up to `count`. cloth: a Verlet spring mesh hanging from its `pin`s, with wind, tearing (`tear` × rest length) and `grab` to drag the point nearest `pointer`. `layer` draws it (shapes take `style`; `colors` ramps along `values`); `points`, `values` (heading, growth order or stretch) and the `from` / `to` line segments are there to draw your own. Steps 60 times per second of frame time, so the same seed and frames give the same result. A rising edge on `reset` starts over. growth: differential growth — a curve (the first outline of `shape`, or a circle of `radius`) whose nodes push apart within `repel` (× `force`), pull `align` of the way to their neighbours' middle and move at most `speed` a step, while `grow` new nodes a second go in on random edges and edges longer than `maxEdge` split, up to `maxNodes`: it folds like coral or a brain; `values` is each node's age, `colors` ramps the edges by it. reaction: Gray–Scott reaction–diffusion on a grid `resolution` cells across `size` (CPU, as an image): a `preset` pattern (coral, mitosis, fingerprints, worms, maze, spots, waves) or `custom` `feed` / `kill`, diffusion `rateA` / `rateB`, `speed` iterations a step; B starts where `seed image` is bright (or in a few random spots) and `paint` points keep adding it. Growth and reaction keep running through edits of the patch.",
+   "description": "A running simulation; pick it with `mode` and the pins follow. flocking: boids that separate, align and cohere on a wrapping field (`attract` pulls them to `target`, or each boid to its nearest `food` point while `food` has any). physarum: slime-mould agents following and laying a trail map, which comes out as `image` (angles in degrees, distances in grid cells; `food` points keep feeding the trail). dla: walkers sticking to a growing cluster from `seeds`, `rate` particles a second up to `count`. cloth: a Verlet spring mesh hanging from its `pin`s, with wind, tearing (`tear` × rest length) and `grab` to drag the point nearest `pointer`. `layer` draws it (shapes take `style`; `colors` ramps along `values`); `points`, `values` (heading, growth order or stretch) and the `from` / `to` line segments are there to draw your own. Steps 60 times per second of frame time, so the same seed and frames give the same result. A rising edge on `reset` starts over. growth: differential growth — a curve (the first outline of `shape`, or a circle of `radius`) whose nodes push apart within `repel` (× `force`), pull `align` of the way to their neighbours' middle and move at most `speed` a step, while `grow` new nodes a second go in on random edges and edges longer than `maxEdge` split, up to `maxNodes`: it folds like coral or a brain; `values` is each node's age, `colors` ramps the edges by it. reaction: Gray–Scott reaction–diffusion on a grid `resolution` cells across `size` (CPU, as an image): a `preset` pattern (coral, mitosis, fingerprints, worms, maze, spots, waves) or `custom` `feed` / `kill`, diffusion `rateA` / `rateB`, `speed` iterations a step; B starts where `seed image` is bright (or in a few random spots) and `paint` points keep adding it. Growth and reaction keep running through edits of the patch.",
    "inputs": [
     {
      "name": "count",
@@ -14291,6 +14404,11 @@
       "x": 0,
       "y": 0
      }
+    },
+    {
+     "name": "food",
+     "type": "vec2",
+     "kind": "spread"
     },
     {
      "name": "attract",

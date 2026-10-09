@@ -253,7 +253,7 @@ pub static CONVERT: Family = Family {
     adaptive: &[],
 };
 
-/// Read from a list: by index, or where a value is.
+/// Read from a list: by index, where a value is, or the nearest point.
 pub static LOOKUP: Family = Family {
     ty: "spread/lookup",
     param: "op",
@@ -263,6 +263,7 @@ pub static LOOKUP: Family = Family {
         op("group-at", "Group At", "spread/at-group"),
         op("index-of", "Index Of", "spread/index-of"),
         op("indices-of", "Indices Of", "spread/indices-by-value"),
+        op("nearest", "Nearest", "spread/nearest"),
     ],
     adaptive: &[],
 };

@@ -10,6 +10,7 @@ mod automata;
 mod combine;
 mod generators;
 mod jssort;
+mod nearest;
 mod ops;
 
 #[cfg(test)]
@@ -74,6 +75,8 @@ const NODES: &[(&str, RawFn)] = &[
     ("spread/index-of", combine::index_of),
     ("spread/count-where", combine::count_where),
     ("spread/indices-by-value", combine::indices_by_value),
+    // native: Lookup's `nearest` op
+    ("spread/nearest", nearest::nearest),
     // partition.ts
     ("spread/partition", combine::partition),
     ("spread/pairwise", combine::pairwise),

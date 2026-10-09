@@ -700,3 +700,56 @@ fn a_seed_image_that_arrives_late_starts_reaction_over() {
     let next = image(&r.ticks(3));
     assert_ne!(next.rgba(), img.rgba());
 }
+
+/// Mean distance from each boid to the nearest of `food`.
+fn mean_gap(ps: &[Vec2], food: &[Vec2]) -> f64 {
+    ps.iter()
+        .map(|p| {
+            food.iter()
+                .map(|f| (f.x - p.x).hypot(f.y - p.y))
+                .fold(f64::INFINITY, f64::min)
+        })
+        .sum::<f64>()
+        / ps.len() as f64
+}
+
+#[test]
+fn boids_head_for_their_nearest_food() {
+    // Two food points far apart: with `attract` the flock splits between
+    // them and closes in on both, which `target` (one point) can't do.
+    let food = [Vec2 { x: -150.0, y: 0.0 }, Vec2 { x: 150.0, y: 0.0 }];
+    let run = |with_food: bool| {
+        let mut r = Run::new("flocking")
+            .with("count", Value::Num(120.0))
+            .with("attract", Value::Num(3.0))
+            .with("cohesion", Value::Num(0.0))
+            .with("alignment", Value::Num(0.0));
+        if with_food {
+            r.pin("food", food.iter().map(|f| Value::Vec2(*f)).collect());
+        }
+        points(&r.ticks(240))
+    };
+    let fed = run(true);
+    let unfed = run(false);
+    assert!(
+        mean_gap(&fed, &food) < 0.5 * mean_gap(&unfed, &food),
+        "{} vs {}",
+        mean_gap(&fed, &food),
+        mean_gap(&unfed, &food)
+    );
+    // Both points draw boids.
+    let left = fed.iter().filter(|p| p.x < 0.0).count();
+    assert!(left > 20 && left < 100, "{left} of 120 on the left");
+}
+
+#[test]
+fn food_is_reached_the_short_way_round_the_field() {
+    // Field 600 wide: from x = 280, food at x = −280 is 40 away through the
+    // right edge, not 560 across.
+    let way = super::flock::nearest_way(
+        Vec2 { x: 280.0, y: 0.0 },
+        &[Vec2 { x: -280.0, y: 0.0 }],
+        Vec2 { x: 600.0, y: 600.0 },
+    );
+    assert!((way.x - 40.0).abs() < 1e-9 && way.y.abs() < 1e-9, "{way:?}");
+}

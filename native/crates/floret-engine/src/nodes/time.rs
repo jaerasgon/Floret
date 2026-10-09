@@ -4,14 +4,18 @@
 //! a ForEach with `delay` is shifted per iteration — same as the frame TS
 //! passes to `readFromContext`.
 
+use super::shared::first;
 use super::Registrar;
-use crate::node::{raw, NodeImpl, NodeInit};
+use crate::node::{always_eval, raw, NodeImpl, NodeInit};
 use crate::value::{one, Value};
+use std::sync::OnceLock;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 pub fn register(r: &mut Registrar) {
     r.node("time/seconds", seconds);
     r.node("time/frame", frame);
     r.node("time/delta", delta);
+    r.node("time/clock", clock);
 }
 
 /// `t` and the `loop` phase: 0..1 over the patch's loop length (native
@@ -50,6 +54,119 @@ fn frame(_: &NodeInit) -> Box<dyn NodeImpl> {
 
 fn delta(_: &NodeInit) -> Box<dyn NodeImpl> {
     raw(|_, cx| Ok(vec![one(Value::Num(cx.frame.dt))]))
+}
+
+// ─── time/clock ──────────────────────────────────────────────────────────────
+
+/// The local time zone's offset from UTC, in seconds, at a Unix time:
+/// the app installs one (the engine has no OS dependencies); without it
+/// `local` reads as UTC.
+pub type LocalOffset = fn(unix_seconds: i64) -> i64;
+
+static LOCAL_OFFSET: OnceLock<LocalOffset> = OnceLock::new();
+
+/// Install the local time zone lookup `time/clock` uses (once; later calls
+/// are ignored).
+pub fn install_local_offset(f: LocalOffset) {
+    let _ = LOCAL_OFFSET.set(f);
+}
+
+/// `time/clock`: the wall clock, effectful (read every tick).
+fn clock(_: &NodeInit) -> Box<dyn NodeImpl> {
+    always_eval(raw(|inputs, cx| {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_or(0.0, |d| d.as_secs_f64());
+        let local = cx.param("zone").and_then(|v| v.as_str()) != Some("utc");
+        let zone = match LOCAL_OFFSET.get() {
+            Some(f) if local => f(now.floor() as i64) as f64,
+            _ => 0.0,
+        };
+        let hours = first(inputs, 0).to_number();
+        let shift = if hours.is_finite() {
+            hours * 3600.0
+        } else {
+            0.0
+        };
+        let c = clock_parts(now + zone + shift);
+        Ok([
+            c.hours,
+            c.minutes,
+            c.seconds,
+            c.day,
+            c.month,
+            c.year,
+            c.weekday,
+            c.year_phase,
+            c.days,
+        ]
+        .into_iter()
+        .map(|v| one(Value::Num(v)))
+        .collect())
+    }))
+}
+
+/// A wall-clock time split into the Clock node's outputs.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ClockParts {
+    pub hours: f64,
+    pub minutes: f64,
+    pub seconds: f64,
+    pub day: f64,
+    pub month: f64,
+    pub year: f64,
+    /// 0 = Monday … 6 = Sunday.
+    pub weekday: f64,
+    pub year_phase: f64,
+    /// Days since 1970-01-01 (fractional).
+    pub days: f64,
+}
+
+/// Split seconds since 1970-01-01 00:00 (in whatever zone they're
+/// counted) into the time of day and the calendar date.
+pub fn clock_parts(t: f64) -> ClockParts {
+    let days = (t / 86_400.0).floor();
+    let sod = t - days * 86_400.0;
+    let (y, m, d) = civil_from_days(days as i64);
+    let start = days_from_civil(y, 1, 1) as f64;
+    let len = days_from_civil(y + 1, 1, 1) as f64 - start;
+    ClockParts {
+        hours: sod / 3600.0,
+        minutes: (sod % 3600.0) / 60.0,
+        seconds: sod % 60.0,
+        day: d as f64,
+        month: m as f64,
+        year: y as f64,
+        // 1970-01-01 was a Thursday.
+        weekday: ((days as i64 + 3).rem_euclid(7)) as f64,
+        year_phase: ((t / 86_400.0 - start) / len).clamp(0.0, 1.0),
+        days: t / 86_400.0,
+    }
+}
+
+/// The proleptic Gregorian date of a day count from 1970-01-01 (Howard
+/// Hinnant's `civil_from_days`).
+fn civil_from_days(z: i64) -> (i64, i64, i64) {
+    let z = z + 719_468;
+    let era = z.div_euclid(146_097);
+    let doe = z.rem_euclid(146_097);
+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = doy - (153 * mp + 2) / 5 + 1;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 };
+    (yoe + era * 400 + i64::from(m <= 2), m, d)
+}
+
+/// Days from 1970-01-01 to a proleptic Gregorian date.
+fn days_from_civil(y: i64, m: i64, d: i64) -> i64 {
+    let y = if m <= 2 { y - 1 } else { y };
+    let era = y.div_euclid(400);
+    let yoe = y.rem_euclid(400);
+    let mp = (m + 9) % 12;
+    let doy = (153 * mp + 2) / 5 + d - 1;
+    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+    era * 146_097 + doe - 719_468
 }
 
 #[cfg(test)]
@@ -109,5 +226,46 @@ mod tests {
                 assert!((p - f64::from(i) / f64::from(n)).abs() < 1e-9);
             }
         }
+    }
+
+    #[test]
+    fn clock_parts_split_dates_and_times() {
+        use super::clock_parts;
+        // (unix seconds, y, m, d, weekday Monday = 0, day of year from 1)
+        for (t, y, m, d, wd, yday) in [
+            (1_709_209_815.0, 2024.0, 2.0, 29.0, 3.0, 60.0),
+            (0.0, 1970.0, 1.0, 1.0, 3.0, 1.0),
+            (978_307_199.0, 2000.0, 12.0, 31.0, 6.0, 366.0),
+            (-21_600.0, 1969.0, 12.0, 31.0, 2.0, 365.0),
+            (1_791_531_900.0, 2026.0, 10.0, 9.0, 4.0, 282.0),
+        ] {
+            let c = clock_parts(t);
+            assert_eq!((c.year, c.month, c.day, c.weekday), (y, m, d, wd), "{t}");
+            let leap = y == 2024.0 || y == 2000.0;
+            let len = if leap { 366.0 } else { 365.0 };
+            let sod = t.rem_euclid(86_400.0);
+            let want = (yday - 1.0 + sod / 86_400.0) / len;
+            assert!((c.year_phase - want).abs() < 1e-9, "{t}: {}", c.year_phase);
+            assert!((c.days - t / 86_400.0).abs() < 1e-9);
+        }
+        // 12:30:15 → 12.504…, 30.25, 15.
+        let c = clock_parts(1_709_209_815.5);
+        assert!((c.hours - (12.0 + 30.0 / 60.0 + 15.5 / 3600.0)).abs() < 1e-9);
+        assert!((c.minutes - (30.0 + 15.5 / 60.0)).abs() < 1e-9);
+        assert!((c.seconds - 15.5).abs() < 1e-6);
+    }
+
+    #[test]
+    fn clock_node_reads_the_wall_clock_shifted_by_offset() {
+        let mut n = node("time/clock", serde_json::json!({ "zone": "utc" }));
+        let out = n.eval1(&[crate::value::Value::Num(0.0)]);
+        assert_eq!(out.len(), 9);
+        let year = num(&out[5]);
+        assert!((2024.0..2200.0).contains(&year), "{year}");
+        let h0 = num(&out[0]);
+        // Twelve hours on: the hour moves by 12 (mod 24).
+        let h12 = num(&n.eval1(&[crate::value::Value::Num(12.0)])[0]);
+        let d = (h12 - h0 - 12.0).rem_euclid(24.0);
+        assert!(d < 0.01 || d > 23.99, "{h0} → {h12}");
     }
 }

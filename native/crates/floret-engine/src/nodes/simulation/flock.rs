@@ -3,7 +3,9 @@
 //! Each boid steers by its neighbours within `radius`: away from the ones
 //! too close (separation, inside half the radius), toward their average
 //! heading (alignment) and their centre (cohesion), and optionally toward
-//! `target` (`attract`). Steering is limited to `maxSpeed` · 2 per second²,
+//! `target` (`attract`) — or, while `food` holds points, each toward the
+//! food point nearest it (the shortest way round the field; every boid
+//! against every point, so keep food to hundreds). Steering is limited to `maxSpeed` · 2 per second²,
 //! speed to `maxSpeed` (and at least a third of it, so the flock keeps
 //! moving). The field is `size`, centred on the origin; boids leaving one
 //! side come back on the other. Neighbours come from a grid of
@@ -78,6 +80,23 @@ fn steer(desired: Vec2, vel: Vec2, speed: f64, force: f64) -> Vec2 {
     )
 }
 
+/// The shortest way from `p` to the nearest of `food` on a field of size
+/// `s` that wraps.
+pub(super) fn nearest_way(p: Vec2, food: &[Vec2], s: Vec2) -> Vec2 {
+    let mut best = (f64::INFINITY, Vec2::default());
+    for f in food {
+        let d = Vec2 {
+            x: wrap(f.x - p.x, s.x),
+            y: wrap(f.y - p.y, s.y),
+        };
+        let d2 = d.x * d.x + d.y * d.y;
+        if d2 < best.0 {
+            best = (d2, d);
+        }
+    }
+    best.1
+}
+
 /// `x` wrapped into `[-w/2, w/2)`.
 fn wrap(x: f64, w: f64) -> f64 {
     (x + w / 2.0).rem_euclid(w) - w / 2.0
@@ -137,6 +156,7 @@ impl Sim for Flock {
         );
         let attract = ins.num("attract", 0.0);
         let target = ins.vec2("target", Vec2::default());
+        let food = ins.points("food");
         let n = self.pos.len();
         for p in &mut self.pos {
             p.x = wrap(p.x, s.x);
@@ -225,9 +245,13 @@ impl Sim for Flock {
                 add(steer(coh, v, speed, force), wc);
             }
             if attract != 0.0 {
-                let to = Vec2 {
-                    x: target.x - p.x,
-                    y: target.y - p.y,
+                let to = if food.is_empty() {
+                    Vec2 {
+                        x: target.x - p.x,
+                        y: target.y - p.y,
+                    }
+                } else {
+                    nearest_way(p, &food, s)
                 };
                 add(steer(to, v, speed, force), attract);
             }

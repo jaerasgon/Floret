@@ -6,22 +6,40 @@
 //! at `frames / fps`, so the last frame lasts a full frame and a one-loop
 //! export repeats seamlessly. Colours are tagged BT.709, as QuickTime and
 //! browsers expect.
+//!
+//! With sound, a second input takes interleaved float PCM and Apple's AAC
+//! encoder (licensed with the OS, like H.264) compresses it. Sound buffers
+//! are stamped in samples (`n / sample_rate`) and queued here, then handed
+//! over whenever the audio input is ready, including while a video frame
+//! waits, so the writer can always interleave the two tracks. The session
+//! end trims the sound to the pictures (they are pushed to the same
+//! length anyway, see `export::audio_span`); AVFoundation records the AAC
+//! encoder delay in the file, so playback starts on sample 0.
 
-use crate::export::H264Settings;
+use crate::export::{AudioSettings, H264Settings};
 use block2::RcBlock;
 use objc2::rc::Retained;
 use objc2::runtime::AnyObject;
 use objc2_av_foundation::{
     AVAssetWriter, AVAssetWriterInput, AVAssetWriterInputPixelBufferAdaptor, AVAssetWriterStatus,
-    AVFileTypeMPEG4, AVMediaTypeVideo, AVVideoAverageBitRateKey, AVVideoCodecKey,
+    AVFileTypeMPEG4, AVMediaTypeAudio, AVMediaTypeVideo, AVVideoAverageBitRateKey, AVVideoCodecKey,
     AVVideoCodecTypeH264, AVVideoColorPrimariesKey, AVVideoColorPrimaries_ITU_R_709_2,
     AVVideoColorPropertiesKey, AVVideoCompressionPropertiesKey, AVVideoExpectedSourceFrameRateKey,
     AVVideoHeightKey, AVVideoMaxKeyFrameIntervalKey, AVVideoProfileLevelH264HighAutoLevel,
     AVVideoProfileLevelKey, AVVideoTransferFunctionKey, AVVideoTransferFunction_ITU_R_709_2,
     AVVideoWidthKey, AVVideoYCbCrMatrixKey, AVVideoYCbCrMatrix_ITU_R_709_2,
 };
+use objc2_avf_audio::{AVEncoderBitRateKey, AVFormatIDKey, AVNumberOfChannelsKey, AVSampleRateKey};
+use objc2_core_audio_types::{
+    kAudioFormatFlagsNativeFloatPacked, kAudioFormatLinearPCM, kAudioFormatMPEG4AAC,
+    AudioStreamBasicDescription,
+};
 use objc2_core_foundation::CFRetained;
-use objc2_core_media::CMTime;
+use objc2_core_media::{
+    kCMBlockBufferAssureMemoryNowFlag, CMAudioFormatDescription, CMAudioFormatDescriptionCreate,
+    CMAudioSampleBufferCreateReadyWithPacketDescriptions, CMBlockBuffer, CMFormatDescription,
+    CMSampleBuffer, CMTime,
+};
 use objc2_core_video::{
     kCVPixelBufferHeightKey, kCVPixelBufferPixelFormatTypeKey, kCVPixelBufferWidthKey,
     kCVPixelFormatType_32BGRA, kCVReturnSuccess, CVPixelBuffer, CVPixelBufferGetBaseAddress,
@@ -30,6 +48,8 @@ use objc2_core_video::{
     CVPixelBufferUnlockBaseAddress,
 };
 use objc2_foundation::{NSDictionary, NSError, NSNumber, NSString, NSURL};
+use std::collections::VecDeque;
+use std::ffi::c_void;
 use std::path::Path;
 use std::ptr::NonNull;
 use std::time::{Duration, Instant};
@@ -37,13 +57,161 @@ use std::time::{Duration, Instant};
 /// How long to wait for the encoder to take a frame or close the file.
 const PATIENCE: Duration = Duration::from_secs(60);
 
+/// Stereo, interleaved `f32`.
+const CHANNELS: usize = 2;
+/// Sample frames per sound buffer handed to the writer.
+const SOUND_CHUNK: usize = 1024;
+
 pub struct Writer {
     writer: Retained<AVAssetWriter>,
     input: Retained<AVAssetWriterInput>,
     adaptor: Retained<AVAssetWriterInputPixelBufferAdaptor>,
+    sound: Option<Sound>,
     settings: H264Settings,
     frames: usize,
     finished: bool,
+}
+
+/// The sound track: its writer input, the PCM format pushed into it, and
+/// the samples not handed over yet.
+struct Sound {
+    input: Retained<AVAssetWriterInput>,
+    format: CFRetained<CMAudioFormatDescription>,
+    rate: u32,
+    pending: VecDeque<f32>,
+    /// Sample frames handed over so far: the next buffer's time stamp.
+    written: u64,
+}
+
+impl Sound {
+    /// Add an AAC input for `settings`, fed float PCM, to a writer that
+    /// hasn't started writing.
+    fn add(writer: &AVAssetWriter, settings: AudioSettings) -> Result<Sound, String> {
+        let rate = settings.sample_rate.max(1);
+        // SAFETY: AVFoundation / CoreMedia calls with valid, retained
+        // arguments (the settings dictionary maps NSString keys to NSNumber
+        // values, as AVAudioSettings.h documents); the format description
+        // out-pointer is checked before it's adopted.
+        unsafe {
+            let (format_id, sample_rate, channels, bitrate) = (
+                num(kAudioFormatMPEG4AAC),
+                NSNumber::new_f64(f64::from(rate)),
+                num(CHANNELS as u32),
+                num(settings.bitrate),
+            );
+            let output = dict(&[
+                (key(AVFormatIDKey)?, &format_id),
+                (key(AVSampleRateKey)?, &sample_rate),
+                (key(AVNumberOfChannelsKey)?, &channels),
+                (key(AVEncoderBitRateKey)?, &bitrate),
+            ]);
+            let audio = AVMediaTypeAudio.ok_or("AVFoundation: no audio media type")?;
+            let input = AVAssetWriterInput::assetWriterInputWithMediaType_outputSettings(
+                audio,
+                Some(&output),
+            );
+            input.setExpectsMediaDataInRealTime(false);
+            if !writer.canAddInput(&input) {
+                return Err("AVFoundation can't write AAC sound at this rate".into());
+            }
+            writer.addInput(&input);
+
+            let bytes = (CHANNELS * std::mem::size_of::<f32>()) as u32;
+            let asbd = AudioStreamBasicDescription {
+                mSampleRate: f64::from(rate),
+                mFormatID: kAudioFormatLinearPCM,
+                mFormatFlags: kAudioFormatFlagsNativeFloatPacked,
+                mBytesPerPacket: bytes,
+                mFramesPerPacket: 1,
+                mBytesPerFrame: bytes,
+                mChannelsPerFrame: CHANNELS as u32,
+                mBitsPerChannel: 32,
+                mReserved: 0,
+            };
+            let mut out: *const CMAudioFormatDescription = std::ptr::null();
+            let status = CMAudioFormatDescriptionCreate(
+                None,
+                NonNull::from(&asbd),
+                0,
+                std::ptr::null(),
+                0,
+                std::ptr::null(),
+                None,
+                NonNull::from(&mut out),
+            );
+            let format = match NonNull::new(out.cast_mut()) {
+                Some(f) if status == 0 => CFRetained::from_raw(f),
+                _ => return Err(format!("CoreMedia: no PCM format ({status})")),
+            };
+            Ok(Sound {
+                input,
+                format,
+                rate,
+                pending: VecDeque::new(),
+                written: 0,
+            })
+        }
+    }
+
+    /// Hand the writer one buffer of up to [`SOUND_CHUNK`] queued frames.
+    fn append_chunk(&mut self) -> Result<bool, String> {
+        let frames = (self.pending.len() / CHANNELS).min(SOUND_CHUNK);
+        if frames == 0 {
+            return Ok(false);
+        }
+        let samples: Vec<f32> = self.pending.drain(..frames * CHANNELS).collect();
+        let len = std::mem::size_of_val(samples.as_slice());
+        // SAFETY: a block buffer of `len` bytes, allocated now and filled
+        // from `samples` (exactly `len` bytes); the sample buffer refers to
+        // it and the format description, both retained until appended.
+        unsafe {
+            let mut block: *mut CMBlockBuffer = std::ptr::null_mut();
+            let status = CMBlockBuffer::create_with_memory_block(
+                None,
+                std::ptr::null_mut(),
+                len,
+                None,
+                std::ptr::null(),
+                0,
+                len,
+                kCMBlockBufferAssureMemoryNowFlag,
+                NonNull::from(&mut block),
+            );
+            let block = match NonNull::new(block) {
+                Some(b) if status == 0 => CFRetained::from_raw(b),
+                _ => return Err(format!("CoreMedia: no sound buffer ({status})")),
+            };
+            let src = NonNull::new(samples.as_ptr().cast_mut().cast::<c_void>())
+                .ok_or("CoreMedia: no sound samples")?;
+            let status = CMBlockBuffer::replace_data_bytes(src, &block, 0, len);
+            if status != 0 {
+                return Err(format!(
+                    "CoreMedia: couldn't fill a sound buffer ({status})"
+                ));
+            }
+            let at = CMTime::new(self.written as i64, self.rate as i32);
+            let mut sample: *mut CMSampleBuffer = std::ptr::null_mut();
+            let format: &CMFormatDescription = &self.format;
+            let status = CMAudioSampleBufferCreateReadyWithPacketDescriptions(
+                None,
+                &block,
+                format,
+                frames as _,
+                at,
+                std::ptr::null(),
+                NonNull::from(&mut sample),
+            );
+            let sample = match NonNull::new(sample) {
+                Some(s) if status == 0 => CFRetained::from_raw(s),
+                _ => return Err(format!("CoreMedia: no sound sample buffer ({status})")),
+            };
+            if !self.input.appendSampleBuffer(&sample) {
+                return Err("AVFoundation didn't take the sound".into());
+            }
+        }
+        self.written += frames as u64;
+        Ok(true)
+    }
 }
 
 fn describe(e: Option<Retained<NSError>>) -> String {
@@ -66,7 +234,11 @@ fn num(n: u32) -> Retained<NSNumber> {
 }
 
 impl Writer {
-    pub fn create(path: &Path, settings: H264Settings) -> Result<Writer, String> {
+    pub fn create(
+        path: &Path,
+        settings: H264Settings,
+        sound: Option<AudioSettings>,
+    ) -> Result<Writer, String> {
         // AVAssetWriter won't overwrite.
         match std::fs::remove_file(path) {
             Err(e) if e.kind() != std::io::ErrorKind::NotFound => {
@@ -140,6 +312,7 @@ impl Writer {
                 return Err("AVFoundation can't write H.264 at this size".into());
             }
             writer.addInput(&input);
+            let sound = sound.map(|a| Sound::add(&writer, a)).transpose()?;
             if !writer.startWriting() {
                 return Err(format!(
                     "AVFoundation couldn't start writing: {}",
@@ -151,6 +324,7 @@ impl Writer {
                 writer,
                 input,
                 adaptor,
+                sound,
                 settings,
                 frames: 0,
                 finished: false,
@@ -170,6 +344,67 @@ impl Writer {
         self.frames
     }
 
+    pub fn has_sound(&self) -> bool {
+        self.sound.is_some()
+    }
+
+    /// Queue interleaved stereo samples (see `Mp4File::push_audio`) and
+    /// hand over what the writer will take now.
+    pub fn push_audio(&mut self, interleaved: &[f32]) -> Result<(), String> {
+        let Some(s) = self.sound.as_mut() else {
+            return Ok(());
+        };
+        s.pending.extend(interleaved.iter().map(|v| {
+            if v.is_finite() {
+                v.clamp(-1.0, 1.0)
+            } else {
+                0.0
+            }
+        }));
+        self.pump_sound()?;
+        Ok(())
+    }
+
+    /// Hand queued sound to the writer while its input is ready. True if
+    /// anything went.
+    fn pump_sound(&mut self) -> Result<bool, String> {
+        let mut sent = false;
+        loop {
+            let Some(s) = self.sound.as_mut() else {
+                return Ok(sent);
+            };
+            // SAFETY: readiness of an input we own.
+            if s.pending.len() < CHANNELS || !unsafe { s.input.isReadyForMoreMediaData() } {
+                return Ok(sent);
+            }
+            if let Err(e) = s.append_chunk() {
+                return Err(self.failed().unwrap_or(e));
+            }
+            sent = true;
+        }
+    }
+
+    /// Hand over all queued sound, waiting for the writer as needed.
+    fn drain_sound(&mut self) -> Result<(), String> {
+        let since = Instant::now();
+        while self
+            .sound
+            .as_ref()
+            .is_some_and(|s| s.pending.len() >= CHANNELS)
+        {
+            if let Some(e) = self.failed() {
+                return Err(e);
+            }
+            if since.elapsed() > PATIENCE {
+                return Err("AVFoundation stopped taking sound".into());
+            }
+            if !self.pump_sound()? {
+                std::thread::sleep(Duration::from_millis(1));
+            }
+        }
+        Ok(())
+    }
+
     /// Add a frame of RGBA8 pixels (alpha ignored), row-major.
     pub fn push_rgba(&mut self, rgba: &[u8]) -> Result<(), String> {
         let (w, h) = (self.settings.width as usize, self.settings.height as usize);
@@ -185,7 +420,10 @@ impl Writer {
             if since.elapsed() > PATIENCE {
                 return Err("AVFoundation stopped taking frames".into());
             }
-            std::thread::sleep(Duration::from_millis(1));
+            // The writer may be waiting for sound to interleave.
+            if !self.pump_sound()? {
+                std::thread::sleep(Duration::from_millis(1));
+            }
         }
         let pb = self.pixel_buffer()?;
         // SAFETY: the buffer is locked while written, and every row written
@@ -247,6 +485,10 @@ impl Writer {
 
     /// End the video at `frames / fps` and close the file.
     pub fn finish(mut self) -> Result<(), String> {
+        // The pictures are all in: let the sound catch up, then close both.
+        // SAFETY: finishing an input we own.
+        unsafe { self.input.markAsFinished() };
+        self.drain_sound()?;
         self.finished = true;
         let (tx, rx) = std::sync::mpsc::channel();
         let done = RcBlock::new(move || {
@@ -255,7 +497,9 @@ impl Writer {
         // SAFETY: finishing a writer we own; the block only signals the
         // channel, from whichever queue AVFoundation calls it on.
         unsafe {
-            self.input.markAsFinished();
+            if let Some(s) = &self.sound {
+                s.input.markAsFinished();
+            }
             let end = CMTime::new(self.frames as i64, self.settings.fps as i32);
             self.writer.endSessionAtSourceTime(end);
             self.writer.finishWritingWithCompletionHandler(&done);

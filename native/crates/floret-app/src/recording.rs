@@ -14,6 +14,25 @@
 //! over it). A loop is `N = round(loop × fps)` frames at `dt = loop / N`,
 //! so frame N would be frame 0 again: played on repeat, a one-loop
 //! recording joins seamlessly.
+//!
+//! **Sound.** A patch with `sound/*` nodes gets an audio engine of its own
+//! for the run ([`AudioSystem::for_export`]: no device, sound files loaded
+//! up front), rendered in step with the pictures: after frame `i` is
+//! ticked, exactly the samples that play during it
+//! ([`floret_video::export::audio_span`]) are rendered, so analysers see
+//! the same sound the live preview would and the run stays deterministic,
+//! however fast or slow the machine. On macOS an MP4 carries that sound
+//! (AAC through Apple's encoder, "Include sound"); elsewhere MP4s stay
+//! pictures-only for now (no royalty-free AAC encoder to ship).
+//!
+//! The sound of a one-loop recording joins seamlessly when looped if the
+//! patch's sound itself repeats over the loop (notes and gates driven by
+//! the Time node's loop phase, oscillators whose pitch fits the loop a
+//! whole number of times). A run starts from silence, so a reverb or delay
+//! tail ringing over the loop's end is cut off rather than carried into
+//! the start, and the sound runs on the video's clock (`1 / fps` per
+//! frame) where the pictures step by `dt`; they differ only when
+//! `loop × fps` isn't whole, by under half a frame per loop.
 
 use crate::export;
 use crate::theme;
@@ -23,8 +42,9 @@ use floret_engine::graph::NodeIdx;
 use floret_engine::patch::PatchFile;
 use floret_engine::scene::SceneNode;
 use floret_engine::{Engine, FrameCtx};
+use floret_media::AudioSystem;
 use floret_render::{RenderClock, Renderer};
-use floret_video::export::{H264Settings, Mp4File};
+use floret_video::export::{self as video, AudioSettings, H264Settings, Mp4File};
 use floret_video::gif_writer::{self, GifWriter};
 use std::fs::File;
 use std::io::BufWriter;
@@ -209,12 +229,22 @@ pub fn problem(size: (u32, u32), fps: u32, format: Format, max_texture: u32) -> 
 
 // ─── Offline run ────────────────────────────────────────────────────────────
 
+/// The sample rate sound is rendered at for exports.
+pub const SOUND_RATE: u32 = 48_000;
+
+/// Does the patch send anything to the speakers (a `sound/output`)?
+pub fn has_sound(patch: &PatchFile) -> bool {
+    patch.nodes.iter().any(|n| n.def_type == "sound/output")
+}
+
 /// A fresh engine for the patch, run frame by frame for one renderer.
 pub struct Offline {
     engine: Engine,
     renderer: NodeIdx,
     /// The recorded renderer's canvas size.
     pub size: (u32, u32),
+    /// The patch's own audio engine, when it has sound nodes.
+    audio: Option<Arc<AudioSystem>>,
 }
 
 fn renderer_size(engine: &Engine, r: NodeIdx) -> (u32, u32) {
@@ -236,11 +266,42 @@ impl Offline {
             .or_else(|| engine.graph.renderer())
             .ok_or("The patch has no Renderer to record")?;
         let size = renderer_size(&engine, r);
+        // Sound nodes get an engine of their own, so they (and anything
+        // analysing them) behave as in the live preview.
+        let audio = (engine.graph.nodes.iter())
+            .any(|n| n.ty.starts_with("sound/"))
+            .then(|| {
+                let a = AudioSystem::for_export(SOUND_RATE as f32);
+                a.set_host(Some(crate::host::shared()));
+                Arc::new(a)
+            });
+        if let Some(a) = &audio {
+            engine.set_audio(Some(a.clone()));
+        }
         Ok(Offline {
             engine,
             renderer: r,
             size,
+            audio,
         })
+    }
+
+    /// Whether the run has sound nodes (and renders sound).
+    pub fn has_audio(&self) -> bool {
+        self.audio.is_some()
+    }
+
+    /// Render the sound that plays during frame `i` at `fps` (call after
+    /// ticking it): interleaved stereo at [`SOUND_RATE`], the frame's
+    /// [`video::audio_span`]. Empty without sound nodes.
+    pub fn sound(&mut self, i: usize, fps: u32) -> Vec<f32> {
+        let Some(a) = &self.audio else {
+            return Vec::new();
+        };
+        let span = video::audio_span(i, fps, SOUND_RATE);
+        let mut buf = vec![0f32; (span.end - span.start) as usize * 2];
+        a.render_into(&mut buf);
+        buf
     }
 
     /// Tick frame `i` and return the recorded renderer's scene and
@@ -281,7 +342,8 @@ enum Sink {
 }
 
 impl Sink {
-    fn create(spec: &Spec, size: (u32, u32)) -> Result<Sink, String> {
+    /// `sound`: give an MP4 a sound track (where the platform can).
+    fn create(spec: &Spec, size: (u32, u32), sound: bool) -> Result<Sink, String> {
         let create = |p: &Path| {
             File::create(p)
                 .map(BufWriter::new)
@@ -291,7 +353,8 @@ impl Sink {
         Ok(match spec.format {
             Format::Mp4 => {
                 let settings = H264Settings::export(size.0, size.1, spec.fps);
-                Sink::Mp4(Mp4File::create(&path, settings)?, path)
+                let sound = sound.then(AudioSettings::export);
+                Sink::Mp4(Mp4File::create_with_sound(&path, settings, sound)?, path)
             }
             Format::Gif => {
                 let gif = GifWriter::new(create(&path)?, size.0, size.1, spec.fps)?;
@@ -326,6 +389,18 @@ impl Sink {
                 Ok(())
             }
         }
+    }
+
+    /// Add the sound that plays during the last frame pushed.
+    fn push_sound(&mut self, interleaved: &[f32]) -> Result<(), String> {
+        match self {
+            Sink::Mp4(enc, _) if !interleaved.is_empty() => enc.push_audio(interleaved),
+            _ => Ok(()),
+        }
+    }
+
+    fn has_sound(&self) -> bool {
+        matches!(self, Sink::Mp4(enc, _) if enc.has_sound())
     }
 
     /// Finish the file(s): the name to report.
@@ -385,9 +460,17 @@ pub struct Spec {
     pub scale: f64,
     pub fps: u32,
     pub plan: Plan,
+    /// Put the patch's sound in the file (MP4 where supported, see
+    /// [`video::sound_supported`]).
+    pub sound: bool,
 }
 
 const CANCELLED: &str = "Export cancelled";
+
+/// Why "Include sound" is off outside macOS.
+pub const SOUND_MAC_ONLY: &str = "Sound in MP4 export is Mac-only for now: Floret uses \
+    Apple's licensed AAC encoder there and has no royalty-free one to ship elsewhere \
+    yet. The video is exported without sound.";
 
 /// Make the recording, counting finished frames in `progress` and
 /// stopping when `cancel` is set. Ok: what was saved.
@@ -407,7 +490,8 @@ pub fn record(
     if let Some(p) = problem(size, spec.fps, spec.format, max) {
         return Err(p);
     }
-    let mut sink = Sink::create(spec, size)?;
+    let sound = spec.sound && offline.has_audio();
+    let mut sink = Sink::create(spec, size, sound)?;
     let mut run = || {
         let mut renderer = Renderer::new(
             &gpu.device,
@@ -446,15 +530,19 @@ pub fn record(
                 return Err(e.to_string());
             }
             sink.push(pixels)?;
+            // Rendered whether or not it's kept: analysers need it.
+            let pcm = offline.sound(i, spec.fps);
+            sink.push_sound(&pcm)?;
             progress.store(i + 1, Ordering::Relaxed);
         }
         Ok(())
     };
     match run() {
         Ok(()) => {
+            let with = if sink.has_sound() { ", with sound" } else { "" };
             let name = sink.finish()?;
             Ok(format!(
-                "Saved {name} ({} × {}, {} frames)",
+                "Saved {name} ({} × {}, {} frames{with})",
                 size.0, size.1, spec.plan.frames
             ))
         }
@@ -484,6 +572,8 @@ pub struct Recorder {
     scale: f64,
     fps: u32,
     loops: u32,
+    /// "Include sound" (MP4s of patches with sound, where supported).
+    sound: bool,
     job: Option<Job>,
     /// How the last recording went.
     status: Option<Result<String, String>>,
@@ -498,6 +588,7 @@ impl Default for Recorder {
             scale: 1.0,
             fps: 30,
             loops: 1,
+            sound: true,
             job: None,
             status: None,
         }
@@ -506,14 +597,18 @@ impl Default for Recorder {
 
 /// A renderer the window can record: id, title, canvas size, and the name
 /// files are called after.
-struct Target {
-    id: String,
-    title: String,
-    size: (u32, u32),
-    name: String,
+pub(crate) struct Target {
+    pub id: String,
+    pub title: String,
+    pub size: (u32, u32),
+    pub name: String,
 }
 
-fn targets(patch: &PatchFile, renderers: &[(String, String)], doc_name: &str) -> Vec<Target> {
+pub(crate) fn targets(
+    patch: &PatchFile,
+    renderers: &[(String, String)],
+    doc_name: &str,
+) -> Vec<Target> {
     renderers
         .iter()
         .filter_map(|(id, title)| {
@@ -700,6 +795,12 @@ impl Recorder {
                 }
                 ui.end_row();
 
+                if self.format == Format::Mp4 && has_sound(patch) {
+                    ui.label("Sound");
+                    self.sound_option(ui);
+                    ui.end_row();
+                }
+
                 ui.label("Length");
                 ui.horizontal(|ui| {
                     let suffix = if self.loops == 1 { " loop" } else { " loops" };
@@ -718,6 +819,26 @@ impl Recorder {
                 });
                 ui.end_row();
             });
+    }
+
+    /// The MP4 "Include sound" checkbox: on by default; off and explained
+    /// where MP4s can't carry sound yet.
+    fn sound_option(&mut self, ui: &mut egui::Ui) {
+        if video::sound_supported() {
+            ui.checkbox(&mut self.sound, "Include sound").on_hover_text(
+                "Put the patch's sound in the video (AAC), rendered offline in step \
+                 with the frames. A one-loop export's sound repeats seamlessly when \
+                 the patch's sound repeats over the loop.",
+            );
+        } else {
+            ui.horizontal(|ui| {
+                let mut off = false;
+                ui.add_enabled(false, egui::Checkbox::new(&mut off, "Include sound"))
+                    .on_disabled_hover_text(SOUND_MAC_ONLY);
+                ui.label(RichText::new("Mac only for now").color(theme::FG_2).small())
+                    .on_hover_text(SOUND_MAC_ONLY);
+            });
+        }
     }
 
     fn footer(
@@ -835,6 +956,10 @@ impl Recorder {
             scale: self.scale,
             fps: self.fps,
             plan,
+            sound: self.format == Format::Mp4
+                && self.sound
+                && has_sound(patch)
+                && video::sound_supported(),
         };
         let gpu = Gpu {
             device: rs.device.clone(),
@@ -870,7 +995,7 @@ impl Recorder {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
 
     const SAMPLE: &str = include_str!("../../../samples/loop-bloom.flora");
@@ -981,10 +1106,81 @@ mod tests {
         }
     }
 
+    const SOUND_SAMPLE: &str = include_str!("../../../samples/fft-bloom.flora");
+
+    #[test]
+    fn knows_which_patches_have_sound() {
+        let sound = floret_engine::load_patch(SOUND_SAMPLE).unwrap();
+        assert!(has_sound(&sound));
+        assert!(Offline::new(&sound, "").unwrap().has_audio());
+        let quiet = floret_engine::load_patch(SAMPLE).unwrap();
+        assert!(!has_sound(&quiet));
+        let mut off = Offline::new(&quiet, "").unwrap();
+        assert!(!off.has_audio());
+        off.frame(0, 1.0 / 30.0);
+        assert!(off.sound(0, 30).is_empty());
+    }
+
+    /// The sound of `frames` frames of an offline run at `fps`.
+    fn sound_of(patch: &PatchFile, frames: usize, fps: u32) -> Vec<Vec<f32>> {
+        let p = plan(patch.loop_seconds(), 1, fps);
+        let mut off = Offline::new(patch, "").unwrap();
+        (0..frames)
+            .map(|i| {
+                off.frame(i, p.dt);
+                off.sound(i, fps)
+            })
+            .collect()
+    }
+
+    #[test]
+    fn offline_sound_is_deterministic_and_as_long_as_the_video() {
+        let patch = floret_engine::load_patch(SOUND_SAMPLE).unwrap();
+        for fps in [24, 30, 60] {
+            let frames = fps as usize / 2;
+            let a = sound_of(&patch, frames, fps);
+            // Each frame carries exactly its share: rate / fps stereo frames.
+            for (i, chunk) in a.iter().enumerate() {
+                let span = video::audio_span(i, fps, SOUND_RATE);
+                assert_eq!(chunk.len() as u64, (span.end - span.start) * 2);
+                assert_eq!(chunk.len(), 2 * SOUND_RATE as usize / fps as usize);
+            }
+            // Half a second of video, half a second of sound.
+            let total: usize = a.iter().map(Vec::len).sum();
+            assert_eq!(total, SOUND_RATE as usize, "{fps} fps");
+            assert_eq!(
+                a,
+                sound_of(&patch, frames, fps),
+                "{fps} fps: same every run"
+            );
+        }
+        let a = sound_of(&patch, 15, 30).concat();
+        assert!(a.iter().any(|v| v.abs() > 0.01), "the sample is audible");
+        assert!(a.iter().all(|v| v.is_finite() && v.abs() <= 1.0));
+    }
+
+    #[test]
+    fn sound_follows_the_patch_into_its_analysers() {
+        // fft-bloom draws its spectrum: with its own audio engine the
+        // offline frames see sound, as the live preview does.
+        let patch = floret_engine::load_patch(SOUND_SAMPLE).unwrap();
+        let mut off = Offline::new(&patch, "").unwrap();
+        let mut quiet = Offline::new(&patch, "").unwrap();
+        quiet.engine.set_audio(None);
+        let dt = 1.0 / 30.0;
+        let (mut a, mut b) = (String::new(), String::new());
+        for i in 0..10 {
+            a = format!("{:?}", off.frame(i, dt));
+            off.sound(i, 30);
+            b = format!("{:?}", quiet.frame(i, dt));
+        }
+        assert_ne!(a, b);
+    }
+
     /// The whole path on a real GPU (skipped without an adapter): a GIF and
     /// a PNG sequence of the sample, read back.
     /// A device of our own, as `floret_render::Headless` makes one.
-    fn gpu() -> Option<Gpu> {
+    pub(crate) fn gpu() -> Option<Gpu> {
         let instance =
             wgpu::Instance::new(wgpu::InstanceDescriptor::new_without_display_handle_from_env());
         let adapter =
@@ -1025,6 +1221,7 @@ mod tests {
             scale: 0.1,
             fps: 10,
             plan,
+            sound: false,
         };
         let (progress, cancel) = (AtomicUsize::new(0), AtomicBool::new(false));
 

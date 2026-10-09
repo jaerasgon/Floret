@@ -25,7 +25,10 @@ native Mac app.
 - **Variations and presets:** roll a new variation with Cmd+Shift+R, save
   the ones you like as presets, and morph between them.
 - **Export** a still as PNG (up to 4×) or a seamless loop as MP4, GIF or a
-  PNG sequence.
+  PNG sequence. MP4s include the patch's sound.
+- **Export Variations** renders a dozen (or a few hundred) seeds or presets
+  in one go, with a contact sheet to pick favourites from; click one to
+  bring it back into the patch.
 - **Real files:** patches are `.flora` files. Double-click one in Finder to
   open it in Floret. Unsaved work is autosaved and offered back after a
   crash. Patches from the earlier web version open as they are.

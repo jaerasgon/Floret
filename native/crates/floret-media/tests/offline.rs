@@ -524,6 +524,55 @@ fn sound_file_loads_plays_and_reports_its_playhead() {
     let _ = std::fs::remove_file(&*url);
 }
 
+/// The export system loads a sound file while the first tick that plays it
+/// is submitted, so the file plays from sample 0 on every run.
+#[test]
+fn export_audio_loads_files_up_front_and_renders_the_same_every_time() {
+    let rate = 22050;
+    let tone: Vec<i16> = (0..rate / 4)
+        .map(|n| ((TAU * 440.0 * f64::from(n) / f64::from(rate)).sin() * 16000.0) as i16)
+        .collect();
+    let url: Arc<str> = Arc::from(temp_wav("export", rate, &tone));
+    let run = || {
+        let sys = AudioSystem::for_export(SR);
+        let g = graph(vec![
+            (
+                "sf",
+                AudioNode::SoundFile {
+                    url: url.clone(),
+                    rate: 1.0,
+                    pan: 0.0,
+                    amp: 1.0,
+                    looping: true,
+                    play: true,
+                },
+            ),
+            ("out", out("sf")),
+        ]);
+        // No waiting: ready as soon as the first graph is in.
+        sys.submit(g.clone());
+        assert!(matches!(
+            sys.feedback().samples.get(&url),
+            Some(SampleState::Ready { .. })
+        ));
+        let mut buf = Vec::new();
+        // Uneven chunks, as video frames at odd rates ask for.
+        for n in [1600usize, 1601, 7, 3000] {
+            sys.submit(g.clone());
+            let mut chunk = vec![0f32; n * 2];
+            sys.render_into(&mut chunk);
+            buf.extend(chunk);
+        }
+        buf
+    };
+    let a = run();
+    assert_eq!(a.len(), (1600 + 1601 + 7 + 3000) * 2);
+    // The file is playing from the very first quantum.
+    assert!(a[..256].iter().any(|v| v.abs() > 0.01));
+    assert_eq!(a, run());
+    let _ = std::fs::remove_file(&*url);
+}
+
 #[test]
 fn fan_out_and_nodes_that_skip_a_tick() {
     let sys = AudioSystem::offline(SR);

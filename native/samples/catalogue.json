@@ -951,6 +951,76 @@
       "category": "Image",
       "description": "The webcam through Echo's slit-scan: each row of the picture comes from a moment further back, so anything that moves stretches and bends. Without a camera, a swinging stand-in shows the effect.",
       "file": "camera-slit-scan.flora"
+    },
+    {
+      "id": "flow-lines",
+      "name": "Flow Lines",
+      "category": "Curves",
+      "description": "Contours' flow mode: evenly spaced streamlines through a noise field, each line a colour from the palette — the plotter-art look, slowly turning with time.",
+      "file": "flow-lines.flora"
+    },
+    {
+      "id": "mondrian-splits",
+      "name": "Mondrian Splits",
+      "category": "Geometry",
+      "description": "Cells' subdivide mode: a square split recursively by chance, black gaps between the parts, colours picked at random from a mostly-white palette.",
+      "file": "mondrian-splits.flora"
+    },
+    {
+      "id": "truchet-tiles",
+      "name": "Truchet Tiles",
+      "category": "Geometry",
+      "description": "The Tiles node's truchet mode: quarter-circle tiles turned by noise, so the arcs clump into long meandering loops in two colours.",
+      "file": "truchet-tiles.flora"
+    },
+    {
+      "id": "wfc-circuits",
+      "name": "WFC Circuits",
+      "category": "Geometry",
+      "description": "The Tiles node's wfc mode: wave function collapse over edge-matched pipe tiles, none running off the grid, each tile type in its own colour.",
+      "file": "wfc-circuits.flora"
+    },
+    {
+      "id": "kaleido-slime",
+      "name": "Kaleido Slime",
+      "category": "Geometry",
+      "description": "The Symmetry node's kaleidoscope mode: a slime mould's trail map cut to a wedge and mirrored six times round the centre, a growing lace mandala.",
+      "file": "kaleido-slime.flora"
+    },
+    {
+      "id": "wallpaper-groups",
+      "name": "Wallpaper Groups",
+      "category": "Geometry",
+      "description": "The Symmetry node's wallpaper mode: a small turning motif repeated by the p6m plane group on a hexagonal lattice. Pick any of the 17 groups.",
+      "file": "wallpaper-groups.flora"
+    },
+    {
+      "id": "sim-differential-growth",
+      "name": "Differential Growth",
+      "category": "Particles",
+      "description": "The Simulation node's growth mode: a ring whose nodes repel and whose edges split as they stretch, folding like coral; edges coloured by age.",
+      "file": "sim-differential-growth.flora"
+    },
+    {
+      "id": "sim-reaction-diffusion",
+      "name": "Reaction Diffusion",
+      "category": "Particles",
+      "description": "The Simulation node's reaction mode: Gray–Scott coral growing out of a rasterised word, with presets for mitosis, fingerprints, worms and more.",
+      "file": "sim-reaction-diffusion.flora"
+    },
+    {
+      "id": "ascii-cells",
+      "name": "ASCII Cells",
+      "category": "Image",
+      "description": "The Effect node's ascii mode: reaction–diffusion fingerprint ridges redrawn as coloured characters picked by brightness.",
+      "file": "ascii-cells.flora"
+    },
+    {
+      "id": "palette-from-image",
+      "name": "Palette From Image",
+      "category": "Color",
+      "description": "The Palette node's image mode: a photo's six dominant colours (k-means in OKLab), used to colour a Mondrian beside it.",
+      "file": "palette-from-image.flora"
     }
   ]
 }

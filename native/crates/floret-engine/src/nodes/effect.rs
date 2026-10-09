@@ -17,7 +17,9 @@
 //! barrel / pincushion distortion, Sobel edges, and the colour tools:
 //! posterize, threshold (by brightness, or by coverage for metaballs),
 //! levels, curves (five colour pins = a curve per channel), a 3D LUT from
-//! a `.cube` file, and chroma key.
+//! a `.cube` file, and chroma key. Last, `ascii`: the layer as text
+//! characters picked by brightness, drawn from a glyph atlas the node
+//! rasterises from the bundled monospace font (see [`glyph_atlas`]).
 
 use super::gpu::as_layer;
 use super::Registrar;
@@ -49,7 +51,7 @@ pub(crate) fn effect_seed(seed: f64) -> f64 {
 }
 
 /// The effect modes, in dropdown order.
-pub const MODES: [&str; 18] = [
+pub const MODES: [&str; 19] = [
     "bloom",
     "grain",
     "displace",
@@ -68,6 +70,7 @@ pub const MODES: [&str; 18] = [
     "curves",
     "lut",
     "key",
+    "ascii",
 ];
 
 /// Blur's `kind`s, in dropdown order.
@@ -217,6 +220,21 @@ fn own_ports(mode: &str, sub: &str) -> Vec<PortSpec> {
             num("tolerance", 0.15),
             num("softness", 0.1),
             num("spill", 0.5),
+        ],
+        "ascii" => vec![
+            num("size", 12.0),
+            PortSpec::new("chars", PortType::String).default(Value::str(ASCII_RAMP)),
+            PortSpec::new("colored", PortType::Boolean).default(Value::Bool(true)),
+            color("color", Color::WHITE),
+            color(
+                "background",
+                Color {
+                    r: 0.0,
+                    g: 0.0,
+                    b: 0.0,
+                    a: 0.0,
+                },
+            ),
         ],
         "grain" => vec![num("amount", 0.15), num("size", 1.5), int("seed", 0.0)],
         "displace" => vec![
@@ -793,6 +811,43 @@ void mainImage(out vec4 o, in vec2 fc) {
 }
 ";
 
+/// ASCII art: the canvas in cells `size` pixels tall and half as wide;
+/// each cell's mean brightness (on black) picks a character from the
+/// atlas in channel 1 (the characters side by side, darkest first, each
+/// tile half as wide as it is tall), coloured from the cell or `color`,
+/// over `background`.
+const ASCII: &str = "
+uniform float size;
+uniform float colored;
+uniform vec4 color;
+uniform vec4 background;
+void mainImage(out vec4 o, in vec2 fc) {
+  vec2 cell = vec2(0.5, 1.0) * max(size, 2.0);
+  vec2 c0 = floor(fc / cell) * cell;
+  vec4 acc = vec4(0.0);
+  for (int j = 0; j < 4; j++) {
+    for (int i = 0; i < 4; i++) {
+      vec2 p = c0 + (vec2(float(i), float(j)) + 0.5) * cell / 4.0;
+      acc += fetch(0, p / iResolution.xy);
+    }
+  }
+  acc /= 16.0;
+  vec2 tex = vec2(textureSize(iChannel1, 0));
+  float n = max(floor(tex.x / (tex.y * 0.5) + 0.5), 1.0);
+  float l = clamp(dot(acc.rgb, LUMA), 0.0, 1.0);
+  float k = min(floor(l * n), n - 1.0);
+  vec2 f = clamp(fract(fc / cell), vec2(0.5) / (tex.y * vec2(0.5, 1.0)),
+                 vec2(1.0) - vec2(0.5) / (tex.y * vec2(0.5, 1.0)));
+  float cov = texture(iChannel1, vec2((k + f.x) / n, 1.0 - f.y)).a;
+  vec3 fg = colored > 0.5 ? (acc.a > 0.0 ? clamp(acc.rgb / acc.a, 0.0, 1.0) : vec3(0.0))
+                          : color.rgb;
+  float fa = cov * (colored > 0.5 ? 1.0 : color.a);
+  float a = fa + background.a * (1.0 - fa);
+  vec3 rgb = fg * fa + background.rgb * background.a * (1.0 - fa);
+  o = vec4(a > 0.0 ? rgb / a : vec3(0.0), a);
+}
+";
+
 /// Chroma key: pixels whose chroma (YCbCr) is within `tolerance` of the key
 /// `color` go transparent, fading over `softness`; `spill` takes the key's
 /// tint out of what's left (green fringes on hair).
@@ -889,6 +944,9 @@ pub fn mode_passes(mode: &str, sub: &str, map: bool, lut: bool) -> Vec<ShaderPas
         // No table (yet): the layer as it is.
         "lut" => vec![image(COPY, input)],
         "key" => vec![image(KEY, input)],
+        "ascii" if lut => vec![image(ASCII, [C::Input, C::Lut, C::None, C::None])],
+        // No characters (no font): the layer as it is.
+        "ascii" => vec![image(COPY, input)],
         "grain" => vec![image(GRAIN, input)],
         "displace" if map => vec![image(DISPLACE_MAP, [C::Input, C::Map, C::None, C::None])],
         "displace" => vec![image(DISPLACE_NOISE, input)],
@@ -946,6 +1004,8 @@ fn uniform(port: &PortSpec, v: Option<&Value>) -> UniformValue {
 fn effect(init: &NodeInit) -> Box<dyn NodeImpl> {
     let lut_mode = init.params.get("mode").and_then(|v| v.as_str()) == Some("lut");
     let mut slot: LoadSlot<Arc<Image>> = LoadSlot::default();
+    // The ASCII mode's atlas, for the characters it was made from.
+    let mut atlas: Option<(String, Option<Arc<Image>>)> = None;
     let node = raw(move |inputs, cx: &mut EvalCtx| {
         let get = |k: &str| cx.param(k).and_then(|v| v.as_str()).map(str::to_owned);
         let mode = mode_of(get);
@@ -969,10 +1029,23 @@ fn effect(init: &NodeInit) -> Box<dyn NodeImpl> {
         }
         let map_port = ports.iter().position(|p| p.ty == PortType::Layer);
         let map = map_port.and_then(|i| as_layer(inputs.get(i + 1).map(|s| &s[..])));
-        let lut = if mode == "lut" {
-            load_lut(&mut slot, pin("lut"), cx)
-        } else {
-            None
+        let lut = match mode {
+            "lut" => load_lut(&mut slot, pin("lut"), cx),
+            "ascii" => {
+                let chars = match pin("chars") {
+                    Some(Value::Str(s)) if !s.is_empty() => s.to_string(),
+                    _ => ASCII_RAMP.to_owned(),
+                };
+                match &atlas {
+                    Some((c, img)) if *c == chars => img.clone(),
+                    _ => {
+                        let img = glyph_atlas(&chars).map(Arc::new);
+                        atlas = Some((chars, img.clone()));
+                        img
+                    }
+                }
+            }
+            _ => None,
         };
         let passes = mode_passes(mode, sub, map.is_some(), lut.is_some());
         let mut decls: Vec<UniformDecl> = Vec::new();
@@ -1053,6 +1126,73 @@ fn load_lut(
         }
         LoadState::Loading => None,
     }
+}
+
+// ─── ASCII ───────────────────────────────────────────────────────────────────
+
+/// The ASCII mode's default characters, darkest (emptiest) first.
+pub const ASCII_RAMP: &str = " .:-=+*#%@";
+/// An atlas tile's height in pixels (its width is half that).
+pub const GLYPH_TILE: u32 = 48;
+/// Most characters an atlas holds.
+pub const MAX_GLYPHS: usize = 128;
+
+/// The characters of `chars` (at most [`MAX_GLYPHS`]) rasterised from the
+/// bundled monospace font, side by side in tiles [`GLYPH_TILE`] tall and
+/// half as wide: white, coverage in alpha. `None` without the font or
+/// characters.
+pub fn glyph_atlas(chars: &str) -> Option<Image> {
+    use skrifa::MetadataProvider;
+    let chars: Vec<char> = chars.chars().take(MAX_GLYPHS).collect();
+    if chars.is_empty() {
+        return None;
+    }
+    let face = crate::text::face(crate::text::resolve("monospace", 400, false)?)?;
+    let font = face.font()?;
+    let charmap = font.charmap();
+    let (th, tw) = (GLYPH_TILE as usize, GLYPH_TILE as usize / 2);
+    // About 0.6 em wide: 35 px type fits a 24 × 48 tile with a margin.
+    let size = th as f64 * 0.74;
+    let baseline = th as f64 * 0.74;
+    let w = tw * chars.len();
+    let mut rgba = vec![0u8; w * th * 4];
+    for (k, c) in chars.iter().enumerate() {
+        let Some(gid) = charmap.map(*c) else { continue };
+        let Ok(id) = u16::try_from(gid.to_u32()) else {
+            continue;
+        };
+        let contours = crate::text::outline::glyph_contours(&face, id, size, &[]);
+        if contours.is_empty() {
+            continue;
+        }
+        let Some((lo, hi)) = crate::text::outline::bounds(&contours) else {
+            continue;
+        };
+        // Centred across the tile (monospace glyphs sit in their advance).
+        let dx = (tw as f64 - (hi.x - lo.x)) / 2.0 - lo.x;
+        for y in 0..th {
+            for x in 0..tw {
+                // 4 × 4 samples a pixel.
+                let mut hits = 0;
+                for sy in 0..4 {
+                    for sx in 0..4 {
+                        let p = crate::value::Vec2 {
+                            x: x as f64 + (sx as f64 + 0.5) / 4.0 - dx,
+                            y: y as f64 + (sy as f64 + 0.5) / 4.0 - baseline,
+                        };
+                        if crate::text::outline::winding(&contours, p) != 0 {
+                            hits += 1;
+                        }
+                    }
+                }
+                if hits > 0 {
+                    let o = (y * w + k * tw + x) * 4;
+                    rgba[o..o + 4].copy_from_slice(&[255, 255, 255, (hits * 255 / 16) as u8]);
+                }
+            }
+        }
+    }
+    Some(Image::new(w as u32, th as u32, rgba))
 }
 
 // ─── .cube lookup tables ─────────────────────────────────────────────────────
@@ -1732,5 +1872,85 @@ mod tests {
             };
             assert_eq!(effect(&init).memoise(), memo, "{mode}");
         }
+    }
+}
+
+#[cfg(test)]
+mod ascii_tests {
+    use super::*;
+    use crate::nodes::value::harness::node;
+    use serde_json::json;
+
+    fn coverage(img: &Image, k: u32) -> u32 {
+        let tw = GLYPH_TILE / 2;
+        let mut sum = 0;
+        for y in 0..img.height() {
+            for x in k * tw..(k + 1) * tw {
+                sum += u32::from(img.pixel(x, y)[3]);
+            }
+        }
+        sum
+    }
+
+    #[test]
+    fn the_atlas_holds_each_character_in_a_tile() {
+        let img = glyph_atlas(ASCII_RAMP).expect("the bundled monospace font");
+        let n = ASCII_RAMP.chars().count() as u32;
+        assert_eq!(
+            (img.width(), img.height()),
+            (n * GLYPH_TILE / 2, GLYPH_TILE)
+        );
+        // A space is empty; the ramp gets denser towards '@'.
+        assert_eq!(coverage(&img, 0), 0);
+        assert!(coverage(&img, 1) > 0, "'.' has ink");
+        assert!(coverage(&img, n - 1) > coverage(&img, 1) * 4);
+        // Ink stays inside its tile (no glyph spills into the next).
+        for k in 0..n {
+            let tw = GLYPH_TILE / 2;
+            for y in 0..GLYPH_TILE {
+                assert_eq!(img.pixel(k * tw, y)[3], 0, "tile {k}'s left column");
+            }
+        }
+        assert!(glyph_atlas("").is_none());
+        // At most MAX_GLYPHS characters.
+        let long: String = std::iter::repeat_n('#', 500).collect();
+        let img = glyph_atlas(&long).unwrap();
+        assert_eq!(img.width(), MAX_GLYPHS as u32 * GLYPH_TILE / 2);
+    }
+
+    #[test]
+    fn ascii_mode_hands_the_atlas_to_its_pass() {
+        let shader = |chars: &str| {
+            let mut n = node("gpu/effect", json!({"mode": "ascii"}));
+            let layer = Value::Scene(Arc::new(SceneNode::group(Vec::new())));
+            // input, size, chars, colored, color, background
+            let out = n
+                .eval(vec![
+                    vec![layer],
+                    vec![Value::Num(10.0)],
+                    vec![Value::str(chars)],
+                    vec![Value::Bool(true)],
+                    vec![],
+                    vec![],
+                ])
+                .unwrap();
+            match &out[0][0] {
+                Value::Scene(s) => match &**s {
+                    SceneNode::Shader(sh) => sh.clone(),
+                    other => panic!("{other:?}"),
+                },
+                other => panic!("{other:?}"),
+            }
+        };
+        let sh = shader(" .oO@");
+        let atlas = sh.lut.clone().expect("an atlas");
+        assert_eq!(atlas.width(), 5 * GLYPH_TILE / 2);
+        assert_eq!(sh.passes.len(), 1);
+        assert_eq!(sh.passes[0].channels[1], ShaderChannel::Lut);
+        assert!(sh.uniform_decls.iter().any(|d| &*d.name == "colored"));
+        // Empty chars: the default ramp.
+        let sh = shader("");
+        let n = ASCII_RAMP.chars().count() as u32;
+        assert_eq!(sh.lut.as_ref().unwrap().width(), n * GLYPH_TILE / 2);
     }
 }

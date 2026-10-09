@@ -1,0 +1,168 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "WFC Circuits",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "wf_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Wave function collapse\n\nThe Tiles node in `wfc` mode fills the grid with tiles whose edges must match: `sockets` lists each tile as four characters for its north, east, south and west edges (`0` = nothing, `1` = a pipe), and `*3` makes one three times as likely. Every tile is tried in its four turns. Cell by cell, the most constrained one is settled and its neighbours narrowed down — and with `closed` on, no pipe runs off the grid (`1000`, a dead end, is the only way to stop short).\n\nEach kind of tile takes its own colour. Change `seed`, or edit the sockets (try removing the tees `1110`).",
+        "width": 520,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Wave function collapse\n\nThe Tiles node in `wfc` mode fills the grid with tiles whose edges must match: `sockets` lists each tile as four characters for its north, east, south and west edges (`0` = nothing, `1` = a pipe), and `*3` makes one three times as likely. Every tile is tried in its four turns. Cell by cell, the most constrained one is settled and its neighbours narrowed down — and with `closed` on, no pipe runs off the grid (`1000`, a dead end, is the only way to stop short).\n\nEach kind of tile takes its own colour. Change `seed`, or edit the sockets (try removing the tees `1110`).",
+        "width": 520,
+        "height": 200
+      }
+    },
+    {
+      "id": "wf_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 230,
+        "y": 3
+      },
+      "params": {
+        "stopCount": 6,
+        "c0": "#2a2a40",
+        "c1": "#00b8a9",
+        "c2": "#f8b400",
+        "c3": "#e43f5a",
+        "c4": "#f6f6f6",
+        "c5": "#7868e6"
+      },
+      "portValues": {
+        "stopCount": 6,
+        "c0": "#2a2a40",
+        "c1": "#00b8a9",
+        "c2": "#f8b400",
+        "c3": "#e43f5a",
+        "c4": "#f6f6f6",
+        "c5": "#7868e6"
+      }
+    },
+    {
+      "id": "wf_w",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 0,
+        "y": 283
+      },
+      "params": {
+        "w": 5
+      },
+      "portValues": {
+        "w": 5
+      }
+    },
+    {
+      "id": "wf_cap",
+      "defType": "style/stroke-cap",
+      "position": {
+        "x": 256,
+        "y": 261
+      },
+      "params": {
+        "cap": "round"
+      },
+      "portValues": {
+        "cap": "round"
+      }
+    },
+    {
+      "id": "wf_tiles",
+      "defType": "geometry/tiles",
+      "position": {
+        "x": 500,
+        "y": 0
+      },
+      "params": {
+        "mode": "wfc",
+        "cols": 16,
+        "rows": 16,
+        "size": 32,
+        "seed": 4,
+        "closed": true,
+        "sockets": "0000*1.5 1010 1100*3 1110*0.5 1111*0.3 1000*0.2"
+      },
+      "portValues": {
+        "cols": 16,
+        "rows": 16,
+        "size": 32,
+        "seed": 4,
+        "closed": true,
+        "sockets": "0000*1.5 1010 1100*3 1110*0.5 1111*0.3 1000*0.2",
+        "mode": "wfc"
+      }
+    },
+    {
+      "id": "wf_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 763,
+        "y": 0
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.08627450980392157,
+          "g": 0.08627450980392157,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.08627450980392157,
+          "g": 0.08627450980392157,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "wf_w",
+      "target": "wf_cap",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_2",
+      "source": "wf_cap",
+      "target": "wf_tiles",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_3",
+      "source": "wf_pal",
+      "target": "wf_tiles",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_4",
+      "source": "wf_tiles",
+      "target": "wf_r",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

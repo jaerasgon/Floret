@@ -485,3 +485,218 @@ fn ramp_interpolates_evenly() {
     assert_eq!(ramp(&stops, 2.0).r, 0.0);
     assert_eq!(ramp(&[], 0.5), Color::WHITE);
 }
+
+// ─── Growth and reaction–diffusion ───────────────────────────────────────────
+
+#[test]
+fn new_modes_have_their_pins_and_run() {
+    let cat = Catalogue::builtin();
+    let spec = cat.get("particles/simulation").unwrap();
+    let names = |params: serde_json::Value| -> Vec<String> {
+        cat.resolved_inputs(spec, params.as_object().unwrap())
+            .into_iter()
+            .map(|p| p.name)
+            .collect()
+    };
+    let growth = names(json!({ "mode": "growth" }));
+    for pin in ["shape", "repel", "align", "maxEdge", "maxNodes", "reset"] {
+        assert!(growth.contains(&pin.to_owned()), "growth lacks {pin}");
+    }
+    let reaction = names(json!({ "mode": "reaction" }));
+    assert!(reaction.contains(&"preset".to_owned()));
+    assert!(
+        !reaction.contains(&"feed".to_owned()),
+        "feed only for custom"
+    );
+    let custom = names(json!({ "mode": "reaction", "preset": "custom" }));
+    assert!(custom.contains(&"feed".to_owned()) && custom.contains(&"kill".to_owned()));
+    assert_eq!(custom.last().map(String::as_str), Some("reset"));
+    for mode in ["growth", "reaction"] {
+        let mut r = Run::new(mode);
+        if mode == "reaction" {
+            r = r.with("resolution", Value::Num(48.0));
+        }
+        let out = r.ticks(20);
+        assert_eq!(out.len(), 6, "{mode}");
+        assert!(layer_len(&out) > 0, "{mode} drew nothing");
+        assert_eq!(out[3].len(), out[4].len(), "{mode} segments");
+        assert_eq!(image(&out).is_ready(), mode == "reaction", "{mode}");
+    }
+}
+
+#[test]
+fn growth_grows_folds_and_stays_bounded() {
+    let mut r = Run::new("growth")
+        .with("maxNodes", Value::Num(400.0))
+        .with("size", v2(300.0, 300.0));
+    let start = points(&r.tick()).len();
+    let out = r.ticks(600);
+    let pts = points(&out);
+    assert!(pts.len() > start, "{} → {}", start, pts.len());
+    assert!(pts.len() <= 400);
+    for p in &pts {
+        assert!(
+            p.x.abs() <= 150.0 && p.y.abs() <= 150.0,
+            "{p:?} left the bounds"
+        );
+        assert!(p.x.is_finite() && p.y.is_finite());
+    }
+    // A closed curve: an edge per node; ages run 0..1.
+    assert_eq!(out[3].len(), pts.len());
+    let ages = numbers(&out);
+    assert!(ages.iter().all(|a| (0.0..=1.0).contains(a)));
+    assert!(ages.contains(&0.0) && ages.contains(&1.0));
+    // Edges stay near maxEdge (5) once split.
+    let long = out[3]
+        .iter()
+        .zip(&out[4])
+        .filter(|(a, b)| match (a, b) {
+            (Value::Vec2(a), Value::Vec2(b)) => (a.x - b.x).hypot(a.y - b.y) > 15.0,
+            _ => true,
+        })
+        .count();
+    assert_eq!(long, 0, "edges stretched far past maxEdge");
+}
+
+#[test]
+fn growth_is_the_same_for_a_seed_and_starts_from_a_shape() {
+    let run = |seed: f64| points(&Run::new("growth").with("seed", Value::Num(seed)).ticks(60));
+    assert_eq!(run(2.0), run(2.0));
+    assert_ne!(run(2.0), run(3.0));
+    // An open line: an open curve (one edge fewer than nodes).
+    let line = Value::Scene(Arc::new(SceneNode::Line {
+        x1: -100.0,
+        y1: 0.0,
+        x2: 100.0,
+        y2: 0.0,
+        style: crate::scene::line_default_style().clone(),
+    }));
+    let mut r = Run::new("growth").with("shape", line);
+    let out = r.ticks(30);
+    let n = points(&out).len();
+    assert!(n > 20, "the 200-long line split into {n} nodes");
+    assert_eq!(out[3].len(), n - 1);
+    // Degenerate pins fall back rather than breaking.
+    let mut r = Run::new("growth")
+        .with("radius", Value::Num(f64::NAN))
+        .with("repel", Value::Num(f64::INFINITY))
+        .with("maxNodes", Value::Num(-5.0));
+    let out = r.ticks(10);
+    assert!(points(&out)
+        .iter()
+        .all(|p| p.x.is_finite() && p.y.is_finite()));
+}
+
+#[test]
+fn growth_and_reaction_survive_an_edit() {
+    for mode in ["growth", "reaction"] {
+        let make = || {
+            let r = Run::new(mode);
+            if mode == "reaction" {
+                r.with("resolution", Value::Num(32.0))
+            } else {
+                r
+            }
+        };
+        let state = |out: &[Vec<Value>]| (points(out), image(out).rgba().to_vec());
+        let reference = state(&make().ticks(31));
+        let mut a = make();
+        a.ticks(30);
+        let carried = a.h.carry().expect("carries its state");
+        // The rebuilt node carries on from frame 30.
+        let mut b = make();
+        b.h.adopt(carried);
+        assert!(state(&b.tick()) == reference, "{mode}");
+        assert!(state(&make().tick()) != reference, "{mode}");
+    }
+    // The older modes start over as before.
+    let mut f = Run::new("flocking");
+    f.ticks(5);
+    assert!(f.h.carry().is_none());
+}
+
+#[test]
+fn reaction_diffusion_develops_and_is_deterministic() {
+    let run = |seed: f64, preset: &str, frames: usize| {
+        let mut r = Run::new("reaction")
+            .with("resolution", Value::Num(64.0))
+            .with("seed", Value::Num(seed));
+        r = r.with("preset", Value::str(preset));
+        image(&r.ticks(frames))
+    };
+    let lit = |img: &Image| img.rgba().chunks(4).filter(|p| p[3] > 64).count();
+    let early = run(1.0, "coral", 2);
+    let late = run(1.0, "coral", 120);
+    assert_eq!((late.width(), late.height()), (64, 64));
+    assert!(lit(&late) > lit(&early), "{} → {}", lit(&early), lit(&late));
+    assert_eq!(late.rgba(), run(1.0, "coral", 120).rgba());
+    assert_ne!(late.rgba(), run(2.0, "coral", 120).rgba());
+    assert_ne!(late.rgba(), run(1.0, "mitosis", 120).rgba());
+    // The grid follows the size's shape.
+    let mut r = Run::new("reaction")
+        .with("resolution", Value::Num(100.0))
+        .with("size", v2(800.0, 400.0));
+    let img = image(&r.tick());
+    assert_eq!((img.width(), img.height()), (100, 50));
+}
+
+#[test]
+fn reaction_seeds_from_a_bright_image_and_paints() {
+    // A white image: B everywhere at the start.
+    let white = Arc::new(Image::new(4, 4, vec![255; 64]));
+    let mut r = Run::new("reaction")
+        .with("resolution", Value::Num(32.0))
+        .with("seedImage", Value::Image(white));
+    let img = image(&r.tick());
+    assert!(img.rgba().chunks(4).all(|p| p[3] == 255));
+    // A transparent one seeds nothing, so random spots are used instead.
+    let clear = Arc::new(Image::new(4, 4, vec![0; 64]));
+    let mut r = Run::new("reaction")
+        .with("resolution", Value::Num(32.0))
+        .with("seedImage", Value::Image(clear));
+    let img = image(&r.tick());
+    assert!(img.rgba().chunks(4).any(|p| p[3] > 0));
+    // Painting adds B where the point is.
+    let mut r = Run::new("reaction").with("resolution", Value::Num(32.0));
+    r.tick();
+    r.pin("paint", vec![v2(-280.0, -280.0)]);
+    let img = image(&r.tick());
+    assert!(img.rgba()[3] > 0, "the top-left corner was painted");
+    // feed / kill: a preset's, or the pins' for custom.
+    let ins_of = |names: &[&str], vals: Vec<Spread>| {
+        let names: Vec<String> = names.iter().map(|s| s.to_string()).collect();
+        let ins = Ins {
+            inputs: &vals,
+            names: &names,
+        };
+        reaction::feed_kill(&ins)
+    };
+    let s = |v: &str| crate::value::one(Value::str(v));
+    let n = |v: f64| crate::value::one(Value::Num(v));
+    assert_eq!(ins_of(&["preset"], vec![s("mitosis")]), (0.0367, 0.0649));
+    assert_eq!(
+        ins_of(
+            &["preset", "feed", "kill"],
+            vec![s("custom"), n(0.01), n(0.05)]
+        ),
+        (0.01, 0.05)
+    );
+    assert_eq!(ins_of(&["preset"], vec![s("nonsense")]), (0.0545, 0.062));
+}
+
+#[test]
+fn a_seed_image_that_arrives_late_starts_reaction_over() {
+    let mut r = Run::new("reaction").with("resolution", Value::Num(32.0));
+    r.ticks(5);
+    // A rasterised layer typically turns up a frame or two later.
+    let white = Arc::new(Image::new(4, 4, vec![255; 64]));
+    r.pin("seedImage", vec![Value::Image(white)]);
+    let img = image(&r.tick());
+    assert!(
+        img.rgba().chunks(4).all(|p| p[3] == 255),
+        "seeded from the image"
+    );
+    // Later frames of the same (or a changing) image don't restart it.
+    let next = image(&r.ticks(3));
+    assert_ne!(next.rgba(), img.rgba());
+}

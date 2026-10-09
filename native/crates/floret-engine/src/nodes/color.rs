@@ -547,12 +547,14 @@ fn clamp_stops(n: &Value) -> usize {
 
 /// What the palette node makes: the authored stops (the `mode` param's
 /// default, and every palette saved before modes existed), a cosine
-/// palette, or a colour harmony around a base colour.
+/// palette, a colour harmony around a base colour, or the dominant
+/// colours of an image.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum PaletteMode {
     Stops,
     Cosine,
     Harmony(Harmony),
+    Image,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -573,6 +575,7 @@ impl PaletteMode {
             Some("triadic") => PaletteMode::Harmony(Harmony::Triadic),
             Some("split") => PaletteMode::Harmony(Harmony::Split),
             Some("tetradic") => PaletteMode::Harmony(Harmony::Tetradic),
+            Some("image") => PaletteMode::Image,
             _ => PaletteMode::Stops,
         }
     }
@@ -681,6 +684,14 @@ fn build_stop_ports(params: &Params) -> Vec<PortSpec> {
                 }),
             ),
         ],
+        PaletteMode::Image => {
+            let mut sort = PortSpec::new("sort", PortType::String).default(Value::str("lightness"));
+            sort.param = Some("sort".into());
+            vec![
+                PortSpec::new("image", PortType::Image).default(Value::Null),
+                sort,
+            ]
+        }
         PaletteMode::Harmony(h) => {
             let mut ports = vec![color_port(
                 "base",
@@ -695,7 +706,9 @@ fn build_stop_ports(params: &Params) -> Vec<PortSpec> {
 }
 
 fn palette(_: &NodeInit) -> Box<dyn NodeImpl> {
-    raw(|inputs, cx| {
+    // The image mode's last answer: (image id, count, sort) → colours.
+    let mut extracted: Option<((u64, usize, String), Vec<Color>)> = None;
+    raw(move |inputs, cx| {
         let count = clamp_stops(
             &cx.param("stopCount")
                 .map(Value::from_json)
@@ -718,9 +731,182 @@ fn palette(_: &NodeInit) -> Box<dyn NodeImpl> {
                 let angle = first_or(inputs, 1, Value::Num(30.0)).to_number();
                 harmony(base, h, angle)
             }
+            PaletteMode::Image => {
+                let Some(img) = crate::image::ready(&first(inputs, 0)).cloned() else {
+                    return Ok(vec![crate::value::empty()]);
+                };
+                let sort = match first(inputs, 1) {
+                    Value::Str(s) => PaletteSort::parse(&s),
+                    _ => PaletteSort::Lightness,
+                };
+                let key = (img.id(), count, format!("{sort:?}"));
+                match &extracted {
+                    Some((k, colors)) if *k == key => colors.clone(),
+                    _ => {
+                        let colors = dominant_colors(&img, count, sort);
+                        extracted = Some((key, colors.clone()));
+                        colors
+                    }
+                }
+            }
         };
         Ok(vec![colors.into_iter().map(Value::Color).collect()])
     })
+}
+
+/// How the image mode orders its colours.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum PaletteSort {
+    /// Darkest first (OKLab lightness).
+    Lightness,
+    /// Most of the picture first.
+    Frequency,
+    /// Round the hue wheel from red, greys first.
+    Hue,
+}
+
+impl PaletteSort {
+    fn parse(s: &str) -> PaletteSort {
+        match s {
+            "frequency" => PaletteSort::Frequency,
+            "hue" => PaletteSort::Hue,
+            _ => PaletteSort::Lightness,
+        }
+    }
+}
+
+/// Pixels sampled at most (a stride keeps big pictures quick).
+const PALETTE_SAMPLES: usize = 16_384;
+const KMEANS_ROUNDS: usize = 24;
+
+/// The `count` dominant colours of an image: k-means in OKLab over its
+/// opaque pixels (alpha ≥ ½), seeded by k-means++ from a fixed stream so
+/// the same picture always gives the same palette. Fewer when the picture
+/// has fewer distinct colours; empty when it is all transparent.
+pub(crate) fn dominant_colors(
+    img: &crate::image::Image,
+    count: usize,
+    sort: PaletteSort,
+) -> Vec<Color> {
+    let (w, h) = (img.width() as usize, img.height() as usize);
+    if w == 0 || h == 0 || count == 0 {
+        return Vec::new();
+    }
+    let stride = ((w * h) as f64 / PALETTE_SAMPLES as f64)
+        .sqrt()
+        .ceil()
+        .max(1.0) as usize;
+    let mut pts: Vec<[f64; 3]> = Vec::new();
+    for y in (0..h).step_by(stride) {
+        for x in (0..w).step_by(stride) {
+            let [r, g, b, a] = img.pixel(x as u32, y as u32);
+            if a < 128 {
+                continue;
+            }
+            let c = Color {
+                r: f64::from(r) / 255.0,
+                g: f64::from(g) / 255.0,
+                b: f64::from(b) / 255.0,
+                a: 1.0,
+            };
+            pts.push(to_oklab(c));
+        }
+    }
+    if pts.is_empty() {
+        return Vec::new();
+    }
+    let d2 = |p: &[f64; 3], q: &[f64; 3]| {
+        (p[0] - q[0]).powi(2) + (p[1] - q[1]).powi(2) + (p[2] - q[2]).powi(2)
+    };
+    // k-means++: each next centre drawn with probability ∝ distance².
+    let mut rng = js::Mulberry32::new(0x9e37_79b9);
+    let mut centres: Vec<[f64; 3]> =
+        vec![pts[(rng.next_f64() * pts.len() as f64) as usize % pts.len()]];
+    let mut near: Vec<f64> = pts.iter().map(|p| d2(p, &centres[0])).collect();
+    while centres.len() < count {
+        let total: f64 = near.iter().sum();
+        if total <= 1e-12 {
+            break; // every pixel already sits on a centre
+        }
+        let mut x = rng.next_f64() * total;
+        let mut pick = pts.len() - 1;
+        for (i, d) in near.iter().enumerate() {
+            x -= d;
+            if x < 0.0 {
+                pick = i;
+                break;
+            }
+        }
+        let c = pts[pick];
+        centres.push(c);
+        for (n, p) in near.iter_mut().zip(&pts) {
+            *n = n.min(d2(p, &c));
+        }
+    }
+    // Lloyd rounds.
+    let k = centres.len();
+    let mut label = vec![0usize; pts.len()];
+    let mut sizes = vec![0usize; k];
+    for _ in 0..KMEANS_ROUNDS {
+        let mut sums = vec![[0.0f64; 3]; k];
+        sizes = vec![0; k];
+        let mut changed = false;
+        for (i, p) in pts.iter().enumerate() {
+            let mut best = (f64::INFINITY, 0);
+            for (j, c) in centres.iter().enumerate() {
+                let d = d2(p, c);
+                if d < best.0 {
+                    best = (d, j);
+                }
+            }
+            if label[i] != best.1 {
+                label[i] = best.1;
+                changed = true;
+            }
+            sizes[best.1] += 1;
+            for (s, v) in sums[best.1].iter_mut().zip(p) {
+                *s += v;
+            }
+        }
+        for j in 0..k {
+            if sizes[j] > 0 {
+                centres[j] = sums[j].map(|s| s / sizes[j] as f64);
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+    let mut found: Vec<([f64; 3], usize)> = centres
+        .into_iter()
+        .zip(sizes)
+        .filter(|(_, n)| *n > 0)
+        .collect();
+    match sort {
+        PaletteSort::Lightness => found.sort_by(|a, b| a.0[0].total_cmp(&b.0[0])),
+        PaletteSort::Frequency => {
+            found.sort_by(|a, b| b.1.cmp(&a.1).then(a.0[0].total_cmp(&b.0[0])))
+        }
+        PaletteSort::Hue => {
+            // Greys (chroma under 0.03) first by lightness, then by hue.
+            let key = |c: &[f64; 3]| {
+                let chroma = c[1].hypot(c[2]);
+                if chroma < 0.03 {
+                    (0, c[0])
+                } else {
+                    (1, c[2].atan2(c[1]).rem_euclid(std::f64::consts::TAU))
+                }
+            };
+            found.sort_by(|a, b| {
+                let (ka, kb) = (key(&a.0), key(&b.0));
+                ka.0.cmp(&kb.0).then(ka.1.total_cmp(&kb.1))
+            });
+        }
+    }
+    found
+        .into_iter()
+        .map(|(c, _)| clamp_rgb(from_oklab(c, 1.0)))
+        .collect()
 }
 
 /// The stops mode: each wired colour, else its `c<i>` hex param.
@@ -1390,5 +1576,100 @@ mod tests {
         );
         assert_eq!((big.r, big.g), (1.0, 0.0));
         assert!(near(big.b, 1.0, 1e-12));
+    }
+}
+
+#[cfg(test)]
+mod palette_image_tests {
+    use super::*;
+    use crate::image::Image;
+    use crate::nodes::value::harness::node;
+    use serde_json::json;
+
+    /// An image of horizontal bands, `rows` pixels of each colour.
+    fn bands(colors: &[([u8; 3], usize)]) -> Image {
+        let w = 8;
+        let mut px = Vec::new();
+        for (c, rows) in colors {
+            for _ in 0..rows * w {
+                px.extend_from_slice(&[c[0], c[1], c[2], 255]);
+            }
+        }
+        let h = colors.iter().map(|c| c.1).sum::<usize>();
+        Image::new(w as u32, h as u32, px)
+    }
+
+    fn bytes(c: &Color) -> [u8; 3] {
+        [c.r, c.g, c.b].map(|v| (v * 255.0).round() as u8)
+    }
+
+    const RED: [u8; 3] = [220, 30, 40];
+    const NAVY: [u8; 3] = [20, 30, 90];
+    const CREAM: [u8; 3] = [250, 240, 210];
+
+    #[test]
+    fn finds_the_colours_of_a_picture() {
+        let img = bands(&[(RED, 10), (NAVY, 30), (CREAM, 20)]);
+        let got = dominant_colors(&img, 3, PaletteSort::Lightness);
+        let got: Vec<[u8; 3]> = got.iter().map(bytes).collect();
+        // Darkest first; each within rounding of the band.
+        let near = |a: [u8; 3], b: [u8; 3]| a.iter().zip(&b).all(|(x, y)| x.abs_diff(*y) <= 2);
+        assert_eq!(got.len(), 3);
+        assert!(near(got[0], NAVY), "{got:?}");
+        assert!(near(got[1], RED), "{got:?}");
+        assert!(near(got[2], CREAM), "{got:?}");
+        // By frequency: navy (30 rows), cream (20), red (10).
+        let f: Vec<[u8; 3]> = dominant_colors(&img, 3, PaletteSort::Frequency)
+            .iter()
+            .map(bytes)
+            .collect();
+        assert!(
+            near(f[0], NAVY) && near(f[1], CREAM) && near(f[2], RED),
+            "{f:?}"
+        );
+        // By hue: the near-grey cream first? It has chroma: red (hue ≈ 0.4
+        // rad) before cream (yellowish) before navy (blue).
+        let h: Vec<[u8; 3]> = dominant_colors(&img, 3, PaletteSort::Hue)
+            .iter()
+            .map(bytes)
+            .collect();
+        assert!(near(h[0], RED) && near(h[2], NAVY), "{h:?}");
+    }
+
+    #[test]
+    fn is_deterministic_and_handles_odd_pictures() {
+        let img = bands(&[(RED, 7), (NAVY, 5), (CREAM, 9), ([10, 200, 90], 3)]);
+        let a = dominant_colors(&img, 5, PaletteSort::Lightness);
+        assert_eq!(a, dominant_colors(&img, 5, PaletteSort::Lightness));
+        // Fewer colours than asked: one each.
+        let flat = bands(&[(RED, 4)]);
+        assert_eq!(dominant_colors(&flat, 6, PaletteSort::Lightness).len(), 1);
+        // Transparent or empty: nothing.
+        let clear = Image::new(4, 4, vec![0; 64]);
+        assert!(dominant_colors(&clear, 4, PaletteSort::Lightness).is_empty());
+        assert!(dominant_colors(&Image::new(0, 0, Vec::new()), 4, PaletteSort::Hue).is_empty());
+        assert!(dominant_colors(&img, 0, PaletteSort::Hue).is_empty());
+        // A big picture is sampled, not read in full, and still works.
+        let big = Image::new(1000, 1000, [40u8, 50, 60, 255].repeat(1_000_000));
+        let c = dominant_colors(&big, 3, PaletteSort::Lightness);
+        assert_eq!(c.len(), 1);
+        assert_eq!(bytes(&c[0]), [40, 50, 60]);
+    }
+
+    #[test]
+    fn the_node_reads_stop_count_and_sort() {
+        let mut n = node("color/palette", json!({"mode": "image", "stopCount": 2}));
+        let img = Arc::new(bands(&[(RED, 10), (NAVY, 30)]));
+        let out = n
+            .eval(vec![vec![Value::Image(img)], vec![Value::str("frequency")]])
+            .unwrap();
+        assert_eq!(out[0].len(), 2);
+        let Value::Color(first) = &out[0][0] else {
+            panic!()
+        };
+        assert!(bytes(first)[2] > 80, "navy, the most common, first");
+        // No image: no colours.
+        let out = n.eval(vec![vec![Value::Null], vec![]]).unwrap();
+        assert!(out[0].is_empty());
     }
 }

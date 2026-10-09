@@ -1,0 +1,214 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Palette From Image",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "pi_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Palette from an image\n\nThe Palette node's `image` mode finds the dominant colours of a picture (k-means in the OKLab colour space, so the clusters are the colours your eye groups), `stopCount` of them, sorted by `sort` — lightness, frequency or hue. The same picture always gives the same palette.\n\nHere a photo's palette colours a Mondrian (Cells' subdivide mode) beside it. Load another picture with the URL, or wire a Camera.",
+        "width": 520,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Palette from an image\n\nThe Palette node's `image` mode finds the dominant colours of a picture (k-means in the OKLab colour space, so the clusters are the colours your eye groups), `stopCount` of them, sorted by `sort` — lightness, frequency or hue. The same picture always gives the same palette.\n\nHere a photo's palette colours a Mondrian (Cells' subdivide mode) beside it. Load another picture with the URL, or wire a Camera.",
+        "width": 520,
+        "height": 200
+      }
+    },
+    {
+      "id": "pi_url",
+      "defType": "io/image-url",
+      "position": {
+        "x": 0,
+        "y": 159
+      },
+      "params": {
+        "url": "https://picsum.photos/seed/floret-palette/500/500"
+      },
+      "portValues": {
+        "url": "https://picsum.photos/seed/floret-palette/500/500"
+      }
+    },
+    {
+      "id": "pi_show",
+      "defType": "draw/image",
+      "position": {
+        "x": 631,
+        "y": 0
+      },
+      "params": {
+        "pos": {
+          "x": -145,
+          "y": 0
+        },
+        "w": 260,
+        "h": 260
+      },
+      "portValues": {
+        "pos": {
+          "x": -145,
+          "y": 0
+        },
+        "w": 260,
+        "h": 260
+      }
+    },
+    {
+      "id": "pi_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 276,
+        "y": 297
+      },
+      "params": {
+        "mode": "image",
+        "stopCount": 6,
+        "sort": "lightness"
+      },
+      "portValues": {
+        "stopCount": 6,
+        "sort": "lightness",
+        "mode": "image"
+      }
+    },
+    {
+      "id": "pi_cells",
+      "defType": "geometry/cells",
+      "position": {
+        "x": 596,
+        "y": 214
+      },
+      "params": {
+        "mode": "subdivide",
+        "center": {
+          "x": 145,
+          "y": 0
+        },
+        "size": {
+          "x": 260,
+          "y": 260
+        },
+        "depth": 5,
+        "chance": 0.7,
+        "minSize": 20,
+        "ratio": 0.6,
+        "seed": 3,
+        "gap": 5
+      },
+      "portValues": {
+        "center": {
+          "x": 145,
+          "y": 0
+        },
+        "size": {
+          "x": 260,
+          "y": 260
+        },
+        "depth": 5,
+        "chance": 0.7,
+        "minSize": 20,
+        "ratio": 0.6,
+        "seed": 3,
+        "gap": 5,
+        "mode": "subdivide"
+      }
+    },
+    {
+      "id": "pi_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 875,
+        "y": 96
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "pi_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1139,
+        "y": 96
+      },
+      "params": {
+        "width": 620,
+        "height": 340,
+        "background": {
+          "r": 0.08235294117647059,
+          "g": 0.08235294117647059,
+          "b": 0.08235294117647059,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 620,
+        "height": 340,
+        "background": {
+          "r": 0.08235294117647059,
+          "g": 0.08235294117647059,
+          "b": 0.08235294117647059,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "pi_url",
+      "target": "pi_show",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_2",
+      "source": "pi_url",
+      "target": "pi_pal",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_3",
+      "source": "pi_pal",
+      "target": "pi_cells",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_4",
+      "source": "pi_show",
+      "target": "pi_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_5",
+      "source": "pi_cells",
+      "target": "pi_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_6",
+      "source": "pi_group",
+      "target": "pi_r",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

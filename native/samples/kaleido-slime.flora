@@ -1,0 +1,149 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Kaleido Slime",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "kf_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Kaleidoscope slime\n\nThe Symmetry node in `kaleidoscope` mode: a slime mould simulation's trail map, cut to one wedge and mirrored round the centre `count` times — six mirrors, twelve copies, meeting edge to edge like a real kaleidoscope (`clip`). The veins grow into a lace mandala.\n\nTry `rotate` (turns only), another `count`, or wire any other layer in.",
+        "width": 520,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Kaleidoscope slime\n\nThe Symmetry node in `kaleidoscope` mode: a slime mould simulation's trail map, cut to one wedge and mirrored round the centre `count` times — six mirrors, twelve copies, meeting edge to edge like a real kaleidoscope (`clip`). The veins grow into a lace mandala.\n\nTry `rotate` (turns only), another `count`, or wire any other layer in.",
+        "width": 520,
+        "height": 200
+      }
+    },
+    {
+      "id": "kf_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 198
+      },
+      "params": {
+        "stopCount": 4,
+        "c0": "#0d0221",
+        "c1": "#7b2cbf",
+        "c2": "#ff6d00",
+        "c3": "#ffe8d6"
+      },
+      "portValues": {
+        "stopCount": 4,
+        "c0": "#0d0221",
+        "c1": "#7b2cbf",
+        "c2": "#ff6d00",
+        "c3": "#ffe8d6"
+      }
+    },
+    {
+      "id": "kf_slime",
+      "defType": "particles/simulation",
+      "position": {
+        "x": 264,
+        "y": 44
+      },
+      "params": {
+        "mode": "physarum",
+        "agents": 7000,
+        "size": {
+          "x": 600,
+          "y": 600
+        },
+        "resolution": 160,
+        "seed": 5
+      },
+      "portValues": {
+        "agents": 7000,
+        "size": {
+          "x": 600,
+          "y": 600
+        },
+        "resolution": 160,
+        "seed": 5,
+        "mode": "physarum"
+      }
+    },
+    {
+      "id": "kf_sym",
+      "defType": "transform/symmetry",
+      "position": {
+        "x": 523,
+        "y": 0
+      },
+      "params": {
+        "mode": "kaleidoscope",
+        "count": 6,
+        "clip": true
+      },
+      "portValues": {
+        "count": 6,
+        "clip": true,
+        "mode": "kaleidoscope"
+      }
+    },
+    {
+      "id": "kf_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 806,
+        "y": 0
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.050980392156862744,
+          "g": 0.00784313725490196,
+          "b": 0.12941176470588237,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.050980392156862744,
+          "g": 0.00784313725490196,
+          "b": 0.12941176470588237,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "kf_pal",
+      "target": "kf_slime",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_2",
+      "source": "kf_slime",
+      "target": "kf_sym",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_3",
+      "source": "kf_sym",
+      "target": "kf_r",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

@@ -11,6 +11,10 @@
 //!   growing cluster ([`dla`]).
 //! - `cloth`: a Verlet spring mesh with pins, wind, tearing and a grab
 //!   handle ([`cloth`]).
+//! - `growth`: differential growth, a curve whose nodes repel and split
+//!   into coral-like folds ([`growth`]).
+//! - `reaction`: Gray–Scott reaction–diffusion on a grid, as an image
+//!   ([`reaction`]).
 //!
 //! Time: the node steps in fixed ticks of [`STEP`] seconds, as many as the
 //! frame's `dt` covers (at most [`MAX_STEPS`] a frame, so a slow frame
@@ -18,17 +22,21 @@
 //! times give the same picture. State lives in the node; a rising edge on
 //! `reset` (or a new seed / size / count where that reshapes the
 //! simulation) starts it over. The node is effectful (never memoised).
+//! Growth and reaction–diffusion also survive edits of the patch (see
+//! [`NodeImpl::carry`]): they take a while to develop.
 //!
 //! Outputs, in order: `layer` (the simulation drawn, ready for a renderer),
 //! `points` (positions), `values` (one number per point: heading, growth
 //! order or strain), `from` / `to` (line segments: velocity, branch or
-//! spring) and `image` (the physarum trail map; a 1×1 placeholder in the
-//! other modes).
+//! spring) and `image` (the physarum trail map or the reaction–diffusion
+//! picture; a 1×1 placeholder in the other modes).
 
 mod cloth;
 mod dla;
 mod flock;
+pub(crate) mod growth;
 mod physarum;
+pub(crate) mod reaction;
 #[cfg(test)]
 mod tests;
 
@@ -36,7 +44,7 @@ use super::shared::{first, to_color, to_vec2};
 use super::style::style_arg;
 use super::Registrar;
 use crate::image::Image;
-use crate::node::{raw, NodeImpl, NodeInit};
+use crate::node::{CarriedState, EvalCtx, NodeImpl, NodeInit, NodeResult};
 use crate::scene::{self, Paint, ResolvedStyle, SceneNode};
 use crate::spec::{Params, PortKind, PortSpec, PortType};
 use crate::value::{empty, one, Color, Spread, Value, Vec2};
@@ -58,6 +66,8 @@ enum Mode {
     Physarum,
     Dla,
     Cloth,
+    Growth,
+    Reaction,
 }
 
 impl Mode {
@@ -66,6 +76,8 @@ impl Mode {
             Some("physarum") => Mode::Physarum,
             Some("dla") => Mode::Dla,
             Some("cloth") => Mode::Cloth,
+            Some("growth") => Mode::Growth,
+            Some("reaction") => Mode::Reaction,
             _ => Mode::Flocking,
         }
     }
@@ -146,6 +158,45 @@ fn sim_inputs(params: &Params) -> Vec<PortSpec> {
             int("seed", 1.0),
             reset(),
         ],
+        Mode::Growth => vec![
+            PortSpec::new("shape", PortType::Layer).kind(PortKind::Spread),
+            num("radius", 40.0),
+            vec2("size", 600.0, 600.0),
+            int("maxNodes", 2000.0),
+            num("repel", 10.0),
+            num("force", 1.0),
+            num("align", 0.5),
+            num("maxEdge", 5.0),
+            num("grow", 40.0),
+            num("speed", 1.0),
+            style(),
+            spread("colors", PortType::Color),
+            int("seed", 1.0),
+            reset(),
+        ],
+        Mode::Reaction => {
+            let mut preset = PortSpec::new("preset", PortType::String).default(Value::str("coral"));
+            preset.param = Some("preset".into());
+            let custom = params.get("preset").and_then(|v| v.as_str()) == Some("custom");
+            let mut v = vec![vec2("size", 600.0, 600.0), int("resolution", 200.0), preset];
+            if custom {
+                v.push(num("feed", 0.055));
+                v.push(num("kill", 0.062));
+            }
+            v.extend([
+                num("rateA", 1.0),
+                num("rateB", 0.5),
+                int("speed", 8.0),
+                PortSpec::new("seedImage", PortType::Image)
+                    .default(Value::Null)
+                    .label("seed image"),
+                spread("paint", PortType::Vec2),
+                spread("colors", PortType::Color),
+                int("seed", 1.0),
+                reset(),
+            ]);
+            v
+        }
         Mode::Cloth => {
             let mut pin = PortSpec::new("pin", PortType::String).default(Value::str("top"));
             pin.param = Some("pin".into());
@@ -372,6 +423,11 @@ impl Styles {
         Styles { base, levels }
     }
 
+    /// The style without the colour ramp.
+    pub(crate) fn base(&self) -> &Arc<ResolvedStyle> {
+        &self.base
+    }
+
     /// The style for a shape at `t` (0..1) on the colour ramp.
     pub(crate) fn at(&self, t: f64) -> Arc<ResolvedStyle> {
         if self.levels.is_empty() {
@@ -423,46 +479,71 @@ fn start(mode: Mode, ins: &Ins) -> Box<dyn Sim> {
         Mode::Physarum => Box::new(physarum::Physarum::new(ins)),
         Mode::Dla => Box::new(dla::Dla::new(ins)),
         Mode::Cloth => Box::new(cloth::Cloth::new(ins)),
+        Mode::Growth => Box::new(growth::Growth::new(ins)),
+        Mode::Reaction => Box::new(reaction::Reaction::new(ins)),
     }
 }
 
+/// The node: the running simulation and its clock.
+struct Simulation {
+    mode: Mode,
+    names: Vec<String>,
+    sim: Option<Box<dyn Sim>>,
+    was_reset: bool,
+    /// Unstepped time carried to the next frame.
+    carry: f64,
+}
+
+/// What a growth or reaction–diffusion simulation hands to the node
+/// rebuilt by an edit, so a long-grown picture survives a tweak.
+struct Carried {
+    mode: Mode,
+    sim: Box<dyn Sim>,
+    was_reset: bool,
+    carry: f64,
+}
+
 fn simulation(init: &NodeInit) -> Box<dyn NodeImpl> {
-    let mode = Mode::of(init.params);
-    let names: Vec<String> = init.inputs.iter().map(|p| p.name.clone()).collect();
-    let mut sim: Option<Box<dyn Sim>> = None;
-    let mut was_reset = false;
-    // Unstepped time carried to the next frame.
-    let mut carry = 0.0;
-    raw(move |inputs, cx| {
+    Box::new(Simulation {
+        mode: Mode::of(init.params),
+        names: init.inputs.iter().map(|p| p.name.clone()).collect(),
+        sim: None,
+        was_reset: false,
+        carry: 0.0,
+    })
+}
+
+impl NodeImpl for Simulation {
+    fn eval(&mut self, inputs: &[Spread], cx: &mut EvalCtx) -> NodeResult {
         let ins = Ins {
             inputs,
-            names: &names,
+            names: &self.names,
         };
         let reset = ins.flag("reset");
-        if (reset && !was_reset) || sim.as_ref().is_some_and(|s| s.stale(&ins)) {
-            sim = None;
+        if (reset && !self.was_reset) || self.sim.as_ref().is_some_and(|s| s.stale(&ins)) {
+            self.sim = None;
         }
-        was_reset = reset;
-        let s = match &mut sim {
+        self.was_reset = reset;
+        let s = match &mut self.sim {
             Some(s) => {
                 let dt = cx.tick_frame.dt;
-                carry += if dt.is_finite() {
+                self.carry += if dt.is_finite() {
                     dt.clamp(0.0, 0.25)
                 } else {
                     0.0
                 };
                 let mut steps = 0;
-                while carry >= STEP * 0.999 && steps < MAX_STEPS {
+                while self.carry >= STEP * 0.999 && steps < MAX_STEPS {
                     s.step(&ins);
-                    carry -= STEP;
+                    self.carry -= STEP;
                     steps += 1;
                 }
-                carry = carry.clamp(0.0, STEP);
+                self.carry = self.carry.clamp(0.0, STEP);
                 s
             }
             None => {
-                carry = 0.0;
-                sim.insert(start(mode, &ins))
+                self.carry = 0.0;
+                self.sim.insert(start(self.mode, &ins))
             }
         };
         let out = s.output(&ins);
@@ -479,5 +560,30 @@ fn simulation(init: &NodeInit) -> Box<dyn NodeImpl> {
             Arc::from(to),
             one(Value::Image(out.image.unwrap_or_else(Image::placeholder))),
         ])
-    })
+    }
+
+    /// Growth and reaction–diffusion take minutes to develop, so they
+    /// survive edits (the older modes start over, as they always have).
+    fn carry(&mut self) -> Option<CarriedState> {
+        if !matches!(self.mode, Mode::Growth | Mode::Reaction) {
+            return None;
+        }
+        let sim = self.sim.take()?;
+        Some(Box::new(Carried {
+            mode: self.mode,
+            sim,
+            was_reset: self.was_reset,
+            carry: self.carry,
+        }))
+    }
+
+    fn adopt(&mut self, state: CarriedState) {
+        if let Ok(c) = state.downcast::<Carried>() {
+            if c.mode == self.mode {
+                self.sim = Some(c.sim);
+                self.was_reset = c.was_reset;
+                self.carry = c.carry;
+            }
+        }
+    }
 }

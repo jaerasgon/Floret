@@ -1,0 +1,155 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "ASCII Cells",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "as_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "ASCII cells\n\nThe Effect node's `ascii` mode redraws a layer as text: the canvas is cut into cells `size` pixels tall, and each cell's brightness picks a character from `chars`, darkest first (a space for black). With `colored` on, each character takes its cell's colour.\n\nThe layer here is reaction–diffusion in its `fingerprints` preset: ridges that spread from a few drops until they fill the canvas. Try your own ramp in `chars`, a bigger `size`, or turn `colored` off for one-colour terminal text.",
+        "width": 520,
+        "height": 200
+      },
+      "portValues": {
+        "text": "ASCII cells\n\nThe Effect node's `ascii` mode redraws a layer as text: the canvas is cut into cells `size` pixels tall, and each cell's brightness picks a character from `chars`, darkest first (a space for black). With `colored` on, each character takes its cell's colour.\n\nThe layer here is reaction–diffusion in its `fingerprints` preset: ridges that spread from a few drops until they fill the canvas. Try your own ramp in `chars`, a bigger `size`, or turn `colored` off for one-colour terminal text.",
+        "width": 520,
+        "height": 200
+      }
+    },
+    {
+      "id": "as_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 88
+      },
+      "params": {
+        "stopCount": 5,
+        "c0": "#001219",
+        "c1": "#0a9396",
+        "c2": "#94d2bd",
+        "c3": "#e9d8a6",
+        "c4": "#ee9b00"
+      },
+      "portValues": {
+        "stopCount": 5,
+        "c0": "#001219",
+        "c1": "#0a9396",
+        "c2": "#94d2bd",
+        "c3": "#e9d8a6",
+        "c4": "#ee9b00"
+      }
+    },
+    {
+      "id": "as_sim",
+      "defType": "particles/simulation",
+      "position": {
+        "x": 264,
+        "y": 22
+      },
+      "params": {
+        "mode": "reaction",
+        "preset": "fingerprints",
+        "size": {
+          "x": 600,
+          "y": 600
+        },
+        "resolution": 120,
+        "speed": 30,
+        "seed": 4
+      },
+      "portValues": {
+        "size": {
+          "x": 600,
+          "y": 600
+        },
+        "resolution": 120,
+        "preset": "fingerprints",
+        "speed": 30,
+        "seed": 4,
+        "mode": "reaction"
+      }
+    },
+    {
+      "id": "as_fx",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 523,
+        "y": 0
+      },
+      "params": {
+        "mode": "ascii",
+        "size": 14,
+        "chars": " .:-=+*#%@",
+        "colored": true
+      },
+      "portValues": {
+        "size": 14,
+        "chars": " .:-=+*#%@",
+        "colored": true,
+        "mode": "ascii"
+      }
+    },
+    {
+      "id": "as_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 788,
+        "y": 0
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "as_pal",
+      "target": "as_sim",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_2",
+      "source": "as_sim",
+      "target": "as_fx",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_3",
+      "source": "as_fx",
+      "target": "as_r",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

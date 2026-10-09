@@ -270,7 +270,7 @@ fn cells_node_outputs_polygons_colours_and_centres() {
             vec![Value::Null],
         ])
         .unwrap();
-    assert_eq!(out.len(), 5);
+    assert_eq!(out.len(), 6);
     assert_eq!(out[1].len(), 2, "two triangles");
     assert_eq!(out[2].len(), 6);
     let counts: Vec<f64> = out[3].iter().map(|c| c.as_f64().unwrap()).collect();

@@ -21,6 +21,9 @@
 //! holes. `levels` out gives each contour's level. A wired `colors`
 //! spread colours the levels (fill, else stroke), spread across them as
 //! a palette from the first level to the last.
+//!
+//! Mode `flow` traces a vector field instead: streamlines, evenly spaced
+//! (see [`super::flow`]).
 
 use super::{
     flat, int_pin, layer_pin, live_mode, num_pin, param_str, pin_style, poly_outputs, ramp,
@@ -43,6 +46,7 @@ const MAX_LEVELS: f64 = 256.0;
 pub(super) fn inputs(params: &Params) -> Vec<PortSpec> {
     let mut v = Vec::new();
     match param_str(params, "mode", MODE) {
+        "flow" => v.extend(super::flow::inputs()),
         "points" => {
             v.push(PortSpec::new("points", PortType::Vec2).kind(PortKind::Spread));
             v.push(
@@ -559,6 +563,9 @@ pub(super) fn contours(init: &NodeInit) -> Box<dyn NodeImpl> {
     let pins = Pins::new(init);
     raw(move |inputs, cx| {
         let mode = live_mode(cx, MODE);
+        if mode == "flow" {
+            return Ok(super::flow::flow(&pins, inputs, cx));
+        }
         let center = pins.vec2(inputs, "center", Vec2::default());
         let field = match mode.as_str() {
             "points" => {

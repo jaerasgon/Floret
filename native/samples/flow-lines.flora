@@ -1,0 +1,214 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Flow Lines",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "fl_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Flow lines\n\nContours' `flow` mode traces streamlines through a vector field — here its built-in `angle` field (Perlin noise turned into directions). Lines are spaced evenly (Jobard–Lefer): each new line seeds the next ones `spacing` to either side, and a line stops when it comes within half a spacing of another, so the page fills like a plotter drawing.\n\nTime turns every direction slowly (`turn`), so the lines re-trace as the field swings round. Try `field` curl, a smaller `spacing`, or wire your own `vectors`.",
+        "width": 520,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Flow lines\n\nContours' `flow` mode traces streamlines through a vector field — here its built-in `angle` field (Perlin noise turned into directions). Lines are spaced evenly (Jobard–Lefer): each new line seeds the next ones `spacing` to either side, and a line stops when it comes within half a spacing of another, so the page fills like a plotter drawing.\n\nTime turns every direction slowly (`turn`), so the lines re-trace as the field swings round. Try `field` curl, a smaller `spacing`, or wire your own `vectors`.",
+        "width": 520,
+        "height": 200
+      }
+    },
+    {
+      "id": "fl_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 230,
+        "y": 205
+      },
+      "params": {
+        "stopCount": 5,
+        "c0": "#ffd166",
+        "c1": "#ef476f",
+        "c2": "#06d6a0",
+        "c3": "#118ab2",
+        "c4": "#fdf0d5"
+      },
+      "portValues": {
+        "stopCount": 5,
+        "c0": "#ffd166",
+        "c1": "#ef476f",
+        "c2": "#06d6a0",
+        "c3": "#118ab2",
+        "c4": "#fdf0d5"
+      }
+    },
+    {
+      "id": "fl_w",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 0,
+        "y": 463
+      },
+      "params": {
+        "w": 1.6
+      },
+      "portValues": {
+        "w": 1.6
+      }
+    },
+    {
+      "id": "fl_cap",
+      "defType": "style/stroke-cap",
+      "position": {
+        "x": 256,
+        "y": 441
+      },
+      "params": {
+        "cap": "round"
+      },
+      "portValues": {
+        "cap": "round"
+      }
+    },
+    {
+      "id": "fl_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 25,
+        "y": 79
+      },
+      "params": {}
+    },
+    {
+      "id": "fl_slow",
+      "defType": "math/math",
+      "position": {
+        "x": 230,
+        "y": 57
+      },
+      "params": {
+        "op": "mul",
+        "b": 0.05
+      },
+      "portValues": {
+        "b": 0.05
+      }
+    },
+    {
+      "id": "fl_flow",
+      "defType": "geometry/contours",
+      "position": {
+        "x": 515,
+        "y": 0
+      },
+      "params": {
+        "mode": "flow",
+        "field": "angle",
+        "size": {
+          "x": 540,
+          "y": 540
+        },
+        "scale": 0.0045,
+        "seed": 3,
+        "spacing": 9,
+        "step": 2,
+        "maxLength": 520,
+        "minLength": 30
+      },
+      "portValues": {
+        "field": "angle",
+        "size": {
+          "x": 540,
+          "y": 540
+        },
+        "scale": 0.0045,
+        "seed": 3,
+        "spacing": 9,
+        "step": 2,
+        "maxLength": 520,
+        "minLength": 30,
+        "mode": "flow"
+      }
+    },
+    {
+      "id": "fl_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 762,
+        "y": 0
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.043137254901960784,
+          "g": 0.07450980392156863,
+          "b": 0.16862745098039217,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.043137254901960784,
+          "g": 0.07450980392156863,
+          "b": 0.16862745098039217,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "fl_w",
+      "target": "fl_cap",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_2",
+      "source": "fl_cap",
+      "target": "fl_flow",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_3",
+      "source": "fl_pal",
+      "target": "fl_flow",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_4",
+      "source": "fl_t",
+      "target": "fl_slow",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_5",
+      "source": "fl_slow",
+      "target": "fl_flow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-turn"
+    },
+    {
+      "id": "e_6",
+      "source": "fl_flow",
+      "target": "fl_r",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

@@ -43,6 +43,7 @@ pub mod sound;
 pub mod spread;
 pub mod string;
 pub mod style;
+pub mod symmetry;
 pub mod text;
 pub mod text_animate;
 pub mod time;
@@ -113,6 +114,7 @@ fn registry() -> &'static Registrar {
         simulation::register(&mut r);
         sound::register(&mut r);
         spread::register(&mut r);
+        symmetry::register(&mut r);
         string::register(&mut r);
         style::register(&mut r);
         text::register(&mut r);

@@ -1,0 +1,204 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Differential Growth",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "dg_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Differential growth\n\nThe Simulation node's `growth` mode: a ring of nodes that push each other away (`repel`) while each pulls towards its neighbours (`align`). New nodes keep appearing on random edges (`grow` a second) and edges that stretch past `maxEdge` split in two; the extra length has nowhere to go but sideways, and the curve folds like coral or the surface of a brain, up to `maxNodes`.\n\n`colors` ramp the edges by age, oldest first, over the style's fill. Click the Bang to grow it again; try a shape on `shape`, e.g. a line for an open curve.",
+        "width": 520,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Differential growth\n\nThe Simulation node's `growth` mode: a ring of nodes that push each other away (`repel`) while each pulls towards its neighbours (`align`). New nodes keep appearing on random edges (`grow` a second) and edges that stretch past `maxEdge` split in two; the extra length has nowhere to go but sideways, and the curve folds like coral or the surface of a brain, up to `maxNodes`.\n\n`colors` ramp the edges by age, oldest first, over the style's fill. Click the Bang to grow it again; try a shape on `shape`, e.g. a line for an open curve.",
+        "width": 520,
+        "height": 200
+      }
+    },
+    {
+      "id": "dg_bang",
+      "defType": "io/bang",
+      "position": {
+        "x": 230,
+        "y": 419
+      },
+      "params": {}
+    },
+    {
+      "id": "dg_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 230,
+        "y": 205
+      },
+      "params": {
+        "stopCount": 4,
+        "c0": "#ffd6a5",
+        "c1": "#ff8fab",
+        "c2": "#c77dff",
+        "c3": "#4cc9f0"
+      },
+      "portValues": {
+        "stopCount": 4,
+        "c0": "#ffd6a5",
+        "c1": "#ff8fab",
+        "c2": "#c77dff",
+        "c3": "#4cc9f0"
+      }
+    },
+    {
+      "id": "dg_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 101
+      },
+      "params": {
+        "color": {
+          "r": 0.10980392156862745,
+          "g": 0.0784313725490196,
+          "b": 0.2196078431372549,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.10980392156862745,
+          "g": 0.0784313725490196,
+          "b": 0.2196078431372549,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "dg_w",
+      "defType": "style/stroke-weight",
+      "position": {
+        "x": 247,
+        "y": 79
+      },
+      "params": {
+        "w": 1.4
+      },
+      "portValues": {
+        "w": 1.4
+      }
+    },
+    {
+      "id": "dg_sim",
+      "defType": "particles/simulation",
+      "position": {
+        "x": 518,
+        "y": 0
+      },
+      "params": {
+        "mode": "growth",
+        "radius": 60,
+        "size": {
+          "x": 560,
+          "y": 560
+        },
+        "maxNodes": 3000,
+        "repel": 13,
+        "force": 1,
+        "grow": 250,
+        "align": 0.45,
+        "maxEdge": 6,
+        "speed": 1.2,
+        "seed": 1
+      },
+      "portValues": {
+        "radius": 60,
+        "size": {
+          "x": 560,
+          "y": 560
+        },
+        "maxNodes": 3000,
+        "repel": 13,
+        "force": 1,
+        "grow": 250,
+        "align": 0.45,
+        "maxEdge": 6,
+        "speed": 1.2,
+        "seed": 1,
+        "mode": "growth"
+      }
+    },
+    {
+      "id": "dg_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 777,
+        "y": 0
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.054901960784313725,
+          "g": 0.043137254901960784,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.054901960784313725,
+          "g": 0.043137254901960784,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "dg_fill",
+      "target": "dg_w",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_2",
+      "source": "dg_w",
+      "target": "dg_sim",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_3",
+      "source": "dg_pal",
+      "target": "dg_sim",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_4",
+      "source": "dg_bang",
+      "target": "dg_sim",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-reset"
+    },
+    {
+      "id": "e_5",
+      "source": "dg_sim",
+      "target": "dg_r",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

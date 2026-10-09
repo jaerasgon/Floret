@@ -1,6 +1,7 @@
 //! `geometry/*` nodes (native-only): point scattering, Voronoi / Delaunay /
 //! hull cells, path operations, shape booleans, L-systems, trimming,
-//! morphing, connecting points, contours and animated layouts.
+//! morphing, connecting points, contours (and flow lines), animated
+//! layouts and tilings (Truchet, wave function collapse).
 //!
 //! The polygon-producing nodes share one output shape: `shape` (every
 //! polygon in one group layer), `layers` (one layer per polygon; `cells`
@@ -19,6 +20,9 @@ mod boolean;
 mod cells;
 mod connect;
 mod contours;
+mod flow;
+#[cfg(test)]
+mod gen_tests;
 mod layout;
 mod lsystem;
 mod measure;
@@ -31,6 +35,7 @@ mod relax;
 mod scatter;
 #[cfg(test)]
 mod tests;
+mod tiles;
 mod trim;
 
 use super::random::hash32;
@@ -63,6 +68,8 @@ pub fn register(r: &mut Registrar) {
     r.dynamic("geometry/contours", contours::inputs);
     r.node("geometry/layout", layout::layout);
     r.dynamic("geometry/layout", layout::inputs);
+    r.node("geometry/tiles", tiles::tiles);
+    r.dynamic("geometry/tiles", tiles::inputs);
 }
 
 /// Most points / vertices a geometry node emits (it warns when it stops).
@@ -73,9 +80,15 @@ pub(crate) const MAX_POINTS: usize = 50_000;
 /// The random stream for a node's `seed`. Every geometry node draws its
 /// randomness from here, with the patch seed mixed in ([`crate::seed`]).
 pub(crate) fn rng(seed: f64) -> Mulberry32 {
+    rng_salted(seed, 0.0)
+}
+
+/// A second, independent stream for the same `seed` (`salt` ≠ 0), for
+/// draws that mustn't move when the main stream's use changes.
+pub(crate) fn rng_salted(seed: f64, salt: f64) -> Mulberry32 {
     Mulberry32::new(hash32(
         crate::seed::mix(seed),
-        0.0,
+        salt,
         f64::from(0x6765_6f6d_u32),
     ))
 }
@@ -435,6 +448,22 @@ pub(crate) fn pin_style(style: &Value, closed: bool) -> Arc<ResolvedStyle> {
         line_default_style()
     };
     resolve_style(style_arg(style), fallback)
+}
+
+/// A style for lines: one with no stroke (a wired chain of, say, Stroke
+/// Weight on the default fill) strokes in its fill colour instead, and
+/// doesn't fill.
+pub(crate) fn as_line(style: &Arc<ResolvedStyle>) -> Arc<ResolvedStyle> {
+    if style.stroke.is_some() {
+        return style.clone();
+    }
+    let mut st = (**style).clone();
+    st.stroke = Some(
+        st.fill
+            .take()
+            .unwrap_or_else(|| scene::Paint::css("#ffffff")),
+    );
+    Arc::new(st)
 }
 
 /// Outputs `(shape, layers, points, counts)` for a list of polygons.

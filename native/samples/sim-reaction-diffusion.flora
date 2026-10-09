@@ -1,0 +1,231 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Reaction Diffusion",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "rd_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -264
+      },
+      "params": {
+        "text": "Reaction–diffusion\n\nThe Simulation node's `reaction` mode runs Gray–Scott chemistry: chemical B eats A and spreads, A is fed back in, B is killed off, and the balance (`preset`, or `custom` feed and kill) decides the pattern — coral, mitosis, fingerprints, worms, maze, spots, waves.\n\nB starts where the `seed image` is bright: here the word, rasterised, so the coral grows out of the letters. `colors` ramp from no B to the most. Click the Bang to start over, or switch the preset.",
+        "width": 520,
+        "height": 200
+      },
+      "portValues": {
+        "text": "Reaction–diffusion\n\nThe Simulation node's `reaction` mode runs Gray–Scott chemistry: chemical B eats A and spreads, A is fed back in, B is killed off, and the balance (`preset`, or `custom` feed and kill) decides the pattern — coral, mitosis, fingerprints, worms, maze, spots, waves.\n\nB starts where the `seed image` is bright: here the word, rasterised, so the coral grows out of the letters. `colors` ramp from no B to the most. Click the Bang to start over, or switch the preset.",
+        "width": 520,
+        "height": 200
+      }
+    },
+    {
+      "id": "rd_bang",
+      "defType": "io/bang",
+      "position": {
+        "x": 478,
+        "y": 384
+      },
+      "params": {}
+    },
+    {
+      "id": "rd_white",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 110
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "rd_word",
+      "defType": "text/glyphs",
+      "position": {
+        "x": 230,
+        "y": 0
+      },
+      "params": {
+        "align": "center",
+        "string": "floret",
+        "size": 170,
+        "pos": {
+          "x": 0,
+          "y": 55
+        }
+      },
+      "portValues": {
+        "string": "floret",
+        "size": 170,
+        "align": "center",
+        "pos": {
+          "x": 0,
+          "y": 55
+        }
+      }
+    },
+    {
+      "id": "rd_ras",
+      "defType": "image/from-layer",
+      "position": {
+        "x": 507,
+        "y": 0
+      },
+      "params": {
+        "w": 600,
+        "h": 600
+      },
+      "portValues": {
+        "w": 600,
+        "h": 600
+      }
+    },
+    {
+      "id": "rd_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 478,
+        "y": 148
+      },
+      "params": {
+        "stopCount": 5,
+        "c0": "#10002b",
+        "c1": "#3c096c",
+        "c2": "#9d4edd",
+        "c3": "#ff9e00",
+        "c4": "#fff3d6"
+      },
+      "portValues": {
+        "stopCount": 5,
+        "c0": "#10002b",
+        "c1": "#3c096c",
+        "c2": "#9d4edd",
+        "c3": "#ff9e00",
+        "c4": "#fff3d6"
+      }
+    },
+    {
+      "id": "rd_sim",
+      "defType": "particles/simulation",
+      "position": {
+        "x": 769,
+        "y": 23
+      },
+      "params": {
+        "mode": "reaction",
+        "preset": "coral",
+        "size": {
+          "x": 600,
+          "y": 600
+        },
+        "resolution": 200,
+        "speed": 3,
+        "seed": 1
+      },
+      "portValues": {
+        "size": {
+          "x": 600,
+          "y": 600
+        },
+        "resolution": 200,
+        "preset": "coral",
+        "speed": 3,
+        "seed": 1,
+        "mode": "reaction"
+      }
+    },
+    {
+      "id": "rd_r",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1028,
+        "y": 23
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.06274509803921569,
+          "g": 0.0,
+          "b": 0.16862745098039217,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.06274509803921569,
+          "g": 0.0,
+          "b": 0.16862745098039217,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "rd_white",
+      "target": "rd_word",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_2",
+      "source": "rd_word",
+      "target": "rd_ras",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_3",
+      "source": "rd_ras",
+      "target": "rd_sim",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-seedImage"
+    },
+    {
+      "id": "e_4",
+      "source": "rd_pal",
+      "target": "rd_sim",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_5",
+      "source": "rd_bang",
+      "target": "rd_sim",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-reset"
+    },
+    {
+      "id": "e_6",
+      "source": "rd_sim",
+      "target": "rd_r",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

@@ -42,11 +42,11 @@ old category names and type ids.
 | Color & Style | Color, Split Color, Gradient, Lerp (colour), Palette, Set Alpha, Color Picker; Fill, Stroke, Gradient Fill and the other styles. |
 | Shape Ops | Translate, Rotate, Scale, Shear, Apply Matrix; Group, Blend, Mask, Cache; Path Ops, Shape Boolean. |
 | Patterns | Grid, Ring, Spiral, Fibonacci, Scatter, Cells (Voronoi), L-System, points from a layer; Linear / Range / Sine / Geometric spreads; random walks and cellular automata. |
-| Noise & Random | Noise, Uniform, Gaussian, Wanderer2D, NoiseSpread, Shuffle, Randomize. |
+| Noise & Random | Noise, Uniform, Gaussian, Wanderer2D, Noise Spread, Shuffle, Randomize. |
 | Animate | Time, Frame, Delta, LFO, Ease, Smooth, Spring, Delay Line, Trigger, Metro, Counter, Edge, Gate. |
 | Image | Rasterize, Crop, Resize, Dims, Sample, Slicer, Blend (images), pixel get / set. |
 | Effects | Effect (bloom, blur, shadow, glow, levels, curves, LUT, key …), Shader, Filter, Adjust, Convolve, Pixelate, Pixel Sort, Blur. |
-| Particles & Physics | Emitter, Simulation, World, Bounds, Trail, Render, forces, colliders, Walker Cluster. |
+| Particles & Physics | Emitter, Simulation, World, Bounds, Trail, Particle Shapes, forces, colliders, Walker Cluster. |
 | Input & Sound | Mouse, Keyboard, MIDI, Camera, Landmarks; audio in, analysis (FFT, Amplitude …) and synthesis. |
 | Math | Math, Vector Math, Compare, Logic, Statistics, Convert, Map, Norm, Lerp, Clamp, Wrap, Step, Smoothstep, Expression, Cumulative, Delta, Histogram, Vec2 / Split / FromAngle / ToPolar, Select. |
 | Lists | Building, reordering, slicing and combining spreads. |
@@ -82,7 +82,7 @@ to that op.
 | Label · type | Inputs → Outputs | Description |
 |---|---|---|
 | **Math** · `math/math` | `op` picks the pins: `a, b, …` (add, subtract, multiply, divide, min, max — number, vec2 or colour, component-wise; the header's `− n +` sets how many), `a, b` (mod, pow), `x` (negate, abs, sign, floor, ceil, round, fract, sqrt, square, exp, log, sin, cos, tan, asin, acos, atan), `y, x` (atan2), `x, y` (length), `x1, y1, x2, y2` (distance) → `result: number` (vec2 / colour when the arithmetic ops are wired so) | Arithmetic and maths functions in one node. Each op computes exactly as the single-op node it replaced (the legacy rows below, same pins and edge cases). The header shows the op's symbol (`+`, `×`, `sin`, `x^y` …). Native-only. |
-| **Statistics** · `math/statistics` | `op`; `spread: number*` → `result: number` | mean, median, sum, min, max or stddev (population) of a number spread — exactly the old Mean, Median, Sum, MinSpread, MaxSpread and StdDev. Native-only. |
+| **Statistics** · `math/statistics` | `op`; `spread: number*` → `result: number` | mean, median, sum, min, max or stddev (population) of a number spread — exactly the old Mean, Median, Sum, Min Spread, Max Spread and StdDev. Native-only. |
 | **Expression** · `math/expression` | one pin per name in the formula: `number*`, or `vec2*` / `color*` when read as `p.x` / `c.r` → `value: any` | Type a formula (`expr` param), e.g. `sin(x * 3) + y * t`. Runs once per element over spreads (shorter ones cycle). Built in: `t`, `frame`, `index`, `count`, `pi`, `tau`, `e`. Numbers, vec2s and colours (0..1 channels) with per-component arithmetic; `+ - * / % ^`, comparisons, `&& \|\| !`, `c ? a : b`; maths functions plus `noise`, `vec2`, `length`, `distance`, `dot`, `normalize`, `angle`, `rgb`, `hsl`. No loops or IO; errors show on the node. Native-only. |
 | **Map** · `math/map` | `x, inMin, inMax, outMin, outMax: number` → `out: number` | Remap x from [inMin..inMax] to [outMin..outMax]. |
 | **Norm** · `math/norm` | `x, start, stop: number` → `out: number` | Map x from [start, stop] into [0, 1]. Inverse of Lerp. |
@@ -127,8 +127,8 @@ Each is now an op of **Math** (or **Statistics**): `math/mul` is Math set to mul
 | **Dist** · `math/dist` | `x1, y1, x2, y2: number` → `out: number` | Distance between (x1, y1) and (x2, y2). |
 | **Sum** · `math/sum` | `spread: number*` → `out: number` | Σ of a number spread. |
 | **Mean** · `math/mean` | `spread: number*` → `out: number` | Arithmetic mean. Empty spread → 0. |
-| **MinSpread** · `math/min-spread` | `spread: number*` → `out: number` | Minimum value across a spread. |
-| **MaxSpread** · `math/max-spread` | `spread: number*` → `out: number` | Maximum value across a spread. |
+| **Min Spread** · `math/min-spread` | `spread: number*` → `out: number` | Minimum value across a spread. |
+| **Max Spread** · `math/max-spread` | `spread: number*` → `out: number` | Maximum value across a spread. |
 | **Median** · `math/median` | `spread: number*` → `out: number` | Median (average of middles when even). |
 | **StdDev** · `math/stddev` | `spread: number*` → `out: number` | Population standard deviation. |
 
@@ -196,7 +196,7 @@ Seeded, deterministic noise and PRNGs. Wire `time/frame` into `seed` for per-fra
 
 | Label · type | Inputs → Outputs | Description |
 |---|---|---|
-| **LinearSpread** · `spread/linear` | `from, to, count: number` → `spread: number*` | A spread from `from` to `to`, of length `count` (inclusive endpoints). |
+| **Linear Spread** · `spread/linear` | `from, to, count: number` → `spread: number*` | A spread from `from` to `to`, of length `count` (inclusive endpoints). |
 | **Range** · `spread/range` | `count: number` → `spread: number*` | Integers `0 .. count-1`. |
 | **Repeat** · `spread/repeat` | `value, count: number` → `spread: number*` | Repeat a value N times. |
 | **CircularSpread** · `spread/circular` | `count, phase: number` → `spread: number*` | A spread of length `count` distributed across [0, TAU). Step = TAU/count. |
@@ -213,9 +213,9 @@ Seeded, deterministic noise and PRNGs. Wire `time/frame` into `seed` for per-fra
 | **Slice** · `spread/slice` | `spread: number*, start, end: number` → `spread: number*` | Elements `[start..end)`. Negative `end` means count-from-end. |
 | **Stack** · `spread/stack` | `a: number*, b: number*` → `spread: number*` | Concatenate two spreads: `a ++ b`. |
 | **Resample** · `spread/resample` | `spread: number*, count: number` → `spread: number*` | Resample a spread to length `count` (linear interpolation). |
-| **SineSpread** · `spread/sine` | `count, amplitude, frequency, phase, offset: number` → `spread: number*` | `count` samples of `offset + amplitude · sin(2π · frequency · i/count + phase)`. |
-| **GeometricSpread** · `spread/geometric` | `start, ratio, count: number` → `spread: number*` | Geometric progression `start, start·ratio, start·ratio², …`. |
-| **NoiseSpread** · `spread/noise` | `count, frequency, phase, seed: number` → `spread: number*` | 1-D Perlin noise sampled at regular intervals, in [0, 1]. |
+| **Sine Spread** · `spread/sine` | `count, amplitude, frequency, phase, offset: number` → `spread: number*` | `count` samples of `offset + amplitude · sin(2π · frequency · i/count + phase)`. |
+| **Geometric Spread** · `spread/geometric` | `start, ratio, count: number` → `spread: number*` | Geometric progression `start, start·ratio, start·ratio², …`. |
+| **Noise Spread** · `spread/noise` | `count, frequency, phase, seed: number` → `spread: number*` | 1-D Perlin noise sampled at regular intervals, in [0, 1]. |
 | **SetSlice** · `spread/set-slice` | `spread: T*, index: number, replacement: T*` → `out: T*` | Replace the element at `index` with the replacement spread (length grows when replacement > 1). |
 | **InsertSlice** · `spread/insert-slice` | `spread: T*, index: number, insertion: T*` → `out: T*` | Insert a spread at `index` without overwriting. |
 | **RemoveSlice** · `spread/remove-slice` | `spread: T*, index, count: number` → `out: T*` | Delete `count` elements starting at `index`. |
@@ -344,7 +344,7 @@ Image manipulation. The `image` wire carries an `HTMLCanvasElement` — either l
 |---|---|---|
 | **Dims** · `image/dims` | `image: image` → `width, height, aspect: number` | Pixel dimensions of an image. `aspect` is `width / height`. All zero while loading. |
 | **Sample** · `image/sample` | `image: image, x, y: number` → `color: color` | Read one pixel as a Color. Coordinates clamp to the image bounds. |
-| **SampleSpread** · `image/sample-spread` | `image: image, points: vec2*` → `colors: color*` | Read a spread of points from an image, one Color per point. One full-bitmap read amortised across all points — cheap for thousands. |
+| **Sample Spread** · `image/sample-spread` | `image: image, points: vec2*` → `colors: color*` | Read a spread of points from an image, one Color per point. One full-bitmap read amortised across all points — cheap for thousands. |
 | **Crop** · `image/crop` | `image: image, sx, sy, sw, sh: number` → `image: image` | New image containing the source's `(sx, sy, sw, sh)` rectangle, sized `(sw, sh)`. Zero in `sw/sh` runs the rect to the image edge. |
 | **Slicer** · `image/slicer` | `image, cols, rows: number` → `images: image*` | Split an image into a `cols × rows` grid of sub-images (row-major spread). Each sub-image is sized `(srcW/cols, srcH/rows)`. Capped at 256 cells. |
 | **Resize** · `image/resize` | `image: image, w, h: number` → `image: image` | New image scaled to `(w, h)`. Zero on an axis keeps the source's dimension on that axis. |
@@ -518,7 +518,7 @@ Stateful particle simulation. See [CONCEPTS.md → Particle architecture](CONCEP
 |---|---|---|
 | **Emitter** · `particles/emitter` | `world, positions*, rate, lifetime, initialVel, velSpread, color, size, maxCount (C), overflowMode (C), seed (C), localForces*` → `particles` | The system root. Owns a fixed-capacity ParticleBuffer; spawns at `rate`/sec from `positions`; integrates each tick. |
 | **FromLayer** · `particles/from-layer` | `layer, mode (C), density (C)` → `positions*` | Sample points on any shape (outline or fill). Wire into Emitter `positions` to emit from rects, ellipses, polygons, even text. |
-| **Render** · `particles/render-as` | `particles, template (C), templateLayer, style, tint, useBufferColor (C)` → `layer` | Convert a ParticleBuffer into a renderable Layer. Template is circle / rect / custom layer. |
+| **Particle Shapes** · `particles/render-as` | `particles, template (C), templateLayer, style, tint, useBufferColor (C)` → `layer` | Convert a ParticleBuffer into a renderable Layer. Template is circle / rect / custom layer. |
 | **Trail** · `particles/trail` | `particles, segments (C), style, color, fadeOut` → `layer` | Render a polyline trail behind every alive particle. Ring buffer length fixed at compile. |
 | **Bounds** · `particles/bounds` | `size, center, mode (C), restitution` → `collider` | Wrap, kill, or bounce particles at the edges of a rectangle. Plug into a World's `colliders` input. |
 

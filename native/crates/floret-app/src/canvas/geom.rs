@@ -80,12 +80,11 @@ fn row_count(n: &PatchNode, cat: &Catalogue, look: Look) -> usize {
         let outs = subpatch_ports(n, PortDirection::Output).count();
         return ins.max(outs).max(1);
     }
-    if let Some(rows) = widgets::custom_of(&n.def_type).and_then(|c| super::custom::rows(c, n, cat))
-    {
+    if let Some(rows) = widgets::custom_for(n).and_then(|c| super::custom::rows(c, n, cat)) {
         return rows;
     }
     let left = values::left_items(cat, spec, n).len();
-    left.max(ports::resolved_outputs(spec, &n.params).len())
+    left.max(ports::resolved_outputs(cat, spec, &n.params).len())
 }
 
 /// A node's size in canvas units as drawn with `look`, with no inline
@@ -112,9 +111,7 @@ pub fn box_size_with(
         Look::Node | Look::Collapsed => {
             let rows = row_count(n, cat, look) as f32;
             let body = match look {
-                Look::Node => {
-                    widgets::custom_of(&n.def_type).map_or(0.0, |c| super::custom::body_h(c, n))
-                }
+                Look::Node => widgets::custom_for(n).map_or(0.0, |c| super::custom::body_h(c, n)),
                 _ => 0.0,
             };
             (
@@ -323,7 +320,7 @@ pub fn node_width(
     let label_font = FontId::proportional(LABEL_FONT);
     let out_font = FontId::proportional(LABEL_FONT);
     if look == Look::Node {
-        if let Some(c) = widgets::custom_of(&n.def_type) {
+        if let Some(c) = widgets::custom_for(n) {
             return custom_width(n, spec, cat, c, &label_font, &out_font);
         }
     }
@@ -332,7 +329,7 @@ pub fn node_width(
         let w = 10.0 + left + out.map_or(0.0, |o| 14.0 + o) + 10.0;
         widest = widest.max(w);
     };
-    let math = values::math_symbol(&n.def_type);
+    let math = values::header_symbol(n);
     let title = if look == Look::Collapsed {
         let label = n.params.get("label").and_then(|v| v.as_str());
         format!("▶ {}", label.unwrap_or(&spec.label))
@@ -363,7 +360,7 @@ pub fn node_width(
     } else {
         let wired = wired_inputs(patch, &n.id);
         let items = values::left_items(cat, spec, n);
-        let outs = ports::resolved_outputs(spec, &n.params);
+        let outs = ports::resolved_outputs(cat, spec, &n.params);
         for i in 0..items.len().max(outs.len()) {
             let out = outs.get(i).map(|p| {
                 let label = values::display_label(p, false);
@@ -421,7 +418,7 @@ fn custom_width(
         return NODE_W;
     }
     let items = values::left_items(cat, spec, n);
-    let outs = ports::resolved_outputs(spec, &n.params);
+    let outs = ports::resolved_outputs(cat, spec, &n.params);
     let widest = items
         .iter()
         .enumerate()
@@ -531,7 +528,8 @@ pub struct NodeBox {
     pub label: String,
     /// `label` is a math symbol.
     pub math: bool,
-    pub category: String,
+    /// Browser group: picks the accent colour.
+    pub group: String,
     /// Drag handle: the header row, or the strip above a region frame.
     pub header: Rect,
     pub pins: Vec<PinGeom>,
@@ -658,7 +656,7 @@ pub fn layout(
             .and_then(|v| v.as_str())
             .filter(|_| look.is_frame() || look == Look::Collapsed)
             .map(str::to_owned)
-            .or_else(|| values::math_symbol(&n.def_type).map(str::to_owned))
+            .or_else(|| values::header_symbol(n).map(str::to_owned))
             .unwrap_or_else(|| spec.label.clone());
         let header = if look.is_frame() {
             Rect::from_min_max(
@@ -671,9 +669,9 @@ pub fn layout(
         let mut b = NodeBox {
             rect,
             look,
-            math: look == Look::Node && values::math_symbol(&n.def_type).is_some(),
+            math: look == Look::Node && values::header_symbol(n).is_some(),
             label,
-            category: spec.category.clone(),
+            group: spec.group.clone(),
             header,
             pins: Vec::new(),
             rows: Vec::new(),
@@ -704,7 +702,7 @@ pub fn layout(
         match look {
             Look::Region | Look::Frame => frame_box(cx, n, spec, (w, h), &mut b),
             Look::Collapsed => collapsed_box(cx, n, &mut b),
-            Look::Node => match widgets::custom_of(&n.def_type) {
+            Look::Node => match widgets::custom_for(n) {
                 Some(c) => super::custom::layout(cx, n, spec, c, &wired, &mut b),
                 None => row_box(cx, n, spec, &wired, &mut b),
             },
@@ -859,7 +857,7 @@ pub fn row_box(
 ) {
     let z = cx.zoom;
     let items = values::left_items(cx.cat, spec, n);
-    let outs = ports::resolved_outputs(spec, &n.params);
+    let outs = ports::resolved_outputs(cx.cat, spec, &n.params);
     for i in 0..items.len().max(outs.len()) {
         let y = row_y(b, i, z);
         let output = outs

@@ -57,7 +57,10 @@ pub struct PortDoc {
 pub struct Doc {
     pub label: String,
     pub ty: String,
-    pub category: String,
+    /// The browser group (Source, Draw …).
+    pub group: String,
+    /// For a hidden node an op family replaced: what to use instead.
+    pub legacy: Option<String>,
     pub description: Option<String>,
     /// The `NODES.md` description, when it says more than the catalogue.
     pub notes: Option<String>,
@@ -102,7 +105,14 @@ pub fn doc(cat: &Catalogue, ty: &str) -> Option<Doc> {
     Some(Doc {
         label: spec.label.clone(),
         ty: spec.ty.clone(),
-        category: spec.category.clone(),
+        group: spec.group.clone(),
+        legacy: floret_engine::nodes::family::superseded_by(ty).map(|(f, o)| {
+            let node = cat.get(f.ty).map_or(f.ty, |s| s.label.as_str());
+            format!(
+                "Legacy node, hidden from the node browser: {node} set to {} does the same.",
+                o.id
+            )
+        }),
         description: spec.description.clone(),
         notes,
         inputs: cat
@@ -153,7 +163,7 @@ pub fn search<'a>(cat: &'a Catalogue, query: &str) -> Vec<&'a NodeSpec> {
         .iter()
         .filter(|s| !s.hidden)
         .filter(|s| {
-            format!("{} {} {}", s.ty, s.label, s.category)
+            format!("{} {} {} {}", s.ty, s.label, s.category, s.group)
                 .to_lowercase()
                 .contains(&q)
         })
@@ -264,8 +274,8 @@ impl HelpPanel {
                 .horizontal(|ui| {
                     let r = ui.selectable_label(false, RichText::new(&s.label).color(theme::FG_0));
                     ui.label(
-                        RichText::new(&s.category)
-                            .color(theme::category_color(&s.category))
+                        RichText::new(&s.group)
+                            .color(theme::category_color(&s.group))
                             .small(),
                     );
                     ui.label(RichText::new(&s.ty).color(theme::FG_2).small().monospace());
@@ -292,13 +302,17 @@ fn show_doc(ui: &mut egui::Ui, d: &Doc) {
         ui.label(RichText::new(&d.ty).color(theme::FG_2).monospace().small());
     });
     ui.label(
-        RichText::new(&d.category)
-            .color(theme::category_color(&d.category))
+        RichText::new(&d.group)
+            .color(theme::category_color(&d.group))
             .small(),
     );
     if let Some(desc) = &d.description {
         ui.add_space(4.0);
         ui.label(RichText::new(desc).color(theme::FG_1));
+    }
+    if let Some(l) = &d.legacy {
+        ui.add_space(2.0);
+        ui.label(RichText::new(l).color(theme::FG_2).small().italics());
     }
     if let Some(n) = &d.notes {
         ui.add_space(2.0);
@@ -384,7 +398,8 @@ mod tests {
         let cat = Catalogue::builtin();
         let d = doc(cat, "io/slider").expect("slider");
         assert_eq!(d.label, "Slider");
-        assert_eq!(d.category, "IO");
+        assert_eq!(d.group, "Source");
+        assert_eq!(d.legacy, None);
         assert!(d.inputs.is_empty());
         assert_eq!(d.outputs.len(), 1);
         assert_eq!(d.outputs[0].ty, "number");
@@ -392,6 +407,12 @@ mod tests {
         assert_eq!(d.notes, None);
         let add = doc(cat, "math/add").expect("add");
         assert_eq!(add.inputs.len(), 2);
+        assert_eq!(
+            add.legacy.as_deref(),
+            Some("Legacy node, hidden from the node browser: Math set to add does the same.")
+        );
+        let math = doc(cat, "math/math").expect("math");
+        assert_eq!((math.group.as_str(), math.legacy), ("Math", None));
         let foreach = doc(cat, "region/foreach").expect("foreach");
         assert_eq!(foreach.region, Some("foreach"));
         assert!(doc(cat, "nope/nope").is_none());

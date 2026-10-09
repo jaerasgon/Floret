@@ -1,10 +1,16 @@
 //! Node search filtering (`NodeSearch.tsx`): token match over label /
-//! type / category / description, restricted to nodes that can take the
-//! dragged wire (or sit inside a wire being split).
+//! type / category / group / description, restricted to nodes that can
+//! take the dragged wire (or sit inside a wire being split).
+//!
+//! Besides node types, a search lists the ops of the op-family nodes as
+//! entries of their own — typing "mul" offers *Multiply*, which places a
+//! Math node set to multiply — so the single-op nodes those families
+//! replaced are still one search away, under their old names and type ids.
 
 use super::connect::are_ports_compatible;
 use super::ports::{resolved_outputs, Side};
-use floret_engine::spec::{Catalogue, NodeSpec, PortSpec, PortType};
+use floret_engine::nodes::family::{self, Family, Op};
+use floret_engine::spec::{Catalogue, NodeSpec, Params, PortSpec, PortType};
 
 pub const MAX_RESULTS: usize = 40;
 
@@ -26,15 +32,166 @@ pub enum Fit {
     },
 }
 
-fn inputs(cat: &Catalogue, s: &NodeSpec) -> Vec<PortSpec> {
-    cat.resolved_inputs(s, &s.default_params)
+/// Separates a node type from an op in an entry key (`math/math#sin`).
+const OP_SEP: char = '#';
+
+/// A placeable entry key: the node type, and the op it's preset to.
+pub fn split_key(key: &str) -> (&str, Option<&str>) {
+    match key.split_once(OP_SEP) {
+        Some((ty, op)) => (ty, Some(op)),
+        None => (key, None),
+    }
 }
 
-/// The pin on a fresh `spec` node that a `side`/`ty` wire would land on.
-pub fn first_compatible(cat: &Catalogue, s: &NodeSpec, side: Side, ty: PortType) -> Option<String> {
+/// One thing the browser or search can place: a node type, or an op
+/// family node preset to one of its ops.
+#[derive(Clone, Copy, Debug)]
+pub struct Entry<'a> {
+    pub spec: &'a NodeSpec,
+    pub op: Option<(&'static Family, &'static Op)>,
+}
+
+impl<'a> Entry<'a> {
+    pub fn node(spec: &'a NodeSpec) -> Entry<'a> {
+        Entry { spec, op: None }
+    }
+
+    /// The key a pick / drag / favourite carries (see [`split_key`]).
+    pub fn key(&self) -> String {
+        match self.op {
+            Some((_, o)) => format!("{}{OP_SEP}{}", self.spec.ty, o.id),
+            None => self.spec.ty.clone(),
+        }
+    }
+
+    pub fn label(&self) -> &str {
+        self.op.map_or(&self.spec.label, |(_, o)| o.label)
+    }
+
+    /// Secondary text naming the node an op entry places ("Math").
+    pub fn owner(&self) -> Option<&str> {
+        self.op.map(|_| self.spec.label.as_str())
+    }
+
+    /// The params a fresh node gets: the type's defaults, plus the op.
+    pub fn params(&self) -> Params {
+        let mut p = self.spec.default_params.clone();
+        if let Some((f, o)) = self.op {
+            p.insert(f.param.into(), o.id.into());
+        }
+        p
+    }
+
+    /// The superseded single-op node an op entry stands for.
+    fn legacy<'c>(&self, cat: &'c Catalogue) -> Option<&'c NodeSpec> {
+        self.op
+            .and_then(|(_, o)| o.legacy())
+            .and_then(|t| cat.get(t))
+    }
+
+    /// What it does: an op entry's own node's description.
+    pub fn description<'c>(&self, cat: &'c Catalogue) -> Option<&'c str>
+    where
+        'a: 'c,
+    {
+        self.legacy(cat)
+            .and_then(|s| s.description.as_deref())
+            .or(self.spec.description.as_deref())
+    }
+
+    /// The names a query's tokens are matched against: label, type id,
+    /// category and group. An op entry is named by its op and the node it
+    /// supersedes (label, type id, category), not by its family's, so
+    /// "math" lists the Math node rather than all 28 of its ops.
+    fn names(&self, cat: &Catalogue) -> String {
+        let s = self.spec;
+        let hay = match self.op {
+            None => format!("{} {} {} {}", s.label, s.ty, s.category, s.group),
+            Some((_, o)) => {
+                let legacy = self.legacy(cat);
+                format!(
+                    "{} {} {} {} {} {}",
+                    o.label,
+                    o.id,
+                    s.label,
+                    legacy.map_or("", |l| l.ty.as_str()),
+                    legacy.map_or("", |l| l.label.as_str()),
+                    legacy.map_or("", |l| l.category.as_str()),
+                )
+            }
+        };
+        hay.to_lowercase()
+    }
+
+    /// Names plus (for a node type) its description.
+    fn haystack(&self, cat: &Catalogue) -> String {
+        match (self.op, &self.spec.description) {
+            (None, Some(d)) => format!("{} {}", self.names(cat), d.to_lowercase()),
+            _ => self.names(cat),
+        }
+    }
+}
+
+/// The entry a key names (hidden node types too: favourites and drags of
+/// them keep working).
+pub fn entry<'a>(cat: &'a Catalogue, key: &str) -> Option<Entry<'a>> {
+    let (ty, op) = split_key(key);
+    let spec = cat.get(ty)?;
+    let op = match op {
+        None => None,
+        Some(id) => {
+            let f = family::family(ty)?;
+            Some((f, f.op_by_id(id)?))
+        }
+    };
+    Some(Entry { spec, op })
+}
+
+/// A starred key as a browsable entry: a star on a single-op node that an
+/// op family replaced (`math/mul`) now stands for that op (Math set to
+/// multiply); other hidden types drop out.
+pub fn favorite<'a>(cat: &'a Catalogue, key: &str) -> Option<Entry<'a>> {
+    let e = entry(cat, key)?;
+    if !e.spec.hidden {
+        return Some(e);
+    }
+    let (f, o) = family::superseded_by(&e.spec.ty)?;
+    Some(Entry {
+        spec: cat.get(f.ty)?,
+        op: Some((f, o)),
+    })
+}
+
+/// Every op of every family, as entries.
+pub fn op_entries(cat: &Catalogue) -> Vec<Entry<'_>> {
+    family::FAMILIES
+        .iter()
+        .filter_map(|f| cat.get(f.ty).map(|s| (*f, s)))
+        .flat_map(|(f, spec)| {
+            f.ops.iter().map(move |o| Entry {
+                spec,
+                op: Some((f, o)),
+            })
+        })
+        .collect()
+}
+
+fn inputs(cat: &Catalogue, s: &NodeSpec, params: &Params) -> Vec<PortSpec> {
+    cat.resolved_inputs(s, params)
+}
+
+/// The pin on a fresh `spec` node (with `params`) that a `side`/`ty` wire
+/// would land on.
+pub fn first_compatible(
+    cat: &Catalogue,
+    s: &NodeSpec,
+    params: &Params,
+    side: Side,
+    ty: PortType,
+) -> Option<String> {
     let ports = match side {
-        Side::Out => inputs(cat, s),
-        Side::In => resolved_outputs(s, &s.default_params),
+        Side::Out => inputs(cat, s, params),
+        Side::In => resolved_outputs(cat, s, params),
     };
     ports
         .into_iter()
@@ -49,50 +206,80 @@ pub fn first_compatible(cat: &Catalogue, s: &NodeSpec, side: Side, ty: PortType)
 pub fn insertion_ports(
     cat: &Catalogue,
     s: &NodeSpec,
+    params: &Params,
     src: PortType,
     dst: PortType,
 ) -> Option<(String, String)> {
     Some((
-        first_compatible(cat, s, Side::Out, src)?,
-        first_compatible(cat, s, Side::In, dst)?,
+        first_compatible(cat, s, params, Side::Out, src)?,
+        first_compatible(cat, s, params, Side::In, dst)?,
     ))
 }
 
-pub fn fits(cat: &Catalogue, s: &NodeSpec, fit: &Fit) -> bool {
+pub fn fits(cat: &Catalogue, e: &Entry, fit: &Fit) -> bool {
+    let params = e.params();
     match fit {
         Fit::Any => true,
-        Fit::Pin { side, ty } => first_compatible(cat, s, *side, *ty).is_some(),
-        Fit::Insert { src, dst } => insertion_ports(cat, s, *src, *dst).is_some(),
+        Fit::Pin { side, ty } => first_compatible(cat, e.spec, &params, *side, *ty).is_some(),
+        Fit::Insert { src, dst } => insertion_ports(cat, e.spec, &params, *src, *dst).is_some(),
     }
 }
 
-pub fn search<'a>(cat: &'a Catalogue, query: &str, fit: &Fit) -> Vec<&'a NodeSpec> {
+/// Entries matching every token of `query`, browsable node types plus (for
+/// a non-empty query) the families' ops.
+pub fn matching<'a>(cat: &'a Catalogue, query: &str, fit: &Fit) -> Vec<Entry<'a>> {
     let q = query.trim().to_lowercase();
     let tokens: Vec<&str> = q.split_whitespace().collect();
-    let mut matches: Vec<&NodeSpec> = cat
-        .iter()
-        .filter(|s| !s.hidden && fits(cat, s, fit))
-        .filter(|s| {
-            let hay = format!(
-                "{} {} {} {}",
-                s.label,
-                s.ty,
-                s.category,
-                s.description.as_deref().unwrap_or("")
-            )
-            .to_lowercase();
+    let nodes = cat.iter().filter(|s| !s.hidden).map(Entry::node);
+    let ops = if tokens.is_empty() {
+        Vec::new()
+    } else {
+        op_entries(cat)
+    };
+    nodes
+        .chain(ops)
+        .filter(|e| {
+            let hay = e.haystack(cat);
             tokens.iter().all(|t| hay.contains(t))
         })
-        .collect();
-    matches.sort_by(|a, b| {
-        let prefix = |s: &NodeSpec| !(q.is_empty() || s.label.to_lowercase().starts_with(&q));
-        prefix(a)
-            .cmp(&prefix(b))
-            .then_with(|| a.label.to_lowercase().cmp(&b.label.to_lowercase()))
-            .then_with(|| a.label.cmp(&b.label))
+        .filter(|e| fits(cat, e, fit))
+        .collect()
+}
+
+pub fn search<'a>(cat: &'a Catalogue, query: &str, fit: &Fit) -> Vec<Entry<'a>> {
+    let q = query.trim().to_lowercase();
+    let mut matches = matching(cat, query, fit);
+    // An exact label first ("sin" → Sin before SineSpread), then label
+    // prefixes, then entries whose names (not just their description)
+    // match ("mul" → Multiply before AccRead's "accumulator"); nodes
+    // before ops; then by label.
+    let tokens: Vec<&str> = q.split_whitespace().collect();
+    let by_name = |e: &Entry| {
+        let names = e.names(cat);
+        !tokens.iter().all(|t| names.contains(t))
+    };
+    matches.sort_by_cached_key(|e| {
+        let label = e.label().to_lowercase();
+        (
+            !q.is_empty() && label != q,
+            !(q.is_empty() || label.starts_with(&q)),
+            by_name(e),
+            e.op.is_some(),
+            label,
+            e.label().to_owned(),
+        )
     });
     matches.truncate(MAX_RESULTS);
     matches
+}
+
+/// The first sentence of a description, for a one-line hint.
+pub fn first_sentence(d: &str) -> &str {
+    let end = d
+        .char_indices()
+        .find(|&(i, c)| c == '.' && d[i + 1..].chars().next().is_none_or(char::is_whitespace))
+        .map_or(d.len(), |(i, _)| i + 1);
+    d[..end].trim()
 }
 
 #[cfg(test)]
@@ -111,88 +298,163 @@ mod tests {
             },
         );
         assert!(!layers.is_empty());
-        for s in &layers {
-            assert!(first_compatible(cat, s, Side::Out, PortType::Layer).is_some());
+        for e in &layers {
+            assert!(
+                first_compatible(cat, e.spec, &e.params(), Side::Out, PortType::Layer).is_some()
+            );
         }
-        assert!(layers.iter().all(|s| s.ty != "time/seconds"));
+        assert!(layers.iter().all(|e| e.spec.ty != "time/seconds"));
         // Multi-token match + prefix-first ordering.
         let r = search(cat, "add", &Fit::Any);
-        assert!(r[0].label.to_lowercase().starts_with("add"));
+        assert!(r[0].label().to_lowercase().starts_with("add"));
         assert!(search(cat, "zzzz-nothing", &Fit::Any).is_empty());
+        // A boolean wire finds the Logic ops preset to and / or …
+        let r = search(
+            cat,
+            "or",
+            &Fit::Pin {
+                side: Side::Out,
+                ty: PortType::Boolean,
+            },
+        );
+        assert!(r.iter().any(|e| e.key() == "logic/logic#or"));
     }
 
     #[test]
     fn ranking_matches_node_search_tsx() {
         let cat = Catalogue::builtin();
-        // Every token must hit label, type, category or description, in
-        // any order.
+        // Every token must hit label, type, category, group or description,
+        // in any order.
         let r = search(cat, "spread ring", &Fit::Any);
-        assert!(r.iter().any(|s| s.ty == "spread/ring"));
-        for s in &r {
-            let hay = format!(
-                "{} {} {} {}",
-                s.label,
-                s.ty,
-                s.category,
-                s.description.as_deref().unwrap_or("")
-            )
-            .to_lowercase();
-            assert!(hay.contains("spread") && hay.contains("ring"));
+        assert!(r.iter().any(|e| e.spec.ty == "spread/ring"));
+        for e in &r {
+            let h = e.haystack(cat);
+            assert!(h.contains("spread") && h.contains("ring"));
         }
-        // Label-prefix matches first, then alphabetical by label.
+        // Label-prefix matches first, then nodes alphabetically by label.
         let r = search(cat, "ring", &Fit::Any);
         let first_other = r
             .iter()
-            .position(|s| !s.label.to_lowercase().starts_with("ring"))
+            .position(|e| !e.label().to_lowercase().starts_with("ring"))
             .unwrap_or(r.len());
         assert!(first_other > 0);
         assert!(r[first_other..]
             .iter()
-            .all(|s| !s.label.to_lowercase().starts_with("ring")));
-        let tail: Vec<String> = r[first_other..]
+            .all(|e| !e.label().to_lowercase().starts_with("ring")));
+        // … name matches before description-only ones, each by label.
+        let named = |e: &Entry| e.names(cat).contains("ring");
+        let tail = &r[first_other..];
+        let split = tail.iter().position(|e| !named(e)).unwrap_or(tail.len());
+        assert!(tail[split..].iter().all(|e| !named(e)));
+        for part in [&tail[..split], &tail[split..]] {
+            let labels: Vec<String> = part
+                .iter()
+                .filter(|e| e.op.is_none())
+                .map(|e| e.label().to_lowercase())
+                .collect();
+            let mut sorted = labels.clone();
+            sorted.sort();
+            assert_eq!(labels, sorted);
+        }
+        // "mul" ranks Multiply above "accumulator" description hits.
+        let r = search(cat, "mul", &Fit::Any);
+        let acc = r
             .iter()
-            .map(|s| s.label.to_lowercase())
-            .collect();
-        let mut sorted = tail.clone();
-        sorted.sort();
-        assert_eq!(tail, sorted);
+            .position(|e| e.spec.ty.contains("accumulator"))
+            .unwrap();
+        assert!(r[..acc].iter().any(|e| e.key() == "math/math#multiply"));
         assert!(search(cat, "", &Fit::Any).len() <= MAX_RESULTS);
+        // An empty query lists node types only.
+        assert!(search(cat, "", &Fit::Any).iter().all(|e| e.op.is_none()));
+    }
+
+    #[test]
+    fn old_names_find_the_ops_that_replaced_them() {
+        let cat = Catalogue::builtin();
+        let first = |q: &str| search(cat, q, &Fit::Any)[0].key();
+        assert_eq!(first("mul"), "math/math#multiply");
+        assert_eq!(first("sin"), "math/math#sin");
+        assert_eq!(first("normalize"), "vec2/math#normalize");
+        assert_eq!(first("greater"), "logic/compare#greater");
+        assert_eq!(first("xor"), "logic/logic#xor");
+        assert_eq!(first("median"), "math/statistics#median");
+        // By old type id and old category (all matches, not just the top 40).
+        let has = |q: &str, key: &str| matching(cat, q, &Fit::Any).iter().any(|e| e.key() == key);
+        assert!(has("math/mul", "math/math#multiply"));
+        assert!(has("vec2/dot", "vec2/math#dot"));
+        assert!(has("vec2", "vec2/make"));
+        assert!(has("vec2 rotate", "vec2/math#rotate"));
+        assert!(has("logic/lte", "logic/compare#less-equal"));
+        assert!(has("to-string", "convert/convert#string"));
+        assert!(has("spread", "spread/ring"));
+        assert!(has("geometry", "geometry/scatter"));
+        // By new group.
+        assert!(has("patterns", "spread/ring"));
+        // "math" lists nodes first, not each of Math's ops.
+        let r = search(cat, "math", &Fit::Any);
+        let nodes = r.iter().take_while(|e| e.op.is_none()).count();
+        assert!(nodes >= 5, "{nodes}");
+        // Hidden single-op nodes never show up themselves.
+        assert!(search(cat, "mul", &Fit::Any).iter().all(|e| !e.spec.hidden));
+    }
+
+    #[test]
+    fn keys_round_trip() {
+        let cat = Catalogue::builtin();
+        let all = op_entries(cat)
+            .into_iter()
+            .chain(cat.iter().filter(|s| !s.hidden).map(Entry::node));
+        for e in all {
+            let back = entry(cat, &e.key()).unwrap();
+            assert_eq!(back.key(), e.key());
+            assert_eq!(back.label(), e.label());
+            assert!(e.description(cat).is_some(), "{}", e.key());
+        }
+        assert_eq!(split_key("math/math#sin"), ("math/math", Some("sin")));
+        assert_eq!(split_key("draw/rect"), ("draw/rect", None));
+        assert!(entry(cat, "math/math#nope").is_none());
+        assert!(entry(cat, "draw/rect#sin").is_none());
+        let e = entry(cat, "math/math#multiply").unwrap();
+        assert_eq!(e.params()["op"], "multiply");
+        assert_eq!(e.owner(), Some("Math"));
+        assert_eq!(
+            e.description(cat),
+            cat.get("math/mul").unwrap().description.as_deref()
+        );
+        assert_eq!(first_sentence("Sum all. Then more."), "Sum all.");
+        assert_eq!(first_sentence("Pick 1.5 or 2"), "Pick 1.5 or 2");
     }
 
     #[test]
     fn insertion_needs_both_sides() {
         let cat = Catalogue::builtin();
-        let r = search(
-            cat,
-            "",
-            &Fit::Insert {
-                src: PortType::Number,
-                dst: PortType::Vec2,
-            },
-        );
-        for s in &r {
-            assert!(insertion_ports(cat, s, PortType::Number, PortType::Vec2).is_some());
+        let fit = Fit::Insert {
+            src: PortType::Number,
+            dst: PortType::Vec2,
+        };
+        for e in search(cat, "", &fit) {
+            let ports = insertion_ports(cat, e.spec, &e.params(), PortType::Number, PortType::Vec2);
+            assert!(ports.is_some());
         }
-        let make = search(
+        let make = search(cat, "vec2/make", &fit);
+        assert_eq!(make.len(), 1);
+        // Splitting a number → number wire offers Math set to sin.
+        let sin = search(
             cat,
-            "vec2/make",
+            "sin",
             &Fit::Insert {
                 src: PortType::Number,
-                dst: PortType::Vec2,
-            },
-        );
-        assert_eq!(make.len(), 1);
-        // Nothing turns a layer into a number.
-        let none = search(
-            cat,
-            "",
-            &Fit::Insert {
-                src: PortType::Layer,
                 dst: PortType::Number,
             },
         );
-        assert!(none
-            .iter()
-            .all(|s| insertion_ports(cat, s, PortType::Layer, PortType::Number).is_some()));
+        assert_eq!(sin[0].key(), "math/math#sin");
+        // Nothing turns a layer into a number.
+        let fit = Fit::Insert {
+            src: PortType::Layer,
+            dst: PortType::Number,
+        };
+        assert!(search(cat, "", &fit).iter().all(|e| {
+            insertion_ports(cat, e.spec, &e.params(), PortType::Layer, PortType::Number).is_some()
+        }));
     }
 }

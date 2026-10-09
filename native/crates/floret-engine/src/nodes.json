@@ -1,9 +1,10 @@
 {
- "count": 325,
+ "count": 344,
  "nodes": [
   {
    "type": "collider/circle",
    "category": "Collider",
+   "group": "Particles & Physics",
    "label": "Circle",
    "description": "Analytic circle collider. Cheap.",
    "inputs": [
@@ -69,6 +70,7 @@
   {
    "type": "collider/from-layer",
    "category": "Collider",
+   "group": "Particles & Physics",
    "label": "FromLayer",
    "description": "Build a collider from any shape layer (rect, ellipse, polygon, triangle).",
    "inputs": [
@@ -125,6 +127,7 @@
   {
    "type": "collider/rect",
    "category": "Collider",
+   "group": "Particles & Physics",
    "label": "Rect",
    "description": "Axis-aligned rectangle collider.",
    "inputs": [
@@ -193,6 +196,7 @@
   {
    "type": "color/color",
    "category": "Color",
+   "group": "Color & Style",
    "label": "Color",
    "description": "Build a colour. Pick mode (rgb / hsl / hex) and the input pins adapt.",
    "inputs": [
@@ -227,6 +231,7 @@
   {
    "type": "color/gradient",
    "category": "Color",
+   "group": "Color & Style",
    "label": "Gradient",
    "description": "Sample a gradient of color stops at t ∈ [0, 1]. `space` picks how neighbouring stops blend: rgb, oklab (perceptually even) or oklch (round the hue wheel).",
    "inputs": [
@@ -265,6 +270,7 @@
   {
    "type": "color/hex",
    "category": "Color",
+   "group": "Color & Style",
    "label": "Hex",
    "description": "Legacy — use the unified Color node instead.",
    "inputs": [
@@ -291,6 +297,7 @@
   {
    "type": "color/hsl",
    "category": "Color",
+   "group": "Color & Style",
    "label": "HSL",
    "description": "Legacy — use the unified Color node instead.",
    "inputs": [
@@ -335,6 +342,7 @@
   {
    "type": "color/lerp",
    "category": "Color",
+   "group": "Color & Style",
    "label": "Lerp",
    "description": "Blend from a to b by t. `space` picks how: rgb mixes the channels (fast, but a blend between strong colours dips through grey); oklab blends perceptually, evenly and without muddy midpoints; oklch walks round the hue wheel, keeping colours vivid.",
    "inputs": [
@@ -390,6 +398,7 @@
   {
    "type": "color/palette",
    "category": "Color",
+   "group": "Color & Style",
    "label": "Palette",
    "description": "A list of colours. `mode` stops: author them by clicking swatches. cosine: Inigo Quilez's a + b·cos(2π(c·t + d)) per channel, sampled `count` times round one cycle (a = centre, b = contrast, c = how many times each channel cycles, d = phase). complementary, analogous, triadic, split, tetradic: colour harmonies — the base colour and its hue turned round the colour wheel (analogous / split use `angle`).",
    "inputs": [
@@ -438,6 +447,7 @@
   {
    "type": "color/rgb",
    "category": "Color",
+   "group": "Color & Style",
    "label": "RGB",
    "description": "Legacy — use the unified Color node instead.",
    "inputs": [
@@ -482,6 +492,7 @@
   {
    "type": "color/set-alpha",
    "category": "Color",
+   "group": "Color & Style",
    "label": "SetAlpha",
    "description": "Replace the alpha channel (0..255) of a color.",
    "inputs": [
@@ -518,6 +529,7 @@
   {
    "type": "color/split",
    "category": "Color",
+   "group": "Color & Style",
    "label": "SplitColor",
    "description": "Decompose a colour into channels. Pick mode (rgb or hsl); alpha is exposed in both.",
    "inputs": [
@@ -570,6 +582,7 @@
   {
    "type": "color/split-hsl",
    "category": "Color",
+   "group": "Color & Style",
    "label": "SplitHSL",
    "description": "Legacy — use the unified SplitColor node instead.",
    "inputs": [
@@ -616,6 +629,7 @@
   {
    "type": "color/split-rgb",
    "category": "Color",
+   "group": "Color & Style",
    "label": "SplitRGB",
    "description": "Legacy — use the unified SplitColor node instead.",
    "inputs": [
@@ -662,6 +676,7 @@
   {
    "type": "convert/to-bool",
    "category": "Convert",
+   "group": "Math",
    "label": "ToBool",
    "description": "Convert any value to a boolean.",
    "inputs": [
@@ -681,11 +696,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "convert/to-degrees",
    "category": "Convert",
+   "group": "Math",
    "label": "ToDegrees",
    "description": "Scale a unit value [0, 1] to degrees [0, 360].",
    "inputs": [
@@ -706,11 +723,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "convert/to-int",
    "category": "Convert",
+   "group": "Math",
    "label": "ToInt",
    "description": "Round any value to the nearest integer.",
    "inputs": [
@@ -730,11 +749,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "convert/to-number",
    "category": "Convert",
+   "group": "Math",
    "label": "ToNumber",
    "description": "Convert any value to a number.",
    "inputs": [
@@ -754,11 +775,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "convert/to-radians",
    "category": "Convert",
+   "group": "Math",
    "label": "ToRadians",
    "description": "Convert an angle from degrees to radians.",
    "inputs": [
@@ -779,11 +802,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "convert/to-string",
    "category": "Convert",
+   "group": "Math",
    "label": "ToString",
    "description": "Convert any value to a string.",
    "inputs": [
@@ -803,11 +828,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "data/csv-inline",
    "category": "Data",
+   "group": "Source",
    "label": "CSVInline",
    "description": "Parse inline CSV data into a number spread.",
    "inputs": [],
@@ -828,6 +855,7 @@
   {
    "type": "data/csv-file",
    "category": "Data",
+   "group": "Source",
    "label": "CSVFile",
    "description": "Load the numbers in a CSV file (a path relative to the patch, a URL, or a File node's url) into a number spread. Pick a column, or -1 for every cell.",
    "inputs": [
@@ -873,6 +901,7 @@
   {
    "type": "draw/arc",
    "category": "Draw",
+   "group": "Draw",
    "label": "Arc",
    "description": "Draw an arc segment from `start` to `stop` radians.",
    "inputs": [
@@ -947,6 +976,7 @@
   {
    "type": "draw/ellipse",
    "category": "Draw",
+   "group": "Draw",
    "label": "Ellipse",
    "description": "Draw an ellipse anchored at `pos`. `anchor` picks which point of the bounding box `pos` is — center (default) or a corner (tl/tr/bl/br).",
    "inputs": [
@@ -1009,6 +1039,7 @@
   {
    "type": "draw/image",
    "category": "Draw",
+   "group": "Draw",
    "label": "Image",
    "description": "Draw an image at `pos` with size (w, h).",
    "inputs": [
@@ -1077,6 +1108,7 @@
   {
    "type": "draw/image-region",
    "category": "Draw",
+   "group": "Draw",
    "label": "ImageRegion",
    "description": "Draw a sub-rectangle of an image onto a destination rect.",
    "inputs": [
@@ -1155,6 +1187,7 @@
   {
    "type": "draw/image-tile",
    "category": "Draw",
+   "group": "Draw",
    "label": "ImageTile",
    "description": "Tile an image `cols × rows` times across a rect.",
    "inputs": [
@@ -1237,6 +1270,7 @@
   {
    "type": "draw/line",
    "category": "Draw",
+   "group": "Draw",
    "label": "Line",
    "description": "Draw a line from point `a` to point `b`.",
    "inputs": [
@@ -1279,6 +1313,7 @@
   {
    "type": "draw/path",
    "category": "Draw",
+   "group": "Draw",
    "label": "Path",
    "description": "Stroke a path through a spread of vec2 points. Tension > 0 turns straight lines into Catmull–Rom curves. Wire `widths` to taper.",
    "inputs": [
@@ -1327,6 +1362,7 @@
   {
    "type": "draw/point",
    "category": "Draw",
+   "group": "Draw",
    "label": "Point",
    "description": "Draw a single point at `pos`.",
    "inputs": [
@@ -1360,6 +1396,7 @@
   {
    "type": "draw/polygon",
    "category": "Draw",
+   "group": "Draw",
    "label": "Polygon",
    "description": "Draw a polygon from a spread of vec2 points. Optionally wire a `widths` spread to taper the stroke into a filled offset polygon.",
    "inputs": [
@@ -1401,6 +1438,7 @@
   {
    "type": "draw/quad",
    "category": "Draw",
+   "group": "Draw",
    "label": "Quad",
    "description": "Draw a quadrilateral from four corner points.",
    "inputs": [
@@ -1461,6 +1499,7 @@
   {
    "type": "draw/rect",
    "category": "Draw",
+   "group": "Draw",
    "label": "Rect",
    "description": "Draw a rectangle anchored at `pos`. `anchor` picks which point of the box `pos` is — center (default) or a corner (tl/tr/bl/br).",
    "inputs": [
@@ -1523,6 +1562,7 @@
   {
    "type": "draw/text",
    "category": "Draw",
+   "group": "Text",
    "label": "Text",
    "description": "Draw a text string at `pos`.",
    "inputs": [
@@ -1587,6 +1627,7 @@
   {
    "type": "draw/triangle",
    "category": "Draw",
+   "group": "Draw",
    "label": "Triangle",
    "description": "Draw a triangle from three corner points.",
    "inputs": [
@@ -1638,6 +1679,7 @@
   {
    "type": "draw/walker-cluster",
    "category": "Draw",
+   "group": "Particles & Physics",
    "label": "WalkerCluster",
    "description": "Spawn a cluster of random walkers that paint trails and circles.",
    "inputs": [
@@ -1697,6 +1739,7 @@
   {
    "type": "text/font",
    "category": "Text",
+   "group": "Text",
    "label": "Font",
    "description": "A font for `style/text-params`: an installed family, or a font file (.ttf, .otf, .ttc, .woff, .woff2) — a file wins. Lists the font’s variation axes (tag, min, default, max).",
    "inputs": [
@@ -1758,6 +1801,7 @@
   {
    "type": "text/glyphs",
    "category": "Text",
+   "group": "Text",
    "label": "Glyphs",
    "description": "Text split into shaped glyphs, laid out like `draw/text`. `shape` draws them all; per glyph: a layer drawn at the origin (translate it to its position), its baseline position, advance, source characters and character index — for kinetic type in a ForEach.",
    "inputs": [
@@ -1853,6 +1897,7 @@
   {
    "type": "text/on-path",
    "category": "Text",
+   "group": "Text",
    "label": "Text on Path",
    "description": "Lay text along a path — a point spread, or a wired `path` layer (`draw/path`, polygon, line, ellipse). Each glyph turns to the tangent. `offset` slides the text along, `shift` lifts it off the path; `closed` wraps around a loop.",
    "inputs": [
@@ -1964,6 +2009,7 @@
   {
    "type": "text/outline",
    "category": "Text",
+   "group": "Text",
    "label": "Text Outline",
    "description": "Points sampled along the glyph outlines (`outline`) or on a grid inside them (`fill`), every `spacing` units, laid out like `draw/text` — for particles from type, morphing, plotter-style lines. With each point’s contour and glyph index.",
    "inputs": [
@@ -2056,6 +2102,7 @@
   {
    "type": "force/attractor",
    "category": "Force",
+   "group": "Particles & Physics",
    "label": "Attractor",
    "description": "Radial pull toward a point. Negative strength = repulsion. Falloff curve baked at compile.",
    "inputs": [
@@ -2128,6 +2175,7 @@
   {
    "type": "force/drag",
    "category": "Force",
+   "group": "Particles & Physics",
    "label": "Drag",
    "description": "Velocity-proportional damping, applied per-particle.",
    "inputs": [
@@ -2153,6 +2201,7 @@
   {
    "type": "force/gravity",
    "category": "Force",
+   "group": "Particles & Physics",
    "label": "Gravity",
    "description": "Uniform vector force (acts like gravity).",
    "inputs": [
@@ -2187,6 +2236,7 @@
   {
    "type": "force/repulsor",
    "category": "Force",
+   "group": "Particles & Physics",
    "label": "Repulsor",
    "description": "Radial push away from a point.",
    "inputs": [
@@ -2259,6 +2309,7 @@
   {
    "type": "force/turbulence",
    "category": "Force",
+   "group": "Particles & Physics",
    "label": "Turbulence",
    "description": "Perlin-noise vector field. Each particle gets a force from the local gradient; time drifts the field.",
    "inputs": [
@@ -2307,6 +2358,7 @@
   {
    "type": "force/vortex",
    "category": "Force",
+   "group": "Particles & Physics",
    "label": "Vortex",
    "description": "Rotational force around a centre, with optional radial pull. Counter-clockwise when axisStrength > 0.",
    "inputs": [
@@ -2385,6 +2437,7 @@
   {
    "type": "force/wind",
    "category": "Force",
+   "group": "Particles & Physics",
    "label": "Wind",
    "description": "Directional force with optional noise variation. Mass-dependent (heavier = less push).",
    "inputs": [
@@ -2436,6 +2489,7 @@
   {
    "type": "gpu/shader",
    "category": "Render",
+   "group": "Effects",
    "label": "Shader",
    "description": "Fragment shader (ShaderToy-style) with optional Buffer A–D passes. Wire a layer for post-FX, or leave it for generative. Edit in the side panel.",
    "inputs": [
@@ -2464,6 +2518,7 @@
   {
    "type": "image/adjust",
    "category": "Image",
+   "group": "Effects",
    "label": "Adjust",
    "description": "Adjust brightness, contrast, saturation, and hue.",
    "inputs": [
@@ -2512,6 +2567,7 @@
   {
    "type": "image/blend",
    "category": "Image",
+   "group": "Image",
    "label": "Blend",
    "description": "Composite image B onto image A using the chosen blend mode.",
    "inputs": [
@@ -2607,6 +2663,7 @@
   {
    "type": "image/convolve",
    "category": "Image",
+   "group": "Effects",
    "label": "Convolve",
    "description": "Apply a 3×3 convolution kernel (edge, sharpen, emboss).",
    "inputs": [
@@ -2646,6 +2703,7 @@
   {
    "type": "image/crop",
    "category": "Image",
+   "group": "Image",
    "label": "Crop",
    "description": "Crop an image to the rectangle (sx, sy, sw, sh).",
    "inputs": [
@@ -2694,6 +2752,7 @@
   {
    "type": "image/dims",
    "category": "Image",
+   "group": "Image",
    "label": "Dims",
    "description": "Read an image's pixel dimensions and aspect ratio.",
    "inputs": [
@@ -2728,6 +2787,7 @@
   {
    "type": "image/filter",
    "category": "Image",
+   "group": "Effects",
    "label": "Filter",
    "description": "Apply an image filter (blur, gray, threshold, posterize, …).",
    "inputs": [
@@ -2773,6 +2833,7 @@
   {
    "type": "image/from-layer",
    "category": "Image",
+   "group": "Image",
    "label": "Rasterize",
    "description": "Rasterize a layer into an image at (w, h).",
    "inputs": [
@@ -2809,6 +2870,7 @@
   {
    "type": "image/pixelate",
    "category": "Image",
+   "group": "Effects",
    "label": "Pixelate",
    "description": "Pixelate an image into chunky blocks of `size` source pixels.",
    "inputs": [
@@ -2840,6 +2902,7 @@
   {
    "type": "image/resize",
    "category": "Image",
+   "group": "Image",
    "label": "Resize",
    "description": "Resize an image to (w, h).",
    "inputs": [
@@ -2876,6 +2939,7 @@
   {
    "type": "image/sample",
    "category": "Image",
+   "group": "Image",
    "label": "Sample",
    "description": "Read one pixel of an image as a color. (x, y) is measured from the image's centre, like positions on the canvas (y down).",
    "inputs": [
@@ -2912,6 +2976,7 @@
   {
    "type": "image/sample-spread",
    "category": "Image",
+   "group": "Image",
    "label": "SampleSpread",
    "description": "Read a spread of points from an image as a spread of colors. Points are measured from the image's centre, like positions on the canvas (y down).",
    "inputs": [
@@ -2941,6 +3006,7 @@
   {
    "type": "image/slicer",
    "category": "Image",
+   "group": "Image",
    "label": "Slicer",
    "description": "Split an image into a cols × rows grid of sub-images.",
    "inputs": [
@@ -2979,6 +3045,7 @@
   {
    "type": "input/camera",
    "category": "Input",
+   "group": "Input & Sound",
    "label": "Camera",
    "description": "Live webcam / connected-camera feed as an image. Flip `start` on to open the camera.",
    "inputs": [
@@ -3028,6 +3095,7 @@
   {
    "type": "input/keyboard",
    "category": "Input",
+   "group": "Input & Sound",
    "label": "Keyboard",
    "description": "Read the last key pressed in the preview.",
    "inputs": [],
@@ -3051,6 +3119,7 @@
   {
    "type": "input/landmarks",
    "category": "Input",
+   "group": "Input & Sound",
    "label": "Landmarks",
    "description": "Hand / face / pose tracking (MediaPipe). Wire an image + flip `start`; outputs landmark points, depth, and per-detection grouping.",
    "inputs": [
@@ -3175,6 +3244,7 @@
   {
    "type": "input/midi-cc",
    "category": "Input",
+   "group": "Input & Sound",
    "label": "MidiCC",
    "description": "Read a single MIDI Control Change message.",
    "inputs": [],
@@ -3202,6 +3272,7 @@
   {
    "type": "input/midi-note",
    "category": "Input",
+   "group": "Input & Sound",
    "label": "MidiNote",
    "description": "Read the last MIDI note held (monophonic).",
    "inputs": [],
@@ -3238,6 +3309,7 @@
   {
    "type": "input/mouse",
    "category": "Input",
+   "group": "Input & Sound",
    "label": "Mouse",
    "description": "Read mouse position and button state from the preview.",
    "inputs": [],
@@ -3266,6 +3338,7 @@
   {
    "type": "io/bang",
    "category": "IO",
+   "group": "Source",
    "label": "Bang",
    "description": "Momentary trigger — click to emit `true` for one tick, then `false`. Wire into a rising-edge input (e.g. a send/reset).",
    "inputs": [],
@@ -3286,6 +3359,7 @@
   {
    "type": "io/button",
    "category": "IO",
+   "group": "Source",
    "label": "Button",
    "description": "Momentary boolean — `true` while pressed, `false` on release (vs Toggle, which latches).",
    "inputs": [],
@@ -3307,6 +3381,7 @@
   {
    "type": "io/color-picker",
    "category": "IO",
+   "group": "Color & Style",
    "label": "ColorPicker",
    "description": "Pick a colour and its r/g/b channels.",
    "inputs": [],
@@ -3342,6 +3417,7 @@
   {
    "type": "io/counter",
    "category": "IO",
+   "group": "Animate",
    "label": "Counter",
    "description": "Add `step` to a running count on each rising edge of `inc`; `reset` returns it to `start`.",
    "inputs": [
@@ -3392,6 +3468,7 @@
   {
    "type": "io/edge",
    "category": "IO",
+   "group": "Animate",
    "label": "Edge",
    "description": "Emit a one-tick bang when `in` rises past / falls below `threshold`, or whenever it changes. Turns a continuous signal into a trigger.",
    "inputs": [
@@ -3442,6 +3519,7 @@
   {
    "type": "io/file",
    "category": "IO",
+   "group": "Source",
    "label": "File",
    "description": "Pick a file from disk — outputs a URL and image handle.",
    "inputs": [],
@@ -3484,6 +3562,7 @@
   {
    "type": "io/gate",
    "category": "IO",
+   "group": "Animate",
    "label": "Gate",
    "description": "Pass `value` through while `open` is true; when closed, hold the last value that passed. Flow control / sample-and-hold.",
    "inputs": [
@@ -3517,6 +3596,7 @@
   {
    "type": "io/image-url",
    "category": "IO",
+   "group": "Source",
    "label": "ImageURL",
    "description": "Load an image from a URL.",
    "inputs": [],
@@ -3552,6 +3632,7 @@
   {
    "type": "io/metro",
    "category": "IO",
+   "group": "Animate",
    "label": "Metro",
    "description": "Emit a one-tick bang every `interval` seconds while `run` is on. Drives periodic actions (pairs with Counter).",
    "inputs": [
@@ -3588,6 +3669,7 @@
   {
    "type": "io/save-svg",
    "category": "IO",
+   "group": "Draw",
    "label": "SaveSVG",
    "description": "Export wired layers as an SVG file when `save` rises.",
    "inputs": [
@@ -3627,6 +3709,7 @@
   {
    "type": "io/select",
    "category": "IO",
+   "group": "Source",
    "label": "Select",
    "description": "Choose one of a list of options (comma-separated) — outputs the selected string.",
    "inputs": [],
@@ -3649,6 +3732,7 @@
   {
    "type": "io/slider",
    "category": "IO",
+   "group": "Source",
    "label": "Slider",
    "description": "Drag to set a number.",
    "inputs": [],
@@ -3671,6 +3755,7 @@
   {
    "type": "io/stepper",
    "category": "IO",
+   "group": "Source",
    "label": "Stepper",
    "description": "An integer you nudge with +/− buttons (clamped to min/max, by step).",
    "inputs": [],
@@ -3695,6 +3780,7 @@
   {
    "type": "io/svg",
    "category": "IO",
+   "group": "Source",
    "label": "SVG",
    "description": "Load an SVG as vector layers. Pick a file, give a URL, or paste markup.",
    "inputs": [
@@ -3761,6 +3847,7 @@
   {
    "type": "io/toggle",
    "category": "IO",
+   "group": "Source",
    "label": "Toggle",
    "description": "Click to flip a boolean on or off.",
    "inputs": [],
@@ -3781,6 +3868,7 @@
   {
    "type": "io/xy-pad",
    "category": "IO",
+   "group": "Source",
    "label": "XYPad",
    "description": "Drag a 2D point — outputs x, y in [0, 1].",
    "inputs": [],
@@ -3807,6 +3895,7 @@
   {
    "type": "logic/and",
    "category": "Logic",
+   "group": "Math",
    "label": "And",
    "description": "True when both a and b are true.",
    "inputs": [
@@ -3833,11 +3922,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "logic/eq",
    "category": "Logic",
+   "group": "Math",
    "label": "Equal",
    "description": "True when a equals b.",
    "inputs": [
@@ -3864,11 +3955,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "logic/gt",
    "category": "Logic",
+   "group": "Math",
    "label": "Greater",
    "description": "True when a is greater than b.",
    "inputs": [
@@ -3895,11 +3988,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "logic/gte",
    "category": "Logic",
+   "group": "Math",
    "label": "GreaterEq",
    "description": "True when a is greater than or equal to b.",
    "inputs": [
@@ -3926,11 +4021,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "logic/lt",
    "category": "Logic",
+   "group": "Math",
    "label": "Less",
    "description": "True when a is less than b.",
    "inputs": [
@@ -3957,11 +4054,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "logic/lte",
    "category": "Logic",
+   "group": "Math",
    "label": "LessEq",
    "description": "True when a is less than or equal to b.",
    "inputs": [
@@ -3988,11 +4087,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "logic/neq",
    "category": "Logic",
+   "group": "Math",
    "label": "NotEqual",
    "description": "True when a does not equal b.",
    "inputs": [
@@ -4019,11 +4120,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "logic/not",
    "category": "Logic",
+   "group": "Math",
    "label": "Not",
    "description": "Invert a boolean.",
    "inputs": [
@@ -4044,11 +4147,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "logic/or",
    "category": "Logic",
+   "group": "Math",
    "label": "Or",
    "description": "True when either a or b is true.",
    "inputs": [
@@ -4075,11 +4180,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "logic/select",
    "category": "Logic",
+   "group": "Math",
    "label": "Select",
    "description": "Pick a when cond is true, otherwise b.",
    "inputs": [
@@ -4115,6 +4222,7 @@
   {
    "type": "math/abs",
    "category": "Math",
+   "group": "Math",
    "label": "Abs",
    "description": "Absolute value of x (component-wise for vec2 / color).",
    "inputs": [
@@ -4139,11 +4247,13 @@
    },
    "paramOptions": null,
    "adaptiveType": true,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "math/acos",
    "category": "Math",
+   "group": "Math",
    "label": "Acos",
    "description": "Arccosine in radians. Input clamped to [-1, 1].",
    "inputs": [
@@ -4164,11 +4274,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/add",
    "category": "Math",
+   "group": "Math",
    "label": "Add",
    "description": "Sum all wired inputs (number, vec2, or color — adapts to what you plug in).",
    "inputs": [
@@ -4200,11 +4312,13 @@
    },
    "paramOptions": null,
    "adaptiveType": true,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "math/asin",
    "category": "Math",
+   "group": "Math",
    "label": "Asin",
    "description": "Arcsine in radians. Input clamped to [-1, 1].",
    "inputs": [
@@ -4225,11 +4339,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/atan",
    "category": "Math",
+   "group": "Math",
    "label": "Atan",
    "description": "Arctangent in radians.",
    "inputs": [
@@ -4250,11 +4366,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/atan2",
    "category": "Math",
+   "group": "Math",
    "label": "Atan2",
    "description": "Angle of (x, y) in radians, full [-π, π] range.",
    "inputs": [
@@ -4281,11 +4399,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/ceil",
    "category": "Math",
+   "group": "Math",
    "label": "Ceil",
    "description": "Round x up to the nearest integer.",
    "inputs": [
@@ -4306,11 +4426,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/clamp",
    "category": "Math",
+   "group": "Math",
    "label": "Clamp",
    "description": "Constrain x to the range [min, max].",
    "inputs": [
@@ -4348,6 +4470,7 @@
   {
    "type": "math/cos",
    "category": "Math",
+   "group": "Math",
    "label": "Cos",
    "description": "Cosine of x (radians).",
    "inputs": [
@@ -4368,11 +4491,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/cumulative",
    "category": "Math",
+   "group": "Math",
    "label": "Cumulative",
    "description": "Running sum of a number spread.",
    "inputs": [
@@ -4397,6 +4522,7 @@
   {
    "type": "math/delta",
    "category": "Math",
+   "group": "Math",
    "label": "Delta",
    "description": "Pairwise differences of a number spread (length N − 1).",
    "inputs": [
@@ -4421,6 +4547,7 @@
   {
    "type": "math/dist",
    "category": "Math",
+   "group": "Math",
    "label": "Dist",
    "description": "Distance between (x1, y1) and (x2, y2).",
    "inputs": [
@@ -4459,11 +4586,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/div",
    "category": "Math",
+   "group": "Math",
    "label": "Div",
    "description": "Divide the first input by subsequent ones (component-wise). Division by zero yields 0.",
    "inputs": [
@@ -4495,11 +4624,13 @@
    },
    "paramOptions": null,
    "adaptiveType": true,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "math/exp",
    "category": "Math",
+   "group": "Math",
    "label": "Exp",
    "description": "Exponential — eˣ.",
    "inputs": [
@@ -4520,11 +4651,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/floor",
    "category": "Math",
+   "group": "Math",
    "label": "Floor",
    "description": "Round x down to the nearest integer.",
    "inputs": [
@@ -4545,11 +4678,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/fract",
    "category": "Math",
+   "group": "Math",
    "label": "Fract",
    "description": "Fractional part of x — always non-negative.",
    "inputs": [
@@ -4570,11 +4705,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/histogram",
    "category": "Math",
+   "group": "Math",
    "label": "Histogram",
    "description": "Bin counts of a number spread between `min` and `max`.",
    "inputs": [
@@ -4618,6 +4755,7 @@
   {
    "type": "math/lerp",
    "category": "Math",
+   "group": "Math",
    "label": "Lerp",
    "description": "Linear interpolate between a and b at t ∈ [0, 1]. Adapts a/b to number, vec2, or color; t is always a number.",
    "inputs": [
@@ -4659,6 +4797,7 @@
   {
    "type": "math/log",
    "category": "Math",
+   "group": "Math",
    "label": "Log",
    "description": "Natural logarithm. log(x ≤ 0) = 0.",
    "inputs": [
@@ -4679,11 +4818,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/mag",
    "category": "Math",
+   "group": "Math",
    "label": "Mag",
    "description": "Distance from the origin to (x, y).",
    "inputs": [
@@ -4710,11 +4851,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/map",
    "category": "Math",
+   "group": "Math",
    "label": "Map",
    "description": "Remap x from [inMin, inMax] to [outMin, outMax].",
    "inputs": [
@@ -4764,6 +4907,7 @@
   {
    "type": "math/expression",
    "category": "Math",
+   "group": "Math",
    "label": "Expression",
    "description": "Type a formula, e.g. `sin(x * 3) + y * t`. Every name it uses becomes an input pin; wire spreads in and it runs once per element (shorter spreads cycle). Built in: `t` (seconds) and `frame`, `index` / `count` (the element), `pi`, `tau`, `e`. Values can be numbers, vec2s or colours (channels 0..1): `p.x`, `c.r` read a component (and give that pin a vec2 / colour type); + − * / work per component. Operators: + - * / % (wraps negatives) ^, comparisons, && || !, `c ? a : b`. Functions: sin cos tan asin acos atan atan2 sinh cosh tanh exp log log2 log10 sqrt pow abs sign floor ceil round fract trunc mod min max clamp mix step smoothstep map hypot radians degrees noise(x, y, seed) vec2(x, y) length distance dot normalize angle rgb(r, g, b, a) hsl(h, s, l, a). Mistakes show on the node.",
    "inputs": [
@@ -4797,6 +4941,7 @@
   {
    "type": "math/max",
    "category": "Math",
+   "group": "Math",
    "label": "Max",
    "description": "Largest of all wired inputs (component-wise for vec2 / color).",
    "inputs": [
@@ -4832,11 +4977,13 @@
    },
    "paramOptions": null,
    "adaptiveType": true,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "math/max-spread",
    "category": "Math",
+   "group": "Math",
    "label": "MaxSpread",
    "description": "Maximum value of a number spread.",
    "inputs": [
@@ -4856,11 +5003,13 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/mean",
    "category": "Math",
+   "group": "Math",
    "label": "Mean",
    "description": "Arithmetic mean of a number spread.",
    "inputs": [
@@ -4880,11 +5029,13 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/median",
    "category": "Math",
+   "group": "Math",
    "label": "Median",
    "description": "Median of a number spread.",
    "inputs": [
@@ -4904,11 +5055,13 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/min",
    "category": "Math",
+   "group": "Math",
    "label": "Min",
    "description": "Smallest of all wired inputs (component-wise for vec2 / color).",
    "inputs": [
@@ -4944,11 +5097,13 @@
    },
    "paramOptions": null,
    "adaptiveType": true,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "math/min-spread",
    "category": "Math",
+   "group": "Math",
    "label": "MinSpread",
    "description": "Minimum value of a number spread.",
    "inputs": [
@@ -4968,11 +5123,13 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/mod",
    "category": "Math",
+   "group": "Math",
    "label": "Mod",
    "description": "Euclidean modulo — a mod b, always non-negative.",
    "inputs": [
@@ -4999,11 +5156,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/mul",
    "category": "Math",
+   "group": "Math",
    "label": "Mul",
    "description": "Multiply all wired inputs (number, vec2, or color — component-wise).",
    "inputs": [
@@ -5035,11 +5194,13 @@
    },
    "paramOptions": null,
    "adaptiveType": true,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "math/neg",
    "category": "Math",
+   "group": "Math",
    "label": "Neg",
    "description": "Negate x (component-wise for vec2 / color).",
    "inputs": [
@@ -5064,11 +5225,13 @@
    },
    "paramOptions": null,
    "adaptiveType": true,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "math/norm",
    "category": "Math",
+   "group": "Math",
    "label": "Norm",
    "description": "Map x from [start, stop] to [0, 1] (inverse of Lerp).",
    "inputs": [
@@ -5106,6 +5269,7 @@
   {
    "type": "math/pow",
    "category": "Math",
+   "group": "Math",
    "label": "Pow",
    "description": "Raise a to the power b.",
    "inputs": [
@@ -5132,11 +5296,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/round",
    "category": "Math",
+   "group": "Math",
    "label": "Round",
    "description": "Round x to the nearest integer.",
    "inputs": [
@@ -5157,11 +5323,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/sign",
    "category": "Math",
+   "group": "Math",
    "label": "Sign",
    "description": "Sign of x: -1, 0, or +1.",
    "inputs": [
@@ -5182,11 +5350,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/sin",
    "category": "Math",
+   "group": "Math",
    "label": "Sin",
    "description": "Sine of x (radians).",
    "inputs": [
@@ -5207,11 +5377,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/smoothstep",
    "category": "Math",
+   "group": "Math",
    "label": "Smoothstep",
    "description": "Smooth Hermite 0→1 ramp as x moves across [edge0, edge1]; flat outside.",
    "inputs": [
@@ -5249,6 +5421,7 @@
   {
    "type": "math/sq",
    "category": "Math",
+   "group": "Math",
    "label": "Sq",
    "description": "Square of x (x²).",
    "inputs": [
@@ -5269,11 +5442,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/sqrt",
    "category": "Math",
+   "group": "Math",
    "label": "Sqrt",
    "description": "Square root of x. Negatives yield 0.",
    "inputs": [
@@ -5294,11 +5469,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/stddev",
    "category": "Math",
+   "group": "Math",
    "label": "StdDev",
    "description": "Population standard deviation of a number spread.",
    "inputs": [
@@ -5318,11 +5495,13 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/step",
    "category": "Math",
+   "group": "Math",
    "label": "Step",
    "description": "Returns 0 when x < edge, else 1 — a hard threshold.",
    "inputs": [
@@ -5354,6 +5533,7 @@
   {
    "type": "math/sub",
    "category": "Math",
+   "group": "Math",
    "label": "Sub",
    "description": "Subtract subsequent inputs from the first (number, vec2, or color).",
    "inputs": [
@@ -5385,11 +5565,13 @@
    },
    "paramOptions": null,
    "adaptiveType": true,
-   "dynamicOutputs": true
+   "dynamicOutputs": true,
+   "hidden": true
   },
   {
    "type": "math/sum",
    "category": "Math",
+   "group": "Math",
    "label": "Sum",
    "description": "Sum of a number spread.",
    "inputs": [
@@ -5409,11 +5591,13 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/tan",
    "category": "Math",
+   "group": "Math",
    "label": "Tan",
    "description": "Tangent of x (radians).",
    "inputs": [
@@ -5434,11 +5618,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "math/wrap",
    "category": "Math",
+   "group": "Math",
    "label": "Wrap",
    "description": "Wrap x into the half-open range [min, max) (modulo that keeps wrapping seamless).",
    "inputs": [
@@ -5476,6 +5662,7 @@
   {
    "type": "meta/comment",
    "category": "Meta",
+   "group": "Structure",
    "label": "Comment",
    "description": "Annotate the patch with a free-floating note.",
    "inputs": [],
@@ -5492,6 +5679,7 @@
   {
    "type": "meta/probe",
    "category": "Meta",
+   "group": "Structure",
    "label": "Probe",
    "description": "Inspect the data on a wire — a persistent, scrollable readout that also reroutes the wire. Drag a wire out and Alt-click empty space to drop one.",
    "inputs": [
@@ -5517,6 +5705,7 @@
   {
    "type": "meta/subpatch",
    "category": "Meta",
+   "group": "Structure",
    "label": "Subpatch",
    "description": "Group nodes behind a single boundary with custom ports.",
    "inputs": [],
@@ -5534,6 +5723,7 @@
   {
    "type": "motion/delay-line",
    "category": "Motion",
+   "group": "Animate",
    "label": "DelayLine",
    "description": "Echo `value` (number, vec2, or color) as it was `delay` seconds ago (linearly interpolated). History clears on recompile.",
    "inputs": [
@@ -5570,6 +5760,7 @@
   {
    "type": "motion/ease",
    "category": "Motion",
+   "group": "Animate",
    "label": "Ease",
    "description": "Remap t ∈ [0,1] through an easing curve. Pick the curve from the dropdown.",
    "inputs": [
@@ -5610,6 +5801,7 @@
   {
    "type": "motion/lfo",
    "category": "Motion",
+   "group": "Animate",
    "label": "LFO",
    "description": "Low-frequency oscillator: a value that cycles between `min` and `max`, `rate` times a second. Shapes: sine, triangle, saw, ramp-down, square (`width` = the high part of the cycle), random (a new value each cycle) and smooth-random. `offset` shifts the phase (0..1); a rising edge on `reset` restarts the cycle. With `bpm` above 0, `rate` counts cycles per beat (0.25 = once a bar in 4/4). With `count` > 1, `value` carries that many copies, each `spread / count` of a cycle behind the last (random shapes get one sequence per copy) — wire it into a ForEach to animate many things at once. `phase` is the 0..1 position in the cycle.",
    "inputs": [
@@ -5716,6 +5908,7 @@
   {
    "type": "motion/smooth",
    "category": "Motion",
+   "group": "Animate",
    "label": "Smooth",
    "description": "Exponentially ease toward `value` (number, vec2, or color). Higher `rate` = snappier; frame-rate independent.",
    "inputs": [
@@ -5752,6 +5945,7 @@
   {
    "type": "motion/spring",
    "category": "Motion",
+   "group": "Animate",
    "label": "Spring",
    "description": "Spring-follow `value` (number, vec2, or color) with stiffness + damping — overshoots and settles.",
    "inputs": [
@@ -5794,6 +5988,7 @@
   {
    "type": "motion/trigger",
    "category": "Motion",
+   "group": "Animate",
    "label": "Trigger",
    "description": "Emit a single-frame `true` pulse: on any change, a rising edge, or crossing `threshold` upward.",
    "inputs": [
@@ -5834,6 +6029,7 @@
   {
    "type": "noise/curl",
    "category": "Random",
+   "group": "Noise & Random",
    "label": "CurlNoise",
    "description": "Divergence-free flow field — the curl of a Perlin potential at `pos·scale`. Returns a vec2 you can use to advect particles in smooth swirls (no sources or sinks).",
    "inputs": [
@@ -5889,6 +6085,7 @@
   {
    "type": "noise/noise",
    "category": "Random",
+   "group": "Noise & Random",
    "label": "Noise",
    "description": "Smooth 2D noise at (pos + (x, y)) · scale, per element: wire spreads (a grid of positions, a list of seeds) into any pin for a spread of values. Modes: perlin, simplex, value, cellular (Worley — `feature` F1 = distance to the nearest cell point, F2 = to the second nearest, F2-F1 = cell edges) and curl (`flow` = the divergence-free curl of Perlin noise, for advecting things in swirls). `noise` is in [0, 1]. `octaves` > 1 adds finer layers (fBm), each `falloff` times as strong. `warp` pushes the sample point around by another noise field (`warp scale` = its frequency) for marbled, folded shapes. Perlin mode at default settings gives exactly what the old Perlin node gave.",
    "inputs": [
@@ -5988,6 +6185,7 @@
   {
    "type": "noise/perlin",
    "category": "Random",
+   "group": "Noise & Random",
    "label": "Perlin",
    "description": "Sample 2D Perlin noise in [0, 1].",
    "inputs": [
@@ -6040,6 +6238,7 @@
   {
    "type": "particles/bounds",
    "category": "Particles",
+   "group": "Particles & Physics",
    "label": "Bounds",
    "description": "Wrap, kill, or bounce particles at the edges of a rectangular boundary.",
    "inputs": [
@@ -6099,6 +6298,7 @@
   {
    "type": "particles/emitter",
    "category": "Particles",
+   "group": "Particles & Physics",
    "label": "Emitter",
    "description": "Particle source. Owns a fixed-capacity buffer; integrates world forces + local forces each tick.",
    "inputs": [
@@ -6224,6 +6424,7 @@
   {
    "type": "particles/from-layer",
    "category": "Particles",
+   "group": "Patterns",
    "label": "FromLayer",
    "description": "Sample points from any shape — pipe into an Emitter to spawn particles from that shape.",
    "inputs": [
@@ -6274,6 +6475,7 @@
   {
    "type": "particles/render-as",
    "category": "Particles",
+   "group": "Particles & Physics",
    "label": "Render",
    "description": "Render a ParticleBuffer as a Layer. Template controls the per-particle shape.",
    "inputs": [
@@ -6341,6 +6543,7 @@
   {
    "type": "particles/trail",
    "category": "Particles",
+   "group": "Particles & Physics",
    "label": "Trail",
    "description": "Render a polyline trail behind every alive particle. Ring-buffer length is fixed (CONSTANT).",
    "inputs": [
@@ -6415,6 +6618,7 @@
   {
    "type": "physics/world",
    "category": "Particles",
+   "group": "Particles & Physics",
    "label": "World",
    "description": "Physics world: gravity, drag, time scale, global forces, global colliders. Wire into one or more Emitters.",
    "inputs": [
@@ -6486,6 +6690,7 @@
   {
    "type": "pixel/get-col",
    "category": "Pixel",
+   "group": "Image",
    "label": "GetCol",
    "description": "Read one column of pixels (clamped to image bounds) as a spread of colors.",
    "inputs": [
@@ -6517,6 +6722,7 @@
   {
    "type": "pixel/get-pixels",
    "category": "Pixel",
+   "group": "Image",
    "label": "GetPixels",
    "description": "Read every pixel of an image as a row-major spread of colors.",
    "inputs": [
@@ -6551,6 +6757,7 @@
   {
    "type": "pixel/get-row",
    "category": "Pixel",
+   "group": "Image",
    "label": "GetRow",
    "description": "Read one row of pixels (clamped to image bounds) as a spread of colors.",
    "inputs": [
@@ -6582,6 +6789,7 @@
   {
    "type": "pixel/set-col",
    "category": "Pixel",
+   "group": "Image",
    "label": "SetCol",
    "description": "Write a spread of colors as one column of the image.",
    "inputs": [
@@ -6618,6 +6826,7 @@
   {
    "type": "pixel/set-pixels",
    "category": "Pixel",
+   "group": "Image",
    "label": "SetPixels",
    "description": "Write a spread of colors into a copy of the source image.",
    "inputs": [
@@ -6647,6 +6856,7 @@
   {
    "type": "pixel/set-row",
    "category": "Pixel",
+   "group": "Image",
    "label": "SetRow",
    "description": "Write a spread of colors as one row of the image.",
    "inputs": [
@@ -6683,6 +6893,7 @@
   {
    "type": "pixel/sort",
    "category": "Pixel",
+   "group": "Effects",
    "label": "PixelSort",
    "description": "Sort runs of pixels along rows or cols, masked by a value range.",
    "inputs": [
@@ -6741,6 +6952,7 @@
   {
    "type": "random/gaussian",
    "category": "Random",
+   "group": "Noise & Random",
    "label": "Gaussian",
    "description": "Sample a Gaussian random number with given mean and stddev.",
    "inputs": [
@@ -6779,6 +6991,7 @@
   {
    "type": "random/uniform",
    "category": "Random",
+   "group": "Noise & Random",
    "label": "Uniform",
    "description": "Sample a uniform random number in [min, max).",
    "inputs": [
@@ -6817,6 +7030,7 @@
   {
    "type": "random/wanderer2d",
    "category": "Random",
+   "group": "Noise & Random",
    "label": "Wanderer2D",
    "description": "Drift a 2D point smoothly using Perlin noise.",
    "inputs": [
@@ -6861,7 +7075,8 @@
   {
    "type": "region/accumulator-read/boolean",
    "category": "Region",
-   "label": "Read",
+   "group": "Structure",
+   "label": "AccRead",
    "description": "Per-iteration accumulator read — paired with Write by slot.",
    "inputs": [
     {
@@ -6888,7 +7103,8 @@
   {
    "type": "region/accumulator-read/image",
    "category": "Region",
-   "label": "Read",
+   "group": "Structure",
+   "label": "AccRead",
    "description": "Per-iteration accumulator read — paired with Write by slot.",
    "inputs": [
     {
@@ -6915,7 +7131,8 @@
   {
    "type": "region/accumulator-read/number",
    "category": "Region",
-   "label": "Read",
+   "group": "Structure",
+   "label": "AccRead",
    "description": "Per-iteration accumulator read — paired with Write by slot.",
    "inputs": [
     {
@@ -6942,7 +7159,8 @@
   {
    "type": "region/accumulator-write/boolean",
    "category": "Region",
-   "label": "Write",
+   "group": "Structure",
+   "label": "AccWrite",
    "description": "Per-iteration accumulator write — final emits after the loop.",
    "inputs": [
     {
@@ -6969,7 +7187,8 @@
   {
    "type": "region/accumulator-write/image",
    "category": "Region",
-   "label": "Write",
+   "group": "Structure",
+   "label": "AccWrite",
    "description": "Per-iteration accumulator write — final emits after the loop.",
    "inputs": [
     {
@@ -6996,7 +7215,8 @@
   {
    "type": "region/accumulator-write/number",
    "category": "Region",
-   "label": "Write",
+   "group": "Structure",
+   "label": "AccWrite",
    "description": "Per-iteration accumulator write — final emits after the loop.",
    "inputs": [
     {
@@ -7023,6 +7243,7 @@
   {
    "type": "region/cache",
    "category": "Region",
+   "group": "Structure",
    "label": "Cache",
    "description": "Cache inner-scope outputs; re-run only when inputs change.",
    "inputs": [],
@@ -7040,6 +7261,7 @@
   {
    "type": "region/foreach",
    "category": "Region",
+   "group": "Structure",
    "label": "ForEach",
    "description": "Iterate inner nodes once per element of the input spread. Built-in index/count/fraction pins; delay staggers each iteration's time source.",
    "inputs": [
@@ -7064,6 +7286,7 @@
   {
    "type": "region/if",
    "category": "Region",
+   "group": "Structure",
    "label": "If",
    "description": "Run inner nodes only when `condition` is true.",
    "inputs": [
@@ -7087,6 +7310,7 @@
   {
    "type": "region/loop-var",
    "category": "Region",
+   "group": "Structure",
    "label": "LoopVar",
    "description": "Per-iteration loop variable (index / count / fraction).",
    "inputs": [],
@@ -7107,6 +7331,7 @@
   {
    "type": "region/splicer-in/any",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerIn:any",
    "description": "Receive a Spread<any> from outside; deliver one slot per iteration.",
    "inputs": [
@@ -7133,6 +7358,7 @@
   {
    "type": "region/splicer-in/boolean",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerIn:boolean",
    "description": "Receive a Spread<boolean> from outside; deliver one slot per iteration.",
    "inputs": [
@@ -7159,6 +7385,7 @@
   {
    "type": "region/splicer-in/color",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerIn:color",
    "description": "Receive a Spread<color> from outside; deliver one slot per iteration.",
    "inputs": [
@@ -7185,6 +7412,7 @@
   {
    "type": "region/splicer-in/image",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerIn:image",
    "description": "Receive a Spread<image> from outside; deliver one slot per iteration.",
    "inputs": [
@@ -7211,6 +7439,7 @@
   {
    "type": "region/splicer-in/layer",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerIn:layer",
    "description": "Receive a Spread<layer> from outside; deliver one slot per iteration.",
    "inputs": [
@@ -7237,6 +7466,7 @@
   {
    "type": "region/splicer-in/mat3",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerIn:mat3",
    "description": "Receive a Spread<mat3> from outside; deliver one slot per iteration.",
    "inputs": [
@@ -7263,6 +7493,7 @@
   {
    "type": "region/splicer-in/number",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerIn:number",
    "description": "Receive a Spread<number> from outside; deliver one slot per iteration.",
    "inputs": [
@@ -7289,6 +7520,7 @@
   {
    "type": "region/splicer-in/string",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerIn:string",
    "description": "Receive a Spread<string> from outside; deliver one slot per iteration.",
    "inputs": [
@@ -7315,6 +7547,7 @@
   {
    "type": "region/splicer-in/style",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerIn:style",
    "description": "Receive a Spread<style> from outside; deliver one slot per iteration.",
    "inputs": [
@@ -7341,6 +7574,7 @@
   {
    "type": "region/splicer-in/vec2",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerIn:vec2",
    "description": "Receive a Spread<vec2> from outside; deliver one slot per iteration.",
    "inputs": [
@@ -7367,6 +7601,7 @@
   {
    "type": "region/splicer-out/any",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerOut:any",
    "description": "Collect one value per iteration into an outer Spread<any>.",
    "inputs": [
@@ -7393,6 +7628,7 @@
   {
    "type": "region/splicer-out/boolean",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerOut:boolean",
    "description": "Collect one value per iteration into an outer Spread<boolean>.",
    "inputs": [
@@ -7419,6 +7655,7 @@
   {
    "type": "region/splicer-out/color",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerOut:color",
    "description": "Collect one value per iteration into an outer Spread<color>.",
    "inputs": [
@@ -7445,6 +7682,7 @@
   {
    "type": "region/splicer-out/image",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerOut:image",
    "description": "Collect one value per iteration into an outer Spread<image>.",
    "inputs": [
@@ -7471,6 +7709,7 @@
   {
    "type": "region/splicer-out/layer",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerOut:layer",
    "description": "Collect one value per iteration into an outer Spread<layer>.",
    "inputs": [
@@ -7497,6 +7736,7 @@
   {
    "type": "region/splicer-out/mat3",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerOut:mat3",
    "description": "Collect one value per iteration into an outer Spread<mat3>.",
    "inputs": [
@@ -7523,6 +7763,7 @@
   {
    "type": "region/splicer-out/number",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerOut:number",
    "description": "Collect one value per iteration into an outer Spread<number>.",
    "inputs": [
@@ -7549,6 +7790,7 @@
   {
    "type": "region/splicer-out/string",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerOut:string",
    "description": "Collect one value per iteration into an outer Spread<string>.",
    "inputs": [
@@ -7575,6 +7817,7 @@
   {
    "type": "region/splicer-out/style",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerOut:style",
    "description": "Collect one value per iteration into an outer Spread<style>.",
    "inputs": [
@@ -7601,6 +7844,7 @@
   {
    "type": "region/splicer-out/vec2",
    "category": "Region",
+   "group": "Structure",
    "label": "SplicerOut:vec2",
    "description": "Collect one value per iteration into an outer Spread<vec2>.",
    "inputs": [
@@ -7627,6 +7871,7 @@
   {
    "type": "render/renderer",
    "category": "Render",
+   "group": "Draw",
    "label": "Renderer",
    "description": "Render wired layers to the preview canvas.",
    "inputs": [
@@ -7684,6 +7929,7 @@
   {
    "type": "sound/amplitude",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "Amplitude",
    "description": "Measure the RMS level of an audio signal.",
    "inputs": [
@@ -7714,6 +7960,7 @@
   {
    "type": "sound/audio-in",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "AudioIn",
    "description": "Read audio from the microphone.",
    "inputs": [
@@ -7745,6 +7992,7 @@
   {
    "type": "sound/compressor",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "Compressor",
    "description": "Compress audio dynamics with threshold, ratio, attack, and release.",
    "inputs": [
@@ -7799,6 +8047,7 @@
   {
    "type": "sound/delay",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "Delay",
    "description": "Echo an audio signal with feedback and lowpass damping.",
    "inputs": [
@@ -7841,6 +8090,7 @@
   {
    "type": "sound/distortion",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "Distortion",
    "description": "Waveshaper distortion driven by `amount`.",
    "inputs": [
@@ -7885,6 +8135,7 @@
   {
    "type": "sound/envelope",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "Envelope",
    "description": "Shape an audio signal with an ADSR envelope.",
    "inputs": [
@@ -7945,6 +8196,7 @@
   {
    "type": "sound/fft",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "FFT",
    "description": "Analyse audio into frequency-bin and waveform spreads.",
    "inputs": [
@@ -7991,6 +8243,7 @@
   {
    "type": "sound/filter",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "Filter",
    "description": "Biquad filter — lowpass, highpass, or bandpass.",
    "inputs": [
@@ -8035,6 +8288,7 @@
   {
    "type": "sound/freq-to-midi",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "FreqToMidi",
    "description": "Convert a frequency in Hz to a MIDI note number.",
    "inputs": [
@@ -8060,6 +8314,7 @@
   {
    "type": "sound/gain",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "Gain",
    "description": "Multiply an audio signal by `level`.",
    "inputs": [
@@ -8090,6 +8345,7 @@
   {
    "type": "sound/midi-to-freq",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "MidiToFreq",
    "description": "Convert a MIDI note number to frequency in Hz.",
    "inputs": [
@@ -8115,6 +8371,7 @@
   {
    "type": "sound/mono-synth",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "MonoSynth",
    "description": "Play a single MIDI-note voice with an ADSR envelope.",
    "inputs": [
@@ -8176,6 +8433,7 @@
   {
    "type": "sound/noise",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "Noise",
    "description": "Generate white, pink, or brown noise.",
    "inputs": [
@@ -8209,6 +8467,7 @@
   {
    "type": "sound/oscillator",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "Oscillator",
    "description": "Generate a sine, triangle, saw, or square waveform.",
    "inputs": [
@@ -8249,6 +8508,7 @@
   {
    "type": "sound/output",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "Output",
    "description": "Send an audio chain to the speakers.",
    "inputs": [
@@ -8273,6 +8533,7 @@
   {
    "type": "sound/peak-detect",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "PeakDetect",
    "description": "Detect amplitude peaks within a frequency band.",
    "inputs": [
@@ -8315,6 +8576,7 @@
   {
    "type": "sound/pulse",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "Pulse",
    "description": "Generate a square wave with adjustable pulse width.",
    "inputs": [
@@ -8352,6 +8614,7 @@
   {
    "type": "sound/reverb",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "Reverb",
    "description": "Add convolution reverb to an audio signal.",
    "inputs": [
@@ -8396,6 +8659,7 @@
   {
    "type": "sound/sound-file",
    "category": "Sound",
+   "group": "Input & Sound",
    "label": "SoundFile",
    "description": "Load and play an audio file from URL.",
    "inputs": [
@@ -8469,6 +8733,7 @@
   {
    "type": "spread/append",
    "category": "Spread",
+   "group": "Lists",
    "label": "AppendSpread",
    "description": "Append a single value to the end of a spread.",
    "inputs": [
@@ -8500,6 +8765,7 @@
   {
    "type": "spread/at",
    "category": "Spread",
+   "group": "Lists",
    "label": "AtSpread",
    "description": "Pick one element from a spread by index.",
    "inputs": [
@@ -8532,6 +8798,7 @@
   {
    "type": "spread/at-group",
    "category": "Spread",
+   "group": "Lists",
    "label": "AtGroupSpread",
    "description": "Pick the Nth group as a sub-spread, given flat + groupSize.",
    "inputs": [
@@ -8569,6 +8836,7 @@
   {
    "type": "spread/ca-grid-seed",
    "category": "Spread",
+   "group": "Patterns",
    "label": "CAGridSeedSpread",
    "description": "Seed a 2D boolean grid with one live cell in the bottom row.",
    "inputs": [
@@ -8609,6 +8877,7 @@
   {
    "type": "spread/ca-seed",
    "category": "Spread",
+   "group": "Patterns",
    "label": "CASeedSpread",
    "description": "Seed a 1D CA row with one live cell at `index`.",
    "inputs": [
@@ -8642,6 +8911,7 @@
   {
    "type": "spread/cons",
    "category": "Spread",
+   "group": "Lists",
    "label": "ConsSpread",
    "description": "Prepend a single value to a spread.",
    "inputs": [
@@ -8673,6 +8943,7 @@
   {
    "type": "spread/count",
    "category": "Spread",
+   "group": "Lists",
    "label": "CountSpread",
    "description": "Length of a spread.",
    "inputs": [
@@ -8698,6 +8969,7 @@
   {
    "type": "spread/count-where",
    "category": "Spread",
+   "group": "Lists",
    "label": "CountWhereSpread",
    "description": "Count true entries in a boolean spread.",
    "inputs": [
@@ -8723,6 +8995,7 @@
   {
    "type": "spread/cross",
    "category": "Spread",
+   "group": "Lists",
    "label": "CrossProductSpread",
    "description": "Cartesian product of two spreads as two parallel spreads.",
    "inputs": [
@@ -8758,6 +9031,7 @@
   {
    "type": "spread/cycle",
    "category": "Spread",
+   "group": "Lists",
    "label": "CycleSpread",
    "description": "Repeat a spread cyclically until the output reaches `count` elements.",
    "inputs": [
@@ -8789,6 +9063,7 @@
   {
    "type": "spread/elementary-ca",
    "category": "Spread",
+   "group": "Patterns",
    "label": "ElementaryCASpread",
    "description": "Advance a 1D elementary cellular automaton by one tick.",
    "inputs": [
@@ -8820,6 +9095,7 @@
   {
    "type": "spread/fibonacci",
    "category": "Spread",
+   "group": "Patterns",
    "label": "FibonacciSpread",
    "description": "Generate a sunflower spiral using the golden angle.",
    "inputs": [
@@ -8858,6 +9134,7 @@
   {
    "type": "spread/geometric",
    "category": "Spread",
+   "group": "Patterns",
    "label": "GeometricSpread",
    "description": "Geometric progression: start, start·ratio, start·ratio², …",
    "inputs": [
@@ -8896,6 +9173,7 @@
   {
    "type": "spread/gol-seed",
    "category": "Spread",
+   "group": "Patterns",
    "label": "GoLSeedSpread",
    "description": "Seed a Game-of-Life grid with random live cells.",
    "inputs": [
@@ -8942,6 +9220,7 @@
   {
    "type": "spread/gol-step",
    "category": "Spread",
+   "group": "Patterns",
    "label": "GoLStepSpread",
    "description": "Advance Conway's Game of Life by one tick.",
    "inputs": [
@@ -8980,6 +9259,7 @@
   {
    "type": "spread/grid",
    "category": "Spread",
+   "group": "Patterns",
    "label": "GridSpread",
    "description": "Generate a `cols × rows` grid of points centred on `center`.",
    "inputs": [
@@ -9034,6 +9314,7 @@
   {
    "type": "spread/index-of",
    "category": "Spread",
+   "group": "Lists",
    "label": "IndexOfSpread",
    "description": "First index of a value in the spread, or -1.",
    "inputs": [
@@ -9065,6 +9346,7 @@
   {
    "type": "spread/indices-by-value",
    "category": "Spread",
+   "group": "Lists",
    "label": "IndicesByValueSpread",
    "description": "All indices where the spread matches `value`.",
    "inputs": [
@@ -9095,6 +9377,7 @@
   {
    "type": "spread/inject",
    "category": "Spread",
+   "group": "Lists",
    "label": "InjectSpread",
    "description": "Inject elements of `marks` at N evenly-spaced positions in `spread`.",
    "inputs": [
@@ -9132,6 +9415,7 @@
   {
    "type": "spread/insert-slice",
    "category": "Spread",
+   "group": "Lists",
    "label": "InsertSliceSpread",
    "description": "Insert a spread at an index without overwriting.",
    "inputs": [
@@ -9169,6 +9453,7 @@
   {
    "type": "spread/interleave",
    "category": "Spread",
+   "group": "Lists",
    "label": "InterleaveSpread",
    "description": "Interleave two spreads element-by-element.",
    "inputs": [
@@ -9199,6 +9484,7 @@
   {
    "type": "spread/last-row",
    "category": "Spread",
+   "group": "Patterns",
    "label": "LastRowSpread",
    "description": "Slice the bottom row from a 2D boolean grid.",
    "inputs": [
@@ -9230,6 +9516,7 @@
   {
    "type": "spread/linear",
    "category": "Spread",
+   "group": "Patterns",
    "label": "LinearSpread",
    "description": "Generate a spread evenly stepping from `from` to `to`.",
    "inputs": [
@@ -9268,6 +9555,7 @@
   {
    "type": "spread/merge",
    "category": "Spread",
+   "group": "Lists",
    "label": "Merge",
    "description": "Combine multiple wires into one spread (each numbered slot takes one wire). Use it to feed several sources into a single input pin.",
    "inputs": [
@@ -9301,6 +9589,7 @@
   {
    "type": "spread/neighbor",
    "category": "Spread",
+   "group": "Lists",
    "label": "Neighbor",
    "description": "Read a neighbouring element by relative `offset` (e.g. -1 / +1). Inside a ForEach: broadcast the iterated spread into `spread` and wire the region's `index` pin. `edges` sets out-of-range behaviour: clamp (repeat ends), wrap (toroidal), or zero (empty).",
    "inputs": [
@@ -9348,6 +9637,7 @@
   {
    "type": "spread/noise",
    "category": "Spread",
+   "group": "Noise & Random",
    "label": "NoiseSpread",
    "description": "1-D Perlin noise sampled at regular intervals, in [0, 1].",
    "inputs": [
@@ -9393,6 +9683,7 @@
   {
    "type": "spread/pairwise",
    "category": "Spread",
+   "group": "Lists",
    "label": "PairwiseSpread",
    "description": "Adjacent pairs: outputs (s[0..n-1]) and (s[1..n]).",
    "inputs": [
@@ -9423,6 +9714,7 @@
   {
    "type": "spread/partition",
    "category": "Spread",
+   "group": "Lists",
    "label": "PartitionSpread",
    "description": "Chunk a spread into fixed-size groups. Outputs flat + groupSize.",
    "inputs": [
@@ -9460,6 +9752,7 @@
   {
    "type": "spread/permute",
    "category": "Spread",
+   "group": "Lists",
    "label": "PermuteSpread",
    "description": "Reorder elements by an index spread.",
    "inputs": [
@@ -9490,6 +9783,7 @@
   {
    "type": "spread/pick",
    "category": "Spread",
+   "group": "Lists",
    "label": "PickSpread",
    "description": "Index into `source` using each entry of `indices`. Output length = indices length; output[i] = source[indices[i] mod source.length]. Out-of-range indices wrap.",
    "inputs": [
@@ -9520,6 +9814,7 @@
   {
    "type": "spread/randomize",
    "category": "Spread",
+   "group": "Noise & Random",
    "label": "RandomizeSpread",
    "description": "Shuffle the input spread into a random order. Output length matches input; output type echoes input.",
    "inputs": [
@@ -9553,6 +9848,7 @@
   {
    "type": "spread/range",
    "category": "Spread",
+   "group": "Patterns",
    "label": "RangeSpread",
    "description": "Generate the integers 0, 1, …, count − 1.",
    "inputs": [
@@ -9579,6 +9875,7 @@
   {
    "type": "spread/remove-slice",
    "category": "Spread",
+   "group": "Lists",
    "label": "RemoveSliceSpread",
    "description": "Delete `count` elements starting at `index`.",
    "inputs": [
@@ -9618,6 +9915,7 @@
   {
    "type": "spread/repeat",
    "category": "Spread",
+   "group": "Lists",
    "label": "RepeatSpread",
    "description": "Repeat the input N times into a spread. A scalar becomes N copies; a spread of length K tiles to length N×K.",
    "inputs": [
@@ -9651,6 +9949,7 @@
   {
    "type": "spread/resample",
    "category": "Spread",
+   "group": "Lists",
    "label": "ResampleSpread",
    "description": "Resample a spread to a new length by linear interpolation.",
    "inputs": [
@@ -9682,6 +9981,7 @@
   {
    "type": "spread/reverse",
    "category": "Spread",
+   "group": "Lists",
    "label": "ReverseSpread",
    "description": "Reverse the order of elements.",
    "inputs": [
@@ -9706,6 +10006,7 @@
   {
    "type": "spread/ring",
    "category": "Spread",
+   "group": "Patterns",
    "label": "RingSpread",
    "description": "Lay `count` points evenly around a circle. `positions` are ready to place; `angles` (radians) drive orientation, spirals, or hue.",
    "inputs": [
@@ -9758,6 +10059,7 @@
   {
    "type": "spread/rotate",
    "category": "Spread",
+   "group": "Lists",
    "label": "RotateSpread",
    "description": "Cyclic shift by N positions (negative shifts left).",
    "inputs": [
@@ -9790,6 +10092,7 @@
   {
    "type": "spread/scroll-up",
    "category": "Spread",
+   "group": "Patterns",
    "label": "ScrollUpSpread",
    "description": "Scroll a 2D boolean grid up one row and append newRow at the bottom.",
    "inputs": [
@@ -9826,6 +10129,7 @@
   {
    "type": "spread/set-slice",
    "category": "Spread",
+   "group": "Lists",
    "label": "SetSliceSpread",
    "description": "Replace element(s) at an index with another spread.",
    "inputs": [
@@ -9863,6 +10167,7 @@
   {
    "type": "spread/shuffle",
    "category": "Spread",
+   "group": "Noise & Random",
    "label": "ShuffleSpread",
    "description": "Shuffle deterministically by seed.",
    "inputs": [
@@ -9894,6 +10199,7 @@
   {
    "type": "spread/sift",
    "category": "Spread",
+   "group": "Lists",
    "label": "SiftSpread",
    "description": "Keep elements where the parallel boolean spread is true.",
    "inputs": [
@@ -9924,6 +10230,7 @@
   {
    "type": "spread/sine",
    "category": "Spread",
+   "group": "Patterns",
    "label": "SineSpread",
    "description": "Generate `count` samples of a sine wave.",
    "inputs": [
@@ -9974,6 +10281,7 @@
   {
    "type": "spread/skip",
    "category": "Spread",
+   "group": "Lists",
    "label": "SkipSpread",
    "description": "Drop the first N elements.",
    "inputs": [
@@ -10006,6 +10314,7 @@
   {
    "type": "spread/slice",
    "category": "Spread",
+   "group": "Lists",
    "label": "SliceSpread",
    "description": "Slice elements from start to end (end ≤ 0 counts from the end).",
    "inputs": [
@@ -10045,6 +10354,7 @@
   {
    "type": "spread/sort",
    "category": "Spread",
+   "group": "Lists",
    "label": "SortSpread",
    "description": "Sort numerically, ascending by default.",
    "inputs": [
@@ -10075,6 +10385,7 @@
   {
    "type": "spread/sort-by-key",
    "category": "Spread",
+   "group": "Lists",
    "label": "SortByKeySpread",
    "description": "Sort a spread by a parallel number spread.",
    "inputs": [
@@ -10111,6 +10422,7 @@
   {
    "type": "spread/spiral",
    "category": "Spread",
+   "group": "Patterns",
    "label": "SpiralSpread",
    "description": "Generate points along an Archimedean spiral.",
    "inputs": [
@@ -10155,6 +10467,7 @@
   {
    "type": "spread/stack",
    "category": "Spread",
+   "group": "Lists",
    "label": "StackSpread",
    "description": "Concatenate two spreads end-to-end.",
    "inputs": [
@@ -10185,6 +10498,7 @@
   {
    "type": "spread/swap",
    "category": "Spread",
+   "group": "Lists",
    "label": "SwapSpread",
    "description": "Swap two elements by index.",
    "inputs": [
@@ -10224,6 +10538,7 @@
   {
    "type": "spread/take",
    "category": "Spread",
+   "group": "Lists",
    "label": "TakeSpread",
    "description": "Keep the first N elements.",
    "inputs": [
@@ -10256,6 +10571,7 @@
   {
    "type": "spread/ungroup",
    "category": "Spread",
+   "group": "Lists",
    "label": "Ungroup",
    "description": "Split a spread-of-spreads into one output pin per sub-spread (out 1…N). `count` sets the pins; missing groups emit empty spreads.",
    "inputs": [
@@ -10296,6 +10612,7 @@
   {
    "type": "spread/uninterleave",
    "category": "Spread",
+   "group": "Lists",
    "label": "UninterleaveSpread",
    "description": "Split a spread into even- and odd-indexed elements.",
    "inputs": [
@@ -10326,6 +10643,7 @@
   {
    "type": "spread/unique",
    "category": "Spread",
+   "group": "Lists",
    "label": "UniqueSpread",
    "description": "Remove duplicates, preserving first occurrence.",
    "inputs": [
@@ -10351,6 +10669,7 @@
   {
    "type": "spread/walk-step",
    "category": "Spread",
+   "group": "Patterns",
    "label": "WalkStepSpread",
    "description": "Advance a vec2 trail by one random-walk step.",
    "inputs": [
@@ -10400,6 +10719,7 @@
   {
    "type": "spread/windows",
    "category": "Spread",
+   "group": "Lists",
    "label": "WindowsSpread",
    "description": "Sliding windows of size N (stride 1). Outputs flat + windowSize.",
    "inputs": [
@@ -10437,6 +10757,7 @@
   {
    "type": "state/read",
    "category": "State",
+   "group": "Structure",
    "label": "Read",
    "description": "Emit the value last written under `slot`, or `init` on frame 0.",
    "inputs": [
@@ -10463,6 +10784,7 @@
   {
    "type": "state/read-spread",
    "category": "State",
+   "group": "Structure",
    "label": "Read*",
    "description": "Emit the spread last written under `slot`, or `init` on frame 0.",
    "inputs": [
@@ -10489,6 +10811,7 @@
   {
    "type": "state/spread",
    "category": "State",
+   "group": "Structure",
    "label": "StateSpread",
    "description": "Legacy: use Read* / Write* instead for left-to-right spread feedback.",
    "inputs": [
@@ -10520,6 +10843,7 @@
   {
    "type": "state/value",
    "category": "State",
+   "group": "Structure",
    "label": "State",
    "description": "Hold a single value across frames — emit last tick's `next` as `current`.",
    "inputs": [
@@ -10550,6 +10874,7 @@
   {
    "type": "state/write",
    "category": "State",
+   "group": "Structure",
    "label": "Write",
    "description": "Stash a value at end-of-tick; the matching Read emits it next tick.",
    "inputs": [
@@ -10572,6 +10897,7 @@
   {
    "type": "state/write-spread",
    "category": "State",
+   "group": "Structure",
    "label": "Write*",
    "description": "Stash a spread at end-of-tick; the matching Read* emits it next tick.",
    "inputs": [
@@ -10594,6 +10920,7 @@
   {
    "type": "string/concat",
    "category": "IO",
+   "group": "Text",
    "label": "Concat",
    "description": "Concatenate any number of strings into one. Wire multiple strings into `parts` (the pin gathers them); `separator` goes between each.",
    "inputs": [
@@ -10628,6 +10955,7 @@
   {
    "type": "string/length",
    "category": "IO",
+   "group": "Text",
    "label": "Length",
    "description": "Number of characters in the input string.",
    "inputs": [
@@ -10653,6 +10981,7 @@
   {
    "type": "string/split",
    "category": "IO",
+   "group": "Text",
    "label": "Split",
    "description": "Split a string into a Spread<string>. With `by=\"\"` (default) you get one item per character; with `by=\" \"` one item per word.",
    "inputs": [
@@ -10689,6 +11018,7 @@
   {
    "type": "string/word-indices",
    "category": "IO",
+   "group": "Text",
    "label": "WordIndices",
    "description": "For each character of `text`, output the word index that character belongs to. Words are separated by `by` (default \" \"). Separators themselves take the index of the word that just ended, so per-char colouring stays continuous.",
    "inputs": [
@@ -10725,6 +11055,7 @@
   {
    "type": "style/blur",
    "category": "Style",
+   "group": "Effects",
    "label": "Blur",
    "description": "Gaussian-blur downstream shapes by N pixels (fill, stroke, and text alike). 0 = sharp.",
    "inputs": [
@@ -10755,6 +11086,7 @@
   {
    "type": "style/ellipse-mode",
    "category": "Style",
+   "group": "Color & Style",
    "label": "EllipseMode",
    "description": "Set how Ellipse interprets (x, y, w, h).",
    "inputs": [
@@ -10795,6 +11127,7 @@
   {
    "type": "style/fill",
    "category": "Style",
+   "group": "Color & Style",
    "label": "Fill",
    "description": "Set the fill colour for downstream shapes. Wire a Color node into `color`.",
    "inputs": [
@@ -10825,6 +11158,7 @@
   {
    "type": "style/no-fill",
    "category": "Style",
+   "group": "Color & Style",
    "label": "NoFill",
    "description": "Disable the fill on downstream shapes.",
    "inputs": [
@@ -10849,6 +11183,7 @@
   {
    "type": "style/no-stroke",
    "category": "Style",
+   "group": "Color & Style",
    "label": "NoStroke",
    "description": "Disable the stroke on downstream shapes.",
    "inputs": [
@@ -10873,6 +11208,7 @@
   {
    "type": "style/rect-mode",
    "category": "Style",
+   "group": "Color & Style",
    "label": "RectMode",
    "description": "Set how Rect interprets (x, y, w, h).",
    "inputs": [
@@ -10913,6 +11249,7 @@
   {
    "type": "style/stroke",
    "category": "Style",
+   "group": "Color & Style",
    "label": "Stroke",
    "description": "Set the stroke colour, width, and alignment (center / inside / outside the outline). Alignment applies to closed shapes.",
    "inputs": [
@@ -10964,6 +11301,7 @@
   {
    "type": "style/stroke-cap",
    "category": "Style",
+   "group": "Color & Style",
    "label": "StrokeCap",
    "description": "Set the line end-cap shape.",
    "inputs": [
@@ -11003,6 +11341,7 @@
   {
    "type": "style/stroke-join",
    "category": "Style",
+   "group": "Color & Style",
    "label": "StrokeJoin",
    "description": "Set how stroke corners are joined.",
    "inputs": [
@@ -11042,6 +11381,7 @@
   {
    "type": "style/stroke-weight",
    "category": "Style",
+   "group": "Color & Style",
    "label": "StrokeWeight",
    "description": "Set the stroke thickness in pixels.",
    "inputs": [
@@ -11072,6 +11412,7 @@
   {
    "type": "style/text-params",
    "category": "Style",
+   "group": "Text",
    "label": "TextParams",
    "description": "Override typographic style for downstream text — font family, weight, italic, alignment, kerning, line spacing.",
    "inputs": [
@@ -11165,6 +11506,7 @@
   {
    "type": "style/font-variations",
    "category": "Style",
+   "group": "Text",
    "label": "FontVariations",
    "description": "Variable-font axes for downstream text, animatable per frame: weight (wght), width (wdth), slant (slnt), optical size (opsz), plus any axis by tag. 0 leaves an axis at the font’s default; chain nodes for more custom axes.",
    "inputs": [
@@ -11228,6 +11570,7 @@
   {
    "type": "time/delta",
    "category": "Time",
+   "group": "Animate",
    "label": "Delta",
    "description": "Seconds elapsed since the previous frame (dt) — for frame-rate-independent motion.",
    "inputs": [],
@@ -11246,6 +11589,7 @@
   {
    "type": "time/frame",
    "category": "Time",
+   "group": "Animate",
    "label": "Frame",
    "description": "Output the integer frame counter.",
    "inputs": [],
@@ -11264,6 +11608,7 @@
   {
    "type": "time/seconds",
    "category": "Time",
+   "group": "Animate",
    "label": "Time",
    "description": "Output seconds elapsed since the patch started, and the loop phase: 0..1 over the patch's loop length (set in Export Video), so animations built on it loop perfectly.",
    "inputs": [],
@@ -11289,6 +11634,7 @@
   {
    "type": "transform/apply-matrix",
    "category": "Transform",
+   "group": "Shape Ops",
    "label": "ApplyMatrix",
    "description": "Apply an arbitrary 2D affine transform to a layer.",
    "inputs": [
@@ -11349,6 +11695,7 @@
   {
    "type": "transform/blend",
    "category": "Transform",
+   "group": "Shape Ops",
    "label": "Blend",
    "description": "Composite a layer using the chosen blend mode.",
    "inputs": [
@@ -11400,6 +11747,7 @@
   {
    "type": "transform/cache",
    "category": "Transform",
+   "group": "Shape Ops",
    "label": "Cache",
    "description": "Rasterise a layer into a cached bitmap and blit it.",
    "inputs": [
@@ -11436,6 +11784,7 @@
   {
    "type": "transform/group",
    "category": "Transform",
+   "group": "Shape Ops",
    "label": "Group",
    "description": "Combine multiple layer wires into one layer.",
    "inputs": [
@@ -11469,6 +11818,7 @@
   {
    "type": "transform/rotate",
    "category": "Transform",
+   "group": "Shape Ops",
    "label": "Rotate",
    "description": "Rotate a layer by `angle` radians around the origin.",
    "inputs": [
@@ -11499,6 +11849,7 @@
   {
    "type": "transform/scale",
    "category": "Transform",
+   "group": "Shape Ops",
    "label": "Scale",
    "description": "Scale a layer by (sx, sy).",
    "inputs": [
@@ -11535,6 +11886,7 @@
   {
    "type": "transform/shear-x",
    "category": "Transform",
+   "group": "Shape Ops",
    "label": "ShearX",
    "description": "Shear a layer along the X axis by `angle` radians.",
    "inputs": [
@@ -11565,6 +11917,7 @@
   {
    "type": "transform/shear-y",
    "category": "Transform",
+   "group": "Shape Ops",
    "label": "ShearY",
    "description": "Shear a layer along the Y axis by `angle` radians.",
    "inputs": [
@@ -11595,6 +11948,7 @@
   {
    "type": "transform/translate",
    "category": "Transform",
+   "group": "Shape Ops",
    "label": "Translate",
    "description": "Translate a layer by the vector `by`.",
    "inputs": [
@@ -11628,6 +11982,7 @@
   {
    "type": "value/number",
    "category": "IO",
+   "group": "Source",
    "label": "Number",
    "description": "Hold a constant number.",
    "inputs": [],
@@ -11648,6 +12003,7 @@
   {
    "type": "value/string",
    "category": "IO",
+   "group": "Source",
    "label": "String",
    "description": "Hold a constant string.",
    "inputs": [],
@@ -11668,6 +12024,7 @@
   {
    "type": "vec2/add",
    "category": "Vec2",
+   "group": "Math",
    "label": "Add",
    "description": "Add two vec2s component-wise.",
    "inputs": [
@@ -11706,6 +12063,7 @@
   {
    "type": "vec2/angle-between",
    "category": "Vec2",
+   "group": "Math",
    "label": "AngleBetween",
    "description": "Signed angle from a to b, in radians.",
    "inputs": [
@@ -11738,11 +12096,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "vec2/dist",
    "category": "Vec2",
+   "group": "Math",
    "label": "Dist",
    "description": "Distance between two points.",
    "inputs": [
@@ -11775,11 +12135,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "vec2/dot",
    "category": "Vec2",
+   "group": "Math",
    "label": "Dot",
    "description": "Dot product of a and b.",
    "inputs": [
@@ -11812,11 +12174,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "vec2/from-angle",
    "category": "Vec2",
+   "group": "Math",
    "label": "FromAngle",
    "description": "Polar → cartesian: unit vector at `angle` radians, scaled by `mag` (radius).",
    "inputs": [
@@ -11848,6 +12212,7 @@
   {
    "type": "vec2/heading",
    "category": "Vec2",
+   "group": "Math",
    "label": "Heading",
    "description": "Angle of the vector in radians.",
    "inputs": [
@@ -11871,11 +12236,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "vec2/lerp",
    "category": "Vec2",
+   "group": "Math",
    "label": "Lerp",
    "description": "Linear interpolate between a and b at t ∈ [0, 1] (component-wise).",
    "inputs": [
@@ -11920,6 +12287,7 @@
   {
    "type": "vec2/limit",
    "category": "Vec2",
+   "group": "Math",
    "label": "Limit",
    "description": "Clamp the magnitude to at most `max`.",
    "inputs": [
@@ -11949,11 +12317,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "vec2/mag",
    "category": "Vec2",
+   "group": "Math",
    "label": "Mag",
    "description": "Length of the vector.",
    "inputs": [
@@ -11977,11 +12347,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "vec2/make",
    "category": "Vec2",
+   "group": "Math",
    "label": "Vec2",
    "description": "Build a vec2 from (x, y).",
    "inputs": [
@@ -12013,6 +12385,7 @@
   {
    "type": "vec2/mul",
    "category": "Vec2",
+   "group": "Math",
    "label": "Mul",
    "description": "Component-wise multiply.",
    "inputs": [
@@ -12051,6 +12424,7 @@
   {
    "type": "vec2/normalize",
    "category": "Vec2",
+   "group": "Math",
    "label": "Normalize",
    "description": "Unit vector in the same direction. Zero vectors stay zero.",
    "inputs": [
@@ -12074,11 +12448,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "vec2/project",
    "category": "Vec2",
+   "group": "Math",
    "label": "Project",
    "description": "Vector projection of `a` onto `b`.",
    "inputs": [
@@ -12111,11 +12487,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "vec2/reflect",
    "category": "Vec2",
+   "group": "Math",
    "label": "Reflect",
    "description": "Reflect `v` across the surface with `normal` (normal is normalised internally).",
    "inputs": [
@@ -12148,11 +12526,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "vec2/rotate",
    "category": "Vec2",
+   "group": "Math",
    "label": "Rotate",
    "description": "Rotate the vector by `angle` radians around the origin.",
    "inputs": [
@@ -12182,11 +12562,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "vec2/scale",
    "category": "Vec2",
+   "group": "Math",
    "label": "Scale",
    "description": "Multiply a vec2 by a scalar.",
    "inputs": [
@@ -12216,11 +12598,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "vec2/set-mag",
    "category": "Vec2",
+   "group": "Math",
    "label": "SetMag",
    "description": "Rescale the vector to the given magnitude.",
    "inputs": [
@@ -12250,11 +12634,13 @@
    "eval": "scalar",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "vec2/split",
    "category": "Vec2",
+   "group": "Math",
    "label": "Split",
    "description": "Decompose a vec2 into x and y.",
    "inputs": [
@@ -12288,6 +12674,7 @@
   {
    "type": "vec2/sub",
    "category": "Vec2",
+   "group": "Math",
    "label": "Sub",
    "description": "Subtract b from a component-wise.",
    "inputs": [
@@ -12326,6 +12713,7 @@
   {
    "type": "vec2/to-polar",
    "category": "Vec2",
+   "group": "Math",
    "label": "ToPolar",
    "description": "Cartesian → polar: decompose a vec2 into `angle` (radians) and `radius`.",
    "inputs": [
@@ -12359,6 +12747,7 @@
   {
    "type": "video/file",
    "category": "Video",
+   "group": "Source",
    "label": "VideoFile",
    "description": "Play a video file (MP4 / MOV) as an image. Pick a file on the node; `scrub` (0..1) overrides playback while wired.",
    "inputs": [
@@ -12437,6 +12826,7 @@
   {
    "type": "video/frame-at",
    "category": "Video",
+   "group": "Source",
    "label": "VideoFrameAt",
    "description": "One frame of a video file at `time` seconds: random access without playback.",
    "inputs": [
@@ -12492,6 +12882,7 @@
   {
    "type": "geometry/scatter",
    "category": "Geometry",
+   "group": "Patterns",
    "label": "Scatter",
    "description": "Scatter points over a rectangle (`center`, `size`) or inside a wired `shape`. Modes: `poisson` (no two points closer than `distance`), `random` (`count` uniform points), `jittered-grid` (one point per `spacing` cell, moved up to `jitter` of a cell), `halton` (`count` evenly spread low-discrepancy points). The same `seed` gives the same points.",
    "inputs": [
@@ -12556,6 +12947,7 @@
   {
    "type": "geometry/cells",
    "category": "Geometry",
+   "group": "Patterns",
    "label": "Cells",
    "description": "Voronoi cells, Delaunay triangles or the convex hull of a points spread, as polygons. Voronoi cells are clipped to the `center` / `size` rectangle; `gap` leaves that much space between neighbours; `colors` fills polygon i with colour i (cycled). Outputs all polygons as one layer and one layer each (`cells`), their corners (`points`, flat) with `counts` per polygon (for `spread/at-group`), and each polygon's centre.",
    "inputs": [
@@ -12642,6 +13034,7 @@
   {
    "type": "geometry/path-ops",
    "category": "Geometry",
+   "group": "Shape Ops",
    "label": "Path Ops",
    "description": "Reshape a point list (`points`, `closed`) or every outline of a wired `path` layer. Modes: `resample` (points evenly `spacing` apart), `smooth` (Chaikin corner cutting, `iterations` times), `subdivide` (insert midpoints, `iterations` times), `simplify` (drop points within `tolerance`), `offset` (grow by `distance`, shrink when negative; closed shapes get `join` corners, open paths shift sideways). Shapes from a layer keep their own style unless `style` is wired.",
    "inputs": [
@@ -12718,6 +13111,7 @@
   {
    "type": "geometry/boolean",
    "category": "Geometry",
+   "group": "Shape Ops",
    "label": "Shape Boolean",
    "description": "Union, intersect, subtract (a − b) or xor the filled areas of two layers, as polygons (holes included). Closed shapes count (nonzero winding), lines don't; with only `a` wired, `union` merges its shapes. Drawn in the first shape's style unless `style` is wired.",
    "inputs": [
@@ -12776,6 +13170,7 @@
   {
    "type": "geometry/lsystem",
    "category": "Geometry",
+   "group": "Patterns",
    "label": "L-System",
    "description": "Grow a string from `axiom` by `rules` (e.g. `F=F[+F]F[-F]F`; separate rules with `;`), `iterations` times, and draw it with a turtle: `F` / `G` draw a step, `f` / `g` move, `+` / `-` turn by `angle` degrees, `|` turns round, `[` / `]` branch; other symbols only rewrite. `fit` > 0 scales the drawing into a `fit`-wide box centred on `position` (0: start at `position`, `step` per move). `heading` in degrees (−90 = up); `jitter` varies every turn by up to that many degrees.",
    "inputs": [
@@ -12880,6 +13275,7 @@
   {
    "type": "particles/simulation",
    "category": "Particles",
+   "group": "Particles & Physics",
    "label": "Simulation",
    "description": "A running simulation; pick it with `mode` and the pins follow. flocking: boids that separate, align and cohere on a wrapping field (`attract` pulls them to `target`). physarum: slime-mould agents following and laying a trail map, which comes out as `image` (angles in degrees, distances in grid cells; `food` points keep feeding the trail). dla: walkers sticking to a growing cluster from `seeds`, `rate` particles a second up to `count`. cloth: a Verlet spring mesh hanging from its `pin`s, with wind, tearing (`tear` × rest length) and `grab` to drag the point nearest `pointer`. `layer` draws it (shapes take `style`; `colors` ramps along `values`); `points`, `values` (heading, growth order or stretch) and the `from` / `to` line segments are there to draw your own. Steps 60 times per second of frame time, so the same seed and frames give the same result. A rising edge on `reset` starts over.",
    "inputs": [
@@ -13031,6 +13427,7 @@
   {
    "type": "style/gradient",
    "category": "Style",
+   "group": "Color & Style",
    "label": "Gradient Fill",
    "description": "Fill (or stroke) downstream shapes with a linear, radial or conic gradient through the `colors` spread (evenly spaced, or at `positions` 0..1). `units`: `shape` places the geometry in each shape's own box (-1..1 across it, centre origin), `canvas` in scene units. `extend` says what happens past the ends: pad, repeat or mirror. The `mode` dropdown swaps the geometry pins (start / end, center / radius, center / angle in radians). Chain via `base` like Fill.",
    "inputs": [
@@ -13107,6 +13504,7 @@
   {
    "type": "transform/mask",
    "category": "Transform",
+   "group": "Shape Ops",
    "label": "Mask",
    "description": "Show `layer` through `mask`: by the mask's alpha, or by its luminance (white shows, black hides). `invert` shows the layer where the mask is empty instead.",
    "inputs": [
@@ -13149,6 +13547,7 @@
   {
    "type": "gpu/effect",
    "category": "Render",
+   "group": "Effects",
    "label": "Effect",
    "description": "A post-effect on a layer, on the GPU: bloom / glow, film grain (animates by itself), displacement (by noise, or by a `map` layer: red pushes right, green down), ordered dither, colour halftone dots, chromatic aberration, vignette. Pick the `mode`; the pins follow it. Sizes are in pixels.",
    "inputs": [
@@ -13199,6 +13598,279 @@
      "vignette"
     ]
    }
+  },
+  {
+   "type": "math/math",
+   "category": "Math",
+   "group": "Math",
+   "label": "Math",
+   "description": "Arithmetic and maths functions in one node: pick `op` and the pins follow. add, subtract, multiply, divide, min and max take any number of inputs (number, vec2 or colour, component-wise); then mod, pow, negate, abs, sign, floor, ceil, round, fract, sqrt, square, exp, log, sin, cos, tan, asin, acos, atan, atan2, length of (x, y) and distance between two (x, y) points.",
+   "inputs": [
+    {
+     "name": "a",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "b",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    }
+   ],
+   "outputs": [
+    {
+     "name": "result",
+     "type": "number",
+     "kind": "single"
+    }
+   ],
+   "eval": "scalar",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "op": "add",
+    "slotCount": 2,
+    "valueType": "any"
+   },
+   "paramOptions": {
+    "op": [
+     "add",
+     "subtract",
+     "multiply",
+     "divide",
+     "mod",
+     "pow",
+     "min",
+     "max",
+     "negate",
+     "abs",
+     "sign",
+     "floor",
+     "ceil",
+     "round",
+     "fract",
+     "sqrt",
+     "square",
+     "exp",
+     "log",
+     "sin",
+     "cos",
+     "tan",
+     "asin",
+     "acos",
+     "atan",
+     "atan2",
+     "length",
+     "distance"
+    ]
+   },
+   "adaptiveType": true,
+   "dynamicOutputs": true
+  },
+  {
+   "type": "vec2/math",
+   "category": "Vec2",
+   "group": "Math",
+   "label": "Vector Math",
+   "description": "Vector operations in one node: pick `op` and the pins follow. length, distance, dot, angle-between and heading give a number; normalize, set-length, limit, scale, rotate, project and reflect give a vec2. (Adding, subtracting or multiplying vec2s: Math. Blending: Lerp.)",
+   "inputs": [
+    {
+     "name": "v",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    }
+   ],
+   "outputs": [
+    {
+     "name": "result",
+     "type": "number",
+     "kind": "single"
+    }
+   ],
+   "eval": "scalar",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "op": "length"
+   },
+   "paramOptions": {
+    "op": [
+     "length",
+     "distance",
+     "dot",
+     "angle-between",
+     "heading",
+     "normalize",
+     "set-length",
+     "limit",
+     "scale",
+     "rotate",
+     "project",
+     "reflect"
+    ]
+   },
+   "dynamicOutputs": true
+  },
+  {
+   "type": "logic/compare",
+   "category": "Logic",
+   "group": "Math",
+   "label": "Compare",
+   "description": "Compare a with b — less, less-equal, greater, greater-equal, equal or not-equal — as true / false.",
+   "inputs": [
+    {
+     "name": "a",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "b",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    }
+   ],
+   "outputs": [
+    {
+     "name": "result",
+     "type": "boolean",
+     "kind": "single"
+    }
+   ],
+   "eval": "scalar",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "op": "less"
+   },
+   "paramOptions": {
+    "op": [
+     "less",
+     "less-equal",
+     "greater",
+     "greater-equal",
+     "equal",
+     "not-equal"
+    ]
+   }
+  },
+  {
+   "type": "logic/logic",
+   "category": "Logic",
+   "group": "Math",
+   "label": "Logic",
+   "description": "Boolean logic: a and b, a or b, a xor b (exactly one true), or not x.",
+   "inputs": [
+    {
+     "name": "a",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    },
+    {
+     "name": "b",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    }
+   ],
+   "outputs": [
+    {
+     "name": "result",
+     "type": "boolean",
+     "kind": "single"
+    }
+   ],
+   "eval": "scalar",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "op": "and"
+   },
+   "paramOptions": {
+    "op": [
+     "and",
+     "or",
+     "xor",
+     "not"
+    ]
+   }
+  },
+  {
+   "type": "math/statistics",
+   "category": "Math",
+   "group": "Math",
+   "label": "Statistics",
+   "description": "One number from a number spread: its mean, median, sum, min, max or (population) standard deviation.",
+   "inputs": [
+    {
+     "name": "spread",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "result",
+     "type": "number",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "op": "mean"
+   },
+   "paramOptions": {
+    "op": [
+     "mean",
+     "median",
+     "sum",
+     "min",
+     "max",
+     "stddev"
+    ]
+   }
+  },
+  {
+   "type": "convert/convert",
+   "category": "Convert",
+   "group": "Math",
+   "label": "Convert",
+   "description": "Convert a value `to` a number, an integer (rounded), a boolean or a string; or an angle to radians (from degrees) or to degrees (from a 0..1 turn).",
+   "inputs": [
+    {
+     "name": "in",
+     "type": "any",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "result",
+     "type": "number",
+     "kind": "single"
+    }
+   ],
+   "eval": "scalar",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "to": "number"
+   },
+   "paramOptions": {
+    "to": [
+     "number",
+     "integer",
+     "boolean",
+     "string",
+     "radians",
+     "degrees"
+    ]
+   },
+   "dynamicOutputs": true
   }
  ]
 }

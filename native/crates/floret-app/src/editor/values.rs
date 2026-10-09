@@ -105,7 +105,7 @@ pub fn option_label(o: &str) -> &str {
 pub fn left_items(cat: &Catalogue, spec: &NodeSpec, n: &PatchNode) -> Vec<LeftItem> {
     let inputs = cat.resolved_inputs(spec, &n.params);
     // Custom bodies (slider, XY pad, stepper …) edit their own params.
-    let custom = super::widgets::custom_of(&spec.ty).is_some();
+    let custom = super::widgets::custom_for(n).is_some();
     let mut items: Vec<LeftItem> = spec
         .default_params
         .iter()
@@ -489,6 +489,16 @@ pub fn display_label(p: &PortSpec, input: bool) -> String {
 }
 
 /// Header symbols for math nodes (`MATH_SYMBOLS`).
+/// The symbol a node shows in its header instead of its label: a math
+/// node's (`×`), or an op family's selected op's (Math set to multiply
+/// shows `×`, Compare set to less shows `<`).
+pub fn header_symbol(n: &PatchNode) -> Option<&'static str> {
+    match floret_engine::nodes::family::family(&n.def_type) {
+        Some(f) => f.op(&n.params).symbol,
+        None => math_symbol(&n.def_type),
+    }
+}
+
 pub fn math_symbol(ty: &str) -> Option<&'static str> {
     Some(match ty {
         "math/add" => "+",
@@ -743,6 +753,21 @@ mod tests {
                 .unwrap_or(rect.inputs[0].name.clone())
         );
         assert_eq!(math_symbol("math/lerp"), None);
+        // Op families show their op's symbol; the same as the old node's.
+        let mut m = node("m", "math/math");
+        assert_eq!(header_symbol(&m), Some("+"));
+        for (op, legacy) in [
+            ("multiply", "math/mul"),
+            ("sin", "math/sin"),
+            ("pow", "math/pow"),
+        ] {
+            m.params.insert("op".into(), json!(op));
+            assert_eq!(header_symbol(&m), math_symbol(legacy), "{op}");
+        }
+        let mut c = node("c", "logic/compare");
+        c.params.insert("op".into(), json!("greater-equal"));
+        assert_eq!(header_symbol(&c), Some("≥"));
+        assert_eq!(header_symbol(&node("v", "vec2/math")), None);
     }
 
     #[test]

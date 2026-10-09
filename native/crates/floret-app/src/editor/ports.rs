@@ -2,7 +2,6 @@
 //! `{type, kind}`, honouring dynamic inputs, region frame ports, loop
 //! variables and the adaptive-math `valueType` latch.
 
-use floret_engine::nodes::math::adaptive::port_type_for_value_type;
 use floret_engine::patch::{parse_handle, Handle, PatchFile, PatchNode, PortDirection};
 use floret_engine::spec::{Catalogue, NodeSpec, PortKind, PortSpec, PortType};
 
@@ -57,18 +56,14 @@ pub fn is_loop_var(name: &str) -> bool {
     )
 }
 
-/// Output ports for display and validation. Adaptive nodes report their
-/// latched `valueType` on `result`; other dynamic outputs fall back to the
-/// static spec (the engine has no `dynamicOutputs` hook yet).
-pub fn resolved_outputs(spec: &NodeSpec, params: &floret_engine::spec::Params) -> Vec<PortSpec> {
-    let mut outs = spec.outputs.clone();
-    if spec.adaptive_type {
-        let ty = port_type_for_value_type(params);
-        for p in &mut outs {
-            p.ty = ty;
-        }
-    }
-    outs
+/// Output ports for display and validation: the catalogue's resolution
+/// (an op family's output type, an adaptive node's latched `valueType`).
+pub fn resolved_outputs(
+    cat: &Catalogue,
+    spec: &NodeSpec,
+    params: &floret_engine::spec::Params,
+) -> Vec<PortSpec> {
+    cat.resolved_outputs(spec, params)
 }
 
 /// `resolvePort` (connection-rules.ts).
@@ -114,7 +109,7 @@ pub fn resolve_port(
     }
     let list = match side {
         Side::In => cat.resolved_inputs(spec, &n.params),
-        Side::Out => resolved_outputs(spec, &n.params),
+        Side::Out => resolved_outputs(cat, spec, &n.params),
     };
     list.iter().find(|p| p.name == name).map(|p| ResolvedPort {
         ty: p.ty,

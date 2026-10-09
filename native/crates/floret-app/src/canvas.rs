@@ -1982,8 +1982,8 @@ pub fn show(
         );
     }
     if let (Some(drag), Some(p)) = (&palette_hover, pointer) {
-        if let Some(spec) = cat.get(&drag.0) {
-            draw::drop_ghost(&painter, p, &spec.label, &spec.category, z);
+        if let Some(e) = search::entry(cat, &drag.0) {
+            draw::drop_ghost(&painter, p, e.label(), &e.spec.group, z);
         }
     }
 
@@ -3152,9 +3152,10 @@ fn place_from_search(
     st: SearchState,
     ty: &str,
 ) {
-    let Some(spec) = cat.get(ty) else {
+    let Some(entry) = search::entry(cat, ty) else {
         return;
     };
+    let (spec, params) = (entry.spec, entry.params());
     if regions::is_drawable(spec.region_kind) {
         // Drawable regions arm the crosshair: the user sizes them.
         view.armed = Some(ty.to_owned());
@@ -3181,7 +3182,7 @@ fn place_from_search(
     };
     match (&st.purpose, &st.fit) {
         (Purpose::Wire { node, side, port }, Fit::Pin { ty: wty, .. }) => {
-            if let Some(p) = search::first_compatible(cat, spec, *side, *wty) {
+            if let Some(p) = search::first_compatible(cat, spec, &params, *side, *wty) {
                 let c = match side {
                     Side::Out => {
                         Conn::new(node, &Side::Out.handle(port), &id, &Side::In.handle(&p))
@@ -3192,7 +3193,7 @@ fn place_from_search(
             }
         }
         (Purpose::Insert { edge }, Fit::Insert { src, dst }) => {
-            if let Some((i, o)) = search::insertion_ports(cat, spec, *src, *dst) {
+            if let Some((i, o)) = search::insertion_ports(cat, spec, &params, *src, *dst) {
                 connect::remove_edge(patch, &edge.id);
                 if let (Some(sh), Some(th)) = (&edge.source_handle, &edge.target_handle) {
                     connect::connect(

@@ -18,7 +18,7 @@ fn port_concrete_type(
     let (side, name) = split_handle(handle)?;
     let n = find_node(patch, node)?;
     let spec = cat.get(&n.def_type)?;
-    let t = if spec.adaptive_type {
+    let t = if cat.is_adaptive(spec, &n.params) {
         match n.params.get("valueType").and_then(|v| v.as_str()) {
             Some("vec2") => PortType::Vec2,
             Some("color") => PortType::Color,
@@ -38,7 +38,7 @@ fn port_concrete_type(
             spec.inputs.iter().find(|p| p.name == name)?.ty
         }
     } else if side == Side::Out {
-        resolved_outputs(spec, &n.params)
+        resolved_outputs(cat, spec, &n.params)
             .iter()
             .find(|p| p.name == name)?
             .ty
@@ -69,6 +69,14 @@ pub fn reconcile_adaptive_types(patch: &mut PatchFile, cat: &Catalogue) -> bool 
             .get("valueType")
             .and_then(|v| v.as_str())
             .unwrap_or("any");
+        // An op family in a non-adapting op (a Math node set to `sin`)
+        // drops its latch, so switching back to `add` re-latches afresh.
+        if !cat.is_adaptive(spec, &n.params) {
+            if cur != "any" {
+                updates.push((i, "any"));
+            }
+            continue;
+        }
         // Only ADAPTIVE inputs drive the latch: those whose type changes
         // between valueType number and vec2 (lerp's `t`, spring's
         // `stiffness` … stay fixed numbers and don't count).
@@ -176,6 +184,36 @@ mod tests {
         connect(&mut p, cat, &Conn::new("t", "out-t", "add", "in-a")).unwrap();
         reconcile_adaptive_types(&mut p, cat);
         assert_eq!(vt(&p, "add"), "number");
+    }
+
+    #[test]
+    fn math_node_latches_only_in_arithmetic_ops() {
+        let cat = Catalogue::builtin();
+        let mut m = node("m", "math/math");
+        m.params = cat.get("math/math").unwrap().default_params.clone();
+        m.params.insert("op".into(), "multiply".into());
+        let mut p = patch(vec![m, node("mk", "vec2/make")], vec![]);
+        connect(&mut p, cat, &Conn::new("mk", "out-vector", "m", "in-a")).unwrap();
+        reconcile_adaptive_types(&mut p, cat);
+        assert_eq!(vt(&p, "m"), "vec2");
+        let out = |p: &PatchFile| {
+            crate::editor::ports::resolve_port(p, cat, "m", Side::Out, "result")
+                .unwrap()
+                .ty
+        };
+        assert_eq!(out(&p), PortType::Vec2);
+        // Switch to sin: `a` is gone, the latch drops, the output is a number.
+        crate::editor::ports::find_node_mut(&mut p, "m")
+            .unwrap()
+            .params
+            .insert("op".into(), "sin".into());
+        crate::editor::values::prune_dead_inputs(&mut p, cat, "m");
+        assert!(reconcile_adaptive_types(&mut p, cat));
+        assert_eq!(vt(&p, "m"), "any");
+        assert_eq!(out(&p), PortType::Number);
+        // A vec2 into sin's `x` doesn't latch anything.
+        let _ = connect(&mut p, cat, &Conn::new("mk", "out-vector", "m", "in-x"));
+        assert!(!reconcile_adaptive_types(&mut p, cat));
     }
 
     #[test]

@@ -241,7 +241,7 @@ pub fn node(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     let accent = if b.look == Look::Collapsed {
         frame_color(Some(RegionKind::Subpatch))
     } else {
-        theme::category_color(&b.category)
+        theme::category_color(&b.group)
     };
     if st.selected {
         // Soft gold glow (the web app's --glow-gold) that slowly breathes
@@ -711,7 +711,7 @@ pub fn region_preview(p: &Painter, r: Rect, kind: Option<RegionKind>, label: &st
 }
 
 /// The ghost of a palette node being dragged over the canvas.
-pub fn drop_ghost(p: &Painter, at: Pos2, label: &str, category: &str, z: f32) {
+pub fn drop_ghost(p: &Painter, at: Pos2, label: &str, group: &str, z: f32) {
     let r = Rect::from_min_size(at, vec2(super::geom::NODE_W, HEADER_H + 8.0) * z);
     p.rect(
         r,
@@ -723,7 +723,7 @@ pub fn drop_ghost(p: &Painter, at: Pos2, label: &str, category: &str, z: f32) {
     p.circle_filled(
         r.left_top() + vec2(12.0, HEADER_H / 2.0) * z,
         3.2 * z,
-        theme::category_color(category),
+        theme::category_color(group),
     );
     p.text(
         r.left_top() + vec2(22.0, HEADER_H / 2.0) * z,

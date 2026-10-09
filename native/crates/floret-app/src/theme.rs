@@ -126,27 +126,30 @@ pub fn port_color(ty: &str) -> Color32 {
     *Token::new(dark, light)
 }
 
-/// Category accent: a few muted families of related categories rather
-/// than a rainbow (low saturation; darker on the light theme so it reads
-/// on white).
-pub fn category_color(category: &str) -> Color32 {
+/// Accent for a node browser group (or, for catalogues without groups, a
+/// category): a few muted families of related groups rather than a
+/// rainbow (low saturation; darker on the light theme so it reads on
+/// white).
+pub fn category_color(group: &str) -> Color32 {
     // (hue, saturation)
-    let (hue, sat) = match category.to_ascii_lowercase().as_str() {
-        // Drawing and output: warm sand.
-        "draw" | "style" | "text" | "color" | "transform" | "render" => (38.0, 0.30),
-        // Shape generators and operations sit with drawing.
-        "geometry" => (38.0, 0.30),
-        // Numbers and lists: slate blue.
-        "math" | "vec2" | "logic" | "convert" | "data" | "spread" | "string" | "random" => {
-            (215.0, 0.22)
-        }
-        // Time and change: sage.
-        "time" | "motion" | "state" | "noise" => (140.0, 0.20),
-        // Media and devices: dusty rose.
-        "image" | "pixel" | "video" | "sound" | "input" | "io" | "gpu" => (345.0, 0.24),
+    let (hue, sat) = match group.to_ascii_lowercase().as_str() {
+        // Drawing and how it looks: warm sand.
+        "draw" | "text" | "color & style" | "shape ops" => (38.0, 0.30),
+        // Numbers, lists and the patterns built from them: slate blue.
+        "math" | "lists" | "patterns" => (215.0, 0.22),
+        // Time and variation: sage.
+        "animate" | "noise & random" => (140.0, 0.20),
+        // Media in, out and through: dusty rose.
+        "source" | "image" | "effects" | "input & sound" => (345.0, 0.24),
         // Simulation: muted teal.
+        "particles & physics" => (180.0, 0.22),
+        // Categories (catalogues without groups).
+        "style" | "color" | "transform" | "render" | "geometry" => (38.0, 0.30),
+        "vec2" | "logic" | "convert" | "data" | "spread" | "string" | "random" => (215.0, 0.22),
+        "time" | "motion" | "state" | "noise" => (140.0, 0.20),
+        "pixel" | "video" | "sound" | "input" | "io" | "gpu" => (345.0, 0.24),
         "particles" | "force" | "collider" | "physics" => (180.0, 0.22),
-        // Structure (regions, comments, probes): neutral.
+        // Structure (regions, state, comments, probes): neutral.
         _ => (0.0, 0.0),
     };
     if is_light() {
@@ -280,6 +283,24 @@ fn style_for(style: &mut egui::Style, light: bool) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn every_group_but_structure_has_a_family_accent() {
+        let neutral = category_color("no such group");
+        for g in floret_engine::spec::GROUPS {
+            let c = category_color(g.name);
+            assert_eq!(c == neutral, g.name == "Structure", "{}", g.name);
+        }
+        // Groups share the families their old categories had.
+        assert_eq!(category_color("Draw"), category_color("draw"));
+        assert_eq!(category_color("Math"), category_color("spread"));
+        assert_eq!(category_color("Animate"), category_color("time"));
+        assert_eq!(category_color("Effects"), category_color("image"));
+        assert_eq!(
+            category_color("Particles & Physics"),
+            category_color("force")
+        );
+    }
 
     #[test]
     fn tokens_follow_the_active_theme() {

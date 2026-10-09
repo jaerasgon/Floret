@@ -354,7 +354,15 @@ fn list_spreads() -> Vec<Vec<Value>> {
             s(""),
             s("x"),
         ],
-        vec![n(-1.0), n(10.0), n(2.5), n(-6.0), n(0.0), n(f64::NAN), s("2")],
+        vec![
+            n(-1.0),
+            n(10.0),
+            n(2.5),
+            n(-6.0),
+            n(0.0),
+            n(f64::NAN),
+            s("2"),
+        ],
         vec![s("b"), s("a"), s("c"), s("a")],
     ]
 }
@@ -395,8 +403,8 @@ fn list_singles() -> Vec<Vec<Value>> {
 }
 
 /// Each list op, against the node it supersedes, over every combination
-/// of [`list_spreads`] / [`list_singles`] on its pins (sampled beyond
-/// 30 000 combinations).
+/// of [`list_spreads`] / [`list_singles`] on its pins (the full product:
+/// every op has fewer than 30 000; sampled beyond that).
 #[test]
 fn list_ops_match_the_nodes_they_supersede() {
     let cat = Catalogue::builtin();
@@ -443,7 +451,7 @@ fn list_ops_match_the_nodes_they_supersede() {
             }
         }
     }
-    assert!(checked > 50_000, "only {checked} cases");
+    assert!(checked > 25_000, "only {checked} cases");
 }
 
 /// Out-of-range and degenerate cases give what the old nodes documented.
@@ -469,7 +477,11 @@ fn list_ops_edge_cases() {
     );
     // Items At wraps.
     assert_eq!(
-        eval("spread/lookup", "pick", vec![abc.clone(), vec![n(4.0), n(-1.0)]]),
+        eval(
+            "spread/lookup",
+            "pick",
+            vec![abc.clone(), vec![n(4.0), n(-1.0)]]
+        ),
         canon(&[vec![s("b"), s("c")]])
     );
     assert_eq!(

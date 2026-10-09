@@ -3047,7 +3047,12 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             match ty.as_deref() {
                 Some("io/svg") => dialog = dialog.add_filter("SVG", &["svg"]),
                 Some(t) if widgets::is_video(t) => {
-                    dialog = dialog.add_filter("Video", widgets::VIDEO_EXTENSIONS);
+                    dialog = dialog
+                        .add_filter("Video", widgets::VIDEO_EXTENSIONS)
+                        .add_filter(
+                            "Image sequence (pick one frame)",
+                            widgets::SEQUENCE_EXTENSIONS,
+                        );
                 }
                 _ => {}
             }

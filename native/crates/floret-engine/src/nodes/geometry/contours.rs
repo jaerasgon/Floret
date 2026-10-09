@@ -9,21 +9,29 @@
 //!   `radius`, cycled), sampled every `cell` units over the rectangle.
 //! - `image`: an image's brightness (0..1, times alpha), drawn centred on
 //!   `center` at `size` (0 = its own size in pixels).
+//! - `shape`: distance from the outlines of a `shape` layer, sampled every
+//!   `cell` units: the levels are distances (0 = the outline, positive
+//!   outside, negative inside), so `step` > 0 draws rings round the shape,
+//!   outer rings underneath.
 //!
 //! It draws `levels` contours, at `threshold`, `threshold + step`, ….
 //! Outside the field counts as below every level, so every contour comes
 //! out closed, with the higher side on its right-hand side going round
 //! (clockwise round a peak): each level fills as one polygon with its
-//! holes. `levels` out gives each contour's level.
+//! holes. `levels` out gives each contour's level. A wired `colors`
+//! spread colours the levels (fill, else stroke), spread across them as
+//! a palette from the first level to the last.
 
 use super::{
-    int_pin, live_mode, num_pin, param_str, pin_style, poly_outputs, style_pin, vec2_pin, Pins,
-    Poly, MAX_POINTS,
+    flat, int_pin, layer_pin, live_mode, num_pin, param_str, pin_style, poly_outputs, ramp,
+    style_pin, vec2_pin, Pins, Poly, MAX_POINTS,
 };
 use crate::node::{raw, NodeImpl, NodeInit};
+use crate::scene::ResolvedStyle;
 use crate::spec::{Params, PortKind, PortSpec, PortType};
 use crate::value::{Spread, Value, Vec2};
 use std::collections::HashMap;
+use std::sync::Arc;
 
 const MODE: &str = "field";
 const SIZE: Vec2 = Vec2 { x: 400.0, y: 400.0 };
@@ -57,6 +65,15 @@ pub(super) fn inputs(params: &Params) -> Vec<PortSpec> {
             v.push(int_pin("levels", 1.0));
             v.push(num_pin("step", 0.1));
         }
+        "shape" => {
+            v.push(layer_pin("shape"));
+            v.push(vec2_pin("center", 0.0, 0.0));
+            v.push(vec2_pin("size", SIZE.x, SIZE.y));
+            v.push(num_pin("cell", 2.0));
+            v.push(num_pin("threshold", 0.0));
+            v.push(int_pin("levels", 6.0));
+            v.push(num_pin("step", 12.0));
+        }
         _ => {
             v.push(PortSpec::new("values", PortType::Number).kind(PortKind::Spread));
             v.push(int_pin("cols", 16.0));
@@ -67,6 +84,7 @@ pub(super) fn inputs(params: &Params) -> Vec<PortSpec> {
             v.push(num_pin("step", 0.1));
         }
     }
+    v.push(PortSpec::new("colors", PortType::Color).kind(PortKind::Spread));
     v.push(style_pin());
     v
 }
@@ -238,6 +256,189 @@ pub(super) fn image_field(img: &crate::image::Image, center: Vec2, size: Vec2) -
     })
 }
 
+/// Signed distance from a layer's outlines, sampled every `cell` units
+/// over the rectangle: positive inside a filled area (nonzero winding),
+/// negative outside, so contour `t` is the outline grown by −t (the
+/// caller negates the levels: users give distances, outward positive).
+/// Open paths count by distance only (never inside).
+///
+/// Exact at the nodes near an outline and on the rectangle's border; the
+/// rest by "dead reckoning" (each node takes the nearest outline point its
+/// neighbours found, measured exactly from itself), which stays within a
+/// fraction of a cell.
+pub(super) fn shape_field(layers: &[Value], center: Vec2, size: Vec2, cell: f64) -> Option<Field> {
+    let contours = super::layer_contours(layers);
+    let segs: Vec<(Vec2, Vec2)> = contours
+        .iter()
+        .flat_map(|c| {
+            let n = c.pts.len();
+            let count = match n {
+                0 => 0,
+                1 => 1,
+                _ if c.closed => n,
+                _ => n - 1,
+            };
+            (0..count).map(move |i| (c.pts[i], c.pts[(i + 1) % n]))
+        })
+        .filter(|(a, b)| a.x.is_finite() && a.y.is_finite() && b.x.is_finite() && b.y.is_finite())
+        .collect();
+    if segs.is_empty() {
+        return None;
+    }
+    let (cols, rows, origin, dx, dy) = lattice(center, size, cell)?;
+    let node = |i: usize, j: usize| Vec2 {
+        x: origin.x + i as f64 * dx,
+        y: origin.y + j as f64 * dy,
+    };
+    let closest = |p: Vec2, (a, b): (Vec2, Vec2)| {
+        let (ex, ey) = (b.x - a.x, b.y - a.y);
+        let len2 = ex * ex + ey * ey;
+        let t = if len2 > 0.0 {
+            (((p.x - a.x) * ex + (p.y - a.y) * ey) / len2).clamp(0.0, 1.0)
+        } else {
+            0.0
+        };
+        Vec2 {
+            x: a.x + ex * t,
+            y: a.y + ey * t,
+        }
+    };
+    // Each node's nearest outline point found so far, and its distance².
+    let mut near: Vec<Option<Vec2>> = vec![None; cols * rows];
+    let mut best = vec![f64::INFINITY; cols * rows];
+    let offer = |best: &mut [f64], near: &mut [Option<Vec2>], k: usize, p: Vec2, q: Vec2| {
+        let d = (p.x - q.x).powi(2) + (p.y - q.y).powi(2);
+        if d < best[k] {
+            best[k] = d;
+            near[k] = Some(q);
+        }
+    };
+    // Exact near every segment (two cells round its box) …
+    let reach = 2.0 * dx.max(dy);
+    let span = |lo: f64, hi: f64, o: f64, step: f64, n: usize| {
+        let a = ((lo - reach - o) / step).floor().max(0.0);
+        let b = ((hi + reach - o) / step).ceil().max(0.0);
+        (a.min(n as f64) as usize, (b + 1.0).min(n as f64) as usize)
+    };
+    for &s in &segs {
+        let (i0, i1) = span(s.0.x.min(s.1.x), s.0.x.max(s.1.x), origin.x, dx, cols);
+        let (j0, j1) = span(s.0.y.min(s.1.y), s.0.y.max(s.1.y), origin.y, dy, rows);
+        for j in j0..j1 {
+            for i in i0..i1 {
+                let p = node(i, j);
+                offer(&mut best, &mut near, j * cols + i, p, closest(p, s));
+            }
+        }
+    }
+    // … and on the border, so outlines off the rectangle still reach in.
+    let border = (0..cols)
+        .flat_map(|i| [(i, 0), (i, rows - 1)])
+        .chain((0..rows).flat_map(|j| [(0, j), (cols - 1, j)]));
+    for (i, j) in border {
+        let p = node(i, j);
+        for &s in &segs {
+            offer(&mut best, &mut near, j * cols + i, p, closest(p, s));
+        }
+    }
+    // Dead reckoning: a forward sweep, then a backward one.
+    for pass in 0..2 {
+        let nbrs: [(isize, isize); 4] = if pass == 0 {
+            [(-1, -1), (0, -1), (1, -1), (-1, 0)]
+        } else {
+            [(1, 0), (-1, 1), (0, 1), (1, 1)]
+        };
+        for step in 0..rows * cols {
+            let k = if pass == 0 {
+                step
+            } else {
+                rows * cols - 1 - step
+            };
+            let (i, j) = (k % cols, k / cols);
+            let p = node(i, j);
+            for (di, dj) in nbrs {
+                let (ni, nj) = (i as isize + di, j as isize + dj);
+                if ni < 0 || nj < 0 || ni as usize >= cols || nj as usize >= rows {
+                    continue;
+                }
+                if let Some(q) = near[nj as usize * cols + ni as usize] {
+                    offer(&mut best, &mut near, k, p, q);
+                }
+            }
+        }
+    }
+    // Inside: nonzero winding of the closed outlines, row by row.
+    let mut inside = vec![false; cols * rows];
+    let mut crossings: Vec<Vec<(f64, i32)>> = vec![Vec::new(); rows];
+    for c in contours.iter().filter(|c| c.closed && c.pts.len() >= 3) {
+        let n = c.pts.len();
+        for k in 0..n {
+            let (a, b) = (c.pts[k], c.pts[(k + 1) % n]);
+            if a.y == b.y || !(a.y.is_finite() && b.y.is_finite()) {
+                continue;
+            }
+            let (lo, hi, dir) = if a.y < b.y {
+                (a.y, b.y, 1)
+            } else {
+                (b.y, a.y, -1)
+            };
+            // Rows with lo <= y < hi.
+            let j0 = ((lo - origin.y) / dy).ceil().max(0.0) as usize;
+            let mut j = j0;
+            while j < rows {
+                let y = origin.y + j as f64 * dy;
+                if y >= hi {
+                    break;
+                }
+                if y >= lo {
+                    let x = a.x + (y - a.y) * (b.x - a.x) / (b.y - a.y);
+                    crossings[j].push((x, dir));
+                }
+                j += 1;
+            }
+        }
+    }
+    for (j, row) in crossings.iter_mut().enumerate() {
+        row.sort_by(|p, q| p.0.total_cmp(&q.0));
+        let mut wind = 0;
+        let mut i = 0;
+        for k in 0..row.len() {
+            wind += row[k].1;
+            let next = row.get(k + 1).map_or(f64::INFINITY, |c| c.0);
+            if wind == 0 {
+                continue;
+            }
+            // Nodes between this crossing and the next are inside.
+            while i < cols && origin.x + i as f64 * dx < row[k].0 {
+                i += 1;
+            }
+            while i < cols && origin.x + (i as f64) * dx < next {
+                inside[j * cols + i] = true;
+                i += 1;
+            }
+        }
+    }
+    let values = best
+        .iter()
+        .zip(&inside)
+        .map(|(d, inn)| {
+            let d = d.sqrt();
+            if *inn {
+                d
+            } else {
+                -d
+            }
+        })
+        .collect();
+    Some(Field {
+        cols,
+        rows,
+        values,
+        origin,
+        dx,
+        dy,
+    })
+}
+
 /// The closed contours of `f` at level `t` (marching squares, saddles
 /// split by the cell's mean, the field's outside counting as below `t`).
 /// Higher values lie on the right going round.
@@ -342,6 +543,18 @@ pub(super) fn isolines(f: &Field, t: f64) -> Vec<Vec<Vec2>> {
     out
 }
 
+/// `style` in a level's colour: its fill, or its stroke when it has no
+/// fill.
+fn level_style(style: &Arc<ResolvedStyle>, rgba: [f64; 4]) -> Arc<ResolvedStyle> {
+    let mut st = (**style).clone();
+    if st.fill.is_some() {
+        st.fill = Some(flat(rgba));
+    } else if st.stroke.is_some() {
+        st.stroke = Some(flat(rgba));
+    }
+    Arc::new(st)
+}
+
 pub(super) fn contours(init: &NodeInit) -> Box<dyn NodeImpl> {
     let pins = Pins::new(init);
     raw(move |inputs, cx| {
@@ -366,6 +579,12 @@ pub(super) fn contours(init: &NodeInit) -> Box<dyn NodeImpl> {
                 Some(img) => image_field(img, center, pins.vec2(inputs, "size", Vec2::default())),
                 None => None,
             },
+            "shape" => shape_field(
+                pins.spread(inputs, "shape"),
+                center,
+                pins.vec2(inputs, "size", SIZE),
+                pins.num(inputs, "cell", 2.0),
+            ),
             _ => {
                 let values: Vec<f64> = pins
                     .spread(inputs, "values")
@@ -377,21 +596,27 @@ pub(super) fn contours(init: &NodeInit) -> Box<dyn NodeImpl> {
             }
         };
         let fallback = match mode.as_str() {
-            "points" => (1.0, 0.5),
-            "image" => (0.5, 0.1),
-            _ => (0.0, 0.1),
+            "points" => (1.0, 0.5, 1.0),
+            "image" => (0.5, 0.1, 1.0),
+            "shape" => (0.0, 12.0, 6.0),
+            _ => (0.0, 0.1, 1.0),
         };
         let threshold = pins.num(inputs, "threshold", fallback.0);
         let step = pins.num(inputs, "step", fallback.1);
-        let levels = pins.num(inputs, "levels", 1.0).clamp(0.0, MAX_LEVELS) as usize;
+        let levels = pins
+            .num(inputs, "levels", fallback.2)
+            .clamp(0.0, MAX_LEVELS) as usize;
         let style = pin_style(&pins.value(inputs, "style"), true);
+        let colors = pins.colors(inputs, "colors");
+        // Shape distances run outwards: the field is inside-high.
+        let distance = mode == "shape";
         let mut polys = Vec::new();
         let mut level_of = Vec::new();
         let mut total = 0;
         if let Some(f) = &field {
             for k in 0..levels {
                 let t = threshold + step * k as f64;
-                let rings = isolines(f, t);
+                let rings = isolines(f, if distance { -t } else { t });
                 if rings.is_empty() {
                     continue;
                 }
@@ -401,12 +626,33 @@ pub(super) fn contours(init: &NodeInit) -> Box<dyn NodeImpl> {
                     break;
                 }
                 level_of.extend(rings.iter().map(|_| Value::Num(t)));
+                let at = if levels > 1 {
+                    k as f64 / (levels - 1) as f64
+                } else {
+                    0.0
+                };
                 polys.push(Poly {
                     rings,
                     closed: true,
-                    style: style.clone(),
+                    style: match ramp(&colors, at) {
+                        Some(c) => level_style(&style, c),
+                        None => style.clone(),
+                    },
                 });
             }
+        }
+        // Rings growing outwards: the outer ones go underneath.
+        if distance && step > 0.0 {
+            polys.reverse();
+            let counts: Vec<usize> = polys.iter().map(|p| p.rings.len()).collect();
+            let mut rest = &level_of[..];
+            let mut flipped = Vec::with_capacity(level_of.len());
+            for n in counts.iter().rev() {
+                let (head, tail) = rest.split_at(*n);
+                flipped.push(head);
+                rest = tail;
+            }
+            level_of = flipped.into_iter().rev().flatten().cloned().collect();
         }
         let mut out = poly_outputs(&polys);
         out.push(Spread::from(level_of));

@@ -9,6 +9,12 @@
 //! Every mode takes `relax`: that many passes of Lloyd relaxation (see
 //! [`super::relax`]), which evens the points out over the area — random
 //! points become an even, organic spread with an exact count.
+//!
+//! `stipple` draws `count` points whose density follows a `density` image
+//! stretched over the area (darker = denser; `invert` for lighter; `gamma`
+//! sharpens the contrast), then relaxes them by weighted Lloyd passes
+//! (Secord's weighted Voronoi stippling): even, organic dots that shade
+//! the picture.
 
 use super::{
     int_pin, layer_contours, live_mode, num_pin, param_str, rng, vec2_pin, Pins, MAX_POINTS,
@@ -17,7 +23,7 @@ use crate::js::Mulberry32;
 use crate::node::{raw, NodeImpl, NodeInit};
 use crate::spec::{Params, PortKind, PortSpec, PortType};
 use crate::text::outline::winding;
-use crate::value::{Value, Vec2};
+use crate::value::{Spread, Value, Vec2};
 use std::sync::Arc;
 
 const MODE: &str = "poisson";
@@ -25,6 +31,8 @@ const SIZE: Vec2 = Vec2 { x: 400.0, y: 400.0 };
 const DISTANCE: f64 = 24.0;
 const COUNT: f64 = 200.0;
 const SPACING: f64 = 24.0;
+const STIPPLE_COUNT: f64 = 1500.0;
+const STIPPLE_RELAX: f64 = 20.0;
 
 /// Pins: the area (`center`, `size`, or a `shape` layer), then the mode's.
 pub(super) fn inputs(params: &Params) -> Vec<PortSpec> {
@@ -42,6 +50,15 @@ pub(super) fn inputs(params: &Params) -> Vec<PortSpec> {
         "relax" => {
             v.push(PortSpec::new("points", PortType::Vec2).kind(PortKind::Spread));
             v.push(int_pin("relax", 10.0));
+            return v;
+        }
+        "stipple" => {
+            v.push(PortSpec::new("density", PortType::Image));
+            v.push(int_pin("count", STIPPLE_COUNT));
+            v.push(num_pin("gamma", 1.0));
+            v.push(PortSpec::new("invert", PortType::Boolean).default(Value::Bool(false)));
+            v.push(int_pin("relax", STIPPLE_RELAX));
+            v.push(int_pin("seed", 1.0));
             return v;
         }
         _ => v.push(num_pin("distance", DISTANCE)),
@@ -119,8 +136,42 @@ impl Area {
     }
 }
 
+/// What `stipple` mode's points depend on: the image (by identity), the
+/// shape layers (by identity, as the memo hands them on unchanged), the
+/// numbers and the (patch-mixed) seed.
+fn stipple_key(pins: &Pins, inputs: &[Spread], seed: f64) -> u64 {
+    use std::hash::{Hash, Hasher};
+    let mut h = std::collections::hash_map::DefaultHasher::new();
+    match crate::image::ready(&pins.value(inputs, "density")) {
+        Some(img) => img.id().hash(&mut h),
+        None => u64::MAX.hash(&mut h),
+    }
+    for v in pins.spread(inputs, "shape") {
+        if let Value::Scene(n) = v {
+            (Arc::as_ptr(n) as usize).hash(&mut h);
+        }
+    }
+    let c = pins.vec2(inputs, "center", Vec2::default());
+    let z = pins.vec2(inputs, "size", SIZE);
+    for n in [
+        c.x,
+        c.y,
+        z.x,
+        z.y,
+        pins.num(inputs, "count", STIPPLE_COUNT),
+        pins.num(inputs, "gamma", 1.0),
+        pins.num(inputs, "relax", STIPPLE_RELAX),
+        crate::seed::mix(seed),
+    ] {
+        n.to_bits().hash(&mut h);
+    }
+    pins.bool(inputs, "invert", false).hash(&mut h);
+    h.finish()
+}
+
 pub(super) fn scatter(init: &NodeInit) -> Box<dyn NodeImpl> {
     let pins = Pins::new(init);
+    let mut stippled: Option<(u64, Spread)> = None;
     raw(move |inputs, cx| {
         let mode = live_mode(cx, MODE);
         let shape = pins.spread(inputs, "shape");
@@ -155,6 +206,46 @@ pub(super) fn scatter(init: &NodeInit) -> Box<dyn NodeImpl> {
                 jittered_grid(&area, spacing, jitter, seed)
             }
             "relax" => (pins.points(inputs, "points"), false),
+            "stipple" => {
+                // An image pin keeps the node out of the memo: reuse the
+                // last points while nothing they depend on changed.
+                let key = stipple_key(&pins, inputs, seed);
+                if let Some((k, out)) = &stippled {
+                    if *k == key {
+                        return Ok(vec![out.clone()]);
+                    }
+                }
+                let n = pins.num(inputs, "count", STIPPLE_COUNT).max(0.0) as usize;
+                let density = crate::image::ready(&pins.value(inputs, "density")).map(|img| {
+                    Density::new(
+                        img,
+                        &area,
+                        pins.num(inputs, "gamma", 1.0),
+                        pins.bool(inputs, "invert", false),
+                    )
+                });
+                let n = n.min(MAX_POINTS);
+                let pts = match &density {
+                    Some(d) => d.sample(&area, n, seed),
+                    None => random(&area, n, seed),
+                };
+                let passes = pins
+                    .num(inputs, "relax", STIPPLE_RELAX)
+                    .clamp(0.0, super::relax::MAX_ITERATIONS) as usize;
+                let weight = density.as_ref().map(|d| move |p: Vec2| d.at(p));
+                let pts = super::relax::weighted_lloyd(
+                    &area,
+                    pts,
+                    passes,
+                    weight.as_ref().map(|w| w as &dyn Fn(Vec2) -> f64),
+                );
+                if pins.num(inputs, "count", STIPPLE_COUNT) > MAX_POINTS as f64 {
+                    cx.warn(format!("Stopped at {MAX_POINTS} points."));
+                }
+                let out: Spread = Arc::from(pts.into_iter().map(Value::Vec2).collect::<Vec<_>>());
+                stippled = Some((key, out.clone()));
+                return Ok(vec![out]);
+            }
             _ => poisson(&area, pins.num(inputs, "distance", DISTANCE), seed),
         };
         let fallback = if mode == "relax" { 10.0 } else { 0.0 };
@@ -169,6 +260,85 @@ pub(super) fn scatter(init: &NodeInit) -> Box<dyn NodeImpl> {
             pts.into_iter().map(Value::Vec2).collect::<Vec<_>>(),
         )])
     })
+}
+
+/// Where points gather in `stipple` mode: an image's darkness (or
+/// lightness, `invert`) × alpha, raised to `gamma`, stretched over the
+/// area's bounds. Kept per pixel, read nearest.
+pub(super) struct Density {
+    w: Vec<f32>,
+    cols: usize,
+    rows: usize,
+    min: Vec2,
+    /// Pixels per unit.
+    sx: f64,
+    sy: f64,
+    max: f32,
+}
+
+impl Density {
+    pub fn new(img: &crate::image::Image, area: &Area, gamma: f64, invert: bool) -> Density {
+        let (cols, rows) = (img.width() as usize, img.height() as usize);
+        let gamma = if gamma.is_finite() && gamma > 0.0 {
+            gamma
+        } else {
+            1.0
+        };
+        let w: Vec<f32> = img
+            .rgba()
+            .as_chunks::<4>()
+            .0
+            .iter()
+            .map(|p| {
+                let l = (0.2126 * f64::from(p[0])
+                    + 0.7152 * f64::from(p[1])
+                    + 0.0722 * f64::from(p[2]))
+                    / 255.0;
+                let ink = if invert { l } else { 1.0 - l };
+                (ink * f64::from(p[3]) / 255.0).clamp(0.0, 1.0).powf(gamma) as f32
+            })
+            .collect();
+        let max = w.iter().copied().fold(0.0_f32, f32::max);
+        Density {
+            w,
+            cols,
+            rows,
+            min: area.min,
+            sx: cols as f64 / area.w().max(1e-9),
+            sy: rows as f64 / area.h().max(1e-9),
+            max,
+        }
+    }
+
+    /// The weight at `p` (0 outside the image).
+    pub fn at(&self, p: Vec2) -> f64 {
+        let i = ((p.x - self.min.x) * self.sx).floor();
+        let j = ((p.y - self.min.y) * self.sy).floor();
+        if !(i >= 0.0 && j >= 0.0 && (i as usize) < self.cols && (j as usize) < self.rows) {
+            return 0.0;
+        }
+        f64::from(self.w[j as usize * self.cols + i as usize])
+    }
+
+    /// `count` points drawn with probability ∝ the weight (rejection
+    /// sampled; uniform when the image is blank).
+    pub fn sample(&self, area: &Area, count: usize, seed: f64) -> Vec<Vec2> {
+        if self.max <= 0.0 {
+            return random(area, count, seed);
+        }
+        let mut r = rng(seed);
+        let mut out = Vec::with_capacity(count);
+        let mut tries = 0usize;
+        let limit = count.saturating_mul(400).max(10_000);
+        while out.len() < count && tries < limit {
+            tries += 1;
+            let p = area.random_point(&mut r);
+            if area.contains(p) && r.next_f64() * f64::from(self.max) < self.at(p) {
+                out.push(p);
+            }
+        }
+        out
+    }
 }
 
 /// Uniform points (rejection sampled inside a shape).

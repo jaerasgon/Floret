@@ -1,5 +1,5 @@
 {
- "count": 351,
+ "count": 353,
  "nodes": [
   {
    "type": "collider/circle",
@@ -2614,7 +2614,7 @@
    "category": "Render",
    "group": "Effects",
    "label": "Shader",
-   "description": "Fragment shader (ShaderToy-style) with optional Buffer A–D passes. Wire a layer for post-FX, or leave it for generative. Edit in the side panel.",
+   "description": "Fragment shader (ShaderToy-style) with optional Buffer A–D passes. Wire a layer for post-FX, or leave it for generative. Edit in the side panel. `history` > 0 keeps that many of the input's past frames for the passes (`iHistoryFrame(ago, uv)`, or `iHistory` with `iHistoryHead / Count / Size`).",
    "inputs": [
     {
      "name": "input",
@@ -2634,7 +2634,8 @@
    "dynamicInputs": true,
    "defaultParams": {
     "source": "// iTime, iResolution, iMouse, iChannel0 are provided.\n// Declare a 'uniform float foo;' to grow a wired input port.\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord) {\n  vec2 uv = fragCoord / iResolution.xy;\n  vec3 col = 0.5 + 0.5 * cos(iTime + uv.xyx + vec3(0.0, 2.0, 4.0));\n  fragColor = vec4(col, 1.0);\n}",
-    "feedback": false
+    "feedback": false,
+    "history": 0
    },
    "paramOptions": null
   },
@@ -12875,7 +12876,7 @@
    "category": "Video",
    "group": "Source",
    "label": "VideoFile",
-   "description": "Play a video file (MP4 / MOV) as an image. Pick a file on the node; `scrub` (0..1) overrides playback while wired.",
+   "description": "Play a video file (MP4 / MOV) or an image sequence (numbered PNG / JPEG frames: pick one frame, or give a folder or a `name_####.png` pattern; played at `fps`) as an image. Pick a file on the node; `scrub` (0..1) overrides playback while wired.",
    "inputs": [
     {
      "name": "url",
@@ -12907,6 +12908,12 @@
      "type": "number",
      "kind": "single",
      "default": null
+    },
+    {
+     "name": "fps",
+     "type": "number",
+     "kind": "single",
+     "default": 30
     }
    ],
    "outputs": [
@@ -12954,7 +12961,7 @@
    "category": "Video",
    "group": "Source",
    "label": "VideoFrameAt",
-   "description": "One frame of a video file at `time` seconds: random access without playback.",
+   "description": "One frame of a video file or image sequence (at `fps`) at `time` seconds: random access without playback.",
    "inputs": [
     {
      "name": "url",
@@ -12968,6 +12975,12 @@
      "type": "number",
      "kind": "single",
      "default": 0
+    },
+    {
+     "name": "fps",
+     "type": "number",
+     "kind": "single",
+     "default": 30
     }
    ],
    "outputs": [
@@ -13010,7 +13023,7 @@
    "category": "Geometry",
    "group": "Patterns",
    "label": "Scatter",
-   "description": "Scatter points over a rectangle (`center`, `size`) or inside a wired `shape`. Modes: `poisson` (no two points closer than `distance`), `random` (`count` uniform points), `jittered-grid` (one point per `spacing` cell, moved up to `jitter` of a cell), `halton` (`count` evenly spread low-discrepancy points). The same `seed` gives the same points. Every mode takes `relax`: that many passes of Lloyd relaxation, spreading the points evenly over the area (random points become an even, organic spread with an exact count); mode `relax` spreads out wired `points` instead.",
+   "description": "Scatter points over a rectangle (`center`, `size`) or inside a wired `shape`. Modes: `poisson` (no two points closer than `distance`), `random` (`count` uniform points), `jittered-grid` (one point per `spacing` cell, moved up to `jitter` of a cell), `halton` (`count` evenly spread low-discrepancy points). The same `seed` gives the same points. Every mode takes `relax`: that many passes of Lloyd relaxation, spreading the points evenly over the area (random points become an even, organic spread with an exact count); mode `relax` spreads out wired `points` instead. Mode `stipple` draws `count` points that gather where a `density` image (stretched over the area) is dark (`invert`: light; `gamma` sharpens the contrast), relaxed by weighted Lloyd passes into even, organic dots that shade the picture.",
    "inputs": [
     {
      "name": "center",
@@ -13074,7 +13087,8 @@
      "random",
      "jittered-grid",
      "halton",
-     "relax"
+     "relax",
+     "stipple"
     ]
    }
   },
@@ -13576,7 +13590,7 @@
    "category": "Geometry",
    "group": "Patterns",
    "label": "Connect Points",
-   "description": "Lines between nearby points (the plexus look). Modes: `distance` joins every pair closer than `distance` (each point keeps at most `maxLinks`, shortest first; 0 = no limit); `nearest` joins each point to its `neighbours` nearest (within `distance` when > 0). A line's `strength` falls from 1 (touching) to 0 (at the reach); `fade` takes that much off its alpha and `taper` off its width. Fast for thousands of points. Outputs the lines as one layer, and each line's ends and strength.",
+   "description": "Lines between nearby points (the plexus look). Modes: `distance` joins every pair closer than `distance` (each point keeps at most `maxLinks`, shortest first; 0 = no limit); `nearest` joins each point to its `neighbours` nearest (within `distance` when > 0). A line's `strength` falls from 1 (touching) to 0 (at the reach); `fade` takes that much off its alpha and `taper` off its width. Wire `colors` to colour the lines: `colorBy` `points` gives point i colour i (cycled), each line a gradient between its ends; `length` runs the colours from the shortest lines to those at the reach. Fast for thousands of points. Outputs the lines as one layer, and each line's ends and strength.",
    "inputs": [
     {
      "name": "points",
@@ -13609,6 +13623,18 @@
      "default": 0
     },
     {
+     "name": "colors",
+     "type": "color",
+     "kind": "spread"
+    },
+    {
+     "name": "colorBy",
+     "type": "string",
+     "kind": "single",
+     "default": "points",
+     "param": "colorBy"
+    },
+    {
      "name": "style",
      "type": "style",
      "kind": "single"
@@ -13639,12 +13665,17 @@
    "eval": "raw",
    "dynamicInputs": true,
    "defaultParams": {
-    "mode": "distance"
+    "mode": "distance",
+    "colorBy": "points"
    },
    "paramOptions": {
     "mode": [
      "distance",
      "nearest"
+    ],
+    "colorBy": [
+     "points",
+     "length"
     ]
    }
   },
@@ -13653,7 +13684,7 @@
    "category": "Geometry",
    "group": "Patterns",
    "label": "Contours",
-   "description": "Isolines of a field as closed outlines (marching squares): topographic lines, metaballs, image outlines. Modes: `field` (a spread of `values`, `cols` a row, over `center` / `size` — e.g. noise on Grid positions), `points` (metaballs: Σ radius² / distance² of the `points`, sampled every `cell` units), `image` (brightness × alpha, 0..1, centred on `center` at `size`, 0 = pixel size). Draws `levels` contours at `threshold`, `threshold + step`, …; each level fills as one polygon with its holes (outside the field counts as low, so every contour closes). `levels` out: each contour's level.",
+   "description": "Isolines of a field as closed outlines (marching squares): topographic lines, metaballs, image outlines. Modes: `field` (a spread of `values`, `cols` a row, over `center` / `size` — e.g. noise on Grid positions), `points` (metaballs: Σ radius² / distance² of the `points`, sampled every `cell` units), `image` (brightness × alpha, 0..1, centred on `center` at `size`, 0 = pixel size), `shape` (distance from the outlines of a wired `shape`, sampled every `cell`: levels are distances, 0 = the outline, outward positive — rings round text or shapes, outer ones underneath). Draws `levels` contours at `threshold`, `threshold + step`, …; each level fills as one polygon with its holes (outside the field counts as low, so every contour closes). `levels` out: each contour's level. Wire `colors` to colour the levels (fill, else stroke): a palette from the first level to the last.",
    "inputs": [
     {
      "name": "values",
@@ -13705,6 +13736,11 @@
      "default": 0.1
     },
     {
+     "name": "colors",
+     "type": "color",
+     "kind": "spread"
+    },
+    {
      "name": "style",
      "type": "style",
      "kind": "single"
@@ -13746,7 +13782,8 @@
     "mode": [
      "field",
      "points",
-     "image"
+     "image",
+     "shape"
     ]
    }
   },
@@ -14027,7 +14064,7 @@
    "category": "Render",
    "group": "Effects",
    "label": "Effect",
-   "description": "A post-effect on a layer, on the GPU. Pick the `mode`; the pins follow it. Sizes are in pixels, angles in radians. Light and texture: bloom (bright parts glow), film grain (animates by itself), displacement (by noise, or by a `map` layer: red pushes right, green down), ordered dither, colour halftone dots, chromatic aberration, vignette. Blur: `kind` gaussian, lens (bokeh discs; `highlights` opens bright points), motion (along `angle`), zoom (streaks towards `center`) or spin (round it). Shape: drop shadow and glow of the layer's coverage (`inner` puts them inside), barrel / pincushion distortion, Sobel edges. Colour: posterize, threshold (by brightness into `low` / `high`, or `channel` alpha cuts the coverage — blur first for gooey metaballs), levels, curves (each colour pin is a point of the curve at black, ¼, ½, ¾ and white, per channel), lut (a `.cube` file: wire a File node's `url` or type a path), chroma key (with spill suppression).",
+   "description": "A post-effect on a layer, on the GPU. Pick the `mode`; the pins follow it. Sizes are in pixels, angles in radians. Light and texture: bloom (bright parts glow), film grain (animates by itself), displacement (by noise, or by a `map` layer: red pushes right, green down), ordered dither, colour halftone dots, chromatic aberration, vignette. Blur: `kind` gaussian, lens (bokeh discs; `highlights` opens bright points), motion (along `angle`), zoom (streaks towards `center`) or spin (round it). Shape: drop shadow and glow of the layer's coverage (`inner` puts them inside; glow `blend` add makes it light that adds, over the layer too), barrel / pincushion distortion, Sobel edges. Colour: posterize, threshold (by brightness into `low` / `high`, or `channel` alpha cuts the coverage — blur first for gooey metaballs), levels, curves (each colour pin is a point of the curve at black, ¼, ½, ¾ and white, per channel), lut (a `.cube` file: wire a File node's `url` or type a path), chroma key (with spill suppression).",
    "inputs": [
     {
      "name": "input",
@@ -14096,6 +14133,10 @@
     "channel": [
      "luma",
      "alpha"
+    ],
+    "blend": [
+     "normal",
+     "add"
     ]
    }
   },
@@ -14497,6 +14538,169 @@
      "time"
     ]
    }
+  },
+  {
+   "type": "geometry/layout",
+   "category": "Geometry",
+   "group": "Patterns",
+   "label": "Layout",
+   "description": "Arrange `count` items as a `grid` (`cols`, 0 = square-ish; `spacing`), a `ring` (`radius`, `start` angle, `sweep`: a full turn or an arc with items on both ends), a phyllotaxis `spiral` (`spacing`) or evenly along a `path` (a layer's outlines end to end, or `points`, `closed`). Outputs each item's position, angle (outwards on a ring or spiral, along a path) and scale. When `count`, the mode or `cols` changes, or the node is edited, the items ease to their new places over `duration` seconds (`easing`; `stagger` 0..1 starts later items later): new items grow in, removed ones shrink away where they are (the spreads are longer than `count` until the move ends). Animated inputs are followed exactly; `reset` jumps. `progress`: 0..1 through a move, 1 when settled.",
+   "inputs": [
+    {
+     "name": "count",
+     "type": "number",
+     "kind": "single",
+     "default": 16,
+     "integer": true
+    },
+    {
+     "name": "center",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "cols",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "integer": true
+    },
+    {
+     "name": "spacing",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 40,
+      "y": 40
+     }
+    },
+    {
+     "name": "duration",
+     "type": "number",
+     "kind": "single",
+     "default": 0.8
+    },
+    {
+     "name": "stagger",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "easing",
+     "type": "string",
+     "kind": "single",
+     "default": "inOutCubic",
+     "param": "easing"
+    },
+    {
+     "name": "reset",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    }
+   ],
+   "outputs": [
+    {
+     "name": "positions",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "angles",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "scales",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "progress",
+     "type": "number",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "grid",
+    "easing": "inOutCubic"
+   },
+   "paramOptions": {
+    "mode": [
+     "grid",
+     "ring",
+     "spiral",
+     "path"
+    ],
+    "easing": [
+     "linear",
+     "inQuad",
+     "outQuad",
+     "inOutQuad",
+     "inCubic",
+     "outCubic",
+     "inOutCubic",
+     "inElastic",
+     "outElastic",
+     "inOutElastic"
+    ]
+   },
+   "effectful": true
+  },
+  {
+   "type": "image/track-points",
+   "category": "Image",
+   "group": "Input & Sound",
+   "label": "Point Tracker",
+   "description": "Follow points across the frames of a moving image (camera, video, a rendered layer) by pyramidal Lucas–Kanade optical flow. Tracks start at the wired `points` (canvas units: (0, 0) is the image's centre, y down) and start there again while `reset` is on, when the number of points changes or when they're edited; a point can move up to about `window` pixels a frame. `confidence` (0..1) is how well each window matched (it drops when the way back doesn't return, or there's nothing to lock onto); a lost point stays put at 0. Repeated frames are skipped; the tracks survive patch edits.",
+   "inputs": [
+    {
+     "name": "image",
+     "type": "image",
+     "kind": "single"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "reset",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    },
+    {
+     "name": "window",
+     "type": "number",
+     "kind": "single",
+     "default": 40
+    }
+   ],
+   "outputs": [
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "confidence",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": null,
+   "paramOptions": null,
+   "effectful": true
   }
  ]
 }

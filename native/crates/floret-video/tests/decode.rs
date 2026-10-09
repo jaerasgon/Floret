@@ -143,6 +143,7 @@ fn req(src: &str) -> VideoRequest<'_> {
         dt: 0.0,
         restart: false,
         wait: true,
+        fps: 30.0,
     }
 }
 

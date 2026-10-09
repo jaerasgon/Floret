@@ -22,6 +22,7 @@ mod pixel;
 pub mod raster;
 #[cfg(test)]
 mod tests;
+pub mod track;
 
 use super::shared::first;
 use super::Registrar;
@@ -45,6 +46,7 @@ pub fn register(r: &mut Registrar) {
     r.node("image/sample", sample);
     r.node("image/sample-spread", sample_spread);
     r.node("image/slicer", slicer);
+    r.node("image/track-points", track::track_points);
     r.node("pixel/get-pixels", pixel::get_pixels);
     r.node("pixel/set-pixels", pixel::set_pixels);
     r.node("pixel/get-row", pixel::get_row);

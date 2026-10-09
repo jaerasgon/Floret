@@ -26,6 +26,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   fragColor = texture(iChannel0, uv);
 }";
 
+/// How to read past frames (the node's `history` param).
+const HISTORY_HELP: &str = "past frames: set `history` on the node to N, then \
+iHistoryFrame(ago, uv) reads the input as it was `ago` frames back (0 = now, up to N − 1); \
+or sample iHistory (a sampler2DArray) with iHistoryHead / iHistoryCount / iHistorySize";
+
 /// Renderer-side errors: (node id, pass, errors).
 pub type RuntimeErrors = [(Arc<str>, ShaderBuffer, Vec<ShaderError>)];
 
@@ -336,6 +341,7 @@ impl ShaderPanel {
                 .color(theme::FG_2)
                 .small(),
         );
+        ui.label(RichText::new(HISTORY_HELP).color(theme::FG_2).small());
         edited
     }
 

@@ -3,6 +3,10 @@
 //!
 //! Both read the app's video provider (`crate::video`), which owns the
 //! playhead and the decoder; the node only gathers the request.
+//!
+//! The source can also be an image sequence (numbered PNG / JPEG frames:
+//! a folder, one frame of the run, a `name_####.png` pattern, or a list
+//! of frames one per line), played at the `fps` pin's rate.
 
 use super::shared::first;
 use super::Registrar;
@@ -64,8 +68,16 @@ fn outputs(f: VideoFrame, extra: &[f64]) -> NodeResult {
     Ok(out)
 }
 
-/// Inputs: url, play, loop, speed, scrub. Outputs: image, time, duration,
-/// width, height, ready.
+/// An image sequence's frame rate (the `fps` pin; 30 unwired).
+fn fps(v: &Value) -> f64 {
+    wired_num(v).filter(|n| *n > 0.0).unwrap_or(DEFAULT_FPS)
+}
+
+/// Frames a second for image sequences unless the `fps` pin says.
+pub const DEFAULT_FPS: f64 = 30.0;
+
+/// Inputs: url, play, loop, speed, scrub, fps. Outputs: image, time,
+/// duration, width, height, ready.
 fn file(_: &NodeInit) -> Box<dyn NodeImpl> {
     raw(|inputs, cx| {
         let url = first(inputs, 0);
@@ -80,6 +92,7 @@ fn file(_: &NodeInit) -> Box<dyn NodeImpl> {
             dt: cx.tick_frame.dt,
             restart: cx.tick_frame.frame_count == 0.0,
             wait: video::waiting(),
+            fps: fps(&first(inputs, 5)),
         };
         let f = request(cx, req)?;
         let (time, duration) = (f.time, f.duration);
@@ -87,8 +100,8 @@ fn file(_: &NodeInit) -> Box<dyn NodeImpl> {
     })
 }
 
-/// Inputs: url, time (seconds). Outputs: image, duration, width, height,
-/// ready.
+/// Inputs: url, time (seconds), fps. Outputs: image, duration, width,
+/// height, ready.
 fn frame_at(_: &NodeInit) -> Box<dyn NodeImpl> {
     raw(|inputs: &[Spread], cx| {
         let url = first(inputs, 0);
@@ -103,6 +116,7 @@ fn frame_at(_: &NodeInit) -> Box<dyn NodeImpl> {
             dt: cx.tick_frame.dt,
             restart: false,
             wait: video::waiting(),
+            fps: fps(&first(inputs, 2)),
         };
         let f = request(cx, req)?;
         let duration = f.duration;

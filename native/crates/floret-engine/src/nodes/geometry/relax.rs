@@ -8,6 +8,11 @@
 //! through a uniform grid of the points; the samples shift a little every
 //! pass, so points never lock onto them. Points nothing is nearest to
 //! stay where they are.
+//!
+//! [`weighted_lloyd`] weighs every sample (Secord's weighted Voronoi
+//! stippling for `geometry/scatter`'s `stipple` mode): each point moves
+//! to the weighted centre of its part of the area, so points gather where
+//! the weight (an image's darkness) is high.
 
 use super::connect::Grid;
 use super::scatter::Area;
@@ -47,7 +52,19 @@ fn samples(area: &Area, n: usize, shift: (f64, f64)) -> Vec<Vec2> {
 }
 
 /// `pts` relaxed `iterations` times over `area`.
-pub(super) fn lloyd(area: &Area, mut pts: Vec<Vec2>, iterations: usize) -> Vec<Vec2> {
+pub(super) fn lloyd(area: &Area, pts: Vec<Vec2>, iterations: usize) -> Vec<Vec2> {
+    weighted_lloyd(area, pts, iterations, None)
+}
+
+/// `pts` relaxed `iterations` times over `area`, each sample of the area
+/// counting `weight(p)` (≥ 0) towards the centroids when given: points
+/// gather where the weight is high (Secord's weighted Voronoi stippling).
+pub(super) fn weighted_lloyd(
+    area: &Area,
+    mut pts: Vec<Vec2>,
+    iterations: usize,
+    weight: Option<&dyn Fn(Vec2) -> f64>,
+) -> Vec<Vec2> {
     pts.retain(|p| p.x.is_finite() && p.y.is_finite());
     let (w, h) = (area.w(), area.h());
     if pts.len() < 2 || iterations == 0 || !(w > 0.0 && h > 0.0 && (w * h).is_finite()) {
@@ -71,9 +88,9 @@ pub(super) fn lloyd(area: &Area, mut pts: Vec<Vec2>, iterations: usize) -> Vec<V
         x: (area.min.x + area.max.x) / 2.0,
         y: (area.min.y + area.max.y) / 2.0,
     };
-    let mut sum = vec![(0.0, 0.0, 0usize); pts.len()];
+    let mut sum = vec![(0.0, 0.0, 0.0); pts.len()];
     for pass in 0..iterations {
-        let centroids: Vec<Option<Vec2>> = if area.is_rect() {
+        let centroids: Vec<Option<Vec2>> = if area.is_rect() && weight.is_none() {
             super::cells::voronoi_cells(&pts, centre, Vec2 { x: w, y: h })
                 .into_iter()
                 .map(|c| c.map(|ring| super::centroid(&ring)))
@@ -87,20 +104,24 @@ pub(super) fn lloyd(area: &Area, mut pts: Vec<Vec2>, iterations: usize) -> Vec<V
             );
             let field = samples(area, pts.len(), shift);
             let grid = Grid::new(&pts, cell);
-            sum.iter_mut().for_each(|s| *s = (0.0, 0.0, 0));
+            sum.iter_mut().for_each(|s| *s = (0.0, 0.0, 0.0));
             for q in &field {
+                let w = weight.map_or(1.0, |f| f(*q));
+                if !(w > 0.0 && w.is_finite()) {
+                    continue;
+                }
                 if let Some(i) = grid.nearest(&pts, *q) {
                     let s = &mut sum[i];
-                    s.0 += q.x;
-                    s.1 += q.y;
-                    s.2 += 1;
+                    s.0 += q.x * w;
+                    s.1 += q.y * w;
+                    s.2 += w;
                 }
             }
             sum.iter()
                 .map(|s| {
-                    (s.2 > 0).then(|| Vec2 {
-                        x: s.0 / s.2 as f64,
-                        y: s.1 / s.2 as f64,
+                    (s.2 > 0.0).then(|| Vec2 {
+                        x: s.0 / s.2,
+                        y: s.1 / s.2,
                     })
                 })
                 .collect()

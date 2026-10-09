@@ -661,9 +661,17 @@ input/camera out ready
 input/camera out width
 input/camera param device
 input/camera param mirror
+input/keyboard in clear
+input/keyboard in keys
+input/keyboard in max
 input/keyboard node
+input/keyboard out down
+input/keyboard out hit
+input/keyboard out index
 input/keyboard out key
 input/keyboard out pressed
+input/keyboard out text
+input/keyboard param mode
 input/landmarks in guides
 input/landmarks in image
 input/landmarks in size
@@ -1468,6 +1476,12 @@ sound/gain out audio
 sound/midi-to-freq in midi
 sound/midi-to-freq node
 sound/midi-to-freq out freq
+sound/mix in in1
+sound/mix in in2
+sound/mix in level
+sound/mix node
+sound/mix out audio
+sound/mix param slotCount
 sound/mono-synth in attack
 sound/mono-synth in decay
 sound/mono-synth in note
@@ -1507,6 +1521,20 @@ sound/reverb in wet
 sound/reverb node
 sound/reverb out audio
 sound/reverb param reverse
+sound/scale in amount
+sound/scale in degree
+sound/scale in note
+sound/scale in octave
+sound/scale in octaves
+sound/scale in root
+sound/scale in scale
+sound/scale in steps
+sound/scale node
+sound/scale out freq
+sound/scale out index
+sound/scale out note
+sound/scale param mode
+sound/scale param scale
 sound/sound-file in amp
 sound/sound-file in loop
 sound/sound-file in pan

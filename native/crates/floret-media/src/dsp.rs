@@ -34,6 +34,19 @@ impl Bus {
         &self.ch[c.min(self.channels - 1)]
     }
 
+    /// Add `other` in (a mono bus turns stereo when `other` is).
+    pub fn add(&mut self, other: &Bus) {
+        if other.channels == 2 && self.channels == 1 {
+            self.ch[1] = self.ch[0];
+            self.channels = 2;
+        }
+        for c in 0..self.channels {
+            for (y, x) in self.ch[c].iter_mut().zip(other.chan(c)) {
+                *y += x;
+            }
+        }
+    }
+
     /// Down-mix to mono (`(L + R) / 2`).
     pub fn mono(&self, i: usize) -> f32 {
         if self.channels == 2 {

@@ -1,0 +1,1035 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.2.0",
+  "meta": {
+    "name": "Reaction Painter",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "rp_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -524,
+        "y": 0
+      },
+      "params": {
+        "text": "Reaction Painter\n\nPaint chemistry: drag on the preview to drop chemical B, and watch it react and spread into coral, cells or fingerprints. Keys 1–7 switch the reaction (coral, mitosis, fingerprints, worms, maze, spots, waves) while it runs, P cycles the colours, R (or Reset) wipes the dish back to the three seed rings. Speed sets how many reaction steps run a frame.\n\nHow it works: Simulation in reaction mode (Gray–Scott). Its `paint` points are a little brush of seven points round the mouse, kept only while the button is down (Sublist keep-where). The `preset` pin is wired from Lookup over the preset names, picked by the last number key; the colour ramp is one of four palettes picked with Lookup group-at.",
+        "width": 460,
+        "height": 250
+      }
+    },
+    {
+      "id": "rp_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 37,
+        "y": 400
+      },
+      "params": {}
+    },
+    {
+      "id": "rp_mpos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 376,
+        "y": 612
+      },
+      "params": {}
+    },
+    {
+      "id": "rp_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 42,
+        "y": 0
+      },
+      "params": {}
+    },
+    {
+      "id": "rp_kb",
+      "defType": "input/keyboard",
+      "position": {
+        "x": 0,
+        "y": 1744
+      },
+      "params": {
+        "mode": "keys"
+      },
+      "portValues": {
+        "keys": "1234567pr"
+      }
+    },
+    {
+      "id": "rp_preset",
+      "defType": "state/value",
+      "position": {
+        "x": 41,
+        "y": 1618
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "rp_presetNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 334,
+        "y": 1348
+      },
+      "params": {
+        "expr": "hit && k >= 0 && k < 7 ? k : n"
+      }
+    },
+    {
+      "id": "rp_presetNames",
+      "defType": "string/split",
+      "position": {
+        "x": 345,
+        "y": 1052
+      },
+      "params": {
+        "text": "coral,mitosis,fingerprints,worms,maze,spots,waves",
+        "by": ","
+      }
+    },
+    {
+      "id": "rp_presetName",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 812,
+        "y": 1200
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "rp_paletteNo",
+      "defType": "state/value",
+      "position": {
+        "x": 41,
+        "y": 1958
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "rp_paletteNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 334,
+        "y": 1638
+      },
+      "params": {
+        "expr": "hit && k == 7 ? (n + 1) % 4 : n"
+      }
+    },
+    {
+      "id": "rp_resetBang",
+      "defType": "io/bang",
+      "position": {
+        "x": 0,
+        "y": 2084
+      },
+      "params": {
+        "label": "Reset"
+      }
+    },
+    {
+      "id": "rp_reset",
+      "defType": "math/expression",
+      "position": {
+        "x": 334,
+        "y": 1824
+      },
+      "params": {
+        "expr": "b || (hit && k == 8)"
+      }
+    },
+    {
+      "id": "rp_palettes",
+      "defType": "spread/merge",
+      "position": {
+        "x": 334,
+        "y": 1178
+      },
+      "params": {
+        "slotCount": 4
+      }
+    },
+    {
+      "id": "rp_pal0",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 674
+      },
+      "params": {
+        "stopCount": 5,
+        "c0": "#10002b",
+        "c1": "#3c096c",
+        "c2": "#9d4edd",
+        "c3": "#ff9e00",
+        "c4": "#fff3d6"
+      }
+    },
+    {
+      "id": "rp_pal1",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 910
+      },
+      "params": {
+        "stopCount": 5,
+        "c0": "#03071e",
+        "c1": "#370617",
+        "c2": "#9d0208",
+        "c3": "#f48c06",
+        "c4": "#ffba08"
+      }
+    },
+    {
+      "id": "rp_pal2",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 1146
+      },
+      "params": {
+        "stopCount": 5,
+        "c0": "#001219",
+        "c1": "#005f73",
+        "c2": "#0a9396",
+        "c3": "#94d2bd",
+        "c4": "#e9d8a6"
+      }
+    },
+    {
+      "id": "rp_pal3",
+      "defType": "color/palette",
+      "position": {
+        "x": 0,
+        "y": 1382
+      },
+      "params": {
+        "stopCount": 5,
+        "c0": "#0b090a",
+        "c1": "#161a1d",
+        "c2": "#b1a7a6",
+        "c3": "#d3d3d3",
+        "c4": "#f5f3f4"
+      }
+    },
+    {
+      "id": "rp_paletteSizes",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 335,
+        "y": 1534
+      },
+      "params": {
+        "data": "5,5,5,5"
+      }
+    },
+    {
+      "id": "rp_palette",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 812,
+        "y": 1348
+      },
+      "params": {
+        "op": "group-at"
+      }
+    },
+    {
+      "id": "rp_brushSize",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 548
+      },
+      "params": {
+        "value": 9,
+        "min": 3,
+        "max": 30,
+        "label": "Brush"
+      }
+    },
+    {
+      "id": "rp_tips",
+      "defType": "spread/range",
+      "position": {
+        "x": 15,
+        "y": 296
+      },
+      "params": {},
+      "portValues": {
+        "count": 7
+      }
+    },
+    {
+      "id": "rp_brush",
+      "defType": "math/expression",
+      "position": {
+        "x": 809,
+        "y": 597
+      },
+      "params": {
+        "expr": "m + (i == 0 ? vec2(0, 0) : vec2(cos(i + t * 3), sin(i + t * 3)) * r)"
+      }
+    },
+    {
+      "id": "rp_down",
+      "defType": "math/expression",
+      "position": {
+        "x": 334,
+        "y": 448
+      },
+      "params": {
+        "expr": "i * 0 + p"
+      }
+    },
+    {
+      "id": "rp_paint",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 1209,
+        "y": 763
+      },
+      "params": {
+        "op": "keep-where"
+      }
+    },
+    {
+      "id": "rp_ringStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 17,
+        "y": 126
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "width": 7
+      }
+    },
+    {
+      "id": "rp_ringNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 374,
+        "y": 342
+      },
+      "params": {}
+    },
+    {
+      "id": "rp_ringSizes",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 335,
+        "y": 238
+      },
+      "params": {
+        "data": "90,250,410"
+      }
+    },
+    {
+      "id": "rp_ringLoop",
+      "defType": "region/foreach",
+      "position": {
+        "x": 718,
+        "y": 325
+      },
+      "params": {
+        "width": 350,
+        "height": 224,
+        "label": "Seed rings"
+      },
+      "ports": [
+        {
+          "id": "d",
+          "name": "d",
+          "type": "number",
+          "direction": "input",
+          "y": 110
+        },
+        {
+          "id": "ring",
+          "name": "ring",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 350,
+      "height": 224
+    },
+    {
+      "id": "rp_seedRing",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 129,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "rp_ringLoop"
+    },
+    {
+      "id": "rp_seed",
+      "defType": "image/from-layer",
+      "position": {
+        "x": 1235,
+        "y": 615
+      },
+      "params": {},
+      "portValues": {
+        "w": 600,
+        "h": 600
+      }
+    },
+    {
+      "id": "rp_speed",
+      "defType": "io/slider",
+      "position": {
+        "x": 1206,
+        "y": 489
+      },
+      "params": {
+        "value": 10,
+        "min": 1,
+        "max": 30,
+        "step": 1,
+        "label": "Speed"
+      }
+    },
+    {
+      "id": "rp_sim",
+      "defType": "particles/simulation",
+      "position": {
+        "x": 1533,
+        "y": 781
+      },
+      "params": {
+        "mode": "reaction",
+        "preset": "coral"
+      },
+      "portValues": {
+        "size": {
+          "x": 600,
+          "y": 600
+        },
+        "resolution": 200,
+        "seed": 1
+      }
+    },
+    {
+      "id": "rp_cursorSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 334,
+        "y": 840
+      },
+      "params": {
+        "expr": "r * 2 + 12"
+      }
+    },
+    {
+      "id": "rp_cursorStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 11,
+        "y": 2188
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.6
+        },
+        "width": 1.5
+      }
+    },
+    {
+      "id": "rp_cursorNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 374,
+        "y": 2010
+      },
+      "params": {}
+    },
+    {
+      "id": "rp_cursor",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 844,
+        "y": 1008
+      },
+      "params": {}
+    },
+    {
+      "id": "rp_help",
+      "defType": "value/string",
+      "position": {
+        "x": 814,
+        "y": 904
+      },
+      "params": {
+        "value": "drag to paint · 1–7 reaction · P colours · R reset"
+      }
+    },
+    {
+      "id": "rp_statusParts",
+      "defType": "spread/merge",
+      "position": {
+        "x": 1206,
+        "y": 1028
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "rp_status",
+      "defType": "string/concat",
+      "position": {
+        "x": 1556,
+        "y": 1127
+      },
+      "params": {
+        "separator": "   ·   "
+      }
+    },
+    {
+      "id": "rp_statusBack",
+      "defType": "style/fill",
+      "position": {
+        "x": 1542,
+        "y": 655
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.5
+        }
+      }
+    },
+    {
+      "id": "rp_statusBar",
+      "defType": "draw/rect",
+      "position": {
+        "x": 1821,
+        "y": 761
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 285.0
+        },
+        "w": 600,
+        "h": 30
+      }
+    },
+    {
+      "id": "rp_statusFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1542,
+        "y": 1253
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.8
+        }
+      }
+    },
+    {
+      "id": "rp_statusText",
+      "defType": "draw/text",
+      "position": {
+        "x": 1837,
+        "y": 1062
+      },
+      "params": {
+        "size": 13,
+        "align": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 289.0
+        }
+      }
+    },
+    {
+      "id": "rp_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 2077,
+        "y": 973
+      },
+      "params": {
+        "slotCount": 4
+      }
+    },
+    {
+      "id": "rp_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2341,
+        "y": 973
+      },
+      "params": {
+        "width": 600,
+        "height": 600
+      },
+      "portValues": {
+        "background": {
+          "r": 0.0392156862745098,
+          "g": 0.023529411764705882,
+          "b": 0.07058823529411765,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "rp_mouse",
+      "target": "rp_mpos",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_2",
+      "source": "rp_mouse",
+      "target": "rp_mpos",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_3",
+      "source": "rp_kb",
+      "target": "rp_presetNext",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_4",
+      "source": "rp_kb",
+      "target": "rp_presetNext",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_5",
+      "source": "rp_preset",
+      "target": "rp_presetNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_6",
+      "source": "rp_presetNext",
+      "target": "rp_preset",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_7",
+      "source": "rp_presetNames",
+      "target": "rp_presetName",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_8",
+      "source": "rp_presetNext",
+      "target": "rp_presetName",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_9",
+      "source": "rp_kb",
+      "target": "rp_paletteNext",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_10",
+      "source": "rp_kb",
+      "target": "rp_paletteNext",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_11",
+      "source": "rp_paletteNo",
+      "target": "rp_paletteNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_12",
+      "source": "rp_paletteNext",
+      "target": "rp_paletteNo",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_13",
+      "source": "rp_resetBang",
+      "target": "rp_reset",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_14",
+      "source": "rp_kb",
+      "target": "rp_reset",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_15",
+      "source": "rp_kb",
+      "target": "rp_reset",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_16",
+      "source": "rp_pal0",
+      "target": "rp_palettes",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_17",
+      "source": "rp_pal1",
+      "target": "rp_palettes",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_18",
+      "source": "rp_pal2",
+      "target": "rp_palettes",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_19",
+      "source": "rp_pal3",
+      "target": "rp_palettes",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_20",
+      "source": "rp_palettes",
+      "target": "rp_palette",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-flat"
+    },
+    {
+      "id": "e_21",
+      "source": "rp_paletteSizes",
+      "target": "rp_palette",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-groupSize"
+    },
+    {
+      "id": "e_22",
+      "source": "rp_paletteNext",
+      "target": "rp_palette",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_23",
+      "source": "rp_tips",
+      "target": "rp_brush",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_24",
+      "source": "rp_mpos",
+      "target": "rp_brush",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_25",
+      "source": "rp_brushSize",
+      "target": "rp_brush",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_26",
+      "source": "rp_tips",
+      "target": "rp_down",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_27",
+      "source": "rp_mouse",
+      "target": "rp_down",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_28",
+      "source": "rp_brush",
+      "target": "rp_paint",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_29",
+      "source": "rp_down",
+      "target": "rp_paint",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_30",
+      "source": "rp_ringStroke",
+      "target": "rp_ringNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_31",
+      "source": "rp_ringSizes",
+      "target": "rp_ringLoop",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_32",
+      "source": "rp_ringLoop",
+      "target": "rp_seedRing",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_33",
+      "source": "rp_ringLoop",
+      "target": "rp_seedRing",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_34",
+      "source": "rp_ringNoFill",
+      "target": "rp_seedRing",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_35",
+      "source": "rp_seedRing",
+      "target": "rp_ringLoop",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-ring"
+    },
+    {
+      "id": "e_36",
+      "source": "rp_ringLoop",
+      "target": "rp_seed",
+      "sourceHandle": "out-ring",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_37",
+      "source": "rp_presetName",
+      "target": "rp_sim",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-preset"
+    },
+    {
+      "id": "e_38",
+      "source": "rp_speed",
+      "target": "rp_sim",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-speed"
+    },
+    {
+      "id": "e_39",
+      "source": "rp_seed",
+      "target": "rp_sim",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-seedImage"
+    },
+    {
+      "id": "e_40",
+      "source": "rp_paint",
+      "target": "rp_sim",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-paint"
+    },
+    {
+      "id": "e_41",
+      "source": "rp_palette",
+      "target": "rp_sim",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_42",
+      "source": "rp_reset",
+      "target": "rp_sim",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-reset"
+    },
+    {
+      "id": "e_43",
+      "source": "rp_brushSize",
+      "target": "rp_cursorSize",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_44",
+      "source": "rp_cursorStroke",
+      "target": "rp_cursorNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_45",
+      "source": "rp_mpos",
+      "target": "rp_cursor",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_46",
+      "source": "rp_cursorSize",
+      "target": "rp_cursor",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_47",
+      "source": "rp_cursorSize",
+      "target": "rp_cursor",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_48",
+      "source": "rp_cursorNoFill",
+      "target": "rp_cursor",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_49",
+      "source": "rp_presetName",
+      "target": "rp_statusParts",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_50",
+      "source": "rp_help",
+      "target": "rp_statusParts",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_51",
+      "source": "rp_statusParts",
+      "target": "rp_status",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-parts"
+    },
+    {
+      "id": "e_52",
+      "source": "rp_statusBack",
+      "target": "rp_statusBar",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_53",
+      "source": "rp_status",
+      "target": "rp_statusText",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_54",
+      "source": "rp_statusFill",
+      "target": "rp_statusText",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_55",
+      "source": "rp_sim",
+      "target": "rp_scene",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_56",
+      "source": "rp_cursor",
+      "target": "rp_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_57",
+      "source": "rp_statusBar",
+      "target": "rp_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_58",
+      "source": "rp_statusText",
+      "target": "rp_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_59",
+      "source": "rp_scene",
+      "target": "rp_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

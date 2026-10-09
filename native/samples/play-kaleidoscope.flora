@@ -1,0 +1,965 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.2.0",
+  "meta": {
+    "name": "Kaleidoscope Toy",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "kt_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -304
+      },
+      "params": {
+        "text": "Kaleidoscope Toy\n\nA real kaleidoscope: loose beads tumbling in a round chamber, seen through mirrors. Drag sideways to turn the tube — gravity turns with it and the beads slide and tumble — and beads trickle in where you press. Keys 3–9 set the number of mirrors, C empties the chamber. Left alone it turns slowly by itself.\n\nHow it works: an Emitter's beads live in a World whose gravity points 'down the tube' (From Angle of the turn) and whose inverted Circle collider keeps them in the chamber. Symmetry in kaleidoscope mode mirrors that layer into the wedges, turned with the tube; a Mask rounds the view off and Effect bloom makes the glass glow.",
+        "width": 460,
+        "height": 240
+      }
+    },
+    {
+      "id": "kt_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 37,
+        "y": 273
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_mpos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 344,
+        "y": 290
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 1516,
+        "y": 731
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_dt",
+      "defType": "time/delta",
+      "position": {
+        "x": 344,
+        "y": 668
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_frame",
+      "defType": "time/frame",
+      "position": {
+        "x": 38,
+        "y": 38
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_kb",
+      "defType": "input/keyboard",
+      "position": {
+        "x": 0,
+        "y": 813
+      },
+      "params": {
+        "mode": "keys"
+      },
+      "portValues": {
+        "keys": "3456789c"
+      }
+    },
+    {
+      "id": "kt_mirrors",
+      "defType": "state/value",
+      "position": {
+        "x": 41,
+        "y": 1027
+      },
+      "params": {},
+      "portValues": {
+        "init": 6
+      }
+    },
+    {
+      "id": "kt_mirrorsNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 303,
+        "y": 936
+      },
+      "params": {
+        "expr": "hit && k >= 0 && k < 7 ? k + 3 : n"
+      }
+    },
+    {
+      "id": "kt_clear",
+      "defType": "math/expression",
+      "position": {
+        "x": 303,
+        "y": 772
+      },
+      "params": {
+        "expr": "hit && k == 7"
+      }
+    },
+    {
+      "id": "kt_prevX",
+      "defType": "state/value",
+      "position": {
+        "x": 343,
+        "y": 164
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "kt_wasPressed",
+      "defType": "state/value",
+      "position": {
+        "x": 343,
+        "y": 542
+      },
+      "params": {},
+      "portValues": {
+        "init": false
+      }
+    },
+    {
+      "id": "kt_turn",
+      "defType": "state/value",
+      "position": {
+        "x": 343,
+        "y": 416
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "kt_turnNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 619,
+        "y": 334
+      },
+      "params": {
+        "expr": "a + (p && was ? (x - px) * 0.012 : min(d, 0.1) * 0.18)"
+      }
+    },
+    {
+      "id": "kt_down",
+      "defType": "math/expression",
+      "position": {
+        "x": 913,
+        "y": 317
+      },
+      "params": {
+        "expr": "vec2(-sin(a), cos(a)) * 520"
+      }
+    },
+    {
+      "id": "kt_chamber",
+      "defType": "collider/circle",
+      "position": {
+        "x": 929,
+        "y": 459
+      },
+      "params": {
+        "mode": "bounce",
+        "inverted": true
+      },
+      "portValues": {
+        "radius": 292,
+        "restitution": 0.45
+      }
+    },
+    {
+      "id": "kt_world",
+      "defType": "physics/world",
+      "position": {
+        "x": 1201,
+        "y": 348
+      },
+      "params": {},
+      "portValues": {
+        "drag": 0.9
+      }
+    },
+    {
+      "id": "kt_killAll",
+      "defType": "particles/bounds",
+      "position": {
+        "x": 935,
+        "y": 115
+      },
+      "params": {
+        "mode": "kill"
+      },
+      "portValues": {
+        "size": {
+          "x": 1,
+          "y": 1
+        }
+      }
+    },
+    {
+      "id": "kt_emptyWorld",
+      "defType": "physics/world",
+      "position": {
+        "x": 1189,
+        "y": 80
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_useWorld",
+      "defType": "logic/select",
+      "position": {
+        "x": 1506,
+        "y": 277
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_dropAt",
+      "defType": "math/expression",
+      "position": {
+        "x": 619,
+        "y": 159
+      },
+      "params": {
+        "expr": "p ? m : vec2(0, 0) + vec2(sin(t * 3), cos(t * 2)) * 150.0"
+      }
+    },
+    {
+      "id": "kt_rate",
+      "defType": "math/expression",
+      "position": {
+        "x": 303,
+        "y": 0
+      },
+      "params": {
+        "expr": "f < 45 ? 260 : (p ? 24 : 0)"
+      }
+    },
+    {
+      "id": "kt_beadCol",
+      "defType": "math/expression",
+      "position": {
+        "x": 1474,
+        "y": 425
+      },
+      "params": {
+        "expr": "hsl(fract(0.13 * floor(t * 7) + 0.07 * sin(t)), 0.85, 0.55 + 0.15 * sin(t * 11))"
+      }
+    },
+    {
+      "id": "kt_beadSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 1474,
+        "y": 589
+      },
+      "params": {
+        "expr": "10 + 14 * fract(sin(t * 91.7) * 4375.85)"
+      }
+    },
+    {
+      "id": "kt_beads",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 1767,
+        "y": 280
+      },
+      "params": {
+        "maxCount": 160,
+        "overflowMode": "replace-oldest",
+        "seed": 6
+      },
+      "portValues": {
+        "lifetime": 100000,
+        "initialVel": {
+          "x": 0,
+          "y": 0
+        },
+        "velSpread": 1.2
+      }
+    },
+    {
+      "id": "kt_beadStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 1780,
+        "y": 110
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.5
+        },
+        "width": 1
+      }
+    },
+    {
+      "id": "kt_beadLook",
+      "defType": "particles/render-as",
+      "position": {
+        "x": 2057,
+        "y": 131
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_shards",
+      "defType": "particles/render-as",
+      "position": {
+        "x": 2057,
+        "y": 345
+      },
+      "params": {
+        "template": "rect"
+      }
+    },
+    {
+      "id": "kt_shardTurn",
+      "defType": "transform/rotate",
+      "position": {
+        "x": 2310,
+        "y": 308
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_shardScale",
+      "defType": "transform/scale",
+      "position": {
+        "x": 2507,
+        "y": 295
+      },
+      "params": {},
+      "portValues": {
+        "sx": 0.55,
+        "sy": 0.55
+      }
+    },
+    {
+      "id": "kt_glass",
+      "defType": "transform/group",
+      "position": {
+        "x": 2714,
+        "y": 293
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "kt_mirrored",
+      "defType": "transform/symmetry",
+      "position": {
+        "x": 2999,
+        "y": 413
+      },
+      "params": {
+        "mode": "kaleidoscope"
+      },
+      "portValues": {
+        "clip": true
+      }
+    },
+    {
+      "id": "kt_lens",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 3038,
+        "y": 627
+      },
+      "params": {},
+      "portValues": {
+        "w": 600,
+        "h": 600
+      }
+    },
+    {
+      "id": "kt_round",
+      "defType": "transform/mask",
+      "position": {
+        "x": 3300,
+        "y": 506
+      },
+      "params": {
+        "mode": "alpha"
+      }
+    },
+    {
+      "id": "kt_bloom",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 3572,
+        "y": 530
+      },
+      "params": {
+        "mode": "bloom"
+      },
+      "portValues": {
+        "threshold": 0.45,
+        "radius": 18,
+        "intensity": 0.9
+      }
+    },
+    {
+      "id": "kt_rimStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 3020,
+        "y": 819
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.788235294117647,
+          "g": 0.6980392156862745,
+          "b": 0.48627450980392156,
+          "a": 0.8
+        },
+        "width": 6
+      }
+    },
+    {
+      "id": "kt_rimNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 3340,
+        "y": 813
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_rim",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 3602,
+        "y": 722
+      },
+      "params": {},
+      "portValues": {
+        "w": 606,
+        "h": 606
+      }
+    },
+    {
+      "id": "kt_mirrorText",
+      "defType": "string/format-number",
+      "position": {
+        "x": 627,
+        "y": 981
+      },
+      "params": {},
+      "portValues": {
+        "decimals": 0,
+        "suffix": " mirrors   ·   drag to turn & drop beads   ·   3–9 · C"
+      }
+    },
+    {
+      "id": "kt_statusFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 924,
+        "y": 1086
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.9098039215686274,
+          "g": 0.8627450980392157,
+          "b": 0.7529411764705882,
+          "a": 0.55
+        }
+      }
+    },
+    {
+      "id": "kt_statusStr",
+      "defType": "string/concat",
+      "position": {
+        "x": 949,
+        "y": 960
+      },
+      "params": {}
+    },
+    {
+      "id": "kt_statusText",
+      "defType": "draw/text",
+      "position": {
+        "x": 1215,
+        "y": 968
+      },
+      "params": {
+        "size": 12,
+        "align": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 314.0
+        }
+      }
+    },
+    {
+      "id": "kt_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 3863,
+        "y": 707
+      },
+      "params": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "kt_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 4127,
+        "y": 706
+      },
+      "params": {
+        "width": 640,
+        "height": 640
+      },
+      "portValues": {
+        "background": {
+          "r": 0.0196078431372549,
+          "g": 0.0196078431372549,
+          "b": 0.03529411764705882,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "kt_mouse",
+      "target": "kt_mpos",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_2",
+      "source": "kt_mouse",
+      "target": "kt_mpos",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_3",
+      "source": "kt_kb",
+      "target": "kt_mirrorsNext",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_4",
+      "source": "kt_kb",
+      "target": "kt_mirrorsNext",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_5",
+      "source": "kt_mirrors",
+      "target": "kt_mirrorsNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_6",
+      "source": "kt_mirrorsNext",
+      "target": "kt_mirrors",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_7",
+      "source": "kt_kb",
+      "target": "kt_clear",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_8",
+      "source": "kt_kb",
+      "target": "kt_clear",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_9",
+      "source": "kt_mouse",
+      "target": "kt_prevX",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_10",
+      "source": "kt_mouse",
+      "target": "kt_wasPressed",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_11",
+      "source": "kt_turn",
+      "target": "kt_turnNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_12",
+      "source": "kt_mouse",
+      "target": "kt_turnNext",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_13",
+      "source": "kt_wasPressed",
+      "target": "kt_turnNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-was"
+    },
+    {
+      "id": "e_14",
+      "source": "kt_mouse",
+      "target": "kt_turnNext",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_15",
+      "source": "kt_prevX",
+      "target": "kt_turnNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-px"
+    },
+    {
+      "id": "e_16",
+      "source": "kt_dt",
+      "target": "kt_turnNext",
+      "sourceHandle": "out-dt",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_17",
+      "source": "kt_turnNext",
+      "target": "kt_turn",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_18",
+      "source": "kt_turnNext",
+      "target": "kt_down",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_19",
+      "source": "kt_down",
+      "target": "kt_world",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-gravity"
+    },
+    {
+      "id": "e_20",
+      "source": "kt_chamber",
+      "target": "kt_world",
+      "sourceHandle": "out-collider",
+      "targetHandle": "in-colliders"
+    },
+    {
+      "id": "e_21",
+      "source": "kt_killAll",
+      "target": "kt_emptyWorld",
+      "sourceHandle": "out-collider",
+      "targetHandle": "in-colliders"
+    },
+    {
+      "id": "e_22",
+      "source": "kt_clear",
+      "target": "kt_useWorld",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_23",
+      "source": "kt_emptyWorld",
+      "target": "kt_useWorld",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_24",
+      "source": "kt_world",
+      "target": "kt_useWorld",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_25",
+      "source": "kt_mouse",
+      "target": "kt_dropAt",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_26",
+      "source": "kt_mpos",
+      "target": "kt_dropAt",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_27",
+      "source": "kt_frame",
+      "target": "kt_rate",
+      "sourceHandle": "out-frame",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_28",
+      "source": "kt_mouse",
+      "target": "kt_rate",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_29",
+      "source": "kt_useWorld",
+      "target": "kt_beads",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_30",
+      "source": "kt_dropAt",
+      "target": "kt_beads",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_31",
+      "source": "kt_rate",
+      "target": "kt_beads",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_32",
+      "source": "kt_beadCol",
+      "target": "kt_beads",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_33",
+      "source": "kt_beadSize",
+      "target": "kt_beads",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-size"
+    },
+    {
+      "id": "e_34",
+      "source": "kt_time",
+      "target": "kt_beads",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_35",
+      "source": "kt_beads",
+      "target": "kt_beadLook",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_36",
+      "source": "kt_beadStroke",
+      "target": "kt_beadLook",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_37",
+      "source": "kt_beads",
+      "target": "kt_shards",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_38",
+      "source": "kt_turnNext",
+      "target": "kt_shardTurn",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_39",
+      "source": "kt_shards",
+      "target": "kt_shardTurn",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_40",
+      "source": "kt_shardTurn",
+      "target": "kt_shardScale",
+      "sourceHandle": "out-rotated",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_41",
+      "source": "kt_beadLook",
+      "target": "kt_glass",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_42",
+      "source": "kt_shardScale",
+      "target": "kt_glass",
+      "sourceHandle": "out-scaled",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_43",
+      "source": "kt_glass",
+      "target": "kt_mirrored",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_44",
+      "source": "kt_mirrorsNext",
+      "target": "kt_mirrored",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_45",
+      "source": "kt_turnNext",
+      "target": "kt_mirrored",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_46",
+      "source": "kt_mirrored",
+      "target": "kt_round",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_47",
+      "source": "kt_lens",
+      "target": "kt_round",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-mask"
+    },
+    {
+      "id": "e_48",
+      "source": "kt_round",
+      "target": "kt_bloom",
+      "sourceHandle": "out-masked",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_49",
+      "source": "kt_rimStroke",
+      "target": "kt_rimNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_50",
+      "source": "kt_rimNoFill",
+      "target": "kt_rim",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_51",
+      "source": "kt_mirrorsNext",
+      "target": "kt_mirrorText",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_52",
+      "source": "kt_mirrorText",
+      "target": "kt_statusStr",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-parts"
+    },
+    {
+      "id": "e_53",
+      "source": "kt_statusStr",
+      "target": "kt_statusText",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_54",
+      "source": "kt_statusFill",
+      "target": "kt_statusText",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_55",
+      "source": "kt_bloom",
+      "target": "kt_scene",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_56",
+      "source": "kt_rim",
+      "target": "kt_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_57",
+      "source": "kt_statusText",
+      "target": "kt_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_58",
+      "source": "kt_scene",
+      "target": "kt_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

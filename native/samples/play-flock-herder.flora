@@ -1,0 +1,1100 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.2.0",
+  "meta": {
+    "name": "Flock Herder",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "fh_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -314
+      },
+      "params": {
+        "text": "Flock Herder\n\nHold the mouse button down and the flock streams towards the pointer; let go and they go back to flocking on their own. F turns the lure into a scare: held, the birds flee the pointer instead. Keys 1, 2, 3 change the flock's character — 1 a loose drift, 2 a tight school, 3 a nervous swarm — and S scatters it afresh. The sliders still tune separation, alignment and cohesion on top.\n\nHow it works: the Simulation node's flocking mode does the boids; the pointer is its `target` and `attract` is +, − or 0 depending on the button and F. The characters are three columns of numbers picked by a key with Lookup. Connect Points draws the lines between near neighbours, and Echo leaves fading trails.",
+        "width": 460,
+        "height": 250
+      }
+    },
+    {
+      "id": "fh_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 351,
+        "y": 1172
+      },
+      "params": {}
+    },
+    {
+      "id": "fh_mpos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1060,
+        "y": 1122
+      },
+      "params": {}
+    },
+    {
+      "id": "fh_kb",
+      "defType": "input/keyboard",
+      "position": {
+        "x": 0,
+        "y": 977
+      },
+      "params": {
+        "mode": "keys"
+      },
+      "portValues": {
+        "keys": "123fs"
+      }
+    },
+    {
+      "id": "fh_mood",
+      "defType": "state/value",
+      "position": {
+        "x": 41,
+        "y": 800
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "fh_moodNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 315,
+        "y": 718
+      },
+      "params": {
+        "expr": "hit && k <= 2 && k >= 0 ? k : m"
+      }
+    },
+    {
+      "id": "fh_scare",
+      "defType": "state/value",
+      "position": {
+        "x": 41,
+        "y": 1402
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "fh_scareNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 315,
+        "y": 1320
+      },
+      "params": {
+        "expr": "hit && k == 3 ? 1 - s : s"
+      }
+    },
+    {
+      "id": "fh_scatter",
+      "defType": "math/expression",
+      "position": {
+        "x": 315,
+        "y": 1008
+      },
+      "params": {
+        "expr": "hit && k == 4"
+      }
+    },
+    {
+      "id": "fh_sepOfList",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 315,
+        "y": 170
+      },
+      "params": {
+        "data": "1.2,2.4,3.2"
+      }
+    },
+    {
+      "id": "fh_sepOf",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 702,
+        "y": 148
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "fh_aliOfList",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 315,
+        "y": 444
+      },
+      "params": {
+        "data": "0.6,1.6,0.4"
+      }
+    },
+    {
+      "id": "fh_aliOf",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 702,
+        "y": 422
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "fh_cohOfList",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 315,
+        "y": 614
+      },
+      "params": {
+        "data": "0.7,1.3,0.5"
+      }
+    },
+    {
+      "id": "fh_cohOf",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 702,
+        "y": 696
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "fh_speedOfList",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 315,
+        "y": 22
+      },
+      "params": {
+        "data": "110,150,230"
+      }
+    },
+    {
+      "id": "fh_speedOf",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 702,
+        "y": 0
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "fh_radiusOfList",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 315,
+        "y": 904
+      },
+      "params": {
+        "data": "46,34,28"
+      }
+    },
+    {
+      "id": "fh_radiusOf",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 702,
+        "y": 970
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "fh_sepTweak",
+      "defType": "io/slider",
+      "position": {
+        "x": 699,
+        "y": 296
+      },
+      "params": {
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "label": "Separation ×"
+      }
+    },
+    {
+      "id": "fh_aliTweak",
+      "defType": "io/slider",
+      "position": {
+        "x": 699,
+        "y": 570
+      },
+      "params": {
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "label": "Alignment ×"
+      }
+    },
+    {
+      "id": "fh_cohTweak",
+      "defType": "io/slider",
+      "position": {
+        "x": 699,
+        "y": 844
+      },
+      "params": {
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "label": "Cohesion ×"
+      }
+    },
+    {
+      "id": "fh_separation",
+      "defType": "math/math",
+      "position": {
+        "x": 1019,
+        "y": 380
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "fh_alignment",
+      "defType": "math/math",
+      "position": {
+        "x": 1019,
+        "y": 548
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "fh_cohesion",
+      "defType": "math/math",
+      "position": {
+        "x": 1019,
+        "y": 728
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "fh_attract",
+      "defType": "math/expression",
+      "position": {
+        "x": 699,
+        "y": 1182
+      },
+      "params": {
+        "expr": "p ? (s ? -3.5 : 2.2) : 0"
+      }
+    },
+    {
+      "id": "fh_palette",
+      "defType": "color/palette",
+      "position": {
+        "x": 1019,
+        "y": 908
+      },
+      "params": {
+        "stopCount": 4,
+        "c0": "#34e7e4",
+        "c1": "#4bcffa",
+        "c2": "#ffdd59",
+        "c3": "#ff5e57"
+      }
+    },
+    {
+      "id": "fh_flock",
+      "defType": "particles/simulation",
+      "position": {
+        "x": 1338,
+        "y": 604
+      },
+      "params": {
+        "mode": "flocking"
+      },
+      "portValues": {
+        "count": 320,
+        "size": {
+          "x": 640,
+          "y": 640
+        },
+        "scale": 7,
+        "seed": 2
+      }
+    },
+    {
+      "id": "fh_linkStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 1346,
+        "y": 1016
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.29411764705882354,
+          "g": 0.8117647058823529,
+          "b": 0.9803921568627451,
+          "a": 0.5
+        },
+        "width": 1
+      }
+    },
+    {
+      "id": "fh_links",
+      "defType": "geometry/connect",
+      "position": {
+        "x": 1620,
+        "y": 742
+      },
+      "params": {
+        "mode": "distance"
+      },
+      "portValues": {
+        "distance": 38,
+        "maxLinks": 3,
+        "fade": 0.9,
+        "taper": 0.5
+      }
+    },
+    {
+      "id": "fh_birds",
+      "defType": "transform/group",
+      "position": {
+        "x": 1893,
+        "y": 752
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "fh_trails",
+      "defType": "gpu/echo",
+      "position": {
+        "x": 2186,
+        "y": 902
+      },
+      "params": {
+        "mode": "trails"
+      },
+      "portValues": {
+        "decay": 0.86
+      }
+    },
+    {
+      "id": "fh_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 42,
+        "y": 389
+      },
+      "params": {}
+    },
+    {
+      "id": "fh_ringCol",
+      "defType": "math/expression",
+      "position": {
+        "x": 699,
+        "y": 1346
+      },
+      "params": {
+        "expr": "p ? (s ? rgba(1, 0.35, 0.3, 0.9) : rgba(0.4, 1, 0.6, 0.9)) : rgba(1, 1, 1, 0.3)"
+      }
+    },
+    {
+      "id": "fh_ringSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 1335,
+        "y": 1200
+      },
+      "params": {
+        "expr": "p ? 36 + 8 * sin(t * 9) : 22"
+      }
+    },
+    {
+      "id": "fh_ringStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 1056,
+        "y": 1374
+      },
+      "params": {},
+      "portValues": {
+        "width": 2
+      }
+    },
+    {
+      "id": "fh_ringNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 1375,
+        "y": 1342
+      },
+      "params": {}
+    },
+    {
+      "id": "fh_ring",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 1652,
+        "y": 1179
+      },
+      "params": {}
+    },
+    {
+      "id": "fh_moods",
+      "defType": "string/split",
+      "position": {
+        "x": 325,
+        "y": 1541
+      },
+      "params": {
+        "text": "drift,school,swarm",
+        "by": ","
+      }
+    },
+    {
+      "id": "fh_moodName",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 702,
+        "y": 1532
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "fh_lureTxt",
+      "defType": "value/string",
+      "position": {
+        "x": 320,
+        "y": 1771
+      },
+      "params": {
+        "value": "hold to lure"
+      }
+    },
+    {
+      "id": "fh_scareTxt",
+      "defType": "value/string",
+      "position": {
+        "x": 320,
+        "y": 1667
+      },
+      "params": {
+        "value": "hold to scare"
+      }
+    },
+    {
+      "id": "fh_modeTxt",
+      "defType": "logic/select",
+      "position": {
+        "x": 730,
+        "y": 1680
+      },
+      "params": {}
+    },
+    {
+      "id": "fh_help",
+      "defType": "value/string",
+      "position": {
+        "x": 704,
+        "y": 1828
+      },
+      "params": {
+        "value": "1 2 3 character · F lure / scare · S scatter"
+      }
+    },
+    {
+      "id": "fh_statusParts",
+      "defType": "spread/merge",
+      "position": {
+        "x": 1019,
+        "y": 1605
+      },
+      "params": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "fh_status",
+      "defType": "string/concat",
+      "position": {
+        "x": 1360,
+        "y": 1446
+      },
+      "params": {
+        "separator": "   ·   "
+      }
+    },
+    {
+      "id": "fh_statusFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1346,
+        "y": 1572
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.8117647058823529,
+          "g": 0.9137254901960784,
+          "b": 1.0,
+          "a": 0.6
+        }
+      }
+    },
+    {
+      "id": "fh_statusText",
+      "defType": "draw/text",
+      "position": {
+        "x": 1657,
+        "y": 1383
+      },
+      "params": {
+        "size": 13,
+        "align": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 304.0
+        }
+      }
+    },
+    {
+      "id": "fh_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 2480,
+        "y": 1097
+      },
+      "params": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "fh_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2744,
+        "y": 1097
+      },
+      "params": {
+        "width": 640,
+        "height": 640
+      },
+      "portValues": {
+        "background": {
+          "r": 0.027450980392156862,
+          "g": 0.06274509803921569,
+          "b": 0.10196078431372549,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "fh_mouse",
+      "target": "fh_mpos",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_2",
+      "source": "fh_mouse",
+      "target": "fh_mpos",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_3",
+      "source": "fh_kb",
+      "target": "fh_moodNext",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_4",
+      "source": "fh_kb",
+      "target": "fh_moodNext",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_5",
+      "source": "fh_mood",
+      "target": "fh_moodNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_6",
+      "source": "fh_moodNext",
+      "target": "fh_mood",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_7",
+      "source": "fh_kb",
+      "target": "fh_scareNext",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_8",
+      "source": "fh_kb",
+      "target": "fh_scareNext",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_9",
+      "source": "fh_scare",
+      "target": "fh_scareNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_10",
+      "source": "fh_scareNext",
+      "target": "fh_scare",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_11",
+      "source": "fh_kb",
+      "target": "fh_scatter",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_12",
+      "source": "fh_kb",
+      "target": "fh_scatter",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_13",
+      "source": "fh_sepOfList",
+      "target": "fh_sepOf",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_14",
+      "source": "fh_moodNext",
+      "target": "fh_sepOf",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_15",
+      "source": "fh_aliOfList",
+      "target": "fh_aliOf",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_16",
+      "source": "fh_moodNext",
+      "target": "fh_aliOf",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_17",
+      "source": "fh_cohOfList",
+      "target": "fh_cohOf",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_18",
+      "source": "fh_moodNext",
+      "target": "fh_cohOf",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_19",
+      "source": "fh_speedOfList",
+      "target": "fh_speedOf",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_20",
+      "source": "fh_moodNext",
+      "target": "fh_speedOf",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_21",
+      "source": "fh_radiusOfList",
+      "target": "fh_radiusOf",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_22",
+      "source": "fh_moodNext",
+      "target": "fh_radiusOf",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_23",
+      "source": "fh_sepOf",
+      "target": "fh_separation",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_24",
+      "source": "fh_sepTweak",
+      "target": "fh_separation",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_25",
+      "source": "fh_aliOf",
+      "target": "fh_alignment",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_26",
+      "source": "fh_aliTweak",
+      "target": "fh_alignment",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_27",
+      "source": "fh_cohOf",
+      "target": "fh_cohesion",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_28",
+      "source": "fh_cohTweak",
+      "target": "fh_cohesion",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_29",
+      "source": "fh_mouse",
+      "target": "fh_attract",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_30",
+      "source": "fh_scareNext",
+      "target": "fh_attract",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_31",
+      "source": "fh_mpos",
+      "target": "fh_flock",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-target"
+    },
+    {
+      "id": "e_32",
+      "source": "fh_attract",
+      "target": "fh_flock",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-attract"
+    },
+    {
+      "id": "e_33",
+      "source": "fh_separation",
+      "target": "fh_flock",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-separation"
+    },
+    {
+      "id": "e_34",
+      "source": "fh_alignment",
+      "target": "fh_flock",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-alignment"
+    },
+    {
+      "id": "e_35",
+      "source": "fh_cohesion",
+      "target": "fh_flock",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cohesion"
+    },
+    {
+      "id": "e_36",
+      "source": "fh_speedOf",
+      "target": "fh_flock",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-maxSpeed"
+    },
+    {
+      "id": "e_37",
+      "source": "fh_radiusOf",
+      "target": "fh_flock",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-radius"
+    },
+    {
+      "id": "e_38",
+      "source": "fh_palette",
+      "target": "fh_flock",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_39",
+      "source": "fh_scatter",
+      "target": "fh_flock",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-reset"
+    },
+    {
+      "id": "e_40",
+      "source": "fh_flock",
+      "target": "fh_links",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_41",
+      "source": "fh_linkStroke",
+      "target": "fh_links",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_42",
+      "source": "fh_links",
+      "target": "fh_birds",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_43",
+      "source": "fh_flock",
+      "target": "fh_birds",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_44",
+      "source": "fh_birds",
+      "target": "fh_trails",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_45",
+      "source": "fh_mouse",
+      "target": "fh_ringCol",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_46",
+      "source": "fh_scareNext",
+      "target": "fh_ringCol",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_47",
+      "source": "fh_mouse",
+      "target": "fh_ringSize",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_48",
+      "source": "fh_ringCol",
+      "target": "fh_ringStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_49",
+      "source": "fh_ringStroke",
+      "target": "fh_ringNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_50",
+      "source": "fh_mpos",
+      "target": "fh_ring",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_51",
+      "source": "fh_ringSize",
+      "target": "fh_ring",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_52",
+      "source": "fh_ringSize",
+      "target": "fh_ring",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_53",
+      "source": "fh_ringNoFill",
+      "target": "fh_ring",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_54",
+      "source": "fh_moods",
+      "target": "fh_moodName",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_55",
+      "source": "fh_moodNext",
+      "target": "fh_moodName",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_56",
+      "source": "fh_scareNext",
+      "target": "fh_modeTxt",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_57",
+      "source": "fh_scareTxt",
+      "target": "fh_modeTxt",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_58",
+      "source": "fh_lureTxt",
+      "target": "fh_modeTxt",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_59",
+      "source": "fh_moodName",
+      "target": "fh_statusParts",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_60",
+      "source": "fh_modeTxt",
+      "target": "fh_statusParts",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_61",
+      "source": "fh_help",
+      "target": "fh_statusParts",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_62",
+      "source": "fh_statusParts",
+      "target": "fh_status",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-parts"
+    },
+    {
+      "id": "e_63",
+      "source": "fh_status",
+      "target": "fh_statusText",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_64",
+      "source": "fh_statusFill",
+      "target": "fh_statusText",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_65",
+      "source": "fh_trails",
+      "target": "fh_scene",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_66",
+      "source": "fh_ring",
+      "target": "fh_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_67",
+      "source": "fh_statusText",
+      "target": "fh_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_68",
+      "source": "fh_scene",
+      "target": "fh_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

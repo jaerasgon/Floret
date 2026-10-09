@@ -1,0 +1,1750 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.2.0",
+  "meta": {
+    "name": "Slingshot Sandbox",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ps_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -324
+      },
+      "params": {
+        "text": "Slingshot Sandbox\n\nPress anywhere, pull back and let go: a ball flies from where you pressed, opposite the pull, like a slingshot — the dotted arc shows where it will go. G cycles gravity (down, none, up), W switches the walls between bouncing and wrapping round, C clears the balls, R turns the rain of balls from the top on and off. Balls bounce off the bumpers.\n\nHow it works: one Emitter launches a ball on the frame you let go (rate 61/s for one 1/60 s frame = one ball) with the pull as its velocity, and on rain ticks drops one at the top. Three Worlds share the bumpers: a bouncing one, a wrapping one and a 'kill' one the Emitter is handed for a single frame to clear.",
+        "width": 460,
+        "height": 260
+      }
+    },
+    {
+      "id": "ps_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 37,
+        "y": 2099
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_mpos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 366,
+        "y": 2074
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 1964,
+        "y": 1738
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_frame",
+      "defType": "time/frame",
+      "position": {
+        "x": 363,
+        "y": 1100
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_kb",
+      "defType": "input/keyboard",
+      "position": {
+        "x": 0,
+        "y": 1524
+      },
+      "params": {
+        "mode": "keys"
+      },
+      "portValues": {
+        "keys": "gwcr"
+      }
+    },
+    {
+      "id": "ps_gravityMode",
+      "defType": "state/value",
+      "position": {
+        "x": 41,
+        "y": 1864
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "ps_gravityNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 325,
+        "y": 1762
+      },
+      "params": {
+        "expr": "hit && k == 0 ? (g + 1) % 3 : g"
+      }
+    },
+    {
+      "id": "ps_gravity",
+      "defType": "math/expression",
+      "position": {
+        "x": 795,
+        "y": 1432
+      },
+      "params": {
+        "expr": "vec2(0, g == 0 ? 520 : (g == 2 ? -520 : 0))"
+      }
+    },
+    {
+      "id": "ps_wrapWalls",
+      "defType": "state/value",
+      "position": {
+        "x": 41,
+        "y": 1738
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "ps_wrapNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 325,
+        "y": 1576
+      },
+      "params": {
+        "expr": "hit && k == 1 ? 1 - w : w"
+      }
+    },
+    {
+      "id": "ps_rainOn",
+      "defType": "state/value",
+      "position": {
+        "x": 41,
+        "y": 1398
+      },
+      "params": {},
+      "portValues": {
+        "init": 1
+      }
+    },
+    {
+      "id": "ps_rainNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 325,
+        "y": 1390
+      },
+      "params": {
+        "expr": "hit && k == 3 ? 1 - r : r"
+      }
+    },
+    {
+      "id": "ps_clearBang",
+      "defType": "io/bang",
+      "position": {
+        "x": 0,
+        "y": 1294
+      },
+      "params": {
+        "label": "Clear"
+      }
+    },
+    {
+      "id": "ps_clear",
+      "defType": "math/expression",
+      "position": {
+        "x": 325,
+        "y": 1204
+      },
+      "params": {
+        "expr": "b || (hit && k == 2)"
+      }
+    },
+    {
+      "id": "ps_wasPressed",
+      "defType": "state/value",
+      "position": {
+        "x": 365,
+        "y": 1948
+      },
+      "params": {},
+      "portValues": {
+        "init": false
+      }
+    },
+    {
+      "id": "ps_anchor",
+      "defType": "state/value",
+      "position": {
+        "x": 365,
+        "y": 2200
+      },
+      "params": {},
+      "portValues": {
+        "init": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": "ps_anchorNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 795,
+        "y": 1882
+      },
+      "params": {
+        "expr": "p && !was ? m : a"
+      }
+    },
+    {
+      "id": "ps_pull",
+      "defType": "math/expression",
+      "position": {
+        "x": 1228,
+        "y": 1825
+      },
+      "params": {
+        "expr": "(a - m) * 3.2"
+      }
+    },
+    {
+      "id": "ps_release",
+      "defType": "math/expression",
+      "position": {
+        "x": 795,
+        "y": 1718
+      },
+      "params": {
+        "expr": "was && !p"
+      }
+    },
+    {
+      "id": "ps_rainTick",
+      "defType": "math/expression",
+      "position": {
+        "x": 795,
+        "y": 1268
+      },
+      "params": {
+        "expr": "r && f % 30 == 0"
+      }
+    },
+    {
+      "id": "ps_rainAt",
+      "defType": "math/expression",
+      "position": {
+        "x": 795,
+        "y": 1115
+      },
+      "params": {
+        "expr": "vec2((fract(sin(f * 12.9898) * 43758.5453) - 0.5) * 560, -280.0)"
+      }
+    },
+    {
+      "id": "ps_spawnAt",
+      "defType": "logic/select",
+      "position": {
+        "x": 1260,
+        "y": 1677
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_spawnVel",
+      "defType": "logic/select",
+      "position": {
+        "x": 1567,
+        "y": 1643
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_rate",
+      "defType": "math/expression",
+      "position": {
+        "x": 1228,
+        "y": 1513
+      },
+      "params": {
+        "expr": "rel || rain ? 61 : 0"
+      }
+    },
+    {
+      "id": "ps_ballCol",
+      "defType": "math/expression",
+      "position": {
+        "x": 1922,
+        "y": 1596
+      },
+      "params": {
+        "expr": "hsl(fract(t * 0.11), 0.8, 0.62)"
+      }
+    },
+    {
+      "id": "ps_colliders",
+      "defType": "spread/merge",
+      "position": {
+        "x": 325,
+        "y": 738
+      },
+      "params": {
+        "slotCount": 5
+      }
+    },
+    {
+      "id": "ps_bump0",
+      "defType": "collider/circle",
+      "position": {
+        "x": 1,
+        "y": 334
+      },
+      "params": {
+        "mode": "bounce"
+      },
+      "portValues": {
+        "center": {
+          "x": -150,
+          "y": -40
+        },
+        "radius": 51,
+        "restitution": 0.9
+      }
+    },
+    {
+      "id": "ps_bump1",
+      "defType": "collider/circle",
+      "position": {
+        "x": 4,
+        "y": 526
+      },
+      "params": {
+        "mode": "bounce"
+      },
+      "portValues": {
+        "center": {
+          "x": 140,
+          "y": -90
+        },
+        "radius": 43,
+        "restitution": 0.9
+      }
+    },
+    {
+      "id": "ps_bump2",
+      "defType": "collider/circle",
+      "position": {
+        "x": 10,
+        "y": 718
+      },
+      "params": {
+        "mode": "bounce"
+      },
+      "portValues": {
+        "center": {
+          "x": 30,
+          "y": 90
+        },
+        "radius": 59,
+        "restitution": 0.9
+      }
+    },
+    {
+      "id": "ps_bump3",
+      "defType": "collider/circle",
+      "position": {
+        "x": 1,
+        "y": 910
+      },
+      "params": {
+        "mode": "bounce"
+      },
+      "portValues": {
+        "center": {
+          "x": -180,
+          "y": 170
+        },
+        "radius": 35,
+        "restitution": 0.9
+      }
+    },
+    {
+      "id": "ps_bump4",
+      "defType": "collider/circle",
+      "position": {
+        "x": 4,
+        "y": 1102
+      },
+      "params": {
+        "mode": "bounce"
+      },
+      "portValues": {
+        "center": {
+          "x": 200,
+          "y": 160
+        },
+        "radius": 39,
+        "restitution": 0.9
+      }
+    },
+    {
+      "id": "ps_bounceWalls",
+      "defType": "particles/bounds",
+      "position": {
+        "x": 335,
+        "y": 930
+      },
+      "params": {
+        "mode": "bounce"
+      },
+      "portValues": {
+        "size": {
+          "x": 630,
+          "y": 630
+        },
+        "restitution": 0.8
+      }
+    },
+    {
+      "id": "ps_wrapEdges",
+      "defType": "particles/bounds",
+      "position": {
+        "x": 335,
+        "y": 568
+      },
+      "params": {
+        "mode": "wrap"
+      },
+      "portValues": {
+        "size": {
+          "x": 640,
+          "y": 640
+        }
+      }
+    },
+    {
+      "id": "ps_killAll",
+      "defType": "particles/bounds",
+      "position": {
+        "x": 1250,
+        "y": 839
+      },
+      "params": {
+        "mode": "kill"
+      },
+      "portValues": {
+        "size": {
+          "x": 1,
+          "y": 1
+        }
+      }
+    },
+    {
+      "id": "ps_bounceSet",
+      "defType": "spread/combine",
+      "position": {
+        "x": 798,
+        "y": 967
+      },
+      "params": {
+        "op": "append"
+      }
+    },
+    {
+      "id": "ps_wrapSet",
+      "defType": "spread/combine",
+      "position": {
+        "x": 798,
+        "y": 797
+      },
+      "params": {
+        "op": "append"
+      }
+    },
+    {
+      "id": "ps_bounceWorld",
+      "defType": "physics/world",
+      "position": {
+        "x": 1254,
+        "y": 1277
+      },
+      "params": {},
+      "portValues": {
+        "drag": 0.02
+      }
+    },
+    {
+      "id": "ps_wrapWorld",
+      "defType": "physics/world",
+      "position": {
+        "x": 1254,
+        "y": 1041
+      },
+      "params": {},
+      "portValues": {
+        "drag": 0.02
+      }
+    },
+    {
+      "id": "ps_killWorld",
+      "defType": "physics/world",
+      "position": {
+        "x": 1549,
+        "y": 845
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_wallWorld",
+      "defType": "logic/select",
+      "position": {
+        "x": 1567,
+        "y": 1081
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_world",
+      "defType": "logic/select",
+      "position": {
+        "x": 1953,
+        "y": 1069
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_balls",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 2328,
+        "y": 1445
+      },
+      "params": {
+        "maxCount": 300,
+        "overflowMode": "replace-oldest",
+        "seed": 5
+      },
+      "portValues": {
+        "lifetime": 40,
+        "velSpread": 0.15,
+        "size": 11
+      }
+    },
+    {
+      "id": "ps_ballTrails",
+      "defType": "particles/trail",
+      "position": {
+        "x": 2649,
+        "y": 1439
+      },
+      "params": {
+        "segments": 12
+      },
+      "portValues": {
+        "fadeOut": true,
+        "tapered": true,
+        "tailWidth": 0.2
+      }
+    },
+    {
+      "id": "ps_ballDots",
+      "defType": "particles/render-as",
+      "position": {
+        "x": 2644,
+        "y": 1697
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_bumperX",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 1,
+        "y": 0
+      },
+      "params": {
+        "data": "-150,140,30,-180,200"
+      }
+    },
+    {
+      "id": "ps_bumperY",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 1,
+        "y": 104
+      },
+      "params": {
+        "data": "-40,-90,90,170,160"
+      }
+    },
+    {
+      "id": "ps_bumperR",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 325,
+        "y": 243
+      },
+      "params": {
+        "data": "92,76,108,60,68"
+      }
+    },
+    {
+      "id": "ps_bumperPos",
+      "defType": "math/expression",
+      "position": {
+        "x": 325,
+        "y": 79
+      },
+      "params": {
+        "expr": "vec2(x, y)"
+      }
+    },
+    {
+      "id": "ps_bumperFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 17,
+        "y": 208
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.16862745098039217,
+          "g": 0.19215686274509805,
+          "b": 0.3137254901960784,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ps_bumperRing",
+      "defType": "style/stroke",
+      "position": {
+        "x": 342,
+        "y": 347
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.4980392156862745,
+          "g": 0.5490196078431373,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "width": 3
+      }
+    },
+    {
+      "id": "ps_bumperLoop",
+      "defType": "region/foreach",
+      "position": {
+        "x": 709,
+        "y": 292
+      },
+      "params": {
+        "width": 340,
+        "height": 224,
+        "label": "Bumpers"
+      },
+      "ports": [
+        {
+          "id": "at",
+          "name": "at",
+          "type": "vec2",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "d",
+          "name": "d",
+          "type": "number",
+          "direction": "input",
+          "y": 110
+        },
+        {
+          "id": "bumper",
+          "name": "bumper",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 340,
+      "height": 224
+    },
+    {
+      "id": "ps_bumper",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 129,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "ps_bumperLoop"
+    },
+    {
+      "id": "ps_bumperGlow",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 2634,
+        "y": 1203
+      },
+      "params": {
+        "mode": "glow"
+      },
+      "portValues": {
+        "radius": 14,
+        "intensity": 1.2
+      }
+    },
+    {
+      "id": "ps_bandStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 806,
+        "y": 2090
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.7
+        },
+        "width": 2
+      }
+    },
+    {
+      "id": "ps_band",
+      "defType": "draw/line",
+      "position": {
+        "x": 1270,
+        "y": 2093
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_arcSteps",
+      "defType": "spread/range",
+      "position": {
+        "x": 1243,
+        "y": 1989
+      },
+      "params": {},
+      "portValues": {
+        "count": 30
+      }
+    },
+    {
+      "id": "ps_arc",
+      "defType": "math/expression",
+      "position": {
+        "x": 1536,
+        "y": 1791
+      },
+      "params": {
+        "expr": "a + v * (i * 0.045) + g * (0.5 * (i * 0.045) * (i * 0.045))"
+      }
+    },
+    {
+      "id": "ps_arcFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1547,
+        "y": 2010
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.55
+        }
+      }
+    },
+    {
+      "id": "ps_arcLoop",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1836,
+        "y": 1886
+      },
+      "params": {
+        "width": 339,
+        "height": 224,
+        "label": "Aim"
+      },
+      "ports": [
+        {
+          "id": "at",
+          "name": "at",
+          "type": "vec2",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "dot",
+          "name": "dot",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 339,
+      "height": 224
+    },
+    {
+      "id": "ps_arcDot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {},
+      "portValues": {
+        "w": 4,
+        "h": 4
+      },
+      "parentId": "ps_arcLoop"
+    },
+    {
+      "id": "ps_aimGroup",
+      "defType": "transform/group",
+      "position": {
+        "x": 2330,
+        "y": 2008
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "ps_aim",
+      "defType": "logic/select",
+      "position": {
+        "x": 2666,
+        "y": 1911
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_gravNames",
+      "defType": "string/split",
+      "position": {
+        "x": 335,
+        "y": 2326
+      },
+      "params": {
+        "text": "gravity ↓,no gravity,gravity ↑",
+        "by": ","
+      }
+    },
+    {
+      "id": "ps_gravName",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 798,
+        "y": 2260
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "ps_wallNames",
+      "defType": "string/split",
+      "position": {
+        "x": 335,
+        "y": 2452
+      },
+      "params": {
+        "text": "walls bounce,walls wrap",
+        "by": ","
+      }
+    },
+    {
+      "id": "ps_wallName",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 798,
+        "y": 2408
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "ps_help",
+      "defType": "value/string",
+      "position": {
+        "x": 800,
+        "y": 2556
+      },
+      "params": {
+        "value": "drag & release to fling · G W C R"
+      }
+    },
+    {
+      "id": "ps_statusParts",
+      "defType": "spread/merge",
+      "position": {
+        "x": 1228,
+        "y": 2340
+      },
+      "params": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "ps_status",
+      "defType": "string/concat",
+      "position": {
+        "x": 1561,
+        "y": 2204
+      },
+      "params": {
+        "separator": "   ·   "
+      }
+    },
+    {
+      "id": "ps_statusFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1547,
+        "y": 2330
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.7843137254901961,
+          "g": 0.803921568627451,
+          "b": 0.8784313725490196,
+          "a": 0.6
+        }
+      }
+    },
+    {
+      "id": "ps_statusText",
+      "defType": "draw/text",
+      "position": {
+        "x": 1961,
+        "y": 2158
+      },
+      "params": {
+        "size": 13,
+        "align": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 306.0
+        }
+      }
+    },
+    {
+      "id": "ps_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 2967,
+        "y": 1656
+      },
+      "params": {
+        "slotCount": 5
+      }
+    },
+    {
+      "id": "ps_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 3231,
+        "y": 1655
+      },
+      "params": {
+        "width": 640,
+        "height": 640
+      },
+      "portValues": {
+        "background": {
+          "r": 0.054901960784313725,
+          "g": 0.06274509803921569,
+          "b": 0.08627450980392157,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "ps_mouse",
+      "target": "ps_mpos",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_2",
+      "source": "ps_mouse",
+      "target": "ps_mpos",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_3",
+      "source": "ps_kb",
+      "target": "ps_gravityNext",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_4",
+      "source": "ps_kb",
+      "target": "ps_gravityNext",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_5",
+      "source": "ps_gravityMode",
+      "target": "ps_gravityNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_6",
+      "source": "ps_gravityNext",
+      "target": "ps_gravityMode",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_7",
+      "source": "ps_gravityNext",
+      "target": "ps_gravity",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_8",
+      "source": "ps_kb",
+      "target": "ps_wrapNext",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_9",
+      "source": "ps_kb",
+      "target": "ps_wrapNext",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_10",
+      "source": "ps_wrapWalls",
+      "target": "ps_wrapNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_11",
+      "source": "ps_wrapNext",
+      "target": "ps_wrapWalls",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_12",
+      "source": "ps_kb",
+      "target": "ps_rainNext",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_13",
+      "source": "ps_kb",
+      "target": "ps_rainNext",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_14",
+      "source": "ps_rainOn",
+      "target": "ps_rainNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_15",
+      "source": "ps_rainNext",
+      "target": "ps_rainOn",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_16",
+      "source": "ps_clearBang",
+      "target": "ps_clear",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_17",
+      "source": "ps_kb",
+      "target": "ps_clear",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_18",
+      "source": "ps_kb",
+      "target": "ps_clear",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_19",
+      "source": "ps_mouse",
+      "target": "ps_wasPressed",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_20",
+      "source": "ps_mouse",
+      "target": "ps_anchorNext",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_21",
+      "source": "ps_wasPressed",
+      "target": "ps_anchorNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-was"
+    },
+    {
+      "id": "e_22",
+      "source": "ps_mpos",
+      "target": "ps_anchorNext",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_23",
+      "source": "ps_anchor",
+      "target": "ps_anchorNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_24",
+      "source": "ps_anchorNext",
+      "target": "ps_anchor",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_25",
+      "source": "ps_anchorNext",
+      "target": "ps_pull",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_26",
+      "source": "ps_mpos",
+      "target": "ps_pull",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_27",
+      "source": "ps_wasPressed",
+      "target": "ps_release",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-was"
+    },
+    {
+      "id": "e_28",
+      "source": "ps_mouse",
+      "target": "ps_release",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_29",
+      "source": "ps_rainNext",
+      "target": "ps_rainTick",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_30",
+      "source": "ps_frame",
+      "target": "ps_rainTick",
+      "sourceHandle": "out-frame",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_31",
+      "source": "ps_frame",
+      "target": "ps_rainAt",
+      "sourceHandle": "out-frame",
+      "targetHandle": "in-f"
+    },
+    {
+      "id": "e_32",
+      "source": "ps_release",
+      "target": "ps_spawnAt",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_33",
+      "source": "ps_anchorNext",
+      "target": "ps_spawnAt",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_34",
+      "source": "ps_rainAt",
+      "target": "ps_spawnAt",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_35",
+      "source": "ps_release",
+      "target": "ps_spawnVel",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_36",
+      "source": "ps_pull",
+      "target": "ps_spawnVel",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_37",
+      "source": "ps_release",
+      "target": "ps_rate",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-rel"
+    },
+    {
+      "id": "e_38",
+      "source": "ps_rainTick",
+      "target": "ps_rate",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-rain"
+    },
+    {
+      "id": "e_39",
+      "source": "ps_bump0",
+      "target": "ps_colliders",
+      "sourceHandle": "out-collider",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_40",
+      "source": "ps_bump1",
+      "target": "ps_colliders",
+      "sourceHandle": "out-collider",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_41",
+      "source": "ps_bump2",
+      "target": "ps_colliders",
+      "sourceHandle": "out-collider",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_42",
+      "source": "ps_bump3",
+      "target": "ps_colliders",
+      "sourceHandle": "out-collider",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_43",
+      "source": "ps_bump4",
+      "target": "ps_colliders",
+      "sourceHandle": "out-collider",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_44",
+      "source": "ps_colliders",
+      "target": "ps_bounceSet",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_45",
+      "source": "ps_bounceWalls",
+      "target": "ps_bounceSet",
+      "sourceHandle": "out-collider",
+      "targetHandle": "in-tail"
+    },
+    {
+      "id": "e_46",
+      "source": "ps_colliders",
+      "target": "ps_wrapSet",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_47",
+      "source": "ps_wrapEdges",
+      "target": "ps_wrapSet",
+      "sourceHandle": "out-collider",
+      "targetHandle": "in-tail"
+    },
+    {
+      "id": "e_48",
+      "source": "ps_gravity",
+      "target": "ps_bounceWorld",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-gravity"
+    },
+    {
+      "id": "e_49",
+      "source": "ps_bounceSet",
+      "target": "ps_bounceWorld",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-colliders"
+    },
+    {
+      "id": "e_50",
+      "source": "ps_gravity",
+      "target": "ps_wrapWorld",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-gravity"
+    },
+    {
+      "id": "e_51",
+      "source": "ps_wrapSet",
+      "target": "ps_wrapWorld",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-colliders"
+    },
+    {
+      "id": "e_52",
+      "source": "ps_killAll",
+      "target": "ps_killWorld",
+      "sourceHandle": "out-collider",
+      "targetHandle": "in-colliders"
+    },
+    {
+      "id": "e_53",
+      "source": "ps_wrapNext",
+      "target": "ps_wallWorld",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_54",
+      "source": "ps_wrapWorld",
+      "target": "ps_wallWorld",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_55",
+      "source": "ps_bounceWorld",
+      "target": "ps_wallWorld",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_56",
+      "source": "ps_clear",
+      "target": "ps_world",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_57",
+      "source": "ps_killWorld",
+      "target": "ps_world",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_58",
+      "source": "ps_wallWorld",
+      "target": "ps_world",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_59",
+      "source": "ps_world",
+      "target": "ps_balls",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_60",
+      "source": "ps_spawnAt",
+      "target": "ps_balls",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_61",
+      "source": "ps_rate",
+      "target": "ps_balls",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_62",
+      "source": "ps_spawnVel",
+      "target": "ps_balls",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-initialVel"
+    },
+    {
+      "id": "e_63",
+      "source": "ps_ballCol",
+      "target": "ps_balls",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_64",
+      "source": "ps_time",
+      "target": "ps_balls",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_65",
+      "source": "ps_balls",
+      "target": "ps_ballTrails",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_66",
+      "source": "ps_balls",
+      "target": "ps_ballDots",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_67",
+      "source": "ps_bumperX",
+      "target": "ps_bumperPos",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_68",
+      "source": "ps_bumperY",
+      "target": "ps_bumperPos",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_69",
+      "source": "ps_bumperFill",
+      "target": "ps_bumperRing",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_70",
+      "source": "ps_bumperPos",
+      "target": "ps_bumperLoop",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_71",
+      "source": "ps_bumperR",
+      "target": "ps_bumperLoop",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_72",
+      "source": "ps_bumperLoop",
+      "target": "ps_bumper",
+      "sourceHandle": "out-at",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_73",
+      "source": "ps_bumperLoop",
+      "target": "ps_bumper",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_74",
+      "source": "ps_bumperLoop",
+      "target": "ps_bumper",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_75",
+      "source": "ps_bumperRing",
+      "target": "ps_bumper",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_76",
+      "source": "ps_bumper",
+      "target": "ps_bumperLoop",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-bumper"
+    },
+    {
+      "id": "e_77",
+      "source": "ps_bumperLoop",
+      "target": "ps_bumperGlow",
+      "sourceHandle": "out-bumper",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_78",
+      "source": "ps_anchorNext",
+      "target": "ps_band",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_79",
+      "source": "ps_mpos",
+      "target": "ps_band",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_80",
+      "source": "ps_bandStroke",
+      "target": "ps_band",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_81",
+      "source": "ps_arcSteps",
+      "target": "ps_arc",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_82",
+      "source": "ps_anchorNext",
+      "target": "ps_arc",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_83",
+      "source": "ps_pull",
+      "target": "ps_arc",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_84",
+      "source": "ps_gravity",
+      "target": "ps_arc",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_85",
+      "source": "ps_arc",
+      "target": "ps_arcLoop",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_86",
+      "source": "ps_arcLoop",
+      "target": "ps_arcDot",
+      "sourceHandle": "out-at",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_87",
+      "source": "ps_arcFill",
+      "target": "ps_arcDot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_88",
+      "source": "ps_arcDot",
+      "target": "ps_arcLoop",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-dot"
+    },
+    {
+      "id": "e_89",
+      "source": "ps_band",
+      "target": "ps_aimGroup",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_90",
+      "source": "ps_arcLoop",
+      "target": "ps_aimGroup",
+      "sourceHandle": "out-dot",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_91",
+      "source": "ps_mouse",
+      "target": "ps_aim",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_92",
+      "source": "ps_aimGroup",
+      "target": "ps_aim",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_93",
+      "source": "ps_gravNames",
+      "target": "ps_gravName",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_94",
+      "source": "ps_gravityNext",
+      "target": "ps_gravName",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_95",
+      "source": "ps_wallNames",
+      "target": "ps_wallName",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_96",
+      "source": "ps_wrapNext",
+      "target": "ps_wallName",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_97",
+      "source": "ps_gravName",
+      "target": "ps_statusParts",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_98",
+      "source": "ps_wallName",
+      "target": "ps_statusParts",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_99",
+      "source": "ps_help",
+      "target": "ps_statusParts",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_100",
+      "source": "ps_statusParts",
+      "target": "ps_status",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-parts"
+    },
+    {
+      "id": "e_101",
+      "source": "ps_status",
+      "target": "ps_statusText",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_102",
+      "source": "ps_statusFill",
+      "target": "ps_statusText",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_103",
+      "source": "ps_bumperGlow",
+      "target": "ps_scene",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_104",
+      "source": "ps_ballTrails",
+      "target": "ps_scene",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_105",
+      "source": "ps_ballDots",
+      "target": "ps_scene",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_106",
+      "source": "ps_aim",
+      "target": "ps_scene",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_107",
+      "source": "ps_statusText",
+      "target": "ps_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_108",
+      "source": "ps_scene",
+      "target": "ps_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

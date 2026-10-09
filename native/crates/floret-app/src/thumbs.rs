@@ -200,7 +200,7 @@ pub fn render_sample(
     run.ok().flatten()
 }
 
-fn write_png(path: &Path, (w, h, px): &Rgba) -> Result<(), String> {
+pub(crate) fn write_png(path: &Path, (w, h, px): &Rgba) -> Result<(), String> {
     let mut buf = Vec::new();
     {
         let mut enc = png::Encoder::new(&mut buf, *w, *h);

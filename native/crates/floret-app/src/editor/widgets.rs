@@ -80,7 +80,7 @@ pub fn custom_of(def_type: &str) -> Option<Custom> {
         "text/font" => Custom::Font,
         "math/expression" => Custom::Expression,
         "math/add" | "math/sub" | "math/mul" | "math/div" | "math/min" | "math/max"
-        | "spread/merge" | "transform/group" => Custom::Slots(GROUP_SLOTS),
+        | "spread/merge" | "transform/group" | "sound/mix" => Custom::Slots(GROUP_SLOTS),
         _ => return None,
     })
 }

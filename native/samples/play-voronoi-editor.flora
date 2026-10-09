@@ -1,0 +1,1509 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.2.0",
+  "meta": {
+    "name": "Voronoi Editor",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "vo_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -324
+      },
+      "params": {
+        "text": "Voronoi Editor\n\nDrag the white handles to reshape the cells. Click empty space to add a point; X removes the one nearest the mouse. Hold L to relax the points (each slides towards the middle of its cell, and the mosaic evens out). D shows the Delaunay triangles, H the convex hull; R (or Reset) starts over.\n\nHow it works: the points are a State*. Each frame an Expression measures every point's distance to the mouse, Statistics (min) and Lookup (index-of) find the nearest, and a State remembers which one a press grabbed until release. The edit chain then moves, relaxes (Scatter's relax mode as a target), appends or removes points, and Cells draws Voronoi, Delaunay and hull from the result.",
+        "width": 460,
+        "height": 260
+      }
+    },
+    {
+      "id": "vo_mouse",
+      "defType": "input/mouse",
+      "position": {
+        "x": 53,
+        "y": 592
+      },
+      "params": {}
+    },
+    {
+      "id": "vo_mpos",
+      "defType": "math/expression",
+      "position": {
+        "x": 373,
+        "y": 444
+      },
+      "params": {
+        "expr": "vec2(clamp(x, -312.0, 312.0), clamp(y, -312.0, 312.0))"
+      }
+    },
+    {
+      "id": "vo_wasPressed",
+      "defType": "state/value",
+      "position": {
+        "x": 1026,
+        "y": 597
+      },
+      "params": {},
+      "portValues": {
+        "init": false
+      }
+    },
+    {
+      "id": "vo_click",
+      "defType": "math/expression",
+      "position": {
+        "x": 1292,
+        "y": 657
+      },
+      "params": {
+        "expr": "p && !was"
+      }
+    },
+    {
+      "id": "vo_kb",
+      "defType": "input/keyboard",
+      "position": {
+        "x": 16,
+        "y": 378
+      },
+      "params": {
+        "mode": "keys"
+      },
+      "portValues": {
+        "keys": "xldhr"
+      }
+    },
+    {
+      "id": "vo_seedPts",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 0,
+        "y": 740
+      },
+      "params": {
+        "mode": "poisson"
+      },
+      "portValues": {
+        "size": {
+          "x": 560,
+          "y": 560
+        },
+        "distance": 120,
+        "seed": 4
+      }
+    },
+    {
+      "id": "vo_pts",
+      "defType": "state/spread",
+      "position": {
+        "x": 400,
+        "y": 683
+      },
+      "params": {}
+    },
+    {
+      "id": "vo_dist",
+      "defType": "math/expression",
+      "position": {
+        "x": 671,
+        "y": 640
+      },
+      "params": {
+        "expr": "distance(q, m)"
+      }
+    },
+    {
+      "id": "vo_nearD",
+      "defType": "math/statistics",
+      "position": {
+        "x": 1000,
+        "y": 723
+      },
+      "params": {
+        "op": "min"
+      }
+    },
+    {
+      "id": "vo_nearest",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1295,
+        "y": 821
+      },
+      "params": {
+        "op": "index-of"
+      }
+    },
+    {
+      "id": "vo_grab",
+      "defType": "state/value",
+      "position": {
+        "x": 1332,
+        "y": 531
+      },
+      "params": {},
+      "portValues": {
+        "init": -1
+      }
+    },
+    {
+      "id": "vo_grabNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 1590,
+        "y": 514
+      },
+      "params": {
+        "expr": "click ? (d < 26 ? n : -1) : (pr ? g : -1)"
+      }
+    },
+    {
+      "id": "vo_dragged",
+      "defType": "math/expression",
+      "position": {
+        "x": 1896,
+        "y": 391
+      },
+      "params": {
+        "expr": "index == g ? m : q"
+      }
+    },
+    {
+      "id": "vo_relaxTarget",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 2172,
+        "y": 421
+      },
+      "params": {
+        "mode": "relax"
+      },
+      "portValues": {
+        "size": {
+          "x": 620,
+          "y": 620
+        },
+        "relax": 1
+      }
+    },
+    {
+      "id": "vo_relaxHeld",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 2191,
+        "y": 241
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 1
+      }
+    },
+    {
+      "id": "vo_relaxed",
+      "defType": "math/expression",
+      "position": {
+        "x": 2482,
+        "y": 292
+      },
+      "params": {
+        "expr": "l && index != g ? q + (r - q) * 0.12 : q"
+      }
+    },
+    {
+      "id": "vo_withNew",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2766,
+        "y": 447
+      },
+      "params": {
+        "op": "append"
+      }
+    },
+    {
+      "id": "vo_count",
+      "defType": "spread/count",
+      "position": {
+        "x": 687,
+        "y": 804
+      },
+      "params": {}
+    },
+    {
+      "id": "vo_adding",
+      "defType": "math/expression",
+      "position": {
+        "x": 3038,
+        "y": 489
+      },
+      "params": {
+        "expr": "q.x * 0 + (index < n || (click && d >= 26) ? 1 : 0)"
+      }
+    },
+    {
+      "id": "vo_added",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 3311,
+        "y": 465
+      },
+      "params": {
+        "op": "keep-where"
+      }
+    },
+    {
+      "id": "vo_removing",
+      "defType": "math/expression",
+      "position": {
+        "x": 985,
+        "y": 849
+      },
+      "params": {
+        "expr": "hit && k == 0 && n > 3 ? 1 : 0"
+      }
+    },
+    {
+      "id": "vo_removed",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 3582,
+        "y": 532
+      },
+      "params": {
+        "op": "remove"
+      }
+    },
+    {
+      "id": "vo_resetBang",
+      "defType": "io/bang",
+      "position": {
+        "x": 16,
+        "y": 976
+      },
+      "params": {
+        "label": "Reset"
+      }
+    },
+    {
+      "id": "vo_resetting",
+      "defType": "math/expression",
+      "position": {
+        "x": 373,
+        "y": 873
+      },
+      "params": {
+        "expr": "b || (hit && k == 4)"
+      }
+    },
+    {
+      "id": "vo_ptsNextBoth",
+      "defType": "spread/combine",
+      "position": {
+        "x": 3848,
+        "y": 448
+      },
+      "params": {
+        "op": "concat"
+      }
+    },
+    {
+      "id": "vo_ptsNextFirstCount",
+      "defType": "spread/count",
+      "position": {
+        "x": 3860,
+        "y": 596
+      },
+      "params": {}
+    },
+    {
+      "id": "vo_ptsNextPart",
+      "defType": "math/expression",
+      "position": {
+        "x": 4119,
+        "y": 497
+      },
+      "params": {
+        "expr": "q.x * 0 + ((index < n) == (c > 0.5) ? 1 : 0)"
+      }
+    },
+    {
+      "id": "vo_ptsNext",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 4411,
+        "y": 458
+      },
+      "params": {
+        "op": "keep-where"
+      }
+    },
+    {
+      "id": "vo_showTri",
+      "defType": "state/value",
+      "position": {
+        "x": 57,
+        "y": 0
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "vo_showTriNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 373,
+        "y": 40
+      },
+      "params": {
+        "expr": "hit && k == 2 ? 1 - s : s"
+      }
+    },
+    {
+      "id": "vo_showHull",
+      "defType": "state/value",
+      "position": {
+        "x": 57,
+        "y": 126
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "vo_showHullNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 373,
+        "y": 226
+      },
+      "params": {
+        "expr": "hit && k == 3 ? 1 - s : s"
+      }
+    },
+    {
+      "id": "vo_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 58,
+        "y": 252
+      },
+      "params": {}
+    },
+    {
+      "id": "vo_palette",
+      "defType": "color/palette",
+      "position": {
+        "x": 4392,
+        "y": 80
+      },
+      "params": {
+        "mode": "cosine",
+        "stopCount": 9
+      },
+      "portValues": {
+        "a": {
+          "r": 0.5019607843137255,
+          "g": 0.5019607843137255,
+          "b": 0.5019607843137255,
+          "a": 1.0
+        },
+        "b": {
+          "r": 0.5019607843137255,
+          "g": 0.5019607843137255,
+          "b": 0.5019607843137255,
+          "a": 1.0
+        },
+        "c": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "d": {
+          "r": 0.0,
+          "g": 0.2,
+          "b": 0.4196078431372549,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "vo_cells",
+      "defType": "geometry/cells",
+      "position": {
+        "x": 4750,
+        "y": 22
+      },
+      "params": {
+        "mode": "voronoi"
+      },
+      "portValues": {
+        "size": {
+          "x": 640,
+          "y": 640
+        },
+        "gap": 5
+      }
+    },
+    {
+      "id": "vo_rounded",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 5120,
+        "y": 89
+      },
+      "params": {
+        "mode": "round-corners"
+      },
+      "portValues": {
+        "radius": 12
+      }
+    },
+    {
+      "id": "vo_triStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 4130,
+        "y": 271
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.45
+        },
+        "width": 1.2
+      }
+    },
+    {
+      "id": "vo_triNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 4448,
+        "y": 308
+      },
+      "params": {}
+    },
+    {
+      "id": "vo_tri",
+      "defType": "geometry/cells",
+      "position": {
+        "x": 4750,
+        "y": 258
+      },
+      "params": {
+        "mode": "delaunay"
+      }
+    },
+    {
+      "id": "vo_triShown",
+      "defType": "logic/select",
+      "position": {
+        "x": 5164,
+        "y": 303
+      },
+      "params": {}
+    },
+    {
+      "id": "vo_hullStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 4136,
+        "y": 683
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8196078431372549,
+          "b": 0.4,
+          "a": 1.0
+        },
+        "width": 2.5
+      }
+    },
+    {
+      "id": "vo_hullNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 4448,
+        "y": 621
+      },
+      "params": {}
+    },
+    {
+      "id": "vo_hull",
+      "defType": "geometry/cells",
+      "position": {
+        "x": 4750,
+        "y": 472
+      },
+      "params": {
+        "mode": "hull"
+      }
+    },
+    {
+      "id": "vo_hullShown",
+      "defType": "logic/select",
+      "position": {
+        "x": 5164,
+        "y": 451
+      },
+      "params": {}
+    },
+    {
+      "id": "vo_handleSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 4751,
+        "y": 686
+      },
+      "params": {
+        "expr": "q.x * 0 + (index == g ? 18 : (index == n && d < 26 ? 15 : 10))"
+      }
+    },
+    {
+      "id": "vo_handleFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 4425,
+        "y": 971
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.06274509803921569,
+          "g": 0.06274509803921569,
+          "b": 0.08627450980392157,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "vo_handleRing",
+      "defType": "style/stroke",
+      "position": {
+        "x": 4768,
+        "y": 905
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 1.0
+        },
+        "width": 2
+      }
+    },
+    {
+      "id": "vo_handleLoop",
+      "defType": "region/foreach",
+      "position": {
+        "x": 5046,
+        "y": 621
+      },
+      "params": {
+        "width": 340,
+        "height": 224,
+        "label": "Handles"
+      },
+      "ports": [
+        {
+          "id": "at",
+          "name": "at",
+          "type": "vec2",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "d",
+          "name": "d",
+          "type": "number",
+          "direction": "input",
+          "y": 110
+        },
+        {
+          "id": "handle",
+          "name": "handle",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 340,
+      "height": 224
+    },
+    {
+      "id": "vo_handle",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 129,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "vo_handleLoop"
+    },
+    {
+      "id": "vo_countText",
+      "defType": "string/format-number",
+      "position": {
+        "x": 994,
+        "y": 1067
+      },
+      "params": {},
+      "portValues": {
+        "decimals": 0,
+        "suffix": " points"
+      }
+    },
+    {
+      "id": "vo_help",
+      "defType": "value/string",
+      "position": {
+        "x": 990,
+        "y": 1325
+      },
+      "params": {
+        "value": "drag · click to add · X remove · hold L relax · D H R"
+      }
+    },
+    {
+      "id": "vo_statusParts",
+      "defType": "spread/merge",
+      "position": {
+        "x": 1292,
+        "y": 1171
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "vo_status",
+      "defType": "string/concat",
+      "position": {
+        "x": 1615,
+        "y": 1142
+      },
+      "params": {
+        "separator": "   ·   "
+      }
+    },
+    {
+      "id": "vo_statusBack",
+      "defType": "style/fill",
+      "position": {
+        "x": 4762,
+        "y": 1075
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.55
+        }
+      }
+    },
+    {
+      "id": "vo_statusBar",
+      "defType": "draw/rect",
+      "position": {
+        "x": 5156,
+        "y": 893
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 304.0
+        },
+        "w": 640,
+        "h": 32
+      }
+    },
+    {
+      "id": "vo_statusFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1601,
+        "y": 1268
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.75
+        }
+      }
+    },
+    {
+      "id": "vo_statusText",
+      "defType": "draw/text",
+      "position": {
+        "x": 1936,
+        "y": 1147
+      },
+      "params": {
+        "size": 13,
+        "align": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 308.0
+        }
+      }
+    },
+    {
+      "id": "vo_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 5555,
+        "y": 572
+      },
+      "params": {
+        "slotCount": 6
+      }
+    },
+    {
+      "id": "vo_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 5819,
+        "y": 572
+      },
+      "params": {
+        "width": 640,
+        "height": 640
+      },
+      "portValues": {
+        "background": {
+          "r": 0.058823529411764705,
+          "g": 0.058823529411764705,
+          "b": 0.0784313725490196,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "vo_mouse",
+      "target": "vo_mpos",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_2",
+      "source": "vo_mouse",
+      "target": "vo_mpos",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_3",
+      "source": "vo_mouse",
+      "target": "vo_wasPressed",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_4",
+      "source": "vo_mouse",
+      "target": "vo_click",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_5",
+      "source": "vo_wasPressed",
+      "target": "vo_click",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-was"
+    },
+    {
+      "id": "e_6",
+      "source": "vo_seedPts",
+      "target": "vo_pts",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_7",
+      "source": "vo_pts",
+      "target": "vo_dist",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_8",
+      "source": "vo_mpos",
+      "target": "vo_dist",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_9",
+      "source": "vo_dist",
+      "target": "vo_nearD",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_10",
+      "source": "vo_dist",
+      "target": "vo_nearest",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_11",
+      "source": "vo_nearD",
+      "target": "vo_nearest",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_12",
+      "source": "vo_click",
+      "target": "vo_grabNext",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-click"
+    },
+    {
+      "id": "e_13",
+      "source": "vo_nearD",
+      "target": "vo_grabNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_14",
+      "source": "vo_nearest",
+      "target": "vo_grabNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_15",
+      "source": "vo_mouse",
+      "target": "vo_grabNext",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pr"
+    },
+    {
+      "id": "e_16",
+      "source": "vo_grab",
+      "target": "vo_grabNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_17",
+      "source": "vo_grabNext",
+      "target": "vo_grab",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_18",
+      "source": "vo_pts",
+      "target": "vo_dragged",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_19",
+      "source": "vo_grabNext",
+      "target": "vo_dragged",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_20",
+      "source": "vo_mpos",
+      "target": "vo_dragged",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_21",
+      "source": "vo_dragged",
+      "target": "vo_relaxTarget",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_22",
+      "source": "vo_kb",
+      "target": "vo_relaxHeld",
+      "sourceHandle": "out-down",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_23",
+      "source": "vo_relaxHeld",
+      "target": "vo_relaxed",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_24",
+      "source": "vo_dragged",
+      "target": "vo_relaxed",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_25",
+      "source": "vo_relaxTarget",
+      "target": "vo_relaxed",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_26",
+      "source": "vo_grabNext",
+      "target": "vo_relaxed",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_27",
+      "source": "vo_relaxed",
+      "target": "vo_withNew",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_28",
+      "source": "vo_mpos",
+      "target": "vo_withNew",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-tail"
+    },
+    {
+      "id": "e_29",
+      "source": "vo_pts",
+      "target": "vo_count",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_30",
+      "source": "vo_withNew",
+      "target": "vo_adding",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_31",
+      "source": "vo_count",
+      "target": "vo_adding",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_32",
+      "source": "vo_click",
+      "target": "vo_adding",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-click"
+    },
+    {
+      "id": "e_33",
+      "source": "vo_nearD",
+      "target": "vo_adding",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_34",
+      "source": "vo_withNew",
+      "target": "vo_added",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_35",
+      "source": "vo_adding",
+      "target": "vo_added",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_36",
+      "source": "vo_kb",
+      "target": "vo_removing",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_37",
+      "source": "vo_kb",
+      "target": "vo_removing",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_38",
+      "source": "vo_count",
+      "target": "vo_removing",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_39",
+      "source": "vo_added",
+      "target": "vo_removed",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_40",
+      "source": "vo_nearest",
+      "target": "vo_removed",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_41",
+      "source": "vo_removing",
+      "target": "vo_removed",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_42",
+      "source": "vo_resetBang",
+      "target": "vo_resetting",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_43",
+      "source": "vo_kb",
+      "target": "vo_resetting",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_44",
+      "source": "vo_kb",
+      "target": "vo_resetting",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_45",
+      "source": "vo_seedPts",
+      "target": "vo_ptsNextBoth",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_46",
+      "source": "vo_removed",
+      "target": "vo_ptsNextBoth",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_47",
+      "source": "vo_seedPts",
+      "target": "vo_ptsNextFirstCount",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_48",
+      "source": "vo_ptsNextBoth",
+      "target": "vo_ptsNextPart",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_49",
+      "source": "vo_ptsNextFirstCount",
+      "target": "vo_ptsNextPart",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_50",
+      "source": "vo_resetting",
+      "target": "vo_ptsNextPart",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_51",
+      "source": "vo_ptsNextBoth",
+      "target": "vo_ptsNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_52",
+      "source": "vo_ptsNextPart",
+      "target": "vo_ptsNext",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_53",
+      "source": "vo_ptsNext",
+      "target": "vo_pts",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_54",
+      "source": "vo_kb",
+      "target": "vo_showTriNext",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_55",
+      "source": "vo_kb",
+      "target": "vo_showTriNext",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_56",
+      "source": "vo_showTri",
+      "target": "vo_showTriNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_57",
+      "source": "vo_showTriNext",
+      "target": "vo_showTri",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_58",
+      "source": "vo_kb",
+      "target": "vo_showHullNext",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-hit"
+    },
+    {
+      "id": "e_59",
+      "source": "vo_kb",
+      "target": "vo_showHullNext",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_60",
+      "source": "vo_showHull",
+      "target": "vo_showHullNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_61",
+      "source": "vo_showHullNext",
+      "target": "vo_showHull",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_62",
+      "source": "vo_ptsNext",
+      "target": "vo_cells",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_63",
+      "source": "vo_palette",
+      "target": "vo_cells",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_64",
+      "source": "vo_cells",
+      "target": "vo_rounded",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_65",
+      "source": "vo_triStroke",
+      "target": "vo_triNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_66",
+      "source": "vo_ptsNext",
+      "target": "vo_tri",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_67",
+      "source": "vo_triNoFill",
+      "target": "vo_tri",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_68",
+      "source": "vo_showTriNext",
+      "target": "vo_triShown",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_69",
+      "source": "vo_tri",
+      "target": "vo_triShown",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_70",
+      "source": "vo_hullStroke",
+      "target": "vo_hullNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_71",
+      "source": "vo_ptsNext",
+      "target": "vo_hull",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_72",
+      "source": "vo_hullNoFill",
+      "target": "vo_hull",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_73",
+      "source": "vo_showHullNext",
+      "target": "vo_hullShown",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_74",
+      "source": "vo_hull",
+      "target": "vo_hullShown",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_75",
+      "source": "vo_ptsNext",
+      "target": "vo_handleSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-q"
+    },
+    {
+      "id": "e_76",
+      "source": "vo_grabNext",
+      "target": "vo_handleSize",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-g"
+    },
+    {
+      "id": "e_77",
+      "source": "vo_nearest",
+      "target": "vo_handleSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_78",
+      "source": "vo_nearD",
+      "target": "vo_handleSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_79",
+      "source": "vo_handleFill",
+      "target": "vo_handleRing",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_80",
+      "source": "vo_ptsNext",
+      "target": "vo_handleLoop",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_81",
+      "source": "vo_handleSize",
+      "target": "vo_handleLoop",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_82",
+      "source": "vo_handleLoop",
+      "target": "vo_handle",
+      "sourceHandle": "out-at",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_83",
+      "source": "vo_handleLoop",
+      "target": "vo_handle",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_84",
+      "source": "vo_handleLoop",
+      "target": "vo_handle",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_85",
+      "source": "vo_handleRing",
+      "target": "vo_handle",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_86",
+      "source": "vo_handle",
+      "target": "vo_handleLoop",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-handle"
+    },
+    {
+      "id": "e_87",
+      "source": "vo_count",
+      "target": "vo_countText",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_88",
+      "source": "vo_countText",
+      "target": "vo_statusParts",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_89",
+      "source": "vo_help",
+      "target": "vo_statusParts",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_90",
+      "source": "vo_statusParts",
+      "target": "vo_status",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-parts"
+    },
+    {
+      "id": "e_91",
+      "source": "vo_statusBack",
+      "target": "vo_statusBar",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_92",
+      "source": "vo_status",
+      "target": "vo_statusText",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_93",
+      "source": "vo_statusFill",
+      "target": "vo_statusText",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_94",
+      "source": "vo_rounded",
+      "target": "vo_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_95",
+      "source": "vo_triShown",
+      "target": "vo_scene",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_96",
+      "source": "vo_hullShown",
+      "target": "vo_scene",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_97",
+      "source": "vo_handleLoop",
+      "target": "vo_scene",
+      "sourceHandle": "out-handle",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_98",
+      "source": "vo_statusBar",
+      "target": "vo_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_99",
+      "source": "vo_statusText",
+      "target": "vo_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s6"
+    },
+    {
+      "id": "e_100",
+      "source": "vo_scene",
+      "target": "vo_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

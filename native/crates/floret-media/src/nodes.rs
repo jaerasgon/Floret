@@ -98,7 +98,7 @@ impl Dsp {
                 amp: ramp(*amp),
             })),
             AudioNode::AudioIn { .. } => Dsp::Mic(ramp(0.0)),
-            AudioNode::Gain { level, .. } => Dsp::Gain(ramp(*level)),
+            AudioNode::Gain { level, .. } | AudioNode::Mix { level, .. } => Dsp::Gain(ramp(*level)),
             AudioNode::Filter { freq, q, .. } => Dsp::Filter(Filter {
                 biquad: Biquad::default(),
                 freq: ramp(*freq),

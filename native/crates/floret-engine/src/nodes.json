@@ -1,5 +1,5 @@
 {
- "count": 358,
+ "count": 360,
  "nodes": [
   {
    "type": "collider/circle",
@@ -3275,7 +3275,7 @@
    "category": "Input",
    "group": "Input & Sound",
    "label": "Keyboard",
-   "description": "Read the last key pressed in the preview.",
+   "description": "Keys pressed in the preview. `mode` last: the last key pressed (`key`) and whether any is down (`pressed`). keys: which of the `keys` listed are held (`down`, one per key: one character each, or names split by commas, e.g. `ArrowLeft, ArrowRight, space`) and `index`, the most recently pressed one still held (−1 none) — a keyboard piano or game controls. text: the `text` typed so far (Backspace deletes, Enter starts a line, at most `max` characters; a rising `clear` empties it). `hit` is true on the frame a key (a listed one; in text mode any typing) goes down.",
    "inputs": [],
    "outputs": [
     {
@@ -3287,12 +3287,41 @@
      "name": "key",
      "type": "string",
      "kind": "single"
+    },
+    {
+     "name": "down",
+     "type": "boolean",
+     "kind": "spread"
+    },
+    {
+     "name": "index",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "text",
+     "type": "string",
+     "kind": "single"
+    },
+    {
+     "name": "hit",
+     "type": "boolean",
+     "kind": "single"
     }
    ],
-   "eval": "context",
-   "dynamicInputs": false,
-   "defaultParams": null,
-   "paramOptions": null
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "last"
+   },
+   "paramOptions": {
+    "mode": [
+     "last",
+     "keys",
+     "text"
+    ]
+   },
+   "effectful": true
   },
   {
    "type": "input/landmarks",
@@ -8510,6 +8539,44 @@
    "paramOptions": null
   },
   {
+   "type": "sound/mix",
+   "category": "Sound",
+   "group": "Input & Sound",
+   "label": "Mix",
+   "description": "Sum several audio chains into one, × `level` — so voices can share a delay, a reverb, an analyser or one Output. The header's `− n +` sets how many inputs.",
+   "inputs": [
+    {
+     "name": "in1",
+     "type": "audio",
+     "kind": "single"
+    },
+    {
+     "name": "in2",
+     "type": "audio",
+     "kind": "single"
+    },
+    {
+     "name": "level",
+     "type": "number",
+     "kind": "single",
+     "default": 1
+    }
+   ],
+   "outputs": [
+    {
+     "name": "audio",
+     "type": "audio",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "slotCount": 2
+   },
+   "paramOptions": null
+  },
+  {
    "type": "sound/mono-synth",
    "category": "Sound",
    "group": "Input & Sound",
@@ -8796,6 +8863,86 @@
     "reverse": false
    },
    "paramOptions": null
+  },
+  {
+   "type": "sound/scale",
+   "category": "Sound",
+   "group": "Input & Sound",
+   "label": "Scale",
+   "description": "Snap numbers to the notes of a musical scale, so mice, sliders, noise and sensors play in key. `mode` degree: steps of the `scale` up from `root` (a MIDI note; 0 = the root, one more than the scale's length = an octave up, negative goes down) + `octave` octaves. quantize: any MIDI `note` moved to the nearest note of the scale. range: `amount` 0..1 spread over `octaves` octaves of the scale from the root. Per element over the first pin's spread. Outputs the MIDI `note`, its `freq` in Hz and its `index` in the scale (0 = the root), e.g. for colours. `scale`: major, minor, harmonic-minor, dorian, phrygian, lydian, mixolydian, pentatonic, minor-pentatonic, blues, whole-tone, chromatic or custom (`steps`: semitones from the root, e.g. `0 3 5 7 10`).",
+   "inputs": [
+    {
+     "name": "degree",
+     "type": "number",
+     "kind": "spread",
+     "default": 0
+    },
+    {
+     "name": "root",
+     "type": "number",
+     "kind": "single",
+     "default": 60
+    },
+    {
+     "name": "octave",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "integer": true
+    },
+    {
+     "name": "scale",
+     "type": "string",
+     "kind": "single",
+     "default": "major",
+     "param": "scale"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "note",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "freq",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "index",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "degree",
+    "scale": "major"
+   },
+   "paramOptions": {
+    "mode": [
+     "degree",
+     "quantize",
+     "range"
+    ],
+    "scale": [
+     "major",
+     "minor",
+     "harmonic-minor",
+     "dorian",
+     "phrygian",
+     "lydian",
+     "mixolydian",
+     "pentatonic",
+     "minor-pentatonic",
+     "blues",
+     "whole-tone",
+     "chromatic",
+     "custom"
+    ]
+   }
   },
   {
    "type": "sound/sound-file",

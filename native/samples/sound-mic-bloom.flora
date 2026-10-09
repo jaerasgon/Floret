@@ -1,0 +1,1497 @@
+{
+  "kind": "floret.patch",
+  "version": 2,
+  "appVersion": "0.2.0",
+  "meta": {
+    "name": "Mic Bloom",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "mb_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -324
+      },
+      "params": {
+        "text": "Mic Bloom\n\nA flower that listens. Switch Microphone on and talk, sing, clap or play music near the computer: the petals are the spectrum (low notes at the top, high round the sides), the core swells with the bass, a beat sends a ring out and sparks fly with the treble. With the microphone off it listens to its own little demo loop (Demo volume sets how loud you hear it).\n\nHow it works: AudioIn and the demo (a MonoSynth arpeggio + noise hats) → Mix → FFT (64 bins). Expression turns the spectrum into 128 petal points mirrored left–right; Statistics (mean) of slices give bass and treble, Peak Detect finds beats. Without sound at all (no audio device) it breathes on a noise spectrum so it never goes dark. Echo smears it into trails.",
+        "width": 470,
+        "height": 260
+      }
+    },
+    {
+      "id": "mb_micOn",
+      "defType": "io/toggle",
+      "position": {
+        "x": 0,
+        "y": 999
+      },
+      "params": {
+        "value": false,
+        "label": "Microphone"
+      }
+    },
+    {
+      "id": "mb_mic",
+      "defType": "sound/audio-in",
+      "position": {
+        "x": 1691,
+        "y": 937
+      },
+      "params": {},
+      "portValues": {
+        "amp": 1
+      }
+    },
+    {
+      "id": "mb_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 3689,
+        "y": 1576
+      },
+      "params": {}
+    },
+    {
+      "id": "mb_demoSteps",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 1,
+        "y": 376
+      },
+      "params": {
+        "data": "0,2,4,7,9,7,4,2,0,4,7,11,9,7,4,2"
+      }
+    },
+    {
+      "id": "mb_demoStep",
+      "defType": "math/expression",
+      "position": {
+        "x": 0,
+        "y": 480
+      },
+      "params": {
+        "expr": "floor(t * 6) % 16"
+      }
+    },
+    {
+      "id": "mb_demoDegree",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 279,
+        "y": 414
+      },
+      "params": {
+        "op": "at"
+      }
+    },
+    {
+      "id": "mb_demoScale",
+      "defType": "sound/scale",
+      "position": {
+        "x": 546,
+        "y": 394
+      },
+      "params": {
+        "mode": "degree",
+        "scale": "minor-pentatonic"
+      },
+      "portValues": {
+        "root": 57
+      }
+    },
+    {
+      "id": "mb_demoNote",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 810,
+        "y": 375
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      }
+    },
+    {
+      "id": "mb_demoGate",
+      "defType": "math/expression",
+      "position": {
+        "x": 807,
+        "y": 523
+      },
+      "params": {
+        "expr": "fract(t * 6) < 0.45"
+      }
+    },
+    {
+      "id": "mb_demoSynth",
+      "defType": "sound/mono-synth",
+      "position": {
+        "x": 1095,
+        "y": 404
+      },
+      "params": {},
+      "portValues": {
+        "velocity": 0.6,
+        "attack": 0.005,
+        "decay": 0.15,
+        "sustain": 0.2,
+        "release": 0.25
+      }
+    },
+    {
+      "id": "mb_bassGate",
+      "defType": "math/expression",
+      "position": {
+        "x": 807,
+        "y": 904
+      },
+      "params": {
+        "expr": "fract(t * 1.5) < 0.25"
+      }
+    },
+    {
+      "id": "mb_bass",
+      "defType": "sound/mono-synth",
+      "position": {
+        "x": 1095,
+        "y": 810
+      },
+      "params": {},
+      "portValues": {
+        "note": 33,
+        "velocity": 0.9,
+        "attack": 0.003,
+        "decay": 0.3,
+        "sustain": 0,
+        "release": 0.2
+      }
+    },
+    {
+      "id": "mb_hatNoise",
+      "defType": "sound/noise",
+      "position": {
+        "x": 10,
+        "y": 639
+      },
+      "params": {
+        "type": "white"
+      },
+      "portValues": {
+        "amp": 0.5
+      }
+    },
+    {
+      "id": "mb_hatGate",
+      "defType": "math/expression",
+      "position": {
+        "x": 0,
+        "y": 765
+      },
+      "params": {
+        "expr": "fract(t * 3 + 0.5) < 0.08"
+      }
+    },
+    {
+      "id": "mb_hat",
+      "defType": "sound/envelope",
+      "position": {
+        "x": 305,
+        "y": 655
+      },
+      "params": {},
+      "portValues": {
+        "attack": 0.001,
+        "decay": 0.05,
+        "sustain": 0,
+        "release": 0.04
+      }
+    },
+    {
+      "id": "mb_hatFilter",
+      "defType": "sound/filter",
+      "position": {
+        "x": 1076,
+        "y": 640
+      },
+      "params": {
+        "type": "highpass"
+      },
+      "portValues": {
+        "freq": 6000,
+        "res": 1
+      }
+    },
+    {
+      "id": "mb_demoMix",
+      "defType": "sound/mix",
+      "position": {
+        "x": 1369,
+        "y": 649
+      },
+      "params": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "mb_demoOn",
+      "defType": "math/expression",
+      "position": {
+        "x": 1369,
+        "y": 896
+      },
+      "params": {
+        "expr": "m ? 0 : 1"
+      }
+    },
+    {
+      "id": "mb_demo",
+      "defType": "sound/gain",
+      "position": {
+        "x": 1695,
+        "y": 811
+      },
+      "params": {}
+    },
+    {
+      "id": "mb_demoVol",
+      "defType": "io/slider",
+      "position": {
+        "x": 1657,
+        "y": 685
+      },
+      "params": {
+        "value": 0.5,
+        "min": 0,
+        "max": 1,
+        "label": "Demo volume"
+      }
+    },
+    {
+      "id": "mb_speaker",
+      "defType": "sound/output",
+      "position": {
+        "x": 1969,
+        "y": 738
+      },
+      "params": {}
+    },
+    {
+      "id": "mb_listen",
+      "defType": "sound/mix",
+      "position": {
+        "x": 1933,
+        "y": 866
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "mb_fft",
+      "defType": "sound/fft",
+      "position": {
+        "x": 2207,
+        "y": 784
+      },
+      "params": {
+        "bins": "64"
+      },
+      "portValues": {
+        "smoothing": 0.75
+      }
+    },
+    {
+      "id": "mb_beat",
+      "defType": "sound/peak-detect",
+      "position": {
+        "x": 2229,
+        "y": 932
+      },
+      "params": {},
+      "portValues": {
+        "freq1": 30,
+        "freq2": 160,
+        "threshold": 0.45
+      }
+    },
+    {
+      "id": "mb_bands",
+      "defType": "spread/range",
+      "position": {
+        "x": 1948,
+        "y": 1162
+      },
+      "params": {},
+      "portValues": {
+        "count": 64
+      }
+    },
+    {
+      "id": "mb_standIn",
+      "defType": "math/expression",
+      "position": {
+        "x": 2207,
+        "y": 1102
+      },
+      "params": {
+        "expr": "(1 - k / 64) * 150 * noise(k * 0.15, t * 0.8) + 40 * (0.5 + 0.5 * sin(t * 2.5 - k * 0.2))"
+      }
+    },
+    {
+      "id": "mb_withStandIn",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2509,
+        "y": 885
+      },
+      "params": {
+        "op": "concat"
+      }
+    },
+    {
+      "id": "mb_spectrum",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 2790,
+        "y": 750
+      },
+      "params": {
+        "op": "take"
+      },
+      "portValues": {
+        "count": 64
+      }
+    },
+    {
+      "id": "mb_lows",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 3069,
+        "y": 704
+      },
+      "params": {
+        "op": "take"
+      },
+      "portValues": {
+        "count": 6
+      }
+    },
+    {
+      "id": "mb_bassLevel",
+      "defType": "math/statistics",
+      "position": {
+        "x": 3358,
+        "y": 728
+      },
+      "params": {
+        "op": "mean"
+      }
+    },
+    {
+      "id": "mb_highs",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 3069,
+        "y": 852
+      },
+      "params": {
+        "op": "skip"
+      },
+      "portValues": {
+        "count": 36
+      }
+    },
+    {
+      "id": "mb_trebleLevel",
+      "defType": "math/statistics",
+      "position": {
+        "x": 3358,
+        "y": 868
+      },
+      "params": {
+        "op": "mean"
+      }
+    },
+    {
+      "id": "mb_bassSmooth",
+      "defType": "motion/smooth",
+      "position": {
+        "x": 3681,
+        "y": 738
+      },
+      "params": {},
+      "portValues": {
+        "rate": 10
+      }
+    },
+    {
+      "id": "mb_petalIdx",
+      "defType": "spread/range",
+      "position": {
+        "x": 3081,
+        "y": 376
+      },
+      "params": {},
+      "portValues": {
+        "count": 128
+      }
+    },
+    {
+      "id": "mb_mirrorIdx",
+      "defType": "math/expression",
+      "position": {
+        "x": 3343,
+        "y": 430
+      },
+      "params": {
+        "expr": "i < 64 ? i : 127 - i"
+      }
+    },
+    {
+      "id": "mb_petalVal",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 3650,
+        "y": 426
+      },
+      "params": {
+        "op": "pick"
+      }
+    },
+    {
+      "id": "mb_spin",
+      "defType": "state/value",
+      "position": {
+        "x": 3383,
+        "y": 602
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "mb_spinNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 3647,
+        "y": 574
+      },
+      "params": {
+        "expr": "a + 0.002 + tr / 255 * 0.03"
+      }
+    },
+    {
+      "id": "mb_outer",
+      "defType": "math/expression",
+      "position": {
+        "x": 3956,
+        "y": 302
+      },
+      "params": {
+        "expr": "vec2(sin(i / 128 * tau + a), -cos(i / 128 * tau + a)) * (95 + v / 255 * 190)"
+      }
+    },
+    {
+      "id": "mb_inner",
+      "defType": "math/expression",
+      "position": {
+        "x": 3956,
+        "y": 510
+      },
+      "params": {
+        "expr": "vec2(sin(i / 128 * tau - a * 2), -cos(i / 128 * tau - a * 2)) * (60 + v / 255 * 90)"
+      }
+    },
+    {
+      "id": "mb_petalCols",
+      "defType": "color/palette",
+      "position": {
+        "x": 3647,
+        "y": 0
+      },
+      "params": {
+        "stopCount": 4,
+        "c0": "#ff3cac",
+        "c1": "#784ba0",
+        "c2": "#2b86c5",
+        "c3": "#00f5d4"
+      }
+    },
+    {
+      "id": "mb_outerFill",
+      "defType": "style/gradient",
+      "position": {
+        "x": 3965,
+        "y": 22
+      },
+      "params": {
+        "mode": "radial",
+        "units": "canvas"
+      },
+      "portValues": {
+        "radius": 300
+      }
+    },
+    {
+      "id": "mb_outerShape",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 4303,
+        "y": 381
+      },
+      "params": {},
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "mb_innerFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 3967,
+        "y": 718
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8196078431372549,
+          "b": 0.4,
+          "a": 0.85
+        }
+      }
+    },
+    {
+      "id": "mb_innerShape",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 4303,
+        "y": 685
+      },
+      "params": {},
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "mb_coreSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 3956,
+        "y": 844
+      },
+      "params": {
+        "expr": "40 + b / 255 * 120"
+      }
+    },
+    {
+      "id": "mb_coreFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 3973,
+        "y": 986
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.9568627450980393,
+          "b": 0.8784313725490196,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "mb_core",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 4300,
+        "y": 855
+      },
+      "params": {}
+    },
+    {
+      "id": "mb_lastBeat",
+      "defType": "state/value",
+      "position": {
+        "x": 2247,
+        "y": 1266
+      },
+      "params": {},
+      "portValues": {
+        "init": -10
+      }
+    },
+    {
+      "id": "mb_lastBeatNext",
+      "defType": "math/expression",
+      "position": {
+        "x": 2506,
+        "y": 1109
+      },
+      "params": {
+        "expr": "d && t - l > 0.2 ? t : l"
+      }
+    },
+    {
+      "id": "mb_beatSize",
+      "defType": "math/expression",
+      "position": {
+        "x": 3343,
+        "y": 1186
+      },
+      "params": {
+        "expr": "160 + (t - l) * 900"
+      }
+    },
+    {
+      "id": "mb_beatCol",
+      "defType": "math/expression",
+      "position": {
+        "x": 2787,
+        "y": 1209
+      },
+      "params": {
+        "expr": "rgba(1, 0.85, 0.6, clamp(1 - (t - l) * 1.6, 0, 1))"
+      }
+    },
+    {
+      "id": "mb_beatStroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 3104,
+        "y": 1294
+      },
+      "params": {},
+      "portValues": {
+        "width": 4
+      }
+    },
+    {
+      "id": "mb_beatNoFill",
+      "defType": "style/no-fill",
+      "position": {
+        "x": 3383,
+        "y": 1328
+      },
+      "params": {}
+    },
+    {
+      "id": "mb_beatRing",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 3677,
+        "y": 1242
+      },
+      "params": {}
+    },
+    {
+      "id": "mb_sparkRate",
+      "defType": "math/expression",
+      "position": {
+        "x": 3647,
+        "y": 1100
+      },
+      "params": {
+        "expr": "max(0, tr - 25) * 6"
+      }
+    },
+    {
+      "id": "mb_sparkAt",
+      "defType": "math/expression",
+      "position": {
+        "x": 3647,
+        "y": 1434
+      },
+      "params": {
+        "expr": "vec2(sin(t * 7.3), cos(t * 5.1)) * 120"
+      }
+    },
+    {
+      "id": "mb_sparkWorld",
+      "defType": "physics/world",
+      "position": {
+        "x": 3667,
+        "y": 864
+      },
+      "params": {},
+      "portValues": {
+        "gravity": {
+          "x": 0,
+          "y": 0
+        },
+        "drag": 0.4
+      }
+    },
+    {
+      "id": "mb_sparks",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 3973,
+        "y": 1164
+      },
+      "params": {
+        "maxCount": 700,
+        "seed": 8
+      },
+      "portValues": {
+        "lifetime": 1.4,
+        "initialVel": {
+          "x": 0,
+          "y": 0
+        },
+        "velSpread": 2.4,
+        "size": 2.5,
+        "color": {
+          "r": 0.7843137254901961,
+          "g": 1.0,
+          "b": 0.9568627450980393,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "mb_sparkDots",
+      "defType": "particles/render-as",
+      "position": {
+        "x": 4281,
+        "y": 1047
+      },
+      "params": {}
+    },
+    {
+      "id": "mb_flower",
+      "defType": "transform/group",
+      "position": {
+        "x": 4588,
+        "y": 801
+      },
+      "params": {
+        "slotCount": 5
+      }
+    },
+    {
+      "id": "mb_trails",
+      "defType": "gpu/echo",
+      "position": {
+        "x": 4874,
+        "y": 904
+      },
+      "params": {
+        "mode": "trails"
+      },
+      "portValues": {
+        "decay": 0.8
+      }
+    },
+    {
+      "id": "mb_bloom",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 5161,
+        "y": 1028
+      },
+      "params": {
+        "mode": "bloom"
+      },
+      "portValues": {
+        "threshold": 0.5,
+        "radius": 20,
+        "intensity": 0.8
+      }
+    },
+    {
+      "id": "mb_micTxtOn",
+      "defType": "value/string",
+      "position": {
+        "x": 5,
+        "y": 1137
+      },
+      "params": {
+        "value": "listening to the microphone"
+      }
+    },
+    {
+      "id": "mb_micTxtOff",
+      "defType": "value/string",
+      "position": {
+        "x": 5,
+        "y": 1241
+      },
+      "params": {
+        "value": "playing its demo · switch Microphone on to listen"
+      }
+    },
+    {
+      "id": "mb_statusStr",
+      "defType": "logic/select",
+      "position": {
+        "x": 307,
+        "y": 1130
+      },
+      "params": {}
+    },
+    {
+      "id": "mb_statusFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 287,
+        "y": 1278
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.9019607843137255,
+          "g": 0.8509803921568627,
+          "b": 1.0,
+          "a": 0.55
+        }
+      }
+    },
+    {
+      "id": "mb_statusText",
+      "defType": "draw/text",
+      "position": {
+        "x": 582,
+        "y": 1189
+      },
+      "params": {
+        "size": 13,
+        "align": "center"
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 304.0
+        }
+      }
+    },
+    {
+      "id": "mb_scene",
+      "defType": "transform/group",
+      "position": {
+        "x": 5448,
+        "y": 1175
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "mb_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 5712,
+        "y": 1175
+      },
+      "params": {
+        "width": 640,
+        "height": 640
+      },
+      "portValues": {
+        "background": {
+          "r": 0.023529411764705882,
+          "g": 0.01568627450980392,
+          "b": 0.047058823529411764,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "mb_micOn",
+      "target": "mb_mic",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_2",
+      "source": "mb_demoSteps",
+      "target": "mb_demoDegree",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_3",
+      "source": "mb_demoStep",
+      "target": "mb_demoDegree",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_4",
+      "source": "mb_demoDegree",
+      "target": "mb_demoScale",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-degree"
+    },
+    {
+      "id": "e_5",
+      "source": "mb_demoScale",
+      "target": "mb_demoNote",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_6",
+      "source": "mb_demoNote",
+      "target": "mb_demoSynth",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-note"
+    },
+    {
+      "id": "e_7",
+      "source": "mb_demoGate",
+      "target": "mb_demoSynth",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-trigger"
+    },
+    {
+      "id": "e_8",
+      "source": "mb_bassGate",
+      "target": "mb_bass",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-trigger"
+    },
+    {
+      "id": "e_9",
+      "source": "mb_hatNoise",
+      "target": "mb_hat",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_10",
+      "source": "mb_hatGate",
+      "target": "mb_hat",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-trigger"
+    },
+    {
+      "id": "e_11",
+      "source": "mb_hat",
+      "target": "mb_hatFilter",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_12",
+      "source": "mb_demoSynth",
+      "target": "mb_demoMix",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in1"
+    },
+    {
+      "id": "e_13",
+      "source": "mb_bass",
+      "target": "mb_demoMix",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in2"
+    },
+    {
+      "id": "e_14",
+      "source": "mb_hatFilter",
+      "target": "mb_demoMix",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in3"
+    },
+    {
+      "id": "e_15",
+      "source": "mb_micOn",
+      "target": "mb_demoOn",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_16",
+      "source": "mb_demoMix",
+      "target": "mb_demo",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_17",
+      "source": "mb_demoOn",
+      "target": "mb_demo",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-level"
+    },
+    {
+      "id": "e_18",
+      "source": "mb_demo",
+      "target": "mb_speaker",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_19",
+      "source": "mb_demoVol",
+      "target": "mb_speaker",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-volume"
+    },
+    {
+      "id": "e_20",
+      "source": "mb_mic",
+      "target": "mb_listen",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in1"
+    },
+    {
+      "id": "e_21",
+      "source": "mb_demo",
+      "target": "mb_listen",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in2"
+    },
+    {
+      "id": "e_22",
+      "source": "mb_listen",
+      "target": "mb_fft",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_23",
+      "source": "mb_listen",
+      "target": "mb_beat",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_24",
+      "source": "mb_bands",
+      "target": "mb_standIn",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_25",
+      "source": "mb_fft",
+      "target": "mb_withStandIn",
+      "sourceHandle": "out-spectrum",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_26",
+      "source": "mb_standIn",
+      "target": "mb_withStandIn",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_27",
+      "source": "mb_withStandIn",
+      "target": "mb_spectrum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_28",
+      "source": "mb_spectrum",
+      "target": "mb_lows",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_29",
+      "source": "mb_lows",
+      "target": "mb_bassLevel",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_30",
+      "source": "mb_spectrum",
+      "target": "mb_highs",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_31",
+      "source": "mb_highs",
+      "target": "mb_trebleLevel",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_32",
+      "source": "mb_bassLevel",
+      "target": "mb_bassSmooth",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_33",
+      "source": "mb_petalIdx",
+      "target": "mb_mirrorIdx",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_34",
+      "source": "mb_spectrum",
+      "target": "mb_petalVal",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_35",
+      "source": "mb_mirrorIdx",
+      "target": "mb_petalVal",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_36",
+      "source": "mb_spin",
+      "target": "mb_spinNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_37",
+      "source": "mb_trebleLevel",
+      "target": "mb_spinNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-tr"
+    },
+    {
+      "id": "e_38",
+      "source": "mb_spinNext",
+      "target": "mb_spin",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_39",
+      "source": "mb_petalIdx",
+      "target": "mb_outer",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_40",
+      "source": "mb_petalVal",
+      "target": "mb_outer",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_41",
+      "source": "mb_spinNext",
+      "target": "mb_outer",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_42",
+      "source": "mb_petalIdx",
+      "target": "mb_inner",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_43",
+      "source": "mb_petalVal",
+      "target": "mb_inner",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_44",
+      "source": "mb_spinNext",
+      "target": "mb_inner",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_45",
+      "source": "mb_petalCols",
+      "target": "mb_outerFill",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_46",
+      "source": "mb_outer",
+      "target": "mb_outerShape",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_47",
+      "source": "mb_outerFill",
+      "target": "mb_outerShape",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_48",
+      "source": "mb_inner",
+      "target": "mb_innerShape",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_49",
+      "source": "mb_innerFill",
+      "target": "mb_innerShape",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_50",
+      "source": "mb_bassSmooth",
+      "target": "mb_coreSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_51",
+      "source": "mb_coreSize",
+      "target": "mb_core",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_52",
+      "source": "mb_coreSize",
+      "target": "mb_core",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_53",
+      "source": "mb_coreFill",
+      "target": "mb_core",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_54",
+      "source": "mb_beat",
+      "target": "mb_lastBeatNext",
+      "sourceHandle": "out-detected",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_55",
+      "source": "mb_lastBeat",
+      "target": "mb_lastBeatNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_56",
+      "source": "mb_lastBeatNext",
+      "target": "mb_lastBeat",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_57",
+      "source": "mb_lastBeatNext",
+      "target": "mb_beatSize",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_58",
+      "source": "mb_lastBeatNext",
+      "target": "mb_beatCol",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_59",
+      "source": "mb_beatCol",
+      "target": "mb_beatStroke",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_60",
+      "source": "mb_beatStroke",
+      "target": "mb_beatNoFill",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-base"
+    },
+    {
+      "id": "e_61",
+      "source": "mb_beatSize",
+      "target": "mb_beatRing",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_62",
+      "source": "mb_beatSize",
+      "target": "mb_beatRing",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_63",
+      "source": "mb_beatNoFill",
+      "target": "mb_beatRing",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_64",
+      "source": "mb_trebleLevel",
+      "target": "mb_sparkRate",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-tr"
+    },
+    {
+      "id": "e_65",
+      "source": "mb_sparkWorld",
+      "target": "mb_sparks",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_66",
+      "source": "mb_sparkAt",
+      "target": "mb_sparks",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_67",
+      "source": "mb_sparkRate",
+      "target": "mb_sparks",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_68",
+      "source": "mb_time",
+      "target": "mb_sparks",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_69",
+      "source": "mb_sparks",
+      "target": "mb_sparkDots",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_70",
+      "source": "mb_outerShape",
+      "target": "mb_flower",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_71",
+      "source": "mb_innerShape",
+      "target": "mb_flower",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_72",
+      "source": "mb_core",
+      "target": "mb_flower",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_73",
+      "source": "mb_beatRing",
+      "target": "mb_flower",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_74",
+      "source": "mb_sparkDots",
+      "target": "mb_flower",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_75",
+      "source": "mb_flower",
+      "target": "mb_trails",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_76",
+      "source": "mb_trails",
+      "target": "mb_bloom",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_77",
+      "source": "mb_micOn",
+      "target": "mb_statusStr",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_78",
+      "source": "mb_micTxtOn",
+      "target": "mb_statusStr",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_79",
+      "source": "mb_micTxtOff",
+      "target": "mb_statusStr",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_80",
+      "source": "mb_statusStr",
+      "target": "mb_statusText",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_81",
+      "source": "mb_statusFill",
+      "target": "mb_statusText",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_82",
+      "source": "mb_bloom",
+      "target": "mb_scene",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_83",
+      "source": "mb_statusText",
+      "target": "mb_scene",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_84",
+      "source": "mb_scene",
+      "target": "mb_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

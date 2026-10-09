@@ -87,6 +87,8 @@ pub struct Slot {
     pub dsp: Option<Dsp>,
     /// Upstream slot (always earlier in the program).
     pub input: Option<usize>,
+    /// A Mix's upstream slots (earlier too), summed into its input.
+    pub mix: Vec<usize>,
     pub params: Arc<Params>,
     /// Slot of the previous program whose DSP this one takes over.
     pub reuse: Option<usize>,
@@ -151,8 +153,8 @@ pub struct Control {
     garbage: Consumer<Garbage>,
     in_flight: usize,
     nodes: IndexMap<Arc<str>, Node>,
-    /// The topology of the last program sent.
-    topology: Vec<(Arc<str>, Key, Option<Arc<str>>)>,
+    /// The topology of the last program sent: node, key, live inputs.
+    topology: Vec<(Arc<str>, Key, Vec<Arc<str>>)>,
     /// Node → (slot, key) in the last program sent.
     layout: HashMap<Arc<str>, (usize, Key)>,
     samples: Samples,
@@ -301,16 +303,17 @@ impl Control {
     }
 
     fn rebuild_if_changed(&mut self) {
-        let mut topology: Vec<(Arc<str>, Key, Option<Arc<str>>)> = self
+        let mut topology: Vec<(Arc<str>, Key, Vec<Arc<str>>)> = self
             .nodes
             .iter()
             .map(|(id, n)| {
-                let input = n
+                let inputs = n
                     .desc
-                    .input()
+                    .sources()
                     .filter(|i| self.nodes.contains_key(&***i))
-                    .cloned();
-                (id.clone(), key_of(&n.desc, n.sample.as_ref()), input)
+                    .cloned()
+                    .collect();
+                (id.clone(), key_of(&n.desc, n.sample.as_ref()), inputs)
             })
             .collect();
         topology.sort_by(|a, b| a.0.cmp(&b.0));
@@ -338,7 +341,7 @@ impl Control {
                 return;
             }
             state.insert(id, false);
-            if let Some(input) = nodes[id].desc.input() {
+            for input in nodes[id].desc.sources() {
                 if let Some((k, _)) = nodes.get_key_value(input) {
                     visit(k, nodes, state, order);
                 }
@@ -366,11 +369,20 @@ impl Control {
                 .input()
                 .and_then(|i| layout.get(i))
                 .map(|(i, _): &(usize, Key)| *i);
+            let mix = match &n.desc {
+                AudioNode::Mix { inputs, .. } => inputs
+                    .iter()
+                    .filter_map(|i| layout.get(i))
+                    .map(|(i, _): &(usize, Key)| *i)
+                    .collect(),
+                _ => Vec::new(),
+            };
             slots.push(Slot {
                 dsp: reuse
                     .is_none()
                     .then(|| Dsp::new(&n.desc, self.sample_rate, n.sample.clone(), n.tap.clone())),
                 input,
+                mix,
                 params: n.params.clone(),
                 reuse,
                 out: Bus::new(),
@@ -435,6 +447,7 @@ fn write_params(n: &mut Node) {
         AudioNode::Noise { amp, .. }
         | AudioNode::AudioIn { amp, .. }
         | AudioNode::Gain { level: amp, .. }
+        | AudioNode::Mix { level: amp, .. }
         | AudioNode::Output { volume: amp, .. }
         | AudioNode::Reverb { wet: amp, .. } => {
             set(&[*amp]);

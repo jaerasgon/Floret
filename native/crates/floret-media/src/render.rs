@@ -3,7 +3,7 @@
 //! here allocates, frees or blocks: programs and microphone streams arrive
 //! over a ring and leave over another one.
 
-use crate::dsp::{Ramp, QUANTUM};
+use crate::dsp::{Bus, Ramp, QUANTUM};
 use crate::graph::{Cmd, Ends, Garbage, Program};
 use crate::nodes::Ctx;
 use rtrb::{Consumer, Producer};
@@ -125,6 +125,8 @@ pub struct Renderer {
     block: [[f32; QUANTUM]; 2],
     used: usize,
     frames: Arc<AtomicU64>,
+    /// A Mix's inputs summed, for the quantum.
+    mix_bus: Bus,
 }
 
 impl Renderer {
@@ -141,6 +143,7 @@ impl Renderer {
             block: [[0.0; QUANTUM]; 2],
             used: QUANTUM,
             frames: Arc::default(),
+            mix_bus: Bus::new(),
         }
     }
 
@@ -218,10 +221,19 @@ impl Renderer {
             mic,
         };
         let slots = &mut self.program.slots;
+        let mix_bus = &mut self.mix_bus;
         for i in 0..slots.len() {
             let (done, rest) = slots.split_at_mut(i);
             let s = &mut rest[0];
-            let input = s.input.filter(|&j| j < i).map(|j| &done[j].out);
+            let input = if s.mix.is_empty() {
+                s.input.filter(|&j| j < i).map(|j| &done[j].out)
+            } else {
+                mix_bus.silence();
+                for &j in s.mix.iter().filter(|&&j| j < i) {
+                    mix_bus.add(&done[j].out);
+                }
+                Some(&*mix_bus)
+            };
             match &mut s.dsp {
                 Some(d) => d.process(&s.params, input, &mut s.out, &cx),
                 None => s.out.silence(),

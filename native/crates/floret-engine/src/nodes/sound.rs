@@ -19,6 +19,7 @@ use crate::audio::{
 use crate::js;
 use crate::node::{raw, scalar, EvalCtx, NodeImpl, NodeInit, NodeResult};
 use crate::particles::Handle;
+use crate::spec::{Params, PortKind, PortSpec, PortType};
 use crate::value::{one, Spread, Value};
 use std::sync::Arc;
 
@@ -42,6 +43,10 @@ pub fn register(r: &mut Registrar) {
     r.node("sound/output", output);
     r.node("sound/midi-to-freq", midi_to_freq);
     r.node("sound/freq-to-midi", freq_to_midi);
+    r.node("sound/mix", mix);
+    r.dynamic("sound/mix", mix_inputs);
+    r.node("sound/scale", scale);
+    r.dynamic("sound/scale", scale_inputs);
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -431,6 +436,55 @@ fn output(_: &NodeInit) -> Box<dyn NodeImpl> {
     })
 }
 
+/// Most inputs a Mix takes (the editor's `− n +` goes to 32).
+const MAX_MIX_SLOTS: usize = 32;
+
+/// `sound/mix`'s pins: `slotCount` audio inputs `in1`, `in2`, … and
+/// `level` (`DynamicInputsFn`).
+fn mix_inputs(params: &Params) -> Vec<PortSpec> {
+    let raw = params
+        .get("slotCount")
+        .and_then(serde_json::Value::as_f64)
+        .unwrap_or(2.0);
+    let n = if raw.is_finite() && raw >= 1.0 {
+        (raw.floor() as usize).min(MAX_MIX_SLOTS)
+    } else {
+        2
+    };
+    let mut pins: Vec<PortSpec> = (1..=n)
+        .map(|i| PortSpec::new(format!("in{i}"), PortType::Audio).label(i.to_string()))
+        .collect();
+    pins.push(PortSpec::new("level", PortType::Number).default(Value::Num(1.0)));
+    pins
+}
+
+/// Mix: the sum of every wired input, × `level`. Lets several voices
+/// share one effect chain, analyser or output.
+fn mix(_: &NodeInit) -> Box<dyn NodeImpl> {
+    raw(|inputs, cx| {
+        let n = inputs.len().saturating_sub(1);
+        let mut sources: Vec<Arc<str>> = Vec::new();
+        for i in 0..n {
+            if let Some(id) = upstream(inputs, i) {
+                if !sources.contains(&id) {
+                    sources.push(id);
+                }
+            }
+        }
+        let level = arg(inputs, n, 1.0);
+        context()?;
+        let level = finite(clamp(level, 0.0, 2.0))?;
+        declare(
+            cx,
+            "mix",
+            AudioNode::Mix {
+                inputs: sources,
+                level,
+            },
+        )
+    })
+}
+
 // ─── Analysers ───────────────────────────────────────────────────────────────
 
 /// Declare an analyser tap and return its data from the start of the tick
@@ -583,6 +637,192 @@ fn freq_to_midi(init: &NodeInit) -> Box<dyn NodeImpl> {
             return Ok(vec![Value::Num(0.0)]);
         }
         Ok(vec![Value::Num(69.0 + 12.0 * (f / 440.0).log2())])
+    })
+}
+
+// ─── sound/scale ─────────────────────────────────────────────────────────────
+
+/// The scales `sound/scale` knows: name and semitone steps from the root.
+pub const SCALES: &[(&str, &[f64])] = &[
+    ("major", &[0.0, 2.0, 4.0, 5.0, 7.0, 9.0, 11.0]),
+    ("minor", &[0.0, 2.0, 3.0, 5.0, 7.0, 8.0, 10.0]),
+    ("harmonic-minor", &[0.0, 2.0, 3.0, 5.0, 7.0, 8.0, 11.0]),
+    ("dorian", &[0.0, 2.0, 3.0, 5.0, 7.0, 9.0, 10.0]),
+    ("phrygian", &[0.0, 1.0, 3.0, 5.0, 7.0, 8.0, 10.0]),
+    ("lydian", &[0.0, 2.0, 4.0, 6.0, 7.0, 9.0, 11.0]),
+    ("mixolydian", &[0.0, 2.0, 4.0, 5.0, 7.0, 9.0, 10.0]),
+    ("pentatonic", &[0.0, 2.0, 4.0, 7.0, 9.0]),
+    ("minor-pentatonic", &[0.0, 3.0, 5.0, 7.0, 10.0]),
+    ("blues", &[0.0, 3.0, 5.0, 6.0, 7.0, 10.0]),
+    ("whole-tone", &[0.0, 2.0, 4.0, 6.0, 8.0, 10.0]),
+    (
+        "chromatic",
+        &[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0],
+    ),
+];
+
+/// `sound/scale`'s `mode`: what its first pin means.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum ScaleMode {
+    /// A step of the scale (0 = the root, 7 = the root an octave up in a
+    /// seven-note scale, −1 the note below the root).
+    Degree,
+    /// Any MIDI note, moved to the nearest note of the scale.
+    Quantize,
+    /// 0..1 across `octaves` octaves of the scale from the root.
+    Range,
+}
+
+impl ScaleMode {
+    fn of(params: &Params) -> ScaleMode {
+        match params.get("mode").and_then(|v| v.as_str()) {
+            Some("quantize") => ScaleMode::Quantize,
+            Some("range") => ScaleMode::Range,
+            _ => ScaleMode::Degree,
+        }
+    }
+}
+
+/// `sound/scale`'s pins for its `mode` (`DynamicInputsFn`); `steps`
+/// shows while `scale` is `custom`.
+fn scale_inputs(params: &Params) -> Vec<PortSpec> {
+    let n = |name: &str, d: f64| PortSpec::new(name, PortType::Number).default(Value::Num(d));
+    let mut pins = match ScaleMode::of(params) {
+        ScaleMode::Degree => {
+            let mut octave = n("octave", 0.0);
+            octave.integer = true;
+            vec![
+                n("degree", 0.0).kind(PortKind::Spread),
+                n("root", 60.0),
+                octave,
+            ]
+        }
+        ScaleMode::Quantize => vec![n("note", 60.0).kind(PortKind::Spread), n("root", 60.0)],
+        ScaleMode::Range => vec![
+            n("amount", 0.0).kind(PortKind::Spread),
+            n("root", 60.0),
+            n("octaves", 2.0),
+        ],
+    };
+    let mut scale = PortSpec::new("scale", PortType::String).default(Value::str("major"));
+    scale.param = Some("scale".into());
+    pins.push(scale);
+    if params.get("scale").and_then(|v| v.as_str()) == Some("custom") {
+        pins.push(PortSpec::new("steps", PortType::String).default(Value::str("0 2 4 7 9")));
+    }
+    pins
+}
+
+/// The steps of a scale by name, or of a `custom` list (semitones from
+/// the root, separated by spaces or commas, folded into one octave and
+/// sorted). Unknown names read as major; an empty custom list as the root.
+fn scale_steps(name: &str, custom: &str) -> Vec<f64> {
+    if name == "custom" {
+        let mut steps: Vec<f64> = custom
+            .split([' ', ',', '\t', ';'])
+            .filter_map(|s| s.trim().parse::<f64>().ok())
+            .filter(|v| v.is_finite())
+            .map(|v| v.rem_euclid(12.0))
+            .collect();
+        steps.sort_by(f64::total_cmp);
+        steps.dedup();
+        if steps.is_empty() {
+            steps.push(0.0);
+        }
+        return steps;
+    }
+    SCALES
+        .iter()
+        .find(|(n, _)| *n == name)
+        .unwrap_or(&SCALES[0])
+        .1
+        .to_vec()
+}
+
+/// The MIDI note of scale `degree` (rounded to a whole step) above
+/// `root`, and its index in the scale.
+fn degree_note(steps: &[f64], root: f64, degree: f64) -> (f64, usize) {
+    let len = steps.len() as i64;
+    let d = degree.round() as i64;
+    let (oct, i) = (d.div_euclid(len), d.rem_euclid(len) as usize);
+    (root + 12.0 * oct as f64 + steps[i], i)
+}
+
+/// The note of the scale nearest `note` (ties go up), and its index.
+fn quantize_note(steps: &[f64], root: f64, note: f64) -> (f64, usize) {
+    let oct = ((note - root) / 12.0).floor();
+    let mut best = (f64::INFINITY, 0.0, 0);
+    for o in [oct - 1.0, oct, oct + 1.0] {
+        for (i, s) in steps.iter().enumerate() {
+            let cand = root + 12.0 * o + s;
+            let d = (cand - note).abs();
+            if d < best.0 || (d == best.0 && cand > best.1) {
+                best = (d, cand, i);
+            }
+        }
+    }
+    (best.1, best.2)
+}
+
+/// Scale: snap numbers to the notes of a musical scale. `degree` counts
+/// steps of the scale up from `root` (+ `octave` octaves); `quantize`
+/// moves any MIDI note to the nearest note of the scale; `range` spreads
+/// 0..1 over `octaves` octaves of it, so a mouse, a slider or noise plays
+/// in key. Per element over the first pin's spread. Outputs the MIDI
+/// `note`, its `freq` in Hz and its `index` in the scale (0 = the root).
+fn scale(init: &NodeInit) -> Box<dyn NodeImpl> {
+    let mode = ScaleMode::of(init.params);
+    let names: Vec<String> = init.inputs.iter().map(|p| p.name.clone()).collect();
+    raw(move |inputs, cx| {
+        let pin = |name: &str| names.iter().position(|n| n == name);
+        let single = |name: &str, d: f64| {
+            let v = pin(name).map_or(Value::Undefined, |i| first(inputs, i));
+            let x = if v.is_nullish() { d } else { v.to_number() };
+            if x.is_finite() {
+                x
+            } else {
+                d
+            }
+        };
+        let name = match pin("scale").map(|i| first(inputs, i)) {
+            Some(Value::Str(s)) => s.to_string(),
+            _ => param_str(cx, "scale").unwrap_or_else(|| "major".into()),
+        };
+        let custom = pin("steps")
+            .map(|i| super::convert::js_string_or_empty(&first(inputs, i)))
+            .unwrap_or_default();
+        let steps = scale_steps(&name, &custom);
+        let root = single("root", 60.0);
+        let values = inputs.first().cloned().unwrap_or_else(crate::value::empty);
+        let mut notes = Vec::with_capacity(values.len());
+        let mut freqs = Vec::with_capacity(values.len());
+        let mut index = Vec::with_capacity(values.len());
+        for v in values.iter() {
+            let x = v.to_number();
+            if !x.is_finite() {
+                notes.push(Value::Num(f64::NAN));
+                freqs.push(Value::Num(f64::NAN));
+                index.push(Value::Num(f64::NAN));
+                continue;
+            }
+            let (note, i) = match mode {
+                ScaleMode::Degree => {
+                    let octave = single("octave", 0.0).round();
+                    degree_note(&steps, root + 12.0 * octave, x)
+                }
+                ScaleMode::Quantize => quantize_note(&steps, root, x),
+                ScaleMode::Range => {
+                    let octaves = single("octaves", 2.0).clamp(0.0, 10.0);
+                    let top = (steps.len() as f64 * octaves).round();
+                    let d = (x.clamp(0.0, 1.0) * (top + 1.0)).floor().min(top);
+                    degree_note(&steps, root, d)
+                }
+            };
+            notes.push(Value::Num(note));
+            freqs.push(Value::Num(midi_to_hz(note)));
+            index.push(Value::Num(i as f64));
+        }
+        Ok(vec![Arc::from(notes), Arc::from(freqs), Arc::from(index)])
     })
 }
 

@@ -481,10 +481,10 @@ enum Sampling {
 /// `Mulberry32(0x5eed)` stream — identical to the fixtures whenever this
 /// node is the patch's only `Math.random` consumer.
 ///
-/// Text: TS rasterises glyphs on an `OffscreenCanvas` and samples inside /
-/// outline pixels. TODO(#61): port that once text rasterisation exists in
-/// the engine; until then text uses the TS bounding-box fallback (what TS
-/// itself does without `OffscreenCanvas`, and what the fixtures recorded).
+/// Text: sampled inside / along its glyph outlines, as TS did by
+/// rasterising them on an `OffscreenCanvas` (#61). Without one TS fell
+/// back to the bounding box, which is what the fixtures recorded: replays
+/// of TS reference data ([`scene::ts_reference`]) still get that.
 fn from_layer(_: &NodeInit) -> Box<dyn NodeImpl> {
     // Seeded on the first tick, where the patch seed is known.
     let mut rng: Option<Mulberry32> = None;
@@ -611,7 +611,24 @@ fn sample_positions(
             if text.is_empty() {
                 return;
             }
-            // TODO(#61): glyph rasterisation; this is the TS bbox fallback.
+            // The letterforms, as the geometry nodes read `draw/text`. TS
+            // sampled its rasterised glyphs only with an OffscreenCanvas;
+            // its recorded traces hold the bounding box it fell back to,
+            // which replays of them (and a missing font) still get.
+            if !scene::ts_reference() {
+                let text = Value::Scene(Arc::new(node.clone()));
+                let placed = crate::nodes::text_animate::glyphs(&[text]);
+                if !placed.is_empty() {
+                    let run = scene::GlyphRun {
+                        glyphs: placed.iter().map(|g| g.glyph).collect(),
+                        size: style.font_size,
+                        style: style.clone(),
+                    };
+                    let glyphs = SceneNode::Glyphs(Arc::new(run));
+                    sample_positions(&glyphs, mode, density, out, random);
+                    return;
+                }
+            }
             let sz = style.font_size;
             let w = text.encode_utf16().count() as f64 * sz * 0.6;
             let h = sz;

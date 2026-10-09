@@ -535,7 +535,51 @@ fn integrators_match_ts() {
 }
 
 #[test]
+fn from_layer_samples_text_inside_its_glyphs() {
+    let mut st = (**scene::default_style()).clone();
+    st.font_size = 200.0;
+    st.text_align = Arc::from("center");
+    let text = Value::Scene(Arc::new(SceneNode::Text {
+        text: Arc::from("O"),
+        x: 0.0,
+        y: 0.0,
+        style: Arc::new(st.clone()),
+    }));
+    let contours = {
+        let placed = crate::nodes::text_animate::glyphs(std::slice::from_ref(&text));
+        crate::text::outline::run_contours(&scene::GlyphRun {
+            glyphs: placed.iter().map(|g| g.glyph).collect(),
+            size: 200.0,
+            style: Arc::new(st),
+        })
+    };
+    assert!(contours.len() >= 2, "an O has a hole: {}", contours.len());
+    let out = run(
+        "particles/from-layer",
+        vec![vec![text.clone()], s("fill"), n(300.0)],
+    );
+    assert_eq!(out[0].len(), 300);
+    for p in out[0].iter() {
+        let Value::Vec2(p) = p else { panic!() };
+        // Inside the ink, never in the counter or the box's corners.
+        assert_ne!(crate::text::outline::winding(&contours, *p), 0, "{p:?}");
+    }
+    // Replaying TS reference data keeps its bounding-box fallback.
+    let _ts = scene::ts_reference_line_default();
+    let bbox = run(
+        "particles/from-layer",
+        vec![vec![text], s("fill"), n(300.0)],
+    );
+    assert!(bbox[0].iter().any(|p| match p {
+        Value::Vec2(p) => crate::text::outline::winding(&contours, *p) == 0,
+        _ => false,
+    }));
+}
+
+#[test]
 fn from_layer_sampling_matches_ts() {
+    // The TS cases recorded the text bounding-box fallback.
+    let _ts = scene::ts_reference_line_default();
     let text = {
         let mut st = (**scene::default_style()).clone();
         st.font_size = 30.0;

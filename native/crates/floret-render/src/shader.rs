@@ -464,7 +464,18 @@ enum Source {
     Transparent,
     Input,
     Target(usize),
+    /// An uploaded lookup table, by image id.
+    Lut(u64),
 }
+
+/// A lookup-table image on the GPU (`gpu/effect`'s lut mode).
+struct LutTexture {
+    view: wgpu::TextureView,
+    last_used: u64,
+}
+
+/// Frames a table stays uploaded after its last use.
+const LUT_TTL_FRAMES: u64 = 120;
 
 struct PassPlan {
     program: Arc<Program>,
@@ -505,6 +516,7 @@ pub struct ShaderRunner {
     plans: Vec<DrawPlan>,
     errors: Vec<(Arc<str>, ShaderBuffer, Vec<ShaderError>)>,
     frame: u64,
+    luts: HashMap<u64, LutTexture>,
 }
 
 const HELPER_WGSL: &str = "
@@ -717,6 +729,7 @@ impl ShaderRunner {
             plans: Vec::new(),
             errors: Vec::new(),
             frame: 0,
+            luts: HashMap::new(),
         }
     }
 
@@ -879,6 +892,9 @@ impl ShaderRunner {
         self.frame += 1;
         self.plans.clear();
         self.errors.clear();
+        let frame = self.frame;
+        self.luts
+            .retain(|_, t| t.last_used + LUT_TTL_FRAMES >= frame);
         if draws.is_empty() {
             self.programs
                 .retain(|_, e| e.last_used + PROGRAM_TTL_FRAMES >= self.frame);
@@ -930,6 +946,10 @@ impl ShaderRunner {
             .map
             .as_ref()
             .map(|_| self.owned_target(device, format!("{}:map", sh.node_id)));
+        let lut = sh
+            .lut
+            .as_ref()
+            .and_then(|img| self.upload_lut(device, queue, img));
         // Transient targets: any target not owned by a live pair.
         let owned: Vec<usize> = self
             .feedback
@@ -962,6 +982,7 @@ impl ShaderRunner {
                 ShaderChannel::None => Source::Transparent,
                 ShaderChannel::Input => Source::Input,
                 ShaderChannel::Map => map.map_or(Source::Transparent, Source::Target),
+                ShaderChannel::Lut => lut.map_or(Source::Transparent, Source::Lut),
                 ShaderChannel::Buffer(b) if rendered.contains(&b) => Source::Target(
                     pairs
                         .get(&b)
@@ -1016,6 +1037,59 @@ impl ShaderRunner {
         }
     }
 
+    /// The table's texture (uploaded on first use, as it is: straight
+    /// colour, no flip), or `None` when it's too big for the device.
+    fn upload_lut(
+        &mut self,
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+        img: &floret_engine::image::Image,
+    ) -> Option<u64> {
+        let id = img.id();
+        if let Some(t) = self.luts.get_mut(&id) {
+            t.last_used = self.frame;
+            return Some(id);
+        }
+        let (w, h) = (img.width(), img.height());
+        let max = device.limits().max_texture_dimension_2d;
+        if w == 0 || h == 0 || w > max || h > max {
+            return None;
+        }
+        let size = wgpu::Extent3d {
+            width: w,
+            height: h,
+            depth_or_array_layers: 1,
+        };
+        let texture = device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("floret shader lut"),
+            size,
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: wgpu::TextureFormat::Rgba8Unorm,
+            usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+            view_formats: &[],
+        });
+        queue.write_texture(
+            texture.as_image_copy(),
+            img.rgba(),
+            wgpu::TexelCopyBufferLayout {
+                offset: 0,
+                bytes_per_row: Some(w * 4),
+                rows_per_image: Some(h),
+            },
+            size,
+        );
+        self.luts.insert(
+            id,
+            LutTexture {
+                view: texture.create_view(&Default::default()),
+                last_used: self.frame,
+            },
+        );
+        Some(id)
+    }
+
     fn uniform_buffer(&mut self, device: &wgpu::Device, slot: usize, size: u32) -> wgpu::Buffer {
         let size = u64::from(size.max(16)).next_multiple_of(16);
         while self.uniforms.len() <= slot {
@@ -1037,6 +1111,7 @@ impl ShaderRunner {
             Source::Transparent => &self.transparent,
             Source::Input => self.input.as_ref().unwrap_or(&self.transparent),
             Source::Target(i) => self.targets.get(i).map_or(&self.transparent, |t| &t.view),
+            Source::Lut(id) => self.luts.get(&id).map_or(&self.transparent, |t| &t.view),
         });
         let mut entries = vec![
             wgpu::BindGroupEntry {
@@ -1359,6 +1434,7 @@ void mainImage(out vec4 c, in vec2 f) { c = col * k * float(n); }";
             ]),
             input: None,
             map: None,
+            lut: None,
         };
         let clock = RenderClock {
             time: 1.5,

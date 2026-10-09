@@ -769,16 +769,11 @@ mod tests {
     fn pattern(mode: &str, x: f64, y: f64, rest: &[f64], angle: Option<f64>) -> f64 {
         let mut h = noise_node(mode);
         let mut ins: Vec<Vec<Value>> = std::iter::once(origin())
-            .chain(
-                DEFAULTS
-                    .iter()
-                    .enumerate()
-                    .map(|(i, d)| match i {
-                        0 => vec![n(x)],
-                        1 => vec![n(y)],
-                        _ => vec![n(*rest.get(i - 2).unwrap_or(d))],
-                    }),
-            )
+            .chain(DEFAULTS.iter().enumerate().map(|(i, d)| match i {
+                0 => vec![n(x)],
+                1 => vec![n(y)],
+                _ => vec![n(*rest.get(i - 2).unwrap_or(d))],
+            }))
             .collect();
         if let Some(a) = angle {
             ins.push(vec![n(a)]);

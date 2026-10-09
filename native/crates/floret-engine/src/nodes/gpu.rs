@@ -201,6 +201,7 @@ fn shader(_: &NodeInit) -> Box<dyn NodeImpl> {
             uniforms: Arc::from(uniforms),
             input: as_layer(inputs.first().map(|s| &s[..])),
             map: None,
+            lut: None,
         };
         Ok(vec![one(Value::Scene(Arc::new(SceneNode::Shader(
             Arc::new(shape),

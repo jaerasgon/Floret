@@ -275,6 +275,9 @@ pub enum ShaderChannel {
     Input,
     /// The second layer, [`ShaderShape::map`] (built-in effects only).
     Map,
+    /// The colour lookup table, [`ShaderShape::lut`] (built-in effects
+    /// only), sampled as it is: no flip, straight colour.
+    Lut,
     /// Another buffer's output (its own: the previous frame).
     Buffer(ShaderBuffer),
 }
@@ -322,6 +325,10 @@ pub struct ShaderShape {
     /// A second layer for [`ShaderChannel::Map`] (`gpu/effect`'s
     /// displacement map); `gpu/shader` never sets it.
     pub map: Option<Arc<crate::scene::SceneNode>>,
+    /// An image for [`ShaderChannel::Lut`] (`gpu/effect`'s 3D colour
+    /// lookup table, laid out as N slices of N × N side by side); `gpu/shader`
+    /// never sets it.
+    pub lut: Option<Arc<crate::image::Image>>,
 }
 
 impl ShaderShape {
@@ -336,6 +343,7 @@ impl ShaderShape {
             ShaderChannel::None => Value::Null,
             ShaderChannel::Input => obj(vec![("kind", Value::str("input"))]),
             ShaderChannel::Map => obj(vec![("kind", Value::str("map"))]),
+            ShaderChannel::Lut => obj(vec![("kind", Value::str("lut"))]),
             ShaderChannel::Buffer(b) => obj(vec![
                 ("kind", Value::str("buffer")),
                 ("buf", Value::str(b.as_str())),

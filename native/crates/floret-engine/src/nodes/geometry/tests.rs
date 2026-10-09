@@ -487,7 +487,14 @@ fn new_path_modes_have_their_pins() {
     assert_eq!(path_ops_pins("resample"), with(&["spacing"]));
     let cat = crate::spec::Catalogue::builtin();
     let spec = cat.get("geometry/path-ops").unwrap();
-    for m in ["round-corners", "thicken", "wave", "noise", "twist", "explode"] {
+    for m in [
+        "round-corners",
+        "thicken",
+        "wave",
+        "noise",
+        "twist",
+        "explode",
+    ] {
         assert!(spec.param_options["mode"].iter().any(|o| o == m), "{m}");
     }
     assert_eq!(spec.param_options["cap"], ["round", "butt", "square"]);

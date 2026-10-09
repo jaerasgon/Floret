@@ -1914,6 +1914,7 @@ mod tests {
             uniforms: Arc::from([]),
             input: Some(dot.clone()),
             map: Some(dot),
+            lut: None,
         });
         let fb = build(&[SceneNode::Shader(sh)]);
         assert_eq!(fb.shaders.len(), 1);

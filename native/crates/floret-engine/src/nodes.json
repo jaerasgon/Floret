@@ -13563,7 +13563,7 @@
    "category": "Render",
    "group": "Effects",
    "label": "Effect",
-   "description": "A post-effect on a layer, on the GPU: bloom / glow, film grain (animates by itself), displacement (by noise, or by a `map` layer: red pushes right, green down), ordered dither, colour halftone dots, chromatic aberration, vignette. Pick the `mode`; the pins follow it. Sizes are in pixels.",
+   "description": "A post-effect on a layer, on the GPU. Pick the `mode`; the pins follow it. Sizes are in pixels, angles in radians. Light and texture: bloom (bright parts glow), film grain (animates by itself), displacement (by noise, or by a `map` layer: red pushes right, green down), ordered dither, colour halftone dots, chromatic aberration, vignette. Blur: `kind` gaussian, lens (bokeh discs; `highlights` opens bright points), motion (along `angle`), zoom (streaks towards `center`) or spin (round it). Shape: drop shadow and glow of the layer's coverage (`inner` puts them inside), barrel / pincushion distortion, Sobel edges. Colour: posterize, threshold (by brightness into `low` / `high`, or `channel` alpha cuts the coverage — blur first for gooey metaballs), levels, curves (each colour pin is a point of the curve at black, ¼, ½, ¾ and white, per channel), lut (a `.cube` file: wire a File node's `url` or type a path), chroma key (with spill suppression).",
    "inputs": [
     {
      "name": "input",
@@ -13609,7 +13609,29 @@
      "dither",
      "halftone",
      "chromatic",
-     "vignette"
+     "vignette",
+     "blur",
+     "shadow",
+     "glow",
+     "barrel",
+     "edges",
+     "posterize",
+     "threshold",
+     "levels",
+     "curves",
+     "lut",
+     "key"
+    ],
+    "kind": [
+     "gaussian",
+     "lens",
+     "motion",
+     "zoom",
+     "spin"
+    ],
+    "channel": [
+     "luma",
+     "alpha"
     ]
    }
   },

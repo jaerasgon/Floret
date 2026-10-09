@@ -1,8 +1,136 @@
 # Floret Changelog
 
-A complete record of every change made to this project, in chronological order.
-Each section is a coherent phase of work; bullets within are individual
-changes (file additions, fixes, behavior shifts).
+A complete record of every change made to this project. Releases come
+first, newest on top; below them, the development log in chronological
+order. Each section is a coherent phase of work; bullets within are
+individual changes (file additions, fixes, behavior shifts).
+
+---
+
+## Unreleased — the native app's first release (proposed 0.2.0)
+
+Floret is now a native desktop app written in Rust (`native/`), replacing
+the TypeScript web app at the repo root, which stays in the repository as a
+reference only. Patches (`.flora`) written by the web app open in the
+native app, and the native app writes the same format.
+
+**Version.** The crates are still at 0.1.0; a later step bumps them. The
+proposal is **0.2.0**: the first release of a new implementation, not yet
+run end to end on a real Mac, and unsigned. A 0.x version says plainly that
+things may still change, without the promises a 1.0 (even a 1.0 beta)
+makes about stability and file-format freezes. 1.0 can follow once the
+Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
+
+### Highlights
+
+- **Native and GPU-rendered:** egui + wgpu (Metal on macOS). Every frame is
+  drawn on the GPU by the `floret-render` crate: shapes, text, images,
+  particles, gradients, masks, shaders and post-effects.
+- **A node editor built for live work:** Tab / double-click search,
+  wiring with drop-to-search, inline values you can type or scrub, regions
+  (ForEach, If, Cache …) and subpatches, undo for everything, node gravity
+  (dragging a node gently pulls its neighbours along) and auto-arrange.
+- **127 built-in samples** in the Library, including 48 step-by-step
+  tutorials, each opening fitted and centred with a tidy layout.
+- **Export:** PNG at 1×/2×/4×, and MP4 (H.264), GIF or PNG sequences of
+  seamless loops, rendered offline at a fixed frame rate.
+- **Seeds, variations and presets:** a patch seed behind every random and
+  noise node, New Variation (Cmd+Shift+R), and saved presets you can recall
+  and morph between.
+- **Sound, camera, MIDI and body tracking**, all on-device.
+
+### Nodes
+
+- 351 node types, about 257 of them in the Nodes browser (the rest are
+  older versions kept hidden so old patches still load). The browser groups
+  them by role: Source, Draw, Text, Color & Style, Shape Ops, Patterns,
+  Animate, Noise & Random, Math, Lists, Structure, Particles & Physics,
+  Image, Effects, Input & Sound. See `NODES.md`.
+- **Drawing and style:** shapes, paths, polygons, images and text; fills,
+  strokes, Gradient Fill (linear / radial / conic), masks, blend groups.
+- **Generative geometry:** Scatter (poisson / random / jittered grid /
+  halton, relax), Cells (voronoi / delaunay / hull), Path Ops, Shape
+  Boolean, Shape Morph, Trim Path, Connect Points, Contours, L-System.
+- **Noise and maths:** one Noise node (perlin, simplex, value, cellular,
+  curl, plus patterns), an Expression node (type a formula, its names
+  become pins), Math / Vector Math / Compare / Logic / Statistics /
+  Convert families, LFO, easing and springs.
+- **Colour:** palettes with harmony modes, OKLab / OKLCH mixing.
+- **Particles and simulations:** emitters, forces, colliders and worlds;
+  a Simulation node for flocking, slime mould (physarum), DLA growth and
+  cloth.
+- **Typography:** installed and loaded fonts (variable-font axes), text on
+  a path, glyphs, outlines and Text Animate.
+- **GPU:** a ShaderToy-style Shader node with buffer passes and a side
+  panel editor; an Effect node with bloom, blur, glow, grain, displace,
+  dither, halftone, chromatic aberration, vignette, levels, curves, LUTs,
+  keying and more.
+- **Images and video:** image adjust / pixelate / pixel sort / sampling;
+  Video File and Video Frame At play MP4 / MOV clips as images.
+- **Input and sound:** mouse and keyboard, MIDI CC and notes, Camera,
+  Landmarks (hand / face / pose tracking), microphone input, FFT and
+  amplitude analysis, and a sound engine with oscillators, filters,
+  envelopes and effects.
+- **Data:** CSV files, number formatting, image URLs.
+
+### Editor
+
+- Dockable panels: one Preview per Renderer, Inspector, Help (live node
+  docs), Library, Presets, Shader and Profiler; the layout is remembered.
+- Nodes panel with search and favourites (Q menu, 1–9 to place).
+- Library panel: every sample by category plus your own saved patches, in
+  list, icon or column views, with one search; import and download
+  libraries.
+- Preview: zoom and pan with a pixel grid, pause / step / restart, focus
+  mode, and a fullscreen output window on any display.
+- Minimap, dot grid and snapping, a shortcuts overlay (`?`), tooltips on
+  pins and wires, compile warnings on the nodes that cause them, value
+  probes (Alt + drop a wire).
+- Light and dark themes (or follow the system), interface zoom, reduce
+  motion, and preferences for startup, autosave, grid and render size.
+
+### Files
+
+- Real `.flora` files with Open / Save / Save As, recent files, and a
+  "Save changes?" prompt before anything would discard edits.
+- Autosave to a recovery file, and an offer to restore after a crash or
+  force-quit.
+- macOS: `.flora` files are Floret documents. Double-clicking one in
+  Finder (or Open With → Floret, or dropping it on the Dock icon) opens it,
+  whether Floret is running or not. `floret <file.flora>` on the command
+  line opens a file on every platform.
+
+### Export
+
+- PNG of the current frame at 1×, 2× or 4× (a true re-render).
+- MP4 (H.264), GIF and PNG sequences of whole loops: a patch loop length
+  (toolbar Loop field), chosen size, fps and number of loops, with progress
+  and Cancel while the app keeps running.
+- On macOS, MP4 export and video playback use Apple's AVFoundation /
+  VideoToolbox (which macOS licenses); the Mac app contains no OpenH264.
+
+### Platform notes
+
+- **macOS 11 or later**, Apple Silicon or Intel, built from source with
+  `./floret.sh install` (installs Rust on first run) into
+  `/Applications/Floret.app`.
+- The app asks for microphone and camera access the first time a patch
+  uses them; video and audio never leave the computer.
+- Linux builds and runs for development (`./floret.sh`), using OpenH264;
+  Windows and Linux releases come later.
+
+### Known limitations
+
+- **Unsigned:** the app is ad-hoc signed on the machine that builds it. It
+  isn't notarised, so a copy sent to another Mac is blocked by Gatekeeper.
+  macOS may ask again for camera / microphone access after an update.
+- **Mac only for now.** Windows and Linux packages (and their H.264 codecs:
+  Media Foundation on Windows, Cisco's OpenH264 binary on Linux) come later.
+- Most of the app has been tested under Linux with a software GPU; the Mac
+  checklist in `docs/qa-checklist-mac.md` hasn't been run end to end yet.
+- The web app's SVG export is gone: the SaveSVG node still loads but passes
+  its layers through without saving a file.
+- One patch per window, one window.
 
 ---
 

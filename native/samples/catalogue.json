@@ -417,7 +417,7 @@
       "id": "particles-text-dust",
       "name": "Text Dust",
       "category": "Particles",
-      "description": "particles/from-layer rasterises the wired text shape and samples inside the glyph alpha mask — particles spawn from the actual letterforms.",
+      "description": "particles/from-layer samples points inside the wired text's glyph outlines — particles spawn from the actual letterforms.",
       "file": "particles-text-dust.flora"
     },
     {
@@ -452,7 +452,7 @@
       "id": "kaleidoscope",
       "name": "Kaleidoscope",
       "category": "Curves",
-      "description": "A drifting window into a photo, drawn as 12 wedges around the centre with every other wedge mirrored. The window wanders with time.",
+      "description": "A drifting window into a photo, cut to a wedge and repeated as 12 round the centre, every other one mirrored (the Symmetry node in kaleidoscope mode). The window wanders with time.",
       "file": "kaleidoscope.flora"
     },
     {
@@ -613,7 +613,7 @@
       "id": "shader-reaction-diffusion",
       "name": "Shader · Reaction-Diffusion",
       "category": "Shaders",
-      "description": "Gray-Scott reaction-diffusion on a multi-buffer shader: Buffer A holds the chemical field (reads its own previous frame), the Image pass colour-maps it. The canonical multi-pass GPU case — give it a few seconds to bloom.",
+      "description": "Gray-Scott reaction-diffusion on a multi-buffer shader: Buffers A–D each advance the chemical field one step (A reads D’s previous frame, so four steps a frame), the Image pass colour-maps it. The canonical multi-pass GPU case — give it a few seconds to bloom.",
       "file": "shader-reaction-diffusion.flora"
     },
     {

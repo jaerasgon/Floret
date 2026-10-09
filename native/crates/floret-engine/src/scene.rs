@@ -337,12 +337,20 @@ thread_local! {
 /// **For comparing against TypeScript reference data only** (the parity
 /// traces, the `ts_cases.json` node cases). While the returned guard lives,
 /// [`line_default_style`] on this thread strokes black ([`TS_LINE_STROKE`])
-/// as the web app did. The engine evaluates on the calling thread, so
+/// as the web app did, and [`ts_reference`] is true (other recorded TS
+/// fallbacks replay too). The engine evaluates on the calling thread, so
 /// this covers a whole `Engine::tick`. Never use it in the app.
 #[must_use = "the TS default is on only while the guard lives"]
 pub fn ts_reference_line_default() -> TsLineDefault {
     let was = TS_LINE_DEFAULT.with(|c| c.replace(true));
     TsLineDefault { was }
+}
+
+/// Whether TS reference data is being replayed on this thread (a
+/// [`ts_reference_line_default`] guard lives), so nodes reproduce what the
+/// recording did where it differs from the app.
+pub fn ts_reference() -> bool {
+    TS_LINE_DEFAULT.with(std::cell::Cell::get)
 }
 
 /// Guard from [`ts_reference_line_default`]; dropping it restores the

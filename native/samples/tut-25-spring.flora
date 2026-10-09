@@ -21,7 +21,7 @@
         "height": 240
       },
       "portValues": {
-        "text": "Spring physics with state\n\nA position chases the mouse with Hooke + damping. Two state slots (vec2): position and velocity. Each frame, with vec2 maths:\n  • vel ← vel · damp + (mouse − pos) · k\n  • pos ← pos + vel\nThe two Scale nodes hold k (0.05) and damp (0.85).\n\nWrite/Read are used twice — one for pos, one for vel.",
+        "text": "Spring physics with state\n\nA position chases the mouse with Hooke + damping. Two state slots (vec2): position and velocity. Each frame, with vec2 maths:\n  • vel ← vel · damp + (mouse − pos) · k\n  • pos ← pos + vel\nThe two Vector Math nodes set to scale hold k (0.05) and damp (0.85).\n\nWrite/Read are used twice — one for pos, one for vel.",
         "width": 440,
         "height": 240
       }

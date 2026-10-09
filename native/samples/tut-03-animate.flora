@@ -21,7 +21,7 @@
         "height": 200
       },
       "portValues": {
-        "text": "Animation = time → shape\n\n`time/seconds` outputs the time elapsed in seconds. Run it through `sin` and you get a smooth oscillation between -1 and 1. Multiply to scale the motion to pixels.\n\nThis ellipse swings left-right with sin(t)·150.",
+        "text": "Animation = time → shape\n\n`time/seconds` outputs the time elapsed in seconds. Run it through a Math node set to `sin` and you get a smooth oscillation between -1 and 1. A second Math node set to `multiply` scales the motion to pixels.\n\nThis ellipse swings left-right with sin(t)·150.",
         "width": 360,
         "height": 200
       }

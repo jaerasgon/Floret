@@ -377,3 +377,359 @@ fn rewritten_samples_draw_as_before() {
     eprintln!("{compared} rewritten samples compared");
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
+
+// ─── Review renders (docs/sample-review.md) ─────────────────────────────────
+
+/// The frames [`review_samples`] saves (1-based: frame 1 is the first tick).
+const REVIEW_FRAMES: &[u32] = &[1, 60, 240];
+
+fn median_ms(mut v: Vec<f64>) -> f64 {
+    v.sort_by(f64::total_cmp);
+    v.get(v.len() / 2).copied().unwrap_or(0.0)
+}
+
+fn save_png(path: &std::path::Path, w: u32, h: u32, px: &[u8]) {
+    let file = std::fs::File::create(path).expect("create png");
+    let mut enc = png::Encoder::new(std::io::BufWriter::new(file), w, h);
+    enc.set_color(png::ColorType::Rgba);
+    enc.set_depth(png::BitDepth::Eight);
+    enc.write_header()
+        .and_then(|mut wr| wr.write_image_data(px))
+        .expect("write png");
+}
+
+/// What a frame shows, for spotting blank, clipped or off-centre pictures:
+/// the box of pixels that differ from the background (x0, y0, x1, y1) and
+/// the fraction of the canvas they cover.
+fn ink(px: &[u8], w: u32, bg: [f64; 4]) -> (Option<[u32; 4]>, f64) {
+    let bg = bg.map(|c| (c.clamp(0.0, 1.0) * 255.0).round() as i32);
+    let (mut bb, mut n) = (None::<[u32; 4]>, 0usize);
+    for (i, p) in px.as_chunks::<4>().0.iter().enumerate() {
+        let d = (0..3)
+            .map(|c| (i32::from(p[c]) - bg[c]).abs())
+            .max()
+            .unwrap_or(0);
+        if d > 12 {
+            n += 1;
+            let (x, y) = (i as u32 % w, i as u32 / w);
+            let b = bb.get_or_insert([x, y, x, y]);
+            *b = [b[0].min(x), b[1].min(y), b[2].max(x), b[3].max(y)];
+        }
+    }
+    (bb, n as f64 / (px.len() / 4).max(1) as f64)
+}
+
+/// Mean absolute channel difference between two frames, 0..255.
+fn frame_diff(a: &[u8], b: &[u8]) -> f64 {
+    if a.len() != b.len() || a.is_empty() {
+        return f64::NAN;
+    }
+    let s: u64 = a
+        .iter()
+        .zip(b)
+        .map(|(x, y)| u64::from(x.abs_diff(*y)))
+        .sum();
+    s as f64 / a.len() as f64
+}
+
+/// The app's host, but every http(s) URL loads one local picture
+/// (`FLORET_REVIEW_IMAGE`): reviews photo samples without the network.
+struct StandIn(std::sync::Arc<dyn floret_engine::host::Host>, Vec<u8>);
+
+impl floret_engine::host::Host for StandIn {
+    fn rasterize(
+        &self,
+        layers: &[std::sync::Arc<floret_engine::scene::SceneNode>],
+        width: u32,
+        height: u32,
+    ) -> Option<floret_engine::image::Image> {
+        self.0.rasterize(layers, width, height)
+    }
+
+    fn fetch(&self, url: &str) -> Result<Vec<u8>, String> {
+        if url.starts_with("http://") || url.starts_with("https://") {
+            Ok(self.1.clone())
+        } else {
+            self.0.fetch(url)
+        }
+    }
+
+    fn base_dir(&self) -> Option<std::path::PathBuf> {
+        self.0.base_dir()
+    }
+}
+
+/// `FLORET_REVIEW_OUT=<dir> cargo test -p floret-app -- --ignored
+/// review_samples --nocapture`: runs every Library sample to its last saved
+/// frame
+/// at 60 fps (a mouse circling the canvas, pressed from frame 90 to 150;
+/// R held from frame 100), renders every frame at full size as the app's
+/// preview does, saves frames [`REVIEW_FRAMES`] (or `FLORET_REVIEW_FRAMES=1,60,…`;
+/// the TSV compares the first three) as `<id>-fNNN.png` and
+/// writes `review.tsv`: median tick / render ms, the inked box and
+/// coverage, and how much the picture changes between the saved frames.
+/// `FLORET_SAMPLES_ONLY=a,b` limits it to ids starting so.
+#[test]
+#[ignore = "writes review frames; needs FLORET_REVIEW_OUT and a GPU adapter"]
+fn review_samples() {
+    use floret_engine::{Engine, FrameCtx};
+    use std::fmt::Write as _;
+    use std::time::Instant;
+    let Some(out_dir) = std::env::var_os("FLORET_REVIEW_OUT") else {
+        eprintln!("FLORET_REVIEW_OUT not set: skipping");
+        return;
+    };
+    let out_dir = std::path::PathBuf::from(out_dir);
+    std::fs::create_dir_all(&out_dir).expect("output dir");
+    let only = std::env::var("FLORET_SAMPLES_ONLY").ok();
+    let frames: Vec<u32> = std::env::var("FLORET_REVIEW_FRAMES")
+        .ok()
+        .map(|s| s.split(',').filter_map(|f| f.trim().parse().ok()).collect())
+        .unwrap_or_else(|| REVIEW_FRAMES.to_vec());
+    let last = frames.iter().copied().max().unwrap_or(1);
+    // As the app does at startup: video files and image sequences play.
+    floret_video::install();
+    let host: std::sync::Arc<dyn floret_engine::host::Host> =
+        match std::env::var_os("FLORET_REVIEW_IMAGE") {
+            Some(p) => std::sync::Arc::new(StandIn(
+                crate::host::shared(),
+                std::fs::read(p).expect("FLORET_REVIEW_IMAGE"),
+            )),
+            None => crate::host::shared(),
+        };
+    let mut tsv = String::from(
+        "id\tcategory\tw\th\ttick_ms\trender_ms\tframe_ms\tbox\tcoverage\tdiff_1_60\tdiff_60_240\n",
+    );
+    for s in SAMPLES {
+        if only
+            .as_deref()
+            .is_some_and(|o| !o.split(',').any(|p| s.id.starts_with(p)))
+        {
+            continue;
+        }
+        // A fresh device per sample: no feedback buffers carried over.
+        let Some(mut hl) = floret_render::Headless::with_sample_count(4) else {
+            eprintln!("no GPU adapter: skipping");
+            return;
+        };
+        let _wait = floret_engine::video::wait_for_frames();
+        let (mut engine, _) = Engine::load_with_warnings(s.flora).expect("sample loads");
+        engine.set_host(Some(host.clone()));
+        let Some(r) = engine.graph.renderer() else {
+            eprintln!("{}: no renderer", s.id);
+            continue;
+        };
+        let id = engine.graph.nodes[r].id.clone();
+        let size = floret_render::canvas_size(
+            engine.params.get(&id, "width"),
+            engine.params.get(&id, "height"),
+        );
+        let (cw, ch) = (f64::from(size.0), f64::from(size.1));
+        let dt = 1.0 / 60.0;
+        let (mut tick_ms, mut render_ms, mut frame_ms) = (Vec::new(), Vec::new(), Vec::new());
+        let mut saved: Vec<(Vec<u8>, [f64; 4])> = Vec::new();
+        for f in 0..last {
+            let t = f64::from(f) * dt;
+            let rad = 0.3 * cw.min(ch);
+            let ctx = FrameCtx {
+                t,
+                dt,
+                frame_count: f64::from(f),
+                width: cw,
+                height: ch,
+                mouse_x: rad * (t * 1.5).cos(),
+                mouse_y: rad * (t * 1.5).sin(),
+                mouse_is_pressed: (90..150).contains(&f),
+                key: if f >= 100 { "r".into() } else { String::new() },
+                key_is_pressed: f >= 100,
+                ..Default::default()
+            };
+            let t0 = Instant::now();
+            let res = engine.tick(&ctx);
+            let t1 = Instant::now();
+            let out = res.outputs.get(r).cloned().flatten();
+            let layers = out
+                .as_ref()
+                .and_then(|o| o.first())
+                .map(|s| floret_render::flatten_layers(s))
+                .unwrap_or_default();
+            let bg = out
+                .as_ref()
+                .and_then(|o| o.get(1))
+                .map_or([0.0, 0.0, 0.0, 1.0], |s| floret_render::background(s));
+            hl.renderer.set_clock(floret_render::RenderClock {
+                time: t,
+                time_delta: dt,
+                frame: f64::from(f),
+                ..Default::default()
+            });
+            let (px, _) = floret_render::render_and_read(
+                &hl.device,
+                &hl.queue,
+                &mut hl.renderer,
+                &layers,
+                size,
+                bg,
+            );
+            let t2 = Instant::now();
+            if f > 0 {
+                tick_ms.push((t1 - t0).as_secs_f64() * 1e3);
+                render_ms.push((t2 - t1).as_secs_f64() * 1e3);
+                frame_ms.push((t2 - t0).as_secs_f64() * 1e3);
+            }
+            if frames.contains(&(f + 1)) {
+                let path = out_dir.join(format!("{}-f{:03}.png", s.id, f + 1));
+                save_png(&path, size.0, size.1, &px);
+                saved.push((px, bg));
+            }
+        }
+        let (bb, cov) = saved
+            .get(1)
+            .map_or((None, 0.0), |(px, bg)| ink(px, size.0, *bg));
+        let bb = bb.map_or("-".into(), |b| {
+            format!("{},{},{},{}", b[0], b[1], b[2], b[3])
+        });
+        let d = |a: usize, b: usize| match (saved.get(a), saved.get(b)) {
+            (Some(x), Some(y)) => frame_diff(&x.0, &y.0),
+            _ => f64::NAN,
+        };
+        let line = format!(
+            "{}\t{}\t{}\t{}\t{:.2}\t{:.2}\t{:.2}\t{bb}\t{cov:.3}\t{:.2}\t{:.2}",
+            s.id,
+            s.category,
+            size.0,
+            size.1,
+            median_ms(tick_ms),
+            median_ms(render_ms),
+            median_ms(frame_ms),
+            d(0, 1),
+            d(1, 2),
+        );
+        eprintln!("{line}");
+        let _ = writeln!(tsv, "{line}");
+    }
+    std::fs::write(out_dir.join("review.tsv"), tsv).expect("write review.tsv");
+}
+
+/// Controls [`review_controls`] can't see change anything here: (node,
+/// why).
+const QUIET_CONTROLS: &[(&str, &str)] = &[
+    ("wm_start", "starts the camera (none here)"),
+    ("bt_tog", "starts the camera and tracker (none here)"),
+    ("cs_on", "starts the camera; the stand-in shows without one"),
+    ("fb_amp", "scales the analysed sound (no audio engine here)"),
+    ("cl_tear", "matters only while the mouse pulls the cloth"),
+    (
+        "t39_sz",
+        "changes the image's pixels, which the scene doesn't show",
+    ),
+    (
+        "ps_lo",
+        "changes the image's pixels, which the scene doesn't show",
+    ),
+    (
+        "ps_hi",
+        "changes the image's pixels, which the scene doesn't show",
+    ),
+];
+
+/// `cargo test -p floret-app -- --ignored review_controls --nocapture`:
+/// every Slider, Toggle and Bang in a Library sample changes what the
+/// Renderer gets. Two copies of the sample run in step; at frame 30 one
+/// has the control moved (a slider to the end of its range further from
+/// its value, a toggle flipped, a bang fired) as the editor does it, and
+/// the scenes are compared at frames 60 and 120.
+#[test]
+#[ignore = "slow: runs every sample with a control twice"]
+fn review_controls() {
+    use floret_engine::{Engine, FrameCtx};
+    let mut dead = Vec::new();
+    let mut checked = 0;
+    let only = std::env::var("FLORET_SAMPLES_ONLY").ok();
+    floret_video::install();
+    let host: std::sync::Arc<dyn floret_engine::host::Host> =
+        match std::env::var_os("FLORET_REVIEW_IMAGE") {
+            Some(p) => std::sync::Arc::new(StandIn(
+                crate::host::shared(),
+                std::fs::read(p).expect("FLORET_REVIEW_IMAGE"),
+            )),
+            None => crate::host::shared(),
+        };
+    for s in SAMPLES {
+        if only
+            .as_deref()
+            .is_some_and(|o| !o.split(',').any(|p| s.id.starts_with(p)))
+        {
+            continue;
+        }
+        let patch = floret_engine::load_patch(s.flora).expect("sample loads");
+        let controls: Vec<_> = patch
+            .nodes
+            .iter()
+            .filter(|n| matches!(n.def_type.as_str(), "io/slider" | "io/toggle" | "io/bang"))
+            .map(|n| (n.id.clone(), n.def_type.clone(), n.params.clone()))
+            .collect();
+        for (id, ty, params) in controls {
+            let run = |moved: bool| -> Vec<String> {
+                let _wait = floret_engine::video::wait_for_frames();
+                let (mut e, _) = Engine::from_patch(&patch).expect("compiles");
+                e.set_host(Some(host.clone()));
+                let r = e.graph.renderer().expect("renderer");
+                let mut seen = Vec::new();
+                for f in 0..121u32 {
+                    if moved && f == 30 {
+                        let num =
+                            |k: &str, d: f64| params.get(k).and_then(Json::as_f64).unwrap_or(d);
+                        match ty.as_str() {
+                            "io/slider" => {
+                                let (v, lo, hi) =
+                                    (num("value", 0.5), num("min", 0.0), num("max", 1.0));
+                                let to = if v - lo > hi - v { lo } else { hi };
+                                e.params.set(&id, "value", Json::from(to));
+                            }
+                            "io/toggle" => {
+                                let on =
+                                    params.get("value").and_then(Json::as_bool).unwrap_or(false);
+                                e.params.set(&id, "value", Json::Bool(!on));
+                            }
+                            _ => e.params.set(&id, "bang", Json::Bool(true)),
+                        }
+                    }
+                    let ctx = FrameCtx {
+                        t: f64::from(f) / 60.0,
+                        dt: 1.0 / 60.0,
+                        frame_count: f64::from(f),
+                        width: 600.0,
+                        height: 600.0,
+                        ..Default::default()
+                    };
+                    let res = e.tick(&ctx);
+                    if f == 60 || f == 120 {
+                        let out = res.outputs.get(r).cloned().flatten().unwrap_or_default();
+                        // The layers in full (a group's value is a summary).
+                        let layers = out.first().map(|sp| floret_render::flatten_layers(sp));
+                        seen.push(format!("{layers:?}"));
+                    }
+                }
+                seen
+            };
+            checked += 1;
+            let (a, b) = (run(false), run(true));
+            let effect = a != b;
+            eprintln!(
+                "{}\t{id}\t{ty}\t{}",
+                s.id,
+                if effect { "changes" } else { "NO EFFECT" }
+            );
+            if !effect && !QUIET_CONTROLS.iter().any(|(c, _)| *c == id) {
+                dead.push(format!("{}: {id} ({ty})", s.id));
+            }
+        }
+    }
+    eprintln!("{checked} controls checked");
+    assert!(
+        dead.is_empty(),
+        "controls with no effect:\n{}",
+        dead.join("\n")
+    );
+}

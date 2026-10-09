@@ -135,6 +135,21 @@ fn compile_refs(
         match cat.get(&n.def_type) {
             Some(s) => {
                 spec_by_id.insert(n.id.as_str(), s);
+                // A family node with an op it doesn't have runs its default
+                // op (so a newer file still loads): say so, or a typo'd op
+                // silently computes something else.
+                if let Some(f) = crate::nodes::family::family(&n.def_type) {
+                    let op = n.params.get(f.param).and_then(|v| v.as_str());
+                    if let Some(op) = op.filter(|op| f.op_by_id(op).is_none()) {
+                        warn(
+                            format!(
+                                "{} has no {} \"{op}\" — it runs {} instead.",
+                                s.label, f.param, f.ops[0].id
+                            ),
+                            &[&n.id],
+                        );
+                    }
+                }
             }
             None => warn(
                 format!("Unknown node type \"{}\" — node skipped.", n.def_type),

@@ -6210,7 +6210,7 @@
    "category": "Random",
    "group": "Noise & Random",
    "label": "Noise",
-   "description": "Smooth 2D noise at (pos + (x, y)) · scale, per element: wire spreads (a grid of positions, a list of seeds) into any pin for a spread of values. Modes: perlin, simplex, value, cellular (Worley — `feature` F1 = distance to the nearest cell point, F2 = to the second nearest, F2-F1 = cell edges) and curl (`flow` = the divergence-free curl of Perlin noise, for advecting things in swirls). `noise` is in [0, 1]. `octaves` > 1 adds finer layers (fBm), each `falloff` times as strong. `warp` pushes the sample point around by another noise field (`warp scale` = its frequency) for marbled, folded shapes. Perlin mode at default settings gives exactly what the old Perlin node gave.",
+   "description": "Smooth 2D noise at (pos + (x, y)) · scale, per element: wire spreads (a grid of positions, a list of seeds) into any pin for a spread of values. Modes: perlin, simplex, value, cellular (Worley — `feature` F1 = distance to the nearest cell point, F2 = to the second nearest, F2-F1 = cell edges) and curl (`flow` = the divergence-free curl of Perlin noise, for advecting things in swirls); plus three pattern fields: checker (1 / 0 on alternate unit squares), stripes (a smooth wave, one stripe per unit, turned by `angle` in radians) and rings (the same wave round the origin). With `warp`, stripes become marble and rings wood grain. `noise` is in [0, 1]. `octaves` > 1 adds finer layers (fBm), each `falloff` times as strong. `warp` pushes the sample point around by another noise field (`warp scale` = its frequency) for marbled, folded shapes. Perlin mode at default settings gives exactly what the old Perlin node gave.",
    "inputs": [
     {
      "name": "pos",
@@ -6296,7 +6296,10 @@
      "simplex",
      "value",
      "cellular",
-     "curl"
+     "curl",
+     "checker",
+     "stripes",
+     "rings"
     ],
     "feature": [
      "F1",
@@ -13167,7 +13170,7 @@
    "category": "Geometry",
    "group": "Shape Ops",
    "label": "Path Ops",
-   "description": "Reshape a point list (`points`, `closed`) or every outline of a wired `path` layer. Modes: `resample` (points evenly `spacing` apart), `smooth` (Chaikin corner cutting, `iterations` times), `subdivide` (insert midpoints, `iterations` times), `simplify` (drop points within `tolerance`), `offset` (grow by `distance`, shrink when negative; closed shapes get `join` corners, open paths shift sideways). Shapes from a layer keep their own style unless `style` is wired.",
+   "description": "Reshape a point list (`points`, `closed`) or every outline of a wired `path` layer. Modes: `resample` (points evenly `spacing` apart), `smooth` (Chaikin corner cutting, `iterations` times), `subdivide` (insert midpoints, `iterations` times), `simplify` (drop points within `tolerance`), `offset` (grow by `distance`, shrink when negative; closed shapes get `join` corners, open paths shift sideways), `round-corners` (every corner an arc of `radius`), `thicken` (a `width`-wide stroke's outline as filled polygons, with `cap` ends and `join` corners), `wave` (a sine wave along the path: `amplitude`, `wavelength`; closed shapes fit whole waves), `noise` (Perlin wobble: `amount`, `scale`, `seed`), `twist` (swirl round `center` by `angle` radians, fading out at `radius`) and `explode` (every edge its own piece on `layers`, pushed `distance` from the centre). wave / noise / twist resample every `detail` units first; their `phase` loops every whole number. Shapes from a layer keep their own style unless `style` is wired.",
    "inputs": [
     {
      "name": "points",
@@ -13230,12 +13233,23 @@
      "smooth",
      "subdivide",
      "simplify",
-     "offset"
+     "offset",
+     "round-corners",
+     "thicken",
+     "wave",
+     "noise",
+     "twist",
+     "explode"
     ],
     "join": [
      "round",
      "miter",
      "bevel"
+    ],
+    "cap": [
+     "round",
+     "butt",
+     "square"
     ]
    }
   },
@@ -14013,7 +14027,7 @@
    "category": "Render",
    "group": "Effects",
    "label": "Effect",
-   "description": "A post-effect on a layer, on the GPU: bloom / glow, film grain (animates by itself), displacement (by noise, or by a `map` layer: red pushes right, green down), ordered dither, colour halftone dots, chromatic aberration, vignette. Pick the `mode`; the pins follow it. Sizes are in pixels.",
+   "description": "A post-effect on a layer, on the GPU. Pick the `mode`; the pins follow it. Sizes are in pixels, angles in radians. Light and texture: bloom (bright parts glow), film grain (animates by itself), displacement (by noise, or by a `map` layer: red pushes right, green down), ordered dither, colour halftone dots, chromatic aberration, vignette. Blur: `kind` gaussian, lens (bokeh discs; `highlights` opens bright points), motion (along `angle`), zoom (streaks towards `center`) or spin (round it). Shape: drop shadow and glow of the layer's coverage (`inner` puts them inside), barrel / pincushion distortion, Sobel edges. Colour: posterize, threshold (by brightness into `low` / `high`, or `channel` alpha cuts the coverage — blur first for gooey metaballs), levels, curves (each colour pin is a point of the curve at black, ¼, ½, ¾ and white, per channel), lut (a `.cube` file: wire a File node's `url` or type a path), chroma key (with spill suppression).",
    "inputs": [
     {
      "name": "input",
@@ -14059,7 +14073,29 @@
      "dither",
      "halftone",
      "chromatic",
-     "vignette"
+     "vignette",
+     "blur",
+     "shadow",
+     "glow",
+     "barrel",
+     "edges",
+     "posterize",
+     "threshold",
+     "levels",
+     "curves",
+     "lut",
+     "key"
+    ],
+    "kind": [
+     "gaussian",
+     "lens",
+     "motion",
+     "zoom",
+     "spin"
+    ],
+    "channel": [
+     "luma",
+     "alpha"
     ]
    }
   },

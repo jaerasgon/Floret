@@ -47,6 +47,7 @@ fn shader(
         input,
         map: None,
         history: None,
+        lut: None,
     })))
 }
 

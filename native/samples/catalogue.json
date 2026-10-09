@@ -846,6 +846,48 @@
       "category": "Color",
       "description": "The same red → blue blend in RGB, OKLab and OKLCH (Lerp's space option), a cosine palette, and a tetradic harmony around a base colour whose hue turns with time (Palette's generator modes).",
       "file": "color-spaces.flora"
+    },
+    {
+      "id": "effect-metaballs",
+      "name": "Metaballs",
+      "category": "Shaders",
+      "description": "Gooey metaballs from Effect modes: blur (gaussian), then threshold on the coverage (channel alpha) so nearby circles melt together, a coverage glow and an inner shadow for depth. Orbiting circles merge and split.",
+      "file": "effect-metaballs.flora"
+    },
+    {
+      "id": "effect-colour-grade",
+      "name": "Colour Grade",
+      "category": "Color",
+      "description": "Chroma key, then a grade: petals on a green backdrop keyed onto a gradient sky (with spill suppression), then Levels, Curves (colour pins = a curve per channel: cool shadows, warm highlights) and a 3D LUT from a .cube file in a File node.",
+      "file": "effect-colour-grade.flora"
+    },
+    {
+      "id": "effect-rainy-night",
+      "name": "Rainy Night",
+      "category": "Shaders",
+      "description": "Lens blur turns scattered lights into bokeh discs, motion blur streaks falling rain along its angle, and barrel distortion bulges the frame like a wide lens.",
+      "file": "effect-rainy-night.flora"
+    },
+    {
+      "id": "effect-warp-speed",
+      "name": "Warp Speed",
+      "category": "Shaders",
+      "description": "A starfield through spin blur (arcs round the centre) and zoom blur (streaks from it), the zoom pulsing with an LFO for a jump to hyperspace.",
+      "file": "effect-warp-speed.flora"
+    },
+    {
+      "id": "noise-patterns",
+      "name": "Marble, Wood & Op Art",
+      "category": "Fields",
+      "description": "Noise's pattern modes, domain-warped: stripes → marble, rings → wood grain, checker → op art. The panels go through blur, posterize and edges for a topographic map.",
+      "file": "noise-patterns.flora"
+    },
+    {
+      "id": "path-ops-shapes",
+      "name": "Path Ops Shapes",
+      "category": "Geometry",
+      "description": "Six Path Ops modes: round corners, thicken (a spiral stroke outlined), wave, noise and twist deformers (phases looping with Time), and explode (a hexagon's edges pushed apart).",
+      "file": "path-ops-shapes.flora"
     }
   ]
 }

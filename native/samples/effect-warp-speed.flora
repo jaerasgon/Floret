@@ -1,0 +1,343 @@
+{
+  "kind": "floret.patch",
+  "version": 3,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Warp Speed",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ws_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -274
+      },
+      "params": {
+        "text": "Zoom and spin blur\n\nA starfield through two Effect · blur nodes: kind spin smears each star round the centre (`angle` radians of arc), kind zoom streaks it along the line from the centre (`amount` = how far towards it). An LFO pulses the zoom: cruising, then the jump. Levels (in white 0.35) brightens the faint streaks; the sharp stars go back on top.",
+        "width": 420,
+        "height": 210
+      },
+      "portValues": {
+        "text": "Zoom and spin blur\n\nA starfield through two Effect · blur nodes: kind spin smears each star round the centre (`angle` radians of arc), kind zoom streaks it along the line from the centre (`amount` = how far towards it). An LFO pulses the zoom: cruising, then the jump. Levels (in white 0.35) brightens the faint streaks; the sharp stars go back on top.",
+        "width": 420,
+        "height": 210
+      }
+    },
+    {
+      "id": "ws_stars",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 0,
+        "y": 385
+      },
+      "params": {
+        "mode": "random"
+      },
+      "portValues": {
+        "size": {
+          "x": 600,
+          "y": 600
+        },
+        "count": 260,
+        "seed": 11
+      }
+    },
+    {
+      "id": "ws_pal",
+      "defType": "color/palette",
+      "position": {
+        "x": 15,
+        "y": 203
+      },
+      "params": {
+        "stopCount": 3,
+        "c0": "#ffffff",
+        "c1": "#9fd8ff",
+        "c2": "#ffd9a0"
+      },
+      "portValues": {
+        "stopCount": 3
+      }
+    },
+    {
+      "id": "ws_dots",
+      "defType": "region/foreach",
+      "position": {
+        "x": 302,
+        "y": 249
+      },
+      "params": {
+        "width": 772,
+        "height": 241,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "pos",
+          "name": "pos",
+          "type": "vec2",
+          "direction": "input",
+          "y": 121
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 76
+        }
+      ],
+      "width": 772,
+      "height": 241
+    },
+    {
+      "id": "ws_dots_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 564,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "ws_dots",
+      "portValues": {
+        "w": 5,
+        "h": 5
+      }
+    },
+    {
+      "id": "ws_dots_grad",
+      "defType": "color/gradient",
+      "position": {
+        "x": 137,
+        "y": 107
+      },
+      "params": {
+        "space": "oklab"
+      },
+      "parentId": "ws_dots"
+    },
+    {
+      "id": "ws_dots_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 383,
+        "y": 113
+      },
+      "params": {},
+      "parentId": "ws_dots"
+    },
+    {
+      "id": "ws_jump",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 1234,
+        "y": 182
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 0.15,
+        "min": 0.04,
+        "max": 0.45
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 0.15,
+        "min": 0.04,
+        "max": 0.45
+      }
+    },
+    {
+      "id": "ws_spin",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1210,
+        "y": 0
+      },
+      "params": {
+        "mode": "blur",
+        "kind": "spin"
+      },
+      "portValues": {
+        "angle": 0.12,
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": "ws_zoom",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1491,
+        "y": 97
+      },
+      "params": {
+        "mode": "blur",
+        "kind": "zoom"
+      },
+      "portValues": {
+        "center": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": "ws_bright",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1767,
+        "y": 170
+      },
+      "params": {
+        "mode": "levels"
+      },
+      "portValues": {
+        "inWhite": 0.35
+      }
+    },
+    {
+      "id": "ws_stack",
+      "defType": "transform/group",
+      "position": {
+        "x": 2045,
+        "y": 264
+      },
+      "params": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "ws_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2309,
+        "y": 264
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.01568627450980392,
+          "g": 0.01568627450980392,
+          "b": 0.047058823529411764,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.01568627450980392,
+          "g": 0.01568627450980392,
+          "b": 0.047058823529411764,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_ws_stars_ws_dots_pos",
+      "source": "ws_stars",
+      "target": "ws_dots",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_ws_dots_ws_dots_dot_pos",
+      "source": "ws_dots",
+      "target": "ws_dots_dot",
+      "sourceHandle": "out-pos",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_ws_dots_dot_ws_dots_layer",
+      "source": "ws_dots_dot",
+      "target": "ws_dots",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_ws_pal_ws_dots_grad_colors",
+      "source": "ws_pal",
+      "target": "ws_dots_grad",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_ws_dots_ws_dots_grad_t",
+      "source": "ws_dots",
+      "target": "ws_dots_grad",
+      "sourceHandle": "out-__loopvar_fraction",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_ws_dots_grad_ws_dots_fill_color",
+      "source": "ws_dots_grad",
+      "target": "ws_dots_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_ws_dots_fill_ws_dots_dot_style",
+      "source": "ws_dots_fill",
+      "target": "ws_dots_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ws_dots_ws_spin_input",
+      "source": "ws_dots",
+      "target": "ws_spin",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_ws_spin_ws_zoom_input",
+      "source": "ws_spin",
+      "target": "ws_zoom",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_ws_jump_ws_zoom_amount",
+      "source": "ws_jump",
+      "target": "ws_zoom",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-amount"
+    },
+    {
+      "id": "e_ws_zoom_ws_bright_input",
+      "source": "ws_zoom",
+      "target": "ws_bright",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_ws_bright_ws_stack_s1",
+      "source": "ws_bright",
+      "target": "ws_stack",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_ws_dots_ws_stack_s2",
+      "source": "ws_dots",
+      "target": "ws_stack",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_ws_stack_ws_renderer_layers",
+      "source": "ws_stack",
+      "target": "ws_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

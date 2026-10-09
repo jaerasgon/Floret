@@ -285,6 +285,12 @@ fn masks_by_luminance() {
 /// The `gpu/effect` shape for `mode` with `values` on its pins, built by
 /// the engine from a patch (input: a placeholder rect, replaced by tests).
 fn effect(mode: &str, values: serde_json::Value) -> ShaderShape {
+    effect_patch(json!({ "mode": mode }), values, false)
+}
+
+/// The shape for `params` (the mode and its sub-choice) with `values` on
+/// its pins; `lut`: tick until the lookup table has loaded.
+fn effect_patch(params: serde_json::Value, values: serde_json::Value, lut: bool) -> ShaderShape {
     let patch = json!({
         "kind": "floret.patch",
         "version": 2,
@@ -293,7 +299,7 @@ fn effect(mode: &str, values: serde_json::Value) -> ShaderShape {
             { "id": "m", "defType": "draw/rect", "position": {"x": 0, "y": 100} },
             {
                 "id": "fx", "defType": "gpu/effect", "position": {"x": 200, "y": 0},
-                "params": { "mode": mode },
+                "params": params,
                 "portValues": values,
             },
             {
@@ -308,15 +314,22 @@ fn effect(mode: &str, values: serde_json::Value) -> ShaderShape {
     });
     let mut engine = Engine::load(&patch.to_string()).expect("patch loads");
     let renderer = engine.graph.renderer().expect("a renderer");
-    let r = engine.tick(&FrameCtx::default());
-    assert!(r.errors.is_empty(), "{:?}", r.errors);
-    let layers = r.layers(renderer);
-    match layers.first() {
-        Some(Value::Scene(n)) => match &**n {
-            SceneNode::Shader(sh) => (**sh).clone(),
-            other => panic!("not a shader: {other:?}"),
-        },
-        other => panic!("no layer: {other:?}"),
+    let start = std::time::Instant::now();
+    loop {
+        let r = engine.tick(&FrameCtx::default());
+        assert!(r.errors.is_empty(), "{:?}", r.errors);
+        let layers = r.layers(renderer);
+        let sh = match layers.first() {
+            Some(Value::Scene(n)) => match &**n {
+                SceneNode::Shader(sh) => (**sh).clone(),
+                other => panic!("not a shader: {other:?}"),
+            },
+            other => panic!("no layer: {other:?}"),
+        };
+        if !lut || sh.lut.is_some() || start.elapsed().as_secs() > 10 {
+            return sh;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(5));
     }
 }
 
@@ -492,6 +505,404 @@ fn displacement_moves_pixels() {
     assert_ne!(px, plain);
 }
 
+// ─── Effects: blur, shadow / glow, distort, edges, colour ───────────────────
+
+/// `effect` with more params than the mode (`kind`, `channel`).
+fn effect_with(params: serde_json::Value, values: serde_json::Value) -> ShaderShape {
+    effect_patch(params, values, false)
+}
+
+#[test]
+fn every_kind_and_channel_compiles() {
+    let Some(mut g) = gpu() else { return };
+    let mut cases: Vec<serde_json::Value> = floret_engine::nodes::effect::BLUR_KINDS
+        .iter()
+        .map(|k| json!({ "mode": "blur", "kind": k }))
+        .collect();
+    cases.extend(
+        floret_engine::nodes::effect::THRESHOLD_CHANNELS
+            .iter()
+            .map(|c| json!({ "mode": "threshold", "channel": c })),
+    );
+    cases.push(json!({ "mode": "shadow" }));
+    cases.push(json!({ "mode": "glow" }));
+    for params in cases {
+        let sh = effect_with(params.clone(), json!({}));
+        for p in sh.passes.iter() {
+            if let Err(e) = floret_render::shader::check(&p.source) {
+                panic!("{params} {:?}: {e:?}", p.buf);
+            }
+        }
+        render(
+            &mut g,
+            &[with_input(
+                sh,
+                rect(0.0, 0.0, 100.0, 100.0, solid("#ffffff")),
+            )],
+        );
+        assert!(g.renderer.shader_errors().is_empty(), "{params}");
+    }
+    // The LUT pass, with a table bound.
+    let sh = lut_effect(&invert_cube(), 1.0);
+    for p in sh.passes.iter() {
+        floret_render::shader::check(&p.source).unwrap();
+    }
+}
+
+fn white_square() -> Arc<SceneNode> {
+    rect(0.0, 0.0, 100.0, 100.0, solid("#ffffff"))
+}
+
+#[test]
+fn gaussian_and_lens_blur_soften_edges() {
+    let Some(mut g) = gpu() else { return };
+    for kind in ["gaussian", "lens"] {
+        let sh = effect_with(
+            json!({ "mode": "blur", "kind": kind }),
+            json!({ "radius": 10.0, "highlights": 0.0 }),
+        );
+        let px = render(&mut g, &[with_input(sh, white_square())]);
+        assert_px(&px, 0, 0, [255, 255, 255], 2);
+        // Half-lit on the edge, a soft ramp either side.
+        let edge = at(&px, 50, 0)[0];
+        assert!((90..170).contains(&edge), "{kind} edge {edge}");
+        assert!(at(&px, 54, 0)[0] > 5, "{kind} spills out");
+        assert!(at(&px, 46, 0)[0] < 250, "{kind} softens in");
+        assert_px(&px, 0, 80, [0, 0, 0], 2);
+    }
+    // Radius 0 changes nothing.
+    let sh = effect_with(
+        json!({ "mode": "blur", "kind": "lens" }),
+        json!({ "radius": 0.0 }),
+    );
+    let px = render(&mut g, &[with_input(sh, white_square())]);
+    assert_eq!(px, render(&mut g, &[white_square()]));
+}
+
+#[test]
+fn lens_highlights_open_into_discs() {
+    let Some(mut g) = gpu() else { return };
+    let point = rect(0.0, 0.0, 4.0, 4.0, solid("#ffffff"));
+    let disc = |g: &mut Headless, highlights: f64| {
+        let sh = effect_with(
+            json!({ "mode": "blur", "kind": "lens" }),
+            json!({ "radius": 12.0, "highlights": highlights }),
+        );
+        render(g, &[with_input(sh, point.clone())])
+    };
+    let flat = disc(&mut g, 0.0);
+    let bokeh = disc(&mut g, 1.0);
+    // Spread over the disc either way; brighter with highlights.
+    assert!(at(&flat, 8, 0)[0] > 0 && at(&flat, 16, 0)[0] == 0);
+    assert!(at(&bokeh, 8, 0)[0] > at(&flat, 8, 0)[0] + 10);
+}
+
+#[test]
+fn motion_zoom_and_spin_blur_streak() {
+    let Some(mut g) = gpu() else { return };
+    // Horizontal motion: the side edges smear, top and bottom stay sharp.
+    let sh = effect_with(
+        json!({ "mode": "blur", "kind": "motion" }),
+        json!({ "amount": 40.0, "angle": 0.0 }),
+    );
+    let px = render(&mut g, &[with_input(sh, white_square())]);
+    let edge = at(&px, 50, 0)[0];
+    assert!((100..160).contains(&edge), "edge {edge}");
+    assert!(at(&px, 65, 0)[0] > 20);
+    assert_px(&px, 0, 45, [255, 255, 255], 2);
+    assert_px(&px, 0, 55, [0, 0, 0], 2);
+    // Zoom: a square right of centre streaks outwards, not inwards.
+    let sq = rect(60.0, 0.0, 20.0, 20.0, solid("#ffffff"));
+    let sh = effect_with(
+        json!({ "mode": "blur", "kind": "zoom" }),
+        json!({ "amount": 0.5 }),
+    );
+    let px = render(&mut g, &[with_input(sh, sq.clone())]);
+    assert!(at(&px, 95, 0)[0] > 20, "{:?}", at(&px, 95, 0));
+    assert_px(&px, 40, 0, [0, 0, 0], 1);
+    assert!(at(&px, 60, 0)[0] > 60);
+    // A moved centre moves the streaks.
+    let sh = effect_with(
+        json!({ "mode": "blur", "kind": "zoom" }),
+        json!({ "amount": 0.5, "center": { "x": 60.0, "y": 0.0 } }),
+    );
+    let px = render(&mut g, &[with_input(sh, sq.clone())]);
+    assert_px(&px, 95, 0, [0, 0, 0], 1);
+    // Spin round the centre: the square smears along its circle.
+    let sh = effect_with(
+        json!({ "mode": "blur", "kind": "spin" }),
+        json!({ "angle": 1.0 }),
+    );
+    let px = render(&mut g, &[with_input(sh, sq)]);
+    let (s, c) = 0.35f64.sin_cos();
+    let along = at(&px, (60.0 * c) as i32, (60.0 * s) as i32)[0];
+    assert!(along > 20, "along the circle {along}");
+    assert_px(&px, 0, 60, [0, 0, 0], 1);
+}
+
+#[test]
+fn drop_shadow_and_inner_shadow() {
+    let Some(mut g) = gpu() else { return };
+    let sq = rect(0.0, 0.0, 60.0, 60.0, solid("#ffffff"));
+    let red = json!({ "r": 1.0, "g": 0.0, "b": 0.0, "a": 1.0 });
+    let sh = effect(
+        "shadow",
+        json!({ "offset": { "x": 20.0, "y": 20.0 }, "radius": 0.0, "color": red, "opacity": 1.0 }),
+    );
+    let px = render(&mut g, &[with_input(sh, sq.clone())]);
+    // Down and right of the square (y down), in red; the square on top.
+    assert_px(&px, 40, 40, [255, 0, 0], 2);
+    assert_px(&px, 0, 0, [255, 255, 255], 2);
+    assert_px(&px, -40, -40, [0, 0, 0], 1);
+    assert_px(&px, 40, -25, [0, 0, 0], 1);
+    // Half opacity, softened.
+    let sh = effect(
+        "shadow",
+        json!({ "offset": { "x": 20.0, "y": 20.0 }, "radius": 8.0, "color": red, "opacity": 0.5 }),
+    );
+    let px = render(&mut g, &[with_input(sh, sq.clone())]);
+    let mid = at(&px, 40, 40);
+    assert!((100..150).contains(&mid[0]) && mid[1] < 5, "{mid:?}");
+    // Inner: inside the square, along the edges the light comes from.
+    let sh = effect(
+        "shadow",
+        json!({ "offset": { "x": 10.0, "y": 10.0 }, "radius": 0.0, "color": red, "opacity": 1.0, "inner": true }),
+    );
+    let px = render(&mut g, &[with_input(sh, sq)]);
+    assert_px(&px, -25, -25, [255, 0, 0], 2);
+    assert_px(&px, 25, 25, [255, 255, 255], 2);
+    assert_px(&px, -40, -40, [0, 0, 0], 1);
+}
+
+#[test]
+fn glow_rings_the_coverage() {
+    let Some(mut g) = gpu() else { return };
+    // A dark shape: bloom (brightness) wouldn't light it, glow does.
+    let sq = rect(0.0, 0.0, 60.0, 60.0, solid("#202020"));
+    let blue = json!({ "r": 0.0, "g": 0.4, "b": 1.0, "a": 1.0 });
+    let sh = effect(
+        "glow",
+        json!({ "radius": 12.0, "color": blue, "intensity": 2.0 }),
+    );
+    let px = render(&mut g, &[with_input(sh, sq.clone())]);
+    let halo = at(&px, 34, 0);
+    assert!(halo[2] > 40 && halo[0] < 5, "halo {halo:?}");
+    assert!(at(&px, 34, 0)[2] > at(&px, 40, 0)[2]);
+    assert_px(&px, 0, 0, [32, 32, 32], 2);
+    assert_px(&px, 80, 0, [0, 0, 0], 2);
+    // Inner glow lights the inside of the edge.
+    let sh = effect(
+        "glow",
+        json!({ "radius": 12.0, "color": blue, "intensity": 2.0, "inner": true }),
+    );
+    let px = render(&mut g, &[with_input(sh, sq)]);
+    assert!(at(&px, 28, 0)[2] > 80);
+    assert_px(&px, 0, 0, [32, 32, 32], 3);
+    assert_px(&px, 34, 0, [0, 0, 0], 1);
+}
+
+#[test]
+fn barrel_bulges_and_pincushion_pinches() {
+    let Some(mut g) = gpu() else { return };
+    let sh = effect("barrel", json!({ "amount": 0.3 }));
+    let px = render(&mut g, &[with_input(sh, white_square())]);
+    // The 100-wide square's edge moves in (to x ≈ 46.8) …
+    assert_px(&px, 44, 0, [255, 255, 255], 2);
+    assert_px(&px, 49, 0, [0, 0, 0], 2);
+    assert_px(&px, 0, 0, [255, 255, 255], 0);
+    // … and out for pincushion.
+    let sh = effect("barrel", json!({ "amount": -0.3 }));
+    let px = render(&mut g, &[with_input(sh, white_square())]);
+    assert_px(&px, 51, 0, [255, 255, 255], 2);
+    // zoom 2 doubles the middle.
+    let sh = effect("barrel", json!({ "amount": 0.0, "zoom": 2.0 }));
+    let px = render(&mut g, &[with_input(sh, white_square())]);
+    assert_px(&px, 90, 0, [255, 255, 255], 2);
+}
+
+#[test]
+fn edges_outline_shapes() {
+    let Some(mut g) = gpu() else { return };
+    let gold = json!({ "r": 1.0, "g": 0.8, "b": 0.0, "a": 1.0 });
+    let sh = effect("edges", json!({ "color": gold }));
+    let px = render(&mut g, &[with_input(sh, white_square())]);
+    let e = at(&px, 50, 0);
+    assert!(e[0] > 200 && e[1] > 150 && e[2] < 10, "edge {e:?}");
+    assert_px(&px, 0, 0, [0, 0, 0], 1);
+    assert_px(&px, 80, 0, [0, 0, 0], 1);
+    // keep 1: the shape stays under its edges. A black shape has edges
+    // too (its coverage changes).
+    let sh = effect("edges", json!({ "color": gold, "keep": 1.0 }));
+    let px = render(&mut g, &[with_input(sh, white_square())]);
+    assert_px(&px, 0, 0, [255, 255, 255], 1);
+    let sh = effect("edges", json!({ "color": gold }));
+    let dark = rect(0.0, 0.0, 100.0, 100.0, solid("#000000"));
+    let px = g.render(&[with_input(sh, dark)], W, H, [0.2, 0.2, 0.2, 1.0]);
+    assert!(at(&px, 50, 0)[0] > 200);
+}
+
+#[test]
+fn posterize_and_threshold() {
+    let Some(mut g) = gpu() else { return };
+    let two = |g: &mut Headless, sh: ShaderShape, css: &str| {
+        let px = render(g, &[with_input(sh, white_square_in(css))]);
+        at(&px, 0, 0)
+    };
+    let post = || effect("posterize", json!({ "levels": 2 }));
+    assert_eq!(two(&mut g, post(), "#666666"), [0, 0, 0]);
+    assert_eq!(two(&mut g, post(), "#999999"), [255, 255, 255]);
+    let post3 = effect("posterize", json!({ "levels": 3 }));
+    let mid = two(&mut g, post3, "#8a8a8a");
+    assert!(mid[0].abs_diff(128) <= 1, "{mid:?}");
+    // Threshold by brightness into low / high.
+    let teal = json!({ "r": 0.0, "g": 0.5, "b": 0.5, "a": 1.0 });
+    let th = || effect("threshold", json!({ "level": 0.5, "high": teal }));
+    assert_eq!(two(&mut g, th(), "#666666"), [0, 0, 0]);
+    let hi = two(&mut g, th(), "#999999");
+    assert!(hi[0] == 0 && hi[1].abs_diff(128) <= 1, "{hi:?}");
+    // By coverage: faint goes, strong turns solid.
+    let alpha = || {
+        effect_with(
+            json!({ "mode": "threshold", "channel": "alpha" }),
+            json!({ "level": 0.5 }),
+        )
+    };
+    assert_eq!(two(&mut g, alpha(), "rgba(255,0,0,0.4)"), [0, 0, 0]);
+    assert_eq!(two(&mut g, alpha(), "rgba(255,0,0,0.6)"), [255, 0, 0]);
+}
+
+fn white_square_in(css: &str) -> Arc<SceneNode> {
+    rect(0.0, 0.0, 100.0, 100.0, solid(css))
+}
+
+#[test]
+fn levels_and_curves() {
+    let Some(mut g) = gpu() else { return };
+    let one = |g: &mut Headless, sh: ShaderShape, css: &str| {
+        let px = render(g, &[with_input(sh, white_square_in(css))]);
+        at(&px, 0, 0)
+    };
+    let lv = || effect("levels", json!({ "inBlack": 0.2, "inWhite": 0.8 }));
+    assert_eq!(one(&mut g, lv(), "#333333"), [0, 0, 0]);
+    assert_eq!(one(&mut g, lv(), "#cccccc"), [255, 255, 255]);
+    let m = one(&mut g, lv(), "#808080");
+    assert!(m[0].abs_diff(128) <= 2, "{m:?}");
+    let gamma = effect("levels", json!({ "gamma": 2.0 }));
+    let m = one(&mut g, gamma, "#404040");
+    assert!(m[0].abs_diff(128) <= 2, "{m:?}");
+    let out = effect("levels", json!({ "outBlack": 0.5 }));
+    let m = one(&mut g, out, "#000000");
+    assert!(m[0].abs_diff(128) <= 1, "{m:?}");
+    // Curves at their defaults change nothing.
+    for css in ["#000000", "#4d4d4d", "#a0a0a0", "#ffffff", "#ff8000"] {
+        let plain = render(&mut g, &[white_square_in(css)]);
+        let px = render(
+            &mut g,
+            &[with_input(
+                effect("curves", json!({})),
+                white_square_in(css),
+            )],
+        );
+        let (a, b) = (at(&plain, 0, 0), at(&px, 0, 0));
+        assert!(
+            (0..3).all(|i| a[i].abs_diff(b[i]) <= 1),
+            "{css}: {a:?} vs {b:?}"
+        );
+    }
+    // A red midpoint: mid grey turns red, black and white stay.
+    let red = json!({ "r": 1.0, "g": 0.0, "b": 0.0, "a": 1.0 });
+    let cv = || effect("curves", json!({ "midtones": red }));
+    assert_eq!(one(&mut g, cv(), "#808080"), [255, 0, 0]);
+    assert_eq!(one(&mut g, cv(), "#000000"), [0, 0, 0]);
+    assert_eq!(one(&mut g, cv(), "#ffffff"), [255, 255, 255]);
+    // An S-curve: darker shadows, brighter highlights, no overshoot.
+    let s = |v: f64| json!({ "r": v, "g": v, "b": v, "a": 1.0 });
+    let sc = || {
+        effect(
+            "curves",
+            json!({ "shadows": s(0.15), "highlights": s(0.85) }),
+        )
+    };
+    assert!(one(&mut g, sc(), "#404040")[0] < 50);
+    assert!(one(&mut g, sc(), "#c0c0c0")[0] > 205);
+    let near_white = one(&mut g, sc(), "#f8f8f8")[0];
+    assert!(near_white >= 248, "{near_white}");
+}
+
+/// A 2³ table that inverts colour.
+fn invert_cube() -> String {
+    let mut s = String::from("LUT_3D_SIZE 2\n");
+    for b in 0..2 {
+        for g in 0..2 {
+            for r in 0..2 {
+                s += &format!("{} {} {}\n", 1 - r, 1 - g, 1 - b);
+            }
+        }
+    }
+    s
+}
+
+fn data_url(text: &str) -> String {
+    let mut out = String::from("data:text/plain,");
+    for b in text.bytes() {
+        if b.is_ascii_alphanumeric() || b == b'.' || b == b'-' {
+            out.push(b as char);
+        } else {
+            out += &format!("%{b:02X}");
+        }
+    }
+    out
+}
+
+/// The lut-mode shape with `cube` on its pin, once the table has loaded.
+fn lut_effect(cube: &str, amount: f64) -> ShaderShape {
+    effect_patch(
+        json!({ "mode": "lut" }),
+        json!({ "lut": data_url(cube), "amount": amount }),
+        true,
+    )
+}
+
+#[test]
+fn lut_recolours_through_the_table() {
+    let Some(mut g) = gpu() else { return };
+    let sh = lut_effect(&invert_cube(), 1.0);
+    assert!(sh.lut.is_some());
+    let px = render(&mut g, &[with_input(sh, white_square_in("#ff4000"))]);
+    let c = at(&px, 0, 0);
+    assert!(c[0] < 2 && c[1].abs_diff(191) <= 2 && c[2] > 253, "{c:?}");
+    // Outside the layer stays transparent (the background shows).
+    assert_px(&px, 80, 0, [0, 0, 0], 0);
+    // Half amount: halfway to the inverse.
+    let sh = lut_effect(&invert_cube(), 0.5);
+    let px = render(&mut g, &[with_input(sh, white_square_in("#ffffff"))]);
+    let c = at(&px, 0, 0);
+    assert!(c.iter().all(|v| v.abs_diff(128) <= 2), "{c:?}");
+}
+
+#[test]
+fn chroma_key_removes_the_key_colour() {
+    let Some(mut g) = gpu() else { return };
+    let screen = rect(0.0, 0.0, 200.0, 200.0, solid("#10e020"));
+    let subject = rect(0.0, 0.0, 60.0, 60.0, solid("#d04040"));
+    let layer = Arc::new(SceneNode::group(vec![screen, subject]));
+    let sh = effect("key", json!({}));
+    let px = g.render(&[with_input(sh, layer)], W, H, [0.0, 0.0, 1.0, 1.0]);
+    // The green screen is gone (the blue backdrop shows), the subject stays.
+    assert_px(&px, 80, 80, [0, 0, 255], 2);
+    let s = at(&px, 0, 0);
+    assert!(s[0] > 180 && s[2] < 120, "{s:?}");
+    // Spill: a greenish grey loses its green cast.
+    let tinted = rect(0.0, 0.0, 200.0, 200.0, solid("#80a080"));
+    let sh = effect(
+        "key",
+        json!({ "spill": 1.0, "tolerance": 0.0, "softness": 0.0 }),
+    );
+    let px = render(&mut g, &[with_input(sh, tinted)]);
+    let c = at(&px, 0, 0);
+    assert!(c[1] <= c[0] + 4, "{c:?}");
+}
+
 // ─── Samples ─────────────────────────────────────────────────────────────────
 
 /// A sample after `frames` ticks at 60 fps, drawn: (pixels, width, height).
@@ -583,4 +994,85 @@ fn neon_bloom_sample_draws() {
     // Glow spills off the core well past its 18 px radius.
     let halo = px_at(&a, w, h, 30, 0);
     assert!(halo.iter().any(|c| *c > 40), "halo {halo:?}");
+}
+
+#[test]
+fn metaballs_sample_draws() {
+    let Some(mut g) = gpu() else { return };
+    let (px, w, h) = draw_sample(&mut g, "effect-metaballs", 30);
+    // The core blob is solid coral, the corners the dark background.
+    let core = px_at(&px, w, h, 0, 0);
+    assert!(core[0] > 200 && core[1] < 150, "core {core:?}");
+    let corner = px_at(&px, w, h, -290, -290);
+    assert!(corner.iter().all(|c| *c < 40), "corner {corner:?}");
+    // Thresholded: no half-transparent fuzz far from the blobs, but a glow
+    // just outside them.
+    let lit = px.chunks(4).filter(|p| p[0] > 200).count();
+    assert!(lit > 2000, "lit {lit}");
+}
+
+#[test]
+fn colour_grade_sample_draws() {
+    let Some(mut g) = gpu() else { return };
+    let (px, w, h) = draw_sample(&mut g, "effect-colour-grade", 30);
+    // No green left from the backdrop: the graded sky shows instead.
+    let sky = px_at(&px, w, h, -280, -280);
+    assert!(sky[2] > sky[1] && sky[2] > 40, "sky {sky:?}");
+    let greenish = px
+        .chunks(4)
+        .filter(|p| p[1] > 150 && p[0] < 100 && p[2] < 100)
+        .count();
+    assert!(greenish < 50, "green left: {greenish}");
+    // The core is still there (purple, lifted by the grade).
+    let core = px_at(&px, w, h, 0, 0);
+    assert!(core[2] > core[1], "core {core:?}");
+}
+
+#[test]
+fn rainy_night_sample_draws() {
+    let Some(mut g) = gpu() else { return };
+    let (px, ..) = draw_sample(&mut g, "effect-rainy-night", 30);
+    // Soft lights: many mid-bright warm pixels, few hard dots.
+    let warm = px.chunks(4).filter(|p| p[0] > 60 && p[0] > p[2]).count();
+    assert!(warm > 5000, "warm {warm}");
+    assert!(mean(&px) > 15.0, "mean {}", mean(&px));
+}
+
+#[test]
+fn warp_speed_sample_draws() {
+    let Some(mut g) = gpu() else { return };
+    let (px, ..) = draw_sample(&mut g, "effect-warp-speed", 30);
+    let lit = px.chunks(4).filter(|p| p[0] > 20).count();
+    // Streaked stars cover far more pixels than 260 4-px dots would.
+    assert!(lit > 260 * 16, "lit {lit}");
+}
+
+#[test]
+fn noise_patterns_sample_draws() {
+    let Some(mut g) = gpu() else { return };
+    let (px, w, h) = draw_sample(&mut g, "noise-patterns", 10);
+    // Three panels, each banded with dark contour lines.
+    for x in [-210, 0, 210] {
+        let row: Vec<[u8; 3]> = (-90..90).map(|y| px_at(&px, w, h, x, y)).collect();
+        let dark = row.iter().filter(|p| p[0] < 60).count();
+        assert!(dark > 0, "panel {x}: no contour lines");
+        let distinct: std::collections::BTreeSet<u8> = row.iter().map(|p| p[0] / 16).collect();
+        assert!(distinct.len() >= 3, "panel {x}: {distinct:?}");
+    }
+    // The gaps between panels are the background.
+    let gap = px_at(&px, w, h, 105, 0);
+    assert!(gap[0] > 220, "gap {gap:?}");
+}
+
+#[test]
+fn path_ops_sample_draws() {
+    let Some(mut g) = gpu() else { return };
+    let (px, w, h) = draw_sample(&mut g, "path-ops-shapes", 30);
+    // Every motif draws something near its centre.
+    for (x, y) in [(-190, -80), (190, -95), (-190, 95), (0, 95)] {
+        let c = px_at(&px, w, h, x, y);
+        assert!(c.iter().any(|v| *v > 100), "motif at ({x},{y}): {c:?}");
+    }
+    let lit = px.chunks(4).filter(|p| p[0] > 100 || p[1] > 100).count();
+    assert!(lit > 15_000, "lit {lit}");
 }

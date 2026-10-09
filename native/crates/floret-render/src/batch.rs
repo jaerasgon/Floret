@@ -1915,6 +1915,7 @@ mod tests {
             input: Some(dot.clone()),
             map: Some(dot),
             history: None,
+            lut: None,
         });
         let fb = build(&[SceneNode::Shader(sh)]);
         assert_eq!(fb.shaders.len(), 1);

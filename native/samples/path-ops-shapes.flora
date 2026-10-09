@@ -1,0 +1,715 @@
+{
+  "kind": "floret.patch",
+  "version": 3,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Path Ops Shapes",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ps_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": -534,
+        "y": 0
+      },
+      "params": {
+        "text": "Six Path Ops modes\n\nTop: round-corners (a triangle with 22 px arcs), thicken (an open spiral outlined as a filled shape with round caps), wave (a circle with whole waves round it, phase from Time's loop). Bottom: noise (a wobbling blob whose phase loops), twist (a square swirled round its centre) and explode (a hexagon's edges pushed apart and back). The deformers resample every `detail` px first.",
+        "width": 470,
+        "height": 250
+      },
+      "portValues": {
+        "text": "Six Path Ops modes\n\nTop: round-corners (a triangle with 22 px arcs), thicken (an open spiral outlined as a filled shape with round caps), wave (a circle with whole waves round it, phase from Time's loop). Bottom: noise (a wobbling blob whose phase loops), twist (a square swirled round its centre) and explode (a hexagon's edges pushed apart and back). The deformers resample every `detail` px first.",
+        "width": 470,
+        "height": 250
+      }
+    },
+    {
+      "id": "ps_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 23,
+        "y": 912
+      },
+      "params": {}
+    },
+    {
+      "id": "ps_apart",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 5,
+        "y": 2106
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 0.3,
+        "min": 0,
+        "max": 26
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 0.3,
+        "min": 0,
+        "max": 26
+      }
+    },
+    {
+      "id": "ps_swirl",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 5,
+        "y": 1520
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 0.2,
+        "min": -2.4,
+        "max": 2.4
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 0.2,
+        "min": -2.4,
+        "max": 2.4
+      }
+    },
+    {
+      "id": "ps_fill_a",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 162
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.4196078431372549,
+          "b": 0.4196078431372549,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.4196078431372549,
+          "b": 0.4196078431372549,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ps_fill_b",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 3323
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8196078431372549,
+          "b": 0.4,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8196078431372549,
+          "b": 0.4,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ps_fill_c",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 790
+      },
+      "params": {
+        "color": {
+          "r": 0.023529411764705882,
+          "g": 0.8392156862745098,
+          "b": 0.6274509803921569,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.023529411764705882,
+          "g": 0.8392156862745098,
+          "b": 0.6274509803921569,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ps_fill_d",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 1216
+      },
+      "params": {
+        "color": {
+          "r": 0.2980392156862745,
+          "g": 0.788235294117647,
+          "b": 0.9411764705882353,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.2980392156862745,
+          "g": 0.788235294117647,
+          "b": 0.9411764705882353,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ps_fill_e",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 1822
+      },
+      "params": {
+        "color": {
+          "r": 0.7803921568627451,
+          "g": 0.49019607843137253,
+          "b": 1.0,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 0.7803921568627451,
+          "g": 0.49019607843137253,
+          "b": 1.0,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ps_fill_f",
+      "defType": "style/fill",
+      "position": {
+        "x": 0,
+        "y": 3201
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.6235294117647059,
+          "b": 0.10980392156862745,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.6235294117647059,
+          "b": 0.10980392156862745,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ps_tri",
+      "defType": "spread/ring",
+      "position": {
+        "x": 6,
+        "y": 0
+      },
+      "params": {},
+      "portValues": {
+        "count": 3,
+        "radius": 70,
+        "center": {
+          "x": -190,
+          "y": -95
+        },
+        "phase": -1.5707963267948966
+      }
+    },
+    {
+      "id": "ps_round",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 288,
+        "y": 236
+      },
+      "params": {
+        "mode": "round-corners"
+      },
+      "portValues": {
+        "closed": true,
+        "radius": 22
+      }
+    },
+    {
+      "id": "ps_spiral",
+      "defType": "spread/spiral",
+      "position": {
+        "x": 3,
+        "y": 284
+      },
+      "params": {},
+      "portValues": {
+        "count": 90,
+        "turns": 2.5,
+        "radius": 62
+      }
+    },
+    {
+      "id": "ps_spiral_at",
+      "defType": "transform/translate",
+      "position": {
+        "x": 619,
+        "y": 603
+      },
+      "params": {},
+      "portValues": {
+        "by": {
+          "x": 0,
+          "y": -95
+        }
+      }
+    },
+    {
+      "id": "ps_stroke_b",
+      "defType": "style/stroke",
+      "position": {
+        "x": 0,
+        "y": 446
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8196078431372549,
+          "b": 0.4,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.8196078431372549,
+          "b": 0.4,
+          "a": 1.0
+        },
+        "width": 2
+      }
+    },
+    {
+      "id": "ps_spiral_line",
+      "defType": "draw/polygon",
+      "position": {
+        "x": 339,
+        "y": 438
+      },
+      "params": {},
+      "portValues": {
+        "closed": false
+      }
+    },
+    {
+      "id": "ps_thick",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 871,
+        "y": 727
+      },
+      "params": {
+        "mode": "thicken",
+        "cap": "round",
+        "join": "round"
+      },
+      "portValues": {
+        "width": 9,
+        "cap": "round",
+        "join": "round"
+      }
+    },
+    {
+      "id": "ps_circle",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 0,
+        "y": 608
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": 190,
+          "y": -95
+        },
+        "w": 120,
+        "h": 120
+      }
+    },
+    {
+      "id": "ps_wave",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 288,
+        "y": 704
+      },
+      "params": {
+        "mode": "wave"
+      },
+      "portValues": {
+        "amplitude": 9,
+        "wavelength": 34,
+        "detail": 3
+      }
+    },
+    {
+      "id": "ps_blob",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 0,
+        "y": 1034
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": -190,
+          "y": 95
+        },
+        "w": 120,
+        "h": 120
+      }
+    },
+    {
+      "id": "ps_wobble",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 288,
+        "y": 966
+      },
+      "params": {
+        "mode": "noise"
+      },
+      "portValues": {
+        "amount": 16,
+        "scale": 0.025,
+        "seed": 3,
+        "detail": 3
+      }
+    },
+    {
+      "id": "ps_square",
+      "defType": "draw/rect",
+      "position": {
+        "x": 9,
+        "y": 1338
+      },
+      "params": {},
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 95
+        },
+        "w": 110,
+        "h": 110
+      }
+    },
+    {
+      "id": "ps_twist",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 288,
+        "y": 1376
+      },
+      "params": {
+        "mode": "twist"
+      },
+      "portValues": {
+        "radius": 90,
+        "center": {
+          "x": 0,
+          "y": 95
+        },
+        "detail": 3
+      }
+    },
+    {
+      "id": "ps_hex",
+      "defType": "spread/ring",
+      "position": {
+        "x": 6,
+        "y": 1944
+      },
+      "params": {},
+      "portValues": {
+        "count": 6,
+        "radius": 62,
+        "center": {
+          "x": 190,
+          "y": 95
+        }
+      }
+    },
+    {
+      "id": "ps_stroke_f",
+      "defType": "style/stroke",
+      "position": {
+        "x": 0,
+        "y": 2408
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.6235294117647059,
+          "b": 0.10980392156862745,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.6235294117647059,
+          "b": 0.10980392156862745,
+          "a": 1.0
+        },
+        "width": 5
+      }
+    },
+    {
+      "id": "ps_explode",
+      "defType": "geometry/path-ops",
+      "position": {
+        "x": 288,
+        "y": 1892
+      },
+      "params": {
+        "mode": "explode"
+      },
+      "portValues": {
+        "closed": true
+      }
+    },
+    {
+      "id": "ps_all",
+      "defType": "transform/group",
+      "position": {
+        "x": 1201,
+        "y": 921
+      },
+      "params": {
+        "slotCount": 6
+      }
+    },
+    {
+      "id": "ps_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1465,
+        "y": 921
+      },
+      "params": {
+        "width": 600,
+        "height": 400,
+        "background": {
+          "r": 0.0784313725490196,
+          "g": 0.07058823529411765,
+          "b": 0.10980392156862745,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 400,
+        "background": {
+          "r": 0.0784313725490196,
+          "g": 0.07058823529411765,
+          "b": 0.10980392156862745,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_ps_tri_ps_round_points",
+      "source": "ps_tri",
+      "target": "ps_round",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_ps_fill_a_ps_round_style",
+      "source": "ps_fill_a",
+      "target": "ps_round",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ps_spiral_ps_spiral_line_points",
+      "source": "ps_spiral",
+      "target": "ps_spiral_line",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_ps_stroke_b_ps_spiral_line_style",
+      "source": "ps_stroke_b",
+      "target": "ps_spiral_line",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ps_spiral_line_ps_spiral_at_layer",
+      "source": "ps_spiral_line",
+      "target": "ps_spiral_at",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_ps_spiral_at_ps_thick_path",
+      "source": "ps_spiral_at",
+      "target": "ps_thick",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_ps_circle_ps_wave_path",
+      "source": "ps_circle",
+      "target": "ps_wave",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_ps_time_ps_wave_phase",
+      "source": "ps_time",
+      "target": "ps_wave",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_ps_fill_c_ps_wave_style",
+      "source": "ps_fill_c",
+      "target": "ps_wave",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ps_blob_ps_wobble_path",
+      "source": "ps_blob",
+      "target": "ps_wobble",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_ps_time_ps_wobble_phase",
+      "source": "ps_time",
+      "target": "ps_wobble",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_ps_fill_d_ps_wobble_style",
+      "source": "ps_fill_d",
+      "target": "ps_wobble",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ps_square_ps_twist_path",
+      "source": "ps_square",
+      "target": "ps_twist",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-path"
+    },
+    {
+      "id": "e_ps_swirl_ps_twist_angle",
+      "source": "ps_swirl",
+      "target": "ps_twist",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_ps_fill_e_ps_twist_style",
+      "source": "ps_fill_e",
+      "target": "ps_twist",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ps_hex_ps_explode_points",
+      "source": "ps_hex",
+      "target": "ps_explode",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_ps_apart_ps_explode_distance",
+      "source": "ps_apart",
+      "target": "ps_explode",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-distance"
+    },
+    {
+      "id": "e_ps_stroke_f_ps_explode_style",
+      "source": "ps_stroke_f",
+      "target": "ps_explode",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_ps_round_ps_all_s1",
+      "source": "ps_round",
+      "target": "ps_all",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_ps_thick_ps_all_s2",
+      "source": "ps_thick",
+      "target": "ps_all",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_ps_wave_ps_all_s3",
+      "source": "ps_wave",
+      "target": "ps_all",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_ps_wobble_ps_all_s4",
+      "source": "ps_wobble",
+      "target": "ps_all",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_ps_twist_ps_all_s5",
+      "source": "ps_twist",
+      "target": "ps_all",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_ps_explode_ps_all_s6",
+      "source": "ps_explode",
+      "target": "ps_all",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s6"
+    },
+    {
+      "id": "e_ps_all_ps_renderer_layers",
+      "source": "ps_all",
+      "target": "ps_renderer",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

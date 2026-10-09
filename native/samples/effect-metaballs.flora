@@ -1,0 +1,500 @@
+{
+  "kind": "floret.patch",
+  "version": 3,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Metaballs",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "modifiedAt": "2026-10-09T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "mb_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -314
+      },
+      "params": {
+        "text": "Gooey metaballs from four Effects\n\nBlur (gaussian) softens the circles' edges so neighbours' coverage adds up; Threshold with `channel` alpha cuts that coverage at 0.5 — where blobs come close they melt together. Glow (coverage-based, unlike Bloom) adds a halo; an inner Shadow, offset up and left, shades the far edges for depth.\n\nTry the blur radius: bigger = gooier.",
+        "width": 460,
+        "height": 250
+      },
+      "portValues": {
+        "text": "Gooey metaballs from four Effects\n\nBlur (gaussian) softens the circles' edges so neighbours' coverage adds up; Threshold with `channel` alpha cuts that coverage at 0.5 — where blobs come close they melt together. Glow (coverage-based, unlike Bloom) adds a halo; an inner Shadow, offset up and left, shades the far edges for depth.\n\nTry the blur radius: bigger = gooier.",
+        "width": 460,
+        "height": 250
+      }
+    },
+    {
+      "id": "mb_turn",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 17,
+        "y": 0
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 0.06,
+        "min": 0,
+        "max": 6.283185307179586
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 0.06,
+        "min": 0,
+        "max": 6.283185307179586
+      }
+    },
+    {
+      "id": "mb_breathe",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 14,
+        "y": 302
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 0.25,
+        "min": 55,
+        "max": 150
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 0.25,
+        "min": 55,
+        "max": 150
+      }
+    },
+    {
+      "id": "mb_back",
+      "defType": "math/math",
+      "position": {
+        "x": 0,
+        "y": 604
+      },
+      "params": {
+        "op": "negate",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "mb_outer",
+      "defType": "spread/ring",
+      "position": {
+        "x": 276,
+        "y": 46
+      },
+      "params": {},
+      "portValues": {
+        "count": 5,
+        "radius": 150
+      }
+    },
+    {
+      "id": "mb_inner",
+      "defType": "spread/ring",
+      "position": {
+        "x": 276,
+        "y": 360
+      },
+      "params": {},
+      "portValues": {
+        "count": 3
+      }
+    },
+    {
+      "id": "mb_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 271,
+        "y": 522
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.4196078431372549,
+          "b": 0.4196078431372549,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.4196078431372549,
+          "b": 0.4196078431372549,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "mb_big",
+      "defType": "region/foreach",
+      "position": {
+        "x": 548,
+        "y": 111
+      },
+      "params": {
+        "width": 336,
+        "height": 214,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "pos",
+          "name": "pos",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 76
+        }
+      ],
+      "width": 336,
+      "height": 214
+    },
+    {
+      "id": "mb_big_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "mb_big",
+      "portValues": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    {
+      "id": "mb_small",
+      "defType": "region/foreach",
+      "position": {
+        "x": 548,
+        "y": 395
+      },
+      "params": {
+        "width": 336,
+        "height": 214,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "pos",
+          "name": "pos",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 76
+        }
+      ],
+      "width": 336,
+      "height": 214
+    },
+    {
+      "id": "mb_small_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "mb_small",
+      "portValues": {
+        "w": 64,
+        "h": 64
+      }
+    },
+    {
+      "id": "mb_core",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 663,
+        "y": 657
+      },
+      "params": {},
+      "portValues": {
+        "w": 120,
+        "h": 120
+      }
+    },
+    {
+      "id": "mb_group",
+      "defType": "transform/group",
+      "position": {
+        "x": 1016,
+        "y": 394
+      },
+      "params": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "mb_blur",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1280,
+        "y": 372
+      },
+      "params": {
+        "mode": "blur",
+        "kind": "gaussian"
+      },
+      "portValues": {
+        "radius": 26
+      }
+    },
+    {
+      "id": "mb_goo",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1543,
+        "y": 351
+      },
+      "params": {
+        "mode": "threshold",
+        "channel": "alpha"
+      },
+      "portValues": {
+        "level": 0.5,
+        "softness": 0.04
+      }
+    },
+    {
+      "id": "mb_glow",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 1807,
+        "y": 329
+      },
+      "params": {
+        "mode": "glow"
+      },
+      "portValues": {
+        "radius": 36,
+        "color": {
+          "r": 1.0,
+          "g": 0.5607843137254902,
+          "b": 0.4196078431372549,
+          "a": 1.0
+        },
+        "intensity": 1.2
+      }
+    },
+    {
+      "id": "mb_shade",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 2070,
+        "y": 308
+      },
+      "params": {
+        "mode": "shadow"
+      },
+      "portValues": {
+        "offset": {
+          "x": -9,
+          "y": -11
+        },
+        "radius": 16,
+        "color": {
+          "r": 0.2901960784313726,
+          "g": 0.058823529411764705,
+          "b": 0.20784313725490197,
+          "a": 1.0
+        },
+        "opacity": 0.65,
+        "inner": true
+      }
+    },
+    {
+      "id": "mb_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 2333,
+        "y": 308
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.08627450980392157,
+          "g": 0.047058823529411764,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.08627450980392157,
+          "g": 0.047058823529411764,
+          "b": 0.12156862745098039,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_mb_outer_mb_big_pos",
+      "source": "mb_outer",
+      "target": "mb_big",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_mb_big_mb_big_dot_pos",
+      "source": "mb_big",
+      "target": "mb_big_dot",
+      "sourceHandle": "out-pos",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_mb_big_dot_mb_big_layer",
+      "source": "mb_big_dot",
+      "target": "mb_big",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_mb_fill_mb_big_dot_style",
+      "source": "mb_fill",
+      "target": "mb_big_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_mb_inner_mb_small_pos",
+      "source": "mb_inner",
+      "target": "mb_small",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_mb_small_mb_small_dot_pos",
+      "source": "mb_small",
+      "target": "mb_small_dot",
+      "sourceHandle": "out-pos",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_mb_small_dot_mb_small_layer",
+      "source": "mb_small_dot",
+      "target": "mb_small",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_mb_fill_mb_small_dot_style",
+      "source": "mb_fill",
+      "target": "mb_small_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_mb_turn_mb_outer_phase",
+      "source": "mb_turn",
+      "target": "mb_outer",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_mb_turn_mb_back_x",
+      "source": "mb_turn",
+      "target": "mb_back",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_mb_back_mb_inner_phase",
+      "source": "mb_back",
+      "target": "mb_inner",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_mb_breathe_mb_inner_radius",
+      "source": "mb_breathe",
+      "target": "mb_inner",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-radius"
+    },
+    {
+      "id": "e_mb_fill_mb_core_style",
+      "source": "mb_fill",
+      "target": "mb_core",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_mb_big_mb_group_s1",
+      "source": "mb_big",
+      "target": "mb_group",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_mb_small_mb_group_s2",
+      "source": "mb_small",
+      "target": "mb_group",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_mb_core_mb_group_s3",
+      "source": "mb_core",
+      "target": "mb_group",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_mb_group_mb_blur_input",
+      "source": "mb_group",
+      "target": "mb_blur",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_mb_blur_mb_goo_input",
+      "source": "mb_blur",
+      "target": "mb_goo",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_mb_goo_mb_glow_input",
+      "source": "mb_goo",
+      "target": "mb_glow",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_mb_glow_mb_shade_input",
+      "source": "mb_glow",
+      "target": "mb_shade",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_mb_shade_mb_renderer_layers",
+      "source": "mb_shade",
+      "target": "mb_renderer",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

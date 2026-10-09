@@ -151,6 +151,9 @@ enum Mode {
     Value,
     Cellular,
     Curl,
+    Checker,
+    Stripes,
+    Rings,
 }
 
 impl Mode {
@@ -160,6 +163,9 @@ impl Mode {
             Some("value") => Mode::Value,
             Some("cellular") => Mode::Cellular,
             Some("curl") => Mode::Curl,
+            Some("checker") => Mode::Checker,
+            Some("stripes") => Mode::Stripes,
+            Some("rings") => Mode::Rings,
             _ => Mode::Perlin,
         }
     }
@@ -199,9 +205,12 @@ const FALLOFF: usize = 6;
 const WARP: usize = 7;
 const WARP_SCALE: usize = 8;
 const FEATURE: usize = 9;
+/// Stripes mode's direction (where cellular has `feature`).
+const ANGLE: usize = 9;
 
 /// `dynamicInputs` for `noise/noise`: spread-kind pins (so a spread of
-/// positions gives a spread of values), plus `feature` in cellular mode.
+/// positions gives a spread of values), plus `feature` in cellular mode
+/// and `angle` in stripes mode.
 /// The sample point is `(pos + (x, y)) · scale`: `pos` takes a vec2 (a
 /// grid), `x` / `y` numbers, so both old nodes' wiring carries over
 /// (`noise/curl` had `pos`, `noise/perlin` had `x` and `y`).
@@ -230,7 +239,42 @@ fn noise_inputs(params: &Params) -> Vec<PortSpec> {
         p.param = Some("feature".into());
         ports.push(p);
     }
+    if Mode::of(params) == Mode::Stripes {
+        ports.push(num("angle", 0.0));
+    }
     ports
+}
+
+// ─── Pattern fields ──────────────────────────────────────────────────────────
+//
+// Not noise, but the same kind of thing: a value at each position, so they
+// share the Noise node's pins. With `warp` they bend like noise does
+// (stripes + warp = marble, rings + warp = wood grain); `octaves` layers
+// them at doubling frequency like fBm. The seed only moves the warp.
+
+/// 1 on alternate unit squares (the one at the origin's top-right), else 0.
+fn checker_2d(x: f64, y: f64, _: f64) -> f64 {
+    if !(x.is_finite() && y.is_finite()) {
+        return 0.0;
+    }
+    let s = x.floor() + y.floor();
+    if s.rem_euclid(2.0) == 0.0 {
+        1.0
+    } else {
+        0.0
+    }
+}
+
+/// A smooth wave across x, one stripe per unit: 0.5 + 0.5·cos(2πx), in
+/// [0, 1], 1 on the stripes' centres (x = 0, ±1 …). [`Sampler::at`] turns
+/// the point by `angle` first.
+fn stripes_2d(x: f64, _: f64, _: f64) -> f64 {
+    0.5 + 0.5 * (std::f64::consts::TAU * x).cos()
+}
+
+/// Concentric rings round the origin, one per unit of radius, in [0, 1].
+fn rings_2d(x: f64, y: f64, _: f64) -> f64 {
+    stripes_2d(x.hypot(y), 0.0, 0.0)
 }
 
 /// Hash-value noise: smoothly interpolated random values at the lattice
@@ -326,6 +370,9 @@ struct Sampler {
     falloff: f64,
     warp: f64,
     warp_scale: f64,
+    /// Stripes' direction: the point turns by −angle (radians) before
+    /// sampling, so the stripes run at `angle` from vertical.
+    angle: f64,
 }
 
 impl Sampler {
@@ -346,6 +393,12 @@ impl Sampler {
 
     fn at(&self, x: f64, y: f64) -> f64 {
         let (x, y) = self.warped(x, y);
+        let (x, y) = if self.angle == 0.0 {
+            (x, y)
+        } else {
+            let (s, c) = self.angle.sin_cos();
+            (c * x + s * y, -s * x + c * y)
+        };
         fbm(self.base, x, y, self.seed, self.octaves, self.falloff)
     }
 
@@ -373,12 +426,19 @@ fn noise(_: &NodeInit) -> Box<dyn NodeImpl> {
             (Mode::Cellular, Feature::F1) => worley_f1,
             (Mode::Cellular, Feature::F2) => worley_f2,
             (Mode::Cellular, Feature::F2MinusF1) => worley_f2_f1,
+            (Mode::Checker, _) => checker_2d,
+            (Mode::Stripes, _) => stripes_2d,
+            (Mode::Rings, _) => rings_2d,
         };
+        let angle_pin = (mode == Mode::Stripes)
+            .then(|| inputs.get(ANGLE))
+            .flatten()
+            .filter(|s| !s.is_empty());
         let pins = inputs.get(..=WARP_SCALE).unwrap_or(&[]);
         if pins.len() <= WARP_SCALE {
             return Err("noise: missing inputs".into());
         }
-        let count = cyclic_len(pins);
+        let count = cyclic_len(pins.iter().chain(angle_pin));
         let mut values = Vec::with_capacity(count);
         let mut flows = Vec::with_capacity(count);
         for i in 0..count {
@@ -393,6 +453,14 @@ fn noise(_: &NodeInit) -> Box<dyn NodeImpl> {
                 falloff: n(FALLOFF),
                 warp: n(WARP),
                 warp_scale: n(WARP_SCALE),
+                angle: angle_pin.map_or(0.0, |a| {
+                    let a = cyclic(a, i).to_number();
+                    if a.is_finite() {
+                        a
+                    } else {
+                        0.0
+                    }
+                }),
             };
             values.push(Value::Num(s.at(x, y)));
             flows.push(Value::Vec2(if mode == Mode::Curl {
@@ -695,6 +763,109 @@ mod tests {
         assert!(h.eval(ins).unwrap()[0].is_empty());
     }
 
+    /// One sample in a pattern mode at (x, y), with `rest` after them
+    /// (scale, seed, octaves, falloff, warp, warpScale) and `angle` when
+    /// given.
+    fn pattern(mode: &str, x: f64, y: f64, rest: &[f64], angle: Option<f64>) -> f64 {
+        let mut h = noise_node(mode);
+        let mut ins: Vec<Vec<Value>> = std::iter::once(origin())
+            .chain(DEFAULTS.iter().enumerate().map(|(i, d)| match i {
+                0 => vec![n(x)],
+                1 => vec![n(y)],
+                _ => vec![n(*rest.get(i - 2).unwrap_or(d))],
+            }))
+            .collect();
+        if let Some(a) = angle {
+            ins.push(vec![n(a)]);
+        }
+        num(&h.eval(ins).unwrap()[0][0])
+    }
+
+    #[test]
+    fn checker_alternates_unit_squares() {
+        assert_eq!(pattern("checker", 0.5, 0.5, &[], None), 1.0);
+        assert_eq!(pattern("checker", 1.5, 0.5, &[], None), 0.0);
+        assert_eq!(pattern("checker", -0.5, 0.5, &[], None), 0.0);
+        assert_eq!(pattern("checker", -0.5, -0.5, &[], None), 1.0);
+        // `scale` sets the square size: 0.1 → 10-unit squares.
+        assert_eq!(pattern("checker", 5.0, 5.0, &[0.1], None), 1.0);
+        assert_eq!(pattern("checker", 15.0, 5.0, &[0.1], None), 0.0);
+        // Non-finite positions read 0, not NaN.
+        assert_eq!(super::checker_2d(f64::NAN, 0.0, 0.0), 0.0);
+        assert_eq!(super::checker_2d(f64::INFINITY, 0.0, 0.0), 0.0);
+    }
+
+    #[test]
+    fn stripes_run_at_the_angle() {
+        let close = |a: f64, b: f64| (a - b).abs() < 1e-9;
+        // Vertical stripes, one per unit: peaks on whole x, troughs between.
+        assert!(close(pattern("stripes", 0.0, 0.3, &[], Some(0.0)), 1.0));
+        assert!(close(pattern("stripes", 0.5, 7.0, &[], Some(0.0)), 0.0));
+        assert!(close(pattern("stripes", 0.25, 0.0, &[], Some(0.0)), 0.5));
+        // Constant along y at angle 0, along x at a quarter turn.
+        let q = std::f64::consts::FRAC_PI_2;
+        for t in [0.1, 2.7, -3.3] {
+            let a = pattern("stripes", 0.2, t, &[], Some(0.0));
+            assert!(close(a, pattern("stripes", 0.2, 0.0, &[], Some(0.0))));
+            let b = pattern("stripes", t, 0.2, &[], Some(q));
+            assert!(close(b, pattern("stripes", 0.0, 0.2, &[], Some(q))));
+        }
+        // A non-finite angle is 0; an unwired angle pin too.
+        assert!(close(
+            pattern("stripes", 0.3, 0.0, &[], Some(f64::NAN)),
+            pattern("stripes", 0.3, 0.0, &[], None)
+        ));
+    }
+
+    #[test]
+    fn rings_are_round() {
+        let close = |a: f64, b: f64| (a - b).abs() < 1e-9;
+        assert!(close(pattern("rings", 0.0, 0.0, &[], None), 1.0));
+        for r in [0.5, 1.25, 3.0] {
+            let a = pattern("rings", r, 0.0, &[], None);
+            for t in [0.7f64, 2.0, 4.0] {
+                let b = pattern("rings", r * t.cos(), r * t.sin(), &[], None);
+                assert!(close(a, b), "r {r}: {a} vs {b}");
+            }
+        }
+        assert!(close(pattern("rings", 0.0, 0.5, &[], None), 0.0));
+    }
+
+    #[test]
+    fn patterns_warp_and_stay_in_range() {
+        for mode in ["checker", "stripes", "rings"] {
+            let (mut lo, mut hi) = (f64::INFINITY, f64::NEG_INFINITY);
+            let mut moved = false;
+            for (x, y) in grid().take(200) {
+                let plain = pattern(mode, x, y, &[], None);
+                let warped = pattern(mode, x, y, &[1.0, 3.0, 2.0, 0.5, 0.8, 0.4], None);
+                moved |= plain != warped;
+                for v in [plain, warped] {
+                    lo = lo.min(v);
+                    hi = hi.max(v);
+                }
+            }
+            assert!(lo >= 0.0 && hi <= 1.0, "{mode}: [{lo}, {hi}]");
+            assert!(hi - lo > 0.5, "{mode} barely varies");
+            assert!(moved, "{mode}: warp moves the pattern");
+        }
+    }
+
+    #[test]
+    fn angle_spreads_evaluate_per_element() {
+        let mut h = noise_node("stripes");
+        let mut ins: Vec<Vec<Value>> = std::iter::once(origin())
+            .chain(DEFAULTS.iter().map(|d| vec![n(*d)]))
+            .collect();
+        ins[super::X] = vec![n(0.25)];
+        ins[super::Y] = vec![n(0.0)];
+        ins.push(vec![n(0.0), n(std::f64::consts::FRAC_PI_2)]);
+        let out = h.eval(ins).unwrap();
+        assert_eq!(out[0].len(), 2);
+        assert!((num(&out[0][0]) - 0.5).abs() < 1e-9);
+        assert!((num(&out[0][1]) - 1.0).abs() < 1e-9);
+    }
+
     #[test]
     fn feature_pin_only_in_cellular_mode() {
         let names = |mode: &str| -> Vec<String> {
@@ -709,6 +880,9 @@ mod tests {
             Some("feature")
         );
         assert_eq!(names("cellular").len(), 10);
+        assert_eq!(names("stripes").last().map(String::as_str), Some("angle"));
+        assert_eq!(names("checker"), names("perlin"));
+        assert_eq!(names("rings"), names("perlin"));
         let cat = crate::spec::Catalogue::builtin();
         let spec = cat.get("noise/noise").unwrap();
         let statics: Vec<_> = spec.inputs.iter().map(|p| p.name.clone()).collect();

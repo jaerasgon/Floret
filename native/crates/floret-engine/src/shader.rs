@@ -275,6 +275,9 @@ pub enum ShaderChannel {
     Input,
     /// The second layer, [`ShaderShape::map`] (built-in effects only).
     Map,
+    /// The colour lookup table, [`ShaderShape::lut`] (built-in effects
+    /// only), sampled as it is: no flip, straight colour.
+    Lut,
     /// Another buffer's output (its own: the previous frame).
     Buffer(ShaderBuffer),
 }
@@ -325,6 +328,10 @@ pub struct ShaderShape {
     /// Keep the input's last frames for the passes (`gpu/echo`); `None`
     /// for every other draw.
     pub history: Option<ShaderHistory>,
+    /// An image for [`ShaderChannel::Lut`] (`gpu/effect`'s 3D colour
+    /// lookup table, laid out as N slices of N × N side by side); `gpu/shader`
+    /// never sets it.
+    pub lut: Option<Arc<crate::image::Image>>,
 }
 
 /// A ring of the input's past frames the renderer keeps for one draw: the
@@ -351,6 +358,7 @@ impl ShaderShape {
             ShaderChannel::None => Value::Null,
             ShaderChannel::Input => obj(vec![("kind", Value::str("input"))]),
             ShaderChannel::Map => obj(vec![("kind", Value::str("map"))]),
+            ShaderChannel::Lut => obj(vec![("kind", Value::str("lut"))]),
             ShaderChannel::Buffer(b) => obj(vec![
                 ("kind", Value::str("buffer")),
                 ("buf", Value::str(b.as_str())),

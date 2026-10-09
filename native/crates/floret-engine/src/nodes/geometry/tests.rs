@@ -443,6 +443,325 @@ fn offset_mode_pins_and_glyph_like_holes() {
     assert!(close(a, 90.0 * 90.0 - 50.0 * 50.0, 1.0), "{a}");
 }
 
+// ─── Path ops: round corners, thicken, deformers, explode ───────────────────
+
+use super::path_ops::{explode, noise as wobble, round_corners, thicken, twist, wave};
+
+fn path_ops_pins(mode: &str) -> Vec<String> {
+    let cat = crate::spec::Catalogue::builtin();
+    let spec = cat.get("geometry/path-ops").unwrap();
+    let mut p = Params::new();
+    p.insert("mode".into(), json!(mode));
+    cat.resolved_inputs(spec, &p)
+        .into_iter()
+        .map(|p| p.name)
+        .collect()
+}
+
+#[test]
+fn new_path_modes_have_their_pins() {
+    let with = |mid: &[&str]| -> Vec<String> {
+        ["points", "closed", "path"]
+            .iter()
+            .chain(mid)
+            .chain(&["style"])
+            .map(|s| s.to_string())
+            .collect()
+    };
+    assert_eq!(path_ops_pins("round-corners"), with(&["radius"]));
+    assert_eq!(path_ops_pins("thicken"), with(&["width", "cap", "join"]));
+    assert_eq!(
+        path_ops_pins("wave"),
+        with(&["amplitude", "wavelength", "phase", "detail"])
+    );
+    assert_eq!(
+        path_ops_pins("noise"),
+        with(&["amount", "scale", "seed", "phase", "detail"])
+    );
+    assert_eq!(
+        path_ops_pins("twist"),
+        with(&["angle", "radius", "center", "detail"])
+    );
+    assert_eq!(path_ops_pins("explode"), with(&["distance"]));
+    // The old modes keep their pins.
+    assert_eq!(path_ops_pins("resample"), with(&["spacing"]));
+    let cat = crate::spec::Catalogue::builtin();
+    let spec = cat.get("geometry/path-ops").unwrap();
+    for m in [
+        "round-corners",
+        "thicken",
+        "wave",
+        "noise",
+        "twist",
+        "explode",
+    ] {
+        assert!(spec.param_options["mode"].iter().any(|o| o == m), "{m}");
+    }
+    assert_eq!(spec.param_options["cap"], ["round", "butt", "square"]);
+}
+
+#[test]
+fn round_corners_fits_arcs_into_corners() {
+    let sq = square(0.0, 0.0, 100.0);
+    let r = round_corners(&sq, true, 10.0);
+    assert!(r.len() > 4 * 3);
+    // Inside the square, never through a sharp corner, and the top-left
+    // arc is 10 from its centre (10, 10).
+    for p in &r {
+        assert!((-1e-9..=100.0 + 1e-9).contains(&p.x) && (-1e-9..=100.0 + 1e-9).contains(&p.y));
+        assert!(dist(*p, v(0.0, 0.0)) > 10.0 * (2f64.sqrt() - 1.0) - 1e-6);
+        if p.x < 10.0 && p.y < 10.0 {
+            assert!(close(dist(*p, v(10.0, 10.0)), 10.0, 1e-9), "{p:?}");
+        }
+    }
+    assert!(r.contains(&v(10.0, 0.0)) || r.iter().any(|p| dist(*p, v(10.0, 0.0)) < 1e-9));
+    // Too big a radius is limited by the edges: a square becomes a circle.
+    let c = round_corners(&sq, true, 1000.0);
+    for p in &c {
+        assert!(close(dist(*p, v(50.0, 50.0)), 50.0, 1e-6), "{p:?}");
+    }
+    // An open path keeps its ends; straight points and repeats stay.
+    let open = [v(0.0, 0.0), v(50.0, 0.0), v(50.0, 50.0)];
+    let o = round_corners(&open, false, 5.0);
+    assert_eq!(o.first(), Some(&v(0.0, 0.0)));
+    assert_eq!(o.last(), Some(&v(50.0, 50.0)));
+    let straight = [v(0.0, 0.0), v(10.0, 0.0), v(20.0, 0.0)];
+    assert_eq!(round_corners(&straight, false, 5.0), straight);
+    let repeat = [v(0.0, 0.0), v(10.0, 0.0), v(10.0, 0.0), v(10.0, 10.0)];
+    assert_eq!(round_corners(&repeat, false, 5.0).len(), 4);
+    // No radius, or too few points: unchanged.
+    assert_eq!(round_corners(&sq, true, 0.0), sq);
+    assert_eq!(round_corners(&sq, true, f64::NAN), sq);
+    assert_eq!(round_corners(&sq[..2], true, 5.0), sq[..2].to_vec());
+}
+
+#[test]
+fn thicken_outlines_strokes() {
+    let line = [v(0.0, 0.0), v(100.0, 0.0)];
+    let butt = thicken(&line, false, 10.0, "butt", "round");
+    assert_eq!(butt.len(), 1);
+    assert!(close(area(&butt), 1000.0, 1e-6), "{}", area(&butt));
+    let square_cap = thicken(&line, false, 10.0, "square", "round");
+    assert!(close(area(&square_cap), 1100.0, 1e-6));
+    let round = thicken(&line, false, 10.0, "round", "round");
+    let want = 1000.0 + std::f64::consts::PI * 25.0;
+    assert!(close(area(&round), want, 2.0), "{}", area(&round));
+    // A closed square becomes a ring: outer 110², hole 90².
+    let ring = thicken(&square(0.0, 0.0, 100.0), true, 10.0, "butt", "miter");
+    assert_eq!(ring.len(), 1);
+    assert_eq!(ring[0].len(), 2);
+    assert!(close(area(&ring), 110.0 * 110.0 - 90.0 * 90.0, 1.0));
+    // Nothing to stroke.
+    assert!(thicken(&line, false, 0.0, "butt", "round").is_empty());
+    assert!(thicken(&line, false, f64::NAN, "butt", "round").is_empty());
+    assert!(thicken(&line[..1], false, 10.0, "butt", "round").is_empty());
+}
+
+#[test]
+fn wave_runs_along_the_normals() {
+    let line = resample(&[v(0.0, 0.0), v(200.0, 0.0)], false, 1.0);
+    let w = wave(&line, false, 5.0, 40.0, 0.0);
+    assert_eq!(w.len(), line.len());
+    let peak = w.iter().map(|p| p.y.abs()).fold(0.0, f64::max);
+    assert!(close(peak, 5.0, 0.01), "{peak}");
+    // Moves sideways only, and sin(2π · 10/40) = 1 at x = 10 (the normal
+    // of a rightward path points up the screen, −y).
+    for (a, b) in w.iter().zip(&line) {
+        assert!(close(a.x, b.x, 1e-9));
+    }
+    assert!(close(w[10].y, -5.0, 1e-9), "{:?}", w[10]);
+    // phase 1 = a whole wavelength: the same path; 0.5 flips it.
+    let p1 = wave(&line, false, 5.0, 40.0, 1.0);
+    let half = wave(&line, false, 5.0, 40.0, 0.5);
+    for i in 0..w.len() {
+        assert!(close(w[i].y, p1[i].y, 1e-9));
+        assert!(close(w[i].y, -half[i].y, 1e-9));
+    }
+    // A closed 400-long square fits 9 whole waves for wavelength 45.
+    let sq = resample(&square(0.0, 0.0, 100.0), true, 1.0);
+    let ws = wave(&sq, true, 4.0, 45.0, 0.0);
+    let lambda = 400.0 / 9.0;
+    let s = 30.0;
+    let want = 4.0 * (std::f64::consts::TAU * s / lambda).sin();
+    // Point 30 is 30 along the top edge (moving +x): its normal is −y.
+    assert!(close(ws[30].y, -want, 1e-9), "{:?} vs {want}", ws[30]);
+    // Degenerate input comes back unchanged.
+    assert_eq!(wave(&line, false, 5.0, 0.0, 0.0), line);
+    assert_eq!(wave(&line, false, 0.0, 40.0, 0.0), line);
+    assert_eq!(wave(&line[..1], false, 5.0, 40.0, 0.0), line[..1].to_vec());
+}
+
+#[test]
+fn noise_wobbles_within_amount_and_loops() {
+    let ring = resample(&square(-50.0, -50.0, 100.0), true, 5.0);
+    let a = wobble(&ring, 10.0, 0.02, 3.0, 0.0);
+    assert_eq!(a.len(), ring.len());
+    let mut moved = 0.0f64;
+    for (p, q) in a.iter().zip(&ring) {
+        let d = dist(*p, *q);
+        assert!(d <= 10.0 * 2f64.sqrt() + 1e-9);
+        moved = moved.max(d);
+    }
+    assert!(moved > 1.0, "barely moves: {moved}");
+    // Deterministic, loops at whole phases, changes with phase and seed.
+    assert_eq!(a, wobble(&ring, 10.0, 0.02, 3.0, 0.0));
+    let looped = wobble(&ring, 10.0, 0.02, 3.0, 1.0);
+    for (p, q) in a.iter().zip(&looped) {
+        assert!(dist(*p, *q) < 1e-9);
+    }
+    assert_ne!(a, wobble(&ring, 10.0, 0.02, 3.0, 0.5));
+    assert_ne!(a, wobble(&ring, 10.0, 0.02, 4.0, 0.0));
+    assert_eq!(wobble(&ring, 0.0, 0.02, 3.0, 0.0), ring);
+}
+
+#[test]
+fn twist_swirls_round_the_centre() {
+    let c = v(10.0, 20.0);
+    let q = std::f64::consts::FRAC_PI_2;
+    // The centre stays; outside the radius nothing moves.
+    let pts = [c, v(10.0, 20.0 + 150.0), v(10.0 + 1e-6, 20.0)];
+    let t = twist(&pts, c, q, 100.0);
+    assert_eq!(t[0], c);
+    assert!(dist(t[1], pts[1]) < 1e-9);
+    // Right next to the centre: a full quarter turn (+x → +y, y down).
+    assert!(close(t[2].x, 10.0, 1e-9) && close(t[2].y, 20.0 + 1e-6, 1e-9));
+    // Halfway out turns by a quarter of the angle; distances are kept.
+    let half = twist(&[v(60.0, 20.0)], c, q, 100.0)[0];
+    let a = (half.y - c.y).atan2(half.x - c.x);
+    assert!(close(a, q * 0.25, 1e-9), "{a}");
+    assert!(close(dist(half, c), 50.0, 1e-9));
+    // No radius: a rigid turn.
+    let rigid = twist(&[v(110.0, 20.0)], c, q, 0.0)[0];
+    assert!(close(rigid.x, 10.0, 1e-9) && close(rigid.y, 120.0, 1e-9));
+    assert_eq!(twist(&pts, c, 0.0, 100.0), pts);
+    assert_eq!(twist(&pts, c, f64::NAN, 100.0), pts);
+}
+
+#[test]
+fn explode_splits_edges_and_pushes_them_out() {
+    let sq = square(-50.0, -50.0, 100.0);
+    let pieces = explode(&sq, true, 0.0);
+    assert_eq!(pieces.len(), 4);
+    assert_eq!(pieces[0], vec![v(-50.0, -50.0), v(50.0, -50.0)]);
+    // Pushed 10 away from the centre: the top edge moves up.
+    let out = explode(&sq, true, 10.0);
+    assert_eq!(out[0], vec![v(-50.0, -60.0), v(50.0, -60.0)]);
+    assert_eq!(out[1], vec![v(60.0, -50.0), v(60.0, 50.0)]);
+    // An open path has one fewer piece; repeated points add none.
+    let open = [v(0.0, 0.0), v(10.0, 0.0), v(10.0, 0.0), v(10.0, 10.0)];
+    assert_eq!(explode(&open, false, 0.0).len(), 2);
+    // A two-point line: its midpoint is its centre, so it moves along its
+    // normal.
+    let line = explode(&[v(-10.0, 0.0), v(10.0, 0.0)], false, 5.0);
+    assert_eq!(line, vec![vec![v(-10.0, -5.0), v(10.0, -5.0)]]);
+    assert!(explode(&sq[..1], true, 5.0).is_empty());
+    let nan = explode(&sq, true, f64::NAN);
+    assert_eq!(nan, pieces);
+}
+
+#[test]
+fn thicken_and_explode_restyle_their_pieces() {
+    let red = Paint::css("#ff0000");
+    let stroked = Value::Scene(Arc::new(SceneNode::Line {
+        x1: -50.0,
+        y1: 0.0,
+        x2: 50.0,
+        y2: 0.0,
+        style: Arc::new(ResolvedStyle {
+            fill: None,
+            stroke: Some(red.clone()),
+            ..(**default_style()).clone()
+        }),
+    }));
+    // points, closed, path, width, cap, join, style
+    let mut n = node("geometry/path-ops", json!({"mode": "thicken"}));
+    let out = n
+        .eval(vec![
+            vec![],
+            vec![Value::Bool(false)],
+            vec![stroked],
+            vec![Value::Num(8.0)],
+            vec![Value::str("butt")],
+            vec![Value::str("round")],
+            vec![Value::Null],
+        ])
+        .unwrap();
+    let Value::Scene(l) = &out[1][0] else {
+        panic!()
+    };
+    let SceneNode::Polygon {
+        style,
+        closed,
+        points,
+        ..
+    } = &**l
+    else {
+        panic!("{l:?}")
+    };
+    assert!(closed);
+    assert_eq!(style.fill.as_ref(), Some(&red), "the stroke's paint fills");
+    assert!(style.stroke.is_none());
+    assert!(close(signed_area(points).abs(), 800.0, 1e-6));
+
+    // A filled square explodes into four lines in its fill colour.
+    let filled = Value::Scene(polygon(
+        square(0.0, 0.0, 100.0),
+        true,
+        Arc::new(ResolvedStyle {
+            fill: Some(red.clone()),
+            ..(**default_style()).clone()
+        }),
+    ));
+    let mut n = node("geometry/path-ops", json!({"mode": "explode"}));
+    let out = n
+        .eval(vec![
+            vec![],
+            vec![Value::Bool(false)],
+            vec![filled],
+            vec![Value::Num(5.0)],
+            vec![Value::Null],
+        ])
+        .unwrap();
+    assert_eq!(out[1].len(), 4);
+    assert_eq!(out[3].len(), 4, "two points per piece");
+    let Value::Scene(l) = &out[1][0] else {
+        panic!()
+    };
+    let SceneNode::Polygon { style, closed, .. } = &**l else {
+        panic!()
+    };
+    assert!(!closed);
+    assert_eq!(style.stroke.as_ref(), Some(&red));
+    assert!(style.fill.is_none());
+}
+
+#[test]
+fn deformers_resample_by_detail_first() {
+    // A four-point square still bends: it's resampled every 4 units.
+    let mut n = node("geometry/path-ops", json!({"mode": "wave"}));
+    let pts: Vec<Value> = square(-50.0, -50.0, 100.0)
+        .into_iter()
+        .map(Value::Vec2)
+        .collect();
+    // points, closed, path, amplitude, wavelength, phase, detail, style
+    let run = |n: &mut crate::nodes::value::harness::Harness, detail: f64| {
+        n.eval(vec![
+            pts.clone(),
+            vec![Value::Bool(true)],
+            vec![],
+            vec![Value::Num(5.0)],
+            vec![Value::Num(40.0)],
+            vec![Value::Num(0.0)],
+            vec![Value::Num(detail)],
+            vec![Value::Null],
+        ])
+        .unwrap()
+    };
+    assert_eq!(run(&mut n, 4.0)[2].len(), 100);
+    // detail 0: the points as they are (the corners sit on whole waves).
+    assert_eq!(run(&mut n, 0.0)[2].len(), 4);
+}
+
 // ─── Boolean ─────────────────────────────────────────────────────────────────
 
 #[test]

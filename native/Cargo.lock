@@ -1480,6 +1480,7 @@ dependencies = [
  "floret-engine",
  "floret-input",
  "floret-media",
+ "floret-open-files",
  "floret-render",
  "floret-video",
  "gif",
@@ -1535,6 +1536,14 @@ dependencies = [
  "realfft",
  "rtrb",
  "symphonia",
+]
+
+[[package]]
+name = "floret-open-files"
+version = "0.1.0"
+dependencies = [
+ "objc2 0.6.4",
+ "objc2-foundation 0.3.2",
 ]
 
 [[package]]

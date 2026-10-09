@@ -81,6 +81,13 @@ $PB -c "Add :CFBundleVersion string $BUILD" "$PLIST"
 $PB -c "Add :CFBundleGetInfoString string Floret $VERSION ($COMMIT)" "$PLIST"
 $PB -c "Add :LSMinimumSystemVersion string 11.0" "$PLIST"
 $PB -c "Add :LSApplicationCategoryType string public.app-category.graphics-design" "$PLIST"
+# Double-clicking a .flora file opens Floret: the document type and the
+# app.floret.patch type come from the base Info.plist.
+if ! $PB -c "Print :UTExportedTypeDeclarations:0:UTTypeIdentifier" "$PLIST" 2>/dev/null |
+  grep -qx app.floret.patch; then
+  echo "  (Info.plist has no .flora document type: Finder won't open patches in Floret)"
+fi
+plutil -lint -s "$PLIST" || echo "  (Info.plist didn't pass plutil -lint)"
 
 # The icon: every size macOS asks for, from the 1024 px master.
 ICONSET="$(mktemp -d)/Floret.iconset"
@@ -105,7 +112,10 @@ RUNNING=0
 pgrep -xq floret && RUNNING=1
 rm -rf "$DEST/Floret.app"
 ditto "$APP" "$DEST/Floret.app"
-# Make Finder / Launchpad / Spotlight pick up the new icon and version.
+# Only the installed copy, so "Open With" lists one Floret.
+rm -rf "$APP"
+# Make Finder / Launchpad / Spotlight pick up the new icon, version and
+# .flora document type.
 LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
 [ -x "$LSREGISTER" ] && "$LSREGISTER" -f "$DEST/Floret.app" >/dev/null 2>&1 || true
 touch "$DEST/Floret.app"

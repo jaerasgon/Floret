@@ -10,7 +10,10 @@
 //! windows, cut down when the way back doesn't return to the start or the
 //! window has too little texture to lock onto. A point whose track fails
 //! (off the image, nothing to lock onto) stays where it was, at
-//! confidence 0.
+//! confidence 0. Each point also remembers how it looked when its track
+//! started and pulls every frame's result onto that look, so small
+//! frame-to-frame errors don't add up into drift; when the look changes
+//! for good (it turns, the light moves) it takes a new one.
 //!
 //! Points are in canvas units like the other image nodes: (0, 0) is the
 //! image's centre, y down, one unit a pixel. The tracks start at the
@@ -125,33 +128,37 @@ fn levels_for(window: f64) -> usize {
     ((window / reach).log2().ceil() as usize + 1).clamp(1, MAX_LEVELS)
 }
 
-/// Track `p` (pixel coordinates) from `a` to `b`: where it went, and the
-/// smaller eigenvalue of the window's structure tensor (per pixel; how
-/// much texture there was to lock onto). `None` when it can't be tracked.
-fn lucas_kanade(a: &Pyramid, b: &Pyramid, p: Vec2) -> Option<(Vec2, f64)> {
-    let levels = a.0.len().min(b.0.len());
-    let mut g = Vec2::default();
-    let mut min_eig = 0.0;
-    for l in (0..levels).rev() {
-        let (ia, ib) = (&a.0[l], &b.0[l]);
-        let k = f64::from(1u32 << l);
-        let c = Vec2 {
-            x: p.x / k,
-            y: p.y / k,
-        };
-        // Gradients and the structure tensor of the window in `a`.
+/// A window of a picture round a point, ready to look for: its pixels'
+/// offsets, values and gradients, and their structure tensor.
+#[derive(Clone, Debug)]
+pub(crate) struct Template {
+    win: Vec<(f64, f64, f64, f64, f64)>,
+    gxx: f64,
+    gxy: f64,
+    gyy: f64,
+    det: f64,
+    /// The tensor's smaller eigenvalue per pixel: how much texture there
+    /// is to lock onto.
+    pub min_eig: f64,
+}
+
+impl Template {
+    /// The window round `c` (pixel coordinates) of `img`; `None` when it
+    /// has no texture at all.
+    pub fn new(img: &Grey, c: Vec2) -> Option<Template> {
         let n = ((2 * HALF + 1) * (2 * HALF + 1)) as usize;
         let mut win = Vec::with_capacity(n);
         let (mut gxx, mut gxy, mut gyy) = (0.0, 0.0, 0.0);
         for dy in -HALF..=HALF {
             for dx in -HALF..=HALF {
-                let (x, y) = (c.x + f64::from(dx), c.y + f64::from(dy));
-                let ix = (ia.at(x + 1.0, y) - ia.at(x - 1.0, y)) / 2.0;
-                let iy = (ia.at(x, y + 1.0) - ia.at(x, y - 1.0)) / 2.0;
+                let (dx, dy) = (f64::from(dx), f64::from(dy));
+                let (x, y) = (c.x + dx, c.y + dy);
+                let ix = (img.at(x + 1.0, y) - img.at(x - 1.0, y)) / 2.0;
+                let iy = (img.at(x, y + 1.0) - img.at(x, y - 1.0)) / 2.0;
                 gxx += ix * ix;
                 gxy += ix * iy;
                 gyy += iy * iy;
-                win.push((x, y, ia.at(x, y), ix, iy));
+                win.push((dx, dy, img.at(x, y), ix, iy));
             }
         }
         let det = gxx * gyy - gxy * gxy;
@@ -159,68 +166,98 @@ fn lucas_kanade(a: &Pyramid, b: &Pyramid, p: Vec2) -> Option<(Vec2, f64)> {
             return None;
         }
         let tr = gxx + gyy;
-        min_eig = (tr - (tr * tr - 4.0 * det).max(0.0).sqrt()) / 2.0 / n as f64;
-        let mut v = Vec2::default();
-        for _ in 0..ITERATIONS {
-            let (mut bx, mut by) = (0.0, 0.0);
-            for &(x, y, i0, ix, iy) in &win {
-                let d = i0 - ib.at(x + g.x + v.x, y + g.y + v.y);
-                bx += d * ix;
-                by += d * iy;
-            }
-            let ex = (gyy * bx - gxy * by) / det;
-            let ey = (gxx * by - gxy * bx) / det;
-            if !(ex.is_finite() && ey.is_finite()) {
-                return None;
-            }
-            v.x += ex;
-            v.y += ey;
-            if ex * ex + ey * ey < 1e-4 {
-                break;
-            }
-        }
-        g = if l > 0 {
-            Vec2 {
-                x: 2.0 * (g.x + v.x),
-                y: 2.0 * (g.y + v.y),
-            }
-        } else {
-            Vec2 {
-                x: g.x + v.x,
-                y: g.y + v.y,
-            }
-        };
+        let min_eig = (tr - (tr * tr - 4.0 * det).max(0.0).sqrt()) / 2.0 / n as f64;
+        Some(Template {
+            win,
+            gxx,
+            gxy,
+            gyy,
+            det,
+            min_eig,
+        })
     }
-    let q = Vec2 {
-        x: p.x + g.x,
-        y: p.y + g.y,
-    };
-    (q.x.is_finite() && q.y.is_finite() && b.0[0].inside(q.x, q.y)).then_some((q, min_eig))
-}
 
-/// Normalised cross-correlation of the windows round `p` in `a` and `q`
-/// in `b` (−1..1; 0 for flat windows).
-fn ncc(a: &Grey, p: Vec2, b: &Grey, q: Vec2) -> f64 {
-    let n = f64::from((2 * HALF + 1) * (2 * HALF + 1));
-    let (mut sa, mut sb, mut saa, mut sbb, mut sab) = (0.0, 0.0, 0.0, 0.0, 0.0);
-    for dy in -HALF..=HALF {
-        for dx in -HALF..=HALF {
-            let (dx, dy) = (f64::from(dx), f64::from(dy));
-            let u = a.at(p.x + dx, p.y + dy);
-            let w = b.at(q.x + dx, q.y + dy);
+    /// Normalised cross-correlation of the window with `img` round `q`
+    /// (−1..1; 0 for flat windows).
+    pub fn ncc(&self, img: &Grey, q: Vec2) -> f64 {
+        let n = self.win.len() as f64;
+        let (mut sa, mut sb, mut saa, mut sbb, mut sab) = (0.0, 0.0, 0.0, 0.0, 0.0);
+        for &(dx, dy, u, _, _) in &self.win {
+            let w = img.at(q.x + dx, q.y + dy);
             sa += u;
             sb += w;
             saa += u * u;
             sbb += w * w;
             sab += u * w;
         }
+        let va = saa - sa * sa / n;
+        let vb = sbb - sb * sb / n;
+        if va <= 1e-9 || vb <= 1e-9 {
+            return 0.0;
+        }
+        (sab - sa * sb / n) / (va * vb).sqrt()
     }
-    let va = saa - sa * sa / n;
-    let vb = sbb - sb * sb / n;
-    if va <= 1e-9 || vb <= 1e-9 {
-        return 0.0;
+
+    /// Lucas–Kanade on one level: where in `img` the window lies, looking
+    /// from `start` (pixel coordinates of its centre).
+    pub fn find(&self, img: &Grey, start: Vec2) -> Option<Vec2> {
+        let mut q = start;
+        for _ in 0..ITERATIONS {
+            let (mut bx, mut by) = (0.0, 0.0);
+            for &(dx, dy, i0, ix, iy) in &self.win {
+                let d = i0 - img.at(q.x + dx, q.y + dy);
+                bx += d * ix;
+                by += d * iy;
+            }
+            let ex = (self.gyy * bx - self.gxy * by) / self.det;
+            let ey = (self.gxx * by - self.gxy * bx) / self.det;
+            if !(ex.is_finite() && ey.is_finite()) {
+                return None;
+            }
+            q.x += ex;
+            q.y += ey;
+            if ex * ex + ey * ey < 1e-4 {
+                break;
+            }
+        }
+        Some(q)
     }
-    (sab - sa * sb / n) / (va * vb).sqrt()
+}
+
+/// Track `p` (pixel coordinates) from `a` to `b`, coarse level first:
+/// where it went, and how much texture its window had (see
+/// [`Template::min_eig`]). `None` when it can't be tracked.
+fn lucas_kanade(a: &Pyramid, b: &Pyramid, p: Vec2) -> Option<(Vec2, f64)> {
+    let levels = a.0.len().min(b.0.len());
+    // The motion so far, in this level's pixels.
+    let mut g = Vec2::default();
+    let mut texture = 0.0;
+    for l in (0..levels).rev() {
+        let k = f64::from(1u32 << l);
+        let c = Vec2 {
+            x: p.x / k,
+            y: p.y / k,
+        };
+        let t = Template::new(&a.0[l], c)?;
+        texture = t.min_eig;
+        let q = t.find(
+            &b.0[l],
+            Vec2 {
+                x: c.x + g.x,
+                y: c.y + g.y,
+            },
+        )?;
+        let f = if l > 0 { 2.0 } else { 1.0 };
+        g = Vec2 {
+            x: (q.x - c.x) * f,
+            y: (q.y - c.y) * f,
+        };
+    }
+    let q = Vec2 {
+        x: p.x + g.x,
+        y: p.y + g.y,
+    };
+    (q.x.is_finite() && q.y.is_finite() && b.0[0].inside(q.x, q.y)).then_some((q, texture))
 }
 
 /// One point from frame `a` to `b`: its new place and the confidence.
@@ -232,11 +269,71 @@ pub(crate) fn track(a: &Pyramid, b: &Pyramid, p: Vec2) -> Option<(Vec2, f64)> {
     // Forward–backward: the way back should come home.
     let fb =
         lucas_kanade(b, a, q).map_or(f64::INFINITY, |(r, _)| super::super::geometry::dist(p, r));
-    let corr = ncc(&a.0[0], p, &b.0[0], q).max(0.0);
+    let corr = Template::new(&a.0[0], p).map_or(0.0, |t| t.ncc(&b.0[0], q).max(0.0));
     let home = 1.0 / (1.0 + (fb / 2.0).powi(2));
-    // Below ~1e-4 per pixel (grey 0..1) there's little to lock onto.
-    let texture = (texture / 1e-4).min(1.0);
+    // Below ~1e-5 per pixel (grey 0..1) there's little to lock onto.
+    let texture = (texture / 1e-5).min(1.0);
     Some((q, (corr * home * texture).clamp(0.0, 1.0)))
+}
+
+/// How far (pixels) the anchored look may move a frame-to-frame track.
+const ANCHOR_PULL: f64 = 2.5;
+/// Below this match with its anchor, a well-tracked point takes a new one
+/// (its look has changed: it turned, the light moved).
+const ANCHOR_KEEP: f64 = 0.75;
+
+/// A tracked point: where it is, how sure, and the look it started with
+/// (re-taken when the look changes), which stops slow drift: each
+/// frame's track is pulled onto that look.
+#[derive(Clone, Debug)]
+pub(crate) struct Track {
+    pub at: Vec2,
+    pub confidence: f64,
+    anchor: Option<Template>,
+}
+
+impl Track {
+    fn new(at: Vec2, frame: &Arc<Pyramid>) -> Track {
+        let mut t = Track {
+            at,
+            confidence: 1.0,
+            anchor: None,
+        };
+        t.anchor_on(frame);
+        t
+    }
+
+    fn anchor_on(&mut self, frame: &Arc<Pyramid>) {
+        let base = &frame.0[0];
+        self.anchor = (base.inside(self.at.x, self.at.y))
+            .then(|| Template::new(base, self.at))
+            .flatten();
+    }
+
+    /// Follow the point from `prev` into `next`.
+    fn step(&mut self, prev: &Arc<Pyramid>, next: &Arc<Pyramid>) {
+        let Some((q, conf)) = track(prev, next, self.at) else {
+            self.confidence = 0.0;
+            return;
+        };
+        let cur = &next.0[0];
+        let mut at = q;
+        let mut stale = true;
+        if let Some(tpl) = &self.anchor {
+            if let Some(r) = tpl.find(cur, q) {
+                let close = super::super::geometry::dist(q, r) <= ANCHOR_PULL;
+                if close && cur.inside(r.x, r.y) && tpl.ncc(cur, r) >= ANCHOR_KEEP {
+                    at = r;
+                    stale = false;
+                }
+            }
+        }
+        self.at = at;
+        self.confidence = conf;
+        if stale && conf >= ANCHOR_KEEP {
+            self.anchor_on(next);
+        }
+    }
 }
 
 /// What a Point Tracker keeps between frames (and across recompiles).
@@ -244,9 +341,8 @@ pub(crate) fn track(a: &Pyramid, b: &Pyramid, p: Vec2) -> Option<(Vec2, f64)> {
 pub(crate) struct State {
     /// The last frame's pyramid and its image id.
     frame: Option<(u64, Arc<Pyramid>)>,
-    /// Tracked points (pixel coordinates) and their confidence.
-    points: Vec<Vec2>,
-    confidence: Vec<f64>,
+    /// Tracked points (pixel coordinates).
+    tracks: Vec<Track>,
     /// The seeds the tracks started from (canvas units).
     seeds: Vec<Vec2>,
     /// Rebuilt after an edit: start again if the seeds changed.
@@ -285,34 +381,28 @@ impl State {
         let levels = levels_for(window);
         let new_frame = self.frame.as_ref().is_none_or(|(id, _)| *id != img.id());
         if reseed {
+            let frame = Arc::new(Pyramid::new(Grey::of(img), levels));
             self.seeds = seeds.to_vec();
-            self.points = seeds.iter().map(to_px).collect();
-            self.confidence = vec![1.0; seeds.len()];
-            self.frame = Some((img.id(), Arc::new(Pyramid::new(Grey::of(img), levels))));
+            self.tracks = seeds.iter().map(|s| Track::new(to_px(s), &frame)).collect();
+            self.frame = Some((img.id(), frame));
         } else if new_frame {
             let next = Arc::new(Pyramid::new(Grey::of(img), levels));
             if let Some((_, prev)) = &self.frame {
-                for (p, c) in self.points.iter_mut().zip(&mut self.confidence) {
-                    match track(prev, &next, *p) {
-                        Some((q, conf)) => {
-                            *p = q;
-                            *c = conf;
-                        }
-                        None => *c = 0.0,
-                    }
+                for t in &mut self.tracks {
+                    t.step(prev, &next);
                 }
             }
             self.frame = Some((img.id(), next));
         }
         let out = self
-            .points
+            .tracks
             .iter()
-            .map(|p| Vec2 {
-                x: p.x - w / 2.0,
-                y: p.y - h / 2.0,
+            .map(|t| Vec2 {
+                x: t.at.x - w / 2.0,
+                y: t.at.y - h / 2.0,
             })
             .collect();
-        (out, self.confidence.clone())
+        (out, self.tracks.iter().map(|t| t.confidence).collect())
     }
 }
 
@@ -406,11 +496,18 @@ mod tests {
 
     /// A `w × h` view of the texture moved by `(ox, oy)` pixels.
     fn frame(w: u32, h: u32, ox: f64, oy: f64) -> Arc<Image> {
+        noisy(w, h, ox, oy, 0.0, 0)
+    }
+
+    /// [`frame`] with ± `noise` (0..1) of sensor noise, drawn from `seed`.
+    fn noisy(w: u32, h: u32, ox: f64, oy: f64, noise: f64, seed: u32) -> Arc<Image> {
         let b = base();
+        let mut r = crate::js::Mulberry32::new(seed);
         let mut px = Vec::with_capacity((w * h * 4) as usize);
         for y in 0..h {
             for x in 0..w {
-                let v = b.at(f64::from(x) - ox + 150.0, f64::from(y) - oy + 150.0);
+                let v = b.at(f64::from(x) - ox + 150.0, f64::from(y) - oy + 150.0)
+                    + noise * (2.0 * r.next_f64() - 1.0);
                 let c = (v.clamp(0.0, 1.0) * 255.0).round() as u8;
                 px.extend([c, c, c, 255]);
             }
@@ -496,6 +593,41 @@ mod tests {
             (seeds.to_vec(), vec![0.0])
         );
         assert_eq!(s.step(Some(&img), &[], false, 40.0), (vec![], vec![]));
+    }
+
+    #[test]
+    fn long_tracks_dont_drift() {
+        // Twice round a circle in sub-pixel steps through noisy frames:
+        // frame-to-frame errors would pile up; the anchor holds them.
+        let mut s = State::default();
+        let seeds = [v(0.0, 0.0), v(-40.0, 30.0)];
+        s.step(
+            Some(&noisy(160, 140, 0.0, 0.0, 0.04, 0)),
+            &seeds,
+            false,
+            40.0,
+        );
+        let n = 160;
+        let (mut worst, mut late) = (0.0f64, 0.0f64);
+        for k in 1..=n {
+            let a = std::f64::consts::TAU * 2.0 * f64::from(k) / f64::from(n);
+            let (ox, oy) = (18.0 * a.sin(), 12.0 * (1.0 - a.cos()));
+            let img = noisy(160, 140, ox, oy, 0.04, k);
+            let (p, c) = s.step(Some(&img), &seeds, false, 40.0);
+            for (q, seed) in p.iter().zip(&seeds) {
+                let err = (q.x - seed.x - ox).hypot(q.y - seed.y - oy);
+                worst = worst.max(err);
+                if k > n - 20 {
+                    late = late.max(err);
+                }
+            }
+            assert!(c.iter().all(|c| *c > 0.5), "frame {k}: {c:?} at {p:?}");
+        }
+        // Bounded by the noise (without the anchor: 1.7 px, still growing).
+        assert!(
+            worst < 1.0 && late < 0.8,
+            "worst {worst}, last frames {late}"
+        );
     }
 
     #[test]

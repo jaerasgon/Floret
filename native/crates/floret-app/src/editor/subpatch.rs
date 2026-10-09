@@ -205,6 +205,7 @@ pub fn group(patch: &mut PatchFile, cat: &Catalogue, ids: &[String]) -> Option<S
         ports: Some(ports),
         width: None,
         height: None,
+        bypassed: false,
     };
     for n in patch
         .nodes

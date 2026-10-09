@@ -12,6 +12,7 @@
 //! ```
 
 pub mod audio;
+pub mod bypass;
 pub mod compile;
 pub mod devices;
 pub mod graph;

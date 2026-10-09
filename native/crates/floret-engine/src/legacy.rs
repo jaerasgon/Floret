@@ -129,6 +129,7 @@ pub fn migrate_legacy_draw_coords(patch: &mut PatchFile) {
                 ports: None,
                 width: None,
                 height: None,
+                bypassed: false,
             });
             if let Some(i) = xi {
                 patch.edges[i].target = make_id.clone();

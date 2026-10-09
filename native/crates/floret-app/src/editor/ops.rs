@@ -151,6 +151,7 @@ pub fn add_node(
         },
         width,
         height,
+        bypassed: false,
     });
     Some(id)
 }
@@ -346,10 +347,70 @@ pub fn absolute_pos(patch: &PatchFile, id: &str) -> Position {
     p
 }
 
+/// Bypass `ids` (the ones that can be: not regions, comments, probes,
+/// State nodes or the Renderer), or turn them all back on when every one
+/// already is. Returns whether anything changed.
+pub fn toggle_bypass(patch: &mut PatchFile, cat: &Catalogue, ids: &[String]) -> bool {
+    let can = |n: &PatchNode| {
+        ids.contains(&n.id)
+            && cat
+                .get(&n.def_type)
+                .is_some_and(floret_engine::bypass::can_bypass)
+    };
+    let targets: Vec<usize> = (0..patch.nodes.len())
+        .filter(|&i| can(&patch.nodes[i]))
+        .collect();
+    if targets.is_empty() {
+        return false;
+    }
+    let on = !targets.iter().all(|&i| patch.nodes[i].bypassed);
+    for i in targets {
+        patch.nodes[i].bypassed = on;
+    }
+    true
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::editor::test_util::{edge, node, patch};
+
+    #[test]
+    fn bypass_toggles_bypassable_nodes_as_one_undo_step() {
+        let cat = Catalogue::builtin();
+        let mut p = patch(
+            vec![
+                node("fx", "gpu/effect"),
+                node("m", "math/math"),
+                node("r", "region/foreach"),
+                node("out", "render/renderer"),
+            ],
+            vec![],
+        );
+        let mut history = crate::editor::history::History::default();
+        history.reset(&p);
+        // Regions and the Renderer can't be bypassed.
+        assert!(!toggle_bypass(&mut p, cat, &["r".into(), "out".into()]));
+        assert!(toggle_bypass(&mut p, cat, &["fx".into(), "r".into()]));
+        assert!(p.nodes[0].bypassed && !p.nodes[2].bypassed);
+        history.push(&p, None);
+        // A mixed selection bypasses all; all bypassed turns them back on.
+        assert!(toggle_bypass(&mut p, cat, &["fx".into(), "m".into()]));
+        assert!(p.nodes[0].bypassed && p.nodes[1].bypassed);
+        assert!(toggle_bypass(&mut p, cat, &["fx".into(), "m".into()]));
+        assert!(!p.nodes[0].bypassed && !p.nodes[1].bypassed);
+        // Undo restores the flag.
+        let mut p2 = p.clone();
+        assert!(history.undo(&mut p2));
+        assert!(!p2.nodes[0].bypassed);
+        assert!(history.redo(&mut p2));
+        assert!(p2.nodes[0].bypassed);
+        // Saved only while on, and read back.
+        let text = p2.to_json();
+        assert_eq!(text.matches("\"bypassed\"").count(), 1);
+        let back = floret_engine::load_patch(&text).unwrap();
+        assert!(back.nodes[0].bypassed && !back.nodes[1].bypassed);
+    }
 
     #[test]
     fn fresh_ids_are_unique() {

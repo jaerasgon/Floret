@@ -486,6 +486,7 @@ mod tests {
             ports: None,
             width: None,
             height: None,
+            bypassed: false,
         };
         assert!(structural(cat, spec, &n, "mode"));
         n.def_type = "draw/ellipse".into();

@@ -101,6 +101,10 @@ pub struct PatchNode {
     pub width: Option<f64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub height: Option<f64>,
+    /// Switched off in the editor: outputs pass inputs through (see
+    /// `crate::bypass`). Absent when off; builds without bypass ignore it.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub bypassed: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]

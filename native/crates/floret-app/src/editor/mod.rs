@@ -45,6 +45,7 @@ pub(crate) mod test_util {
             ports: None,
             width: None,
             height: None,
+            bypassed: false,
         }
     }
 

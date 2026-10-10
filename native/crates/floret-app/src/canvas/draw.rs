@@ -114,12 +114,98 @@ fn chip(p: &Painter, r: Rect) {
 pub struct FrameState<'a> {
     pub kind: Option<RegionKind>,
     pub def_type: &'a str,
+    /// A section's tint (`None` for other frames).
+    pub tint: Option<Color32>,
     pub selected: bool,
     pub drop_target: bool,
     pub selected_ports: &'a [String],
 }
 
+/// A new section's tint (the theme's blue).
+pub const SECTION_DEFAULT: &str = "#7cb6ff";
+
+/// A section's tint from its `color` param; `None` for other nodes.
+pub fn section_tint(n: &floret_engine::patch::PatchNode) -> Option<Color32> {
+    (n.def_type == "meta/section").then(|| {
+        let [r, g, b, _] = n
+            .params
+            .get("color")
+            .and_then(|v| v.as_str())
+            .and_then(values::parse_hex)
+            .or_else(|| values::parse_hex(SECTION_DEFAULT))
+            .unwrap_or([0.5, 0.7, 1.0, 1.0]);
+        let c = |v: f64| (v.clamp(0.0, 1.0) * 255.0).round() as u8;
+        Color32::from_rgb(c(r), c(g), c(b))
+    })
+}
+
+/// A section: a flat, tinted card behind its nodes with the title on a
+/// tinted strip, no pins or pills.
+fn section(p: &Painter, b: &NodeBox, st: &FrameState, tint: Color32, z: f32) {
+    let card = b.header.union(b.rect);
+    let r = (9.0 * z).min(255.0) as u8;
+    let (fill, stroke) = if st.drop_target {
+        (tint.gamma_multiply(0.16), Stroke::new(1.5, tint))
+    } else if st.selected {
+        (tint.gamma_multiply(0.09), Stroke::new(1.25, tint))
+    } else {
+        (
+            tint.gamma_multiply(0.07),
+            Stroke::new(0.75, tint.gamma_multiply(0.45)),
+        )
+    };
+    p.rect(
+        card,
+        CornerRadius::same(r),
+        fill,
+        Stroke::NONE,
+        StrokeKind::Inside,
+    );
+    p.rect(
+        b.header,
+        CornerRadius {
+            nw: r,
+            ne: r,
+            sw: 0,
+            se: 0,
+        },
+        tint.gamma_multiply(0.14),
+        Stroke::NONE,
+        StrokeKind::Inside,
+    );
+    p.rect(
+        card,
+        CornerRadius::same(r),
+        Color32::TRANSPARENT,
+        stroke,
+        StrokeKind::Inside,
+    );
+    if z >= 0.2 {
+        p.text(
+            pos2(b.header.left() + 10.0 * z, b.header.center().y),
+            Align2::LEFT_CENTER,
+            &b.label,
+            theme::medium(12.0 * z),
+            mix(tint, *FG_0, 0.55),
+        );
+    }
+    if let Some((r, _)) = &b.warning {
+        chip(p, *r);
+    }
+    // Resize grip.
+    let c = b.rect.right_bottom() - vec2(4.0, 4.0) * z;
+    for k in [4.0, 8.0] {
+        p.line_segment(
+            [c - vec2(k * z, 0.0), c - vec2(0.0, k * z)],
+            Stroke::new(1.0, tint.gamma_multiply(0.6)),
+        );
+    }
+}
+
 pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
+    if let (Some(RegionKind::Section), Some(tint)) = (st.kind, st.tint) {
+        return section(p, b, st, tint, z);
+    }
     let accent = frame_color(st.kind);
     let (fill, stroke) = if st.drop_target {
         (accent.gamma_multiply(0.12), Stroke::new(1.5, accent))

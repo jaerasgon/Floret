@@ -134,6 +134,14 @@ pub fn groups() -> Vec<Section> {
             title: "Regions",
             rows: vec![
                 menu(Group),
+                (
+                    Trigger::Text("Right-click a selection"),
+                    "Wrap in ForEach / If / Cache / Section, or group into a subpatch",
+                ),
+                (
+                    Trigger::Text("Right-click a frame"),
+                    "Unwrap a region / section, or ungroup a subpatch",
+                ),
                 (keys(none, Key::I), "Enter the selected subpatch"),
                 (keys(none, Key::O), "Exit the subpatch"),
                 (

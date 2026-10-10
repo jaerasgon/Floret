@@ -15,6 +15,7 @@ pub mod audio;
 pub mod bypass;
 pub mod compile;
 pub mod devices;
+pub mod flow;
 pub mod graph;
 pub mod host;
 pub mod image;

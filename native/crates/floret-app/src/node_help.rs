@@ -145,6 +145,7 @@ pub fn doc(cat: &Catalogue, key: &str) -> Option<Doc> {
             RegionKind::If => "if",
             RegionKind::Cache => "cache",
             RegionKind::Subpatch => "subpatch",
+            RegionKind::Section => "section",
         }),
     })
 }
@@ -391,15 +392,25 @@ fn show_doc(ui: &mut egui::Ui, d: &Doc) {
     );
     if let Some(kind) = d.region {
         ui.add_space(8.0);
-        ui.label(RichText::new("Region").color(theme::FG_2).small());
-        ui.label(
-            RichText::new(format!(
-                "This is a {kind} region. Nodes placed inside its frame run in its scope. \
-                 Drag wires onto the edge to add input / output ports."
-            ))
-            .color(theme::FG_1)
-            .small(),
-        );
+        let (title, text) = if kind == "section" {
+            (
+                "Section",
+                "A backdrop for organising the patch: nodes inside move with it, \
+                 but run exactly as if it weren't there, and wires pass straight \
+                 through. Right-click it to change its colour or unwrap it."
+                    .to_owned(),
+            )
+        } else {
+            (
+                "Region",
+                format!(
+                    "This is a {kind} region. Nodes placed inside its frame run in its scope. \
+                     Drag wires onto the edge to add input / output ports."
+                ),
+            )
+        };
+        ui.label(RichText::new(title).color(theme::FG_2).small());
+        ui.label(RichText::new(text).color(theme::FG_1).small());
     }
 }
 

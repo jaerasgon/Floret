@@ -114,6 +114,9 @@ pub enum RegionKind {
     If,
     Cache,
     Subpatch,
+    /// A titled backdrop grouping nodes on the canvas. No ports and no
+    /// scope: compile lifts its children into the enclosing scope.
+    Section,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Deserialize)]

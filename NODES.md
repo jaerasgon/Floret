@@ -72,7 +72,7 @@ old category names and type ids.
 | Input & Sound | Mouse, Keyboard, MIDI, Camera, Landmarks, Point Tracker; audio in, analysis (FFT, Amplitude …) and synthesis. |
 | Math | Math, Vector Math, Compare, Logic, Statistics, Convert, Map, Norm, Lerp, Clamp, Wrap, Step, Smoothstep, Expression, Cumulative, Delta, Histogram, Vec2 / Split / FromAngle / ToPolar, Select, Switch. |
 | Lists | Lookup, Sublist, Reorder, Combine (op dropdowns); Count, Count Where, Repeat, Cycle, Resample, Merge, Neighbor; Cross Product, Pairwise, Partition, Windows, Uninterleave, Ungroup. |
-| Structure | ForEach, If, Cache regions and their accumulators; State, Read / Write; Subpatch, Comment, Probe. |
+| Structure | ForEach, If, Cache regions and their accumulators; State, Read / Write; Subpatch, Section, Comment, Probe. |
 
 **Op families.** Math, Vector Math, Compare, Logic, Statistics and
 Convert, and in Lists Lookup, Sublist, Reorder and Combine, are one node
@@ -559,6 +559,7 @@ Regions are scope containers. Inner nodes run with extra context (per-iteration 
 | **ForEach** · `region/foreach` | dynamic frame ports → dynamic frame ports | Iterate over a spread. Inner nodes run once per slot. |
 | **If** · `region/if` | `condition: boolean` + dynamic ports → dynamic ports | Run the inner scope when `condition` is true; otherwise emit empties / forward accumulator inits unchanged. |
 | **Cache** · `region/cache` | dynamic ports → dynamic ports | Memoise the inner scope by structural hash of its inputs. Re-runs only when inputs change. |
+| **Section** · `meta/section` | — → — | A titled, coloured backdrop that groups nodes on the canvas. Purely visual: no ports and no scope — compile lifts its children into the enclosing scope, so the patch computes the same with or without it, and wires pass straight through. Nodes inside move with it; resize it like a region, double-click the title to rename it, right-click for its colour or to unwrap it. Params: `label`, `color` (hex), `width`, `height`. |
 | **AccRead** · `region/accumulator-read/{number,boolean,image}` | `init: T` → `read: T` | Per-iteration accumulator read. Paired by `slot` with a Write inside the same region. Drop on the LEFT of the inner scope so wires flow rightward into the loop body. |
 | **AccWrite** · `region/accumulator-write/{number,boolean,image}` | `write: T` → `final: T` | Per-iteration accumulator write. The `write` input becomes the next iteration's `read`; the last value is exposed as `final` on the outer side once the loop completes. |
 

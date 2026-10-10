@@ -753,10 +753,15 @@ impl View {
         let constant = |p: &floret_engine::spec::PortSpec| {
             p.constant && matches!(key, EditKey::Param(k) if p.param.as_ref() == Some(k))
         };
+        // A Write / Read's slot re-pairs it: the compile warnings follow.
+        let repairs = |n: &floret_engine::patch::PatchNode| {
+            pairs::is_pair_type(&n.def_type) && matches!(key, EditKey::Param(k) if k == "slot")
+        };
         let reshapes = ports::find_node(patch, node).is_some_and(|n| {
-            cat.get(&n.def_type).is_some_and(|s| {
-                s.has_dynamic_inputs || cat.resolved_inputs(s, &n.params).iter().any(constant)
-            })
+            repairs(n)
+                || cat.get(&n.def_type).is_some_and(|s| {
+                    s.has_dynamic_inputs || cat.resolved_inputs(s, &n.params).iter().any(constant)
+                })
         });
         match key {
             EditKey::Param(k) if !reshapes => {
@@ -2880,8 +2885,9 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             }
             if let Some(id) = ops::place_node(patch, cat, &ty, view.snapped(at), scope.as_deref()) {
                 view.select_only(&id);
-                // A Write / Read half arrives with its partner: both selected.
-                view.selection.extend(pairs::partners(patch, &id));
+                // A Write / Read half arrives with its partner: both
+                // selected, the placed one primary (last).
+                view.selection.splice(0..0, pairs::partners(patch, &id));
                 view.commit(patch);
             }
         }
@@ -2960,7 +2966,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             let added = pairs::reslot_copies(patch, cat, &new);
             let tops = new.len().min(ids.len());
             view.selection = new[..tops].to_vec();
-            view.selection.extend(added);
+            view.selection.splice(0..0, added);
             for i in &new[..tops] {
                 view.raise(i);
             }
@@ -3097,7 +3103,15 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             } else {
                 Rect::from_min_size(
                     pos2(p.x as f32 + 18.0, p.y as f32 + 4.0),
-                    vec2(w as f32 - 36.0, geom::HEADER_H - 8.0),
+                    // A pair's name gets room to type (the card grows to fit).
+                    vec2(
+                        (w as f32 - 36.0).max(if pairs::is_pair_type(&n.def_type) {
+                            180.0
+                        } else {
+                            0.0
+                        }),
+                        geom::HEADER_H - 8.0,
+                    ),
                 )
             };
             // A Write / Read half edits the pair's name (blank: none).
@@ -3357,7 +3371,7 @@ fn paste(patch: &mut PatchFile, view: &mut View, clip: &PatchFile, at: Position)
     // Pasted Write / Read halves become a pair of their own.
     let added = pairs::reslot_copies(patch, Catalogue::builtin(), &ids);
     view.selection = ids[..tops].to_vec();
-    view.selection.extend(added);
+    view.selection.splice(0..0, added);
     view.selected_edge = None;
     for i in &ids[..tops] {
         view.raise(i);
@@ -3432,7 +3446,7 @@ fn place_from_search(
         _ => {}
     }
     view.select_only(&id);
-    view.selection.extend(pairs::partners(patch, &id));
+    view.selection.splice(0..0, pairs::partners(patch, &id));
     view.commit(patch);
 }
 

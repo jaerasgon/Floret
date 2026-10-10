@@ -151,7 +151,11 @@ fn partner_position(patch: &PatchFile, cat: &Catalogue, id: &str) -> Position {
         .iter()
         .filter(|s| s.id != id && s.parent_id == n.parent_id)
         .collect();
-    let xs = siblings.iter().map(|s| s.position.x);
+    // The flow's extent: comments sit beside it, not in it.
+    let xs = siblings
+        .iter()
+        .filter(|s| s.def_type != "meta/comment")
+        .map(|s| s.position.x);
     let mut x = if is_write(&n.def_type) {
         xs.fold(n.position.x, f64::min) - STEP
     } else {

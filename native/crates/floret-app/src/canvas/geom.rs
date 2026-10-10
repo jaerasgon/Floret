@@ -353,6 +353,10 @@ pub fn node_width(
         let text = slot;
         header += 6.0 + text_width(&text, FontId::monospace(10.0)) + 8.0;
     }
+    if look == Look::Node && pairs::is_pair_type(&n.def_type) {
+        // Room for the warning chip of a half without its partner.
+        header += 20.0;
+    }
     if look == Look::Collapsed {
         header += 8.0 + text_width("subpatch", FontId::proportional(9.5));
         let ins: Vec<_> = subpatch_ports(n, PortDirection::Input).collect();

@@ -558,7 +558,11 @@ Read pair. No new node types; the pairs became easier to make and read.
 - **Warnings** (compile, on the node): a Read with no Write ("it only ever
   outputs `init`"), a Write with no Read, several Writes on one slot (only
   the last one's value is kept), a half with no slot. Named pairs are
-  quoted by name.
+  quoted by name. Editing a half's slot now recompiles, so the warnings
+  follow at once; Read / Write headers keep room for the warning chip.
+- **Suggestions (not done):** copies keep the original's name (a
+  " 2" suffix would tell the pairs apart); placing a pair could pan the
+  view when the new half lands off screen.
 - **State** (`state/value`) is hidden from the browser like `State*`; it
   still loads, and its description points to Write → Read.
 - **Tests:** engine `compile.rs` `feedback_tests` (pairing by slot whatever

@@ -773,3 +773,30 @@ Read pair. No new node types; the pairs became easier to make and read.
   the names, names round-trip, warnings); app `editor/pairs.rs` (auto
   pair, rename sync + undo, delete pair, copies get a fresh slot / a new
   Read, State hidden from search).
+
+## Flow rule: play samples (E3b)
+
+No new nodes. Eight Interactive samples (`play-breakout`,
+`play-midi-garden`, `play-brush-studio`, `play-kaleidoscope`,
+`play-voronoi-editor`, `play-flock-herder`, `play-physics-sandbox`,
+`play-reaction-painter`) now read left to right in every scope.
+
+- **State → Write → Read:** every `state/value` / `state/spread` became a
+  named pair (`state/read` + `state/write`, or the spread pair), a unique
+  slot per family. The Read keeps the old node id (its `init` and every
+  `current` wire are unchanged); the new Write is `<id>Write` and takes the
+  wire that fed `next`. The existing paper pair in Brush Studio is named
+  "paper".
+- **Layout:** auto-arranged, then in each scope holding a pair the Reads
+  sit in a column at the left (after whatever feeds their `init`) and the
+  Writes in a column at the right end; subpatch frames grew to fit.
+- **Breakout regrouped:** its subpatches fed each other both ways (Turns ↔
+  Ball ↔ Bricks), so the same nodes and wires are now grouped in flow
+  order: Turns (reads playing / held / lives / level; start, launch,
+  game over, speed) → Ball (moves the ball, lost, paddle) → Bricks →
+  Next turn (back on the paddle; Lives & score with the score pair and the
+  count Writes) → Bounce (new velocity and position, their Writes, the
+  ball drawing) → HUD. Comments updated.
+- **Same behaviour:** `rebuilt_samples_play_as_before` (idle and scripted
+  play, 150 frames) matches the old files exactly for all eight (layers
+  within 0, no pixel differs).

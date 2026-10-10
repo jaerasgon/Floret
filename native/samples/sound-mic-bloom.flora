@@ -13,12 +13,12 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -324
+        "y": -354
       },
       "params": {
         "text": "Mic Bloom\n\nA flower that listens. Switch Microphone on and talk, sing, clap or play music near the computer: the petals are the spectrum (low notes at the top, high round the sides), the core swells with the bass, a beat sends a ring out and sparks fly with the treble. With the microphone off it listens to its own little demo loop (Demo volume sets how loud you hear it).\n\nHow it works: AudioIn and the demo (one Beat clock steps a MonoSynth arpeggio, a bass on every fourth step and noise hats on the offbeats) → Mix → FFT (64 bins). Pick reads the spectrum forwards then backwards for 128 petal lengths, mirrored left–right; Ring angles and From Angle set them round the circle, turning (Integrate) faster with more treble. Statistics (mean) of slices give bass and treble, Peak Detect finds beats, and an Envelope fades each beat's ring. Without sound at all (no audio device) the Stand-in spectrum subpatch breathes noise hills so it never goes dark. Echo smears it into trails.",
         "width": 470,
-        "height": 260
+        "height": 290
       }
     },
     {
@@ -491,14 +491,30 @@
     },
     {
       "id": "mb_lastBeat",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 132,
-        "y": 276
+        "x": 131,
+        "y": 299
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "last beat"
+      },
       "portValues": {
         "init": -10
+      },
+      "parentId": "mb_ringBox"
+    },
+    {
+      "id": "mb_lastBeatWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 1405,
+        "y": 258
+      },
+      "params": {
+        "slot": 1,
+        "name": "last beat"
       },
       "parentId": "mb_ringBox"
     },
@@ -506,8 +522,8 @@
       "id": "mb_beatStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 2422,
-        "y": 184
+        "x": 2494,
+        "y": 182
       },
       "params": {},
       "portValues": {
@@ -519,7 +535,7 @@
       "id": "mb_beatNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 2619,
+        "x": 2691,
         "y": 232
       },
       "params": {},
@@ -529,8 +545,8 @@
       "id": "mb_beatRing",
       "defType": "draw/ellipse",
       "position": {
-        "x": 2816,
-        "y": 61
+        "x": 2888,
+        "y": 62
       },
       "params": {},
       "parentId": "mb_ringBox"
@@ -867,7 +883,7 @@
       },
       "params": {
         "label": "Stand-in spectrum",
-        "width": 1715,
+        "width": 1718,
         "height": 646
       },
       "ports": [
@@ -883,7 +899,7 @@
           "name": "levels",
           "type": "number",
           "direction": "output",
-          "y": 199
+          "y": 197
         }
       ]
     },
@@ -918,8 +934,8 @@
       "id": "mb_siY",
       "defType": "math/math",
       "position": {
-        "x": 424,
-        "y": 274
+        "x": 423,
+        "y": 277
       },
       "params": {
         "op": "multiply",
@@ -935,8 +951,8 @@
       "id": "mb_siNoise",
       "defType": "noise/noise",
       "position": {
-        "x": 697,
-        "y": 153
+        "x": 698,
+        "y": 145
       },
       "params": {
         "mode": "perlin"
@@ -969,8 +985,8 @@
       "id": "mb_siHills",
       "defType": "math/math",
       "position": {
-        "x": 971,
-        "y": 108
+        "x": 973,
+        "y": 102
       },
       "params": {
         "op": "multiply",
@@ -982,8 +998,8 @@
       "id": "mb_siRun",
       "defType": "math/math",
       "position": {
-        "x": 424,
-        "y": 422
+        "x": 423,
+        "y": 425
       },
       "params": {
         "op": "multiply",
@@ -1016,8 +1032,8 @@
       "id": "mb_siPhase",
       "defType": "math/math",
       "position": {
-        "x": 696,
-        "y": 455
+        "x": 697,
+        "y": 469
       },
       "params": {
         "op": "subtract",
@@ -1029,8 +1045,8 @@
       "id": "mb_siSin",
       "defType": "math/math",
       "position": {
-        "x": 980,
-        "y": 357
+        "x": 982,
+        "y": 366
       },
       "params": {
         "op": "sin",
@@ -1042,8 +1058,8 @@
       "id": "mb_siWave",
       "defType": "math/map",
       "position": {
-        "x": 1247,
-        "y": 282
+        "x": 1249,
+        "y": 285
       },
       "params": {
         "inMin": -1,
@@ -1064,8 +1080,8 @@
       "id": "mb_siSum",
       "defType": "math/math",
       "position": {
-        "x": 1435,
-        "y": 162
+        "x": 1438,
+        "y": 160
       },
       "params": {
         "op": "add",
@@ -1305,8 +1321,8 @@
       "id": "mb_sinceLast",
       "defType": "math/math",
       "position": {
-        "x": 323,
-        "y": 177
+        "x": 384,
+        "y": 194
       },
       "params": {
         "op": "subtract",
@@ -1318,8 +1334,8 @@
       "id": "mb_rested",
       "defType": "logic/compare",
       "position": {
-        "x": 591,
-        "y": 176
+        "x": 651,
+        "y": 193
       },
       "params": {
         "op": "greater",
@@ -1334,8 +1350,8 @@
       "id": "mb_newBeat",
       "defType": "logic/logic",
       "position": {
-        "x": 875,
-        "y": 143
+        "x": 940,
+        "y": 158
       },
       "params": {
         "op": "and"
@@ -1346,8 +1362,8 @@
       "id": "mb_lastBeatNext",
       "defType": "logic/select",
       "position": {
-        "x": 1118,
-        "y": 199
+        "x": 1185,
+        "y": 223
       },
       "params": {},
       "parentId": "mb_ringBox"
@@ -1356,8 +1372,8 @@
       "id": "mb_beatAge",
       "defType": "math/math",
       "position": {
-        "x": 1325,
-        "y": 118
+        "x": 1396,
+        "y": 110
       },
       "params": {
         "op": "subtract",
@@ -1369,7 +1385,7 @@
       "id": "mb_beatSize",
       "defType": "math/map",
       "position": {
-        "x": 2618,
+        "x": 2690,
         "y": 40
       },
       "params": {
@@ -1391,8 +1407,8 @@
       "id": "mb_beatFade",
       "defType": "motion/envelope",
       "position": {
-        "x": 1601,
-        "y": 151
+        "x": 1672,
+        "y": 145
       },
       "params": {
         "shape": "fade",
@@ -1409,8 +1425,8 @@
       "id": "mb_beatAlpha",
       "defType": "math/math",
       "position": {
-        "x": 1896,
-        "y": 176
+        "x": 1967,
+        "y": 172
       },
       "params": {
         "op": "multiply",
@@ -1426,8 +1442,8 @@
       "id": "mb_beatCol",
       "defType": "color/color",
       "position": {
-        "x": 2167,
-        "y": 136
+        "x": 2238,
+        "y": 133
       },
       "params": {
         "mode": "rgb",
@@ -1611,8 +1627,8 @@
       },
       "params": {
         "label": "Beat ring",
-        "width": 3039,
-        "height": 394
+        "width": 3111,
+        "height": 417
       },
       "ports": [
         {
@@ -1620,21 +1636,21 @@
           "name": "ring",
           "type": "layer",
           "direction": "output",
-          "y": 121
+          "y": 128
         },
         {
           "id": "t",
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 207
+          "y": 241
         },
         {
           "id": "beat",
           "name": "beat",
           "type": "boolean",
           "direction": "input",
-          "y": 181
+          "y": 135
         }
       ]
     },
@@ -2662,7 +2678,7 @@
     {
       "id": "e_126",
       "source": "mb_lastBeatNext",
-      "target": "mb_lastBeat",
+      "target": "mb_lastBeatWrite",
       "sourceHandle": "out-selected",
       "targetHandle": "in-next"
     },

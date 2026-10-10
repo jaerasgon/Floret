@@ -3,7 +3,7 @@
   "version": 4,
   "appVersion": "0.0.1",
   "meta": {
-    "name": "09 · State (per-frame memory)",
+    "name": "09 · Memory (Write → Read)",
     "createdAt": "2026-01-01T00:00:00.000Z",
     "modifiedAt": "2026-01-01T00:00:00.000Z"
   },
@@ -13,39 +13,53 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -304
+        "y": -324
       },
       "params": {
-        "text": "State = memory across frames\n\n`state/value` carries a value from one frame to the next.\n• `current` is what last frame stored.\n• Wire something into `next` and that becomes `current` on the very next frame.\n\nHere we add 1 every frame and use it to rotate the hue.",
-        "width": 380,
-        "height": 240
+        "text": "Memory across frames: Write → Read\n\nThe patch runs once a frame, left to right. To keep a value from one frame to the next, end the flow with a Write and start it with its Read. The two are a pair (named \"counter\" here); no wire runs back.\n• The Read at the left gives the value the Write stored last frame (on the very first frame, its `init`).\n• Whatever reaches the Write's `next` is what the Read gives on the next frame.\n\nHere the count goes through +1 into the Write, so it grows by 1 every frame and turns the hue.",
+        "width": 400,
+        "height": 260
       },
       "portValues": {
-        "text": "State = memory across frames\n\n`state/value` carries a value from one frame to the next.\n• `current` is what last frame stored.\n• Wire something into `next` and that becomes `current` on the very next frame.\n\nHere we add 1 every frame and use it to rotate the hue.",
-        "width": 380,
-        "height": 240
+        "text": "Memory across frames: Write → Read\n\nThe patch runs once a frame, left to right. To keep a value from one frame to the next, end the flow with a Write and start it with its Read. The two are a pair (named \"counter\" here); no wire runs back.\n• The Read at the left gives the value the Write stored last frame (on the very first frame, its `init`).\n• Whatever reaches the Write's `next` is what the Read gives on the next frame.\n\nHere the count goes through +1 into the Write, so it grows by 1 every frame and turns the hue.",
+        "width": 400,
+        "height": 260
       }
     },
     {
       "id": "t09_state",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
         "x": 0,
-        "y": 96
+        "y": 118
       },
       "params": {
-        "init": 0
+        "init": 0,
+        "slot": 1,
+        "name": "counter"
       },
       "portValues": {
         "init": 0
+      }
+    },
+    {
+      "id": "t09_stateWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 516,
+        "y": 0
+      },
+      "params": {
+        "slot": 1,
+        "name": "counter"
       }
     },
     {
       "id": "t09_step",
       "defType": "math/math",
       "position": {
-        "x": 194,
-        "y": 0
+        "x": 252,
+        "y": 22
       },
       "params": {
         "op": "add",
@@ -59,8 +73,8 @@
       "id": "t09_col",
       "defType": "color/color",
       "position": {
-        "x": 202,
-        "y": 148
+        "x": 260,
+        "y": 170
       },
       "params": {
         "mode": "hsl",
@@ -79,8 +93,8 @@
       "id": "t09_fill",
       "defType": "style/fill",
       "position": {
-        "x": 458,
-        "y": 148
+        "x": 546,
+        "y": 170
       },
       "params": {}
     },
@@ -88,8 +102,8 @@
       "id": "t09_ell",
       "defType": "draw/ellipse",
       "position": {
-        "x": 640,
-        "y": 60
+        "x": 757,
+        "y": 82
       },
       "params": {
         "w": 160,
@@ -104,8 +118,8 @@
       "id": "t09_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 845,
-        "y": 60
+        "x": 962,
+        "y": 82
       },
       "params": {
         "width": 400,
@@ -128,7 +142,7 @@
     {
       "id": "e_40",
       "source": "t09_step",
-      "target": "t09_state",
+      "target": "t09_stateWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },

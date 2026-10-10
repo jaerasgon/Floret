@@ -16,7 +16,7 @@
         "y": -334
       },
       "params": {
-        "text": "Step Sequencer\n\nA tone matrix: 16 steps × 8 notes of a scale. Click a cell to switch it on or off, drag to paint a run of them; the playhead sweeps left to right and every lit cell in its column plays (up to four at once). R scatters a random tune, C (or the Clear bang) empties the grid. Tempo, Tone (the filter) and the Scale are on the canvas.\n\nHow it works: the grid is a State* of 128 on/off values; Edit cells rewrites it each frame (the cell under a press takes the paint value). Clock counts sixteenth notes; on each new step the lit rows of the column become notes (Scale), shared out to four MonoSynth voices, which Mix into one filter, delay and reverb. Cell looks colours the grid.",
+        "text": "Step Sequencer\n\nA tone matrix: 16 steps × 8 notes of a scale. Click a cell to switch it on or off, drag to paint a run of them; the playhead sweeps left to right and every lit cell in its column plays (up to four at once). R scatters a random tune, C (or the Clear bang) empties the grid. Tempo, Tone (the filter) and the Scale are on the canvas.\n\nHow it works: the grid is 128 on/off values kept by a Write* → Read* pair (\"cells\"); Edit cells rewrites it each frame (the cell under a press takes the paint value). Clock counts sixteenth notes; on each new step the lit rows of the column become notes (Scale), shared out to four MonoSynth voices, which Mix into one filter, delay and reverb. Cell looks colours the grid.",
         "width": 460,
         "height": 270
       }
@@ -26,7 +26,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 37,
-        "y": 411
+        "y": 11
       },
       "params": {}
     },
@@ -34,8 +34,8 @@
       "id": "sq_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 614,
-        "y": 1087
+        "x": 600,
+        "y": 637
       },
       "params": {},
       "portValues": {
@@ -53,13 +53,13 @@
       "id": "sq_edit",
       "defType": "meta/subpatch",
       "position": {
-        "x": 939,
-        "y": 496
+        "x": 885,
+        "y": 312
       },
       "params": {
         "label": "Edit cells",
-        "width": 2506,
-        "height": 1029
+        "width": 2520,
+        "height": 1034
       },
       "ports": [
         {
@@ -67,81 +67,96 @@
           "name": "pressed",
           "type": "boolean",
           "direction": "input",
-          "y": 370
+          "y": 180
         },
         {
           "id": "mouse",
           "name": "mouse",
           "type": "vec2",
           "direction": "input",
-          "y": 626
+          "y": 612
         },
         {
           "id": "grid",
           "name": "grid",
           "type": "vec2",
           "direction": "input",
-          "y": 648
+          "y": 634
         },
         {
           "id": "cells",
           "name": "cells",
           "type": "number",
           "direction": "input",
-          "y": 751
+          "y": 756
         },
         {
           "id": "clear",
           "name": "clear",
           "type": "boolean",
           "direction": "input",
-          "y": 69
+          "y": 36
         },
         {
           "id": "random",
           "name": "random",
           "type": "boolean",
           "direction": "input",
-          "y": 89
+          "y": 56
         },
         {
           "id": "next",
           "name": "next",
           "type": "number",
           "direction": "output",
-          "y": 101
+          "y": 82
         },
         {
           "id": "hovered",
           "name": "hovered",
           "type": "number",
           "direction": "output",
-          "y": 660
+          "y": 501
         }
       ],
-      "width": 2506,
-      "height": 1029
+      "width": 2520,
+      "height": 1034
     },
     {
       "id": "sq_cells",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 312,
+        "x": 294,
         "y": 630
       },
-      "params": {}
+      "params": {
+        "slot": 1,
+        "name": "cells"
+      }
+    },
+    {
+      "id": "sq_cellsWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 1184,
+        "y": 290
+      },
+      "params": {
+        "slot": 1,
+        "name": "cells"
+      }
     },
     {
       "id": "sq_clock",
       "defType": "meta/subpatch",
       "position": {
-        "x": 301,
-        "y": 882
+        "x": 299,
+        "y": 756
       },
       "params": {
         "label": "Clock",
-        "width": 1368,
-        "height": 628
+        "width": 1170,
+        "height": 714
       },
       "ports": [
         {
@@ -149,39 +164,39 @@
           "name": "bpm",
           "type": "number",
           "direction": "input",
-          "y": 252
+          "y": 338
         },
         {
           "id": "step",
           "name": "step",
           "type": "number",
           "direction": "output",
-          "y": 206
+          "y": 290
         },
         {
           "id": "within",
           "name": "within",
           "type": "number",
           "direction": "output",
-          "y": 269
+          "y": 357
         },
         {
           "id": "stepped",
           "name": "stepped",
           "type": "boolean",
           "direction": "output",
-          "y": 92
+          "y": 87
         }
       ],
-      "width": 1368,
-      "height": 628
+      "width": 1170,
+      "height": 714
     },
     {
       "id": "sq_notes",
       "defType": "meta/subpatch",
       "position": {
-        "x": 609,
-        "y": 685
+        "x": 595,
+        "y": 829
       },
       "params": {
         "label": "Notes",
@@ -239,8 +254,8 @@
       "id": "sq_sound",
       "defType": "meta/subpatch",
       "position": {
-        "x": 947,
-        "y": 870
+        "x": 892,
+        "y": 881
       },
       "params": {
         "label": "Sound",
@@ -284,13 +299,13 @@
       "id": "sq_gridDraw",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1223,
-        "y": 667
+        "x": 1187,
+        "y": 588
       },
       "params": {
         "label": "Grid",
-        "width": 2523,
-        "height": 1045
+        "width": 2524,
+        "height": 1023
       },
       "ports": [
         {
@@ -298,81 +313,81 @@
           "name": "cells",
           "type": "number",
           "direction": "input",
-          "y": 747
+          "y": 596
         },
         {
           "id": "step",
           "name": "step",
           "type": "number",
           "direction": "input",
-          "y": 547
+          "y": 470
         },
         {
           "id": "within",
           "name": "within",
           "type": "number",
           "direction": "input",
-          "y": 643
+          "y": 646
         },
         {
           "id": "hovered",
           "name": "hovered",
           "type": "number",
           "direction": "input",
-          "y": 813
+          "y": 666
         },
         {
           "id": "column",
           "name": "column",
           "type": "number",
           "direction": "input",
-          "y": 199
+          "y": 196
         },
         {
           "id": "lit",
           "name": "lit",
           "type": "boolean",
           "direction": "input",
-          "y": 115
+          "y": 112
         },
         {
           "id": "grid",
           "name": "grid",
           "type": "vec2",
           "direction": "input",
-          "y": 319
+          "y": 218
         },
         {
           "id": "playhead",
           "name": "playhead",
           "type": "layer",
           "direction": "output",
-          "y": 115
+          "y": 137
         },
         {
           "id": "squares",
           "name": "squares",
           "type": "layer",
           "direction": "output",
-          "y": 615
+          "y": 431
         },
         {
           "id": "ripples",
           "name": "ripples",
           "type": "layer",
           "direction": "output",
-          "y": 234
+          "y": 260
         }
       ],
-      "width": 2523,
-      "height": 1045
+      "width": 2524,
+      "height": 1023
     },
     {
       "id": "sq_pattern",
       "defType": "data/csv-inline",
       "position": {
         "x": 1,
-        "y": 622
+        "y": 652
       },
       "params": {
         "data": "0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0"
@@ -382,8 +397,8 @@
       "id": "sq_cellAt",
       "defType": "spread/lookup",
       "position": {
-        "x": 432,
-        "y": 632
+        "x": 424,
+        "y": 666
       },
       "params": {
         "op": "pick"
@@ -392,14 +407,30 @@
     },
     {
       "id": "sq_paint",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 750,
-        "y": 674
+        "x": 732,
+        "y": 484
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "paint"
+      },
       "portValues": {
         "init": 1
+      },
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_paintWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 1295,
+        "y": 273
+      },
+      "params": {
+        "slot": 1,
+        "name": "paint"
       },
       "parentId": "sq_edit"
     },
@@ -408,7 +439,7 @@
       "defType": "input/keyboard",
       "position": {
         "x": 0,
-        "y": 68
+        "y": 246
       },
       "params": {
         "mode": "keys"
@@ -421,8 +452,8 @@
       "id": "sq_clearBang",
       "defType": "io/bang",
       "position": {
-        "x": 285,
-        "y": 0
+        "x": 283,
+        "y": 126
       },
       "params": {
         "label": "Clear"
@@ -432,8 +463,8 @@
       "id": "sq_randomBang",
       "defType": "io/bang",
       "position": {
-        "x": 285,
-        "y": 526
+        "x": 283,
+        "y": 378
       },
       "params": {
         "label": "Random"
@@ -444,7 +475,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 891
+        "y": 864
       },
       "params": {
         "value": 112,
@@ -456,14 +487,30 @@
     },
     {
       "id": "sq_prevStep",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 862,
-        "y": 106
+        "x": 606,
+        "y": 70
       },
-      "params": {},
+      "params": {
+        "slot": 2,
+        "name": "last step"
+      },
       "portValues": {
         "init": -1
+      },
+      "parentId": "sq_clock"
+    },
+    {
+      "id": "sq_prevStepWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 888,
+        "y": 188
+      },
+      "params": {
+        "slot": 2,
+        "name": "last step"
       },
       "parentId": "sq_clock"
     },
@@ -497,7 +544,7 @@
       "defType": "io/select",
       "position": {
         "x": 0,
-        "y": 726
+        "y": 995
       },
       "params": {
         "options": "pentatonic,minor-pentatonic,major,dorian,blues,whole-tone",
@@ -763,8 +810,8 @@
       "id": "sq_tone",
       "defType": "io/slider",
       "position": {
-        "x": 593,
-        "y": 961
+        "x": 579,
+        "y": 1009
       },
       "params": {
         "value": 2400,
@@ -834,8 +881,8 @@
       "id": "sq_cellLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 447,
-        "y": 570
+        "x": 434,
+        "y": 361
       },
       "params": {
         "width": 526,
@@ -900,7 +947,7 @@
       "id": "sq_headFill",
       "defType": "style/fill",
       "position": {
-        "x": 1090,
+        "x": 1077,
         "y": 248
       },
       "params": {},
@@ -918,8 +965,8 @@
       "id": "sq_head",
       "defType": "draw/rect",
       "position": {
-        "x": 1375,
-        "y": 140
+        "x": 1363,
+        "y": 147
       },
       "params": {},
       "portValues": {
@@ -932,8 +979,8 @@
       "id": "sq_colPos",
       "defType": "spread/lookup",
       "position": {
-        "x": 148,
-        "y": 118
+        "x": 143,
+        "y": 115
       },
       "params": {
         "op": "pick"
@@ -944,7 +991,7 @@
       "id": "sq_ripplePos",
       "defType": "spread/sublist",
       "position": {
-        "x": 629,
+        "x": 616,
         "y": 40
       },
       "params": {
@@ -956,8 +1003,8 @@
       "id": "sq_rippleStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 1599,
-        "y": 343
+        "x": 1590,
+        "y": 453
       },
       "params": {},
       "portValues": {
@@ -969,8 +1016,8 @@
       "id": "sq_rippleNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 1831,
-        "y": 348
+        "x": 1826,
+        "y": 412
       },
       "params": {},
       "parentId": "sq_gridDraw"
@@ -979,8 +1026,8 @@
       "id": "sq_rippleLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 2072,
-        "y": 157
+        "x": 2073,
+        "y": 183
       },
       "params": {
         "width": 339,
@@ -1108,8 +1155,8 @@
       "id": "sq_scene",
       "defType": "transform/group",
       "position": {
-        "x": 1454,
-        "y": 711
+        "x": 1432,
+        "y": 672
       },
       "params": {
         "slotCount": 4
@@ -1119,8 +1166,8 @@
       "id": "sq_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1718,
-        "y": 711
+        "x": 1696,
+        "y": 672
       },
       "params": {
         "width": 680,
@@ -1139,8 +1186,8 @@
       "id": "sq_keyC",
       "defType": "spread/lookup",
       "position": {
-        "x": 288,
-        "y": 104
+        "x": 286,
+        "y": 230
       },
       "params": {
         "op": "at"
@@ -1153,8 +1200,8 @@
       "id": "sq_clear",
       "defType": "logic/logic",
       "position": {
-        "x": 608,
-        "y": 207
+        "x": 593,
+        "y": 245
       },
       "params": {
         "op": "or"
@@ -1164,8 +1211,8 @@
       "id": "sq_keyR",
       "defType": "spread/lookup",
       "position": {
-        "x": 288,
-        "y": 252
+        "x": 286,
+        "y": 482
       },
       "params": {
         "op": "at"
@@ -1178,8 +1225,8 @@
       "id": "sq_random",
       "defType": "logic/logic",
       "position": {
-        "x": 608,
-        "y": 505
+        "x": 593,
+        "y": 393
       },
       "params": {
         "op": "or"
@@ -1189,8 +1236,8 @@
       "id": "sq_editNote",
       "defType": "meta/comment",
       "position": {
-        "x": 132,
-        "y": 829
+        "x": 131,
+        "y": 834
       },
       "params": {
         "text": "Hit Test finds the cell the mouse is over (36 px squares round the Grid's points; −1 off the grid). A click on a cell picks the paint (the opposite of that cell) and holding the button paints every cell the mouse passes. R fills the grid with a random tune (a hash of the cell number and the time), C or the Clear bang empties it.",
@@ -1203,8 +1250,8 @@
       "id": "sq_mpos",
       "defType": "vec2/make",
       "position": {
-        "x": 326,
-        "y": 400
+        "x": 324,
+        "y": 0
       },
       "params": {}
     },
@@ -1212,8 +1259,8 @@
       "id": "sq_hovered",
       "defType": "geometry/hit-test",
       "position": {
-        "x": 132,
-        "y": 567
+        "x": 131,
+        "y": 553
       },
       "params": {
         "mode": "rects"
@@ -1230,8 +1277,8 @@
       "id": "sq_click",
       "defType": "io/edge",
       "position": {
-        "x": 167,
-        "y": 392
+        "x": 166,
+        "y": 184
       },
       "params": {
         "mode": "rising",
@@ -1243,8 +1290,8 @@
       "id": "sq_onCell",
       "defType": "logic/compare",
       "position": {
-        "x": 423,
-        "y": 484
+        "x": 414,
+        "y": 518
       },
       "params": {
         "op": "greater-equal"
@@ -1258,8 +1305,8 @@
       "id": "sq_pickPaint",
       "defType": "logic/logic",
       "position": {
-        "x": 724,
-        "y": 378
+        "x": 735,
+        "y": 336
       },
       "params": {
         "op": "and"
@@ -1270,8 +1317,8 @@
       "id": "sq_flip",
       "defType": "math/math",
       "position": {
-        "x": 709,
-        "y": 526
+        "x": 721,
+        "y": 610
       },
       "params": {
         "op": "subtract",
@@ -1287,8 +1334,8 @@
       "id": "sq_paintNow",
       "defType": "logic/select",
       "position": {
-        "x": 1018,
-        "y": 486
+        "x": 1033,
+        "y": 416
       },
       "params": {},
       "parentId": "sq_edit"
@@ -1297,8 +1344,8 @@
       "id": "sq_cellIdx",
       "defType": "spread/range",
       "position": {
-        "x": 145,
-        "y": 252
+        "x": 144,
+        "y": 332
       },
       "params": {},
       "parentId": "sq_edit",
@@ -1310,8 +1357,8 @@
       "id": "sq_editTime",
       "defType": "time/seconds",
       "position": {
-        "x": 172,
-        "y": 126
+        "x": 171,
+        "y": 58
       },
       "params": {},
       "parentId": "sq_edit"
@@ -1320,8 +1367,8 @@
       "id": "sq_hashI",
       "defType": "math/math",
       "position": {
-        "x": 429,
-        "y": 40
+        "x": 421,
+        "y": 222
       },
       "params": {
         "op": "multiply",
@@ -1337,8 +1384,8 @@
       "id": "sq_hashT",
       "defType": "math/math",
       "position": {
-        "x": 429,
-        "y": 188
+        "x": 421,
+        "y": 42
       },
       "params": {
         "op": "multiply",
@@ -1354,8 +1401,8 @@
       "id": "sq_hashSum",
       "defType": "math/math",
       "position": {
-        "x": 709,
-        "y": 82
+        "x": 721,
+        "y": 40
       },
       "params": {
         "op": "add",
@@ -1368,8 +1415,8 @@
       "id": "sq_hashSin",
       "defType": "math/math",
       "position": {
-        "x": 995,
-        "y": 101
+        "x": 1010,
+        "y": 64
       },
       "params": {
         "op": "sin"
@@ -1380,8 +1427,8 @@
       "id": "sq_hashScale",
       "defType": "math/math",
       "position": {
-        "x": 1262,
-        "y": 121
+        "x": 1275,
+        "y": 89
       },
       "params": {
         "op": "multiply",
@@ -1397,8 +1444,8 @@
       "id": "sq_hash",
       "defType": "math/math",
       "position": {
-        "x": 1537,
-        "y": 142
+        "x": 1551,
+        "y": 115
       },
       "params": {
         "op": "fract"
@@ -1409,8 +1456,8 @@
       "id": "sq_randomLit",
       "defType": "logic/compare",
       "position": {
-        "x": 1794,
-        "y": 164
+        "x": 1808,
+        "y": 142
       },
       "params": {
         "op": "greater"
@@ -1424,8 +1471,8 @@
       "id": "sq_isUnder",
       "defType": "logic/compare",
       "position": {
-        "x": 423,
-        "y": 336
+        "x": 414,
+        "y": 370
       },
       "params": {
         "op": "equal"
@@ -1436,8 +1483,8 @@
       "id": "sq_brush",
       "defType": "logic/logic",
       "position": {
-        "x": 724,
-        "y": 230
+        "x": 735,
+        "y": 188
       },
       "params": {
         "op": "and"
@@ -1448,8 +1495,8 @@
       "id": "sq_painted",
       "defType": "logic/select",
       "position": {
-        "x": 1294,
-        "y": 412
+        "x": 1307,
+        "y": 399
       },
       "params": {},
       "parentId": "sq_edit"
@@ -1458,8 +1505,8 @@
       "id": "sq_rolled",
       "defType": "logic/select",
       "position": {
-        "x": 2082,
-        "y": 149
+        "x": 2096,
+        "y": 129
       },
       "params": {},
       "parentId": "sq_edit"
@@ -1468,8 +1515,8 @@
       "id": "sq_cellsNext",
       "defType": "logic/select",
       "position": {
-        "x": 2289,
-        "y": 65
+        "x": 2303,
+        "y": 45
       },
       "params": {},
       "parentId": "sq_edit",
@@ -1482,7 +1529,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 128,
-        "y": 468
+        "y": 554
       },
       "params": {
         "text": "A phase that counts sixteenth notes: Integrate runs it at tempo / 15 steps a second (four steps a beat) and wraps it at 16. Its whole part is the step, its fraction how far through the step we are; a new step fires the notes.",
@@ -1496,7 +1543,7 @@
       "defType": "math/math",
       "position": {
         "x": 128,
-        "y": 193
+        "y": 279
       },
       "params": {
         "op": "divide",
@@ -1513,7 +1560,7 @@
       "defType": "motion/integrate",
       "position": {
         "x": 392,
-        "y": 194
+        "y": 280
       },
       "params": {
         "valueType": "number",
@@ -1531,8 +1578,8 @@
       "id": "sq_step",
       "defType": "math/math",
       "position": {
-        "x": 606,
-        "y": 110
+        "x": 608,
+        "y": 196
       },
       "params": {
         "op": "floor"
@@ -1543,8 +1590,8 @@
       "id": "sq_within",
       "defType": "math/math",
       "position": {
-        "x": 606,
-        "y": 236
+        "x": 608,
+        "y": 322
       },
       "params": {
         "op": "fract"
@@ -1555,7 +1602,7 @@
       "id": "sq_stepped",
       "defType": "logic/compare",
       "position": {
-        "x": 1074,
+        "x": 876,
         "y": 40
       },
       "params": {
@@ -1752,8 +1799,8 @@
       "id": "sq_gridNote",
       "defType": "meta/comment",
       "position": {
-        "x": 145,
-        "y": 915
+        "x": 140,
+        "y": 893
       },
       "params": {
         "text": "128 cells on a Grid; the playhead is a faint column; each note that plays sends out a ring that grows and fades over its step.",
@@ -1766,13 +1813,13 @@
       "id": "sq_look",
       "defType": "meta/subpatch",
       "position": {
-        "x": 149,
-        "y": 710
+        "x": 145,
+        "y": 559
       },
       "params": {
         "label": "Cell looks",
-        "width": 2666,
-        "height": 1057
+        "width": 2609,
+        "height": 1031
       },
       "ports": [
         {
@@ -1780,46 +1827,46 @@
           "name": "cells",
           "type": "number",
           "direction": "input",
-          "y": 356
+          "y": 392
         },
         {
           "id": "step",
           "name": "step",
           "type": "number",
           "direction": "input",
-          "y": 421
+          "y": 605
         },
         {
           "id": "within",
           "name": "within",
           "type": "number",
           "direction": "input",
-          "y": 804
+          "y": 562
         },
         {
           "id": "hovered",
           "name": "hovered",
           "type": "number",
           "direction": "input",
-          "y": 481
+          "y": 457
         },
         {
           "id": "colors",
           "name": "colors",
           "type": "color",
           "direction": "output",
-          "y": 262
+          "y": 149
         },
         {
           "id": "sizes",
           "name": "sizes",
           "type": "number",
           "direction": "output",
-          "y": 419
+          "y": 636
         }
       ],
-      "width": 2666,
-      "height": 1057,
+      "width": 2609,
+      "height": 1031,
       "parentId": "sq_gridDraw"
     },
     {
@@ -1827,7 +1874,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 128,
-        "y": 917
+        "y": 891
       },
       "params": {
         "text": "Lit cells take their row's hue and flash brighter and bigger as the playhead crosses them; dark cells show the hovered cell and the playhead's column.",
@@ -1841,7 +1888,7 @@
       "defType": "spread/range",
       "position": {
         "x": 150,
-        "y": 193
+        "y": 229
       },
       "params": {},
       "parentId": "sq_look",
@@ -1854,7 +1901,7 @@
       "defType": "logic/compare",
       "position": {
         "x": 128,
-        "y": 297
+        "y": 333
       },
       "params": {
         "op": "greater"
@@ -1868,8 +1915,8 @@
       "id": "sq_rowOfCell",
       "defType": "math/math",
       "position": {
-        "x": 446,
-        "y": 40
+        "x": 449,
+        "y": 146
       },
       "params": {
         "op": "divide",
@@ -1885,8 +1932,8 @@
       "id": "sq_cellRow",
       "defType": "math/math",
       "position": {
-        "x": 755,
-        "y": 40
+        "x": 747,
+        "y": 97
       },
       "params": {
         "op": "floor"
@@ -1897,8 +1944,8 @@
       "id": "sq_rowEighth",
       "defType": "math/math",
       "position": {
-        "x": 1054,
-        "y": 41
+        "x": 1046,
+        "y": 47
       },
       "params": {
         "op": "divide",
@@ -1914,8 +1961,8 @@
       "id": "sq_rowHueStep",
       "defType": "math/math",
       "position": {
-        "x": 1360,
-        "y": 63
+        "x": 1321,
+        "y": 55
       },
       "params": {
         "op": "multiply",
@@ -1931,8 +1978,8 @@
       "id": "sq_rowHue",
       "defType": "math/math",
       "position": {
-        "x": 1632,
-        "y": 70
+        "x": 1589,
+        "y": 40
       },
       "params": {
         "op": "add",
@@ -1948,8 +1995,8 @@
       "id": "sq_rowHueDeg",
       "defType": "math/math",
       "position": {
-        "x": 1904,
-        "y": 99
+        "x": 1857,
+        "y": 44
       },
       "params": {
         "op": "multiply",
@@ -1965,8 +2012,8 @@
       "id": "sq_cellCol",
       "defType": "math/math",
       "position": {
-        "x": 455,
-        "y": 188
+        "x": 458,
+        "y": 442
       },
       "params": {
         "op": "mod"
@@ -1980,8 +2027,8 @@
       "id": "sq_inPlayhead",
       "defType": "logic/compare",
       "position": {
-        "x": 739,
-        "y": 320
+        "x": 732,
+        "y": 440
       },
       "params": {
         "op": "equal"
@@ -1993,7 +2040,7 @@
       "defType": "math/math",
       "position": {
         "x": 135,
-        "y": 723
+        "y": 481
       },
       "params": {
         "op": "subtract",
@@ -2009,8 +2056,8 @@
       "id": "sq_flash",
       "defType": "math/math",
       "position": {
-        "x": 746,
-        "y": 605
+        "x": 738,
+        "y": 272
       },
       "params": {
         "op": "multiply",
@@ -2026,8 +2073,8 @@
       "id": "sq_flashHere",
       "defType": "logic/select",
       "position": {
-        "x": 1086,
-        "y": 573
+        "x": 1077,
+        "y": 195
       },
       "params": {},
       "parentId": "sq_look",
@@ -2039,8 +2086,8 @@
       "id": "sq_light",
       "defType": "math/math",
       "position": {
-        "x": 1632,
-        "y": 490
+        "x": 1589,
+        "y": 188
       },
       "params": {
         "op": "add",
@@ -2056,8 +2103,8 @@
       "id": "sq_lightPct",
       "defType": "math/math",
       "position": {
-        "x": 1904,
-        "y": 429
+        "x": 1857,
+        "y": 192
       },
       "params": {
         "op": "multiply",
@@ -2073,8 +2120,8 @@
       "id": "sq_litCol",
       "defType": "color/color",
       "position": {
-        "x": 2189,
-        "y": 219
+        "x": 2131,
+        "y": 91
       },
       "params": {
         "mode": "hsl"
@@ -2089,8 +2136,8 @@
       "id": "sq_isHovered",
       "defType": "logic/compare",
       "position": {
-        "x": 439,
-        "y": 400
+        "x": 442,
+        "y": 294
       },
       "params": {
         "op": "equal"
@@ -2101,8 +2148,8 @@
       "id": "sq_darkCol",
       "defType": "logic/switch",
       "position": {
-        "x": 1054,
-        "y": 337
+        "x": 1046,
+        "y": 343
       },
       "params": {
         "mode": "first-true",
@@ -2134,8 +2181,8 @@
       "id": "sq_cellColor",
       "defType": "logic/select",
       "position": {
-        "x": 2449,
-        "y": 225
+        "x": 2391,
+        "y": 100
       },
       "params": {},
       "parentId": "sq_look"
@@ -2144,8 +2191,8 @@
       "id": "sq_bigNow",
       "defType": "logic/logic",
       "position": {
-        "x": 1069,
-        "y": 189
+        "x": 1060,
+        "y": 579
       },
       "params": {
         "op": "and"
@@ -2156,8 +2203,8 @@
       "id": "sq_swell",
       "defType": "math/math",
       "position": {
-        "x": 746,
-        "y": 753
+        "x": 738,
+        "y": 634
       },
       "params": {
         "op": "multiply",
@@ -2173,8 +2220,8 @@
       "id": "sq_swellSize",
       "defType": "math/math",
       "position": {
-        "x": 1054,
-        "y": 721
+        "x": 1046,
+        "y": 727
       },
       "params": {
         "op": "add",
@@ -2190,8 +2237,8 @@
       "id": "sq_cellSize",
       "defType": "logic/select",
       "position": {
-        "x": 1392,
-        "y": 419
+        "x": 1352,
+        "y": 632
       },
       "params": {},
       "parentId": "sq_look",
@@ -2203,8 +2250,8 @@
       "id": "sq_headStep",
       "defType": "math/math",
       "position": {
-        "x": 145,
-        "y": 266
+        "x": 140,
+        "y": 263
       },
       "params": {
         "op": "multiply",
@@ -2220,7 +2267,7 @@
       "id": "sq_headLeft",
       "defType": "math/math",
       "position": {
-        "x": 626,
+        "x": 613,
         "y": 188
       },
       "params": {
@@ -2237,7 +2284,7 @@
       "id": "sq_headX",
       "defType": "vec2/make",
       "position": {
-        "x": 1120,
+        "x": 1107,
         "y": 122
       },
       "params": {},
@@ -2250,8 +2297,8 @@
       "id": "sq_rippleGrow",
       "defType": "math/math",
       "position": {
-        "x": 145,
-        "y": 414
+        "x": 140,
+        "y": 411
       },
       "params": {
         "op": "multiply",
@@ -2267,8 +2314,8 @@
       "id": "sq_rippleSize",
       "defType": "math/math",
       "position": {
-        "x": 1791,
-        "y": 200
+        "x": 1786,
+        "y": 260
       },
       "params": {
         "op": "add",
@@ -2284,8 +2331,8 @@
       "id": "sq_rippleFade",
       "defType": "math/math",
       "position": {
-        "x": 145,
-        "y": 562
+        "x": 140,
+        "y": 729
       },
       "params": {
         "op": "subtract",
@@ -2301,8 +2348,8 @@
       "id": "sq_rippleA",
       "defType": "math/math",
       "position": {
-        "x": 626,
-        "y": 378
+        "x": 613,
+        "y": 690
       },
       "params": {
         "op": "multiply",
@@ -2318,8 +2365,8 @@
       "id": "sq_rippleAlpha",
       "defType": "math/math",
       "position": {
-        "x": 1079,
-        "y": 391
+        "x": 1066,
+        "y": 625
       },
       "params": {
         "op": "multiply",
@@ -2335,8 +2382,8 @@
       "id": "sq_rippleCol",
       "defType": "color/color",
       "position": {
-        "x": 1348,
-        "y": 340
+        "x": 1336,
+        "y": 495
       },
       "params": {
         "mode": "rgb"
@@ -2352,8 +2399,8 @@
       "id": "sq_statusLine",
       "defType": "meta/subpatch",
       "position": {
-        "x": 299,
-        "y": 756
+        "x": 297,
+        "y": 945
       },
       "params": {
         "label": "Status",
@@ -2860,7 +2907,7 @@
     {
       "id": "e_b1_27",
       "source": "sq_paintNow",
-      "target": "sq_paint",
+      "target": "sq_paintWrite",
       "sourceHandle": "out-selected",
       "targetHandle": "in-next"
     },
@@ -3021,7 +3068,7 @@
     {
       "id": "e_b1_50",
       "source": "sq_edit",
-      "target": "sq_cells",
+      "target": "sq_cellsWrite",
       "sourceHandle": "out-next",
       "targetHandle": "in-next"
     },
@@ -3063,7 +3110,7 @@
     {
       "id": "e_b1_56",
       "source": "sq_step",
-      "target": "sq_prevStep",
+      "target": "sq_prevStepWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },

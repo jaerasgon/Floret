@@ -13,20 +13,20 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -314
+        "y": -334
       },
       "params": {
-        "text": "Typing Toy\n\nType! Each letter you type drops in with a bounce, a spin and a puff of sparks, then keeps bobbing on a slow wave; the colours run across the line like a rainbow seen through the letters. Backspace deletes, Enter starts a new line, Clear (or 48 letters) starts over. Press Focus on the preview first, so the editor's own shortcuts (Delete, Tab, F …) stay out of the way.\n\nHow it works: Keyboard in `text` mode keeps the typed string. Glyphs splits it into one layer per letter with its position, and a State* remembers the time each letter appeared. A ForEach turns each letter's age (now − its birth time) into an elastic scale, a fall (a decay Envelope) and a wobble (a boing Envelope); Mask shows a moving gradient through the letters.",
+        "text": "Typing Toy\n\nType! Each letter you type drops in with a bounce, a spin and a puff of sparks, then keeps bobbing on a slow wave; the colours run across the line like a rainbow seen through the letters. Backspace deletes, Enter starts a new line, Clear (or 48 letters) starts over. Press Focus on the preview first, so the editor's own shortcuts (Delete, Tab, F …) stay out of the way.\n\nHow it works: Keyboard in `text` mode keeps the typed string. Glyphs splits it into one layer per letter with its position, and a Write* → Read* pair (\"letter births\") remembers the time each letter appeared. A ForEach turns each letter's age (now − its birth time) into an elastic scale, a fall (a decay Envelope) and a wobble (a boing Envelope); Mask shows a moving gradient through the letters.",
         "width": 470,
-        "height": 250
+        "height": 270
       }
     },
     {
       "id": "tt_clearBang",
       "defType": "io/bang",
       "position": {
-        "x": 0,
-        "y": 1064
+        "x": 2,
+        "y": 913
       },
       "params": {
         "label": "Clear"
@@ -36,8 +36,8 @@
       "id": "tt_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 299,
-        "y": 1042
+        "x": 332,
+        "y": 888
       },
       "params": {
         "mode": "text"
@@ -50,8 +50,8 @@
       "id": "tt_time",
       "defType": "time/seconds",
       "position": {
-        "x": 42,
-        "y": 715
+        "x": 44,
+        "y": 787
       },
       "params": {}
     },
@@ -59,8 +59,8 @@
       "id": "tt_textFill",
       "defType": "style/fill",
       "position": {
-        "x": 316,
-        "y": 820
+        "x": 349,
+        "y": 730
       },
       "params": {},
       "portValues": {
@@ -76,8 +76,8 @@
       "id": "tt_glyphs",
       "defType": "text/glyphs",
       "position": {
-        "x": 624,
-        "y": 727
+        "x": 637,
+        "y": 701
       },
       "params": {
         "size": 64,
@@ -94,26 +94,41 @@
       "id": "tt_glyphCount",
       "defType": "spread/count",
       "position": {
-        "x": 918,
-        "y": 807
+        "x": 935,
+        "y": 869
       },
       "params": {}
     },
     {
       "id": "tt_births",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 28,
-        "y": 886
+        "x": 0,
+        "y": 1211
       },
-      "params": {}
+      "params": {
+        "slot": 1,
+        "name": "letter births"
+      }
+    },
+    {
+      "id": "tt_birthsWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 2699,
+        "y": 1211
+      },
+      "params": {
+        "slot": 1,
+        "name": "letter births"
+      }
     },
     {
       "id": "tt_bornCount",
       "defType": "spread/count",
       "position": {
-        "x": 918,
-        "y": 1123
+        "x": 935,
+        "y": 1226
       },
       "params": {}
     },
@@ -121,8 +136,8 @@
       "id": "tt_plusNow",
       "defType": "spread/combine",
       "position": {
-        "x": 302,
-        "y": 672
+        "x": 335,
+        "y": 1124
       },
       "params": {
         "op": "append"
@@ -132,8 +147,8 @@
       "id": "tt_birthsNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 1241,
-        "y": 684
+        "x": 1262,
+        "y": 1064
       },
       "params": {
         "op": "take"
@@ -143,7 +158,7 @@
       "id": "tt_letters",
       "defType": "region/foreach",
       "position": {
-        "x": 1549,
+        "x": 1597,
         "y": 22
       },
       "params": {
@@ -330,8 +345,8 @@
       "id": "tt_newest",
       "defType": "spread/lookup",
       "position": {
-        "x": 906,
-        "y": 943
+        "x": 922,
+        "y": 973
       },
       "params": {
         "op": "at"
@@ -571,8 +586,8 @@
       "id": "tt_scene",
       "defType": "transform/group",
       "position": {
-        "x": 4434,
-        "y": 797
+        "x": 4487,
+        "y": 833
       },
       "params": {
         "slotCount": 5
@@ -582,8 +597,8 @@
       "id": "tt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 4698,
-        "y": 797
+        "x": 4751,
+        "y": 833
       },
       "params": {
         "width": 760,
@@ -1428,8 +1443,8 @@
       "id": "tt_sparkFx",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1250,
-        "y": 1116
+        "x": 1272,
+        "y": 1212
       },
       "params": {
         "label": "Sparks",
@@ -1494,8 +1509,8 @@
       "id": "tt_rainbowInk",
       "defType": "meta/subpatch",
       "position": {
-        "x": 4101,
-        "y": 831
+        "x": 4150,
+        "y": 839
       },
       "params": {
         "label": "Rainbow ink",
@@ -1546,8 +1561,8 @@
       "id": "tt_caretMark",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1255,
-        "y": 946
+        "x": 1276,
+        "y": 894
       },
       "params": {
         "label": "Caret",
@@ -1612,8 +1627,8 @@
       "id": "tt_hintGroup",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1259,
-        "y": 274
+        "x": 1281,
+        "y": 302
       },
       "params": {
         "label": "Hint",
@@ -1664,8 +1679,8 @@
       "id": "tt_lengthText",
       "defType": "meta/subpatch",
       "position": {
-        "x": 4119,
-        "y": 1104
+        "x": 4168,
+        "y": 1179
       },
       "params": {
         "label": "Count",
@@ -1773,7 +1788,7 @@
     {
       "id": "e_12",
       "source": "tt_birthsNext",
-      "target": "tt_births",
+      "target": "tt_birthsWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },

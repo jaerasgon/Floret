@@ -13,7 +13,7 @@
       "defType": "io/slider",
       "position": {
         "x": 457,
-        "y": 190
+        "y": 211
       },
       "params": {
         "value": 0.02,
@@ -31,7 +31,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 0,
-        "y": 356
+        "y": 399
       },
       "params": {
         "x": 0,
@@ -47,7 +47,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 0,
-        "y": 120
+        "y": 164
       },
       "params": {
         "x": 0,
@@ -63,7 +63,7 @@
       "defType": "value/number",
       "position": {
         "x": 1887,
-        "y": 180
+        "y": 202
       },
       "params": {
         "value": 220
@@ -74,28 +74,58 @@
     },
     {
       "id": "dr_pos",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 211,
-        "y": 356
+        "x": 182,
+        "y": 377
       },
-      "params": {}
+      "params": {
+        "slot": 1,
+        "name": "position"
+      }
+    },
+    {
+      "id": "dr_posWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 2826,
+        "y": 221
+      },
+      "params": {
+        "slot": 1,
+        "name": "position"
+      }
     },
     {
       "id": "dr_vel",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 211,
-        "y": 120
+        "x": 182,
+        "y": 142
       },
-      "params": {}
+      "params": {
+        "slot": 2,
+        "name": "velocity"
+      }
+    },
+    {
+      "id": "dr_velWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 2826,
+        "y": 0
+      },
+      "params": {
+        "slot": 2,
+        "name": "velocity"
+      }
     },
     {
       "id": "dr_vMag",
       "defType": "vec2/math",
       "position": {
         "x": 451,
-        "y": 64
+        "y": 85
       },
       "params": {
         "op": "length"
@@ -106,7 +136,7 @@
       "defType": "math/math",
       "position": {
         "x": 739,
-        "y": 103
+        "y": 124
       },
       "params": {
         "op": "multiply",
@@ -123,7 +153,7 @@
       "defType": "vec2/math",
       "position": {
         "x": 1024,
-        "y": 64
+        "y": 86
       },
       "params": {
         "op": "scale"
@@ -134,7 +164,7 @@
       "defType": "math/math",
       "position": {
         "x": 1327,
-        "y": 115
+        "y": 136
       },
       "params": {
         "op": "add",
@@ -153,7 +183,7 @@
       "defType": "math/math",
       "position": {
         "x": 1610,
-        "y": 195
+        "y": 217
       },
       "params": {
         "op": "add",
@@ -165,7 +195,7 @@
       "defType": "vec2/split",
       "position": {
         "x": 1917,
-        "y": 284
+        "y": 306
       },
       "params": {}
     },
@@ -174,7 +204,7 @@
       "defType": "logic/compare",
       "position": {
         "x": 2145,
-        "y": 167
+        "y": 189
       },
       "params": {
         "op": "greater"
@@ -185,7 +215,7 @@
       "defType": "logic/select",
       "position": {
         "x": 2438,
-        "y": 268
+        "y": 290
       },
       "params": {}
     },
@@ -194,7 +224,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 2645,
-        "y": 221
+        "y": 242
       },
       "params": {}
     },
@@ -203,7 +233,7 @@
       "defType": "vec2/split",
       "position": {
         "x": 1917,
-        "y": 37
+        "y": 58
       },
       "params": {}
     },
@@ -212,7 +242,7 @@
       "defType": "math/math",
       "position": {
         "x": 2151,
-        "y": 19
+        "y": 41
       },
       "params": {
         "op": "multiply",
@@ -227,7 +257,7 @@
       "defType": "logic/select",
       "position": {
         "x": 2438,
-        "y": 63
+        "y": 84
       },
       "params": {}
     },
@@ -236,7 +266,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 2645,
-        "y": 0
+        "y": 22
       },
       "params": {}
     },
@@ -245,7 +275,7 @@
       "defType": "style/fill",
       "position": {
         "x": 181,
-        "y": 482
+        "y": 503
       },
       "params": {
         "mode": "rgb",
@@ -267,7 +297,7 @@
       "defType": "draw/rect",
       "position": {
         "x": 486,
-        "y": 348
+        "y": 369
       },
       "params": {
         "w": 500,
@@ -291,7 +321,7 @@
       "defType": "style/fill",
       "position": {
         "x": 187,
-        "y": 628
+        "y": 649
       },
       "params": {
         "mode": "rgb",
@@ -313,7 +343,7 @@
       "defType": "draw/ellipse",
       "position": {
         "x": 491,
-        "y": 540
+        "y": 561
       },
       "params": {
         "w": 28,
@@ -329,7 +359,7 @@
       "defType": "transform/group",
       "position": {
         "x": 739,
-        "y": 433
+        "y": 454
       },
       "params": {
         "slotCount": 2
@@ -343,7 +373,7 @@
       "defType": "render/renderer",
       "position": {
         "x": 1010,
-        "y": 432
+        "y": 454
       },
       "params": {
         "width": 500,
@@ -539,14 +569,14 @@
     {
       "id": "e_1152",
       "source": "dr_posFin",
-      "target": "dr_pos",
+      "target": "dr_posWrite",
       "sourceHandle": "out-vector",
       "targetHandle": "in-next"
     },
     {
       "id": "e_1153",
       "source": "dr_velFin",
-      "target": "dr_vel",
+      "target": "dr_velWrite",
       "sourceHandle": "out-vector",
       "targetHandle": "in-next"
     },

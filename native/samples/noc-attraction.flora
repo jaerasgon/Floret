@@ -13,7 +13,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 4,
-        "y": 336
+        "y": 213
       },
       "params": {}
     },
@@ -22,7 +22,7 @@
       "defType": "io/slider",
       "position": {
         "x": 1363,
-        "y": 206
+        "y": 195
       },
       "params": {
         "value": 800,
@@ -39,8 +39,8 @@
       "id": "at_damp",
       "defType": "io/slider",
       "position": {
-        "x": 2213,
-        "y": 237
+        "x": 2214,
+        "y": 258
       },
       "params": {
         "value": 0.985,
@@ -58,7 +58,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 0,
-        "y": 210
+        "y": 487
       },
       "params": {
         "x": -200,
@@ -73,7 +73,7 @@
       "id": "at_initVel",
       "defType": "vec2/make",
       "position": {
-        "x": 1684,
+        "x": 1686,
         "y": 0
       },
       "params": {
@@ -87,28 +87,58 @@
     },
     {
       "id": "at_pos",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 229,
-        "y": 210
+        "x": 200,
+        "y": 465
       },
-      "params": {}
+      "params": {
+        "slot": 1,
+        "name": "position"
+      }
+    },
+    {
+      "id": "at_posWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 3050,
+        "y": 240
+      },
+      "params": {
+        "slot": 1,
+        "name": "position"
+      }
     },
     {
       "id": "at_vel",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 1968,
-        "y": 6
+        "x": 1941,
+        "y": 39
       },
-      "params": {}
+      "params": {
+        "slot": 2,
+        "name": "velocity"
+      }
+    },
+    {
+      "id": "at_velWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 2797,
+        "y": 136
+      },
+      "params": {
+        "slot": 2,
+        "name": "velocity"
+      }
     },
     {
       "id": "at_mv",
       "defType": "vec2/make",
       "position": {
         "x": 230,
-        "y": 336
+        "y": 213
       },
       "params": {}
     },
@@ -116,8 +146,8 @@
       "id": "at_diff",
       "defType": "math/math",
       "position": {
-        "x": 489,
-        "y": 187
+        "x": 484,
+        "y": 132
       },
       "params": {
         "op": "subtract",
@@ -128,8 +158,8 @@
       "id": "at_dist",
       "defType": "vec2/math",
       "position": {
-        "x": 765,
-        "y": 232
+        "x": 761,
+        "y": 191
       },
       "params": {
         "op": "length"
@@ -139,8 +169,8 @@
       "id": "at_distSq",
       "defType": "math/math",
       "position": {
-        "x": 1079,
-        "y": 271
+        "x": 1077,
+        "y": 243
       },
       "params": {
         "op": "square"
@@ -150,8 +180,8 @@
       "id": "at_distClamp",
       "defType": "math/clamp",
       "position": {
-        "x": 1400,
-        "y": 332
+        "x": 1401,
+        "y": 321
       },
       "params": {
         "min": 100,
@@ -166,7 +196,7 @@
       "id": "at_F",
       "defType": "math/math",
       "position": {
-        "x": 1642,
+        "x": 1644,
         "y": 252
       },
       "params": {
@@ -178,7 +208,7 @@
       "id": "at_dir",
       "defType": "vec2/math",
       "position": {
-        "x": 1636,
+        "x": 1638,
         "y": 126
       },
       "params": {
@@ -189,8 +219,8 @@
       "id": "at_acc",
       "defType": "vec2/math",
       "position": {
-        "x": 1921,
-        "y": 149
+        "x": 1924,
+        "y": 165
       },
       "params": {
         "op": "scale"
@@ -200,8 +230,8 @@
       "id": "at_velAdd",
       "defType": "math/math",
       "position": {
-        "x": 2213,
-        "y": 89
+        "x": 2214,
+        "y": 110
       },
       "params": {
         "op": "add",
@@ -212,8 +242,8 @@
       "id": "at_velDamp",
       "defType": "vec2/math",
       "position": {
-        "x": 2489,
-        "y": 116
+        "x": 2493,
+        "y": 192
       },
       "params": {
         "op": "scale"
@@ -223,8 +253,8 @@
       "id": "at_posAdd",
       "defType": "math/math",
       "position": {
-        "x": 2770,
-        "y": 40
+        "x": 2786,
+        "y": 262
       },
       "params": {
         "op": "add",
@@ -236,7 +266,7 @@
       "defType": "style/fill",
       "position": {
         "x": 205,
-        "y": 615
+        "y": 591
       },
       "params": {
         "mode": "rgb",
@@ -257,8 +287,8 @@
       "id": "at_ball",
       "defType": "draw/ellipse",
       "position": {
-        "x": 523,
-        "y": 527
+        "x": 519,
+        "y": 472
       },
       "params": {
         "w": 28,
@@ -274,7 +304,7 @@
       "defType": "style/fill",
       "position": {
         "x": 199,
-        "y": 462
+        "y": 339
       },
       "params": {
         "mode": "rgb",
@@ -295,8 +325,8 @@
       "id": "at_mMark",
       "defType": "draw/ellipse",
       "position": {
-        "x": 523,
-        "y": 335
+        "x": 519,
+        "y": 280
       },
       "params": {
         "w": 16,
@@ -311,8 +341,8 @@
       "id": "at_grp",
       "defType": "transform/group",
       "position": {
-        "x": 771,
-        "y": 420
+        "x": 767,
+        "y": 366
       },
       "params": {
         "slotCount": 2
@@ -325,8 +355,8 @@
       "id": "at_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1050,
-        "y": 419
+        "x": 1048,
+        "y": 369
       },
       "params": {
         "width": 500,
@@ -494,14 +524,14 @@
     {
       "id": "e_1183",
       "source": "at_posAdd",
-      "target": "at_pos",
+      "target": "at_posWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {
       "id": "e_1184",
       "source": "at_velDamp",
-      "target": "at_vel",
+      "target": "at_velWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },

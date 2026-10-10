@@ -13,7 +13,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 37,
-        "y": 472
+        "y": 504
       },
       "params": {}
     },
@@ -22,7 +22,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 343
+        "y": 375
       },
       "params": {
         "value": 1,
@@ -40,7 +40,7 @@
       "defType": "vec2/math",
       "position": {
         "x": 565,
-        "y": 376
+        "y": 400
       },
       "params": {
         "op": "scale",
@@ -61,7 +61,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 42,
-        "y": 50
+        "y": 104
       },
       "params": {
         "x": 0,
@@ -77,7 +77,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 328,
-        "y": 598
+        "y": 630
       },
       "params": {
         "x": 0,
@@ -90,28 +90,58 @@
     },
     {
       "id": "wg_pos",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 327,
-        "y": 50
+        "x": 298,
+        "y": 82
       },
-      "params": {}
+      "params": {
+        "slot": 1,
+        "name": "position"
+      }
+    },
+    {
+      "id": "wg_posWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 1456,
+        "y": 242
+      },
+      "params": {
+        "slot": 1,
+        "name": "position"
+      }
     },
     {
       "id": "wg_vel",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 612,
-        "y": 524
+        "x": 583,
+        "y": 548
       },
-      "params": {}
+      "params": {
+        "slot": 2,
+        "name": "velocity"
+      }
+    },
+    {
+      "id": "wg_velWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 2666,
+        "y": 260
+      },
+      "params": {
+        "slot": 2,
+        "name": "velocity"
+      }
     },
     {
       "id": "wg_velAdd",
       "defType": "math/math",
       "position": {
-        "x": 877,
-        "y": 354
+        "x": 876,
+        "y": 381
       },
       "params": {
         "op": "add",
@@ -129,8 +159,8 @@
       "id": "wg_posAdd",
       "defType": "math/math",
       "position": {
-        "x": 1182,
-        "y": 161
+        "x": 1181,
+        "y": 195
       },
       "params": {
         "op": "add",
@@ -141,8 +171,8 @@
       "id": "wg_ps",
       "defType": "vec2/split",
       "position": {
-        "x": 1450,
-        "y": 134
+        "x": 1487,
+        "y": 116
       },
       "params": {}
     },
@@ -150,8 +180,8 @@
       "id": "wg_vs",
       "defType": "vec2/split",
       "position": {
-        "x": 1673,
-        "y": 394
+        "x": 1740,
+        "y": 397
       },
       "params": {}
     },
@@ -159,8 +189,8 @@
       "id": "wg_absX",
       "defType": "math/math",
       "position": {
-        "x": 1640,
-        "y": 47
+        "x": 1707,
+        "y": 38
       },
       "params": {
         "op": "abs",
@@ -171,7 +201,7 @@
       "id": "wg_hitX",
       "defType": "logic/compare",
       "position": {
-        "x": 1898,
+        "x": 1965,
         "y": 0
       },
       "params": {
@@ -186,8 +216,8 @@
       "id": "wg_absY",
       "defType": "math/math",
       "position": {
-        "x": 1640,
-        "y": 173
+        "x": 1707,
+        "y": 164
       },
       "params": {
         "op": "abs",
@@ -198,7 +228,7 @@
       "id": "wg_hitY",
       "defType": "logic/compare",
       "position": {
-        "x": 1898,
+        "x": 1965,
         "y": 148
       },
       "params": {
@@ -213,7 +243,7 @@
       "id": "wg_vxNeg",
       "defType": "math/math",
       "position": {
-        "x": 1913,
+        "x": 1980,
         "y": 296
       },
       "params": {
@@ -225,7 +255,7 @@
       "id": "wg_vyNeg",
       "defType": "math/math",
       "position": {
-        "x": 1913,
+        "x": 1980,
         "y": 422
       },
       "params": {
@@ -237,7 +267,7 @@
       "id": "wg_vxOut",
       "defType": "logic/select",
       "position": {
-        "x": 2207,
+        "x": 2275,
         "y": 219
       },
       "params": {}
@@ -246,7 +276,7 @@
       "id": "wg_vyOut",
       "defType": "logic/select",
       "position": {
-        "x": 2207,
+        "x": 2275,
         "y": 367
       },
       "params": {}
@@ -255,7 +285,7 @@
       "id": "wg_vFinal",
       "defType": "vec2/make",
       "position": {
-        "x": 2418,
+        "x": 2485,
         "y": 282
       },
       "params": {}
@@ -265,7 +295,7 @@
       "defType": "style/fill",
       "position": {
         "x": 303,
-        "y": 324
+        "y": 356
       },
       "params": {
         "mode": "rgb",
@@ -287,7 +317,7 @@
       "defType": "draw/ellipse",
       "position": {
         "x": 606,
-        "y": 151
+        "y": 182
       },
       "params": {
         "w": 36,
@@ -303,7 +333,7 @@
       "defType": "math/math",
       "position": {
         "x": 286,
-        "y": 176
+        "y": 208
       },
       "params": {
         "op": "multiply",
@@ -318,8 +348,8 @@
       "id": "wg_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 857,
-        "y": 184
+        "x": 856,
+        "y": 211
       },
       "params": {
         "width": 500,
@@ -347,7 +377,7 @@
       "defType": "math/math",
       "position": {
         "x": 286,
-        "y": 450
+        "y": 482
       },
       "params": {
         "op": "divide",
@@ -506,14 +536,14 @@
     {
       "id": "e_1111",
       "source": "wg_posAdd",
-      "target": "wg_pos",
+      "target": "wg_posWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {
       "id": "e_1112",
       "source": "wg_vFinal",
-      "target": "wg_vel",
+      "target": "wg_velWrite",
       "sourceHandle": "out-vector",
       "targetHandle": "in-next"
     },

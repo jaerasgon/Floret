@@ -13,12 +13,12 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -344
+        "y": -364
       },
       "params": {
-        "text": "Keyboard Synth\n\nPlay the computer keyboard like a piano: A S D F G H J K are the white keys from C, W E T Y U the black ones; Z / X shift an octave. Move the mouse up and down over the preview to open and close the filter. Flip Arp on and hold a chord: the arpeggiator steps through the held notes at Arp speed.\n\nHow it works: Keyboard in `keys` mode reports which of its 13 keys are held (`down`) and the latest press (`index`); a Counter keeps the octave. In the Arpeggiator subpatch, played alone the latest key is the note and a new press dips the gate for a frame so it re-attacks; with Arp on, the held keys are filtered into a list and an Integrate clock walks it. State keeps the last note between presses. Two MonoSynths (one an octave down) → Mix → filter → delay → reverb; the Scope subpatch plots a sawtooth that fits more cycles in for higher notes. Tip: press Focus on the preview so the editor doesn't also catch the keys.",
+        "text": "Keyboard Synth\n\nPlay the computer keyboard like a piano: A S D F G H J K are the white keys from C, W E T Y U the black ones; Z / X shift an octave. Move the mouse up and down over the preview to open and close the filter. Flip Arp on and hold a chord: the arpeggiator steps through the held notes at Arp speed.\n\nHow it works: Keyboard in `keys` mode reports which of its 13 keys are held (`down`) and the latest press (`index`); a Counter keeps the octave. In the Arpeggiator subpatch, played alone the latest key is the note and a new press dips the gate for a frame so it re-attacks; with Arp on, the held keys are filtered into a list and an Integrate clock walks it. A Write → Read pair (\"last note\") keeps the last note between presses. Two MonoSynths (one an octave down) → Mix → filter → delay → reverb; the Scope subpatch plots a sawtooth that fits more cycles in for higher notes. Tip: press Focus on the preview so the editor doesn't also catch the keys.",
         "width": 470,
-        "height": 280
+        "height": 300
       }
     },
     {
@@ -95,14 +95,30 @@
     },
     {
       "id": "ks_lastSemi",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 178,
+        "x": 148,
         "y": 188
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "last note"
+      },
       "portValues": {
         "init": 0
+      },
+      "parentId": "ks_noteBox"
+    },
+    {
+      "id": "ks_lastSemiWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 657,
+        "y": 107
+      },
+      "params": {
+        "slot": 1,
+        "name": "last note"
       },
       "parentId": "ks_noteBox"
     },
@@ -558,8 +574,8 @@
       "id": "ks_time",
       "defType": "time/seconds",
       "position": {
-        "x": 637,
-        "y": 518
+        "x": 632,
+        "y": 511
       },
       "params": {},
       "parentId": "ks_sparksBox"
@@ -568,8 +584,8 @@
       "id": "ks_topsX",
       "defType": "data/csv-inline",
       "position": {
-        "x": 141,
-        "y": 242
+        "x": 133,
+        "y": 194
       },
       "params": {
         "data": "-203,-174,-145,-116,-87,-29,0,29,58,87,116,145,203"
@@ -580,7 +596,7 @@
       "id": "ks_sparkAt",
       "defType": "spread/lookup",
       "position": {
-        "x": 598,
+        "x": 593,
         "y": 276
       },
       "params": {
@@ -592,8 +608,8 @@
       "id": "ks_sparkCol",
       "defType": "spread/lookup",
       "position": {
-        "x": 143,
-        "y": 494
+        "x": 136,
+        "y": 446
       },
       "params": {
         "op": "at"
@@ -604,7 +620,7 @@
       "id": "ks_world",
       "defType": "physics/world",
       "position": {
-        "x": 608,
+        "x": 603,
         "y": 40
       },
       "params": {},
@@ -621,8 +637,8 @@
       "id": "ks_sparks",
       "defType": "particles/emitter",
       "position": {
-        "x": 888,
-        "y": 254
+        "x": 882,
+        "y": 247
       },
       "params": {
         "maxCount": 900,
@@ -643,8 +659,8 @@
       "id": "ks_sparkTrail",
       "defType": "particles/trail",
       "position": {
-        "x": 1144,
-        "y": 135
+        "x": 1138,
+        "y": 126
       },
       "params": {
         "segments": 10
@@ -659,8 +675,8 @@
       "id": "ks_sparkDots",
       "defType": "particles/render-as",
       "position": {
-        "x": 1140,
-        "y": 393
+        "x": 1133,
+        "y": 384
       },
       "params": {},
       "parentId": "ks_sparksBox"
@@ -1058,7 +1074,7 @@
       },
       "params": {
         "label": "Arpeggiator",
-        "width": 1971,
+        "width": 1967,
         "height": 682
       },
       "ports": [
@@ -1211,7 +1227,7 @@
       "id": "ks_arpNote",
       "defType": "logic/select",
       "position": {
-        "x": 1532,
+        "x": 1527,
         "y": 41
       },
       "params": {},
@@ -1224,7 +1240,7 @@
       "id": "ks_playing",
       "defType": "logic/select",
       "position": {
-        "x": 1754,
+        "x": 1750,
         "y": 88
       },
       "params": {},
@@ -1315,7 +1331,7 @@
       "id": "ks_gate",
       "defType": "logic/select",
       "position": {
-        "x": 1532,
+        "x": 1527,
         "y": 189
       },
       "params": {},
@@ -1341,8 +1357,8 @@
       "id": "ks_lastSemiNext",
       "defType": "logic/select",
       "position": {
-        "x": 421,
-        "y": 123
+        "x": 419,
+        "y": 114
       },
       "params": {},
       "parentId": "ks_noteBox"
@@ -1368,8 +1384,8 @@
       "id": "ks_note",
       "defType": "math/math",
       "position": {
-        "x": 642,
-        "y": 195
+        "x": 648,
+        "y": 233
       },
       "params": {
         "op": "add",
@@ -1386,8 +1402,8 @@
       "id": "ks_subNote",
       "defType": "math/math",
       "position": {
-        "x": 912,
-        "y": 143
+        "x": 919,
+        "y": 167
       },
       "params": {
         "op": "subtract",
@@ -1682,8 +1698,8 @@
       "id": "ks_keyTops",
       "defType": "vec2/make",
       "position": {
-        "x": 409,
-        "y": 248
+        "x": 404,
+        "y": 246
       },
       "params": {
         "y": 41
@@ -1697,8 +1713,8 @@
       "id": "ks_sparkRate",
       "defType": "logic/select",
       "position": {
-        "x": 172,
-        "y": 346
+        "x": 164,
+        "y": 298
       },
       "params": {},
       "portValues": {
@@ -2252,7 +2268,7 @@
       },
       "params": {
         "label": "Note",
-        "width": 1192,
+        "width": 1199,
         "height": 454
       },
       "ports": [
@@ -2275,21 +2291,21 @@
           "name": "note",
           "type": "number",
           "direction": "output",
-          "y": 267
+          "y": 291
         },
         {
           "id": "sub",
           "name": "sub",
           "type": "number",
           "direction": "output",
-          "y": 180
+          "y": 204
         },
         {
           "id": "key",
           "name": "key",
           "type": "any",
           "direction": "output",
-          "y": 119
+          "y": 91
         }
       ]
     },
@@ -2302,8 +2318,8 @@
       },
       "params": {
         "label": "Sparks",
-        "width": 1401,
-        "height": 636
+        "width": 1394,
+        "height": 629
       },
       "ports": [
         {
@@ -2311,35 +2327,35 @@
           "name": "trails",
           "type": "layer",
           "direction": "output",
-          "y": 192
+          "y": 179
         },
         {
           "id": "dots",
           "name": "dots",
           "type": "layer",
           "direction": "output",
-          "y": 430
+          "y": 421
         },
         {
           "id": "hues",
           "name": "hues",
           "type": "color",
           "direction": "input",
-          "y": 553
+          "y": 505
         },
         {
           "id": "key",
           "name": "key",
           "type": "any",
           "direction": "input",
-          "y": 406
+          "y": 457
         },
         {
           "id": "gate",
           "name": "gate",
           "type": "boolean",
           "direction": "input",
-          "y": 383
+          "y": 335
         }
       ]
     },
@@ -3203,7 +3219,7 @@
     {
       "id": "e_117",
       "source": "ks_lastSemiNext",
-      "target": "ks_lastSemi",
+      "target": "ks_lastSemiWrite",
       "sourceHandle": "out-selected",
       "targetHandle": "in-next"
     },

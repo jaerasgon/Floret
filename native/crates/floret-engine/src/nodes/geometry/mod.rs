@@ -20,9 +20,11 @@ mod boolean;
 mod cells;
 mod connect;
 mod contours;
+mod curve;
 mod flow;
 #[cfg(test)]
 mod gen_tests;
+mod hit_test;
 mod layout;
 mod lsystem;
 mod measure;
@@ -31,6 +33,7 @@ mod morph;
 #[cfg(test)]
 mod motion_tests;
 mod path_ops;
+mod plot;
 mod relax;
 mod scatter;
 #[cfg(test)]
@@ -70,6 +73,12 @@ pub fn register(r: &mut Registrar) {
     r.dynamic("geometry/layout", layout::inputs);
     r.node("geometry/tiles", tiles::tiles);
     r.dynamic("geometry/tiles", tiles::inputs);
+    r.node("geometry/curve", curve::curve);
+    r.dynamic("geometry/curve", curve::inputs);
+    r.node("geometry/plot", plot::plot);
+    r.dynamic("geometry/plot", plot::inputs);
+    r.node("geometry/hit-test", hit_test::hit_test);
+    r.dynamic("geometry/hit-test", hit_test::inputs);
 }
 
 /// Most points / vertices a geometry node emits (it warns when it stops).

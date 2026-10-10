@@ -80,7 +80,9 @@ pub fn custom_of(def_type: &str) -> Option<Custom> {
         "text/font" => Custom::Font,
         "math/expression" => Custom::Expression,
         "math/add" | "math/sub" | "math/mul" | "math/div" | "math/min" | "math/max"
-        | "spread/merge" | "transform/group" | "sound/mix" => Custom::Slots(GROUP_SLOTS),
+        | "spread/merge" | "transform/group" | "sound/mix" | "logic/switch" => {
+            Custom::Slots(GROUP_SLOTS)
+        }
         _ => return None,
     })
 }
@@ -780,6 +782,7 @@ mod tests {
         }
         assert_eq!(custom_of("math/pow"), None);
         assert_eq!(custom_of("math/add"), Some(Custom::Slots(GROUP_SLOTS)));
+        assert_eq!(custom_of("logic/switch"), Some(Custom::Slots(GROUP_SLOTS)));
         // A Math node steps its slots only in the variadic ops.
         let slots = Some(Custom::Slots(GROUP_SLOTS));
         assert_eq!(custom_for(&with("math/math", json!({}))), slots);

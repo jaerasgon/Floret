@@ -9,6 +9,13 @@
 //! modes, fBm octaves, domain warp, evaluated per element over spreads.
 //! Its Perlin and curl modes reuse the functions above, so at default
 //! settings they give exactly what `noise/perlin` / `noise/curl` give.
+//!
+//! Two field modes sit beside the noise: `radial` and `gaussian` sum a
+//! bump round every `center` (smooth falloff to 0 at `radius`, or a bell
+//! with 1/e at `radius`), each × its `weight` — pressure highs and lows,
+//! metaballs, attractor maps. Every mode also outputs the `gradient`: the
+//! value's slope per unit of `pos` (uphill direction × steepness), for
+//! steering flows and placing things along a field without formulas.
 
 use super::random::{hash32, hash_unit};
 use super::shared::{cyclic, cyclic_len, to_vec2};
@@ -154,6 +161,10 @@ enum Mode {
     Checker,
     Stripes,
     Rings,
+    /// Σ weight · (1 − (d / r)²)² inside each radius.
+    Radial,
+    /// Σ weight · e^(−(d / r)²).
+    Gaussian,
 }
 
 impl Mode {
@@ -166,12 +177,18 @@ impl Mode {
             Some("checker") => Mode::Checker,
             Some("stripes") => Mode::Stripes,
             Some("rings") => Mode::Rings,
+            Some("radial") => Mode::Radial,
+            Some("gaussian") => Mode::Gaussian,
             _ => Mode::Perlin,
         }
     }
 
     fn of(params: &Params) -> Mode {
         Mode::parse(params.get("mode").and_then(serde_json::Value::as_str))
+    }
+
+    fn is_field(self) -> bool {
+        matches!(self, Mode::Radial | Mode::Gaussian)
     }
 }
 
@@ -207,6 +224,10 @@ const WARP_SCALE: usize = 8;
 const FEATURE: usize = 9;
 /// Stripes mode's direction (where cellular has `feature`).
 const ANGLE: usize = 9;
+/// The field modes' bumps (where cellular has `feature`).
+const CENTER: usize = 9;
+const RADIUS: usize = 10;
+const WEIGHT: usize = 11;
 
 /// `dynamicInputs` for `noise/noise`: spread-kind pins (so a spread of
 /// positions gives a spread of values), plus `feature` in cellular mode
@@ -242,7 +263,67 @@ fn noise_inputs(params: &Params) -> Vec<PortSpec> {
     if Mode::of(params) == Mode::Stripes {
         ports.push(num("angle", 0.0));
     }
+    if Mode::of(params).is_field() {
+        ports.push(
+            PortSpec::new("center", PortType::Vec2)
+                .kind(crate::spec::PortKind::Spread)
+                .default(Value::Vec2(Vec2::default())),
+        );
+        ports.push(num("radius", 100.0));
+        ports.push(num("weight", 1.0));
+    }
     ports
+}
+
+/// The field modes' bumps: centre, radius (> 0) and weight each.
+struct Bumps(Vec<(Vec2, f64, f64)>);
+
+impl Bumps {
+    fn new(center: &Spread, radius: &Spread, weight: &Spread) -> Bumps {
+        let n = cyclic_len([center, radius, weight]);
+        Bumps(
+            (0..n)
+                .filter_map(|i| {
+                    let c = to_vec2(&cyclic(center, i));
+                    let r = cyclic(radius, i).to_number().abs();
+                    let w = cyclic(weight, i).to_number();
+                    (c.x.is_finite()
+                        && c.y.is_finite()
+                        && r > 0.0
+                        && r.is_finite()
+                        && w.is_finite())
+                    .then_some((c, r, w))
+                })
+                .collect(),
+        )
+    }
+
+    /// The summed field at (x, y).
+    fn at(&self, x: f64, y: f64, gaussian: bool) -> f64 {
+        let mut sum = 0.0;
+        for (c, r, w) in &self.0 {
+            let (dx, dy) = ((x - c.x) / r, (y - c.y) / r);
+            let u2 = dx * dx + dy * dy;
+            sum += w * if gaussian {
+                (-u2).exp()
+            } else if u2 < 1.0 {
+                (1.0 - u2) * (1.0 - u2)
+            } else {
+                0.0
+            };
+        }
+        sum
+    }
+
+    /// A finite-difference step small against the smallest bump.
+    fn step(&self) -> f64 {
+        1e-4 * self
+            .0
+            .iter()
+            .map(|b| b.1)
+            .fold(f64::INFINITY, f64::min)
+            .min(1e6)
+    }
 }
 
 // ─── Pattern fields ──────────────────────────────────────────────────────────
@@ -412,6 +493,15 @@ impl Sampler {
     }
 }
 
+/// (0, 0) for a vector with a non-finite part.
+fn finite(v: Vec2) -> Vec2 {
+    if v.x.is_finite() && v.y.is_finite() {
+        v
+    } else {
+        Vec2::default()
+    }
+}
+
 fn noise(_: &NodeInit) -> Box<dyn NodeImpl> {
     raw(|inputs, cx| {
         let mode = Mode::parse(cx.param("mode").and_then(serde_json::Value::as_str));
@@ -429,6 +519,7 @@ fn noise(_: &NodeInit) -> Box<dyn NodeImpl> {
             (Mode::Checker, _) => checker_2d,
             (Mode::Stripes, _) => stripes_2d,
             (Mode::Rings, _) => rings_2d,
+            (Mode::Radial | Mode::Gaussian, _) => perlin_2d,
         };
         let angle_pin = (mode == Mode::Stripes)
             .then(|| inputs.get(ANGLE))
@@ -439,8 +530,17 @@ fn noise(_: &NodeInit) -> Box<dyn NodeImpl> {
             return Err("noise: missing inputs".into());
         }
         let count = cyclic_len(pins.iter().chain(angle_pin));
+        let field = mode.is_field();
+        let bumps = if field {
+            let pin = |i: usize| inputs.get(i).cloned().unwrap_or_else(crate::value::empty);
+            Bumps::new(&pin(CENTER), &pin(RADIUS), &pin(WEIGHT))
+        } else {
+            Bumps(Vec::new())
+        };
+        let gaussian = mode == Mode::Gaussian;
         let mut values = Vec::with_capacity(count);
         let mut flows = Vec::with_capacity(count);
+        let mut gradients = Vec::with_capacity(count);
         for i in 0..count {
             let n = |k: usize| cyclic(&pins[k], i).to_number();
             let pos = to_vec2(&cyclic(&pins[POS], i));
@@ -462,14 +562,52 @@ fn noise(_: &NodeInit) -> Box<dyn NodeImpl> {
                     }
                 }),
             };
-            values.push(Value::Num(s.at(x, y)));
+            if field {
+                // In the field modes the point is `pos + (x, y)` as it is
+                // (`scale` doesn't apply); `warp` moves it in those units.
+                let (px, py) = (pos.x + n(X), pos.y + n(Y));
+                let val = |x: f64, y: f64| {
+                    let (x, y) = s.warped(x, y);
+                    bumps.at(x, y, gaussian)
+                };
+                let v = val(px, py);
+                let e = bumps.step();
+                // Central differences: bumps are cheap, and exact on the
+                // symmetric slopes of a bump's top.
+                let g = if e.is_finite() && e > 0.0 {
+                    Vec2 {
+                        x: (val(px + e, py) - val(px - e, py)) / (2.0 * e),
+                        y: (val(px, py + e) - val(px, py - e)) / (2.0 * e),
+                    }
+                } else {
+                    Vec2::default()
+                };
+                values.push(Value::Num(v));
+                flows.push(Value::Vec2(Vec2::default()));
+                gradients.push(Value::Vec2(finite(g)));
+                continue;
+            }
+            let v = s.at(x, y);
+            values.push(Value::Num(v));
             flows.push(Value::Vec2(if mode == Mode::Curl {
                 s.curl(x, y)
             } else {
                 Vec2::default()
             }));
+            // Forward differences in noise space, × scale: the slope per
+            // unit of `pos`.
+            const E: f64 = 1e-4;
+            let g = Vec2 {
+                x: (s.at(x + E, y) - v) / E * scale,
+                y: (s.at(x, y + E) - v) / E * scale,
+            };
+            gradients.push(Value::Vec2(finite(g)));
         }
-        Ok(vec![Spread::from(values), Arc::from(flows)])
+        Ok(vec![
+            Spread::from(values),
+            Arc::from(flows),
+            Arc::from(gradients),
+        ])
     })
 }
 
@@ -893,5 +1031,171 @@ mod tests {
         );
         assert!(cat.get("noise/perlin").unwrap().hidden);
         assert!(cat.get("noise/curl").unwrap().hidden);
+    }
+
+    // ─── Gradient and field modes ────────────────────────────────────────
+
+    /// Inputs for `mode` with some per-point pins replaced (by index) and
+    /// the mode's extra pins appended.
+    fn eval_all(mode: &str, pins: &[(usize, Vec<Value>)], extra: &[Vec<Value>]) -> Vec<Vec<Value>> {
+        let mut h = noise_node(mode);
+        let mut ins: Vec<Vec<Value>> = std::iter::once(origin())
+            .chain(DEFAULTS.iter().map(|d| vec![n(*d)]))
+            .collect();
+        for (i, v) in pins {
+            ins[*i] = v.clone();
+        }
+        ins.extend(extra.iter().cloned());
+        h.eval(ins).unwrap()
+    }
+
+    fn v2(x: f64, y: f64) -> Value {
+        Value::Vec2(Vec2 { x, y })
+    }
+
+    fn vec_of(v: &Value) -> Vec2 {
+        match v {
+            Value::Vec2(p) => *p,
+            _ => panic!("vec2 expected"),
+        }
+    }
+
+    #[test]
+    fn gradient_matches_the_slope_for_every_noise_mode() {
+        // Against a central difference of the value output, in pos units
+        // (scale 0.5 halves the slope per unit of pos).
+        for mode in [
+            "perlin", "simplex", "value", "cellular", "curl", "stripes", "rings",
+        ] {
+            let extra: Vec<Vec<Value>> = match mode {
+                "cellular" => vec![vec![Value::str("F1")]],
+                "stripes" => vec![vec![n(0.4)]],
+                _ => vec![],
+            };
+            let at = |x: f64, y: f64| {
+                let out = eval_all(
+                    mode,
+                    &[(super::POS, vec![v2(x, y)]), (super::SCALE, vec![n(0.5)])],
+                    &extra,
+                );
+                (num(&out[0][0]), vec_of(&out[2][0]))
+            };
+            for (x, y) in [(0.31, 0.77), (2.2, -1.4), (-3.7, 5.1)] {
+                let (_, g) = at(x, y);
+                let h = 1e-5;
+                let gx = (at(x + h, y).0 - at(x - h, y).0) / (2.0 * h);
+                let gy = (at(x, y + h).0 - at(x, y - h).0) / (2.0 * h);
+                assert!(
+                    (g.x - gx).abs() < 1e-3 && (g.y - gy).abs() < 1e-3,
+                    "{mode} at ({x}, {y}): {g:?} vs ({gx}, {gy})"
+                );
+            }
+        }
+        // Checker is flat inside its squares.
+        let out = eval_all("checker", &[(super::POS, vec![v2(0.5, 0.5)])], &[]);
+        assert_eq!(vec_of(&out[2][0]), Vec2::default());
+    }
+
+    #[test]
+    fn gradient_is_per_element() {
+        let out = eval_all(
+            "perlin",
+            &[(super::POS, vec![v2(0.3, 0.1), v2(1.7, 2.9), v2(-4.0, 0.6)])],
+            &[],
+        );
+        assert_eq!(out[2].len(), 3);
+        assert_ne!(vec_of(&out[2][0]), vec_of(&out[2][1]));
+    }
+
+    #[test]
+    fn radial_and_gaussian_fields() {
+        let field = |mode: &str, p: Vec<Value>, c: Vec<Value>, r: Vec<Value>, w: Vec<Value>| {
+            eval_all(mode, &[(super::POS, p)], &[c, r, w])
+        };
+        // One bump at (100, 0), radius 50.
+        let pts = vec![
+            v2(100.0, 0.0),
+            v2(125.0, 0.0),
+            v2(150.0, 0.0),
+            v2(300.0, 0.0),
+        ];
+        let out = field(
+            "radial",
+            pts.clone(),
+            vec![v2(100.0, 0.0)],
+            vec![n(50.0)],
+            vec![n(1.0)],
+        );
+        let v: Vec<f64> = out[0].iter().map(num).collect();
+        assert_eq!(v[0], 1.0);
+        assert!((v[1] - 0.5625).abs() < 1e-12);
+        assert_eq!(v[2], 0.0);
+        assert_eq!(v[3], 0.0);
+        // The gradient points uphill (toward the centre); 0 outside.
+        let g = vec_of(&out[2][1]);
+        assert!(g.x < 0.0 && g.y.abs() < 1e-9, "{g:?}");
+        assert_eq!(vec_of(&out[2][3]), Vec2::default());
+        let out = field(
+            "gaussian",
+            pts,
+            vec![v2(100.0, 0.0)],
+            vec![n(50.0)],
+            vec![n(2.0)],
+        );
+        let v: Vec<f64> = out[0].iter().map(num).collect();
+        assert_eq!(v[0], 2.0);
+        assert!((v[2] - 2.0 * (-1.0f64).exp()).abs() < 1e-12);
+        // d/dx 2·e^(−(x−100)²/2500) at x = 150 is −0.08·e^(−1).
+        let g = vec_of(&out[2][2]);
+        assert!((g.x + 0.08 * (-1.0f64).exp()).abs() < 1e-5, "{g:?}");
+        // Bumps sum; negative weights dig holes; scale doesn't apply.
+        let out = eval_all(
+            "gaussian",
+            &[
+                (super::POS, vec![v2(0.0, 0.0)]),
+                (super::SCALE, vec![n(0.01)]),
+            ],
+            &[
+                vec![v2(0.0, 0.0), v2(0.0, 0.0)],
+                vec![n(10.0)],
+                vec![n(1.0), n(-0.25)],
+            ],
+        );
+        assert!((num(&out[0][0]) - 0.75).abs() < 1e-12);
+        // No bumps, zero / NaN radii: a flat 0.
+        let out = field(
+            "radial",
+            vec![v2(0.0, 0.0)],
+            vec![],
+            vec![n(10.0)],
+            vec![n(1.0)],
+        );
+        assert_eq!(num(&out[0][0]), 0.0);
+        let out = field(
+            "gaussian",
+            vec![v2(0.0, 0.0)],
+            vec![v2(0.0, 0.0)],
+            vec![n(0.0), n(f64::NAN)],
+            vec![n(1.0)],
+        );
+        assert_eq!(num(&out[0][0]), 0.0);
+        assert_eq!(vec_of(&out[2][0]), Vec2::default());
+    }
+
+    #[test]
+    fn field_pins_only_in_field_modes() {
+        let names = |mode: &str| -> Vec<String> {
+            super::noise_inputs(json!({ "mode": mode }).as_object().unwrap())
+                .into_iter()
+                .map(|p| p.name)
+                .collect()
+        };
+        for m in ["radial", "gaussian"] {
+            assert_eq!(names(m)[9..], ["center", "radius", "weight"]);
+        }
+        assert_eq!(names("perlin").len(), 9);
+        let cat = crate::spec::Catalogue::builtin();
+        let spec = cat.get("noise/noise").unwrap();
+        assert_eq!(spec.outputs[2].name, "gradient");
     }
 }

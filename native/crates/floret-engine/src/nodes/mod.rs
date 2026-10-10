@@ -13,6 +13,7 @@ use std::sync::OnceLock;
 
 pub mod collider;
 pub mod color;
+pub mod control;
 pub mod convert;
 pub mod data;
 pub mod draw;
@@ -32,6 +33,7 @@ pub mod logic;
 pub mod math;
 pub mod meta;
 pub mod motion;
+pub mod mover;
 pub mod noise;
 pub mod particles;
 pub mod physics;
@@ -47,6 +49,7 @@ pub mod symmetry;
 pub mod text;
 pub mod text_animate;
 pub mod time;
+pub mod timing;
 pub mod transform;
 pub mod value;
 pub mod vec2;
@@ -87,6 +90,7 @@ fn registry() -> &'static Registrar {
         let mut r = Registrar::default();
         collider::register(&mut r);
         color::register(&mut r);
+        control::register(&mut r);
         convert::register(&mut r);
         data::register(&mut r);
         draw::register(&mut r);
@@ -106,6 +110,7 @@ fn registry() -> &'static Registrar {
         math::register(&mut r);
         meta::register(&mut r);
         motion::register(&mut r);
+        mover::register(&mut r);
         noise::register(&mut r);
         particles::register(&mut r);
         physics::register(&mut r);
@@ -120,6 +125,7 @@ fn registry() -> &'static Registrar {
         text::register(&mut r);
         text_animate::register(&mut r);
         time::register(&mut r);
+        timing::register(&mut r);
         transform::register(&mut r);
         value::register(&mut r);
         vec2::register(&mut r);

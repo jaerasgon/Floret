@@ -382,6 +382,41 @@ geometry/contours out points
 geometry/contours out shape
 geometry/contours param field
 geometry/contours param mode
+geometry/curve in R
+geometry/curve in a
+geometry/curve in b
+geometry/curve in center
+geometry/curve in count
+geometry/curve in d
+geometry/curve in inner
+geometry/curve in m
+geometry/curve in n
+geometry/curve in n1
+geometry/curve in n2
+geometry/curve in n3
+geometry/curve in phase
+geometry/curve in points
+geometry/curve in r
+geometry/curve in radius
+geometry/curve in rotation
+geometry/curve in style
+geometry/curve in turns
+geometry/curve node
+geometry/curve out points
+geometry/curve out shape
+geometry/curve out tangents
+geometry/curve param mode
+geometry/hit-test in centers
+geometry/hit-test in margin
+geometry/hit-test in points
+geometry/hit-test in radii
+geometry/hit-test in shapes
+geometry/hit-test in sizes
+geometry/hit-test node
+geometry/hit-test out hits
+geometry/hit-test out index
+geometry/hit-test out inside
+geometry/hit-test param mode
 geometry/layout in center
 geometry/layout in closed
 geometry/layout in cols
@@ -458,6 +493,21 @@ geometry/path-ops out shape
 geometry/path-ops param cap
 geometry/path-ops param join
 geometry/path-ops param mode
+geometry/plot in baseline
+geometry/plot in center
+geometry/plot in gap
+geometry/plot in max
+geometry/plot in min
+geometry/plot in range
+geometry/plot in size
+geometry/plot in style
+geometry/plot in values
+geometry/plot node
+geometry/plot out base
+geometry/plot out points
+geometry/plot out shape
+geometry/plot param mode
+geometry/plot param range
 geometry/scatter in center
 geometry/scatter in count
 geometry/scatter in density
@@ -757,6 +807,13 @@ io/image-url out image
 io/image-url out loaded
 io/image-url out width
 io/image-url param url
+io/latch in initial
+io/latch in reset
+io/latch in set
+io/latch in toggle
+io/latch node
+io/latch out changed
+io/latch out state
 io/metro in interval
 io/metro in run
 io/metro node
@@ -849,6 +906,19 @@ logic/select in b
 logic/select in cond
 logic/select node
 logic/select out selected
+logic/switch in else
+logic/switch in if0
+logic/switch in if1
+logic/switch in index
+logic/switch in range
+logic/switch in v0
+logic/switch in v1
+logic/switch node
+logic/switch out out
+logic/switch out which
+logic/switch param mode
+logic/switch param range
+logic/switch param slotCount
 math/abs in x
 math/abs node
 math/abs out result
@@ -1069,6 +1139,32 @@ motion/ease in t
 motion/ease node
 motion/ease out result
 motion/ease param curve
+motion/envelope in age
+motion/envelope in attack
+motion/envelope in frequency
+motion/envelope in from
+motion/envelope in hold
+motion/envelope in time
+motion/envelope in trigger
+motion/envelope node
+motion/envelope out active
+motion/envelope out age
+motion/envelope out value
+motion/envelope param from
+motion/envelope param shape
+motion/integrate in limit
+motion/integrate in max
+motion/integrate in maxDt
+motion/integrate in min
+motion/integrate in rate
+motion/integrate in reset
+motion/integrate in run
+motion/integrate in start
+motion/integrate node
+motion/integrate out hit
+motion/integrate out value
+motion/integrate param limit
+motion/integrate param valueType
 motion/lfo in bpm
 motion/lfo in count
 motion/lfo in max
@@ -1108,18 +1204,22 @@ noise/curl in seed
 noise/curl node
 noise/curl out flow
 noise/noise in angle
+noise/noise in center
 noise/noise in falloff
 noise/noise in feature
 noise/noise in octaves
 noise/noise in pos
+noise/noise in radius
 noise/noise in scale
 noise/noise in seed
 noise/noise in warp
 noise/noise in warpScale
+noise/noise in weight
 noise/noise in x
 noise/noise in y
 noise/noise node
 noise/noise out flow
+noise/noise out gradient
 noise/noise out noise
 noise/noise param feature
 noise/noise param mode
@@ -1162,6 +1262,25 @@ particles/from-layer node
 particles/from-layer out positions
 particles/from-layer param density
 particles/from-layer param mode
+particles/move in acceleration
+particles/move in center
+particles/move in drag
+particles/move in edge
+particles/move in maxSpeed
+particles/move in position
+particles/move in radius
+particles/move in reset
+particles/move in restitution
+particles/move in size
+particles/move in timeScale
+particles/move in velocity
+particles/move node
+particles/move out hit
+particles/move out normal
+particles/move out position
+particles/move out velocity
+particles/move param edge
+particles/move param mode
 particles/render-as in particles
 particles/render-as in style
 particles/render-as in template
@@ -1560,6 +1679,10 @@ spread/at-group in groupSize
 spread/at-group in index
 spread/at-group node
 spread/at-group out values
+spread/bin in spread
+spread/bin in values
+spread/bin node
+spread/bin out indices
 spread/ca-grid-seed in cols
 spread/ca-grid-seed in index
 spread/ca-grid-seed in rows
@@ -1672,6 +1795,7 @@ spread/lookup in points
 spread/lookup in source
 spread/lookup in spread
 spread/lookup in value
+spread/lookup in values
 spread/lookup node
 spread/lookup out result
 spread/lookup param op
@@ -2069,6 +2193,22 @@ text/outline param align
 text/outline param mode
 text/outline param size
 text/outline param string
+time/beat in beats
+time/beat in bpm
+time/beat in reset
+time/beat in run
+time/beat in steps
+time/beat in swing
+time/beat in sync
+time/beat in width
+time/beat node
+time/beat out bar
+time/beat out count
+time/beat out gate
+time/beat out phase
+time/beat out step
+time/beat out trigger
+time/beat param sync
 time/clock in offset
 time/clock in zone
 time/clock node

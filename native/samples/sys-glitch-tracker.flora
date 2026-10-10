@@ -30,8 +30,8 @@
       "id": "glt_glitch",
       "defType": "io/slider",
       "position": {
-        "x": 3279,
-        "y": 634
+        "x": 3177,
+        "y": 956
       },
       "params": {
         "value": 0.6,
@@ -48,8 +48,8 @@
       "id": "glt_slitScan",
       "defType": "io/toggle",
       "position": {
-        "x": 3279,
-        "y": 217
+        "x": 3177,
+        "y": 538
       },
       "params": {
         "value": true
@@ -62,8 +62,8 @@
       "id": "glt_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 53,
-        "y": 1096
+        "x": 32,
+        "y": 1369
       },
       "params": {},
       "portValues": {}
@@ -72,8 +72,8 @@
       "id": "glt_mpos",
       "defType": "vec2/make",
       "position": {
-        "x": 413,
-        "y": 991
+        "x": 377,
+        "y": 1233
       },
       "params": {},
       "portValues": {}
@@ -83,7 +83,7 @@
       "defType": "geometry/scatter",
       "position": {
         "x": 0,
-        "y": 43
+        "y": 0
       },
       "params": {
         "mode": "poisson"
@@ -105,12 +105,12 @@
       "id": "glt_dots",
       "defType": "region/foreach",
       "position": {
-        "x": 1576,
-        "y": 22
+        "x": 1496,
+        "y": 156
       },
       "params": {
-        "width": 340,
-        "height": 224,
+        "width": 364,
+        "height": 244,
         "label": "ForEach dot"
       },
       "ports": [
@@ -126,7 +126,7 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 190
         },
         {
           "id": "w",
@@ -136,15 +136,15 @@
           "y": 110
         }
       ],
-      "width": 340,
-      "height": 224
+      "width": 364,
+      "height": 244
     },
     {
       "id": "glt_dotFill",
       "defType": "style/fill",
       "position": {
-        "x": 388,
-        "y": 188
+        "x": 361,
+        "y": 319
       },
       "params": {},
       "portValues": {
@@ -171,8 +171,8 @@
       "id": "glt_blobIds",
       "defType": "spread/range",
       "position": {
-        "x": 31,
-        "y": 769
+        "x": 10,
+        "y": 960
       },
       "params": {
         "count": 5
@@ -185,12 +185,12 @@
       "id": "glt_discs",
       "defType": "region/foreach",
       "position": {
-        "x": 678,
-        "y": 316
+        "x": 650,
+        "y": 470
       },
       "params": {
-        "width": 2135,
-        "height": 520,
+        "width": 2056,
+        "height": 632,
         "label": "ForEach disc"
       },
       "ports": [
@@ -199,25 +199,25 @@
           "name": "c",
           "type": "vec2",
           "direction": "input",
-          "y": 174
+          "y": 275
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 172
+          "y": 449
         }
       ],
-      "width": 2135,
-      "height": 520
+      "width": 2056,
+      "height": 632
     },
     {
       "id": "glt_discFill",
       "defType": "style/fill",
       "position": {
-        "x": 1460,
-        "y": 99
+        "x": 1370,
+        "y": 256
       },
       "params": {},
       "parentId": "glt_discs",
@@ -227,8 +227,8 @@
       "id": "glt_disc",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1647,
-        "y": 44
+        "x": 1553,
+        "y": 207
       },
       "params": {},
       "parentId": "glt_discs",
@@ -241,8 +241,8 @@
       "id": "glt_ringFill",
       "defType": "style/fill",
       "position": {
-        "x": 388,
-        "y": 547
+        "x": 361,
+        "y": 737
       },
       "params": {},
       "portValues": {
@@ -258,8 +258,8 @@
       "id": "glt_discRing",
       "defType": "draw/ellipse",
       "position": {
-        "x": 182,
-        "y": 188
+        "x": 166,
+        "y": 211
       },
       "params": {},
       "parentId": "glt_discs",
@@ -272,8 +272,8 @@
       "id": "glt_eyeFill",
       "defType": "style/fill",
       "position": {
-        "x": 388,
-        "y": 673
+        "x": 361,
+        "y": 880
       },
       "params": {},
       "portValues": {
@@ -289,8 +289,8 @@
       "id": "glt_discEye",
       "defType": "draw/ellipse",
       "position": {
-        "x": 454,
-        "y": 331
+        "x": 439,
+        "y": 430
       },
       "params": {},
       "parentId": "glt_discs",
@@ -303,8 +303,8 @@
       "id": "glt_discParts",
       "defType": "transform/group",
       "position": {
-        "x": 1855,
-        "y": 135
+        "x": 1776,
+        "y": 343
       },
       "params": {
         "slotCount": 3
@@ -316,8 +316,8 @@
       "id": "glt_footage",
       "defType": "transform/group",
       "position": {
-        "x": 2965,
-        "y": 433
+        "x": 2866,
+        "y": 735
       },
       "params": {
         "slotCount": 2
@@ -328,8 +328,8 @@
       "id": "glt_rasterize",
       "defType": "image/from-layer",
       "position": {
-        "x": 3308,
-        "y": 760
+        "x": 3206,
+        "y": 1099
       },
       "params": {},
       "portValues": {
@@ -341,8 +341,8 @@
       "id": "glt_seedGrid",
       "defType": "spread/grid",
       "position": {
-        "x": 392,
-        "y": 799
+        "x": 357,
+        "y": 1024
       },
       "params": {},
       "portValues": {
@@ -356,8 +356,8 @@
       "id": "glt_useMouseSeeds",
       "defType": "spread/sublist",
       "position": {
-        "x": 2968,
-        "y": 971
+        "x": 2888,
+        "y": 1296
       },
       "params": {
         "op": "take"
@@ -368,8 +368,8 @@
       "id": "glt_useStartSeeds",
       "defType": "spread/sublist",
       "position": {
-        "x": 1665,
-        "y": 1180
+        "x": 1616,
+        "y": 1481
       },
       "params": {
         "op": "take"
@@ -380,8 +380,8 @@
       "id": "glt_seeds",
       "defType": "spread/combine",
       "position": {
-        "x": 3282,
-        "y": 1041
+        "x": 3199,
+        "y": 1397
       },
       "params": {
         "op": "concat"
@@ -392,8 +392,8 @@
       "id": "glt_tracker",
       "defType": "image/track-points",
       "position": {
-        "x": 3603,
-        "y": 1016
+        "x": 3498,
+        "y": 1407
       },
       "params": {
         "window": 48
@@ -406,12 +406,12 @@
       "id": "glt_hudBoxes",
       "defType": "region/foreach",
       "position": {
-        "x": 3920,
-        "y": 859
+        "x": 3826,
+        "y": 1340
       },
       "params": {
-        "width": 1365,
-        "height": 688,
+        "width": 1383,
+        "height": 801,
         "label": "ForEach track"
       },
       "ports": [
@@ -420,32 +420,32 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 400
+          "y": 430
         },
         {
           "id": "q",
           "name": "q",
           "type": "number",
           "direction": "input",
-          "y": 565
+          "y": 584
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 312
+          "y": 573
         }
       ],
-      "width": 1365,
-      "height": 688
+      "width": 1383,
+      "height": 801
     },
     {
       "id": "glt_boxStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 448,
-        "y": 526
+        "x": 415,
+        "y": 621
       },
       "params": {},
       "parentId": "glt_hudBoxes",
@@ -457,8 +457,8 @@
       "id": "glt_boxNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 688,
-        "y": 480
+        "x": 658,
+        "y": 641
       },
       "params": {},
       "parentId": "glt_hudBoxes",
@@ -468,8 +468,8 @@
       "id": "glt_box",
       "defType": "draw/rect",
       "position": {
-        "x": 879,
-        "y": 347
+        "x": 864,
+        "y": 509
       },
       "params": {
         "anchor": "center"
@@ -485,7 +485,7 @@
       "id": "glt_trackName",
       "defType": "string/format-number",
       "position": {
-        "x": 142,
+        "x": 143,
         "y": 40
       },
       "params": {
@@ -501,8 +501,8 @@
       "id": "glt_trackNameOne",
       "defType": "spread/lookup",
       "position": {
-        "x": 413,
-        "y": 124
+        "x": 411,
+        "y": 230
       },
       "params": {
         "op": "at"
@@ -516,8 +516,8 @@
       "id": "glt_labelFill",
       "defType": "style/fill",
       "position": {
-        "x": 451,
-        "y": 400
+        "x": 431,
+        "y": 478
       },
       "params": {},
       "parentId": "glt_hudBoxes",
@@ -527,8 +527,8 @@
       "id": "glt_label",
       "defType": "draw/text",
       "position": {
-        "x": 687,
-        "y": 231
+        "x": 647,
+        "y": 335
       },
       "params": {
         "size": 10,
@@ -544,8 +544,8 @@
       "id": "glt_trackMark",
       "defType": "transform/group",
       "position": {
-        "x": 1085,
-        "y": 275
+        "x": 1103,
+        "y": 490
       },
       "params": {
         "slotCount": 2
@@ -557,8 +557,8 @@
       "id": "glt_linkStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 3597,
-        "y": 733
+        "x": 3501,
+        "y": 1055
       },
       "params": {},
       "portValues": {
@@ -575,8 +575,8 @@
       "id": "glt_links",
       "defType": "geometry/connect",
       "position": {
-        "x": 4521,
-        "y": 557
+        "x": 4445,
+        "y": 971
       },
       "params": {
         "mode": "distance"
@@ -591,8 +591,8 @@
       "id": "glt_slitScanFx",
       "defType": "gpu/echo",
       "position": {
-        "x": 3278,
-        "y": 355
+        "x": 3194,
+        "y": 672
       },
       "params": {
         "mode": "slit-scan",
@@ -607,8 +607,8 @@
       "id": "glt_footageView",
       "defType": "logic/select",
       "position": {
-        "x": 3618,
-        "y": 379
+        "x": 3519,
+        "y": 720
       },
       "params": {},
       "portValues": {}
@@ -617,8 +617,8 @@
       "id": "glt_chromatic",
       "defType": "gpu/effect",
       "position": {
-        "x": 4518,
-        "y": 409
+        "x": 4450,
+        "y": 805
       },
       "params": {
         "mode": "chromatic"
@@ -629,8 +629,8 @@
       "id": "glt_displace",
       "defType": "gpu/effect",
       "position": {
-        "x": 5410,
-        "y": 485
+        "x": 5340,
+        "y": 945
       },
       "params": {
         "mode": "displace"
@@ -645,8 +645,8 @@
       "id": "glt_scene",
       "defType": "transform/group",
       "position": {
-        "x": 5709,
-        "y": 712
+        "x": 5609,
+        "y": 1358
       },
       "params": {
         "slotCount": 3
@@ -657,8 +657,8 @@
       "id": "glt_grain",
       "defType": "gpu/effect",
       "position": {
-        "x": 5973,
-        "y": 689
+        "x": 5873,
+        "y": 1403
       },
       "params": {
         "mode": "grain"
@@ -672,8 +672,8 @@
       "id": "glt_r",
       "defType": "render/renderer",
       "position": {
-        "x": 6238,
-        "y": 688
+        "x": 6103,
+        "y": 1515
       },
       "params": {
         "width": 640,
@@ -701,7 +701,7 @@
       "defType": "vec2/split",
       "position": {
         "x": 128,
-        "y": 175
+        "y": 112
       },
       "params": {},
       "parentId": "glt_dotSizes"
@@ -710,8 +710,8 @@
       "id": "glt_multiply",
       "defType": "math/math",
       "position": {
-        "x": 318,
-        "y": 91
+        "x": 320,
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -726,8 +726,8 @@
       "id": "glt_multiply2",
       "defType": "math/math",
       "position": {
-        "x": 318,
-        "y": 239
+        "x": 320,
+        "y": 206
       },
       "params": {
         "op": "multiply",
@@ -742,8 +742,8 @@
       "id": "glt_add",
       "defType": "math/math",
       "position": {
-        "x": 591,
-        "y": 134
+        "x": 594,
+        "y": 158
       },
       "params": {
         "op": "add",
@@ -755,8 +755,8 @@
       "id": "glt_dotHash",
       "defType": "math/math",
       "position": {
-        "x": 856,
-        "y": 117
+        "x": 859,
+        "y": 204
       },
       "params": {
         "op": "fract",
@@ -768,8 +768,8 @@
       "id": "glt_multiply3",
       "defType": "math/math",
       "position": {
-        "x": 1103,
-        "y": 78
+        "x": 1067,
+        "y": 206
       },
       "params": {
         "op": "multiply",
@@ -784,8 +784,8 @@
       "id": "glt_add2",
       "defType": "math/math",
       "position": {
-        "x": 1368,
-        "y": 40
+        "x": 1331,
+        "y": 230
       },
       "params": {
         "op": "add",
@@ -800,8 +800,8 @@
       "id": "glt_time",
       "defType": "time/seconds",
       "position": {
-        "x": 58,
-        "y": 640
+        "x": 37,
+        "y": 847
       },
       "params": {}
     },
@@ -809,13 +809,13 @@
       "id": "glt_blobPaths",
       "defType": "meta/subpatch",
       "position": {
-        "x": 386,
-        "y": 421
+        "x": 350,
+        "y": 593
       },
       "params": {
         "label": "Dance",
-        "width": 1951,
-        "height": 656
+        "width": 1948,
+        "height": 701
       },
       "ports": [
         {
@@ -830,25 +830,25 @@
           "name": "time",
           "type": "number",
           "direction": "input",
-          "y": 196
+          "y": 14
         },
         {
           "id": "pos",
           "name": "positions",
           "type": "vec2",
           "direction": "output",
-          "y": 206
+          "y": 443
         }
       ],
-      "width": 1951,
-      "height": 656
+      "width": 1948,
+      "height": 701
     },
     {
       "id": "glt_multiply4",
       "defType": "math/math",
       "position": {
-        "x": 145,
-        "y": 72
+        "x": 147,
+        "y": 46
       },
       "params": {
         "op": "multiply",
@@ -863,8 +863,8 @@
       "id": "glt_add3",
       "defType": "math/math",
       "position": {
-        "x": 417,
-        "y": 84
+        "x": 427,
+        "y": 123
       },
       "params": {
         "op": "add",
@@ -879,8 +879,8 @@
       "id": "glt_multiply5",
       "defType": "math/math",
       "position": {
-        "x": 687,
-        "y": 40
+        "x": 717,
+        "y": 47
       },
       "params": {
         "op": "multiply",
@@ -892,8 +892,8 @@
       "id": "glt_multiply6",
       "defType": "math/math",
       "position": {
-        "x": 145,
-        "y": 220
+        "x": 147,
+        "y": 212
       },
       "params": {
         "op": "multiply",
@@ -908,8 +908,8 @@
       "id": "glt_add4",
       "defType": "math/math",
       "position": {
-        "x": 963,
-        "y": 97
+        "x": 996,
+        "y": 111
       },
       "params": {
         "op": "add",
@@ -921,8 +921,8 @@
       "id": "glt_blobPathsSinX",
       "defType": "math/math",
       "position": {
-        "x": 1231,
-        "y": 101
+        "x": 1264,
+        "y": 176
       },
       "params": {
         "op": "sin",
@@ -934,8 +934,8 @@
       "id": "glt_multiply7",
       "defType": "math/math",
       "position": {
-        "x": 1481,
-        "y": 106
+        "x": 1476,
+        "y": 221
       },
       "params": {
         "op": "multiply",
@@ -950,8 +950,8 @@
       "id": "glt_multiply8",
       "defType": "math/math",
       "position": {
-        "x": 145,
-        "y": 368
+        "x": 147,
+        "y": 377
       },
       "params": {
         "op": "multiply",
@@ -966,8 +966,8 @@
       "id": "glt_add5",
       "defType": "math/math",
       "position": {
-        "x": 417,
-        "y": 371
+        "x": 427,
+        "y": 296
       },
       "params": {
         "op": "add",
@@ -982,8 +982,8 @@
       "id": "glt_multiply9",
       "defType": "math/math",
       "position": {
-        "x": 687,
-        "y": 319
+        "x": 717,
+        "y": 216
       },
       "params": {
         "op": "multiply",
@@ -995,8 +995,8 @@
       "id": "glt_multiply10",
       "defType": "math/math",
       "position": {
-        "x": 145,
-        "y": 516
+        "x": 147,
+        "y": 543
       },
       "params": {
         "op": "multiply",
@@ -1011,8 +1011,8 @@
       "id": "glt_add6",
       "defType": "math/math",
       "position": {
-        "x": 963,
-        "y": 351
+        "x": 996,
+        "y": 366
       },
       "params": {
         "op": "add",
@@ -1024,8 +1024,8 @@
       "id": "glt_blobPathsCosY",
       "defType": "math/math",
       "position": {
-        "x": 1231,
-        "y": 302
+        "x": 1264,
+        "y": 387
       },
       "params": {
         "op": "cos",
@@ -1037,8 +1037,8 @@
       "id": "glt_multiply11",
       "defType": "math/math",
       "position": {
-        "x": 1481,
-        "y": 254
+        "x": 1476,
+        "y": 386
       },
       "params": {
         "op": "multiply",
@@ -1053,8 +1053,8 @@
       "id": "glt_blobPathsPos",
       "defType": "vec2/make",
       "position": {
-        "x": 1754,
-        "y": 169
+        "x": 1751,
+        "y": 360
       },
       "params": {},
       "parentId": "glt_blobPaths"
@@ -1064,7 +1064,7 @@
       "defType": "value/number",
       "position": {
         "x": 28,
-        "y": 1244
+        "y": 1498
       },
       "params": {
         "value": 0
@@ -1074,13 +1074,13 @@
       "id": "glt_blobStarts",
       "defType": "meta/subpatch",
       "position": {
-        "x": 348,
-        "y": 1117
+        "x": 313,
+        "y": 1377
       },
       "params": {
         "label": "Dance · at the start",
-        "width": 1951,
-        "height": 656
+        "width": 1948,
+        "height": 701
       },
       "ports": [
         {
@@ -1095,25 +1095,25 @@
           "name": "time",
           "type": "number",
           "direction": "input",
-          "y": 196
+          "y": 14
         },
         {
           "id": "pos",
           "name": "positions",
           "type": "vec2",
           "direction": "output",
-          "y": 206
+          "y": 443
         }
       ],
-      "width": 1951,
-      "height": 656
+      "width": 1948,
+      "height": 701
     },
     {
       "id": "glt_multiply12",
       "defType": "math/math",
       "position": {
-        "x": 145,
-        "y": 72
+        "x": 147,
+        "y": 46
       },
       "params": {
         "op": "multiply",
@@ -1128,8 +1128,8 @@
       "id": "glt_add7",
       "defType": "math/math",
       "position": {
-        "x": 417,
-        "y": 84
+        "x": 427,
+        "y": 123
       },
       "params": {
         "op": "add",
@@ -1144,8 +1144,8 @@
       "id": "glt_multiply13",
       "defType": "math/math",
       "position": {
-        "x": 687,
-        "y": 40
+        "x": 717,
+        "y": 47
       },
       "params": {
         "op": "multiply",
@@ -1157,8 +1157,8 @@
       "id": "glt_multiply14",
       "defType": "math/math",
       "position": {
-        "x": 145,
-        "y": 220
+        "x": 147,
+        "y": 212
       },
       "params": {
         "op": "multiply",
@@ -1173,8 +1173,8 @@
       "id": "glt_add8",
       "defType": "math/math",
       "position": {
-        "x": 963,
-        "y": 97
+        "x": 996,
+        "y": 111
       },
       "params": {
         "op": "add",
@@ -1186,8 +1186,8 @@
       "id": "glt_blobStartsSinX",
       "defType": "math/math",
       "position": {
-        "x": 1231,
-        "y": 101
+        "x": 1264,
+        "y": 176
       },
       "params": {
         "op": "sin",
@@ -1199,8 +1199,8 @@
       "id": "glt_multiply15",
       "defType": "math/math",
       "position": {
-        "x": 1481,
-        "y": 106
+        "x": 1476,
+        "y": 221
       },
       "params": {
         "op": "multiply",
@@ -1215,8 +1215,8 @@
       "id": "glt_multiply16",
       "defType": "math/math",
       "position": {
-        "x": 145,
-        "y": 368
+        "x": 147,
+        "y": 377
       },
       "params": {
         "op": "multiply",
@@ -1231,8 +1231,8 @@
       "id": "glt_add9",
       "defType": "math/math",
       "position": {
-        "x": 417,
-        "y": 371
+        "x": 427,
+        "y": 296
       },
       "params": {
         "op": "add",
@@ -1247,8 +1247,8 @@
       "id": "glt_multiply17",
       "defType": "math/math",
       "position": {
-        "x": 687,
-        "y": 319
+        "x": 717,
+        "y": 216
       },
       "params": {
         "op": "multiply",
@@ -1260,8 +1260,8 @@
       "id": "glt_multiply18",
       "defType": "math/math",
       "position": {
-        "x": 145,
-        "y": 516
+        "x": 147,
+        "y": 543
       },
       "params": {
         "op": "multiply",
@@ -1276,8 +1276,8 @@
       "id": "glt_add10",
       "defType": "math/math",
       "position": {
-        "x": 963,
-        "y": 351
+        "x": 996,
+        "y": 366
       },
       "params": {
         "op": "add",
@@ -1289,8 +1289,8 @@
       "id": "glt_blobStartsCosY",
       "defType": "math/math",
       "position": {
-        "x": 1231,
-        "y": 302
+        "x": 1264,
+        "y": 387
       },
       "params": {
         "op": "cos",
@@ -1302,8 +1302,8 @@
       "id": "glt_multiply19",
       "defType": "math/math",
       "position": {
-        "x": 1481,
-        "y": 254
+        "x": 1476,
+        "y": 386
       },
       "params": {
         "op": "multiply",
@@ -1318,8 +1318,8 @@
       "id": "glt_blobStartsPos",
       "defType": "vec2/make",
       "position": {
-        "x": 1754,
-        "y": 169
+        "x": 1751,
+        "y": 360
       },
       "params": {},
       "parentId": "glt_blobStarts"
@@ -1328,8 +1328,8 @@
       "id": "glt_multiply20",
       "defType": "math/math",
       "position": {
-        "x": 148,
-        "y": 40
+        "x": 143,
+        "y": 46
       },
       "params": {
         "op": "multiply",
@@ -1344,8 +1344,8 @@
       "id": "glt_add11",
       "defType": "math/math",
       "position": {
-        "x": 419,
-        "y": 41
+        "x": 416,
+        "y": 40
       },
       "params": {
         "op": "add",
@@ -1360,8 +1360,8 @@
       "id": "glt_discHue",
       "defType": "math/math",
       "position": {
-        "x": 688,
-        "y": 49
+        "x": 685,
+        "y": 57
       },
       "params": {
         "op": "fract",
@@ -1373,8 +1373,8 @@
       "id": "glt_multiply21",
       "defType": "math/math",
       "position": {
-        "x": 938,
-        "y": 58
+        "x": 897,
+        "y": 54
       },
       "params": {
         "op": "multiply",
@@ -1389,8 +1389,8 @@
       "id": "glt_discColour",
       "defType": "color/color",
       "position": {
-        "x": 1207,
-        "y": 66
+        "x": 1165,
+        "y": 73
       },
       "params": {
         "mode": "hsl"
@@ -1406,8 +1406,8 @@
       "id": "glt_eyePos",
       "defType": "math/math",
       "position": {
-        "x": 148,
-        "y": 380
+        "x": 143,
+        "y": 421
       },
       "params": {
         "op": "add",
@@ -1425,8 +1425,8 @@
       "id": "glt_mouseSeeds",
       "defType": "math/math",
       "position": {
-        "x": 1662,
-        "y": 884
+        "x": 1594,
+        "y": 1150
       },
       "params": {
         "op": "add",
@@ -1437,8 +1437,8 @@
       "id": "glt_mouseSeedCount",
       "defType": "logic/select",
       "position": {
-        "x": 1693,
-        "y": 1032
+        "x": 1632,
+        "y": 1315
       },
       "params": {},
       "portValues": {
@@ -1450,8 +1450,8 @@
       "id": "glt_startSeedCount",
       "defType": "logic/select",
       "position": {
-        "x": 403,
-        "y": 1243
+        "x": 374,
+        "y": 1520
       },
       "params": {},
       "portValues": {
@@ -1463,8 +1463,8 @@
       "id": "glt_trackColour",
       "defType": "color/lerp",
       "position": {
-        "x": 140,
-        "y": 462
+        "x": 161,
+        "y": 481
       },
       "params": {
         "space": "rgb"
@@ -1490,7 +1490,7 @@
       "defType": "math/math",
       "position": {
         "x": 133,
-        "y": 298
+        "y": 316
       },
       "params": {
         "op": "add",
@@ -1508,8 +1508,8 @@
       "id": "glt_multiply22",
       "defType": "math/math",
       "position": {
-        "x": 128,
-        "y": 258
+        "x": 129,
+        "y": 49
       },
       "params": {
         "op": "multiply",
@@ -1524,8 +1524,8 @@
       "id": "glt_burstNoise",
       "defType": "noise/noise",
       "position": {
-        "x": 392,
-        "y": 216
+        "x": 397,
+        "y": 50
       },
       "params": {
         "mode": "perlin"
@@ -1539,8 +1539,8 @@
       "id": "glt_bursting",
       "defType": "logic/compare",
       "position": {
-        "x": 655,
-        "y": 198
+        "x": 640,
+        "y": 177
       },
       "params": {
         "op": "greater"
@@ -1554,8 +1554,8 @@
       "id": "glt_burstLevel",
       "defType": "logic/select",
       "position": {
-        "x": 933,
-        "y": 204
+        "x": 892,
+        "y": 151
       },
       "params": {},
       "portValues": {
@@ -1568,8 +1568,8 @@
       "id": "glt_multiply23",
       "defType": "math/math",
       "position": {
-        "x": 1137,
-        "y": 140
+        "x": 1094,
+        "y": 82
       },
       "params": {
         "op": "multiply",
@@ -1581,8 +1581,8 @@
       "id": "glt_multiply24",
       "defType": "math/math",
       "position": {
-        "x": 1414,
-        "y": 56
+        "x": 1372,
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -1597,8 +1597,8 @@
       "id": "glt_add12",
       "defType": "math/math",
       "position": {
-        "x": 1682,
-        "y": 40
+        "x": 1636,
+        "y": 62
       },
       "params": {
         "op": "add",
@@ -1613,8 +1613,8 @@
       "id": "glt_displaceAmount",
       "defType": "math/math",
       "position": {
-        "x": 1414,
-        "y": 204
+        "x": 1372,
+        "y": 206
       },
       "params": {
         "op": "multiply",
@@ -1629,13 +1629,13 @@
       "id": "glt_dotSizes",
       "defType": "meta/subpatch",
       "position": {
-        "x": 377,
-        "y": 84
+        "x": 342,
+        "y": 198
       },
       "params": {
         "label": "Dot sizes",
-        "width": 1648,
-        "height": 379
+        "width": 1611,
+        "height": 390
       },
       "ports": [
         {
@@ -1643,30 +1643,30 @@
           "name": "points",
           "type": "vec2",
           "direction": "input",
-          "y": 212
+          "y": 152
         },
         {
           "id": "add2",
           "name": "sizes",
           "type": "number",
           "direction": "output",
-          "y": 83
+          "y": 336
         }
       ],
-      "width": 1648,
-      "height": 379
+      "width": 1611,
+      "height": 390
     },
     {
       "id": "glt_bursts",
       "defType": "meta/subpatch",
       "position": {
-        "x": 3582,
-        "y": 527
+        "x": 3477,
+        "y": 885
       },
       "params": {
         "label": "Glitch bursts",
-        "width": 1964,
-        "height": 532
+        "width": 1916,
+        "height": 417
       },
       "ports": [
         {
@@ -1674,32 +1674,32 @@
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 317
+          "y": 108
         },
         {
           "id": "glitch",
           "name": "glitch",
           "type": "number",
           "direction": "input",
-          "y": 168
+          "y": 37
         },
         {
           "id": "add12",
           "name": "add12",
           "type": "number",
           "direction": "output",
-          "y": 106
+          "y": 167
         },
         {
           "id": "displaceAmount",
           "name": "displace",
           "type": "number",
           "direction": "output",
-          "y": 238
+          "y": 307
         }
       ],
-      "width": 1964,
-      "height": 532
+      "width": 1916,
+      "height": 417
     }
   ],
   "edges": [

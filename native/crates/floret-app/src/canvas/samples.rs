@@ -267,22 +267,20 @@ fn sample_nodes_fit_their_text() {
                         _ => {}
                     }
                 }
-                // Value boxes run to 8 from the edge; output labels sit 10
-                // in, 4 clear of the row's content.
-                let out = row.output.as_ref().map(|(l, _)| w(l, label.clone()) + 4.0);
-                let limit = match out {
-                    Some(o) => b.rect.right() - 10.0 - o,
-                    None => b.rect.right() - geom::BOX_X,
-                };
-                if end > limit + 1.0 {
-                    failures.push(format!(
-                        "{at}: row '{name}' runs into {}",
-                        if out.is_some() {
-                            "its output"
-                        } else {
-                            "the edge"
-                        }
-                    ));
+                // Value boxes run to 8 from the edge.
+                if end > b.rect.right() - geom::BOX_X + 1.0 {
+                    failures.push(format!("{at}: row '{name}' runs into the edge"));
+                }
+            }
+            // Footer labels sit 10 in from the right, clear of the left edge
+            // and below the inputs.
+            let foot = egui::FontId::proportional(geom::FOOT_FONT);
+            for o in &b.outs {
+                if b.rect.right() - 10.0 - w(&o.label, foot.clone()) < b.rect.left() + 8.0 {
+                    failures.push(format!("{at}: output '{}' doesn't fit", o.label));
+                }
+                if b.rows.iter().any(|r| r.y + geom::ROW_H / 2.0 > o.y) {
+                    failures.push(format!("{at}: output '{}' isn't under the inputs", o.label));
                 }
             }
         }
@@ -292,8 +290,8 @@ fn sample_nodes_fit_their_text() {
 }
 
 /// The Palette's mode dropdown is wide enough for every mode, in every
-/// mode: a generating palette (standard rows, the output on the mode's
-/// row) grows to fit it; the stops body keeps the custom-node width.
+/// mode: a generating palette (standard rows, the output in the footer)
+/// grows to fit it; the stops body keeps the custom-node width.
 #[test]
 fn palette_mode_dropdown_fits_every_option() {
     real_fonts();

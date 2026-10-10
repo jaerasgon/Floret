@@ -30,8 +30,8 @@
       "id": "gs_sky_pal",
       "defType": "color/palette",
       "position": {
-        "x": 858,
-        "y": 0
+        "x": 855,
+        "y": 40
       },
       "params": {
         "stopCount": 4,
@@ -45,8 +45,8 @@
       "id": "gs_sky_grad",
       "defType": "style/gradient",
       "position": {
-        "x": 1161,
-        "y": 49
+        "x": 1157,
+        "y": 159
       },
       "params": {
         "mode": "linear",
@@ -81,8 +81,8 @@
       "id": "gs_sky",
       "defType": "draw/rect",
       "position": {
-        "x": 1475,
-        "y": 155
+        "x": 1426,
+        "y": 404
       },
       "params": {
         "w": 600,
@@ -97,8 +97,8 @@
       "id": "gs_sun_pal",
       "defType": "color/palette",
       "position": {
-        "x": 575,
-        "y": 178
+        "x": 571,
+        "y": 181
       },
       "params": {
         "stopCount": 3,
@@ -111,8 +111,8 @@
       "id": "gs_sun_grad",
       "defType": "style/gradient",
       "position": {
-        "x": 866,
-        "y": 214
+        "x": 876,
+        "y": 250
       },
       "params": {
         "mode": "linear",
@@ -147,8 +147,8 @@
       "id": "gs_sun",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1179,
-        "y": 329
+        "x": 1159,
+        "y": 456
       },
       "params": {
         "pos": {
@@ -172,7 +172,7 @@
       "defType": "color/palette",
       "position": {
         "x": 0,
-        "y": 498
+        "y": 305
       },
       "params": {
         "stopCount": 4,
@@ -186,8 +186,8 @@
       "id": "gs_stripe_pos",
       "defType": "data/csv-inline",
       "position": {
-        "x": 1,
-        "y": 712
+        "x": 26,
+        "y": 515
       },
       "params": {
         "data": "0, 0.6, 0.6, 1"
@@ -197,8 +197,8 @@
       "id": "gs_stripe_grad",
       "defType": "style/gradient",
       "position": {
-        "x": 279,
-        "y": 561
+        "x": 292,
+        "y": 380
       },
       "params": {
         "mode": "linear",
@@ -233,8 +233,8 @@
       "id": "gs_stripes",
       "defType": "draw/rect",
       "position": {
-        "x": 599,
-        "y": 496
+        "x": 594,
+        "y": 512
       },
       "params": {
         "pos": {
@@ -257,8 +257,8 @@
       "id": "gs_slide",
       "defType": "motion/lfo",
       "position": {
-        "x": 295,
-        "y": 237
+        "x": 275,
+        "y": 0
       },
       "params": {
         "shape": "saw",
@@ -277,8 +277,8 @@
       "id": "gs_slide_xy",
       "defType": "vec2/make",
       "position": {
-        "x": 617,
-        "y": 370
+        "x": 613,
+        "y": 368
       },
       "params": {
         "x": 0,
@@ -293,8 +293,8 @@
       "id": "gs_slide_tr",
       "defType": "transform/translate",
       "position": {
-        "x": 896,
-        "y": 494
+        "x": 884,
+        "y": 547
       },
       "params": {}
     },
@@ -302,8 +302,8 @@
       "id": "gs_top",
       "defType": "draw/rect",
       "position": {
-        "x": 878,
-        "y": 620
+        "x": 877,
+        "y": 691
       },
       "params": {
         "pos": {
@@ -326,8 +326,8 @@
       "id": "gs_mask_layers",
       "defType": "transform/group",
       "position": {
-        "x": 1152,
-        "y": 521
+        "x": 1136,
+        "y": 666
       },
       "params": {
         "slotCount": 2
@@ -337,8 +337,8 @@
       "id": "gs_mask",
       "defType": "transform/mask",
       "position": {
-        "x": 1445,
-        "y": 385
+        "x": 1420,
+        "y": 613
       },
       "params": {
         "mode": "luminance",
@@ -353,8 +353,8 @@
       "id": "gs_ring_pal",
       "defType": "color/palette",
       "position": {
-        "x": 270,
-        "y": 841
+        "x": 271,
+        "y": 678
       },
       "params": {
         "stopCount": 4,
@@ -368,8 +368,8 @@
       "id": "gs_turn",
       "defType": "motion/lfo",
       "position": {
-        "x": 295,
-        "y": 1055
+        "x": 275,
+        "y": 887
       },
       "params": {
         "shape": "saw",
@@ -388,8 +388,8 @@
       "id": "gs_ring_nofill",
       "defType": "style/no-fill",
       "position": {
-        "x": 42,
-        "y": 1401
+        "x": 40,
+        "y": 1264
       },
       "params": {}
     },
@@ -397,8 +397,8 @@
       "id": "gs_ring_weight",
       "defType": "style/stroke-weight",
       "position": {
-        "x": 296,
-        "y": 1379
+        "x": 288,
+        "y": 1267
       },
       "params": {
         "w": 5
@@ -411,8 +411,8 @@
       "id": "gs_ring_grad",
       "defType": "style/gradient",
       "position": {
-        "x": 584,
-        "y": 929
+        "x": 592,
+        "y": 900
       },
       "params": {
         "mode": "conic",
@@ -441,8 +441,8 @@
       "id": "gs_ring",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1472,
-        "y": 572
+        "x": 1426,
+        "y": 801
       },
       "params": {
         "pos": {
@@ -465,8 +465,8 @@
       "id": "gs_group",
       "defType": "transform/group",
       "position": {
-        "x": 1739,
-        "y": 348
+        "x": 1677,
+        "y": 690
       },
       "params": {
         "slotCount": 3
@@ -476,8 +476,8 @@
       "id": "gs_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2003,
-        "y": 348
+        "x": 1941,
+        "y": 759
       },
       "params": {
         "width": 600,

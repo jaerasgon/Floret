@@ -30,8 +30,8 @@
       "id": "eco_hunger",
       "defType": "io/slider",
       "position": {
-        "x": 2571,
-        "y": 1061
+        "x": 2604,
+        "y": 1420
       },
       "params": {
         "value": 1.6,
@@ -48,8 +48,8 @@
       "id": "eco_speed",
       "defType": "io/slider",
       "position": {
-        "x": 2571,
-        "y": 787
+        "x": 2604,
+        "y": 1111
       },
       "params": {
         "value": 120,
@@ -66,8 +66,8 @@
       "id": "eco_regrow",
       "defType": "io/slider",
       "position": {
-        "x": 600,
-        "y": 470
+        "x": 591,
+        "y": 675
       },
       "params": {
         "value": 6,
@@ -84,8 +84,8 @@
       "id": "eco_metabolism",
       "defType": "io/slider",
       "position": {
-        "x": 4091,
-        "y": 1532
+        "x": 4176,
+        "y": 2001
       },
       "params": {
         "value": 0.07,
@@ -102,8 +102,8 @@
       "id": "eco_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 25,
-        "y": 559
+        "x": 22,
+        "y": 1009
       },
       "params": {},
       "portValues": {}
@@ -112,8 +112,8 @@
       "id": "eco_dt",
       "defType": "time/delta",
       "position": {
-        "x": 635,
-        "y": 1472
+        "x": 632,
+        "y": 1802
       },
       "params": {},
       "portValues": {
@@ -124,8 +124,8 @@
       "id": "eco_foodStart",
       "defType": "geometry/scatter",
       "position": {
-        "x": 277,
-        "y": 1111
+        "x": 297,
+        "y": 1370
       },
       "params": {
         "mode": "random"
@@ -147,8 +147,8 @@
       "id": "eco_ids",
       "defType": "spread/range",
       "position": {
-        "x": 4,
-        "y": 1203
+        "x": 0,
+        "y": 1432
       },
       "params": {
         "count": 70
@@ -161,8 +161,8 @@
       "id": "eco_rfood",
       "defType": "state/read-spread",
       "position": {
-        "x": 611,
-        "y": 1100
+        "x": 616,
+        "y": 1383
       },
       "params": {
         "slot": 1
@@ -175,8 +175,8 @@
       "id": "eco_rage",
       "defType": "state/read-spread",
       "position": {
-        "x": 611,
-        "y": 974
+        "x": 616,
+        "y": 1239
       },
       "params": {
         "slot": 2
@@ -189,8 +189,8 @@
       "id": "eco_ripeFood",
       "defType": "spread/sublist",
       "position": {
-        "x": 2574,
-        "y": 913
+        "x": 2626,
+        "y": 1254
       },
       "params": {
         "op": "keep-where"
@@ -201,8 +201,8 @@
       "id": "eco_rpop",
       "defType": "state/read",
       "position": {
-        "x": 0,
-        "y": 1077
+        "x": 13,
+        "y": 1247
       },
       "params": {
         "slot": 3,
@@ -217,8 +217,8 @@
       "id": "eco_boidColours",
       "defType": "color/palette",
       "position": {
-        "x": 2571,
-        "y": 1187
+        "x": 2604,
+        "y": 1563
       },
       "params": {
         "stopCount": 3,
@@ -237,8 +237,8 @@
       "id": "eco_flock",
       "defType": "particles/simulation",
       "position": {
-        "x": 2873,
-        "y": 837
+        "x": 2930,
+        "y": 1121
       },
       "params": {
         "mode": "flocking"
@@ -261,8 +261,8 @@
       "id": "eco_nearestBoid",
       "defType": "spread/lookup",
       "position": {
-        "x": 3221,
-        "y": 1229
+        "x": 3316,
+        "y": 1669
       },
       "params": {
         "op": "nearest"
@@ -273,8 +273,8 @@
       "id": "eco_boidAt",
       "defType": "spread/lookup",
       "position": {
-        "x": 3502,
-        "y": 1194
+        "x": 3600,
+        "y": 1624
       },
       "params": {
         "op": "pick"
@@ -285,37 +285,37 @@
       "id": "eco_fertileSpot",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1616,
-        "y": 573
+        "x": 1612,
+        "y": 1072
       },
       "params": {
         "label": "Fertile spot",
-        "width": 2028,
-        "height": 741
+        "width": 2065,
+        "height": 782
       },
-      "width": 2028,
-      "height": 741,
+      "width": 2065,
+      "height": 782,
       "ports": [
         {
           "id": "pr",
           "name": "mouse down",
           "type": "boolean",
           "direction": "input",
-          "y": 56
+          "y": 15
         },
         {
           "id": "m",
           "name": "mouse",
           "type": "vec2",
           "direction": "input",
-          "y": 82
+          "y": 35
         },
         {
           "id": "value",
           "name": "spot",
           "type": "vec2",
           "direction": "output",
-          "y": 77
+          "y": 189
         }
       ]
     },
@@ -323,51 +323,51 @@
       "id": "eco_regrowAt",
       "defType": "meta/subpatch",
       "position": {
-        "x": 4102,
-        "y": 984
+        "x": 4187,
+        "y": 1383
       },
       "params": {
         "label": "Regrow",
-        "width": 3244,
-        "height": 492
+        "width": 3173,
+        "height": 539
       },
-      "width": 3244,
-      "height": 492,
+      "width": 3173,
+      "height": 539,
       "ports": [
         {
           "id": "ate",
           "name": "eaten",
           "type": "boolean",
           "direction": "input",
-          "y": 15
+          "y": 17
         },
         {
           "id": "c",
           "name": "spot",
           "type": "vec2",
           "direction": "input",
-          "y": 35
+          "y": 37
         },
         {
           "id": "f",
           "name": "food",
           "type": "vec2",
           "direction": "input",
-          "y": 438
+          "y": 485
         },
         {
           "id": "ids",
           "name": "item",
           "type": "number",
           "direction": "input",
-          "y": 190
+          "y": 182
         },
         {
           "id": "value",
           "name": "food",
           "type": "vec2",
           "direction": "output",
-          "y": 87
+          "y": 263
         }
       ]
     },
@@ -375,8 +375,8 @@
       "id": "eco_wfood",
       "defType": "state/write-spread",
       "position": {
-        "x": 4422,
-        "y": 962
+        "x": 4518,
+        "y": 1452
       },
       "params": {
         "slot": 1
@@ -389,8 +389,8 @@
       "id": "eco_wage",
       "defType": "state/write-spread",
       "position": {
-        "x": 4422,
-        "y": 1132
+        "x": 4518,
+        "y": 1824
       },
       "params": {
         "slot": 2
@@ -403,8 +403,8 @@
       "id": "eco_meals",
       "defType": "spread/count-where",
       "position": {
-        "x": 4086,
-        "y": 1428
+        "x": 4170,
+        "y": 1714
       },
       "params": {},
       "portValues": {}
@@ -413,8 +413,8 @@
       "id": "eco_wpop",
       "defType": "state/write",
       "position": {
-        "x": 4714,
-        "y": 1508
+        "x": 4810,
+        "y": 2019
       },
       "params": {
         "slot": 3
@@ -427,8 +427,8 @@
       "id": "eco_rtotal",
       "defType": "state/read",
       "position": {
-        "x": 4103,
-        "y": 1302
+        "x": 4203,
+        "y": 1570
       },
       "params": {
         "slot": 4,
@@ -443,8 +443,8 @@
       "id": "eco_wtotal",
       "defType": "state/write",
       "position": {
-        "x": 4714,
-        "y": 1382
+        "x": 4810,
+        "y": 1865
       },
       "params": {
         "slot": 4
@@ -457,8 +457,8 @@
       "id": "eco_ripeCount",
       "defType": "spread/count-where",
       "position": {
-        "x": 2566,
-        "y": 557
+        "x": 2598,
+        "y": 846
       },
       "params": {},
       "portValues": {}
@@ -467,8 +467,8 @@
       "id": "eco_rhist_pop",
       "defType": "state/read-spread",
       "position": {
-        "x": 1627,
-        "y": 699
+        "x": 1636,
+        "y": 763
       },
       "params": {
         "slot": 5
@@ -481,8 +481,8 @@
       "id": "eco_take_pop",
       "defType": "spread/sublist",
       "position": {
-        "x": 1619,
-        "y": 825
+        "x": 1634,
+        "y": 906
       },
       "params": {
         "op": "take"
@@ -493,8 +493,8 @@
       "id": "eco_hist_pop",
       "defType": "spread/combine",
       "position": {
-        "x": 2574,
-        "y": 409
+        "x": 2626,
+        "y": 680
       },
       "params": {
         "op": "concat"
@@ -505,8 +505,8 @@
       "id": "eco_len_pop",
       "defType": "spread/count",
       "position": {
-        "x": 2886,
-        "y": 555
+        "x": 2926,
+        "y": 738
       },
       "params": {},
       "portValues": {}
@@ -515,8 +515,8 @@
       "id": "eco_cap_pop",
       "defType": "spread/sublist",
       "position": {
-        "x": 3776,
-        "y": 503
+        "x": 3883,
+        "y": 658
       },
       "params": {
         "op": "skip"
@@ -527,8 +527,8 @@
       "id": "eco_whist_pop",
       "defType": "state/write-spread",
       "position": {
-        "x": 4125,
-        "y": 412
+        "x": 4199,
+        "y": 666
       },
       "params": {
         "slot": 5
@@ -541,8 +541,8 @@
       "id": "eco_rhist_food",
       "defType": "state/read-spread",
       "position": {
-        "x": 3510,
-        "y": 300
+        "x": 3603,
+        "y": 870
       },
       "params": {
         "slot": 6
@@ -555,8 +555,8 @@
       "id": "eco_take_food",
       "defType": "spread/sublist",
       "position": {
-        "x": 3502,
-        "y": 426
+        "x": 3600,
+        "y": 1013
       },
       "params": {
         "op": "take"
@@ -567,8 +567,8 @@
       "id": "eco_hist_food",
       "defType": "spread/combine",
       "position": {
-        "x": 3776,
-        "y": 292
+        "x": 3883,
+        "y": 824
       },
       "params": {
         "op": "concat"
@@ -579,8 +579,8 @@
       "id": "eco_len_food",
       "defType": "spread/count",
       "position": {
-        "x": 4107,
-        "y": 308
+        "x": 4191,
+        "y": 792
       },
       "params": {},
       "portValues": {}
@@ -589,8 +589,8 @@
       "id": "eco_cap_food",
       "defType": "spread/sublist",
       "position": {
-        "x": 4986,
-        "y": 283
+        "x": 5118,
+        "y": 743
       },
       "params": {
         "op": "skip"
@@ -601,8 +601,8 @@
       "id": "eco_whist_food",
       "defType": "state/write-spread",
       "position": {
-        "x": 5315,
-        "y": 242
+        "x": 5432,
+        "y": 739
       },
       "params": {
         "slot": 6
@@ -615,8 +615,8 @@
       "id": "eco_fieldFill",
       "defType": "style/fill",
       "position": {
-        "x": 2888,
-        "y": 78
+        "x": 2936,
+        "y": 381
       },
       "params": {},
       "portValues": {
@@ -632,8 +632,8 @@
       "id": "eco_field",
       "defType": "draw/rect",
       "position": {
-        "x": 3248,
-        "y": 15
+        "x": 3317,
+        "y": 341
       },
       "params": {
         "anchor": "center"
@@ -652,12 +652,12 @@
       "id": "eco_foodEach",
       "defType": "region/foreach",
       "position": {
-        "x": 1001,
-        "y": 126
+        "x": 992,
+        "y": 235
       },
       "params": {
-        "width": 1398,
-        "height": 399,
+        "width": 1407,
+        "height": 480,
         "label": "ForEach food"
       },
       "ports": [
@@ -680,18 +680,18 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 78
+          "y": 301
         }
       ],
-      "width": 1398,
-      "height": 399
+      "width": 1407,
+      "height": 480
     },
     {
       "id": "eco_foodFill",
       "defType": "style/fill",
       "position": {
-        "x": 982,
-        "y": 216
+        "x": 971,
+        "y": 303
       },
       "params": {},
       "parentId": "eco_foodEach",
@@ -701,8 +701,8 @@
       "id": "eco_foodDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1187,
-        "y": 42
+        "x": 1172,
+        "y": 151
       },
       "params": {},
       "parentId": "eco_foodEach",
@@ -730,8 +730,8 @@
       "id": "eco_spotNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 1656,
-        "y": 0
+        "x": 1652,
+        "y": 91
       },
       "params": {},
       "portValues": {}
@@ -740,8 +740,8 @@
       "id": "eco_spotRing",
       "defType": "draw/ellipse",
       "position": {
-        "x": 2606,
-        "y": 127
+        "x": 2626,
+        "y": 433
       },
       "params": {},
       "portValues": {
@@ -753,8 +753,8 @@
       "id": "eco_boidTrails",
       "defType": "gpu/echo",
       "position": {
-        "x": 3218,
-        "y": 239
+        "x": 3311,
+        "y": 582
       },
       "params": {
         "mode": "trails"
@@ -767,8 +767,8 @@
       "id": "eco_world",
       "defType": "transform/group",
       "position": {
-        "x": 3499,
-        "y": 120
+        "x": 3578,
+        "y": 498
       },
       "params": {
         "slotCount": 4
@@ -779,8 +779,8 @@
       "id": "eco_place",
       "defType": "transform/translate",
       "position": {
-        "x": 5574,
-        "y": 252
+        "x": 5712,
+        "y": 766
       },
       "params": {},
       "portValues": {
@@ -794,30 +794,30 @@
       "id": "eco_chart_food",
       "defType": "meta/subpatch",
       "position": {
-        "x": 5266,
-        "y": 368
+        "x": 5393,
+        "y": 865
       },
       "params": {
         "label": "Chart · ripe food",
-        "width": 1632,
-        "height": 379
+        "width": 1642,
+        "height": 403
       },
-      "width": 1632,
-      "height": 379,
+      "width": 1642,
+      "height": 403,
       "ports": [
         {
           "id": "v",
           "name": "ripe share",
           "type": "number",
           "direction": "input",
-          "y": 246
+          "y": 186
         },
         {
           "id": "value",
           "name": "points",
           "type": "vec2",
           "direction": "output",
-          "y": 140
+          "y": 305
         }
       ]
     },
@@ -825,8 +825,8 @@
       "id": "eco_chartStroke_food",
       "defType": "style/stroke",
       "position": {
-        "x": 5298,
-        "y": 472
+        "x": 5434,
+        "y": 986
       },
       "params": {},
       "portValues": {
@@ -843,8 +843,8 @@
       "id": "eco_chartLine_food",
       "defType": "draw/polygon",
       "position": {
-        "x": 5580,
-        "y": 419
+        "x": 5715,
+        "y": 963
       },
       "params": {},
       "portValues": {
@@ -855,30 +855,30 @@
       "id": "eco_chart_pop",
       "defType": "meta/subpatch",
       "position": {
-        "x": 4071,
-        "y": 538
+        "x": 4156,
+        "y": 913
       },
       "params": {
         "label": "Chart · population",
-        "width": 1632,
-        "height": 379
+        "width": 1642,
+        "height": 403
       },
-      "width": 1632,
-      "height": 379,
+      "width": 1642,
+      "height": 403,
       "ports": [
         {
           "id": "v",
           "name": "population share",
           "type": "number",
           "direction": "input",
-          "y": 246
+          "y": 186
         },
         {
           "id": "value",
           "name": "points",
           "type": "vec2",
           "direction": "output",
-          "y": 140
+          "y": 305
         }
       ]
     },
@@ -886,8 +886,8 @@
       "id": "eco_chartStroke_pop",
       "defType": "style/stroke",
       "position": {
-        "x": 4108,
-        "y": 642
+        "x": 4201,
+        "y": 1035
       },
       "params": {},
       "portValues": {
@@ -904,8 +904,8 @@
       "id": "eco_chartLine_pop",
       "defType": "draw/polygon",
       "position": {
-        "x": 4421,
-        "y": 557
+        "x": 4527,
+        "y": 951
       },
       "params": {},
       "portValues": {
@@ -916,8 +916,8 @@
       "id": "eco_fmtPop",
       "defType": "string/format-number",
       "position": {
-        "x": 4686,
-        "y": 608
+        "x": 4793,
+        "y": 1038
       },
       "params": {
         "mode": "number"
@@ -931,8 +931,8 @@
       "id": "eco_fmtFood",
       "defType": "string/format-number",
       "position": {
-        "x": 4686,
-        "y": 866
+        "x": 4793,
+        "y": 1314
       },
       "params": {
         "mode": "number"
@@ -946,8 +946,8 @@
       "id": "eco_fmtMeals",
       "defType": "string/format-number",
       "position": {
-        "x": 4686,
-        "y": 1124
+        "x": 4793,
+        "y": 1589
       },
       "params": {
         "mode": "number"
@@ -962,8 +962,8 @@
       "id": "eco_hudParts",
       "defType": "spread/merge",
       "position": {
-        "x": 4983,
-        "y": 801
+        "x": 5096,
+        "y": 1396
       },
       "params": {
         "slotCount": 3
@@ -976,8 +976,8 @@
       "id": "eco_hudText",
       "defType": "string/concat",
       "position": {
-        "x": 5315,
-        "y": 674
+        "x": 5438,
+        "y": 1243
       },
       "params": {
         "separator": "    "
@@ -990,8 +990,8 @@
       "id": "eco_hudFill",
       "defType": "style/fill",
       "position": {
-        "x": 5298,
-        "y": 800
+        "x": 5434,
+        "y": 1386
       },
       "params": {},
       "portValues": {
@@ -1007,8 +1007,8 @@
       "id": "eco_hud",
       "defType": "draw/text",
       "position": {
-        "x": 5581,
-        "y": 630
+        "x": 5708,
+        "y": 1207
       },
       "params": {
         "size": 13,
@@ -1027,8 +1027,8 @@
       "id": "eco_scene",
       "defType": "transform/group",
       "position": {
-        "x": 5812,
-        "y": 437
+        "x": 5955,
+        "y": 1039
       },
       "params": {
         "slotCount": 4
@@ -1039,8 +1039,8 @@
       "id": "eco_r",
       "defType": "render/renderer",
       "position": {
-        "x": 6076,
-        "y": 437
+        "x": 6219,
+        "y": 1129
       },
       "params": {
         "width": 700,
@@ -1067,8 +1067,8 @@
       "id": "eco_subtract",
       "defType": "math/math",
       "position": {
-        "x": 293,
-        "y": 638
+        "x": 292,
+        "y": 1083
       },
       "params": {
         "op": "subtract",
@@ -1082,8 +1082,8 @@
       "id": "eco_mouseWorld",
       "defType": "vec2/make",
       "position": {
-        "x": 641,
-        "y": 596
+        "x": 633,
+        "y": 1096
       },
       "params": {}
     },
@@ -1092,7 +1092,7 @@
       "defType": "math/math",
       "position": {
         "x": 128,
-        "y": 84
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -1108,7 +1108,7 @@
       "defType": "math/math",
       "position": {
         "x": 392,
-        "y": 62
+        "y": 87
       },
       "params": {
         "op": "fract",
@@ -1120,8 +1120,8 @@
       "id": "eco_multiply2",
       "defType": "math/math",
       "position": {
-        "x": 638,
-        "y": 40
+        "x": 600,
+        "y": 112
       },
       "params": {
         "op": "multiply",
@@ -1136,8 +1136,8 @@
       "id": "eco_ripe",
       "defType": "logic/compare",
       "position": {
-        "x": 1609,
-        "y": 973
+        "x": 1625,
+        "y": 1247
       },
       "params": {
         "op": "greater-equal"
@@ -1147,8 +1147,8 @@
       "id": "eco_flockSize",
       "defType": "math/math",
       "position": {
-        "x": 2580,
-        "y": 661
+        "x": 2632,
+        "y": 967
       },
       "params": {
         "op": "floor",
@@ -1160,7 +1160,7 @@
       "defType": "vec2/math",
       "position": {
         "x": 128,
-        "y": 131
+        "y": 71
       },
       "params": {
         "op": "distance"
@@ -1171,8 +1171,8 @@
       "id": "eco_reached",
       "defType": "logic/compare",
       "position": {
-        "x": 404,
-        "y": 110
+        "x": 371,
+        "y": 87
       },
       "params": {
         "op": "less"
@@ -1186,7 +1186,7 @@
       "id": "eco_eaten",
       "defType": "logic/logic",
       "position": {
-        "x": 685,
+        "x": 620,
         "y": 40
       },
       "params": {
@@ -1198,8 +1198,8 @@
       "id": "eco_time",
       "defType": "time/seconds",
       "position": {
-        "x": 128,
-        "y": 328
+        "x": 129,
+        "y": 223
       },
       "params": {},
       "parentId": "eco_fertileSpot"
@@ -1208,8 +1208,8 @@
       "id": "eco_multiply3",
       "defType": "math/math",
       "position": {
-        "x": 309,
-        "y": 306
+        "x": 310,
+        "y": 201
       },
       "params": {
         "op": "multiply",
@@ -1224,8 +1224,8 @@
       "id": "eco_spotNoiseX",
       "defType": "noise/noise",
       "position": {
-        "x": 597,
-        "y": 101
+        "x": 603,
+        "y": 40
       },
       "params": {
         "mode": "perlin"
@@ -1239,8 +1239,8 @@
       "id": "eco_spotNoiseY",
       "defType": "noise/noise",
       "position": {
-        "x": 597,
-        "y": 425
+        "x": 603,
+        "y": 415
       },
       "params": {
         "mode": "perlin"
@@ -1254,8 +1254,8 @@
       "id": "eco_spotNoise",
       "defType": "vec2/make",
       "position": {
-        "x": 884,
-        "y": 239
+        "x": 867,
+        "y": 400
       },
       "params": {},
       "parentId": "eco_fertileSpot"
@@ -1264,8 +1264,8 @@
       "id": "eco_spotCentred",
       "defType": "math/math",
       "position": {
-        "x": 1069,
-        "y": 191
+        "x": 1067,
+        "y": 303
       },
       "params": {
         "op": "subtract",
@@ -1283,8 +1283,8 @@
       "id": "eco_spotSpread",
       "defType": "math/math",
       "position": {
-        "x": 1336,
-        "y": 144
+        "x": 1349,
+        "y": 229
       },
       "params": {
         "op": "multiply",
@@ -1302,8 +1302,8 @@
       "id": "eco_spotInField",
       "defType": "math/clamp",
       "position": {
-        "x": 1604,
-        "y": 120
+        "x": 1631,
+        "y": 178
       },
       "params": {
         "valueType": "vec2"
@@ -1324,8 +1324,8 @@
       "id": "eco_spotOrMouse",
       "defType": "logic/select",
       "position": {
-        "x": 1811,
-        "y": 40
+        "x": 1861,
+        "y": 83
       },
       "params": {},
       "parentId": "eco_fertileSpot"
@@ -1335,7 +1335,7 @@
       "defType": "time/frame",
       "position": {
         "x": 172,
-        "y": 353
+        "y": 371
       },
       "params": {},
       "parentId": "eco_regrowAt"
@@ -1345,7 +1345,7 @@
       "defType": "math/math",
       "position": {
         "x": 134,
-        "y": 57
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -1360,8 +1360,8 @@
       "id": "eco_multiply5",
       "defType": "math/math",
       "position": {
-        "x": 422,
-        "y": 166
+        "x": 424,
+        "y": 179
       },
       "params": {
         "op": "multiply",
@@ -1376,8 +1376,8 @@
       "id": "eco_add",
       "defType": "math/math",
       "position": {
-        "x": 692,
-        "y": 85
+        "x": 701,
+        "y": 117
       },
       "params": {
         "op": "add",
@@ -1389,8 +1389,8 @@
       "id": "eco_turnSin",
       "defType": "math/math",
       "position": {
-        "x": 959,
-        "y": 78
+        "x": 971,
+        "y": 123
       },
       "params": {
         "op": "sin",
@@ -1402,8 +1402,8 @@
       "id": "eco_multiply6",
       "defType": "math/math",
       "position": {
-        "x": 1209,
-        "y": 71
+        "x": 1185,
+        "y": 107
       },
       "params": {
         "op": "multiply",
@@ -1418,8 +1418,8 @@
       "id": "eco_turn",
       "defType": "math/math",
       "position": {
-        "x": 1486,
-        "y": 65
+        "x": 1483,
+        "y": 114
       },
       "params": {
         "op": "fract",
@@ -1432,7 +1432,7 @@
       "defType": "math/math",
       "position": {
         "x": 134,
-        "y": 205
+        "y": 206
       },
       "params": {
         "op": "multiply",
@@ -1447,8 +1447,8 @@
       "id": "eco_multiply8",
       "defType": "math/math",
       "position": {
-        "x": 422,
-        "y": 314
+        "x": 424,
+        "y": 345
       },
       "params": {
         "op": "multiply",
@@ -1463,8 +1463,8 @@
       "id": "eco_add2",
       "defType": "math/math",
       "position": {
-        "x": 692,
-        "y": 246
+        "x": 701,
+        "y": 283
       },
       "params": {
         "op": "add",
@@ -1476,8 +1476,8 @@
       "id": "eco_reachSin",
       "defType": "math/math",
       "position": {
-        "x": 1218,
-        "y": 231
+        "x": 1213,
+        "y": 286
       },
       "params": {
         "op": "sin",
@@ -1489,8 +1489,8 @@
       "id": "eco_multiply9",
       "defType": "math/math",
       "position": {
-        "x": 1477,
-        "y": 217
+        "x": 1455,
+        "y": 270
       },
       "params": {
         "op": "multiply",
@@ -1505,8 +1505,8 @@
       "id": "eco_reach",
       "defType": "math/math",
       "position": {
-        "x": 1753,
-        "y": 206
+        "x": 1754,
+        "y": 277
       },
       "params": {
         "op": "fract",
@@ -1518,8 +1518,8 @@
       "id": "eco_multiply10",
       "defType": "math/math",
       "position": {
-        "x": 1744,
-        "y": 58
+        "x": 1726,
+        "y": 100
       },
       "params": {
         "op": "multiply",
@@ -1534,8 +1534,8 @@
       "id": "eco_direction",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 2027,
-        "y": 64
+        "x": 1997,
+        "y": 119
       },
       "params": {},
       "parentId": "eco_regrowAt",
@@ -1547,8 +1547,8 @@
       "id": "eco_evenDisc",
       "defType": "math/math",
       "position": {
-        "x": 2012,
-        "y": 190
+        "x": 2000,
+        "y": 263
       },
       "params": {
         "op": "sqrt",
@@ -1560,8 +1560,8 @@
       "id": "eco_offset",
       "defType": "vec2/math",
       "position": {
-        "x": 2266,
-        "y": 92
+        "x": 2227,
+        "y": 165
       },
       "params": {
         "op": "scale"
@@ -1572,8 +1572,8 @@
       "id": "eco_newPlace",
       "defType": "math/math",
       "position": {
-        "x": 2547,
-        "y": 40
+        "x": 2477,
+        "y": 113
       },
       "params": {
         "op": "add",
@@ -1585,8 +1585,8 @@
       "id": "eco_inField",
       "defType": "math/clamp",
       "position": {
-        "x": 2817,
-        "y": 62
+        "x": 2746,
+        "y": 150
       },
       "params": {
         "valueType": "vec2"
@@ -1607,8 +1607,8 @@
       "id": "eco_regrowOrStay",
       "defType": "logic/select",
       "position": {
-        "x": 3027,
-        "y": 50
+        "x": 2969,
+        "y": 157
       },
       "params": {},
       "parentId": "eco_regrowAt"
@@ -1617,8 +1617,8 @@
       "id": "eco_add3",
       "defType": "math/math",
       "position": {
-        "x": 1616,
-        "y": 1357
+        "x": 1612,
+        "y": 1697
       },
       "params": {
         "op": "add",
@@ -1629,8 +1629,8 @@
       "id": "eco_ageing",
       "defType": "logic/select",
       "position": {
-        "x": 4123,
-        "y": 1154
+        "x": 4214,
+        "y": 1835
       },
       "params": {},
       "portValues": {
@@ -1641,13 +1641,13 @@
       "id": "eco_population",
       "defType": "meta/subpatch",
       "position": {
-        "x": 4388,
-        "y": 1490
+        "x": 4496,
+        "y": 1950
       },
       "params": {
         "label": "Population",
-        "width": 1156,
-        "height": 409
+        "width": 1162,
+        "height": 417
       },
       "ports": [
         {
@@ -1655,46 +1655,46 @@
           "name": "population",
           "type": "number",
           "direction": "input",
-          "y": 132
+          "y": 110
         },
         {
           "id": "m",
           "name": "meals",
           "type": "number",
           "direction": "input",
-          "y": 152
+          "y": 130
         },
         {
           "id": "k",
           "name": "metabolism",
           "type": "number",
           "direction": "input",
-          "y": 312
+          "y": 303
         },
         {
           "id": "h",
           "name": "frame step",
           "type": "number",
           "direction": "input",
-          "y": 355
+          "y": 363
         },
         {
           "id": "next",
           "name": "next population",
           "type": "number",
           "direction": "output",
-          "y": 136
+          "y": 355
         }
       ],
-      "width": 1156,
-      "height": 409
+      "width": 1162,
+      "height": 417
     },
     {
       "id": "eco_multiply11",
       "defType": "math/math",
       "position": {
-        "x": 140,
-        "y": 83
+        "x": 141,
+        "y": 56
       },
       "params": {
         "op": "multiply",
@@ -1709,7 +1709,7 @@
       "id": "eco_add4",
       "defType": "math/math",
       "position": {
-        "x": 411,
+        "x": 415,
         "y": 40
       },
       "params": {
@@ -1722,8 +1722,8 @@
       "id": "eco_multiply12",
       "defType": "math/math",
       "position": {
-        "x": 140,
-        "y": 231
+        "x": 141,
+        "y": 222
       },
       "params": {
         "op": "multiply",
@@ -1735,8 +1735,8 @@
       "id": "eco_multiply13",
       "defType": "math/math",
       "position": {
-        "x": 411,
-        "y": 225
+        "x": 415,
+        "y": 247
       },
       "params": {
         "op": "multiply",
@@ -1748,8 +1748,8 @@
       "id": "eco_subtract2",
       "defType": "math/math",
       "position": {
-        "x": 687,
-        "y": 99
+        "x": 693,
+        "y": 180
       },
       "params": {
         "op": "subtract",
@@ -1761,8 +1761,8 @@
       "id": "eco_births",
       "defType": "math/clamp",
       "position": {
-        "x": 951,
-        "y": 99
+        "x": 957,
+        "y": 249
       },
       "params": {
         "valueType": "number"
@@ -1777,8 +1777,8 @@
       "id": "eco_totalMeals",
       "defType": "math/math",
       "position": {
-        "x": 4389,
-        "y": 1303
+        "x": 4495,
+        "y": 1659
       },
       "params": {
         "op": "add",
@@ -1790,7 +1790,7 @@
       "defType": "time/frame",
       "position": {
         "x": 128,
-        "y": 106
+        "y": 62
       },
       "params": {},
       "parentId": "eco_sampleNowEvery"
@@ -1800,7 +1800,7 @@
       "defType": "math/math",
       "position": {
         "x": 316,
-        "y": 84
+        "y": 40
       },
       "params": {
         "op": "mod",
@@ -1815,8 +1815,8 @@
       "id": "eco_sampleNowTenth",
       "defType": "logic/compare",
       "position": {
-        "x": 562,
-        "y": 62
+        "x": 524,
+        "y": 87
       },
       "params": {
         "op": "equal"
@@ -1830,8 +1830,8 @@
       "id": "eco_sampleNow",
       "defType": "convert/convert",
       "position": {
-        "x": 839,
-        "y": 40
+        "x": 762,
+        "y": 134
       },
       "params": {
         "to": "number"
@@ -1842,8 +1842,8 @@
       "id": "eco_divide",
       "defType": "math/math",
       "position": {
-        "x": 293,
-        "y": 859
+        "x": 292,
+        "y": 885
       },
       "params": {
         "op": "divide",
@@ -1857,8 +1857,8 @@
       "id": "eco_norm_pop",
       "defType": "math/math",
       "position": {
-        "x": 600,
-        "y": 826
+        "x": 591,
+        "y": 834
       },
       "params": {
         "op": "min",
@@ -1872,8 +1872,8 @@
       "id": "eco_divide2",
       "defType": "math/math",
       "position": {
-        "x": 2871,
-        "y": 375
+        "x": 2910,
+        "y": 859
       },
       "params": {
         "op": "divide",
@@ -1887,8 +1887,8 @@
       "id": "eco_norm_food",
       "defType": "math/math",
       "position": {
-        "x": 3218,
-        "y": 431
+        "x": 3294,
+        "y": 957
       },
       "params": {
         "op": "min",
@@ -1902,8 +1902,8 @@
       "id": "eco_subtract3",
       "defType": "math/math",
       "position": {
-        "x": 3218,
-        "y": 611
+        "x": 3294,
+        "y": 792
       },
       "params": {
         "op": "subtract",
@@ -1917,8 +1917,8 @@
       "id": "eco_drop_pop",
       "defType": "math/math",
       "position": {
-        "x": 3499,
-        "y": 584
+        "x": 3578,
+        "y": 704
       },
       "params": {
         "op": "max",
@@ -1932,8 +1932,8 @@
       "id": "eco_subtract4",
       "defType": "math/math",
       "position": {
-        "x": 4389,
-        "y": 330
+        "x": 4495,
+        "y": 785
       },
       "params": {
         "op": "subtract",
@@ -1947,8 +1947,8 @@
       "id": "eco_drop_food",
       "defType": "math/math",
       "position": {
-        "x": 4677,
-        "y": 330
+        "x": 4783,
+        "y": 791
       },
       "params": {
         "op": "max",
@@ -1962,8 +1962,8 @@
       "id": "eco_count",
       "defType": "spread/count",
       "position": {
-        "x": 149,
-        "y": 135
+        "x": 150,
+        "y": 66
       },
       "params": {},
       "parentId": "eco_chart_food"
@@ -1972,8 +1972,8 @@
       "id": "eco_chart_foodIndex",
       "defType": "spread/range",
       "position": {
-        "x": 398,
-        "y": 139
+        "x": 401,
+        "y": 75
       },
       "params": {},
       "parentId": "eco_chart_food"
@@ -1982,8 +1982,8 @@
       "id": "eco_multiply14",
       "defType": "math/math",
       "position": {
-        "x": 633,
-        "y": 99
+        "x": 637,
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -1998,8 +1998,8 @@
       "id": "eco_divide3",
       "defType": "math/math",
       "position": {
-        "x": 897,
-        "y": 80
+        "x": 904,
+        "y": 71
       },
       "params": {
         "op": "divide",
@@ -2014,8 +2014,8 @@
       "id": "eco_add5",
       "defType": "math/math",
       "position": {
-        "x": 1162,
-        "y": 40
+        "x": 1170,
+        "y": 80
       },
       "params": {
         "op": "add",
@@ -2031,7 +2031,7 @@
       "defType": "math/math",
       "position": {
         "x": 134,
-        "y": 239
+        "y": 188
       },
       "params": {
         "op": "multiply",
@@ -2046,8 +2046,8 @@
       "id": "eco_subtract5",
       "defType": "math/math",
       "position": {
-        "x": 1162,
-        "y": 188
+        "x": 1170,
+        "y": 245
       },
       "params": {
         "op": "subtract",
@@ -2062,8 +2062,8 @@
       "id": "eco_chart_foodPoint",
       "defType": "vec2/make",
       "position": {
-        "x": 1435,
-        "y": 103
+        "x": 1445,
+        "y": 221
       },
       "params": {},
       "parentId": "eco_chart_food"
@@ -2072,8 +2072,8 @@
       "id": "eco_count2",
       "defType": "spread/count",
       "position": {
-        "x": 149,
-        "y": 135
+        "x": 150,
+        "y": 66
       },
       "params": {},
       "parentId": "eco_chart_pop"
@@ -2082,8 +2082,8 @@
       "id": "eco_chart_popIndex",
       "defType": "spread/range",
       "position": {
-        "x": 398,
-        "y": 139
+        "x": 401,
+        "y": 75
       },
       "params": {},
       "parentId": "eco_chart_pop"
@@ -2092,8 +2092,8 @@
       "id": "eco_multiply16",
       "defType": "math/math",
       "position": {
-        "x": 633,
-        "y": 99
+        "x": 637,
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -2108,8 +2108,8 @@
       "id": "eco_divide4",
       "defType": "math/math",
       "position": {
-        "x": 897,
-        "y": 80
+        "x": 904,
+        "y": 71
       },
       "params": {
         "op": "divide",
@@ -2124,8 +2124,8 @@
       "id": "eco_add6",
       "defType": "math/math",
       "position": {
-        "x": 1162,
-        "y": 40
+        "x": 1170,
+        "y": 80
       },
       "params": {
         "op": "add",
@@ -2141,7 +2141,7 @@
       "defType": "math/math",
       "position": {
         "x": 134,
-        "y": 239
+        "y": 188
       },
       "params": {
         "op": "multiply",
@@ -2156,8 +2156,8 @@
       "id": "eco_subtract6",
       "defType": "math/math",
       "position": {
-        "x": 1162,
-        "y": 188
+        "x": 1170,
+        "y": 245
       },
       "params": {
         "op": "subtract",
@@ -2172,8 +2172,8 @@
       "id": "eco_chart_popPoint",
       "defType": "vec2/make",
       "position": {
-        "x": 1435,
-        "y": 103
+        "x": 1445,
+        "y": 221
       },
       "params": {},
       "parentId": "eco_chart_pop"
@@ -2182,8 +2182,8 @@
       "id": "eco_dotRipe",
       "defType": "logic/compare",
       "position": {
-        "x": 134,
-        "y": 94
+        "x": 148,
+        "y": 85
       },
       "params": {
         "op": "greater-equal"
@@ -2194,8 +2194,8 @@
       "id": "eco_multiply18",
       "defType": "math/math",
       "position": {
-        "x": 141,
-        "y": 242
+        "x": 135,
+        "y": 250
       },
       "params": {
         "op": "multiply",
@@ -2210,8 +2210,8 @@
       "id": "eco_divide5",
       "defType": "math/math",
       "position": {
-        "x": 417,
-        "y": 259
+        "x": 404,
+        "y": 296
       },
       "params": {
         "op": "divide",
@@ -2223,8 +2223,8 @@
       "id": "eco_add7",
       "defType": "math/math",
       "position": {
-        "x": 687,
-        "y": 255
+        "x": 672,
+        "y": 322
       },
       "params": {
         "op": "add",
@@ -2239,8 +2239,8 @@
       "id": "eco_foodSize",
       "defType": "logic/select",
       "position": {
-        "x": 973,
-        "y": 68
+        "x": 967,
+        "y": 137
       },
       "params": {},
       "parentId": "eco_foodEach",
@@ -2252,8 +2252,8 @@
       "id": "eco_foodColour",
       "defType": "logic/select",
       "position": {
-        "x": 719,
-        "y": 107
+        "x": 710,
+        "y": 156
       },
       "params": {},
       "parentId": "eco_foodEach",
@@ -2276,13 +2276,13 @@
       "id": "eco_startAges",
       "defType": "meta/subpatch",
       "position": {
-        "x": 296,
-        "y": 1007
+        "x": 295,
+        "y": 1248
       },
       "params": {
         "label": "Start ages",
-        "width": 918,
-        "height": 224
+        "width": 880,
+        "height": 272
       },
       "ports": [
         {
@@ -2290,30 +2290,30 @@
           "name": "ids",
           "type": "number",
           "direction": "input",
-          "y": 143
+          "y": 99
         },
         {
           "id": "multiply2",
           "name": "multiply2",
           "type": "number",
           "direction": "output",
-          "y": 77
+          "y": 218
         }
       ],
-      "width": 918,
-      "height": 224
+      "width": 880,
+      "height": 272
     },
     {
       "id": "eco_eating",
       "defType": "meta/subpatch",
       "position": {
-        "x": 3787,
-        "y": 1180
+        "x": 3874,
+        "y": 1611
       },
       "params": {
         "label": "Eaten?",
-        "width": 936,
-        "height": 271
+        "width": 816,
+        "height": 245
       },
       "ports": [
         {
@@ -2321,44 +2321,44 @@
           "name": "current",
           "type": "any",
           "direction": "input",
-          "y": 190
+          "y": 130
         },
         {
           "id": "boidAt",
           "name": "boid at",
           "type": "any",
           "direction": "input",
-          "y": 212
+          "y": 152
         },
         {
           "id": "ripe",
           "name": "ripe",
           "type": "boolean",
           "direction": "input",
-          "y": 85
+          "y": 47
         },
         {
           "id": "eaten",
           "name": "eaten",
           "type": "boolean",
           "direction": "output",
-          "y": 78
+          "y": 146
         }
       ],
-      "width": 936,
-      "height": 271
+      "width": 816,
+      "height": 245
     },
     {
       "id": "eco_sampleNowEvery",
       "defType": "meta/subpatch",
       "position": {
-        "x": 583,
-        "y": 722
+        "x": 574,
+        "y": 999
       },
       "params": {
         "label": "Every 10th frame",
-        "width": 1092,
-        "height": 224
+        "width": 977,
+        "height": 273
       },
       "ports": [
         {
@@ -2366,11 +2366,11 @@
           "name": "sample now",
           "type": "number",
           "direction": "output",
-          "y": 77
+          "y": 219
         }
       ],
-      "width": 1092,
-      "height": 224
+      "width": 977,
+      "height": 273
     }
   ],
   "edges": [

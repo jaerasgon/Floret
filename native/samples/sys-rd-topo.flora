@@ -30,8 +30,8 @@
       "id": "rdt_reset",
       "defType": "io/bang",
       "position": {
-        "x": 794,
-        "y": 760
+        "x": 780,
+        "y": 667
       },
       "params": {},
       "portValues": {}
@@ -40,8 +40,8 @@
       "id": "rdt_showRaw",
       "defType": "io/toggle",
       "position": {
-        "x": 2323,
-        "y": 246
+        "x": 2334,
+        "y": 476
       },
       "params": {
         "value": false
@@ -54,8 +54,8 @@
       "id": "rdt_levels",
       "defType": "io/slider",
       "position": {
-        "x": 794,
-        "y": 864
+        "x": 780,
+        "y": 788
       },
       "params": {
         "value": 7,
@@ -72,8 +72,8 @@
       "id": "rdt_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 53,
-        "y": 777
+        "x": 32,
+        "y": 642
       },
       "params": {},
       "portValues": {}
@@ -82,8 +82,8 @@
       "id": "rdt_mpos",
       "defType": "vec2/make",
       "position": {
-        "x": 438,
-        "y": 743
+        "x": 406,
+        "y": 596
       },
       "params": {},
       "portValues": {}
@@ -92,8 +92,8 @@
       "id": "rdt_brush",
       "defType": "spread/sublist",
       "position": {
-        "x": 797,
-        "y": 612
+        "x": 802,
+        "y": 501
       },
       "params": {
         "op": "take"
@@ -105,7 +105,7 @@
       "defType": "geometry/scatter",
       "position": {
         "x": 0,
-        "y": 363
+        "y": 17
       },
       "params": {
         "mode": "poisson"
@@ -127,8 +127,8 @@
       "id": "rdt_white",
       "defType": "style/fill",
       "position": {
-        "x": 33,
-        "y": 599
+        "x": 21,
+        "y": 270
       },
       "params": {},
       "portValues": {
@@ -144,12 +144,12 @@
       "id": "rdt_seedBlobs",
       "defType": "region/foreach",
       "position": {
-        "x": 311,
-        "y": 424
+        "x": 267,
+        "y": 183
       },
       "params": {
-        "width": 339,
-        "height": 224,
+        "width": 363,
+        "height": 244,
         "label": "ForEach seed"
       },
       "ports": [
@@ -165,11 +165,11 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 190
         }
       ],
-      "width": 339,
-      "height": 224
+      "width": 363,
+      "height": 244
     },
     {
       "id": "rdt_blob",
@@ -189,8 +189,8 @@
       "id": "rdt_rasterize",
       "defType": "image/from-layer",
       "position": {
-        "x": 823,
-        "y": 464
+        "x": 809,
+        "y": 336
       },
       "params": {},
       "portValues": {
@@ -202,8 +202,8 @@
       "id": "rdt_sim",
       "defType": "particles/simulation",
       "position": {
-        "x": 1085,
-        "y": 358
+        "x": 1077,
+        "y": 293
       },
       "params": {
         "mode": "reaction",
@@ -225,8 +225,8 @@
       "id": "rdt_tints",
       "defType": "color/palette",
       "position": {
-        "x": 1399,
-        "y": 712
+        "x": 1400,
+        "y": 617
       },
       "params": {
         "stopCount": 6,
@@ -251,8 +251,8 @@
       "id": "rdt_bands",
       "defType": "geometry/contours",
       "position": {
-        "x": 1728,
-        "y": 583
+        "x": 1735,
+        "y": 620
       },
       "params": {
         "mode": "image"
@@ -273,8 +273,8 @@
       "id": "rdt_smoothTerrain",
       "defType": "image/filter",
       "position": {
-        "x": 1395,
-        "y": 532
+        "x": 1417,
+        "y": 870
       },
       "params": {
         "mode": "blur"
@@ -287,8 +287,8 @@
       "id": "rdt_inkStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 1093,
-        "y": 1115
+        "x": 1091,
+        "y": 1172
       },
       "params": {},
       "portValues": {
@@ -305,8 +305,8 @@
       "id": "rdt_inkNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 1439,
-        "y": 1266
+        "x": 1440,
+        "y": 1367
       },
       "params": {},
       "portValues": {}
@@ -315,8 +315,8 @@
       "id": "rdt_isolines",
       "defType": "geometry/contours",
       "position": {
-        "x": 1728,
-        "y": 863
+        "x": 1731,
+        "y": 983
       },
       "params": {
         "mode": "image"
@@ -337,8 +337,8 @@
       "id": "rdt_paperFill",
       "defType": "style/fill",
       "position": {
-        "x": 1416,
-        "y": 406
+        "x": 1426,
+        "y": 441
       },
       "params": {},
       "portValues": {
@@ -354,8 +354,8 @@
       "id": "rdt_paper",
       "defType": "draw/rect",
       "position": {
-        "x": 1749,
-        "y": 391
+        "x": 1731,
+        "y": 410
       },
       "params": {
         "anchor": "center"
@@ -374,8 +374,8 @@
       "id": "rdt_ringStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 27,
-        "y": 1151
+        "x": 15,
+        "y": 976
       },
       "params": {},
       "portValues": {
@@ -392,8 +392,8 @@
       "id": "rdt_ringNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 437,
-        "y": 1151
+        "x": 404,
+        "y": 1067
       },
       "params": {},
       "portValues": {}
@@ -402,8 +402,8 @@
       "id": "rdt_brushRing",
       "defType": "draw/ellipse",
       "position": {
-        "x": 829,
-        "y": 1063
+        "x": 803,
+        "y": 1005
       },
       "params": {},
       "portValues": {
@@ -416,7 +416,7 @@
       "defType": "transform/group",
       "position": {
         "x": 2034,
-        "y": 729
+        "y": 933
       },
       "params": {
         "slotCount": 4
@@ -427,8 +427,8 @@
       "id": "rdt_grain",
       "defType": "gpu/effect",
       "position": {
-        "x": 2322,
-        "y": 549
+        "x": 2351,
+        "y": 767
       },
       "params": {
         "mode": "grain"
@@ -442,8 +442,8 @@
       "id": "rdt_darkFill",
       "defType": "style/fill",
       "position": {
-        "x": 1099,
-        "y": 88
+        "x": 1097,
+        "y": 41
       },
       "params": {},
       "portValues": {
@@ -459,7 +459,7 @@
       "id": "rdt_darkRect",
       "defType": "draw/rect",
       "position": {
-        "x": 1428,
+        "x": 1423,
         "y": 0
       },
       "params": {
@@ -479,8 +479,8 @@
       "id": "rdt_rawImage",
       "defType": "draw/image",
       "position": {
-        "x": 1433,
-        "y": 192
+        "x": 1423,
+        "y": 210
       },
       "params": {},
       "portValues": {
@@ -503,8 +503,8 @@
       "id": "rdt_rawView",
       "defType": "transform/group",
       "position": {
-        "x": 1720,
-        "y": 164
+        "x": 1709,
+        "y": 267
       },
       "params": {
         "slotCount": 2
@@ -515,8 +515,8 @@
       "id": "rdt_view",
       "defType": "logic/select",
       "position": {
-        "x": 2611,
-        "y": 347
+        "x": 2633,
+        "y": 600
       },
       "params": {},
       "portValues": {}
@@ -525,8 +525,8 @@
       "id": "rdt_r",
       "defType": "render/renderer",
       "position": {
-        "x": 2812,
-        "y": 347
+        "x": 2821,
+        "y": 670
       },
       "params": {
         "width": 600,
@@ -553,8 +553,8 @@
       "id": "rdt_brushOnNum",
       "defType": "convert/convert",
       "position": {
-        "x": 410,
-        "y": 869
+        "x": 397,
+        "y": 740
       },
       "params": {
         "to": "number"
@@ -564,8 +564,8 @@
       "id": "rdt_bandSpan",
       "defType": "math/math",
       "position": {
-        "x": 1082,
-        "y": 816
+        "x": 1071,
+        "y": 739
       },
       "params": {
         "op": "divide",
@@ -579,8 +579,8 @@
       "id": "rdt_lineSpan",
       "defType": "math/math",
       "position": {
-        "x": 1399,
-        "y": 1118
+        "x": 1400,
+        "y": 1201
       },
       "params": {
         "op": "divide",
@@ -594,8 +594,8 @@
       "id": "rdt_lineLevels",
       "defType": "math/math",
       "position": {
-        "x": 1399,
-        "y": 970
+        "x": 1400,
+        "y": 1036
       },
       "params": {
         "op": "multiply",

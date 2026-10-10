@@ -156,15 +156,18 @@ pub fn body_h(c: Custom, n: &PatchNode) -> f32 {
     }
 }
 
-/// Row count when the body replaces the standard rows.
+/// Input row count when the body replaces the standard rows (the outputs'
+/// footer comes after them).
 pub fn rows(c: Custom, n: &PatchNode, _cat: &Catalogue) -> Option<usize> {
     match c {
         Custom::Slider => Some(0),
+        // The bang / button / stepper control's row.
+        Custom::Bang | Custom::Button | Custom::Stepper => Some(1),
         Custom::Select => Some(2),
         // Generated palettes use the standard rows (mode, their pins).
         Custom::Palette if widgets::palette_generates(n) => None,
-        // The mode, a row per stop, the output.
-        Custom::Palette => Some(widgets::slot_count(n, widgets::PALETTE_STOPS) as usize + 2),
+        // The mode, then a row per stop.
+        Custom::Palette => Some(widgets::slot_count(n, widgets::PALETTE_STOPS) as usize + 1),
         _ => None,
     }
 }
@@ -208,17 +211,6 @@ pub fn layout(
                 at(b, z, 10.0, y - 8.0, NODE_W - 28.0, 16.0),
                 WidgetKind::Slider(s),
             ));
-            if let Some(out) = spec.outputs.first() {
-                b.pins.push(PinGeom {
-                    side: Side::Out,
-                    port: out.name.clone(),
-                    label: values::display_label(out, false),
-                    ty: out.ty,
-                    pos: pos2(b.rect.right(), b.rect.top() + y * z),
-                    spread: false,
-                    constant: false,
-                });
-            }
             let fy = HEADER_H + 26.0;
             for (key, x) in [("min", 8.0), ("max", NODE_W - 62.0)] {
                 b.fields.push(Field {
@@ -716,8 +708,8 @@ fn expression_box_h(n: &PatchNode) -> f32 {
     len.div_ceil(24).clamp(2, 6) as f32 * 11.0 + 6.0
 }
 
-/// Palette rows: the mode, then one pin + hex swatch per stop, the spread
-/// output last.
+/// Palette rows: the mode, then one pin + hex swatch per stop (the spread
+/// output is in the footer).
 fn palette(
     cx: &Ctx,
     n: &PatchNode,
@@ -733,7 +725,6 @@ fn palette(
         label_rect: Rect::NOTHING,
         constant: false,
         integer: false,
-        output: None,
     };
     // Row 0: the mode dropdown (stops, cosine, harmonies).
     {
@@ -783,21 +774,6 @@ fn palette(
                 Json::String(widgets::palette_stop(n, i)),
             ));
         }
-        b.rows.push(row);
-    }
-    if let Some(out) = spec.outputs.first() {
-        let y = row_y(b, inputs.len() + 1, z);
-        b.pins.push(PinGeom {
-            side: Side::Out,
-            port: out.name.clone(),
-            label: values::display_label(out, false),
-            ty: out.ty,
-            pos: pos2(b.rect.right(), y),
-            spread: true,
-            constant: false,
-        });
-        let mut row = empty_row(y);
-        row.output = Some((values::display_label(out, false), out.name.clone()));
         b.rows.push(row);
     }
 }

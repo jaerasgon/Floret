@@ -26,7 +26,7 @@
       "defType": "io/toggle",
       "position": {
         "x": 0,
-        "y": 311
+        "y": 328
       },
       "params": {
         "value": false,
@@ -37,8 +37,8 @@
       "id": "mb_mic",
       "defType": "sound/audio-in",
       "position": {
-        "x": 585,
-        "y": 287
+        "x": 598,
+        "y": 302
       },
       "params": {},
       "portValues": {
@@ -49,8 +49,8 @@
       "id": "mb_time",
       "defType": "time/seconds",
       "position": {
-        "x": 1185,
-        "y": 506
+        "x": 1212,
+        "y": 622
       },
       "params": {}
     },
@@ -59,7 +59,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 128,
-        "y": 232
+        "y": 40
       },
       "params": {
         "data": "0,2,4,7,9,7,4,2,0,4,7,11,9,7,4,2"
@@ -70,8 +70,8 @@
       "id": "mb_demoDegree",
       "defType": "spread/lookup",
       "position": {
-        "x": 409,
-        "y": 210
+        "x": 367,
+        "y": 125
       },
       "params": {
         "op": "at"
@@ -82,8 +82,8 @@
       "id": "mb_demoScale",
       "defType": "sound/scale",
       "position": {
-        "x": 690,
-        "y": 124
+        "x": 601,
+        "y": 82
       },
       "params": {
         "mode": "degree",
@@ -98,8 +98,8 @@
       "id": "mb_demoNote",
       "defType": "spread/lookup",
       "position": {
-        "x": 981,
-        "y": 71
+        "x": 894,
+        "y": 105
       },
       "params": {
         "op": "at"
@@ -113,8 +113,8 @@
       "id": "mb_demoSynth",
       "defType": "sound/mono-synth",
       "position": {
-        "x": 1274,
-        "y": 40
+        "x": 1134,
+        "y": 106
       },
       "params": {},
       "portValues": {
@@ -130,8 +130,8 @@
       "id": "mb_bass",
       "defType": "sound/mono-synth",
       "position": {
-        "x": 1546,
-        "y": 128
+        "x": 1372,
+        "y": 338
       },
       "params": {},
       "portValues": {
@@ -148,8 +148,8 @@
       "id": "mb_hatNoise",
       "defType": "sound/noise",
       "position": {
-        "x": 988,
-        "y": 406
+        "x": 904,
+        "y": 452
       },
       "params": {
         "type": "white"
@@ -163,8 +163,8 @@
       "id": "mb_hat",
       "defType": "sound/envelope",
       "position": {
-        "x": 1281,
-        "y": 424
+        "x": 1141,
+        "y": 525
       },
       "params": {},
       "portValues": {
@@ -179,8 +179,8 @@
       "id": "mb_hatFilter",
       "defType": "sound/filter",
       "position": {
-        "x": 1527,
-        "y": 364
+        "x": 1373,
+        "y": 591
       },
       "params": {
         "type": "highpass"
@@ -195,8 +195,8 @@
       "id": "mb_demoMix",
       "defType": "sound/mix",
       "position": {
-        "x": 1810,
-        "y": 140
+        "x": 1625,
+        "y": 416
       },
       "params": {
         "slotCount": 3
@@ -207,8 +207,8 @@
       "id": "mb_demo",
       "defType": "sound/gain",
       "position": {
-        "x": 589,
-        "y": 156
+        "x": 606,
+        "y": 159
       },
       "params": {}
     },
@@ -216,8 +216,8 @@
       "id": "mb_demoVol",
       "defType": "io/slider",
       "position": {
-        "x": 551,
-        "y": 19
+        "x": 564,
+        "y": 0
       },
       "params": {
         "value": 0.5,
@@ -230,8 +230,8 @@
       "id": "mb_speaker",
       "defType": "sound/output",
       "position": {
-        "x": 875,
-        "y": 0
+        "x": 892,
+        "y": 25
       },
       "params": {}
     },
@@ -239,8 +239,8 @@
       "id": "mb_listen",
       "defType": "sound/mix",
       "position": {
-        "x": 839,
-        "y": 230
+        "x": 855,
+        "y": 273
       },
       "params": {
         "slotCount": 2
@@ -250,8 +250,8 @@
       "id": "mb_fft",
       "defType": "sound/fft",
       "position": {
-        "x": 1144,
-        "y": 84
+        "x": 1194,
+        "y": 131
       },
       "params": {
         "bins": "64"
@@ -264,8 +264,8 @@
       "id": "mb_beat",
       "defType": "sound/peak-detect",
       "position": {
-        "x": 1166,
-        "y": 336
+        "x": 1192,
+        "y": 435
       },
       "params": {},
       "portValues": {
@@ -278,8 +278,8 @@
       "id": "mb_bands",
       "defType": "spread/range",
       "position": {
-        "x": 854,
-        "y": 126
+        "x": 870,
+        "y": 151
       },
       "params": {},
       "portValues": {
@@ -290,8 +290,8 @@
       "id": "mb_withStandIn",
       "defType": "spread/combine",
       "position": {
-        "x": 1444,
-        "y": 142
+        "x": 1484,
+        "y": 215
       },
       "params": {
         "op": "concat"
@@ -301,8 +301,8 @@
       "id": "mb_spectrum",
       "defType": "spread/sublist",
       "position": {
-        "x": 1707,
-        "y": 154
+        "x": 1726,
+        "y": 217
       },
       "params": {
         "op": "take"
@@ -315,8 +315,8 @@
       "id": "mb_lows",
       "defType": "spread/sublist",
       "position": {
-        "x": 1992,
-        "y": 161
+        "x": 1972,
+        "y": 266
       },
       "params": {
         "op": "take"
@@ -329,8 +329,8 @@
       "id": "mb_bassLevel",
       "defType": "math/statistics",
       "position": {
-        "x": 2256,
-        "y": 179
+        "x": 2198,
+        "y": 294
       },
       "params": {
         "op": "mean"
@@ -340,8 +340,8 @@
       "id": "mb_highs",
       "defType": "spread/sublist",
       "position": {
-        "x": 1992,
-        "y": 309
+        "x": 1972,
+        "y": 432
       },
       "params": {
         "op": "skip"
@@ -354,8 +354,8 @@
       "id": "mb_trebleLevel",
       "defType": "math/statistics",
       "position": {
-        "x": 2256,
-        "y": 305
+        "x": 2198,
+        "y": 438
       },
       "params": {
         "op": "mean"
@@ -365,8 +365,8 @@
       "id": "mb_bassSmooth",
       "defType": "motion/smooth",
       "position": {
-        "x": 2532,
-        "y": 265
+        "x": 2455,
+        "y": 411
       },
       "params": {},
       "portValues": {
@@ -377,8 +377,8 @@
       "id": "mb_petalVal",
       "defType": "spread/lookup",
       "position": {
-        "x": 677,
-        "y": 569
+        "x": 635,
+        "y": 562
       },
       "params": {
         "op": "pick"
@@ -389,8 +389,8 @@
       "id": "mb_petalCols",
       "defType": "color/palette",
       "position": {
-        "x": 992,
-        "y": 402
+        "x": 935,
+        "y": 454
       },
       "params": {
         "stopCount": 4,
@@ -405,8 +405,8 @@
       "id": "mb_outerFill",
       "defType": "style/gradient",
       "position": {
-        "x": 1275,
-        "y": 292
+        "x": 1218,
+        "y": 353
       },
       "params": {
         "mode": "radial",
@@ -421,8 +421,8 @@
       "id": "mb_outerShape",
       "defType": "draw/polygon",
       "position": {
-        "x": 1554,
-        "y": 221
+        "x": 1473,
+        "y": 378
       },
       "params": {},
       "portValues": {
@@ -434,8 +434,8 @@
       "id": "mb_innerFill",
       "defType": "style/fill",
       "position": {
-        "x": 1532,
-        "y": 781
+        "x": 1460,
+        "y": 992
       },
       "params": {},
       "portValues": {
@@ -452,8 +452,8 @@
       "id": "mb_innerShape",
       "defType": "draw/polygon",
       "position": {
-        "x": 1781,
-        "y": 695
+        "x": 1693,
+        "y": 943
       },
       "params": {},
       "portValues": {
@@ -466,7 +466,7 @@
       "defType": "style/fill",
       "position": {
         "x": 128,
-        "y": 232
+        "y": 250
       },
       "params": {},
       "portValues": {
@@ -483,8 +483,8 @@
       "id": "mb_core",
       "defType": "draw/ellipse",
       "position": {
-        "x": 372,
-        "y": 53
+        "x": 350,
+        "y": 150
       },
       "params": {},
       "parentId": "mb_coreBox"
@@ -493,8 +493,8 @@
       "id": "mb_lastBeat",
       "defType": "state/read",
       "position": {
-        "x": 131,
-        "y": 299
+        "x": 130,
+        "y": 181
       },
       "params": {
         "slot": 1,
@@ -509,8 +509,8 @@
       "id": "mb_lastBeatWrite",
       "defType": "state/write",
       "position": {
-        "x": 1405,
-        "y": 258
+        "x": 1310,
+        "y": 206
       },
       "params": {
         "slot": 1,
@@ -522,8 +522,8 @@
       "id": "mb_beatStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 2494,
-        "y": 182
+        "x": 2296,
+        "y": 246
       },
       "params": {},
       "portValues": {
@@ -535,8 +535,8 @@
       "id": "mb_beatNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 2691,
-        "y": 232
+        "x": 2521,
+        "y": 309
       },
       "params": {},
       "parentId": "mb_ringBox"
@@ -545,8 +545,8 @@
       "id": "mb_beatRing",
       "defType": "draw/ellipse",
       "position": {
-        "x": 2888,
-        "y": 62
+        "x": 2719,
+        "y": 201
       },
       "params": {},
       "parentId": "mb_ringBox"
@@ -555,7 +555,7 @@
       "id": "mb_sparkWorld",
       "defType": "physics/world",
       "position": {
-        "x": 959,
+        "x": 903,
         "y": 40
       },
       "params": {},
@@ -572,8 +572,8 @@
       "id": "mb_sparks",
       "defType": "particles/emitter",
       "position": {
-        "x": 1241,
-        "y": 174
+        "x": 1191,
+        "y": 269
       },
       "params": {
         "maxCount": 700,
@@ -600,8 +600,8 @@
       "id": "mb_sparkDots",
       "defType": "particles/render-as",
       "position": {
-        "x": 1472,
-        "y": 174
+        "x": 1507,
+        "y": 558
       },
       "params": {},
       "parentId": "mb_sparkBox"
@@ -610,8 +610,8 @@
       "id": "mb_flower",
       "defType": "transform/group",
       "position": {
-        "x": 2992,
-        "y": 210
+        "x": 2919,
+        "y": 383
       },
       "params": {
         "slotCount": 5
@@ -621,8 +621,8 @@
       "id": "mb_trails",
       "defType": "gpu/echo",
       "position": {
-        "x": 3261,
-        "y": 198
+        "x": 3187,
+        "y": 428
       },
       "params": {
         "mode": "trails"
@@ -635,8 +635,8 @@
       "id": "mb_bloom",
       "defType": "gpu/effect",
       "position": {
-        "x": 3530,
-        "y": 208
+        "x": 3435,
+        "y": 495
       },
       "params": {
         "mode": "bloom"
@@ -652,7 +652,7 @@
       "defType": "value/string",
       "position": {
         "x": 128,
-        "y": 61
+        "y": 44
       },
       "params": {
         "value": "listening to the microphone"
@@ -664,7 +664,7 @@
       "defType": "value/string",
       "position": {
         "x": 128,
-        "y": 165
+        "y": 166
       },
       "params": {
         "value": "playing its demo · switch Microphone on to listen"
@@ -675,7 +675,7 @@
       "id": "mb_statusStr",
       "defType": "logic/select",
       "position": {
-        "x": 415,
+        "x": 382,
         "y": 40
       },
       "params": {},
@@ -685,8 +685,8 @@
       "id": "mb_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 394,
-        "y": 188
+        "x": 363,
+        "y": 206
       },
       "params": {},
       "portValues": {
@@ -703,8 +703,8 @@
       "id": "mb_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 641,
-        "y": 70
+        "x": 592,
+        "y": 137
       },
       "params": {
         "size": 13,
@@ -722,8 +722,8 @@
       "id": "mb_scene",
       "defType": "transform/group",
       "position": {
-        "x": 3808,
-        "y": 292
+        "x": 3688,
+        "y": 656
       },
       "params": {
         "slotCount": 2
@@ -733,8 +733,8 @@
       "id": "mb_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 4072,
-        "y": 291
+        "x": 3952,
+        "y": 702
       },
       "params": {
         "width": 640,
@@ -753,8 +753,8 @@
       "id": "mb_clock",
       "defType": "time/beat",
       "position": {
-        "x": 151,
-        "y": 337
+        "x": 137,
+        "y": 162
       },
       "params": {
         "sync": "free"
@@ -771,8 +771,8 @@
       "id": "mb_beatOf4",
       "defType": "math/math",
       "position": {
-        "x": 987,
-        "y": 258
+        "x": 900,
+        "y": 286
       },
       "params": {
         "op": "mod",
@@ -788,8 +788,8 @@
       "id": "mb_bassGate",
       "defType": "logic/compare",
       "position": {
-        "x": 1245,
-        "y": 276
+        "x": 1124,
+        "y": 359
       },
       "params": {
         "op": "equal",
@@ -804,8 +804,8 @@
       "id": "mb_offbeat",
       "defType": "math/math",
       "position": {
-        "x": 415,
-        "y": 390
+        "x": 373,
+        "y": 384
       },
       "params": {
         "op": "mod",
@@ -821,8 +821,8 @@
       "id": "mb_isOffbeat",
       "defType": "logic/compare",
       "position": {
-        "x": 680,
-        "y": 393
+        "x": 617,
+        "y": 397
       },
       "params": {
         "op": "equal",
@@ -837,8 +837,8 @@
       "id": "mb_hatShort",
       "defType": "logic/compare",
       "position": {
-        "x": 680,
-        "y": 541
+        "x": 617,
+        "y": 562
       },
       "params": {
         "op": "less",
@@ -853,8 +853,8 @@
       "id": "mb_hatGate",
       "defType": "logic/logic",
       "position": {
-        "x": 992,
-        "y": 532
+        "x": 914,
+        "y": 595
       },
       "params": {
         "op": "and"
@@ -865,8 +865,8 @@
       "id": "mb_demoOn",
       "defType": "logic/select",
       "position": {
-        "x": 309,
-        "y": 249
+        "x": 319,
+        "y": 243
       },
       "params": {},
       "portValues": {
@@ -878,13 +878,13 @@
       "id": "mb_standIn",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1121,
-        "y": 232
+        "x": 1148,
+        "y": 313
       },
       "params": {
         "label": "Stand-in spectrum",
-        "width": 1718,
-        "height": 646
+        "width": 1771,
+        "height": 757
       },
       "ports": [
         {
@@ -892,14 +892,14 @@
           "name": "band",
           "type": "number",
           "direction": "input",
-          "y": 311
+          "y": 324
         },
         {
           "id": "levels",
           "name": "levels",
           "type": "number",
           "direction": "output",
-          "y": 197
+          "y": 537
         }
       ]
     },
@@ -907,8 +907,8 @@
       "id": "mb_siTime",
       "defType": "time/seconds",
       "position": {
-        "x": 189,
-        "y": 380
+        "x": 190,
+        "y": 415
       },
       "params": {},
       "parentId": "mb_standIn"
@@ -917,8 +917,8 @@
       "id": "mb_siX",
       "defType": "math/math",
       "position": {
-        "x": 147,
-        "y": 232
+        "x": 148,
+        "y": 250
       },
       "params": {
         "op": "multiply",
@@ -934,8 +934,8 @@
       "id": "mb_siY",
       "defType": "math/math",
       "position": {
-        "x": 423,
-        "y": 277
+        "x": 427,
+        "y": 331
       },
       "params": {
         "op": "multiply",
@@ -951,8 +951,8 @@
       "id": "mb_siNoise",
       "defType": "noise/noise",
       "position": {
-        "x": 698,
-        "y": 145
+        "x": 725,
+        "y": 225
       },
       "params": {
         "mode": "perlin"
@@ -963,7 +963,7 @@
       "id": "mb_siTaper",
       "defType": "math/map",
       "position": {
-        "x": 191,
+        "x": 180,
         "y": 40
       },
       "params": {
@@ -985,8 +985,8 @@
       "id": "mb_siHills",
       "defType": "math/math",
       "position": {
-        "x": 973,
-        "y": 102
+        "x": 995,
+        "y": 273
       },
       "params": {
         "op": "multiply",
@@ -998,8 +998,8 @@
       "id": "mb_siRun",
       "defType": "math/math",
       "position": {
-        "x": 423,
-        "y": 425
+        "x": 427,
+        "y": 496
       },
       "params": {
         "op": "multiply",
@@ -1015,8 +1015,8 @@
       "id": "mb_siLag",
       "defType": "math/math",
       "position": {
-        "x": 147,
-        "y": 506
+        "x": 148,
+        "y": 528
       },
       "params": {
         "op": "multiply",
@@ -1032,8 +1032,8 @@
       "id": "mb_siPhase",
       "defType": "math/math",
       "position": {
-        "x": 697,
-        "y": 469
+        "x": 708,
+        "y": 599
       },
       "params": {
         "op": "subtract",
@@ -1045,8 +1045,8 @@
       "id": "mb_siSin",
       "defType": "math/math",
       "position": {
-        "x": 982,
-        "y": 366
+        "x": 1023,
+        "y": 536
       },
       "params": {
         "op": "sin",
@@ -1058,8 +1058,8 @@
       "id": "mb_siWave",
       "defType": "math/map",
       "position": {
-        "x": 1249,
-        "y": 285
+        "x": 1275,
+        "y": 472
       },
       "params": {
         "inMin": -1,
@@ -1080,8 +1080,8 @@
       "id": "mb_siSum",
       "defType": "math/math",
       "position": {
-        "x": 1438,
-        "y": 160
+        "x": 1491,
+        "y": 431
       },
       "params": {
         "op": "add",
@@ -1093,8 +1093,8 @@
       "id": "mb_bandsBack",
       "defType": "spread/reorder",
       "position": {
-        "x": 132,
-        "y": 701
+        "x": 134,
+        "y": 651
       },
       "params": {
         "op": "reverse"
@@ -1105,8 +1105,8 @@
       "id": "mb_mirrorIdx",
       "defType": "spread/combine",
       "position": {
-        "x": 400,
-        "y": 633
+        "x": 371,
+        "y": 601
       },
       "params": {
         "op": "concat"
@@ -1117,8 +1117,8 @@
       "id": "mb_spinRate",
       "defType": "math/map",
       "position": {
-        "x": 172,
-        "y": 333
+        "x": 147,
+        "y": 173
       },
       "params": {
         "inMin": 0,
@@ -1139,8 +1139,8 @@
       "id": "mb_spin",
       "defType": "motion/integrate",
       "position": {
-        "x": 427,
-        "y": 335
+        "x": 379,
+        "y": 212
       },
       "params": {
         "limit": "none",
@@ -1156,8 +1156,8 @@
       "id": "mb_outerStart",
       "defType": "math/math",
       "position": {
-        "x": 674,
-        "y": 209
+        "x": 613,
+        "y": 180
       },
       "params": {
         "op": "subtract",
@@ -1173,7 +1173,7 @@
       "id": "mb_outerRing",
       "defType": "spread/ring",
       "position": {
-        "x": 1008,
+        "x": 955,
         "y": 40
       },
       "params": {},
@@ -1187,8 +1187,8 @@
       "id": "mb_outerR",
       "defType": "math/map",
       "position": {
-        "x": 1034,
-        "y": 210
+        "x": 967,
+        "y": 244
       },
       "params": {
         "inMin": 0,
@@ -1209,8 +1209,8 @@
       "id": "mb_outer",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 1291,
-        "y": 156
+        "x": 1221,
+        "y": 210
       },
       "params": {},
       "parentId": "mb_petalBox"
@@ -1219,8 +1219,8 @@
       "id": "mb_counter",
       "defType": "math/math",
       "position": {
-        "x": 674,
-        "y": 421
+        "x": 613,
+        "y": 397
       },
       "params": {
         "op": "multiply",
@@ -1236,8 +1236,8 @@
       "id": "mb_innerStart",
       "defType": "math/math",
       "position": {
-        "x": 992,
-        "y": 616
+        "x": 935,
+        "y": 663
       },
       "params": {
         "op": "subtract",
@@ -1253,8 +1253,8 @@
       "id": "mb_innerRing",
       "defType": "spread/ring",
       "position": {
-        "x": 1283,
-        "y": 572
+        "x": 1217,
+        "y": 651
       },
       "params": {},
       "portValues": {
@@ -1267,8 +1267,8 @@
       "id": "mb_innerR",
       "defType": "math/map",
       "position": {
-        "x": 1309,
-        "y": 742
+        "x": 1229,
+        "y": 855
       },
       "params": {
         "inMin": 0,
@@ -1289,8 +1289,8 @@
       "id": "mb_inner",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 1546,
-        "y": 655
+        "x": 1465,
+        "y": 848
       },
       "params": {},
       "parentId": "mb_petalBox"
@@ -1299,7 +1299,7 @@
       "id": "mb_coreSize",
       "defType": "math/map",
       "position": {
-        "x": 154,
+        "x": 135,
         "y": 40
       },
       "params": {
@@ -1321,8 +1321,8 @@
       "id": "mb_sinceLast",
       "defType": "math/math",
       "position": {
-        "x": 384,
-        "y": 194
+        "x": 390,
+        "y": 84
       },
       "params": {
         "op": "subtract",
@@ -1334,8 +1334,8 @@
       "id": "mb_rested",
       "defType": "logic/compare",
       "position": {
-        "x": 651,
-        "y": 193
+        "x": 660,
+        "y": 87
       },
       "params": {
         "op": "greater",
@@ -1350,8 +1350,8 @@
       "id": "mb_newBeat",
       "defType": "logic/logic",
       "position": {
-        "x": 940,
-        "y": 158
+        "x": 911,
+        "y": 59
       },
       "params": {
         "op": "and"
@@ -1362,8 +1362,8 @@
       "id": "mb_lastBeatNext",
       "defType": "logic/select",
       "position": {
-        "x": 1185,
-        "y": 223
+        "x": 1096,
+        "y": 130
       },
       "params": {},
       "parentId": "mb_ringBox"
@@ -1372,8 +1372,8 @@
       "id": "mb_beatAge",
       "defType": "math/math",
       "position": {
-        "x": 1396,
-        "y": 110
+        "x": 1301,
+        "y": 40
       },
       "params": {
         "op": "subtract",
@@ -1385,8 +1385,8 @@
       "id": "mb_beatSize",
       "defType": "math/map",
       "position": {
-        "x": 2690,
-        "y": 40
+        "x": 2513,
+        "y": 100
       },
       "params": {
         "inMin": 0,
@@ -1407,8 +1407,8 @@
       "id": "mb_beatFade",
       "defType": "motion/envelope",
       "position": {
-        "x": 1672,
-        "y": 145
+        "x": 1575,
+        "y": 129
       },
       "params": {
         "shape": "fade",
@@ -1425,8 +1425,8 @@
       "id": "mb_beatAlpha",
       "defType": "math/math",
       "position": {
-        "x": 1967,
-        "y": 172
+        "x": 1829,
+        "y": 211
       },
       "params": {
         "op": "multiply",
@@ -1442,8 +1442,8 @@
       "id": "mb_beatCol",
       "defType": "color/color",
       "position": {
-        "x": 2238,
-        "y": 133
+        "x": 2098,
+        "y": 162
       },
       "params": {
         "mode": "rgb",
@@ -1463,8 +1463,8 @@
       "id": "mb_sparkOver",
       "defType": "math/math",
       "position": {
-        "x": 139,
-        "y": 476
+        "x": 140,
+        "y": 436
       },
       "params": {
         "op": "subtract",
@@ -1480,8 +1480,8 @@
       "id": "mb_sparkMore",
       "defType": "math/math",
       "position": {
-        "x": 664,
-        "y": 450
+        "x": 624,
+        "y": 460
       },
       "params": {
         "op": "max",
@@ -1497,8 +1497,8 @@
       "id": "mb_sparkRate",
       "defType": "math/math",
       "position": {
-        "x": 940,
-        "y": 424
+        "x": 892,
+        "y": 476
       },
       "params": {
         "op": "multiply",
@@ -1514,8 +1514,8 @@
       "id": "mb_sparkXT",
       "defType": "math/math",
       "position": {
-        "x": 139,
-        "y": 180
+        "x": 140,
+        "y": 105
       },
       "params": {
         "op": "multiply",
@@ -1531,8 +1531,8 @@
       "id": "mb_sparkX",
       "defType": "math/math",
       "position": {
-        "x": 407,
-        "y": 188
+        "x": 406,
+        "y": 162
       },
       "params": {
         "op": "sin",
@@ -1544,8 +1544,8 @@
       "id": "mb_sparkYT",
       "defType": "math/math",
       "position": {
-        "x": 139,
-        "y": 328
+        "x": 140,
+        "y": 270
       },
       "params": {
         "op": "multiply",
@@ -1561,8 +1561,8 @@
       "id": "mb_sparkY",
       "defType": "math/math",
       "position": {
-        "x": 407,
-        "y": 314
+        "x": 406,
+        "y": 305
       },
       "params": {
         "op": "cos",
@@ -1574,8 +1574,8 @@
       "id": "mb_sparkDir",
       "defType": "vec2/make",
       "position": {
-        "x": 705,
-        "y": 259
+        "x": 665,
+        "y": 269
       },
       "params": {},
       "parentId": "mb_sparkBox"
@@ -1584,8 +1584,8 @@
       "id": "mb_sparkAt",
       "defType": "vec2/math",
       "position": {
-        "x": 934,
-        "y": 276
+        "x": 905,
+        "y": 294
       },
       "params": {
         "op": "scale",
@@ -1600,13 +1600,13 @@
       "id": "mb_demoBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 278,
-        "y": 145
+        "x": 282,
+        "y": 146
       },
       "params": {
         "label": "Demo loop",
-        "width": 2090,
-        "height": 681
+        "width": 1905,
+        "height": 771
       },
       "ports": [
         {
@@ -1614,7 +1614,7 @@
           "name": "audio",
           "type": "audio",
           "direction": "output",
-          "y": 177
+          "y": 544
         }
       ]
     },
@@ -1622,13 +1622,13 @@
       "id": "mb_ringBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1448,
-        "y": 406
+        "x": 1469,
+        "y": 534
       },
       "params": {
         "label": "Beat ring",
-        "width": 3111,
-        "height": 417
+        "width": 2954,
+        "height": 426
       },
       "ports": [
         {
@@ -1636,21 +1636,21 @@
           "name": "ring",
           "type": "layer",
           "direction": "output",
-          "y": 128
+          "y": 350
         },
         {
           "id": "t",
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 241
+          "y": 125
         },
         {
           "id": "beat",
           "name": "beat",
           "type": "boolean",
           "direction": "input",
-          "y": 135
+          "y": 61
         }
       ]
     },
@@ -1658,13 +1658,13 @@
       "id": "mb_petalBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 2514,
-        "y": 117
+        "x": 2437,
+        "y": 229
       },
       "params": {
         "label": "Petals",
-        "width": 1997,
-        "height": 926
+        "width": 1908,
+        "height": 1128
       },
       "ports": [
         {
@@ -1672,35 +1672,35 @@
           "name": "spectrum",
           "type": "any",
           "direction": "input",
-          "y": 607
+          "y": 573
         },
         {
           "id": "outer",
           "name": "outer",
           "type": "layer",
           "direction": "output",
-          "y": 297
+          "y": 501
         },
         {
           "id": "inner",
           "name": "inner",
           "type": "layer",
           "direction": "output",
-          "y": 731
+          "y": 1070
         },
         {
           "id": "bands",
           "name": "bands",
           "type": "number",
           "direction": "input",
-          "y": 704
+          "y": 655
         },
         {
           "id": "treble",
           "name": "treble",
           "type": "number",
           "direction": "input",
-          "y": 370
+          "y": 284
         }
       ]
     },
@@ -1708,13 +1708,13 @@
       "id": "mb_coreBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 2758,
-        "y": 259
+        "x": 2683,
+        "y": 423
       },
       "params": {
         "label": "Core",
-        "width": 593,
-        "height": 350
+        "width": 585,
+        "height": 386
       },
       "ports": [
         {
@@ -1722,7 +1722,7 @@
           "name": "core",
           "type": "layer",
           "direction": "output",
-          "y": 90
+          "y": 300
         },
         {
           "id": "bass",
@@ -1737,13 +1737,13 @@
       "id": "mb_sparkBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 2511,
-        "y": 391
+        "x": 2434,
+        "y": 555
       },
       "params": {
         "label": "Sparks",
-        "width": 1732,
-        "height": 616
+        "width": 1767,
+        "height": 784
       },
       "ports": [
         {
@@ -1751,21 +1751,21 @@
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 382
+          "y": 329
         },
         {
           "id": "sparks",
           "name": "sparks",
           "type": "layer",
           "direction": "output",
-          "y": 211
+          "y": 730
         },
         {
           "id": "treble",
           "name": "treble",
           "type": "number",
           "direction": "input",
-          "y": 535
+          "y": 495
         }
       ]
     },
@@ -1773,13 +1773,13 @@
       "id": "mb_statusBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 3533,
-        "y": 400
+        "x": 3420,
+        "y": 704
       },
       "params": {
         "label": "Status line",
-        "width": 842,
-        "height": 306
+        "width": 815,
+        "height": 342
       },
       "ports": [
         {
@@ -1787,14 +1787,14 @@
           "name": "mic",
           "type": "boolean",
           "direction": "input",
-          "y": 37
+          "y": 20
         },
         {
           "id": "status",
           "name": "status",
           "type": "layer",
           "direction": "output",
-          "y": 107
+          "y": 287
         }
       ]
     }

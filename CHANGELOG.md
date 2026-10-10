@@ -99,6 +99,10 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   click it to type; dropdowns, colour swatches and checkboxes work
   directly. A vec2 box has its own X and Y cells. (This replaces clicking
   a row's name to open an edit box over a gold read-out.)
+- Node rows: every input and param has a full-width row of its own, so the
+  value boxes line up. Outputs no longer share rows with inputs: they are
+  listed in a compact, slightly darker footer under the inputs (labels
+  right-aligned against their pins). Nodes without outputs have no footer.
 - Bypass any node (header button or B) to pass its input straight through;
   a curve editor for Effect → curves; a file picker for LUTs.
 - Minimap, dot grid and snapping, a shortcuts overlay (`?`), tooltips on

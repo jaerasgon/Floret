@@ -26,7 +26,7 @@
       "defType": "io/bang",
       "position": {
         "x": 2,
-        "y": 913
+        "y": 964
       },
       "params": {
         "label": "Clear"
@@ -36,8 +36,8 @@
       "id": "tt_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 332,
-        "y": 888
+        "x": 345,
+        "y": 955
       },
       "params": {
         "mode": "text"
@@ -51,7 +51,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 44,
-        "y": 787
+        "y": 851
       },
       "params": {}
     },
@@ -59,8 +59,8 @@
       "id": "tt_textFill",
       "defType": "style/fill",
       "position": {
-        "x": 349,
-        "y": 730
+        "x": 342,
+        "y": 780
       },
       "params": {},
       "portValues": {
@@ -76,8 +76,8 @@
       "id": "tt_glyphs",
       "defType": "text/glyphs",
       "position": {
-        "x": 637,
-        "y": 701
+        "x": 613,
+        "y": 728
       },
       "params": {
         "size": 64,
@@ -94,8 +94,8 @@
       "id": "tt_glyphCount",
       "defType": "spread/count",
       "position": {
-        "x": 935,
-        "y": 869
+        "x": 861,
+        "y": 986
       },
       "params": {}
     },
@@ -104,7 +104,7 @@
       "defType": "state/read-spread",
       "position": {
         "x": 0,
-        "y": 1211
+        "y": 1271
       },
       "params": {
         "slot": 1,
@@ -115,8 +115,8 @@
       "id": "tt_birthsWrite",
       "defType": "state/write-spread",
       "position": {
-        "x": 2699,
-        "y": 1211
+        "x": 2624,
+        "y": 1428
       },
       "params": {
         "slot": 1,
@@ -127,8 +127,8 @@
       "id": "tt_bornCount",
       "defType": "spread/count",
       "position": {
-        "x": 935,
-        "y": 1226
+        "x": 861,
+        "y": 1372
       },
       "params": {}
     },
@@ -136,8 +136,8 @@
       "id": "tt_plusNow",
       "defType": "spread/combine",
       "position": {
-        "x": 335,
-        "y": 1124
+        "x": 339,
+        "y": 1220
       },
       "params": {
         "op": "append"
@@ -147,8 +147,8 @@
       "id": "tt_birthsNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 1262,
-        "y": 1064
+        "x": 1204,
+        "y": 1216
       },
       "params": {
         "op": "take"
@@ -158,12 +158,12 @@
       "id": "tt_letters",
       "defType": "region/foreach",
       "position": {
-        "x": 1597,
+        "x": 1535,
         "y": 22
       },
       "params": {
-        "width": 2378,
-        "height": 1109,
+        "width": 2352,
+        "height": 1326,
         "label": "Letters"
       },
       "ports": [
@@ -172,46 +172,46 @@
           "name": "glyph",
           "type": "layer",
           "direction": "input",
-          "y": 1055
+          "y": 1272
         },
         {
           "id": "at",
           "name": "at",
           "type": "vec2",
           "direction": "input",
-          "y": 312
+          "y": 364
         },
         {
           "id": "adv",
           "name": "adv",
           "type": "number",
           "direction": "input",
-          "y": 543
+          "y": 596
         },
         {
           "id": "born",
           "name": "born",
           "type": "number",
           "direction": "input",
-          "y": 565
+          "y": 618
         },
         {
           "id": "letter",
           "name": "letter",
           "type": "layer",
           "direction": "output",
-          "y": 326
+          "y": 677
         }
       ],
-      "width": 2378,
-      "height": 1109
+      "width": 2352,
+      "height": 1326
     },
     {
       "id": "tt_toCentre",
       "defType": "transform/translate",
       "position": {
-        "x": 1130,
-        "y": 904
+        "x": 1089,
+        "y": 1144
       },
       "params": {},
       "parentId": "tt_letters"
@@ -220,8 +220,8 @@
       "id": "tt_popped",
       "defType": "transform/scale",
       "position": {
-        "x": 1656,
-        "y": 678
+        "x": 1617,
+        "y": 959
       },
       "params": {},
       "parentId": "tt_letters"
@@ -230,8 +230,8 @@
       "id": "tt_turned",
       "defType": "transform/rotate",
       "position": {
-        "x": 1904,
-        "y": 473
+        "x": 1872,
+        "y": 778
       },
       "params": {},
       "parentId": "tt_letters"
@@ -240,8 +240,8 @@
       "id": "tt_placed",
       "defType": "transform/translate",
       "position": {
-        "x": 2156,
-        "y": 288
+        "x": 2130,
+        "y": 592
       },
       "params": {},
       "parentId": "tt_letters"
@@ -250,7 +250,7 @@
       "id": "tt_rainbow",
       "defType": "color/palette",
       "position": {
-        "x": 1185,
+        "x": 1147,
         "y": 40
       },
       "params": {
@@ -289,8 +289,8 @@
       "id": "tt_rainbowFill",
       "defType": "style/gradient",
       "position": {
-        "x": 1506,
-        "y": 121
+        "x": 1428,
+        "y": 176
       },
       "params": {
         "mode": "linear",
@@ -303,8 +303,8 @@
       "id": "tt_paint",
       "defType": "draw/rect",
       "position": {
-        "x": 1769,
-        "y": 139
+        "x": 1652,
+        "y": 303
       },
       "params": {},
       "portValues": {
@@ -317,8 +317,8 @@
       "id": "tt_inked",
       "defType": "transform/mask",
       "position": {
-        "x": 1990,
-        "y": 223
+        "x": 1873,
+        "y": 408
       },
       "params": {
         "mode": "alpha"
@@ -329,8 +329,8 @@
       "id": "tt_glow",
       "defType": "gpu/effect",
       "position": {
-        "x": 2255,
-        "y": 203
+        "x": 2103,
+        "y": 477
       },
       "params": {
         "mode": "glow"
@@ -345,8 +345,8 @@
       "id": "tt_newest",
       "defType": "spread/lookup",
       "position": {
-        "x": 922,
-        "y": 973
+        "x": 868,
+        "y": 1108
       },
       "params": {
         "op": "at"
@@ -359,7 +359,7 @@
       "id": "tt_sparkWorld",
       "defType": "physics/world",
       "position": {
-        "x": 930,
+        "x": 885,
         "y": 40
       },
       "params": {},
@@ -376,8 +376,8 @@
       "id": "tt_sparks",
       "defType": "particles/emitter",
       "position": {
-        "x": 1200,
-        "y": 219
+        "x": 1150,
+        "y": 294
       },
       "params": {
         "maxCount": 800,
@@ -398,8 +398,8 @@
       "id": "tt_sparkDots",
       "defType": "particles/render-as",
       "position": {
-        "x": 1431,
-        "y": 219
+        "x": 1466,
+        "y": 582
       },
       "params": {},
       "parentId": "tt_sparkFx"
@@ -408,8 +408,8 @@
       "id": "tt_lastAdv",
       "defType": "spread/lookup",
       "position": {
-        "x": 138,
-        "y": 205
+        "x": 152,
+        "y": 206
       },
       "params": {
         "op": "at"
@@ -423,8 +423,8 @@
       "id": "tt_caretFill",
       "defType": "style/fill",
       "position": {
-        "x": 1231,
-        "y": 237
+        "x": 1193,
+        "y": 410
       },
       "params": {},
       "parentId": "tt_caretMark"
@@ -433,8 +433,8 @@
       "id": "tt_caret",
       "defType": "draw/rect",
       "position": {
-        "x": 1428,
-        "y": 115
+        "x": 1385,
+        "y": 313
       },
       "params": {},
       "portValues": {
@@ -447,8 +447,8 @@
       "id": "tt_hintFill",
       "defType": "style/fill",
       "position": {
-        "x": 146,
-        "y": 188
+        "x": 135,
+        "y": 206
       },
       "params": {},
       "portValues": {
@@ -465,8 +465,8 @@
       "id": "tt_hintText",
       "defType": "draw/text",
       "position": {
-        "x": 407,
-        "y": 109
+        "x": 368,
+        "y": 165
       },
       "params": {
         "string": "type something …",
@@ -485,8 +485,8 @@
       "id": "tt_hintWave",
       "defType": "text/animate",
       "position": {
-        "x": 667,
-        "y": 128
+        "x": 594,
+        "y": 211
       },
       "params": {
         "mode": "wave"
@@ -505,8 +505,8 @@
       "id": "tt_hint",
       "defType": "logic/select",
       "position": {
-        "x": 960,
-        "y": 77
+        "x": 867,
+        "y": 244
       },
       "params": {},
       "parentId": "tt_hintGroup"
@@ -515,7 +515,7 @@
       "id": "tt_lenText",
       "defType": "string/format-number",
       "position": {
-        "x": 320,
+        "x": 321,
         "y": 40
       },
       "params": {},
@@ -530,7 +530,7 @@
       "defType": "string/length",
       "position": {
         "x": 128,
-        "y": 62
+        "y": 43
       },
       "params": {},
       "parentId": "tt_lengthText"
@@ -539,8 +539,8 @@
       "id": "tt_lenFill",
       "defType": "style/fill",
       "position": {
-        "x": 567,
-        "y": 166
+        "x": 566,
+        "y": 357
       },
       "params": {},
       "portValues": {
@@ -557,8 +557,8 @@
       "id": "tt_lenStr",
       "defType": "string/concat",
       "position": {
-        "x": 592,
-        "y": 40
+        "x": 577,
+        "y": 214
       },
       "params": {},
       "parentId": "tt_lengthText"
@@ -567,8 +567,8 @@
       "id": "tt_lenDraw",
       "defType": "draw/text",
       "position": {
-        "x": 812,
-        "y": 59
+        "x": 796,
+        "y": 287
       },
       "params": {
         "size": 12,
@@ -586,8 +586,8 @@
       "id": "tt_scene",
       "defType": "transform/group",
       "position": {
-        "x": 4487,
-        "y": 833
+        "x": 4415,
+        "y": 1020
       },
       "params": {
         "slotCount": 5
@@ -597,8 +597,8 @@
       "id": "tt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 4751,
-        "y": 833
+        "x": 4679,
+        "y": 1133
       },
       "params": {
         "width": 760,
@@ -618,7 +618,7 @@
       "defType": "math/math",
       "position": {
         "x": 188,
-        "y": 484
+        "y": 537
       },
       "params": {
         "op": "subtract",
@@ -631,8 +631,8 @@
       "id": "tt_halfBack",
       "defType": "math/math",
       "position": {
-        "x": 197,
-        "y": 928
+        "x": 216,
+        "y": 1033
       },
       "params": {
         "op": "negate",
@@ -644,8 +644,8 @@
       "id": "tt_halfLeft",
       "defType": "math/math",
       "position": {
-        "x": 493,
-        "y": 928
+        "x": 482,
+        "y": 1094
       },
       "params": {
         "op": "divide",
@@ -661,8 +661,8 @@
       "id": "tt_centred",
       "defType": "vec2/make",
       "position": {
-        "x": 855,
-        "y": 934
+        "x": 826,
+        "y": 1150
       },
       "params": {},
       "parentId": "tt_letters",
@@ -674,8 +674,8 @@
       "id": "tt_popDecayK",
       "defType": "math/math",
       "position": {
-        "x": 493,
-        "y": 484
+        "x": 482,
+        "y": 597
       },
       "params": {
         "op": "multiply",
@@ -691,8 +691,8 @@
       "id": "tt_popDecay",
       "defType": "math/math",
       "position": {
-        "x": 823,
-        "y": 682
+        "x": 813,
+        "y": 863
       },
       "params": {
         "op": "exp"
@@ -703,8 +703,8 @@
       "id": "tt_popWaveT",
       "defType": "math/math",
       "position": {
-        "x": 493,
-        "y": 632
+        "x": 482,
+        "y": 763
       },
       "params": {
         "op": "multiply",
@@ -720,8 +720,8 @@
       "id": "tt_popWave",
       "defType": "math/math",
       "position": {
-        "x": 823,
-        "y": 808
+        "x": 813,
+        "y": 1007
       },
       "params": {
         "op": "cos"
@@ -732,8 +732,8 @@
       "id": "tt_popLeft",
       "defType": "math/math",
       "position": {
-        "x": 1101,
-        "y": 719
+        "x": 1060,
+        "y": 931
       },
       "params": {
         "op": "multiply",
@@ -746,8 +746,8 @@
       "id": "tt_pop",
       "defType": "math/math",
       "position": {
-        "x": 1378,
-        "y": 685
+        "x": 1339,
+        "y": 919
       },
       "params": {
         "op": "subtract",
@@ -763,8 +763,8 @@
       "id": "tt_spinBoing",
       "defType": "motion/envelope",
       "position": {
-        "x": 802,
-        "y": 364
+        "x": 792,
+        "y": 477
       },
       "params": {
         "shape": "boing",
@@ -780,8 +780,8 @@
       "id": "tt_spin",
       "defType": "math/math",
       "position": {
-        "x": 1101,
-        "y": 393
+        "x": 1060,
+        "y": 562
       },
       "params": {
         "op": "multiply",
@@ -798,7 +798,7 @@
       "defType": "math/math",
       "position": {
         "x": 188,
-        "y": 632
+        "y": 702
       },
       "params": {
         "op": "multiply",
@@ -815,7 +815,7 @@
       "defType": "math/math",
       "position": {
         "x": 188,
-        "y": 780
+        "y": 868
       },
       "params": {
         "op": "multiply",
@@ -831,8 +831,8 @@
       "id": "tt_swayPhase",
       "defType": "math/math",
       "position": {
-        "x": 493,
-        "y": 780
+        "x": 482,
+        "y": 928
       },
       "params": {
         "op": "add",
@@ -845,8 +845,8 @@
       "id": "tt_swaySin",
       "defType": "math/math",
       "position": {
-        "x": 823,
-        "y": 556
+        "x": 813,
+        "y": 720
       },
       "params": {
         "op": "sin"
@@ -857,8 +857,8 @@
       "id": "tt_sway",
       "defType": "math/math",
       "position": {
-        "x": 1101,
-        "y": 541
+        "x": 1060,
+        "y": 727
       },
       "params": {
         "op": "multiply",
@@ -874,8 +874,8 @@
       "id": "tt_wobble",
       "defType": "math/math",
       "position": {
-        "x": 1378,
-        "y": 449
+        "x": 1339,
+        "y": 691
       },
       "params": {
         "op": "add",
@@ -888,8 +888,8 @@
       "id": "tt_fall",
       "defType": "motion/envelope",
       "position": {
-        "x": 481,
-        "y": 314
+        "x": 489,
+        "y": 377
       },
       "params": {
         "shape": "decay",
@@ -904,8 +904,8 @@
       "id": "tt_drop",
       "defType": "math/math",
       "position": {
-        "x": 814,
-        "y": 90
+        "x": 785,
+        "y": 168
       },
       "params": {
         "op": "multiply",
@@ -921,8 +921,8 @@
       "id": "tt_dropY",
       "defType": "math/math",
       "position": {
-        "x": 1101,
-        "y": 97
+        "x": 1060,
+        "y": 208
       },
       "params": {
         "op": "subtract",
@@ -939,7 +939,7 @@
       "defType": "math/math",
       "position": {
         "x": 188,
-        "y": 188
+        "y": 206
       },
       "params": {
         "op": "multiply",
@@ -956,7 +956,7 @@
       "defType": "math/math",
       "position": {
         "x": 188,
-        "y": 336
+        "y": 371
       },
       "params": {
         "op": "multiply",
@@ -972,8 +972,8 @@
       "id": "tt_bobPhase",
       "defType": "math/math",
       "position": {
-        "x": 493,
-        "y": 166
+        "x": 482,
+        "y": 211
       },
       "params": {
         "op": "add",
@@ -986,8 +986,8 @@
       "id": "tt_bobSin",
       "defType": "math/math",
       "position": {
-        "x": 823,
-        "y": 238
+        "x": 813,
+        "y": 334
       },
       "params": {
         "op": "sin"
@@ -998,8 +998,8 @@
       "id": "tt_bob",
       "defType": "math/math",
       "position": {
-        "x": 1101,
-        "y": 245
+        "x": 1060,
+        "y": 373
       },
       "params": {
         "op": "multiply",
@@ -1015,8 +1015,8 @@
       "id": "tt_placeY",
       "defType": "math/math",
       "position": {
-        "x": 1378,
-        "y": 146
+        "x": 1339,
+        "y": 301
       },
       "params": {
         "op": "add",
@@ -1046,8 +1046,8 @@
       "id": "tt_placeBy",
       "defType": "vec2/make",
       "position": {
-        "x": 1657,
-        "y": 135
+        "x": 1618,
+        "y": 295
       },
       "params": {},
       "parentId": "tt_letters"
@@ -1056,8 +1056,8 @@
       "id": "tt_place",
       "defType": "math/math",
       "position": {
-        "x": 1867,
-        "y": 122
+        "x": 1834,
+        "y": 312
       },
       "params": {
         "op": "add",
@@ -1070,8 +1070,8 @@
       "id": "tt_grew",
       "defType": "logic/compare",
       "position": {
-        "x": 131,
-        "y": 320
+        "x": 145,
+        "y": 286
       },
       "params": {
         "op": "greater"
@@ -1082,8 +1082,8 @@
       "id": "tt_sparkAt",
       "defType": "math/math",
       "position": {
-        "x": 138,
-        "y": 172
+        "x": 132,
+        "y": 121
       },
       "params": {
         "op": "add",
@@ -1102,8 +1102,8 @@
       "id": "tt_sparkRate",
       "defType": "logic/select",
       "position": {
-        "x": 948,
-        "y": 276
+        "x": 913,
+        "y": 294
       },
       "params": {},
       "portValues": {
@@ -1116,8 +1116,8 @@
       "id": "tt_sparkHueT",
       "defType": "math/math",
       "position": {
-        "x": 138,
-        "y": 475
+        "x": 132,
+        "y": 452
       },
       "params": {
         "op": "multiply",
@@ -1133,8 +1133,8 @@
       "id": "tt_sparkHueTurn",
       "defType": "math/math",
       "position": {
-        "x": 410,
-        "y": 458
+        "x": 402,
+        "y": 461
       },
       "params": {
         "op": "fract"
@@ -1145,8 +1145,8 @@
       "id": "tt_sparkHue",
       "defType": "math/math",
       "position": {
-        "x": 659,
-        "y": 441
+        "x": 616,
+        "y": 449
       },
       "params": {
         "op": "multiply",
@@ -1162,8 +1162,8 @@
       "id": "tt_sparkCol",
       "defType": "color/color",
       "position": {
-        "x": 925,
-        "y": 424
+        "x": 910,
+        "y": 459
       },
       "params": {
         "mode": "hsl"
@@ -1179,8 +1179,8 @@
       "id": "tt_sweepT",
       "defType": "math/math",
       "position": {
-        "x": 128,
-        "y": 364
+        "x": 129,
+        "y": 205
       },
       "params": {
         "op": "multiply",
@@ -1196,8 +1196,8 @@
       "id": "tt_sweepSin",
       "defType": "math/math",
       "position": {
-        "x": 393,
-        "y": 351
+        "x": 394,
+        "y": 242
       },
       "params": {
         "op": "sin"
@@ -1208,8 +1208,8 @@
       "id": "tt_sweepBy",
       "defType": "math/math",
       "position": {
-        "x": 641,
-        "y": 317
+        "x": 604,
+        "y": 236
       },
       "params": {
         "op": "multiply",
@@ -1225,8 +1225,8 @@
       "id": "tt_sweepFromX",
       "defType": "math/math",
       "position": {
-        "x": 917,
-        "y": 204
+        "x": 881,
+        "y": 174
       },
       "params": {
         "op": "add",
@@ -1242,8 +1242,8 @@
       "id": "tt_sweepToX",
       "defType": "math/math",
       "position": {
-        "x": 917,
-        "y": 352
+        "x": 881,
+        "y": 339
       },
       "params": {
         "op": "add",
@@ -1259,8 +1259,8 @@
       "id": "tt_sweep",
       "defType": "vec2/make",
       "position": {
-        "x": 1242,
-        "y": 232
+        "x": 1189,
+        "y": 250
       },
       "params": {},
       "portValues": {
@@ -1272,8 +1272,8 @@
       "id": "tt_sweepEnd",
       "defType": "vec2/make",
       "position": {
-        "x": 1242,
-        "y": 358
+        "x": 1189,
+        "y": 393
       },
       "params": {},
       "portValues": {
@@ -1285,7 +1285,7 @@
       "id": "tt_anyText",
       "defType": "logic/compare",
       "position": {
-        "x": 128,
+        "x": 143,
         "y": 40
       },
       "params": {
@@ -1300,8 +1300,8 @@
       "id": "tt_caretGap",
       "defType": "math/math",
       "position": {
-        "x": 406,
-        "y": 183
+        "x": 399,
+        "y": 220
       },
       "params": {
         "op": "add",
@@ -1317,8 +1317,8 @@
       "id": "tt_caretOffset",
       "defType": "vec2/make",
       "position": {
-        "x": 719,
-        "y": 180
+        "x": 698,
+        "y": 242
       },
       "params": {},
       "portValues": {
@@ -1330,8 +1330,8 @@
       "id": "tt_caretAfter",
       "defType": "math/math",
       "position": {
-        "x": 953,
-        "y": 117
+        "x": 916,
+        "y": 197
       },
       "params": {
         "op": "add",
@@ -1344,8 +1344,8 @@
       "id": "tt_caretAt",
       "defType": "logic/select",
       "position": {
-        "x": 1222,
-        "y": 81
+        "x": 1189,
+        "y": 190
       },
       "params": {},
       "portValues": {
@@ -1360,8 +1360,8 @@
       "id": "tt_blinkT",
       "defType": "math/math",
       "position": {
-        "x": 135,
-        "y": 353
+        "x": 130,
+        "y": 371
       },
       "params": {
         "op": "multiply",
@@ -1377,8 +1377,8 @@
       "id": "tt_blinkPhase",
       "defType": "math/math",
       "position": {
-        "x": 415,
-        "y": 331
+        "x": 427,
+        "y": 389
       },
       "params": {
         "op": "fract"
@@ -1389,8 +1389,8 @@
       "id": "tt_blinkOn",
       "defType": "logic/compare",
       "position": {
-        "x": 671,
-        "y": 306
+        "x": 670,
+        "y": 385
       },
       "params": {
         "op": "less"
@@ -1404,8 +1404,8 @@
       "id": "tt_caretCol",
       "defType": "logic/select",
       "position": {
-        "x": 984,
-        "y": 272
+        "x": 954,
+        "y": 397
       },
       "params": {},
       "portValues": {
@@ -1428,7 +1428,7 @@
       "id": "tt_emptyNow",
       "defType": "logic/compare",
       "position": {
-        "x": 128,
+        "x": 129,
         "y": 40
       },
       "params": {
@@ -1443,13 +1443,13 @@
       "id": "tt_sparkFx",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1272,
-        "y": 1212
+        "x": 1194,
+        "y": 1382
       },
       "params": {
         "label": "Sparks",
-        "width": 1691,
-        "height": 796
+        "width": 1726,
+        "height": 972
       },
       "ports": [
         {
@@ -1457,46 +1457,46 @@
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 578
+          "y": 566
         },
         {
           "id": "glyphCount",
           "name": "glyphCount",
           "type": "number",
           "direction": "input",
-          "y": 379
+          "y": 345
         },
         {
           "id": "bornCount",
           "name": "bornCount",
           "type": "number",
           "direction": "input",
-          "y": 401
+          "y": 367
         },
         {
           "id": "newest",
           "name": "newest",
           "type": "vec2",
           "direction": "input",
-          "y": 231
+          "y": 208
         },
         {
           "id": "sparks",
           "name": "sparks",
           "type": "layer",
           "direction": "output",
-          "y": 256
+          "y": 754
         }
       ],
-      "width": 1691,
-      "height": 796
+      "width": 1726,
+      "height": 972
     },
     {
       "id": "tt_sparkFxNote",
       "defType": "meta/comment",
       "position": {
-        "x": 131,
-        "y": 656
+        "x": 132,
+        "y": 832
       },
       "params": {
         "text": "When the text grows, a puff of sparks from the new letter, in a colour running round the wheel.",
@@ -1509,13 +1509,13 @@
       "id": "tt_rainbowInk",
       "defType": "meta/subpatch",
       "position": {
-        "x": 4150,
-        "y": 839
+        "x": 4065,
+        "y": 1071
       },
       "params": {
         "label": "Rainbow ink",
-        "width": 2536,
-        "height": 706
+        "width": 2349,
+        "height": 889
       },
       "ports": [
         {
@@ -1523,32 +1523,32 @@
           "name": "letters",
           "type": "layer",
           "direction": "input",
-          "y": 488
+          "y": 507
         },
         {
           "id": "t",
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 423
+          "y": 274
         },
         {
           "id": "ink",
           "name": "ink",
           "type": "layer",
           "direction": "output",
-          "y": 243
+          "y": 671
         }
       ],
-      "width": 2536,
-      "height": 706
+      "width": 2349,
+      "height": 889
     },
     {
       "id": "tt_rainbowInkNote",
       "defType": "meta/comment",
       "position": {
-        "x": 128,
-        "y": 566
+        "x": 129,
+        "y": 749
       },
       "params": {
         "text": "A rainbow gradient sliding to and fro, seen through the letters (Mask), glowing.",
@@ -1561,13 +1561,13 @@
       "id": "tt_caretMark",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1276,
-        "y": 894
+        "x": 1199,
+        "y": 1029
       },
       "params": {
         "label": "Caret",
-        "width": 1639,
-        "height": 657
+        "width": 1620,
+        "height": 719
       },
       "ports": [
         {
@@ -1575,46 +1575,46 @@
           "name": "advances",
           "type": "number",
           "direction": "input",
-          "y": 264
+          "y": 265
         },
         {
           "id": "glyphCount",
           "name": "glyphCount",
           "type": "number",
           "direction": "input",
-          "y": 99
+          "y": 122
         },
         {
           "id": "newest",
           "name": "newest",
           "type": "vec2",
           "direction": "input",
-          "y": 164
+          "y": 182
         },
         {
           "id": "t",
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 412
+          "y": 430
         },
         {
           "id": "caret",
           "name": "caret",
           "type": "layer",
           "direction": "output",
-          "y": 152
+          "y": 463
         }
       ],
-      "width": 1639,
-      "height": 657
+      "width": 1620,
+      "height": 719
     },
     {
       "id": "tt_caretMarkNote",
       "defType": "meta/comment",
       "position": {
-        "x": 128,
-        "y": 517
+        "x": 130,
+        "y": 579
       },
       "params": {
         "text": "A blinking bar after the last letter (or where the first will go).",
@@ -1627,13 +1627,13 @@
       "id": "tt_hintGroup",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1281,
-        "y": 302
+        "x": 1203,
+        "y": 324
       },
       "params": {
         "label": "Hint",
-        "width": 1177,
-        "height": 608
+        "width": 1071,
+        "height": 742
       },
       "ports": [
         {
@@ -1641,32 +1641,32 @@
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 290
+          "y": 349
         },
         {
           "id": "glyphCount",
           "name": "glyphCount",
           "type": "number",
           "direction": "input",
-          "y": 99
+          "y": 110
         },
         {
           "id": "hint",
           "name": "hint",
           "type": "layer",
           "direction": "output",
-          "y": 114
+          "y": 350
         }
       ],
-      "width": 1177,
-      "height": 608
+      "width": 1071,
+      "height": 742
     },
     {
       "id": "tt_hintGroupNote",
       "defType": "meta/comment",
       "position": {
-        "x": 128,
-        "y": 468
+        "x": 129,
+        "y": 602
       },
       "params": {
         "text": "'type something …' waving while nothing is typed.",
@@ -1679,13 +1679,13 @@
       "id": "tt_lengthText",
       "defType": "meta/subpatch",
       "position": {
-        "x": 4168,
-        "y": 1179
+        "x": 4083,
+        "y": 1378
       },
       "params": {
         "label": "Count",
-        "width": 1018,
-        "height": 454
+        "width": 1019,
+        "height": 657
       },
       "ports": [
         {
@@ -1693,25 +1693,25 @@
           "name": "kb",
           "type": "string",
           "direction": "input",
-          "y": 99
+          "y": 86
         },
         {
           "id": "count",
           "name": "count",
           "type": "layer",
           "direction": "output",
-          "y": 96
+          "y": 436
         }
       ],
-      "width": 1018,
-      "height": 454
+      "width": 1019,
+      "height": 657
     },
     {
       "id": "tt_lengthTextNote",
       "defType": "meta/comment",
       "position": {
         "x": 128,
-        "y": 314
+        "y": 517
       },
       "params": {
         "text": "How many of the 48 letters are used.",

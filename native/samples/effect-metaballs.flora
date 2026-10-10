@@ -31,7 +31,7 @@
       "defType": "motion/lfo",
       "position": {
         "x": 0,
-        "y": 431
+        "y": 229
       },
       "params": {
         "shape": "saw",
@@ -50,7 +50,7 @@
       "id": "mb_breathe",
       "defType": "motion/lfo",
       "position": {
-        "x": 240,
+        "x": 270,
         "y": 0
       },
       "params": {
@@ -70,8 +70,8 @@
       "id": "mb_back",
       "defType": "math/math",
       "position": {
-        "x": 227,
-        "y": 324
+        "x": 294,
+        "y": 380
       },
       "params": {
         "op": "negate",
@@ -82,8 +82,8 @@
       "id": "mb_outer",
       "defType": "spread/ring",
       "position": {
-        "x": 239,
-        "y": 450
+        "x": 287,
+        "y": 524
       },
       "params": {},
       "portValues": {
@@ -95,8 +95,8 @@
       "id": "mb_inner",
       "defType": "spread/ring",
       "position": {
-        "x": 611,
-        "y": 183
+        "x": 669,
+        "y": 318
       },
       "params": {},
       "portValues": {
@@ -107,8 +107,8 @@
       "id": "mb_fill",
       "defType": "style/fill",
       "position": {
-        "x": 235,
-        "y": 620
+        "x": 292,
+        "y": 747
       },
       "params": {
         "color": {
@@ -131,12 +131,12 @@
       "id": "mb_big",
       "defType": "region/foreach",
       "position": {
-        "x": 503,
-        "y": 375
+        "x": 551,
+        "y": 544
       },
       "params": {
-        "width": 339,
-        "height": 224,
+        "width": 363,
+        "height": 244,
         "label": "ForEach"
       },
       "ports": [
@@ -152,11 +152,11 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 190
         }
       ],
-      "width": 339,
-      "height": 224
+      "width": 363,
+      "height": 244
     },
     {
       "id": "mb_big_dot",
@@ -176,12 +176,12 @@
       "id": "mb_small",
       "defType": "region/foreach",
       "position": {
-        "x": 978,
-        "y": 403
+        "x": 1048,
+        "y": 620
       },
       "params": {
-        "width": 339,
-        "height": 224,
+        "width": 363,
+        "height": 244,
         "label": "ForEach"
       },
       "ports": [
@@ -197,11 +197,11 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 190
         }
       ],
-      "width": 339,
-      "height": 224
+      "width": 363,
+      "height": 244
     },
     {
       "id": "mb_small_dot",
@@ -221,8 +221,8 @@
       "id": "mb_core",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1093,
-        "y": 675
+        "x": 1168,
+        "y": 912
       },
       "params": {},
       "portValues": {
@@ -234,8 +234,8 @@
       "id": "mb_group",
       "defType": "transform/group",
       "position": {
-        "x": 1444,
-        "y": 423
+        "x": 1549,
+        "y": 699
       },
       "params": {
         "slotCount": 3
@@ -245,8 +245,8 @@
       "id": "mb_blur",
       "defType": "gpu/effect",
       "position": {
-        "x": 1708,
-        "y": 399
+        "x": 1814,
+        "y": 738
       },
       "params": {
         "mode": "blur",
@@ -260,8 +260,8 @@
       "id": "mb_goo",
       "defType": "gpu/effect",
       "position": {
-        "x": 1973,
-        "y": 375
+        "x": 2045,
+        "y": 799
       },
       "params": {
         "mode": "threshold",
@@ -276,8 +276,8 @@
       "id": "mb_glow",
       "defType": "gpu/effect",
       "position": {
-        "x": 2239,
-        "y": 352
+        "x": 2276,
+        "y": 884
       },
       "params": {
         "mode": "glow"
@@ -297,8 +297,8 @@
       "id": "mb_shade",
       "defType": "gpu/effect",
       "position": {
-        "x": 2504,
-        "y": 329
+        "x": 2507,
+        "y": 1014
       },
       "params": {
         "mode": "shadow"
@@ -323,8 +323,8 @@
       "id": "mb_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2769,
-        "y": 328
+        "x": 2737,
+        "y": 1169
       },
       "params": {
         "width": 600,

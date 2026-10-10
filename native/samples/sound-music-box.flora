@@ -25,8 +25,8 @@
       "id": "mx_time",
       "defType": "time/seconds",
       "position": {
-        "x": 601,
-        "y": 303
+        "x": 602,
+        "y": 312
       },
       "params": {}
     },
@@ -34,8 +34,8 @@
       "id": "mx_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 1452,
-        "y": 477
+        "x": 1476,
+        "y": 523
       },
       "params": {}
     },
@@ -43,8 +43,8 @@
       "id": "mx_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 0,
-        "y": 648
+        "x": 28,
+        "y": 580
       },
       "params": {
         "mode": "keys"
@@ -57,13 +57,13 @@
       "id": "mx_compose",
       "defType": "meta/subpatch",
       "position": {
-        "x": 838,
-        "y": 413
+        "x": 843,
+        "y": 412
       },
       "params": {
         "label": "Compose",
-        "width": 3428,
-        "height": 1014
+        "width": 3288,
+        "height": 1085
       },
       "ports": [
         {
@@ -71,32 +71,32 @@
           "name": "time",
           "type": "number",
           "direction": "input",
-          "y": 591
+          "y": 538
         },
         {
           "id": "new",
           "name": "new",
           "type": "boolean",
           "direction": "input",
-          "y": 464
+          "y": 455
         },
         {
           "id": "tune",
           "name": "tune",
           "type": "vec2",
           "direction": "output",
-          "y": 174
+          "y": 527
         }
       ],
-      "width": 3428,
-      "height": 1014
+      "width": 3288,
+      "height": 1085
     },
     {
       "id": "mx_turnNext",
       "defType": "motion/integrate",
       "position": {
-        "x": 301,
-        "y": 205
+        "x": 302,
+        "y": 70
       },
       "params": {
         "valueType": "number",
@@ -112,7 +112,7 @@
       "defType": "state/read-spread",
       "position": {
         "x": 0,
-        "y": 72
+        "y": 140
       },
       "params": {
         "slot": 1,
@@ -126,8 +126,8 @@
       "id": "mx_turnWrite",
       "defType": "state/write-spread",
       "position": {
-        "x": 564,
-        "y": 177
+        "x": 565,
+        "y": 183
       },
       "params": {
         "slot": 1,
@@ -138,8 +138,8 @@
       "id": "mx_pins",
       "defType": "state/read-spread",
       "position": {
-        "x": 1117,
-        "y": 304
+        "x": 1137,
+        "y": 305
       },
       "params": {
         "slot": 2,
@@ -150,8 +150,8 @@
       "id": "mx_pinsWrite",
       "defType": "state/write-spread",
       "position": {
-        "x": 2000,
-        "y": 381
+        "x": 2035,
+        "y": 642
       },
       "params": {
         "slot": 2,
@@ -162,13 +162,13 @@
       "id": "mx_where",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1402,
-        "y": 287
+        "x": 1426,
+        "y": 316
       },
       "params": {
         "label": "Pins on the disc",
-        "width": 1413,
-        "height": 516
+        "width": 1379,
+        "height": 543
       },
       "ports": [
         {
@@ -176,37 +176,37 @@
           "name": "pins",
           "type": "vec2",
           "direction": "input",
-          "y": 240
+          "y": 241
         },
         {
           "id": "turn",
           "name": "turn",
           "type": "number",
           "direction": "input",
-          "y": 116
+          "y": 115
         },
         {
           "id": "positions",
           "name": "positions",
           "type": "vec2",
           "direction": "output",
-          "y": 180
+          "y": 335
         }
       ],
-      "width": 1413,
-      "height": 516
+      "width": 1379,
+      "height": 543
     },
     {
       "id": "mx_edit",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1721,
-        "y": 403
+        "x": 1756,
+        "y": 463
       },
       "params": {
         "label": "Edit pins",
-        "width": 5196,
-        "height": 1114
+        "width": 4840,
+        "height": 1136
       },
       "ports": [
         {
@@ -214,86 +214,86 @@
           "name": "pins",
           "type": "vec2",
           "direction": "input",
-          "y": 313
+          "y": 227
         },
         {
           "id": "positions",
           "name": "positions",
           "type": "vec2",
           "direction": "input",
-          "y": 799
+          "y": 801
         },
         {
           "id": "turn",
           "name": "turn",
           "type": "number",
           "direction": "input",
-          "y": 245
+          "y": 159
         },
         {
           "id": "x",
           "name": "x",
           "type": "number",
           "direction": "input",
-          "y": 696
+          "y": 639
         },
         {
           "id": "y",
           "name": "y",
           "type": "number",
           "direction": "input",
-          "y": 718
+          "y": 661
         },
         {
           "id": "pressed",
           "name": "pressed",
           "type": "boolean",
           "direction": "input",
-          "y": 458
+          "y": 389
         },
         {
           "id": "tune",
           "name": "tune",
           "type": "vec2",
           "direction": "input",
-          "y": 136
+          "y": 102
         },
         {
           "id": "newTune",
           "name": "newTune",
           "type": "boolean",
           "direction": "input",
-          "y": 116
+          "y": 82
         },
         {
           "id": "clear",
           "name": "clear",
           "type": "boolean",
           "direction": "input",
-          "y": 158
+          "y": 122
         },
         {
           "id": "next",
           "name": "next",
           "type": "vec2",
           "direction": "output",
-          "y": 116
+          "y": 190
         }
       ],
-      "width": 5196,
-      "height": 1114
+      "width": 4840,
+      "height": 1136
     },
     {
       "id": "mx_combPass",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1429,
-        "y": 87
+        "x": 1453,
+        "y": 57
       },
       "params": {
         "label": "Plucks",
-        "width": 2058,
-        "height": 705
+        "width": 1939,
+        "height": 853
       },
       "ports": [
         {
@@ -301,72 +301,72 @@
           "name": "pins",
           "type": "vec2",
           "direction": "input",
-          "y": 278
+          "y": 279
         },
         {
           "id": "turn",
           "name": "turn",
           "type": "number",
           "direction": "input",
-          "y": 126
+          "y": 185
         },
         {
           "id": "turnBefore",
           "name": "turnBefore",
           "type": "number",
           "direction": "input",
-          "y": 417
+          "y": 451
         },
         {
           "id": "scale",
           "name": "scale",
           "type": "string",
           "direction": "input",
-          "y": 472
+          "y": 565
         },
         {
           "id": "plucked",
           "name": "plucked",
           "type": "boolean",
           "direction": "output",
-          "y": 169
+          "y": 383
         },
         {
           "id": "freqs",
           "name": "freqs",
           "type": "number",
           "direction": "output",
-          "y": 266
+          "y": 532
         },
         {
           "id": "rings",
           "name": "rings",
           "type": "number",
           "direction": "output",
-          "y": 189
+          "y": 403
         },
         {
           "id": "notes",
           "name": "notes",
           "type": "number",
           "direction": "output",
-          "y": 423
+          "y": 606
         }
       ],
-      "width": 2058,
-      "height": 705
+      "width": 1939,
+      "height": 853
     },
     {
       "id": "mx_voices",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1732,
+        "x": 1767,
         "y": 0
       },
       "params": {
         "label": "Bells",
-        "width": 2741,
-        "height": 1237
+        "width": 2680,
+        "height": 1299
       },
       "ports": [
         {
@@ -374,23 +374,23 @@
           "name": "freqs",
           "type": "number",
           "direction": "input",
-          "y": 545
+          "y": 443
         }
       ],
-      "width": 2741,
-      "height": 1237
+      "width": 2680,
+      "height": 1299
     },
     {
       "id": "mx_combDraw",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1729,
-        "y": 274
+        "x": 1764,
+        "y": 319
       },
       "params": {
         "label": "Comb",
-        "width": 4096,
-        "height": 1182
+        "width": 3925,
+        "height": 1176
       },
       "ports": [
         {
@@ -398,37 +398,37 @@
           "name": "rings",
           "type": "number",
           "direction": "input",
-          "y": 470
+          "y": 356
         },
         {
           "id": "time",
           "name": "time",
           "type": "number",
           "direction": "input",
-          "y": 699
+          "y": 620
         },
         {
           "id": "comb",
           "name": "comb",
           "type": "layer",
           "direction": "output",
-          "y": 476
+          "y": 735
         }
       ],
-      "width": 4096,
-      "height": 1182
+      "width": 3925,
+      "height": 1176
     },
     {
       "id": "mx_discDraw",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1734,
+        "x": 1769,
         "y": 104
       },
       "params": {
         "label": "Disc",
-        "width": 2837,
-        "height": 1342
+        "width": 2794,
+        "height": 1437
       },
       "ports": [
         {
@@ -436,60 +436,60 @@
           "name": "positions",
           "type": "vec2",
           "direction": "input",
-          "y": 283
+          "y": 375
         },
         {
           "id": "plucked",
           "name": "plucked",
           "type": "boolean",
           "direction": "input",
-          "y": 492
+          "y": 560
         },
         {
           "id": "notes",
           "name": "notes",
           "type": "number",
           "direction": "input",
-          "y": 514
+          "y": 582
         },
         {
           "id": "disc",
           "name": "disc",
           "type": "layer",
           "direction": "output",
-          "y": 642
+          "y": 944
         },
         {
           "id": "rings",
           "name": "rings",
           "type": "layer",
           "direction": "output",
-          "y": 254
+          "y": 386
         },
         {
           "id": "pins",
           "name": "pins",
           "type": "layer",
           "direction": "output",
-          "y": 336
+          "y": 777
         },
         {
           "id": "hub",
           "name": "hub",
           "type": "layer",
           "direction": "output",
-          "y": 903
+          "y": 1109
         }
       ],
-      "width": 2837,
-      "height": 1342
+      "width": 2794,
+      "height": 1437
     },
     {
       "id": "mx_mpos",
       "defType": "vec2/make",
       "position": {
         "x": 157,
-        "y": 659
+        "y": 602
       },
       "params": {},
       "parentId": "mx_edit"
@@ -498,8 +498,8 @@
       "id": "mx_newBang",
       "defType": "io/bang",
       "position": {
-        "x": 271,
-        "y": 611
+        "x": 272,
+        "y": 528
       },
       "params": {
         "label": "New tune"
@@ -510,7 +510,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 202
+        "y": 23
       },
       "params": {
         "value": 0.35,
@@ -523,8 +523,8 @@
       "id": "mx_slots",
       "defType": "spread/range",
       "position": {
-        "x": 654,
-        "y": 172
+        "x": 622,
+        "y": 66
       },
       "params": {},
       "portValues": {
@@ -536,8 +536,8 @@
       "id": "mx_tuneSeed",
       "defType": "state/read",
       "position": {
-        "x": 645,
-        "y": 642
+        "x": 613,
+        "y": 668
       },
       "params": {
         "slot": 1,
@@ -552,8 +552,8 @@
       "id": "mx_tuneSeedWrite",
       "defType": "state/write",
       "position": {
-        "x": 1233,
-        "y": 722
+        "x": 1207,
+        "y": 793
       },
       "params": {
         "slot": 1,
@@ -565,8 +565,8 @@
       "id": "mx_tune",
       "defType": "spread/sublist",
       "position": {
-        "x": 3152,
-        "y": 112
+        "x": 3052,
+        "y": 421
       },
       "params": {
         "op": "keep-where"
@@ -577,8 +577,8 @@
       "id": "mx_nearest",
       "defType": "math/statistics",
       "position": {
-        "x": 702,
-        "y": 751
+        "x": 687,
+        "y": 763
       },
       "params": {
         "op": "min"
@@ -589,8 +589,8 @@
       "id": "mx_withNew",
       "defType": "spread/combine",
       "position": {
-        "x": 1843,
-        "y": 212
+        "x": 1749,
+        "y": 203
       },
       "params": {
         "op": "append"
@@ -602,7 +602,7 @@
       "defType": "spread/count",
       "position": {
         "x": 131,
-        "y": 317
+        "y": 231
       },
       "params": {},
       "parentId": "mx_edit"
@@ -611,8 +611,8 @@
       "id": "mx_edited",
       "defType": "spread/sublist",
       "position": {
-        "x": 4651,
-        "y": 155
+        "x": 4326,
+        "y": 150
       },
       "params": {
         "op": "keep-where"
@@ -623,8 +623,8 @@
       "id": "mx_scaleSel",
       "defType": "io/select",
       "position": {
-        "x": 1105,
-        "y": 178
+        "x": 1117,
+        "y": 161
       },
       "params": {
         "options": "major,pentatonic,lydian,dorian,minor,harmonic-minor",
@@ -636,8 +636,8 @@
       "id": "mx_scale",
       "defType": "sound/scale",
       "position": {
-        "x": 687,
-        "y": 347
+        "x": 708,
+        "y": 444
       },
       "params": {
         "mode": "degree",
@@ -652,8 +652,8 @@
       "id": "mx_pluckFreqs",
       "defType": "spread/sublist",
       "position": {
-        "x": 1779,
-        "y": 229
+        "x": 1700,
+        "y": 427
       },
       "params": {
         "op": "keep-where"
@@ -664,8 +664,8 @@
       "id": "mx_pluckLanes",
       "defType": "spread/sublist",
       "position": {
-        "x": 1779,
-        "y": 81
+        "x": 1700,
+        "y": 261
       },
       "params": {
         "op": "keep-where"
@@ -676,8 +676,8 @@
       "id": "mx_pluckCount",
       "defType": "spread/count",
       "position": {
-        "x": 159,
-        "y": 459
+        "x": 145,
+        "y": 328
       },
       "params": {},
       "parentId": "mx_voices"
@@ -686,8 +686,8 @@
       "id": "mx_bells",
       "defType": "sound/mix",
       "position": {
-        "x": 2054,
-        "y": 336
+        "x": 1997,
+        "y": 581
       },
       "params": {
         "slotCount": 3
@@ -701,8 +701,8 @@
       "id": "mx_f0",
       "defType": "spread/lookup",
       "position": {
-        "x": 147,
-        "y": 233
+        "x": 152,
+        "y": 163
       },
       "params": {
         "op": "at"
@@ -716,8 +716,8 @@
       "id": "mx_held0",
       "defType": "state/read",
       "position": {
-        "x": 452,
-        "y": 167
+        "x": 429,
+        "y": 40
       },
       "params": {
         "slot": 2,
@@ -732,8 +732,8 @@
       "id": "mx_held0Write",
       "defType": "state/write",
       "position": {
-        "x": 976,
-        "y": 106
+        "x": 934,
+        "y": 162
       },
       "params": {
         "slot": 2,
@@ -745,8 +745,8 @@
       "id": "mx_fund0",
       "defType": "sound/oscillator",
       "position": {
-        "x": 1260,
-        "y": 40
+        "x": 1223,
+        "y": 43
       },
       "params": {
         "type": "sine"
@@ -760,8 +760,8 @@
       "id": "mx_part0",
       "defType": "sound/oscillator",
       "position": {
-        "x": 1260,
-        "y": 188
+        "x": 1223,
+        "y": 208
       },
       "params": {
         "type": "sine"
@@ -775,8 +775,8 @@
       "id": "mx_tone0",
       "defType": "sound/mix",
       "position": {
-        "x": 1532,
-        "y": 109
+        "x": 1464,
+        "y": 164
       },
       "params": {
         "slotCount": 2
@@ -787,8 +787,8 @@
       "id": "mx_env0",
       "defType": "sound/envelope",
       "position": {
-        "x": 1817,
-        "y": 122
+        "x": 1757,
+        "y": 192
       },
       "params": {},
       "portValues": {
@@ -804,8 +804,8 @@
       "id": "mx_f1",
       "defType": "spread/lookup",
       "position": {
-        "x": 147,
-        "y": 563
+        "x": 152,
+        "y": 450
       },
       "params": {
         "op": "at"
@@ -819,8 +819,8 @@
       "id": "mx_held1",
       "defType": "state/read",
       "position": {
-        "x": 451,
-        "y": 589
+        "x": 428,
+        "y": 515
       },
       "params": {
         "slot": 3,
@@ -835,8 +835,8 @@
       "id": "mx_held1Write",
       "defType": "state/write",
       "position": {
-        "x": 975,
-        "y": 639
+        "x": 933,
+        "y": 668
       },
       "params": {
         "slot": 3,
@@ -848,8 +848,8 @@
       "id": "mx_fund1",
       "defType": "sound/oscillator",
       "position": {
-        "x": 1260,
-        "y": 416
+        "x": 1223,
+        "y": 434
       },
       "params": {
         "type": "sine"
@@ -863,8 +863,8 @@
       "id": "mx_part1",
       "defType": "sound/oscillator",
       "position": {
-        "x": 1260,
-        "y": 564
+        "x": 1223,
+        "y": 599
       },
       "params": {
         "type": "sine"
@@ -878,8 +878,8 @@
       "id": "mx_tone1",
       "defType": "sound/mix",
       "position": {
-        "x": 1532,
-        "y": 464
+        "x": 1464,
+        "y": 524
       },
       "params": {
         "slotCount": 2
@@ -890,8 +890,8 @@
       "id": "mx_env1",
       "defType": "sound/envelope",
       "position": {
-        "x": 1817,
-        "y": 358
+        "x": 1757,
+        "y": 446
       },
       "params": {},
       "portValues": {
@@ -907,8 +907,8 @@
       "id": "mx_f2",
       "defType": "spread/lookup",
       "position": {
-        "x": 147,
-        "y": 711
+        "x": 152,
+        "y": 615
       },
       "params": {
         "op": "at"
@@ -922,8 +922,8 @@
       "id": "mx_held2",
       "defType": "state/read",
       "position": {
-        "x": 450,
-        "y": 863
+        "x": 427,
+        "y": 824
       },
       "params": {
         "slot": 4,
@@ -938,8 +938,8 @@
       "id": "mx_held2Write",
       "defType": "state/write",
       "position": {
-        "x": 975,
-        "y": 945
+        "x": 933,
+        "y": 1007
       },
       "params": {
         "slot": 4,
@@ -951,8 +951,8 @@
       "id": "mx_fund2",
       "defType": "sound/oscillator",
       "position": {
-        "x": 1260,
-        "y": 712
+        "x": 1223,
+        "y": 765
       },
       "params": {
         "type": "sine"
@@ -966,8 +966,8 @@
       "id": "mx_part2",
       "defType": "sound/oscillator",
       "position": {
-        "x": 1260,
-        "y": 860
+        "x": 1223,
+        "y": 930
       },
       "params": {
         "type": "sine"
@@ -981,8 +981,8 @@
       "id": "mx_tone2",
       "defType": "sound/mix",
       "position": {
-        "x": 1532,
-        "y": 735
+        "x": 1464,
+        "y": 822
       },
       "params": {
         "slotCount": 2
@@ -993,8 +993,8 @@
       "id": "mx_env2",
       "defType": "sound/envelope",
       "position": {
-        "x": 1817,
-        "y": 594
+        "x": 1757,
+        "y": 699
       },
       "params": {},
       "portValues": {
@@ -1010,8 +1010,8 @@
       "id": "mx_reverb",
       "defType": "sound/reverb",
       "position": {
-        "x": 2318,
-        "y": 314
+        "x": 2261,
+        "y": 650
       },
       "params": {},
       "portValues": {
@@ -1025,8 +1025,8 @@
       "id": "mx_out",
       "defType": "sound/output",
       "position": {
-        "x": 2534,
-        "y": 314
+        "x": 2466,
+        "y": 763
       },
       "params": {},
       "portValues": {
@@ -1038,8 +1038,8 @@
       "id": "mx_teeth",
       "defType": "spread/range",
       "position": {
-        "x": 414,
-        "y": 198
+        "x": 371,
+        "y": 80
       },
       "params": {},
       "portValues": {
@@ -1051,8 +1051,8 @@
       "id": "mx_lane0",
       "defType": "spread/lookup",
       "position": {
-        "x": 142,
-        "y": 263
+        "x": 140,
+        "y": 132
       },
       "params": {
         "op": "at"
@@ -1066,8 +1066,8 @@
       "id": "mx_lane1",
       "defType": "spread/lookup",
       "position": {
-        "x": 142,
-        "y": 411
+        "x": 140,
+        "y": 297
       },
       "params": {
         "op": "at"
@@ -1081,8 +1081,8 @@
       "id": "mx_lane2",
       "defType": "spread/lookup",
       "position": {
-        "x": 142,
-        "y": 559
+        "x": 140,
+        "y": 463
       },
       "params": {
         "op": "at"
@@ -1096,8 +1096,8 @@
       "id": "mx_toothTimes",
       "defType": "state/read-spread",
       "position": {
-        "x": 1250,
-        "y": 570
+        "x": 1161,
+        "y": 546
       },
       "params": {
         "slot": 3,
@@ -1109,8 +1109,8 @@
       "id": "mx_toothTimesWrite",
       "defType": "state/write-spread",
       "position": {
-        "x": 1739,
-        "y": 412
+        "x": 1638,
+        "y": 424
       },
       "params": {
         "slot": 3,
@@ -1122,12 +1122,12 @@
       "id": "mx_toothLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 3181,
-        "y": 281
+        "x": 2993,
+        "y": 441
       },
       "params": {
-        "width": 522,
-        "height": 250,
+        "width": 549,
+        "height": 268,
         "label": "Comb"
       },
       "ports": [
@@ -1157,11 +1157,11 @@
           "name": "tooth",
           "type": "layer",
           "direction": "output",
-          "y": 81
+          "y": 204
         }
       ],
-      "width": 522,
-      "height": 250,
+      "width": 549,
+      "height": 268,
       "parentId": "mx_combDraw"
     },
     {
@@ -1178,8 +1178,8 @@
       "id": "mx_tooth",
       "defType": "draw/rect",
       "position": {
-        "x": 311,
-        "y": 44
+        "x": 314,
+        "y": 53
       },
       "params": {},
       "portValues": {
@@ -1191,8 +1191,8 @@
       "id": "mx_combBackX",
       "defType": "data/csv-inline",
       "position": {
-        "x": 139,
-        "y": 739
+        "x": 144,
+        "y": 660
       },
       "params": {
         "data": "154,98,132,188"
@@ -1203,8 +1203,8 @@
       "id": "mx_combBackY",
       "defType": "data/csv-inline",
       "position": {
-        "x": 139,
-        "y": 843
+        "x": 144,
+        "y": 782
       },
       "params": {
         "data": "-55,-244.0,-244.0,-55"
@@ -1215,8 +1215,8 @@
       "id": "mx_combBackFill",
       "defType": "style/fill",
       "position": {
-        "x": 416,
-        "y": 880
+        "x": 382,
+        "y": 856
       },
       "params": {},
       "portValues": {
@@ -1233,8 +1233,8 @@
       "id": "mx_combBack",
       "defType": "draw/polygon",
       "position": {
-        "x": 736,
-        "y": 770
+        "x": 678,
+        "y": 787
       },
       "params": {},
       "portValues": {
@@ -1246,8 +1246,8 @@
       "id": "mx_comb",
       "defType": "transform/group",
       "position": {
-        "x": 3816,
-        "y": 439
+        "x": 3645,
+        "y": 651
       },
       "params": {
         "slotCount": 2
@@ -1258,8 +1258,8 @@
       "id": "mx_discFill",
       "defType": "style/gradient",
       "position": {
-        "x": 419,
-        "y": 702
+        "x": 436,
+        "y": 784
       },
       "params": {
         "mode": "radial",
@@ -1271,8 +1271,8 @@
       "id": "mx_discCols",
       "defType": "color/palette",
       "position": {
-        "x": 139,
-        "y": 751
+        "x": 140,
+        "y": 854
       },
       "params": {
         "stopCount": 3,
@@ -1287,7 +1287,7 @@
       "defType": "draw/ellipse",
       "position": {
         "x": 708,
-        "y": 618
+        "y": 859
       },
       "params": {},
       "portValues": {
@@ -1300,8 +1300,8 @@
       "id": "mx_ringStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 689,
-        "y": 188
+        "x": 705,
+        "y": 233
       },
       "params": {},
       "portValues": {
@@ -1319,8 +1319,8 @@
       "id": "mx_ringNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 988,
-        "y": 202
+        "x": 994,
+        "y": 303
       },
       "params": {},
       "parentId": "mx_discDraw"
@@ -1330,11 +1330,11 @@
       "defType": "region/foreach",
       "position": {
         "x": 1226,
-        "y": 79
+        "y": 189
       },
       "params": {
-        "width": 350,
-        "height": 224,
+        "width": 364,
+        "height": 244,
         "label": "Rings"
       },
       "ports": [
@@ -1350,11 +1350,11 @@
           "name": "ring",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 190
         }
       ],
-      "width": 350,
-      "height": 224,
+      "width": 364,
+      "height": 244,
       "parentId": "mx_discDraw"
     },
     {
@@ -1371,12 +1371,12 @@
       "id": "mx_pinLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 1928,
-        "y": 267
+        "x": 1897,
+        "y": 432
       },
       "params": {
-        "width": 526,
-        "height": 281,
+        "width": 554,
+        "height": 299,
         "label": "Pins"
       },
       "ports": [
@@ -1406,11 +1406,11 @@
           "name": "pin",
           "type": "layer",
           "direction": "output",
-          "y": 89
+          "y": 209
         }
       ],
-      "width": 526,
-      "height": 281,
+      "width": 554,
+      "height": 299,
       "parentId": "mx_discDraw"
     },
     {
@@ -1427,8 +1427,8 @@
       "id": "mx_pin",
       "defType": "draw/ellipse",
       "position": {
-        "x": 315,
-        "y": 52
+        "x": 319,
+        "y": 59
       },
       "params": {},
       "parentId": "mx_pinLoop"
@@ -1437,8 +1437,8 @@
       "id": "mx_pinGlow",
       "defType": "gpu/effect",
       "position": {
-        "x": 2554,
-        "y": 298
+        "x": 2548,
+        "y": 582
       },
       "params": {
         "mode": "glow"
@@ -1453,8 +1453,8 @@
       "id": "mx_hubFill",
       "defType": "style/fill",
       "position": {
-        "x": 156,
-        "y": 1070
+        "x": 166,
+        "y": 1122
       },
       "params": {},
       "portValues": {
@@ -1471,8 +1471,8 @@
       "id": "mx_hub",
       "defType": "draw/ellipse",
       "position": {
-        "x": 440,
-        "y": 982
+        "x": 438,
+        "y": 1081
       },
       "params": {},
       "portValues": {
@@ -1485,8 +1485,8 @@
       "id": "mx_help",
       "defType": "value/string",
       "position": {
-        "x": 5,
-        "y": 411
+        "x": 23,
+        "y": 265
       },
       "params": {
         "value": "click the disc to add or remove pins · N new tune · C clear"
@@ -1496,8 +1496,8 @@
       "id": "mx_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 11,
-        "y": 515
+        "x": 20,
+        "y": 387
       },
       "params": {},
       "portValues": {
@@ -1513,8 +1513,8 @@
       "id": "mx_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 310,
-        "y": 419
+        "x": 301,
+        "y": 318
       },
       "params": {
         "size": 13,
@@ -1531,8 +1531,8 @@
       "id": "mx_scene",
       "defType": "transform/group",
       "position": {
-        "x": 1981,
-        "y": 151
+        "x": 2016,
+        "y": 217
       },
       "params": {
         "slotCount": 6
@@ -1542,8 +1542,8 @@
       "id": "mx_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2245,
-        "y": 151
+        "x": 2280,
+        "y": 353
       },
       "params": {
         "width": 640,
@@ -1562,8 +1562,8 @@
       "id": "mx_keyN",
       "defType": "spread/lookup",
       "position": {
-        "x": 274,
-        "y": 715
+        "x": 294,
+        "y": 649
       },
       "params": {
         "op": "at"
@@ -1576,8 +1576,8 @@
       "id": "mx_newTune",
       "defType": "logic/logic",
       "position": {
-        "x": 573,
-        "y": 570
+        "x": 602,
+        "y": 529
       },
       "params": {
         "op": "or"
@@ -1587,8 +1587,8 @@
       "id": "mx_clear",
       "defType": "spread/lookup",
       "position": {
-        "x": 1419,
-        "y": 657
+        "x": 1462,
+        "y": 685
       },
       "params": {
         "op": "at"
@@ -1602,7 +1602,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 128,
-        "y": 864
+        "y": 935
       },
       "params": {
         "text": "A tune is one pin per slot (64 round the disc) where noise is high enough, its ring from more noise, so the same seed gives the same tune. New tune (or N) takes a new seed from the clock; C clears the disc.",
@@ -1616,7 +1616,7 @@
       "defType": "math/math",
       "position": {
         "x": 128,
-        "y": 532
+        "y": 479
       },
       "params": {
         "op": "multiply",
@@ -1632,8 +1632,8 @@
       "id": "mx_seedFract",
       "defType": "math/math",
       "position": {
-        "x": 392,
-        "y": 513
+        "x": 396,
+        "y": 502
       },
       "params": {
         "op": "fract"
@@ -1644,8 +1644,8 @@
       "id": "mx_seedNew",
       "defType": "math/math",
       "position": {
-        "x": 639,
-        "y": 494
+        "x": 607,
+        "y": 503
       },
       "params": {
         "op": "multiply",
@@ -1661,8 +1661,8 @@
       "id": "mx_tuneSeedNext",
       "defType": "logic/select",
       "position": {
-        "x": 957,
-        "y": 488
+        "x": 934,
+        "y": 526
       },
       "params": {},
       "parentId": "mx_compose"
@@ -1671,7 +1671,7 @@
       "id": "mx_slotTurn",
       "defType": "math/math",
       "position": {
-        "x": 1776,
+        "x": 1783,
         "y": 40
       },
       "params": {
@@ -1688,8 +1688,8 @@
       "id": "mx_slotAngle",
       "defType": "math/math",
       "position": {
-        "x": 2049,
-        "y": 60
+        "x": 2052,
+        "y": 123
       },
       "params": {
         "op": "multiply",
@@ -1705,8 +1705,8 @@
       "id": "mx_ringNoiseX",
       "defType": "math/math",
       "position": {
-        "x": 926,
-        "y": 303
+        "x": 896,
+        "y": 235
       },
       "params": {
         "op": "multiply",
@@ -1722,8 +1722,8 @@
       "id": "mx_ringNoise",
       "defType": "noise/noise",
       "position": {
-        "x": 1229,
-        "y": 398
+        "x": 1219,
+        "y": 253
       },
       "params": {
         "mode": "perlin"
@@ -1734,8 +1734,8 @@
       "id": "mx_ringSpan",
       "defType": "math/math",
       "position": {
-        "x": 1504,
-        "y": 429
+        "x": 1516,
+        "y": 283
       },
       "params": {
         "op": "multiply",
@@ -1751,8 +1751,8 @@
       "id": "mx_ringShift",
       "defType": "math/math",
       "position": {
-        "x": 1776,
-        "y": 352
+        "x": 1783,
+        "y": 320
       },
       "params": {
         "op": "subtract",
@@ -1768,8 +1768,8 @@
       "id": "mx_slotRing",
       "defType": "math/math",
       "position": {
-        "x": 2058,
-        "y": 275
+        "x": 2080,
+        "y": 356
       },
       "params": {
         "op": "round"
@@ -1780,8 +1780,8 @@
       "id": "mx_tunePins",
       "defType": "vec2/make",
       "position": {
-        "x": 2383,
-        "y": 102
+        "x": 2368,
+        "y": 227
       },
       "params": {},
       "parentId": "mx_compose"
@@ -1790,8 +1790,8 @@
       "id": "mx_keepNoiseX1",
       "defType": "math/math",
       "position": {
-        "x": 926,
-        "y": 155
+        "x": 896,
+        "y": 70
       },
       "params": {
         "op": "multiply",
@@ -1807,8 +1807,8 @@
       "id": "mx_keepNoiseX",
       "defType": "math/math",
       "position": {
-        "x": 1228,
-        "y": 102
+        "x": 1202,
+        "y": 87
       },
       "params": {
         "op": "add",
@@ -1824,8 +1824,8 @@
       "id": "mx_keepNoiseY",
       "defType": "math/math",
       "position": {
-        "x": 1228,
-        "y": 250
+        "x": 1202,
+        "y": 627
       },
       "params": {
         "op": "multiply",
@@ -1841,8 +1841,8 @@
       "id": "mx_keepNoise",
       "defType": "noise/noise",
       "position": {
-        "x": 1505,
-        "y": 105
+        "x": 1533,
+        "y": 448
       },
       "params": {
         "mode": "perlin"
@@ -1853,8 +1853,8 @@
       "id": "mx_loud",
       "defType": "logic/compare",
       "position": {
-        "x": 2626,
-        "y": 147
+        "x": 2594,
+        "y": 613
       },
       "params": {
         "op": "greater"
@@ -1868,8 +1868,8 @@
       "id": "mx_ringIn",
       "defType": "logic/compare",
       "position": {
-        "x": 2335,
-        "y": 228
+        "x": 2339,
+        "y": 371
       },
       "params": {
         "op": "greater-equal"
@@ -1883,8 +1883,8 @@
       "id": "mx_ringBelow",
       "defType": "logic/compare",
       "position": {
-        "x": 2335,
-        "y": 376
+        "x": 2339,
+        "y": 536
       },
       "params": {
         "op": "less"
@@ -1898,8 +1898,8 @@
       "id": "mx_onDisc",
       "defType": "logic/logic",
       "position": {
-        "x": 2647,
-        "y": 295
+        "x": 2623,
+        "y": 447
       },
       "params": {
         "op": "and"
@@ -1910,8 +1910,8 @@
       "id": "mx_tuneKeep",
       "defType": "logic/logic",
       "position": {
-        "x": 2914,
-        "y": 178
+        "x": 2855,
+        "y": 509
       },
       "params": {
         "op": "and"
@@ -1923,7 +1923,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 133,
-        "y": 386
+        "y": 413
       },
       "params": {
         "text": "A pin is (angle on the disc, ring). Turned with the disc, it sits at angle + turn, 62 px out plus 12.5 px a ring. Take keeps the list empty when there are no pins.",
@@ -1936,8 +1936,8 @@
       "id": "mx_pinParts",
       "defType": "vec2/split",
       "position": {
-        "x": 159,
-        "y": 140
+        "x": 160,
+        "y": 135
       },
       "params": {},
       "parentId": "mx_where"
@@ -1946,7 +1946,7 @@
       "id": "mx_pinAngle",
       "defType": "math/math",
       "position": {
-        "x": 377,
+        "x": 381,
         "y": 40
       },
       "params": {
@@ -1960,8 +1960,8 @@
       "id": "mx_pinRingOut",
       "defType": "math/math",
       "position": {
-        "x": 377,
-        "y": 188
+        "x": 381,
+        "y": 206
       },
       "params": {
         "op": "multiply",
@@ -1977,8 +1977,8 @@
       "id": "mx_pinRadius",
       "defType": "math/math",
       "position": {
-        "x": 646,
-        "y": 136
+        "x": 650,
+        "y": 196
       },
       "params": {
         "op": "add",
@@ -1994,8 +1994,8 @@
       "id": "mx_pinPoint",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 915,
-        "y": 106
+        "x": 924,
+        "y": 179
       },
       "params": {},
       "parentId": "mx_where"
@@ -2005,7 +2005,7 @@
       "defType": "spread/count",
       "position": {
         "x": 133,
-        "y": 266
+        "y": 273
       },
       "params": {},
       "parentId": "mx_where"
@@ -2014,8 +2014,8 @@
       "id": "mx_pinAt",
       "defType": "spread/sublist",
       "position": {
-        "x": 1139,
-        "y": 143
+        "x": 1143,
+        "y": 229
       },
       "params": {
         "op": "take"
@@ -2027,7 +2027,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 131,
-        "y": 934
+        "y": 956
       },
       "params": {
         "text": "A click within 10 px of a pin takes it out. A click anywhere else on the rings adds a pin there: its ring from the distance to the centre, its angle on the disc from the click's angle less the turn. The new pin is appended and every pin is tested; the ones that stay make the next list. A new tune replaces the list, C empties it.",
@@ -2040,8 +2040,8 @@
       "id": "mx_click",
       "defType": "io/edge",
       "position": {
-        "x": 153,
-        "y": 421
+        "x": 139,
+        "y": 352
       },
       "params": {
         "mode": "rising",
@@ -2053,8 +2053,8 @@
       "id": "mx_pinDist",
       "defType": "vec2/math",
       "position": {
-        "x": 386,
-        "y": 742
+        "x": 390,
+        "y": 743
       },
       "params": {
         "op": "distance"
@@ -2065,8 +2065,8 @@
       "id": "mx_clickReach",
       "defType": "vec2/math",
       "position": {
-        "x": 386,
-        "y": 616
+        "x": 390,
+        "y": 599
       },
       "params": {
         "op": "length"
@@ -2077,8 +2077,8 @@
       "id": "mx_clickOut",
       "defType": "math/math",
       "position": {
-        "x": 687,
-        "y": 603
+        "x": 658,
+        "y": 566
       },
       "params": {
         "op": "subtract",
@@ -2094,8 +2094,8 @@
       "id": "mx_clickRingF",
       "defType": "math/math",
       "position": {
-        "x": 962,
-        "y": 594
+        "x": 930,
+        "y": 554
       },
       "params": {
         "op": "divide",
@@ -2111,8 +2111,8 @@
       "id": "mx_newLane",
       "defType": "math/math",
       "position": {
-        "x": 1253,
-        "y": 586
+        "x": 1218,
+        "y": 544
       },
       "params": {
         "op": "round"
@@ -2123,8 +2123,8 @@
       "id": "mx_clickAngle",
       "defType": "vec2/math",
       "position": {
-        "x": 386,
-        "y": 490
+        "x": 390,
+        "y": 456
       },
       "params": {
         "op": "heading"
@@ -2135,8 +2135,8 @@
       "id": "mx_newAngle",
       "defType": "math/math",
       "position": {
-        "x": 687,
-        "y": 300
+        "x": 658,
+        "y": 283
       },
       "params": {
         "op": "subtract",
@@ -2149,8 +2149,8 @@
       "id": "mx_newPin",
       "defType": "vec2/make",
       "position": {
-        "x": 1600,
-        "y": 316
+        "x": 1520,
+        "y": 267
       },
       "params": {},
       "parentId": "mx_edit"
@@ -2159,8 +2159,8 @@
       "id": "mx_candParts",
       "defType": "vec2/split",
       "position": {
-        "x": 2144,
-        "y": 311
+        "x": 2014,
+        "y": 365
       },
       "params": {},
       "parentId": "mx_edit"
@@ -2169,8 +2169,8 @@
       "id": "mx_candAngle",
       "defType": "math/math",
       "position": {
-        "x": 2375,
-        "y": 129
+        "x": 2251,
+        "y": 279
       },
       "params": {
         "op": "add",
@@ -2183,8 +2183,8 @@
       "id": "mx_candRingOut",
       "defType": "math/math",
       "position": {
-        "x": 2375,
-        "y": 381
+        "x": 2251,
+        "y": 445
       },
       "params": {
         "op": "multiply",
@@ -2200,8 +2200,8 @@
       "id": "mx_candRadius",
       "defType": "math/math",
       "position": {
-        "x": 2666,
-        "y": 245
+        "x": 2531,
+        "y": 422
       },
       "params": {
         "op": "add",
@@ -2217,8 +2217,8 @@
       "id": "mx_withNewAt",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 2947,
-        "y": 251
+        "x": 2805,
+        "y": 403
       },
       "params": {},
       "parentId": "mx_edit"
@@ -2227,8 +2227,8 @@
       "id": "mx_candDist",
       "defType": "vec2/math",
       "position": {
-        "x": 3186,
-        "y": 391
+        "x": 3032,
+        "y": 486
       },
       "params": {
         "op": "distance"
@@ -2239,8 +2239,8 @@
       "id": "mx_closeToPin",
       "defType": "logic/compare",
       "position": {
-        "x": 3465,
-        "y": 376
+        "x": 3282,
+        "y": 456
       },
       "params": {
         "op": "less"
@@ -2254,8 +2254,8 @@
       "id": "mx_removeThis",
       "defType": "logic/logic",
       "position": {
-        "x": 3751,
-        "y": 391
+        "x": 3534,
+        "y": 384
       },
       "params": {
         "op": "and"
@@ -2266,8 +2266,8 @@
       "id": "mx_pinStays",
       "defType": "logic/logic",
       "position": {
-        "x": 3992,
-        "y": 375
+        "x": 3725,
+        "y": 359
       },
       "params": {
         "op": "not"
@@ -2278,8 +2278,8 @@
       "id": "mx_noPins",
       "defType": "logic/compare",
       "position": {
-        "x": 1237,
-        "y": 346
+        "x": 1203,
+        "y": 188
       },
       "params": {
         "op": "equal"
@@ -2293,8 +2293,8 @@
       "id": "mx_nearAPin",
       "defType": "logic/compare",
       "position": {
-        "x": 956,
-        "y": 759
+        "x": 943,
+        "y": 761
       },
       "params": {
         "op": "less"
@@ -2308,8 +2308,8 @@
       "id": "mx_awayFromPins",
       "defType": "logic/logic",
       "position": {
-        "x": 1258,
-        "y": 768
+        "x": 1232,
+        "y": 775
       },
       "params": {
         "op": "not"
@@ -2320,8 +2320,8 @@
       "id": "mx_room",
       "defType": "logic/logic",
       "position": {
-        "x": 1573,
-        "y": 474
+        "x": 1520,
+        "y": 443
       },
       "params": {
         "op": "or"
@@ -2332,8 +2332,8 @@
       "id": "mx_placeClick",
       "defType": "logic/logic",
       "position": {
-        "x": 1855,
-        "y": 457
+        "x": 1769,
+        "y": 449
       },
       "params": {
         "op": "and"
@@ -2344,8 +2344,8 @@
       "id": "mx_laneIn",
       "defType": "logic/compare",
       "position": {
-        "x": 1552,
-        "y": 622
+        "x": 1491,
+        "y": 608
       },
       "params": {
         "op": "greater-equal"
@@ -2359,8 +2359,8 @@
       "id": "mx_laneBelow",
       "defType": "logic/compare",
       "position": {
-        "x": 1552,
-        "y": 770
+        "x": 1491,
+        "y": 774
       },
       "params": {
         "op": "less"
@@ -2374,8 +2374,8 @@
       "id": "mx_laneOk",
       "defType": "logic/logic",
       "position": {
-        "x": 1855,
-        "y": 630
+        "x": 1769,
+        "y": 667
       },
       "params": {
         "op": "and"
@@ -2386,8 +2386,8 @@
       "id": "mx_addNew",
       "defType": "logic/logic",
       "position": {
-        "x": 2116,
-        "y": 521
+        "x": 2014,
+        "y": 572
       },
       "params": {
         "op": "and"
@@ -2398,8 +2398,8 @@
       "id": "mx_candCount",
       "defType": "spread/count",
       "position": {
-        "x": 2117,
-        "y": 207
+        "x": 1987,
+        "y": 244
       },
       "params": {},
       "parentId": "mx_edit"
@@ -2408,8 +2408,8 @@
       "id": "mx_candIdx",
       "defType": "spread/range",
       "position": {
-        "x": 2390,
-        "y": 277
+        "x": 2266,
+        "y": 158
       },
       "params": {},
       "parentId": "mx_edit"
@@ -2418,8 +2418,8 @@
       "id": "mx_isOld",
       "defType": "logic/compare",
       "position": {
-        "x": 2660,
-        "y": 393
+        "x": 2544,
+        "y": 128
       },
       "params": {
         "op": "less"
@@ -2430,8 +2430,8 @@
       "id": "mx_keepOne",
       "defType": "logic/select",
       "position": {
-        "x": 4235,
-        "y": 340
+        "x": 3916,
+        "y": 327
       },
       "params": {},
       "parentId": "mx_edit"
@@ -2440,8 +2440,8 @@
       "id": "mx_keepPin",
       "defType": "logic/select",
       "position": {
-        "x": 4447,
-        "y": 225
+        "x": 4124,
+        "y": 214
       },
       "params": {},
       "parentId": "mx_edit",
@@ -2453,7 +2453,7 @@
       "id": "mx_pinsNext",
       "defType": "logic/switch",
       "position": {
-        "x": 4913,
+        "x": 4560,
         "y": 40
       },
       "params": {
@@ -2467,7 +2467,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 133,
-        "y": 555
+        "y": 703
       },
       "params": {
         "text": "The comb sits a quarter turn round. A pin passes it when its turn fraction (angle / τ + ¼, wrapped) drops between the last frame and this one. Its ring is its note: a degree of the Scale from middle C.",
@@ -2480,8 +2480,8 @@
       "id": "mx_pluckParts",
       "defType": "vec2/split",
       "position": {
-        "x": 159,
-        "y": 178
+        "x": 160,
+        "y": 173
       },
       "params": {},
       "parentId": "mx_combPass"
@@ -2490,7 +2490,7 @@
       "id": "mx_angleNow",
       "defType": "math/math",
       "position": {
-        "x": 393,
+        "x": 395,
         "y": 40
       },
       "params": {
@@ -2504,8 +2504,8 @@
       "id": "mx_turnsNow",
       "defType": "math/math",
       "position": {
-        "x": 684,
-        "y": 47
+        "x": 688,
+        "y": 88
       },
       "params": {
         "op": "divide",
@@ -2521,8 +2521,8 @@
       "id": "mx_quarterNow",
       "defType": "math/math",
       "position": {
-        "x": 952,
-        "y": 54
+        "x": 957,
+        "y": 137
       },
       "params": {
         "op": "add",
@@ -2538,8 +2538,8 @@
       "id": "mx_fracNow",
       "defType": "math/math",
       "position": {
-        "x": 1223,
-        "y": 74
+        "x": 1226,
+        "y": 188
       },
       "params": {
         "op": "fract"
@@ -2550,8 +2550,8 @@
       "id": "mx_angleBefore",
       "defType": "math/math",
       "position": {
-        "x": 393,
-        "y": 336
+        "x": 395,
+        "y": 371
       },
       "params": {
         "op": "add",
@@ -2564,8 +2564,8 @@
       "id": "mx_turnsBefore",
       "defType": "math/math",
       "position": {
-        "x": 684,
-        "y": 199
+        "x": 688,
+        "y": 279
       },
       "params": {
         "op": "divide",
@@ -2581,8 +2581,8 @@
       "id": "mx_quarterBefore",
       "defType": "math/math",
       "position": {
-        "x": 952,
-        "y": 202
+        "x": 957,
+        "y": 304
       },
       "params": {
         "op": "add",
@@ -2598,8 +2598,8 @@
       "id": "mx_fracBefore",
       "defType": "math/math",
       "position": {
-        "x": 1223,
-        "y": 200
+        "x": 1226,
+        "y": 331
       },
       "params": {
         "op": "fract"
@@ -2610,8 +2610,8 @@
       "id": "mx_plucked",
       "defType": "logic/compare",
       "position": {
-        "x": 1486,
-        "y": 167
+        "x": 1449,
+        "y": 312
       },
       "params": {
         "op": "less"
@@ -2623,7 +2623,7 @@
       "defType": "spread/count",
       "position": {
         "x": 133,
-        "y": 304
+        "y": 311
       },
       "params": {},
       "parentId": "mx_combPass"
@@ -2632,8 +2632,8 @@
       "id": "mx_lanes",
       "defType": "spread/sublist",
       "position": {
-        "x": 396,
-        "y": 188
+        "x": 417,
+        "y": 206
       },
       "params": {
         "op": "take"
@@ -2644,8 +2644,8 @@
       "id": "mx_bellsNote",
       "defType": "meta/comment",
       "position": {
-        "x": 147,
-        "y": 1087
+        "x": 145,
+        "y": 1149
       },
       "params": {
         "text": "Up to three pins can ring at once: voice i plays the i-th plucked note. Each holds its frequency between plucks and is two sine partials (×1 and ×2.76, a bell's) through an envelope, mixed into one reverb.",
@@ -2658,8 +2658,8 @@
       "id": "mx_hit0",
       "defType": "logic/compare",
       "position": {
-        "x": 447,
-        "y": 293
+        "x": 443,
+        "y": 184
       },
       "params": {
         "op": "greater"
@@ -2673,8 +2673,8 @@
       "id": "mx_freq0",
       "defType": "logic/select",
       "position": {
-        "x": 748,
-        "y": 132
+        "x": 718,
+        "y": 115
       },
       "params": {},
       "parentId": "mx_voices"
@@ -2683,8 +2683,8 @@
       "id": "mx_over0",
       "defType": "math/math",
       "position": {
-        "x": 978,
-        "y": 232
+        "x": 936,
+        "y": 288
       },
       "params": {
         "op": "multiply",
@@ -2700,8 +2700,8 @@
       "id": "mx_hit1",
       "defType": "logic/compare",
       "position": {
-        "x": 447,
-        "y": 441
+        "x": 443,
+        "y": 349
       },
       "params": {
         "op": "greater"
@@ -2715,8 +2715,8 @@
       "id": "mx_freq1",
       "defType": "logic/select",
       "position": {
-        "x": 748,
-        "y": 504
+        "x": 718,
+        "y": 457
       },
       "params": {},
       "parentId": "mx_voices"
@@ -2725,8 +2725,8 @@
       "id": "mx_over1",
       "defType": "math/math",
       "position": {
-        "x": 978,
-        "y": 491
+        "x": 936,
+        "y": 503
       },
       "params": {
         "op": "multiply",
@@ -2742,8 +2742,8 @@
       "id": "mx_hit2",
       "defType": "logic/compare",
       "position": {
-        "x": 447,
-        "y": 715
+        "x": 443,
+        "y": 658
       },
       "params": {
         "op": "greater"
@@ -2757,8 +2757,8 @@
       "id": "mx_freq2",
       "defType": "logic/select",
       "position": {
-        "x": 748,
-        "y": 794
+        "x": 718,
+        "y": 782
       },
       "params": {},
       "parentId": "mx_voices"
@@ -2767,8 +2767,8 @@
       "id": "mx_over2",
       "defType": "math/math",
       "position": {
-        "x": 978,
-        "y": 797
+        "x": 936,
+        "y": 842
       },
       "params": {
         "op": "multiply",
@@ -2784,8 +2784,8 @@
       "id": "mx_combNote",
       "defType": "meta/comment",
       "position": {
-        "x": 139,
-        "y": 1022
+        "x": 140,
+        "y": 1016
       },
       "params": {
         "text": "Fifteen teeth, one per ring, shorter outwards. A Write* → Read* pair (\"plucked at\") keeps when each was last plucked (by any of the first three plucks this frame); since then it wobbles (a boing envelope) and glows from cream back to brass (a decay envelope).",
@@ -2798,8 +2798,8 @@
       "id": "mx_toothInit",
       "defType": "spread/repeat",
       "position": {
-        "x": 993,
-        "y": 596
+        "x": 913,
+        "y": 558
       },
       "params": {},
       "parentId": "mx_combDraw",
@@ -2812,8 +2812,8 @@
       "id": "mx_laneNum0",
       "defType": "convert/convert",
       "position": {
-        "x": 412,
-        "y": 302
+        "x": 389,
+        "y": 202
       },
       "params": {
         "to": "number"
@@ -2824,8 +2824,8 @@
       "id": "mx_toothIs0",
       "defType": "logic/compare",
       "position": {
-        "x": 697,
-        "y": 203
+        "x": 659,
+        "y": 109
       },
       "params": {
         "op": "equal"
@@ -2836,8 +2836,8 @@
       "id": "mx_laneNum1",
       "defType": "convert/convert",
       "position": {
-        "x": 412,
-        "y": 428
+        "x": 389,
+        "y": 345
       },
       "params": {
         "to": "number"
@@ -2848,8 +2848,8 @@
       "id": "mx_toothIs1",
       "defType": "logic/compare",
       "position": {
-        "x": 697,
-        "y": 351
+        "x": 659,
+        "y": 275
       },
       "params": {
         "op": "equal"
@@ -2860,8 +2860,8 @@
       "id": "mx_laneNum2",
       "defType": "convert/convert",
       "position": {
-        "x": 412,
-        "y": 554
+        "x": 389,
+        "y": 489
       },
       "params": {
         "to": "number"
@@ -2872,8 +2872,8 @@
       "id": "mx_toothIs2",
       "defType": "logic/compare",
       "position": {
-        "x": 697,
-        "y": 499
+        "x": 659,
+        "y": 440
       },
       "params": {
         "op": "equal"
@@ -2884,8 +2884,8 @@
       "id": "mx_toothHit01",
       "defType": "logic/logic",
       "position": {
-        "x": 995,
-        "y": 306
+        "x": 942,
+        "y": 264
       },
       "params": {
         "op": "or"
@@ -2896,8 +2896,8 @@
       "id": "mx_toothHit",
       "defType": "logic/logic",
       "position": {
-        "x": 1263,
-        "y": 409
+        "x": 1202,
+        "y": 381
       },
       "params": {
         "op": "or"
@@ -2908,8 +2908,8 @@
       "id": "mx_toothNext",
       "defType": "logic/select",
       "position": {
-        "x": 1524,
-        "y": 487
+        "x": 1435,
+        "y": 472
       },
       "params": {},
       "parentId": "mx_combDraw"
@@ -2918,8 +2918,8 @@
       "id": "mx_toothAge",
       "defType": "math/math",
       "position": {
-        "x": 1739,
-        "y": 538
+        "x": 1637,
+        "y": 550
       },
       "params": {
         "op": "subtract",
@@ -2932,8 +2932,8 @@
       "id": "mx_toothShorter",
       "defType": "math/math",
       "position": {
-        "x": 1739,
-        "y": 264
+        "x": 1637,
+        "y": 206
       },
       "params": {
         "op": "multiply",
@@ -2949,8 +2949,8 @@
       "id": "mx_toothLen",
       "defType": "math/math",
       "position": {
-        "x": 2026,
-        "y": 272
+        "x": 1920,
+        "y": 286
       },
       "params": {
         "op": "subtract",
@@ -2966,8 +2966,8 @@
       "id": "mx_toothHalf",
       "defType": "math/math",
       "position": {
-        "x": 2334,
-        "y": 40
+        "x": 2220,
+        "y": 95
       },
       "params": {
         "op": "divide",
@@ -2983,8 +2983,8 @@
       "id": "mx_toothX",
       "defType": "math/math",
       "position": {
-        "x": 2620,
-        "y": 90
+        "x": 2495,
+        "y": 196
       },
       "params": {
         "op": "add",
@@ -3000,8 +3000,8 @@
       "id": "mx_toothRingOut",
       "defType": "math/math",
       "position": {
-        "x": 1739,
-        "y": 116
+        "x": 1637,
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -3017,8 +3017,8 @@
       "id": "mx_toothRadius",
       "defType": "math/math",
       "position": {
-        "x": 2026,
-        "y": 124
+        "x": 1920,
+        "y": 121
       },
       "params": {
         "op": "add",
@@ -3034,8 +3034,8 @@
       "id": "mx_toothUp",
       "defType": "math/math",
       "position": {
-        "x": 2343,
-        "y": 188
+        "x": 2248,
+        "y": 260
       },
       "params": {
         "op": "negate",
@@ -3047,8 +3047,8 @@
       "id": "mx_toothBoing",
       "defType": "motion/envelope",
       "position": {
-        "x": 2014,
-        "y": 420
+        "x": 1927,
+        "y": 452
       },
       "params": {
         "shape": "boing",
@@ -3064,8 +3064,8 @@
       "id": "mx_toothWobble",
       "defType": "math/math",
       "position": {
-        "x": 2334,
-        "y": 314
+        "x": 2220,
+        "y": 404
       },
       "params": {
         "op": "multiply",
@@ -3081,8 +3081,8 @@
       "id": "mx_toothY",
       "defType": "math/math",
       "position": {
-        "x": 2620,
-        "y": 238
+        "x": 2495,
+        "y": 361
       },
       "params": {
         "op": "add",
@@ -3095,8 +3095,8 @@
       "id": "mx_toothAt",
       "defType": "vec2/make",
       "position": {
-        "x": 2949,
-        "y": 209
+        "x": 2788,
+        "y": 368
       },
       "params": {},
       "parentId": "mx_combDraw"
@@ -3105,8 +3105,8 @@
       "id": "mx_toothGlow",
       "defType": "motion/envelope",
       "position": {
-        "x": 2608,
-        "y": 485
+        "x": 2502,
+        "y": 561
       },
       "params": {
         "shape": "decay",
@@ -3121,8 +3121,8 @@
       "id": "mx_toothCol",
       "defType": "color/lerp",
       "position": {
-        "x": 2914,
-        "y": 424
+        "x": 2774,
+        "y": 556
       },
       "params": {
         "space": "rgb"
@@ -3147,8 +3147,8 @@
       "id": "mx_combBackPts",
       "defType": "vec2/make",
       "position": {
-        "x": 440,
-        "y": 754
+        "x": 398,
+        "y": 713
       },
       "params": {},
       "parentId": "mx_combDraw"
@@ -3157,8 +3157,8 @@
       "id": "mx_discNote",
       "defType": "meta/comment",
       "position": {
-        "x": 139,
-        "y": 1212
+        "x": 140,
+        "y": 1307
       },
       "params": {
         "text": "The wooden disc with faint guides for its 15 rings, the pins coloured by their note's place in the scale (lighter and bigger while they ring), and the brass hub.",
@@ -3171,8 +3171,8 @@
       "id": "mx_ringIdx",
       "defType": "spread/range",
       "position": {
-        "x": 154,
-        "y": 107
+        "x": 155,
+        "y": 40
       },
       "params": {},
       "parentId": "mx_discDraw",
@@ -3184,8 +3184,8 @@
       "id": "mx_ringStep",
       "defType": "math/math",
       "position": {
-        "x": 410,
-        "y": 85
+        "x": 415,
+        "y": 43
       },
       "params": {
         "op": "multiply",
@@ -3201,8 +3201,8 @@
       "id": "mx_ringRadius",
       "defType": "math/math",
       "position": {
-        "x": 678,
-        "y": 40
+        "x": 685,
+        "y": 68
       },
       "params": {
         "op": "add",
@@ -3218,8 +3218,8 @@
       "id": "mx_ringSizes",
       "defType": "math/math",
       "position": {
-        "x": 948,
-        "y": 54
+        "x": 954,
+        "y": 137
       },
       "params": {
         "op": "multiply",
@@ -3235,8 +3235,8 @@
       "id": "mx_hueStep",
       "defType": "math/math",
       "position": {
-        "x": 139,
-        "y": 455
+        "x": 140,
+        "y": 523
       },
       "params": {
         "op": "divide",
@@ -3252,8 +3252,8 @@
       "id": "mx_hueHalf",
       "defType": "math/math",
       "position": {
-        "x": 410,
-        "y": 456
+        "x": 415,
+        "y": 539
       },
       "params": {
         "op": "multiply",
@@ -3269,8 +3269,8 @@
       "id": "mx_hueShift",
       "defType": "math/math",
       "position": {
-        "x": 678,
-        "y": 435
+        "x": 685,
+        "y": 534
       },
       "params": {
         "op": "add",
@@ -3286,8 +3286,8 @@
       "id": "mx_hueTurn",
       "defType": "math/math",
       "position": {
-        "x": 957,
-        "y": 436
+        "x": 982,
+        "y": 552
       },
       "params": {
         "op": "fract"
@@ -3298,8 +3298,8 @@
       "id": "mx_hue",
       "defType": "math/math",
       "position": {
-        "x": 1317,
-        "y": 437
+        "x": 1324,
+        "y": 547
       },
       "params": {
         "op": "multiply",
@@ -3315,8 +3315,8 @@
       "id": "mx_pinLight",
       "defType": "logic/select",
       "position": {
-        "x": 171,
-        "y": 603
+        "x": 178,
+        "y": 688
       },
       "params": {},
       "parentId": "mx_discDraw",
@@ -3329,8 +3329,8 @@
       "id": "mx_pinCol",
       "defType": "color/color",
       "position": {
-        "x": 1676,
-        "y": 441
+        "x": 1691,
+        "y": 562
       },
       "params": {
         "mode": "hsl"
@@ -3345,8 +3345,8 @@
       "id": "mx_pinSize",
       "defType": "logic/select",
       "position": {
-        "x": 171,
-        "y": 307
+        "x": 178,
+        "y": 357
       },
       "params": {},
       "parentId": "mx_discDraw",

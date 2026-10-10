@@ -10,6 +10,9 @@
 //! turn once (they seem to flow). Closed curves run once round exactly (the
 //! period is found from the ratios), their path is closed and the first
 //! point isn't repeated; spirals are open and end on their outer point.
+//! Hypo- and epitrochoids take `laps`: above 0 the pen runs round that
+//! many times instead, as an open path (`count` even steps, the end not
+//! repeated, as on closed curves).
 
 use super::{int_pin, num_pin, pin_style, style_pin, vec2_pin, Pins, MAX_POINTS};
 use crate::node::{raw, NodeImpl, NodeInit};
@@ -71,8 +74,18 @@ fn mode_pins(mode: Mode) -> Vec<PortSpec> {
     match mode {
         Mode::Lissajous => vec![num_pin("a", 3.0), num_pin("b", 2.0)],
         Mode::Rose => vec![num_pin("n", 5.0), num_pin("d", 1.0)],
-        Mode::Hypotrochoid => vec![num_pin("R", 5.0), num_pin("r", 3.0), num_pin("d", 5.0)],
-        Mode::Epitrochoid => vec![num_pin("R", 3.0), num_pin("r", 1.0), num_pin("d", 0.5)],
+        Mode::Hypotrochoid => vec![
+            num_pin("R", 5.0),
+            num_pin("r", 3.0),
+            num_pin("d", 5.0),
+            num_pin("laps", 0.0),
+        ],
+        Mode::Epitrochoid => vec![
+            num_pin("R", 3.0),
+            num_pin("r", 1.0),
+            num_pin("d", 0.5),
+            num_pin("laps", 0.0),
+        ],
         Mode::Spiral => vec![num_pin("turns", 3.0), num_pin("inner", 0.0)],
         Mode::LogSpiral => vec![num_pin("turns", 3.0), num_pin("inner", 4.0)],
         Mode::Star => vec![int_pin("points", 5.0), num_pin("inner", 0.5)],
@@ -162,14 +175,29 @@ impl Args<'_> {
     }
 }
 
+/// Turns a hypo- / epitrochoid's pen runs round when `laps` is set (above
+/// 0 and finite): the curve is then that open stretch, not one closed
+/// period.
+fn laps_of(mode: Mode, a: &Args) -> Option<f64> {
+    let laps = match mode {
+        Mode::Hypotrochoid | Mode::Epitrochoid => a.n("laps", 0.0),
+        _ => 0.0,
+    };
+    (laps > 0.0 && laps.is_finite()).then_some(laps)
+}
+
 /// The curve's points before placing (unit-ish size; `fit` = the radius
-/// they span, so scaling by `radius / fit` fits them).
-fn trace(mode: Mode, count: usize, phase: f64, a: &Args) -> (Vec<Vec2>, f64) {
+/// they span, so scaling by `radius / fit` fits them), and whether the
+/// path closes.
+fn trace(mode: Mode, count: usize, phase: f64, a: &Args) -> (Vec<Vec2>, f64, bool) {
     let ph = TAU * phase;
-    let closed = mode.closed();
-    // Parameter s in [0, 1): closed curves don't repeat the first point.
+    let laps = laps_of(mode, a);
+    let closed = mode.closed() && laps.is_none();
+    // Parameter s in [0, 1): closed curves (and set laps, which run like
+    // them, just not round to the start) don't repeat the first point.
+    let even = mode.closed();
     let s_of = |i: usize| {
-        if closed {
+        if even {
             i as f64 / count as f64
         } else if count > 1 {
             i as f64 / (count - 1) as f64
@@ -228,7 +256,7 @@ fn trace(mode: Mode, count: usize, phase: f64, a: &Args) -> (Vec<Vec2>, f64) {
             let r = if r == 0.0 { 1.0 } else { r };
             let arm = if hypo { big - r } else { big + r };
             let w = arm / r;
-            let span = TAU * turns_for(&[big / r]);
+            let span = TAU * laps.unwrap_or_else(|| turns_for(&[big / r]));
             fit = (arm.abs() + d.abs()).max(1e-9);
             (0..count)
                 .map(|i| {
@@ -317,7 +345,7 @@ fn trace(mode: Mode, count: usize, phase: f64, a: &Args) -> (Vec<Vec2>, f64) {
             raw
         }
     };
-    (pts, fit)
+    (pts, fit, closed)
 }
 
 pub(super) fn curve(init: &NodeInit) -> Box<dyn NodeImpl> {
@@ -337,7 +365,7 @@ pub(super) fn curve(init: &NodeInit) -> Box<dyn NodeImpl> {
         let center = pins.vec2(inputs, "center", Vec2::default());
         let radius = a.n("radius", 150.0);
         let rotation = a.n("rotation", 0.0);
-        let (pts, fit) = trace(mode, count, a.n("phase", 0.0), &a);
+        let (pts, fit, closed) = trace(mode, count, a.n("phase", 0.0), &a);
         let scale = radius / fit;
         let (sin, cos) = rotation.sin_cos();
         let pts: Vec<Vec2> = pts
@@ -350,7 +378,6 @@ pub(super) fn curve(init: &NodeInit) -> Box<dyn NodeImpl> {
                 }
             })
             .collect();
-        let closed = mode.closed();
         // Direction of travel at each point (central differences, wrapping
         // round on closed curves).
         let n = pts.len();
@@ -530,6 +557,51 @@ mod tests {
         assert!(pts.iter().all(|p| p.x.is_finite() && p.y.is_finite()));
         // Deterministic.
         assert_eq!(run("epitrochoid", &[]).0, run("epitrochoid", &[]).0);
+    }
+
+    #[test]
+    fn laps_run_a_trochoid_open_for_that_many_turns() {
+        for m in ["hypotrochoid", "epitrochoid"] {
+            // Unset (0, the default), negative or NaN: one closed period.
+            let whole = run(m, &[("count", n(300.0))]);
+            for off in [0.0, -2.0, f64::NAN] {
+                assert_eq!(run(m, &[("count", n(300.0)), ("laps", n(off))]), whole, "{m}");
+            }
+            assert!(whole.1);
+            // Set: an open path, point i at i / count of the laps, fitted
+            // to the radius as before.
+            let (r, rr, d, laps) = (5.0, 3.0, 5.0, 2.5);
+            let given = [
+                ("count", n(100.0)),
+                ("R", n(r)),
+                ("r", n(rr)),
+                ("d", n(d)),
+                ("laps", n(laps)),
+                ("radius", n(150.0)),
+            ];
+            let (pts, closed) = run(m, &given);
+            assert!(!closed, "{m}");
+            assert_eq!(pts.len(), 100);
+            let hypo = m == "hypotrochoid";
+            let arm: f64 = if hypo { r - rr } else { r + rr };
+            let scale = 150.0 / (arm.abs() + d);
+            for (i, p) in pts.iter().enumerate() {
+                let t = TAU * laps * i as f64 / 100.0;
+                let u = arm / rr * t;
+                let (x, y) = if hypo {
+                    (arm * t.cos() + d * u.cos(), arm * t.sin() - d * u.sin())
+                } else {
+                    (arm * t.cos() - d * u.cos(), arm * t.sin() - d * u.sin())
+                };
+                assert!((p.x - x * scale).abs() < 1e-9 && (p.y - y * scale).abs() < 1e-9);
+            }
+            // Laps past the period draw the same figure, still open.
+            let (_, closed) = run(m, &[("laps", n(64.0))]);
+            assert!(!closed);
+        }
+        // Other modes have no laps pin.
+        let p: Params = serde_json::from_value(json!({ "mode": "rose" })).unwrap();
+        assert!(inputs(&p).iter().all(|pin| pin.name != "laps"));
     }
 
     #[test]

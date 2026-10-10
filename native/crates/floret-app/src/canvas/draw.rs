@@ -547,12 +547,13 @@ fn node_card(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
 /// Where a node's title starts (after the category lamp), canvas units.
 pub const TITLE_X: f32 = 24.0;
 
-/// A value box's fill, lighter under the pointer.
+/// A value box's fill: a shade off the node's own card colour, lighter
+/// under the pointer.
 fn box_fill(hot: bool) -> Color32 {
     if hot {
-        mix(*FG_3, *BG_3, 0.4)
+        mix(*FG_3, *BG_2, 0.28)
     } else {
-        mix(*FG_3, *BG_3, 0.25)
+        mix(*FG_3, *BG_2, 0.15)
     }
 }
 

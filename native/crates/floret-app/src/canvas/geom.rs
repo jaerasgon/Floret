@@ -23,7 +23,7 @@ pub const MATH_MIN_W: f32 = 72.0;
 pub const MAX_W: f32 = 360.0;
 pub const HEADER_H: f32 = 26.0;
 pub const ROW_H: f32 = 22.0;
-pub const PIN_R: f32 = 4.5;
+pub const PIN_R: f32 = 3.75;
 /// Pointer distance (screen px) that counts as "on" a pin / wire.
 pub const PIN_HIT: f32 = 9.0;
 pub const PIN_DROP: f32 = 16.0;

@@ -160,6 +160,7 @@ fn compile_refs(
             ),
         }
     }
+    feedback_pair_warnings(&nodes, &spec_by_id, cat, &mut warn);
 
     #[derive(Default)]
     struct RegionMeta {
@@ -677,6 +678,118 @@ const ALWAYS_LIVE_TYPES: &[&str] = &[
     "io/receive",
 ];
 
+/// Write → Read feedback families: (Read type, Write type). A Read emits
+/// what the Write of the same family and `slot` stored last frame.
+pub const FEEDBACK_FAMILIES: [(&str, &str); 2] = [
+    ("state/read", "state/write"),
+    ("state/read-spread", "state/write-spread"),
+];
+
+/// A feedback pair's user-given name (the `name` param, trimmed), if any.
+pub fn pair_name(params: &Params) -> Option<&str> {
+    params
+        .get("name")
+        .and_then(|v| v.as_str())
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+}
+
+/// Warn about Write → Read pairs that don't pair up: a Read or Write with
+/// no partner of the same family and slot, and several Writes on one slot
+/// (only the last one's value survives). Pairing is by slot alone, as in
+/// the tick; names only label the messages.
+fn feedback_pair_warnings(
+    nodes: &[NodeRef],
+    specs: &HashMap<&str, &NodeSpec>,
+    cat: &Catalogue,
+    warn: &mut impl FnMut(String, &[&str]),
+) {
+    let describe = |label: &str, slot: Option<&str>, name: Option<&str>| match (name, slot) {
+        (Some(name), Some(slot)) => format!("{label} \"{name}\" (slot {slot})"),
+        (Some(name), None) => format!("{label} \"{name}\""),
+        (None, Some(slot)) => format!("{label} #{slot}"),
+        (None, None) => format!("{label} (no slot)"),
+    };
+    for (read_ty, write_ty) in FEEDBACK_FAMILIES {
+        let label = |ty: &str| {
+            cat.get(ty)
+                .map_or_else(|| ty.to_owned(), |s| s.label.clone())
+        };
+        // Slot → (reads, writes), in patch order.
+        let mut slots: IndexMap<Option<String>, (Vec<&NodeRef>, Vec<&NodeRef>)> = IndexMap::new();
+        let mut unslotted: Vec<&NodeRef> = Vec::new();
+        for n in nodes {
+            let is_read = n.def_type == read_ty;
+            if !(is_read || n.def_type == write_ty) || !specs.contains_key(n.id.as_str()) {
+                continue;
+            }
+            let Some(slot) = crate::tick::slot_key(n.params.get("slot")) else {
+                unslotted.push(n);
+                continue;
+            };
+            let e = slots.entry(Some(slot)).or_default();
+            if is_read {
+                e.0.push(n);
+            } else {
+                e.1.push(n);
+            }
+        }
+        for n in unslotted {
+            let what = describe(&label(&n.def_type), None, pair_name(&n.params));
+            warn(
+                format!("{what} has no slot, so it can't pair — give it one."),
+                &[&n.id],
+            );
+        }
+        for (slot, (reads, writes)) in &slots {
+            let slot = slot.as_deref();
+            let name = reads
+                .iter()
+                .chain(writes)
+                .find_map(|n| pair_name(&n.params));
+            if writes.is_empty() {
+                for r in reads {
+                    let what = describe(&label(read_ty), slot, pair_name(&r.params).or(name));
+                    warn(
+                        format!(
+                            "{what} has no {} — it only ever outputs `init`.",
+                            label(write_ty)
+                        ),
+                        &[&r.id],
+                    );
+                }
+                continue;
+            }
+            if reads.is_empty() {
+                for w in writes {
+                    let what = describe(&label(write_ty), slot, pair_name(&w.params).or(name));
+                    warn(
+                        format!(
+                            "{what} has no {} — nothing reads its value.",
+                            label(read_ty)
+                        ),
+                        &[&w.id],
+                    );
+                }
+            }
+            if writes.len() > 1 {
+                let named = name.map(|n| format!(" (\"{n}\")")).unwrap_or_default();
+                let ids: Vec<&str> = writes.iter().map(|w| w.id.as_str()).collect();
+                warn(
+                    format!(
+                        "{} {} nodes share slot {}{named} — only the last one's value is kept. Give each {} its own pair.",
+                        writes.len(),
+                        label(write_ty),
+                        slot.unwrap_or("?"),
+                        label(write_ty)
+                    ),
+                    &ids,
+                );
+            }
+        }
+    }
+}
+
 /// `Number(params.slot ?? 1)`, falling back to 1 when not finite.
 fn slot_of(params: &Params) -> f64 {
     let v = params
@@ -1038,4 +1151,116 @@ fn flatten_subpatches(
             .collect();
     }
     (nodes, edges)
+}
+
+#[cfg(test)]
+mod feedback_tests {
+    use crate::{Engine, FrameCtx};
+    use serde_json::{json, Value as J};
+
+    /// `(id, type, params)` nodes and `(from, out, to, in)` wires as `.flora`.
+    fn flora(nodes: &[(&str, &str, J)], wires: &[(&str, &str, &str, &str)]) -> String {
+        let nodes: Vec<J> = (nodes.iter())
+            .map(|(id, ty, p)| {
+                json!({"id": id, "defType": ty, "position": {"x": 0, "y": 0},
+                       "params": p, "portValues": {"init": 0, "b": 1}})
+            })
+            .collect();
+        let edges: Vec<J> = (wires.iter().enumerate())
+            .map(|(i, (s, sp, t, tp))| {
+                json!({"id": format!("e{i}"), "source": s, "sourceHandle": format!("out-{sp}"),
+                       "target": t, "targetHandle": format!("in-{tp}")})
+            })
+            .collect();
+        json!({"kind": "floret.patch", "version": 4, "nodes": nodes, "edges": edges}).to_string()
+    }
+
+    fn warnings(text: &str) -> Vec<(String, Vec<String>)> {
+        let (_, w) = Engine::load_with_warnings(text).unwrap();
+        w.into_iter().map(|w| (w.message, w.node_ids)).collect()
+    }
+
+    /// Read → +1 → Write: a counter, with `names` on the two halves.
+    fn counter(names: (&str, &str)) -> String {
+        flora(
+            &[
+                ("r", "state/read", json!({"slot": 1, "name": names.0})),
+                ("add", "math/add", json!({})),
+                ("w", "state/write", json!({"slot": 1, "name": names.1})),
+            ],
+            &[("r", "current", "add", "a"), ("add", "result", "w", "next")],
+        )
+    }
+
+    #[test]
+    fn pairs_match_by_slot_whatever_their_names() {
+        // Even mismatched names pair: the slot is the link.
+        let text = counter(("ball", "something else"));
+        assert!(warnings(&text).is_empty(), "{:?}", warnings(&text));
+        let mut e = Engine::load(&text).unwrap();
+        let add = e.graph.idx("add").unwrap();
+        let mut seen = Vec::new();
+        for i in 0..3 {
+            let r = e.tick(&FrameCtx {
+                frame_count: f64::from(i),
+                dt: 1.0 / 60.0,
+                ..FrameCtx::default()
+            });
+            seen.push(r.outputs[add].clone().unwrap()[0][0].to_number());
+        }
+        assert_eq!(seen, [1.0, 2.0, 3.0]);
+    }
+
+    #[test]
+    fn names_round_trip_through_save_and_load() {
+        let p = crate::load_patch(&counter(("ball position", "ball position"))).unwrap();
+        let back = crate::load_patch(&p.to_json()).unwrap();
+        for id in ["r", "w"] {
+            let n = back.nodes.iter().find(|n| n.id == id).unwrap();
+            assert_eq!(super::pair_name(&n.params), Some("ball position"));
+            assert_eq!(n.params["slot"], 1);
+        }
+        // A blank name is no name.
+        let blank = json!({"name": "  "});
+        assert_eq!(super::pair_name(blank.as_object().unwrap()), None);
+    }
+
+    #[test]
+    fn unpaired_and_doubled_halves_warn_by_name() {
+        let w = warnings(&flora(
+            &[
+                ("r", "state/read", json!({"slot": 1, "name": "ball"})),
+                ("w", "state/write", json!({"slot": 2})),
+                ("rs", "state/read-spread", json!({"slot": 3})),
+                (
+                    "ws1",
+                    "state/write-spread",
+                    json!({"slot": 3, "name": "trail"}),
+                ),
+                ("ws2", "state/write-spread", json!({"slot": 3})),
+            ],
+            &[],
+        ));
+        let msgs: Vec<&str> = w.iter().map(|(m, _)| m.as_str()).collect();
+        assert_eq!(
+            msgs,
+            [
+                "Read \"ball\" (slot 1) has no Write — it only ever outputs `init`.",
+                "Write #2 has no Read — nothing reads its value.",
+                "2 Write* nodes share slot 3 (\"trail\") — only the last one's value is kept. Give each Write* its own pair.",
+            ]
+        );
+        assert_eq!(w[0].1, ["r"]);
+        assert_eq!(w[1].1, ["w"]);
+        assert_eq!(w[2].1, ["ws1", "ws2"]);
+        // A Read and a Write of different families don't pair.
+        let w = warnings(&flora(
+            &[
+                ("r", "state/read", json!({"slot": 1})),
+                ("w", "state/write-spread", json!({"slot": 1})),
+            ],
+            &[],
+        ));
+        assert_eq!(w.len(), 2);
+    }
 }

@@ -11349,7 +11349,7 @@
    "category": "State",
    "group": "Structure",
    "label": "Read",
-   "description": "Emit the value last written under `slot`, or `init` on frame 0.",
+   "description": "Start of a feedback pair: emit the value its Write (same `slot`) stored last frame, or `init` on frame 0. Placing a Read places its Write; name the pair to label both.",
    "inputs": [
     {
      "name": "init",
@@ -11367,7 +11367,8 @@
    "eval": "none",
    "dynamicInputs": false,
    "defaultParams": {
-    "slot": 1
+    "slot": 1,
+    "name": ""
    },
    "paramOptions": null
   },
@@ -11376,7 +11377,7 @@
    "category": "State",
    "group": "Structure",
    "label": "Read*",
-   "description": "Emit the spread last written under `slot`, or `init` on frame 0.",
+   "description": "Start of a spread feedback pair: emit the spread its Write* (same `slot`) stored last frame, or `init` on frame 0. Placing a Read* places its Write*.",
    "inputs": [
     {
      "name": "init",
@@ -11394,7 +11395,8 @@
    "eval": "none",
    "dynamicInputs": false,
    "defaultParams": {
-    "slot": 1
+    "slot": 1,
+    "name": ""
    },
    "paramOptions": null
   },
@@ -11435,7 +11437,7 @@
    "category": "State",
    "group": "Structure",
    "label": "State",
-   "description": "Hold a single value across frames — emit last tick's `next` as `current`.",
+   "description": "Legacy: use Write → Read instead (a Write at the end of the flow, its paired Read at the start) for left-to-right feedback.",
    "inputs": [
     {
      "name": "init",
@@ -11459,14 +11461,15 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "stateful": true
+   "stateful": true,
+   "hidden": true
   },
   {
    "type": "state/write",
    "category": "State",
    "group": "Structure",
    "label": "Write",
-   "description": "Stash a value at end-of-tick; the matching Read emits it next tick.",
+   "description": "End of a feedback pair: store `next` at end of frame; its Read (same `slot`) emits it next frame. Placing a Write places its Read; name the pair to label both.",
    "inputs": [
     {
      "name": "next",
@@ -11478,7 +11481,8 @@
    "eval": "none",
    "dynamicInputs": false,
    "defaultParams": {
-    "slot": 1
+    "slot": 1,
+    "name": ""
    },
    "paramOptions": null,
    "stateful": true,
@@ -11489,7 +11493,7 @@
    "category": "State",
    "group": "Structure",
    "label": "Write*",
-   "description": "Stash a spread at end-of-tick; the matching Read* emits it next tick.",
+   "description": "End of a spread feedback pair: store `next` at end of frame; its Read* (same `slot`) emits it next frame. Placing a Write* places its Read*.",
    "inputs": [
     {
      "name": "next",
@@ -11501,7 +11505,8 @@
    "eval": "none",
    "dynamicInputs": false,
    "defaultParams": {
-    "slot": 1
+    "slot": 1,
+    "name": ""
    },
    "paramOptions": null,
    "stateful": true,

@@ -255,7 +255,7 @@ struct Ticker<'a> {
     scratch: Vec<Spread>,
 }
 
-fn slot_key(v: Option<&serde_json::Value>) -> Option<String> {
+pub(crate) fn slot_key(v: Option<&serde_json::Value>) -> Option<String> {
     v.map(|j| match j {
         serde_json::Value::String(s) => s.clone(),
         other => crate::value::Value::from_json(other)

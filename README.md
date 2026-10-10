@@ -58,15 +58,16 @@ the pull). This also works on Linux.
    edge) to the Renderer's `layers` pin (on its left edge). A small white
    circle appears in the middle of the Preview. Outputs are always on the
    right of a node, inputs on the left.
-5. **Change values.** Click the Ellipse's `w` row: an edit box opens on
-   it. Click the box, type `400` and press Return; the circle stretches
-   into an oval. (Dragging sideways in the box scrubs the number.)
-6. **Animate it.** Add an **LFO** (Tab, `lfo`). Open its `min` row the
-   same way and set it to `100`, and `max` to `600`. Then wire the LFO's
+5. **Change values.** Every unwired value on a node is a value box, its
+   name on the left and its value on the right. Click the Ellipse's `w`
+   box, type `400` and press Return; the circle stretches into an oval.
+   (Dragging sideways on the box scrubs the number.)
+6. **Animate it.** Add an **LFO** (Tab, `lfo`). Set its `min` box the
+   same way to `100`, and `max` to `600`. Then wire the LFO's
    `value` pin into the Ellipse's `w`, and again into its `h`. The circle
    now grows and shrinks; the LFO's `rate` sets how many times a second.
-7. **Colour it.** Add a **Fill** (Tab, `fill`). Click its `color` row,
-   then the colour swatch, pick a colour, and click the canvas to close the
+7. **Colour it.** Add a **Fill** (Tab, `fill`). Click its `color` box,
+   pick a colour, and click the canvas to close the
    picker (Esc cancels). Wire Fill's `style` pin into the Ellipse's
    `style`.
 8. **Save and export.** File → Save (Cmd+S) writes a `.flora` file.

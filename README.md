@@ -54,10 +54,11 @@ the pull). This also works on Linux.
    the **Preview** panel on the right. Double-clicking the canvas also
    opens the search.
 3. **Add a shape.** Press Tab again, type `ellipse`, press Return.
-4. **Wire it.** Drag from the Ellipse's output pin (`layer`, on its right
-   edge) to the Renderer's `layers` pin (on its left edge). A small white
-   circle appears in the middle of the Preview. Outputs are always on the
-   right of a node, inputs on the left.
+4. **Wire it.** Drag from the Ellipse's output pin (`layer`, at the bottom
+   of its right edge) to the Renderer's `layers` pin (on its left edge). A
+   small white circle appears in the middle of the Preview. Inputs are on
+   the left of a node, one row each; outputs are listed in a footer under
+   them, with their pins on the right.
 5. **Change values.** Every unwired value on a node is a value box, its
    name on the left and its value on the right. Click the Ellipse's `w`
    box, type `400` and press Return; the circle stretches into an oval.

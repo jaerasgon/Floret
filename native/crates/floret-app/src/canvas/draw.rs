@@ -2,13 +2,14 @@
 //! node boxes with rows and inline fields, pins, chips and tooltips.
 
 use super::geom::{
-    value_text, Field, FieldLabel, Look, NodeBox, PinGeom, BOX_PAD, CHECK, CHECK_GAP, HEADER_H,
-    LABEL_FONT, PIN_R, SELECT_ARROW, SWATCH_W, VALUE_FONT,
+    value_text, Field, FieldLabel, Look, NodeBox, PinGeom, BOX_PAD, CHECK, CHECK_GAP, FOOT_FONT,
+    HEADER_H, LABEL_FONT, PIN_R, SELECT_ARROW, SWATCH_W, VALUE_FONT,
 };
 use crate::editor::ports::type_name;
 use crate::editor::values::{self, FieldKind};
 use crate::theme::{
-    self, BG_0, BG_2, BG_3, BORDER, DANGER, FG_0, FG_1, FG_2, FG_3, GOLD, GOLD_TEXT, SPREAD_PIN,
+    self, BG_0, BG_1, BG_2, BG_3, BORDER, DANGER, FG_0, FG_1, FG_2, FG_3, GOLD, GOLD_TEXT,
+    SPREAD_PIN,
 };
 use eframe::egui::{
     self, pos2, vec2, Align2, Color32, CornerRadius, FontId, Id, LayerId, Order, Painter, Pos2,
@@ -415,11 +416,26 @@ fn node_card(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     } else {
         Stroke::new(1.0, *BORDER)
     };
-    // A flat card: header and rows share the fill, split by a hairline.
+    // A flat card: header and rows share the fill, split by a hairline;
+    // the outputs' footer is a shade darker under its own hairline.
     p.rect_filled(b.rect, r, *BG_2);
+    if let Some(top) = b.footer {
+        let foot = Rect::from_min_max(pos2(b.rect.left(), top), b.rect.max);
+        let corners = CornerRadius {
+            nw: 0,
+            ne: 0,
+            sw: r.sw,
+            se: r.se,
+        };
+        p.rect_filled(foot, corners, footer_fill());
+    }
     if z > 0.2 {
         let y = p.round_to_pixel_center(b.rect.top() + HEADER_H * z);
         p.hline(b.rect.x_range(), y, Stroke::new(1.0, *BORDER));
+        if let Some(top) = b.footer.filter(|t| *t > b.rect.top() + HEADER_H * z + 0.5) {
+            let y = p.round_to_pixel_center(top);
+            p.hline(b.rect.x_range(), y, Stroke::new(1.0, *BORDER));
+        }
     }
     p.rect_stroke(b.rect, r, border, StrokeKind::Inside);
     let header = Rect::from_min_size(b.rect.min, vec2(b.rect.width(), HEADER_H * z));
@@ -517,22 +533,14 @@ fn node_card(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                 );
             }
         }
-        if let Some((label, _)) = &row.output {
-            // Output rows show the port name (as in the web app); the live
-            // value is in the pin's hover tooltip. Keep clear of an inline
-            // field on the same row.
-            let left = b
-                .fields
-                .iter()
-                .filter(|f| (f.rect.center().y - row.y).abs() < 1.0)
-                .map(|f| f.rect.right() + 4.0 * z)
-                .fold(b.rect.left(), f32::max);
-            let right = b.rect.right() - 10.0 * z;
-            let g = p.layout_no_wrap(label.clone(), FontId::proportional(LABEL_FONT * z), *FG_1);
-            if right - g.size().x >= left {
-                p.galley(pos2(right - g.size().x, row.y - g.size().y / 2.0), g, *FG_1);
-            }
-        }
+    }
+    // Footer rows show the output's name (as in the web app), right-aligned
+    // against its pin; the live value is in the pin's hover tooltip.
+    let foot_font = FontId::proportional(FOOT_FONT * z);
+    for o in &b.outs {
+        let g = p.layout_no_wrap(o.label.clone(), foot_font.clone(), *FG_1);
+        let x = b.rect.right() - 10.0 * z - g.size().x;
+        p.galley(pos2(x, o.y - g.size().y / 2.0), g, *FG_1);
     }
     for f in &b.fields {
         let editing = st.editing.is_some_and(|e| e.rect == f.rect);
@@ -546,6 +554,11 @@ fn node_card(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
 
 /// Where a node's title starts (after the category lamp), canvas units.
 pub const TITLE_X: f32 = 24.0;
+
+/// The outputs' footer: a touch darker than the card, towards the panels.
+fn footer_fill() -> Color32 {
+    mix(*BG_1, *BG_2, 0.7)
+}
 
 /// A value box's fill: a shade off the node's own card colour, lighter
 /// under the pointer.

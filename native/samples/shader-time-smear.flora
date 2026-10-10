@@ -16,60 +16,22 @@
         "y": -314
       },
       "params": {
-        "text": "Time smear\n\nA star spins and swings across the canvas. The Shader's `history` is 48: it keeps the input's last 48 frames on the GPU, and the GLSL reads them back with iHistoryFrame(ago, uv) (0 = now). Each band of rows shows a different moment, the delay rolling down the picture in a wave, and now and then a block jumps further back: the motion smears and tears like a datamoshed video.\n\nOpen the Shader panel to edit it; `bands`, `glitch` and `background` are uniforms.",
+        "text": "Time smear\n\nA star (Curve in `star` mode) spins once a loop while two LFOs swing it across the canvas in a figure of eight. The Shader's `history` is 48: it keeps the input's last 48 frames on the GPU, and the GLSL reads them back with iHistoryFrame(ago, uv) (0 = now). Each band of rows shows a different moment, the delay rolling down the picture in a wave, and now and then a block jumps further back: the motion smears and tears like a datamoshed video.\n\nOpen the Shader panel to edit it; `bands`, `glitch` and `background` are uniforms.",
         "width": 480,
         "height": 250
       },
       "portValues": {
-        "text": "Time smear\n\nA star spins and swings across the canvas. The Shader's `history` is 48: it keeps the input's last 48 frames on the GPU, and the GLSL reads them back with iHistoryFrame(ago, uv) (0 = now). Each band of rows shows a different moment, the delay rolling down the picture in a wave, and now and then a block jumps further back: the motion smears and tears like a datamoshed video.\n\nOpen the Shader panel to edit it; `bands`, `glitch` and `background` are uniforms.",
+        "text": "Time smear\n\nA star (Curve in `star` mode) spins once a loop while two LFOs swing it across the canvas in a figure of eight. The Shader's `history` is 48: it keeps the input's last 48 frames on the GPU, and the GLSL reads them back with iHistoryFrame(ago, uv) (0 = now). Each band of rows shows a different moment, the delay rolling down the picture in a wave, and now and then a block jumps further back: the motion smears and tears like a datamoshed video.\n\nOpen the Shader panel to edit it; `bands`, `glitch` and `background` are uniforms.",
         "width": 480,
         "height": 250
       }
-    },
-    {
-      "id": "ts_t",
-      "defType": "time/seconds",
-      "position": {
-        "x": 311,
-        "y": 30
-      },
-      "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "ts_ring",
-      "defType": "spread/ring",
-      "position": {
-        "x": 20,
-        "y": 162
-      },
-      "params": {
-        "count": 14,
-        "radius": 110
-      },
-      "portValues": {
-        "count": 14,
-        "radius": 110
-      }
-    },
-    {
-      "id": "ts_star",
-      "defType": "math/expression",
-      "position": {
-        "x": 269,
-        "y": 156
-      },
-      "params": {
-        "expr": "vec2(p.x, p.y) * (1 - 0.55 * (index % 2))"
-      },
-      "portValues": {}
     },
     {
       "id": "ts_grad",
       "defType": "style/gradient",
       "position": {
-        "x": 277,
-        "y": 299
+        "x": 306,
+        "y": 720
       },
       "params": {
         "mode": "radial",
@@ -84,7 +46,7 @@
       "defType": "color/palette",
       "position": {
         "x": 0,
-        "y": 332
+        "y": 720
       },
       "params": {
         "stopCount": 3,
@@ -100,8 +62,8 @@
       "id": "ts_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 581,
-        "y": 223
+        "x": 610,
+        "y": 569
       },
       "params": {},
       "portValues": {
@@ -109,45 +71,21 @@
       }
     },
     {
-      "id": "ts_spin",
-      "defType": "math/expression",
-      "position": {
-        "x": 543,
-        "y": 81
-      },
-      "params": {
-        "expr": "tau * l"
-      },
-      "portValues": {}
-    },
-    {
       "id": "ts_rot",
       "defType": "transform/rotate",
       "position": {
-        "x": 856,
-        "y": 142
+        "x": 863,
+        "y": 345
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "ts_path",
-      "defType": "math/expression",
-      "position": {
-        "x": 816,
-        "y": 0
-      },
-      "params": {
-        "expr": "vec2(140 * sin(tau * l), 45 * sin(tau * l * 2))"
-      },
       "portValues": {}
     },
     {
       "id": "ts_move",
       "defType": "transform/translate",
       "position": {
-        "x": 1086,
-        "y": 79
+        "x": 1064,
+        "y": 242
       },
       "params": {},
       "portValues": {}
@@ -156,8 +94,8 @@
       "id": "ts_shader",
       "defType": "gpu/shader",
       "position": {
-        "x": 1274,
-        "y": 35
+        "x": 1270,
+        "y": 198
       },
       "params": {
         "source": "// Time smear: each band of rows shows the input as it was a\n// different number of frames ago, the delay rolling down the picture\n// like a wave, with blocky glitches now and then. `history` on the\n// node keeps the last 48 frames; iHistoryFrame(ago, uv) reads one.\nuniform float bands;\nuniform float glitch;\nuniform vec4 background;\n\nfloat hash(vec2 p) {\n  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);\n}\n\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord) {\n  vec2 uv = fragCoord / iResolution.xy;\n  float band = floor(fragCoord.y / max(bands, 1.0));\n  // A wave of delay down the rows.\n  float lag = 0.5 + 0.5 * sin(band * 0.21 - iTime * 2.3);\n  // Now and then a block jumps further back.\n  vec2 cell = floor(fragCoord / 32.0);\n  float beat = floor(iTime * 4.0);\n  if (hash(cell + beat) < glitch) lag = hash(cell - beat);\n  int ago = int(lag * float(iHistoryCount - 1));\n  vec4 c = iHistoryFrame(ago, uv);\n  // Premultiplied over the background.\n  fragColor = vec4(c.rgb + background.rgb * (1.0 - c.a), 1.0);\n}",
@@ -179,8 +117,8 @@
       "id": "ts_r",
       "defType": "render/renderer",
       "position": {
-        "x": 1501,
-        "y": 35
+        "x": 1497,
+        "y": 198
       },
       "params": {
         "width": 600,
@@ -202,92 +140,184 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "ts_star",
+      "defType": "geometry/curve",
+      "position": {
+        "x": 288,
+        "y": 440
+      },
+      "params": {
+        "mode": "star",
+        "count": 14,
+        "radius": 110,
+        "points": 7,
+        "inner": 0.45,
+        "rotation": 1.5707963267948966
+      },
+      "portValues": {
+        "count": 14,
+        "radius": 110,
+        "points": 7,
+        "inner": 0.45,
+        "rotation": 1.5707963267948966
+      }
+    },
+    {
+      "id": "ts_spin",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 587,
+        "y": 223
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 1,
+        "min": 0,
+        "max": 6.283185307179586,
+        "sync": "loop"
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 1,
+        "min": 0,
+        "max": 6.283185307179586
+      }
+    },
+    {
+      "id": "ts_x",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 10,
+        "y": 0
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 1,
+        "min": -140,
+        "max": 140,
+        "offset": 0.25,
+        "sync": "loop"
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 1,
+        "min": -140,
+        "max": 140,
+        "offset": 0.25
+      }
+    },
+    {
+      "id": "ts_y",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 10,
+        "y": 346
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 2,
+        "min": -45,
+        "max": 45,
+        "offset": 0.25,
+        "sync": "loop"
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 2,
+        "min": -45,
+        "max": 45,
+        "offset": 0.25
+      }
+    },
+    {
+      "id": "ts_path",
+      "defType": "vec2/make",
+      "position": {
+        "x": 339,
+        "y": 162
+      },
+      "params": {}
     }
   ],
   "edges": [
     {
-      "id": "e_ts_ring_ts_star_p",
-      "source": "ts_ring",
-      "target": "ts_star",
-      "sourceHandle": "out-positions",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_ts_pal_ts_grad_colors",
+      "id": "e_1",
       "source": "ts_pal",
       "target": "ts_grad",
       "sourceHandle": "out-colors",
       "targetHandle": "in-colors"
     },
     {
-      "id": "e_ts_star_ts_poly_points",
-      "source": "ts_star",
-      "target": "ts_poly",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-points"
-    },
-    {
-      "id": "e_ts_grad_ts_poly_style",
+      "id": "e_2",
       "source": "ts_grad",
       "target": "ts_poly",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_ts_t_ts_spin_l",
-      "source": "ts_t",
-      "target": "ts_spin",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_ts_spin_ts_rot_angle",
-      "source": "ts_spin",
-      "target": "ts_rot",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-angle"
-    },
-    {
-      "id": "e_ts_poly_ts_rot_layer",
+      "id": "e_3",
       "source": "ts_poly",
       "target": "ts_rot",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_ts_t_ts_path_l",
-      "source": "ts_t",
-      "target": "ts_path",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_ts_path_ts_move_by",
-      "source": "ts_path",
-      "target": "ts_move",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-by"
-    },
-    {
-      "id": "e_ts_rot_ts_move_layer",
+      "id": "e_4",
       "source": "ts_rot",
       "target": "ts_move",
       "sourceHandle": "out-rotated",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_ts_move_ts_shader_input",
+      "id": "e_5",
       "source": "ts_move",
       "target": "ts_shader",
       "sourceHandle": "out-translated",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_ts_shader_ts_r_layers",
+      "id": "e_6",
       "source": "ts_shader",
       "target": "ts_r",
       "sourceHandle": "out-out",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_7",
+      "source": "ts_star",
+      "target": "ts_poly",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_8",
+      "source": "ts_spin",
+      "target": "ts_rot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_9",
+      "source": "ts_x",
+      "target": "ts_path",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_10",
+      "source": "ts_y",
+      "target": "ts_path",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_11",
+      "source": "ts_path",
+      "target": "ts_move",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-by"
     }
   ]
 }

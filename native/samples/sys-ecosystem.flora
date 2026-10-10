@@ -16,12 +16,12 @@
         "y": -344
       },
       "params": {
-        "text": "Ecosystem\n\nA flock grazes on food that regrows. The Simulation node's flocking boids each steer for the nearest ripe food (its `food` pin, weighted by `attract`); a food item a boid reaches is eaten and grows again somewhere around the fertile spot, which drifts. Every meal adds to the population and every boid burns energy, so the population (State) rises and starves with the food supply — boom and bust, drawn in the chart (green: ripe food, white: population).\n\n• Hold the mouse: food grows around the cursor instead.\n• Sliders: `hunger` (attract), `speed` (maxSpeed), `regrow` (seconds to ripen), `metabolism` (deaths per boid per second).",
+        "text": "Ecosystem\n\nA flock grazes on food that regrows. The Simulation node's flocking boids each steer for the nearest ripe food (its `food` pin, weighted by `attract`); a food item a boid reaches is eaten and grows again somewhere around the fertile spot, which drifts. Every meal adds to the population and every boid burns energy, so the population (State, the Population subpatch) rises and starves with the food supply — boom and bust, drawn in the chart (green: ripe food, white: population).\n\n• Hold the mouse: food grows around the cursor instead.\n• Sliders: `hunger` (attract), `speed` (maxSpeed), `regrow` (seconds to ripen), `metabolism` (deaths per boid per second).",
         "width": 560,
         "height": 280
       },
       "portValues": {
-        "text": "Ecosystem\n\nA flock grazes on food that regrows. The Simulation node's flocking boids each steer for the nearest ripe food (its `food` pin, weighted by `attract`); a food item a boid reaches is eaten and grows again somewhere around the fertile spot, which drifts. Every meal adds to the population and every boid burns energy, so the population (State) rises and starves with the food supply — boom and bust, drawn in the chart (green: ripe food, white: population).\n\n• Hold the mouse: food grows around the cursor instead.\n• Sliders: `hunger` (attract), `speed` (maxSpeed), `regrow` (seconds to ripen), `metabolism` (deaths per boid per second).",
+        "text": "Ecosystem\n\nA flock grazes on food that regrows. The Simulation node's flocking boids each steer for the nearest ripe food (its `food` pin, weighted by `attract`); a food item a boid reaches is eaten and grows again somewhere around the fertile spot, which drifts. Every meal adds to the population and every boid burns energy, so the population (State, the Population subpatch) rises and starves with the food supply — boom and bust, drawn in the chart (green: ripe food, white: population).\n\n• Hold the mouse: food grows around the cursor instead.\n• Sliders: `hunger` (attract), `speed` (maxSpeed), `regrow` (seconds to ripen), `metabolism` (deaths per boid per second).",
         "width": 560,
         "height": 280
       }
@@ -30,8 +30,8 @@
       "id": "eco_hunger",
       "defType": "io/slider",
       "position": {
-        "x": 1948,
-        "y": 1042
+        "x": 2571,
+        "y": 1061
       },
       "params": {
         "value": 1.6,
@@ -48,8 +48,8 @@
       "id": "eco_speed",
       "defType": "io/slider",
       "position": {
-        "x": 1948,
-        "y": 768
+        "x": 2571,
+        "y": 787
       },
       "params": {
         "value": 120,
@@ -66,8 +66,8 @@
       "id": "eco_regrow",
       "defType": "io/slider",
       "position": {
-        "x": 617,
-        "y": 477
+        "x": 600,
+        "y": 470
       },
       "params": {
         "value": 6,
@@ -84,8 +84,8 @@
       "id": "eco_metabolism",
       "defType": "io/slider",
       "position": {
-        "x": 3527,
-        "y": 1424
+        "x": 4091,
+        "y": 1532
       },
       "params": {
         "value": 0.07,
@@ -103,51 +103,29 @@
       "defType": "input/mouse",
       "position": {
         "x": 25,
-        "y": 755
+        "y": 559
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "eco_mouseWorld",
-      "defType": "math/expression",
-      "position": {
-        "x": 298,
-        "y": 691
-      },
-      "params": {
-        "expr": "vec2(x, y - -72)"
-      },
       "portValues": {}
     },
     {
       "id": "eco_dt",
       "defType": "time/delta",
       "position": {
-        "x": 2947,
-        "y": 1140
+        "x": 635,
+        "y": 1472
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "eco_h",
-      "defType": "math/expression",
-      "position": {
-        "x": 3186,
-        "y": 1125
-      },
-      "params": {
-        "expr": "min(dt, 0.05)"
-      },
-      "portValues": {}
+      "portValues": {
+        "max": 0.05
+      }
     },
     {
       "id": "eco_foodStart",
       "defType": "geometry/scatter",
       "position": {
-        "x": 282,
-        "y": 1171
+        "x": 277,
+        "y": 1111
       },
       "params": {
         "mode": "random"
@@ -170,7 +148,7 @@
       "defType": "spread/range",
       "position": {
         "x": 4,
-        "y": 587
+        "y": 1203
       },
       "params": {
         "count": 70
@@ -180,23 +158,11 @@
       }
     },
     {
-      "id": "eco_age0",
-      "defType": "math/expression",
-      "position": {
-        "x": 298,
-        "y": 549
-      },
-      "params": {
-        "expr": "fract(i * 0.618) * 8"
-      },
-      "portValues": {}
-    },
-    {
       "id": "eco_rfood",
       "defType": "state/read-spread",
       "position": {
-        "x": 628,
-        "y": 1243
+        "x": 611,
+        "y": 1100
       },
       "params": {
         "slot": 1
@@ -209,8 +175,8 @@
       "id": "eco_rage",
       "defType": "state/read-spread",
       "position": {
-        "x": 628,
-        "y": 603
+        "x": 611,
+        "y": 974
       },
       "params": {
         "slot": 2
@@ -220,23 +186,11 @@
       }
     },
     {
-      "id": "eco_ripe",
-      "defType": "math/expression",
-      "position": {
-        "x": 1322,
-        "y": 721
-      },
-      "params": {
-        "expr": "a >= g"
-      },
-      "portValues": {}
-    },
-    {
       "id": "eco_ripeFood",
       "defType": "spread/sublist",
       "position": {
-        "x": 1951,
-        "y": 894
+        "x": 2574,
+        "y": 913
       },
       "params": {
         "op": "keep-where"
@@ -248,7 +202,7 @@
       "defType": "state/read",
       "position": {
         "x": 0,
-        "y": 1069
+        "y": 1077
       },
       "params": {
         "slot": 3,
@@ -260,23 +214,11 @@
       }
     },
     {
-      "id": "eco_flockSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 1948,
-        "y": 626
-      },
-      "params": {
-        "expr": "floor(p)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "eco_boidColours",
       "defType": "color/palette",
       "position": {
-        "x": 1948,
-        "y": 1168
+        "x": 2571,
+        "y": 1187
       },
       "params": {
         "stopCount": 3,
@@ -295,8 +237,8 @@
       "id": "eco_flock",
       "defType": "particles/simulation",
       "position": {
-        "x": 2249,
-        "y": 780
+        "x": 2873,
+        "y": 837
       },
       "params": {
         "mode": "flocking"
@@ -319,8 +261,8 @@
       "id": "eco_nearestBoid",
       "defType": "spread/lookup",
       "position": {
-        "x": 2567,
-        "y": 1126
+        "x": 3221,
+        "y": 1229
       },
       "params": {
         "op": "nearest"
@@ -331,8 +273,8 @@
       "id": "eco_boidAt",
       "defType": "spread/lookup",
       "position": {
-        "x": 2909,
-        "y": 992
+        "x": 3502,
+        "y": 1194
       },
       "params": {
         "op": "pick"
@@ -340,59 +282,101 @@
       "portValues": {}
     },
     {
-      "id": "eco_eaten",
-      "defType": "math/expression",
-      "position": {
-        "x": 3186,
-        "y": 916
-      },
-      "params": {
-        "expr": "ok && distance(f, b) < 9"
-      },
-      "portValues": {}
-    },
-    {
       "id": "eco_fertileSpot",
-      "defType": "math/expression",
+      "defType": "meta/subpatch",
       "position": {
-        "x": 617,
-        "y": 761
+        "x": 1616,
+        "y": 573
       },
       "params": {
-        "expr": "pr ? m : vec2(clamp((noise(t * 0.05, 1.3) - 0.5) * 1056.0, -240.0, 240.0), clamp((noise(t * 0.05, 7.7) - 0.5) * 688.0, -135.0, 135.0))"
+        "label": "Fertile spot",
+        "width": 2028,
+        "height": 741
       },
-      "portValues": {}
+      "width": 2028,
+      "height": 741,
+      "ports": [
+        {
+          "id": "pr",
+          "name": "mouse down",
+          "type": "boolean",
+          "direction": "input",
+          "y": 56
+        },
+        {
+          "id": "m",
+          "name": "mouse",
+          "type": "vec2",
+          "direction": "input",
+          "y": 82
+        },
+        {
+          "id": "value",
+          "name": "spot",
+          "type": "vec2",
+          "direction": "output",
+          "y": 77
+        }
+      ]
     },
     {
       "id": "eco_regrowAt",
-      "defType": "math/expression",
+      "defType": "meta/subpatch",
       "position": {
-        "x": 3527,
-        "y": 964
+        "x": 4102,
+        "y": 984
       },
       "params": {
-        "expr": "ate ? vec2(clamp(c.x + cos(fract(sin(index * 12.9898 + frame * 78.233) * 43758.5453) * 6.283) * 140 * sqrt(fract(sin(index * 39.3468 + frame * 11.135) * 24634.6345)), -318.0, 318.0), clamp(c.y + sin(fract(sin(index * 12.9898 + frame * 78.233) * 43758.5453) * 6.283) * 140 * sqrt(fract(sin(index * 39.3468 + frame * 11.135) * 24634.6345)), -203.0, 203.0)) : f"
+        "label": "Regrow",
+        "width": 3244,
+        "height": 492
       },
-      "portValues": {}
-    },
-    {
-      "id": "eco_ageing",
-      "defType": "math/expression",
-      "position": {
-        "x": 3527,
-        "y": 604
-      },
-      "params": {
-        "expr": "ate ? 0 : a + h"
-      },
-      "portValues": {}
+      "width": 3244,
+      "height": 492,
+      "ports": [
+        {
+          "id": "ate",
+          "name": "eaten",
+          "type": "boolean",
+          "direction": "input",
+          "y": 15
+        },
+        {
+          "id": "c",
+          "name": "spot",
+          "type": "vec2",
+          "direction": "input",
+          "y": 35
+        },
+        {
+          "id": "f",
+          "name": "food",
+          "type": "vec2",
+          "direction": "input",
+          "y": 438
+        },
+        {
+          "id": "ids",
+          "name": "item",
+          "type": "number",
+          "direction": "input",
+          "y": 190
+        },
+        {
+          "id": "value",
+          "name": "food",
+          "type": "vec2",
+          "direction": "output",
+          "y": 87
+        }
+      ]
     },
     {
       "id": "eco_wfood",
       "defType": "state/write-spread",
       "position": {
-        "x": 3849,
-        "y": 1024
+        "x": 4422,
+        "y": 962
       },
       "params": {
         "slot": 1
@@ -405,8 +389,8 @@
       "id": "eco_wage",
       "defType": "state/write-spread",
       "position": {
-        "x": 3849,
-        "y": 573
+        "x": 4422,
+        "y": 1132
       },
       "params": {
         "slot": 2
@@ -419,30 +403,18 @@
       "id": "eco_meals",
       "defType": "spread/count-where",
       "position": {
-        "x": 3521,
-        "y": 1320
+        "x": 4086,
+        "y": 1428
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "eco_births",
-      "defType": "math/expression",
-      "position": {
-        "x": 3816,
-        "y": 1388
-      },
-      "params": {
-        "expr": "clamp(p + m * 0.7 - p * k * h, 6, 400)"
-      },
       "portValues": {}
     },
     {
       "id": "eco_wpop",
       "defType": "state/write",
       "position": {
-        "x": 4180,
-        "y": 1576
+        "x": 4714,
+        "y": 1508
       },
       "params": {
         "slot": 3
@@ -455,8 +427,8 @@
       "id": "eco_rtotal",
       "defType": "state/read",
       "position": {
-        "x": 3538,
-        "y": 1194
+        "x": 4103,
+        "y": 1302
       },
       "params": {
         "slot": 4,
@@ -468,23 +440,11 @@
       }
     },
     {
-      "id": "eco_totalMeals",
-      "defType": "math/expression",
-      "position": {
-        "x": 3816,
-        "y": 1224
-      },
-      "params": {
-        "expr": "n + m"
-      },
-      "portValues": {}
-    },
-    {
       "id": "eco_wtotal",
       "defType": "state/write",
       "position": {
-        "x": 4180,
-        "y": 1450
+        "x": 4714,
+        "y": 1382
       },
       "params": {
         "slot": 4
@@ -497,30 +457,18 @@
       "id": "eco_ripeCount",
       "defType": "spread/count-where",
       "position": {
-        "x": 1943,
-        "y": 522
+        "x": 2566,
+        "y": 557
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "eco_sampleNow",
-      "defType": "math/expression",
-      "position": {
-        "x": 298,
-        "y": 887
-      },
-      "params": {
-        "expr": "frame % 10 == 0 ? 1 : 0"
-      },
       "portValues": {}
     },
     {
       "id": "eco_rhist_pop",
       "defType": "state/read-spread",
       "position": {
-        "x": 628,
-        "y": 969
+        "x": 1627,
+        "y": 699
       },
       "params": {
         "slot": 5
@@ -530,23 +478,11 @@
       }
     },
     {
-      "id": "eco_norm_pop",
-      "defType": "math/expression",
-      "position": {
-        "x": 298,
-        "y": 1029
-      },
-      "params": {
-        "expr": "min(v / 200.0, 1)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "eco_take_pop",
       "defType": "spread/sublist",
       "position": {
-        "x": 620,
-        "y": 1095
+        "x": 1619,
+        "y": 825
       },
       "params": {
         "op": "take"
@@ -557,8 +493,8 @@
       "id": "eco_hist_pop",
       "defType": "spread/combine",
       "position": {
-        "x": 1325,
-        "y": 1164
+        "x": 2574,
+        "y": 409
       },
       "params": {
         "op": "concat"
@@ -569,30 +505,18 @@
       "id": "eco_len_pop",
       "defType": "spread/count",
       "position": {
-        "x": 1964,
-        "y": 1360
+        "x": 2886,
+        "y": 555
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "eco_drop_pop",
-      "defType": "math/expression",
-      "position": {
-        "x": 2247,
-        "y": 1214
-      },
-      "params": {
-        "expr": "max(0, n - 240)"
-      },
       "portValues": {}
     },
     {
       "id": "eco_cap_pop",
       "defType": "spread/sublist",
       "position": {
-        "x": 2567,
-        "y": 946
+        "x": 3776,
+        "y": 503
       },
       "params": {
         "op": "skip"
@@ -603,8 +527,8 @@
       "id": "eco_whist_pop",
       "defType": "state/write-spread",
       "position": {
-        "x": 2940,
-        "y": 1244
+        "x": 4125,
+        "y": 412
       },
       "params": {
         "slot": 5
@@ -617,8 +541,8 @@
       "id": "eco_rhist_food",
       "defType": "state/read-spread",
       "position": {
-        "x": 2576,
-        "y": 606
+        "x": 3510,
+        "y": 300
       },
       "params": {
         "slot": 6
@@ -628,23 +552,11 @@
       }
     },
     {
-      "id": "eco_norm_food",
-      "defType": "math/expression",
-      "position": {
-        "x": 2247,
-        "y": 574
-      },
-      "params": {
-        "expr": "min(v / 70.0, 1)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "eco_take_food",
       "defType": "spread/sublist",
       "position": {
-        "x": 2567,
-        "y": 732
+        "x": 3502,
+        "y": 426
       },
       "params": {
         "op": "take"
@@ -655,8 +567,8 @@
       "id": "eco_hist_food",
       "defType": "spread/combine",
       "position": {
-        "x": 2909,
-        "y": 734
+        "x": 3776,
+        "y": 292
       },
       "params": {
         "op": "concat"
@@ -667,30 +579,18 @@
       "id": "eco_len_food",
       "defType": "spread/count",
       "position": {
-        "x": 3202,
-        "y": 804
+        "x": 4107,
+        "y": 308
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "eco_drop_food",
-      "defType": "math/expression",
-      "position": {
-        "x": 3527,
-        "y": 822
-      },
-      "params": {
-        "expr": "max(0, n - 240)"
-      },
       "portValues": {}
     },
     {
       "id": "eco_cap_food",
       "defType": "spread/sublist",
       "position": {
-        "x": 3819,
-        "y": 699
+        "x": 4986,
+        "y": 283
       },
       "params": {
         "op": "skip"
@@ -701,8 +601,8 @@
       "id": "eco_whist_food",
       "defType": "state/write-spread",
       "position": {
-        "x": 4177,
-        "y": 808
+        "x": 5315,
+        "y": 242
       },
       "params": {
         "slot": 6
@@ -715,8 +615,8 @@
       "id": "eco_fieldFill",
       "defType": "style/fill",
       "position": {
-        "x": 2264,
-        "y": 90
+        "x": 2888,
+        "y": 78
       },
       "params": {},
       "portValues": {
@@ -732,8 +632,8 @@
       "id": "eco_field",
       "defType": "draw/rect",
       "position": {
-        "x": 2594,
-        "y": 69
+        "x": 3248,
+        "y": 15
       },
       "params": {
         "anchor": "center"
@@ -753,11 +653,11 @@
       "defType": "region/foreach",
       "position": {
         "x": 1001,
-        "y": 214
+        "y": 126
       },
       "params": {
-        "width": 810,
-        "height": 427,
+        "width": 1398,
+        "height": 399,
         "label": "ForEach food"
       },
       "ports": [
@@ -773,51 +673,25 @@
           "name": "a",
           "type": "number",
           "direction": "input",
-          "y": 258
+          "y": 238
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 134
+          "y": 78
         }
       ],
-      "width": 810,
-      "height": 427
-    },
-    {
-      "id": "eco_foodSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 135,
-        "y": 96
-      },
-      "params": {
-        "expr": "a >= g ? 7 : 1.5 + 4 * a / g"
-      },
-      "parentId": "eco_foodEach",
-      "portValues": {}
-    },
-    {
-      "id": "eco_foodColour",
-      "defType": "math/expression",
-      "position": {
-        "x": 135,
-        "y": 260
-      },
-      "params": {
-        "expr": "a >= g ? rgb(0.61, 0.9, 0.39) : rgb(0.31, 0.54, 0.36)"
-      },
-      "parentId": "eco_foodEach",
-      "portValues": {}
+      "width": 1398,
+      "height": 399
     },
     {
       "id": "eco_foodFill",
       "defType": "style/fill",
       "position": {
-        "x": 408,
-        "y": 247
+        "x": 982,
+        "y": 216
       },
       "params": {},
       "parentId": "eco_foodEach",
@@ -827,8 +701,8 @@
       "id": "eco_foodDot",
       "defType": "draw/ellipse",
       "position": {
-        "x": 599,
-        "y": 98
+        "x": 1187,
+        "y": 42
       },
       "params": {},
       "parentId": "eco_foodEach",
@@ -838,8 +712,8 @@
       "id": "eco_spotStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 309,
-        "y": 89
+        "x": 611,
+        "y": 0
       },
       "params": {},
       "portValues": {
@@ -856,8 +730,8 @@
       "id": "eco_spotNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 657,
-        "y": 89
+        "x": 1656,
+        "y": 0
       },
       "params": {},
       "portValues": {}
@@ -866,8 +740,8 @@
       "id": "eco_spotRing",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1356,
-        "y": 0
+        "x": 2606,
+        "y": 127
       },
       "params": {},
       "portValues": {
@@ -879,8 +753,8 @@
       "id": "eco_boidTrails",
       "defType": "gpu/echo",
       "position": {
-        "x": 2564,
-        "y": 382
+        "x": 3218,
+        "y": 239
       },
       "params": {
         "mode": "trails"
@@ -893,8 +767,8 @@
       "id": "eco_world",
       "defType": "transform/group",
       "position": {
-        "x": 2906,
-        "y": 193
+        "x": 3499,
+        "y": 120
       },
       "params": {
         "slotCount": 4
@@ -905,8 +779,8 @@
       "id": "eco_place",
       "defType": "transform/translate",
       "position": {
-        "x": 4987,
-        "y": 301
+        "x": 5574,
+        "y": 252
       },
       "params": {},
       "portValues": {
@@ -918,22 +792,41 @@
     },
     {
       "id": "eco_chart_food",
-      "defType": "math/expression",
+      "defType": "meta/subpatch",
       "position": {
-        "x": 4143,
-        "y": 238
+        "x": 5266,
+        "y": 368
       },
       "params": {
-        "expr": "vec2(-330.0 + 660 * index / 239, 292 - 108 * v)"
+        "label": "Chart · ripe food",
+        "width": 1632,
+        "height": 379
       },
-      "portValues": {}
+      "width": 1632,
+      "height": 379,
+      "ports": [
+        {
+          "id": "v",
+          "name": "ripe share",
+          "type": "number",
+          "direction": "input",
+          "y": 246
+        },
+        {
+          "id": "value",
+          "name": "points",
+          "type": "vec2",
+          "direction": "output",
+          "y": 140
+        }
+      ]
     },
     {
       "id": "eco_chartStroke_food",
       "defType": "style/stroke",
       "position": {
-        "x": 4160,
-        "y": 380
+        "x": 5298,
+        "y": 472
       },
       "params": {},
       "portValues": {
@@ -950,8 +843,8 @@
       "id": "eco_chartLine_food",
       "defType": "draw/polygon",
       "position": {
-        "x": 4489,
-        "y": 335
+        "x": 5580,
+        "y": 419
       },
       "params": {},
       "portValues": {
@@ -960,22 +853,41 @@
     },
     {
       "id": "eco_chart_pop",
-      "defType": "math/expression",
+      "defType": "meta/subpatch",
       "position": {
-        "x": 2906,
-        "y": 390
+        "x": 4071,
+        "y": 538
       },
       "params": {
-        "expr": "vec2(-330.0 + 660 * index / 239, 292 - 108 * v)"
+        "label": "Chart · population",
+        "width": 1632,
+        "height": 379
       },
-      "portValues": {}
+      "width": 1632,
+      "height": 379,
+      "ports": [
+        {
+          "id": "v",
+          "name": "population share",
+          "type": "number",
+          "direction": "input",
+          "y": 246
+        },
+        {
+          "id": "value",
+          "name": "points",
+          "type": "vec2",
+          "direction": "output",
+          "y": 140
+        }
+      ]
     },
     {
       "id": "eco_chartStroke_pop",
       "defType": "style/stroke",
       "position": {
-        "x": 2923,
-        "y": 532
+        "x": 4108,
+        "y": 642
       },
       "params": {},
       "portValues": {
@@ -992,8 +904,8 @@
       "id": "eco_chartLine_pop",
       "defType": "draw/polygon",
       "position": {
-        "x": 3219,
-        "y": 465
+        "x": 4421,
+        "y": 557
       },
       "params": {},
       "portValues": {
@@ -1004,8 +916,8 @@
       "id": "eco_fmtPop",
       "defType": "string/format-number",
       "position": {
-        "x": 4152,
-        "y": 550
+        "x": 4686,
+        "y": 608
       },
       "params": {
         "mode": "number"
@@ -1019,8 +931,8 @@
       "id": "eco_fmtFood",
       "defType": "string/format-number",
       "position": {
-        "x": 4152,
-        "y": 934
+        "x": 4686,
+        "y": 866
       },
       "params": {
         "mode": "number"
@@ -1034,8 +946,8 @@
       "id": "eco_fmtMeals",
       "defType": "string/format-number",
       "position": {
-        "x": 4152,
-        "y": 1192
+        "x": 4686,
+        "y": 1124
       },
       "params": {
         "mode": "number"
@@ -1050,8 +962,8 @@
       "id": "eco_hudParts",
       "defType": "spread/merge",
       "position": {
-        "x": 4456,
-        "y": 820
+        "x": 4983,
+        "y": 801
       },
       "params": {
         "slotCount": 3
@@ -1064,8 +976,8 @@
       "id": "eco_hudText",
       "defType": "string/concat",
       "position": {
-        "x": 4760,
-        "y": 670
+        "x": 5315,
+        "y": 674
       },
       "params": {
         "separator": "    "
@@ -1078,8 +990,8 @@
       "id": "eco_hudFill",
       "defType": "style/fill",
       "position": {
-        "x": 4743,
-        "y": 796
+        "x": 5298,
+        "y": 800
       },
       "params": {},
       "portValues": {
@@ -1095,8 +1007,8 @@
       "id": "eco_hud",
       "defType": "draw/text",
       "position": {
-        "x": 4994,
-        "y": 615
+        "x": 5581,
+        "y": 630
       },
       "params": {
         "size": 13,
@@ -1115,8 +1027,8 @@
       "id": "eco_scene",
       "defType": "transform/group",
       "position": {
-        "x": 5219,
-        "y": 402
+        "x": 5812,
+        "y": 437
       },
       "params": {
         "slotCount": 4
@@ -1127,8 +1039,8 @@
       "id": "eco_r",
       "defType": "render/renderer",
       "position": {
-        "x": 5483,
-        "y": 401
+        "x": 6076,
+        "y": 437
       },
       "params": {
         "width": 700,
@@ -1150,743 +1062,2710 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "eco_subtract",
+      "defType": "math/math",
+      "position": {
+        "x": 293,
+        "y": 638
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": -72
+      }
+    },
+    {
+      "id": "eco_mouseWorld",
+      "defType": "vec2/make",
+      "position": {
+        "x": 641,
+        "y": 596
+      },
+      "params": {}
+    },
+    {
+      "id": "eco_multiply",
+      "defType": "math/math",
+      "position": {
+        "x": 128,
+        "y": 84
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.618
+      },
+      "parentId": "eco_startAges"
+    },
+    {
+      "id": "eco_age0Fract",
+      "defType": "math/math",
+      "position": {
+        "x": 392,
+        "y": 62
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "eco_startAges"
+    },
+    {
+      "id": "eco_multiply2",
+      "defType": "math/math",
+      "position": {
+        "x": 638,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 8
+      },
+      "parentId": "eco_startAges"
+    },
+    {
+      "id": "eco_ripe",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1609,
+        "y": 973
+      },
+      "params": {
+        "op": "greater-equal"
+      }
+    },
+    {
+      "id": "eco_flockSize",
+      "defType": "math/math",
+      "position": {
+        "x": 2580,
+        "y": 661
+      },
+      "params": {
+        "op": "floor",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "eco_toBoid",
+      "defType": "vec2/math",
+      "position": {
+        "x": 128,
+        "y": 131
+      },
+      "params": {
+        "op": "distance"
+      },
+      "parentId": "eco_eating"
+    },
+    {
+      "id": "eco_reached",
+      "defType": "logic/compare",
+      "position": {
+        "x": 404,
+        "y": 110
+      },
+      "params": {
+        "op": "less"
+      },
+      "portValues": {
+        "b": 9
+      },
+      "parentId": "eco_eating"
+    },
+    {
+      "id": "eco_eaten",
+      "defType": "logic/logic",
+      "position": {
+        "x": 685,
+        "y": 40
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "eco_eating"
+    },
+    {
+      "id": "eco_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 128,
+        "y": 328
+      },
+      "params": {},
+      "parentId": "eco_fertileSpot"
+    },
+    {
+      "id": "eco_multiply3",
+      "defType": "math/math",
+      "position": {
+        "x": 309,
+        "y": 306
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_fertileSpot",
+      "portValues": {
+        "b": 0.05
+      }
+    },
+    {
+      "id": "eco_spotNoiseX",
+      "defType": "noise/noise",
+      "position": {
+        "x": 597,
+        "y": 101
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "eco_fertileSpot",
+      "portValues": {
+        "y": 1.3
+      }
+    },
+    {
+      "id": "eco_spotNoiseY",
+      "defType": "noise/noise",
+      "position": {
+        "x": 597,
+        "y": 425
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "eco_fertileSpot",
+      "portValues": {
+        "y": 7.7
+      }
+    },
+    {
+      "id": "eco_spotNoise",
+      "defType": "vec2/make",
+      "position": {
+        "x": 884,
+        "y": 239
+      },
+      "params": {},
+      "parentId": "eco_fertileSpot"
+    },
+    {
+      "id": "eco_spotCentred",
+      "defType": "math/math",
+      "position": {
+        "x": 1069,
+        "y": 191
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "vec2"
+      },
+      "parentId": "eco_fertileSpot",
+      "portValues": {
+        "b": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      }
+    },
+    {
+      "id": "eco_spotSpread",
+      "defType": "math/math",
+      "position": {
+        "x": 1336,
+        "y": 144
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "vec2"
+      },
+      "parentId": "eco_fertileSpot",
+      "portValues": {
+        "b": {
+          "x": 1056.0,
+          "y": 688.0
+        }
+      }
+    },
+    {
+      "id": "eco_spotInField",
+      "defType": "math/clamp",
+      "position": {
+        "x": 1604,
+        "y": 120
+      },
+      "params": {
+        "valueType": "vec2"
+      },
+      "parentId": "eco_fertileSpot",
+      "portValues": {
+        "min": {
+          "x": -240.0,
+          "y": -135.0
+        },
+        "max": {
+          "x": 240.0,
+          "y": 135.0
+        }
+      }
+    },
+    {
+      "id": "eco_spotOrMouse",
+      "defType": "logic/select",
+      "position": {
+        "x": 1811,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "eco_fertileSpot"
+    },
+    {
+      "id": "eco_frame",
+      "defType": "time/frame",
+      "position": {
+        "x": 172,
+        "y": 353
+      },
+      "params": {},
+      "parentId": "eco_regrowAt"
+    },
+    {
+      "id": "eco_multiply4",
+      "defType": "math/math",
+      "position": {
+        "x": 134,
+        "y": 57
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt",
+      "portValues": {
+        "b": 12.9898
+      }
+    },
+    {
+      "id": "eco_multiply5",
+      "defType": "math/math",
+      "position": {
+        "x": 422,
+        "y": 166
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt",
+      "portValues": {
+        "b": 78.233
+      }
+    },
+    {
+      "id": "eco_add",
+      "defType": "math/math",
+      "position": {
+        "x": 692,
+        "y": 85
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt"
+    },
+    {
+      "id": "eco_turnSin",
+      "defType": "math/math",
+      "position": {
+        "x": 959,
+        "y": 78
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt"
+    },
+    {
+      "id": "eco_multiply6",
+      "defType": "math/math",
+      "position": {
+        "x": 1209,
+        "y": 71
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt",
+      "portValues": {
+        "b": 43758.5453
+      }
+    },
+    {
+      "id": "eco_turn",
+      "defType": "math/math",
+      "position": {
+        "x": 1486,
+        "y": 65
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt"
+    },
+    {
+      "id": "eco_multiply7",
+      "defType": "math/math",
+      "position": {
+        "x": 134,
+        "y": 205
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt",
+      "portValues": {
+        "b": 39.3468
+      }
+    },
+    {
+      "id": "eco_multiply8",
+      "defType": "math/math",
+      "position": {
+        "x": 422,
+        "y": 314
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt",
+      "portValues": {
+        "b": 11.135
+      }
+    },
+    {
+      "id": "eco_add2",
+      "defType": "math/math",
+      "position": {
+        "x": 692,
+        "y": 246
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt"
+    },
+    {
+      "id": "eco_reachSin",
+      "defType": "math/math",
+      "position": {
+        "x": 1218,
+        "y": 231
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt"
+    },
+    {
+      "id": "eco_multiply9",
+      "defType": "math/math",
+      "position": {
+        "x": 1477,
+        "y": 217
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt",
+      "portValues": {
+        "b": 24634.6345
+      }
+    },
+    {
+      "id": "eco_reach",
+      "defType": "math/math",
+      "position": {
+        "x": 1753,
+        "y": 206
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt"
+    },
+    {
+      "id": "eco_multiply10",
+      "defType": "math/math",
+      "position": {
+        "x": 1744,
+        "y": 58
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt",
+      "portValues": {
+        "b": 6.283
+      }
+    },
+    {
+      "id": "eco_direction",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 2027,
+        "y": 64
+      },
+      "params": {},
+      "parentId": "eco_regrowAt",
+      "portValues": {
+        "mag": 140
+      }
+    },
+    {
+      "id": "eco_evenDisc",
+      "defType": "math/math",
+      "position": {
+        "x": 2012,
+        "y": 190
+      },
+      "params": {
+        "op": "sqrt",
+        "valueType": "number"
+      },
+      "parentId": "eco_regrowAt"
+    },
+    {
+      "id": "eco_offset",
+      "defType": "vec2/math",
+      "position": {
+        "x": 2266,
+        "y": 92
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "eco_regrowAt"
+    },
+    {
+      "id": "eco_newPlace",
+      "defType": "math/math",
+      "position": {
+        "x": 2547,
+        "y": 40
+      },
+      "params": {
+        "op": "add",
+        "valueType": "vec2"
+      },
+      "parentId": "eco_regrowAt"
+    },
+    {
+      "id": "eco_inField",
+      "defType": "math/clamp",
+      "position": {
+        "x": 2817,
+        "y": 62
+      },
+      "params": {
+        "valueType": "vec2"
+      },
+      "parentId": "eco_regrowAt",
+      "portValues": {
+        "min": {
+          "x": -318.0,
+          "y": -203.0
+        },
+        "max": {
+          "x": 318.0,
+          "y": 203.0
+        }
+      }
+    },
+    {
+      "id": "eco_regrowOrStay",
+      "defType": "logic/select",
+      "position": {
+        "x": 3027,
+        "y": 50
+      },
+      "params": {},
+      "parentId": "eco_regrowAt"
+    },
+    {
+      "id": "eco_add3",
+      "defType": "math/math",
+      "position": {
+        "x": 1616,
+        "y": 1357
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "eco_ageing",
+      "defType": "logic/select",
+      "position": {
+        "x": 4123,
+        "y": 1154
+      },
+      "params": {},
+      "portValues": {
+        "a": 0
+      }
+    },
+    {
+      "id": "eco_population",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 4388,
+        "y": 1490
+      },
+      "params": {
+        "label": "Population",
+        "width": 1156,
+        "height": 409
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "population",
+          "type": "number",
+          "direction": "input",
+          "y": 132
+        },
+        {
+          "id": "m",
+          "name": "meals",
+          "type": "number",
+          "direction": "input",
+          "y": 152
+        },
+        {
+          "id": "k",
+          "name": "metabolism",
+          "type": "number",
+          "direction": "input",
+          "y": 312
+        },
+        {
+          "id": "h",
+          "name": "frame step",
+          "type": "number",
+          "direction": "input",
+          "y": 355
+        },
+        {
+          "id": "next",
+          "name": "next population",
+          "type": "number",
+          "direction": "output",
+          "y": 136
+        }
+      ],
+      "width": 1156,
+      "height": 409
+    },
+    {
+      "id": "eco_multiply11",
+      "defType": "math/math",
+      "position": {
+        "x": 140,
+        "y": 83
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_population",
+      "portValues": {
+        "b": 0.7
+      }
+    },
+    {
+      "id": "eco_add4",
+      "defType": "math/math",
+      "position": {
+        "x": 411,
+        "y": 40
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "eco_population"
+    },
+    {
+      "id": "eco_multiply12",
+      "defType": "math/math",
+      "position": {
+        "x": 140,
+        "y": 231
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_population"
+    },
+    {
+      "id": "eco_multiply13",
+      "defType": "math/math",
+      "position": {
+        "x": 411,
+        "y": 225
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_population"
+    },
+    {
+      "id": "eco_subtract2",
+      "defType": "math/math",
+      "position": {
+        "x": 687,
+        "y": 99
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "eco_population"
+    },
+    {
+      "id": "eco_births",
+      "defType": "math/clamp",
+      "position": {
+        "x": 951,
+        "y": 99
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "eco_population",
+      "portValues": {
+        "min": 6,
+        "max": 400
+      }
+    },
+    {
+      "id": "eco_totalMeals",
+      "defType": "math/math",
+      "position": {
+        "x": 4389,
+        "y": 1303
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "eco_frame2",
+      "defType": "time/frame",
+      "position": {
+        "x": 128,
+        "y": 106
+      },
+      "params": {},
+      "parentId": "eco_sampleNowEvery"
+    },
+    {
+      "id": "eco_sampleNowMod",
+      "defType": "math/math",
+      "position": {
+        "x": 316,
+        "y": 84
+      },
+      "params": {
+        "op": "mod",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 10
+      },
+      "parentId": "eco_sampleNowEvery"
+    },
+    {
+      "id": "eco_sampleNowTenth",
+      "defType": "logic/compare",
+      "position": {
+        "x": 562,
+        "y": 62
+      },
+      "params": {
+        "op": "equal"
+      },
+      "portValues": {
+        "b": 0
+      },
+      "parentId": "eco_sampleNowEvery"
+    },
+    {
+      "id": "eco_sampleNow",
+      "defType": "convert/convert",
+      "position": {
+        "x": 839,
+        "y": 40
+      },
+      "params": {
+        "to": "number"
+      },
+      "parentId": "eco_sampleNowEvery"
+    },
+    {
+      "id": "eco_divide",
+      "defType": "math/math",
+      "position": {
+        "x": 293,
+        "y": 859
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 200.0
+      }
+    },
+    {
+      "id": "eco_norm_pop",
+      "defType": "math/math",
+      "position": {
+        "x": 600,
+        "y": 826
+      },
+      "params": {
+        "op": "min",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "eco_divide2",
+      "defType": "math/math",
+      "position": {
+        "x": 2871,
+        "y": 375
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 70.0
+      }
+    },
+    {
+      "id": "eco_norm_food",
+      "defType": "math/math",
+      "position": {
+        "x": 3218,
+        "y": 431
+      },
+      "params": {
+        "op": "min",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "eco_subtract3",
+      "defType": "math/math",
+      "position": {
+        "x": 3218,
+        "y": 611
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 240
+      }
+    },
+    {
+      "id": "eco_drop_pop",
+      "defType": "math/math",
+      "position": {
+        "x": 3499,
+        "y": 584
+      },
+      "params": {
+        "op": "max",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 0
+      }
+    },
+    {
+      "id": "eco_subtract4",
+      "defType": "math/math",
+      "position": {
+        "x": 4389,
+        "y": 330
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 240
+      }
+    },
+    {
+      "id": "eco_drop_food",
+      "defType": "math/math",
+      "position": {
+        "x": 4677,
+        "y": 330
+      },
+      "params": {
+        "op": "max",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 0
+      }
+    },
+    {
+      "id": "eco_count",
+      "defType": "spread/count",
+      "position": {
+        "x": 149,
+        "y": 135
+      },
+      "params": {},
+      "parentId": "eco_chart_food"
+    },
+    {
+      "id": "eco_chart_foodIndex",
+      "defType": "spread/range",
+      "position": {
+        "x": 398,
+        "y": 139
+      },
+      "params": {},
+      "parentId": "eco_chart_food"
+    },
+    {
+      "id": "eco_multiply14",
+      "defType": "math/math",
+      "position": {
+        "x": 633,
+        "y": 99
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_chart_food",
+      "portValues": {
+        "a": 660.0
+      }
+    },
+    {
+      "id": "eco_divide3",
+      "defType": "math/math",
+      "position": {
+        "x": 897,
+        "y": 80
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "eco_chart_food",
+      "portValues": {
+        "b": 239
+      }
+    },
+    {
+      "id": "eco_add5",
+      "defType": "math/math",
+      "position": {
+        "x": 1162,
+        "y": 40
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "eco_chart_food",
+      "portValues": {
+        "a": -330.0
+      }
+    },
+    {
+      "id": "eco_multiply15",
+      "defType": "math/math",
+      "position": {
+        "x": 134,
+        "y": 239
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_chart_food",
+      "portValues": {
+        "a": 108
+      }
+    },
+    {
+      "id": "eco_subtract5",
+      "defType": "math/math",
+      "position": {
+        "x": 1162,
+        "y": 188
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "eco_chart_food",
+      "portValues": {
+        "a": 292
+      }
+    },
+    {
+      "id": "eco_chart_foodPoint",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1435,
+        "y": 103
+      },
+      "params": {},
+      "parentId": "eco_chart_food"
+    },
+    {
+      "id": "eco_count2",
+      "defType": "spread/count",
+      "position": {
+        "x": 149,
+        "y": 135
+      },
+      "params": {},
+      "parentId": "eco_chart_pop"
+    },
+    {
+      "id": "eco_chart_popIndex",
+      "defType": "spread/range",
+      "position": {
+        "x": 398,
+        "y": 139
+      },
+      "params": {},
+      "parentId": "eco_chart_pop"
+    },
+    {
+      "id": "eco_multiply16",
+      "defType": "math/math",
+      "position": {
+        "x": 633,
+        "y": 99
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_chart_pop",
+      "portValues": {
+        "a": 660.0
+      }
+    },
+    {
+      "id": "eco_divide4",
+      "defType": "math/math",
+      "position": {
+        "x": 897,
+        "y": 80
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "eco_chart_pop",
+      "portValues": {
+        "b": 239
+      }
+    },
+    {
+      "id": "eco_add6",
+      "defType": "math/math",
+      "position": {
+        "x": 1162,
+        "y": 40
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "eco_chart_pop",
+      "portValues": {
+        "a": -330.0
+      }
+    },
+    {
+      "id": "eco_multiply17",
+      "defType": "math/math",
+      "position": {
+        "x": 134,
+        "y": 239
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_chart_pop",
+      "portValues": {
+        "a": 108
+      }
+    },
+    {
+      "id": "eco_subtract6",
+      "defType": "math/math",
+      "position": {
+        "x": 1162,
+        "y": 188
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "eco_chart_pop",
+      "portValues": {
+        "a": 292
+      }
+    },
+    {
+      "id": "eco_chart_popPoint",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1435,
+        "y": 103
+      },
+      "params": {},
+      "parentId": "eco_chart_pop"
+    },
+    {
+      "id": "eco_dotRipe",
+      "defType": "logic/compare",
+      "position": {
+        "x": 134,
+        "y": 94
+      },
+      "params": {
+        "op": "greater-equal"
+      },
+      "parentId": "eco_foodEach"
+    },
+    {
+      "id": "eco_multiply18",
+      "defType": "math/math",
+      "position": {
+        "x": 141,
+        "y": 242
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "eco_foodEach",
+      "portValues": {
+        "a": 4
+      }
+    },
+    {
+      "id": "eco_divide5",
+      "defType": "math/math",
+      "position": {
+        "x": 417,
+        "y": 259
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "eco_foodEach"
+    },
+    {
+      "id": "eco_add7",
+      "defType": "math/math",
+      "position": {
+        "x": 687,
+        "y": 255
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "eco_foodEach",
+      "portValues": {
+        "a": 1.5
+      }
+    },
+    {
+      "id": "eco_foodSize",
+      "defType": "logic/select",
+      "position": {
+        "x": 973,
+        "y": 68
+      },
+      "params": {},
+      "parentId": "eco_foodEach",
+      "portValues": {
+        "a": 7
+      }
+    },
+    {
+      "id": "eco_foodColour",
+      "defType": "logic/select",
+      "position": {
+        "x": 719,
+        "y": 107
+      },
+      "params": {},
+      "parentId": "eco_foodEach",
+      "portValues": {
+        "a": {
+          "r": 0.61,
+          "g": 0.9,
+          "b": 0.39,
+          "a": 1.0
+        },
+        "b": {
+          "r": 0.31,
+          "g": 0.54,
+          "b": 0.36,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "eco_startAges",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 296,
+        "y": 1007
+      },
+      "params": {
+        "label": "Start ages",
+        "width": 918,
+        "height": 224
+      },
+      "ports": [
+        {
+          "id": "ids",
+          "name": "ids",
+          "type": "number",
+          "direction": "input",
+          "y": 143
+        },
+        {
+          "id": "multiply2",
+          "name": "multiply2",
+          "type": "number",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 918,
+      "height": 224
+    },
+    {
+      "id": "eco_eating",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 3787,
+        "y": 1180
+      },
+      "params": {
+        "label": "Eaten?",
+        "width": 936,
+        "height": 271
+      },
+      "ports": [
+        {
+          "id": "current",
+          "name": "current",
+          "type": "any",
+          "direction": "input",
+          "y": 190
+        },
+        {
+          "id": "boidAt",
+          "name": "boid at",
+          "type": "any",
+          "direction": "input",
+          "y": 212
+        },
+        {
+          "id": "ripe",
+          "name": "ripe",
+          "type": "boolean",
+          "direction": "input",
+          "y": 85
+        },
+        {
+          "id": "eaten",
+          "name": "eaten",
+          "type": "boolean",
+          "direction": "output",
+          "y": 78
+        }
+      ],
+      "width": 936,
+      "height": 271
+    },
+    {
+      "id": "eco_sampleNowEvery",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 583,
+        "y": 722
+      },
+      "params": {
+        "label": "Every 10th frame",
+        "width": 1092,
+        "height": 224
+      },
+      "ports": [
+        {
+          "id": "sampleNow",
+          "name": "sample now",
+          "type": "number",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 1092,
+      "height": 224
     }
   ],
   "edges": [
     {
       "id": "e_1",
-      "source": "eco_mouse",
-      "target": "eco_mouseWorld",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_2",
-      "source": "eco_mouse",
-      "target": "eco_mouseWorld",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_3",
-      "source": "eco_dt",
-      "target": "eco_h",
-      "sourceHandle": "out-dt",
-      "targetHandle": "in-dt"
-    },
-    {
-      "id": "e_4",
-      "source": "eco_ids",
-      "target": "eco_age0",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_5",
       "source": "eco_foodStart",
       "target": "eco_rfood",
       "sourceHandle": "out-points",
       "targetHandle": "in-init"
     },
     {
-      "id": "e_6",
-      "source": "eco_age0",
+      "id": "e_2",
+      "source": "eco_startAges",
       "target": "eco_rage",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-multiply2",
       "targetHandle": "in-init"
     },
     {
-      "id": "e_7",
-      "source": "eco_rage",
-      "target": "eco_ripe",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_8",
-      "source": "eco_regrow",
-      "target": "eco_ripe",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_9",
+      "id": "e_3",
       "source": "eco_rfood",
       "target": "eco_ripeFood",
       "sourceHandle": "out-current",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_10",
+      "id": "e_4",
       "source": "eco_ripe",
       "target": "eco_ripeFood",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-keep"
     },
     {
-      "id": "e_11",
-      "source": "eco_rpop",
-      "target": "eco_flockSize",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_12",
+      "id": "e_5",
       "source": "eco_flockSize",
       "target": "eco_flock",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-count"
     },
     {
-      "id": "e_13",
+      "id": "e_6",
       "source": "eco_speed",
       "target": "eco_flock",
       "sourceHandle": "out-number",
       "targetHandle": "in-maxSpeed"
     },
     {
-      "id": "e_14",
+      "id": "e_7",
       "source": "eco_hunger",
       "target": "eco_flock",
       "sourceHandle": "out-number",
       "targetHandle": "in-attract"
     },
     {
-      "id": "e_15",
+      "id": "e_8",
       "source": "eco_ripeFood",
       "target": "eco_flock",
       "sourceHandle": "out-result",
       "targetHandle": "in-food"
     },
     {
-      "id": "e_16",
+      "id": "e_9",
       "source": "eco_boidColours",
       "target": "eco_flock",
       "sourceHandle": "out-colors",
       "targetHandle": "in-colors"
     },
     {
-      "id": "e_17",
+      "id": "e_10",
       "source": "eco_flock",
       "target": "eco_nearestBoid",
       "sourceHandle": "out-points",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_18",
+      "id": "e_11",
       "source": "eco_rfood",
       "target": "eco_nearestBoid",
       "sourceHandle": "out-current",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_19",
+      "id": "e_12",
       "source": "eco_flock",
       "target": "eco_boidAt",
       "sourceHandle": "out-points",
       "targetHandle": "in-source"
     },
     {
-      "id": "e_20",
+      "id": "e_13",
       "source": "eco_nearestBoid",
       "target": "eco_boidAt",
       "sourceHandle": "out-result",
       "targetHandle": "in-indices"
     },
     {
-      "id": "e_21",
-      "source": "eco_ripe",
-      "target": "eco_eaten",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ok"
-    },
-    {
-      "id": "e_22",
-      "source": "eco_rfood",
-      "target": "eco_eaten",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_23",
-      "source": "eco_boidAt",
-      "target": "eco_eaten",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_24",
+      "id": "e_14",
       "source": "eco_mouse",
       "target": "eco_fertileSpot",
       "sourceHandle": "out-pressed",
       "targetHandle": "in-pr"
     },
     {
-      "id": "e_25",
+      "id": "e_15",
       "source": "eco_mouseWorld",
       "target": "eco_fertileSpot",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-vector",
       "targetHandle": "in-m"
     },
     {
-      "id": "e_26",
-      "source": "eco_eaten",
+      "id": "e_16",
+      "source": "eco_eating",
       "target": "eco_regrowAt",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-eaten",
       "targetHandle": "in-ate"
     },
     {
-      "id": "e_27",
+      "id": "e_17",
       "source": "eco_fertileSpot",
       "target": "eco_regrowAt",
       "sourceHandle": "out-value",
       "targetHandle": "in-c"
     },
     {
-      "id": "e_28",
+      "id": "e_18",
       "source": "eco_rfood",
       "target": "eco_regrowAt",
       "sourceHandle": "out-current",
       "targetHandle": "in-f"
     },
     {
-      "id": "e_29",
-      "source": "eco_eaten",
-      "target": "eco_ageing",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ate"
-    },
-    {
-      "id": "e_30",
-      "source": "eco_rage",
-      "target": "eco_ageing",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_31",
-      "source": "eco_h",
-      "target": "eco_ageing",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_32",
+      "id": "e_19",
       "source": "eco_regrowAt",
       "target": "eco_wfood",
       "sourceHandle": "out-value",
       "targetHandle": "in-next"
     },
     {
-      "id": "e_33",
+      "id": "e_20",
       "source": "eco_ageing",
       "target": "eco_wage",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-selected",
       "targetHandle": "in-next"
     },
     {
-      "id": "e_34",
-      "source": "eco_eaten",
+      "id": "e_21",
+      "source": "eco_eating",
       "target": "eco_meals",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-eaten",
       "targetHandle": "in-keep"
     },
     {
-      "id": "e_35",
-      "source": "eco_rpop",
-      "target": "eco_births",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_36",
-      "source": "eco_meals",
-      "target": "eco_births",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_37",
-      "source": "eco_metabolism",
-      "target": "eco_births",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_38",
-      "source": "eco_h",
-      "target": "eco_births",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_39",
-      "source": "eco_births",
+      "id": "e_22",
+      "source": "eco_population",
       "target": "eco_wpop",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-next",
       "targetHandle": "in-next"
     },
     {
-      "id": "e_40",
-      "source": "eco_rtotal",
-      "target": "eco_totalMeals",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_41",
-      "source": "eco_meals",
-      "target": "eco_totalMeals",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_42",
+      "id": "e_23",
       "source": "eco_totalMeals",
       "target": "eco_wtotal",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {
-      "id": "e_43",
+      "id": "e_24",
       "source": "eco_ripe",
       "target": "eco_ripeCount",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-keep"
     },
     {
-      "id": "e_44",
-      "source": "eco_rpop",
-      "target": "eco_norm_pop",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_45",
+      "id": "e_25",
       "source": "eco_norm_pop",
       "target": "eco_take_pop",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_46",
-      "source": "eco_sampleNow",
+      "id": "e_26",
+      "source": "eco_sampleNowEvery",
       "target": "eco_take_pop",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-sampleNow",
       "targetHandle": "in-count"
     },
     {
-      "id": "e_47",
+      "id": "e_27",
       "source": "eco_rhist_pop",
       "target": "eco_hist_pop",
       "sourceHandle": "out-current",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_48",
+      "id": "e_28",
       "source": "eco_take_pop",
       "target": "eco_hist_pop",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_49",
+      "id": "e_29",
       "source": "eco_hist_pop",
       "target": "eco_len_pop",
       "sourceHandle": "out-result",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_50",
-      "source": "eco_len_pop",
-      "target": "eco_drop_pop",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_51",
+      "id": "e_30",
       "source": "eco_hist_pop",
       "target": "eco_cap_pop",
       "sourceHandle": "out-result",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_52",
+      "id": "e_31",
       "source": "eco_drop_pop",
       "target": "eco_cap_pop",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-count"
     },
     {
-      "id": "e_53",
+      "id": "e_32",
       "source": "eco_cap_pop",
       "target": "eco_whist_pop",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {
-      "id": "e_54",
-      "source": "eco_ripeCount",
-      "target": "eco_norm_food",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_55",
+      "id": "e_33",
       "source": "eco_norm_food",
       "target": "eco_take_food",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_56",
-      "source": "eco_sampleNow",
+      "id": "e_34",
+      "source": "eco_sampleNowEvery",
       "target": "eco_take_food",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-sampleNow",
       "targetHandle": "in-count"
     },
     {
-      "id": "e_57",
+      "id": "e_35",
       "source": "eco_rhist_food",
       "target": "eco_hist_food",
       "sourceHandle": "out-current",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_58",
+      "id": "e_36",
       "source": "eco_take_food",
       "target": "eco_hist_food",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_59",
+      "id": "e_37",
       "source": "eco_hist_food",
       "target": "eco_len_food",
       "sourceHandle": "out-result",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_60",
-      "source": "eco_len_food",
-      "target": "eco_drop_food",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_61",
+      "id": "e_38",
       "source": "eco_hist_food",
       "target": "eco_cap_food",
       "sourceHandle": "out-result",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_62",
+      "id": "e_39",
       "source": "eco_drop_food",
       "target": "eco_cap_food",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-count"
     },
     {
-      "id": "e_63",
+      "id": "e_40",
       "source": "eco_cap_food",
       "target": "eco_whist_food",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {
-      "id": "e_64",
+      "id": "e_41",
       "source": "eco_fieldFill",
       "target": "eco_field",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_65",
+      "id": "e_42",
       "source": "eco_rfood",
       "target": "eco_foodEach",
       "sourceHandle": "out-current",
       "targetHandle": "in-p"
     },
     {
-      "id": "e_66",
+      "id": "e_43",
       "source": "eco_rage",
       "target": "eco_foodEach",
       "sourceHandle": "out-current",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_67",
-      "source": "eco_foodEach",
-      "target": "eco_foodSize",
-      "sourceHandle": "out-a",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_68",
-      "source": "eco_regrow",
-      "target": "eco_foodSize",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_69",
-      "source": "eco_foodEach",
-      "target": "eco_foodColour",
-      "sourceHandle": "out-a",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_70",
-      "source": "eco_regrow",
-      "target": "eco_foodColour",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_71",
+      "id": "e_44",
       "source": "eco_foodColour",
       "target": "eco_foodFill",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-selected",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_72",
+      "id": "e_45",
       "source": "eco_foodEach",
       "target": "eco_foodDot",
       "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_73",
+      "id": "e_46",
       "source": "eco_foodSize",
       "target": "eco_foodDot",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-selected",
       "targetHandle": "in-w"
     },
     {
-      "id": "e_74",
+      "id": "e_47",
       "source": "eco_foodSize",
       "target": "eco_foodDot",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-selected",
       "targetHandle": "in-h"
     },
     {
-      "id": "e_75",
+      "id": "e_48",
       "source": "eco_foodFill",
       "target": "eco_foodDot",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_76",
+      "id": "e_49",
       "source": "eco_foodDot",
       "target": "eco_foodEach",
       "sourceHandle": "out-shape",
       "targetHandle": "in-l"
     },
     {
-      "id": "e_77",
+      "id": "e_50",
       "source": "eco_spotStroke",
       "target": "eco_spotNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_78",
+      "id": "e_51",
       "source": "eco_fertileSpot",
       "target": "eco_spotRing",
       "sourceHandle": "out-value",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_79",
+      "id": "e_52",
       "source": "eco_spotNoFill",
       "target": "eco_spotRing",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_80",
+      "id": "e_53",
       "source": "eco_flock",
       "target": "eco_boidTrails",
       "sourceHandle": "out-layer",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_81",
+      "id": "e_54",
       "source": "eco_field",
       "target": "eco_world",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_82",
+      "id": "e_55",
       "source": "eco_spotRing",
       "target": "eco_world",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_83",
+      "id": "e_56",
       "source": "eco_foodEach",
       "target": "eco_world",
       "sourceHandle": "out-l",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_84",
+      "id": "e_57",
       "source": "eco_boidTrails",
       "target": "eco_world",
       "sourceHandle": "out-out",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_85",
+      "id": "e_58",
       "source": "eco_world",
       "target": "eco_place",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_86",
+      "id": "e_59",
       "source": "eco_cap_food",
       "target": "eco_chart_food",
       "sourceHandle": "out-result",
       "targetHandle": "in-v"
     },
     {
-      "id": "e_87",
+      "id": "e_60",
       "source": "eco_chart_food",
       "target": "eco_chartLine_food",
       "sourceHandle": "out-value",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_88",
+      "id": "e_61",
       "source": "eco_chartStroke_food",
       "target": "eco_chartLine_food",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_89",
+      "id": "e_62",
       "source": "eco_cap_pop",
       "target": "eco_chart_pop",
       "sourceHandle": "out-result",
       "targetHandle": "in-v"
     },
     {
-      "id": "e_90",
+      "id": "e_63",
       "source": "eco_chart_pop",
       "target": "eco_chartLine_pop",
       "sourceHandle": "out-value",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_91",
+      "id": "e_64",
       "source": "eco_chartStroke_pop",
       "target": "eco_chartLine_pop",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_92",
+      "id": "e_65",
       "source": "eco_flockSize",
       "target": "eco_fmtPop",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-value"
     },
     {
-      "id": "e_93",
+      "id": "e_66",
       "source": "eco_ripeCount",
       "target": "eco_fmtFood",
       "sourceHandle": "out-count",
       "targetHandle": "in-value"
     },
     {
-      "id": "e_94",
+      "id": "e_67",
       "source": "eco_totalMeals",
       "target": "eco_fmtMeals",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-value"
     },
     {
-      "id": "e_95",
+      "id": "e_68",
       "source": "eco_fmtPop",
       "target": "eco_hudParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_96",
+      "id": "e_69",
       "source": "eco_fmtFood",
       "target": "eco_hudParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_97",
+      "id": "e_70",
       "source": "eco_fmtMeals",
       "target": "eco_hudParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_98",
+      "id": "e_71",
       "source": "eco_hudParts",
       "target": "eco_hudText",
       "sourceHandle": "out-merged",
       "targetHandle": "in-parts"
     },
     {
-      "id": "e_99",
+      "id": "e_72",
       "source": "eco_hudText",
       "target": "eco_hud",
       "sourceHandle": "out-text",
       "targetHandle": "in-string"
     },
     {
-      "id": "e_100",
+      "id": "e_73",
       "source": "eco_hudFill",
       "target": "eco_hud",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_101",
+      "id": "e_74",
       "source": "eco_place",
       "target": "eco_scene",
       "sourceHandle": "out-translated",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_102",
+      "id": "e_75",
       "source": "eco_chartLine_food",
       "target": "eco_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_103",
+      "id": "e_76",
       "source": "eco_chartLine_pop",
       "target": "eco_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_104",
+      "id": "e_77",
       "source": "eco_hud",
       "target": "eco_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_105",
+      "id": "e_78",
       "source": "eco_scene",
       "target": "eco_r",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_79",
+      "source": "eco_mouse",
+      "target": "eco_subtract",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_80",
+      "source": "eco_mouse",
+      "target": "eco_mouseWorld",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_81",
+      "source": "eco_subtract",
+      "target": "eco_mouseWorld",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_82",
+      "source": "eco_startAges",
+      "target": "eco_multiply",
+      "sourceHandle": "out-ids",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_83",
+      "source": "eco_multiply",
+      "target": "eco_age0Fract",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_84",
+      "source": "eco_age0Fract",
+      "target": "eco_multiply2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_85",
+      "source": "eco_rage",
+      "target": "eco_ripe",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_86",
+      "source": "eco_regrow",
+      "target": "eco_ripe",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_87",
+      "source": "eco_rpop",
+      "target": "eco_flockSize",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_88",
+      "source": "eco_eating",
+      "target": "eco_toBoid",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_89",
+      "source": "eco_eating",
+      "target": "eco_toBoid",
+      "sourceHandle": "out-boidAt",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_90",
+      "source": "eco_toBoid",
+      "target": "eco_reached",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_91",
+      "source": "eco_eating",
+      "target": "eco_eaten",
+      "sourceHandle": "out-ripe",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_92",
+      "source": "eco_reached",
+      "target": "eco_eaten",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_93",
+      "source": "eco_time",
+      "target": "eco_multiply3",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_94",
+      "source": "eco_multiply3",
+      "target": "eco_spotNoiseX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_95",
+      "source": "eco_multiply3",
+      "target": "eco_spotNoiseY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_96",
+      "source": "eco_spotNoiseX",
+      "target": "eco_spotNoise",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_97",
+      "source": "eco_spotNoiseY",
+      "target": "eco_spotNoise",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_98",
+      "source": "eco_spotNoise",
+      "target": "eco_spotCentred",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_99",
+      "source": "eco_spotCentred",
+      "target": "eco_spotSpread",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_100",
+      "source": "eco_spotSpread",
+      "target": "eco_spotInField",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_101",
+      "source": "eco_fertileSpot",
+      "target": "eco_spotOrMouse",
+      "sourceHandle": "out-pr",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_102",
+      "source": "eco_fertileSpot",
+      "target": "eco_spotOrMouse",
+      "sourceHandle": "out-m",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_103",
+      "source": "eco_spotInField",
+      "target": "eco_spotOrMouse",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_104",
+      "source": "eco_spotOrMouse",
+      "target": "eco_fertileSpot",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_105",
+      "source": "eco_ids",
+      "target": "eco_regrowAt",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-ids"
+    },
+    {
+      "id": "e_106",
+      "source": "eco_regrowAt",
+      "target": "eco_multiply4",
+      "sourceHandle": "out-ids",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_107",
+      "source": "eco_frame",
+      "target": "eco_multiply5",
+      "sourceHandle": "out-frame",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_108",
+      "source": "eco_multiply4",
+      "target": "eco_add",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_109",
+      "source": "eco_multiply5",
+      "target": "eco_add",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_110",
+      "source": "eco_add",
+      "target": "eco_turnSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_111",
+      "source": "eco_turnSin",
+      "target": "eco_multiply6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_112",
+      "source": "eco_multiply6",
+      "target": "eco_turn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_113",
+      "source": "eco_regrowAt",
+      "target": "eco_multiply7",
+      "sourceHandle": "out-ids",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_114",
+      "source": "eco_frame",
+      "target": "eco_multiply8",
+      "sourceHandle": "out-frame",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_115",
+      "source": "eco_multiply7",
+      "target": "eco_add2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_116",
+      "source": "eco_multiply8",
+      "target": "eco_add2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_117",
+      "source": "eco_add2",
+      "target": "eco_reachSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_118",
+      "source": "eco_reachSin",
+      "target": "eco_multiply9",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_119",
+      "source": "eco_multiply9",
+      "target": "eco_reach",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_120",
+      "source": "eco_turn",
+      "target": "eco_multiply10",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_121",
+      "source": "eco_multiply10",
+      "target": "eco_direction",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_122",
+      "source": "eco_reach",
+      "target": "eco_evenDisc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_123",
+      "source": "eco_direction",
+      "target": "eco_offset",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_124",
+      "source": "eco_evenDisc",
+      "target": "eco_offset",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_125",
+      "source": "eco_regrowAt",
+      "target": "eco_newPlace",
+      "sourceHandle": "out-c",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_126",
+      "source": "eco_offset",
+      "target": "eco_newPlace",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_127",
+      "source": "eco_newPlace",
+      "target": "eco_inField",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_128",
+      "source": "eco_regrowAt",
+      "target": "eco_regrowOrStay",
+      "sourceHandle": "out-ate",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_129",
+      "source": "eco_inField",
+      "target": "eco_regrowOrStay",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_130",
+      "source": "eco_regrowAt",
+      "target": "eco_regrowOrStay",
+      "sourceHandle": "out-f",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_131",
+      "source": "eco_regrowOrStay",
+      "target": "eco_regrowAt",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_132",
+      "source": "eco_rage",
+      "target": "eco_add3",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_133",
+      "source": "eco_dt",
+      "target": "eco_add3",
+      "sourceHandle": "out-dt",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_134",
+      "source": "eco_eating",
+      "target": "eco_ageing",
+      "sourceHandle": "out-eaten",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_135",
+      "source": "eco_add3",
+      "target": "eco_ageing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_136",
+      "source": "eco_rpop",
+      "target": "eco_population",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_137",
+      "source": "eco_meals",
+      "target": "eco_population",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-m"
+    },
+    {
+      "id": "e_138",
+      "source": "eco_metabolism",
+      "target": "eco_population",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-k"
+    },
+    {
+      "id": "e_139",
+      "source": "eco_dt",
+      "target": "eco_population",
+      "sourceHandle": "out-dt",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_140",
+      "source": "eco_population",
+      "target": "eco_multiply11",
+      "sourceHandle": "out-m",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_141",
+      "source": "eco_population",
+      "target": "eco_add4",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_142",
+      "source": "eco_multiply11",
+      "target": "eco_add4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_143",
+      "source": "eco_population",
+      "target": "eco_multiply12",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_144",
+      "source": "eco_population",
+      "target": "eco_multiply12",
+      "sourceHandle": "out-k",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_145",
+      "source": "eco_multiply12",
+      "target": "eco_multiply13",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_146",
+      "source": "eco_population",
+      "target": "eco_multiply13",
+      "sourceHandle": "out-h",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_147",
+      "source": "eco_add4",
+      "target": "eco_subtract2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_148",
+      "source": "eco_multiply13",
+      "target": "eco_subtract2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_149",
+      "source": "eco_subtract2",
+      "target": "eco_births",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_150",
+      "source": "eco_births",
+      "target": "eco_population",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_151",
+      "source": "eco_rtotal",
+      "target": "eco_totalMeals",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_152",
+      "source": "eco_meals",
+      "target": "eco_totalMeals",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_153",
+      "source": "eco_frame2",
+      "target": "eco_sampleNowMod",
+      "sourceHandle": "out-frame",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_154",
+      "source": "eco_sampleNowMod",
+      "target": "eco_sampleNowTenth",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_155",
+      "source": "eco_sampleNowTenth",
+      "target": "eco_sampleNow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_156",
+      "source": "eco_rpop",
+      "target": "eco_divide",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_157",
+      "source": "eco_divide",
+      "target": "eco_norm_pop",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_158",
+      "source": "eco_ripeCount",
+      "target": "eco_divide2",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_159",
+      "source": "eco_divide2",
+      "target": "eco_norm_food",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_160",
+      "source": "eco_len_pop",
+      "target": "eco_subtract3",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_161",
+      "source": "eco_subtract3",
+      "target": "eco_drop_pop",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_162",
+      "source": "eco_len_food",
+      "target": "eco_subtract4",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_163",
+      "source": "eco_subtract4",
+      "target": "eco_drop_food",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_164",
+      "source": "eco_chart_food",
+      "target": "eco_count",
+      "sourceHandle": "out-v",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_165",
+      "source": "eco_count",
+      "target": "eco_chart_foodIndex",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_166",
+      "source": "eco_chart_foodIndex",
+      "target": "eco_multiply14",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_167",
+      "source": "eco_multiply14",
+      "target": "eco_divide3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_168",
+      "source": "eco_divide3",
+      "target": "eco_add5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_169",
+      "source": "eco_chart_food",
+      "target": "eco_multiply15",
+      "sourceHandle": "out-v",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_170",
+      "source": "eco_multiply15",
+      "target": "eco_subtract5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_171",
+      "source": "eco_add5",
+      "target": "eco_chart_foodPoint",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_172",
+      "source": "eco_subtract5",
+      "target": "eco_chart_foodPoint",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_173",
+      "source": "eco_chart_foodPoint",
+      "target": "eco_chart_food",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_174",
+      "source": "eco_chart_pop",
+      "target": "eco_count2",
+      "sourceHandle": "out-v",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_175",
+      "source": "eco_count2",
+      "target": "eco_chart_popIndex",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_176",
+      "source": "eco_chart_popIndex",
+      "target": "eco_multiply16",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_177",
+      "source": "eco_multiply16",
+      "target": "eco_divide4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_178",
+      "source": "eco_divide4",
+      "target": "eco_add6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_179",
+      "source": "eco_chart_pop",
+      "target": "eco_multiply17",
+      "sourceHandle": "out-v",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_180",
+      "source": "eco_multiply17",
+      "target": "eco_subtract6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_181",
+      "source": "eco_add6",
+      "target": "eco_chart_popPoint",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_182",
+      "source": "eco_subtract6",
+      "target": "eco_chart_popPoint",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_183",
+      "source": "eco_chart_popPoint",
+      "target": "eco_chart_pop",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_184",
+      "source": "eco_foodEach",
+      "target": "eco_dotRipe",
+      "sourceHandle": "out-a",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_185",
+      "source": "eco_regrow",
+      "target": "eco_dotRipe",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_186",
+      "source": "eco_foodEach",
+      "target": "eco_multiply18",
+      "sourceHandle": "out-a",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_187",
+      "source": "eco_multiply18",
+      "target": "eco_divide5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_188",
+      "source": "eco_regrow",
+      "target": "eco_divide5",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_189",
+      "source": "eco_divide5",
+      "target": "eco_add7",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_190",
+      "source": "eco_dotRipe",
+      "target": "eco_foodSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_191",
+      "source": "eco_add7",
+      "target": "eco_foodSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_192",
+      "source": "eco_dotRipe",
+      "target": "eco_foodColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_193",
+      "source": "eco_ids",
+      "target": "eco_startAges",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-ids"
+    },
+    {
+      "id": "e_194",
+      "source": "eco_multiply2",
+      "target": "eco_startAges",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-multiply2"
+    },
+    {
+      "id": "e_195",
+      "source": "eco_rfood",
+      "target": "eco_eating",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-current"
+    },
+    {
+      "id": "e_196",
+      "source": "eco_boidAt",
+      "target": "eco_eating",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-boidAt"
+    },
+    {
+      "id": "e_197",
+      "source": "eco_ripe",
+      "target": "eco_eating",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-ripe"
+    },
+    {
+      "id": "e_198",
+      "source": "eco_eaten",
+      "target": "eco_eating",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-eaten"
+    },
+    {
+      "id": "e_199",
+      "source": "eco_sampleNow",
+      "target": "eco_sampleNowEvery",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-sampleNow"
     }
   ]
 }

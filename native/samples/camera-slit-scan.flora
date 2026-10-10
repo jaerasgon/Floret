@@ -16,12 +16,12 @@
         "y": -314
       },
       "params": {
-        "text": "Camera slit-scan\n\nThe Toggle opens the camera. Echo in `slit-scan` mode keeps the last 90 frames and builds the picture from all of them: the top row is now, each row lower is a frame older (`direction` turns it). Move your hand, or tilt your head, and it stretches into ribbons.\n\nUntil the camera is ready (or with none at all), Select shows a stand-in: a bar and two dots swinging, so the smear is there to see.",
+        "text": "Camera slit-scan\n\nThe Toggle opens the camera. Echo in `slit-scan` mode keeps the last 90 frames and builds the picture from all of them: the top row is now, each row lower is a frame older (`direction` turns it). Move your hand, or tilt your head, and it stretches into ribbons.\n\nUntil the camera is ready (or with none at all), Select shows a stand-in: a bar and two dots, rocked by one LFO and slid side to side by another, so the smear is there to see.",
         "width": 480,
         "height": 250
       },
       "portValues": {
-        "text": "Camera slit-scan\n\nThe Toggle opens the camera. Echo in `slit-scan` mode keeps the last 90 frames and builds the picture from all of them: the top row is now, each row lower is a frame older (`direction` turns it). Move your hand, or tilt your head, and it stretches into ribbons.\n\nUntil the camera is ready (or with none at all), Select shows a stand-in: a bar and two dots swinging, so the smear is there to see.",
+        "text": "Camera slit-scan\n\nThe Toggle opens the camera. Echo in `slit-scan` mode keeps the last 90 frames and builds the picture from all of them: the top row is now, each row lower is a frame older (`direction` turns it). Move your hand, or tilt your head, and it stretches into ribbons.\n\nUntil the camera is ready (or with none at all), Select shows a stand-in: a bar and two dots, rocked by one LFO and slid side to side by another, so the smear is there to see.",
         "width": 480,
         "height": 250
       }
@@ -30,8 +30,8 @@
       "id": "cs_on",
       "defType": "io/toggle",
       "position": {
-        "x": 483,
-        "y": 67
+        "x": 479,
+        "y": 0
       },
       "params": {
         "value": true
@@ -44,8 +44,8 @@
       "id": "cs_cam",
       "defType": "input/camera",
       "position": {
-        "x": 761,
-        "y": 57
+        "x": 780,
+        "y": 61
       },
       "params": {
         "device": "",
@@ -60,8 +60,8 @@
       "id": "cs_feed",
       "defType": "draw/image",
       "position": {
-        "x": 1039,
-        "y": 0
+        "x": 1078,
+        "y": 141
       },
       "params": {},
       "portValues": {
@@ -70,21 +70,11 @@
       }
     },
     {
-      "id": "cs_t",
-      "defType": "time/seconds",
-      "position": {
-        "x": 252,
-        "y": 217
-      },
-      "params": {},
-      "portValues": {}
-    },
-    {
       "id": "cs_barfill",
       "defType": "style/fill",
       "position": {
         "x": 0,
-        "y": 431
+        "y": 748
       },
       "params": {
         "color": {
@@ -108,7 +98,7 @@
       "defType": "draw/rect",
       "position": {
         "x": 239,
-        "y": 343
+        "y": 660
       },
       "params": {},
       "portValues": {
@@ -121,7 +111,7 @@
       "defType": "style/fill",
       "position": {
         "x": 0,
-        "y": 623
+        "y": 940
       },
       "params": {
         "color": {
@@ -145,7 +135,7 @@
       "defType": "draw/ellipse",
       "position": {
         "x": 230,
-        "y": 535
+        "y": 852
       },
       "params": {},
       "portValues": {
@@ -162,7 +152,7 @@
       "defType": "style/fill",
       "position": {
         "x": 0,
-        "y": 815
+        "y": 1132
       },
       "params": {
         "color": {
@@ -186,7 +176,7 @@
       "defType": "draw/ellipse",
       "position": {
         "x": 233,
-        "y": 727
+        "y": 1044
       },
       "params": {},
       "portValues": {
@@ -202,8 +192,8 @@
       "id": "cs_shape",
       "defType": "transform/group",
       "position": {
-        "x": 483,
-        "y": 482
+        "x": 479,
+        "y": 830
       },
       "params": {
         "slotCount": 3
@@ -211,45 +201,21 @@
       "portValues": {}
     },
     {
-      "id": "cs_swing",
-      "defType": "math/expression",
-      "position": {
-        "x": 483,
-        "y": 297
-      },
-      "params": {
-        "expr": "0.9 * sin(tau * l * 2)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "cs_rot",
       "defType": "transform/rotate",
       "position": {
-        "x": 801,
-        "y": 369
+        "x": 818,
+        "y": 556
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "cs_slide",
-      "defType": "math/expression",
-      "position": {
-        "x": 761,
-        "y": 227
-      },
-      "params": {
-        "expr": "vec2(170 * sin(tau * l), 0)"
-      },
       "portValues": {}
     },
     {
       "id": "cs_move",
       "defType": "transform/translate",
       "position": {
-        "x": 1042,
-        "y": 260
+        "x": 1072,
+        "y": 355
       },
       "params": {},
       "portValues": {}
@@ -258,8 +224,8 @@
       "id": "cs_pick",
       "defType": "logic/select",
       "position": {
-        "x": 1256,
-        "y": 125
+        "x": 1303,
+        "y": 147
       },
       "params": {},
       "portValues": {}
@@ -268,8 +234,8 @@
       "id": "cs_scan",
       "defType": "gpu/echo",
       "position": {
-        "x": 1457,
-        "y": 103
+        "x": 1504,
+        "y": 125
       },
       "params": {
         "mode": "slit-scan",
@@ -284,8 +250,8 @@
       "id": "cs_r",
       "defType": "render/renderer",
       "position": {
-        "x": 1722,
-        "y": 103
+        "x": 1769,
+        "y": 125
       },
       "params": {
         "width": 640,
@@ -307,141 +273,194 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "cs_swing",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 488,
+        "y": 484
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 2,
+        "min": -0.9,
+        "max": 0.9,
+        "offset": 0.25,
+        "sync": "loop"
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 2,
+        "min": -0.9,
+        "max": 0.9,
+        "offset": 0.25
+      }
+    },
+    {
+      "id": "cs_slideX",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 488,
+        "y": 138
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 1,
+        "min": -170,
+        "max": 170,
+        "offset": 0.25,
+        "sync": "loop"
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 1,
+        "min": -170,
+        "max": 170,
+        "offset": 0.25
+      }
+    },
+    {
+      "id": "cs_slide",
+      "defType": "vec2/make",
+      "position": {
+        "x": 822,
+        "y": 246
+      },
+      "params": {
+        "y": 0
+      },
+      "portValues": {
+        "y": 0
+      }
     }
   ],
   "edges": [
     {
-      "id": "e_cs_on_cs_cam_start",
+      "id": "e_1",
       "source": "cs_on",
       "target": "cs_cam",
       "sourceHandle": "out-bool",
       "targetHandle": "in-start"
     },
     {
-      "id": "e_cs_cam_cs_feed_image",
+      "id": "e_2",
       "source": "cs_cam",
       "target": "cs_feed",
       "sourceHandle": "out-image",
       "targetHandle": "in-image"
     },
     {
-      "id": "e_cs_barfill_cs_bar_style",
+      "id": "e_3",
       "source": "cs_barfill",
       "target": "cs_bar",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_cs_dotfill_cs_dot1_style",
+      "id": "e_4",
       "source": "cs_dotfill",
       "target": "cs_dot1",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_cs_dot2fill_cs_dot2_style",
+      "id": "e_5",
       "source": "cs_dot2fill",
       "target": "cs_dot2",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_cs_bar_cs_shape_s1",
+      "id": "e_6",
       "source": "cs_bar",
       "target": "cs_shape",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_cs_dot1_cs_shape_s2",
+      "id": "e_7",
       "source": "cs_dot1",
       "target": "cs_shape",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_cs_dot2_cs_shape_s3",
+      "id": "e_8",
       "source": "cs_dot2",
       "target": "cs_shape",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_cs_t_cs_swing_l",
-      "source": "cs_t",
-      "target": "cs_swing",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_cs_swing_cs_rot_angle",
-      "source": "cs_swing",
-      "target": "cs_rot",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-angle"
-    },
-    {
-      "id": "e_cs_shape_cs_rot_layer",
+      "id": "e_9",
       "source": "cs_shape",
       "target": "cs_rot",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_cs_t_cs_slide_l",
-      "source": "cs_t",
-      "target": "cs_slide",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_cs_slide_cs_move_by",
-      "source": "cs_slide",
-      "target": "cs_move",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-by"
-    },
-    {
-      "id": "e_cs_rot_cs_move_layer",
+      "id": "e_10",
       "source": "cs_rot",
       "target": "cs_move",
       "sourceHandle": "out-rotated",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_cs_cam_cs_pick_cond",
+      "id": "e_11",
       "source": "cs_cam",
       "target": "cs_pick",
       "sourceHandle": "out-ready",
       "targetHandle": "in-cond"
     },
     {
-      "id": "e_cs_feed_cs_pick_a",
+      "id": "e_12",
       "source": "cs_feed",
       "target": "cs_pick",
       "sourceHandle": "out-shape",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_cs_move_cs_pick_b",
+      "id": "e_13",
       "source": "cs_move",
       "target": "cs_pick",
       "sourceHandle": "out-translated",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_cs_pick_cs_scan_input",
+      "id": "e_14",
       "source": "cs_pick",
       "target": "cs_scan",
       "sourceHandle": "out-selected",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_cs_scan_cs_r_layers",
+      "id": "e_15",
       "source": "cs_scan",
       "target": "cs_r",
       "sourceHandle": "out-out",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_16",
+      "source": "cs_swing",
+      "target": "cs_rot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_17",
+      "source": "cs_slideX",
+      "target": "cs_slide",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_18",
+      "source": "cs_slide",
+      "target": "cs_move",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-by"
     }
   ]
 }

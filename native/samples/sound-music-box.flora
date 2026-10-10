@@ -16,7 +16,7 @@
         "y": -324
       },
       "params": {
-        "text": "Music Box\n\nA disc music box: pins on a turning disc pluck the comb as they pass it (top right), the inner rings low notes, the outer high. Click on the disc to put in a pin where you click, or click a pin to take it out. New tune (or N) composes another one from noise, C clears the disc; Speed and the Scale are on the canvas.\n\nHow it works: the pins are a State* of (angle on the disc, ring). Every frame an Expression tests which pins crossed the comb's angle since the last frame; their rings become notes through Scale, shared out to three bell voices (two sine partials → Envelope each) that Mix into a reverb. A noise tune: one pin per slot where noise says so, its ring from more noise, quantised to the scale.",
+        "text": "Music Box\n\nA disc music box: pins on a turning disc pluck the comb as they pass it (top right), the inner rings low notes, the outer high. Click on the disc to put in a pin where you click, or click a pin to take it out. New tune (or N) composes another one from noise, C clears the disc; Speed and the Scale are on the canvas.\n\nHow it works: the pins are a State* of (angle on the disc, ring), and Integrate turns the disc at Speed. Plucks finds the pins that crossed the comb since the last frame; their rings become notes through Scale, shared out to three Bells (two sine partials → Envelope each) that Mix into a reverb. Compose makes a tune from noise; Edit pins adds and removes them.",
         "width": 470,
         "height": 260
       }
@@ -25,17 +25,8 @@
       "id": "mx_time",
       "defType": "time/seconds",
       "position": {
-        "x": 42,
-        "y": 162
-      },
-      "params": {}
-    },
-    {
-      "id": "mx_dt",
-      "defType": "time/delta",
-      "position": {
-        "x": 360,
-        "y": 761
+        "x": 588,
+        "y": 364
       },
       "params": {}
     },
@@ -43,17 +34,8 @@
       "id": "mx_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 37,
-        "y": 288
-      },
-      "params": {}
-    },
-    {
-      "id": "mx_mpos",
-      "defType": "vec2/make",
-      "position": {
-        "x": 361,
-        "y": 509
+        "x": 1464,
+        "y": 475
       },
       "params": {}
     },
@@ -62,7 +44,7 @@
       "defType": "input/keyboard",
       "position": {
         "x": 0,
-        "y": 640
+        "y": 600
       },
       "params": {
         "mode": "keys"
@@ -72,44 +54,433 @@
       }
     },
     {
+      "id": "mx_compose",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 827,
+        "y": 411
+      },
+      "params": {
+        "label": "Compose",
+        "width": 3412,
+        "height": 869
+      },
+      "ports": [
+        {
+          "id": "time",
+          "name": "time",
+          "type": "number",
+          "direction": "input",
+          "y": 528
+        },
+        {
+          "id": "new",
+          "name": "new",
+          "type": "boolean",
+          "direction": "input",
+          "y": 401
+        },
+        {
+          "id": "tune",
+          "name": "tune",
+          "type": "vec2",
+          "direction": "output",
+          "y": 154
+        }
+      ],
+      "width": 3412,
+      "height": 869
+    },
+    {
+      "id": "mx_turnNext",
+      "defType": "motion/integrate",
+      "position": {
+        "x": 852,
+        "y": 197
+      },
+      "params": {
+        "valueType": "number",
+        "limit": "none"
+      },
+      "portValues": {
+        "start": 0,
+        "maxDt": 0.1
+      }
+    },
+    {
+      "id": "mx_turn",
+      "defType": "state/spread",
+      "position": {
+        "x": 1144,
+        "y": 56
+      },
+      "params": {},
+      "portValues": {
+        "init": 0
+      }
+    },
+    {
+      "id": "mx_pins",
+      "defType": "state/spread",
+      "position": {
+        "x": 1144,
+        "y": 308
+      },
+      "params": {}
+    },
+    {
+      "id": "mx_where",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1414,
+        "y": 285
+      },
+      "params": {
+        "label": "Pins on the disc",
+        "width": 1413,
+        "height": 516
+      },
+      "ports": [
+        {
+          "id": "pins",
+          "name": "pins",
+          "type": "vec2",
+          "direction": "input",
+          "y": 240
+        },
+        {
+          "id": "turn",
+          "name": "turn",
+          "type": "number",
+          "direction": "input",
+          "y": 116
+        },
+        {
+          "id": "positions",
+          "name": "positions",
+          "type": "vec2",
+          "direction": "output",
+          "y": 180
+        }
+      ],
+      "width": 1413,
+      "height": 516
+    },
+    {
+      "id": "mx_edit",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1733,
+        "y": 401
+      },
+      "params": {
+        "label": "Edit pins",
+        "width": 5205,
+        "height": 1147
+      },
+      "ports": [
+        {
+          "id": "pins",
+          "name": "pins",
+          "type": "vec2",
+          "direction": "input",
+          "y": 320
+        },
+        {
+          "id": "positions",
+          "name": "positions",
+          "type": "vec2",
+          "direction": "input",
+          "y": 717
+        },
+        {
+          "id": "turn",
+          "name": "turn",
+          "type": "number",
+          "direction": "input",
+          "y": 300
+        },
+        {
+          "id": "x",
+          "name": "x",
+          "type": "number",
+          "direction": "input",
+          "y": 640
+        },
+        {
+          "id": "y",
+          "name": "y",
+          "type": "number",
+          "direction": "input",
+          "y": 662
+        },
+        {
+          "id": "pressed",
+          "name": "pressed",
+          "type": "boolean",
+          "direction": "input",
+          "y": 492
+        },
+        {
+          "id": "tune",
+          "name": "tune",
+          "type": "vec2",
+          "direction": "input",
+          "y": 139
+        },
+        {
+          "id": "newTune",
+          "name": "newTune",
+          "type": "boolean",
+          "direction": "input",
+          "y": 119
+        },
+        {
+          "id": "clear",
+          "name": "clear",
+          "type": "boolean",
+          "direction": "input",
+          "y": 169
+        },
+        {
+          "id": "next",
+          "name": "next",
+          "type": "vec2",
+          "direction": "output",
+          "y": 119
+        }
+      ],
+      "width": 5205,
+      "height": 1147
+    },
+    {
+      "id": "mx_combPass",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1441,
+        "y": 89
+      },
+      "params": {
+        "label": "Plucks",
+        "width": 2061,
+        "height": 755
+      },
+      "ports": [
+        {
+          "id": "pins",
+          "name": "pins",
+          "type": "vec2",
+          "direction": "input",
+          "y": 278
+        },
+        {
+          "id": "turn",
+          "name": "turn",
+          "type": "number",
+          "direction": "input",
+          "y": 124
+        },
+        {
+          "id": "turnBefore",
+          "name": "turnBefore",
+          "type": "number",
+          "direction": "input",
+          "y": 416
+        },
+        {
+          "id": "scale",
+          "name": "scale",
+          "type": "string",
+          "direction": "input",
+          "y": 530
+        },
+        {
+          "id": "plucked",
+          "name": "plucked",
+          "type": "boolean",
+          "direction": "output",
+          "y": 124
+        },
+        {
+          "id": "freqs",
+          "name": "freqs",
+          "type": "number",
+          "direction": "output",
+          "y": 321
+        },
+        {
+          "id": "rings",
+          "name": "rings",
+          "type": "number",
+          "direction": "output",
+          "y": 173
+        },
+        {
+          "id": "notes",
+          "name": "notes",
+          "type": "number",
+          "direction": "output",
+          "y": 477
+        }
+      ],
+      "width": 2061,
+      "height": 755
+    },
+    {
+      "id": "mx_voices",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1744,
+        "y": 0
+      },
+      "params": {
+        "label": "Bells",
+        "width": 2715,
+        "height": 1181
+      },
+      "ports": [
+        {
+          "id": "freqs",
+          "name": "freqs",
+          "type": "number",
+          "direction": "input",
+          "y": 525
+        }
+      ],
+      "width": 2715,
+      "height": 1181
+    },
+    {
+      "id": "mx_combDraw",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1741,
+        "y": 274
+      },
+      "params": {
+        "label": "Comb",
+        "width": 4066,
+        "height": 1245
+      },
+      "ports": [
+        {
+          "id": "rings",
+          "name": "rings",
+          "type": "number",
+          "direction": "input",
+          "y": 589
+        },
+        {
+          "id": "time",
+          "name": "time",
+          "type": "number",
+          "direction": "input",
+          "y": 569
+        },
+        {
+          "id": "comb",
+          "name": "comb",
+          "type": "layer",
+          "direction": "output",
+          "y": 485
+        }
+      ],
+      "width": 4066,
+      "height": 1245
+    },
+    {
+      "id": "mx_discDraw",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1746,
+        "y": 104
+      },
+      "params": {
+        "label": "Disc",
+        "width": 2837,
+        "height": 1342
+      },
+      "ports": [
+        {
+          "id": "positions",
+          "name": "positions",
+          "type": "vec2",
+          "direction": "input",
+          "y": 283
+        },
+        {
+          "id": "plucked",
+          "name": "plucked",
+          "type": "boolean",
+          "direction": "input",
+          "y": 492
+        },
+        {
+          "id": "notes",
+          "name": "notes",
+          "type": "number",
+          "direction": "input",
+          "y": 514
+        },
+        {
+          "id": "disc",
+          "name": "disc",
+          "type": "layer",
+          "direction": "output",
+          "y": 642
+        },
+        {
+          "id": "rings",
+          "name": "rings",
+          "type": "layer",
+          "direction": "output",
+          "y": 254
+        },
+        {
+          "id": "pins",
+          "name": "pins",
+          "type": "layer",
+          "direction": "output",
+          "y": 336
+        },
+        {
+          "id": "hub",
+          "name": "hub",
+          "type": "layer",
+          "direction": "output",
+          "y": 903
+        }
+      ],
+      "width": 2837,
+      "height": 1342
+    },
+    {
+      "id": "mx_mpos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 159,
+        "y": 603
+      },
+      "params": {},
+      "parentId": "mx_edit"
+    },
+    {
       "id": "mx_newBang",
       "defType": "io/bang",
       "position": {
-        "x": 0,
-        "y": 1029
+        "x": 271,
+        "y": 563
       },
       "params": {
         "label": "New tune"
       }
     },
     {
-      "id": "mx_newTune",
-      "defType": "math/expression",
-      "position": {
-        "x": 319,
-        "y": 991
-      },
-      "params": {
-        "expr": "b || (hit && k == 0)"
-      }
-    },
-    {
-      "id": "mx_clear",
-      "defType": "math/expression",
-      "position": {
-        "x": 319,
-        "y": 345
-      },
-      "params": {
-        "expr": "hit && k == 1 ? 1 : 0"
-      }
-    },
-    {
       "id": "mx_speed",
       "defType": "io/slider",
       "position": {
-        "x": 319,
-        "y": 865
+        "x": 546,
+        "y": 194
       },
       "params": {
         "value": 0.35,
@@ -119,306 +490,95 @@
       }
     },
     {
-      "id": "mx_turn",
-      "defType": "state/value",
-      "position": {
-        "x": 360,
-        "y": 1177
-      },
-      "params": {},
-      "portValues": {
-        "init": 0
-      }
-    },
-    {
-      "id": "mx_turnNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 721,
-        "y": 883
-      },
-      "params": {
-        "expr": "a + min(d, 0.1) * s"
-      }
-    },
-    {
       "id": "mx_slots",
       "defType": "spread/range",
       "position": {
-        "x": 736,
-        "y": 615
+        "x": 654,
+        "y": 143
       },
       "params": {},
       "portValues": {
         "count": 64
-      }
+      },
+      "parentId": "mx_compose"
     },
     {
       "id": "mx_tuneSeed",
       "defType": "state/value",
       "position": {
-        "x": 360,
-        "y": 635
+        "x": 679,
+        "y": 577
       },
       "params": {},
       "portValues": {
         "init": 3.7
-      }
-    },
-    {
-      "id": "mx_tuneSeedNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 721,
-        "y": 719
       },
-      "params": {
-        "expr": "n ? fract(t * 0.137) * 100 : s"
-      }
-    },
-    {
-      "id": "mx_tunePins",
-      "defType": "math/expression",
-      "position": {
-        "x": 1145,
-        "y": 651
-      },
-      "params": {
-        "expr": "vec2(k / 64 * tau, round(noise(k * 0.21, s) * 21 - 3))"
-      }
-    },
-    {
-      "id": "mx_tuneKeep",
-      "defType": "math/expression",
-      "position": {
-        "x": 1428,
-        "y": 637
-      },
-      "params": {
-        "expr": "noise(k * 0.77 + 9.1, s * 1.3) > 0.47 && q.y >= 0 && q.y < 15 ? 1 : 0"
-      }
+      "parentId": "mx_compose"
     },
     {
       "id": "mx_tune",
       "defType": "spread/sublist",
       "position": {
-        "x": 1702,
-        "y": 592
+        "x": 3137,
+        "y": 99
       },
       "params": {
         "op": "keep-where"
-      }
-    },
-    {
-      "id": "mx_pins",
-      "defType": "state/spread",
-      "position": {
-        "x": 1994,
-        "y": 756
       },
-      "params": {}
-    },
-    {
-      "id": "mx_pinAt",
-      "defType": "math/expression",
-      "position": {
-        "x": 2283,
-        "y": 765
-      },
-      "params": {
-        "expr": "vec2(cos(q.x + a), sin(q.x + a)) * (62 + q.y * 12.5)"
-      }
-    },
-    {
-      "id": "mx_wasPressed",
-      "defType": "state/value",
-      "position": {
-        "x": 360,
-        "y": 219
-      },
-      "params": {},
-      "portValues": {
-        "init": false
-      }
-    },
-    {
-      "id": "mx_click",
-      "defType": "math/expression",
-      "position": {
-        "x": 721,
-        "y": 201
-      },
-      "params": {
-        "expr": "p && !was"
-      }
-    },
-    {
-      "id": "mx_pinDist",
-      "defType": "math/expression",
-      "position": {
-        "x": 2621,
-        "y": 561
-      },
-      "params": {
-        "expr": "distance(q, m)"
-      }
+      "parentId": "mx_compose"
     },
     {
       "id": "mx_nearest",
       "defType": "math/statistics",
       "position": {
-        "x": 2954,
-        "y": 395
+        "x": 719,
+        "y": 714
       },
       "params": {
         "op": "min"
-      }
-    },
-    {
-      "id": "mx_newLane",
-      "defType": "math/expression",
-      "position": {
-        "x": 721,
-        "y": 473
       },
-      "params": {
-        "expr": "round((length(m) - 62) / 12.5)"
-      }
-    },
-    {
-      "id": "mx_newPin",
-      "defType": "math/expression",
-      "position": {
-        "x": 1145,
-        "y": 401
-      },
-      "params": {
-        "expr": "vec2(atan2(m.y, m.x) - a, l)"
-      }
+      "parentId": "mx_edit"
     },
     {
       "id": "mx_withNew",
       "defType": "spread/combine",
       "position": {
-        "x": 2286,
-        "y": 376
+        "x": 1896,
+        "y": 180
       },
       "params": {
         "op": "append"
-      }
+      },
+      "parentId": "mx_edit"
     },
     {
       "id": "mx_pinCount",
       "defType": "spread/count",
       "position": {
-        "x": 2954,
-        "y": 291
+        "x": 133,
+        "y": 351
       },
-      "params": {}
-    },
-    {
-      "id": "mx_keepPin",
-      "defType": "math/expression",
-      "position": {
-        "x": 3426,
-        "y": 192
-      },
-      "params": {
-        "expr": "c ? 0 : (index < n ? (click && d < 10 && distance(q, m) < 10 ? 0 : 1) : (click && (n == 0 || !(d < 10)) && l >= 0 && l < 15 ? 1 : 0))"
-      }
-    },
-    {
-      "id": "mx_withNewAt",
-      "defType": "math/expression",
-      "position": {
-        "x": 2621,
-        "y": 386
-      },
-      "params": {
-        "expr": "vec2(cos(q.x + a), sin(q.x + a)) * (62 + q.y * 12.5)"
-      }
+      "params": {},
+      "parentId": "mx_edit"
     },
     {
       "id": "mx_edited",
       "defType": "spread/sublist",
       "position": {
-        "x": 3939,
-        "y": 67
+        "x": 4660,
+        "y": 155
       },
       "params": {
         "op": "keep-where"
-      }
-    },
-    {
-      "id": "mx_pinsNextBoth",
-      "defType": "spread/combine",
-      "position": {
-        "x": 4412,
-        "y": 0
       },
-      "params": {
-        "op": "concat"
-      }
-    },
-    {
-      "id": "mx_pinsNextFirstCount",
-      "defType": "spread/count",
-      "position": {
-        "x": 4424,
-        "y": 148
-      },
-      "params": {}
-    },
-    {
-      "id": "mx_pinsNextPart",
-      "defType": "math/expression",
-      "position": {
-        "x": 4882,
-        "y": 65
-      },
-      "params": {
-        "expr": "q.x * 0 + ((index < n) == (c > 0.5) ? 1 : 0)"
-      }
-    },
-    {
-      "id": "mx_pinsNext",
-      "defType": "spread/sublist",
-      "position": {
-        "x": 5194,
-        "y": 8
-      },
-      "params": {
-        "op": "keep-where"
-      }
-    },
-    {
-      "id": "mx_plucked",
-      "defType": "math/expression",
-      "position": {
-        "x": 2283,
-        "y": 1240
-      },
-      "params": {
-        "expr": "fract((q.x + a) / tau + 0.25) < fract((q.x + b) / tau + 0.25)"
-      }
-    },
-    {
-      "id": "mx_lanes",
-      "defType": "math/expression",
-      "position": {
-        "x": 2283,
-        "y": 1098
-      },
-      "params": {
-        "expr": "q.y"
-      }
+      "parentId": "mx_edit"
     },
     {
       "id": "mx_scaleSel",
       "defType": "io/select",
       "position": {
-        "x": 2283,
-        "y": 972
+        "x": 1117,
+        "y": 182
       },
       "params": {
         "options": "major,pentatonic,lydian,dorian,minor,harmonic-minor",
@@ -430,8 +590,8 @@
       "id": "mx_scale",
       "defType": "sound/scale",
       "position": {
-        "x": 2625,
-        "y": 1115
+        "x": 696,
+        "y": 407
       },
       "params": {
         "mode": "degree",
@@ -439,157 +599,134 @@
       },
       "portValues": {
         "root": 60
-      }
+      },
+      "parentId": "mx_combPass"
     },
     {
       "id": "mx_pluckFreqs",
       "defType": "spread/sublist",
       "position": {
-        "x": 2942,
-        "y": 859
+        "x": 1786,
+        "y": 284
       },
       "params": {
         "op": "keep-where"
-      }
+      },
+      "parentId": "mx_combPass"
     },
     {
       "id": "mx_pluckLanes",
       "defType": "spread/sublist",
       "position": {
-        "x": 2624,
-        "y": 1609
+        "x": 1786,
+        "y": 136
       },
       "params": {
         "op": "keep-where"
-      }
+      },
+      "parentId": "mx_combPass"
     },
     {
       "id": "mx_pluckCount",
       "defType": "spread/count",
       "position": {
-        "x": 3442,
-        "y": 942
+        "x": 159,
+        "y": 439
       },
-      "params": {}
+      "params": {},
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_bells",
       "defType": "sound/mix",
       "position": {
-        "x": 6024,
-        "y": 797
+        "x": 2028,
+        "y": 336
       },
       "params": {
         "slotCount": 3
       },
       "portValues": {
         "level": 0.5
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_f0",
       "defType": "spread/lookup",
       "position": {
-        "x": 3939,
-        "y": 247
+        "x": 147,
+        "y": 213
       },
       "params": {
         "op": "at"
       },
       "portValues": {
         "index": 0
-      }
-    },
-    {
-      "id": "mx_hit0",
-      "defType": "math/expression",
-      "position": {
-        "x": 3936,
-        "y": 521
       },
-      "params": {
-        "expr": "n > 0"
-      }
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_held0",
       "defType": "state/value",
       "position": {
-        "x": 3977,
-        "y": 395
+        "x": 494,
+        "y": 148
       },
       "params": {},
       "portValues": {
         "init": 440
-      }
-    },
-    {
-      "id": "mx_freq0",
-      "defType": "math/expression",
-      "position": {
-        "x": 4409,
-        "y": 370
       },
-      "params": {
-        "expr": "h ? f : old"
-      }
-    },
-    {
-      "id": "mx_over0",
-      "defType": "math/expression",
-      "position": {
-        "x": 4882,
-        "y": 465
-      },
-      "params": {
-        "expr": "f * 2.76"
-      }
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_fund0",
       "defType": "sound/oscillator",
       "position": {
-        "x": 5195,
-        "y": 394
+        "x": 1233,
+        "y": 40
       },
       "params": {
         "type": "sine"
       },
       "portValues": {
         "amp": 0.6
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_part0",
       "defType": "sound/oscillator",
       "position": {
-        "x": 5195,
-        "y": 542
+        "x": 1233,
+        "y": 188
       },
       "params": {
         "type": "sine"
       },
       "portValues": {
         "amp": 0.18
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_tone0",
       "defType": "sound/mix",
       "position": {
-        "x": 5491,
-        "y": 499
+        "x": 1505,
+        "y": 109
       },
       "params": {
         "slotCount": 2
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_env0",
       "defType": "sound/envelope",
       "position": {
-        "x": 5787,
-        "y": 583
+        "x": 1791,
+        "y": 122
       },
       "params": {},
       "portValues": {
@@ -598,112 +735,85 @@
         "sustain": 0,
         "release": 1.4,
         "level": 0.8
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_f1",
       "defType": "spread/lookup",
       "position": {
-        "x": 3939,
-        "y": 663
+        "x": 147,
+        "y": 543
       },
       "params": {
         "op": "at"
       },
       "portValues": {
         "index": 1
-      }
-    },
-    {
-      "id": "mx_hit1",
-      "defType": "math/expression",
-      "position": {
-        "x": 3936,
-        "y": 937
       },
-      "params": {
-        "expr": "n > 1"
-      }
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_held1",
       "defType": "state/value",
       "position": {
-        "x": 3977,
-        "y": 811
+        "x": 494,
+        "y": 570
       },
       "params": {},
       "portValues": {
         "init": 440
-      }
-    },
-    {
-      "id": "mx_freq1",
-      "defType": "math/expression",
-      "position": {
-        "x": 4409,
-        "y": 760
       },
-      "params": {
-        "expr": "h ? f : old"
-      }
-    },
-    {
-      "id": "mx_over1",
-      "defType": "math/expression",
-      "position": {
-        "x": 4882,
-        "y": 829
-      },
-      "params": {
-        "expr": "f * 2.76"
-      }
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_fund1",
       "defType": "sound/oscillator",
       "position": {
-        "x": 5195,
-        "y": 732
+        "x": 1233,
+        "y": 423
       },
       "params": {
         "type": "sine"
       },
       "portValues": {
         "amp": 0.6
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_part1",
       "defType": "sound/oscillator",
       "position": {
-        "x": 5195,
-        "y": 880
+        "x": 1233,
+        "y": 571
       },
       "params": {
         "type": "sine"
       },
       "portValues": {
         "amp": 0.18
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_tone1",
       "defType": "sound/mix",
       "position": {
-        "x": 5491,
-        "y": 803
+        "x": 1505,
+        "y": 469
       },
       "params": {
         "slotCount": 2
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_env1",
       "defType": "sound/envelope",
       "position": {
-        "x": 5787,
-        "y": 819
+        "x": 1791,
+        "y": 358
       },
       "params": {},
       "portValues": {
@@ -712,112 +822,85 @@
         "sustain": 0,
         "release": 1.4,
         "level": 0.8
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_f2",
       "defType": "spread/lookup",
       "position": {
-        "x": 3939,
-        "y": 1079
+        "x": 147,
+        "y": 691
       },
       "params": {
         "op": "at"
       },
       "portValues": {
         "index": 2
-      }
-    },
-    {
-      "id": "mx_hit2",
-      "defType": "math/expression",
-      "position": {
-        "x": 3936,
-        "y": 1353
       },
-      "params": {
-        "expr": "n > 2"
-      }
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_held2",
       "defType": "state/value",
       "position": {
-        "x": 3977,
-        "y": 1227
+        "x": 494,
+        "y": 844
       },
       "params": {},
       "portValues": {
         "init": 440
-      }
-    },
-    {
-      "id": "mx_freq2",
-      "defType": "math/expression",
-      "position": {
-        "x": 4409,
-        "y": 1144
       },
-      "params": {
-        "expr": "h ? f : old"
-      }
-    },
-    {
-      "id": "mx_over2",
-      "defType": "math/expression",
-      "position": {
-        "x": 4882,
-        "y": 1181
-      },
-      "params": {
-        "expr": "f * 2.76"
-      }
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_fund2",
       "defType": "sound/oscillator",
       "position": {
-        "x": 5195,
-        "y": 1053
+        "x": 1233,
+        "y": 719
       },
       "params": {
         "type": "sine"
       },
       "portValues": {
         "amp": 0.6
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_part2",
       "defType": "sound/oscillator",
       "position": {
-        "x": 5195,
-        "y": 1201
+        "x": 1233,
+        "y": 867
       },
       "params": {
         "type": "sine"
       },
       "portValues": {
         "amp": 0.18
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_tone2",
       "defType": "sound/mix",
       "position": {
-        "x": 5491,
-        "y": 1096
+        "x": 1505,
+        "y": 739
       },
       "params": {
         "slotCount": 2
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_env2",
       "defType": "sound/envelope",
       "position": {
-        "x": 5787,
-        "y": 1055
+        "x": 1791,
+        "y": 594
       },
       "params": {},
       "portValues": {
@@ -826,158 +909,111 @@
         "sustain": 0,
         "release": 1.4,
         "level": 0.8
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_reverb",
       "defType": "sound/reverb",
       "position": {
-        "x": 6288,
-        "y": 776
+        "x": 2292,
+        "y": 314
       },
       "params": {},
       "portValues": {
         "seconds": 2.8,
         "decay": 2.2,
         "wet": 0.3
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_out",
       "defType": "sound/output",
       "position": {
-        "x": 6504,
-        "y": 776
+        "x": 2508,
+        "y": 314
       },
       "params": {},
       "portValues": {
         "volume": 0.7
-      }
+      },
+      "parentId": "mx_voices"
     },
     {
       "id": "mx_teeth",
       "defType": "spread/range",
       "position": {
-        "x": 15,
-        "y": 1526
+        "x": 422,
+        "y": 330
       },
       "params": {},
       "portValues": {
         "count": 15
-      }
+      },
+      "parentId": "mx_combDraw"
     },
     {
       "id": "mx_lane0",
       "defType": "spread/lookup",
       "position": {
-        "x": 2942,
-        "y": 1647
+        "x": 148,
+        "y": 375
       },
       "params": {
         "op": "at"
       },
       "portValues": {
         "index": 0
-      }
+      },
+      "parentId": "mx_combDraw"
     },
     {
       "id": "mx_lane1",
       "defType": "spread/lookup",
       "position": {
-        "x": 2942,
-        "y": 1795
+        "x": 148,
+        "y": 523
       },
       "params": {
         "op": "at"
       },
       "portValues": {
         "index": 1
-      }
+      },
+      "parentId": "mx_combDraw"
     },
     {
       "id": "mx_lane2",
       "defType": "spread/lookup",
       "position": {
-        "x": 2942,
-        "y": 1943
+        "x": 148,
+        "y": 671
       },
       "params": {
         "op": "at"
       },
       "portValues": {
         "index": 2
-      }
+      },
+      "parentId": "mx_combDraw"
     },
     {
       "id": "mx_toothTimes",
       "defType": "state/spread",
       "position": {
-        "x": 2966,
-        "y": 2091
+        "x": 1270,
+        "y": 697
       },
-      "params": {}
-    },
-    {
-      "id": "mx_toothInit",
-      "defType": "math/expression",
-      "position": {
-        "x": 2621,
-        "y": 1935
-      },
-      "params": {
-        "expr": "k * 0 - 10"
-      }
-    },
-    {
-      "id": "mx_toothNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 3426,
-        "y": 1816
-      },
-      "params": {
-        "expr": "k == a || k == b || k == c ? t : old"
-      }
-    },
-    {
-      "id": "mx_toothAt",
-      "defType": "math/expression",
-      "position": {
-        "x": 3936,
-        "y": 1719
-      },
-      "params": {
-        "expr": "vec2(l / 2 + 4, -(62 + k * 12.5) + 2.5 * exp(-(t - p) * 5) * sin((t - p) * 70))"
-      }
-    },
-    {
-      "id": "mx_toothCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 3936,
-        "y": 1927
-      },
-      "params": {
-        "expr": "mix(rgb(0.72, 0.62, 0.42), rgb(1, 0.95, 0.75), exp(-(t - p) * 3))"
-      }
-    },
-    {
-      "id": "mx_toothLen",
-      "defType": "math/expression",
-      "position": {
-        "x": 3426,
-        "y": 1674
-      },
-      "params": {
-        "expr": "150 - k * 4"
-      }
+      "params": {},
+      "parentId": "mx_combDraw"
     },
     {
       "id": "mx_toothLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 4232,
-        "y": 1860
+        "x": 3151,
+        "y": 289
       },
       "params": {
         "width": 522,
@@ -1015,7 +1051,8 @@
         }
       ],
       "width": 522,
-      "height": 250
+      "height": 250,
+      "parentId": "mx_combDraw"
     },
     {
       "id": "mx_toothFill",
@@ -1044,41 +1081,32 @@
       "id": "mx_combBackX",
       "defType": "data/csv-inline",
       "position": {
-        "x": 1,
-        "y": 1788
+        "x": 145,
+        "y": 819
       },
       "params": {
         "data": "154,98,132,188"
-      }
+      },
+      "parentId": "mx_combDraw"
     },
     {
       "id": "mx_combBackY",
       "defType": "data/csv-inline",
       "position": {
-        "x": 1,
-        "y": 1892
+        "x": 145,
+        "y": 923
       },
       "params": {
         "data": "-55,-244.0,-244.0,-55"
-      }
-    },
-    {
-      "id": "mx_combBackPts",
-      "defType": "math/expression",
-      "position": {
-        "x": 319,
-        "y": 1791
       },
-      "params": {
-        "expr": "vec2(x, y)"
-      }
+      "parentId": "mx_combDraw"
     },
     {
       "id": "mx_combBackFill",
       "defType": "style/fill",
       "position": {
-        "x": 336,
-        "y": 1955
+        "x": 424,
+        "y": 953
       },
       "params": {},
       "portValues": {
@@ -1088,87 +1116,82 @@
           "b": 0.35294117647058826,
           "a": 1.0
         }
-      }
+      },
+      "parentId": "mx_combDraw"
     },
     {
       "id": "mx_combBack",
       "defType": "draw/polygon",
       "position": {
-        "x": 754,
-        "y": 1891
+        "x": 746,
+        "y": 835
       },
       "params": {},
       "portValues": {
         "closed": true
-      }
+      },
+      "parentId": "mx_combDraw"
     },
     {
       "id": "mx_comb",
       "defType": "transform/group",
       "position": {
-        "x": 4882,
-        "y": 2024
+        "x": 3786,
+        "y": 448
       },
       "params": {
         "slotCount": 2
-      }
+      },
+      "parentId": "mx_combDraw"
     },
     {
       "id": "mx_discFill",
       "defType": "style/gradient",
       "position": {
-        "x": 4417,
-        "y": 1400
+        "x": 419,
+        "y": 702
       },
       "params": {
         "mode": "radial",
         "units": "shape"
-      }
+      },
+      "parentId": "mx_discDraw"
     },
     {
       "id": "mx_discCols",
       "defType": "color/palette",
       "position": {
-        "x": 3936,
-        "y": 1495
+        "x": 139,
+        "y": 751
       },
       "params": {
         "stopCount": 3,
         "c0": "#4a3420",
         "c1": "#2d1f13",
         "c2": "#1a120b"
-      }
+      },
+      "parentId": "mx_discDraw"
     },
     {
       "id": "mx_disc",
       "defType": "draw/ellipse",
       "position": {
-        "x": 4911,
-        "y": 1404
+        "x": 708,
+        "y": 618
       },
       "params": {},
       "portValues": {
         "w": 535.0,
         "h": 535.0
-      }
-    },
-    {
-      "id": "mx_ringSizes",
-      "defType": "math/expression",
-      "position": {
-        "x": 319,
-        "y": 1303
       },
-      "params": {
-        "expr": "(62 + k * 12.5) * 2"
-      }
+      "parentId": "mx_discDraw"
     },
     {
       "id": "mx_ringStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 11,
-        "y": 1356
+        "x": 689,
+        "y": 188
       },
       "params": {},
       "portValues": {
@@ -1179,23 +1202,25 @@
           "a": 0.13
         },
         "width": 1
-      }
+      },
+      "parentId": "mx_discDraw"
     },
     {
       "id": "mx_ringNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 359,
-        "y": 1445
+        "x": 988,
+        "y": 202
       },
-      "params": {}
+      "params": {},
+      "parentId": "mx_discDraw"
     },
     {
       "id": "mx_ringLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 630,
-        "y": 1220
+        "x": 1226,
+        "y": 79
       },
       "params": {
         "width": 350,
@@ -1219,7 +1244,8 @@
         }
       ],
       "width": 350,
-      "height": 224
+      "height": 224,
+      "parentId": "mx_discDraw"
     },
     {
       "id": "mx_ring",
@@ -1232,33 +1258,11 @@
       "parentId": "mx_ringLoop"
     },
     {
-      "id": "mx_pinCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 2939,
-        "y": 1378
-      },
-      "params": {
-        "expr": "hsl(fract(0.08 + i / 7 * 0.5), 0.7, h ? 0.85 : 0.6)"
-      }
-    },
-    {
-      "id": "mx_pinSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 2939,
-        "y": 1236
-      },
-      "params": {
-        "expr": "h ? 17 : 11"
-      }
-    },
-    {
       "id": "mx_pinLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 3247,
-        "y": 1345
+        "x": 1928,
+        "y": 267
       },
       "params": {
         "width": 526,
@@ -1296,7 +1300,8 @@
         }
       ],
       "width": 526,
-      "height": 281
+      "height": 281,
+      "parentId": "mx_discDraw"
     },
     {
       "id": "mx_pinFill",
@@ -1322,8 +1327,8 @@
       "id": "mx_pinGlow",
       "defType": "gpu/effect",
       "position": {
-        "x": 4881,
-        "y": 1596
+        "x": 2554,
+        "y": 298
       },
       "params": {
         "mode": "glow"
@@ -1331,14 +1336,15 @@
       "portValues": {
         "radius": 8,
         "intensity": 1.0
-      }
+      },
+      "parentId": "mx_discDraw"
     },
     {
       "id": "mx_hubFill",
       "defType": "style/fill",
       "position": {
-        "x": 4426,
-        "y": 1712
+        "x": 156,
+        "y": 1070
       },
       "params": {},
       "portValues": {
@@ -1348,27 +1354,29 @@
           "b": 0.4196078431372549,
           "a": 1.0
         }
-      }
+      },
+      "parentId": "mx_discDraw"
     },
     {
       "id": "mx_hub",
       "defType": "draw/ellipse",
       "position": {
-        "x": 4911,
-        "y": 1832
+        "x": 440,
+        "y": 982
       },
       "params": {},
       "portValues": {
         "w": 40,
         "h": 40
-      }
+      },
+      "parentId": "mx_discDraw"
     },
     {
       "id": "mx_help",
       "defType": "value/string",
       "position": {
         "x": 5,
-        "y": 2073
+        "y": 363
       },
       "params": {
         "value": "click the disc to add or remove pins · N new tune · C clear"
@@ -1379,7 +1387,7 @@
       "defType": "style/fill",
       "position": {
         "x": 11,
-        "y": 2177
+        "y": 467
       },
       "params": {},
       "portValues": {
@@ -1395,8 +1403,8 @@
       "id": "mx_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 359,
-        "y": 2081
+        "x": 310,
+        "y": 371
       },
       "params": {
         "size": 13,
@@ -1413,8 +1421,8 @@
       "id": "mx_scene",
       "defType": "transform/group",
       "position": {
-        "x": 5191,
-        "y": 1705
+        "x": 1993,
+        "y": 151
       },
       "params": {
         "slotCount": 6
@@ -1424,8 +1432,8 @@
       "id": "mx_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 5471,
-        "y": 1706
+        "x": 2257,
+        "y": 151
       },
       "params": {
         "width": 640,
@@ -1439,547 +1447,1812 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "mx_keyN",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 274,
+        "y": 667
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      }
+    },
+    {
+      "id": "mx_newTune",
+      "defType": "logic/logic",
+      "position": {
+        "x": 561,
+        "y": 544
+      },
+      "params": {
+        "op": "or"
+      }
+    },
+    {
+      "id": "mx_clear",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1431,
+        "y": 655
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 1
+      }
+    },
+    {
+      "id": "mx_composeNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 719
+      },
+      "params": {
+        "text": "A tune is one pin per slot (64 round the disc) where noise is high enough, its ring from more noise, so the same seed gives the same tune. New tune (or N) takes a new seed from the clock; C clears the disc.",
+        "width": 300,
+        "height": 110
+      },
+      "parentId": "mx_compose"
+    },
+    {
+      "id": "mx_seedT",
+      "defType": "math/math",
+      "position": {
+        "x": 128,
+        "y": 469
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 0.137
+      }
+    },
+    {
+      "id": "mx_seedFract",
+      "defType": "math/math",
+      "position": {
+        "x": 392,
+        "y": 449
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "mx_compose"
+    },
+    {
+      "id": "mx_seedNew",
+      "defType": "math/math",
+      "position": {
+        "x": 639,
+        "y": 429
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 100
+      }
+    },
+    {
+      "id": "mx_tuneSeedNext",
+      "defType": "logic/select",
+      "position": {
+        "x": 957,
+        "y": 421
+      },
+      "params": {},
+      "parentId": "mx_compose"
+    },
+    {
+      "id": "mx_slotTurn",
+      "defType": "math/math",
+      "position": {
+        "x": 1762,
+        "y": 40
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 64
+      }
+    },
+    {
+      "id": "mx_slotAngle",
+      "defType": "math/math",
+      "position": {
+        "x": 2033,
+        "y": 56
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 6.283185307179586
+      }
+    },
+    {
+      "id": "mx_ringNoiseX",
+      "defType": "math/math",
+      "position": {
+        "x": 925,
+        "y": 273
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 0.21
+      }
+    },
+    {
+      "id": "mx_ringNoise",
+      "defType": "noise/noise",
+      "position": {
+        "x": 1216,
+        "y": 398
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "mx_compose"
+    },
+    {
+      "id": "mx_ringSpan",
+      "defType": "math/math",
+      "position": {
+        "x": 1490,
+        "y": 410
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 21
+      }
+    },
+    {
+      "id": "mx_ringShift",
+      "defType": "math/math",
+      "position": {
+        "x": 1762,
+        "y": 338
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 3
+      }
+    },
+    {
+      "id": "mx_slotRing",
+      "defType": "math/math",
+      "position": {
+        "x": 2042,
+        "y": 266
+      },
+      "params": {
+        "op": "round"
+      },
+      "parentId": "mx_compose"
+    },
+    {
+      "id": "mx_tunePins",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2368,
+        "y": 94
+      },
+      "params": {},
+      "parentId": "mx_compose"
+    },
+    {
+      "id": "mx_keepNoiseX1",
+      "defType": "math/math",
+      "position": {
+        "x": 925,
+        "y": 125
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 0.77
+      }
+    },
+    {
+      "id": "mx_keepNoiseX",
+      "defType": "math/math",
+      "position": {
+        "x": 1215,
+        "y": 102
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 9.1
+      }
+    },
+    {
+      "id": "mx_keepNoiseY",
+      "defType": "math/math",
+      "position": {
+        "x": 1215,
+        "y": 250
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 1.3
+      }
+    },
+    {
+      "id": "mx_keepNoise",
+      "defType": "noise/noise",
+      "position": {
+        "x": 1491,
+        "y": 108
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "mx_compose"
+    },
+    {
+      "id": "mx_loud",
+      "defType": "logic/compare",
+      "position": {
+        "x": 2610,
+        "y": 138
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 0.47
+      }
+    },
+    {
+      "id": "mx_ringIn",
+      "defType": "logic/compare",
+      "position": {
+        "x": 2320,
+        "y": 220
+      },
+      "params": {
+        "op": "greater-equal"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "mx_ringBelow",
+      "defType": "logic/compare",
+      "position": {
+        "x": 2320,
+        "y": 368
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "mx_compose",
+      "portValues": {
+        "b": 15
+      }
+    },
+    {
+      "id": "mx_onDisc",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2631,
+        "y": 286
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "mx_compose"
+    },
+    {
+      "id": "mx_tuneKeep",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2898,
+        "y": 167
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "mx_compose"
+    },
+    {
+      "id": "mx_whereNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 133,
+        "y": 386
+      },
+      "params": {
+        "text": "A pin is (angle on the disc, ring). Turned with the disc, it sits at angle + turn, 62 px out plus 12.5 px a ring. Take keeps the list empty when there are no pins.",
+        "width": 300,
+        "height": 90
+      },
+      "parentId": "mx_where"
+    },
+    {
+      "id": "mx_pinParts",
+      "defType": "vec2/split",
+      "position": {
+        "x": 159,
+        "y": 140
+      },
+      "params": {},
+      "parentId": "mx_where"
+    },
+    {
+      "id": "mx_pinAngle",
+      "defType": "math/math",
+      "position": {
+        "x": 377,
+        "y": 40
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_where"
+    },
+    {
+      "id": "mx_pinRingOut",
+      "defType": "math/math",
+      "position": {
+        "x": 377,
+        "y": 188
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_where",
+      "portValues": {
+        "b": 12.5
+      }
+    },
+    {
+      "id": "mx_pinRadius",
+      "defType": "math/math",
+      "position": {
+        "x": 646,
+        "y": 136
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_where",
+      "portValues": {
+        "a": 62
+      }
+    },
+    {
+      "id": "mx_pinPoint",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 915,
+        "y": 106
+      },
+      "params": {},
+      "parentId": "mx_where"
+    },
+    {
+      "id": "mx_pinCount2",
+      "defType": "spread/count",
+      "position": {
+        "x": 133,
+        "y": 266
+      },
+      "params": {},
+      "parentId": "mx_where"
+    },
+    {
+      "id": "mx_pinAt",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 1139,
+        "y": 143
+      },
+      "params": {
+        "op": "take"
+      },
+      "parentId": "mx_where"
+    },
+    {
+      "id": "mx_editNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 133,
+        "y": 967
+      },
+      "params": {
+        "text": "A click within 10 px of a pin takes it out. A click anywhere else on the rings adds a pin there: its ring from the distance to the centre, its angle on the disc from the click's angle less the turn. The new pin is appended and every pin is tested; the ones that stay make the next list. A new tune replaces the list, C empties it.",
+        "width": 320,
+        "height": 140
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_click",
+      "defType": "io/edge",
+      "position": {
+        "x": 155,
+        "y": 455
+      },
+      "params": {
+        "mode": "rising",
+        "threshold": 0.5
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_pinDist",
+      "defType": "vec2/math",
+      "position": {
+        "x": 416,
+        "y": 659
+      },
+      "params": {
+        "op": "distance"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_clickReach",
+      "defType": "vec2/math",
+      "position": {
+        "x": 416,
+        "y": 533
+      },
+      "params": {
+        "op": "length"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_clickOut",
+      "defType": "math/math",
+      "position": {
+        "x": 704,
+        "y": 522
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_edit",
+      "portValues": {
+        "b": 62
+      }
+    },
+    {
+      "id": "mx_clickRingF",
+      "defType": "math/math",
+      "position": {
+        "x": 986,
+        "y": 511
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_edit",
+      "portValues": {
+        "b": 12.5
+      }
+    },
+    {
+      "id": "mx_newLane",
+      "defType": "math/math",
+      "position": {
+        "x": 1284,
+        "y": 500
+      },
+      "params": {
+        "op": "round"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_clickAngle",
+      "defType": "vec2/math",
+      "position": {
+        "x": 416,
+        "y": 247
+      },
+      "params": {
+        "op": "heading"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_newAngle",
+      "defType": "math/math",
+      "position": {
+        "x": 704,
+        "y": 246
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_newPin",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1629,
+        "y": 242
+      },
+      "params": {},
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_candParts",
+      "defType": "vec2/split",
+      "position": {
+        "x": 2204,
+        "y": 327
+      },
+      "params": {},
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_candAngle",
+      "defType": "math/math",
+      "position": {
+        "x": 2431,
+        "y": 310
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_candRingOut",
+      "defType": "math/math",
+      "position": {
+        "x": 2431,
+        "y": 458
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_edit",
+      "portValues": {
+        "b": 12.5
+      }
+    },
+    {
+      "id": "mx_candRadius",
+      "defType": "math/math",
+      "position": {
+        "x": 2706,
+        "y": 403
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_edit",
+      "portValues": {
+        "a": 62
+      }
+    },
+    {
+      "id": "mx_withNewAt",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 2982,
+        "y": 370
+      },
+      "params": {},
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_candDist",
+      "defType": "vec2/math",
+      "position": {
+        "x": 3205,
+        "y": 399
+      },
+      "params": {
+        "op": "distance"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_closeToPin",
+      "defType": "logic/compare",
+      "position": {
+        "x": 3486,
+        "y": 365
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "mx_edit",
+      "portValues": {
+        "b": 10
+      }
+    },
+    {
+      "id": "mx_removeThis",
+      "defType": "logic/logic",
+      "position": {
+        "x": 3768,
+        "y": 304
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_pinStays",
+      "defType": "logic/logic",
+      "position": {
+        "x": 4009,
+        "y": 309
+      },
+      "params": {
+        "op": "not"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_noPins",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1268,
+        "y": 677
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "mx_edit",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "mx_nearAPin",
+      "defType": "logic/compare",
+      "position": {
+        "x": 979,
+        "y": 769
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "mx_edit",
+      "portValues": {
+        "b": 10
+      }
+    },
+    {
+      "id": "mx_awayFromPins",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1289,
+        "y": 825
+      },
+      "params": {
+        "op": "not"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_room",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1602,
+        "y": 792
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_placeClick",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1908,
+        "y": 491
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_laneIn",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1581,
+        "y": 496
+      },
+      "params": {
+        "op": "greater-equal"
+      },
+      "parentId": "mx_edit",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "mx_laneBelow",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1581,
+        "y": 644
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "mx_edit",
+      "portValues": {
+        "b": 15
+      }
+    },
+    {
+      "id": "mx_laneOk",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1908,
+        "y": 639
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_addNew",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2176,
+        "y": 554
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_candCount",
+      "defType": "spread/count",
+      "position": {
+        "x": 2177,
+        "y": 191
+      },
+      "params": {},
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_candIdx",
+      "defType": "spread/range",
+      "position": {
+        "x": 2446,
+        "y": 174
+      },
+      "params": {},
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_isOld",
+      "defType": "logic/compare",
+      "position": {
+        "x": 2700,
+        "y": 179
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_keepOne",
+      "defType": "logic/select",
+      "position": {
+        "x": 4251,
+        "y": 284
+      },
+      "params": {},
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_keepPin",
+      "defType": "logic/select",
+      "position": {
+        "x": 4456,
+        "y": 217
+      },
+      "params": {},
+      "parentId": "mx_edit",
+      "portValues": {
+        "a": false
+      }
+    },
+    {
+      "id": "mx_pinsNext",
+      "defType": "logic/switch",
+      "position": {
+        "x": 4922,
+        "y": 40
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 1
+      },
+      "parentId": "mx_edit"
+    },
+    {
+      "id": "mx_plucksNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 133,
+        "y": 615
+      },
+      "params": {
+        "text": "The comb sits a quarter turn round. A pin passes it when its turn fraction (angle / τ + ¼, wrapped) drops between the last frame and this one. Its ring is its note: a degree of the Scale from middle C.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "mx_combPass"
+    },
+    {
+      "id": "mx_pluckParts",
+      "defType": "vec2/split",
+      "position": {
+        "x": 159,
+        "y": 178
+      },
+      "params": {},
+      "parentId": "mx_combPass"
+    },
+    {
+      "id": "mx_angleNow",
+      "defType": "math/math",
+      "position": {
+        "x": 393,
+        "y": 40
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combPass"
+    },
+    {
+      "id": "mx_turnsNow",
+      "defType": "math/math",
+      "position": {
+        "x": 693,
+        "y": 111
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combPass",
+      "portValues": {
+        "b": 6.283185307179586
+      }
+    },
+    {
+      "id": "mx_quarterNow",
+      "defType": "math/math",
+      "position": {
+        "x": 962,
+        "y": 120
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combPass",
+      "portValues": {
+        "b": 0.25
+      }
+    },
+    {
+      "id": "mx_fracNow",
+      "defType": "math/math",
+      "position": {
+        "x": 1231,
+        "y": 134
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "mx_combPass"
+    },
+    {
+      "id": "mx_angleBefore",
+      "defType": "math/math",
+      "position": {
+        "x": 393,
+        "y": 336
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combPass"
+    },
+    {
+      "id": "mx_turnsBefore",
+      "defType": "math/math",
+      "position": {
+        "x": 693,
+        "y": 259
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combPass",
+      "portValues": {
+        "b": 6.283185307179586
+      }
+    },
+    {
+      "id": "mx_quarterBefore",
+      "defType": "math/math",
+      "position": {
+        "x": 962,
+        "y": 268
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combPass",
+      "portValues": {
+        "b": 0.25
+      }
+    },
+    {
+      "id": "mx_fracBefore",
+      "defType": "math/math",
+      "position": {
+        "x": 1231,
+        "y": 260
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "mx_combPass"
+    },
+    {
+      "id": "mx_plucked",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1486,
+        "y": 169
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "mx_combPass"
+    },
+    {
+      "id": "mx_pinCount3",
+      "defType": "spread/count",
+      "position": {
+        "x": 133,
+        "y": 304
+      },
+      "params": {},
+      "parentId": "mx_combPass"
+    },
+    {
+      "id": "mx_lanes",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 396,
+        "y": 188
+      },
+      "params": {
+        "op": "take"
+      },
+      "parentId": "mx_combPass"
+    },
+    {
+      "id": "mx_bellsNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 147,
+        "y": 1031
+      },
+      "params": {
+        "text": "Up to three pins can ring at once: voice i plays the i-th plucked note. Each holds its frequency between plucks and is two sine partials (×1 and ×2.76, a bell's) through an envelope, mixed into one reverb.",
+        "width": 300,
+        "height": 110
+      },
+      "parentId": "mx_voices"
+    },
+    {
+      "id": "mx_hit0",
+      "defType": "logic/compare",
+      "position": {
+        "x": 447,
+        "y": 274
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "mx_voices",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "mx_freq0",
+      "defType": "logic/select",
+      "position": {
+        "x": 746,
+        "y": 124
+      },
+      "params": {},
+      "parentId": "mx_voices"
+    },
+    {
+      "id": "mx_over0",
+      "defType": "math/math",
+      "position": {
+        "x": 958,
+        "y": 156
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_voices",
+      "portValues": {
+        "b": 2.76
+      }
+    },
+    {
+      "id": "mx_hit1",
+      "defType": "logic/compare",
+      "position": {
+        "x": 447,
+        "y": 422
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "mx_voices",
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "mx_freq1",
+      "defType": "logic/select",
+      "position": {
+        "x": 746,
+        "y": 486
+      },
+      "params": {},
+      "parentId": "mx_voices"
+    },
+    {
+      "id": "mx_over1",
+      "defType": "math/math",
+      "position": {
+        "x": 958,
+        "y": 529
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_voices",
+      "portValues": {
+        "b": 2.76
+      }
+    },
+    {
+      "id": "mx_hit2",
+      "defType": "logic/compare",
+      "position": {
+        "x": 447,
+        "y": 696
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "mx_voices",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "mx_freq2",
+      "defType": "logic/select",
+      "position": {
+        "x": 746,
+        "y": 766
+      },
+      "params": {},
+      "parentId": "mx_voices"
+    },
+    {
+      "id": "mx_over2",
+      "defType": "math/math",
+      "position": {
+        "x": 958,
+        "y": 817
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_voices",
+      "portValues": {
+        "b": 2.76
+      }
+    },
+    {
+      "id": "mx_combNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 145,
+        "y": 1095
+      },
+      "params": {
+        "text": "Fifteen teeth, one per ring, shorter outwards. A State* keeps when each was last plucked (by any of the first three plucks this frame); since then it wobbles (a boing envelope) and glows from cream back to brass (a decay envelope).",
+        "width": 300,
+        "height": 110
+      },
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_toothInit",
+      "defType": "spread/repeat",
+      "position": {
+        "x": 1002,
+        "y": 733
+      },
+      "params": {},
+      "parentId": "mx_combDraw",
+      "portValues": {
+        "source": -10,
+        "count": 15
+      }
+    },
+    {
+      "id": "mx_laneNum0",
+      "defType": "convert/convert",
+      "position": {
+        "x": 420,
+        "y": 434
+      },
+      "params": {
+        "to": "number"
+      },
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_toothIs0",
+      "defType": "logic/compare",
+      "position": {
+        "x": 707,
+        "y": 344
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_laneNum1",
+      "defType": "convert/convert",
+      "position": {
+        "x": 420,
+        "y": 560
+      },
+      "params": {
+        "to": "number"
+      },
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_toothIs1",
+      "defType": "logic/compare",
+      "position": {
+        "x": 707,
+        "y": 492
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_laneNum2",
+      "defType": "convert/convert",
+      "position": {
+        "x": 420,
+        "y": 686
+      },
+      "params": {
+        "to": "number"
+      },
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_toothIs2",
+      "defType": "logic/compare",
+      "position": {
+        "x": 707,
+        "y": 640
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_toothHit01",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1003,
+        "y": 442
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_toothHit",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1257,
+        "y": 535
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_toothNext",
+      "defType": "logic/select",
+      "position": {
+        "x": 1502,
+        "y": 591
+      },
+      "params": {},
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_toothAge",
+      "defType": "math/math",
+      "position": {
+        "x": 1711,
+        "y": 496
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_toothShorter",
+      "defType": "math/math",
+      "position": {
+        "x": 1711,
+        "y": 304
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combDraw",
+      "portValues": {
+        "b": 4
+      }
+    },
+    {
+      "id": "mx_toothLen",
+      "defType": "math/math",
+      "position": {
+        "x": 1995,
+        "y": 268
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combDraw",
+      "portValues": {
+        "a": 150
+      }
+    },
+    {
+      "id": "mx_toothHalf",
+      "defType": "math/math",
+      "position": {
+        "x": 2302,
+        "y": 40
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combDraw",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "mx_toothX",
+      "defType": "math/math",
+      "position": {
+        "x": 2589,
+        "y": 92
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combDraw",
+      "portValues": {
+        "b": 4
+      }
+    },
+    {
+      "id": "mx_toothRingOut",
+      "defType": "math/math",
+      "position": {
+        "x": 1711,
+        "y": 156
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combDraw",
+      "portValues": {
+        "b": 12.5
+      }
+    },
+    {
+      "id": "mx_toothRadius",
+      "defType": "math/math",
+      "position": {
+        "x": 1995,
+        "y": 120
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combDraw",
+      "portValues": {
+        "a": 62
+      }
+    },
+    {
+      "id": "mx_toothUp",
+      "defType": "math/math",
+      "position": {
+        "x": 2311,
+        "y": 188
+      },
+      "params": {
+        "op": "negate",
+        "valueType": "number"
+      },
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_toothBoing",
+      "defType": "motion/envelope",
+      "position": {
+        "x": 1983,
+        "y": 416
+      },
+      "params": {
+        "shape": "boing",
+        "from": "age"
+      },
+      "parentId": "mx_combDraw",
+      "portValues": {
+        "frequency": 11.140846016432674,
+        "time": 0.9210340371976183
+      }
+    },
+    {
+      "id": "mx_toothWobble",
+      "defType": "math/math",
+      "position": {
+        "x": 2302,
+        "y": 314
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combDraw",
+      "portValues": {
+        "a": 2.5
+      }
+    },
+    {
+      "id": "mx_toothY",
+      "defType": "math/math",
+      "position": {
+        "x": 2589,
+        "y": 240
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_toothAt",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2918,
+        "y": 213
+      },
+      "params": {},
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_toothGlow",
+      "defType": "motion/envelope",
+      "position": {
+        "x": 2577,
+        "y": 496
+      },
+      "params": {
+        "shape": "decay",
+        "from": "age"
+      },
+      "parentId": "mx_combDraw",
+      "portValues": {
+        "time": 1.5350567286626973
+      }
+    },
+    {
+      "id": "mx_toothCol",
+      "defType": "color/lerp",
+      "position": {
+        "x": 2883,
+        "y": 431
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "parentId": "mx_combDraw",
+      "portValues": {
+        "a": {
+          "r": 0.72,
+          "g": 0.62,
+          "b": 0.42,
+          "a": 1.0
+        },
+        "b": {
+          "r": 1,
+          "g": 0.95,
+          "b": 0.75,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "mx_combBackPts",
+      "defType": "vec2/make",
+      "position": {
+        "x": 448,
+        "y": 827
+      },
+      "params": {},
+      "parentId": "mx_combDraw"
+    },
+    {
+      "id": "mx_discNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 139,
+        "y": 1212
+      },
+      "params": {
+        "text": "The wooden disc with faint guides for its 15 rings, the pins coloured by their note's place in the scale (lighter and bigger while they ring), and the brass hub.",
+        "width": 300,
+        "height": 90
+      },
+      "parentId": "mx_discDraw"
+    },
+    {
+      "id": "mx_ringIdx",
+      "defType": "spread/range",
+      "position": {
+        "x": 154,
+        "y": 107
+      },
+      "params": {},
+      "parentId": "mx_discDraw",
+      "portValues": {
+        "count": 15
+      }
+    },
+    {
+      "id": "mx_ringStep",
+      "defType": "math/math",
+      "position": {
+        "x": 410,
+        "y": 85
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_discDraw",
+      "portValues": {
+        "b": 12.5
+      }
+    },
+    {
+      "id": "mx_ringRadius",
+      "defType": "math/math",
+      "position": {
+        "x": 678,
+        "y": 40
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_discDraw",
+      "portValues": {
+        "a": 62
+      }
+    },
+    {
+      "id": "mx_ringSizes",
+      "defType": "math/math",
+      "position": {
+        "x": 948,
+        "y": 54
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_discDraw",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "mx_hueStep",
+      "defType": "math/math",
+      "position": {
+        "x": 139,
+        "y": 455
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_discDraw",
+      "portValues": {
+        "b": 7
+      }
+    },
+    {
+      "id": "mx_hueHalf",
+      "defType": "math/math",
+      "position": {
+        "x": 410,
+        "y": 456
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_discDraw",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "mx_hueShift",
+      "defType": "math/math",
+      "position": {
+        "x": 678,
+        "y": 435
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_discDraw",
+      "portValues": {
+        "a": 0.08
+      }
+    },
+    {
+      "id": "mx_hueTurn",
+      "defType": "math/math",
+      "position": {
+        "x": 957,
+        "y": 436
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "mx_discDraw"
+    },
+    {
+      "id": "mx_hue",
+      "defType": "math/math",
+      "position": {
+        "x": 1317,
+        "y": 437
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mx_discDraw",
+      "portValues": {
+        "b": 360
+      }
+    },
+    {
+      "id": "mx_pinLight",
+      "defType": "logic/select",
+      "position": {
+        "x": 171,
+        "y": 603
+      },
+      "params": {},
+      "parentId": "mx_discDraw",
+      "portValues": {
+        "a": 85.0,
+        "b": 60.0
+      }
+    },
+    {
+      "id": "mx_pinCol",
+      "defType": "color/color",
+      "position": {
+        "x": 1676,
+        "y": 441
+      },
+      "params": {
+        "mode": "hsl"
+      },
+      "parentId": "mx_discDraw",
+      "portValues": {
+        "s": 70.0,
+        "a": 255
+      }
+    },
+    {
+      "id": "mx_pinSize",
+      "defType": "logic/select",
+      "position": {
+        "x": 171,
+        "y": 307
+      },
+      "params": {},
+      "parentId": "mx_discDraw",
+      "portValues": {
+        "a": 17,
+        "b": 11
+      }
     }
   ],
   "edges": [
-    {
-      "id": "e_1",
-      "source": "mx_mouse",
-      "target": "mx_mpos",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_2",
-      "source": "mx_mouse",
-      "target": "mx_mpos",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_3",
-      "source": "mx_newBang",
-      "target": "mx_newTune",
-      "sourceHandle": "out-bang",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_4",
-      "source": "mx_kb",
-      "target": "mx_newTune",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_5",
-      "source": "mx_kb",
-      "target": "mx_newTune",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_6",
-      "source": "mx_kb",
-      "target": "mx_clear",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_7",
-      "source": "mx_kb",
-      "target": "mx_clear",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_8",
-      "source": "mx_turn",
-      "target": "mx_turnNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_9",
-      "source": "mx_dt",
-      "target": "mx_turnNext",
-      "sourceHandle": "out-dt",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_10",
-      "source": "mx_speed",
-      "target": "mx_turnNext",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_11",
-      "source": "mx_turnNext",
-      "target": "mx_turn",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_12",
-      "source": "mx_newTune",
-      "target": "mx_tuneSeedNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_13",
-      "source": "mx_tuneSeed",
-      "target": "mx_tuneSeedNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_14",
-      "source": "mx_tuneSeedNext",
-      "target": "mx_tuneSeed",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_15",
-      "source": "mx_slots",
-      "target": "mx_tunePins",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_16",
-      "source": "mx_tuneSeedNext",
-      "target": "mx_tunePins",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_17",
-      "source": "mx_slots",
-      "target": "mx_tuneKeep",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_18",
-      "source": "mx_tuneSeedNext",
-      "target": "mx_tuneKeep",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_19",
-      "source": "mx_tunePins",
-      "target": "mx_tuneKeep",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_20",
-      "source": "mx_tunePins",
-      "target": "mx_tune",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_21",
-      "source": "mx_tuneKeep",
-      "target": "mx_tune",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_22",
-      "source": "mx_tune",
-      "target": "mx_pins",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-init"
-    },
-    {
-      "id": "e_23",
-      "source": "mx_pins",
-      "target": "mx_pinAt",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_24",
-      "source": "mx_turnNext",
-      "target": "mx_pinAt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_25",
-      "source": "mx_mouse",
-      "target": "mx_wasPressed",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_26",
-      "source": "mx_mouse",
-      "target": "mx_click",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_27",
-      "source": "mx_wasPressed",
-      "target": "mx_click",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-was"
-    },
-    {
-      "id": "e_28",
-      "source": "mx_pinAt",
-      "target": "mx_pinDist",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_29",
-      "source": "mx_mpos",
-      "target": "mx_pinDist",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_30",
-      "source": "mx_pinDist",
-      "target": "mx_nearest",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_31",
-      "source": "mx_mpos",
-      "target": "mx_newLane",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_32",
-      "source": "mx_mpos",
-      "target": "mx_newPin",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_33",
-      "source": "mx_turnNext",
-      "target": "mx_newPin",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_34",
-      "source": "mx_newLane",
-      "target": "mx_newPin",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_35",
-      "source": "mx_pins",
-      "target": "mx_withNew",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_36",
-      "source": "mx_newPin",
-      "target": "mx_withNew",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-tail"
-    },
-    {
-      "id": "e_37",
-      "source": "mx_pins",
-      "target": "mx_pinCount",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_38",
-      "source": "mx_withNew",
-      "target": "mx_withNewAt",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_39",
-      "source": "mx_turnNext",
-      "target": "mx_withNewAt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_40",
-      "source": "mx_withNewAt",
-      "target": "mx_keepPin",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_41",
-      "source": "mx_clear",
-      "target": "mx_keepPin",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_42",
-      "source": "mx_pinCount",
-      "target": "mx_keepPin",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_43",
-      "source": "mx_click",
-      "target": "mx_keepPin",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-click"
-    },
-    {
-      "id": "e_44",
-      "source": "mx_nearest",
-      "target": "mx_keepPin",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_45",
-      "source": "mx_mpos",
-      "target": "mx_keepPin",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_46",
-      "source": "mx_newLane",
-      "target": "mx_keepPin",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_47",
-      "source": "mx_withNew",
-      "target": "mx_edited",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_48",
-      "source": "mx_keepPin",
-      "target": "mx_edited",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_49",
-      "source": "mx_tune",
-      "target": "mx_pinsNextBoth",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_50",
-      "source": "mx_edited",
-      "target": "mx_pinsNextBoth",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_51",
-      "source": "mx_tune",
-      "target": "mx_pinsNextFirstCount",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_52",
-      "source": "mx_pinsNextBoth",
-      "target": "mx_pinsNextPart",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_53",
-      "source": "mx_pinsNextFirstCount",
-      "target": "mx_pinsNextPart",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_54",
-      "source": "mx_newTune",
-      "target": "mx_pinsNextPart",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_55",
-      "source": "mx_pinsNextBoth",
-      "target": "mx_pinsNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_56",
-      "source": "mx_pinsNextPart",
-      "target": "mx_pinsNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_57",
-      "source": "mx_pinsNext",
-      "target": "mx_pins",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_58",
-      "source": "mx_pins",
-      "target": "mx_plucked",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_59",
-      "source": "mx_turnNext",
-      "target": "mx_plucked",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_60",
-      "source": "mx_turn",
-      "target": "mx_plucked",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_61",
-      "source": "mx_pins",
-      "target": "mx_lanes",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_62",
-      "source": "mx_lanes",
-      "target": "mx_scale",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-degree"
-    },
-    {
-      "id": "e_63",
-      "source": "mx_scaleSel",
-      "target": "mx_scale",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-scale"
-    },
     {
       "id": "e_64",
       "source": "mx_scale",
       "target": "mx_pluckFreqs",
       "sourceHandle": "out-freq",
       "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_65",
-      "source": "mx_plucked",
-      "target": "mx_pluckFreqs",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_66",
-      "source": "mx_lanes",
-      "target": "mx_pluckLanes",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_67",
-      "source": "mx_plucked",
-      "target": "mx_pluckLanes",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_68",
-      "source": "mx_pluckFreqs",
-      "target": "mx_pluckCount",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_69",
-      "source": "mx_pluckFreqs",
-      "target": "mx_f0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_70",
-      "source": "mx_pluckCount",
-      "target": "mx_hit0",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_71",
-      "source": "mx_hit0",
-      "target": "mx_freq0",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_72",
-      "source": "mx_f0",
-      "target": "mx_freq0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_73",
-      "source": "mx_held0",
-      "target": "mx_freq0",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-old"
-    },
-    {
-      "id": "e_74",
-      "source": "mx_freq0",
-      "target": "mx_held0",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_75",
-      "source": "mx_freq0",
-      "target": "mx_over0",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_76",
-      "source": "mx_freq0",
-      "target": "mx_fund0",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-freq"
-    },
-    {
-      "id": "e_77",
-      "source": "mx_over0",
-      "target": "mx_part0",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-freq"
     },
     {
       "id": "e_78",
@@ -2003,81 +3276,11 @@
       "targetHandle": "in-in"
     },
     {
-      "id": "e_81",
-      "source": "mx_hit0",
-      "target": "mx_env0",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-trigger"
-    },
-    {
       "id": "e_82",
       "source": "mx_env0",
       "target": "mx_bells",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in1"
-    },
-    {
-      "id": "e_83",
-      "source": "mx_pluckFreqs",
-      "target": "mx_f1",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_84",
-      "source": "mx_pluckCount",
-      "target": "mx_hit1",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_85",
-      "source": "mx_hit1",
-      "target": "mx_freq1",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_86",
-      "source": "mx_f1",
-      "target": "mx_freq1",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_87",
-      "source": "mx_held1",
-      "target": "mx_freq1",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-old"
-    },
-    {
-      "id": "e_88",
-      "source": "mx_freq1",
-      "target": "mx_held1",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_89",
-      "source": "mx_freq1",
-      "target": "mx_over1",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_90",
-      "source": "mx_freq1",
-      "target": "mx_fund1",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-freq"
-    },
-    {
-      "id": "e_91",
-      "source": "mx_over1",
-      "target": "mx_part1",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-freq"
     },
     {
       "id": "e_92",
@@ -2101,81 +3304,11 @@
       "targetHandle": "in-in"
     },
     {
-      "id": "e_95",
-      "source": "mx_hit1",
-      "target": "mx_env1",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-trigger"
-    },
-    {
       "id": "e_96",
       "source": "mx_env1",
       "target": "mx_bells",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in2"
-    },
-    {
-      "id": "e_97",
-      "source": "mx_pluckFreqs",
-      "target": "mx_f2",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_98",
-      "source": "mx_pluckCount",
-      "target": "mx_hit2",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_99",
-      "source": "mx_hit2",
-      "target": "mx_freq2",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_100",
-      "source": "mx_f2",
-      "target": "mx_freq2",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_101",
-      "source": "mx_held2",
-      "target": "mx_freq2",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-old"
-    },
-    {
-      "id": "e_102",
-      "source": "mx_freq2",
-      "target": "mx_held2",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_103",
-      "source": "mx_freq2",
-      "target": "mx_over2",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_104",
-      "source": "mx_freq2",
-      "target": "mx_fund2",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-freq"
-    },
-    {
-      "id": "e_105",
-      "source": "mx_over2",
-      "target": "mx_part2",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-freq"
     },
     {
       "id": "e_106",
@@ -2199,13 +3332,6 @@
       "targetHandle": "in-in"
     },
     {
-      "id": "e_109",
-      "source": "mx_hit2",
-      "target": "mx_env2",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-trigger"
-    },
-    {
       "id": "e_110",
       "source": "mx_env2",
       "target": "mx_bells",
@@ -2225,139 +3351,6 @@
       "target": "mx_out",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
-    },
-    {
-      "id": "e_113",
-      "source": "mx_pluckLanes",
-      "target": "mx_lane0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_114",
-      "source": "mx_pluckLanes",
-      "target": "mx_lane1",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_115",
-      "source": "mx_pluckLanes",
-      "target": "mx_lane2",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_116",
-      "source": "mx_teeth",
-      "target": "mx_toothInit",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_117",
-      "source": "mx_toothInit",
-      "target": "mx_toothTimes",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-init"
-    },
-    {
-      "id": "e_118",
-      "source": "mx_teeth",
-      "target": "mx_toothNext",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_119",
-      "source": "mx_lane0",
-      "target": "mx_toothNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_120",
-      "source": "mx_lane1",
-      "target": "mx_toothNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_121",
-      "source": "mx_lane2",
-      "target": "mx_toothNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_122",
-      "source": "mx_toothTimes",
-      "target": "mx_toothNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-old"
-    },
-    {
-      "id": "e_123",
-      "source": "mx_toothNext",
-      "target": "mx_toothTimes",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_124",
-      "source": "mx_teeth",
-      "target": "mx_toothAt",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_125",
-      "source": "mx_toothLen",
-      "target": "mx_toothAt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_126",
-      "source": "mx_toothNext",
-      "target": "mx_toothAt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_127",
-      "source": "mx_toothNext",
-      "target": "mx_toothCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_128",
-      "source": "mx_teeth",
-      "target": "mx_toothLen",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_129",
-      "source": "mx_toothAt",
-      "target": "mx_toothLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-at"
-    },
-    {
-      "id": "e_130",
-      "source": "mx_toothCol",
-      "target": "mx_toothLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-col"
-    },
-    {
-      "id": "e_131",
-      "source": "mx_toothLen",
-      "target": "mx_toothLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-len"
     },
     {
       "id": "e_132",
@@ -2395,27 +3388,6 @@
       "targetHandle": "in-tooth"
     },
     {
-      "id": "e_137",
-      "source": "mx_combBackX",
-      "target": "mx_combBackPts",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_138",
-      "source": "mx_combBackY",
-      "target": "mx_combBackPts",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_139",
-      "source": "mx_combBackPts",
-      "target": "mx_combBack",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-points"
-    },
-    {
       "id": "e_140",
       "source": "mx_combBackFill",
       "target": "mx_combBack",
@@ -2451,25 +3423,11 @@
       "targetHandle": "in-style"
     },
     {
-      "id": "e_145",
-      "source": "mx_teeth",
-      "target": "mx_ringSizes",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-k"
-    },
-    {
       "id": "e_146",
       "source": "mx_ringStroke",
       "target": "mx_ringNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
-    },
-    {
-      "id": "e_147",
-      "source": "mx_ringSizes",
-      "target": "mx_ringLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
     },
     {
       "id": "e_148",
@@ -2498,48 +3456,6 @@
       "target": "mx_ringLoop",
       "sourceHandle": "out-shape",
       "targetHandle": "in-ring"
-    },
-    {
-      "id": "e_152",
-      "source": "mx_scale",
-      "target": "mx_pinCol",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_153",
-      "source": "mx_plucked",
-      "target": "mx_pinCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_154",
-      "source": "mx_plucked",
-      "target": "mx_pinSize",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_155",
-      "source": "mx_pinAt",
-      "target": "mx_pinLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-at"
-    },
-    {
-      "id": "e_156",
-      "source": "mx_pinCol",
-      "target": "mx_pinLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-col"
-    },
-    {
-      "id": "e_157",
-      "source": "mx_pinSize",
-      "target": "mx_pinLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
     },
     {
       "id": "e_158",
@@ -2612,41 +3528,6 @@
       "targetHandle": "in-style"
     },
     {
-      "id": "e_168",
-      "source": "mx_disc",
-      "target": "mx_scene",
-      "sourceHandle": "out-shape",
-      "targetHandle": "in-s1"
-    },
-    {
-      "id": "e_169",
-      "source": "mx_ringLoop",
-      "target": "mx_scene",
-      "sourceHandle": "out-ring",
-      "targetHandle": "in-s2"
-    },
-    {
-      "id": "e_170",
-      "source": "mx_pinGlow",
-      "target": "mx_scene",
-      "sourceHandle": "out-out",
-      "targetHandle": "in-s3"
-    },
-    {
-      "id": "e_171",
-      "source": "mx_hub",
-      "target": "mx_scene",
-      "sourceHandle": "out-shape",
-      "targetHandle": "in-s4"
-    },
-    {
-      "id": "e_172",
-      "source": "mx_comb",
-      "target": "mx_scene",
-      "sourceHandle": "out-grouped",
-      "targetHandle": "in-s5"
-    },
-    {
       "id": "e_173",
       "source": "mx_statusText",
       "target": "mx_scene",
@@ -2659,6 +3540,1819 @@
       "target": "mx_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_b1_1",
+      "source": "mx_speed",
+      "target": "mx_turnNext",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_b1_2",
+      "source": "mx_turnNext",
+      "target": "mx_turn",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_3",
+      "source": "mx_kb",
+      "target": "mx_keyN",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_4",
+      "source": "mx_newBang",
+      "target": "mx_newTune",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_5",
+      "source": "mx_keyN",
+      "target": "mx_newTune",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_6",
+      "source": "mx_kb",
+      "target": "mx_clear",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_7",
+      "source": "mx_time",
+      "target": "mx_compose",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_b1_8",
+      "source": "mx_newTune",
+      "target": "mx_compose",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-new"
+    },
+    {
+      "id": "e_b1_9",
+      "source": "mx_compose",
+      "target": "mx_seedT",
+      "sourceHandle": "out-time",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_10",
+      "source": "mx_seedT",
+      "target": "mx_seedFract",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_11",
+      "source": "mx_seedFract",
+      "target": "mx_seedNew",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_12",
+      "source": "mx_compose",
+      "target": "mx_tuneSeedNext",
+      "sourceHandle": "out-new",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_13",
+      "source": "mx_seedNew",
+      "target": "mx_tuneSeedNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_14",
+      "source": "mx_tuneSeed",
+      "target": "mx_tuneSeedNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_15",
+      "source": "mx_tuneSeedNext",
+      "target": "mx_tuneSeed",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_16",
+      "source": "mx_slots",
+      "target": "mx_slotTurn",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_17",
+      "source": "mx_slotTurn",
+      "target": "mx_slotAngle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_18",
+      "source": "mx_slots",
+      "target": "mx_ringNoiseX",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_19",
+      "source": "mx_ringNoiseX",
+      "target": "mx_ringNoise",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_20",
+      "source": "mx_tuneSeedNext",
+      "target": "mx_ringNoise",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_21",
+      "source": "mx_ringNoise",
+      "target": "mx_ringSpan",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_22",
+      "source": "mx_ringSpan",
+      "target": "mx_ringShift",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_23",
+      "source": "mx_ringShift",
+      "target": "mx_slotRing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_24",
+      "source": "mx_slotAngle",
+      "target": "mx_tunePins",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_25",
+      "source": "mx_slotRing",
+      "target": "mx_tunePins",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_26",
+      "source": "mx_slots",
+      "target": "mx_keepNoiseX1",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_27",
+      "source": "mx_keepNoiseX1",
+      "target": "mx_keepNoiseX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_28",
+      "source": "mx_tuneSeedNext",
+      "target": "mx_keepNoiseY",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_29",
+      "source": "mx_keepNoiseX",
+      "target": "mx_keepNoise",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_30",
+      "source": "mx_keepNoiseY",
+      "target": "mx_keepNoise",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_31",
+      "source": "mx_keepNoise",
+      "target": "mx_loud",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_32",
+      "source": "mx_slotRing",
+      "target": "mx_ringIn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_33",
+      "source": "mx_slotRing",
+      "target": "mx_ringBelow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_34",
+      "source": "mx_ringIn",
+      "target": "mx_onDisc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_35",
+      "source": "mx_ringBelow",
+      "target": "mx_onDisc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_36",
+      "source": "mx_loud",
+      "target": "mx_tuneKeep",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_37",
+      "source": "mx_onDisc",
+      "target": "mx_tuneKeep",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_38",
+      "source": "mx_tunePins",
+      "target": "mx_tune",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_39",
+      "source": "mx_tuneKeep",
+      "target": "mx_tune",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_b1_40",
+      "source": "mx_tune",
+      "target": "mx_compose",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-tune"
+    },
+    {
+      "id": "e_b1_41",
+      "source": "mx_compose",
+      "target": "mx_pins",
+      "sourceHandle": "out-tune",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_b1_42",
+      "source": "mx_pins",
+      "target": "mx_where",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-pins"
+    },
+    {
+      "id": "e_b1_43",
+      "source": "mx_turnNext",
+      "target": "mx_where",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-turn"
+    },
+    {
+      "id": "e_b1_44",
+      "source": "mx_where",
+      "target": "mx_pinParts",
+      "sourceHandle": "out-pins",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_45",
+      "source": "mx_pinParts",
+      "target": "mx_pinAngle",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_46",
+      "source": "mx_where",
+      "target": "mx_pinAngle",
+      "sourceHandle": "out-turn",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_47",
+      "source": "mx_pinParts",
+      "target": "mx_pinRingOut",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_48",
+      "source": "mx_pinRingOut",
+      "target": "mx_pinRadius",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_49",
+      "source": "mx_pinAngle",
+      "target": "mx_pinPoint",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_b1_50",
+      "source": "mx_pinRadius",
+      "target": "mx_pinPoint",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_b1_51",
+      "source": "mx_where",
+      "target": "mx_pinCount2",
+      "sourceHandle": "out-pins",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_52",
+      "source": "mx_pinPoint",
+      "target": "mx_pinAt",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_53",
+      "source": "mx_pinCount2",
+      "target": "mx_pinAt",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_b1_54",
+      "source": "mx_pinAt",
+      "target": "mx_where",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_b1_56",
+      "source": "mx_pins",
+      "target": "mx_edit",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-pins"
+    },
+    {
+      "id": "e_b1_57",
+      "source": "mx_where",
+      "target": "mx_edit",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_b1_58",
+      "source": "mx_turnNext",
+      "target": "mx_edit",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-turn"
+    },
+    {
+      "id": "e_b1_59",
+      "source": "mx_mouse",
+      "target": "mx_edit",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_60",
+      "source": "mx_mouse",
+      "target": "mx_edit",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_61",
+      "source": "mx_mouse",
+      "target": "mx_edit",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_b1_62",
+      "source": "mx_compose",
+      "target": "mx_edit",
+      "sourceHandle": "out-tune",
+      "targetHandle": "in-tune"
+    },
+    {
+      "id": "e_b1_63",
+      "source": "mx_newTune",
+      "target": "mx_edit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-newTune"
+    },
+    {
+      "id": "e_b1_64",
+      "source": "mx_clear",
+      "target": "mx_edit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-clear"
+    },
+    {
+      "id": "e_b1_65",
+      "source": "mx_edit",
+      "target": "mx_mpos",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_66",
+      "source": "mx_edit",
+      "target": "mx_mpos",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_67",
+      "source": "mx_edit",
+      "target": "mx_click",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_b1_68",
+      "source": "mx_edit",
+      "target": "mx_pinDist",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_69",
+      "source": "mx_mpos",
+      "target": "mx_pinDist",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_70",
+      "source": "mx_pinDist",
+      "target": "mx_nearest",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_71",
+      "source": "mx_mpos",
+      "target": "mx_clickReach",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_72",
+      "source": "mx_clickReach",
+      "target": "mx_clickOut",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_73",
+      "source": "mx_clickOut",
+      "target": "mx_clickRingF",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_74",
+      "source": "mx_clickRingF",
+      "target": "mx_newLane",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_75",
+      "source": "mx_mpos",
+      "target": "mx_clickAngle",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_76",
+      "source": "mx_clickAngle",
+      "target": "mx_newAngle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_77",
+      "source": "mx_edit",
+      "target": "mx_newAngle",
+      "sourceHandle": "out-turn",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_78",
+      "source": "mx_newAngle",
+      "target": "mx_newPin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_79",
+      "source": "mx_newLane",
+      "target": "mx_newPin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_80",
+      "source": "mx_edit",
+      "target": "mx_withNew",
+      "sourceHandle": "out-pins",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_81",
+      "source": "mx_newPin",
+      "target": "mx_withNew",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-tail"
+    },
+    {
+      "id": "e_b1_82",
+      "source": "mx_edit",
+      "target": "mx_pinCount",
+      "sourceHandle": "out-pins",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_83",
+      "source": "mx_withNew",
+      "target": "mx_candParts",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_84",
+      "source": "mx_candParts",
+      "target": "mx_candAngle",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_85",
+      "source": "mx_edit",
+      "target": "mx_candAngle",
+      "sourceHandle": "out-turn",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_86",
+      "source": "mx_candParts",
+      "target": "mx_candRingOut",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_87",
+      "source": "mx_candRingOut",
+      "target": "mx_candRadius",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_88",
+      "source": "mx_candAngle",
+      "target": "mx_withNewAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_b1_89",
+      "source": "mx_candRadius",
+      "target": "mx_withNewAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_b1_90",
+      "source": "mx_withNewAt",
+      "target": "mx_candDist",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_91",
+      "source": "mx_mpos",
+      "target": "mx_candDist",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_92",
+      "source": "mx_candDist",
+      "target": "mx_closeToPin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_93",
+      "source": "mx_click",
+      "target": "mx_removeThis",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_94",
+      "source": "mx_closeToPin",
+      "target": "mx_removeThis",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_95",
+      "source": "mx_removeThis",
+      "target": "mx_pinStays",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_96",
+      "source": "mx_pinCount",
+      "target": "mx_noPins",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_97",
+      "source": "mx_nearest",
+      "target": "mx_nearAPin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_98",
+      "source": "mx_nearAPin",
+      "target": "mx_awayFromPins",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_99",
+      "source": "mx_noPins",
+      "target": "mx_room",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_100",
+      "source": "mx_awayFromPins",
+      "target": "mx_room",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_101",
+      "source": "mx_click",
+      "target": "mx_placeClick",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_102",
+      "source": "mx_room",
+      "target": "mx_placeClick",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_103",
+      "source": "mx_newLane",
+      "target": "mx_laneIn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_104",
+      "source": "mx_newLane",
+      "target": "mx_laneBelow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_105",
+      "source": "mx_laneIn",
+      "target": "mx_laneOk",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_106",
+      "source": "mx_laneBelow",
+      "target": "mx_laneOk",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_107",
+      "source": "mx_placeClick",
+      "target": "mx_addNew",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_108",
+      "source": "mx_laneOk",
+      "target": "mx_addNew",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_109",
+      "source": "mx_withNew",
+      "target": "mx_candCount",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_110",
+      "source": "mx_candCount",
+      "target": "mx_candIdx",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_b1_111",
+      "source": "mx_candIdx",
+      "target": "mx_isOld",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_112",
+      "source": "mx_pinCount",
+      "target": "mx_isOld",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_113",
+      "source": "mx_isOld",
+      "target": "mx_keepOne",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_114",
+      "source": "mx_pinStays",
+      "target": "mx_keepOne",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_115",
+      "source": "mx_addNew",
+      "target": "mx_keepOne",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_116",
+      "source": "mx_edit",
+      "target": "mx_keepPin",
+      "sourceHandle": "out-clear",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_117",
+      "source": "mx_keepOne",
+      "target": "mx_keepPin",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_118",
+      "source": "mx_withNew",
+      "target": "mx_edited",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_119",
+      "source": "mx_keepPin",
+      "target": "mx_edited",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_b1_120",
+      "source": "mx_edit",
+      "target": "mx_pinsNext",
+      "sourceHandle": "out-newTune",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_b1_121",
+      "source": "mx_edit",
+      "target": "mx_pinsNext",
+      "sourceHandle": "out-tune",
+      "targetHandle": "in-v0"
+    },
+    {
+      "id": "e_b1_122",
+      "source": "mx_edited",
+      "target": "mx_pinsNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-else"
+    },
+    {
+      "id": "e_b1_123",
+      "source": "mx_pinsNext",
+      "target": "mx_edit",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_124",
+      "source": "mx_edit",
+      "target": "mx_pins",
+      "sourceHandle": "out-next",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_125",
+      "source": "mx_pins",
+      "target": "mx_combPass",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-pins"
+    },
+    {
+      "id": "e_b1_126",
+      "source": "mx_turnNext",
+      "target": "mx_combPass",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-turn"
+    },
+    {
+      "id": "e_b1_127",
+      "source": "mx_turn",
+      "target": "mx_combPass",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-turnBefore"
+    },
+    {
+      "id": "e_b1_128",
+      "source": "mx_combPass",
+      "target": "mx_pluckParts",
+      "sourceHandle": "out-pins",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_129",
+      "source": "mx_pluckParts",
+      "target": "mx_angleNow",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_130",
+      "source": "mx_combPass",
+      "target": "mx_angleNow",
+      "sourceHandle": "out-turn",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_131",
+      "source": "mx_angleNow",
+      "target": "mx_turnsNow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_132",
+      "source": "mx_turnsNow",
+      "target": "mx_quarterNow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_133",
+      "source": "mx_quarterNow",
+      "target": "mx_fracNow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_134",
+      "source": "mx_pluckParts",
+      "target": "mx_angleBefore",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_135",
+      "source": "mx_combPass",
+      "target": "mx_angleBefore",
+      "sourceHandle": "out-turnBefore",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_136",
+      "source": "mx_angleBefore",
+      "target": "mx_turnsBefore",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_137",
+      "source": "mx_turnsBefore",
+      "target": "mx_quarterBefore",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_138",
+      "source": "mx_quarterBefore",
+      "target": "mx_fracBefore",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_139",
+      "source": "mx_fracNow",
+      "target": "mx_plucked",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_140",
+      "source": "mx_fracBefore",
+      "target": "mx_plucked",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_141",
+      "source": "mx_combPass",
+      "target": "mx_pinCount3",
+      "sourceHandle": "out-pins",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_142",
+      "source": "mx_pluckParts",
+      "target": "mx_lanes",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_143",
+      "source": "mx_pinCount3",
+      "target": "mx_lanes",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_b1_144",
+      "source": "mx_scaleSel",
+      "target": "mx_combPass",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_b1_145",
+      "source": "mx_combPass",
+      "target": "mx_scale",
+      "sourceHandle": "out-scale",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_b1_146",
+      "source": "mx_lanes",
+      "target": "mx_scale",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-degree"
+    },
+    {
+      "id": "e_b1_147",
+      "source": "mx_plucked",
+      "target": "mx_pluckFreqs",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_b1_148",
+      "source": "mx_lanes",
+      "target": "mx_pluckLanes",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_149",
+      "source": "mx_plucked",
+      "target": "mx_pluckLanes",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_b1_150",
+      "source": "mx_plucked",
+      "target": "mx_combPass",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-plucked"
+    },
+    {
+      "id": "e_b1_151",
+      "source": "mx_pluckFreqs",
+      "target": "mx_combPass",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-freqs"
+    },
+    {
+      "id": "e_b1_152",
+      "source": "mx_pluckLanes",
+      "target": "mx_combPass",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-rings"
+    },
+    {
+      "id": "e_b1_153",
+      "source": "mx_scale",
+      "target": "mx_combPass",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-notes"
+    },
+    {
+      "id": "e_b1_154",
+      "source": "mx_combPass",
+      "target": "mx_voices",
+      "sourceHandle": "out-freqs",
+      "targetHandle": "in-freqs"
+    },
+    {
+      "id": "e_b1_155",
+      "source": "mx_voices",
+      "target": "mx_pluckCount",
+      "sourceHandle": "out-freqs",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_156",
+      "source": "mx_voices",
+      "target": "mx_f0",
+      "sourceHandle": "out-freqs",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_157",
+      "source": "mx_pluckCount",
+      "target": "mx_hit0",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_158",
+      "source": "mx_hit0",
+      "target": "mx_freq0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_159",
+      "source": "mx_f0",
+      "target": "mx_freq0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_160",
+      "source": "mx_held0",
+      "target": "mx_freq0",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_161",
+      "source": "mx_freq0",
+      "target": "mx_held0",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_162",
+      "source": "mx_freq0",
+      "target": "mx_over0",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_163",
+      "source": "mx_freq0",
+      "target": "mx_fund0",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_b1_164",
+      "source": "mx_over0",
+      "target": "mx_part0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_b1_165",
+      "source": "mx_hit0",
+      "target": "mx_env0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-trigger"
+    },
+    {
+      "id": "e_b1_166",
+      "source": "mx_voices",
+      "target": "mx_f1",
+      "sourceHandle": "out-freqs",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_167",
+      "source": "mx_pluckCount",
+      "target": "mx_hit1",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_168",
+      "source": "mx_hit1",
+      "target": "mx_freq1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_169",
+      "source": "mx_f1",
+      "target": "mx_freq1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_170",
+      "source": "mx_held1",
+      "target": "mx_freq1",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_171",
+      "source": "mx_freq1",
+      "target": "mx_held1",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_172",
+      "source": "mx_freq1",
+      "target": "mx_over1",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_173",
+      "source": "mx_freq1",
+      "target": "mx_fund1",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_b1_174",
+      "source": "mx_over1",
+      "target": "mx_part1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_b1_175",
+      "source": "mx_hit1",
+      "target": "mx_env1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-trigger"
+    },
+    {
+      "id": "e_b1_176",
+      "source": "mx_voices",
+      "target": "mx_f2",
+      "sourceHandle": "out-freqs",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_177",
+      "source": "mx_pluckCount",
+      "target": "mx_hit2",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_178",
+      "source": "mx_hit2",
+      "target": "mx_freq2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_179",
+      "source": "mx_f2",
+      "target": "mx_freq2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_180",
+      "source": "mx_held2",
+      "target": "mx_freq2",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_181",
+      "source": "mx_freq2",
+      "target": "mx_held2",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_182",
+      "source": "mx_freq2",
+      "target": "mx_over2",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_183",
+      "source": "mx_freq2",
+      "target": "mx_fund2",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_b1_184",
+      "source": "mx_over2",
+      "target": "mx_part2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_b1_185",
+      "source": "mx_hit2",
+      "target": "mx_env2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-trigger"
+    },
+    {
+      "id": "e_b1_186",
+      "source": "mx_combPass",
+      "target": "mx_combDraw",
+      "sourceHandle": "out-rings",
+      "targetHandle": "in-rings"
+    },
+    {
+      "id": "e_b1_187",
+      "source": "mx_time",
+      "target": "mx_combDraw",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_b1_188",
+      "source": "mx_combDraw",
+      "target": "mx_lane0",
+      "sourceHandle": "out-rings",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_189",
+      "source": "mx_combDraw",
+      "target": "mx_lane1",
+      "sourceHandle": "out-rings",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_190",
+      "source": "mx_combDraw",
+      "target": "mx_lane2",
+      "sourceHandle": "out-rings",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_191",
+      "source": "mx_toothInit",
+      "target": "mx_toothTimes",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_b1_192",
+      "source": "mx_lane0",
+      "target": "mx_laneNum0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_b1_193",
+      "source": "mx_teeth",
+      "target": "mx_toothIs0",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_194",
+      "source": "mx_laneNum0",
+      "target": "mx_toothIs0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_195",
+      "source": "mx_lane1",
+      "target": "mx_laneNum1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_b1_196",
+      "source": "mx_teeth",
+      "target": "mx_toothIs1",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_197",
+      "source": "mx_laneNum1",
+      "target": "mx_toothIs1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_198",
+      "source": "mx_lane2",
+      "target": "mx_laneNum2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_b1_199",
+      "source": "mx_teeth",
+      "target": "mx_toothIs2",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_200",
+      "source": "mx_laneNum2",
+      "target": "mx_toothIs2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_201",
+      "source": "mx_toothIs0",
+      "target": "mx_toothHit01",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_202",
+      "source": "mx_toothIs1",
+      "target": "mx_toothHit01",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_203",
+      "source": "mx_toothHit01",
+      "target": "mx_toothHit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_204",
+      "source": "mx_toothIs2",
+      "target": "mx_toothHit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_205",
+      "source": "mx_toothHit",
+      "target": "mx_toothNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_206",
+      "source": "mx_combDraw",
+      "target": "mx_toothNext",
+      "sourceHandle": "out-time",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_207",
+      "source": "mx_toothTimes",
+      "target": "mx_toothNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_208",
+      "source": "mx_toothNext",
+      "target": "mx_toothTimes",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_209",
+      "source": "mx_combDraw",
+      "target": "mx_toothAge",
+      "sourceHandle": "out-time",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_210",
+      "source": "mx_toothNext",
+      "target": "mx_toothAge",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_211",
+      "source": "mx_teeth",
+      "target": "mx_toothShorter",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_212",
+      "source": "mx_toothShorter",
+      "target": "mx_toothLen",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_213",
+      "source": "mx_toothLen",
+      "target": "mx_toothLoop",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-len"
+    },
+    {
+      "id": "e_b1_214",
+      "source": "mx_toothLen",
+      "target": "mx_toothHalf",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_215",
+      "source": "mx_toothHalf",
+      "target": "mx_toothX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_216",
+      "source": "mx_teeth",
+      "target": "mx_toothRingOut",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_217",
+      "source": "mx_toothRingOut",
+      "target": "mx_toothRadius",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_218",
+      "source": "mx_toothRadius",
+      "target": "mx_toothUp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_219",
+      "source": "mx_toothAge",
+      "target": "mx_toothBoing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-age"
+    },
+    {
+      "id": "e_b1_220",
+      "source": "mx_toothBoing",
+      "target": "mx_toothWobble",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_221",
+      "source": "mx_toothUp",
+      "target": "mx_toothY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_222",
+      "source": "mx_toothWobble",
+      "target": "mx_toothY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_223",
+      "source": "mx_toothX",
+      "target": "mx_toothAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_224",
+      "source": "mx_toothY",
+      "target": "mx_toothAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_225",
+      "source": "mx_toothAt",
+      "target": "mx_toothLoop",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_b1_226",
+      "source": "mx_toothAge",
+      "target": "mx_toothGlow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-age"
+    },
+    {
+      "id": "e_b1_227",
+      "source": "mx_toothGlow",
+      "target": "mx_toothCol",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_b1_228",
+      "source": "mx_toothCol",
+      "target": "mx_toothLoop",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_b1_229",
+      "source": "mx_combBackX",
+      "target": "mx_combBackPts",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_230",
+      "source": "mx_combBackY",
+      "target": "mx_combBackPts",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_231",
+      "source": "mx_combBackPts",
+      "target": "mx_combBack",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_b1_232",
+      "source": "mx_comb",
+      "target": "mx_combDraw",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-comb"
+    },
+    {
+      "id": "e_b1_233",
+      "source": "mx_combDraw",
+      "target": "mx_scene",
+      "sourceHandle": "out-comb",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_b1_234",
+      "source": "mx_where",
+      "target": "mx_discDraw",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_b1_235",
+      "source": "mx_combPass",
+      "target": "mx_discDraw",
+      "sourceHandle": "out-plucked",
+      "targetHandle": "in-plucked"
+    },
+    {
+      "id": "e_b1_236",
+      "source": "mx_combPass",
+      "target": "mx_discDraw",
+      "sourceHandle": "out-notes",
+      "targetHandle": "in-notes"
+    },
+    {
+      "id": "e_b1_237",
+      "source": "mx_discDraw",
+      "target": "mx_pinLoop",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_b1_238",
+      "source": "mx_ringIdx",
+      "target": "mx_ringStep",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_239",
+      "source": "mx_ringStep",
+      "target": "mx_ringRadius",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_240",
+      "source": "mx_ringRadius",
+      "target": "mx_ringSizes",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_241",
+      "source": "mx_ringSizes",
+      "target": "mx_ringLoop",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_b1_242",
+      "source": "mx_discDraw",
+      "target": "mx_hueStep",
+      "sourceHandle": "out-notes",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_243",
+      "source": "mx_hueStep",
+      "target": "mx_hueHalf",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_244",
+      "source": "mx_hueHalf",
+      "target": "mx_hueShift",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_245",
+      "source": "mx_hueShift",
+      "target": "mx_hueTurn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_246",
+      "source": "mx_hueTurn",
+      "target": "mx_hue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_247",
+      "source": "mx_discDraw",
+      "target": "mx_pinLight",
+      "sourceHandle": "out-plucked",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_248",
+      "source": "mx_hue",
+      "target": "mx_pinCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_b1_249",
+      "source": "mx_pinLight",
+      "target": "mx_pinCol",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_b1_250",
+      "source": "mx_pinCol",
+      "target": "mx_pinLoop",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_b1_251",
+      "source": "mx_discDraw",
+      "target": "mx_pinSize",
+      "sourceHandle": "out-plucked",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_252",
+      "source": "mx_pinSize",
+      "target": "mx_pinLoop",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_b1_253",
+      "source": "mx_disc",
+      "target": "mx_discDraw",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-disc"
+    },
+    {
+      "id": "e_b1_254",
+      "source": "mx_ringLoop",
+      "target": "mx_discDraw",
+      "sourceHandle": "out-ring",
+      "targetHandle": "in-rings"
+    },
+    {
+      "id": "e_b1_255",
+      "source": "mx_pinGlow",
+      "target": "mx_discDraw",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-pins"
+    },
+    {
+      "id": "e_b1_256",
+      "source": "mx_hub",
+      "target": "mx_discDraw",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-hub"
+    },
+    {
+      "id": "e_b1_257",
+      "source": "mx_discDraw",
+      "target": "mx_scene",
+      "sourceHandle": "out-disc",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_b1_258",
+      "source": "mx_discDraw",
+      "target": "mx_scene",
+      "sourceHandle": "out-rings",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_b1_259",
+      "source": "mx_discDraw",
+      "target": "mx_scene",
+      "sourceHandle": "out-pins",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_b1_260",
+      "source": "mx_discDraw",
+      "target": "mx_scene",
+      "sourceHandle": "out-hub",
+      "targetHandle": "in-s4"
     }
   ]
 }

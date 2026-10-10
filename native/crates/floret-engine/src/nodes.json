@@ -6373,6 +6373,13 @@
      "kind": "spread",
      "default": 1,
      "label": "warp scale"
+    },
+    {
+     "name": "step",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "label": "gradient step"
     }
    ],
    "outputs": [
@@ -14668,7 +14675,7 @@
    "category": "Geometry",
    "group": "Patterns",
    "label": "Curve",
-   "description": "Classic parametric curves as `count` points and a path layer: `lissajous` (frequencies `a`, `b`), `rose` (`n` / `d` petals), `hypotrochoid` and `epitrochoid` (Spirograph: circle radii `R`, `r`, pen distance `d`), `spiral` and `log-spiral` (`turns`, from radius `inner` out to `radius`), `star` (`points`, `inner` radius ratio) and `superformula` (Gielis: `m`, `n1`, `n2`, `n3`). Fitted to `radius` around `center` (Lissajous fills a square), turned by `rotation`. `phase` 0..1 runs one seamless animation cycle (figures morph, roses / stars turn by a petal, spirals flow). Closed curves come round exactly once (the period is worked out from the ratios). Also outputs each point's direction of travel (`tangents`, radians). Example: Time `loop` into `phase` for a looping Lissajous; the points into a ForEach to place dots along a rose.",
+   "description": "Classic parametric curves as `count` points and a path layer: `lissajous` (frequencies `a`, `b`), `rose` (`n` / `d` petals), `hypotrochoid` and `epitrochoid` (Spirograph: circle radii `R`, `r`, pen distance `d`; `laps` above 0 runs the pen round that many times as an open path instead of one closed period), `spiral` and `log-spiral` (`turns`, from radius `inner` out to `radius`), `star` (`points`, `inner` radius ratio) and `superformula` (Gielis: `m`, `n1`, `n2`, `n3`). Fitted to `radius` around `center` (Lissajous fills a square), turned by `rotation`. `phase` 0..1 runs one seamless animation cycle (figures morph, roses / stars turn by a petal, spirals flow). Closed curves come round exactly once (the period is worked out from the ratios). Also outputs each point's direction of travel (`tangents`, radians). Example: Time `loop` into `phase` for a looping Lissajous; the points into a ForEach to place dots along a rose.",
    "inputs": [
     {
      "name": "count",

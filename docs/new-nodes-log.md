@@ -530,3 +530,207 @@ or the new mode's absence is the old behaviour); pins recorded in
   exactly. *Missing:* rings of seeds around a centre disc, spirals that
   start off-centre. *Test:* `spread/tests.rs`
   `spiral_and_fibonacci_leave_an_inner_hole`.
+
+## No-code rebuild (agent B1)
+
+Twelve interaction-first samples rebuilt with no Expression node (182
+formulas): play-breakout, sound-music-box, sound-step-sequencer,
+play-voronoi-editor, play-physics-sandbox, play-brush-studio,
+play-kaleidoscope, play-flock-herder, play-reaction-painter,
+play-typing-toy, play-preset-morph, play-midi-garden. Each sample's logic
+sits in labelled subpatches with a note inside (Breakout: Turns — with
+Lives & score nested — Ball, Bricks, HUD; Music Box: Compose, Pins on the
+disc, Edit pins, Plucks, Bells, Comb, Disc; …), so the top level reads
+inputs → subpatches → Group → Renderer. One capability was missing.
+
+### Curve → `laps` (`geometry/curve`, hypotrochoid / epitrochoid)
+
+- **Missing:** Preset Morph's spirograph runs the pen round a *Laps*
+  slider's number of turns (4–37 in its presets) as an open path. Curve
+  always drew exactly one closed period (found from R / r, up to 64
+  turns): the Laps slider would have done nothing, and a partial lap would
+  have been closed with a chord across the figure.
+- **Design:** one optional pin on the two roulette modes, `laps` (0, the
+  default: one closed period, exactly as before). Above 0 the pen runs
+  round that many turns as an open path, `count` even steps with the end
+  not repeated (as closed curves do). Fit, rotation and phase unchanged.
+  Kept to the trochoids, where "how long the pen draws" is the natural
+  control; Lissajous / rose could take it the same way.
+- **Tests:** `geometry/curve.rs`
+  `laps_run_a_trochoid_open_for_that_many_turns`.
+- **Sample:** play-preset-morph (a Curve per layer in the ForEach, its
+  radius set to keep the old size, points wobbled with Vector Math scale).
+
+### Patterns used instead of formulas
+
+- `p && !was` with a State → **Edge** (rising; falling for a release).
+- `hit && k == j ? 1 - s : s` → **Latch** toggled by Keyboard `hits`
+  (Lookup at j); `hit && k == j ? (n + 1) % m : n` → **Counter**, limit wrap.
+- Phases and turns (`a + min(dt, 0.1) * s`, `mod(…, 16)`) → **Integrate**
+  (`maxDt` 0.1, limit wrap); the cell under the mouse → **Hit Test** rects.
+- `c ? x : d ? y : z` → **Switch** first-true, or Selects where the result
+  feeds a single-value pin; constant colours per case sit on the Switch /
+  Select (no ×255 / ÷255).
+- Keep-where over `list ++ [new]` with `index < n` flags → a Switch that
+  takes the longer list only when something was added.
+- `vec2(cos a, sin a) * r` → **From Angle**; `vec2(−sin a, cos a) * g` →
+  Vector Math rotate of (0, g); `q + (r − q) * t` → Lerp (vec2).
+- Damped sines and decays after an event → **Envelope** (boing, decay,
+  fade) with `frequency` / `time` giving the same rates.
+
+### How they were checked
+
+- `sample_play.rs` `rebuilt_samples_play_as_before` (ignored;
+  `FLORET_SAMPLES_BEFORE` = the old files): idle and scripted runs give the
+  renderer the same layers on every frame of 150 and the same last frame.
+  Ten samples match to 1e-11 or better (most exactly). Two decide a corner
+  case differently and are listed in `DECIDED_DIFFERENTLY`: the
+  sequencer's Hit Test gives a mouse exactly on a cell border to the cell
+  before it (the script drags along borders), and Edge doesn't count a
+  button already down on the very first frame as a press (the sandbox
+  script presses on frame 0).
+- `sample_sound.rs` `rebuilt_samples_sound_as_before` (ignored): the
+  sequencer, music box and MIDI garden render the same audio, sample for
+  sample, idle and played.
+- `all_samples.rs` `rebuilt_samples_have_no_formula_nodes` lists the
+  twelve (TODO: every sample once all are rebuilt).
+
+### Notes
+
+- Music Box's lowest tooth stays lit, as before: the old formula compared
+  a missing pluck (null) as 0; Convert (to number) keeps that.
+- Value nodes lift over spreads only from two values up, and an empty
+  spread alone reads as the default (unlike Expression, where an empty
+  input gave an empty result). Where a list can be empty (Music Box with no
+  pins) a Sublist `take` of the list's Count closes the chain, so nothing
+  phantom is drawn or plucked.
+- A spread-kind output (Latch, Integrate, Switch, Hit Test) wired into a
+  State's `next` or another single, non-lifting pin warns and the State
+  doesn't update; use State* (`state/spread`) or Lookup `pick` there.
+
+## No-code rebuild (agent B3)
+
+Sixteen samples rebuilt with no Expression node: the three Sound samples
+(Keyboard Synth, Hand Theremin, Mic Bloom), Rose Curve (was Expression
+Rose), Morph Tunnel, Number Counters, Echo Trails, Layout Bloom, Neon
+Orbits, Point Tracker, Time Smear, Camera Slit-Scan, Kinetic Type, Plexus
+Colours, Topographic and Write-On Lettering. The visual vocabulary
+already covered every formula; the bigger patches are split into named
+subpatches (Arpeggiator, Scope, Keys, Note, Pitch, Lanes, Rings, String,
+Demo loop, Stand-in spectrum, Petals …) so the top level reads as the
+signal flow. One existing node needed a fix; nothing new was built.
+
+### Beat: steps land on the frame they are due (`time/beat`)
+
+- **Missing:** Mic Bloom's demo loop ran on `floor(t * 6) % 16`. Beat in
+  free mode sums `dt × rate` frame by frame, and the sum drifts by
+  rounding: at 60 fps a 6-steps-a-second clock started a step a frame
+  late now and then (9-, 10- and 11-frame steps), so the arpeggio, bass
+  and hats jittered against the formula's exact 10-frame steps.
+- **Design:** the step position is snapped onto a whole step when within
+  1e-9 of one (relative past one step), the rule `loop_phase` already
+  uses for loop boundaries; it applies in both sync modes and is stored,
+  so the clock carries on from the exact value. Nothing else changes.
+- **Test:** `nodes/timing/tests.rs`
+  `beat_steps_land_on_the_frames_they_are_due` (90 bpm, 16 steps: one
+  step every 10 frames, with a trigger, for 3000 frames).
+- **Sample:** `sound-mic-bloom` — one Beat drives the arpeggio (`step`,
+  `gate`), the bass (step mod 4 = 0) and the offbeat hats (odd steps,
+  phase < 0.16), which equal the old three formulas frame for frame.
+
+### How the rebuilds were checked
+
+- `floret-app` `sample_equivalence::rebuilt_samples_match_before`
+  (ignored; `FLORET_SAMPLES_BEFORE=<old samples>`): old and new file run
+  the same scripted performance (mouse, keys, a fake camera and hand,
+  toggles switched in both) for 180 frames, every frame rendered; only a
+  frame or two may look different, and loop samples must show frame 0's
+  layers one loop on. All 15 equivalent samples render pixel-identical
+  except Keyboard Synth, whose octave Counter answers Z / X one frame
+  sooner than the old State loop did (frames 40 and 55 of the script).
+- `floret-media` `sample_sound_equivalence` (ignored): the Sound samples
+  through the offline audio engine with the same performances and a
+  microphone tone. Theremin and Mic Bloom are sample-identical; Keyboard
+  Synth's level follows the old one tick by tick (its waves drift out of
+  phase after the one-frame-sooner octave change).
+- Rose Curve is a redesign on the Curve node (a true rose through the
+  centre, `n` petals), not a copy of the formula's offset scallop.
+
+### Suggestions (not done)
+
+- Gate (`io/gate`) has no initial value: closed from the start it outputs
+  nothing, so "the last key played, 0 until then" still needs State +
+  Select. An `initial` pin would make it a one-node sample-and-hold.
+- `relayout_samples` now takes `FLORET_RELAYOUT_ONLY=a,b`; the
+  auto-arrange isn't idempotent on every sample (a second run moves a
+  few nodes), so re-running it over all samples rewrites files nobody
+  changed.
+
+## No-code rebuild (agent B2)
+
+The 15 Systems samples (`sys-*`) rebuilt without a single `math/expression`
+node (260 formulas before). Almost everything was already expressible with
+the building blocks above; the rebuilds lean on them where they fit —
+Integrate (plotter progress, garden growth, landscape camera, data-story
+caption timer), Switch (epidemic state machine, biome colours, bass chord,
+spoke alpha), Lookup `bin` (tile-world biome bands), Smoothstep `window`
+(garden leaf season), Hit Test (weather particles leaving the map), Noise
+`gaussian` (weather storm, city downtown), Delta `max` (every
+`min(dt, 0.05)`), Counter `wrap` (data-story years), Wrap / Clamp on vec2s
+(wrapping walkers, clamped spots). Per-element maths runs on whole lists
+outside ForEach regions where it can (stars, windows, ticks, days, dots),
+so the regions only draw. Larger formulas became subpatches named after
+what they do (Infection, Wander, Pressure and wind, Ridge 1–5, Year
+spiral, Rules …), so each top-level graph keeps the shape it had.
+
+Kept as small node chains, not new nodes: the shader-style hash
+`fract(sin(i · a + frame · b) · k)` (sin → × → fract, inside the subpatch
+that uses it) — a new random node would change every seeded pattern.
+
+### Noise → `step` pin (gradient over a distance)
+
+- **Missing:** the weather map's wind is the pressure's slope taken over 7
+  units either side (central differences), turned a quarter. Noise's
+  `gradient` is the *local* slope (forward differences over 1e-4 noise
+  units), which differs from the coarse slope by a few per cent at the
+  pressure's scale; rebuilding the old maths faithfully took four extra
+  copies of the whole pressure field (north, south, east, west of every
+  point) — 2× slower than the formula in a debug build.
+- **Design:** one pin, `step` (number, default 0, the last pin in every
+  mode so the others keep their indices): above 0 the `gradient` output is
+  `(v(p + h) − v(p − h)) / 2h` per axis with `h = step` units of `pos`
+  (noise modes sample at `h · scale` in noise space; the field modes use it
+  as their difference step). 0, negative or NaN keep the old local slope
+  exactly, so old files compute as before. The weather sample now samples
+  three Noise nodes once per point (with `step` 7) and sums their slopes:
+  the same wind to ~1e-9, faster than the original formula.
+- **Tests:** `nodes/noise.rs` `step_takes_the_gradient_over_a_distance`
+  (Perlin and cellular against central differences of the value output at
+  scale 0.5, ±7; non-positive / NaN steps unchanged; a Gaussian bump's
+  slope over ±30 and that a wide step flattens its flank), the pin-list
+  tests updated; `frozen_ports.txt` gains `noise/noise in step`.
+
+### Tools for checking rebuilds
+
+- `floret-app` `sample_equiv::rebuilt_samples_match` (ignored):
+  `FLORET_SAMPLES_BEFORE=<old dir> FLORET_SAMPLES_ONLY=a,b` plays old and
+  new files side by side with a scripted mouse / keys and every slider,
+  toggle, XY pad and bang moved, and compares the Renderer's flattened
+  layers number by number (tolerance 1e-6) and the rendered frames, with
+  median tick times (`FLORET_COMPARE_PROFILE=1` lists the slowest nodes).
+- `floret_engine::nodes::time::freeze_clock` — a test hook: `time/clock`
+  reads a fixed time plus the frame's `t`, so clock patches compare.
+- `floret-media` `sample_sound::rebuilt_samples_sound_as_before` (ignored):
+  old vs new audio, sample for sample, over ten seconds with the controls
+  moved.
+- `floret-engine/tests/no_expression_nodes.rs`: fails if a listed sample
+  holds an Expression node (the final merge switches it to every sample).
+
+Results at the time of the rebuild (180 frames each): all 15 matched the
+old versions — layers identical on every frame for 9, the rest within
+1e-15 relative (weather 3e-9, from the gradient step and the Noise `scale`
+pin), rendered pixels identical; the music-viz audio identical sample for
+sample. Afterwards the weather's finer noise layer got rounder drift numbers
+(1.73 units a second, offset 1253.3) for readability, which moves that
+layer by a hair; the owner asked for the same behaviour rather than a pixel
+match.

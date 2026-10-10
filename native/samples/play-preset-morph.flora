@@ -16,7 +16,7 @@
         "y": -334
       },
       "params": {
-        "text": "Preset Morph\n\nA spirograph instrument to perform with. Open the Presets panel: click a preset (Nebula, Clockwork, Urchin, Lace, Ember, Tide) to jump to it, or pick two under Morph and drag the slider between them — every slider glides at once and the drawing melts from one into the other. Vary (Ctrl/⌘+Shift+R) re-rolls the seed, which shifts each layer's phase. Drag the XY pad for zoom (left–right) and wobble (up–down), or drag on the preview to fan the layers apart and swell them, and tweak any slider, then save your own preset.\n\nHow it works: each layer is a hypotrochoid — a pen on a wheel of radius r rolling inside a ring of radius R — computed by one Expression over 1400 steps and drawn by a ForEach as a polygon. Presets store the sliders' values (and the seed) in the file; morphing interpolates them.",
+        "text": "Preset Morph\n\nA spirograph instrument to perform with. Open the Presets panel: click a preset (Nebula, Clockwork, Urchin, Lace, Ember, Tide) to jump to it, or pick two under Morph and drag the slider between them — every slider glides at once and the drawing melts from one into the other. Vary (Ctrl/⌘+Shift+R) re-rolls the seed, which shifts each layer's phase. Drag the XY pad for zoom (left–right) and wobble (up–down), or drag on the preview to fan the layers apart and swell them, and tweak any slider, then save your own preset.\n\nHow it works: each layer is a hypotrochoid — a pen on a wheel of radius r rolling inside a ring of radius R — traced by a Curve node for Laps turns of the wheel in 1400 steps, wobbled along its length and drawn by a ForEach as a polygon; each layer's ring is 11 % smaller and turns a little faster. Presets store the sliders' values (and the seed) in the file; morphing interpolates them.",
         "width": 470,
         "height": 270
       }
@@ -25,8 +25,8 @@
       "id": "pm_bigR",
       "defType": "io/slider",
       "position": {
-        "x": 549,
-        "y": 142
+        "x": 268,
+        "y": 269
       },
       "params": {
         "value": 190,
@@ -39,8 +39,8 @@
       "id": "pm_smallR",
       "defType": "io/slider",
       "position": {
-        "x": 549,
-        "y": 520
+        "x": 268,
+        "y": 779
       },
       "params": {
         "value": 73,
@@ -53,8 +53,8 @@
       "id": "pm_pen",
       "defType": "io/slider",
       "position": {
-        "x": 549,
-        "y": 646
+        "x": 268,
+        "y": 905
       },
       "params": {
         "value": 120,
@@ -67,8 +67,8 @@
       "id": "pm_laps",
       "defType": "io/slider",
       "position": {
-        "x": 549,
-        "y": 772
+        "x": 612,
+        "y": 796
       },
       "params": {
         "value": 22,
@@ -82,8 +82,8 @@
       "id": "pm_spin",
       "defType": "io/slider",
       "position": {
-        "x": 549,
-        "y": 898
+        "x": 612,
+        "y": 922
       },
       "params": {
         "value": 0.15,
@@ -96,8 +96,8 @@
       "id": "pm_hue",
       "defType": "io/slider",
       "position": {
-        "x": 549,
-        "y": 1024
+        "x": 612,
+        "y": 1048
       },
       "params": {
         "value": 0.6,
@@ -110,8 +110,8 @@
       "id": "pm_hueSpread",
       "defType": "io/slider",
       "position": {
-        "x": 549,
-        "y": 1150
+        "x": 612,
+        "y": 1174
       },
       "params": {
         "value": 0.12,
@@ -124,8 +124,8 @@
       "id": "pm_width",
       "defType": "io/slider",
       "position": {
-        "x": 549,
-        "y": 1276
+        "x": 612,
+        "y": 1300
       },
       "params": {
         "value": 1.4,
@@ -139,7 +139,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 63
+        "y": 0
       },
       "params": {
         "value": 3,
@@ -153,8 +153,8 @@
       "id": "pm_glow",
       "defType": "io/slider",
       "position": {
-        "x": 1303,
-        "y": 1134
+        "x": 2312,
+        "y": 1052
       },
       "params": {
         "value": 0.9,
@@ -167,8 +167,8 @@
       "id": "pm_pad",
       "defType": "io/xy-pad",
       "position": {
-        "x": 549,
-        "y": 1402
+        "x": 268,
+        "y": 521
       },
       "params": {
         "x": 0.5,
@@ -180,8 +180,8 @@
       "id": "pm_time",
       "defType": "time/seconds",
       "position": {
-        "x": 42,
-        "y": 189
+        "x": 310,
+        "y": 395
       },
       "params": {}
     },
@@ -190,98 +190,68 @@
       "defType": "input/mouse",
       "position": {
         "x": 37,
-        "y": 315
+        "y": 126
       },
       "params": {}
-    },
-    {
-      "id": "pm_twistTarget",
-      "defType": "math/expression",
-      "position": {
-        "x": 280,
-        "y": 211
-      },
-      "params": {
-        "expr": "p ? x / 320 : 0"
-      }
     },
     {
       "id": "pm_twist",
       "defType": "motion/smooth",
       "position": {
-        "x": 582,
-        "y": 268
+        "x": 672,
+        "y": 64
       },
       "params": {},
       "portValues": {
         "rate": 4
-      }
-    },
-    {
-      "id": "pm_swellTarget",
-      "defType": "math/expression",
-      "position": {
-        "x": 280,
-        "y": 375
       },
-      "params": {
-        "expr": "p ? -y / 320 : 0"
-      }
+      "parentId": "pm_drag"
     },
     {
       "id": "pm_swell",
       "defType": "motion/smooth",
       "position": {
-        "x": 582,
-        "y": 394
+        "x": 871,
+        "y": 190
       },
       "params": {},
       "portValues": {
         "rate": 4
-      }
+      },
+      "parentId": "pm_drag"
     },
     {
       "id": "pm_layerIdx",
       "defType": "spread/range",
       "position": {
-        "x": 295,
-        "y": 66
+        "x": 283,
+        "y": 17
       },
       "params": {}
-    },
-    {
-      "id": "pm_phase",
-      "defType": "math/expression",
-      "position": {
-        "x": 549,
-        "y": 0
-      },
-      "params": {
-        "expr": "noise(k * 1.73 + 0.37, 4.21) * tau"
-      }
     },
     {
       "id": "pm_steps",
       "defType": "spread/range",
       "position": {
-        "x": 564,
-        "y": 1660
+        "x": 145,
+        "y": 378
       },
       "params": {},
       "portValues": {
         "count": 1400
-      }
+      },
+      "parentId": "pm_sizing"
     },
     {
       "id": "pm_layerLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 933,
-        "y": 500
+        "x": 986,
+        "y": 313
       },
       "params": {
-        "width": 909,
-        "height": 586,
+        "width": 2819,
+        "height": 691,
         "label": "Layers"
       },
       "ports": [
@@ -290,68 +260,32 @@
           "name": "k",
           "type": "number",
           "direction": "input",
-          "y": 290
+          "y": 377
         },
         {
           "id": "phase",
           "name": "phase",
           "type": "number",
           "direction": "input",
-          "y": 270
+          "y": 98
         },
         {
           "id": "line",
           "name": "line",
           "type": "layer",
           "direction": "output",
-          "y": 288
+          "y": 218
         }
       ],
-      "width": 909,
-      "height": 586
-    },
-    {
-      "id": "pm_curve",
-      "defType": "math/expression",
-      "position": {
-        "x": 410,
-        "y": 40
-      },
-      "params": {
-        "expr": "(vec2((R * (1 - k * 0.11) - r) * cos(i / 1400 * L * tau + a) + d * cos((R * (1 - k * 0.11) - r) / r * i / 1400 * L * tau - a), (R * (1 - k * 0.11) - r) * sin(i / 1400 * L * tau + a) - d * sin((R * (1 - k * 0.11) - r) / r * i / 1400 * L * tau - a))) * (250 * (0.5 + z * 0.8) / (abs(R - r) + d + 1)) * (1 + w * 0.08 * sin(i / 23 + t * 2)) * (1 + sw * 0.45)"
-      },
-      "parentId": "pm_layerLoop"
-    },
-    {
-      "id": "pm_angle",
-      "defType": "math/expression",
-      "position": {
-        "x": 144,
-        "y": 196
-      },
-      "params": {
-        "expr": "ph + t * s * (1 + k * 0.3) + k * tw * 1.2"
-      },
-      "parentId": "pm_layerLoop"
-    },
-    {
-      "id": "pm_lineCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 144,
-        "y": 404
-      },
-      "params": {
-        "expr": "hsl(fract(h + k * s), 0.85, 0.6, 0.85)"
-      },
-      "parentId": "pm_layerLoop"
+      "width": 2819,
+      "height": 691
     },
     {
       "id": "pm_lineStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 448,
-        "y": 424
+        "x": 1519,
+        "y": 322
       },
       "params": {},
       "parentId": "pm_layerLoop"
@@ -360,8 +294,8 @@
       "id": "pm_line",
       "defType": "draw/polygon",
       "position": {
-        "x": 694,
-        "y": 251
+        "x": 2604,
+        "y": 181
       },
       "params": {},
       "portValues": {
@@ -373,8 +307,8 @@
       "id": "pm_bloom",
       "defType": "gpu/effect",
       "position": {
-        "x": 1962,
-        "y": 889
+        "x": 3939,
+        "y": 720
       },
       "params": {
         "mode": "bloom"
@@ -388,8 +322,8 @@
       "id": "pm_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2227,
-        "y": 889
+        "x": 4204,
+        "y": 720
       },
       "params": {
         "width": 640,
@@ -403,64 +337,893 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "pm_twistBy",
+      "defType": "math/math",
+      "position": {
+        "x": 129,
+        "y": 40
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 320
+      },
+      "parentId": "pm_drag"
+    },
+    {
+      "id": "pm_twistTarget",
+      "defType": "logic/select",
+      "position": {
+        "x": 434,
+        "y": 83
+      },
+      "params": {},
+      "portValues": {
+        "b": 0
+      },
+      "parentId": "pm_drag"
+    },
+    {
+      "id": "pm_swellUp",
+      "defType": "math/math",
+      "position": {
+        "x": 138,
+        "y": 253
+      },
+      "params": {
+        "op": "negate",
+        "valueType": "number"
+      },
+      "parentId": "pm_drag"
+    },
+    {
+      "id": "pm_swellBy",
+      "defType": "math/math",
+      "position": {
+        "x": 403,
+        "y": 231
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 320
+      },
+      "parentId": "pm_drag"
+    },
+    {
+      "id": "pm_swellTarget",
+      "defType": "logic/select",
+      "position": {
+        "x": 670,
+        "y": 190
+      },
+      "params": {},
+      "portValues": {
+        "b": 0
+      },
+      "parentId": "pm_drag"
+    },
+    {
+      "id": "pm_phaseX1",
+      "defType": "math/math",
+      "position": {
+        "x": 128,
+        "y": 126
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 1.73
+      },
+      "parentId": "pm_phases"
+    },
+    {
+      "id": "pm_phaseX",
+      "defType": "math/math",
+      "position": {
+        "x": 392,
+        "y": 105
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.37
+      },
+      "parentId": "pm_phases"
+    },
+    {
+      "id": "pm_phaseNoise",
+      "defType": "noise/noise",
+      "position": {
+        "x": 656,
+        "y": 61
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "portValues": {
+        "y": 4.21
+      },
+      "parentId": "pm_phases"
+    },
+    {
+      "id": "pm_phase",
+      "defType": "math/math",
+      "position": {
+        "x": 918,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 6.283185307179586
+      },
+      "parentId": "pm_phases"
+    },
+    {
+      "id": "pm_zoomBy",
+      "defType": "math/math",
+      "position": {
+        "x": 130,
+        "y": 50
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.8
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_zoomHalf",
+      "defType": "math/math",
+      "position": {
+        "x": 399,
+        "y": 45
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 0.5
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_zoom",
+      "defType": "math/math",
+      "position": {
+        "x": 671,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 250
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_rollGap",
+      "defType": "math/math",
+      "position": {
+        "x": 130,
+        "y": 198
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_rollGapAbs",
+      "defType": "math/math",
+      "position": {
+        "x": 408,
+        "y": 193
+      },
+      "params": {
+        "op": "abs",
+        "valueType": "number"
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_extent",
+      "defType": "math/math",
+      "position": {
+        "x": 671,
+        "y": 188
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 3,
+        "valueType": "number"
+      },
+      "portValues": {
+        "c": 1
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_scale",
+      "defType": "math/math",
+      "position": {
+        "x": 944,
+        "y": 83
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_wobbleAlong",
+      "defType": "math/math",
+      "position": {
+        "x": 399,
+        "y": 386
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 23
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_wobbleT",
+      "defType": "math/math",
+      "position": {
+        "x": 130,
+        "y": 482
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 2
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_wobblePhase",
+      "defType": "math/math",
+      "position": {
+        "x": 671,
+        "y": 412
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_wobbleSin",
+      "defType": "math/math",
+      "position": {
+        "x": 953,
+        "y": 404
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_wobbleAmp",
+      "defType": "math/math",
+      "position": {
+        "x": 1211,
+        "y": 339
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 3,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.08
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_wobble",
+      "defType": "math/math",
+      "position": {
+        "x": 1481,
+        "y": 331
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_swellAmp",
+      "defType": "math/math",
+      "position": {
+        "x": 130,
+        "y": 630
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.45
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_swollen",
+      "defType": "math/math",
+      "position": {
+        "x": 1481,
+        "y": 479
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_stretch",
+      "defType": "math/math",
+      "position": {
+        "x": 1755,
+        "y": 371
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_spinRate",
+      "defType": "math/math",
+      "position": {
+        "x": 145,
+        "y": 85
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop",
+      "portValues": {
+        "b": 0.3
+      }
+    },
+    {
+      "id": "pm_spinFaster",
+      "defType": "math/math",
+      "position": {
+        "x": 416,
+        "y": 87
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "pm_spun",
+      "defType": "math/math",
+      "position": {
+        "x": 688,
+        "y": 68
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 3,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_fanned",
+      "defType": "math/math",
+      "position": {
+        "x": 145,
+        "y": 233
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 3,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop",
+      "portValues": {
+        "c": 1.2
+      }
+    },
+    {
+      "id": "pm_angle",
+      "defType": "math/math",
+      "position": {
+        "x": 962,
+        "y": 40
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 3,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_ringShrink",
+      "defType": "math/math",
+      "position": {
+        "x": 145,
+        "y": 403
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop",
+      "portValues": {
+        "b": 0.11
+      }
+    },
+    {
+      "id": "pm_ringLeft",
+      "defType": "math/math",
+      "position": {
+        "x": 416,
+        "y": 338
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "pm_layerR",
+      "defType": "math/math",
+      "position": {
+        "x": 688,
+        "y": 280
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_layerArm",
+      "defType": "math/math",
+      "position": {
+        "x": 962,
+        "y": 210
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_layerArmAbs",
+      "defType": "math/math",
+      "position": {
+        "x": 1231,
+        "y": 188
+      },
+      "params": {
+        "op": "abs",
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_layerExtent",
+      "defType": "math/math",
+      "position": {
+        "x": 1481,
+        "y": 167
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_layerRadius",
+      "defType": "math/math",
+      "position": {
+        "x": 1749,
+        "y": 140
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_curve",
+      "defType": "geometry/curve",
+      "position": {
+        "x": 2024,
+        "y": 40
+      },
+      "params": {
+        "mode": "hypotrochoid"
+      },
+      "parentId": "pm_layerLoop",
+      "portValues": {
+        "count": 1400
+      }
+    },
+    {
+      "id": "pm_wobbled",
+      "defType": "vec2/math",
+      "position": {
+        "x": 2317,
+        "y": 110
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_hueStep",
+      "defType": "math/math",
+      "position": {
+        "x": 145,
+        "y": 551
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_hueSum",
+      "defType": "math/math",
+      "position": {
+        "x": 416,
+        "y": 486
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_hueTurn",
+      "defType": "math/math",
+      "position": {
+        "x": 697,
+        "y": 438
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "pm_layerLoop"
+    },
+    {
+      "id": "pm_hueDeg",
+      "defType": "math/math",
+      "position": {
+        "x": 962,
+        "y": 391
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "pm_layerLoop",
+      "portValues": {
+        "b": 360
+      }
+    },
+    {
+      "id": "pm_lineCol",
+      "defType": "color/color",
+      "position": {
+        "x": 1230,
+        "y": 345
+      },
+      "params": {
+        "mode": "hsl"
+      },
+      "parentId": "pm_layerLoop",
+      "portValues": {
+        "s": 85.0,
+        "l": 60.0,
+        "a": 216.75
+      }
+    },
+    {
+      "id": "pm_drag",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 287,
+        "y": 121
+      },
+      "params": {
+        "label": "Drag",
+        "width": 1084,
+        "height": 535
+      },
+      "ports": [
+        {
+          "id": "x",
+          "name": "x",
+          "type": "number",
+          "direction": "input",
+          "y": 99
+        },
+        {
+          "id": "pressed",
+          "name": "pressed",
+          "type": "boolean",
+          "direction": "input",
+          "y": 180
+        },
+        {
+          "id": "y",
+          "name": "y",
+          "type": "number",
+          "direction": "input",
+          "y": 312
+        },
+        {
+          "id": "swell",
+          "name": "swell",
+          "type": "number",
+          "direction": "output",
+          "y": 227
+        },
+        {
+          "id": "fan",
+          "name": "fan",
+          "type": "number",
+          "direction": "output",
+          "y": 101
+        }
+      ],
+      "width": 1084,
+      "height": 535
+    },
+    {
+      "id": "pm_dragNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 129,
+        "y": 395
+      },
+      "params": {
+        "text": "While the button is held, the mouse's x fans the layers apart and its y swells them; both glide (Smooth) back to 0 when you let go.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "pm_drag"
+    },
+    {
+      "id": "pm_sizing",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 603,
+        "y": 464
+      },
+      "params": {
+        "label": "Size & wobble",
+        "width": 2035,
+        "height": 934
+      },
+      "ports": [
+        {
+          "id": "zoom",
+          "name": "zoom",
+          "type": "number",
+          "direction": "input",
+          "y": 131
+        },
+        {
+          "id": "bigR",
+          "name": "bigR",
+          "type": "number",
+          "direction": "input",
+          "y": 257
+        },
+        {
+          "id": "smallR",
+          "name": "smallR",
+          "type": "number",
+          "direction": "input",
+          "y": 279
+        },
+        {
+          "id": "pen",
+          "name": "pen",
+          "type": "number",
+          "direction": "input",
+          "y": 322
+        },
+        {
+          "id": "t",
+          "name": "t",
+          "type": "number",
+          "direction": "input",
+          "y": 541
+        },
+        {
+          "id": "wobble",
+          "name": "wobble",
+          "type": "number",
+          "direction": "input",
+          "y": 354
+        },
+        {
+          "id": "swell",
+          "name": "swell",
+          "type": "number",
+          "direction": "input",
+          "y": 689
+        },
+        {
+          "id": "scale",
+          "name": "scale",
+          "type": "number",
+          "direction": "output",
+          "y": 131
+        },
+        {
+          "id": "stretch",
+          "name": "stretch",
+          "type": "number",
+          "direction": "output",
+          "y": 407
+        }
+      ],
+      "width": 2035,
+      "height": 934
+    },
+    {
+      "id": "pm_sizingNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 130,
+        "y": 794
+      },
+      "params": {
+        "text": "Zoom sets the scale (the figure's raw size is about |R − r| + d); a sine running along each line and in time wobbles its points out and in, and the drag's swell grows them.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "pm_sizing"
+    },
+    {
+      "id": "pm_phases",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 605,
+        "y": 196
+      },
+      "params": {
+        "label": "Layer phases",
+        "width": 1198,
+        "height": 519
+      },
+      "ports": [
+        {
+          "id": "layerIdx",
+          "name": "layerIdx",
+          "type": "number",
+          "direction": "input",
+          "y": 185
+        },
+        {
+          "id": "phase",
+          "name": "phase",
+          "type": "number",
+          "direction": "output",
+          "y": 78
+        }
+      ],
+      "width": 1198,
+      "height": 519
+    },
+    {
+      "id": "pm_phasesNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 379
+      },
+      "params": {
+        "text": "Each layer starts at its own angle, from noise (Vary moves it).",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "pm_phases"
     }
   ],
   "edges": [
-    {
-      "id": "e_1",
-      "source": "pm_mouse",
-      "target": "pm_twistTarget",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_2",
-      "source": "pm_mouse",
-      "target": "pm_twistTarget",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_3",
-      "source": "pm_twistTarget",
-      "target": "pm_twist",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-value"
-    },
-    {
-      "id": "e_4",
-      "source": "pm_mouse",
-      "target": "pm_swellTarget",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_5",
-      "source": "pm_mouse",
-      "target": "pm_swellTarget",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_6",
-      "source": "pm_swellTarget",
-      "target": "pm_swell",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-value"
-    },
     {
       "id": "e_7",
       "source": "pm_layers",
       "target": "pm_layerIdx",
       "sourceHandle": "out-number",
       "targetHandle": "in-count"
-    },
-    {
-      "id": "e_8",
-      "source": "pm_layerIdx",
-      "target": "pm_phase",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-k"
     },
     {
       "id": "e_9",
@@ -470,151 +1233,11 @@
       "targetHandle": "in-k"
     },
     {
-      "id": "e_10",
-      "source": "pm_phase",
-      "target": "pm_layerLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-phase"
-    },
-    {
-      "id": "e_11",
-      "source": "pm_steps",
-      "target": "pm_curve",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_12",
-      "source": "pm_bigR",
-      "target": "pm_curve",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-R"
-    },
-    {
-      "id": "e_13",
-      "source": "pm_smallR",
-      "target": "pm_curve",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-r"
-    },
-    {
-      "id": "e_14",
-      "source": "pm_pen",
-      "target": "pm_curve",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_15",
-      "source": "pm_laps",
-      "target": "pm_curve",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-L"
-    },
-    {
-      "id": "e_16",
-      "source": "pm_layerLoop",
-      "target": "pm_curve",
-      "sourceHandle": "out-k",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_17",
-      "source": "pm_layerLoop",
-      "target": "pm_angle",
-      "sourceHandle": "out-phase",
-      "targetHandle": "in-ph"
-    },
-    {
-      "id": "e_18",
-      "source": "pm_spin",
-      "target": "pm_angle",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_19",
-      "source": "pm_twist",
-      "target": "pm_angle",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-tw"
-    },
-    {
-      "id": "e_20",
-      "source": "pm_layerLoop",
-      "target": "pm_angle",
-      "sourceHandle": "out-k",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_21",
-      "source": "pm_angle",
-      "target": "pm_curve",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_22",
-      "source": "pm_pad",
-      "target": "pm_curve",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-z"
-    },
-    {
-      "id": "e_23",
-      "source": "pm_pad",
-      "target": "pm_curve",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_24",
-      "source": "pm_swell",
-      "target": "pm_curve",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-sw"
-    },
-    {
-      "id": "e_25",
-      "source": "pm_hue",
-      "target": "pm_lineCol",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_26",
-      "source": "pm_hueSpread",
-      "target": "pm_lineCol",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_27",
-      "source": "pm_layerLoop",
-      "target": "pm_lineCol",
-      "sourceHandle": "out-k",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_28",
-      "source": "pm_lineCol",
-      "target": "pm_lineStroke",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
-    },
-    {
       "id": "e_29",
       "source": "pm_width",
       "target": "pm_lineStroke",
       "sourceHandle": "out-number",
       "targetHandle": "in-width"
-    },
-    {
-      "id": "e_30",
-      "source": "pm_curve",
-      "target": "pm_line",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-points"
     },
     {
       "id": "e_31",
@@ -650,6 +1273,636 @@
       "target": "pm_renderer",
       "sourceHandle": "out-out",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_b1_1",
+      "source": "pm_drag",
+      "target": "pm_twistBy",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_2",
+      "source": "pm_drag",
+      "target": "pm_twistTarget",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_3",
+      "source": "pm_twistBy",
+      "target": "pm_twistTarget",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_4",
+      "source": "pm_twistTarget",
+      "target": "pm_twist",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_b1_5",
+      "source": "pm_drag",
+      "target": "pm_swellUp",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_6",
+      "source": "pm_swellUp",
+      "target": "pm_swellBy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_7",
+      "source": "pm_drag",
+      "target": "pm_swellTarget",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_8",
+      "source": "pm_swellBy",
+      "target": "pm_swellTarget",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_9",
+      "source": "pm_swellTarget",
+      "target": "pm_swell",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_b1_10",
+      "source": "pm_phases",
+      "target": "pm_phaseX1",
+      "sourceHandle": "out-layerIdx",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_11",
+      "source": "pm_phaseX1",
+      "target": "pm_phaseX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_12",
+      "source": "pm_phaseX",
+      "target": "pm_phaseNoise",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_13",
+      "source": "pm_phaseNoise",
+      "target": "pm_phase",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_14",
+      "source": "pm_phases",
+      "target": "pm_layerLoop",
+      "sourceHandle": "out-phase",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_b1_15",
+      "source": "pm_sizing",
+      "target": "pm_zoomBy",
+      "sourceHandle": "out-zoom",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_16",
+      "source": "pm_zoomBy",
+      "target": "pm_zoomHalf",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_17",
+      "source": "pm_zoomHalf",
+      "target": "pm_zoom",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_18",
+      "source": "pm_sizing",
+      "target": "pm_rollGap",
+      "sourceHandle": "out-bigR",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_19",
+      "source": "pm_sizing",
+      "target": "pm_rollGap",
+      "sourceHandle": "out-smallR",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_20",
+      "source": "pm_rollGap",
+      "target": "pm_rollGapAbs",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_21",
+      "source": "pm_rollGapAbs",
+      "target": "pm_extent",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_22",
+      "source": "pm_sizing",
+      "target": "pm_extent",
+      "sourceHandle": "out-pen",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_23",
+      "source": "pm_zoom",
+      "target": "pm_scale",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_24",
+      "source": "pm_extent",
+      "target": "pm_scale",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_25",
+      "source": "pm_steps",
+      "target": "pm_wobbleAlong",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_26",
+      "source": "pm_sizing",
+      "target": "pm_wobbleT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_27",
+      "source": "pm_wobbleAlong",
+      "target": "pm_wobblePhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_28",
+      "source": "pm_wobbleT",
+      "target": "pm_wobblePhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_29",
+      "source": "pm_wobblePhase",
+      "target": "pm_wobbleSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_30",
+      "source": "pm_sizing",
+      "target": "pm_wobbleAmp",
+      "sourceHandle": "out-wobble",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_31",
+      "source": "pm_wobbleSin",
+      "target": "pm_wobbleAmp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_b1_32",
+      "source": "pm_wobbleAmp",
+      "target": "pm_wobble",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_33",
+      "source": "pm_sizing",
+      "target": "pm_swellAmp",
+      "sourceHandle": "out-swell",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_34",
+      "source": "pm_swellAmp",
+      "target": "pm_swollen",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_35",
+      "source": "pm_wobble",
+      "target": "pm_stretch",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_36",
+      "source": "pm_swollen",
+      "target": "pm_stretch",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_37",
+      "source": "pm_layerLoop",
+      "target": "pm_spinRate",
+      "sourceHandle": "out-k",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_38",
+      "source": "pm_spinRate",
+      "target": "pm_spinFaster",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_39",
+      "source": "pm_time",
+      "target": "pm_spun",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_40",
+      "source": "pm_spin",
+      "target": "pm_spun",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_41",
+      "source": "pm_spinFaster",
+      "target": "pm_spun",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_b1_42",
+      "source": "pm_layerLoop",
+      "target": "pm_fanned",
+      "sourceHandle": "out-k",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_43",
+      "source": "pm_drag",
+      "target": "pm_fanned",
+      "sourceHandle": "out-fan",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_44",
+      "source": "pm_layerLoop",
+      "target": "pm_angle",
+      "sourceHandle": "out-phase",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_45",
+      "source": "pm_spun",
+      "target": "pm_angle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_46",
+      "source": "pm_fanned",
+      "target": "pm_angle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_b1_47",
+      "source": "pm_layerLoop",
+      "target": "pm_ringShrink",
+      "sourceHandle": "out-k",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_48",
+      "source": "pm_ringShrink",
+      "target": "pm_ringLeft",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_49",
+      "source": "pm_bigR",
+      "target": "pm_layerR",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_50",
+      "source": "pm_ringLeft",
+      "target": "pm_layerR",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_51",
+      "source": "pm_layerR",
+      "target": "pm_layerArm",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_52",
+      "source": "pm_smallR",
+      "target": "pm_layerArm",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_53",
+      "source": "pm_layerArm",
+      "target": "pm_layerArmAbs",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_54",
+      "source": "pm_layerArmAbs",
+      "target": "pm_layerExtent",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_55",
+      "source": "pm_pen",
+      "target": "pm_layerExtent",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_56",
+      "source": "pm_sizing",
+      "target": "pm_layerRadius",
+      "sourceHandle": "out-scale",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_57",
+      "source": "pm_layerExtent",
+      "target": "pm_layerRadius",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_58",
+      "source": "pm_layerRadius",
+      "target": "pm_curve",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-radius"
+    },
+    {
+      "id": "e_b1_59",
+      "source": "pm_angle",
+      "target": "pm_curve",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-rotation"
+    },
+    {
+      "id": "e_b1_60",
+      "source": "pm_layerR",
+      "target": "pm_curve",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-R"
+    },
+    {
+      "id": "e_b1_61",
+      "source": "pm_smallR",
+      "target": "pm_curve",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-r"
+    },
+    {
+      "id": "e_b1_62",
+      "source": "pm_pen",
+      "target": "pm_curve",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_b1_63",
+      "source": "pm_laps",
+      "target": "pm_curve",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-laps"
+    },
+    {
+      "id": "e_b1_64",
+      "source": "pm_curve",
+      "target": "pm_wobbled",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_65",
+      "source": "pm_sizing",
+      "target": "pm_wobbled",
+      "sourceHandle": "out-stretch",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_b1_66",
+      "source": "pm_wobbled",
+      "target": "pm_line",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_b1_67",
+      "source": "pm_layerLoop",
+      "target": "pm_hueStep",
+      "sourceHandle": "out-k",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_68",
+      "source": "pm_hueSpread",
+      "target": "pm_hueStep",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_69",
+      "source": "pm_hue",
+      "target": "pm_hueSum",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_70",
+      "source": "pm_hueStep",
+      "target": "pm_hueSum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_71",
+      "source": "pm_hueSum",
+      "target": "pm_hueTurn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_72",
+      "source": "pm_hueTurn",
+      "target": "pm_hueDeg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_73",
+      "source": "pm_hueDeg",
+      "target": "pm_lineCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_b1_74",
+      "source": "pm_lineCol",
+      "target": "pm_lineStroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_b1_75",
+      "source": "pm_mouse",
+      "target": "pm_drag",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_76",
+      "source": "pm_mouse",
+      "target": "pm_drag",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_b1_77",
+      "source": "pm_mouse",
+      "target": "pm_drag",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_78",
+      "source": "pm_swell",
+      "target": "pm_drag",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-swell"
+    },
+    {
+      "id": "e_b1_79",
+      "source": "pm_twist",
+      "target": "pm_drag",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-fan"
+    },
+    {
+      "id": "e_b1_80",
+      "source": "pm_pad",
+      "target": "pm_sizing",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-zoom"
+    },
+    {
+      "id": "e_b1_81",
+      "source": "pm_bigR",
+      "target": "pm_sizing",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-bigR"
+    },
+    {
+      "id": "e_b1_82",
+      "source": "pm_smallR",
+      "target": "pm_sizing",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-smallR"
+    },
+    {
+      "id": "e_b1_83",
+      "source": "pm_pen",
+      "target": "pm_sizing",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-pen"
+    },
+    {
+      "id": "e_b1_84",
+      "source": "pm_time",
+      "target": "pm_sizing",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_b1_85",
+      "source": "pm_pad",
+      "target": "pm_sizing",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-wobble"
+    },
+    {
+      "id": "e_b1_86",
+      "source": "pm_drag",
+      "target": "pm_sizing",
+      "sourceHandle": "out-swell",
+      "targetHandle": "in-swell"
+    },
+    {
+      "id": "e_b1_87",
+      "source": "pm_scale",
+      "target": "pm_sizing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_b1_88",
+      "source": "pm_stretch",
+      "target": "pm_sizing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-stretch"
+    },
+    {
+      "id": "e_b1_89",
+      "source": "pm_layerIdx",
+      "target": "pm_phases",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-layerIdx"
+    },
+    {
+      "id": "e_b1_90",
+      "source": "pm_phase",
+      "target": "pm_phases",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-phase"
     }
   ],
   "presets": [

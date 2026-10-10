@@ -1,0 +1,418 @@
+{
+  "kind": "floret.patch",
+  "version": 4,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Rose Curve",
+    "createdAt": "2026-10-03T00:00:00.000Z",
+    "modifiedAt": "2026-10-03T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ex_c",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -274
+      },
+      "params": {
+        "text": "Rose curve\n\nCurve in `rose` mode traces a rose: n petals for an odd n, twice as many for an even one (the slider), and a `d` above 1 gives roses that take several turns to close. Each of its 900 points gets a dot: a Linear spread of hues, drifting with Time, runs twice round the colour wheel along the curve, and a Sine Spread ripples the dot sizes. An LFO turns `phase`, so the petals slowly rotate.\n\nTry Curve's other modes: lissajous, hypotrochoid (Spirograph), star, superformula.",
+        "width": 460,
+        "height": 210
+      },
+      "portValues": {
+        "text": "Rose curve\n\nCurve in `rose` mode traces a rose: n petals for an odd n, twice as many for an even one (the slider), and a `d` above 1 gives roses that take several turns to close. Each of its 900 points gets a dot: a Linear spread of hues, drifting with Time, runs twice round the colour wheel along the curve, and a Sine Spread ripples the dot sizes. An LFO turns `phase`, so the petals slowly rotate.\n\nTry Curve's other modes: lissajous, hypotrochoid (Spirograph), star, superformula.",
+        "width": 460,
+        "height": 210
+      }
+    },
+    {
+      "id": "ex_petals",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 346
+      },
+      "params": {
+        "value": 7,
+        "min": 1,
+        "max": 12,
+        "step": 1,
+        "label": "n (petals)"
+      },
+      "portValues": {
+        "value": 7,
+        "min": 1,
+        "max": 12,
+        "step": 1
+      }
+    },
+    {
+      "id": "ex_region",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1114,
+        "y": 169
+      },
+      "params": {
+        "width": 526,
+        "height": 281,
+        "label": "ForEach"
+      },
+      "ports": [
+        {
+          "id": "pos",
+          "name": "pos",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "col",
+          "name": "col",
+          "type": "color",
+          "direction": "input",
+          "y": 200
+        },
+        {
+          "id": "size",
+          "name": "size",
+          "type": "number",
+          "direction": "input",
+          "y": 123
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 89
+        }
+      ],
+      "width": 526,
+      "height": 281
+    },
+    {
+      "id": "ex_fill",
+      "defType": "style/fill",
+      "position": {
+        "x": 129,
+        "y": 163
+      },
+      "params": {},
+      "parentId": "ex_region"
+    },
+    {
+      "id": "ex_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 315,
+        "y": 52
+      },
+      "params": {},
+      "parentId": "ex_region"
+    },
+    {
+      "id": "ex_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 1736,
+        "y": 221
+      },
+      "params": {
+        "width": 500,
+        "height": 500,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.050980392156862744,
+          "b": 0.07058823529411765,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 500,
+        "height": 500,
+        "background": {
+          "r": 0.047058823529411764,
+          "g": 0.050980392156862744,
+          "b": 0.07058823529411765,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "ex_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 42,
+        "y": 472
+      },
+      "params": {}
+    },
+    {
+      "id": "ex_turn",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 10,
+        "y": 0
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 0.1,
+        "min": 0,
+        "max": 1,
+        "sync": "free"
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 0.1,
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "ex_rose",
+      "defType": "geometry/curve",
+      "position": {
+        "x": 291,
+        "y": 93
+      },
+      "params": {
+        "mode": "rose",
+        "count": 900,
+        "radius": 220,
+        "d": 1
+      },
+      "portValues": {
+        "count": 900,
+        "radius": 220,
+        "d": 1
+      }
+    },
+    {
+      "id": "ex_hues",
+      "defType": "spread/linear",
+      "position": {
+        "x": 316,
+        "y": 437
+      },
+      "params": {
+        "from": 0,
+        "to": 720,
+        "count": 900
+      },
+      "portValues": {
+        "from": 0,
+        "to": 720,
+        "count": 900
+      }
+    },
+    {
+      "id": "ex_drift",
+      "defType": "math/math",
+      "position": {
+        "x": 301,
+        "y": 585
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 18
+      },
+      "portValues": {
+        "b": 18
+      }
+    },
+    {
+      "id": "ex_hue",
+      "defType": "math/math",
+      "position": {
+        "x": 584,
+        "y": 476
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "ex_col",
+      "defType": "color/color",
+      "position": {
+        "x": 852,
+        "y": 425
+      },
+      "params": {
+        "mode": "hsl",
+        "s": 75,
+        "l": 62,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "s": 75,
+        "l": 62,
+        "a": 255
+      }
+    },
+    {
+      "id": "ex_roll",
+      "defType": "math/math",
+      "position": {
+        "x": 584,
+        "y": 328
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": -4
+      },
+      "portValues": {
+        "b": -4
+      }
+    },
+    {
+      "id": "ex_size",
+      "defType": "spread/sine",
+      "position": {
+        "x": 863,
+        "y": 233
+      },
+      "params": {},
+      "portValues": {
+        "count": 900,
+        "amplitude": 2,
+        "frequency": 30,
+        "offset": 3.5
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "ex_region",
+      "target": "ex_fill",
+      "sourceHandle": "out-col",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_2",
+      "source": "ex_fill",
+      "target": "ex_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_3",
+      "source": "ex_region",
+      "target": "ex_dot",
+      "sourceHandle": "out-pos",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_4",
+      "source": "ex_region",
+      "target": "ex_dot",
+      "sourceHandle": "out-size",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_5",
+      "source": "ex_region",
+      "target": "ex_dot",
+      "sourceHandle": "out-size",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_6",
+      "source": "ex_dot",
+      "target": "ex_region",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_7",
+      "source": "ex_region",
+      "target": "ex_renderer",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_8",
+      "source": "ex_petals",
+      "target": "ex_rose",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_9",
+      "source": "ex_turn",
+      "target": "ex_rose",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_10",
+      "source": "ex_rose",
+      "target": "ex_region",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_11",
+      "source": "ex_t",
+      "target": "ex_drift",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_12",
+      "source": "ex_hues",
+      "target": "ex_hue",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_13",
+      "source": "ex_drift",
+      "target": "ex_hue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_14",
+      "source": "ex_hue",
+      "target": "ex_col",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_15",
+      "source": "ex_col",
+      "target": "ex_region",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_16",
+      "source": "ex_t",
+      "target": "ex_roll",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_17",
+      "source": "ex_roll",
+      "target": "ex_size",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_18",
+      "source": "ex_size",
+      "target": "ex_region",
+      "sourceHandle": "out-samples",
+      "targetHandle": "in-size"
+    }
+  ]
+}

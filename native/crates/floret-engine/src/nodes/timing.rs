@@ -590,6 +590,20 @@ fn beat(init: &NodeInit) -> Box<dyn NodeImpl> {
     })
 }
 
+/// A step position a hair (1e-9 of a step, relative past one) short of or
+/// past a whole step, moved onto it. Frame times summed up drift by
+/// rounding, so a step due on a frame (6 steps a second at 60 fps starts
+/// one every 10 frames) would otherwise now and then start a frame late;
+/// `loop_phase` snaps loop boundaries the same way.
+fn snap_to_step(pos: f64) -> f64 {
+    let whole = pos.round();
+    if (pos - whole).abs() < 1e-9 * whole.abs().max(1.0) {
+        whole
+    } else {
+        pos
+    }
+}
+
 /// Swing a step position: within each pair of steps the first runs
 /// `1 + s` long and the second `1 − s` (`s = swing / 2`, `swing` 0..1).
 /// Returns (whole step number, phase within it).
@@ -641,6 +655,7 @@ impl NodeImpl for Beat {
                 0.0
             }
         };
+        let pos = snap_to_step(pos);
         st.pos = Some(pos);
         let restarted = reset && !st.was_reset;
         st.was_reset = reset;

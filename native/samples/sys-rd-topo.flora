@@ -16,12 +16,12 @@
         "y": -324
       },
       "params": {
-        "text": "Topographic reaction\n\nA three-stage pipeline. 1 · Gray–Scott reaction–diffusion (the Simulation node's `reaction` mode) grows from a few seed blobs; hold the mouse to paint more chemical into it. 2 · Contours reads the chemical picture as terrain (its `image` mode): filled bands for the elevation tints and finer isolines on top. 3 · Paper: film grain, like a printed survey map.\n\n• Drag on the canvas: paint.  • Bang: start over.  • Toggle: the raw chemicals instead of the map.\n• Presets panel: Coral, Maze, Spots, Fingerprints (the reaction's `preset`).\n• Slider into `levels`: how many contour bands.",
+        "text": "Topographic reaction\n\nA three-stage pipeline. 1 · Gray–Scott reaction–diffusion (the Simulation node's `reaction` mode) grows from a few seed blobs; hold the mouse to paint more chemical into it. 2 · Contours reads the chemical picture as terrain (its `image` mode): filled bands for the elevation tints and finer isolines on top. 3 · Paper: film grain, like a printed survey map.\n\n• Drag on the canvas: paint.  • Bang: start over.  • Toggle: the raw chemicals instead of the map.\n• Presets panel: Coral, Maze, Spots, Fingerprints (the reaction's `preset`).\n• Slider into `levels`: how many contour bands (the isolines run twice as dense, at half the spacing).",
         "width": 560,
         "height": 260
       },
       "portValues": {
-        "text": "Topographic reaction\n\nA three-stage pipeline. 1 · Gray–Scott reaction–diffusion (the Simulation node's `reaction` mode) grows from a few seed blobs; hold the mouse to paint more chemical into it. 2 · Contours reads the chemical picture as terrain (its `image` mode): filled bands for the elevation tints and finer isolines on top. 3 · Paper: film grain, like a printed survey map.\n\n• Drag on the canvas: paint.  • Bang: start over.  • Toggle: the raw chemicals instead of the map.\n• Presets panel: Coral, Maze, Spots, Fingerprints (the reaction's `preset`).\n• Slider into `levels`: how many contour bands.",
+        "text": "Topographic reaction\n\nA three-stage pipeline. 1 · Gray–Scott reaction–diffusion (the Simulation node's `reaction` mode) grows from a few seed blobs; hold the mouse to paint more chemical into it. 2 · Contours reads the chemical picture as terrain (its `image` mode): filled bands for the elevation tints and finer isolines on top. 3 · Paper: film grain, like a printed survey map.\n\n• Drag on the canvas: paint.  • Bang: start over.  • Toggle: the raw chemicals instead of the map.\n• Presets panel: Coral, Maze, Spots, Fingerprints (the reaction's `preset`).\n• Slider into `levels`: how many contour bands (the isolines run twice as dense, at half the spacing).",
         "width": 560,
         "height": 260
       }
@@ -30,8 +30,8 @@
       "id": "rdt_reset",
       "defType": "io/bang",
       "position": {
-        "x": 795,
-        "y": 869
+        "x": 794,
+        "y": 760
       },
       "params": {},
       "portValues": {}
@@ -40,8 +40,8 @@
       "id": "rdt_showRaw",
       "defType": "io/toggle",
       "position": {
-        "x": 2352,
-        "y": 272
+        "x": 2323,
+        "y": 246
       },
       "params": {
         "value": false
@@ -54,7 +54,7 @@
       "id": "rdt_levels",
       "defType": "io/slider",
       "position": {
-        "x": 1089,
+        "x": 794,
         "y": 864
       },
       "params": {
@@ -73,7 +73,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 53,
-        "y": 873
+        "y": 777
       },
       "params": {},
       "portValues": {}
@@ -83,29 +83,17 @@
       "defType": "vec2/make",
       "position": {
         "x": 438,
-        "y": 833
+        "y": 743
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "rdt_brushOn",
-      "defType": "math/expression",
-      "position": {
-        "x": 397,
-        "y": 959
-      },
-      "params": {
-        "expr": "p ? 1 : 0"
-      },
       "portValues": {}
     },
     {
       "id": "rdt_brush",
       "defType": "spread/sublist",
       "position": {
-        "x": 798,
-        "y": 721
+        "x": 797,
+        "y": 612
       },
       "params": {
         "op": "take"
@@ -117,7 +105,7 @@
       "defType": "geometry/scatter",
       "position": {
         "x": 0,
-        "y": 470
+        "y": 363
       },
       "params": {
         "mode": "poisson"
@@ -140,7 +128,7 @@
       "defType": "style/fill",
       "position": {
         "x": 33,
-        "y": 706
+        "y": 599
       },
       "params": {},
       "portValues": {
@@ -157,7 +145,7 @@
       "defType": "region/foreach",
       "position": {
         "x": 311,
-        "y": 531
+        "y": 424
       },
       "params": {
         "width": 339,
@@ -201,8 +189,8 @@
       "id": "rdt_rasterize",
       "defType": "image/from-layer",
       "position": {
-        "x": 824,
-        "y": 573
+        "x": 823,
+        "y": 464
       },
       "params": {},
       "portValues": {
@@ -214,8 +202,8 @@
       "id": "rdt_sim",
       "defType": "particles/simulation",
       "position": {
-        "x": 1092,
-        "y": 423
+        "x": 1085,
+        "y": 358
       },
       "params": {
         "mode": "reaction",
@@ -237,8 +225,8 @@
       "id": "rdt_tints",
       "defType": "color/palette",
       "position": {
-        "x": 1416,
-        "y": 822
+        "x": 1399,
+        "y": 712
       },
       "params": {
         "stopCount": 6,
@@ -260,23 +248,11 @@
       }
     },
     {
-      "id": "rdt_bandStep",
-      "defType": "math/expression",
-      "position": {
-        "x": 1416,
-        "y": 680
-      },
-      "params": {
-        "expr": "0.85 / n"
-      },
-      "portValues": {}
-    },
-    {
       "id": "rdt_bands",
       "defType": "geometry/contours",
       "position": {
-        "x": 1756,
-        "y": 650
+        "x": 1728,
+        "y": 583
       },
       "params": {
         "mode": "image"
@@ -297,7 +273,7 @@
       "id": "rdt_smoothTerrain",
       "defType": "image/filter",
       "position": {
-        "x": 1412,
+        "x": 1395,
         "y": 532
       },
       "params": {
@@ -308,35 +284,11 @@
       }
     },
     {
-      "id": "rdt_lineStep",
-      "defType": "math/expression",
-      "position": {
-        "x": 1416,
-        "y": 1222
-      },
-      "params": {
-        "expr": "0.85 / n / 2"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "rdt_lineCount",
-      "defType": "math/expression",
-      "position": {
-        "x": 1416,
-        "y": 1080
-      },
-      "params": {
-        "expr": "n * 2"
-      },
-      "portValues": {}
-    },
-    {
       "id": "rdt_inkStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 1100,
-        "y": 1212
+        "x": 1093,
+        "y": 1115
       },
       "params": {},
       "portValues": {
@@ -353,8 +305,8 @@
       "id": "rdt_inkNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 1456,
-        "y": 1364
+        "x": 1439,
+        "y": 1266
       },
       "params": {},
       "portValues": {}
@@ -363,8 +315,8 @@
       "id": "rdt_isolines",
       "defType": "geometry/contours",
       "position": {
-        "x": 1756,
-        "y": 930
+        "x": 1728,
+        "y": 863
       },
       "params": {
         "mode": "image"
@@ -385,7 +337,7 @@
       "id": "rdt_paperFill",
       "defType": "style/fill",
       "position": {
-        "x": 1433,
+        "x": 1416,
         "y": 406
       },
       "params": {},
@@ -402,8 +354,8 @@
       "id": "rdt_paper",
       "defType": "draw/rect",
       "position": {
-        "x": 1777,
-        "y": 458
+        "x": 1749,
+        "y": 391
       },
       "params": {
         "anchor": "center"
@@ -423,7 +375,7 @@
       "defType": "style/stroke",
       "position": {
         "x": 27,
-        "y": 1246
+        "y": 1151
       },
       "params": {},
       "portValues": {
@@ -441,7 +393,7 @@
       "defType": "style/no-fill",
       "position": {
         "x": 437,
-        "y": 1246
+        "y": 1151
       },
       "params": {},
       "portValues": {}
@@ -451,7 +403,7 @@
       "defType": "draw/ellipse",
       "position": {
         "x": 829,
-        "y": 1158
+        "y": 1063
       },
       "params": {},
       "portValues": {
@@ -463,8 +415,8 @@
       "id": "rdt_map",
       "defType": "transform/group",
       "position": {
-        "x": 2062,
-        "y": 793
+        "x": 2034,
+        "y": 729
       },
       "params": {
         "slotCount": 4
@@ -475,8 +427,8 @@
       "id": "rdt_grain",
       "defType": "gpu/effect",
       "position": {
-        "x": 2352,
-        "y": 597
+        "x": 2322,
+        "y": 549
       },
       "params": {
         "mode": "grain"
@@ -490,7 +442,7 @@
       "id": "rdt_darkFill",
       "defType": "style/fill",
       "position": {
-        "x": 1106,
+        "x": 1099,
         "y": 88
       },
       "params": {},
@@ -507,7 +459,7 @@
       "id": "rdt_darkRect",
       "defType": "draw/rect",
       "position": {
-        "x": 1446,
+        "x": 1428,
         "y": 0
       },
       "params": {
@@ -527,7 +479,7 @@
       "id": "rdt_rawImage",
       "defType": "draw/image",
       "position": {
-        "x": 1451,
+        "x": 1433,
         "y": 192
       },
       "params": {},
@@ -551,8 +503,8 @@
       "id": "rdt_rawView",
       "defType": "transform/group",
       "position": {
-        "x": 1747,
-        "y": 173
+        "x": 1720,
+        "y": 164
       },
       "params": {
         "slotCount": 2
@@ -563,8 +515,8 @@
       "id": "rdt_view",
       "defType": "logic/select",
       "position": {
-        "x": 2643,
-        "y": 379
+        "x": 2611,
+        "y": 347
       },
       "params": {},
       "portValues": {}
@@ -573,8 +525,8 @@
       "id": "rdt_r",
       "defType": "render/renderer",
       "position": {
-        "x": 2844,
-        "y": 379
+        "x": 2812,
+        "y": 347
       },
       "params": {
         "width": 600,
@@ -596,6 +548,62 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "rdt_brushOnNum",
+      "defType": "convert/convert",
+      "position": {
+        "x": 410,
+        "y": 869
+      },
+      "params": {
+        "to": "number"
+      }
+    },
+    {
+      "id": "rdt_bandSpan",
+      "defType": "math/math",
+      "position": {
+        "x": 1082,
+        "y": 816
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 0.85
+      }
+    },
+    {
+      "id": "rdt_lineSpan",
+      "defType": "math/math",
+      "position": {
+        "x": 1399,
+        "y": 1118
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "rdt_lineLevels",
+      "defType": "math/math",
+      "position": {
+        "x": 1399,
+        "y": 970
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 2
+      }
     }
   ],
   "edges": [
@@ -615,290 +623,290 @@
     },
     {
       "id": "e_3",
-      "source": "rdt_mouse",
-      "target": "rdt_brushOn",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_4",
       "source": "rdt_mpos",
       "target": "rdt_brush",
       "sourceHandle": "out-vector",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_5",
-      "source": "rdt_brushOn",
+      "id": "e_4",
+      "source": "rdt_brushOnNum",
       "target": "rdt_brush",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-count"
     },
     {
-      "id": "e_6",
+      "id": "e_5",
       "source": "rdt_seedSpots",
       "target": "rdt_seedBlobs",
       "sourceHandle": "out-points",
       "targetHandle": "in-p"
     },
     {
-      "id": "e_7",
+      "id": "e_6",
       "source": "rdt_seedBlobs",
       "target": "rdt_blob",
       "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_8",
+      "id": "e_7",
       "source": "rdt_white",
       "target": "rdt_blob",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_9",
+      "id": "e_8",
       "source": "rdt_blob",
       "target": "rdt_seedBlobs",
       "sourceHandle": "out-shape",
       "targetHandle": "in-l"
     },
     {
-      "id": "e_10",
+      "id": "e_9",
       "source": "rdt_seedBlobs",
       "target": "rdt_rasterize",
       "sourceHandle": "out-l",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_11",
+      "id": "e_10",
       "source": "rdt_rasterize",
       "target": "rdt_sim",
       "sourceHandle": "out-image",
       "targetHandle": "in-seedImage"
     },
     {
-      "id": "e_12",
+      "id": "e_11",
       "source": "rdt_brush",
       "target": "rdt_sim",
       "sourceHandle": "out-result",
       "targetHandle": "in-paint"
     },
     {
-      "id": "e_13",
+      "id": "e_12",
       "source": "rdt_reset",
       "target": "rdt_sim",
       "sourceHandle": "out-bang",
       "targetHandle": "in-reset"
     },
     {
-      "id": "e_14",
-      "source": "rdt_levels",
-      "target": "rdt_bandStep",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_15",
+      "id": "e_13",
       "source": "rdt_sim",
       "target": "rdt_smoothTerrain",
       "sourceHandle": "out-image",
       "targetHandle": "in-image"
     },
     {
-      "id": "e_16",
+      "id": "e_14",
       "source": "rdt_smoothTerrain",
       "target": "rdt_bands",
       "sourceHandle": "out-image",
       "targetHandle": "in-image"
     },
     {
-      "id": "e_17",
+      "id": "e_15",
       "source": "rdt_levels",
       "target": "rdt_bands",
       "sourceHandle": "out-number",
       "targetHandle": "in-levels"
     },
     {
-      "id": "e_18",
-      "source": "rdt_bandStep",
+      "id": "e_16",
+      "source": "rdt_bandSpan",
       "target": "rdt_bands",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-step"
     },
     {
-      "id": "e_19",
+      "id": "e_17",
       "source": "rdt_tints",
       "target": "rdt_bands",
       "sourceHandle": "out-colors",
       "targetHandle": "in-colors"
     },
     {
-      "id": "e_20",
-      "source": "rdt_levels",
-      "target": "rdt_lineStep",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_21",
-      "source": "rdt_levels",
-      "target": "rdt_lineCount",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_22",
+      "id": "e_18",
       "source": "rdt_inkStroke",
       "target": "rdt_inkNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_23",
+      "id": "e_19",
       "source": "rdt_smoothTerrain",
       "target": "rdt_isolines",
       "sourceHandle": "out-image",
       "targetHandle": "in-image"
     },
     {
-      "id": "e_24",
-      "source": "rdt_lineCount",
+      "id": "e_20",
+      "source": "rdt_lineLevels",
       "target": "rdt_isolines",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-levels"
     },
     {
-      "id": "e_25",
-      "source": "rdt_lineStep",
+      "id": "e_21",
+      "source": "rdt_lineSpan",
       "target": "rdt_isolines",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-step"
     },
     {
-      "id": "e_26",
+      "id": "e_22",
       "source": "rdt_inkNoFill",
       "target": "rdt_isolines",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_27",
+      "id": "e_23",
       "source": "rdt_paperFill",
       "target": "rdt_paper",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_28",
+      "id": "e_24",
       "source": "rdt_ringStroke",
       "target": "rdt_ringNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_29",
+      "id": "e_25",
       "source": "rdt_mpos",
       "target": "rdt_brushRing",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_30",
+      "id": "e_26",
       "source": "rdt_ringNoFill",
       "target": "rdt_brushRing",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_31",
+      "id": "e_27",
       "source": "rdt_paper",
       "target": "rdt_map",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_32",
+      "id": "e_28",
       "source": "rdt_bands",
       "target": "rdt_map",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_33",
+      "id": "e_29",
       "source": "rdt_isolines",
       "target": "rdt_map",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_34",
+      "id": "e_30",
       "source": "rdt_brushRing",
       "target": "rdt_map",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_35",
+      "id": "e_31",
       "source": "rdt_map",
       "target": "rdt_grain",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_36",
+      "id": "e_32",
       "source": "rdt_darkFill",
       "target": "rdt_darkRect",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_37",
+      "id": "e_33",
       "source": "rdt_sim",
       "target": "rdt_rawImage",
       "sourceHandle": "out-image",
       "targetHandle": "in-image"
     },
     {
-      "id": "e_38",
+      "id": "e_34",
       "source": "rdt_darkRect",
       "target": "rdt_rawView",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_39",
+      "id": "e_35",
       "source": "rdt_rawImage",
       "target": "rdt_rawView",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_40",
+      "id": "e_36",
       "source": "rdt_showRaw",
       "target": "rdt_view",
       "sourceHandle": "out-bool",
       "targetHandle": "in-cond"
     },
     {
-      "id": "e_41",
+      "id": "e_37",
       "source": "rdt_rawView",
       "target": "rdt_view",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_42",
+      "id": "e_38",
       "source": "rdt_grain",
       "target": "rdt_view",
       "sourceHandle": "out-out",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_43",
+      "id": "e_39",
       "source": "rdt_view",
       "target": "rdt_r",
       "sourceHandle": "out-selected",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_40",
+      "source": "rdt_mouse",
+      "target": "rdt_brushOnNum",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_41",
+      "source": "rdt_levels",
+      "target": "rdt_bandSpan",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_42",
+      "source": "rdt_bandSpan",
+      "target": "rdt_lineSpan",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_43",
+      "source": "rdt_levels",
+      "target": "rdt_lineLevels",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
     }
   ],
   "presets": [

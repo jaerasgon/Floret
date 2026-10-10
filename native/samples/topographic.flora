@@ -16,12 +16,12 @@
         "y": -284
       },
       "params": {
-        "text": "Topographic\n\nNoise sampled on a 120 × 84 grid (a little bigger than the canvas, so the edge lines fall outside) is a height field; Contours (`field` mode) traces it at 14 levels, like the lines of a map. The noise drifts with time, so the hills slowly shift.\n\nTry Contours' `points` mode (metaballs from a point spread) or `image` mode (outlines of a picture's brightness).",
+        "text": "Topographic\n\nNoise sampled on a 120 × 84 grid (a little bigger than the canvas, so the edge lines fall outside) is a height field; Contours (`field` mode) traces it at 14 levels, like the lines of a map. Vector Math scales the grid down into noise space, and Time slides the noise along `y`, so the hills slowly shift.\n\nTry Contours' `points` mode (metaballs from a point spread) or `image` mode (outlines of a picture's brightness).",
         "width": 470,
         "height": 220
       },
       "portValues": {
-        "text": "Topographic\n\nNoise sampled on a 120 × 84 grid (a little bigger than the canvas, so the edge lines fall outside) is a height field; Contours (`field` mode) traces it at 14 levels, like the lines of a map. The noise drifts with time, so the hills slowly shift.\n\nTry Contours' `points` mode (metaballs from a point spread) or `image` mode (outlines of a picture's brightness).",
+        "text": "Topographic\n\nNoise sampled on a 120 × 84 grid (a little bigger than the canvas, so the edge lines fall outside) is a height field; Contours (`field` mode) traces it at 14 levels, like the lines of a map. Vector Math scales the grid down into noise space, and Time slides the noise along `y`, so the hills slowly shift.\n\nTry Contours' `points` mode (metaballs from a point spread) or `image` mode (outlines of a picture's brightness).",
         "width": 470,
         "height": 220
       }
@@ -31,7 +31,7 @@
       "defType": "spread/grid",
       "position": {
         "x": 0,
-        "y": 38
+        "y": 0
       },
       "params": {
         "cols": 120,
@@ -47,23 +47,11 @@
       }
     },
     {
-      "id": "tp_warp",
-      "defType": "math/expression",
-      "position": {
-        "x": 223,
-        "y": 0
-      },
-      "params": {
-        "expr": "vec2(p.x, p.y) * 0.0045 + vec2(0.0, t * 0.04)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "tp_noise",
       "defType": "noise/noise",
       "position": {
-        "x": 487,
-        "y": 16
+        "x": 510,
+        "y": 30
       },
       "params": {
         "mode": "simplex"
@@ -77,8 +65,8 @@
       "id": "tp_line",
       "defType": "style/stroke",
       "position": {
-        "x": 503,
-        "y": 318
+        "x": 526,
+        "y": 332
       },
       "params": {
         "color": {
@@ -105,8 +93,8 @@
       "id": "tp_nofill",
       "defType": "style/no-fill",
       "position": {
-        "x": 265,
-        "y": 384
+        "x": 272,
+        "y": 398
       },
       "params": {}
     },
@@ -114,8 +102,8 @@
       "id": "tp_c",
       "defType": "geometry/contours",
       "position": {
-        "x": 760,
-        "y": 68
+        "x": 782,
+        "y": 71
       },
       "params": {
         "mode": "field"
@@ -135,8 +123,8 @@
       "id": "tp_r",
       "defType": "render/renderer",
       "position": {
-        "x": 1007,
-        "y": 68
+        "x": 1029,
+        "y": 71
       },
       "params": {
         "width": 720,
@@ -158,50 +146,104 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "tp_zoom",
+      "defType": "vec2/math",
+      "position": {
+        "x": 226,
+        "y": 0
+      },
+      "params": {
+        "op": "scale",
+        "s": 0.0045
+      },
+      "portValues": {
+        "s": 0.0045
+      }
+    },
+    {
+      "id": "tp_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 22,
+        "y": 192
+      },
+      "params": {}
+    },
+    {
+      "id": "tp_drift",
+      "defType": "math/math",
+      "position": {
+        "x": 232,
+        "y": 148
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 0.04
+      },
+      "portValues": {
+        "b": 0.04
+      }
     }
   ],
   "edges": [
     {
-      "id": "e_tp_grid_tp_warp_p",
-      "source": "tp_grid",
-      "target": "tp_warp",
-      "sourceHandle": "out-positions",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_tp_warp_tp_noise_pos",
-      "source": "tp_warp",
-      "target": "tp_noise",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-pos"
-    },
-    {
-      "id": "e_tp_noise_tp_c_values",
+      "id": "e_1",
       "source": "tp_noise",
       "target": "tp_c",
       "sourceHandle": "out-noise",
       "targetHandle": "in-values"
     },
     {
-      "id": "e_tp_nofill_tp_line_base",
+      "id": "e_2",
       "source": "tp_nofill",
       "target": "tp_line",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_tp_line_tp_c_style",
+      "id": "e_3",
       "source": "tp_line",
       "target": "tp_c",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_tp_c_tp_r_layers",
+      "id": "e_4",
       "source": "tp_c",
       "target": "tp_r",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_5",
+      "source": "tp_grid",
+      "target": "tp_zoom",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_6",
+      "source": "tp_t",
+      "target": "tp_drift",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_7",
+      "source": "tp_zoom",
+      "target": "tp_noise",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_8",
+      "source": "tp_drift",
+      "target": "tp_noise",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
     }
   ]
 }

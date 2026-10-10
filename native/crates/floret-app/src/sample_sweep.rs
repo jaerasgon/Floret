@@ -191,7 +191,7 @@ const COMPARE_RENDERS: &[u32] = &[1, 30, 119];
 
 /// A value as comparable text: layers, styles and handles in full (their
 /// `Debug` is a summary), image ids (a global counter) left out.
-fn canon_value(v: &floret_engine::Value) -> String {
+pub(crate) fn canon_value(v: &floret_engine::Value) -> String {
     use floret_engine::Value;
     let s = match v {
         Value::Scene(n) => format!("{:?}", n.to_value()),

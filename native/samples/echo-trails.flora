@@ -16,59 +16,22 @@
         "y": -284
       },
       "params": {
-        "text": "Echo trails\n\nA star swings round a Lissajous path. Echo (`echo` mode) keeps the last frames on the GPU and draws ten earlier ones under it, three frames apart, each fainter.\n\nTry `trails` (a fading smear), `delay`, `slit-scan` (each row from a different moment) or `freeze`.",
+        "text": "Echo trails\n\nA star (Curve in `star` mode) spins twice a loop and swings round a Lissajous path: two LFOs, three and four swings a loop, give its x and y. Echo (`echo` mode) keeps the last frames on the GPU and draws ten earlier ones under it, three frames apart, each fainter.\n\nTry `trails` (a fading smear), `delay`, `slit-scan` (each row from a different moment) or `freeze`.",
         "width": 460,
         "height": 220
       },
       "portValues": {
-        "text": "Echo trails\n\nA star swings round a Lissajous path. Echo (`echo` mode) keeps the last frames on the GPU and draws ten earlier ones under it, three frames apart, each fainter.\n\nTry `trails` (a fading smear), `delay`, `slit-scan` (each row from a different moment) or `freeze`.",
+        "text": "Echo trails\n\nA star (Curve in `star` mode) spins twice a loop and swings round a Lissajous path: two LFOs, three and four swings a loop, give its x and y. Echo (`echo` mode) keeps the last frames on the GPU and draws ten earlier ones under it, three frames apart, each fainter.\n\nTry `trails` (a fading smear), `delay`, `slit-scan` (each row from a different moment) or `freeze`.",
         "width": 460,
         "height": 220
       }
-    },
-    {
-      "id": "et_t",
-      "defType": "time/seconds",
-      "position": {
-        "x": 267,
-        "y": 41
-      },
-      "params": {}
-    },
-    {
-      "id": "et_ring",
-      "defType": "spread/ring",
-      "position": {
-        "x": 0,
-        "y": 205
-      },
-      "params": {
-        "count": 10,
-        "radius": 46
-      },
-      "portValues": {
-        "count": 10,
-        "radius": 46
-      }
-    },
-    {
-      "id": "et_star",
-      "defType": "math/expression",
-      "position": {
-        "x": 225,
-        "y": 167
-      },
-      "params": {
-        "expr": "vec2(p.x, p.y) * (1 - 0.5 * (index % 2))"
-      },
-      "portValues": {}
     },
     {
       "id": "et_col",
       "defType": "style/fill",
       "position": {
-        "x": 242,
-        "y": 309
+        "x": 27,
+        "y": 972
       },
       "params": {
         "color": {
@@ -91,8 +54,8 @@
       "id": "et_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 538,
-        "y": 234
+        "x": 340,
+        "y": 756
       },
       "params": {},
       "portValues": {
@@ -100,44 +63,20 @@
       }
     },
     {
-      "id": "et_spin",
-      "defType": "math/expression",
-      "position": {
-        "x": 499,
-        "y": 92
-      },
-      "params": {
-        "expr": "tau * l * 2"
-      },
-      "portValues": {}
-    },
-    {
       "id": "et_rot",
       "defType": "transform/rotate",
       "position": {
-        "x": 812,
-        "y": 153
+        "x": 596,
+        "y": 508
       },
       "params": {}
-    },
-    {
-      "id": "et_path",
-      "defType": "math/expression",
-      "position": {
-        "x": 772,
-        "y": 0
-      },
-      "params": {
-        "expr": "vec2(190 * sin(tau * l * 3), 110 * sin(tau * l * 4))"
-      },
-      "portValues": {}
     },
     {
       "id": "et_move",
       "defType": "transform/translate",
       "position": {
-        "x": 1042,
-        "y": 90
+        "x": 804,
+        "y": 356
       },
       "params": {}
     },
@@ -145,8 +84,8 @@
       "id": "et_echo",
       "defType": "gpu/echo",
       "position": {
-        "x": 1230,
-        "y": 46
+        "x": 1010,
+        "y": 312
       },
       "params": {
         "mode": "echo"
@@ -161,8 +100,8 @@
       "id": "et_r",
       "defType": "render/renderer",
       "position": {
-        "x": 1495,
-        "y": 46
+        "x": 1275,
+        "y": 312
       },
       "params": {
         "width": 640,
@@ -184,85 +123,177 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "et_star",
+      "defType": "geometry/curve",
+      "position": {
+        "x": 0,
+        "y": 692
+      },
+      "params": {
+        "mode": "star",
+        "count": 10,
+        "radius": 46,
+        "points": 5,
+        "inner": 0.5,
+        "rotation": 1.5707963267948966
+      },
+      "portValues": {
+        "count": 10,
+        "radius": 46,
+        "points": 5,
+        "inner": 0.5,
+        "rotation": 1.5707963267948966
+      }
+    },
+    {
+      "id": "et_spin",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 317,
+        "y": 410
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 2,
+        "min": 0,
+        "max": 6.283185307179586,
+        "sync": "loop"
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 2,
+        "min": 0,
+        "max": 6.283185307179586
+      }
+    },
+    {
+      "id": "et_x",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 19,
+        "y": 0
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 3,
+        "min": -190,
+        "max": 190,
+        "offset": 0.25,
+        "sync": "loop"
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 3,
+        "min": -190,
+        "max": 190,
+        "offset": 0.25
+      }
+    },
+    {
+      "id": "et_y",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 19,
+        "y": 346
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 4,
+        "min": -110,
+        "max": 110,
+        "offset": 0.25,
+        "sync": "loop"
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 4,
+        "min": -110,
+        "max": 110,
+        "offset": 0.25
+      }
+    },
+    {
+      "id": "et_path",
+      "defType": "vec2/make",
+      "position": {
+        "x": 349,
+        "y": 227
+      },
+      "params": {}
     }
   ],
   "edges": [
     {
-      "id": "e_et_t_et_spin_l",
-      "source": "et_t",
-      "target": "et_spin",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_et_t_et_path_l",
-      "source": "et_t",
-      "target": "et_path",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_et_ring_et_star_p",
-      "source": "et_ring",
-      "target": "et_star",
-      "sourceHandle": "out-positions",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_et_star_et_poly_points",
-      "source": "et_star",
-      "target": "et_poly",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-points"
-    },
-    {
-      "id": "e_et_col_et_poly_style",
+      "id": "e_1",
       "source": "et_col",
       "target": "et_poly",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_et_spin_et_rot_angle",
-      "source": "et_spin",
-      "target": "et_rot",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-angle"
-    },
-    {
-      "id": "e_et_poly_et_rot_layer",
+      "id": "e_2",
       "source": "et_poly",
       "target": "et_rot",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_et_path_et_move_by",
-      "source": "et_path",
-      "target": "et_move",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-by"
-    },
-    {
-      "id": "e_et_rot_et_move_layer",
+      "id": "e_3",
       "source": "et_rot",
       "target": "et_move",
       "sourceHandle": "out-rotated",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_et_move_et_echo_input",
+      "id": "e_4",
       "source": "et_move",
       "target": "et_echo",
       "sourceHandle": "out-translated",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_et_echo_et_r_layers",
+      "id": "e_5",
       "source": "et_echo",
       "target": "et_r",
       "sourceHandle": "out-out",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_6",
+      "source": "et_star",
+      "target": "et_poly",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_7",
+      "source": "et_spin",
+      "target": "et_rot",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_8",
+      "source": "et_x",
+      "target": "et_path",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_9",
+      "source": "et_y",
+      "target": "et_path",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_10",
+      "source": "et_path",
+      "target": "et_move",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-by"
     }
   ],
   "loopLength": 8

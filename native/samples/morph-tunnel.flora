@@ -16,50 +16,22 @@
         "y": -294
       },
       "params": {
-        "text": "Morph tunnel\n\nShape Morph blends a circle into a five-point star by `t`. A ForEach draws 22 of them, each smaller, turned a little more and at its own `t`, which rolls round with the loop: the shapes breathe from round to spiky and back.\n\nWire any two shapes into `a` and `b`: glyph outlines, a polygon, Cells.",
+        "text": "Morph tunnel\n\nShape Morph blends a circle into a five-point star (Curve) by `t`. A ForEach draws 22 of them, each smaller, turned a little more and with its own hue (Lerp by the shape's place `f`). Each `t` is an LFO sine through the loop, offset by `f`, so the shapes breathe from round to spiky and back one after another; a slow saw turns the whole tunnel.\n\nWire any two shapes into `a` and `b`: glyph outlines, a polygon, Cells.",
         "width": 470,
         "height": 230
       },
       "portValues": {
-        "text": "Morph tunnel\n\nShape Morph blends a circle into a five-point star by `t`. A ForEach draws 22 of them, each smaller, turned a little more and at its own `t`, which rolls round with the loop: the shapes breathe from round to spiky and back.\n\nWire any two shapes into `a` and `b`: glyph outlines, a polygon, Cells.",
+        "text": "Morph tunnel\n\nShape Morph blends a circle into a five-point star (Curve) by `t`. A ForEach draws 22 of them, each smaller, turned a little more and with its own hue (Lerp by the shape's place `f`). Each `t` is an LFO sine through the loop, offset by `f`, so the shapes breathe from round to spiky and back one after another; a slow saw turns the whole tunnel.\n\nWire any two shapes into `a` and `b`: glyph outlines, a polygon, Cells.",
         "width": 470,
         "height": 230
       }
-    },
-    {
-      "id": "mt_ring",
-      "defType": "spread/ring",
-      "position": {
-        "x": 0,
-        "y": 197
-      },
-      "params": {
-        "count": 10,
-        "radius": 230
-      },
-      "portValues": {
-        "count": 10,
-        "radius": 230
-      }
-    },
-    {
-      "id": "mt_star",
-      "defType": "math/expression",
-      "position": {
-        "x": 225,
-        "y": 159
-      },
-      "params": {
-        "expr": "vec2(p.x, p.y) * (1 - 0.55 * (index % 2))"
-      },
-      "portValues": {}
     },
     {
       "id": "mt_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 502,
-        "y": 197
+        "x": 306,
+        "y": 561
       },
       "params": {},
       "portValues": {
@@ -70,8 +42,8 @@
       "id": "mt_circle",
       "defType": "draw/ellipse",
       "position": {
-        "x": 493,
-        "y": 367
+        "x": 303,
+        "y": 731
       },
       "params": {
         "w": 400,
@@ -83,20 +55,11 @@
       }
     },
     {
-      "id": "mt_t",
-      "defType": "time/seconds",
-      "position": {
-        "x": 505,
-        "y": 559
-      },
-      "params": {}
-    },
-    {
       "id": "mt_n",
       "defType": "spread/linear",
       "position": {
-        "x": 489,
-        "y": 49
+        "x": 289,
+        "y": 67
       },
       "params": {
         "from": 0,
@@ -113,12 +76,12 @@
       "id": "mt_each",
       "defType": "region/foreach",
       "position": {
-        "x": 744,
+        "x": 578,
         "y": 22
       },
       "params": {
-        "width": 1423,
-        "height": 749,
+        "width": 1564,
+        "height": 828,
         "label": "ForEach shape"
       },
       "ports": [
@@ -127,51 +90,25 @@
           "name": "f",
           "type": "number",
           "direction": "input",
-          "y": 350
+          "y": 393
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 220
+          "y": 188
         }
       ],
-      "width": 1423,
-      "height": 749
-    },
-    {
-      "id": "mt_tt",
-      "defType": "math/expression",
-      "position": {
-        "x": 146,
-        "y": 346
-      },
-      "params": {
-        "expr": "0.5 - 0.5 * cos(tau * (f + l))"
-      },
-      "portValues": {},
-      "parentId": "mt_each"
-    },
-    {
-      "id": "mt_hue",
-      "defType": "math/expression",
-      "position": {
-        "x": 146,
-        "y": 510
-      },
-      "params": {
-        "expr": "190 + 150 * f"
-      },
-      "portValues": {},
-      "parentId": "mt_each"
+      "width": 1564,
+      "height": 828
     },
     {
       "id": "mt_hsl",
       "defType": "color/hsl",
       "position": {
-        "x": 420,
-        "y": 483
+        "x": 480,
+        "y": 562
       },
       "params": {
         "s": 75,
@@ -189,8 +126,8 @@
       "id": "mt_nofill",
       "defType": "style/no-fill",
       "position": {
-        "x": 419,
-        "y": 653
+        "x": 478,
+        "y": 732
       },
       "params": {},
       "parentId": "mt_each"
@@ -199,8 +136,8 @@
       "id": "mt_stroke",
       "defType": "style/stroke",
       "position": {
-        "x": 613,
-        "y": 503
+        "x": 719,
+        "y": 554
       },
       "params": {
         "width": 2,
@@ -216,8 +153,8 @@
       "id": "mt_m",
       "defType": "geometry/morph",
       "position": {
-        "x": 806,
-        "y": 350
+        "x": 926,
+        "y": 346
       },
       "params": {},
       "portValues": {
@@ -226,47 +163,21 @@
       "parentId": "mt_each"
     },
     {
-      "id": "mt_size",
-      "defType": "math/expression",
-      "position": {
-        "x": 146,
-        "y": 204
-      },
-      "params": {
-        "expr": "1 - 0.92 * f"
-      },
-      "portValues": {},
-      "parentId": "mt_each"
-    },
-    {
       "id": "mt_scale",
       "defType": "transform/scale",
       "position": {
-        "x": 1037,
-        "y": 247
+        "x": 1169,
+        "y": 217
       },
       "params": {},
-      "parentId": "mt_each"
-    },
-    {
-      "id": "mt_spin",
-      "defType": "math/expression",
-      "position": {
-        "x": 146,
-        "y": 40
-      },
-      "params": {
-        "expr": "0.9 * f + tau * l / 10"
-      },
-      "portValues": {},
       "parentId": "mt_each"
     },
     {
       "id": "mt_rot",
       "defType": "transform/rotate",
       "position": {
-        "x": 1223,
-        "y": 183
+        "x": 1359,
+        "y": 151
       },
       "params": {},
       "parentId": "mt_each"
@@ -275,8 +186,8 @@
       "id": "mt_r",
       "defType": "render/renderer",
       "position": {
-        "x": 2263,
-        "y": 205
+        "x": 2238,
+        "y": 173
       },
       "params": {
         "width": 560,
@@ -298,169 +209,290 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "mt_star",
+      "defType": "geometry/curve",
+      "position": {
+        "x": 0,
+        "y": 539
+      },
+      "params": {
+        "mode": "star",
+        "count": 10,
+        "radius": 230,
+        "points": 5,
+        "inner": 0.45,
+        "rotation": 1.5707963267948966
+      },
+      "portValues": {
+        "count": 10,
+        "radius": 230,
+        "points": 5,
+        "inner": 0.45,
+        "rotation": 1.5707963267948966
+      }
+    },
+    {
+      "id": "mt_tt",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 165,
+        "y": 336
+      },
+      "params": {
+        "shape": "sine",
+        "rate": 1,
+        "sync": "loop"
+      },
+      "portValues": {
+        "shape": "sine",
+        "rate": 1
+      },
+      "parentId": "mt_each"
+    },
+    {
+      "id": "mt_hue",
+      "defType": "math/lerp",
+      "position": {
+        "x": 193,
+        "y": 682
+      },
+      "params": {
+        "a": 190,
+        "b": 340,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 190,
+        "b": 340
+      },
+      "parentId": "mt_each"
+    },
+    {
+      "id": "mt_size",
+      "defType": "math/lerp",
+      "position": {
+        "x": 199,
+        "y": 188
+      },
+      "params": {
+        "a": 1,
+        "b": 0.08,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1,
+        "b": 0.08
+      },
+      "parentId": "mt_each"
+    },
+    {
+      "id": "mt_twist",
+      "defType": "math/math",
+      "position": {
+        "x": 156,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 0.9
+      },
+      "portValues": {
+        "b": 0.9
+      },
+      "parentId": "mt_each"
+    },
+    {
+      "id": "mt_turn",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 283,
+        "y": 215
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 1,
+        "sync": "loop",
+        "min": 0,
+        "max": 0.6283185307179586
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 1,
+        "min": 0,
+        "max": 0.6283185307179586
+      }
+    },
+    {
+      "id": "mt_spin",
+      "defType": "math/math",
+      "position": {
+        "x": 438,
+        "y": 62
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "mt_each"
     }
   ],
   "edges": [
     {
-      "id": "e_mt_ring_mt_star_p",
-      "source": "mt_ring",
-      "target": "mt_star",
-      "sourceHandle": "out-positions",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_mt_star_mt_poly_points",
-      "source": "mt_star",
-      "target": "mt_poly",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-points"
-    },
-    {
-      "id": "e_mt_n_mt_each_f",
+      "id": "e_1",
       "source": "mt_n",
       "target": "mt_each",
       "sourceHandle": "out-values",
       "targetHandle": "in-f"
     },
     {
-      "id": "e_mt_each_mt_tt_f",
-      "source": "mt_each",
-      "target": "mt_tt",
-      "sourceHandle": "out-f",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_mt_t_mt_tt_l",
-      "source": "mt_t",
-      "target": "mt_tt",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_mt_each_mt_hue_f",
-      "source": "mt_each",
-      "target": "mt_hue",
-      "sourceHandle": "out-f",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_mt_hue_mt_hsl_h",
-      "source": "mt_hue",
-      "target": "mt_hsl",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_mt_hsl_mt_stroke_color",
+      "id": "e_2",
       "source": "mt_hsl",
       "target": "mt_stroke",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_mt_nofill_mt_stroke_base",
+      "id": "e_3",
       "source": "mt_nofill",
       "target": "mt_stroke",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_mt_circle_mt_m_a",
+      "id": "e_4",
       "source": "mt_circle",
       "target": "mt_m",
       "sourceHandle": "out-shape",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_mt_poly_mt_m_b",
+      "id": "e_5",
       "source": "mt_poly",
       "target": "mt_m",
       "sourceHandle": "out-shape",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_mt_tt_mt_m_t",
-      "source": "mt_tt",
-      "target": "mt_m",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-t"
-    },
-    {
-      "id": "e_mt_stroke_mt_m_style",
+      "id": "e_6",
       "source": "mt_stroke",
       "target": "mt_m",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_mt_each_mt_size_f",
-      "source": "mt_each",
-      "target": "mt_size",
-      "sourceHandle": "out-f",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_mt_size_mt_scale_sx",
-      "source": "mt_size",
-      "target": "mt_scale",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-sx"
-    },
-    {
-      "id": "e_mt_size_mt_scale_sy",
-      "source": "mt_size",
-      "target": "mt_scale",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-sy"
-    },
-    {
-      "id": "e_mt_m_mt_scale_layer",
+      "id": "e_7",
       "source": "mt_m",
       "target": "mt_scale",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_mt_each_mt_spin_f",
-      "source": "mt_each",
-      "target": "mt_spin",
-      "sourceHandle": "out-f",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_mt_t_mt_spin_l",
-      "source": "mt_t",
-      "target": "mt_spin",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_mt_spin_mt_rot_angle",
-      "source": "mt_spin",
-      "target": "mt_rot",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-angle"
-    },
-    {
-      "id": "e_mt_scale_mt_rot_layer",
+      "id": "e_8",
       "source": "mt_scale",
       "target": "mt_rot",
       "sourceHandle": "out-scaled",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_mt_rot_mt_each_l",
+      "id": "e_9",
       "source": "mt_rot",
       "target": "mt_each",
       "sourceHandle": "out-rotated",
       "targetHandle": "in-l"
     },
     {
-      "id": "e_mt_each_mt_r_layers",
+      "id": "e_10",
       "source": "mt_each",
       "target": "mt_r",
       "sourceHandle": "out-l",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_11",
+      "source": "mt_star",
+      "target": "mt_poly",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_12",
+      "source": "mt_each",
+      "target": "mt_tt",
+      "sourceHandle": "out-f",
+      "targetHandle": "in-offset"
+    },
+    {
+      "id": "e_13",
+      "source": "mt_tt",
+      "target": "mt_m",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_14",
+      "source": "mt_each",
+      "target": "mt_hue",
+      "sourceHandle": "out-f",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_15",
+      "source": "mt_hue",
+      "target": "mt_hsl",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_16",
+      "source": "mt_each",
+      "target": "mt_size",
+      "sourceHandle": "out-f",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_17",
+      "source": "mt_size",
+      "target": "mt_scale",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-sx"
+    },
+    {
+      "id": "e_18",
+      "source": "mt_size",
+      "target": "mt_scale",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-sy"
+    },
+    {
+      "id": "e_19",
+      "source": "mt_each",
+      "target": "mt_twist",
+      "sourceHandle": "out-f",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_20",
+      "source": "mt_twist",
+      "target": "mt_spin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_21",
+      "source": "mt_turn",
+      "target": "mt_spin",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_22",
+      "source": "mt_spin",
+      "target": "mt_rot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
     }
   ],
   "loopLength": 8

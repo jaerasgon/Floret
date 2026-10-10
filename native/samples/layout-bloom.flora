@@ -16,34 +16,22 @@
         "y": -314
       },
       "params": {
-        "text": "Layout bloom\n\nLayout places `count` items in a grid, a ring, a phyllotaxis spiral or along a path, and gives each a position, an angle and a scale. When the count, the mode or a grid's `cols` changes (or you edit the node), every item eases to its new place over `duration`: new ones grow in, removed ones shrink away. `stagger` starts later items later.\n\nHere an Expression steps the count 12 → 42 → 72 → 102 every 1.8 s. Switch the mode to `grid` or `ring` and watch the seeds travel.",
+        "text": "Layout bloom\n\nLayout places `count` items in a grid, a ring, a phyllotaxis spiral or along a path, and gives each a position, an angle and a scale. When the count, the mode or a grid's `cols` changes (or you edit the node), every item eases to its new place over `duration`: new ones grow in, removed ones shrink away. `stagger` starts later items later.\n\nHere the count steps through a list, 12 → 42 → 72 → 102, every 1.8 s: Time is divided into 1.8 s periods and Lookup (`pick`, which wraps round) reads the list. Switch the mode to `grid` or `ring` and watch the seeds travel.",
         "width": 480,
         "height": 250
       },
       "portValues": {
-        "text": "Layout bloom\n\nLayout places `count` items in a grid, a ring, a phyllotaxis spiral or along a path, and gives each a position, an angle and a scale. When the count, the mode or a grid's `cols` changes (or you edit the node), every item eases to its new place over `duration`: new ones grow in, removed ones shrink away. `stagger` starts later items later.\n\nHere an Expression steps the count 12 → 42 → 72 → 102 every 1.8 s. Switch the mode to `grid` or `ring` and watch the seeds travel.",
+        "text": "Layout bloom\n\nLayout places `count` items in a grid, a ring, a phyllotaxis spiral or along a path, and gives each a position, an angle and a scale. When the count, the mode or a grid's `cols` changes (or you edit the node), every item eases to its new place over `duration`: new ones grow in, removed ones shrink away. `stagger` starts later items later.\n\nHere the count steps through a list, 12 → 42 → 72 → 102, every 1.8 s: Time is divided into 1.8 s periods and Lookup (`pick`, which wraps round) reads the list. Switch the mode to `grid` or `ring` and watch the seeds travel.",
         "width": 480,
         "height": 250
       }
     },
     {
-      "id": "lb_count",
-      "defType": "math/expression",
-      "position": {
-        "x": 0,
-        "y": 59
-      },
-      "params": {
-        "expr": "12 + 30 * (floor(t / 1.8) % 4)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "lb_lay",
       "defType": "geometry/layout",
       "position": {
-        "x": 264,
-        "y": 75
+        "x": 971,
+        "y": 103
       },
       "params": {
         "mode": "spiral",
@@ -60,12 +48,12 @@
       "id": "lb_each",
       "defType": "region/foreach",
       "position": {
-        "x": 535,
+        "x": 1242,
         "y": 22
       },
       "params": {
-        "width": 814,
-        "height": 317,
+        "width": 1061,
+        "height": 359,
         "label": "ForEach seed"
       },
       "ports": [
@@ -74,14 +62,14 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 102
+          "y": 130
         },
         {
           "id": "s",
           "name": "s",
           "type": "number",
           "direction": "input",
-          "y": 122
+          "y": 150
         },
         {
           "id": "l",
@@ -91,42 +79,16 @@
           "y": 77
         }
       ],
-      "width": 814,
-      "height": 317
-    },
-    {
-      "id": "lb_size",
-      "defType": "math/expression",
-      "parentId": "lb_each",
-      "position": {
-        "x": 143,
-        "y": 41
-      },
-      "params": {
-        "expr": "18 * s"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lb_hue",
-      "defType": "math/expression",
-      "parentId": "lb_each",
-      "position": {
-        "x": 143,
-        "y": 183
-      },
-      "params": {
-        "expr": "hsl(0.97 - 0.42 * f, 0.78, 0.6)"
-      },
-      "portValues": {}
+      "width": 1061,
+      "height": 359
     },
     {
       "id": "lb_fill",
       "defType": "style/fill",
       "parentId": "lb_each",
       "position": {
-        "x": 414,
-        "y": 175
+        "x": 665,
+        "y": 151
       },
       "params": {},
       "portValues": {}
@@ -136,7 +98,7 @@
       "defType": "draw/ellipse",
       "parentId": "lb_each",
       "position": {
-        "x": 603,
+        "x": 850,
         "y": 40
       },
       "params": {},
@@ -146,7 +108,7 @@
       "id": "lb_r",
       "defType": "render/renderer",
       "position": {
-        "x": 1445,
+        "x": 2399,
         "y": 62
       },
       "params": {
@@ -169,92 +131,242 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "lb_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 0,
+        "y": 254
+      },
+      "params": {}
+    },
+    {
+      "id": "lb_periods",
+      "defType": "math/math",
+      "position": {
+        "x": 180,
+        "y": 232
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number",
+        "b": 1.8
+      },
+      "portValues": {
+        "b": 1.8
+      }
+    },
+    {
+      "id": "lb_step",
+      "defType": "math/math",
+      "position": {
+        "x": 453,
+        "y": 210
+      },
+      "params": {
+        "op": "floor",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "lb_counts",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 444,
+        "y": 106
+      },
+      "params": {
+        "data": "12,42,72,102"
+      }
+    },
+    {
+      "id": "lb_count",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 713,
+        "y": 125
+      },
+      "params": {
+        "op": "pick"
+      }
+    },
+    {
+      "id": "lb_size",
+      "defType": "math/math",
+      "position": {
+        "x": 146,
+        "y": 71
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 18
+      },
+      "portValues": {
+        "b": 18
+      },
+      "parentId": "lb_each"
+    },
+    {
+      "id": "lb_hueLerp",
+      "defType": "math/lerp",
+      "position": {
+        "x": 177,
+        "y": 219
+      },
+      "params": {
+        "a": 349.2,
+        "b": 198,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 349.2,
+        "b": 198
+      },
+      "parentId": "lb_each"
+    },
+    {
+      "id": "lb_hue",
+      "defType": "color/color",
+      "position": {
+        "x": 413,
+        "y": 174
+      },
+      "params": {
+        "mode": "hsl",
+        "s": 78,
+        "l": 60,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "s": 78,
+        "l": 60,
+        "a": 255
+      },
+      "parentId": "lb_each"
     }
   ],
   "edges": [
     {
-      "id": "e_lb_count_lb_lay_count",
-      "source": "lb_count",
-      "target": "lb_lay",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-count"
-    },
-    {
-      "id": "e_lb_lay_lb_each_p",
+      "id": "e_1",
       "source": "lb_lay",
       "target": "lb_each",
       "sourceHandle": "out-positions",
       "targetHandle": "in-p"
     },
     {
-      "id": "e_lb_lay_lb_each_s",
+      "id": "e_2",
       "source": "lb_lay",
       "target": "lb_each",
       "sourceHandle": "out-scales",
       "targetHandle": "in-s"
     },
     {
-      "id": "e_lb_each_lb_size_s",
-      "source": "lb_each",
-      "target": "lb_size",
-      "sourceHandle": "out-s",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_lb_each_lb_hue_f",
-      "source": "lb_each",
-      "target": "lb_hue",
-      "sourceHandle": "out-__loopvar_fraction",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_lb_hue_lb_fill_color",
-      "source": "lb_hue",
-      "target": "lb_fill",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
-    },
-    {
-      "id": "e_lb_each_lb_dot_pos",
+      "id": "e_3",
       "source": "lb_each",
       "target": "lb_dot",
       "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_lb_size_lb_dot_w",
-      "source": "lb_size",
-      "target": "lb_dot",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_lb_size_lb_dot_h",
-      "source": "lb_size",
-      "target": "lb_dot",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_lb_fill_lb_dot_style",
+      "id": "e_4",
       "source": "lb_fill",
       "target": "lb_dot",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_lb_dot_lb_each_l",
+      "id": "e_5",
       "source": "lb_dot",
       "target": "lb_each",
       "sourceHandle": "out-shape",
       "targetHandle": "in-l"
     },
     {
-      "id": "e_lb_each_lb_r_layers",
+      "id": "e_6",
       "source": "lb_each",
       "target": "lb_r",
       "sourceHandle": "out-l",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_7",
+      "source": "lb_t",
+      "target": "lb_periods",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_8",
+      "source": "lb_periods",
+      "target": "lb_step",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_9",
+      "source": "lb_counts",
+      "target": "lb_count",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_10",
+      "source": "lb_step",
+      "target": "lb_count",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_11",
+      "source": "lb_count",
+      "target": "lb_lay",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_12",
+      "source": "lb_each",
+      "target": "lb_size",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_13",
+      "source": "lb_size",
+      "target": "lb_dot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_14",
+      "source": "lb_size",
+      "target": "lb_dot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_15",
+      "source": "lb_each",
+      "target": "lb_hueLerp",
+      "sourceHandle": "out-__loopvar_fraction",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_16",
+      "source": "lb_hueLerp",
+      "target": "lb_hue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_17",
+      "source": "lb_hue",
+      "target": "lb_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
     }
   ]
 }

@@ -33,11 +33,12 @@ const EDGE_BAND: f64 = 24.0;
 pub const LOOP_VARS: [&str; 3] = ["index", "count", "fraction"];
 
 /// Whether a region kind is drawn as a frame you place nodes in by hand
-/// (subpatches are entered instead).
+/// (subpatches are entered instead). Sections too: they hold nodes the
+/// same way, without ports or a scope.
 pub fn is_drawable(kind: Option<RegionKind>) -> bool {
     matches!(
         kind,
-        Some(RegionKind::Foreach | RegionKind::If | RegionKind::Cache)
+        Some(RegionKind::Foreach | RegionKind::If | RegionKind::Cache | RegionKind::Section)
     )
 }
 

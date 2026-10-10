@@ -26,7 +26,7 @@
       "defType": "input/keyboard",
       "position": {
         "x": 0,
-        "y": 785
+        "y": 542
       },
       "params": {
         "mode": "keys"
@@ -39,8 +39,8 @@
       "id": "ks_arpOn",
       "defType": "io/toggle",
       "position": {
-        "x": 0,
-        "y": 1092
+        "x": 302,
+        "y": 658
       },
       "params": {
         "value": false,
@@ -51,8 +51,8 @@
       "id": "ks_arpRate",
       "defType": "io/slider",
       "position": {
-        "x": 573,
-        "y": 886
+        "x": 642,
+        "y": 629
       },
       "params": {
         "value": 8,
@@ -66,7 +66,7 @@
       "defType": "spread/range",
       "position": {
         "x": 15,
-        "y": 492
+        "y": 778
       },
       "params": {},
       "portValues": {
@@ -77,8 +77,8 @@
       "id": "ks_held",
       "defType": "spread/sublist",
       "position": {
-        "x": 300,
-        "y": 661
+        "x": 305,
+        "y": 510
       },
       "params": {
         "op": "keep-where"
@@ -88,8 +88,8 @@
       "id": "ks_heldCount",
       "defType": "spread/count",
       "position": {
-        "x": 588,
-        "y": 725
+        "x": 657,
+        "y": 525
       },
       "params": {}
     },
@@ -97,29 +97,31 @@
       "id": "ks_lastSemi",
       "defType": "state/value",
       "position": {
-        "x": 1236,
-        "y": 906
+        "x": 178,
+        "y": 188
       },
       "params": {},
       "portValues": {
         "init": 0
-      }
+      },
+      "parentId": "ks_noteBox"
     },
     {
       "id": "ks_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 37,
-        "y": 1230
+        "x": 128,
+        "y": 83
       },
-      "params": {}
+      "params": {},
+      "parentId": "ks_cutBox"
     },
     {
       "id": "ks_lead",
       "defType": "sound/mono-synth",
       "position": {
-        "x": 2206,
-        "y": 968
+        "x": 1591,
+        "y": 0
       },
       "params": {},
       "portValues": {
@@ -134,8 +136,8 @@
       "id": "ks_sub",
       "defType": "sound/mono-synth",
       "position": {
-        "x": 2534,
-        "y": 996
+        "x": 1591,
+        "y": 236
       },
       "params": {},
       "portValues": {
@@ -150,8 +152,8 @@
       "id": "ks_mix",
       "defType": "sound/mix",
       "position": {
-        "x": 2782,
-        "y": 953
+        "x": 1876,
+        "y": 163
       },
       "params": {
         "slotCount": 2
@@ -164,8 +166,8 @@
       "id": "ks_filter",
       "defType": "sound/filter",
       "position": {
-        "x": 3118,
-        "y": 1159
+        "x": 2157,
+        "y": 255
       },
       "params": {
         "type": "lowpass"
@@ -178,8 +180,8 @@
       "id": "ks_delay",
       "defType": "sound/delay",
       "position": {
-        "x": 3432,
-        "y": 1160
+        "x": 2452,
+        "y": 255
       },
       "params": {},
       "portValues": {
@@ -192,8 +194,8 @@
       "id": "ks_reverb",
       "defType": "sound/reverb",
       "position": {
-        "x": 3681,
-        "y": 1138
+        "x": 2733,
+        "y": 233
       },
       "params": {},
       "portValues": {
@@ -206,8 +208,8 @@
       "id": "ks_out",
       "defType": "sound/output",
       "position": {
-        "x": 3897,
-        "y": 1139
+        "x": 3029,
+        "y": 233
       },
       "params": {},
       "portValues": {
@@ -556,50 +558,54 @@
       "id": "ks_time",
       "defType": "time/seconds",
       "position": {
-        "x": 1915,
-        "y": 828
+        "x": 637,
+        "y": 518
       },
-      "params": {}
+      "params": {},
+      "parentId": "ks_sparksBox"
     },
     {
       "id": "ks_topsX",
       "defType": "data/csv-inline",
       "position": {
-        "x": 1196,
-        "y": 305
+        "x": 141,
+        "y": 242
       },
       "params": {
         "data": "-203,-174,-145,-116,-87,-29,0,29,58,87,116,145,203"
-      }
+      },
+      "parentId": "ks_sparksBox"
     },
     {
       "id": "ks_sparkAt",
       "defType": "spread/lookup",
       "position": {
-        "x": 1876,
-        "y": 532
+        "x": 598,
+        "y": 276
       },
       "params": {
         "op": "at"
-      }
+      },
+      "parentId": "ks_sparksBox"
     },
     {
       "id": "ks_sparkCol",
       "defType": "spread/lookup",
       "position": {
-        "x": 1876,
-        "y": 384
+        "x": 143,
+        "y": 494
       },
       "params": {
         "op": "at"
-      }
+      },
+      "parentId": "ks_sparksBox"
     },
     {
       "id": "ks_world",
       "defType": "physics/world",
       "position": {
-        "x": 1887,
-        "y": 148
+        "x": 608,
+        "y": 40
       },
       "params": {},
       "portValues": {
@@ -608,14 +614,15 @@
           "y": -60
         },
         "drag": 0.6
-      }
+      },
+      "parentId": "ks_sparksBox"
     },
     {
       "id": "ks_sparks",
       "defType": "particles/emitter",
       "position": {
-        "x": 2200,
-        "y": 326
+        "x": 888,
+        "y": 254
       },
       "params": {
         "maxCount": 900,
@@ -629,14 +636,15 @@
         },
         "velSpread": 0.9,
         "size": 3.5
-      }
+      },
+      "parentId": "ks_sparksBox"
     },
     {
       "id": "ks_sparkTrail",
       "defType": "particles/trail",
       "position": {
-        "x": 2796,
-        "y": 75
+        "x": 1144,
+        "y": 135
       },
       "params": {
         "segments": 10
@@ -644,23 +652,25 @@
       "portValues": {
         "fadeOut": true,
         "tapered": true
-      }
+      },
+      "parentId": "ks_sparksBox"
     },
     {
       "id": "ks_sparkDots",
       "defType": "particles/render-as",
       "position": {
-        "x": 2792,
-        "y": 503
+        "x": 1140,
+        "y": 393
       },
-      "params": {}
+      "params": {},
+      "parentId": "ks_sparksBox"
     },
     {
       "id": "ks_env",
       "defType": "motion/smooth",
       "position": {
-        "x": 1907,
-        "y": 1124
+        "x": 1270,
+        "y": 666
       },
       "params": {},
       "portValues": {
@@ -672,7 +682,7 @@
       "defType": "spread/range",
       "position": {
         "x": 15,
-        "y": 161
+        "y": 360
       },
       "params": {},
       "portValues": {
@@ -683,8 +693,8 @@
       "id": "ks_scopeCol",
       "defType": "spread/lookup",
       "position": {
-        "x": 1876,
-        "y": 0
+        "x": 1572,
+        "y": 746
       },
       "params": {
         "op": "at"
@@ -694,8 +704,8 @@
       "id": "ks_scopeStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 2221,
-        "y": 156
+        "x": 1913,
+        "y": 676
       },
       "params": {},
       "portValues": {
@@ -706,8 +716,8 @@
       "id": "ks_scopeLine",
       "defType": "draw/polygon",
       "position": {
-        "x": 2544,
-        "y": 685
+        "x": 2185,
+        "y": 565
       },
       "params": {},
       "portValues": {
@@ -718,8 +728,8 @@
       "id": "ks_scopeGlow",
       "defType": "gpu/effect",
       "position": {
-        "x": 2781,
-        "y": 717
+        "x": 2417,
+        "y": 569
       },
       "params": {
         "mode": "glow"
@@ -825,21 +835,22 @@
       "id": "ks_octText",
       "defType": "string/format-number",
       "position": {
-        "x": 1525,
-        "y": 810
+        "x": 134,
+        "y": 40
       },
       "params": {},
       "portValues": {
         "decimals": 0,
         "prefix": "octave "
-      }
+      },
+      "parentId": "ks_statusBox"
     },
     {
       "id": "ks_cutText",
       "defType": "string/format-number",
       "position": {
-        "x": 1525,
-        "y": 1226
+        "x": 134,
+        "y": 506
       },
       "params": {
         "mode": "compact"
@@ -848,78 +859,85 @@
         "decimals": 1,
         "prefix": "filter ",
         "suffix": " Hz"
-      }
+      },
+      "parentId": "ks_statusBox"
     },
     {
       "id": "ks_arpTxtOn",
       "defType": "value/string",
       "position": {
-        "x": 5,
-        "y": 1378
+        "x": 130,
+        "y": 298
       },
       "params": {
         "value": "arp on"
-      }
+      },
+      "parentId": "ks_statusBox"
     },
     {
       "id": "ks_arpTxtOff",
       "defType": "value/string",
       "position": {
-        "x": 5,
-        "y": 1482
+        "x": 130,
+        "y": 402
       },
       "params": {
         "value": "arp off"
-      }
+      },
+      "parentId": "ks_statusBox"
     },
     {
       "id": "ks_arpTxt",
       "defType": "logic/select",
       "position": {
-        "x": 329,
-        "y": 1370
+        "x": 430,
+        "y": 278
       },
-      "params": {}
+      "params": {},
+      "parentId": "ks_statusBox"
     },
     {
       "id": "ks_help",
       "defType": "value/string",
       "position": {
-        "x": 1521,
-        "y": 1418
+        "x": 403,
+        "y": 441
       },
       "params": {
         "value": "keys A–K play · Z X octave · mouse ↕ filter"
-      }
+      },
+      "parentId": "ks_statusBox"
     },
     {
       "id": "ks_statusParts",
       "defType": "spread/merge",
       "position": {
-        "x": 1873,
-        "y": 1314
+        "x": 674,
+        "y": 266
       },
       "params": {
         "slotCount": 4
-      }
+      },
+      "parentId": "ks_statusBox"
     },
     {
       "id": "ks_status",
       "defType": "string/concat",
       "position": {
-        "x": 2209,
-        "y": 1352
+        "x": 953,
+        "y": 261
       },
       "params": {
         "separator": "   ·   "
-      }
+      },
+      "parentId": "ks_statusBox"
     },
     {
       "id": "ks_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 2195,
-        "y": 1478
+        "x": 939,
+        "y": 387
       },
       "params": {},
       "portValues": {
@@ -929,14 +947,15 @@
           "b": 0.9098039215686274,
           "a": 0.55
         }
-      }
+      },
+      "parentId": "ks_statusBox"
     },
     {
       "id": "ks_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 2551,
-        "y": 1232
+        "x": 1184,
+        "y": 277
       },
       "params": {
         "size": 13,
@@ -947,14 +966,15 @@
           "x": 0,
           "y": 226.0
         }
-      }
+      },
+      "parentId": "ks_statusBox"
     },
     {
       "id": "ks_scene",
       "defType": "transform/group",
       "position": {
-        "x": 3114,
-        "y": 500
+        "x": 2709,
+        "y": 755
       },
       "params": {
         "slotCount": 9
@@ -964,8 +984,8 @@
       "id": "ks_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 3378,
-        "y": 500
+        "x": 2973,
+        "y": 755
       },
       "params": {
         "width": 720,
@@ -984,8 +1004,8 @@
       "id": "ks_kbUp",
       "defType": "input/keyboard",
       "position": {
-        "x": 897,
-        "y": 443
+        "x": 0,
+        "y": 882
       },
       "params": {
         "mode": "keys"
@@ -998,8 +1018,8 @@
       "id": "ks_kbDown",
       "defType": "input/keyboard",
       "position": {
-        "x": 897,
-        "y": 679
+        "x": 0,
+        "y": 1118
       },
       "params": {
         "mode": "keys"
@@ -1012,8 +1032,8 @@
       "id": "ks_octave",
       "defType": "io/counter",
       "position": {
-        "x": 1206,
-        "y": 500
+        "x": 312,
+        "y": 906
       },
       "params": {
         "step": 1,
@@ -1033,8 +1053,8 @@
       "id": "ks_arp",
       "defType": "meta/subpatch",
       "position": {
-        "x": 895,
-        "y": 915
+        "x": 920,
+        "y": 526
       },
       "params": {
         "label": "Arpeggiator",
@@ -1305,8 +1325,8 @@
       "id": "ks_isKey",
       "defType": "logic/compare",
       "position": {
-        "x": 1189,
-        "y": 758
+        "x": 131,
+        "y": 40
       },
       "params": {
         "op": "greater-equal",
@@ -1314,23 +1334,25 @@
       },
       "portValues": {
         "b": 0
-      }
+      },
+      "parentId": "ks_noteBox"
     },
     {
       "id": "ks_lastSemiNext",
       "defType": "logic/select",
       "position": {
-        "x": 1548,
-        "y": 662
+        "x": 421,
+        "y": 123
       },
-      "params": {}
+      "params": {},
+      "parentId": "ks_noteBox"
     },
     {
       "id": "ks_octNote",
       "defType": "math/math",
       "position": {
-        "x": 1516,
-        "y": 514
+        "x": 138,
+        "y": 314
       },
       "params": {
         "op": "multiply",
@@ -1339,14 +1361,15 @@
       },
       "portValues": {
         "b": 12
-      }
+      },
+      "parentId": "ks_noteBox"
     },
     {
       "id": "ks_note",
       "defType": "math/math",
       "position": {
-        "x": 1873,
-        "y": 954
+        "x": 642,
+        "y": 195
       },
       "params": {
         "op": "add",
@@ -1356,14 +1379,15 @@
       },
       "portValues": {
         "b": 12
-      }
+      },
+      "parentId": "ks_noteBox"
     },
     {
       "id": "ks_subNote",
       "defType": "math/math",
       "position": {
-        "x": 2184,
-        "y": 694
+        "x": 912,
+        "y": 143
       },
       "params": {
         "op": "subtract",
@@ -1372,14 +1396,15 @@
       },
       "portValues": {
         "b": 12
-      }
+      },
+      "parentId": "ks_noteBox"
     },
     {
       "id": "ks_cutUp",
       "defType": "math/map",
       "position": {
-        "x": 340,
-        "y": 1178
+        "x": 319,
+        "y": 105
       },
       "params": {
         "inMin": 240,
@@ -1393,14 +1418,15 @@
         "inMax": -240,
         "outMin": 0,
         "outMax": 1
-      }
+      },
+      "parentId": "ks_cutBox"
     },
     {
       "id": "ks_cutAmount",
       "defType": "math/clamp",
       "position": {
-        "x": 610,
-        "y": 1236
+        "x": 497,
+        "y": 105
       },
       "params": {
         "min": 0,
@@ -1410,14 +1436,15 @@
       "portValues": {
         "min": 0,
         "max": 1
-      }
+      },
+      "parentId": "ks_cutBox"
     },
     {
       "id": "ks_cutPow",
       "defType": "math/math",
       "position": {
-        "x": 906,
-        "y": 1251
+        "x": 686,
+        "y": 62
       },
       "params": {
         "op": "pow",
@@ -1426,14 +1453,15 @@
       },
       "portValues": {
         "a": 20
-      }
+      },
+      "parentId": "ks_cutBox"
     },
     {
       "id": "ks_cutoff",
       "defType": "math/math",
       "position": {
-        "x": 1196,
-        "y": 1288
+        "x": 932,
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -1442,14 +1470,15 @@
       },
       "portValues": {
         "b": 300
-      }
+      },
+      "parentId": "ks_cutBox"
     },
     {
       "id": "ks_hueDeg",
       "defType": "math/map",
       "position": {
-        "x": 1238,
-        "y": 113
+        "x": 964,
+        "y": 813
       },
       "params": {
         "inMin": 0,
@@ -1469,8 +1498,8 @@
       "id": "ks_hue",
       "defType": "color/color",
       "position": {
-        "x": 1524,
-        "y": 32
+        "x": 1244,
+        "y": 792
       },
       "params": {
         "mode": "hsl",
@@ -1653,35 +1682,37 @@
       "id": "ks_keyTops",
       "defType": "vec2/make",
       "position": {
-        "x": 1558,
-        "y": 224
+        "x": 409,
+        "y": 248
       },
       "params": {
         "y": 41
       },
       "portValues": {
         "y": 41
-      }
+      },
+      "parentId": "ks_sparksBox"
     },
     {
       "id": "ks_sparkRate",
       "defType": "logic/select",
       "position": {
-        "x": 1905,
-        "y": 680
+        "x": 172,
+        "y": 346
       },
       "params": {},
       "portValues": {
         "a": 140,
         "b": 0
-      }
+      },
+      "parentId": "ks_sparksBox"
     },
     {
       "id": "ks_scope",
       "defType": "meta/subpatch",
       "position": {
-        "x": 2198,
-        "y": 1204
+        "x": 1583,
+        "y": 472
       },
       "params": {
         "label": "Scope",
@@ -2101,8 +2132,8 @@
       "id": "ks_keysBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 2801,
-        "y": 333
+        "x": 2436,
+        "y": 805
       },
       "params": {
         "label": "Keys",
@@ -2158,8 +2189,8 @@
       "id": "ks_nameBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 2185,
-        "y": 842
+        "x": 1570,
+        "y": 620
       },
       "params": {
         "label": "Note name",
@@ -2187,6 +2218,171 @@
           "type": "number",
           "direction": "input",
           "y": 543
+        }
+      ]
+    },
+    {
+      "id": "ks_cutBox",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 301,
+        "y": 406
+      },
+      "params": {
+        "label": "Filter cutoff",
+        "width": 1212,
+        "height": 289
+      },
+      "ports": [
+        {
+          "id": "hz",
+          "name": "hz",
+          "type": "number",
+          "direction": "output",
+          "y": 78
+        }
+      ]
+    },
+    {
+      "id": "ks_noteBox",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1255,
+        "y": 518
+      },
+      "params": {
+        "label": "Note",
+        "width": 1192,
+        "height": 454
+      },
+      "ports": [
+        {
+          "id": "playing",
+          "name": "playing",
+          "type": "number",
+          "direction": "input",
+          "y": 142
+        },
+        {
+          "id": "octave",
+          "name": "octave",
+          "type": "number",
+          "direction": "input",
+          "y": 373
+        },
+        {
+          "id": "note",
+          "name": "note",
+          "type": "number",
+          "direction": "output",
+          "y": 267
+        },
+        {
+          "id": "sub",
+          "name": "sub",
+          "type": "number",
+          "direction": "output",
+          "y": 180
+        },
+        {
+          "id": "key",
+          "name": "key",
+          "type": "any",
+          "direction": "output",
+          "y": 119
+        }
+      ]
+    },
+    {
+      "id": "ks_sparksBox",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1581,
+        "y": 894
+      },
+      "params": {
+        "label": "Sparks",
+        "width": 1401,
+        "height": 636
+      },
+      "ports": [
+        {
+          "id": "trails",
+          "name": "trails",
+          "type": "layer",
+          "direction": "output",
+          "y": 192
+        },
+        {
+          "id": "dots",
+          "name": "dots",
+          "type": "layer",
+          "direction": "output",
+          "y": 430
+        },
+        {
+          "id": "hues",
+          "name": "hues",
+          "type": "color",
+          "direction": "input",
+          "y": 553
+        },
+        {
+          "id": "key",
+          "name": "key",
+          "type": "any",
+          "direction": "input",
+          "y": 406
+        },
+        {
+          "id": "gate",
+          "name": "gate",
+          "type": "boolean",
+          "direction": "input",
+          "y": 383
+        }
+      ]
+    },
+    {
+      "id": "ks_statusBox",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 644,
+        "y": 883
+      },
+      "params": {
+        "label": "Status line",
+        "width": 1385,
+        "height": 690
+      },
+      "ports": [
+        {
+          "id": "arp",
+          "name": "arp",
+          "type": "boolean",
+          "direction": "input",
+          "y": 274
+        },
+        {
+          "id": "status",
+          "name": "status",
+          "type": "layer",
+          "direction": "output",
+          "y": 313
+        },
+        {
+          "id": "cutoff",
+          "name": "cutoff",
+          "type": "number",
+          "direction": "input",
+          "y": 565
+        },
+        {
+          "id": "octave",
+          "name": "octave",
+          "type": "number",
+          "direction": "input",
+          "y": 129
         }
       ]
     }
@@ -2524,1058 +2720,1163 @@
     {
       "id": "e_48",
       "source": "ks_arpOn",
-      "target": "ks_arpTxt",
+      "target": "ks_statusBox",
       "sourceHandle": "out-bool",
-      "targetHandle": "in-cond"
+      "targetHandle": "in-arp"
     },
     {
       "id": "e_49",
+      "source": "ks_statusBox",
+      "target": "ks_arpTxt",
+      "sourceHandle": "out-arp",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_50",
       "source": "ks_arpTxtOn",
       "target": "ks_arpTxt",
       "sourceHandle": "out-text",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_50",
+      "id": "e_51",
       "source": "ks_arpTxtOff",
       "target": "ks_arpTxt",
       "sourceHandle": "out-text",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_51",
+      "id": "e_52",
       "source": "ks_octText",
       "target": "ks_statusParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_52",
+      "id": "e_53",
       "source": "ks_arpTxt",
       "target": "ks_statusParts",
       "sourceHandle": "out-selected",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_53",
+      "id": "e_54",
       "source": "ks_cutText",
       "target": "ks_statusParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_54",
+      "id": "e_55",
       "source": "ks_help",
       "target": "ks_statusParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_55",
+      "id": "e_56",
       "source": "ks_statusParts",
       "target": "ks_status",
       "sourceHandle": "out-merged",
       "targetHandle": "in-parts"
     },
     {
-      "id": "e_56",
+      "id": "e_57",
       "source": "ks_status",
       "target": "ks_statusText",
       "sourceHandle": "out-text",
       "targetHandle": "in-string"
     },
     {
-      "id": "e_57",
+      "id": "e_58",
       "source": "ks_statusFill",
       "target": "ks_statusText",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_58",
+      "id": "e_59",
       "source": "ks_scopeGlow",
       "target": "ks_scene",
       "sourceHandle": "out-out",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_59",
+      "id": "e_60",
       "source": "ks_sparkTrail",
-      "target": "ks_scene",
+      "target": "ks_sparksBox",
       "sourceHandle": "out-layer",
+      "targetHandle": "in-trails"
+    },
+    {
+      "id": "e_61",
+      "source": "ks_sparksBox",
+      "target": "ks_scene",
+      "sourceHandle": "out-trails",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_60",
+      "id": "e_62",
       "source": "ks_whiteLoop",
       "target": "ks_keysBox",
       "sourceHandle": "out-key",
       "targetHandle": "in-whiteKeys"
     },
     {
-      "id": "e_61",
+      "id": "e_63",
       "source": "ks_keysBox",
       "target": "ks_scene",
       "sourceHandle": "out-whiteKeys",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_62",
+      "id": "e_64",
       "source": "ks_whiteLoop",
       "target": "ks_keysBox",
       "sourceHandle": "out-label",
       "targetHandle": "in-whiteLabels"
     },
     {
-      "id": "e_63",
+      "id": "e_65",
       "source": "ks_keysBox",
       "target": "ks_scene",
       "sourceHandle": "out-whiteLabels",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_64",
+      "id": "e_66",
       "source": "ks_blackLoop",
       "target": "ks_keysBox",
       "sourceHandle": "out-key",
       "targetHandle": "in-blackKeys"
     },
     {
-      "id": "e_65",
+      "id": "e_67",
       "source": "ks_keysBox",
       "target": "ks_scene",
       "sourceHandle": "out-blackKeys",
       "targetHandle": "in-s5"
     },
     {
-      "id": "e_66",
+      "id": "e_68",
       "source": "ks_blackLoop",
       "target": "ks_keysBox",
       "sourceHandle": "out-label",
       "targetHandle": "in-blackLabels"
     },
     {
-      "id": "e_67",
+      "id": "e_69",
       "source": "ks_keysBox",
       "target": "ks_scene",
       "sourceHandle": "out-blackLabels",
       "targetHandle": "in-s6"
     },
     {
-      "id": "e_68",
+      "id": "e_70",
       "source": "ks_sparkDots",
-      "target": "ks_scene",
+      "target": "ks_sparksBox",
       "sourceHandle": "out-layer",
+      "targetHandle": "in-dots"
+    },
+    {
+      "id": "e_71",
+      "source": "ks_sparksBox",
+      "target": "ks_scene",
+      "sourceHandle": "out-dots",
       "targetHandle": "in-s7"
     },
     {
-      "id": "e_69",
+      "id": "e_72",
       "source": "ks_nameText",
       "target": "ks_nameBox",
       "sourceHandle": "out-shape",
       "targetHandle": "in-name"
     },
     {
-      "id": "e_70",
+      "id": "e_73",
       "source": "ks_nameBox",
       "target": "ks_scene",
       "sourceHandle": "out-name",
       "targetHandle": "in-s8"
     },
     {
-      "id": "e_71",
+      "id": "e_74",
       "source": "ks_statusText",
-      "target": "ks_scene",
+      "target": "ks_statusBox",
       "sourceHandle": "out-shape",
+      "targetHandle": "in-status"
+    },
+    {
+      "id": "e_75",
+      "source": "ks_statusBox",
+      "target": "ks_scene",
+      "sourceHandle": "out-status",
       "targetHandle": "in-s9"
     },
     {
-      "id": "e_72",
+      "id": "e_76",
       "source": "ks_scene",
       "target": "ks_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
     },
     {
-      "id": "e_73",
+      "id": "e_77",
       "source": "ks_kbUp",
       "target": "ks_octave",
       "sourceHandle": "out-hit",
       "targetHandle": "in-inc"
     },
     {
-      "id": "e_74",
+      "id": "e_78",
       "source": "ks_kbDown",
       "target": "ks_octave",
       "sourceHandle": "out-hit",
       "targetHandle": "in-dec"
     },
     {
-      "id": "e_75",
+      "id": "e_79",
       "source": "ks_arpOn",
       "target": "ks_arp",
       "sourceHandle": "out-bool",
       "targetHandle": "in-arp"
     },
     {
-      "id": "e_76",
+      "id": "e_80",
       "source": "ks_held",
       "target": "ks_arp",
       "sourceHandle": "out-result",
       "targetHandle": "in-held"
     },
     {
-      "id": "e_77",
+      "id": "e_81",
       "source": "ks_heldCount",
       "target": "ks_arp",
       "sourceHandle": "out-count",
       "targetHandle": "in-count"
     },
     {
-      "id": "e_78",
+      "id": "e_82",
       "source": "ks_arpRate",
       "target": "ks_arp",
       "sourceHandle": "out-number",
       "targetHandle": "in-rate"
     },
     {
-      "id": "e_79",
+      "id": "e_83",
       "source": "ks_kb",
       "target": "ks_arp",
       "sourceHandle": "out-index",
       "targetHandle": "in-key"
     },
     {
-      "id": "e_80",
+      "id": "e_84",
       "source": "ks_kb",
       "target": "ks_arp",
       "sourceHandle": "out-hit",
       "targetHandle": "in-hit"
     },
     {
-      "id": "e_81",
+      "id": "e_85",
       "source": "ks_arp",
       "target": "ks_arpNone",
       "sourceHandle": "out-count",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_82",
+      "id": "e_86",
       "source": "ks_arp",
       "target": "ks_arpPhase",
       "sourceHandle": "out-rate",
       "targetHandle": "in-rate"
     },
     {
-      "id": "e_83",
+      "id": "e_87",
       "source": "ks_arpNone",
       "target": "ks_arpPhase",
       "sourceHandle": "out-result",
       "targetHandle": "in-reset"
     },
     {
-      "id": "e_84",
+      "id": "e_88",
       "source": "ks_arpPhase",
       "target": "ks_arpWhole",
       "sourceHandle": "out-value",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_85",
+      "id": "e_89",
       "source": "ks_arpWhole",
       "target": "ks_arpStep",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_86",
+      "id": "e_90",
       "source": "ks_arp",
       "target": "ks_arpStep",
       "sourceHandle": "out-count",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_87",
+      "id": "e_91",
       "source": "ks_arp",
       "target": "ks_arpSemi",
       "sourceHandle": "out-held",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_88",
+      "id": "e_92",
       "source": "ks_arpStep",
       "target": "ks_arpSemi",
       "sourceHandle": "out-result",
       "targetHandle": "in-index"
     },
     {
-      "id": "e_89",
+      "id": "e_93",
       "source": "ks_arp",
       "target": "ks_arpAny",
       "sourceHandle": "out-count",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_90",
+      "id": "e_94",
       "source": "ks_arpAny",
       "target": "ks_arpNote",
       "sourceHandle": "out-result",
       "targetHandle": "in-cond"
     },
     {
-      "id": "e_91",
+      "id": "e_95",
       "source": "ks_arpSemi",
       "target": "ks_arpNote",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_92",
+      "id": "e_96",
       "source": "ks_arp",
       "target": "ks_playing",
       "sourceHandle": "out-arp",
       "targetHandle": "in-cond"
     },
     {
-      "id": "e_93",
+      "id": "e_97",
       "source": "ks_arpNote",
       "target": "ks_playing",
       "sourceHandle": "out-selected",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_94",
+      "id": "e_98",
       "source": "ks_arp",
       "target": "ks_playing",
       "sourceHandle": "out-key",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_95",
+      "id": "e_99",
       "source": "ks_playing",
       "target": "ks_arp",
       "sourceHandle": "out-selected",
       "targetHandle": "in-playing"
     },
     {
-      "id": "e_96",
+      "id": "e_100",
       "source": "ks_arpPhase",
       "target": "ks_arpFrac",
       "sourceHandle": "out-value",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_97",
+      "id": "e_101",
       "source": "ks_arpFrac",
       "target": "ks_arpEarly",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_98",
+      "id": "e_102",
       "source": "ks_arpAny",
       "target": "ks_arpGate",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_99",
+      "id": "e_103",
       "source": "ks_arpEarly",
       "target": "ks_arpGate",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_100",
+      "id": "e_104",
       "source": "ks_arp",
       "target": "ks_keyHeld",
       "sourceHandle": "out-key",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_101",
+      "id": "e_105",
       "source": "ks_arp",
       "target": "ks_noHit",
       "sourceHandle": "out-hit",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_102",
+      "id": "e_106",
       "source": "ks_keyHeld",
       "target": "ks_keyGate",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_103",
+      "id": "e_107",
       "source": "ks_noHit",
       "target": "ks_keyGate",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_104",
+      "id": "e_108",
       "source": "ks_arp",
       "target": "ks_gate",
       "sourceHandle": "out-arp",
       "targetHandle": "in-cond"
     },
     {
-      "id": "e_105",
+      "id": "e_109",
       "source": "ks_arpGate",
       "target": "ks_gate",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_106",
+      "id": "e_110",
       "source": "ks_keyGate",
       "target": "ks_gate",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_107",
+      "id": "e_111",
       "source": "ks_gate",
       "target": "ks_arp",
       "sourceHandle": "out-selected",
       "targetHandle": "in-gate"
     },
     {
-      "id": "e_108",
+      "id": "e_112",
       "source": "ks_arp",
+      "target": "ks_noteBox",
+      "sourceHandle": "out-playing",
+      "targetHandle": "in-playing"
+    },
+    {
+      "id": "e_113",
+      "source": "ks_noteBox",
       "target": "ks_isKey",
       "sourceHandle": "out-playing",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_109",
+      "id": "e_114",
       "source": "ks_isKey",
       "target": "ks_lastSemiNext",
       "sourceHandle": "out-result",
       "targetHandle": "in-cond"
     },
     {
-      "id": "e_110",
-      "source": "ks_arp",
+      "id": "e_115",
+      "source": "ks_noteBox",
       "target": "ks_lastSemiNext",
       "sourceHandle": "out-playing",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_111",
+      "id": "e_116",
       "source": "ks_lastSemi",
       "target": "ks_lastSemiNext",
       "sourceHandle": "out-current",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_112",
+      "id": "e_117",
       "source": "ks_lastSemiNext",
       "target": "ks_lastSemi",
       "sourceHandle": "out-selected",
       "targetHandle": "in-next"
     },
     {
-      "id": "e_113",
+      "id": "e_118",
       "source": "ks_octave",
-      "target": "ks_octNote",
+      "target": "ks_noteBox",
       "sourceHandle": "out-count",
+      "targetHandle": "in-octave"
+    },
+    {
+      "id": "e_119",
+      "source": "ks_noteBox",
+      "target": "ks_octNote",
+      "sourceHandle": "out-octave",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_114",
+      "id": "e_120",
       "source": "ks_octNote",
       "target": "ks_note",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_115",
+      "id": "e_121",
       "source": "ks_lastSemiNext",
       "target": "ks_note",
       "sourceHandle": "out-selected",
       "targetHandle": "in-c"
     },
     {
-      "id": "e_116",
+      "id": "e_122",
       "source": "ks_note",
       "target": "ks_subNote",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_117",
+      "id": "e_123",
       "source": "ks_note",
-      "target": "ks_lead",
+      "target": "ks_noteBox",
       "sourceHandle": "out-result",
       "targetHandle": "in-note"
     },
     {
-      "id": "e_118",
+      "id": "e_124",
+      "source": "ks_noteBox",
+      "target": "ks_lead",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-note"
+    },
+    {
+      "id": "e_125",
       "source": "ks_subNote",
-      "target": "ks_sub",
+      "target": "ks_noteBox",
       "sourceHandle": "out-result",
+      "targetHandle": "in-sub"
+    },
+    {
+      "id": "e_126",
+      "source": "ks_noteBox",
+      "target": "ks_sub",
+      "sourceHandle": "out-sub",
       "targetHandle": "in-note"
     },
     {
-      "id": "e_119",
+      "id": "e_127",
       "source": "ks_arp",
       "target": "ks_lead",
       "sourceHandle": "out-gate",
       "targetHandle": "in-trigger"
     },
     {
-      "id": "e_120",
+      "id": "e_128",
       "source": "ks_arp",
       "target": "ks_sub",
       "sourceHandle": "out-gate",
       "targetHandle": "in-trigger"
     },
     {
-      "id": "e_121",
+      "id": "e_129",
       "source": "ks_arp",
       "target": "ks_env",
       "sourceHandle": "out-gate",
       "targetHandle": "in-value"
     },
     {
-      "id": "e_122",
+      "id": "e_130",
       "source": "ks_mouse",
       "target": "ks_cutUp",
       "sourceHandle": "out-y",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_123",
+      "id": "e_131",
       "source": "ks_cutUp",
       "target": "ks_cutAmount",
       "sourceHandle": "out-result",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_124",
+      "id": "e_132",
       "source": "ks_cutAmount",
       "target": "ks_cutPow",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_125",
+      "id": "e_133",
       "source": "ks_cutPow",
       "target": "ks_cutoff",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_126",
+      "id": "e_134",
       "source": "ks_cutoff",
-      "target": "ks_filter",
+      "target": "ks_cutBox",
       "sourceHandle": "out-result",
+      "targetHandle": "in-hz"
+    },
+    {
+      "id": "e_135",
+      "source": "ks_cutBox",
+      "target": "ks_filter",
+      "sourceHandle": "out-hz",
       "targetHandle": "in-freq"
     },
     {
-      "id": "e_127",
-      "source": "ks_cutoff",
+      "id": "e_136",
+      "source": "ks_cutBox",
+      "target": "ks_statusBox",
+      "sourceHandle": "out-hz",
+      "targetHandle": "in-cutoff"
+    },
+    {
+      "id": "e_137",
+      "source": "ks_statusBox",
       "target": "ks_cutText",
-      "sourceHandle": "out-result",
+      "sourceHandle": "out-cutoff",
       "targetHandle": "in-value"
     },
     {
-      "id": "e_128",
+      "id": "e_138",
       "source": "ks_semis",
       "target": "ks_hueDeg",
       "sourceHandle": "out-indices",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_129",
+      "id": "e_139",
       "source": "ks_hueDeg",
       "target": "ks_hue",
       "sourceHandle": "out-result",
       "targetHandle": "in-h"
     },
     {
-      "id": "e_130",
+      "id": "e_140",
       "source": "ks_hue",
       "target": "ks_keysBox",
       "sourceHandle": "out-color",
       "targetHandle": "in-hues"
     },
     {
-      "id": "e_131",
+      "id": "e_141",
       "source": "ks_keysBox",
       "target": "ks_whiteHue",
       "sourceHandle": "out-hues",
       "targetHandle": "in-source"
     },
     {
-      "id": "e_132",
+      "id": "e_142",
       "source": "ks_keysBox",
       "target": "ks_blackHue",
       "sourceHandle": "out-hues",
       "targetHandle": "in-source"
     },
     {
-      "id": "e_133",
+      "id": "e_143",
       "source": "ks_hue",
-      "target": "ks_sparkCol",
+      "target": "ks_sparksBox",
       "sourceHandle": "out-color",
+      "targetHandle": "in-hues"
+    },
+    {
+      "id": "e_144",
+      "source": "ks_sparksBox",
+      "target": "ks_sparkCol",
+      "sourceHandle": "out-hues",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_134",
+      "id": "e_145",
       "source": "ks_hue",
       "target": "ks_scopeCol",
       "sourceHandle": "out-color",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_135",
+      "id": "e_146",
       "source": "ks_whiteDown",
       "target": "ks_whiteY",
       "sourceHandle": "out-result",
       "targetHandle": "in-cond"
     },
     {
-      "id": "e_136",
+      "id": "e_147",
       "source": "ks_whiteX",
       "target": "ks_whitePos",
       "sourceHandle": "out-values",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_137",
+      "id": "e_148",
       "source": "ks_whiteY",
       "target": "ks_whitePos",
       "sourceHandle": "out-selected",
       "targetHandle": "in-y"
     },
     {
-      "id": "e_138",
+      "id": "e_149",
       "source": "ks_whitePos",
       "target": "ks_whiteLoop",
       "sourceHandle": "out-vector",
       "targetHandle": "in-at"
     },
     {
-      "id": "e_139",
+      "id": "e_150",
       "source": "ks_whiteDown",
       "target": "ks_whiteCol",
       "sourceHandle": "out-result",
       "targetHandle": "in-cond"
     },
     {
-      "id": "e_140",
+      "id": "e_151",
       "source": "ks_whiteHue",
       "target": "ks_whiteCol",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_141",
+      "id": "e_152",
       "source": "ks_whiteUp",
       "target": "ks_whiteCol",
       "sourceHandle": "out-color",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_142",
+      "id": "e_153",
       "source": "ks_whiteCol",
       "target": "ks_whiteLoop",
       "sourceHandle": "out-selected",
       "targetHandle": "in-col"
     },
     {
-      "id": "e_143",
+      "id": "e_154",
       "source": "ks_whiteLoop",
       "target": "ks_whiteAtX",
       "sourceHandle": "out-at",
       "targetHandle": "in-v"
     },
     {
-      "id": "e_144",
+      "id": "e_155",
       "source": "ks_whiteAtX",
       "target": "ks_whiteLabelPos",
       "sourceHandle": "out-x",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_145",
+      "id": "e_156",
       "source": "ks_whiteLabelPos",
       "target": "ks_whiteText",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_146",
+      "id": "e_157",
       "source": "ks_blackDown",
       "target": "ks_blackY",
       "sourceHandle": "out-result",
       "targetHandle": "in-cond"
     },
     {
-      "id": "e_147",
+      "id": "e_158",
       "source": "ks_blackX",
       "target": "ks_blackPos",
       "sourceHandle": "out-values",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_148",
+      "id": "e_159",
       "source": "ks_blackY",
       "target": "ks_blackPos",
       "sourceHandle": "out-selected",
       "targetHandle": "in-y"
     },
     {
-      "id": "e_149",
+      "id": "e_160",
       "source": "ks_blackPos",
       "target": "ks_blackLoop",
       "sourceHandle": "out-vector",
       "targetHandle": "in-at"
     },
     {
-      "id": "e_150",
+      "id": "e_161",
       "source": "ks_blackDown",
       "target": "ks_blackCol",
       "sourceHandle": "out-result",
       "targetHandle": "in-cond"
     },
     {
-      "id": "e_151",
+      "id": "e_162",
       "source": "ks_blackHue",
       "target": "ks_blackCol",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_152",
+      "id": "e_163",
       "source": "ks_blackUp",
       "target": "ks_blackCol",
       "sourceHandle": "out-color",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_153",
+      "id": "e_164",
       "source": "ks_blackCol",
       "target": "ks_blackLoop",
       "sourceHandle": "out-selected",
       "targetHandle": "in-col"
     },
     {
-      "id": "e_154",
+      "id": "e_165",
       "source": "ks_blackLoop",
       "target": "ks_blackAtX",
       "sourceHandle": "out-at",
       "targetHandle": "in-v"
     },
     {
-      "id": "e_155",
+      "id": "e_166",
       "source": "ks_blackAtX",
       "target": "ks_blackLabelPos",
       "sourceHandle": "out-x",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_156",
+      "id": "e_167",
       "source": "ks_blackLabelPos",
       "target": "ks_blackText",
       "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_157",
+      "id": "e_168",
       "source": "ks_topsX",
       "target": "ks_keyTops",
       "sourceHandle": "out-values",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_158",
+      "id": "e_169",
       "source": "ks_keyTops",
       "target": "ks_sparkAt",
       "sourceHandle": "out-vector",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_159",
+      "id": "e_170",
       "source": "ks_lastSemiNext",
+      "target": "ks_noteBox",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-key"
+    },
+    {
+      "id": "e_171",
+      "source": "ks_noteBox",
+      "target": "ks_sparksBox",
+      "sourceHandle": "out-key",
+      "targetHandle": "in-key"
+    },
+    {
+      "id": "e_172",
+      "source": "ks_sparksBox",
       "target": "ks_sparkAt",
-      "sourceHandle": "out-selected",
+      "sourceHandle": "out-key",
       "targetHandle": "in-index"
     },
     {
-      "id": "e_160",
-      "source": "ks_lastSemiNext",
+      "id": "e_173",
+      "source": "ks_sparksBox",
       "target": "ks_sparkCol",
-      "sourceHandle": "out-selected",
+      "sourceHandle": "out-key",
       "targetHandle": "in-index"
     },
     {
-      "id": "e_161",
-      "source": "ks_lastSemiNext",
+      "id": "e_174",
+      "source": "ks_noteBox",
       "target": "ks_scopeCol",
-      "sourceHandle": "out-selected",
+      "sourceHandle": "out-key",
       "targetHandle": "in-index"
     },
     {
-      "id": "e_162",
+      "id": "e_175",
       "source": "ks_arp",
+      "target": "ks_sparksBox",
+      "sourceHandle": "out-gate",
+      "targetHandle": "in-gate"
+    },
+    {
+      "id": "e_176",
+      "source": "ks_sparksBox",
       "target": "ks_sparkRate",
       "sourceHandle": "out-gate",
       "targetHandle": "in-cond"
     },
     {
-      "id": "e_163",
+      "id": "e_177",
       "source": "ks_sparkRate",
       "target": "ks_sparks",
       "sourceHandle": "out-selected",
       "targetHandle": "in-rate"
     },
     {
-      "id": "e_164",
-      "source": "ks_note",
+      "id": "e_178",
+      "source": "ks_noteBox",
       "target": "ks_scope",
-      "sourceHandle": "out-result",
+      "sourceHandle": "out-note",
       "targetHandle": "in-note"
     },
     {
-      "id": "e_165",
+      "id": "e_179",
       "source": "ks_env",
       "target": "ks_scope",
       "sourceHandle": "out-result",
       "targetHandle": "in-level"
     },
     {
-      "id": "e_166",
-      "source": "ks_cutoff",
+      "id": "e_180",
+      "source": "ks_cutBox",
       "target": "ks_scope",
-      "sourceHandle": "out-result",
+      "sourceHandle": "out-hz",
       "targetHandle": "in-cutoff"
     },
     {
-      "id": "e_167",
+      "id": "e_181",
       "source": "ks_scope",
       "target": "ks_scSemis",
       "sourceHandle": "out-note",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_168",
+      "id": "e_182",
       "source": "ks_scSemis",
       "target": "ks_scOctaves",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_169",
+      "id": "e_183",
       "source": "ks_scOctaves",
       "target": "ks_scRatio",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_170",
+      "id": "e_184",
       "source": "ks_scRatio",
       "target": "ks_scCycles",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_171",
+      "id": "e_185",
       "source": "ks_scCycles",
       "target": "ks_scAcross",
       "sourceHandle": "out-result",
       "targetHandle": "in-to"
     },
     {
-      "id": "e_172",
+      "id": "e_186",
       "source": "ks_scTime",
       "target": "ks_scDrift",
       "sourceHandle": "out-t",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_173",
+      "id": "e_187",
       "source": "ks_scAcross",
       "target": "ks_scPhase",
       "sourceHandle": "out-values",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_174",
+      "id": "e_188",
       "source": "ks_scDrift",
       "target": "ks_scPhase",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_175",
+      "id": "e_189",
       "source": "ks_scPhase",
       "target": "ks_scSaw01",
       "sourceHandle": "out-result",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_176",
+      "id": "e_190",
       "source": "ks_scSaw01",
       "target": "ks_scSaw",
       "sourceHandle": "out-result",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_177",
+      "id": "e_191",
       "source": "ks_scope",
       "target": "ks_scLevel",
       "sourceHandle": "out-level",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_178",
+      "id": "e_192",
       "source": "ks_scope",
       "target": "ks_scBright",
       "sourceHandle": "out-cutoff",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_179",
+      "id": "e_193",
       "source": "ks_scBright",
       "target": "ks_scTone",
       "sourceHandle": "out-result",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_180",
+      "id": "e_194",
       "source": "ks_scLevel",
       "target": "ks_scHeight",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_181",
+      "id": "e_195",
       "source": "ks_scTone",
       "target": "ks_scHeight",
       "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_182",
+      "id": "e_196",
       "source": "ks_scHeight",
       "target": "ks_scSize",
       "sourceHandle": "out-result",
       "targetHandle": "in-y"
     },
     {
-      "id": "e_183",
+      "id": "e_197",
       "source": "ks_scSaw",
       "target": "ks_scPlot",
       "sourceHandle": "out-result",
       "targetHandle": "in-values"
     },
     {
-      "id": "e_184",
+      "id": "e_198",
       "source": "ks_scSize",
       "target": "ks_scPlot",
       "sourceHandle": "out-vector",
       "targetHandle": "in-size"
     },
     {
-      "id": "e_185",
+      "id": "e_199",
       "source": "ks_scPlot",
       "target": "ks_scope",
       "sourceHandle": "out-points",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_186",
+      "id": "e_200",
       "source": "ks_scope",
       "target": "ks_scopeLine",
       "sourceHandle": "out-points",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_187",
-      "source": "ks_note",
+      "id": "e_201",
+      "source": "ks_noteBox",
       "target": "ks_nameBox",
-      "sourceHandle": "out-result",
+      "sourceHandle": "out-note",
       "targetHandle": "in-note"
     },
     {
-      "id": "e_188",
+      "id": "e_202",
       "source": "ks_nameBox",
       "target": "ks_pitchClass",
       "sourceHandle": "out-note",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_189",
+      "id": "e_203",
       "source": "ks_pitchClass",
       "target": "ks_noteName",
       "sourceHandle": "out-result",
       "targetHandle": "in-index"
     },
     {
-      "id": "e_190",
+      "id": "e_204",
       "source": "ks_nameBox",
       "target": "ks_noteOctN",
       "sourceHandle": "out-note",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_191",
+      "id": "e_205",
       "source": "ks_noteOctN",
       "target": "ks_noteOctF",
       "sourceHandle": "out-result",
       "targetHandle": "in-x"
     },
     {
-      "id": "e_192",
+      "id": "e_206",
       "source": "ks_noteOctF",
       "target": "ks_noteOct",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_193",
+      "id": "e_207",
       "source": "ks_noteOct",
       "target": "ks_noteOctText",
       "sourceHandle": "out-result",
       "targetHandle": "in-value"
     },
     {
-      "id": "e_194",
+      "id": "e_208",
       "source": "ks_env",
       "target": "ks_nameBox",
       "sourceHandle": "out-result",
       "targetHandle": "in-level"
     },
     {
-      "id": "e_195",
+      "id": "e_209",
       "source": "ks_nameBox",
       "target": "ks_nameAlpha",
       "sourceHandle": "out-level",
       "targetHandle": "in-t"
     },
     {
-      "id": "e_196",
+      "id": "e_210",
       "source": "ks_nameAlpha",
       "target": "ks_nameCol",
       "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_197",
+      "id": "e_211",
       "source": "ks_nameCol",
       "target": "ks_nameFill",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_198",
+      "id": "e_212",
       "source": "ks_octave",
-      "target": "ks_octText",
+      "target": "ks_statusBox",
       "sourceHandle": "out-count",
+      "targetHandle": "in-octave"
+    },
+    {
+      "id": "e_213",
+      "source": "ks_statusBox",
+      "target": "ks_octText",
+      "sourceHandle": "out-octave",
       "targetHandle": "in-value"
     }
   ]

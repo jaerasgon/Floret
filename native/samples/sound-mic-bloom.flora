@@ -485,8 +485,8 @@
       "id": "mb_lastBeat",
       "defType": "state/value",
       "position": {
-        "x": 132,
-        "y": 276
+        "x": 131,
+        "y": 286
       },
       "params": {},
       "portValues": {
@@ -498,7 +498,7 @@
       "id": "mb_beatStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 2422,
+        "x": 2426,
         "y": 184
       },
       "params": {},
@@ -511,7 +511,7 @@
       "id": "mb_beatNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 2619,
+        "x": 2622,
         "y": 232
       },
       "params": {},
@@ -521,8 +521,8 @@
       "id": "mb_beatRing",
       "defType": "draw/ellipse",
       "position": {
-        "x": 2816,
-        "y": 61
+        "x": 2820,
+        "y": 60
       },
       "params": {},
       "parentId": "mb_ringBox"
@@ -1276,7 +1276,7 @@
       "defType": "math/math",
       "position": {
         "x": 323,
-        "y": 177
+        "y": 181
       },
       "params": {
         "op": "subtract",
@@ -1288,8 +1288,8 @@
       "id": "mb_rested",
       "defType": "logic/compare",
       "position": {
-        "x": 591,
-        "y": 176
+        "x": 590,
+        "y": 179
       },
       "params": {
         "op": "greater",
@@ -1304,8 +1304,8 @@
       "id": "mb_newBeat",
       "defType": "logic/logic",
       "position": {
-        "x": 875,
-        "y": 143
+        "x": 879,
+        "y": 146
       },
       "params": {
         "op": "and"
@@ -1316,8 +1316,8 @@
       "id": "mb_lastBeatNext",
       "defType": "logic/select",
       "position": {
-        "x": 1118,
-        "y": 199
+        "x": 1122,
+        "y": 201
       },
       "params": {},
       "parentId": "mb_ringBox"
@@ -1326,8 +1326,8 @@
       "id": "mb_beatAge",
       "defType": "math/math",
       "position": {
-        "x": 1325,
-        "y": 118
+        "x": 1329,
+        "y": 120
       },
       "params": {
         "op": "subtract",
@@ -1339,7 +1339,7 @@
       "id": "mb_beatSize",
       "defType": "math/map",
       "position": {
-        "x": 2618,
+        "x": 2622,
         "y": 40
       },
       "params": {
@@ -1361,8 +1361,8 @@
       "id": "mb_beatFade",
       "defType": "motion/envelope",
       "position": {
-        "x": 1601,
-        "y": 151
+        "x": 1605,
+        "y": 153
       },
       "params": {
         "shape": "fade",
@@ -1379,8 +1379,8 @@
       "id": "mb_beatAlpha",
       "defType": "math/math",
       "position": {
-        "x": 1896,
-        "y": 176
+        "x": 1900,
+        "y": 178
       },
       "params": {
         "op": "multiply",
@@ -1396,8 +1396,8 @@
       "id": "mb_beatCol",
       "defType": "color/color",
       "position": {
-        "x": 2167,
-        "y": 136
+        "x": 2171,
+        "y": 137
       },
       "params": {
         "mode": "rgb",
@@ -1572,8 +1572,8 @@
       },
       "params": {
         "label": "Beat ring",
-        "width": 3039,
-        "height": 394
+        "width": 3043,
+        "height": 404
       },
       "ports": [
         {
@@ -1581,21 +1581,21 @@
           "name": "ring",
           "type": "layer",
           "direction": "output",
-          "y": 121
+          "y": 120
         },
         {
           "id": "t",
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 207
+          "y": 228
         },
         {
           "id": "beat",
           "name": "beat",
           "type": "boolean",
           "direction": "input",
-          "y": 181
+          "y": 122
         }
       ]
     }

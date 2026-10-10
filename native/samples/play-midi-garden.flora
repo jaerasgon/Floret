@@ -16,7 +16,7 @@
         "y": -334
       },
       "params": {
-        "text": "MIDI Garden\n\nPlug in a MIDI keyboard or controller: every note you play plants a flower (louder notes, bigger flowers) and plays it. Knobs sending CC 21, 22, 23, 24 turn the garden's Hue, Petals, Spin and Bloom (the filter too) — set other CC numbers on the MidiCC nodes to match your controller. No MIDI? Everything has a stand-in: the four sliders do the knobs, keys A–K play notes, and clicking plants a flower where you click (higher up = higher note).\n\nHow it works: a note-on is a press, or a new note while held, from whichever source is playing. Each one appends the flower's place, time and note to three State* lists (kept to the newest 28). A ForEach draws every flower as a rose curve that grows in, turns and slowly wilts (two Envelopes); a knob's CC wins over its slider once it has moved.",
+        "text": "MIDI Garden\n\nPlug in a MIDI keyboard or controller: every note you play plants a flower (louder notes, bigger flowers) and plays it. Knobs sending CC 21, 22, 23, 24 turn the garden's Hue, Petals, Spin and Bloom (the filter too) — set other CC numbers on the MidiCC nodes to match your controller. No MIDI? Everything has a stand-in: the four sliders do the knobs, keys A–K play notes, and clicking plants a flower where you click (higher up = higher note).\n\nHow it works: a note-on is a press, or a new note while held, from whichever source is playing. Each one appends the flower's place, time and note to three lists kept by Read* → Write* pairs (the newest 28). A ForEach draws every flower as a rose curve that grows in, turns and slowly wilts (two Envelopes); a knob's CC wins over its slider once it has moved.",
         "width": 470,
         "height": 270
       }
@@ -155,8 +155,8 @@
       },
       "params": {
         "label": "Note on",
-        "width": 3123,
-        "height": 918
+        "width": 3481,
+        "height": 894
       },
       "ports": [
         {
@@ -164,74 +164,74 @@
           "name": "midiOn",
           "type": "boolean",
           "direction": "input",
-          "y": 159
+          "y": 172
         },
         {
           "id": "midiNote",
           "name": "midiNote",
           "type": "number",
           "direction": "input",
-          "y": 284
+          "y": 260
         },
         {
           "id": "midiVelocity",
           "name": "midiVelocity",
           "type": "number",
           "direction": "input",
-          "y": 109
+          "y": 99
         },
         {
           "id": "key",
           "name": "key",
           "type": "number",
           "direction": "input",
-          "y": 452
+          "y": 428
         },
         {
           "id": "click",
           "name": "click",
           "type": "boolean",
           "direction": "input",
-          "y": 252
+          "y": 196
         },
         {
           "id": "y",
           "name": "y",
           "type": "number",
           "direction": "input",
-          "y": 663
+          "y": 639
         },
         {
           "id": "pressed",
           "name": "pressed",
           "type": "boolean",
           "direction": "output",
-          "y": 392
+          "y": 307
         },
         {
           "id": "note",
           "name": "note",
           "type": "number",
           "direction": "output",
-          "y": 360
+          "y": 339
         },
         {
           "id": "velocity",
           "name": "velocity",
           "type": "number",
           "direction": "output",
-          "y": 109
+          "y": 78
         },
         {
           "id": "noteOn",
           "name": "noteOn",
           "type": "boolean",
           "direction": "output",
-          "y": 131
+          "y": 98
         }
       ],
-      "width": 3123,
-      "height": 918
+      "width": 3481,
+      "height": 894
     },
     {
       "id": "mg_plant",
@@ -242,8 +242,8 @@
       },
       "params": {
         "label": "Planting",
-        "width": 3028,
-        "height": 1488
+        "width": 5132,
+        "height": 1490
       },
       "ports": [
         {
@@ -251,88 +251,88 @@
           "name": "noteOn",
           "type": "boolean",
           "direction": "input",
-          "y": 632
+          "y": 622
         },
         {
           "id": "note",
           "name": "note",
           "type": "number",
           "direction": "input",
-          "y": 654
+          "y": 646
         },
         {
           "id": "velocity",
           "name": "velocity",
           "type": "number",
           "direction": "input",
-          "y": 822
+          "y": 814
         },
         {
           "id": "click",
           "name": "click",
           "type": "boolean",
           "direction": "input",
-          "y": 154
+          "y": 146
         },
         {
           "id": "midiOn",
           "name": "midiOn",
           "type": "boolean",
           "direction": "input",
-          "y": 186
+          "y": 179
         },
         {
           "id": "key",
           "name": "key",
           "type": "number",
           "direction": "input",
-          "y": 312
+          "y": 305
         },
         {
           "id": "mouse",
           "name": "mouse",
           "type": "vec2",
           "direction": "input",
-          "y": 377
+          "y": 370
         },
         {
           "id": "time",
           "name": "time",
           "type": "number",
           "direction": "input",
-          "y": 1191
+          "y": 1192
         },
         {
           "id": "where",
           "name": "where",
           "type": "vec2",
           "direction": "output",
-          "y": 293
+          "y": 295
         },
         {
           "id": "born",
           "name": "born",
           "type": "number",
           "direction": "output",
-          "y": 890
+          "y": 832
         },
         {
           "id": "pitch",
           "name": "pitch",
           "type": "number",
           "direction": "output",
-          "y": 597
+          "y": 544
         },
         {
           "id": "loud",
           "name": "loud",
           "type": "number",
           "direction": "output",
-          "y": 743
+          "y": 688
         }
       ],
-      "width": 3028,
-      "height": 1488
+      "width": 5132,
+      "height": 1490
     },
     {
       "id": "mg_gardenDraw",
@@ -343,8 +343,8 @@
       },
       "params": {
         "label": "Garden",
-        "width": 5071,
-        "height": 1424
+        "width": 5056,
+        "height": 1510
       },
       "ports": [
         {
@@ -352,74 +352,74 @@
           "name": "where",
           "type": "vec2",
           "direction": "input",
-          "y": 295
+          "y": 309
         },
         {
           "id": "born",
           "name": "born",
           "type": "number",
           "direction": "input",
-          "y": 414
+          "y": 432
         },
         {
           "id": "pitch",
           "name": "pitch",
           "type": "number",
           "direction": "input",
-          "y": 844
+          "y": 866
         },
         {
           "id": "loud",
           "name": "loud",
           "type": "number",
           "direction": "input",
-          "y": 876
+          "y": 956
         },
         {
           "id": "hue",
           "name": "hue",
           "type": "number",
           "direction": "input",
-          "y": 446
+          "y": 466
         },
         {
           "id": "petals",
           "name": "petals",
           "type": "number",
           "direction": "input",
-          "y": 536
+          "y": 557
         },
         {
           "id": "spin",
           "name": "spin",
           "type": "number",
           "direction": "input",
-          "y": 601
+          "y": 622
         },
         {
           "id": "bloom",
           "name": "bloom",
           "type": "number",
           "direction": "input",
-          "y": 649
+          "y": 670
         },
         {
           "id": "time",
           "name": "time",
           "type": "number",
           "direction": "input",
-          "y": 697
+          "y": 718
         },
         {
           "id": "garden",
           "name": "garden",
           "type": "layer",
           "direction": "output",
-          "y": 295
+          "y": 309
         }
       ],
-      "width": 5071,
-      "height": 1424
+      "width": 5056,
+      "height": 1510
     },
     {
       "id": "mg_sound",
@@ -583,40 +583,88 @@
     },
     {
       "id": "mg_wasPressed",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 2153,
-        "y": 138
+        "x": 135,
+        "y": 59
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "was pressed"
+      },
       "portValues": {
         "init": 0
       },
       "parentId": "mg_notes"
     },
     {
-      "id": "mg_lastNote",
-      "defType": "state/value",
+      "id": "mg_wasPressedWrite",
+      "defType": "state/write",
       "position": {
-        "x": 2153,
-        "y": 264
+        "x": 3191,
+        "y": 181
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "was pressed"
+      },
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_lastNote",
+      "defType": "state/read",
+      "position": {
+        "x": 148,
+        "y": 185
+      },
+      "params": {
+        "slot": 2,
+        "name": "last note"
+      },
       "portValues": {
         "init": -1
       },
       "parentId": "mg_notes"
     },
     {
-      "id": "mg_planted",
-      "defType": "state/value",
+      "id": "mg_lastNoteWrite",
+      "defType": "state/write",
       "position": {
-        "x": 217,
-        "y": 401
+        "x": 3203,
+        "y": 366
       },
-      "params": {},
+      "params": {
+        "slot": 2,
+        "name": "last note"
+      },
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_planted",
+      "defType": "state/read",
+      "position": {
+        "x": 1713,
+        "y": 394
+      },
+      "params": {
+        "slot": 3,
+        "name": "planted"
+      },
       "portValues": {
         "init": 5
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_plantedWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 4848,
+        "y": 320
+      },
+      "params": {
+        "slot": 3,
+        "name": "planted"
       },
       "parentId": "mg_plant"
     },
@@ -624,8 +672,8 @@
       "id": "mg_initPitch",
       "defType": "data/csv-inline",
       "position": {
-        "x": 177,
-        "y": 678
+        "x": 170,
+        "y": 670
       },
       "params": {
         "data": "60,64,67,71,74"
@@ -634,20 +682,36 @@
     },
     {
       "id": "mg_where",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 1948,
-        "y": 266
+        "x": 1697,
+        "y": 259
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "flower spots"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_whereWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 4830,
+        "y": 194
+      },
+      "params": {
+        "slot": 1,
+        "name": "flower spots"
+      },
       "parentId": "mg_plant"
     },
     {
       "id": "mg_wherePlus",
       "defType": "spread/combine",
       "position": {
-        "x": 2199,
-        "y": 162
+        "x": 4008,
+        "y": 157
       },
       "params": {
         "op": "append"
@@ -656,20 +720,36 @@
     },
     {
       "id": "mg_born",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 505,
-        "y": 1049
+        "x": 1696,
+        "y": 1048
       },
-      "params": {},
+      "params": {
+        "slot": 2,
+        "name": "flower births"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_bornWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 4830,
+        "y": 894
+      },
+      "params": {
+        "slot": 2,
+        "name": "flower births"
+      },
       "parentId": "mg_plant"
     },
     {
       "id": "mg_bornInit",
       "defType": "data/csv-inline",
       "position": {
-        "x": 177,
-        "y": 950
+        "x": 170,
+        "y": 942
       },
       "params": {
         "data": "-3,-3.6,-4.2,-4.8,-5.4"
@@ -680,8 +760,8 @@
       "id": "mg_bornPlus",
       "defType": "spread/combine",
       "position": {
-        "x": 781,
-        "y": 1108
+        "x": 2591,
+        "y": 1109
       },
       "params": {
         "op": "append"
@@ -690,19 +770,35 @@
     },
     {
       "id": "mg_pitch",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 505,
-        "y": 733
+        "x": 1692,
+        "y": 732
       },
-      "params": {},
+      "params": {
+        "slot": 3,
+        "name": "flower pitches"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_pitchWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 4825,
+        "y": 600
+      },
+      "params": {
+        "slot": 3,
+        "name": "flower pitches"
+      },
       "parentId": "mg_plant"
     },
     {
       "id": "mg_pitchPlus",
       "defType": "spread/combine",
       "position": {
-        "x": 781,
+        "x": 2591,
         "y": 639
       },
       "params": {
@@ -712,20 +808,36 @@
     },
     {
       "id": "mg_loud",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 505,
-        "y": 923
+        "x": 1686,
+        "y": 922
       },
-      "params": {},
+      "params": {
+        "slot": 4,
+        "name": "flower loudness"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_loudWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 4820,
+        "y": 747
+      },
+      "params": {
+        "slot": 4,
+        "name": "flower loudness"
+      },
       "parentId": "mg_plant"
     },
     {
       "id": "mg_loudInit",
       "defType": "data/csv-inline",
       "position": {
-        "x": 177,
-        "y": 846
+        "x": 170,
+        "y": 838
       },
       "params": {
         "data": "0.6,0.8,0.7,0.9,0.75"
@@ -736,7 +848,7 @@
       "id": "mg_loudPlus",
       "defType": "spread/combine",
       "position": {
-        "x": 781,
+        "x": 2591,
         "y": 923
       },
       "params": {
@@ -748,7 +860,7 @@
       "id": "mg_gardenSize",
       "defType": "spread/count",
       "position": {
-        "x": 794,
+        "x": 2604,
         "y": 787
       },
       "params": {},
@@ -758,8 +870,8 @@
       "id": "mg_whereNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 2754,
-        "y": 257
+        "x": 4562,
+        "y": 246
       },
       "params": {
         "op": "skip"
@@ -770,8 +882,8 @@
       "id": "mg_bornNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 1924,
-        "y": 883
+        "x": 3733,
+        "y": 873
       },
       "params": {
         "op": "skip"
@@ -782,8 +894,8 @@
       "id": "mg_pitchNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 1924,
-        "y": 587
+        "x": 3733,
+        "y": 577
       },
       "params": {
         "op": "skip"
@@ -794,8 +906,8 @@
       "id": "mg_loudNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 1924,
-        "y": 735
+        "x": 3733,
+        "y": 725
       },
       "params": {
         "op": "skip"
@@ -807,7 +919,7 @@
       "defType": "spread/range",
       "position": {
         "x": 145,
-        "y": 743
+        "y": 765
       },
       "params": {},
       "portValues": {
@@ -819,12 +931,12 @@
       "id": "mg_flowers",
       "defType": "region/foreach",
       "position": {
-        "x": 958,
+        "x": 961,
         "y": 62
       },
       "params": {
-        "width": 3463,
-        "height": 1128,
+        "width": 3440,
+        "height": 1214,
         "label": "Flowers"
       },
       "ports": [
@@ -833,54 +945,54 @@
           "name": "at",
           "type": "vec2",
           "direction": "input",
-          "y": 145
+          "y": 161
         },
         {
           "id": "born",
           "name": "born",
           "type": "number",
           "direction": "input",
-          "y": 399
+          "y": 376
         },
         {
           "id": "pitch",
           "name": "pitch",
           "type": "number",
           "direction": "input",
-          "y": 720
+          "y": 644
         },
         {
           "id": "loud",
           "name": "loud",
           "type": "number",
           "direction": "input",
-          "y": 816
+          "y": 902
         },
         {
           "id": "flower",
           "name": "flower",
           "type": "layer",
           "direction": "output",
-          "y": 187
+          "y": 165
         },
         {
           "id": "heart",
           "name": "heart",
           "type": "layer",
           "direction": "output",
-          "y": 296
+          "y": 274
         }
       ],
-      "width": 3463,
-      "height": 1128,
+      "width": 3440,
+      "height": 1214,
       "parentId": "mg_gardenDraw"
     },
     {
       "id": "mg_petalFill",
       "defType": "style/fill",
       "position": {
-        "x": 2809,
-        "y": 348
+        "x": 2786,
+        "y": 305
       },
       "params": {},
       "parentId": "mg_flowers"
@@ -889,8 +1001,8 @@
       "id": "mg_edgeStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 2993,
-        "y": 285
+        "x": 2970,
+        "y": 258
       },
       "params": {},
       "portValues": {
@@ -908,8 +1020,8 @@
       "id": "mg_flower",
       "defType": "draw/polygon",
       "position": {
-        "x": 3248,
-        "y": 151
+        "x": 3225,
+        "y": 129
       },
       "params": {},
       "portValues": {
@@ -921,8 +1033,8 @@
       "id": "mg_heartFill",
       "defType": "style/fill",
       "position": {
-        "x": 1386,
-        "y": 361
+        "x": 1377,
+        "y": 372
       },
       "params": {},
       "portValues": {
@@ -939,7 +1051,7 @@
       "id": "mg_heart",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1700,
+        "x": 1685,
         "y": 188
       },
       "params": {},
@@ -949,8 +1061,8 @@
       "id": "mg_garden",
       "defType": "transform/group",
       "position": {
-        "x": 4524,
-        "y": 260
+        "x": 4505,
+        "y": 246
       },
       "params": {
         "slotCount": 2
@@ -961,7 +1073,7 @@
       "id": "mg_glow",
       "defType": "gpu/effect",
       "position": {
-        "x": 4789,
+        "x": 4773,
         "y": 248
       },
       "params": {
@@ -1243,8 +1355,8 @@
       "id": "mg_notesNote",
       "defType": "meta/comment",
       "position": {
-        "x": 134,
-        "y": 768
+        "x": 135,
+        "y": 744
       },
       "params": {
         "text": "Whichever source is playing gives the note: MIDI first, then the keys A–K (from middle C), else the click's height (three octaves from C3, higher up = higher). A note-on is a new press, or a different note while one is held.",
@@ -1257,8 +1369,8 @@
       "id": "mg_keyDown",
       "defType": "logic/compare",
       "position": {
-        "x": 134,
-        "y": 308
+        "x": 404,
+        "y": 284
       },
       "params": {
         "op": "greater-equal"
@@ -1272,8 +1384,8 @@
       "id": "mg_midiOrKey",
       "defType": "logic/logic",
       "position": {
-        "x": 441,
-        "y": 163
+        "x": 716,
+        "y": 103
       },
       "params": {
         "op": "or"
@@ -1284,8 +1396,8 @@
       "id": "mg_pressed",
       "defType": "logic/logic",
       "position": {
-        "x": 698,
-        "y": 193
+        "x": 972,
+        "y": 124
       },
       "params": {
         "op": "or"
@@ -1296,8 +1408,8 @@
       "id": "mg_keyNote",
       "defType": "math/math",
       "position": {
-        "x": 141,
-        "y": 456
+        "x": 410,
+        "y": 432
       },
       "params": {
         "op": "add",
@@ -1313,8 +1425,8 @@
       "id": "mg_clickHigh",
       "defType": "math/math",
       "position": {
-        "x": 141,
-        "y": 604
+        "x": 410,
+        "y": 580
       },
       "params": {
         "op": "divide",
@@ -1330,8 +1442,8 @@
       "id": "mg_clickUp",
       "defType": "math/math",
       "position": {
-        "x": 427,
-        "y": 551
+        "x": 702,
+        "y": 535
       },
       "params": {
         "op": "subtract",
@@ -1347,8 +1459,8 @@
       "id": "mg_clickClamp",
       "defType": "math/clamp",
       "position": {
-        "x": 721,
-        "y": 544
+        "x": 995,
+        "y": 534
       },
       "params": {},
       "parentId": "mg_notes",
@@ -1361,8 +1473,8 @@
       "id": "mg_clickSpan",
       "defType": "math/math",
       "position": {
-        "x": 939,
-        "y": 514
+        "x": 1219,
+        "y": 512
       },
       "params": {
         "op": "multiply",
@@ -1378,8 +1490,8 @@
       "id": "mg_clickStep",
       "defType": "math/math",
       "position": {
-        "x": 1205,
-        "y": 486
+        "x": 1488,
+        "y": 491
       },
       "params": {
         "op": "round"
@@ -1390,8 +1502,8 @@
       "id": "mg_clickNote",
       "defType": "math/math",
       "position": {
-        "x": 1453,
-        "y": 436
+        "x": 1739,
+        "y": 449
       },
       "params": {
         "op": "add",
@@ -1407,8 +1519,8 @@
       "id": "mg_keyOrClick",
       "defType": "logic/select",
       "position": {
-        "x": 1723,
-        "y": 353
+        "x": 2008,
+        "y": 374
       },
       "params": {},
       "parentId": "mg_notes"
@@ -1417,8 +1529,8 @@
       "id": "mg_note",
       "defType": "logic/select",
       "position": {
-        "x": 1939,
-        "y": 242
+        "x": 2214,
+        "y": 311
       },
       "params": {},
       "parentId": "mg_notes"
@@ -1427,7 +1539,7 @@
       "id": "mg_velocity",
       "defType": "logic/select",
       "position": {
-        "x": 172,
+        "x": 442,
         "y": 40
       },
       "params": {},
@@ -1440,8 +1552,8 @@
       "id": "mg_freshPress",
       "defType": "logic/logic",
       "position": {
-        "x": 2365,
-        "y": 112
+        "x": 2451,
+        "y": 60
       },
       "params": {
         "op": "not"
@@ -1452,8 +1564,8 @@
       "id": "mg_newNote",
       "defType": "logic/compare",
       "position": {
-        "x": 2344,
-        "y": 238
+        "x": 2430,
+        "y": 186
       },
       "params": {
         "op": "not-equal"
@@ -1464,8 +1576,8 @@
       "id": "mg_struck",
       "defType": "logic/logic",
       "position": {
-        "x": 2629,
-        "y": 142
+        "x": 2715,
+        "y": 95
       },
       "params": {
         "op": "or"
@@ -1476,8 +1588,8 @@
       "id": "mg_noteOn",
       "defType": "logic/logic",
       "position": {
-        "x": 2869,
-        "y": 94
+        "x": 2956,
+        "y": 53
       },
       "params": {
         "op": "and"
@@ -1489,10 +1601,10 @@
       "defType": "meta/comment",
       "position": {
         "x": 170,
-        "y": 1308
+        "y": 1310
       },
       "params": {
-        "text": "Four State* lists hold every flower's place, birth time, note and loudness. A note-on appends one to each (a Switch takes the longer list only then), and once there are more than 28 the oldest are skipped. A clicked flower grows where you click; others take the next place on a golden-angle spiral (137.5°, radius growing with √n), round the garden every 60.",
+        "text": "Four Read* → Write* pairs hold every flower's place, birth time, note and loudness. A note-on appends one to each (a Switch takes the longer list only then), and once there are more than 28 the oldest are skipped. A clicked flower grows where you click; others take the next place on a golden-angle spiral (137.5°, radius growing with √n), round the garden every 60.",
         "width": 320,
         "height": 140
       },
@@ -1502,8 +1614,8 @@
       "id": "mg_plantedNext",
       "defType": "math/math",
       "position": {
-        "x": 478,
-        "y": 405
+        "x": 2288,
+        "y": 256
       },
       "params": {
         "op": "add",
@@ -1516,8 +1628,8 @@
       "id": "mg_noMidi",
       "defType": "logic/logic",
       "position": {
-        "x": 191,
-        "y": 127
+        "x": 2002,
+        "y": 120
       },
       "params": {
         "op": "not"
@@ -1528,8 +1640,8 @@
       "id": "mg_noKey",
       "defType": "logic/compare",
       "position": {
-        "x": 170,
-        "y": 253
+        "x": 1981,
+        "y": 246
       },
       "params": {
         "op": "less"
@@ -1543,8 +1655,8 @@
       "id": "mg_clickOnly1",
       "defType": "logic/logic",
       "position": {
-        "x": 492,
-        "y": 45
+        "x": 2302,
+        "y": 44
       },
       "params": {
         "op": "and"
@@ -1555,7 +1667,7 @@
       "id": "mg_byClick",
       "defType": "logic/logic",
       "position": {
-        "x": 793,
+        "x": 2602,
         "y": 40
       },
       "params": {
@@ -1567,8 +1679,8 @@
       "id": "mg_spotAngle",
       "defType": "math/math",
       "position": {
-        "x": 1340,
-        "y": 84
+        "x": 3150,
+        "y": 86
       },
       "params": {
         "op": "multiply",
@@ -1584,8 +1696,8 @@
       "id": "mg_spotRing",
       "defType": "math/math",
       "position": {
-        "x": 487,
-        "y": 257
+        "x": 2297,
+        "y": 404
       },
       "params": {
         "op": "mod"
@@ -1599,8 +1711,8 @@
       "id": "mg_spotRoot",
       "defType": "math/math",
       "position": {
-        "x": 787,
-        "y": 263
+        "x": 2597,
+        "y": 353
       },
       "params": {
         "op": "sqrt"
@@ -1611,8 +1723,8 @@
       "id": "mg_spotOut",
       "defType": "math/math",
       "position": {
-        "x": 1054,
-        "y": 247
+        "x": 2864,
+        "y": 274
       },
       "params": {
         "op": "multiply",
@@ -1628,8 +1740,8 @@
       "id": "mg_spotRadius",
       "defType": "math/math",
       "position": {
-        "x": 1340,
-        "y": 232
+        "x": 3150,
+        "y": 234
       },
       "params": {
         "op": "add",
@@ -1645,8 +1757,8 @@
       "id": "mg_spotSpiral",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 1647,
-        "y": 142
+        "x": 3456,
+        "y": 144
       },
       "params": {},
       "parentId": "mg_plant"
@@ -1655,8 +1767,8 @@
       "id": "mg_spot",
       "defType": "logic/select",
       "position": {
-        "x": 1952,
-        "y": 91
+        "x": 3762,
+        "y": 90
       },
       "params": {},
       "parentId": "mg_plant"
@@ -1665,8 +1777,8 @@
       "id": "mg_initIdx",
       "defType": "spread/range",
       "position": {
-        "x": 192,
-        "y": 542
+        "x": 184,
+        "y": 534
       },
       "params": {},
       "parentId": "mg_plant",
@@ -1678,8 +1790,8 @@
       "id": "mg_initN",
       "defType": "math/math",
       "position": {
-        "x": 478,
-        "y": 553
+        "x": 433,
+        "y": 552
       },
       "params": {
         "op": "add",
@@ -1695,8 +1807,8 @@
       "id": "mg_initAngle",
       "defType": "math/math",
       "position": {
-        "x": 1340,
-        "y": 380
+        "x": 1207,
+        "y": 382
       },
       "params": {
         "op": "multiply",
@@ -1712,7 +1824,7 @@
       "id": "mg_initRoot",
       "defType": "math/math",
       "position": {
-        "x": 787,
+        "x": 697,
         "y": 511
       },
       "params": {
@@ -1724,8 +1836,8 @@
       "id": "mg_initOut",
       "defType": "math/math",
       "position": {
-        "x": 1054,
-        "y": 420
+        "x": 943,
+        "y": 422
       },
       "params": {
         "op": "multiply",
@@ -1741,8 +1853,8 @@
       "id": "mg_initRadius",
       "defType": "math/math",
       "position": {
-        "x": 1340,
-        "y": 528
+        "x": 1207,
+        "y": 530
       },
       "params": {
         "op": "add",
@@ -1758,8 +1870,8 @@
       "id": "mg_initWhere",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 1647,
-        "y": 383
+        "x": 1471,
+        "y": 390
       },
       "params": {},
       "parentId": "mg_plant"
@@ -1768,8 +1880,8 @@
       "id": "mg_sizeAfter",
       "defType": "math/math",
       "position": {
-        "x": 1054,
-        "y": 760
+        "x": 2864,
+        "y": 762
       },
       "params": {
         "op": "add",
@@ -1782,8 +1894,8 @@
       "id": "mg_tooMany",
       "defType": "math/math",
       "position": {
-        "x": 1340,
-        "y": 730
+        "x": 3150,
+        "y": 727
       },
       "params": {
         "op": "subtract",
@@ -1799,8 +1911,8 @@
       "id": "mg_overflow",
       "defType": "math/math",
       "position": {
-        "x": 1623,
-        "y": 679
+        "x": 3432,
+        "y": 670
       },
       "params": {
         "op": "max",
@@ -1816,8 +1928,8 @@
       "id": "mg_whereKept",
       "defType": "logic/switch",
       "position": {
-        "x": 2469,
-        "y": 134
+        "x": 4277,
+        "y": 129
       },
       "params": {
         "mode": "first-true",
@@ -1829,8 +1941,8 @@
       "id": "mg_bornKept",
       "defType": "logic/switch",
       "position": {
-        "x": 1054,
-        "y": 1100
+        "x": 2864,
+        "y": 1102
       },
       "params": {
         "mode": "first-true",
@@ -1842,8 +1954,8 @@
       "id": "mg_pitchKept",
       "defType": "logic/switch",
       "position": {
-        "x": 1054,
-        "y": 568
+        "x": 2864,
+        "y": 570
       },
       "params": {
         "mode": "first-true",
@@ -1855,8 +1967,8 @@
       "id": "mg_loudKept",
       "defType": "logic/switch",
       "position": {
-        "x": 1054,
-        "y": 908
+        "x": 2864,
+        "y": 910
       },
       "params": {
         "mode": "first-true",
@@ -1869,7 +1981,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 130,
-        "y": 1254
+        "y": 1340
       },
       "params": {
         "text": "Every flower is a rose of 160 points round its place: 2 + 7 × Petals lobes, its size from the note's loudness and Bloom, its hue from the note and Hue. It grows in (a decay Envelope, turned upside down), turns at Spin, and after 24 s wilts away over 8 s (a fade Envelope). Bloom makes the garden glow.",
@@ -1883,7 +1995,7 @@
       "defType": "math/math",
       "position": {
         "x": 130,
-        "y": 477
+        "y": 498
       },
       "params": {
         "op": "multiply",
@@ -1900,7 +2012,7 @@
       "defType": "math/math",
       "position": {
         "x": 407,
-        "y": 485
+        "y": 506
       },
       "params": {
         "op": "round"
@@ -1912,7 +2024,7 @@
       "defType": "math/math",
       "position": {
         "x": 667,
-        "y": 473
+        "y": 494
       },
       "params": {
         "op": "add",
@@ -1929,7 +2041,7 @@
       "defType": "math/math",
       "position": {
         "x": 398,
-        "y": 721
+        "y": 743
       },
       "params": {
         "op": "divide",
@@ -1946,7 +2058,7 @@
       "defType": "math/math",
       "position": {
         "x": 667,
-        "y": 717
+        "y": 738
       },
       "params": {
         "op": "multiply",
@@ -1962,8 +2074,8 @@
       "id": "mg_age",
       "defType": "math/math",
       "position": {
-        "x": 132,
-        "y": 318
+        "x": 139,
+        "y": 295
       },
       "params": {
         "op": "subtract",
@@ -1976,8 +2088,8 @@
       "id": "mg_riseFade",
       "defType": "motion/envelope",
       "position": {
-        "x": 422,
-        "y": 290
+        "x": 445,
+        "y": 239
       },
       "params": {
         "shape": "decay",
@@ -1992,8 +2104,8 @@
       "id": "mg_growIn",
       "defType": "math/math",
       "position": {
-        "x": 777,
-        "y": 99
+        "x": 762,
+        "y": 309
       },
       "params": {
         "op": "subtract",
@@ -2009,8 +2121,8 @@
       "id": "mg_wilt",
       "defType": "motion/envelope",
       "position": {
-        "x": 765,
-        "y": 247
+        "x": 750,
+        "y": 95
       },
       "params": {
         "shape": "fade",
@@ -2027,8 +2139,8 @@
       "id": "mg_grow",
       "defType": "math/math",
       "position": {
-        "x": 1077,
-        "y": 242
+        "x": 1069,
+        "y": 259
       },
       "params": {
         "op": "multiply",
@@ -2041,8 +2153,8 @@
       "id": "mg_spinDir",
       "defType": "math/math",
       "position": {
-        "x": 132,
-        "y": 164
+        "x": 139,
+        "y": 591
       },
       "params": {
         "op": "subtract",
@@ -2058,8 +2170,8 @@
       "id": "mg_spun",
       "defType": "math/math",
       "position": {
-        "x": 434,
-        "y": 120
+        "x": 457,
+        "y": 557
       },
       "params": {
         "op": "multiply",
@@ -2075,8 +2187,8 @@
       "id": "mg_turn",
       "defType": "math/math",
       "position": {
-        "x": 777,
-        "y": 461
+        "x": 762,
+        "y": 605
       },
       "params": {
         "op": "add",
@@ -2089,8 +2201,8 @@
       "id": "mg_petalAngle",
       "defType": "math/math",
       "position": {
-        "x": 1077,
-        "y": 442
+        "x": 1069,
+        "y": 525
       },
       "params": {
         "op": "add",
@@ -2103,8 +2215,8 @@
       "id": "mg_lobeAngle",
       "defType": "math/math",
       "position": {
-        "x": 132,
-        "y": 470
+        "x": 139,
+        "y": 749
       },
       "params": {
         "op": "multiply",
@@ -2117,8 +2229,8 @@
       "id": "mg_lobeHalf",
       "defType": "math/math",
       "position": {
-        "x": 434,
-        "y": 460
+        "x": 457,
+        "y": 727
       },
       "params": {
         "op": "divide",
@@ -2134,8 +2246,8 @@
       "id": "mg_lobeCos",
       "defType": "math/math",
       "position": {
-        "x": 786,
-        "y": 609
+        "x": 771,
+        "y": 753
       },
       "params": {
         "op": "cos"
@@ -2146,8 +2258,8 @@
       "id": "mg_lobeAbs",
       "defType": "math/math",
       "position": {
-        "x": 1086,
-        "y": 590
+        "x": 1078,
+        "y": 700
       },
       "params": {
         "op": "abs",
@@ -2159,8 +2271,8 @@
       "id": "mg_lobeDepth",
       "defType": "math/math",
       "position": {
-        "x": 1369,
-        "y": 541
+        "x": 1360,
+        "y": 626
       },
       "params": {
         "op": "multiply",
@@ -2176,8 +2288,8 @@
       "id": "mg_lobe",
       "defType": "math/math",
       "position": {
-        "x": 1665,
-        "y": 493
+        "x": 1650,
+        "y": 552
       },
       "params": {
         "op": "add",
@@ -2193,8 +2305,8 @@
       "id": "mg_brightHalf",
       "defType": "math/math",
       "position": {
-        "x": 132,
-        "y": 840
+        "x": 139,
+        "y": 926
       },
       "params": {
         "op": "add",
@@ -2210,8 +2322,8 @@
       "id": "mg_bigness",
       "defType": "math/math",
       "position": {
-        "x": 434,
-        "y": 777
+        "x": 457,
+        "y": 875
       },
       "params": {
         "op": "multiply",
@@ -2227,8 +2339,8 @@
       "id": "mg_flowerSize",
       "defType": "math/math",
       "position": {
-        "x": 1665,
-        "y": 654
+        "x": 1650,
+        "y": 700
       },
       "params": {
         "op": "add",
@@ -2244,8 +2356,8 @@
       "id": "mg_reach",
       "defType": "math/math",
       "position": {
-        "x": 1959,
-        "y": 414
+        "x": 1937,
+        "y": 504
       },
       "params": {
         "op": "multiply",
@@ -2258,8 +2370,8 @@
       "id": "mg_petalOffsets",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 2264,
-        "y": 322
+        "x": 2242,
+        "y": 433
       },
       "params": {},
       "parentId": "mg_flowers"
@@ -2268,8 +2380,8 @@
       "id": "mg_petalPts",
       "defType": "math/math",
       "position": {
-        "x": 2543,
-        "y": 146
+        "x": 2519,
+        "y": 138
       },
       "params": {
         "op": "add",
@@ -2282,8 +2394,8 @@
       "id": "mg_noteFromC",
       "defType": "math/math",
       "position": {
-        "x": 132,
-        "y": 618
+        "x": 139,
+        "y": 443
       },
       "params": {
         "op": "subtract",
@@ -2299,8 +2411,8 @@
       "id": "mg_noteHue",
       "defType": "math/math",
       "position": {
-        "x": 434,
-        "y": 608
+        "x": 457,
+        "y": 409
       },
       "params": {
         "op": "multiply",
@@ -2316,8 +2428,8 @@
       "id": "mg_hueSum",
       "defType": "math/math",
       "position": {
-        "x": 777,
-        "y": 735
+        "x": 762,
+        "y": 457
       },
       "params": {
         "op": "add",
@@ -2330,8 +2442,8 @@
       "id": "mg_hueTurn",
       "defType": "math/math",
       "position": {
-        "x": 1968,
-        "y": 584
+        "x": 1946,
+        "y": 378
       },
       "params": {
         "op": "fract"
@@ -2342,8 +2454,8 @@
       "id": "mg_hueDeg",
       "defType": "math/math",
       "position": {
-        "x": 2240,
-        "y": 448
+        "x": 2217,
+        "y": 285
       },
       "params": {
         "op": "multiply",
@@ -2359,8 +2471,8 @@
       "id": "mg_lightBy",
       "defType": "math/math",
       "position": {
-        "x": 132,
-        "y": 988
+        "x": 139,
+        "y": 1074
       },
       "params": {
         "op": "multiply",
@@ -2376,8 +2488,8 @@
       "id": "mg_light",
       "defType": "math/math",
       "position": {
-        "x": 1959,
-        "y": 710
+        "x": 1937,
+        "y": 689
       },
       "params": {
         "op": "add",
@@ -2393,8 +2505,8 @@
       "id": "mg_lightPct",
       "defType": "math/math",
       "position": {
-        "x": 2240,
-        "y": 596
+        "x": 2217,
+        "y": 559
       },
       "params": {
         "op": "multiply",
@@ -2410,8 +2522,8 @@
       "id": "mg_fadeIn3",
       "defType": "math/math",
       "position": {
-        "x": 1369,
-        "y": 65
+        "x": 1360,
+        "y": 76
       },
       "params": {
         "op": "multiply",
@@ -2427,7 +2539,7 @@
       "id": "mg_fadeIn",
       "defType": "math/clamp",
       "position": {
-        "x": 1703,
+        "x": 1688,
         "y": 40
       },
       "params": {},
@@ -2441,8 +2553,8 @@
       "id": "mg_alpha",
       "defType": "math/math",
       "position": {
-        "x": 1959,
-        "y": 99
+        "x": 1937,
+        "y": 84
       },
       "params": {
         "op": "multiply",
@@ -2458,8 +2570,8 @@
       "id": "mg_alpha255",
       "defType": "math/math",
       "position": {
-        "x": 2240,
-        "y": 174
+        "x": 2217,
+        "y": 137
       },
       "params": {
         "op": "multiply",
@@ -2475,8 +2587,8 @@
       "id": "mg_petalCol",
       "defType": "color/color",
       "position": {
-        "x": 2551,
-        "y": 347
+        "x": 2527,
+        "y": 286
       },
       "params": {
         "mode": "hsl"
@@ -2490,8 +2602,8 @@
       "id": "mg_heartSize",
       "defType": "math/math",
       "position": {
-        "x": 1369,
-        "y": 213
+        "x": 1360,
+        "y": 224
       },
       "params": {
         "op": "multiply",
@@ -2650,28 +2762,28 @@
     {
       "id": "e_64",
       "source": "mg_whereNext",
-      "target": "mg_where",
+      "target": "mg_whereWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {
       "id": "e_68",
       "source": "mg_bornNext",
-      "target": "mg_born",
+      "target": "mg_bornWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {
       "id": "e_72",
       "source": "mg_pitchNext",
-      "target": "mg_pitch",
+      "target": "mg_pitchWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {
       "id": "e_76",
       "source": "mg_loudNext",
-      "target": "mg_loud",
+      "target": "mg_loudWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
@@ -3147,14 +3259,14 @@
     {
       "id": "e_b1_51",
       "source": "mg_pressed",
-      "target": "mg_wasPressed",
+      "target": "mg_wasPressedWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
     {
       "id": "e_b1_52",
       "source": "mg_note",
-      "target": "mg_lastNote",
+      "target": "mg_lastNoteWrite",
       "sourceHandle": "out-selected",
       "targetHandle": "in-next"
     },
@@ -3308,7 +3420,7 @@
     {
       "id": "e_b1_74",
       "source": "mg_plantedNext",
-      "target": "mg_planted",
+      "target": "mg_plantedWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },

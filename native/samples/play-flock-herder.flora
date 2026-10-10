@@ -43,7 +43,7 @@
       "id": "fh_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 128,
+        "x": 369,
         "y": 202
       },
       "params": {
@@ -56,14 +56,30 @@
     },
     {
       "id": "fh_mood",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 994,
+        "x": 128,
         "y": 320
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "mood"
+      },
       "portValues": {
         "init": 0
+      },
+      "parentId": "fh_keys"
+    },
+    {
+      "id": "fh_moodWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 1653,
+        "y": 265
+      },
+      "params": {
+        "slot": 1,
+        "name": "mood"
       },
       "parentId": "fh_keys"
     },
@@ -573,7 +589,7 @@
       "id": "fh_keyFrom",
       "defType": "logic/compare",
       "position": {
-        "x": 423,
+        "x": 664,
         "y": 40
       },
       "params": {
@@ -588,7 +604,7 @@
       "id": "fh_keyTo",
       "defType": "logic/compare",
       "position": {
-        "x": 423,
+        "x": 664,
         "y": 188
       },
       "params": {
@@ -603,7 +619,7 @@
       "id": "fh_isMoodKey",
       "defType": "logic/logic",
       "position": {
-        "x": 718,
+        "x": 958,
         "y": 126
       },
       "params": {
@@ -615,7 +631,7 @@
       "id": "fh_setMood",
       "defType": "logic/logic",
       "position": {
-        "x": 968,
+        "x": 1209,
         "y": 172
       },
       "params": {
@@ -627,8 +643,8 @@
       "id": "fh_moodNext",
       "defType": "logic/select",
       "position": {
-        "x": 1211,
-        "y": 230
+        "x": 1452,
+        "y": 231
       },
       "params": {},
       "parentId": "fh_keys"
@@ -637,7 +653,7 @@
       "id": "fh_keyF",
       "defType": "spread/lookup",
       "position": {
-        "x": 432,
+        "x": 674,
         "y": 368
       },
       "params": {
@@ -652,8 +668,8 @@
       "id": "fh_scareNext",
       "defType": "io/latch",
       "position": {
-        "x": 716,
-        "y": 364
+        "x": 957,
+        "y": 365
       },
       "params": {},
       "portValues": {
@@ -665,7 +681,7 @@
       "id": "fh_scatter",
       "defType": "spread/lookup",
       "position": {
-        "x": 432,
+        "x": 674,
         "y": 516
       },
       "params": {
@@ -828,7 +844,7 @@
       },
       "params": {
         "label": "Keys",
-        "width": 1428,
+        "width": 1898,
         "height": 820
       },
       "ports": [
@@ -837,24 +853,24 @@
           "name": "mood",
           "type": "number",
           "direction": "output",
-          "y": 267
+          "y": 241
         },
         {
           "id": "scare",
           "name": "scare",
           "type": "boolean",
           "direction": "output",
-          "y": 422
+          "y": 423
         },
         {
           "id": "scatter",
           "name": "scatter",
           "type": "boolean",
           "direction": "output",
-          "y": 551
+          "y": 546
         }
       ],
-      "width": 1428,
+      "width": 1898,
       "height": 820
     },
     {
@@ -865,7 +881,7 @@
         "y": 680
       },
       "params": {
-        "text": "1–3 pick the character (kept in a State), F flips a Latch between lure and scare, S scatters.",
+        "text": "1–3 pick the character (kept by a Write → Read pair), F flips a Latch between lure and scare, S scatters.",
         "width": 300,
         "height": 100
       },
@@ -1431,7 +1447,7 @@
     {
       "id": "e_b1_10",
       "source": "fh_moodNext",
-      "target": "fh_mood",
+      "target": "fh_moodWrite",
       "sourceHandle": "out-selected",
       "targetHandle": "in-next"
     },

@@ -52,8 +52,8 @@
       "id": "kt_dt",
       "defType": "time/delta",
       "position": {
-        "x": 353,
-        "y": 378
+        "x": 436,
+        "y": 418
       },
       "params": {},
       "parentId": "kt_turning",
@@ -75,7 +75,7 @@
       "id": "kt_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 128,
+        "x": 369,
         "y": 175
       },
       "params": {
@@ -88,53 +88,117 @@
     },
     {
       "id": "kt_mirrors",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 1004,
+        "x": 128,
         "y": 415
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "mirrors"
+      },
       "portValues": {
         "init": 6
       },
       "parentId": "kt_keys"
     },
     {
-      "id": "kt_prevX",
-      "defType": "state/value",
+      "id": "kt_mirrorsWrite",
+      "defType": "state/write",
       "position": {
-        "x": 128,
-        "y": 300
+        "x": 1688,
+        "y": 278
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "mirrors"
+      },
+      "parentId": "kt_keys"
+    },
+    {
+      "id": "kt_prevX",
+      "defType": "state/read",
+      "position": {
+        "x": 142,
+        "y": 374
+      },
+      "params": {
+        "slot": 2,
+        "name": "last x"
+      },
       "portValues": {
         "init": 0
       },
       "parentId": "kt_turning"
     },
     {
+      "id": "kt_prevXWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 1445,
+        "y": 500
+      },
+      "params": {
+        "slot": 2,
+        "name": "last x"
+      },
+      "parentId": "kt_turning"
+    },
+    {
       "id": "kt_wasPressed",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
         "x": 128,
-        "y": 152
+        "y": 187
       },
-      "params": {},
+      "params": {
+        "slot": 3,
+        "name": "was pressed"
+      },
       "portValues": {
         "init": false
       },
       "parentId": "kt_turning"
     },
     {
-      "id": "kt_turn",
-      "defType": "state/value",
+      "id": "kt_wasPressedWrite",
+      "defType": "state/write",
       "position": {
-        "x": 874,
-        "y": 40
+        "x": 1423,
+        "y": 248
       },
-      "params": {},
+      "params": {
+        "slot": 3,
+        "name": "was pressed"
+      },
+      "parentId": "kt_turning"
+    },
+    {
+      "id": "kt_turn",
+      "defType": "state/read",
+      "position": {
+        "x": 142,
+        "y": 61
+      },
+      "params": {
+        "slot": 4,
+        "name": "turn"
+      },
       "portValues": {
         "init": 0
+      },
+      "parentId": "kt_turning"
+    },
+    {
+      "id": "kt_turnWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 1448,
+        "y": 40
+      },
+      "params": {
+        "slot": 4,
+        "name": "turn"
       },
       "parentId": "kt_turning"
     },
@@ -501,7 +565,7 @@
       "id": "kt_keyFrom",
       "defType": "logic/compare",
       "position": {
-        "x": 419,
+        "x": 660,
         "y": 40
       },
       "params": {
@@ -516,7 +580,7 @@
       "id": "kt_keyTo",
       "defType": "logic/compare",
       "position": {
-        "x": 419,
+        "x": 660,
         "y": 188
       },
       "params": {
@@ -531,7 +595,7 @@
       "id": "kt_isDigit",
       "defType": "logic/logic",
       "position": {
-        "x": 709,
+        "x": 950,
         "y": 108
       },
       "params": {
@@ -543,7 +607,7 @@
       "id": "kt_setMirrors",
       "defType": "logic/logic",
       "position": {
-        "x": 978,
+        "x": 1220,
         "y": 119
       },
       "params": {
@@ -555,7 +619,7 @@
       "id": "kt_keyMirrors",
       "defType": "math/math",
       "position": {
-        "x": 964,
+        "x": 1205,
         "y": 267
       },
       "params": {
@@ -572,7 +636,7 @@
       "id": "kt_mirrorsNext",
       "defType": "logic/select",
       "position": {
-        "x": 1246,
+        "x": 1487,
         "y": 245
       },
       "params": {},
@@ -582,7 +646,7 @@
       "id": "kt_clear",
       "defType": "spread/lookup",
       "position": {
-        "x": 428,
+        "x": 670,
         "y": 382
       },
       "params": {
@@ -602,8 +666,8 @@
       },
       "params": {
         "label": "Turn",
-        "width": 1354,
-        "height": 628
+        "width": 1709,
+        "height": 772
       },
       "ports": [
         {
@@ -611,32 +675,32 @@
           "name": "pressed",
           "type": "boolean",
           "direction": "input",
-          "y": 128
+          "y": 99
         },
         {
           "id": "x",
           "name": "x",
           "type": "number",
           "direction": "input",
-          "y": 276
+          "y": 350
         },
         {
           "id": "turn",
           "name": "turn",
           "type": "number",
           "direction": "output",
-          "y": 109
+          "y": 142
         }
       ],
-      "width": 1354,
-      "height": 628
+      "width": 1709,
+      "height": 772
     },
     {
       "id": "kt_turnNote",
       "defType": "meta/comment",
       "position": {
         "x": 128,
-        "y": 498
+        "y": 642
       },
       "params": {
         "text": "While the button is held the turn follows the mouse's sideways moves (0.012 rad a pixel); otherwise it turns by itself at 0.18 rad a second.",
@@ -649,8 +713,8 @@
       "id": "kt_dragging",
       "defType": "logic/logic",
       "position": {
-        "x": 329,
-        "y": 82
+        "x": 412,
+        "y": 86
       },
       "params": {
         "op": "and"
@@ -661,8 +725,8 @@
       "id": "kt_moved",
       "defType": "math/math",
       "position": {
-        "x": 315,
-        "y": 230
+        "x": 397,
+        "y": 270
       },
       "params": {
         "op": "subtract",
@@ -675,8 +739,8 @@
       "id": "kt_byHand",
       "defType": "math/math",
       "position": {
-        "x": 584,
-        "y": 176
+        "x": 669,
+        "y": 197
       },
       "params": {
         "op": "multiply",
@@ -692,8 +756,8 @@
       "id": "kt_bySelf",
       "defType": "math/math",
       "position": {
-        "x": 584,
-        "y": 324
+        "x": 669,
+        "y": 345
       },
       "params": {
         "op": "multiply",
@@ -709,8 +773,8 @@
       "id": "kt_turnStep",
       "defType": "logic/select",
       "position": {
-        "x": 865,
-        "y": 166
+        "x": 950,
+        "y": 187
       },
       "params": {},
       "parentId": "kt_turning"
@@ -719,8 +783,8 @@
       "id": "kt_turnNext",
       "defType": "math/math",
       "position": {
-        "x": 1074,
-        "y": 71
+        "x": 1159,
+        "y": 91
       },
       "params": {
         "op": "add",
@@ -1277,7 +1341,7 @@
       },
       "params": {
         "label": "Keys",
-        "width": 1463,
+        "width": 1942,
         "height": 735
       },
       "ports": [
@@ -1286,7 +1350,7 @@
           "name": "mirrors",
           "type": "number",
           "direction": "output",
-          "y": 282
+          "y": 254
         },
         {
           "id": "clear",
@@ -1296,7 +1360,7 @@
           "y": 517
         }
       ],
-      "width": 1463,
+      "width": 1942,
       "height": 735
     },
     {
@@ -1307,7 +1371,7 @@
         "y": 595
       },
       "params": {
-        "text": "A digit key 3–9 sets the number of mirrors (kept in a State); C empties the chamber.",
+        "text": "A digit key 3–9 sets the number of mirrors (kept by a Write → Read pair); C empties the chamber.",
         "width": 300,
         "height": 100
       },
@@ -1740,7 +1804,7 @@
     {
       "id": "e_b1_11",
       "source": "kt_mirrorsNext",
-      "target": "kt_mirrors",
+      "target": "kt_mirrorsWrite",
       "sourceHandle": "out-selected",
       "targetHandle": "in-next"
     },
@@ -1789,14 +1853,14 @@
     {
       "id": "e_b1_18",
       "source": "kt_turning",
-      "target": "kt_wasPressed",
+      "target": "kt_wasPressedWrite",
       "sourceHandle": "out-pressed",
       "targetHandle": "in-next"
     },
     {
       "id": "e_b1_19",
       "source": "kt_turning",
-      "target": "kt_prevX",
+      "target": "kt_prevXWrite",
       "sourceHandle": "out-x",
       "targetHandle": "in-next"
     },
@@ -1880,7 +1944,7 @@
     {
       "id": "e_b1_31",
       "source": "kt_turnNext",
-      "target": "kt_turn",
+      "target": "kt_turnWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },

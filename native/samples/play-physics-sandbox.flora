@@ -52,8 +52,8 @@
       "id": "ps_frame",
       "defType": "time/frame",
       "position": {
-        "x": 162,
-        "y": 323
+        "x": 402,
+        "y": 314
       },
       "params": {},
       "parentId": "ps_sling"
@@ -63,7 +63,7 @@
       "defType": "input/keyboard",
       "position": {
         "x": 128,
-        "y": 437
+        "y": 395
       },
       "params": {
         "mode": "keys"
@@ -86,12 +86,15 @@
     },
     {
       "id": "ps_anchor",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 164,
-        "y": 575
+        "x": 138,
+        "y": 613
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "anchor"
+      },
       "portValues": {
         "init": {
           "x": 0,
@@ -101,11 +104,24 @@
       "parentId": "ps_sling"
     },
     {
+      "id": "ps_anchorWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 2724,
+        "y": 563
+      },
+      "params": {
+        "slot": 1,
+        "name": "anchor"
+      },
+      "parentId": "ps_sling"
+    },
+    {
       "id": "ps_spawnAt",
       "defType": "logic/select",
       "position": {
-        "x": 2303,
-        "y": 326
+        "x": 2523,
+        "y": 237
       },
       "params": {},
       "parentId": "ps_sling"
@@ -114,8 +130,8 @@
       "id": "ps_spawnVel",
       "defType": "logic/select",
       "position": {
-        "x": 1336,
-        "y": 40
+        "x": 1552,
+        "y": 406
       },
       "params": {},
       "parentId": "ps_sling"
@@ -124,8 +140,8 @@
       "id": "ps_colliders",
       "defType": "spread/merge",
       "position": {
-        "x": 451,
-        "y": 614
+        "x": 447,
+        "y": 633
       },
       "params": {
         "slotCount": 5
@@ -137,7 +153,7 @@
       "defType": "collider/circle",
       "position": {
         "x": 130,
-        "y": 327
+        "y": 324
       },
       "params": {
         "mode": "bounce"
@@ -157,7 +173,7 @@
       "defType": "collider/circle",
       "position": {
         "x": 133,
-        "y": 519
+        "y": 516
       },
       "params": {
         "mode": "bounce"
@@ -177,7 +193,7 @@
       "defType": "collider/circle",
       "position": {
         "x": 139,
-        "y": 711
+        "y": 708
       },
       "params": {
         "mode": "bounce"
@@ -197,7 +213,7 @@
       "defType": "collider/circle",
       "position": {
         "x": 130,
-        "y": 903
+        "y": 900
       },
       "params": {
         "mode": "bounce"
@@ -217,7 +233,7 @@
       "defType": "collider/circle",
       "position": {
         "x": 133,
-        "y": 1095
+        "y": 1092
       },
       "params": {
         "mode": "bounce"
@@ -236,8 +252,8 @@
       "id": "ps_bounceWalls",
       "defType": "particles/bounds",
       "position": {
-        "x": 461,
-        "y": 806
+        "x": 457,
+        "y": 825
       },
       "params": {
         "mode": "bounce"
@@ -255,8 +271,8 @@
       "id": "ps_wrapEdges",
       "defType": "particles/bounds",
       "position": {
-        "x": 461,
-        "y": 296
+        "x": 457,
+        "y": 463
       },
       "params": {
         "mode": "wrap"
@@ -273,8 +289,8 @@
       "id": "ps_killAll",
       "defType": "particles/bounds",
       "position": {
-        "x": 1011,
-        "y": 94
+        "x": 1005,
+        "y": 93
       },
       "params": {
         "mode": "kill"
@@ -291,8 +307,8 @@
       "id": "ps_bounceSet",
       "defType": "spread/combine",
       "position": {
-        "x": 746,
-        "y": 654
+        "x": 732,
+        "y": 666
       },
       "params": {
         "op": "append"
@@ -303,8 +319,8 @@
       "id": "ps_wrapSet",
       "defType": "spread/combine",
       "position": {
-        "x": 746,
-        "y": 382
+        "x": 732,
+        "y": 473
       },
       "params": {
         "op": "append"
@@ -315,8 +331,8 @@
       "id": "ps_bounceWorld",
       "defType": "physics/world",
       "position": {
-        "x": 1014,
-        "y": 500
+        "x": 1009,
+        "y": 499
       },
       "params": {},
       "portValues": {
@@ -328,8 +344,8 @@
       "id": "ps_wrapWorld",
       "defType": "physics/world",
       "position": {
-        "x": 1014,
-        "y": 264
+        "x": 1009,
+        "y": 263
       },
       "params": {},
       "portValues": {
@@ -341,7 +357,7 @@
       "id": "ps_killWorld",
       "defType": "physics/world",
       "position": {
-        "x": 1258,
+        "x": 1252,
         "y": 40
       },
       "params": {},
@@ -351,7 +367,7 @@
       "id": "ps_wallWorld",
       "defType": "logic/select",
       "position": {
-        "x": 1276,
+        "x": 1270,
         "y": 276
       },
       "params": {},
@@ -361,7 +377,7 @@
       "id": "ps_world",
       "defType": "logic/select",
       "position": {
-        "x": 1521,
+        "x": 1515,
         "y": 58
       },
       "params": {},
@@ -584,8 +600,8 @@
       "id": "ps_arcSteps",
       "defType": "spread/range",
       "position": {
-        "x": 139,
-        "y": 744
+        "x": 379,
+        "y": 940
       },
       "params": {},
       "portValues": {
@@ -837,8 +853,8 @@
       "id": "ps_keyG",
       "defType": "spread/lookup",
       "position": {
-        "x": 425,
-        "y": 325
+        "x": 427,
+        "y": 272
       },
       "params": {
         "op": "at"
@@ -852,8 +868,8 @@
       "id": "ps_gravityNext",
       "defType": "io/counter",
       "position": {
-        "x": 710,
-        "y": 125
+        "x": 703,
+        "y": 127
       },
       "params": {
         "limit": "wrap",
@@ -870,8 +886,8 @@
       "id": "ps_keyW",
       "defType": "spread/lookup",
       "position": {
-        "x": 425,
-        "y": 621
+        "x": 427,
+        "y": 568
       },
       "params": {
         "op": "at"
@@ -885,8 +901,8 @@
       "id": "ps_wrapNext",
       "defType": "io/latch",
       "position": {
-        "x": 713,
-        "y": 549
+        "x": 706,
+        "y": 533
       },
       "params": {},
       "portValues": {
@@ -898,8 +914,8 @@
       "id": "ps_keyR",
       "defType": "spread/lookup",
       "position": {
-        "x": 425,
-        "y": 769
+        "x": 427,
+        "y": 716
       },
       "params": {
         "op": "at"
@@ -913,8 +929,8 @@
       "id": "ps_rainNext",
       "defType": "io/latch",
       "position": {
-        "x": 713,
-        "y": 719
+        "x": 706,
+        "y": 703
       },
       "params": {},
       "portValues": {
@@ -926,8 +942,8 @@
       "id": "ps_keyC",
       "defType": "spread/lookup",
       "position": {
-        "x": 425,
-        "y": 473
+        "x": 427,
+        "y": 420
       },
       "params": {
         "op": "at"
@@ -941,8 +957,8 @@
       "id": "ps_clear",
       "defType": "logic/logic",
       "position": {
-        "x": 714,
-        "y": 383
+        "x": 707,
+        "y": 385
       },
       "params": {
         "op": "or"
@@ -953,7 +969,7 @@
       "id": "ps_fall",
       "defType": "logic/switch",
       "position": {
-        "x": 963,
+        "x": 956,
         "y": 40
       },
       "params": {
@@ -972,8 +988,8 @@
       "id": "ps_gravity",
       "defType": "vec2/make",
       "position": {
-        "x": 1239,
-        "y": 95
+        "x": 1232,
+        "y": 93
       },
       "params": {},
       "portValues": {
@@ -990,8 +1006,8 @@
       },
       "params": {
         "label": "Slingshot",
-        "width": 2521,
-        "height": 1100
+        "width": 2977,
+        "height": 1262
       },
       "ports": [
         {
@@ -999,74 +1015,74 @@
           "name": "mouse",
           "type": "vec2",
           "direction": "input",
-          "y": 425
+          "y": 652
         },
         {
           "id": "pressed",
           "name": "pressed",
           "type": "boolean",
           "direction": "input",
-          "y": 318
+          "y": 326
         },
         {
           "id": "gravity",
           "name": "gravity",
           "type": "vec2",
           "direction": "input",
-          "y": 697
+          "y": 811
         },
         {
           "id": "rain",
           "name": "rain",
           "type": "boolean",
           "direction": "input",
-          "y": 258
+          "y": 165
         },
         {
           "id": "spawnAt",
           "name": "spawnAt",
           "type": "vec2",
           "direction": "output",
-          "y": 362
+          "y": 274
         },
         {
           "id": "spawnVel",
           "name": "spawnVel",
           "type": "vec2",
           "direction": "output",
-          "y": 150
+          "y": 429
         },
         {
           "id": "rate",
           "name": "rate",
           "type": "number",
           "direction": "output",
-          "y": 218
+          "y": 165
         },
         {
           "id": "anchor",
           "name": "anchor",
           "type": "vec2",
           "direction": "output",
-          "y": 301
+          "y": 513
         },
         {
           "id": "arc",
           "name": "arc",
           "type": "vec2",
           "direction": "output",
-          "y": 593
+          "y": 660
         }
       ],
-      "width": 2521,
-      "height": 1100
+      "width": 2977,
+      "height": 1262
     },
     {
       "id": "ps_slingNote",
       "defType": "meta/comment",
       "position": {
-        "x": 139,
-        "y": 920
+        "x": 138,
+        "y": 1082
       },
       "params": {
         "text": "A press remembers where it started (the anchor). The pull is the anchor minus the mouse, × 3.2: the launch velocity. Letting go fires one ball there (rate 61/s for one frame). Every half second, while rain is on, a ball drops in at a random x along the top. The aim arc samples where a ball fired now would be, every 0.045 s.",
@@ -1079,8 +1095,8 @@
       "id": "ps_press",
       "defType": "io/edge",
       "position": {
-        "x": 161,
-        "y": 427
+        "x": 402,
+        "y": 418
       },
       "params": {
         "mode": "rising",
@@ -1092,8 +1108,8 @@
       "id": "ps_release",
       "defType": "io/edge",
       "position": {
-        "x": 159,
-        "y": 134
+        "x": 399,
+        "y": 159
       },
       "params": {
         "mode": "falling",
@@ -1105,8 +1121,8 @@
       "id": "ps_anchorNext",
       "defType": "logic/select",
       "position": {
-        "x": 425,
-        "y": 514
+        "x": 660,
+        "y": 526
       },
       "params": {},
       "parentId": "ps_sling"
@@ -1115,8 +1131,8 @@
       "id": "ps_pullBack",
       "defType": "math/math",
       "position": {
-        "x": 699,
-        "y": 375
+        "x": 928,
+        "y": 689
       },
       "params": {
         "op": "subtract",
@@ -1129,8 +1145,8 @@
       "id": "ps_pull",
       "defType": "vec2/math",
       "position": {
-        "x": 979,
-        "y": 352
+        "x": 1213,
+        "y": 607
       },
       "params": {
         "op": "scale"
@@ -1144,8 +1160,8 @@
       "id": "ps_frameMod",
       "defType": "math/math",
       "position": {
-        "x": 403,
-        "y": 186
+        "x": 638,
+        "y": 230
       },
       "params": {
         "op": "mod"
@@ -1159,8 +1175,8 @@
       "id": "ps_halfSecond",
       "defType": "logic/compare",
       "position": {
-        "x": 693,
-        "y": 195
+        "x": 921,
+        "y": 225
       },
       "params": {
         "op": "equal"
@@ -1174,8 +1190,8 @@
       "id": "ps_rainTick",
       "defType": "logic/logic",
       "position": {
-        "x": 999,
-        "y": 172
+        "x": 1234,
+        "y": 101
       },
       "params": {
         "op": "and"
@@ -1186,8 +1202,8 @@
       "id": "ps_hashF",
       "defType": "math/math",
       "position": {
-        "x": 394,
-        "y": 366
+        "x": 629,
+        "y": 378
       },
       "params": {
         "op": "multiply",
@@ -1203,8 +1219,8 @@
       "id": "ps_hashSin",
       "defType": "math/math",
       "position": {
-        "x": 708,
-        "y": 523
+        "x": 936,
+        "y": 373
       },
       "params": {
         "op": "sin"
@@ -1215,8 +1231,8 @@
       "id": "ps_hashScale",
       "defType": "math/math",
       "position": {
-        "x": 985,
-        "y": 500
+        "x": 1219,
+        "y": 325
       },
       "params": {
         "op": "multiply",
@@ -1232,8 +1248,8 @@
       "id": "ps_hash",
       "defType": "math/math",
       "position": {
-        "x": 1313,
-        "y": 454
+        "x": 1530,
+        "y": 280
       },
       "params": {
         "op": "fract"
@@ -1244,8 +1260,8 @@
       "id": "ps_hashCentre",
       "defType": "math/math",
       "position": {
-        "x": 1584,
-        "y": 415
+        "x": 1801,
+        "y": 255
       },
       "params": {
         "op": "subtract",
@@ -1261,8 +1277,8 @@
       "id": "ps_rainX",
       "defType": "math/math",
       "position": {
-        "x": 1850,
-        "y": 406
+        "x": 2067,
+        "y": 246
       },
       "params": {
         "op": "multiply",
@@ -1278,8 +1294,8 @@
       "id": "ps_rainAt",
       "defType": "vec2/make",
       "position": {
-        "x": 2116,
-        "y": 405
+        "x": 2333,
+        "y": 254
       },
       "params": {},
       "parentId": "ps_sling",
@@ -1291,8 +1307,8 @@
       "id": "ps_fire",
       "defType": "logic/logic",
       "position": {
-        "x": 1319,
-        "y": 188
+        "x": 1536,
+        "y": 40
       },
       "params": {
         "op": "or"
@@ -1303,8 +1319,8 @@
       "id": "ps_rate",
       "defType": "logic/select",
       "position": {
-        "x": 1615,
-        "y": 185
+        "x": 1832,
+        "y": 69
       },
       "params": {},
       "parentId": "ps_sling",
@@ -1317,8 +1333,8 @@
       "id": "ps_arcT",
       "defType": "math/math",
       "position": {
-        "x": 394,
-        "y": 722
+        "x": 629,
+        "y": 918
       },
       "params": {
         "op": "multiply",
@@ -1334,8 +1350,8 @@
       "id": "ps_arcT2",
       "defType": "math/math",
       "position": {
-        "x": 699,
-        "y": 734
+        "x": 928,
+        "y": 837
       },
       "params": {
         "op": "multiply",
@@ -1351,8 +1367,8 @@
       "id": "ps_arcFly",
       "defType": "vec2/math",
       "position": {
-        "x": 1298,
-        "y": 580
+        "x": 1515,
+        "y": 680
       },
       "params": {
         "op": "scale"
@@ -1363,8 +1379,8 @@
       "id": "ps_arcDrop",
       "defType": "vec2/math",
       "position": {
-        "x": 979,
-        "y": 680
+        "x": 1213,
+        "y": 758
       },
       "params": {
         "op": "scale"
@@ -1375,8 +1391,8 @@
       "id": "ps_arc",
       "defType": "math/math",
       "position": {
-        "x": 1584,
-        "y": 563
+        "x": 1801,
+        "y": 637
       },
       "params": {
         "op": "add",
@@ -1467,8 +1483,8 @@
       },
       "params": {
         "label": "Keys",
-        "width": 1442,
-        "height": 1073
+        "width": 1435,
+        "height": 1029
       },
       "ports": [
         {
@@ -1476,21 +1492,21 @@
           "name": "clearBang",
           "type": "boolean",
           "direction": "input",
-          "y": 297
+          "y": 371
         },
         {
           "id": "gravity",
           "name": "gravity",
           "type": "vec2",
           "direction": "output",
-          "y": 210
+          "y": 206
         },
         {
           "id": "wrap",
           "name": "wrap",
           "type": "boolean",
           "direction": "output",
-          "y": 572
+          "y": 559
         },
         {
           "id": "clear",
@@ -1504,25 +1520,25 @@
           "name": "gravityMode",
           "type": "number",
           "direction": "output",
-          "y": 230
+          "y": 228
         },
         {
           "id": "rain",
           "name": "rain",
           "type": "boolean",
           "direction": "output",
-          "y": 742
+          "y": 729
         }
       ],
-      "width": 1442,
-      "height": 1073
+      "width": 1435,
+      "height": 1029
     },
     {
       "id": "ps_keysNote",
       "defType": "meta/comment",
       "position": {
         "x": 128,
-        "y": 933
+        "y": 889
       },
       "params": {
         "text": "G steps a Counter round the three gravities (down, none, up: a Switch picks the pull), W and R flip Latches for wrapping walls and the rain, C (or Clear) clears the balls.",
@@ -1540,8 +1556,8 @@
       },
       "params": {
         "label": "Worlds",
-        "width": 1740,
-        "height": 1443
+        "width": 1734,
+        "height": 1440
       },
       "ports": [
         {
@@ -1549,39 +1565,39 @@
           "name": "gravity",
           "type": "vec2",
           "direction": "input",
-          "y": 287
+          "y": 284
         },
         {
           "id": "wrap",
           "name": "wrap",
           "type": "boolean",
           "direction": "input",
-          "y": 227
+          "y": 226
         },
         {
           "id": "clear",
           "name": "clear",
           "type": "boolean",
           "direction": "input",
-          "y": 122
+          "y": 124
         },
         {
           "id": "world",
           "name": "world",
           "type": "world",
           "direction": "output",
-          "y": 122
+          "y": 124
         }
       ],
-      "width": 1740,
-      "height": 1443
+      "width": 1734,
+      "height": 1440
     },
     {
       "id": "ps_worldsNote",
       "defType": "meta/comment",
       "position": {
         "x": 130,
-        "y": 1303
+        "y": 1300
       },
       "params": {
         "text": "Five round bumpers shared by two Worlds, one with bouncing walls and one that wraps; clearing hands the Emitter a third World for a frame, whose tiny 'kill' box removes every ball.",
@@ -2377,7 +2393,7 @@
     {
       "id": "e_b1_28",
       "source": "ps_anchorNext",
-      "target": "ps_anchor",
+      "target": "ps_anchorWrite",
       "sourceHandle": "out-selected",
       "targetHandle": "in-next"
     },

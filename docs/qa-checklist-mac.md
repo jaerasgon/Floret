@@ -44,8 +44,9 @@ from the repo folder.
 - [ ] Add a Renderer (Tab, `renderer`). Drag from Rect's output pin (`layer`) to the Renderer's `layers` input: a wire appears and the square shows in the Preview.
 - [ ] Drag a wire from a pin and drop it on empty canvas: the node search opens, and the node you pick comes with the wire already connected.
 - [ ] Double-click a wire and pick a node: it is inserted into the wire.
-- [ ] Click an input row on a node (for example Rect's `w`): an edit box opens. Click it and type a value, or drag sideways in it to scrub. The preview follows.
-- [ ] A colour row opens a colour picker: pick a colour and click the canvas to keep it; Esc puts the old colour back.
+- [ ] Every unwired value on a node is a value box (name left, value right; for example Rect's `w`): drag a value to scrub, click to type and press Return. The preview follows. A wired input shows just its name.
+- [ ] A dropdown box opens its menu on click; a checkbox toggles when you click it or its name.
+- [ ] A colour box opens a colour picker: pick a colour and click the canvas to keep it; Esc puts the old colour back.
 - [ ] Select several nodes with a drag box and with Shift+click. Then Cut, Copy, Paste, Duplicate (Cmd+X / C / V / D) and Delete (Backspace).
 - [ ] Undo and redo every step above (Cmd+Z / Cmd+Shift+Z).
 - [ ] Alt+drag a node: a copy is dragged out.

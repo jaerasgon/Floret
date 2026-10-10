@@ -366,3 +366,167 @@ mixes several patterns).
   `NodeInit` addition, left alone while the engine core is being reworked).
 - Curve could take `count` per mode defaults (stars need few points) and a
   `close` override for open Lissajous segments.
+## No-code samples (agent A1)
+
+The owner wants every Library sample built from visual nodes, with no
+`math/expression` formulas (525 Expression nodes in 43 samples, to be
+rebuilt later). This section is the groundwork: what the visual nodes
+lacked for those rebuilds, and what was added. No new node types.
+
+### Per-element evaluation over spreads (format v4)
+
+- **Missing:** the scalar nodes read only slot 0 of a spread. A spread
+  arriving on a single-value pin of Math, Compare, Vec2, Colour … used
+  its first item, and a spread *output* wired into one was dropped with
+  the warning "only slot 0 reaches it. Wrap the consumer in a ForEach".
+  Only Expression, Noise, Scale, Format Number, the Statistics / List
+  families and LFO (`count`) worked over whole spreads, and 132 of the
+  formulas map over spreads — so a visual rebuild needed a ForEach around
+  every bit of arithmetic.
+- **Design:** the value nodes now run **once per element** as soon as a
+  spread of two or more values reaches a single-value pin, with
+  Expression's rule (`nodes/shared.rs` `cyclic_len` / `cyclic`; here
+  `node::lift_len`): the longest spread sets the count, shorter ones —
+  single values included — cycle (`s[i % len]`), and an empty one empties
+  every output; spread-kind pins (Gradient's `colors`) stay whole. Every
+  output carries one value per element.
+  - **One deliberate difference from Expression:** while no pin carries
+    two or more values, nothing lifts — the node takes its old one-value
+    path, where an *empty* pin reads as "nothing" (its default / `0` /
+    false), not as an empty result. Empty spreads mostly come from an
+    upstream error (a node that fails emits empty outputs) or a device
+    that isn't there: emptying the result there broke three tutorials
+    (a missing microphone made Amplitude → Math → Ellipse draw NaN) and
+    `camera-slit-scan` (a Select on the camera's `ready` stopped falling
+    back to its animation). The cost: a spread that is empty while every
+    other pin holds one value gives one value from the defaults instead of
+    none (as before v4). Making it exactly Expression's is a one-line
+    change in `lift_len` if the owner prefers.
+  - Which nodes: `nodes::lifts(type)` — registered with `r.lifted(&[…])`
+    next to each node: Math, Vector Math, Compare, Logic and Convert (every
+    op), Select, Map, Norm, Lerp, Clamp, Wrap, Step, Smoothstep, Vec2 /
+    Split / FromAngle / ToPolar, Color / Split / Set Alpha / Lerp Color /
+    Gradient (per `t`), Ease, Uniform / Gaussian / Wanderer, MIDI ↔ Freq,
+    String Length, Image Sample (per `x`, `y`), and the hidden single-op
+    nodes behind the families (≈100 types; a test builds every one, every
+    family op, and checks it lifts).
+  - How: `NodeImpl::lift_spreads()` switches a node on. `node::Scalar`
+    (the `compute` wrapper) lifts natively — while every single pin holds
+    exactly one value it takes the old stack-argument path untouched, so
+    the common case allocates nothing new. Raw nodes that read params
+    (Color, Lerp Color, Gradient, Ease, Color Split) are wrapped in
+    `node::per_element`, which runs the inner node per element with
+    one-value inputs.
+  - **Stateful nodes:** Smooth (the owner's plan) and Spring keep state
+    **per element** (`node::per_element_state`: element *i* always runs
+    its own instance; a new element starts at its target, a dropped one
+    forgets its state; element 0 is the instance an unlifted patch runs).
+    Delay Line, Trigger, Edge, Counter, Metro, Gate and LFO still read
+    slot 0 — per-element history for Delay Line would cost up to 4096
+    samples per element, and the edge detectors drive events, which a
+    ForEach or Expression handles better. Draw / style / transform / text
+    / force nodes don't lift (one layer per node); Format Number and Noise
+    already took whole spreads.
+  - **Old files are untouched:** `CURRENT_PATCH_VERSION` is 4. The
+    migration ladder's v3 → v4 step sets a patch-level flag,
+    `PatchFile::legacy_slot0` (saved as `"legacySlot0": true`, absent in
+    newer files), which the compiler reads: in a legacy patch no node
+    lifts, and a spread output into a single pin is still dropped with
+    the old warning. The flag is kept on save, so a user's file computes
+    as it always did however often it's re-saved; the frozen parity
+    fixtures (`native/fixtures/samples/`, v2) stay legacy too. New
+    patches (File → New, the Library's v4 samples) lift.
+  - **Editor:** a spread output may now be wired into a single-value pin
+    of a lifting node (refused into any other, and in a legacy patch);
+    the compiler keeps that wire instead of dropping it.
+  - **Not done:** an "upgrade this file" command that drops
+    `legacySlot0` from an old patch (its spreads would then lift); pasting
+    nodes copied from a legacy patch into a new one makes them lift
+    (the flag is per patch).
+- **Tests:** `nodes/lift_tests.rs` — per-element results equal
+  Expression's for numbers (Math ops, Clamp, Map, Smoothstep, Lerp,
+  Compare, Select), vec2s (Math, Make, Vector Math, Clamp, Map) and
+  colours (Math, Color, Color Split); the cycling rule with mixed single /
+  spread inputs; empty spreads (beside a spread: empty; alone: the
+  one-value path, Select still falls back); several outputs (Split); Gradient keeping
+  its stops; Smooth's per-element state; every registered type lifts; and
+  end to end, the same file as v4 (wire kept, per element, no warning) and
+  as v3 (warning, wire dropped, a dynamic spread reads slot 0).
+  `patch.rs` `older_files_keep_slot0_scalars`; `editor/connect.rs`
+  `connection_rules`.
+- **Library samples:** none relied on slot-0 truncation (the QA sweep
+  already forbade the "only slot 0" warning, and no sample feeds a
+  multi-value spread dynamically into a lifting pin), so all 176 were
+  re-saved as v4 — only their `version` changed (plus `sys-data-story`'s
+  Counter, moved up 90 px: its new `dec` pin made it taller). Verified
+  with the
+  `rewritten_samples_draw_as_before` harness (`sample_sweep.rs`,
+  `FLORET_SAMPLES_BEFORE` = the v2 / v3 originals): every node's outputs
+  over the compared frames and the rendered pixels are identical for all
+  176 (pixels compared where a sample renders deterministically run to
+  run; a first full run flagged `effect-colour-grade` and `sys-clock`
+  through load / wall-clock timing — identical on re-run — and the four
+  empty-spread cases above, which led to the rule above).
+
+### Small extensions (modes and pins on existing nodes)
+
+Each keeps old files computing exactly as before (the new pin's default
+or the new mode's absence is the old behaviour); pins recorded in
+`tests/frozen_ports.txt`.
+
+- **LFO `sync`** (`motion/lfo`): `free` (default, as before) or `loop`.
+  *Missing:* an LFO free-runs at `rate` Hz, so an exported loop only
+  joins if the rate happens to divide the loop length, and the random
+  shapes never repeat. *Design:* in `loop`, `rate` counts whole cycles per
+  patch loop (rounded, at least one) and the phase is computed from the
+  clock (`time::loop_phase` × cycles, snapped onto cycle boundaries), so
+  frame N of a recording equals frame 0; the random shapes key on the
+  cycle within the loop, so they repeat too. `bpm` / `reset` don't apply.
+  *Test:* `lfo.rs` `loop_sync_repeats_every_loop` (sine, saw, random,
+  smooth-random over two loops at a fixed dt).
+- **Counter `dec`, `limit`, `min` / `max`** (`io/counter`): `dec` subtracts
+  `step` on its rising edge; `limit` none (default) / clamp (`[min, max]`)
+  / wrap (`[min, max)`, like the Wrap node: min 0, max 4 counts
+  0 1 2 3 0 …); `min` / `max` pins appear only in clamp / wrap (dynamic
+  inputs). *Missing:* menus, carousels and game scores counted both ways
+  and wrapped, which took a Counter plus Expression. *Test:* `io.rs`
+  `counter_counts_down_and_keeps_within_limits`.
+- **Keyboard `hits*`** (`input/keyboard`, keys mode): one boolean per
+  listed key, true on the frame that key went down (several when pressed
+  together). *Missing:* `hit` only said *some* listed key went down and
+  `index` names one, so a drum pad / piano that retriggers each key needed
+  an edge detector per key. Built on the existing `FrameCtx::keys_down`
+  diff the node already keeps (no new frame plumbing; a key pressed and
+  released between two frames is missed, as `hit` already is). *Test:*
+  `input.rs` `keyboard_hits_say_which_listed_key_went_down`.
+- **Delta `max`** (`time/delta`): above 0 it caps `dt` (e.g. 0.05), so
+  hand-integrated motion doesn't jump after a stall; 0 (default) = as
+  before. Delta became a raw node (it now has an input) wrapped in
+  `always_eval` and flagged effectful, so it is never memoised, as before.
+  *Test:* `time.rs` `delta_caps_at_max`.
+- **Clamp, Wrap, Map adapt to vec2 / colour** (`math/clamp`, `math/wrap`,
+  `math/map`): `adaptiveType` with a `valueType` latch, like Math and
+  Lerp — once a vec2 wire latches them, every pin is vec2 and they compute
+  per component (numbers broadcast). *Missing:* keeping a point in a box or
+  wrapping it around the canvas took a Split, two nodes and a Make. Unset
+  `valueType` (old files) keeps the old number code path exactly — the TS
+  reference cases (a vec2 into Clamp gives NaN) still pass. *Test:*
+  `math/tests.rs` `clamp_wrap_and_map_adapt_to_vec2`, plus the lifted
+  vec2 cases above.
+- **Smoothstep `window`** (`math/smoothstep`): a `mode` dropdown — `step`
+  (default, the classic ramp) or `window`, with pins `edge0, edge1,
+  edge2, edge3, x`: rises across `[edge0, edge1]`, falls back to 0 across
+  `[edge2, edge3]` (`smoothstep(e0, e1, x) · (1 − smoothstep(e2, e3, x))`).
+  Four edges rather than centre / width: they read like GLSL's
+  smoothstep, allow asymmetric attack / release, and the formulas being
+  replaced are written that way. *Missing:* pulses, bands and fades in
+  and out were two Smoothsteps and a multiply. *Test:* `math/tests.rs`
+  `smoothstep_window_rises_and_falls`.
+- **Spiral / Fibonacci `inner`** (`spread/spiral`, `spread/fibonacci`):
+  Spiral's radius runs `inner → radius` instead of `0 → radius`;
+  Fibonacci leaves a hole of radius `inner` with `r = √(inner² + scale² ·
+  i)`, keeping the sunflower's even spacing (adding a constant to the
+  radius would crowd the inner rings). 0 (default) takes the old formula
+  exactly. *Missing:* rings of seeds around a centre disc, spirals that
+  start off-centre. *Test:* `spread/tests.rs`
+  `spiral_and_fibonacci_leave_an_inner_hole`.

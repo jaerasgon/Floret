@@ -18,6 +18,28 @@ Port types: `number`, `boolean`, `string`, `vec2`, `color`, `mat3`,
   runtime gathers them into a spread. Used by `transform/group` so you
   can drop many layer wires onto one input without a Stack chain.
 
+**Spreads into single pins — per element** (native, patches saved from
+format v4 on). The value nodes — Math, Vector Math, Compare, Logic,
+Select, Convert, Map, Norm, Lerp, Clamp, Wrap, Step, Smoothstep, Vec2 /
+Split / FromAngle / ToPolar, Color / Split / Set Alpha / Lerp Color /
+Gradient (per `t`), Ease, Uniform / Gaussian / Wanderer, MIDI ↔ Freq,
+String Length, Image Sample (per `x`, `y`) and the hidden single-op nodes
+behind them — run **once per element** when a spread reaches a
+single-value pin, the same rule as Expression: the longest spread sets the
+count, shorter spreads (and single values) cycle, and an empty spread
+empties the result. Every output then carries one value per element.
+Lifting starts only when a pin carries two or more values: until then the
+node runs exactly as before, an empty pin reading as "nothing" (so a
+missing device or an upstream error still falls back to defaults). A
+spread *output* (Linear, Grid, Range …) may be wired straight into such a
+pin. **Smooth** and **Spring** keep their state per element (a new element
+starts at its target). Delay Line, Trigger, Edge, Counter, LFO and the
+draw / style / transform / text nodes still read slot 0 of a spread (wrap
+them in a ForEach). Files saved before v4 keep their old behaviour: they
+load with `legacySlot0` set, where those nodes read slot 0 of a spread and
+a spread output wired into a single pin is dropped with a warning — saved
+again, they stay that way.
+
 `audio` is a persistent handle to a live p5.sound object kept alive in
 the audio registry across frames. Wires of this type carry signal flow:
 Source nodes (Oscillator, Noise, …) emit it; Processors (Filter, Gain,
@@ -77,6 +99,9 @@ to that op.
 |---|---|---|
 | **Time** · `time/seconds` | — → `t, loop: number` | Seconds since runtime start, and `loop`: the phase 0..1 through the patch's loop length (File → Export Video / GIF… sets it). Build on `loop` and a recording of one loop repeats seamlessly. |
 | **Frame** · `time/frame` | — → `frame: number` | Integer frame counter. |
+| **Delta** · `time/delta` | `max: number` → `dt: number` | Seconds since the previous frame. `max` above 0 (native) caps it, e.g. 0.05, so motion doesn't jump after a stall; 0 (the default) leaves it alone. |
+| **LFO** · `motion/lfo` | `shape, rate, offset, min, max, width: number, reset: boolean, count, spread, bpm, seed: number`, `sync` → `value, phase: number` | Oscillates between `min` and `max`, `rate` times a second (sine, triangle, saw, ramp-down, square, random, smooth-random); `count` > 1 gives that many staggered copies. `sync` loop: `rate` counts whole cycles per patch loop (at least one) and the phase follows the clock, so a recording of whole loops joins seamlessly — random shapes repeat every loop; `bpm` and `reset` don't apply. Native-only. |
+| **Smooth** · `motion/smooth` | `value: any, rate: number` → `result: any` | Eases toward `value` (number, vec2 or colour). Over a spread (v4 files) every element eases on its own. |
 | **Clock** · `time/clock` | `offset: number`, `zone` → `hours, minutes, seconds, day, month, year, weekday, yearPhase, days: number` | The wall clock, read every frame (effectful): the time of day in the computer's time `zone` (`local`, from the OS on macOS and Linux; elsewhere UTC) or `utc`, moved by `offset` hours (time travel, other cities). `hours` 0..24, `minutes` / `seconds` 0..60, all running on smoothly (fractions included); `day` 1..31, `month` 1..12, `year`, `weekday` 0 = Monday … 6 = Sunday, `yearPhase` 0..1 through the year, `days` since 1 January 1970 (for cycles longer than a day, e.g. the Moon's 29.53). Sample: `sys-clock`. Native-only. |
 | **Beat** · `time/beat` | `bpm, steps, beats, swing, gate: number, run, reset: boolean, sync` → `step, phase, bar: number, gate, trigger: boolean, count: number` | A musical step clock: `bpm`, `beats` per bar, the bar cut into `steps`. `step` 0..steps−1, `phase` 0..1 through the step, `bar`, `gate` (on for the first `gate` fraction of a step), `trigger` (the frame a step starts), `count` (steps since the start). `swing` 0..1 delays every second step (1 = 3:1). `run` off pauses, `reset` restarts. `sync` `loop`: a whole number of bars fills the patch loop (tempo bends a little), so a recorded loop repeats seamlessly. Replaces `floor(t * 6) % 16`, `fract(t * 6) < 0.45`, `mod(ph + dt * bpm / 15, 16)` step counters. Effectful; state survives edits. Native-only. |
 
@@ -96,10 +121,12 @@ Smoothing, easing and time-based shaping. (Ease, Smooth, Spring, LFO, Delay Line
 | **Math** · `math/math` | `op` picks the pins: `a, b, …` (add, subtract, multiply, divide, min, max — number, vec2 or colour, component-wise; the header's `− n +` sets how many), `a, b` (mod, pow), `x` (negate, abs, sign, floor, ceil, round, fract, sqrt, square, exp, log, sin, cos, tan, asin, acos, atan), `y, x` (atan2), `x, y` (length), `x1, y1, x2, y2` (distance) → `result: number` (vec2 / colour when the arithmetic ops are wired so) | Arithmetic and maths functions in one node. Each op computes exactly as the single-op node it replaced (the legacy rows below, same pins and edge cases). The header shows the op's symbol (`+`, `×`, `sin`, `x^y` …). Native-only. |
 | **Statistics** · `math/statistics` | `op`; `spread: number*` → `result: number` | mean, median, sum, min, max or stddev (population) of a number spread — exactly the old Mean, Median, Sum, Min Spread, Max Spread and StdDev. Native-only. |
 | **Expression** · `math/expression` | one pin per name in the formula: `number*`, or `vec2*` / `color*` when read as `p.x` / `c.r` → `value: any` | Type a formula (`expr` param), e.g. `sin(x * 3) + y * t`. Runs once per element over spreads (shorter ones cycle). Built in: `t`, `frame`, `index`, `count`, `pi`, `tau`, `e`. Numbers, vec2s and colours (0..1 channels) with per-component arithmetic; `+ - * / % ^`, comparisons, `&& \|\| !`, `c ? a : b`; maths functions plus `noise`, `vec2`, `length`, `distance`, `dot`, `normalize`, `angle`, `rgb`, `hsl`. No loops or IO; errors show on the node. Native-only. |
-| **Map** · `math/map` | `x, inMin, inMax, outMin, outMax: number` → `out: number` | Remap x from [inMin..inMax] to [outMin..outMax]. |
+| **Map** · `math/map` | `x, inMin, inMax, outMin, outMax: number` (vec2 / colour when wired so) → `out: number` | Remap x from [inMin..inMax] to [outMin..outMax]. Adapts like Math (`valueType`): with vec2s, per component (numbers apply to both). |
 | **Norm** · `math/norm` | `x, start, stop: number` → `out: number` | Map x from [start, stop] into [0, 1]. Inverse of Lerp. |
 | **Lerp** · `math/lerp` | `a, b, t: number` → `out: number` | `a + (b − a) × t` |
-| **Clamp** · `math/clamp` | `x, min, max: number` → `out: number` | `max(min, min(max, x))` |
+| **Clamp** · `math/clamp` | `x, min, max: number` (vec2 / colour when wired so) → `out: number` | `max(min, min(max, x))`. Adapts like Math: with vec2s, per component — keep a point inside a box. |
+| **Wrap** · `math/wrap` | `x, min, max: number` (vec2 / colour when wired so) → `result: number` | Wrap x into `[min, max)`. Adapts like Math: with vec2s, per component — wrap a point around the canvas. |
+| **Smoothstep** · `math/smoothstep` | `mode` step: `edge0, edge1, x`; window: `edge0, edge1, edge2, edge3, x` → `result: number` | step: the smooth 0 → 1 ramp across `[edge0, edge1]`. window (native): a smooth bump — up across `[edge0, edge1]`, back down to 0 across `[edge2, edge3]`. |
 | **Cumulative** · `math/cumulative` | `spread: number*` → `out: number*` | Running sum. Output length matches input. |
 | **Delta** · `math/delta` | `spread: number*` → `out: number*` | Pairwise differences. Length = N − 1. |
 | **Histogram** · `math/histogram` | `spread: number*, bins, min, max: number` → `out: number*` | Bin counts across `[min, max]`. |
@@ -221,8 +248,8 @@ The Lists group. **Lookup**, **Sublist**, **Reorder** and **Combine** are one no
 | **CircularSpread** · `spread/circular` | `count, phase: number` → `spread: number*` | A spread of length `count` distributed across [0, TAU). Step = TAU/count. |
 | **Randomize** · `spread/randomize` | `count, min, max, seed: number` → `spread: number*` | A spread of `count` uniform-random numbers in [min, max), deterministic per seed. |
 | **Grid** · `spread/grid` | `cols, rows, w, h: number` → `spread: vec2*` | A `cols × rows` grid of points centred on the origin, spanning `(-w/2, -h/2)` to `(w/2, h/2)`. Row-major. |
-| **Spiral** · `spread/spiral` | `count, turns, radius, phase: number` → `spread: vec2*` | Archimedean spiral — `count` points across `turns` rotations, radius growing `0 → radius`. |
-| **Fibonacci** · `spread/fibonacci` | `count, scale, phase: number` → `spread: vec2*` | Phyllotaxis / sunflower spiral — points at golden-angle increments, radius = `scale · √i`. |
+| **Spiral** · `spread/spiral` | `count, turns, radius, phase, inner: number` → `spread: vec2*` | Archimedean spiral — `count` points across `turns` rotations, radius growing `inner → radius` (`inner` 0, the default: from the centre). |
+| **Fibonacci** · `spread/fibonacci` | `count, scale, phase, inner: number` → `spread: vec2*` | Phyllotaxis / sunflower spiral — points at golden-angle increments, radius = `scale · √i`; `inner` > 0 leaves a hole of that radius (`r = √(inner² + scale² · i)`, still evenly spaced). |
 | **Count** · `spread/count` | `spread: number*` → `count: number` | Length of a spread. |
 | **Shuffle** · `spread/shuffle` | `spread: number*, seed: number` → `spread: number*` | Fisher–Yates shuffle, deterministic per seed. |
 | **Resample** · `spread/resample` | `spread: number*, count: number` → `spread: number*` | Resample a spread to length `count` (linear interpolation). |
@@ -491,7 +518,7 @@ Tap audio sources without consuming them — these bridge `audio` back into `num
 | Label · type | Inputs → Outputs | Description |
 |---|---|---|
 | **Mouse** · `input/mouse` | — → `x, y: number, pressed: boolean` | Mouse position and button state from the preview canvas. |
-| **Keyboard** · `input/keyboard` | `mode` picks the pins: — (last), `keys: string` (keys), `clear: boolean, max: number` (text) → `pressed: boolean, key: string, down: boolean*, index: number, text: string, hit: boolean` | Keys pressed in the preview. `last` (default): the last key pressed (`key`, lowercase letters, `" "` for space, `ArrowLeft` …) and whether any key is down (`pressed`). `keys`: which of the listed keys are held — `down`, one per key (`keys` is one character per key, or names split by commas / spaces, e.g. `ArrowLeft, ArrowRight, space`) — and `index`, the most recently pressed one still held (−1 none): a computer-keyboard piano, game controls. `text`: the `text` typed so far, case and punctuation as typed; Backspace deletes, Enter starts a new line, typing stops at `max` characters, a rising `clear` empties it; the text survives edits of the patch. `hit` is true on the frame a key goes down (a listed one in keys mode, any typing in text mode). Effectful. Native-only modes. |
+| **Keyboard** · `input/keyboard` | `mode` picks the pins: — (last), `keys: string` (keys), `clear: boolean, max: number` (text) → `pressed: boolean, key: string, down: boolean*, index: number, text: string, hit: boolean, hits: boolean*` | Keys pressed in the preview. `last` (default): the last key pressed (`key`, lowercase letters, `" "` for space, `ArrowLeft` …) and whether any key is down (`pressed`). `keys`: which of the listed keys are held — `down`, one per key (`keys` is one character per key, or names split by commas / spaces, e.g. `ArrowLeft, ArrowRight, space`) — and `index`, the most recently pressed one still held (−1 none): a computer-keyboard piano, game controls. `text`: the `text` typed so far, case and punctuation as typed; Backspace deletes, Enter starts a new line, typing stops at `max` characters, a rising `clear` empties it; the text survives edits of the patch. `hit` is true on the frame a key goes down (a listed one in keys mode, any typing in text mode); in keys mode `hits*` says which — one boolean per listed key, true on the frame it went down (several at once when pressed together). Effectful. Native-only modes. |
 | **Point Tracker** · `image/track-points` | `image: image, points: vec2*, reset: boolean, window: number` → `points: vec2*, confidence: number*` | Follow points across the frames of a moving image (camera, video, a rendered layer) by pyramidal Lucas–Kanade optical flow, from the pixels alone. Points are in canvas units like the image nodes ((0, 0) = the image's centre, y down). Tracks start at `points`, and again while `reset` is on, when the number of points changes or when they're edited; a point can move about `window` px a frame. Each point keeps the look it started with and pulls every frame's track onto it, so tracks don't drift. `confidence` 0..1 (normalised correlation, cut when the backward track doesn't return or there's no texture); a lost point stays put at 0. Repeated frames are skipped; tracks survive patch edits. Native-only. |
 | **MidiCC** · `input/midi-cc` | — → `value, raw: number` | Tap a single MIDI Control Change. Set `channel` (0 = any, 1..16) and `cc` (0..127) on the node; `value` is normalised 0..1, `raw` is the original 0..127. The browser handles MIDI permission at app boot — knobs/sliders on any connected board light up automatically. |
 | **MidiNote** · `input/midi-note` | — → `note, velocity: number, pressed: boolean, freq: number` | Last held MIDI note (stack-based mono). Pairs with MonoSynth via `note`→`note` and `pressed`→`trigger`. `freq` is the convenience Hz conversion. |
@@ -507,6 +534,7 @@ Interactive UI nodes — the inline widget IS the value source.
 | **ColorPicker** · `io/color-picker` | — → `color: color, r, g, b: number` | Hex color picker — outputs a Color plus r/g/b channels in 0..255. |
 | **XYPad** · `io/xy-pad` | — → `x, y: number` | 2D draggable area — outputs x, y in [0, 1]. |
 | **Latch** · `io/latch` | `set, reset, toggle: boolean*, initial: boolean` → `state, changed: boolean*` | A flip-flop per element: a rising edge on `set` turns it on, `reset` off, `toggle` flips (reset wins over set). Starts at `initial`; `changed` = the tick it flips. Replaces `hit && m ? 1 - s : s`, `p && !was`, `click && h >= 0 ? 1 - under : v` with a State loop. Effectful; state survives edits. Native-only. |
+| **Counter** · `io/counter` | `inc, reset: boolean, step, start: number, dec: boolean`; `limit` clamp / wrap adds `min, max: number` → `count: number` | `+step` on each rising edge of `inc`, `−step` on each rising edge of `dec`; `reset` returns to `start`. `limit` none (default): unbounded; clamp: within `[min, max]`; wrap: into `[min, max)` (min 0, max 4 counts 0 1 2 3 0 …). |
 | **ImageURL** · `io/image-url` | — → `image: image, loaded: boolean, width, height: number` | Load an image from a URL (set as the node's `url` param). `image` is null and `loaded` is false until the bytes arrive; downstream `draw/image*` nodes no-op during the load window. |
 
 ## State

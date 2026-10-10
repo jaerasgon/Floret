@@ -80,6 +80,15 @@ pub(crate) mod harness {
         }
     }
 
+    /// [`node`], running per element over spreads as in a v4 patch (the
+    /// type must be one [`crate::nodes::lifts`] lists).
+    pub fn lifted(ty: &str, params: serde_json::Value) -> Harness {
+        assert!(crate::nodes::lifts(ty), "{ty} doesn't lift");
+        let mut h = node(ty, params);
+        assert!(h.lift_spreads(), "{ty}'s node doesn't lift");
+        h
+    }
+
     impl Harness {
         /// Evaluate with whole spreads per input port.
         pub fn eval(&mut self, inputs: Vec<Vec<Value>>) -> Result<Vec<Vec<Value>>, String> {
@@ -98,6 +107,11 @@ pub(crate) mod harness {
             self.imp
                 .eval(&spreads, &mut cx)
                 .map(|out| out.into_iter().map(|s| s.to_vec()).collect())
+        }
+
+        /// Run per element over spreads (see `NodeImpl::lift_spreads`).
+        pub fn lift_spreads(&mut self) -> bool {
+            self.imp.lift_spreads()
         }
 
         /// The node's state for a rebuilt node (see `NodeImpl::carry`).

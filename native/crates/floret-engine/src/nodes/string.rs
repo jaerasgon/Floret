@@ -14,6 +14,7 @@ pub fn register(r: &mut Registrar) {
     r.node("string/concat", concat);
     r.node("string/word-indices", word_indices);
     r.node("string/length", length);
+    r.lifted(&["string/length"]);
 }
 
 fn spread(items: Vec<Value>) -> Spread {

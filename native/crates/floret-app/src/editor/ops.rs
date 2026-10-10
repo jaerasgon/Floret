@@ -85,6 +85,8 @@ pub fn empty_like(like: &PatchFile) -> PatchFile {
         loop_length: None,
         seed: 0,
         presets: Vec::new(),
+        // Same header: how the nodes treat spreads, too.
+        legacy_slot0: like.legacy_slot0,
     }
 }
 

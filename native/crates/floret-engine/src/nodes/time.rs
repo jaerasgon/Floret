@@ -52,8 +52,16 @@ fn frame(_: &NodeInit) -> Box<dyn NodeImpl> {
     raw(|_, cx| Ok(vec![one(Value::Num(cx.frame.frame_count))]))
 }
 
+/// `dt`, capped at `max` when that's above 0 (after a stall — a dragged
+/// window, a breakpoint — motion steps once at most `max` instead of
+/// jumping). Reads the frame, so it runs every tick.
 fn delta(_: &NodeInit) -> Box<dyn NodeImpl> {
-    raw(|_, cx| Ok(vec![one(Value::Num(cx.frame.dt))]))
+    always_eval(raw(|inputs, cx| {
+        let dt = cx.frame.dt;
+        let max = first(inputs, 0).to_number();
+        let dt = if max > 0.0 { dt.min(max) } else { dt };
+        Ok(vec![one(Value::Num(dt))])
+    }))
 }
 
 // ─── time/clock ──────────────────────────────────────────────────────────────
@@ -187,6 +195,24 @@ mod tests {
             n.frame.dt = 0.25;
             assert_eq!(num(&n.eval1(&[])[0]), want, "{ty}");
         }
+    }
+
+    #[test]
+    fn delta_caps_at_max() {
+        let mut d = node("time/delta", serde_json::json!({}));
+        let dt = |d: &mut crate::nodes::value::harness::Harness, frame_dt: f64, max: f64| {
+            d.frame.dt = frame_dt;
+            num(&d.eval1(&[super::Value::Num(max)])[0])
+        };
+        // 0 (the default) leaves dt alone, as before.
+        assert_eq!(dt(&mut d, 0.5, 0.0), 0.5);
+        // After a stall, at most `max`; ordinary frames pass.
+        assert_eq!(dt(&mut d, 2.0, 0.05), 0.05);
+        assert_eq!(dt(&mut d, 1.0 / 60.0, 0.05), 1.0 / 60.0);
+        assert_eq!(dt(&mut d, 0.5, -1.0), 0.5);
+        // It reads the frame, so it never memoises.
+        let spec = crate::spec::Catalogue::builtin().get("time/delta").unwrap();
+        assert!(spec.effectful);
     }
 
     #[test]

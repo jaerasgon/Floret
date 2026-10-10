@@ -7,18 +7,18 @@
 use super::shared::{first, to_color, WHITE};
 use super::Registrar;
 use crate::js;
-use crate::node::{raw, scalar, NodeImpl, NodeInit};
+use crate::node::{per_element, raw, scalar, NodeImpl, NodeInit};
 use crate::spec::{Params, PortSpec, PortType};
 use crate::value::{one, Color, Value};
 use std::sync::Arc;
 
 pub fn register(r: &mut Registrar) {
-    r.node("color/color", color);
+    r.node("color/color", |i| per_element(i, color(i)));
     r.dynamic("color/color", color_inputs);
-    r.node("color/split", split);
+    r.node("color/split", |i| per_element(i, split(i)));
     r.node("color/set-alpha", set_alpha);
-    r.node("color/lerp", lerp);
-    r.node("color/gradient", gradient);
+    r.node("color/lerp", |i| per_element(i, lerp(i)));
+    r.node("color/gradient", |i| per_element(i, gradient(i)));
     r.node("color/rgb", rgb);
     r.node("color/hsl", hsl);
     r.node("color/hex", hex);
@@ -26,6 +26,20 @@ pub fn register(r: &mut Registrar) {
     r.node("color/split-hsl", split_hsl);
     r.node("color/palette", palette);
     r.dynamic("color/palette", build_stop_ports);
+    // Per element over spreads (v4 patches on); Gradient per `t`, its
+    // `colors` stay the one list.
+    r.lifted(&[
+        "color/color",
+        "color/split",
+        "color/set-alpha",
+        "color/lerp",
+        "color/gradient",
+        "color/rgb",
+        "color/hsl",
+        "color/hex",
+        "color/split-rgb",
+        "color/split-hsl",
+    ]);
 }
 
 // ─── color-conv.ts ───────────────────────────────────────────────────────────

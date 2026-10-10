@@ -156,6 +156,7 @@ impl NodeImpl for Keyboard {
         st.pressed = f.key_is_pressed;
 
         let mut down = Vec::new();
+        let mut hits = Vec::new();
         let mut index = -1.0;
         let hit;
         match self.mode {
@@ -171,7 +172,12 @@ impl NodeImpl for Keyboard {
                     .rev()
                     .find_map(|h| list.iter().position(|k| k == h))
                     .map_or(-1.0, |i| i as f64);
-                hit = new.iter().any(|k| list.contains(&key_name(k)));
+                let pressed: Vec<String> = new.iter().map(|k| key_name(k)).collect();
+                hits = list
+                    .iter()
+                    .map(|k| Value::Bool(pressed.contains(k)))
+                    .collect();
+                hit = pressed.iter().any(|k| list.contains(k));
             }
             KeyMode::Text => {
                 let clear = first(inputs, 0).truthy();
@@ -213,6 +219,7 @@ impl NodeImpl for Keyboard {
             num(index),
             one(Value::str(&st.text)),
             one(Value::Bool(hit)),
+            Arc::from(hits),
         ])
     }
 
@@ -623,6 +630,36 @@ mod tests {
             .eval(vec![vec![Value::str("ArrowLeft, arrowright space")]])
             .unwrap();
         assert_eq!(bools(&out[2]), [true, false, true]);
+    }
+
+    #[test]
+    fn keyboard_hits_say_which_listed_key_went_down() {
+        let mut k = node("input/keyboard", serde_json::json!({"mode": "keys"}));
+        let keys = || vec![vec![Value::str("asdf")]];
+        assert_eq!(bools(&k.eval(keys()).unwrap()[6]), [false; 4]);
+        // s and f go down together: both hit, on that frame only.
+        press(&mut k, &["s", "f"]);
+        let out = k.eval(keys()).unwrap();
+        assert_eq!(bools(&out[6]), [false, true, false, true]);
+        assert_eq!(bools(&k.eval(keys()).unwrap()[6]), [false; 4]);
+        // a joins while they're held: only a hits.
+        press(&mut k, &["s", "f", "a"]);
+        assert_eq!(
+            bools(&k.eval(keys()).unwrap()[6]),
+            [true, false, false, false]
+        );
+        // Released and pressed again: hits again; unlisted keys never do.
+        press(&mut k, &["q"]);
+        assert_eq!(bools(&k.eval(keys()).unwrap()[6]), [false; 4]);
+        press(&mut k, &["q", "s"]);
+        assert_eq!(
+            bools(&k.eval(keys()).unwrap()[6]),
+            [false, true, false, false]
+        );
+        // Other modes: no list, no hits.
+        let mut k = node("input/keyboard", serde_json::json!({}));
+        press(&mut k, &["s"]);
+        assert!(k.eval(vec![]).unwrap()[6].is_empty());
     }
 
     #[test]

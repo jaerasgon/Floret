@@ -34,6 +34,8 @@ use raster::{apply_filters, Filter, Op, Surface};
 use std::sync::Arc;
 
 pub fn register(r: &mut Registrar) {
+    // A colour per position over spreads of `x` / `y` (v4 patches on).
+    r.lifted(&["image/sample"]);
     r.node("image/adjust", adjust);
     r.node("image/blend", blend);
     r.node("image/convolve", pixel::convolve);

@@ -27,6 +27,7 @@ pub fn register(r: &mut Registrar) {
     r.node("io/color-picker", color_picker);
     r.node("io/metro", metro);
     r.node("io/counter", counter);
+    r.dynamic("io/counter", counter_inputs);
     r.node("io/edge", edge);
     r.node("io/gate", gate);
 }
@@ -159,24 +160,36 @@ fn metro(_: &NodeInit) -> Box<dyn NodeImpl> {
     })
 }
 
-/// Counter — `+step` on each rising edge of `inc`, back to `start` on a
-/// rising edge of `reset`. `step` / `start` come from the params only
-/// (wires into those pins are ignored, as in TS), and `step` 0 reads as 1.
-fn counter(_: &NodeInit) -> Box<dyn NodeImpl> {
+/// Counter — `+step` on each rising edge of `inc`, `−step` on each rising
+/// edge of `dec`, back to `start` on a rising edge of `reset`. `step` /
+/// `start` come from the params only (wires into those pins are ignored, as
+/// in TS), and `step` 0 reads as 1. `limit` (native): `none` (the default:
+/// unbounded, as before), `clamp` to `[min, max]`, or `wrap` into
+/// `[min, max)` — `min`, `max` are pins, shown in those modes.
+fn counter(init: &NodeInit) -> Box<dyn NodeImpl> {
     struct State {
         count: f64,
         prev_inc: bool,
+        prev_dec: bool,
         prev_reset: bool,
     }
+    let limit = CounterLimit::of(init.params);
     let mut state: Option<State> = None;
     raw(move |inputs, cx| {
         let inc = first(inputs, 0).truthy();
         let reset = first(inputs, 1).truthy();
+        let dec = first(inputs, 4).truthy();
         let step = number_or(&param_or(cx, "step", Value::Num(1.0)), 1.0);
         let start = number_or(&param_or(cx, "start", Value::Num(0.0)), 0.0);
+        let bound = |i: usize, d: f64| match first(inputs, i).to_number() {
+            n if n.is_finite() => n,
+            _ => d,
+        };
+        let (lo, hi) = (bound(5, 0.0), bound(6, 10.0));
         let st = state.get_or_insert(State {
             count: start,
             prev_inc: false,
+            prev_dec: false,
             prev_reset: false,
         });
         if reset && !st.prev_reset {
@@ -185,10 +198,58 @@ fn counter(_: &NodeInit) -> Box<dyn NodeImpl> {
         if inc && !st.prev_inc {
             st.count += step;
         }
+        if dec && !st.prev_dec {
+            st.count -= step;
+        }
         st.prev_inc = inc;
+        st.prev_dec = dec;
         st.prev_reset = reset;
+        st.count = limit.apply(st.count, lo, hi);
         Ok(vec![one(Value::Num(st.count))])
     })
+}
+
+/// Counter's `limit`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum CounterLimit {
+    None,
+    Clamp,
+    Wrap,
+}
+
+impl CounterLimit {
+    fn of(params: &crate::spec::Params) -> CounterLimit {
+        match params.get("limit").and_then(serde_json::Value::as_str) {
+            Some("clamp") => CounterLimit::Clamp,
+            Some("wrap") => CounterLimit::Wrap,
+            _ => CounterLimit::None,
+        }
+    }
+
+    /// Keep `n` within the bounds (`lo`, `hi` in either order; an empty
+    /// wrap range holds `lo`).
+    fn apply(self, n: f64, lo: f64, hi: f64) -> f64 {
+        let (lo, hi) = (lo.min(hi), lo.max(hi));
+        match self {
+            CounterLimit::None => n,
+            CounterLimit::Clamp => n.clamp(lo, hi),
+            CounterLimit::Wrap if hi > lo => lo + (n - lo).rem_euclid(hi - lo),
+            CounterLimit::Wrap => lo,
+        }
+    }
+}
+
+/// Counter's pins: `min` / `max` only while `limit` uses them.
+fn counter_inputs(params: &crate::spec::Params) -> Vec<crate::spec::PortSpec> {
+    let spec = crate::spec::Catalogue::builtin()
+        .get("io/counter")
+        .expect("io/counter spec");
+    let keep = if CounterLimit::of(params) == CounterLimit::None {
+        5
+    } else {
+        7
+    };
+    spec.inputs.iter().take(keep).cloned().collect()
 }
 
 /// Edge — bang when `in` crosses `threshold` (rising / falling) or changes.
@@ -315,6 +376,65 @@ mod tests {
             out.extend(c.eval1(&[Value::Bool(i % 2 == 1), Value::Bool(false), n(0.0), n(0.0)]));
         }
         expect(&out, r##"["#0","#1","#1","#2"]"##);
+    }
+
+    #[test]
+    fn counter_counts_down_and_keeps_within_limits() {
+        // inc, reset, step, start, dec[, min, max]: one tick per press.
+        let run = |params: serde_json::Value, presses: &[(&str, f64, f64)]| {
+            let mut c = node("io/counter", params);
+            let mut out = Vec::new();
+            for (key, lo, hi) in presses {
+                // Every other tick lets go, so each press is a rising edge.
+                for down in [true, false] {
+                    let on = |k: &str| Value::Bool(down && *key == k);
+                    let got = c.eval1(&[
+                        on("inc"),
+                        on("reset"),
+                        n(0.0),
+                        n(0.0),
+                        on("dec"),
+                        n(*lo),
+                        n(*hi),
+                    ]);
+                    if down {
+                        out.push(got[0].as_f64().unwrap());
+                    }
+                }
+            }
+            out
+        };
+        let presses = |keys: &[&'static str]| -> Vec<(&'static str, f64, f64)> {
+            keys.iter().map(|k| (*k, 0.0, 3.0)).collect()
+        };
+        // No limit (the default): unbounded both ways.
+        let keys = presses(&["inc", "inc", "dec", "dec", "dec", "reset", "inc"]);
+        assert_eq!(run(json!({}), &keys), [1.0, 2.0, 1.0, 0.0, -1.0, 0.0, 1.0]);
+        // Clamp to [0, 3].
+        let keys = presses(&["inc", "inc", "inc", "inc", "dec", "reset", "dec"]);
+        assert_eq!(
+            run(json!({"limit": "clamp"}), &keys),
+            [1.0, 2.0, 3.0, 3.0, 2.0, 0.0, 0.0]
+        );
+        // Wrap into [0, 3): 0 1 2 0 …, and below 0 back to 2.
+        assert_eq!(
+            run(json!({"limit": "wrap"}), &keys),
+            [1.0, 2.0, 0.0, 1.0, 0.0, 0.0, 2.0]
+        );
+        // `min` / `max` pins only in the limiting modes.
+        let cat = crate::spec::Catalogue::builtin();
+        let spec = cat.get("io/counter").unwrap();
+        let names = |p: serde_json::Value| -> Vec<String> {
+            cat.resolved_inputs(spec, p.as_object().unwrap())
+                .into_iter()
+                .map(|p| p.name)
+                .collect()
+        };
+        assert_eq!(names(json!({})), ["inc", "reset", "step", "start", "dec"]);
+        assert_eq!(
+            names(json!({"limit": "wrap"})),
+            ["inc", "reset", "step", "start", "dec", "min", "max"]
+        );
     }
 
     #[test]

@@ -108,14 +108,17 @@ pub fn compile(
             to_port: tp.into(),
         });
     }
-    compile_refs(nodes, edges, catalogue, params)
+    compile_refs(nodes, edges, catalogue, params, !patch.legacy_slot0)
 }
 
+/// `lift`: scalar nodes of the types `nodes::lifts` lists run per element
+/// over spreads (patches from v4 on; see `PatchFile::legacy_slot0`).
 fn compile_refs(
     nodes_in: Vec<NodeRef>,
     edges_in: Vec<EdgeRef>,
     cat: &Catalogue,
     params: &ParamStore,
+    lift: bool,
 ) -> Result<CompileResult, String> {
     let mut warnings: Vec<CompileWarning> = Vec::new();
     let mut warn = |message: String, ids: &[&str]| {
@@ -258,12 +261,15 @@ fn compile_refs(
     let mut index: HashMap<String, NodeIdx> = HashMap::new();
     let mut unimplemented: Vec<String> = Vec::new();
     let mut parents: Vec<Option<String>> = Vec::new();
+    // Per runtime node: runs per element over spreads (so a spread wire
+    // into one of its single-value pins is kept).
+    let mut lifting: Vec<bool> = Vec::new();
     for n in &nodes {
         let Some(spec) = spec_by_id.get(n.id.as_str()) else {
             continue;
         };
         let meta = region_meta.get(&n.id);
-        let rn = to_runtime_node(
+        let mut rn = to_runtime_node(
             cat,
             spec,
             n,
@@ -279,6 +285,14 @@ fn compile_refs(
         if rn.unimplemented && !unimplemented.contains(&rn.ty) {
             unimplemented.push(rn.ty.clone());
         }
+        let lifts = lift && nodes::lifts(&spec.ty);
+        if lifts {
+            // A bypassed node's pass-through takes the spread as it is.
+            if let Some(imp) = rn.imp.as_mut() {
+                imp.lift_spreads();
+            }
+        }
+        lifting.push(lifts);
         index.insert(n.id.clone(), runtime_nodes.len());
         parents.push(n.parent.clone());
         runtime_nodes.push(rn);
@@ -356,7 +370,7 @@ fn compile_refs(
                 continue;
             };
             let (sp, dp) = (&src_spec.outputs[from], &dst_inputs[to]);
-            if sp.kind == PortKind::Spread && dp.kind == PortKind::Single {
+            if sp.kind == PortKind::Spread && dp.kind == PortKind::Single && !lifting[idx(&e.to)] {
                 let hint = if sp.ty == PortType::Layer {
                     "Wrap the consumer in a ForEach, or feed the spread through a Group first."
                 } else {

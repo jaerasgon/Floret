@@ -6,6 +6,11 @@
 //! `t · rate`, so a running patch stays where it was. A rising edge on
 //! `reset` restarts the cycle. With `count` > 1 the output carries that
 //! many copies, each `spread / count` of a cycle later than the one before.
+//!
+//! `sync: loop` ties it to the patch loop instead: `rate` whole cycles per
+//! loop (at least one), the phase a function of the clock, and the random
+//! shapes keyed on the cycle within the loop — so a recording of whole
+//! loops joins seamlessly.
 
 use super::shared::first;
 use super::Registrar;
@@ -91,6 +96,28 @@ fn hash01(seed: u64, copy: u64, cycle: f64) -> f64 {
     (x >> 11) as f64 / (1u64 << 53) as f64
 }
 
+/// `sync: loop`: cycles at time `t` for `rate` whole cycles (at least one)
+/// per loop of `length` seconds, wrapped to the loop, so every loop — the
+/// random shapes' values included — repeats the first. The engine always
+/// fills the length in; 0 (a bare frame) reads as the default loop.
+fn loop_cycles(t: f64, length: f64, rate: f64) -> f64 {
+    let per_loop = rate.round().max(1.0);
+    let length = if length > 0.0 {
+        length
+    } else {
+        crate::patch::DEFAULT_LOOP_LENGTH
+    };
+    let c = per_loop * super::time::loop_phase(t, length);
+    // Snap a hair off a cycle boundary onto it (as `loop_phase` does for
+    // the loop's), so every loop agrees on which cycle a frame is in.
+    let whole = c.round();
+    if (c - whole).abs() < 1e-9 * per_loop {
+        whole
+    } else {
+        c
+    }
+}
+
 /// A finite number from input `i`, else `fallback`.
 fn num(inputs: &[Spread], i: usize, fallback: f64) -> f64 {
     let v = first(inputs, i).to_number();
@@ -115,10 +142,14 @@ fn lfo(_: &NodeInit) -> Box<dyn NodeImpl> {
         let freq = num(inputs, RATE, 0.5) * if bpm > 0.0 { bpm / 60.0 } else { 1.0 };
         let reset = first(inputs, RESET).truthy();
         let frame = cx.tick_frame;
-        let c = match cycles {
-            _ if reset && !was_reset => 0.0,
-            Some(c) => c + frame.dt.max(0.0) * freq,
-            None => frame.t * freq,
+        let c = if cx.param("sync").and_then(|v| v.as_str()) == Some("loop") {
+            loop_cycles(frame.t, frame.loop_length, num(inputs, RATE, 0.5))
+        } else {
+            match cycles {
+                _ if reset && !was_reset => 0.0,
+                Some(c) => c + frame.dt.max(0.0) * freq,
+                None => frame.t * freq,
+            }
         };
         cycles = Some(c);
         was_reset = reset;
@@ -385,5 +416,43 @@ mod tests {
         // Unknown shape → sine; NaN rate → 0.5 Hz; one copy at t = 0.
         assert_eq!(num(&out[0]), 0.0);
         assert_eq!(num(&out[1]), 0.0);
+    }
+
+    #[test]
+    fn loop_sync_repeats_every_loop() {
+        let ins = |shape: &'static str, rate: f64| Ins {
+            shape,
+            rate,
+            ..Ins::default()
+        };
+        for shape in ["sine", "saw", "random", "smooth-random"] {
+            let mut h = node("motion/lfo", json!({ "shape": shape, "sync": "loop" }));
+            h.frame.loop_length = 2.0;
+            let i = ins(shape, 3.0);
+            // A recording at a fixed dt: frame N (one loop on) is frame 0
+            // again, and so is every frame after.
+            let dt = 2.0 / 48.0;
+            let first: Vec<_> = (0..48).map(|k| at(&mut h, k as f64 * dt, dt, &i)).collect();
+            for k in 48..96 {
+                let again = at(&mut h, k as f64 * dt, dt, &i);
+                let was = &first[k - 48];
+                assert!(near(again.0[0], was.0[0]), "{shape} frame {k}");
+                assert!(near(again.1, was.1), "{shape} phase {k}");
+            }
+        }
+        // `rate` whole cycles a loop: a saw at rate 2.4 runs 2 per loop.
+        let mut h = node("motion/lfo", json!({ "shape": "saw", "sync": "loop" }));
+        h.frame.loop_length = 4.0;
+        let i = ins("saw", 2.4);
+        assert!(near(at(&mut h, 1.0, 0.0, &i).0[0], 0.5));
+        // At least one cycle a loop.
+        let i = ins("saw", 0.0);
+        assert!(near(at(&mut h, 1.0, 0.0, &i).0[0], 0.25));
+        // Free (the default) still accumulates rate · dt.
+        let mut h = node("motion/lfo", json!({ "shape": "saw" }));
+        h.frame.loop_length = 4.0;
+        let i = ins("saw", 0.5);
+        at(&mut h, 0.0, 0.0, &i);
+        assert!(near(at(&mut h, 1.0, 1.0, &i).0[0], 0.5));
     }
 }

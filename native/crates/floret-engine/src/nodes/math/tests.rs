@@ -254,3 +254,99 @@ fn median_sort_matches_v8_with_nan() {
         assert!(same, "{input:?}: got {xs:?}, want {want:?}");
     }
 }
+
+#[test]
+fn clamp_wrap_and_map_adapt_to_vec2() {
+    use crate::nodes::value::harness::node;
+    use crate::value::Vec2;
+    use serde_json::json;
+    let v = |x, y| Value::Vec2(Vec2 { x, y });
+    let n = Value::Num;
+    let point = |out: Vec<Value>| match out[0] {
+        Value::Vec2(p) => (p.x, p.y),
+        ref other => panic!("not a vec2: {other:?}"),
+    };
+    let vec2 = json!({ "valueType": "vec2" });
+    // Clamp a point into a box (per component), or by one number.
+    let mut c = node("math/clamp", vec2.clone());
+    let box_ = [v(0.0, 0.0), v(10.0, 20.0)];
+    assert_eq!(
+        point(c.eval1(&[v(-5.0, 50.0), box_[0].clone(), box_[1].clone()])),
+        (0.0, 20.0)
+    );
+    assert_eq!(point(c.eval1(&[v(-5.0, 5.0), n(0.0), n(1.0)])), (0.0, 1.0));
+    // Wrap a point around a box.
+    let mut w = node("math/wrap", vec2.clone());
+    assert_eq!(
+        point(w.eval1(&[v(-1.0, 25.0), box_[0].clone(), box_[1].clone()])),
+        (9.0, 5.0)
+    );
+    // Map per component.
+    let mut m = node("math/map", vec2.clone());
+    let got = point(m.eval1(&[v(0.5, 0.25), n(0.0), n(1.0), v(0.0, 100.0), v(10.0, 200.0)]));
+    assert_eq!(got, (5.0, 125.0));
+    // The pins follow `valueType`, like Math's.
+    let cat = Catalogue::builtin();
+    let pins = |ty: &str, p: serde_json::Value| -> Vec<PortType> {
+        cat.resolved_inputs(cat.get(ty).unwrap(), p.as_object().unwrap())
+            .into_iter()
+            .map(|p| p.ty)
+            .collect()
+    };
+    assert_eq!(pins("math/clamp", vec2.clone()), [PortType::Vec2; 3]);
+    assert_eq!(pins("math/map", vec2), [PortType::Vec2; 5]);
+    assert_eq!(
+        pins("math/wrap", json!({ "valueType": "number" })),
+        [PortType::Number; 3]
+    );
+    // Unlatched (and old files, which have no `valueType`): numbers as
+    // before — a vec2 reaching the node computes NaN, as it always did.
+    let mut c = node("math/clamp", json!({}));
+    assert!(c.eval1(&[v(1.0, 2.0), n(0.0), n(1.0)])[0]
+        .as_f64()
+        .unwrap()
+        .is_nan());
+    assert_eq!(c.eval1(&[n(5.0), n(0.0), n(1.0)])[0].as_f64(), Some(1.0));
+}
+
+#[test]
+fn smoothstep_window_rises_and_falls() {
+    use crate::nodes::value::harness::{node, Harness};
+    use serde_json::json;
+    let n = Value::Num;
+    let mut s = node("math/smoothstep", json!({ "mode": "window" }));
+    let at = |s: &mut Harness, x: f64| {
+        s.eval1(&[n(0.0), n(1.0), n(3.0), n(4.0), n(x)])[0]
+            .as_f64()
+            .unwrap()
+    };
+    let table = [
+        (-1.0, 0.0),
+        (0.0, 0.0),
+        (0.5, 0.5),
+        (1.0, 1.0),
+        (2.0, 1.0),
+        (3.5, 0.5),
+        (4.0, 0.0),
+        (9.0, 0.0),
+    ];
+    for (x, want) in table {
+        assert!((at(&mut s, x) - want).abs() < 1e-12, "{x}");
+    }
+    // The classic mode (and old files): edge0, edge1, x as before.
+    let mut s = node("math/smoothstep", json!({}));
+    assert_eq!(s.eval1(&[n(0.0), n(2.0), n(1.0)])[0].as_f64(), Some(0.5));
+    let cat = Catalogue::builtin();
+    let spec = cat.get("math/smoothstep").unwrap();
+    let names = |p: serde_json::Value| -> Vec<String> {
+        cat.resolved_inputs(spec, p.as_object().unwrap())
+            .into_iter()
+            .map(|p| p.name)
+            .collect()
+    };
+    assert_eq!(names(json!({})), ["edge0", "edge1", "x"]);
+    assert_eq!(
+        names(json!({ "mode": "window" })),
+        ["edge0", "edge1", "edge2", "edge3", "x"]
+    );
+}

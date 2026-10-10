@@ -16,7 +16,7 @@
         "y": -314
       },
       "params": {
-        "text": "Flock Herder\n\nHold the mouse button down and the flock streams towards the pointer; let go and they go back to flocking on their own. F turns the lure into a scare: held, the birds flee the pointer instead. Keys 1, 2, 3 change the flock's character — 1 a loose drift, 2 a tight school, 3 a nervous swarm — and S scatters it afresh. The sliders still tune separation, alignment and cohesion on top.\n\nHow it works: the Simulation node's flocking mode does the boids; the pointer is its `target` and `attract` is +, − or 0 depending on the button and F. The characters are three columns of numbers picked by a key with Lookup. Connect Points draws the lines between near neighbours, and Echo leaves fading trails.",
+        "text": "Flock Herder\n\nHold the mouse button down and the flock streams towards the pointer; let go and they go back to flocking on their own. F turns the lure into a scare: held, the birds flee the pointer instead. Keys 1, 2, 3 change the flock's character — 1 a loose drift, 2 a tight school, 3 a nervous swarm — and S scatters it afresh. The sliders still tune separation, alignment and cohesion on top.\n\nHow it works: the Simulation node's flocking mode does the boids; the pointer is its `target` and `attract` is +, − or 0 depending on the button and F (a Latch). The characters are three columns of numbers picked by a key with Lookup. Connect Points draws the lines between near neighbours, and Echo leaves fading trails.",
         "width": 460,
         "height": 250
       }
@@ -25,8 +25,8 @@
       "id": "fh_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 351,
-        "y": 1172
+        "x": 18,
+        "y": 419
       },
       "params": {}
     },
@@ -34,8 +34,8 @@
       "id": "fh_mpos",
       "defType": "vec2/make",
       "position": {
-        "x": 1060,
-        "y": 1122
+        "x": 305,
+        "y": 378
       },
       "params": {}
     },
@@ -43,189 +43,156 @@
       "id": "fh_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 0,
-        "y": 977
+        "x": 128,
+        "y": 202
       },
       "params": {
         "mode": "keys"
       },
       "portValues": {
         "keys": "123fs"
-      }
+      },
+      "parentId": "fh_keys"
     },
     {
       "id": "fh_mood",
       "defType": "state/value",
       "position": {
-        "x": 41,
-        "y": 800
+        "x": 994,
+        "y": 320
       },
       "params": {},
       "portValues": {
         "init": 0
-      }
-    },
-    {
-      "id": "fh_moodNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 315,
-        "y": 718
       },
-      "params": {
-        "expr": "hit && k <= 2 && k >= 0 ? k : m"
-      }
-    },
-    {
-      "id": "fh_scare",
-      "defType": "state/value",
-      "position": {
-        "x": 41,
-        "y": 1402
-      },
-      "params": {},
-      "portValues": {
-        "init": 0
-      }
-    },
-    {
-      "id": "fh_scareNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 315,
-        "y": 1320
-      },
-      "params": {
-        "expr": "hit && k == 3 ? 1 - s : s"
-      }
-    },
-    {
-      "id": "fh_scatter",
-      "defType": "math/expression",
-      "position": {
-        "x": 315,
-        "y": 1008
-      },
-      "params": {
-        "expr": "hit && k == 4"
-      }
+      "parentId": "fh_keys"
     },
     {
       "id": "fh_sepOfList",
       "defType": "data/csv-inline",
       "position": {
-        "x": 315,
-        "y": 170
+        "x": 148,
+        "y": 206
       },
       "params": {
         "data": "1.2,2.4,3.2"
-      }
+      },
+      "parentId": "fh_character"
     },
     {
       "id": "fh_sepOf",
       "defType": "spread/lookup",
       "position": {
-        "x": 702,
-        "y": 148
+        "x": 420,
+        "y": 188
       },
       "params": {
         "op": "at"
-      }
+      },
+      "parentId": "fh_character"
     },
     {
       "id": "fh_aliOfList",
       "defType": "data/csv-inline",
       "position": {
-        "x": 315,
-        "y": 444
+        "x": 148,
+        "y": 342
       },
       "params": {
         "data": "0.6,1.6,0.4"
-      }
+      },
+      "parentId": "fh_character"
     },
     {
       "id": "fh_aliOf",
       "defType": "spread/lookup",
       "position": {
-        "x": 702,
-        "y": 422
+        "x": 420,
+        "y": 336
       },
       "params": {
         "op": "at"
-      }
+      },
+      "parentId": "fh_character"
     },
     {
       "id": "fh_cohOfList",
       "defType": "data/csv-inline",
       "position": {
-        "x": 315,
-        "y": 614
+        "x": 148,
+        "y": 478
       },
       "params": {
         "data": "0.7,1.3,0.5"
-      }
+      },
+      "parentId": "fh_character"
     },
     {
       "id": "fh_cohOf",
       "defType": "spread/lookup",
       "position": {
-        "x": 702,
-        "y": 696
+        "x": 420,
+        "y": 484
       },
       "params": {
         "op": "at"
-      }
+      },
+      "parentId": "fh_character"
     },
     {
       "id": "fh_speedOfList",
       "defType": "data/csv-inline",
       "position": {
-        "x": 315,
-        "y": 22
+        "x": 148,
+        "y": 62
       },
       "params": {
         "data": "110,150,230"
-      }
+      },
+      "parentId": "fh_character"
     },
     {
       "id": "fh_speedOf",
       "defType": "spread/lookup",
       "position": {
-        "x": 702,
-        "y": 0
+        "x": 420,
+        "y": 40
       },
       "params": {
         "op": "at"
-      }
+      },
+      "parentId": "fh_character"
     },
     {
       "id": "fh_radiusOfList",
       "defType": "data/csv-inline",
       "position": {
-        "x": 315,
-        "y": 904
+        "x": 148,
+        "y": 614
       },
       "params": {
         "data": "46,34,28"
-      }
+      },
+      "parentId": "fh_character"
     },
     {
       "id": "fh_radiusOf",
       "defType": "spread/lookup",
       "position": {
-        "x": 702,
-        "y": 970
+        "x": 420,
+        "y": 632
       },
       "params": {
         "op": "at"
-      }
+      },
+      "parentId": "fh_character"
     },
     {
       "id": "fh_sepTweak",
       "defType": "io/slider",
       "position": {
-        "x": 699,
-        "y": 296
+        "x": 264,
+        "y": 0
       },
       "params": {
         "value": 1,
@@ -238,8 +205,8 @@
       "id": "fh_aliTweak",
       "defType": "io/slider",
       "position": {
-        "x": 699,
-        "y": 570
+        "x": 264,
+        "y": 126
       },
       "params": {
         "value": 1,
@@ -252,8 +219,8 @@
       "id": "fh_cohTweak",
       "defType": "io/slider",
       "position": {
-        "x": 699,
-        "y": 844
+        "x": 264,
+        "y": 252
       },
       "params": {
         "value": 1,
@@ -266,55 +233,47 @@
       "id": "fh_separation",
       "defType": "math/math",
       "position": {
-        "x": 1019,
-        "y": 380
+        "x": 685,
+        "y": 209
       },
       "params": {
         "op": "multiply",
         "valueType": "number"
-      }
+      },
+      "parentId": "fh_character"
     },
     {
       "id": "fh_alignment",
       "defType": "math/math",
       "position": {
-        "x": 1019,
-        "y": 548
+        "x": 685,
+        "y": 357
       },
       "params": {
         "op": "multiply",
         "valueType": "number"
-      }
+      },
+      "parentId": "fh_character"
     },
     {
       "id": "fh_cohesion",
       "defType": "math/math",
       "position": {
-        "x": 1019,
-        "y": 728
+        "x": 685,
+        "y": 505
       },
       "params": {
         "op": "multiply",
         "valueType": "number"
-      }
-    },
-    {
-      "id": "fh_attract",
-      "defType": "math/expression",
-      "position": {
-        "x": 699,
-        "y": 1182
       },
-      "params": {
-        "expr": "p ? (s ? -3.5 : 2.2) : 0"
-      }
+      "parentId": "fh_character"
     },
     {
       "id": "fh_palette",
       "defType": "color/palette",
       "position": {
-        "x": 1019,
-        "y": 908
+        "x": 579,
+        "y": 471
       },
       "params": {
         "stopCount": 4,
@@ -328,8 +287,8 @@
       "id": "fh_flock",
       "defType": "particles/simulation",
       "position": {
-        "x": 1338,
-        "y": 604
+        "x": 871,
+        "y": 142
       },
       "params": {
         "mode": "flocking"
@@ -348,8 +307,8 @@
       "id": "fh_linkStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 1346,
-        "y": 1016
+        "x": 879,
+        "y": 576
       },
       "params": {},
       "portValues": {
@@ -366,8 +325,8 @@
       "id": "fh_links",
       "defType": "geometry/connect",
       "position": {
-        "x": 1620,
-        "y": 742
+        "x": 1149,
+        "y": 274
       },
       "params": {
         "mode": "distance"
@@ -383,8 +342,8 @@
       "id": "fh_birds",
       "defType": "transform/group",
       "position": {
-        "x": 1893,
-        "y": 752
+        "x": 1420,
+        "y": 268
       },
       "params": {
         "slotCount": 2
@@ -394,8 +353,8 @@
       "id": "fh_trails",
       "defType": "gpu/echo",
       "position": {
-        "x": 2186,
-        "y": 902
+        "x": 1706,
+        "y": 373
       },
       "params": {
         "mode": "trails"
@@ -408,156 +367,146 @@
       "id": "fh_time",
       "defType": "time/seconds",
       "position": {
-        "x": 42,
-        "y": 389
+        "x": 143,
+        "y": 157
       },
-      "params": {}
-    },
-    {
-      "id": "fh_ringCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 699,
-        "y": 1346
-      },
-      "params": {
-        "expr": "p ? (s ? rgba(1, 0.35, 0.3, 0.9) : rgba(0.4, 1, 0.6, 0.9)) : rgba(1, 1, 1, 0.3)"
-      }
-    },
-    {
-      "id": "fh_ringSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 1335,
-        "y": 1200
-      },
-      "params": {
-        "expr": "p ? 36 + 8 * sin(t * 9) : 22"
-      }
+      "params": {},
+      "parentId": "fh_lure"
     },
     {
       "id": "fh_ringStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 1056,
-        "y": 1374
+        "x": 1166,
+        "y": 249
       },
       "params": {},
       "portValues": {
         "width": 2
-      }
+      },
+      "parentId": "fh_lure"
     },
     {
       "id": "fh_ringNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 1375,
-        "y": 1342
+        "x": 1406,
+        "y": 214
       },
-      "params": {}
+      "params": {},
+      "parentId": "fh_lure"
     },
     {
       "id": "fh_ring",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1652,
-        "y": 1179
+        "x": 1611,
+        "y": 40
       },
-      "params": {}
+      "params": {},
+      "parentId": "fh_lure"
     },
     {
       "id": "fh_moods",
       "defType": "string/split",
       "position": {
-        "x": 325,
-        "y": 1541
+        "x": 134,
+        "y": 40
       },
       "params": {
         "text": "drift,school,swarm",
         "by": ","
-      }
+      },
+      "parentId": "fh_statusLine"
     },
     {
       "id": "fh_moodName",
       "defType": "spread/lookup",
       "position": {
-        "x": 702,
-        "y": 1532
+        "x": 394,
+        "y": 47
       },
       "params": {
         "op": "at"
-      }
+      },
+      "parentId": "fh_statusLine"
     },
     {
       "id": "fh_lureTxt",
       "defType": "value/string",
       "position": {
-        "x": 320,
-        "y": 1771
+        "x": 128,
+        "y": 320
       },
       "params": {
         "value": "hold to lure"
-      }
+      },
+      "parentId": "fh_statusLine"
     },
     {
       "id": "fh_scareTxt",
       "defType": "value/string",
       "position": {
-        "x": 320,
-        "y": 1667
+        "x": 128,
+        "y": 216
       },
       "params": {
         "value": "hold to scare"
-      }
+      },
+      "parentId": "fh_statusLine"
     },
     {
       "id": "fh_modeTxt",
       "defType": "logic/select",
       "position": {
-        "x": 730,
-        "y": 1680
+        "x": 423,
+        "y": 195
       },
-      "params": {}
+      "params": {},
+      "parentId": "fh_statusLine"
     },
     {
       "id": "fh_help",
       "defType": "value/string",
       "position": {
-        "x": 704,
-        "y": 1828
+        "x": 396,
+        "y": 343
       },
       "params": {
         "value": "1 2 3 character · F lure / scare · S scatter"
-      }
+      },
+      "parentId": "fh_statusLine"
     },
     {
       "id": "fh_statusParts",
       "defType": "spread/merge",
       "position": {
-        "x": 1019,
-        "y": 1605
+        "x": 671,
+        "y": 173
       },
       "params": {
         "slotCount": 3
-      }
+      },
+      "parentId": "fh_statusLine"
     },
     {
       "id": "fh_status",
       "defType": "string/concat",
       "position": {
-        "x": 1360,
-        "y": 1446
+        "x": 949,
+        "y": 172
       },
       "params": {
         "separator": "   ·   "
-      }
+      },
+      "parentId": "fh_statusLine"
     },
     {
       "id": "fh_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 1346,
-        "y": 1572
+        "x": 935,
+        "y": 298
       },
       "params": {},
       "portValues": {
@@ -567,14 +516,15 @@
           "b": 1.0,
           "a": 0.6
         }
-      }
+      },
+      "parentId": "fh_statusLine"
     },
     {
       "id": "fh_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 1657,
-        "y": 1383
+        "x": 1180,
+        "y": 191
       },
       "params": {
         "size": 13,
@@ -585,14 +535,15 @@
           "x": 0,
           "y": 304.0
         }
-      }
+      },
+      "parentId": "fh_statusLine"
     },
     {
       "id": "fh_scene",
       "defType": "transform/group",
       "position": {
-        "x": 2480,
-        "y": 1097
+        "x": 1994,
+        "y": 522
       },
       "params": {
         "slotCount": 3
@@ -602,8 +553,8 @@
       "id": "fh_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 2744,
-        "y": 1097
+        "x": 2258,
+        "y": 522
       },
       "params": {
         "width": 640,
@@ -617,6 +568,513 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "fh_keyFrom",
+      "defType": "logic/compare",
+      "position": {
+        "x": 423,
+        "y": 40
+      },
+      "params": {
+        "op": "greater-equal"
+      },
+      "portValues": {
+        "b": 0
+      },
+      "parentId": "fh_keys"
+    },
+    {
+      "id": "fh_keyTo",
+      "defType": "logic/compare",
+      "position": {
+        "x": 423,
+        "y": 188
+      },
+      "params": {
+        "op": "less-equal"
+      },
+      "portValues": {
+        "b": 2
+      },
+      "parentId": "fh_keys"
+    },
+    {
+      "id": "fh_isMoodKey",
+      "defType": "logic/logic",
+      "position": {
+        "x": 718,
+        "y": 126
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "fh_keys"
+    },
+    {
+      "id": "fh_setMood",
+      "defType": "logic/logic",
+      "position": {
+        "x": 968,
+        "y": 172
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "fh_keys"
+    },
+    {
+      "id": "fh_moodNext",
+      "defType": "logic/select",
+      "position": {
+        "x": 1211,
+        "y": 230
+      },
+      "params": {},
+      "parentId": "fh_keys"
+    },
+    {
+      "id": "fh_keyF",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 432,
+        "y": 368
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 3
+      },
+      "parentId": "fh_keys"
+    },
+    {
+      "id": "fh_scareNext",
+      "defType": "io/latch",
+      "position": {
+        "x": 716,
+        "y": 364
+      },
+      "params": {},
+      "portValues": {
+        "initial": false
+      },
+      "parentId": "fh_keys"
+    },
+    {
+      "id": "fh_scatter",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 432,
+        "y": 516
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 4
+      },
+      "parentId": "fh_keys"
+    },
+    {
+      "id": "fh_pull",
+      "defType": "logic/select",
+      "position": {
+        "x": 295,
+        "y": 504
+      },
+      "params": {},
+      "portValues": {
+        "a": -3.5,
+        "b": 2.2
+      }
+    },
+    {
+      "id": "fh_attract",
+      "defType": "logic/select",
+      "position": {
+        "x": 610,
+        "y": 323
+      },
+      "params": {},
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "fh_heldCol",
+      "defType": "logic/select",
+      "position": {
+        "x": 133,
+        "y": 290
+      },
+      "params": {},
+      "portValues": {
+        "a": {
+          "r": 1,
+          "g": 0.35,
+          "b": 0.3,
+          "a": 0.9
+        },
+        "b": {
+          "r": 0.4,
+          "g": 1,
+          "b": 0.6,
+          "a": 0.9
+        }
+      },
+      "parentId": "fh_lure"
+    },
+    {
+      "id": "fh_ringCol",
+      "defType": "logic/select",
+      "position": {
+        "x": 372,
+        "y": 268
+      },
+      "params": {},
+      "portValues": {
+        "b": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 0.3
+        }
+      },
+      "parentId": "fh_lure"
+    },
+    {
+      "id": "fh_beatT",
+      "defType": "math/math",
+      "position": {
+        "x": 341,
+        "y": 120
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 9
+      },
+      "parentId": "fh_lure"
+    },
+    {
+      "id": "fh_beatSin",
+      "defType": "math/math",
+      "position": {
+        "x": 609,
+        "y": 128
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "fh_lure"
+    },
+    {
+      "id": "fh_beat",
+      "defType": "math/math",
+      "position": {
+        "x": 860,
+        "y": 114
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 8
+      },
+      "parentId": "fh_lure"
+    },
+    {
+      "id": "fh_ringBig",
+      "defType": "math/math",
+      "position": {
+        "x": 1128,
+        "y": 101
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 36
+      },
+      "parentId": "fh_lure"
+    },
+    {
+      "id": "fh_ringSize",
+      "defType": "logic/select",
+      "position": {
+        "x": 1397,
+        "y": 66
+      },
+      "params": {},
+      "portValues": {
+        "b": 22
+      },
+      "parentId": "fh_lure"
+    },
+    {
+      "id": "fh_keys",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 0,
+        "y": 567
+      },
+      "params": {
+        "label": "Keys",
+        "width": 1428,
+        "height": 820
+      },
+      "ports": [
+        {
+          "id": "mood",
+          "name": "mood",
+          "type": "number",
+          "direction": "output",
+          "y": 267
+        },
+        {
+          "id": "scare",
+          "name": "scare",
+          "type": "boolean",
+          "direction": "output",
+          "y": 422
+        },
+        {
+          "id": "scatter",
+          "name": "scatter",
+          "type": "boolean",
+          "direction": "output",
+          "y": 551
+        }
+      ],
+      "width": 1428,
+      "height": 820
+    },
+    {
+      "id": "fh_keysNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 680
+      },
+      "params": {
+        "text": "1–3 pick the character (kept in a State), F flips a Latch between lure and scare, S scatters.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "fh_keys"
+    },
+    {
+      "id": "fh_character",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 574,
+        "y": 131
+      },
+      "params": {
+        "label": "Character",
+        "width": 966,
+        "height": 936
+      },
+      "ports": [
+        {
+          "id": "separationTweak",
+          "name": "separationTweak",
+          "type": "number",
+          "direction": "input",
+          "y": 318
+        },
+        {
+          "id": "alignmentTweak",
+          "name": "alignmentTweak",
+          "type": "number",
+          "direction": "input",
+          "y": 454
+        },
+        {
+          "id": "cohesionTweak",
+          "name": "cohesionTweak",
+          "type": "number",
+          "direction": "input",
+          "y": 590
+        },
+        {
+          "id": "mood",
+          "name": "mood",
+          "type": "number",
+          "direction": "input",
+          "y": 428
+        },
+        {
+          "id": "separation",
+          "name": "separation",
+          "type": "any",
+          "direction": "output",
+          "y": 246
+        },
+        {
+          "id": "alignment",
+          "name": "alignment",
+          "type": "any",
+          "direction": "output",
+          "y": 394
+        },
+        {
+          "id": "cohesion",
+          "name": "cohesion",
+          "type": "any",
+          "direction": "output",
+          "y": 542
+        },
+        {
+          "id": "speedOf",
+          "name": "speedOf",
+          "type": "any",
+          "direction": "output",
+          "y": 101
+        },
+        {
+          "id": "radiusOf",
+          "name": "radiusOf",
+          "type": "any",
+          "direction": "output",
+          "y": 668
+        }
+      ],
+      "width": 966,
+      "height": 936
+    },
+    {
+      "id": "fh_characterNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 148,
+        "y": 796
+      },
+      "params": {
+        "text": "Each character is a column of numbers (separation, alignment, cohesion, speed, radius) picked with Lookup; the sliders scale the first three.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "fh_character"
+    },
+    {
+      "id": "fh_lure",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 578,
+        "y": 685
+      },
+      "params": {
+        "label": "Pointer ring",
+        "width": 1822,
+        "height": 594
+      },
+      "ports": [
+        {
+          "id": "mpos",
+          "name": "mpos",
+          "type": "vec2",
+          "direction": "input",
+          "y": 65
+        },
+        {
+          "id": "scare",
+          "name": "scare",
+          "type": "boolean",
+          "direction": "input",
+          "y": 327
+        },
+        {
+          "id": "pressed",
+          "name": "pressed",
+          "type": "boolean",
+          "direction": "input",
+          "y": 196
+        },
+        {
+          "id": "ring",
+          "name": "ring",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 1822,
+      "height": 594
+    },
+    {
+      "id": "fh_lureNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 133,
+        "y": 454
+      },
+      "params": {
+        "text": "A ring at the pointer: green and pulsing while luring, red while scaring, faint at rest.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "fh_lure"
+    },
+    {
+      "id": "fh_statusLine",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 278,
+        "y": 716
+      },
+      "params": {
+        "label": "Status",
+        "width": 1381,
+        "height": 603
+      },
+      "ports": [
+        {
+          "id": "mood",
+          "name": "mood",
+          "type": "number",
+          "direction": "input",
+          "y": 142
+        },
+        {
+          "id": "scare",
+          "name": "scare",
+          "type": "boolean",
+          "direction": "input",
+          "y": 192
+        },
+        {
+          "id": "status",
+          "name": "status",
+          "type": "layer",
+          "direction": "output",
+          "y": 228
+        }
+      ],
+      "width": 1381,
+      "height": 603
+    },
+    {
+      "id": "fh_statusLineNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 463
+      },
+      "params": {
+        "text": "The character, lure or scare, and the keys.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "fh_statusLine"
     }
   ],
   "edges": [
@@ -635,88 +1093,11 @@
       "targetHandle": "in-y"
     },
     {
-      "id": "e_3",
-      "source": "fh_kb",
-      "target": "fh_moodNext",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_4",
-      "source": "fh_kb",
-      "target": "fh_moodNext",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_5",
-      "source": "fh_mood",
-      "target": "fh_moodNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_6",
-      "source": "fh_moodNext",
-      "target": "fh_mood",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_7",
-      "source": "fh_kb",
-      "target": "fh_scareNext",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_8",
-      "source": "fh_kb",
-      "target": "fh_scareNext",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_9",
-      "source": "fh_scare",
-      "target": "fh_scareNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_10",
-      "source": "fh_scareNext",
-      "target": "fh_scare",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_11",
-      "source": "fh_kb",
-      "target": "fh_scatter",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_12",
-      "source": "fh_kb",
-      "target": "fh_scatter",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
       "id": "e_13",
       "source": "fh_sepOfList",
       "target": "fh_sepOf",
       "sourceHandle": "out-values",
       "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_14",
-      "source": "fh_moodNext",
-      "target": "fh_sepOf",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-index"
     },
     {
       "id": "e_15",
@@ -726,25 +1107,11 @@
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_16",
-      "source": "fh_moodNext",
-      "target": "fh_aliOf",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-index"
-    },
-    {
       "id": "e_17",
       "source": "fh_cohOfList",
       "target": "fh_cohOf",
       "sourceHandle": "out-values",
       "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_18",
-      "source": "fh_moodNext",
-      "target": "fh_cohOf",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-index"
     },
     {
       "id": "e_19",
@@ -754,25 +1121,11 @@
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_20",
-      "source": "fh_moodNext",
-      "target": "fh_speedOf",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-index"
-    },
-    {
       "id": "e_21",
       "source": "fh_radiusOfList",
       "target": "fh_radiusOf",
       "sourceHandle": "out-values",
       "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_22",
-      "source": "fh_moodNext",
-      "target": "fh_radiusOf",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-index"
     },
     {
       "id": "e_23",
@@ -783,9 +1136,9 @@
     },
     {
       "id": "e_24",
-      "source": "fh_sepTweak",
+      "source": "fh_character",
       "target": "fh_separation",
-      "sourceHandle": "out-number",
+      "sourceHandle": "out-separationTweak",
       "targetHandle": "in-b"
     },
     {
@@ -797,9 +1150,9 @@
     },
     {
       "id": "e_26",
-      "source": "fh_aliTweak",
+      "source": "fh_character",
       "target": "fh_alignment",
-      "sourceHandle": "out-number",
+      "sourceHandle": "out-alignmentTweak",
       "targetHandle": "in-b"
     },
     {
@@ -811,24 +1164,10 @@
     },
     {
       "id": "e_28",
-      "source": "fh_cohTweak",
+      "source": "fh_character",
       "target": "fh_cohesion",
-      "sourceHandle": "out-number",
+      "sourceHandle": "out-cohesionTweak",
       "targetHandle": "in-b"
-    },
-    {
-      "id": "e_29",
-      "source": "fh_mouse",
-      "target": "fh_attract",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_30",
-      "source": "fh_scareNext",
-      "target": "fh_attract",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
     },
     {
       "id": "e_31",
@@ -838,45 +1177,38 @@
       "targetHandle": "in-target"
     },
     {
-      "id": "e_32",
-      "source": "fh_attract",
-      "target": "fh_flock",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-attract"
-    },
-    {
       "id": "e_33",
-      "source": "fh_separation",
+      "source": "fh_character",
       "target": "fh_flock",
-      "sourceHandle": "out-result",
+      "sourceHandle": "out-separation",
       "targetHandle": "in-separation"
     },
     {
       "id": "e_34",
-      "source": "fh_alignment",
+      "source": "fh_character",
       "target": "fh_flock",
-      "sourceHandle": "out-result",
+      "sourceHandle": "out-alignment",
       "targetHandle": "in-alignment"
     },
     {
       "id": "e_35",
-      "source": "fh_cohesion",
+      "source": "fh_character",
       "target": "fh_flock",
-      "sourceHandle": "out-result",
+      "sourceHandle": "out-cohesion",
       "targetHandle": "in-cohesion"
     },
     {
       "id": "e_36",
-      "source": "fh_speedOf",
+      "source": "fh_character",
       "target": "fh_flock",
-      "sourceHandle": "out-result",
+      "sourceHandle": "out-speedOf",
       "targetHandle": "in-maxSpeed"
     },
     {
       "id": "e_37",
-      "source": "fh_radiusOf",
+      "source": "fh_character",
       "target": "fh_flock",
-      "sourceHandle": "out-result",
+      "sourceHandle": "out-radiusOf",
       "targetHandle": "in-radius"
     },
     {
@@ -885,13 +1217,6 @@
       "target": "fh_flock",
       "sourceHandle": "out-colors",
       "targetHandle": "in-colors"
-    },
-    {
-      "id": "e_39",
-      "source": "fh_scatter",
-      "target": "fh_flock",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-reset"
     },
     {
       "id": "e_40",
@@ -929,34 +1254,6 @@
       "targetHandle": "in-input"
     },
     {
-      "id": "e_45",
-      "source": "fh_mouse",
-      "target": "fh_ringCol",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_46",
-      "source": "fh_scareNext",
-      "target": "fh_ringCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_47",
-      "source": "fh_mouse",
-      "target": "fh_ringSize",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_48",
-      "source": "fh_ringCol",
-      "target": "fh_ringStroke",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
-    },
-    {
       "id": "e_49",
       "source": "fh_ringStroke",
       "target": "fh_ringNoFill",
@@ -965,24 +1262,10 @@
     },
     {
       "id": "e_50",
-      "source": "fh_mpos",
+      "source": "fh_lure",
       "target": "fh_ring",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-mpos",
       "targetHandle": "in-pos"
-    },
-    {
-      "id": "e_51",
-      "source": "fh_ringSize",
-      "target": "fh_ring",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_52",
-      "source": "fh_ringSize",
-      "target": "fh_ring",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
     },
     {
       "id": "e_53",
@@ -997,20 +1280,6 @@
       "target": "fh_moodName",
       "sourceHandle": "out-parts",
       "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_55",
-      "source": "fh_moodNext",
-      "target": "fh_moodName",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-index"
-    },
-    {
-      "id": "e_56",
-      "source": "fh_scareNext",
-      "target": "fh_modeTxt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cond"
     },
     {
       "id": "e_57",
@@ -1077,16 +1346,16 @@
     },
     {
       "id": "e_66",
-      "source": "fh_ring",
+      "source": "fh_lure",
       "target": "fh_scene",
-      "sourceHandle": "out-shape",
+      "sourceHandle": "out-ring",
       "targetHandle": "in-s2"
     },
     {
       "id": "e_67",
-      "source": "fh_statusText",
+      "source": "fh_statusLine",
       "target": "fh_scene",
-      "sourceHandle": "out-shape",
+      "sourceHandle": "out-status",
       "targetHandle": "in-s3"
     },
     {
@@ -1095,6 +1364,398 @@
       "target": "fh_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_b1_1",
+      "source": "fh_kb",
+      "target": "fh_keyFrom",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_2",
+      "source": "fh_kb",
+      "target": "fh_keyTo",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_3",
+      "source": "fh_keyFrom",
+      "target": "fh_isMoodKey",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_4",
+      "source": "fh_keyTo",
+      "target": "fh_isMoodKey",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_5",
+      "source": "fh_kb",
+      "target": "fh_setMood",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_6",
+      "source": "fh_isMoodKey",
+      "target": "fh_setMood",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_7",
+      "source": "fh_setMood",
+      "target": "fh_moodNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_8",
+      "source": "fh_kb",
+      "target": "fh_moodNext",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_9",
+      "source": "fh_mood",
+      "target": "fh_moodNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_10",
+      "source": "fh_moodNext",
+      "target": "fh_mood",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_11",
+      "source": "fh_character",
+      "target": "fh_sepOf",
+      "sourceHandle": "out-mood",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_b1_12",
+      "source": "fh_character",
+      "target": "fh_aliOf",
+      "sourceHandle": "out-mood",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_b1_13",
+      "source": "fh_character",
+      "target": "fh_cohOf",
+      "sourceHandle": "out-mood",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_b1_14",
+      "source": "fh_character",
+      "target": "fh_speedOf",
+      "sourceHandle": "out-mood",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_b1_15",
+      "source": "fh_character",
+      "target": "fh_radiusOf",
+      "sourceHandle": "out-mood",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_b1_16",
+      "source": "fh_statusLine",
+      "target": "fh_moodName",
+      "sourceHandle": "out-mood",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_b1_17",
+      "source": "fh_kb",
+      "target": "fh_keyF",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_18",
+      "source": "fh_keyF",
+      "target": "fh_scareNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-toggle"
+    },
+    {
+      "id": "e_b1_19",
+      "source": "fh_statusLine",
+      "target": "fh_modeTxt",
+      "sourceHandle": "out-scare",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_20",
+      "source": "fh_kb",
+      "target": "fh_scatter",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_21",
+      "source": "fh_keys",
+      "target": "fh_flock",
+      "sourceHandle": "out-scatter",
+      "targetHandle": "in-reset"
+    },
+    {
+      "id": "e_b1_22",
+      "source": "fh_keys",
+      "target": "fh_pull",
+      "sourceHandle": "out-scare",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_23",
+      "source": "fh_mouse",
+      "target": "fh_attract",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_24",
+      "source": "fh_pull",
+      "target": "fh_attract",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_25",
+      "source": "fh_attract",
+      "target": "fh_flock",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-attract"
+    },
+    {
+      "id": "e_b1_26",
+      "source": "fh_lure",
+      "target": "fh_heldCol",
+      "sourceHandle": "out-scare",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_27",
+      "source": "fh_lure",
+      "target": "fh_ringCol",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_28",
+      "source": "fh_heldCol",
+      "target": "fh_ringCol",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_29",
+      "source": "fh_ringCol",
+      "target": "fh_ringStroke",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_b1_30",
+      "source": "fh_time",
+      "target": "fh_beatT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_31",
+      "source": "fh_beatT",
+      "target": "fh_beatSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_32",
+      "source": "fh_beatSin",
+      "target": "fh_beat",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_33",
+      "source": "fh_beat",
+      "target": "fh_ringBig",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_34",
+      "source": "fh_lure",
+      "target": "fh_ringSize",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_35",
+      "source": "fh_ringBig",
+      "target": "fh_ringSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_36",
+      "source": "fh_ringSize",
+      "target": "fh_ring",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_b1_37",
+      "source": "fh_ringSize",
+      "target": "fh_ring",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_b1_38",
+      "source": "fh_moodNext",
+      "target": "fh_keys",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-mood"
+    },
+    {
+      "id": "e_b1_39",
+      "source": "fh_scareNext",
+      "target": "fh_keys",
+      "sourceHandle": "out-state",
+      "targetHandle": "in-scare"
+    },
+    {
+      "id": "e_b1_40",
+      "source": "fh_scatter",
+      "target": "fh_keys",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-scatter"
+    },
+    {
+      "id": "e_b1_41",
+      "source": "fh_sepTweak",
+      "target": "fh_character",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-separationTweak"
+    },
+    {
+      "id": "e_b1_42",
+      "source": "fh_aliTweak",
+      "target": "fh_character",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-alignmentTweak"
+    },
+    {
+      "id": "e_b1_43",
+      "source": "fh_cohTweak",
+      "target": "fh_character",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-cohesionTweak"
+    },
+    {
+      "id": "e_b1_44",
+      "source": "fh_keys",
+      "target": "fh_character",
+      "sourceHandle": "out-mood",
+      "targetHandle": "in-mood"
+    },
+    {
+      "id": "e_b1_45",
+      "source": "fh_separation",
+      "target": "fh_character",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-separation"
+    },
+    {
+      "id": "e_b1_46",
+      "source": "fh_alignment",
+      "target": "fh_character",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-alignment"
+    },
+    {
+      "id": "e_b1_47",
+      "source": "fh_cohesion",
+      "target": "fh_character",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cohesion"
+    },
+    {
+      "id": "e_b1_48",
+      "source": "fh_speedOf",
+      "target": "fh_character",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-speedOf"
+    },
+    {
+      "id": "e_b1_49",
+      "source": "fh_radiusOf",
+      "target": "fh_character",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-radiusOf"
+    },
+    {
+      "id": "e_b1_50",
+      "source": "fh_mpos",
+      "target": "fh_lure",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-mpos"
+    },
+    {
+      "id": "e_b1_51",
+      "source": "fh_keys",
+      "target": "fh_lure",
+      "sourceHandle": "out-scare",
+      "targetHandle": "in-scare"
+    },
+    {
+      "id": "e_b1_52",
+      "source": "fh_mouse",
+      "target": "fh_lure",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_b1_53",
+      "source": "fh_ring",
+      "target": "fh_lure",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-ring"
+    },
+    {
+      "id": "e_b1_54",
+      "source": "fh_keys",
+      "target": "fh_statusLine",
+      "sourceHandle": "out-mood",
+      "targetHandle": "in-mood"
+    },
+    {
+      "id": "e_b1_55",
+      "source": "fh_keys",
+      "target": "fh_statusLine",
+      "sourceHandle": "out-scare",
+      "targetHandle": "in-scare"
+    },
+    {
+      "id": "e_b1_56",
+      "source": "fh_statusText",
+      "target": "fh_statusLine",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-status"
     }
   ]
 }

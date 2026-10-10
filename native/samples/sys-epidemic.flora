@@ -30,8 +30,8 @@
       "id": "epi_radius",
       "defType": "io/slider",
       "position": {
-        "x": 1500,
-        "y": 609
+        "x": 1397,
+        "y": 574
       },
       "params": {
         "value": 14,
@@ -48,8 +48,8 @@
       "id": "epi_speed",
       "defType": "io/slider",
       "position": {
-        "x": 845,
-        "y": 608
+        "x": 766,
+        "y": 482
       },
       "params": {
         "value": 45,
@@ -66,8 +66,8 @@
       "id": "epi_recover",
       "defType": "io/slider",
       "position": {
-        "x": 3123,
-        "y": 1010
+        "x": 3069,
+        "y": 1078
       },
       "params": {
         "value": 7,
@@ -84,8 +84,8 @@
       "id": "epi_waning",
       "defType": "io/slider",
       "position": {
-        "x": 3123,
-        "y": 1136
+        "x": 3069,
+        "y": 1221
       },
       "params": {
         "value": 0.02,
@@ -102,8 +102,8 @@
       "id": "epi_lockdown",
       "defType": "io/toggle",
       "position": {
-        "x": 845,
-        "y": 734
+        "x": 766,
+        "y": 626
       },
       "params": {
         "value": false
@@ -117,7 +117,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 22,
-        "y": 1059
+        "y": 985
       },
       "params": {},
       "portValues": {}
@@ -126,8 +126,8 @@
       "id": "epi_mpos",
       "defType": "vec2/make",
       "position": {
-        "x": 309,
-        "y": 1035
+        "x": 291,
+        "y": 959
       },
       "params": {},
       "portValues": {}
@@ -136,8 +136,8 @@
       "id": "epi_dt",
       "defType": "time/delta",
       "position": {
-        "x": 881,
-        "y": 998
+        "x": 807,
+        "y": 759
       },
       "params": {},
       "portValues": {
@@ -148,8 +148,8 @@
       "id": "epi_start",
       "defType": "geometry/scatter",
       "position": {
-        "x": 546,
-        "y": 504
+        "x": 507,
+        "y": 203
       },
       "params": {
         "mode": "random"
@@ -172,7 +172,7 @@
       "defType": "spread/range",
       "position": {
         "x": 0,
-        "y": 955
+        "y": 860
       },
       "params": {
         "count": 320
@@ -185,8 +185,8 @@
       "id": "epi_rpos",
       "defType": "state/read-spread",
       "position": {
-        "x": 857,
-        "y": 482
+        "x": 790,
+        "y": 339
       },
       "params": {
         "slot": 1
@@ -199,8 +199,8 @@
       "id": "epi_rstatus",
       "defType": "state/read-spread",
       "position": {
-        "x": 857,
-        "y": 872
+        "x": 790,
+        "y": 881
       },
       "params": {
         "slot": 2
@@ -213,8 +213,8 @@
       "id": "epi_rsick",
       "defType": "state/read-spread",
       "position": {
-        "x": 3134,
-        "y": 884
+        "x": 3094,
+        "y": 934
       },
       "params": {
         "slot": 3
@@ -227,8 +227,8 @@
       "id": "epi_infectedPos",
       "defType": "spread/sublist",
       "position": {
-        "x": 1503,
-        "y": 392
+        "x": 1419,
+        "y": 377
       },
       "params": {
         "op": "keep-where"
@@ -239,8 +239,8 @@
       "id": "epi_plusFar",
       "defType": "spread/combine",
       "position": {
-        "x": 2172,
-        "y": 689
+        "x": 2110,
+        "y": 709
       },
       "params": {
         "op": "append"
@@ -256,8 +256,8 @@
       "id": "epi_nearest",
       "defType": "spread/lookup",
       "position": {
-        "x": 2831,
-        "y": 705
+        "x": 2795,
+        "y": 742
       },
       "params": {
         "op": "nearest"
@@ -268,8 +268,8 @@
       "id": "epi_nearestPos",
       "defType": "spread/lookup",
       "position": {
-        "x": 3126,
-        "y": 640
+        "x": 3091,
+        "y": 673
       },
       "params": {
         "op": "pick"
@@ -280,107 +280,107 @@
       "id": "epi_transmit",
       "defType": "meta/subpatch",
       "position": {
-        "x": 3428,
-        "y": 706
+        "x": 3382,
+        "y": 756
       },
       "params": {
         "label": "Infection",
-        "width": 3841,
-        "height": 1352
+        "width": 3506,
+        "height": 1485
       },
-      "width": 3841,
-      "height": 1352,
+      "width": 3506,
+      "height": 1485,
       "ports": [
         {
           "id": "s",
           "name": "status",
           "type": "number",
           "direction": "input",
-          "y": 244
+          "y": 295
         },
         {
           "id": "p",
           "name": "positions",
           "type": "vec2",
           "direction": "input",
-          "y": 331
+          "y": 363
         },
         {
           "id": "q",
           "name": "nearest infected",
           "type": "vec2",
           "direction": "input",
-          "y": 269
+          "y": 315
         },
         {
           "id": "r",
           "name": "radius",
           "type": "number",
           "direction": "input",
-          "y": 311
+          "y": 343
         },
         {
           "id": "h",
           "name": "frame step",
           "type": "number",
           "direction": "input",
-          "y": 1145
+          "y": 1243
         },
         {
           "id": "pr",
           "name": "mouse down",
           "type": "boolean",
           "direction": "input",
-          "y": 351
+          "y": 383
         },
         {
           "id": "m",
           "name": "mouse",
           "type": "vec2",
           "direction": "input",
-          "y": 449
+          "y": 484
         },
         {
           "id": "k",
           "name": "sick time",
           "type": "number",
           "direction": "input",
-          "y": 975
+          "y": 972
         },
         {
           "id": "rec",
           "name": "recover",
           "type": "number",
           "direction": "input",
-          "y": 849
+          "y": 912
         },
         {
           "id": "w",
           "name": "waning",
           "type": "number",
           "direction": "input",
-          "y": 1271
+          "y": 1386
         },
         {
           "id": "ids",
           "name": "person",
           "type": "number",
           "direction": "input",
-          "y": 575
+          "y": 628
         },
         {
           "id": "value",
           "name": "next status",
           "type": "number",
           "direction": "output",
-          "y": 499
+          "y": 572
         },
         {
           "id": "sick",
           "name": "next sick time",
           "type": "number",
           "direction": "output",
-          "y": 412
+          "y": 702
         }
       ]
     },
@@ -388,8 +388,8 @@
       "id": "epi_wpos",
       "defType": "state/write-spread",
       "position": {
-        "x": 1533,
-        "y": 767
+        "x": 1421,
+        "y": 718
       },
       "params": {
         "slot": 1
@@ -402,8 +402,8 @@
       "id": "epi_wstatus",
       "defType": "state/write-spread",
       "position": {
-        "x": 3741,
-        "y": 731
+        "x": 3685,
+        "y": 977
       },
       "params": {
         "slot": 2
@@ -416,8 +416,8 @@
       "id": "epi_wsick",
       "defType": "state/write-spread",
       "position": {
-        "x": 3741,
-        "y": 857
+        "x": 3685,
+        "y": 1103
       },
       "params": {
         "slot": 3
@@ -430,8 +430,8 @@
       "id": "epi_countS",
       "defType": "spread/count-where",
       "position": {
-        "x": 1494,
-        "y": 893
+        "x": 1392,
+        "y": 908
       },
       "params": {},
       "portValues": {}
@@ -440,8 +440,8 @@
       "id": "epi_countI",
       "defType": "spread/count-where",
       "position": {
-        "x": 1494,
-        "y": 1366
+        "x": 1392,
+        "y": 1453
       },
       "params": {},
       "portValues": {}
@@ -450,8 +450,8 @@
       "id": "epi_countR",
       "defType": "spread/count-where",
       "position": {
-        "x": 1494,
-        "y": 1551
+        "x": 1392,
+        "y": 1575
       },
       "params": {},
       "portValues": {}
@@ -460,8 +460,8 @@
       "id": "epi_rhistS",
       "defType": "state/read-spread",
       "position": {
-        "x": 2839,
-        "y": 335
+        "x": 2797,
+        "y": 369
       },
       "params": {
         "slot": 4
@@ -474,8 +474,8 @@
       "id": "epi_takeS",
       "defType": "spread/sublist",
       "position": {
-        "x": 2831,
-        "y": 461
+        "x": 2795,
+        "y": 512
       },
       "params": {
         "op": "take"
@@ -486,8 +486,8 @@
       "id": "epi_histS",
       "defType": "spread/combine",
       "position": {
-        "x": 3126,
-        "y": 360
+        "x": 3091,
+        "y": 475
       },
       "params": {
         "op": "concat"
@@ -498,8 +498,8 @@
       "id": "epi_lenS",
       "defType": "spread/count",
       "position": {
-        "x": 3437,
-        "y": 396
+        "x": 3391,
+        "y": 603
       },
       "params": {},
       "portValues": {}
@@ -508,8 +508,8 @@
       "id": "epi_capS",
       "defType": "spread/sublist",
       "position": {
-        "x": 4292,
-        "y": 292
+        "x": 4254,
+        "y": 706
       },
       "params": {
         "op": "skip"
@@ -520,8 +520,8 @@
       "id": "epi_whistS",
       "defType": "state/write-spread",
       "position": {
-        "x": 4806,
-        "y": 211
+        "x": 4741,
+        "y": 802
       },
       "params": {
         "slot": 4
@@ -534,8 +534,8 @@
       "id": "epi_rhistI",
       "defType": "state/read-spread",
       "position": {
-        "x": 2839,
-        "y": 1075
+        "x": 2797,
+        "y": 1456
       },
       "params": {
         "slot": 5
@@ -548,8 +548,8 @@
       "id": "epi_takeI",
       "defType": "spread/sublist",
       "position": {
-        "x": 2831,
-        "y": 1201
+        "x": 2795,
+        "y": 1599
       },
       "params": {
         "op": "take"
@@ -560,8 +560,8 @@
       "id": "epi_histI",
       "defType": "spread/combine",
       "position": {
-        "x": 3126,
-        "y": 1262
+        "x": 3091,
+        "y": 1568
       },
       "params": {
         "op": "concat"
@@ -572,8 +572,8 @@
       "id": "epi_lenI",
       "defType": "spread/count",
       "position": {
-        "x": 3437,
-        "y": 1296
+        "x": 3391,
+        "y": 1688
       },
       "params": {},
       "portValues": {}
@@ -582,8 +582,8 @@
       "id": "epi_capI",
       "defType": "spread/sublist",
       "position": {
-        "x": 4292,
-        "y": 1184
+        "x": 4254,
+        "y": 1685
       },
       "params": {
         "op": "skip"
@@ -594,8 +594,8 @@
       "id": "epi_whistI",
       "defType": "state/write-spread",
       "position": {
-        "x": 4806,
-        "y": 962
+        "x": 4741,
+        "y": 1981
       },
       "params": {
         "slot": 5
@@ -608,8 +608,8 @@
       "id": "epi_rhistR",
       "defType": "state/read-spread",
       "position": {
-        "x": 2839,
-        "y": 1349
+        "x": 2797,
+        "y": 1147
       },
       "params": {
         "slot": 6
@@ -622,8 +622,8 @@
       "id": "epi_takeR",
       "defType": "spread/sublist",
       "position": {
-        "x": 2831,
-        "y": 1475
+        "x": 2795,
+        "y": 1290
       },
       "params": {
         "op": "take"
@@ -634,8 +634,8 @@
       "id": "epi_histR",
       "defType": "spread/combine",
       "position": {
-        "x": 3126,
-        "y": 1410
+        "x": 3091,
+        "y": 1365
       },
       "params": {
         "op": "concat"
@@ -646,8 +646,8 @@
       "id": "epi_lenR",
       "defType": "spread/count",
       "position": {
-        "x": 3437,
-        "y": 1454
+        "x": 3391,
+        "y": 1483
       },
       "params": {},
       "portValues": {}
@@ -656,8 +656,8 @@
       "id": "epi_capR",
       "defType": "spread/sublist",
       "position": {
-        "x": 4292,
-        "y": 1369
+        "x": 4254,
+        "y": 1472
       },
       "params": {
         "op": "skip"
@@ -668,8 +668,8 @@
       "id": "epi_whistR",
       "defType": "state/write-spread",
       "position": {
-        "x": 4806,
-        "y": 1636
+        "x": 4741,
+        "y": 1855
       },
       "params": {
         "slot": 6
@@ -682,8 +682,8 @@
       "id": "epi_boxStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 4306,
-        "y": 55
+        "x": 4258,
+        "y": 220
       },
       "params": {},
       "portValues": {
@@ -700,8 +700,8 @@
       "id": "epi_boxNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 4813,
-        "y": 107
+        "x": 4758,
+        "y": 311
       },
       "params": {},
       "portValues": {}
@@ -710,8 +710,8 @@
       "id": "epi_box",
       "defType": "draw/rect",
       "position": {
-        "x": 5276,
-        "y": 339
+        "x": 5241,
+        "y": 571
       },
       "params": {
         "anchor": "center"
@@ -730,12 +730,12 @@
       "id": "epi_reachEach",
       "defType": "region/foreach",
       "position": {
-        "x": 1852,
+        "x": 1754,
         "y": 22
       },
       "params": {
-        "width": 801,
-        "height": 407,
+        "width": 836,
+        "height": 441,
         "label": "ForEach infected"
       },
       "ports": [
@@ -751,18 +751,18 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 105
+          "y": 274
         }
       ],
-      "width": 801,
-      "height": 407
+      "width": 836,
+      "height": 441
     },
     {
       "id": "epi_reachStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 139,
-        "y": 245
+        "x": 148,
+        "y": 261
       },
       "params": {},
       "parentId": "epi_reachEach",
@@ -780,8 +780,8 @@
       "id": "epi_reachNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 399,
-        "y": 200
+        "x": 405,
+        "y": 269
       },
       "params": {},
       "parentId": "epi_reachEach",
@@ -791,8 +791,8 @@
       "id": "epi_reach",
       "defType": "draw/ellipse",
       "position": {
-        "x": 590,
-        "y": 68
+        "x": 601,
+        "y": 124
       },
       "params": {},
       "parentId": "epi_reachEach",
@@ -802,12 +802,12 @@
       "id": "epi_people",
       "defType": "region/foreach",
       "position": {
-        "x": 4594,
-        "y": 463
+        "x": 4525,
+        "y": 455
       },
       "params": {
-        "width": 526,
-        "height": 281,
+        "width": 554,
+        "height": 299,
         "label": "ForEach person"
       },
       "ports": [
@@ -823,7 +823,7 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 89
+          "y": 209
         },
         {
           "id": "c",
@@ -840,8 +840,8 @@
           "y": 123
         }
       ],
-      "width": 526,
-      "height": 281
+      "width": 554,
+      "height": 299
     },
     {
       "id": "epi_personFill",
@@ -858,8 +858,8 @@
       "id": "epi_person",
       "defType": "draw/ellipse",
       "position": {
-        "x": 315,
-        "y": 52
+        "x": 319,
+        "y": 59
       },
       "params": {},
       "parentId": "epi_people",
@@ -869,30 +869,30 @@
       "id": "epi_chartS",
       "defType": "meta/subpatch",
       "position": {
-        "x": 4750,
-        "y": 337
+        "x": 4695,
+        "y": 928
       },
       "params": {
         "label": "Chart · susceptible",
-        "width": 1632,
-        "height": 379
+        "width": 1642,
+        "height": 403
       },
-      "width": 1632,
-      "height": 379,
+      "width": 1642,
+      "height": 403,
       "ports": [
         {
           "id": "f",
           "name": "share susceptible",
           "type": "number",
           "direction": "input",
-          "y": 246
+          "y": 186
         },
         {
           "id": "value",
           "name": "points",
           "type": "vec2",
           "direction": "output",
-          "y": 140
+          "y": 305
         }
       ]
     },
@@ -900,8 +900,8 @@
       "id": "epi_lineSStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 4790,
-        "y": 792
+        "x": 4743,
+        "y": 1049
       },
       "params": {},
       "portValues": {
@@ -918,8 +918,8 @@
       "id": "epi_lineS",
       "defType": "draw/polygon",
       "position": {
-        "x": 5285,
-        "y": 673
+        "x": 5251,
+        "y": 1018
       },
       "params": {},
       "portValues": {
@@ -930,30 +930,30 @@
       "id": "epi_chartR",
       "defType": "meta/subpatch",
       "position": {
-        "x": 4754,
-        "y": 1088
+        "x": 4699,
+        "y": 1237
       },
       "params": {
         "label": "Chart · recovered",
-        "width": 1632,
-        "height": 379
+        "width": 1642,
+        "height": 403
       },
-      "width": 1632,
-      "height": 379,
+      "width": 1642,
+      "height": 403,
       "ports": [
         {
           "id": "f",
           "name": "share recovered",
           "type": "number",
           "direction": "input",
-          "y": 246
+          "y": 186
         },
         {
           "id": "value",
           "name": "points",
           "type": "vec2",
           "direction": "output",
-          "y": 140
+          "y": 305
         }
       ]
     },
@@ -961,8 +961,8 @@
       "id": "epi_lineRStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 4790,
-        "y": 1192
+        "x": 4743,
+        "y": 1358
       },
       "params": {},
       "portValues": {
@@ -979,8 +979,8 @@
       "id": "epi_lineR",
       "defType": "draw/polygon",
       "position": {
-        "x": 5285,
-        "y": 1019
+        "x": 5251,
+        "y": 1232
       },
       "params": {},
       "portValues": {
@@ -991,30 +991,30 @@
       "id": "epi_chartI",
       "defType": "meta/subpatch",
       "position": {
-        "x": 4760,
-        "y": 1362
+        "x": 4705,
+        "y": 1546
       },
       "params": {
         "label": "Chart · infected",
-        "width": 1632,
-        "height": 379
+        "width": 1642,
+        "height": 403
       },
-      "width": 1632,
-      "height": 379,
+      "width": 1642,
+      "height": 403,
       "ports": [
         {
           "id": "f",
           "name": "share infected",
           "type": "number",
           "direction": "input",
-          "y": 246
+          "y": 186
         },
         {
           "id": "value",
           "name": "points",
           "type": "vec2",
           "direction": "output",
-          "y": 140
+          "y": 305
         }
       ]
     },
@@ -1022,8 +1022,8 @@
       "id": "epi_lineIStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 4790,
-        "y": 1466
+        "x": 4743,
+        "y": 1667
       },
       "params": {},
       "portValues": {
@@ -1040,8 +1040,8 @@
       "id": "epi_lineI",
       "defType": "draw/polygon",
       "position": {
-        "x": 5285,
-        "y": 1189
+        "x": 5251,
+        "y": 1445
       },
       "params": {},
       "portValues": {
@@ -1052,8 +1052,8 @@
       "id": "epi_fmtS",
       "defType": "string/format-number",
       "position": {
-        "x": 2177,
-        "y": 1420
+        "x": 2098,
+        "y": 1497
       },
       "params": {
         "mode": "number"
@@ -1067,8 +1067,8 @@
       "id": "epi_fmtI",
       "defType": "string/format-number",
       "position": {
-        "x": 2177,
-        "y": 1678
+        "x": 2098,
+        "y": 1773
       },
       "params": {
         "mode": "number"
@@ -1082,8 +1082,8 @@
       "id": "epi_fmtR",
       "defType": "string/format-number",
       "position": {
-        "x": 2177,
-        "y": 1936
+        "x": 2098,
+        "y": 2048
       },
       "params": {
         "mode": "number"
@@ -1097,8 +1097,8 @@
       "id": "epi_hudParts",
       "defType": "spread/merge",
       "position": {
-        "x": 2828,
-        "y": 1658
+        "x": 2773,
+        "y": 1917
       },
       "params": {
         "slotCount": 3
@@ -1111,8 +1111,8 @@
       "id": "epi_hudText",
       "defType": "string/concat",
       "position": {
-        "x": 3157,
-        "y": 1665
+        "x": 3099,
+        "y": 1946
       },
       "params": {
         "separator": "    "
@@ -1125,8 +1125,8 @@
       "id": "epi_hudFill",
       "defType": "style/fill",
       "position": {
-        "x": 3140,
-        "y": 1791
+        "x": 3095,
+        "y": 2090
       },
       "params": {},
       "portValues": {
@@ -1142,8 +1142,8 @@
       "id": "epi_hud",
       "defType": "draw/text",
       "position": {
-        "x": 3452,
-        "y": 1687
+        "x": 3401,
+        "y": 2001
       },
       "params": {
         "size": 13,
@@ -1162,8 +1162,8 @@
       "id": "epi_scene",
       "defType": "transform/group",
       "position": {
-        "x": 5558,
-        "y": 732
+        "x": 5526,
+        "y": 1033
       },
       "params": {
         "slotCount": 7
@@ -1174,8 +1174,8 @@
       "id": "epi_r",
       "defType": "render/renderer",
       "position": {
-        "x": 5822,
-        "y": 732
+        "x": 5790,
+        "y": 1190
       },
       "params": {
         "width": 700,
@@ -1202,8 +1202,8 @@
       "id": "epi_firstThree",
       "defType": "logic/compare",
       "position": {
-        "x": 261,
-        "y": 887
+        "x": 262,
+        "y": 794
       },
       "params": {
         "op": "less"
@@ -1216,8 +1216,8 @@
       "id": "epi_status0",
       "defType": "logic/select",
       "position": {
-        "x": 593,
-        "y": 890
+        "x": 540,
+        "y": 848
       },
       "params": {},
       "portValues": {
@@ -1229,8 +1229,8 @@
       "id": "epi_zero",
       "defType": "spread/repeat",
       "position": {
-        "x": 2841,
-        "y": 949
+        "x": 2786,
+        "y": 1003
       },
       "params": {},
       "portValues": {
@@ -1242,13 +1242,13 @@
       "id": "epi_wander",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1206,
-        "y": 678
+        "x": 1108,
+        "y": 381
       },
       "params": {
         "label": "Wander",
-        "width": 2248,
-        "height": 695
+        "width": 2212,
+        "height": 741
       },
       "ports": [
         {
@@ -1256,60 +1256,60 @@
           "name": "positions",
           "type": "vec2",
           "direction": "input",
-          "y": 65
+          "y": 77
         },
         {
           "id": "status",
           "name": "status",
           "type": "number",
           "direction": "input",
-          "y": 576
+          "y": 604
         },
         {
           "id": "speed",
           "name": "speed",
           "type": "number",
           "direction": "input",
-          "y": 345
+          "y": 356
         },
         {
           "id": "lockdown",
           "name": "lockdown",
           "type": "boolean",
           "direction": "input",
-          "y": 406
+          "y": 417
         },
         {
           "id": "h",
           "name": "frame step",
           "type": "number",
           "direction": "input",
-          "y": 641
+          "y": 687
         },
         {
           "id": "ids",
           "name": "person",
           "type": "number",
           "direction": "input",
-          "y": 122
+          "y": 114
         },
         {
           "id": "moved",
           "name": "new positions",
           "type": "vec2",
           "direction": "output",
-          "y": 181
+          "y": 456
         }
       ],
-      "width": 2248,
-      "height": 695
+      "width": 2212,
+      "height": 741
     },
     {
       "id": "epi_multiply",
       "defType": "math/math",
       "position": {
-        "x": 136,
-        "y": 63
+        "x": 131,
+        "y": 55
       },
       "params": {
         "op": "multiply",
@@ -1324,7 +1324,7 @@
       "id": "epi_add",
       "defType": "math/math",
       "position": {
-        "x": 414,
+        "x": 407,
         "y": 40
       },
       "params": {
@@ -1340,8 +1340,8 @@
       "id": "epi_time",
       "defType": "time/seconds",
       "position": {
-        "x": 178,
-        "y": 211
+        "x": 173,
+        "y": 227
       },
       "params": {},
       "parentId": "epi_wander"
@@ -1350,8 +1350,8 @@
       "id": "epi_multiply2",
       "defType": "math/math",
       "position": {
-        "x": 414,
-        "y": 188
+        "x": 407,
+        "y": 206
       },
       "params": {
         "op": "multiply",
@@ -1366,8 +1366,8 @@
       "id": "epi_heading",
       "defType": "noise/noise",
       "position": {
-        "x": 691,
-        "y": 67
+        "x": 704,
+        "y": 104
       },
       "params": {
         "mode": "perlin"
@@ -1378,8 +1378,8 @@
       "id": "epi_multiply3",
       "defType": "math/math",
       "position": {
-        "x": 971,
-        "y": 160
+        "x": 961,
+        "y": 342
       },
       "params": {
         "op": "multiply",
@@ -1394,8 +1394,8 @@
       "id": "epi_lockdownPace",
       "defType": "logic/select",
       "position": {
-        "x": 168,
-        "y": 369
+        "x": 169,
+        "y": 380
       },
       "params": {},
       "parentId": "epi_wander",
@@ -1408,8 +1408,8 @@
       "id": "epi_isSick",
       "defType": "logic/compare",
       "position": {
-        "x": 130,
-        "y": 517
+        "x": 144,
+        "y": 545
       },
       "params": {
         "op": "equal"
@@ -1423,8 +1423,8 @@
       "id": "epi_sickPace",
       "defType": "logic/select",
       "position": {
-        "x": 446,
-        "y": 484
+        "x": 445,
+        "y": 537
       },
       "params": {},
       "parentId": "epi_wander",
@@ -1437,8 +1437,8 @@
       "id": "epi_multiply4",
       "defType": "math/math",
       "position": {
-        "x": 414,
-        "y": 336
+        "x": 407,
+        "y": 371
       },
       "params": {
         "op": "multiply",
@@ -1450,8 +1450,8 @@
       "id": "epi_multiply5",
       "defType": "math/math",
       "position": {
-        "x": 690,
-        "y": 391
+        "x": 687,
+        "y": 478
       },
       "params": {
         "op": "multiply",
@@ -1463,8 +1463,8 @@
       "id": "epi_stride",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 1253,
-        "y": 276
+        "x": 1234,
+        "y": 428
       },
       "params": {},
       "parentId": "epi_wander"
@@ -1473,8 +1473,8 @@
       "id": "epi_strideStep",
       "defType": "vec2/math",
       "position": {
-        "x": 1477,
-        "y": 281
+        "x": 1460,
+        "y": 411
       },
       "params": {
         "op": "scale"
@@ -1485,8 +1485,8 @@
       "id": "epi_walkStep",
       "defType": "math/math",
       "position": {
-        "x": 1766,
-        "y": 147
+        "x": 1720,
+        "y": 287
       },
       "params": {
         "op": "add",
@@ -1498,8 +1498,8 @@
       "id": "epi_wrap",
       "defType": "math/wrap",
       "position": {
-        "x": 2030,
-        "y": 145
+        "x": 1984,
+        "y": 353
       },
       "params": {
         "valueType": "vec2"
@@ -1520,8 +1520,8 @@
       "id": "epi_isInfected",
       "defType": "logic/compare",
       "position": {
-        "x": 1192,
-        "y": 466
+        "x": 1111,
+        "y": 613
       },
       "params": {
         "op": "equal"
@@ -1534,8 +1534,8 @@
       "id": "epi_frame",
       "defType": "time/frame",
       "position": {
-        "x": 184,
-        "y": 664
+        "x": 181,
+        "y": 734
       },
       "params": {},
       "parentId": "epi_transmit"
@@ -1544,8 +1544,8 @@
       "id": "epi_multiply6",
       "defType": "math/math",
       "position": {
-        "x": 146,
-        "y": 516
+        "x": 143,
+        "y": 569
       },
       "params": {
         "op": "multiply",
@@ -1560,8 +1560,8 @@
       "id": "epi_multiply7",
       "defType": "math/math",
       "position": {
-        "x": 441,
-        "y": 613
+        "x": 420,
+        "y": 690
       },
       "params": {
         "op": "multiply",
@@ -1576,8 +1576,8 @@
       "id": "epi_add2",
       "defType": "math/math",
       "position": {
-        "x": 724,
-        "y": 542
+        "x": 697,
+        "y": 631
       },
       "params": {
         "op": "add",
@@ -1589,8 +1589,8 @@
       "id": "epi_diceSin",
       "defType": "math/math",
       "position": {
-        "x": 1000,
-        "y": 544
+        "x": 973,
+        "y": 646
       },
       "params": {
         "op": "sin",
@@ -1602,8 +1602,8 @@
       "id": "epi_multiply8",
       "defType": "math/math",
       "position": {
-        "x": 1258,
-        "y": 546
+        "x": 1194,
+        "y": 639
       },
       "params": {
         "op": "multiply",
@@ -1618,8 +1618,8 @@
       "id": "epi_dice",
       "defType": "math/math",
       "position": {
-        "x": 1534,
-        "y": 550
+        "x": 1470,
+        "y": 733
       },
       "params": {
         "op": "fract",
@@ -1631,8 +1631,8 @@
       "id": "epi_gap",
       "defType": "vec2/math",
       "position": {
-        "x": 140,
-        "y": 188
+        "x": 156,
+        "y": 206
       },
       "params": {
         "op": "distance"
@@ -1643,8 +1643,8 @@
       "id": "epi_close",
       "defType": "logic/compare",
       "position": {
-        "x": 435,
-        "y": 221
+        "x": 433,
+        "y": 267
       },
       "params": {
         "op": "less"
@@ -1655,8 +1655,8 @@
       "id": "epi_multiply9",
       "defType": "math/math",
       "position": {
-        "x": 146,
-        "y": 916
+        "x": 143,
+        "y": 1162
       },
       "params": {
         "op": "multiply",
@@ -1671,8 +1671,8 @@
       "id": "epi_unlucky",
       "defType": "logic/compare",
       "position": {
-        "x": 1798,
-        "y": 499
+        "x": 1694,
+        "y": 691
       },
       "params": {
         "op": "less"
@@ -1683,8 +1683,8 @@
       "id": "epi_toMouse",
       "defType": "vec2/math",
       "position": {
-        "x": 140,
-        "y": 368
+        "x": 156,
+        "y": 403
       },
       "params": {
         "op": "distance"
@@ -1695,8 +1695,8 @@
       "id": "epi_underMouse",
       "defType": "logic/compare",
       "position": {
-        "x": 435,
-        "y": 371
+        "x": 433,
+        "y": 436
       },
       "params": {
         "op": "less"
@@ -1711,7 +1711,7 @@
       "defType": "logic/logic",
       "position": {
         "x": 739,
-        "y": 313
+        "y": 407
       },
       "params": {
         "op": "and"
@@ -1722,8 +1722,8 @@
       "id": "epi_contact",
       "defType": "logic/logic",
       "position": {
-        "x": 2093,
-        "y": 335
+        "x": 1970,
+        "y": 468
       },
       "params": {
         "op": "and"
@@ -1734,8 +1734,8 @@
       "id": "epi_caught",
       "defType": "logic/logic",
       "position": {
-        "x": 2335,
-        "y": 353
+        "x": 2157,
+        "y": 483
       },
       "params": {
         "op": "or"
@@ -1746,8 +1746,8 @@
       "id": "epi_ifSusceptible",
       "defType": "logic/select",
       "position": {
-        "x": 2578,
-        "y": 347
+        "x": 2355,
+        "y": 438
       },
       "params": {},
       "parentId": "epi_transmit",
@@ -1760,8 +1760,8 @@
       "id": "epi_overIt",
       "defType": "logic/compare",
       "position": {
-        "x": 139,
-        "y": 768
+        "x": 156,
+        "y": 831
       },
       "params": {
         "op": "greater"
@@ -1772,8 +1772,8 @@
       "id": "epi_ifInfected",
       "defType": "logic/select",
       "position": {
-        "x": 2578,
-        "y": 643
+        "x": 2355,
+        "y": 603
       },
       "params": {},
       "parentId": "epi_transmit",
@@ -1786,8 +1786,8 @@
       "id": "epi_multiply10",
       "defType": "math/math",
       "position": {
-        "x": 146,
-        "y": 1212
+        "x": 143,
+        "y": 1327
       },
       "params": {
         "op": "multiply",
@@ -1799,8 +1799,8 @@
       "id": "epi_waned",
       "defType": "logic/compare",
       "position": {
-        "x": 1798,
-        "y": 647
+        "x": 1694,
+        "y": 856
       },
       "params": {
         "op": "less"
@@ -1811,8 +1811,8 @@
       "id": "epi_ifRecovered",
       "defType": "logic/select",
       "position": {
-        "x": 2578,
-        "y": 495
+        "x": 2355,
+        "y": 769
       },
       "params": {},
       "parentId": "epi_transmit",
@@ -1825,8 +1825,8 @@
       "id": "epi_nextStatus",
       "defType": "logic/switch",
       "position": {
-        "x": 2809,
-        "y": 374
+        "x": 2583,
+        "y": 479
       },
       "params": {
         "mode": "index",
@@ -1839,8 +1839,8 @@
       "id": "epi_staysA",
       "defType": "logic/compare",
       "position": {
-        "x": 3086,
-        "y": 331
+        "x": 2862,
+        "y": 497
       },
       "params": {
         "op": "equal"
@@ -1854,7 +1854,7 @@
       "id": "epi_staysB",
       "defType": "logic/compare",
       "position": {
-        "x": 139,
+        "x": 156,
         "y": 40
       },
       "params": {
@@ -1869,8 +1869,8 @@
       "id": "epi_staysSick",
       "defType": "logic/logic",
       "position": {
-        "x": 3375,
-        "y": 282
+        "x": 3112,
+        "y": 462
       },
       "params": {
         "op": "and"
@@ -1881,8 +1881,8 @@
       "id": "epi_add3",
       "defType": "math/math",
       "position": {
-        "x": 146,
-        "y": 1064
+        "x": 143,
+        "y": 996
       },
       "params": {
         "op": "add",
@@ -1894,8 +1894,8 @@
       "id": "epi_sickNext",
       "defType": "logic/select",
       "position": {
-        "x": 3624,
-        "y": 377
+        "x": 3302,
+        "y": 598
       },
       "params": {},
       "parentId": "epi_transmit",
@@ -1907,8 +1907,8 @@
       "id": "epi_isS",
       "defType": "logic/compare",
       "position": {
-        "x": 1192,
-        "y": 892
+        "x": 1111,
+        "y": 874
       },
       "params": {
         "op": "equal"
@@ -1921,8 +1921,8 @@
       "id": "epi_isI",
       "defType": "logic/compare",
       "position": {
-        "x": 1192,
-        "y": 1252
+        "x": 1111,
+        "y": 1237
       },
       "params": {
         "op": "equal"
@@ -1935,8 +1935,8 @@
       "id": "epi_isR",
       "defType": "logic/compare",
       "position": {
-        "x": 1192,
-        "y": 1400
+        "x": 1111,
+        "y": 1403
       },
       "params": {
         "op": "equal"
@@ -1949,8 +1949,8 @@
       "id": "epi_frame2",
       "defType": "time/frame",
       "position": {
-        "x": 883,
-        "y": 1134
+        "x": 804,
+        "y": 1093
       },
       "params": {}
     },
@@ -1958,8 +1958,8 @@
       "id": "epi_frameMod",
       "defType": "math/math",
       "position": {
-        "x": 1207,
-        "y": 1104
+        "x": 1126,
+        "y": 1072
       },
       "params": {
         "op": "mod",
@@ -1973,7 +1973,7 @@
       "id": "epi_tenthFrame",
       "defType": "logic/compare",
       "position": {
-        "x": 1493,
+        "x": 1410,
         "y": 1061
       },
       "params": {
@@ -1987,8 +1987,8 @@
       "id": "epi_sampleNow",
       "defType": "convert/convert",
       "position": {
-        "x": 2182,
-        "y": 998
+        "x": 2121,
+        "y": 1023
       },
       "params": {
         "to": "number"
@@ -1998,8 +1998,8 @@
       "id": "epi_fracS",
       "defType": "math/math",
       "position": {
-        "x": 2169,
-        "y": 477
+        "x": 2088,
+        "y": 511
       },
       "params": {
         "op": "divide",
@@ -2013,8 +2013,8 @@
       "id": "epi_subtract",
       "defType": "math/math",
       "position": {
-        "x": 3707,
-        "y": 392
+        "x": 3661,
+        "y": 622
       },
       "params": {
         "op": "subtract",
@@ -2028,8 +2028,8 @@
       "id": "epi_dropS",
       "defType": "math/math",
       "position": {
-        "x": 4010,
-        "y": 366
+        "x": 3963,
+        "y": 696
       },
       "params": {
         "op": "max",
@@ -2043,8 +2043,8 @@
       "id": "epi_fracI",
       "defType": "math/math",
       "position": {
-        "x": 2169,
-        "y": 1124
+        "x": 2088,
+        "y": 1332
       },
       "params": {
         "op": "divide",
@@ -2058,8 +2058,8 @@
       "id": "epi_subtract2",
       "defType": "math/math",
       "position": {
-        "x": 3707,
-        "y": 1289
+        "x": 3661,
+        "y": 1700
       },
       "params": {
         "op": "subtract",
@@ -2073,8 +2073,8 @@
       "id": "epi_dropI",
       "defType": "math/math",
       "position": {
-        "x": 4010,
-        "y": 1261
+        "x": 3963,
+        "y": 1720
       },
       "params": {
         "op": "max",
@@ -2088,8 +2088,8 @@
       "id": "epi_fracR",
       "defType": "math/math",
       "position": {
-        "x": 2169,
-        "y": 1272
+        "x": 2088,
+        "y": 1166
       },
       "params": {
         "op": "divide",
@@ -2103,8 +2103,8 @@
       "id": "epi_subtract3",
       "defType": "math/math",
       "position": {
-        "x": 3707,
-        "y": 1456
+        "x": 3661,
+        "y": 1492
       },
       "params": {
         "op": "subtract",
@@ -2118,8 +2118,8 @@
       "id": "epi_dropR",
       "defType": "math/math",
       "position": {
-        "x": 4010,
-        "y": 1437
+        "x": 3963,
+        "y": 1509
       },
       "params": {
         "op": "max",
@@ -2134,7 +2134,7 @@
       "defType": "math/math",
       "position": {
         "x": 128,
-        "y": 97
+        "y": 95
       },
       "params": {
         "op": "multiply",
@@ -2149,8 +2149,8 @@
       "id": "epi_dotInfected",
       "defType": "logic/compare",
       "position": {
-        "x": 3701,
-        "y": 583
+        "x": 3674,
+        "y": 787
       },
       "params": {
         "op": "equal"
@@ -2163,8 +2163,8 @@
       "id": "epi_dotHealthy",
       "defType": "logic/compare",
       "position": {
-        "x": 4004,
-        "y": 609
+        "x": 3976,
+        "y": 862
       },
       "params": {
         "op": "equal"
@@ -2177,8 +2177,8 @@
       "id": "epi_sickOrImmune",
       "defType": "logic/select",
       "position": {
-        "x": 4042,
-        "y": 757
+        "x": 4001,
+        "y": 1027
       },
       "params": {},
       "portValues": {
@@ -2200,8 +2200,8 @@
       "id": "epi_stateColour",
       "defType": "logic/select",
       "position": {
-        "x": 4321,
-        "y": 685
+        "x": 4270,
+        "y": 872
       },
       "params": {},
       "portValues": {
@@ -2217,8 +2217,8 @@
       "id": "epi_dotSize",
       "defType": "logic/select",
       "position": {
-        "x": 4321,
-        "y": 537
+        "x": 4270,
+        "y": 541
       },
       "params": {},
       "portValues": {
@@ -2230,8 +2230,8 @@
       "id": "epi_count",
       "defType": "spread/count",
       "position": {
-        "x": 149,
-        "y": 135
+        "x": 150,
+        "y": 66
       },
       "params": {},
       "parentId": "epi_chartS"
@@ -2240,8 +2240,8 @@
       "id": "epi_chartSIndex",
       "defType": "spread/range",
       "position": {
-        "x": 398,
-        "y": 139
+        "x": 401,
+        "y": 75
       },
       "params": {},
       "parentId": "epi_chartS"
@@ -2250,8 +2250,8 @@
       "id": "epi_multiply11",
       "defType": "math/math",
       "position": {
-        "x": 633,
-        "y": 99
+        "x": 637,
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -2266,8 +2266,8 @@
       "id": "epi_divide",
       "defType": "math/math",
       "position": {
-        "x": 897,
-        "y": 80
+        "x": 904,
+        "y": 71
       },
       "params": {
         "op": "divide",
@@ -2282,8 +2282,8 @@
       "id": "epi_add4",
       "defType": "math/math",
       "position": {
-        "x": 1162,
-        "y": 40
+        "x": 1170,
+        "y": 80
       },
       "params": {
         "op": "add",
@@ -2299,7 +2299,7 @@
       "defType": "math/math",
       "position": {
         "x": 134,
-        "y": 239
+        "y": 188
       },
       "params": {
         "op": "multiply",
@@ -2314,8 +2314,8 @@
       "id": "epi_subtract4",
       "defType": "math/math",
       "position": {
-        "x": 1162,
-        "y": 188
+        "x": 1170,
+        "y": 245
       },
       "params": {
         "op": "subtract",
@@ -2330,8 +2330,8 @@
       "id": "epi_chartSPoint",
       "defType": "vec2/make",
       "position": {
-        "x": 1435,
-        "y": 103
+        "x": 1445,
+        "y": 221
       },
       "params": {},
       "parentId": "epi_chartS"
@@ -2340,8 +2340,8 @@
       "id": "epi_count2",
       "defType": "spread/count",
       "position": {
-        "x": 149,
-        "y": 135
+        "x": 150,
+        "y": 66
       },
       "params": {},
       "parentId": "epi_chartI"
@@ -2350,8 +2350,8 @@
       "id": "epi_chartIIndex",
       "defType": "spread/range",
       "position": {
-        "x": 398,
-        "y": 139
+        "x": 401,
+        "y": 75
       },
       "params": {},
       "parentId": "epi_chartI"
@@ -2360,8 +2360,8 @@
       "id": "epi_multiply13",
       "defType": "math/math",
       "position": {
-        "x": 633,
-        "y": 99
+        "x": 637,
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -2376,8 +2376,8 @@
       "id": "epi_divide2",
       "defType": "math/math",
       "position": {
-        "x": 897,
-        "y": 80
+        "x": 904,
+        "y": 71
       },
       "params": {
         "op": "divide",
@@ -2392,8 +2392,8 @@
       "id": "epi_add5",
       "defType": "math/math",
       "position": {
-        "x": 1162,
-        "y": 40
+        "x": 1170,
+        "y": 80
       },
       "params": {
         "op": "add",
@@ -2409,7 +2409,7 @@
       "defType": "math/math",
       "position": {
         "x": 134,
-        "y": 239
+        "y": 188
       },
       "params": {
         "op": "multiply",
@@ -2424,8 +2424,8 @@
       "id": "epi_subtract5",
       "defType": "math/math",
       "position": {
-        "x": 1162,
-        "y": 188
+        "x": 1170,
+        "y": 245
       },
       "params": {
         "op": "subtract",
@@ -2440,8 +2440,8 @@
       "id": "epi_chartIPoint",
       "defType": "vec2/make",
       "position": {
-        "x": 1435,
-        "y": 103
+        "x": 1445,
+        "y": 221
       },
       "params": {},
       "parentId": "epi_chartI"
@@ -2450,8 +2450,8 @@
       "id": "epi_count3",
       "defType": "spread/count",
       "position": {
-        "x": 149,
-        "y": 135
+        "x": 150,
+        "y": 66
       },
       "params": {},
       "parentId": "epi_chartR"
@@ -2460,8 +2460,8 @@
       "id": "epi_chartRIndex",
       "defType": "spread/range",
       "position": {
-        "x": 398,
-        "y": 139
+        "x": 401,
+        "y": 75
       },
       "params": {},
       "parentId": "epi_chartR"
@@ -2470,8 +2470,8 @@
       "id": "epi_multiply15",
       "defType": "math/math",
       "position": {
-        "x": 633,
-        "y": 99
+        "x": 637,
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -2486,8 +2486,8 @@
       "id": "epi_divide3",
       "defType": "math/math",
       "position": {
-        "x": 897,
-        "y": 80
+        "x": 904,
+        "y": 71
       },
       "params": {
         "op": "divide",
@@ -2502,8 +2502,8 @@
       "id": "epi_add6",
       "defType": "math/math",
       "position": {
-        "x": 1162,
-        "y": 40
+        "x": 1170,
+        "y": 80
       },
       "params": {
         "op": "add",
@@ -2519,7 +2519,7 @@
       "defType": "math/math",
       "position": {
         "x": 134,
-        "y": 239
+        "y": 188
       },
       "params": {
         "op": "multiply",
@@ -2534,8 +2534,8 @@
       "id": "epi_subtract6",
       "defType": "math/math",
       "position": {
-        "x": 1162,
-        "y": 188
+        "x": 1170,
+        "y": 245
       },
       "params": {
         "op": "subtract",
@@ -2550,8 +2550,8 @@
       "id": "epi_chartRPoint",
       "defType": "vec2/make",
       "position": {
-        "x": 1435,
-        "y": 103
+        "x": 1445,
+        "y": 221
       },
       "params": {},
       "parentId": "epi_chartR"

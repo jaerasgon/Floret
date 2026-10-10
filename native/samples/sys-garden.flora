@@ -31,7 +31,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 1267
+        "y": 1144
       },
       "params": {
         "value": 0.45,
@@ -48,8 +48,8 @@
       "id": "gdn_autoYear",
       "defType": "io/toggle",
       "position": {
-        "x": 1139,
-        "y": 950
+        "x": 1149,
+        "y": 1073
       },
       "params": {
         "value": true
@@ -63,7 +63,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 1398
+        "y": 1288
       },
       "params": {
         "value": 0.5,
@@ -81,7 +81,7 @@
       "defType": "io/bang",
       "position": {
         "x": 0,
-        "y": 955
+        "y": 815
       },
       "params": {},
       "portValues": {}
@@ -91,7 +91,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 42,
-        "y": 1535
+        "y": 1600
       },
       "params": {},
       "portValues": {}
@@ -100,8 +100,8 @@
       "id": "gdn_leafColours",
       "defType": "color/palette",
       "position": {
-        "x": 1667,
-        "y": 1094
+        "x": 1699,
+        "y": 1070
       },
       "params": {
         "stopCount": 6,
@@ -126,7 +126,7 @@
       "id": "gdn_skyColours",
       "defType": "color/palette",
       "position": {
-        "x": 1667,
+        "x": 1699,
         "y": 0
       },
       "params": {
@@ -150,8 +150,8 @@
       "id": "gdn_groundColours",
       "defType": "color/palette",
       "position": {
-        "x": 1667,
-        "y": 236
+        "x": 1699,
+        "y": 232
       },
       "params": {
         "stopCount": 5,
@@ -174,8 +174,8 @@
       "id": "gdn_leafColour",
       "defType": "color/gradient",
       "position": {
-        "x": 2039,
-        "y": 1226
+        "x": 2079,
+        "y": 1205
       },
       "params": {
         "space": "oklab"
@@ -186,8 +186,8 @@
       "id": "gdn_skyColour",
       "defType": "color/gradient",
       "position": {
-        "x": 2039,
-        "y": 154
+        "x": 2079,
+        "y": 146
       },
       "params": {
         "space": "oklab"
@@ -198,8 +198,8 @@
       "id": "gdn_groundColour",
       "defType": "color/gradient",
       "position": {
-        "x": 2039,
-        "y": 302
+        "x": 2079,
+        "y": 312
       },
       "params": {
         "space": "oklab"
@@ -210,8 +210,8 @@
       "id": "gdn_skyFill",
       "defType": "style/fill",
       "position": {
-        "x": 6121,
-        "y": 220
+        "x": 6267,
+        "y": 356
       },
       "params": {},
       "portValues": {}
@@ -220,8 +220,8 @@
       "id": "gdn_sky",
       "defType": "draw/rect",
       "position": {
-        "x": 6390,
-        "y": 357
+        "x": 6531,
+        "y": 638
       },
       "params": {
         "anchor": "center"
@@ -240,8 +240,8 @@
       "id": "gdn_sunFill",
       "defType": "style/fill",
       "position": {
-        "x": 6097,
-        "y": 414
+        "x": 6250,
+        "y": 588
       },
       "params": {},
       "portValues": {
@@ -257,8 +257,8 @@
       "id": "gdn_sun",
       "defType": "draw/ellipse",
       "position": {
-        "x": 6375,
-        "y": 549
+        "x": 6531,
+        "y": 848
       },
       "params": {},
       "portValues": {
@@ -274,8 +274,8 @@
       "id": "gdn_groundFill",
       "defType": "style/fill",
       "position": {
-        "x": 6121,
-        "y": 540
+        "x": 6267,
+        "y": 732
       },
       "params": {},
       "portValues": {}
@@ -284,8 +284,8 @@
       "id": "gdn_ground",
       "defType": "draw/rect",
       "position": {
-        "x": 6384,
-        "y": 741
+        "x": 6531,
+        "y": 1057
       },
       "params": {
         "anchor": "center"
@@ -304,8 +304,8 @@
       "id": "gdn_plantIds",
       "defType": "spread/range",
       "position": {
-        "x": 2047,
-        "y": 1057
+        "x": 2066,
+        "y": 789
       },
       "params": {
         "count": 5
@@ -318,12 +318,12 @@
       "id": "gdn_each",
       "defType": "region/foreach",
       "position": {
-        "x": 2386,
-        "y": 106
+        "x": 2424,
+        "y": 144
       },
       "params": {
-        "width": 3307,
-        "height": 1347,
+        "width": 3314,
+        "height": 1448,
         "label": "ForEach plant"
       },
       "ports": [
@@ -332,25 +332,25 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 683
+          "y": 707
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 310
+          "y": 763
         }
       ],
-      "width": 3307,
-      "height": 1347
+      "width": 3314,
+      "height": 1448
     },
     {
       "id": "gdn_bark",
       "defType": "style/stroke",
       "position": {
-        "x": 1542,
-        "y": 572
+        "x": 1586,
+        "y": 720
       },
       "params": {},
       "parentId": "gdn_each",
@@ -368,8 +368,8 @@
       "id": "gdn_lsystem",
       "defType": "geometry/lsystem",
       "position": {
-        "x": 1837,
-        "y": 668
+        "x": 1867,
+        "y": 873
       },
       "params": {},
       "parentId": "gdn_each",
@@ -390,8 +390,8 @@
       "id": "gdn_grow",
       "defType": "geometry/trim",
       "position": {
-        "x": 2110,
-        "y": 480
+        "x": 2130,
+        "y": 738
       },
       "params": {
         "mode": "sequence"
@@ -405,8 +405,8 @@
       "id": "gdn_leafColourSoft",
       "defType": "color/set-alpha",
       "position": {
-        "x": 199,
-        "y": 1081
+        "x": 203,
+        "y": 1146
       },
       "params": {},
       "parentId": "gdn_each",
@@ -418,8 +418,8 @@
       "id": "gdn_leafStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 482,
-        "y": 1113
+        "x": 476,
+        "y": 1254
       },
       "params": {},
       "parentId": "gdn_each",
@@ -429,8 +429,8 @@
       "id": "gdn_leafCap",
       "defType": "style/stroke-cap",
       "position": {
-        "x": 1857,
-        "y": 992
+        "x": 1868,
+        "y": 1264
       },
       "params": {},
       "parentId": "gdn_each",
@@ -442,8 +442,8 @@
       "id": "gdn_foliage",
       "defType": "geometry/trim",
       "position": {
-        "x": 2110,
-        "y": 738
+        "x": 2130,
+        "y": 1096
       },
       "params": {
         "mode": "sequence"
@@ -457,8 +457,8 @@
       "id": "gdn_plantBody",
       "defType": "transform/group",
       "position": {
-        "x": 2398,
-        "y": 568
+        "x": 2393,
+        "y": 992
       },
       "params": {
         "slotCount": 2
@@ -470,8 +470,8 @@
       "id": "gdn_bend",
       "defType": "transform/shear-x",
       "position": {
-        "x": 2686,
-        "y": 452
+        "x": 2685,
+        "y": 832
       },
       "params": {},
       "parentId": "gdn_each",
@@ -481,8 +481,8 @@
       "id": "gdn_plantHere",
       "defType": "transform/translate",
       "position": {
-        "x": 3085,
-        "y": 269
+        "x": 3092,
+        "y": 680
       },
       "params": {},
       "parentId": "gdn_each",
@@ -492,8 +492,8 @@
       "id": "gdn_facing",
       "defType": "transform/scale",
       "position": {
-        "x": 2893,
-        "y": 342
+        "x": 2896,
+        "y": 719
       },
       "params": {},
       "parentId": "gdn_each",
@@ -505,8 +505,8 @@
       "id": "gdn_windForce",
       "defType": "force/wind",
       "position": {
-        "x": 588,
-        "y": 1404
+        "x": 600,
+        "y": 1423
       },
       "params": {},
       "portValues": {
@@ -522,8 +522,8 @@
       "id": "gdn_airDrag",
       "defType": "force/drag",
       "position": {
-        "x": 601,
-        "y": 1574
+        "x": 617,
+        "y": 1610
       },
       "params": {},
       "portValues": {
@@ -534,8 +534,8 @@
       "id": "gdn_bounds",
       "defType": "particles/bounds",
       "position": {
-        "x": 1677,
-        "y": 1612
+        "x": 1720,
+        "y": 1489
       },
       "params": {
         "mode": "kill"
@@ -552,8 +552,8 @@
       "id": "gdn_world",
       "defType": "physics/world",
       "position": {
-        "x": 2049,
-        "y": 1522
+        "x": 2061,
+        "y": 1536
       },
       "params": {
         "integrator": "euler"
@@ -571,8 +571,8 @@
       "id": "gdn_forces",
       "defType": "spread/merge",
       "position": {
-        "x": 860,
-        "y": 1494
+        "x": 868,
+        "y": 1517
       },
       "params": {
         "slotCount": 2
@@ -585,8 +585,8 @@
       "id": "gdn_canopy",
       "defType": "geometry/scatter",
       "position": {
-        "x": 3939,
-        "y": 1501
+        "x": 4002,
+        "y": 1640
       },
       "params": {
         "mode": "random"
@@ -608,8 +608,8 @@
       "id": "gdn_leafEmitter",
       "defType": "particles/emitter",
       "position": {
-        "x": 5828,
-        "y": 1490
+        "x": 5884,
+        "y": 1681
       },
       "params": {
         "maxCount": 600,
@@ -633,8 +633,8 @@
       "id": "gdn_fallingLeaves",
       "defType": "particles/render-as",
       "position": {
-        "x": 6371,
-        "y": 1101
+        "x": 6518,
+        "y": 1429
       },
       "params": {
         "template": "circle",
@@ -649,8 +649,8 @@
       "id": "gdn_snowLine",
       "defType": "spread/linear",
       "position": {
-        "x": 1682,
-        "y": 1906
+        "x": 1714,
+        "y": 1988
       },
       "params": {},
       "portValues": {
@@ -663,8 +663,8 @@
       "id": "gdn_snowEmitter",
       "defType": "particles/emitter",
       "position": {
-        "x": 3972,
-        "y": 2065
+        "x": 3971,
+        "y": 2257
       },
       "params": {
         "maxCount": 1500,
@@ -694,8 +694,8 @@
       "id": "gdn_snowflakes",
       "defType": "particles/render-as",
       "position": {
-        "x": 6371,
-        "y": 1507
+        "x": 6518,
+        "y": 1870
       },
       "params": {
         "template": "circle",
@@ -710,8 +710,8 @@
       "id": "gdn_snowCoverFill",
       "defType": "style/fill",
       "position": {
-        "x": 6121,
-        "y": 1631
+        "x": 6267,
+        "y": 1908
       },
       "params": {},
       "portValues": {}
@@ -720,8 +720,8 @@
       "id": "gdn_snowCover",
       "defType": "draw/rect",
       "position": {
-        "x": 6384,
-        "y": 1315
+        "x": 6531,
+        "y": 1660
       },
       "params": {
         "anchor": "center"
@@ -740,8 +740,8 @@
       "id": "gdn_scene",
       "defType": "transform/group",
       "position": {
-        "x": 6693,
-        "y": 850
+        "x": 6853,
+        "y": 1268
       },
       "params": {
         "slotCount": 7
@@ -752,8 +752,8 @@
       "id": "gdn_r",
       "defType": "render/renderer",
       "position": {
-        "x": 6958,
-        "y": 850
+        "x": 7117,
+        "y": 1426
       },
       "params": {
         "width": 720,
@@ -780,8 +780,8 @@
       "id": "gdn_divide",
       "defType": "math/math",
       "position": {
-        "x": 303,
-        "y": 1106
+        "x": 306,
+        "y": 1131
       },
       "params": {
         "op": "divide",
@@ -795,8 +795,8 @@
       "id": "gdn_divide2",
       "defType": "math/math",
       "position": {
-        "x": 303,
-        "y": 1254
+        "x": 306,
+        "y": 1297
       },
       "params": {
         "op": "divide",
@@ -810,8 +810,8 @@
       "id": "gdn_add",
       "defType": "math/math",
       "position": {
-        "x": 581,
-        "y": 1143
+        "x": 587,
+        "y": 1226
       },
       "params": {
         "op": "add",
@@ -822,8 +822,8 @@
       "id": "gdn_yearRuns",
       "defType": "math/math",
       "position": {
-        "x": 869,
-        "y": 1115
+        "x": 896,
+        "y": 1227
       },
       "params": {
         "op": "fract",
@@ -834,8 +834,8 @@
       "id": "gdn_multiply",
       "defType": "math/math",
       "position": {
-        "x": 1139,
-        "y": 1088
+        "x": 1149,
+        "y": 1207
       },
       "params": {
         "op": "multiply",
@@ -849,8 +849,8 @@
       "id": "gdn_seasonNow",
       "defType": "logic/select",
       "position": {
-        "x": 1418,
-        "y": 1051
+        "x": 1431,
+        "y": 1194
       },
       "params": {}
     },
@@ -858,8 +858,8 @@
       "id": "gdn_yearPhase",
       "defType": "math/math",
       "position": {
-        "x": 1667,
-        "y": 711
+        "x": 1699,
+        "y": 707
       },
       "params": {
         "op": "divide",
@@ -873,13 +873,13 @@
       "id": "gdn_seasons",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1675,
-        "y": 1357
+        "x": 1707,
+        "y": 1677
       },
       "params": {
         "label": "Seasons",
-        "width": 1779,
-        "height": 893
+        "width": 1733,
+        "height": 926
       },
       "ports": [
         {
@@ -887,39 +887,39 @@
           "name": "season",
           "type": "number",
           "direction": "input",
-          "y": 468
+          "y": 448
         },
         {
           "id": "autumn",
           "name": "autumn",
           "type": "number",
           "direction": "output",
-          "y": 136
+          "y": 299
         },
         {
           "id": "winter",
           "name": "winter",
           "type": "number",
           "direction": "output",
-          "y": 282
+          "y": 592
         },
         {
           "id": "leaves",
           "name": "leaves",
           "type": "number",
           "direction": "output",
-          "y": 599
+          "y": 798
         }
       ],
-      "width": 1779,
-      "height": 893
+      "width": 1733,
+      "height": 926
     },
     {
       "id": "gdn_subtract",
       "defType": "math/math",
       "position": {
-        "x": 162,
-        "y": 95
+        "x": 158,
+        "y": 40
       },
       "params": {
         "op": "subtract",
@@ -934,8 +934,8 @@
       "id": "gdn_fromAutumn",
       "defType": "math/math",
       "position": {
-        "x": 443,
-        "y": 81
+        "x": 438,
+        "y": 77
       },
       "params": {
         "op": "abs",
@@ -947,8 +947,8 @@
       "id": "gdn_multiply2",
       "defType": "math/math",
       "position": {
-        "x": 691,
-        "y": 68
+        "x": 648,
+        "y": 92
       },
       "params": {
         "op": "multiply",
@@ -963,8 +963,8 @@
       "id": "gdn_subtract2",
       "defType": "math/math",
       "position": {
-        "x": 957,
-        "y": 40
+        "x": 914,
+        "y": 120
       },
       "params": {
         "op": "subtract",
@@ -979,8 +979,8 @@
       "id": "gdn_autumn",
       "defType": "math/clamp",
       "position": {
-        "x": 1261,
-        "y": 57
+        "x": 1216,
+        "y": 191
       },
       "params": {
         "valueType": "number"
@@ -995,8 +995,8 @@
       "id": "gdn_subtract3",
       "defType": "math/math",
       "position": {
-        "x": 162,
-        "y": 243
+        "x": 158,
+        "y": 206
       },
       "params": {
         "op": "subtract",
@@ -1011,8 +1011,8 @@
       "id": "gdn_fromWinter",
       "defType": "math/math",
       "position": {
-        "x": 443,
-        "y": 229
+        "x": 438,
+        "y": 243
       },
       "params": {
         "op": "abs",
@@ -1024,8 +1024,8 @@
       "id": "gdn_multiply3",
       "defType": "math/math",
       "position": {
-        "x": 691,
-        "y": 216
+        "x": 648,
+        "y": 258
       },
       "params": {
         "op": "multiply",
@@ -1040,8 +1040,8 @@
       "id": "gdn_subtract4",
       "defType": "math/math",
       "position": {
-        "x": 957,
-        "y": 188
+        "x": 914,
+        "y": 290
       },
       "params": {
         "op": "subtract",
@@ -1056,8 +1056,8 @@
       "id": "gdn_deepWinter",
       "defType": "math/clamp",
       "position": {
-        "x": 1261,
-        "y": 205
+        "x": 1216,
+        "y": 366
       },
       "params": {
         "valueType": "number"
@@ -1072,8 +1072,8 @@
       "id": "gdn_multiply4",
       "defType": "math/math",
       "position": {
-        "x": 162,
-        "y": 391
+        "x": 158,
+        "y": 371
       },
       "params": {
         "op": "multiply",
@@ -1088,8 +1088,8 @@
       "id": "gdn_subtract5",
       "defType": "math/math",
       "position": {
-        "x": 691,
-        "y": 364
+        "x": 648,
+        "y": 423
       },
       "params": {
         "op": "subtract",
@@ -1104,8 +1104,8 @@
       "id": "gdn_earlySpring",
       "defType": "math/clamp",
       "position": {
-        "x": 995,
-        "y": 369
+        "x": 951,
+        "y": 488
       },
       "params": {
         "valueType": "number"
@@ -1120,8 +1120,8 @@
       "id": "gdn_multiply5",
       "defType": "math/math",
       "position": {
-        "x": 1224,
-        "y": 353
+        "x": 1179,
+        "y": 531
       },
       "params": {
         "op": "multiply",
@@ -1136,8 +1136,8 @@
       "id": "gdn_add2",
       "defType": "math/math",
       "position": {
-        "x": 1497,
-        "y": 245
+        "x": 1453,
+        "y": 486
       },
       "params": {
         "op": "add",
@@ -1149,8 +1149,8 @@
       "id": "gdn_beforeWinter",
       "defType": "logic/compare",
       "position": {
-        "x": 155,
-        "y": 539
+        "x": 171,
+        "y": 537
       },
       "params": {
         "op": "less"
@@ -1164,8 +1164,8 @@
       "id": "gdn_leafSeason",
       "defType": "math/smoothstep",
       "position": {
-        "x": 169,
-        "y": 687
+        "x": 179,
+        "y": 702
       },
       "params": {
         "mode": "window"
@@ -1182,8 +1182,8 @@
       "id": "gdn_leafiness",
       "defType": "logic/select",
       "position": {
-        "x": 466,
-        "y": 592
+        "x": 448,
+        "y": 706
       },
       "params": {},
       "parentId": "gdn_seasons",
@@ -1196,7 +1196,7 @@
       "defType": "math/math",
       "position": {
         "x": 0,
-        "y": 807
+        "y": 650
       },
       "params": {
         "op": "divide",
@@ -1211,8 +1211,8 @@
       "id": "gdn_growth",
       "defType": "motion/integrate",
       "position": {
-        "x": 333,
-        "y": 848
+        "x": 336,
+        "y": 747
       },
       "params": {
         "limit": "clamp",
@@ -1229,8 +1229,8 @@
       "id": "gdn_growthNow",
       "defType": "spread/lookup",
       "position": {
-        "x": 1670,
-        "y": 933
+        "x": 1721,
+        "y": 902
       },
       "params": {
         "op": "at"
@@ -1243,8 +1243,8 @@
       "id": "gdn_multiply6",
       "defType": "math/math",
       "position": {
-        "x": 170,
-        "y": 785
+        "x": 174,
+        "y": 815
       },
       "params": {
         "op": "multiply",
@@ -1259,8 +1259,8 @@
       "id": "gdn_angleSin",
       "defType": "math/math",
       "position": {
-        "x": 454,
-        "y": 783
+        "x": 478,
+        "y": 849
       },
       "params": {
         "op": "sin",
@@ -1272,8 +1272,8 @@
       "id": "gdn_multiply7",
       "defType": "math/math",
       "position": {
-        "x": 714,
-        "y": 781
+        "x": 721,
+        "y": 859
       },
       "params": {
         "op": "multiply",
@@ -1288,8 +1288,8 @@
       "id": "gdn_angleHash",
       "defType": "math/math",
       "position": {
-        "x": 999,
-        "y": 795
+        "x": 1028,
+        "y": 897
       },
       "params": {
         "op": "fract",
@@ -1301,8 +1301,8 @@
       "id": "gdn_multiply8",
       "defType": "math/math",
       "position": {
-        "x": 1258,
-        "y": 761
+        "x": 1280,
+        "y": 891
       },
       "params": {
         "op": "multiply",
@@ -1317,8 +1317,8 @@
       "id": "gdn_add3",
       "defType": "math/math",
       "position": {
-        "x": 1525,
-        "y": 742
+        "x": 1560,
+        "y": 907
       },
       "params": {
         "op": "add",
@@ -1333,8 +1333,8 @@
       "id": "gdn_multiply9",
       "defType": "math/math",
       "position": {
-        "x": 170,
-        "y": 933
+        "x": 174,
+        "y": 981
       },
       "params": {
         "op": "multiply",
@@ -1349,8 +1349,8 @@
       "id": "gdn_stepSin",
       "defType": "math/math",
       "position": {
-        "x": 454,
-        "y": 931
+        "x": 478,
+        "y": 1014
       },
       "params": {
         "op": "sin",
@@ -1362,8 +1362,8 @@
       "id": "gdn_multiply10",
       "defType": "math/math",
       "position": {
-        "x": 714,
-        "y": 929
+        "x": 721,
+        "y": 1025
       },
       "params": {
         "op": "multiply",
@@ -1378,8 +1378,8 @@
       "id": "gdn_stepHash",
       "defType": "math/math",
       "position": {
-        "x": 999,
-        "y": 930
+        "x": 1028,
+        "y": 1063
       },
       "params": {
         "op": "fract",
@@ -1391,8 +1391,8 @@
       "id": "gdn_multiply11",
       "defType": "math/math",
       "position": {
-        "x": 1258,
-        "y": 909
+        "x": 1280,
+        "y": 1057
       },
       "params": {
         "op": "multiply",
@@ -1407,8 +1407,8 @@
       "id": "gdn_add4",
       "defType": "math/math",
       "position": {
-        "x": 1525,
-        "y": 890
+        "x": 1560,
+        "y": 1073
       },
       "params": {
         "op": "add",
@@ -1423,8 +1423,8 @@
       "id": "gdn_leafWidth",
       "defType": "math/math",
       "position": {
-        "x": 170,
-        "y": 1207
+        "x": 174,
+        "y": 1290
       },
       "params": {
         "op": "multiply",
@@ -1439,8 +1439,8 @@
       "id": "gdn_time2",
       "defType": "time/seconds",
       "position": {
-        "x": 212,
-        "y": 511
+        "x": 216,
+        "y": 537
       },
       "params": {},
       "parentId": "gdn_each"
@@ -1449,8 +1449,8 @@
       "id": "gdn_multiply12",
       "defType": "math/math",
       "position": {
-        "x": 445,
-        "y": 522
+        "x": 450,
+        "y": 525
       },
       "params": {
         "op": "multiply",
@@ -1465,8 +1465,8 @@
       "id": "gdn_multiply13",
       "defType": "math/math",
       "position": {
-        "x": 170,
-        "y": 637
+        "x": 174,
+        "y": 650
       },
       "params": {
         "op": "multiply",
@@ -1481,8 +1481,8 @@
       "id": "gdn_add5",
       "defType": "math/math",
       "position": {
-        "x": 714,
-        "y": 537
+        "x": 721,
+        "y": 582
       },
       "params": {
         "op": "add",
@@ -1494,8 +1494,8 @@
       "id": "gdn_gust",
       "defType": "noise/noise",
       "position": {
-        "x": 991,
-        "y": 471
+        "x": 1017,
+        "y": 521
       },
       "params": {
         "mode": "perlin"
@@ -1509,8 +1509,8 @@
       "id": "gdn_subtract6",
       "defType": "math/math",
       "position": {
-        "x": 1258,
-        "y": 453
+        "x": 1280,
+        "y": 637
       },
       "params": {
         "op": "subtract",
@@ -1525,8 +1525,8 @@
       "id": "gdn_multiply14",
       "defType": "math/math",
       "position": {
-        "x": 1525,
-        "y": 414
+        "x": 1560,
+        "y": 554
       },
       "params": {
         "op": "multiply",
@@ -1538,8 +1538,8 @@
       "id": "gdn_multiply15",
       "defType": "math/math",
       "position": {
-        "x": 2398,
-        "y": 420
+        "x": 2393,
+        "y": 693
       },
       "params": {
         "op": "multiply",
@@ -1554,8 +1554,8 @@
       "id": "gdn_multiply16",
       "defType": "math/math",
       "position": {
-        "x": 170,
-        "y": 67
+        "x": 174,
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -1570,8 +1570,8 @@
       "id": "gdn_add6",
       "defType": "math/math",
       "position": {
-        "x": 714,
-        "y": 40
+        "x": 721,
+        "y": 113
       },
       "params": {
         "op": "add",
@@ -1586,8 +1586,8 @@
       "id": "gdn_multiply17",
       "defType": "math/math",
       "position": {
-        "x": 170,
-        "y": 215
+        "x": 174,
+        "y": 206
       },
       "params": {
         "op": "multiply",
@@ -1602,8 +1602,8 @@
       "id": "gdn_rootJitter",
       "defType": "math/math",
       "position": {
-        "x": 454,
-        "y": 212
+        "x": 478,
+        "y": 264
       },
       "params": {
         "op": "sin",
@@ -1615,8 +1615,8 @@
       "id": "gdn_multiply18",
       "defType": "math/math",
       "position": {
-        "x": 714,
-        "y": 188
+        "x": 721,
+        "y": 278
       },
       "params": {
         "op": "multiply",
@@ -1631,8 +1631,8 @@
       "id": "gdn_add7",
       "defType": "math/math",
       "position": {
-        "x": 990,
-        "y": 99
+        "x": 1000,
+        "y": 259
       },
       "params": {
         "op": "add",
@@ -1644,8 +1644,8 @@
       "id": "gdn_root",
       "defType": "vec2/make",
       "position": {
-        "x": 2894,
-        "y": 216
+        "x": 2897,
+        "y": 548
       },
       "params": {},
       "parentId": "gdn_each",
@@ -1657,8 +1657,8 @@
       "id": "gdn_odd",
       "defType": "math/math",
       "position": {
-        "x": 179,
-        "y": 363
+        "x": 202,
+        "y": 371
       },
       "params": {
         "op": "mod",
@@ -1673,8 +1673,8 @@
       "id": "gdn_even",
       "defType": "logic/compare",
       "position": {
-        "x": 2391,
-        "y": 272
+        "x": 2406,
+        "y": 528
       },
       "params": {
         "op": "equal"
@@ -1688,8 +1688,8 @@
       "id": "gdn_mirror",
       "defType": "logic/select",
       "position": {
-        "x": 2682,
-        "y": 304
+        "x": 2688,
+        "y": 623
       },
       "params": {},
       "parentId": "gdn_each",
@@ -1702,8 +1702,8 @@
       "id": "gdn_windStrength",
       "defType": "math/math",
       "position": {
-        "x": 303,
-        "y": 1434
+        "x": 306,
+        "y": 1462
       },
       "params": {
         "op": "multiply",
@@ -1717,8 +1717,8 @@
       "id": "gdn_multiply19",
       "defType": "math/math",
       "position": {
-        "x": 2032,
-        "y": 1374
+        "x": 2051,
+        "y": 1370
       },
       "params": {
         "op": "multiply",
@@ -1729,8 +1729,8 @@
       "id": "gdn_multiply20",
       "defType": "math/math",
       "position": {
-        "x": 3955,
-        "y": 1737
+        "x": 3997,
+        "y": 1894
       },
       "params": {
         "op": "multiply",
@@ -1744,8 +1744,8 @@
       "id": "gdn_snowSpots",
       "defType": "vec2/make",
       "position": {
-        "x": 2074,
-        "y": 1906
+        "x": 2092,
+        "y": 2057
       },
       "params": {},
       "portValues": {
@@ -1756,8 +1756,8 @@
       "id": "gdn_snowRate",
       "defType": "math/math",
       "position": {
-        "x": 2032,
-        "y": 2032
+        "x": 2051,
+        "y": 2200
       },
       "params": {
         "op": "multiply",
@@ -1771,8 +1771,8 @@
       "id": "gdn_multiply21",
       "defType": "math/math",
       "position": {
-        "x": 2032,
-        "y": 1758
+        "x": 2051,
+        "y": 1891
       },
       "params": {
         "op": "multiply",
@@ -1786,8 +1786,8 @@
       "id": "gdn_multiply22",
       "defType": "math/math",
       "position": {
-        "x": 3955,
-        "y": 1917
+        "x": 3997,
+        "y": 2091
       },
       "params": {
         "op": "multiply",
@@ -1801,8 +1801,8 @@
       "id": "gdn_snowCoverColour",
       "defType": "color/set-alpha",
       "position": {
-        "x": 5828,
-        "y": 1858
+        "x": 5935,
+        "y": 2067
       },
       "params": {},
       "portValues": {

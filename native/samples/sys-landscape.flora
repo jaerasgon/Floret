@@ -30,8 +30,8 @@
       "id": "lnd_timeOfDay",
       "defType": "io/slider",
       "position": {
-        "x": 309,
-        "y": 764
+        "x": 264,
+        "y": 600
       },
       "params": {
         "value": 0.3,
@@ -48,8 +48,8 @@
       "id": "lnd_autoDay",
       "defType": "io/toggle",
       "position": {
-        "x": 863,
-        "y": 585
+        "x": 818,
+        "y": 469
       },
       "params": {
         "value": true
@@ -62,8 +62,8 @@
       "id": "lnd_travel",
       "defType": "io/slider",
       "position": {
-        "x": 2681,
-        "y": 1129
+        "x": 2636,
+        "y": 1202
       },
       "params": {
         "value": 40,
@@ -80,8 +80,8 @@
       "id": "lnd_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 2718,
-        "y": 1255
+        "x": 2672,
+        "y": 1367
       },
       "params": {},
       "portValues": {}
@@ -90,8 +90,8 @@
       "id": "lnd_skyStops",
       "defType": "spread/merge",
       "position": {
-        "x": 4003,
-        "y": 267
+        "x": 4008,
+        "y": 356
       },
       "params": {
         "slotCount": 2
@@ -104,8 +104,8 @@
       "id": "lnd_skyGradient",
       "defType": "style/gradient",
       "position": {
-        "x": 4820,
-        "y": 52
+        "x": 4825,
+        "y": 196
       },
       "params": {
         "mode": "linear",
@@ -132,8 +132,8 @@
       "id": "lnd_sky",
       "defType": "draw/rect",
       "position": {
-        "x": 5147,
-        "y": 208
+        "x": 5086,
+        "y": 435
       },
       "params": {
         "anchor": "center"
@@ -153,7 +153,7 @@
       "defType": "geometry/scatter",
       "position": {
         "x": 0,
-        "y": 326
+        "y": 29
       },
       "params": {
         "mode": "halton"
@@ -175,12 +175,12 @@
       "id": "lnd_stars",
       "defType": "region/foreach",
       "position": {
-        "x": 3259,
-        "y": 192
+        "x": 3224,
+        "y": 210
       },
       "params": {
-        "width": 518,
-        "height": 262,
+        "width": 551,
+        "height": 280,
         "label": "ForEach star"
       },
       "ports": [
@@ -196,7 +196,7 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 89
+          "y": 167
         },
         {
           "id": "c",
@@ -213,8 +213,8 @@
           "y": 159
         }
       ],
-      "width": 518,
-      "height": 262
+      "width": 551,
+      "height": 280
     },
     {
       "id": "lnd_starStroke",
@@ -231,8 +231,8 @@
       "id": "lnd_star",
       "defType": "draw/point",
       "position": {
-        "x": 321,
-        "y": 52
+        "x": 354,
+        "y": 82
       },
       "params": {},
       "parentId": "lnd_stars",
@@ -242,8 +242,8 @@
       "id": "lnd_sunFill",
       "defType": "style/fill",
       "position": {
-        "x": 2722,
-        "y": 604
+        "x": 2678,
+        "y": 626
       },
       "params": {},
       "portValues": {}
@@ -252,8 +252,8 @@
       "id": "lnd_sun",
       "defType": "draw/ellipse",
       "position": {
-        "x": 3001,
-        "y": 469
+        "x": 2945,
+        "y": 475
       },
       "params": {},
       "portValues": {
@@ -265,8 +265,8 @@
       "id": "lnd_sunGlow",
       "defType": "gpu/effect",
       "position": {
-        "x": 5117,
-        "y": 432
+        "x": 5081,
+        "y": 676
       },
       "params": {
         "mode": "glow",
@@ -287,8 +287,8 @@
       "id": "lnd_moonFill",
       "defType": "style/fill",
       "position": {
-        "x": 1437,
-        "y": 603
+        "x": 1376,
+        "y": 483
       },
       "params": {},
       "portValues": {
@@ -304,8 +304,8 @@
       "id": "lnd_moon",
       "defType": "draw/ellipse",
       "position": {
-        "x": 1775,
-        "y": 515
+        "x": 1697,
+        "y": 442
       },
       "params": {},
       "portValues": {
@@ -317,8 +317,8 @@
       "id": "lnd_birdFill",
       "defType": "style/fill",
       "position": {
-        "x": 4535,
-        "y": 451
+        "x": 4555,
+        "y": 591
       },
       "params": {},
       "portValues": {
@@ -334,8 +334,8 @@
       "id": "lnd_birds",
       "defType": "particles/simulation",
       "position": {
-        "x": 4814,
-        "y": 396
+        "x": 4824,
+        "y": 557
       },
       "params": {
         "mode": "flocking"
@@ -357,8 +357,8 @@
       "id": "lnd_birdsUp",
       "defType": "transform/translate",
       "position": {
-        "x": 5141,
-        "y": 668
+        "x": 5093,
+        "y": 930
       },
       "params": {},
       "portValues": {
@@ -372,8 +372,8 @@
       "id": "lnd_ridgeX",
       "defType": "spread/range",
       "position": {
-        "x": 2696,
-        "y": 1025
+        "x": 2651,
+        "y": 1080
       },
       "params": {
         "count": 100
@@ -386,8 +386,8 @@
       "id": "lnd_ridge0Fill",
       "defType": "style/fill",
       "position": {
-        "x": 4312,
-        "y": 600
+        "x": 4317,
+        "y": 735
       },
       "params": {},
       "portValues": {}
@@ -396,8 +396,8 @@
       "id": "lnd_ridge0",
       "defType": "draw/polygon",
       "position": {
-        "x": 4551,
-        "y": 577
+        "x": 4562,
+        "y": 735
       },
       "params": {},
       "portValues": {
@@ -408,8 +408,8 @@
       "id": "lnd_ridge1Fill",
       "defType": "style/fill",
       "position": {
-        "x": 4312,
-        "y": 726
+        "x": 4317,
+        "y": 879
       },
       "params": {},
       "portValues": {}
@@ -418,8 +418,8 @@
       "id": "lnd_ridge1",
       "defType": "draw/polygon",
       "position": {
-        "x": 4551,
-        "y": 747
+        "x": 4562,
+        "y": 922
       },
       "params": {},
       "portValues": {
@@ -430,8 +430,8 @@
       "id": "lnd_fog1Clear",
       "defType": "color/set-alpha",
       "position": {
-        "x": 4301,
-        "y": 852
+        "x": 4304,
+        "y": 1022
       },
       "params": {},
       "portValues": {
@@ -442,8 +442,8 @@
       "id": "lnd_fog1Mist",
       "defType": "color/set-alpha",
       "position": {
-        "x": 4301,
-        "y": 978
+        "x": 4304,
+        "y": 1166
       },
       "params": {},
       "portValues": {
@@ -454,8 +454,8 @@
       "id": "lnd_fog1Stops",
       "defType": "spread/merge",
       "position": {
-        "x": 4518,
-        "y": 917
+        "x": 4530,
+        "y": 1110
       },
       "params": {
         "slotCount": 2
@@ -468,8 +468,8 @@
       "id": "lnd_fog1Gradient",
       "defType": "style/gradient",
       "position": {
-        "x": 4820,
-        "y": 862
+        "x": 4825,
+        "y": 1123
       },
       "params": {
         "mode": "linear",
@@ -496,8 +496,8 @@
       "id": "lnd_fog1",
       "defType": "draw/rect",
       "position": {
-        "x": 5141,
-        "y": 826
+        "x": 5086,
+        "y": 1105
       },
       "params": {
         "anchor": "center"
@@ -516,8 +516,8 @@
       "id": "lnd_ridge2Fill",
       "defType": "style/fill",
       "position": {
-        "x": 4312,
-        "y": 1104
+        "x": 4317,
+        "y": 1309
       },
       "params": {},
       "portValues": {}
@@ -526,8 +526,8 @@
       "id": "lnd_ridge2",
       "defType": "draw/polygon",
       "position": {
-        "x": 4551,
-        "y": 1043
+        "x": 4562,
+        "y": 1253
       },
       "params": {},
       "portValues": {
@@ -538,8 +538,8 @@
       "id": "lnd_ridge3Fill",
       "defType": "style/fill",
       "position": {
-        "x": 4312,
-        "y": 1230
+        "x": 4317,
+        "y": 1453
       },
       "params": {},
       "portValues": {}
@@ -548,8 +548,8 @@
       "id": "lnd_ridge3",
       "defType": "draw/polygon",
       "position": {
-        "x": 4551,
-        "y": 1213
+        "x": 4562,
+        "y": 1441
       },
       "params": {},
       "portValues": {
@@ -560,8 +560,8 @@
       "id": "lnd_fog3Clear",
       "defType": "color/set-alpha",
       "position": {
-        "x": 4301,
-        "y": 1356
+        "x": 4304,
+        "y": 1596
       },
       "params": {},
       "portValues": {
@@ -572,8 +572,8 @@
       "id": "lnd_fog3Mist",
       "defType": "color/set-alpha",
       "position": {
-        "x": 4301,
-        "y": 1482
+        "x": 4304,
+        "y": 1740
       },
       "params": {},
       "portValues": {
@@ -584,8 +584,8 @@
       "id": "lnd_fog3Stops",
       "defType": "spread/merge",
       "position": {
-        "x": 4518,
-        "y": 1383
+        "x": 4530,
+        "y": 1628
       },
       "params": {
         "slotCount": 2
@@ -598,8 +598,8 @@
       "id": "lnd_fog3Gradient",
       "defType": "style/gradient",
       "position": {
-        "x": 4820,
-        "y": 1174
+        "x": 4825,
+        "y": 1453
       },
       "params": {
         "mode": "linear",
@@ -626,8 +626,8 @@
       "id": "lnd_fog3",
       "defType": "draw/rect",
       "position": {
-        "x": 5141,
-        "y": 1050
+        "x": 5086,
+        "y": 1347
       },
       "params": {
         "anchor": "center"
@@ -646,8 +646,8 @@
       "id": "lnd_ridge4Fill",
       "defType": "style/fill",
       "position": {
-        "x": 4312,
-        "y": 1608
+        "x": 4317,
+        "y": 1883
       },
       "params": {},
       "portValues": {}
@@ -656,8 +656,8 @@
       "id": "lnd_ridge4",
       "defType": "draw/polygon",
       "position": {
-        "x": 4551,
-        "y": 1509
+        "x": 4562,
+        "y": 1772
       },
       "params": {},
       "portValues": {
@@ -668,8 +668,8 @@
       "id": "lnd_scene",
       "defType": "transform/group",
       "position": {
-        "x": 5441,
-        "y": 604
+        "x": 5365,
+        "y": 906
       },
       "params": {
         "slotCount": 12
@@ -680,8 +680,8 @@
       "id": "lnd_r",
       "defType": "render/renderer",
       "position": {
-        "x": 5705,
-        "y": 604
+        "x": 5629,
+        "y": 1173
       },
       "params": {
         "width": 760,
@@ -708,8 +708,8 @@
       "id": "lnd_time",
       "defType": "time/seconds",
       "position": {
-        "x": 58,
-        "y": 562
+        "x": 37,
+        "y": 397
       },
       "params": {}
     },
@@ -717,8 +717,8 @@
       "id": "lnd_divide",
       "defType": "math/math",
       "position": {
-        "x": 309,
-        "y": 616
+        "x": 264,
+        "y": 434
       },
       "params": {
         "op": "divide",
@@ -732,8 +732,8 @@
       "id": "lnd_add",
       "defType": "math/math",
       "position": {
-        "x": 590,
-        "y": 687
+        "x": 541,
+        "y": 549
       },
       "params": {
         "op": "add",
@@ -744,8 +744,8 @@
       "id": "lnd_dayRuns",
       "defType": "math/math",
       "position": {
-        "x": 872,
-        "y": 723
+        "x": 846,
+        "y": 602
       },
       "params": {
         "op": "fract",
@@ -756,8 +756,8 @@
       "id": "lnd_tod",
       "defType": "logic/select",
       "position": {
-        "x": 1171,
-        "y": 708
+        "x": 1127,
+        "y": 604
       },
       "params": {}
     },
@@ -765,13 +765,13 @@
       "id": "lnd_sunArc",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1410,
-        "y": 732
+        "x": 1341,
+        "y": 666
       },
       "params": {
         "label": "Sun and moon",
-        "width": 1685,
-        "height": 659
+        "width": 1654,
+        "height": 732
       },
       "ports": [
         {
@@ -779,39 +779,39 @@
           "name": "time of day",
           "type": "number",
           "direction": "input",
-          "y": 480
+          "y": 313
         },
         {
           "id": "height",
           "name": "sun height",
           "type": "number",
           "direction": "output",
-          "y": 605
+          "y": 678
         },
         {
           "id": "sun",
           "name": "sun",
           "type": "vec2",
           "direction": "output",
-          "y": 181
+          "y": 265
         },
         {
           "id": "moon",
           "name": "moon",
           "type": "vec2",
           "direction": "output",
-          "y": 434
+          "y": 596
         }
       ],
-      "width": 1685,
-      "height": 659
+      "width": 1654,
+      "height": 732
     },
     {
       "id": "lnd_subtract",
       "defType": "math/math",
       "position": {
         "x": 128,
-        "y": 421
+        "y": 254
       },
       "params": {
         "op": "subtract",
@@ -827,7 +827,7 @@
       "defType": "math/math",
       "position": {
         "x": 392,
-        "y": 401
+        "y": 301
       },
       "params": {
         "op": "multiply",
@@ -842,8 +842,8 @@
       "id": "lnd_sunUp",
       "defType": "math/math",
       "position": {
-        "x": 666,
-        "y": 443
+        "x": 667,
+        "y": 420
       },
       "params": {
         "op": "sin",
@@ -855,8 +855,8 @@
       "id": "lnd_sunAcross",
       "defType": "math/math",
       "position": {
-        "x": 666,
-        "y": 317
+        "x": 667,
+        "y": 277
       },
       "params": {
         "op": "cos",
@@ -868,8 +868,8 @@
       "id": "lnd_negate",
       "defType": "math/math",
       "position": {
-        "x": 942,
-        "y": 156
+        "x": 927,
+        "y": 137
       },
       "params": {
         "op": "negate",
@@ -881,7 +881,7 @@
       "id": "lnd_multiply2",
       "defType": "math/math",
       "position": {
-        "x": 1211,
+        "x": 1182,
         "y": 40
       },
       "params": {
@@ -897,8 +897,8 @@
       "id": "lnd_multiply3",
       "defType": "math/math",
       "position": {
-        "x": 933,
-        "y": 282
+        "x": 899,
+        "y": 281
       },
       "params": {
         "op": "multiply",
@@ -913,8 +913,8 @@
       "id": "lnd_subtract2",
       "defType": "math/math",
       "position": {
-        "x": 1211,
-        "y": 188
+        "x": 1182,
+        "y": 206
       },
       "params": {
         "op": "subtract",
@@ -929,8 +929,8 @@
       "id": "lnd_sunPos",
       "defType": "vec2/make",
       "position": {
-        "x": 1486,
-        "y": 116
+        "x": 1457,
+        "y": 181
       },
       "params": {},
       "parentId": "lnd_sunArc"
@@ -939,8 +939,8 @@
       "id": "lnd_multiply4",
       "defType": "math/math",
       "position": {
-        "x": 1211,
-        "y": 336
+        "x": 1182,
+        "y": 371
       },
       "params": {
         "op": "multiply",
@@ -955,8 +955,8 @@
       "id": "lnd_multiply5",
       "defType": "math/math",
       "position": {
-        "x": 933,
-        "y": 438
+        "x": 899,
+        "y": 459
       },
       "params": {
         "op": "multiply",
@@ -971,8 +971,8 @@
       "id": "lnd_add2",
       "defType": "math/math",
       "position": {
-        "x": 1211,
-        "y": 484
+        "x": 1182,
+        "y": 537
       },
       "params": {
         "op": "add",
@@ -987,8 +987,8 @@
       "id": "lnd_moonPos",
       "defType": "vec2/make",
       "position": {
-        "x": 1486,
-        "y": 398
+        "x": 1457,
+        "y": 512
       },
       "params": {},
       "parentId": "lnd_sunArc"
@@ -997,8 +997,8 @@
       "id": "lnd_daylight",
       "defType": "math/smoothstep",
       "position": {
-        "x": 1747,
-        "y": 855
+        "x": 1696,
+        "y": 817
       },
       "params": {
         "mode": "step"
@@ -1012,8 +1012,8 @@
       "id": "lnd_sunLow",
       "defType": "math/math",
       "position": {
-        "x": 1749,
-        "y": 1025
+        "x": 1703,
+        "y": 1004
       },
       "params": {
         "op": "abs",
@@ -1024,8 +1024,8 @@
       "id": "lnd_multiply6",
       "defType": "math/math",
       "position": {
-        "x": 2107,
-        "y": 950
+        "x": 2055,
+        "y": 982
       },
       "params": {
         "op": "multiply",
@@ -1039,8 +1039,8 @@
       "id": "lnd_subtract3",
       "defType": "math/math",
       "position": {
-        "x": 2394,
-        "y": 901
+        "x": 2345,
+        "y": 932
       },
       "params": {
         "op": "subtract",
@@ -1054,8 +1054,8 @@
       "id": "lnd_dusk",
       "defType": "math/clamp",
       "position": {
-        "x": 2719,
-        "y": 877
+        "x": 2673,
+        "y": 915
       },
       "params": {
         "valueType": "number"
@@ -1069,8 +1069,8 @@
       "id": "lnd_camera",
       "defType": "motion/integrate",
       "position": {
-        "x": 2996,
-        "y": 1159
+        "x": 2952,
+        "y": 1235
       },
       "params": {
         "limit": "none",
@@ -1085,8 +1085,8 @@
       "id": "lnd_multiply7",
       "defType": "math/math",
       "position": {
-        "x": 2966,
-        "y": 1373
+        "x": 2922,
+        "y": 1483
       },
       "params": {
         "op": "multiply",
@@ -1100,8 +1100,8 @@
       "id": "lnd_add3",
       "defType": "math/math",
       "position": {
-        "x": 3434,
-        "y": 1174
+        "x": 3415,
+        "y": 1260
       },
       "params": {
         "op": "add",
@@ -1112,7 +1112,7 @@
       "id": "lnd_skyTop",
       "defType": "color/lerp",
       "position": {
-        "x": 3441,
+        "x": 3443,
         "y": 0
       },
       "params": {
@@ -1137,8 +1137,8 @@
       "id": "lnd_horizonDay",
       "defType": "color/lerp",
       "position": {
-        "x": 2973,
-        "y": 693
+        "x": 2950,
+        "y": 716
       },
       "params": {
         "space": "rgb"
@@ -1162,8 +1162,8 @@
       "id": "lnd_multiply8",
       "defType": "math/math",
       "position": {
-        "x": 2966,
-        "y": 863
+        "x": 2922,
+        "y": 904
       },
       "params": {
         "op": "multiply",
@@ -1177,8 +1177,8 @@
       "id": "lnd_skyHorizon",
       "defType": "color/lerp",
       "position": {
-        "x": 3441,
-        "y": 856
+        "x": 3443,
+        "y": 907
       },
       "params": {
         "space": "rgb"
@@ -1196,8 +1196,8 @@
       "id": "lnd_multiply9",
       "defType": "math/math",
       "position": {
-        "x": 1740,
-        "y": 707
+        "x": 1675,
+        "y": 651
       },
       "params": {
         "op": "multiply",
@@ -1211,8 +1211,8 @@
       "id": "lnd_sunWhite",
       "defType": "math/clamp",
       "position": {
-        "x": 2145,
-        "y": 738
+        "x": 2093,
+        "y": 753
       },
       "params": {
         "valueType": "number"
@@ -1226,8 +1226,8 @@
       "id": "lnd_sunColour",
       "defType": "color/lerp",
       "position": {
-        "x": 2401,
-        "y": 651
+        "x": 2373,
+        "y": 663
       },
       "params": {
         "space": "rgb"
@@ -1251,8 +1251,8 @@
       "id": "lnd_split",
       "defType": "vec2/split",
       "position": {
-        "x": 351,
-        "y": 412
+        "x": 306,
+        "y": 253
       },
       "params": {}
     },
@@ -1260,8 +1260,8 @@
       "id": "lnd_multiply10",
       "defType": "math/math",
       "position": {
-        "x": 590,
-        "y": 350
+        "x": 541,
+        "y": 177
       },
       "params": {
         "op": "multiply",
@@ -1275,8 +1275,8 @@
       "id": "lnd_add4",
       "defType": "math/math",
       "position": {
-        "x": 863,
-        "y": 289
+        "x": 818,
+        "y": 138
       },
       "params": {
         "op": "add",
@@ -1290,8 +1290,8 @@
       "id": "lnd_multiply11",
       "defType": "math/math",
       "position": {
-        "x": 863,
-        "y": 437
+        "x": 818,
+        "y": 303
       },
       "params": {
         "op": "multiply",
@@ -1305,8 +1305,8 @@
       "id": "lnd_flicker",
       "defType": "noise/noise",
       "position": {
-        "x": 1140,
-        "y": 287
+        "x": 1107,
+        "y": 143
       },
       "params": {
         "mode": "perlin"
@@ -1316,8 +1316,8 @@
       "id": "lnd_subtract4",
       "defType": "math/math",
       "position": {
-        "x": 2107,
-        "y": 262
+        "x": 2055,
+        "y": 224
       },
       "params": {
         "op": "subtract",
@@ -1331,8 +1331,8 @@
       "id": "lnd_multiply12",
       "defType": "math/math",
       "position": {
-        "x": 1740,
-        "y": 348
+        "x": 1675,
+        "y": 276
       },
       "params": {
         "op": "multiply",
@@ -1346,8 +1346,8 @@
       "id": "lnd_add5",
       "defType": "math/math",
       "position": {
-        "x": 2107,
-        "y": 410
+        "x": 2055,
+        "y": 390
       },
       "params": {
         "op": "add",
@@ -1361,8 +1361,8 @@
       "id": "lnd_multiply13",
       "defType": "math/math",
       "position": {
-        "x": 2394,
-        "y": 290
+        "x": 2345,
+        "y": 288
       },
       "params": {
         "op": "multiply",
@@ -1373,8 +1373,8 @@
       "id": "lnd_multiply14",
       "defType": "math/math",
       "position": {
-        "x": 2681,
-        "y": 243
+        "x": 2636,
+        "y": 223
       },
       "params": {
         "op": "multiply",
@@ -1388,8 +1388,8 @@
       "id": "lnd_twinkle",
       "defType": "color/set-alpha",
       "position": {
-        "x": 2983,
-        "y": 195
+        "x": 2948,
+        "y": 166
       },
       "params": {},
       "portValues": {
@@ -1405,8 +1405,8 @@
       "id": "lnd_multiply15",
       "defType": "math/math",
       "position": {
-        "x": 2107,
-        "y": 558
+        "x": 2055,
+        "y": 555
       },
       "params": {
         "op": "multiply",
@@ -1420,8 +1420,8 @@
       "id": "lnd_starSizeHash",
       "defType": "math/math",
       "position": {
-        "x": 2403,
-        "y": 489
+        "x": 2373,
+        "y": 488
       },
       "params": {
         "op": "fract",
@@ -1432,8 +1432,8 @@
       "id": "lnd_multiply16",
       "defType": "math/math",
       "position": {
-        "x": 2681,
-        "y": 399
+        "x": 2636,
+        "y": 389
       },
       "params": {
         "op": "multiply",
@@ -1447,8 +1447,8 @@
       "id": "lnd_add6",
       "defType": "math/math",
       "position": {
-        "x": 2966,
-        "y": 321
+        "x": 2922,
+        "y": 309
       },
       "params": {
         "op": "add",
@@ -1462,8 +1462,8 @@
       "id": "lnd_multiply17",
       "defType": "math/math",
       "position": {
-        "x": 2966,
-        "y": 1011
+        "x": 2922,
+        "y": 1069
       },
       "params": {
         "op": "multiply",
@@ -1477,8 +1477,8 @@
       "id": "lnd_add7",
       "defType": "math/math",
       "position": {
-        "x": 3434,
-        "y": 1026
+        "x": 3415,
+        "y": 1094
       },
       "params": {
         "op": "add",
@@ -1492,13 +1492,13 @@
       "id": "lnd_ridge02",
       "defType": "meta/subpatch",
       "position": {
-        "x": 3986,
-        "y": 525
+        "x": 3991,
+        "y": 564
       },
       "params": {
         "label": "Ridge 1 · farthest",
-        "width": 3058,
-        "height": 689
+        "width": 2972,
+        "height": 607
       },
       "ports": [
         {
@@ -1506,53 +1506,53 @@
           "name": "x along",
           "type": "number",
           "direction": "input",
-          "y": 174
+          "y": 117
         },
         {
           "id": "look",
           "name": "look",
           "type": "number",
           "direction": "input",
-          "y": 283
+          "y": 195
         },
         {
           "id": "d",
           "name": "daylight",
           "type": "number",
           "direction": "input",
-          "y": 592
+          "y": 451
         },
         {
           "id": "h",
           "name": "horizon",
           "type": "color",
           "direction": "input",
-          "y": 635
+          "y": 511
         },
         {
           "id": "points",
           "name": "outline",
           "type": "vec2",
           "direction": "output",
-          "y": 174
+          "y": 308
         },
         {
           "id": "colour",
           "name": "colour",
           "type": "color",
           "direction": "output",
-          "y": 475
+          "y": 470
         }
       ],
-      "width": 3058,
-      "height": 689
+      "width": 2972,
+      "height": 607
     },
     {
       "id": "lnd_multiply18",
       "defType": "math/math",
       "position": {
-        "x": 130,
-        "y": 224
+        "x": 131,
+        "y": 136
       },
       "params": {
         "op": "multiply",
@@ -1567,8 +1567,8 @@
       "id": "lnd_add8",
       "defType": "math/math",
       "position": {
-        "x": 403,
-        "y": 171
+        "x": 407,
+        "y": 79
       },
       "params": {
         "op": "add",
@@ -1580,8 +1580,8 @@
       "id": "lnd_multiply19",
       "defType": "math/math",
       "position": {
-        "x": 957,
-        "y": 116
+        "x": 947,
+        "y": 47
       },
       "params": {
         "op": "multiply",
@@ -1596,7 +1596,7 @@
       "id": "lnd_ridge0Shape",
       "defType": "noise/noise",
       "position": {
-        "x": 1242,
+        "x": 1233,
         "y": 40
       },
       "params": {
@@ -1611,8 +1611,8 @@
       "id": "lnd_multiply20",
       "defType": "math/math",
       "position": {
-        "x": 680,
-        "y": 233
+        "x": 678,
+        "y": 165
       },
       "params": {
         "op": "multiply",
@@ -1627,8 +1627,8 @@
       "id": "lnd_ridge0Detail",
       "defType": "noise/noise",
       "position": {
-        "x": 958,
-        "y": 273
+        "x": 964,
+        "y": 213
       },
       "params": {
         "mode": "perlin"
@@ -1642,8 +1642,8 @@
       "id": "lnd_multiply21",
       "defType": "math/math",
       "position": {
-        "x": 1241,
-        "y": 364
+        "x": 1216,
+        "y": 415
       },
       "params": {
         "op": "multiply",
@@ -1658,8 +1658,8 @@
       "id": "lnd_add9",
       "defType": "math/math",
       "position": {
-        "x": 1528,
-        "y": 172
+        "x": 1500,
+        "y": 305
       },
       "params": {
         "op": "add",
@@ -1671,8 +1671,8 @@
       "id": "lnd_multiply22",
       "defType": "math/math",
       "position": {
-        "x": 1795,
-        "y": 133
+        "x": 1778,
+        "y": 240
       },
       "params": {
         "op": "multiply",
@@ -1687,8 +1687,8 @@
       "id": "lnd_subtract5",
       "defType": "math/math",
       "position": {
-        "x": 2061,
-        "y": 94
+        "x": 2055,
+        "y": 176
       },
       "params": {
         "op": "subtract",
@@ -1703,8 +1703,8 @@
       "id": "lnd_ridge0Line",
       "defType": "vec2/make",
       "position": {
-        "x": 2329,
-        "y": 60
+        "x": 2332,
+        "y": 136
       },
       "params": {},
       "parentId": "lnd_ridge02"
@@ -1713,8 +1713,8 @@
       "id": "lnd_ridge0CornerR",
       "defType": "spread/combine",
       "position": {
-        "x": 2516,
-        "y": 78
+        "x": 2515,
+        "y": 158
       },
       "params": {
         "op": "append"
@@ -1731,8 +1731,8 @@
       "id": "lnd_ridge0CornerL",
       "defType": "spread/combine",
       "position": {
-        "x": 2781,
-        "y": 97
+        "x": 2736,
+        "y": 203
       },
       "params": {
         "op": "append"
@@ -1749,8 +1749,8 @@
       "id": "lnd_ridge0Lit",
       "defType": "color/lerp",
       "position": {
-        "x": 137,
-        "y": 489
+        "x": 159,
+        "y": 348
       },
       "params": {
         "space": "rgb"
@@ -1775,8 +1775,8 @@
       "id": "lnd_ridge0Haze",
       "defType": "color/lerp",
       "position": {
-        "x": 410,
-        "y": 527
+        "x": 435,
+        "y": 427
       },
       "params": {
         "space": "rgb"
@@ -1790,13 +1790,13 @@
       "id": "lnd_ridge12",
       "defType": "meta/subpatch",
       "position": {
-        "x": 4000,
-        "y": 695
+        "x": 4005,
+        "y": 768
       },
       "params": {
         "label": "Ridge 2 · far",
-        "width": 3058,
-        "height": 689
+        "width": 2972,
+        "height": 607
       },
       "ports": [
         {
@@ -1804,53 +1804,53 @@
           "name": "x along",
           "type": "number",
           "direction": "input",
-          "y": 174
+          "y": 117
         },
         {
           "id": "look",
           "name": "look",
           "type": "number",
           "direction": "input",
-          "y": 283
+          "y": 195
         },
         {
           "id": "d",
           "name": "daylight",
           "type": "number",
           "direction": "input",
-          "y": 592
+          "y": 451
         },
         {
           "id": "h",
           "name": "horizon",
           "type": "color",
           "direction": "input",
-          "y": 635
+          "y": 511
         },
         {
           "id": "points",
           "name": "outline",
           "type": "vec2",
           "direction": "output",
-          "y": 174
+          "y": 308
         },
         {
           "id": "colour",
           "name": "colour",
           "type": "color",
           "direction": "output",
-          "y": 475
+          "y": 470
         }
       ],
-      "width": 3058,
-      "height": 689
+      "width": 2972,
+      "height": 607
     },
     {
       "id": "lnd_multiply23",
       "defType": "math/math",
       "position": {
-        "x": 130,
-        "y": 224
+        "x": 131,
+        "y": 136
       },
       "params": {
         "op": "multiply",
@@ -1865,8 +1865,8 @@
       "id": "lnd_add10",
       "defType": "math/math",
       "position": {
-        "x": 403,
-        "y": 171
+        "x": 407,
+        "y": 79
       },
       "params": {
         "op": "add",
@@ -1878,8 +1878,8 @@
       "id": "lnd_multiply24",
       "defType": "math/math",
       "position": {
-        "x": 957,
-        "y": 116
+        "x": 947,
+        "y": 47
       },
       "params": {
         "op": "multiply",
@@ -1894,7 +1894,7 @@
       "id": "lnd_ridge1Shape",
       "defType": "noise/noise",
       "position": {
-        "x": 1242,
+        "x": 1233,
         "y": 40
       },
       "params": {
@@ -1909,8 +1909,8 @@
       "id": "lnd_multiply25",
       "defType": "math/math",
       "position": {
-        "x": 680,
-        "y": 233
+        "x": 678,
+        "y": 165
       },
       "params": {
         "op": "multiply",
@@ -1925,8 +1925,8 @@
       "id": "lnd_ridge1Detail",
       "defType": "noise/noise",
       "position": {
-        "x": 958,
-        "y": 273
+        "x": 964,
+        "y": 213
       },
       "params": {
         "mode": "perlin"
@@ -1940,8 +1940,8 @@
       "id": "lnd_multiply26",
       "defType": "math/math",
       "position": {
-        "x": 1241,
-        "y": 364
+        "x": 1216,
+        "y": 415
       },
       "params": {
         "op": "multiply",
@@ -1956,8 +1956,8 @@
       "id": "lnd_add11",
       "defType": "math/math",
       "position": {
-        "x": 1528,
-        "y": 172
+        "x": 1500,
+        "y": 305
       },
       "params": {
         "op": "add",
@@ -1969,8 +1969,8 @@
       "id": "lnd_multiply27",
       "defType": "math/math",
       "position": {
-        "x": 1795,
-        "y": 133
+        "x": 1778,
+        "y": 240
       },
       "params": {
         "op": "multiply",
@@ -1985,8 +1985,8 @@
       "id": "lnd_subtract6",
       "defType": "math/math",
       "position": {
-        "x": 2061,
-        "y": 94
+        "x": 2055,
+        "y": 176
       },
       "params": {
         "op": "subtract",
@@ -2001,8 +2001,8 @@
       "id": "lnd_ridge1Line",
       "defType": "vec2/make",
       "position": {
-        "x": 2329,
-        "y": 60
+        "x": 2332,
+        "y": 136
       },
       "params": {},
       "parentId": "lnd_ridge12"
@@ -2011,8 +2011,8 @@
       "id": "lnd_ridge1CornerR",
       "defType": "spread/combine",
       "position": {
-        "x": 2516,
-        "y": 78
+        "x": 2515,
+        "y": 158
       },
       "params": {
         "op": "append"
@@ -2029,8 +2029,8 @@
       "id": "lnd_ridge1CornerL",
       "defType": "spread/combine",
       "position": {
-        "x": 2781,
-        "y": 97
+        "x": 2736,
+        "y": 203
       },
       "params": {
         "op": "append"
@@ -2047,8 +2047,8 @@
       "id": "lnd_ridge1Lit",
       "defType": "color/lerp",
       "position": {
-        "x": 137,
-        "y": 489
+        "x": 159,
+        "y": 348
       },
       "params": {
         "space": "rgb"
@@ -2073,8 +2073,8 @@
       "id": "lnd_ridge1Haze",
       "defType": "color/lerp",
       "position": {
-        "x": 410,
-        "y": 527
+        "x": 435,
+        "y": 427
       },
       "params": {
         "space": "rgb"
@@ -2088,13 +2088,13 @@
       "id": "lnd_ridge22",
       "defType": "meta/subpatch",
       "position": {
-        "x": 3988,
-        "y": 1035
+        "x": 3993,
+        "y": 1159
       },
       "params": {
         "label": "Ridge 3 · middle",
-        "width": 3058,
-        "height": 689
+        "width": 2972,
+        "height": 607
       },
       "ports": [
         {
@@ -2102,53 +2102,53 @@
           "name": "x along",
           "type": "number",
           "direction": "input",
-          "y": 174
+          "y": 117
         },
         {
           "id": "look",
           "name": "look",
           "type": "number",
           "direction": "input",
-          "y": 283
+          "y": 195
         },
         {
           "id": "d",
           "name": "daylight",
           "type": "number",
           "direction": "input",
-          "y": 592
+          "y": 451
         },
         {
           "id": "h",
           "name": "horizon",
           "type": "color",
           "direction": "input",
-          "y": 635
+          "y": 511
         },
         {
           "id": "points",
           "name": "outline",
           "type": "vec2",
           "direction": "output",
-          "y": 174
+          "y": 308
         },
         {
           "id": "colour",
           "name": "colour",
           "type": "color",
           "direction": "output",
-          "y": 475
+          "y": 470
         }
       ],
-      "width": 3058,
-      "height": 689
+      "width": 2972,
+      "height": 607
     },
     {
       "id": "lnd_multiply28",
       "defType": "math/math",
       "position": {
-        "x": 130,
-        "y": 224
+        "x": 131,
+        "y": 136
       },
       "params": {
         "op": "multiply",
@@ -2163,8 +2163,8 @@
       "id": "lnd_add12",
       "defType": "math/math",
       "position": {
-        "x": 403,
-        "y": 171
+        "x": 407,
+        "y": 79
       },
       "params": {
         "op": "add",
@@ -2176,8 +2176,8 @@
       "id": "lnd_multiply29",
       "defType": "math/math",
       "position": {
-        "x": 957,
-        "y": 116
+        "x": 947,
+        "y": 47
       },
       "params": {
         "op": "multiply",
@@ -2192,7 +2192,7 @@
       "id": "lnd_ridge2Shape",
       "defType": "noise/noise",
       "position": {
-        "x": 1242,
+        "x": 1233,
         "y": 40
       },
       "params": {
@@ -2207,8 +2207,8 @@
       "id": "lnd_multiply30",
       "defType": "math/math",
       "position": {
-        "x": 680,
-        "y": 233
+        "x": 678,
+        "y": 165
       },
       "params": {
         "op": "multiply",
@@ -2223,8 +2223,8 @@
       "id": "lnd_ridge2Detail",
       "defType": "noise/noise",
       "position": {
-        "x": 958,
-        "y": 273
+        "x": 964,
+        "y": 213
       },
       "params": {
         "mode": "perlin"
@@ -2238,8 +2238,8 @@
       "id": "lnd_multiply31",
       "defType": "math/math",
       "position": {
-        "x": 1241,
-        "y": 364
+        "x": 1216,
+        "y": 415
       },
       "params": {
         "op": "multiply",
@@ -2254,8 +2254,8 @@
       "id": "lnd_add13",
       "defType": "math/math",
       "position": {
-        "x": 1528,
-        "y": 172
+        "x": 1500,
+        "y": 305
       },
       "params": {
         "op": "add",
@@ -2267,8 +2267,8 @@
       "id": "lnd_multiply32",
       "defType": "math/math",
       "position": {
-        "x": 1795,
-        "y": 133
+        "x": 1778,
+        "y": 240
       },
       "params": {
         "op": "multiply",
@@ -2283,8 +2283,8 @@
       "id": "lnd_subtract7",
       "defType": "math/math",
       "position": {
-        "x": 2061,
-        "y": 94
+        "x": 2055,
+        "y": 176
       },
       "params": {
         "op": "subtract",
@@ -2299,8 +2299,8 @@
       "id": "lnd_ridge2Line",
       "defType": "vec2/make",
       "position": {
-        "x": 2329,
-        "y": 60
+        "x": 2332,
+        "y": 136
       },
       "params": {},
       "parentId": "lnd_ridge22"
@@ -2309,8 +2309,8 @@
       "id": "lnd_ridge2CornerR",
       "defType": "spread/combine",
       "position": {
-        "x": 2516,
-        "y": 78
+        "x": 2515,
+        "y": 158
       },
       "params": {
         "op": "append"
@@ -2327,8 +2327,8 @@
       "id": "lnd_ridge2CornerL",
       "defType": "spread/combine",
       "position": {
-        "x": 2781,
-        "y": 97
+        "x": 2736,
+        "y": 203
       },
       "params": {
         "op": "append"
@@ -2345,8 +2345,8 @@
       "id": "lnd_ridge2Lit",
       "defType": "color/lerp",
       "position": {
-        "x": 137,
-        "y": 489
+        "x": 159,
+        "y": 348
       },
       "params": {
         "space": "rgb"
@@ -2371,8 +2371,8 @@
       "id": "lnd_ridge2Haze",
       "defType": "color/lerp",
       "position": {
-        "x": 410,
-        "y": 527
+        "x": 435,
+        "y": 427
       },
       "params": {
         "space": "rgb"
@@ -2386,13 +2386,13 @@
       "id": "lnd_ridge32",
       "defType": "meta/subpatch",
       "position": {
-        "x": 3995,
-        "y": 1205
+        "x": 4000,
+        "y": 1363
       },
       "params": {
         "label": "Ridge 4 · near",
-        "width": 3058,
-        "height": 689
+        "width": 2972,
+        "height": 607
       },
       "ports": [
         {
@@ -2400,53 +2400,53 @@
           "name": "x along",
           "type": "number",
           "direction": "input",
-          "y": 174
+          "y": 117
         },
         {
           "id": "look",
           "name": "look",
           "type": "number",
           "direction": "input",
-          "y": 283
+          "y": 195
         },
         {
           "id": "d",
           "name": "daylight",
           "type": "number",
           "direction": "input",
-          "y": 592
+          "y": 451
         },
         {
           "id": "h",
           "name": "horizon",
           "type": "color",
           "direction": "input",
-          "y": 635
+          "y": 511
         },
         {
           "id": "points",
           "name": "outline",
           "type": "vec2",
           "direction": "output",
-          "y": 174
+          "y": 308
         },
         {
           "id": "colour",
           "name": "colour",
           "type": "color",
           "direction": "output",
-          "y": 475
+          "y": 470
         }
       ],
-      "width": 3058,
-      "height": 689
+      "width": 2972,
+      "height": 607
     },
     {
       "id": "lnd_multiply33",
       "defType": "math/math",
       "position": {
-        "x": 130,
-        "y": 224
+        "x": 131,
+        "y": 136
       },
       "params": {
         "op": "multiply",
@@ -2461,8 +2461,8 @@
       "id": "lnd_add14",
       "defType": "math/math",
       "position": {
-        "x": 403,
-        "y": 171
+        "x": 407,
+        "y": 79
       },
       "params": {
         "op": "add",
@@ -2474,8 +2474,8 @@
       "id": "lnd_multiply34",
       "defType": "math/math",
       "position": {
-        "x": 957,
-        "y": 116
+        "x": 947,
+        "y": 47
       },
       "params": {
         "op": "multiply",
@@ -2490,7 +2490,7 @@
       "id": "lnd_ridge3Shape",
       "defType": "noise/noise",
       "position": {
-        "x": 1242,
+        "x": 1233,
         "y": 40
       },
       "params": {
@@ -2505,8 +2505,8 @@
       "id": "lnd_multiply35",
       "defType": "math/math",
       "position": {
-        "x": 680,
-        "y": 233
+        "x": 678,
+        "y": 165
       },
       "params": {
         "op": "multiply",
@@ -2521,8 +2521,8 @@
       "id": "lnd_ridge3Detail",
       "defType": "noise/noise",
       "position": {
-        "x": 958,
-        "y": 273
+        "x": 964,
+        "y": 213
       },
       "params": {
         "mode": "perlin"
@@ -2536,8 +2536,8 @@
       "id": "lnd_multiply36",
       "defType": "math/math",
       "position": {
-        "x": 1241,
-        "y": 364
+        "x": 1216,
+        "y": 415
       },
       "params": {
         "op": "multiply",
@@ -2552,8 +2552,8 @@
       "id": "lnd_add15",
       "defType": "math/math",
       "position": {
-        "x": 1528,
-        "y": 172
+        "x": 1500,
+        "y": 305
       },
       "params": {
         "op": "add",
@@ -2565,8 +2565,8 @@
       "id": "lnd_multiply37",
       "defType": "math/math",
       "position": {
-        "x": 1795,
-        "y": 133
+        "x": 1778,
+        "y": 240
       },
       "params": {
         "op": "multiply",
@@ -2581,8 +2581,8 @@
       "id": "lnd_subtract8",
       "defType": "math/math",
       "position": {
-        "x": 2061,
-        "y": 94
+        "x": 2055,
+        "y": 176
       },
       "params": {
         "op": "subtract",
@@ -2597,8 +2597,8 @@
       "id": "lnd_ridge3Line",
       "defType": "vec2/make",
       "position": {
-        "x": 2329,
-        "y": 60
+        "x": 2332,
+        "y": 136
       },
       "params": {},
       "parentId": "lnd_ridge32"
@@ -2607,8 +2607,8 @@
       "id": "lnd_ridge3CornerR",
       "defType": "spread/combine",
       "position": {
-        "x": 2516,
-        "y": 78
+        "x": 2515,
+        "y": 158
       },
       "params": {
         "op": "append"
@@ -2625,8 +2625,8 @@
       "id": "lnd_ridge3CornerL",
       "defType": "spread/combine",
       "position": {
-        "x": 2781,
-        "y": 97
+        "x": 2736,
+        "y": 203
       },
       "params": {
         "op": "append"
@@ -2643,8 +2643,8 @@
       "id": "lnd_ridge3Lit",
       "defType": "color/lerp",
       "position": {
-        "x": 137,
-        "y": 489
+        "x": 159,
+        "y": 348
       },
       "params": {
         "space": "rgb"
@@ -2669,8 +2669,8 @@
       "id": "lnd_ridge3Haze",
       "defType": "color/lerp",
       "position": {
-        "x": 410,
-        "y": 527
+        "x": 435,
+        "y": 427
       },
       "params": {
         "space": "rgb"
@@ -2684,13 +2684,13 @@
       "id": "lnd_ridge42",
       "defType": "meta/subpatch",
       "position": {
-        "x": 3986,
-        "y": 1545
+        "x": 3991,
+        "y": 1755
       },
       "params": {
         "label": "Ridge 5 · nearest",
-        "width": 3058,
-        "height": 689
+        "width": 2972,
+        "height": 607
       },
       "ports": [
         {
@@ -2698,53 +2698,53 @@
           "name": "x along",
           "type": "number",
           "direction": "input",
-          "y": 174
+          "y": 117
         },
         {
           "id": "look",
           "name": "look",
           "type": "number",
           "direction": "input",
-          "y": 283
+          "y": 195
         },
         {
           "id": "d",
           "name": "daylight",
           "type": "number",
           "direction": "input",
-          "y": 592
+          "y": 451
         },
         {
           "id": "h",
           "name": "horizon",
           "type": "color",
           "direction": "input",
-          "y": 635
+          "y": 511
         },
         {
           "id": "points",
           "name": "outline",
           "type": "vec2",
           "direction": "output",
-          "y": 174
+          "y": 308
         },
         {
           "id": "colour",
           "name": "colour",
           "type": "color",
           "direction": "output",
-          "y": 475
+          "y": 470
         }
       ],
-      "width": 3058,
-      "height": 689
+      "width": 2972,
+      "height": 607
     },
     {
       "id": "lnd_multiply38",
       "defType": "math/math",
       "position": {
-        "x": 130,
-        "y": 224
+        "x": 131,
+        "y": 136
       },
       "params": {
         "op": "multiply",
@@ -2759,8 +2759,8 @@
       "id": "lnd_add16",
       "defType": "math/math",
       "position": {
-        "x": 403,
-        "y": 171
+        "x": 407,
+        "y": 79
       },
       "params": {
         "op": "add",
@@ -2772,8 +2772,8 @@
       "id": "lnd_multiply39",
       "defType": "math/math",
       "position": {
-        "x": 957,
-        "y": 116
+        "x": 947,
+        "y": 47
       },
       "params": {
         "op": "multiply",
@@ -2788,7 +2788,7 @@
       "id": "lnd_ridge4Shape",
       "defType": "noise/noise",
       "position": {
-        "x": 1242,
+        "x": 1233,
         "y": 40
       },
       "params": {
@@ -2803,8 +2803,8 @@
       "id": "lnd_multiply40",
       "defType": "math/math",
       "position": {
-        "x": 680,
-        "y": 233
+        "x": 678,
+        "y": 165
       },
       "params": {
         "op": "multiply",
@@ -2819,8 +2819,8 @@
       "id": "lnd_ridge4Detail",
       "defType": "noise/noise",
       "position": {
-        "x": 958,
-        "y": 273
+        "x": 964,
+        "y": 213
       },
       "params": {
         "mode": "perlin"
@@ -2834,8 +2834,8 @@
       "id": "lnd_multiply41",
       "defType": "math/math",
       "position": {
-        "x": 1241,
-        "y": 364
+        "x": 1216,
+        "y": 415
       },
       "params": {
         "op": "multiply",
@@ -2850,8 +2850,8 @@
       "id": "lnd_add17",
       "defType": "math/math",
       "position": {
-        "x": 1528,
-        "y": 172
+        "x": 1500,
+        "y": 305
       },
       "params": {
         "op": "add",
@@ -2863,8 +2863,8 @@
       "id": "lnd_multiply42",
       "defType": "math/math",
       "position": {
-        "x": 1795,
-        "y": 133
+        "x": 1778,
+        "y": 240
       },
       "params": {
         "op": "multiply",
@@ -2879,8 +2879,8 @@
       "id": "lnd_subtract9",
       "defType": "math/math",
       "position": {
-        "x": 2061,
-        "y": 94
+        "x": 2055,
+        "y": 176
       },
       "params": {
         "op": "subtract",
@@ -2895,8 +2895,8 @@
       "id": "lnd_ridge4Line",
       "defType": "vec2/make",
       "position": {
-        "x": 2329,
-        "y": 60
+        "x": 2332,
+        "y": 136
       },
       "params": {},
       "parentId": "lnd_ridge42"
@@ -2905,8 +2905,8 @@
       "id": "lnd_ridge4CornerR",
       "defType": "spread/combine",
       "position": {
-        "x": 2516,
-        "y": 78
+        "x": 2515,
+        "y": 158
       },
       "params": {
         "op": "append"
@@ -2923,8 +2923,8 @@
       "id": "lnd_ridge4CornerL",
       "defType": "spread/combine",
       "position": {
-        "x": 2781,
-        "y": 97
+        "x": 2736,
+        "y": 203
       },
       "params": {
         "op": "append"
@@ -2941,8 +2941,8 @@
       "id": "lnd_ridge4Lit",
       "defType": "color/lerp",
       "position": {
-        "x": 137,
-        "y": 489
+        "x": 159,
+        "y": 348
       },
       "params": {
         "space": "rgb"
@@ -2967,8 +2967,8 @@
       "id": "lnd_ridge4Haze",
       "defType": "color/lerp",
       "position": {
-        "x": 410,
-        "y": 527
+        "x": 435,
+        "y": 427
       },
       "params": {
         "space": "rgb"
@@ -2982,8 +2982,8 @@
       "id": "lnd_fog1Colour",
       "defType": "color/lerp",
       "position": {
-        "x": 4010,
-        "y": 865
+        "x": 4036,
+        "y": 972
       },
       "params": {
         "space": "rgb"
@@ -3002,8 +3002,8 @@
       "id": "lnd_fog3Colour",
       "defType": "color/lerp",
       "position": {
-        "x": 4010,
-        "y": 1375
+        "x": 4036,
+        "y": 1567
       },
       "params": {
         "space": "rgb"

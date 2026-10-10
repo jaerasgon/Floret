@@ -31,7 +31,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 475
+        "y": 416
       },
       "params": {
         "value": 0.4,
@@ -49,7 +49,7 @@
       "defType": "io/toggle",
       "position": {
         "x": 0,
-        "y": 601
+        "y": 560
       },
       "params": {
         "value": true
@@ -63,7 +63,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 263
+        "y": 41
       },
       "params": {
         "value": 7,
@@ -80,8 +80,8 @@
       "id": "cty_blocks",
       "defType": "geometry/cells",
       "position": {
-        "x": 281,
-        "y": 178
+        "x": 297,
+        "y": 0
       },
       "params": {
         "mode": "subdivide"
@@ -107,12 +107,12 @@
       "id": "cty_each",
       "defType": "region/foreach",
       "position": {
-        "x": 616,
-        "y": 286
+        "x": 619,
+        "y": 245
       },
       "params": {
-        "width": 1268,
-        "height": 450,
+        "width": 1146,
+        "height": 643,
         "label": "ForEach block"
       },
       "ports": [
@@ -121,46 +121,46 @@
           "name": "cell",
           "type": "layer",
           "direction": "input",
-          "y": 371
+          "y": 260
         },
         {
           "id": "c",
           "name": "c",
           "type": "vec2",
           "direction": "input",
-          "y": 156
+          "y": 240
         },
         {
           "id": "sh",
           "name": "shadow",
           "type": "layer",
           "direction": "output",
-          "y": 94
+          "y": 437
         },
         {
           "id": "roof",
           "name": "roof",
           "type": "layer",
           "direction": "output",
-          "y": 203
+          "y": 227
         },
         {
           "id": "lot",
           "name": "building",
           "type": "layer",
           "direction": "output",
-          "y": 312
+          "y": 335
         }
       ],
-      "width": 1268,
-      "height": 450
+      "width": 1146,
+      "height": 643
     },
     {
       "id": "cty_roofFill",
       "defType": "style/fill",
       "position": {
-        "x": 464,
-        "y": 53
+        "x": 422,
+        "y": 173
       },
       "params": {},
       "parentId": "cty_each",
@@ -170,8 +170,8 @@
       "id": "cty_roof",
       "defType": "geometry/path-ops",
       "position": {
-        "x": 737,
-        "y": 166
+        "x": 659,
+        "y": 40
       },
       "params": {
         "mode": "offset"
@@ -186,8 +186,8 @@
       "id": "cty_shadowFill",
       "defType": "style/fill",
       "position": {
-        "x": 179,
-        "y": 332
+        "x": 167,
+        "y": 433
       },
       "params": {},
       "parentId": "cty_each",
@@ -197,8 +197,8 @@
       "id": "cty_shadowShape",
       "defType": "geometry/path-ops",
       "position": {
-        "x": 411,
-        "y": 211
+        "x": 385,
+        "y": 348
       },
       "params": {
         "mode": "offset"
@@ -213,8 +213,8 @@
       "id": "cty_castShadow",
       "defType": "transform/translate",
       "position": {
-        "x": 778,
-        "y": 40
+        "x": 683,
+        "y": 353
       },
       "params": {},
       "parentId": "cty_each",
@@ -224,8 +224,8 @@
       "id": "cty_buildingOnly",
       "defType": "transform/translate",
       "position": {
-        "x": 1045,
-        "y": 275
+        "x": 924,
+        "y": 251
       },
       "params": {},
       "parentId": "cty_each",
@@ -235,7 +235,7 @@
       "id": "cty_windowSpots",
       "defType": "geometry/scatter",
       "position": {
-        "x": 2012,
+        "x": 1904,
         "y": 489
       },
       "params": {
@@ -250,12 +250,12 @@
       "id": "cty_windows",
       "defType": "region/foreach",
       "position": {
-        "x": 2744,
-        "y": 130
+        "x": 2563,
+        "y": 224
       },
       "params": {
-        "width": 518,
-        "height": 262,
+        "width": 551,
+        "height": 280,
         "label": "ForEach window"
       },
       "ports": [
@@ -271,7 +271,7 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 89
+          "y": 167
         },
         {
           "id": "c",
@@ -281,8 +281,8 @@
           "y": 137
         }
       ],
-      "width": 518,
-      "height": 262
+      "width": 551,
+      "height": 280
     },
     {
       "id": "cty_windowStroke",
@@ -301,8 +301,8 @@
       "id": "cty_window",
       "defType": "draw/point",
       "position": {
-        "x": 321,
-        "y": 52
+        "x": 354,
+        "y": 82
       },
       "params": {},
       "parentId": "cty_windows",
@@ -312,8 +312,8 @@
       "id": "cty_streetLines",
       "defType": "geometry/path-ops",
       "position": {
-        "x": 2355,
-        "y": 567
+        "x": 2199,
+        "y": 620
       },
       "params": {
         "mode": "offset"
@@ -327,8 +327,8 @@
       "id": "cty_lampSpots",
       "defType": "geometry/path-ops",
       "position": {
-        "x": 2906,
-        "y": 440
+        "x": 2760,
+        "y": 552
       },
       "params": {
         "mode": "resample"
@@ -341,8 +341,8 @@
       "id": "cty_lampStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 2956,
-        "y": 654
+        "x": 2780,
+        "y": 833
       },
       "params": {},
       "portValues": {
@@ -353,12 +353,12 @@
       "id": "cty_lamps",
       "defType": "region/foreach",
       "position": {
-        "x": 3378,
-        "y": 475
+        "x": 3246,
+        "y": 635
       },
       "params": {
         "width": 325,
-        "height": 158,
+        "height": 178,
         "label": "ForEach lamp"
       },
       "ports": [
@@ -374,11 +374,11 @@
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 124
         }
       ],
       "width": 325,
-      "height": 158
+      "height": 178
     },
     {
       "id": "cty_lamp",
@@ -395,8 +395,8 @@
       "id": "cty_headStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 2956,
-        "y": 856
+        "x": 2780,
+        "y": 1052
       },
       "params": {},
       "portValues": {
@@ -407,8 +407,8 @@
       "id": "cty_headlights",
       "defType": "geometry/trim",
       "position": {
-        "x": 3459,
-        "y": 681
+        "x": 3344,
+        "y": 861
       },
       "params": {
         "mode": "each"
@@ -422,8 +422,8 @@
       "id": "cty_tailStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 3494,
-        "y": 1086
+        "x": 3350,
+        "y": 1363
       },
       "params": {},
       "portValues": {
@@ -434,8 +434,8 @@
       "id": "cty_taillights",
       "defType": "geometry/trim",
       "position": {
-        "x": 3831,
-        "y": 798
+        "x": 3733,
+        "y": 1056
       },
       "params": {
         "mode": "each"
@@ -449,8 +449,8 @@
       "id": "cty_groundFill",
       "defType": "style/fill",
       "position": {
-        "x": 4178,
-        "y": 41
+        "x": 4088,
+        "y": 183
       },
       "params": {},
       "portValues": {}
@@ -459,8 +459,8 @@
       "id": "cty_ground",
       "defType": "draw/rect",
       "position": {
-        "x": 4453,
-        "y": 0
+        "x": 4355,
+        "y": 182
       },
       "params": {
         "anchor": "center"
@@ -479,8 +479,8 @@
       "id": "cty_lights",
       "defType": "transform/group",
       "position": {
-        "x": 4137,
-        "y": 501
+        "x": 4046,
+        "y": 774
       },
       "params": {
         "slotCount": 4
@@ -491,8 +491,8 @@
       "id": "cty_bloom",
       "defType": "gpu/effect",
       "position": {
-        "x": 4423,
-        "y": 333
+        "x": 4349,
+        "y": 579
       },
       "params": {
         "mode": "bloom"
@@ -507,8 +507,8 @@
       "id": "cty_scene",
       "defType": "transform/group",
       "position": {
-        "x": 4710,
-        "y": 121
+        "x": 4619,
+        "y": 363
       },
       "params": {
         "slotCount": 4
@@ -519,8 +519,8 @@
       "id": "cty_r",
       "defType": "render/renderer",
       "position": {
-        "x": 4974,
-        "y": 121
+        "x": 4883,
+        "y": 454
       },
       "params": {
         "width": 640,
@@ -547,8 +547,8 @@
       "id": "cty_time",
       "defType": "time/seconds",
       "position": {
-        "x": 130,
-        "y": 182
+        "x": 129,
+        "y": 90
       },
       "params": {},
       "parentId": "cty_dayNight"
@@ -557,8 +557,8 @@
       "id": "cty_divide",
       "defType": "math/math",
       "position": {
-        "x": 325,
-        "y": 256
+        "x": 317,
+        "y": 118
       },
       "params": {
         "op": "divide",
@@ -573,8 +573,8 @@
       "id": "cty_add",
       "defType": "math/math",
       "position": {
-        "x": 596,
-        "y": 219
+        "x": 588,
+        "y": 152
       },
       "params": {
         "op": "add",
@@ -586,8 +586,8 @@
       "id": "cty_dayRuns",
       "defType": "math/math",
       "position": {
-        "x": 868,
-        "y": 249
+        "x": 859,
+        "y": 154
       },
       "params": {
         "op": "fract",
@@ -599,8 +599,8 @@
       "id": "cty_tod",
       "defType": "logic/select",
       "position": {
-        "x": 1122,
-        "y": 247
+        "x": 1079,
+        "y": 144
       },
       "params": {},
       "parentId": "cty_dayNight"
@@ -609,8 +609,8 @@
       "id": "cty_subtract",
       "defType": "math/math",
       "position": {
-        "x": 1331,
-        "y": 213
+        "x": 1274,
+        "y": 148
       },
       "params": {
         "op": "subtract",
@@ -625,8 +625,8 @@
       "id": "cty_multiply",
       "defType": "math/math",
       "position": {
-        "x": 1602,
-        "y": 238
+        "x": 1542,
+        "y": 177
       },
       "params": {
         "op": "multiply",
@@ -641,8 +641,8 @@
       "id": "cty_sunHeight",
       "defType": "math/math",
       "position": {
-        "x": 1876,
-        "y": 279
+        "x": 1809,
+        "y": 221
       },
       "params": {
         "op": "sin",
@@ -654,8 +654,8 @@
       "id": "cty_daylight",
       "defType": "math/smoothstep",
       "position": {
-        "x": 2162,
-        "y": 188
+        "x": 2068,
+        "y": 134
       },
       "params": {
         "mode": "step"
@@ -670,7 +670,7 @@
       "id": "cty_night",
       "defType": "math/math",
       "position": {
-        "x": 2454,
+        "x": 2351,
         "y": 40
       },
       "params": {
@@ -686,13 +686,13 @@
       "id": "cty_shadowDir",
       "defType": "meta/subpatch",
       "position": {
-        "x": 2137,
-        "y": 358
+        "x": 2028,
+        "y": 321
       },
       "params": {
         "label": "Shadow direction",
-        "width": 1467,
-        "height": 544
+        "width": 1405,
+        "height": 529
       },
       "ports": [
         {
@@ -700,33 +700,33 @@
           "name": "time of day",
           "type": "number",
           "direction": "input",
-          "y": 167
+          "y": 108
         },
         {
           "id": "ev",
           "name": "sun height",
           "type": "number",
           "direction": "input",
-          "y": 389
+          "y": 347
         },
         {
           "id": "dir",
           "name": "shadow per unit",
           "type": "vec2",
           "direction": "output",
-          "y": 187
+          "y": 384
         }
       ],
-      "width": 1467,
-      "height": 544,
+      "width": 1405,
+      "height": 529,
       "parentId": "cty_dayNight"
     },
     {
       "id": "cty_multiply2",
       "defType": "math/math",
       "position": {
-        "x": 140,
-        "y": 108
+        "x": 134,
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -741,8 +741,8 @@
       "id": "cty_sunAcross",
       "defType": "math/math",
       "position": {
-        "x": 699,
-        "y": 40
+        "x": 703,
+        "y": 50
       },
       "params": {
         "op": "cos",
@@ -754,7 +754,7 @@
       "id": "cty_sunAlong",
       "defType": "math/math",
       "position": {
-        "x": 428,
+        "x": 435,
         "y": 143
       },
       "params": {
@@ -767,8 +767,8 @@
       "id": "cty_multiply3",
       "defType": "math/math",
       "position": {
-        "x": 690,
-        "y": 166
+        "x": 675,
+        "y": 193
       },
       "params": {
         "op": "multiply",
@@ -783,8 +783,8 @@
       "id": "cty_sunGround",
       "defType": "vec2/make",
       "position": {
-        "x": 976,
-        "y": 119
+        "x": 955,
+        "y": 181
       },
       "params": {},
       "parentId": "cty_shadowDir"
@@ -793,8 +793,8 @@
       "id": "cty_sunUp",
       "defType": "logic/compare",
       "position": {
-        "x": 134,
-        "y": 256
+        "x": 147,
+        "y": 206
       },
       "params": {
         "op": "greater"
@@ -808,8 +808,8 @@
       "id": "cty_sunHeightSafe",
       "defType": "math/math",
       "position": {
-        "x": 140,
-        "y": 404
+        "x": 134,
+        "y": 371
       },
       "params": {
         "op": "max",
@@ -824,8 +824,8 @@
       "id": "cty_divide2",
       "defType": "math/math",
       "position": {
-        "x": 419,
-        "y": 359
+        "x": 407,
+        "y": 365
       },
       "params": {
         "op": "divide",
@@ -840,8 +840,8 @@
       "id": "cty_shadowLength",
       "defType": "math/math",
       "position": {
-        "x": 690,
-        "y": 314
+        "x": 675,
+        "y": 359
       },
       "params": {
         "op": "min",
@@ -856,8 +856,8 @@
       "id": "cty_shadowIfDay",
       "defType": "logic/select",
       "position": {
-        "x": 966,
-        "y": 248
+        "x": 952,
+        "y": 324
       },
       "params": {},
       "parentId": "cty_shadowDir",
@@ -869,8 +869,8 @@
       "id": "cty_shadowPerUnit",
       "defType": "vec2/math",
       "position": {
-        "x": 1175,
-        "y": 150
+        "x": 1151,
+        "y": 278
       },
       "params": {
         "op": "scale"
@@ -881,8 +881,8 @@
       "id": "cty_multiply4",
       "defType": "math/math",
       "position": {
-        "x": 2454,
-        "y": 188
+        "x": 2351,
+        "y": 206
       },
       "params": {
         "op": "multiply",
@@ -897,8 +897,8 @@
       "id": "cty_multiply5",
       "defType": "math/math",
       "position": {
-        "x": 2722,
-        "y": 164
+        "x": 2620,
+        "y": 218
       },
       "params": {
         "op": "multiply",
@@ -913,8 +913,8 @@
       "id": "cty_shadowColour",
       "defType": "color/set-alpha",
       "position": {
-        "x": 2991,
-        "y": 141
+        "x": 2887,
+        "y": 246
       },
       "params": {},
       "portValues": {
@@ -931,8 +931,8 @@
       "id": "cty_multiply6",
       "defType": "math/math",
       "position": {
-        "x": 130,
-        "y": 214
+        "x": 134,
+        "y": 228
       },
       "params": {
         "op": "multiply",
@@ -947,8 +947,8 @@
       "id": "cty_add2",
       "defType": "math/math",
       "position": {
-        "x": 400,
-        "y": 223
+        "x": 402,
+        "y": 260
       },
       "params": {
         "op": "add",
@@ -963,8 +963,8 @@
       "id": "cty_randSin",
       "defType": "math/math",
       "position": {
-        "x": 669,
-        "y": 232
+        "x": 670,
+        "y": 292
       },
       "params": {
         "op": "sin",
@@ -976,8 +976,8 @@
       "id": "cty_multiply7",
       "defType": "math/math",
       "position": {
-        "x": 920,
-        "y": 242
+        "x": 882,
+        "y": 303
       },
       "params": {
         "op": "multiply",
@@ -992,8 +992,8 @@
       "id": "cty_rand",
       "defType": "math/math",
       "position": {
-        "x": 1189,
-        "y": 252
+        "x": 1150,
+        "y": 337
       },
       "params": {
         "op": "fract",
@@ -1005,8 +1005,8 @@
       "id": "cty_isPark",
       "defType": "logic/compare",
       "position": {
-        "x": 1455,
-        "y": 110
+        "x": 1386,
+        "y": 262
       },
       "params": {
         "op": "less"
@@ -1020,8 +1020,8 @@
       "id": "cty_downtown",
       "defType": "noise/noise",
       "position": {
-        "x": 131,
-        "y": 362
+        "x": 152,
+        "y": 393
       },
       "params": {
         "mode": "gaussian"
@@ -1040,8 +1040,8 @@
       "id": "cty_multiply8",
       "defType": "math/math",
       "position": {
-        "x": 1462,
-        "y": 342
+        "x": 1373,
+        "y": 428
       },
       "params": {
         "op": "multiply",
@@ -1056,8 +1056,8 @@
       "id": "cty_add3",
       "defType": "math/math",
       "position": {
-        "x": 1749,
-        "y": 348
+        "x": 1652,
+        "y": 444
       },
       "params": {
         "op": "add",
@@ -1072,8 +1072,8 @@
       "id": "cty_multiply9",
       "defType": "math/math",
       "position": {
-        "x": 2018,
-        "y": 299
+        "x": 1921,
+        "y": 489
       },
       "params": {
         "op": "multiply",
@@ -1085,8 +1085,8 @@
       "id": "cty_add4",
       "defType": "math/math",
       "position": {
-        "x": 2291,
-        "y": 316
+        "x": 2193,
+        "y": 462
       },
       "params": {
         "op": "add",
@@ -1101,8 +1101,8 @@
       "id": "cty_height",
       "defType": "logic/select",
       "position": {
-        "x": 2561,
-        "y": 292
+        "x": 2467,
+        "y": 423
       },
       "params": {},
       "parentId": "cty_blockRules",
@@ -1114,8 +1114,8 @@
       "id": "cty_parkColour",
       "defType": "color/lerp",
       "position": {
-        "x": 137,
-        "y": 44
+        "x": 162,
+        "y": 40
       },
       "params": {
         "space": "rgb"
@@ -1140,8 +1140,8 @@
       "id": "cty_divide3",
       "defType": "math/math",
       "position": {
-        "x": 2782,
-        "y": 195
+        "x": 2670,
+        "y": 367
       },
       "params": {
         "op": "divide",
@@ -1156,8 +1156,8 @@
       "id": "cty_tallness",
       "defType": "math/clamp",
       "position": {
-        "x": 3054,
-        "y": 211
+        "x": 2940,
+        "y": 397
       },
       "params": {
         "valueType": "number"
@@ -1172,8 +1172,8 @@
       "id": "cty_concrete",
       "defType": "color/lerp",
       "position": {
-        "x": 3250,
-        "y": 191
+        "x": 3135,
+        "y": 361
       },
       "params": {
         "space": "rgb"
@@ -1198,8 +1198,8 @@
       "id": "cty_roofLit",
       "defType": "color/lerp",
       "position": {
-        "x": 3509,
-        "y": 203
+        "x": 3364,
+        "y": 310
       },
       "params": {
         "space": "rgb"
@@ -1218,8 +1218,8 @@
       "id": "cty_roofColour",
       "defType": "logic/select",
       "position": {
-        "x": 3763,
-        "y": 133
+        "x": 3588,
+        "y": 248
       },
       "params": {},
       "parentId": "cty_blockRules"
@@ -1228,8 +1228,8 @@
       "id": "cty_shadowOffset",
       "defType": "vec2/math",
       "position": {
-        "x": 2776,
-        "y": 343
+        "x": 2683,
+        "y": 533
       },
       "params": {
         "op": "scale"
@@ -1240,8 +1240,8 @@
       "id": "cty_parkAway",
       "defType": "logic/select",
       "position": {
-        "x": 1780,
-        "y": 40
+        "x": 1690,
+        "y": 235
       },
       "params": {},
       "parentId": "cty_blockRules",
@@ -1260,8 +1260,8 @@
       "id": "cty_count",
       "defType": "spread/count",
       "position": {
-        "x": 168,
-        "y": 58
+        "x": 162,
+        "y": 43
       },
       "params": {},
       "parentId": "cty_glow"
@@ -1270,8 +1270,8 @@
       "id": "cty_windowNumber",
       "defType": "spread/range",
       "position": {
-        "x": 439,
-        "y": 68
+        "x": 435,
+        "y": 52
       },
       "params": {},
       "parentId": "cty_glow"
@@ -1280,8 +1280,8 @@
       "id": "cty_multiply10",
       "defType": "math/math",
       "position": {
-        "x": 694,
-        "y": 56
+        "x": 695,
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -1297,7 +1297,7 @@
       "defType": "math/math",
       "position": {
         "x": 963,
-        "y": 64
+        "y": 72
       },
       "params": {
         "op": "sin",
@@ -1309,8 +1309,8 @@
       "id": "cty_multiply11",
       "defType": "math/math",
       "position": {
-        "x": 1213,
-        "y": 71
+        "x": 1175,
+        "y": 83
       },
       "params": {
         "op": "multiply",
@@ -1325,8 +1325,8 @@
       "id": "cty_windowHash",
       "defType": "math/math",
       "position": {
-        "x": 1482,
-        "y": 78
+        "x": 1443,
+        "y": 116
       },
       "params": {
         "op": "fract",
@@ -1338,8 +1338,8 @@
       "id": "cty_windowOn",
       "defType": "logic/compare",
       "position": {
-        "x": 1732,
-        "y": 84
+        "x": 1654,
+        "y": 127
       },
       "params": {
         "op": "less"
@@ -1353,8 +1353,8 @@
       "id": "cty_windowBright",
       "defType": "logic/select",
       "position": {
-        "x": 2011,
-        "y": 98
+        "x": 1901,
+        "y": 255
       },
       "params": {},
       "portValues": {
@@ -1367,8 +1367,8 @@
       "id": "cty_multiply12",
       "defType": "math/math",
       "position": {
-        "x": 2216,
-        "y": 40
+        "x": 2100,
+        "y": 204
       },
       "params": {
         "op": "multiply",
@@ -1380,8 +1380,8 @@
       "id": "cty_multiply13",
       "defType": "math/math",
       "position": {
-        "x": 2485,
-        "y": 53
+        "x": 2366,
+        "y": 242
       },
       "params": {
         "op": "multiply",
@@ -1396,8 +1396,8 @@
       "id": "cty_windowLight",
       "defType": "color/set-alpha",
       "position": {
-        "x": 2755,
-        "y": 67
+        "x": 2631,
+        "y": 280
       },
       "params": {},
       "portValues": {
@@ -1414,8 +1414,8 @@
       "id": "cty_multiply14",
       "defType": "math/math",
       "position": {
-        "x": 152,
-        "y": 162
+        "x": 146,
+        "y": 164
       },
       "params": {
         "op": "multiply",
@@ -1430,8 +1430,8 @@
       "id": "cty_multiply15",
       "defType": "math/math",
       "position": {
-        "x": 424,
-        "y": 183
+        "x": 420,
+        "y": 178
       },
       "params": {
         "op": "multiply",
@@ -1446,8 +1446,8 @@
       "id": "cty_lampLight",
       "defType": "color/set-alpha",
       "position": {
-        "x": 711,
-        "y": 204
+        "x": 721,
+        "y": 302
       },
       "params": {},
       "portValues": {
@@ -1464,8 +1464,8 @@
       "id": "cty_multiply16",
       "defType": "math/math",
       "position": {
-        "x": 152,
-        "y": 650
+        "x": 146,
+        "y": 705
       },
       "params": {
         "op": "multiply",
@@ -1480,8 +1480,8 @@
       "id": "cty_traffic",
       "defType": "math/math",
       "position": {
-        "x": 433,
-        "y": 577
+        "x": 448,
+        "y": 690
       },
       "params": {
         "op": "fract",
@@ -1493,8 +1493,8 @@
       "id": "cty_headlightColour",
       "defType": "color/lerp",
       "position": {
-        "x": 159,
-        "y": 310
+        "x": 174,
+        "y": 330
       },
       "params": {
         "space": "rgb"
@@ -1519,8 +1519,8 @@
       "id": "cty_taillightColour",
       "defType": "color/lerp",
       "position": {
-        "x": 159,
-        "y": 480
+        "x": 174,
+        "y": 517
       },
       "params": {
         "space": "rgb"
@@ -1545,8 +1545,8 @@
       "id": "cty_add5",
       "defType": "math/math",
       "position": {
-        "x": 2919,
-        "y": 1026
+        "x": 2755,
+        "y": 1240
       },
       "params": {
         "op": "add",
@@ -1560,8 +1560,8 @@
       "id": "cty_tailOffset",
       "defType": "math/math",
       "position": {
-        "x": 3466,
-        "y": 960
+        "x": 3352,
+        "y": 1219
       },
       "params": {
         "op": "fract",
@@ -1598,13 +1598,13 @@
       "id": "cty_dayNight",
       "defType": "meta/subpatch",
       "position": {
-        "x": 274,
-        "y": 546
+        "x": 272,
+        "y": 519
       },
       "params": {
         "label": "Day and night",
-        "width": 3240,
-        "height": 476
+        "width": 3118,
+        "height": 457
       },
       "ports": [
         {
@@ -1612,65 +1612,65 @@
           "name": "time of day",
           "type": "number",
           "direction": "input",
-          "y": 315
+          "y": 275
         },
         {
           "id": "autoDay",
           "name": "auto day",
           "type": "boolean",
           "direction": "input",
-          "y": 158
+          "y": 79
         },
         {
           "id": "shadowColour",
           "name": "shadow colour",
           "type": "color",
           "direction": "output",
-          "y": 178
+          "y": 329
         },
         {
           "id": "daylight",
           "name": "daylight",
           "type": "number",
           "direction": "output",
-          "y": 309
+          "y": 365
         },
         {
           "id": "shadowDir",
           "name": "shadow dir",
           "type": "vec2",
           "direction": "output",
-          "y": 386
+          "y": 397
         },
         {
           "id": "night",
           "name": "night",
           "type": "number",
           "direction": "output",
-          "y": 127
+          "y": 141
         },
         {
           "id": "time",
           "name": "time",
           "type": "number",
           "direction": "output",
-          "y": 107
+          "y": 79
         }
       ],
-      "width": 3240,
-      "height": 476
+      "width": 3118,
+      "height": 457
     },
     {
       "id": "cty_blockRules",
       "defType": "meta/subpatch",
       "position": {
-        "x": 135,
-        "y": 89
+        "x": 142,
+        "y": 172
       },
       "params": {
         "label": "Block",
-        "width": 3982,
-        "height": 782
+        "width": 3792,
+        "height": 864
       },
       "ports": [
         {
@@ -1678,66 +1678,66 @@
           "name": "__loopvar_index",
           "type": "any",
           "direction": "input",
-          "y": 273
+          "y": 287
         },
         {
           "id": "c",
           "name": "c",
           "type": "vec2",
           "direction": "input",
-          "y": 421
+          "y": 452
         },
         {
           "id": "daylight",
           "name": "daylight",
           "type": "number",
           "direction": "input",
-          "y": 176
+          "y": 224
         },
         {
           "id": "shadowDir",
           "name": "shadow dir",
           "type": "vec2",
           "direction": "input",
-          "y": 728
+          "y": 810
         },
         {
           "id": "roofColour",
           "name": "roof colour",
           "type": "any",
           "direction": "output",
-          "y": 170
+          "y": 354
         },
         {
           "id": "shadowOffset",
           "name": "shadow offset",
           "type": "vec2",
           "direction": "output",
-          "y": 376
+          "y": 613
         },
         {
           "id": "parkAway",
           "name": "park away",
           "type": "any",
           "direction": "output",
-          "y": 136
+          "y": 224
         }
       ],
-      "width": 3982,
-      "height": 782,
+      "width": 3792,
+      "height": 864,
       "parentId": "cty_each"
     },
     {
       "id": "cty_glow",
       "defType": "meta/subpatch",
       "position": {
-        "x": 2380,
-        "y": 803
+        "x": 2209,
+        "y": 923
       },
       "params": {
         "label": "Lights",
-        "width": 3005,
-        "height": 790
+        "width": 2860,
+        "height": 863
       },
       "ports": [
         {
@@ -1745,72 +1745,72 @@
           "name": "points",
           "type": "vec2",
           "direction": "input",
-          "y": 139
+          "y": 218
         },
         {
           "id": "night",
           "name": "night",
           "type": "number",
           "direction": "input",
-          "y": 257
+          "y": 378
         },
         {
           "id": "time",
           "name": "time",
           "type": "number",
           "direction": "input",
-          "y": 709
+          "y": 764
         },
         {
           "id": "lampLight",
           "name": "lamp light",
           "type": "color",
           "direction": "output",
-          "y": 253
+          "y": 399
         },
         {
           "id": "headlightColour",
           "name": "headlight colour",
           "type": "color",
           "direction": "output",
-          "y": 313
+          "y": 431
         },
         {
           "id": "traffic",
           "name": "traffic",
           "type": "number",
           "direction": "output",
-          "y": 460
+          "y": 586
         },
         {
           "id": "taillightColour",
           "name": "taillight colour",
           "type": "color",
           "direction": "output",
-          "y": 398
+          "y": 510
         },
         {
           "id": "windowLight",
           "name": "window light",
           "type": "color",
           "direction": "output",
-          "y": 139
+          "y": 364
         }
       ],
-      "width": 3005,
-      "height": 790
+      "width": 2860,
+      "height": 863
     },
     {
       "id": "cty_groundTone",
       "defType": "meta/subpatch",
       "position": {
-        "x": 3819,
-        "y": 12
+        "x": 3704,
+        "y": 117
       },
       "params": {
         "label": "Ground colour",
-        "width": 394,
-        "height": 202
+        "width": 352,
+        "height": 222
       },
       "ports": [
         {
@@ -1825,11 +1825,11 @@
           "name": "ground colour",
           "type": "color",
           "direction": "output",
-          "y": 77
+          "y": 168
         }
       ],
-      "width": 394,
-      "height": 202
+      "width": 352,
+      "height": 222
     }
   ],
   "edges": [

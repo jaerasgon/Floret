@@ -26,7 +26,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 37,
-        "y": 416
+        "y": 469
       },
       "params": {}
     },
@@ -34,8 +34,8 @@
       "id": "ps_mpos",
       "defType": "vec2/make",
       "position": {
-        "x": 294,
-        "y": 380
+        "x": 297,
+        "y": 407
       },
       "params": {}
     },
@@ -43,8 +43,8 @@
       "id": "ps_time",
       "defType": "time/seconds",
       "position": {
-        "x": 565,
-        "y": 466
+        "x": 570,
+        "y": 563
       },
       "params": {}
     },
@@ -52,8 +52,8 @@
       "id": "ps_frame",
       "defType": "time/frame",
       "position": {
-        "x": 402,
-        "y": 314
+        "x": 162,
+        "y": 290
       },
       "params": {},
       "parentId": "ps_sling"
@@ -62,8 +62,8 @@
       "id": "ps_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 128,
-        "y": 395
+        "x": 131,
+        "y": 224
       },
       "params": {
         "mode": "keys"
@@ -78,7 +78,7 @@
       "defType": "io/bang",
       "position": {
         "x": 0,
-        "y": 114
+        "y": 87
       },
       "params": {
         "label": "Clear"
@@ -89,7 +89,7 @@
       "defType": "state/read",
       "position": {
         "x": 138,
-        "y": 613
+        "y": 621
       },
       "params": {
         "slot": 1,
@@ -107,8 +107,8 @@
       "id": "ps_anchorWrite",
       "defType": "state/write",
       "position": {
-        "x": 2724,
-        "y": 563
+        "x": 692,
+        "y": 614
       },
       "params": {
         "slot": 1,
@@ -120,8 +120,8 @@
       "id": "ps_spawnAt",
       "defType": "logic/select",
       "position": {
-        "x": 2523,
-        "y": 237
+        "x": 2241,
+        "y": 323
       },
       "params": {},
       "parentId": "ps_sling"
@@ -130,8 +130,8 @@
       "id": "ps_spawnVel",
       "defType": "logic/select",
       "position": {
-        "x": 1552,
-        "y": 406
+        "x": 1285,
+        "y": 484
       },
       "params": {},
       "parentId": "ps_sling"
@@ -140,8 +140,8 @@
       "id": "ps_colliders",
       "defType": "spread/merge",
       "position": {
-        "x": 447,
-        "y": 633
+        "x": 424,
+        "y": 602
       },
       "params": {
         "slotCount": 5
@@ -152,8 +152,8 @@
       "id": "ps_bump0",
       "defType": "collider/circle",
       "position": {
-        "x": 130,
-        "y": 324
+        "x": 129,
+        "y": 189
       },
       "params": {
         "mode": "bounce"
@@ -172,8 +172,8 @@
       "id": "ps_bump1",
       "defType": "collider/circle",
       "position": {
-        "x": 133,
-        "y": 516
+        "x": 132,
+        "y": 399
       },
       "params": {
         "mode": "bounce"
@@ -192,8 +192,8 @@
       "id": "ps_bump2",
       "defType": "collider/circle",
       "position": {
-        "x": 139,
-        "y": 708
+        "x": 132,
+        "y": 608
       },
       "params": {
         "mode": "bounce"
@@ -212,8 +212,8 @@
       "id": "ps_bump3",
       "defType": "collider/circle",
       "position": {
-        "x": 130,
-        "y": 900
+        "x": 129,
+        "y": 818
       },
       "params": {
         "mode": "bounce"
@@ -232,8 +232,8 @@
       "id": "ps_bump4",
       "defType": "collider/circle",
       "position": {
-        "x": 133,
-        "y": 1092
+        "x": 132,
+        "y": 1027
       },
       "params": {
         "mode": "bounce"
@@ -252,8 +252,8 @@
       "id": "ps_bounceWalls",
       "defType": "particles/bounds",
       "position": {
-        "x": 457,
-        "y": 825
+        "x": 445,
+        "y": 811
       },
       "params": {
         "mode": "bounce"
@@ -271,8 +271,8 @@
       "id": "ps_wrapEdges",
       "defType": "particles/bounds",
       "position": {
-        "x": 457,
-        "y": 463
+        "x": 445,
+        "y": 414
       },
       "params": {
         "mode": "wrap"
@@ -289,8 +289,8 @@
       "id": "ps_killAll",
       "defType": "particles/bounds",
       "position": {
-        "x": 1005,
-        "y": 93
+        "x": 982,
+        "y": 40
       },
       "params": {
         "mode": "kill"
@@ -307,8 +307,8 @@
       "id": "ps_bounceSet",
       "defType": "spread/combine",
       "position": {
-        "x": 732,
-        "y": 666
+        "x": 721,
+        "y": 691
       },
       "params": {
         "op": "append"
@@ -319,8 +319,8 @@
       "id": "ps_wrapSet",
       "defType": "spread/combine",
       "position": {
-        "x": 732,
-        "y": 473
+        "x": 721,
+        "y": 474
       },
       "params": {
         "op": "append"
@@ -331,8 +331,8 @@
       "id": "ps_bounceWorld",
       "defType": "physics/world",
       "position": {
-        "x": 1009,
-        "y": 499
+        "x": 972,
+        "y": 481
       },
       "params": {},
       "portValues": {
@@ -344,8 +344,8 @@
       "id": "ps_wrapWorld",
       "defType": "physics/world",
       "position": {
-        "x": 1009,
-        "y": 263
+        "x": 972,
+        "y": 228
       },
       "params": {},
       "portValues": {
@@ -357,8 +357,8 @@
       "id": "ps_killWorld",
       "defType": "physics/world",
       "position": {
-        "x": 1252,
-        "y": 40
+        "x": 1258,
+        "y": 53
       },
       "params": {},
       "parentId": "ps_worlds"
@@ -367,8 +367,8 @@
       "id": "ps_wallWorld",
       "defType": "logic/select",
       "position": {
-        "x": 1270,
-        "y": 276
+        "x": 1285,
+        "y": 307
       },
       "params": {},
       "parentId": "ps_worlds"
@@ -377,8 +377,8 @@
       "id": "ps_world",
       "defType": "logic/select",
       "position": {
-        "x": 1515,
-        "y": 58
+        "x": 1532,
+        "y": 126
       },
       "params": {},
       "parentId": "ps_worlds"
@@ -387,8 +387,8 @@
       "id": "ps_balls",
       "defType": "particles/emitter",
       "position": {
-        "x": 1154,
-        "y": 145
+        "x": 1092,
+        "y": 40
       },
       "params": {
         "maxCount": 300,
@@ -406,8 +406,8 @@
       "id": "ps_ballTrails",
       "defType": "particles/trail",
       "position": {
-        "x": 1449,
-        "y": 40
+        "x": 1441,
+        "y": 191
       },
       "params": {
         "segments": 12
@@ -423,8 +423,8 @@
       "id": "ps_ballDots",
       "defType": "particles/render-as",
       "position": {
-        "x": 1445,
-        "y": 298
+        "x": 1429,
+        "y": 466
       },
       "params": {},
       "parentId": "ps_ballLook"
@@ -446,7 +446,7 @@
       "defType": "data/csv-inline",
       "position": {
         "x": 128,
-        "y": 144
+        "y": 162
       },
       "params": {
         "data": "-40,-90,90,170,160"
@@ -457,8 +457,8 @@
       "id": "ps_bumperR",
       "defType": "data/csv-inline",
       "position": {
-        "x": 397,
-        "y": 207
+        "x": 348,
+        "y": 259
       },
       "params": {
         "data": "92,76,108,60,68"
@@ -469,8 +469,8 @@
       "id": "ps_bumperFill",
       "defType": "style/fill",
       "position": {
-        "x": 145,
-        "y": 377
+        "x": 128,
+        "y": 399
       },
       "params": {},
       "portValues": {
@@ -487,8 +487,8 @@
       "id": "ps_bumperRing",
       "defType": "style/stroke",
       "position": {
-        "x": 414,
-        "y": 311
+        "x": 348,
+        "y": 380
       },
       "params": {},
       "portValues": {
@@ -506,12 +506,12 @@
       "id": "ps_bumperLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 675,
-        "y": 137
+        "x": 583,
+        "y": 240
       },
       "params": {
-        "width": 340,
-        "height": 224,
+        "width": 364,
+        "height": 244,
         "label": "Bumpers"
       },
       "ports": [
@@ -534,11 +534,11 @@
           "name": "bumper",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 190
         }
       ],
-      "width": 340,
-      "height": 224,
+      "width": 364,
+      "height": 244,
       "parentId": "ps_bumperLook"
     },
     {
@@ -555,8 +555,8 @@
       "id": "ps_bumperGlow",
       "defType": "gpu/effect",
       "position": {
-        "x": 1111,
-        "y": 155
+        "x": 1043,
+        "y": 371
       },
       "params": {
         "mode": "glow"
@@ -572,7 +572,7 @@
       "defType": "style/stroke",
       "position": {
         "x": 128,
-        "y": 127
+        "y": 102
       },
       "params": {},
       "portValues": {
@@ -590,8 +590,8 @@
       "id": "ps_band",
       "defType": "draw/line",
       "position": {
-        "x": 503,
-        "y": 48
+        "x": 509,
+        "y": 40
       },
       "params": {},
       "parentId": "ps_aimLook"
@@ -600,8 +600,8 @@
       "id": "ps_arcSteps",
       "defType": "spread/range",
       "position": {
-        "x": 379,
-        "y": 940
+        "x": 139,
+        "y": 923
       },
       "params": {},
       "portValues": {
@@ -614,7 +614,7 @@
       "defType": "style/fill",
       "position": {
         "x": 128,
-        "y": 310
+        "y": 307
       },
       "params": {},
       "portValues": {
@@ -631,12 +631,12 @@
       "id": "ps_arcLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 375,
-        "y": 218
+        "x": 370,
+        "y": 228
       },
       "params": {
-        "width": 339,
-        "height": 224,
+        "width": 363,
+        "height": 244,
         "label": "Aim"
       },
       "ports": [
@@ -652,11 +652,11 @@
           "name": "dot",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 190
         }
       ],
-      "width": 339,
-      "height": 224,
+      "width": 363,
+      "height": 244,
       "parentId": "ps_aimLook"
     },
     {
@@ -677,8 +677,8 @@
       "id": "ps_aimGroup",
       "defType": "transform/group",
       "position": {
-        "x": 829,
-        "y": 115
+        "x": 856,
+        "y": 178
       },
       "params": {
         "slotCount": 2
@@ -689,8 +689,8 @@
       "id": "ps_aim",
       "defType": "logic/select",
       "position": {
-        "x": 1101,
-        "y": 40
+        "x": 1137,
+        "y": 91
       },
       "params": {},
       "parentId": "ps_aimLook"
@@ -712,8 +712,8 @@
       "id": "ps_gravName",
       "defType": "spread/lookup",
       "position": {
-        "x": 375,
-        "y": 47
+        "x": 339,
+        "y": 74
       },
       "params": {
         "op": "at"
@@ -725,7 +725,7 @@
       "defType": "string/split",
       "position": {
         "x": 128,
-        "y": 188
+        "y": 205
       },
       "params": {
         "text": "walls bounce,walls wrap",
@@ -737,8 +737,8 @@
       "id": "ps_wallName",
       "defType": "spread/lookup",
       "position": {
-        "x": 375,
-        "y": 195
+        "x": 339,
+        "y": 239
       },
       "params": {
         "op": "pick"
@@ -749,8 +749,8 @@
       "id": "ps_help",
       "defType": "value/string",
       "position": {
-        "x": 377,
-        "y": 343
+        "x": 340,
+        "y": 405
       },
       "params": {
         "value": "drag & release to fling · G W C R"
@@ -761,8 +761,8 @@
       "id": "ps_statusParts",
       "defType": "spread/merge",
       "position": {
-        "x": 652,
-        "y": 173
+        "x": 579,
+        "y": 271
       },
       "params": {
         "slotCount": 3
@@ -773,8 +773,8 @@
       "id": "ps_status",
       "defType": "string/concat",
       "position": {
-        "x": 930,
-        "y": 172
+        "x": 844,
+        "y": 340
       },
       "params": {
         "separator": "   ·   "
@@ -785,8 +785,8 @@
       "id": "ps_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 916,
-        "y": 298
+        "x": 843,
+        "y": 484
       },
       "params": {},
       "portValues": {
@@ -803,8 +803,8 @@
       "id": "ps_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 1161,
-        "y": 191
+        "x": 1072,
+        "y": 415
       },
       "params": {
         "size": 13,
@@ -822,8 +822,8 @@
       "id": "ps_scene",
       "defType": "transform/group",
       "position": {
-        "x": 1095,
-        "y": 188
+        "x": 1111,
+        "y": 324
       },
       "params": {
         "slotCount": 5
@@ -833,8 +833,8 @@
       "id": "ps_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1359,
-        "y": 188
+        "x": 1375,
+        "y": 437
       },
       "params": {
         "width": 640,
@@ -853,8 +853,8 @@
       "id": "ps_keyG",
       "defType": "spread/lookup",
       "position": {
-        "x": 427,
-        "y": 272
+        "x": 376,
+        "y": 265
       },
       "params": {
         "op": "at"
@@ -868,8 +868,8 @@
       "id": "ps_gravityNext",
       "defType": "io/counter",
       "position": {
-        "x": 703,
-        "y": 127
+        "x": 612,
+        "y": 206
       },
       "params": {
         "limit": "wrap",
@@ -886,8 +886,8 @@
       "id": "ps_keyW",
       "defType": "spread/lookup",
       "position": {
-        "x": 427,
-        "y": 568
+        "x": 376,
+        "y": 431
       },
       "params": {
         "op": "at"
@@ -901,8 +901,8 @@
       "id": "ps_wrapNext",
       "defType": "io/latch",
       "position": {
-        "x": 706,
-        "y": 533
+        "x": 619,
+        "y": 481
       },
       "params": {},
       "portValues": {
@@ -914,8 +914,8 @@
       "id": "ps_keyR",
       "defType": "spread/lookup",
       "position": {
-        "x": 427,
-        "y": 716
+        "x": 376,
+        "y": 596
       },
       "params": {
         "op": "at"
@@ -929,8 +929,8 @@
       "id": "ps_rainNext",
       "defType": "io/latch",
       "position": {
-        "x": 706,
-        "y": 703
+        "x": 619,
+        "y": 685
       },
       "params": {},
       "portValues": {
@@ -942,8 +942,8 @@
       "id": "ps_keyC",
       "defType": "spread/lookup",
       "position": {
-        "x": 427,
-        "y": 420
+        "x": 376,
+        "y": 100
       },
       "params": {
         "op": "at"
@@ -957,8 +957,8 @@
       "id": "ps_clear",
       "defType": "logic/logic",
       "position": {
-        "x": 707,
-        "y": 385
+        "x": 621,
+        "y": 40
       },
       "params": {
         "op": "or"
@@ -969,8 +969,8 @@
       "id": "ps_fall",
       "defType": "logic/switch",
       "position": {
-        "x": 956,
-        "y": 40
+        "x": 828,
+        "y": 247
       },
       "params": {
         "mode": "index",
@@ -988,8 +988,8 @@
       "id": "ps_gravity",
       "defType": "vec2/make",
       "position": {
-        "x": 1232,
-        "y": 93
+        "x": 1094,
+        "y": 350
       },
       "params": {},
       "portValues": {
@@ -1001,13 +1001,13 @@
       "id": "ps_sling",
       "defType": "meta/subpatch",
       "position": {
-        "x": 528,
-        "y": 274
+        "x": 533,
+        "y": 309
       },
       "params": {
         "label": "Slingshot",
-        "width": 2977,
-        "height": 1262
+        "width": 2445,
+        "height": 1289
       },
       "ports": [
         {
@@ -1015,74 +1015,74 @@
           "name": "mouse",
           "type": "vec2",
           "direction": "input",
-          "y": 652
+          "y": 669
         },
         {
           "id": "pressed",
           "name": "pressed",
           "type": "boolean",
           "direction": "input",
-          "y": 326
+          "y": 284
         },
         {
           "id": "gravity",
           "name": "gravity",
           "type": "vec2",
           "direction": "input",
-          "y": 811
+          "y": 877
         },
         {
           "id": "rain",
           "name": "rain",
           "type": "boolean",
           "direction": "input",
-          "y": 165
+          "y": 176
         },
         {
           "id": "spawnAt",
           "name": "spawnAt",
           "type": "vec2",
           "direction": "output",
-          "y": 274
+          "y": 429
         },
         {
           "id": "spawnVel",
           "name": "spawnVel",
           "type": "vec2",
           "direction": "output",
-          "y": 429
+          "y": 562
         },
         {
           "id": "rate",
           "name": "rate",
           "type": "number",
           "direction": "output",
-          "y": 165
+          "y": 207
         },
         {
           "id": "anchor",
           "name": "anchor",
           "type": "vec2",
           "direction": "output",
-          "y": 513
+          "y": 597
         },
         {
           "id": "arc",
           "name": "arc",
           "type": "vec2",
           "direction": "output",
-          "y": 660
+          "y": 856
         }
       ],
-      "width": 2977,
-      "height": 1262
+      "width": 2445,
+      "height": 1289
     },
     {
       "id": "ps_slingNote",
       "defType": "meta/comment",
       "position": {
         "x": 138,
-        "y": 1082
+        "y": 1109
       },
       "params": {
         "text": "A press remembers where it started (the anchor). The pull is the anchor minus the mouse, × 3.2: the launch velocity. Letting go fires one ball there (rate 61/s for one frame). Every half second, while rain is on, a ball drops in at a random x along the top. The aim arc samples where a ball fired now would be, every 0.045 s.",
@@ -1095,8 +1095,8 @@
       "id": "ps_press",
       "defType": "io/edge",
       "position": {
-        "x": 402,
-        "y": 418
+        "x": 147,
+        "y": 386
       },
       "params": {
         "mode": "rising",
@@ -1108,8 +1108,8 @@
       "id": "ps_release",
       "defType": "io/edge",
       "position": {
-        "x": 399,
-        "y": 159
+        "x": 147,
+        "y": 107
       },
       "params": {
         "mode": "falling",
@@ -1121,8 +1121,8 @@
       "id": "ps_anchorNext",
       "defType": "logic/select",
       "position": {
-        "x": 660,
-        "y": 526
+        "x": 430,
+        "y": 543
       },
       "params": {},
       "parentId": "ps_sling"
@@ -1131,8 +1131,8 @@
       "id": "ps_pullBack",
       "defType": "math/math",
       "position": {
-        "x": 928,
-        "y": 689
+        "x": 678,
+        "y": 740
       },
       "params": {
         "op": "subtract",
@@ -1145,8 +1145,8 @@
       "id": "ps_pull",
       "defType": "vec2/math",
       "position": {
-        "x": 1213,
-        "y": 607
+        "x": 974,
+        "y": 670
       },
       "params": {
         "op": "scale"
@@ -1160,8 +1160,8 @@
       "id": "ps_frameMod",
       "defType": "math/math",
       "position": {
-        "x": 638,
-        "y": 230
+        "x": 420,
+        "y": 212
       },
       "params": {
         "op": "mod"
@@ -1175,8 +1175,8 @@
       "id": "ps_halfSecond",
       "defType": "logic/compare",
       "position": {
-        "x": 921,
-        "y": 225
+        "x": 691,
+        "y": 187
       },
       "params": {
         "op": "equal"
@@ -1190,8 +1190,8 @@
       "id": "ps_rainTick",
       "defType": "logic/logic",
       "position": {
-        "x": 1234,
-        "y": 101
+        "x": 1003,
+        "y": 89
       },
       "params": {
         "op": "and"
@@ -1202,7 +1202,7 @@
       "id": "ps_hashF",
       "defType": "math/math",
       "position": {
-        "x": 629,
+        "x": 392,
         "y": 378
       },
       "params": {
@@ -1219,8 +1219,8 @@
       "id": "ps_hashSin",
       "defType": "math/math",
       "position": {
-        "x": 936,
-        "y": 373
+        "x": 706,
+        "y": 353
       },
       "params": {
         "op": "sin"
@@ -1231,8 +1231,8 @@
       "id": "ps_hashScale",
       "defType": "math/math",
       "position": {
-        "x": 1219,
-        "y": 325
+        "x": 961,
+        "y": 294
       },
       "params": {
         "op": "multiply",
@@ -1248,8 +1248,8 @@
       "id": "ps_hash",
       "defType": "math/math",
       "position": {
-        "x": 1530,
-        "y": 280
+        "x": 1275,
+        "y": 303
       },
       "params": {
         "op": "fract"
@@ -1260,8 +1260,8 @@
       "id": "ps_hashCentre",
       "defType": "math/math",
       "position": {
-        "x": 1801,
-        "y": 255
+        "x": 1510,
+        "y": 290
       },
       "params": {
         "op": "subtract",
@@ -1277,8 +1277,8 @@
       "id": "ps_rainX",
       "defType": "math/math",
       "position": {
-        "x": 2067,
-        "y": 246
+        "x": 1780,
+        "y": 301
       },
       "params": {
         "op": "multiply",
@@ -1294,8 +1294,8 @@
       "id": "ps_rainAt",
       "defType": "vec2/make",
       "position": {
-        "x": 2333,
-        "y": 254
+        "x": 2051,
+        "y": 323
       },
       "params": {},
       "parentId": "ps_sling",
@@ -1307,7 +1307,7 @@
       "id": "ps_fire",
       "defType": "logic/logic",
       "position": {
-        "x": 1536,
+        "x": 1289,
         "y": 40
       },
       "params": {
@@ -1319,8 +1319,8 @@
       "id": "ps_rate",
       "defType": "logic/select",
       "position": {
-        "x": 1832,
-        "y": 69
+        "x": 1548,
+        "y": 105
       },
       "params": {},
       "parentId": "ps_sling",
@@ -1333,8 +1333,8 @@
       "id": "ps_arcT",
       "defType": "math/math",
       "position": {
-        "x": 629,
-        "y": 918
+        "x": 392,
+        "y": 926
       },
       "params": {
         "op": "multiply",
@@ -1350,8 +1350,8 @@
       "id": "ps_arcT2",
       "defType": "math/math",
       "position": {
-        "x": 928,
-        "y": 837
+        "x": 678,
+        "y": 905
       },
       "params": {
         "op": "multiply",
@@ -1367,8 +1367,8 @@
       "id": "ps_arcFly",
       "defType": "vec2/math",
       "position": {
-        "x": 1515,
-        "y": 680
+        "x": 1260,
+        "y": 783
       },
       "params": {
         "op": "scale"
@@ -1379,8 +1379,8 @@
       "id": "ps_arcDrop",
       "defType": "vec2/math",
       "position": {
-        "x": 1213,
-        "y": 758
+        "x": 974,
+        "y": 836
       },
       "params": {
         "op": "scale"
@@ -1391,8 +1391,8 @@
       "id": "ps_arc",
       "defType": "math/math",
       "position": {
-        "x": 1801,
-        "y": 637
+        "x": 1510,
+        "y": 753
       },
       "params": {
         "op": "add",
@@ -1405,8 +1405,8 @@
       "id": "ps_hueT",
       "defType": "math/math",
       "position": {
-        "x": 128,
-        "y": 344
+        "x": 129,
+        "y": 164
       },
       "params": {
         "op": "multiply",
@@ -1422,8 +1422,8 @@
       "id": "ps_hueTurn",
       "defType": "math/math",
       "position": {
-        "x": 392,
-        "y": 324
+        "x": 398,
+        "y": 177
       },
       "params": {
         "op": "fract"
@@ -1434,8 +1434,8 @@
       "id": "ps_hue",
       "defType": "math/math",
       "position": {
-        "x": 639,
-        "y": 305
+        "x": 611,
+        "y": 169
       },
       "params": {
         "op": "multiply",
@@ -1451,8 +1451,8 @@
       "id": "ps_ballCol",
       "defType": "color/color",
       "position": {
-        "x": 903,
-        "y": 287
+        "x": 881,
+        "y": 174
       },
       "params": {
         "mode": "hsl"
@@ -1468,8 +1468,8 @@
       "id": "ps_bumperPos",
       "defType": "vec2/make",
       "position": {
-        "x": 438,
-        "y": 81
+        "x": 364,
+        "y": 115
       },
       "params": {},
       "parentId": "ps_bumperLook"
@@ -1478,13 +1478,13 @@
       "id": "ps_keys",
       "defType": "meta/subpatch",
       "position": {
-        "x": 272,
-        "y": 114
+        "x": 275,
+        "y": 113
       },
       "params": {
         "label": "Keys",
-        "width": 1435,
-        "height": 1029
+        "width": 1291,
+        "height": 1045
       },
       "ports": [
         {
@@ -1492,53 +1492,53 @@
           "name": "clearBang",
           "type": "boolean",
           "direction": "input",
-          "y": 371
+          "y": 146
         },
         {
           "id": "gravity",
           "name": "gravity",
           "type": "vec2",
           "direction": "output",
-          "y": 206
+          "y": 432
         },
         {
           "id": "wrap",
           "name": "wrap",
           "type": "boolean",
           "direction": "output",
-          "y": 559
+          "y": 597
         },
         {
           "id": "clear",
           "name": "clear",
           "type": "boolean",
           "direction": "output",
-          "y": 411
+          "y": 146
         },
         {
           "id": "gravityMode",
           "name": "gravityMode",
           "type": "number",
           "direction": "output",
-          "y": 228
+          "y": 468
         },
         {
           "id": "rain",
           "name": "rain",
           "type": "boolean",
           "direction": "output",
-          "y": 729
+          "y": 801
         }
       ],
-      "width": 1435,
-      "height": 1029
+      "width": 1291,
+      "height": 1045
     },
     {
       "id": "ps_keysNote",
       "defType": "meta/comment",
       "position": {
-        "x": 128,
-        "y": 889
+        "x": 131,
+        "y": 905
       },
       "params": {
         "text": "G steps a Counter round the three gravities (down, none, up: a Switch picks the pull), W and R flip Latches for wrapping walls and the rain, C (or Clear) clears the balls.",
@@ -1551,13 +1551,13 @@
       "id": "ps_worlds",
       "defType": "meta/subpatch",
       "position": {
-        "x": 535,
+        "x": 540,
         "y": 0
       },
       "params": {
         "label": "Worlds",
-        "width": 1734,
-        "height": 1440
+        "width": 1736,
+        "height": 1393
       },
       "ports": [
         {
@@ -1565,39 +1565,39 @@
           "name": "gravity",
           "type": "vec2",
           "direction": "input",
-          "y": 284
+          "y": 149
         },
         {
           "id": "wrap",
           "name": "wrap",
           "type": "boolean",
           "direction": "input",
-          "y": 226
+          "y": 101
         },
         {
           "id": "clear",
           "name": "clear",
           "type": "boolean",
           "direction": "input",
-          "y": 124
+          "y": 78
         },
         {
           "id": "world",
           "name": "world",
           "type": "world",
           "direction": "output",
-          "y": 124
+          "y": 232
         }
       ],
-      "width": 1734,
-      "height": 1440
+      "width": 1736,
+      "height": 1393
     },
     {
       "id": "ps_worldsNote",
       "defType": "meta/comment",
       "position": {
-        "x": 130,
-        "y": 1300
+        "x": 129,
+        "y": 1253
       },
       "params": {
         "text": "Five round bumpers shared by two Worlds, one with bouncing walls and one that wraps; clearing hands the Emitter a third World for a frame, whose tiny 'kill' box removes every ball.",
@@ -1610,13 +1610,13 @@
       "id": "ps_ballLook",
       "defType": "meta/subpatch",
       "position": {
-        "x": 830,
-        "y": 241
+        "x": 836,
+        "y": 318
       },
       "params": {
         "label": "Balls",
-        "width": 1709,
-        "height": 669
+        "width": 1689,
+        "height": 856
       },
       "ports": [
         {
@@ -1624,60 +1624,60 @@
           "name": "worlds",
           "type": "world",
           "direction": "input",
-          "y": 158
+          "y": 52
         },
         {
           "id": "spawnAt",
           "name": "spawnAt",
           "type": "vec2",
           "direction": "input",
-          "y": 190
+          "y": 76
         },
         {
           "id": "spawnVel",
           "name": "spawnVel",
           "type": "vec2",
           "direction": "input",
-          "y": 254
+          "y": 140
         },
         {
           "id": "rate",
           "name": "rate",
           "type": "number",
           "direction": "input",
-          "y": 222
+          "y": 108
         },
         {
           "id": "t",
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 403
+          "y": 223
         },
         {
           "id": "trails",
           "name": "trails",
           "type": "layer",
           "direction": "output",
-          "y": 125
+          "y": 407
         },
         {
           "id": "balls",
           "name": "balls",
           "type": "layer",
           "direction": "output",
-          "y": 335
+          "y": 638
         }
       ],
-      "width": 1709,
-      "height": 669
+      "width": 1689,
+      "height": 856
     },
     {
       "id": "ps_ballLookNote",
       "defType": "meta/comment",
       "position": {
-        "x": 128,
-        "y": 529
+        "x": 129,
+        "y": 716
       },
       "params": {
         "text": "One Emitter makes every ball: a ball for each frame its rate is 61/s, in a colour that slowly runs round the wheel, with tapering trails.",
@@ -1690,13 +1690,13 @@
       "id": "ps_bumperLook",
       "defType": "meta/subpatch",
       "position": {
-        "x": 817,
-        "y": 137
+        "x": 823,
+        "y": 222
       },
       "params": {
         "label": "Bumpers",
-        "width": 1392,
-        "height": 659
+        "width": 1289,
+        "height": 783
       },
       "ports": [
         {
@@ -1704,18 +1704,18 @@
           "name": "bumpers",
           "type": "layer",
           "direction": "output",
-          "y": 192
+          "y": 565
         }
       ],
-      "width": 1392,
-      "height": 659
+      "width": 1289,
+      "height": 783
     },
     {
       "id": "ps_bumperLookNote",
       "defType": "meta/comment",
       "position": {
         "x": 128,
-        "y": 519
+        "y": 643
       },
       "params": {
         "text": "The bumpers drawn where the colliders are: discs with a glowing rim.",
@@ -1728,13 +1728,13 @@
       "id": "ps_aimLook",
       "defType": "meta/subpatch",
       "position": {
-        "x": 833,
-        "y": 433
+        "x": 839,
+        "y": 544
       },
       "params": {
         "label": "Aim",
-        "width": 1318,
-        "height": 646
+        "width": 1341,
+        "height": 676
       },
       "ports": [
         {
@@ -1742,46 +1742,46 @@
           "name": "mpos",
           "type": "vec2",
           "direction": "input",
-          "y": 103
+          "y": 78
         },
         {
           "id": "pressed",
           "name": "pressed",
           "type": "boolean",
           "direction": "input",
-          "y": 30
+          "y": 17
         },
         {
           "id": "anchor",
           "name": "anchor",
           "type": "vec2",
           "direction": "input",
-          "y": 71
+          "y": 46
         },
         {
           "id": "arc",
           "name": "arc",
           "type": "vec2",
           "direction": "input",
-          "y": 286
+          "y": 283
         },
         {
           "id": "aim",
           "name": "aim",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 197
         }
       ],
-      "width": 1318,
-      "height": 646
+      "width": 1341,
+      "height": 676
     },
     {
       "id": "ps_aimLookNote",
       "defType": "meta/comment",
       "position": {
         "x": 128,
-        "y": 506
+        "y": 536
       },
       "params": {
         "text": "While the button is held: the band from the anchor to the mouse and the dotted arc.",
@@ -1794,13 +1794,13 @@
       "id": "ps_statusLine",
       "defType": "meta/subpatch",
       "position": {
-        "x": 537,
-        "y": 148
+        "x": 542,
+        "y": 166
       },
       "params": {
         "label": "Status",
-        "width": 1362,
-        "height": 603
+        "width": 1295,
+        "height": 784
       },
       "ports": [
         {
@@ -1808,32 +1808,32 @@
           "name": "gravityMode",
           "type": "number",
           "direction": "input",
-          "y": 142
+          "y": 160
         },
         {
           "id": "wrap",
           "name": "wrap",
           "type": "boolean",
           "direction": "input",
-          "y": 290
+          "y": 325
         },
         {
           "id": "status",
           "name": "status",
           "type": "layer",
           "direction": "output",
-          "y": 228
+          "y": 565
         }
       ],
-      "width": 1362,
-      "height": 603
+      "width": 1295,
+      "height": 784
     },
     {
       "id": "ps_statusLineNote",
       "defType": "meta/comment",
       "position": {
         "x": 128,
-        "y": 463
+        "y": 644
       },
       "params": {
         "text": "The gravity and walls in words, and the keys.",

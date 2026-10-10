@@ -30,8 +30,8 @@
       "id": "ts_grad",
       "defType": "style/gradient",
       "position": {
-        "x": 306,
-        "y": 720
+        "x": 304,
+        "y": 920
       },
       "params": {
         "mode": "radial",
@@ -46,7 +46,7 @@
       "defType": "color/palette",
       "position": {
         "x": 0,
-        "y": 720
+        "y": 917
       },
       "params": {
         "stopCount": 3,
@@ -62,8 +62,8 @@
       "id": "ts_poly",
       "defType": "draw/polygon",
       "position": {
-        "x": 610,
-        "y": 569
+        "x": 588,
+        "y": 938
       },
       "params": {},
       "portValues": {
@@ -74,8 +74,8 @@
       "id": "ts_rot",
       "defType": "transform/rotate",
       "position": {
-        "x": 863,
-        "y": 345
+        "x": 843,
+        "y": 828
       },
       "params": {},
       "portValues": {}
@@ -84,8 +84,8 @@
       "id": "ts_move",
       "defType": "transform/translate",
       "position": {
-        "x": 1064,
-        "y": 242
+        "x": 1058,
+        "y": 675
       },
       "params": {},
       "portValues": {}
@@ -94,8 +94,8 @@
       "id": "ts_shader",
       "defType": "gpu/shader",
       "position": {
-        "x": 1270,
-        "y": 198
+        "x": 1264,
+        "y": 679
       },
       "params": {
         "source": "// Time smear: each band of rows shows the input as it was a\n// different number of frames ago, the delay rolling down the picture\n// like a wave, with blocky glitches now and then. `history` on the\n// node keeps the last 48 frames; iHistoryFrame(ago, uv) reads one.\nuniform float bands;\nuniform float glitch;\nuniform vec4 background;\n\nfloat hash(vec2 p) {\n  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);\n}\n\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord) {\n  vec2 uv = fragCoord / iResolution.xy;\n  float band = floor(fragCoord.y / max(bands, 1.0));\n  // A wave of delay down the rows.\n  float lag = 0.5 + 0.5 * sin(band * 0.21 - iTime * 2.3);\n  // Now and then a block jumps further back.\n  vec2 cell = floor(fragCoord / 32.0);\n  float beat = floor(iTime * 4.0);\n  if (hash(cell + beat) < glitch) lag = hash(cell - beat);\n  int ago = int(lag * float(iHistoryCount - 1));\n  vec4 c = iHistoryFrame(ago, uv);\n  // Premultiplied over the background.\n  fragColor = vec4(c.rgb + background.rgb * (1.0 - c.a), 1.0);\n}",
@@ -117,8 +117,8 @@
       "id": "ts_r",
       "defType": "render/renderer",
       "position": {
-        "x": 1497,
-        "y": 198
+        "x": 1513,
+        "y": 814
       },
       "params": {
         "width": 600,
@@ -145,8 +145,8 @@
       "id": "ts_star",
       "defType": "geometry/curve",
       "position": {
-        "x": 288,
-        "y": 440
+        "x": 291,
+        "y": 590
       },
       "params": {
         "mode": "star",
@@ -168,8 +168,8 @@
       "id": "ts_spin",
       "defType": "motion/lfo",
       "position": {
-        "x": 587,
-        "y": 223
+        "x": 560,
+        "y": 558
       },
       "params": {
         "shape": "saw",
@@ -189,7 +189,7 @@
       "id": "ts_x",
       "defType": "motion/lfo",
       "position": {
-        "x": 10,
+        "x": 4,
         "y": 0
       },
       "params": {
@@ -212,8 +212,8 @@
       "id": "ts_y",
       "defType": "motion/lfo",
       "position": {
-        "x": 10,
-        "y": 346
+        "x": 4,
+        "y": 380
       },
       "params": {
         "shape": "sine",
@@ -235,8 +235,8 @@
       "id": "ts_path",
       "defType": "vec2/make",
       "position": {
-        "x": 339,
-        "y": 162
+        "x": 324,
+        "y": 446
       },
       "params": {}
     }

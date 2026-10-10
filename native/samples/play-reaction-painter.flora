@@ -26,7 +26,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 37,
-        "y": 593
+        "y": 606
       },
       "params": {}
     },
@@ -35,7 +35,7 @@
       "defType": "vec2/make",
       "position": {
         "x": 314,
-        "y": 583
+        "y": 580
       },
       "params": {}
     },
@@ -44,7 +44,7 @@
       "defType": "time/seconds",
       "position": {
         "x": 314,
-        "y": 309
+        "y": 302
       },
       "params": {}
     },
@@ -52,8 +52,8 @@
       "id": "rp_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 371,
-        "y": 216
+        "x": 131,
+        "y": 209
       },
       "params": {
         "mode": "keys"
@@ -67,8 +67,8 @@
       "id": "rp_preset",
       "defType": "state/read",
       "position": {
-        "x": 130,
-        "y": 367
+        "x": 875,
+        "y": 430
       },
       "params": {
         "slot": 1,
@@ -83,8 +83,8 @@
       "id": "rp_presetWrite",
       "defType": "state/write",
       "position": {
-        "x": 1998,
-        "y": 303
+        "x": 1341,
+        "y": 457
       },
       "params": {
         "slot": 1,
@@ -96,8 +96,8 @@
       "id": "rp_presetNames",
       "defType": "string/split",
       "position": {
-        "x": 1485,
-        "y": 151
+        "x": 1117,
+        "y": 220
       },
       "params": {
         "text": "coral,mitosis,fingerprints,worms,maze,spots,waves",
@@ -109,8 +109,8 @@
       "id": "rp_presetName",
       "defType": "spread/lookup",
       "position": {
-        "x": 1740,
-        "y": 155
+        "x": 1348,
+        "y": 292
       },
       "params": {
         "op": "at"
@@ -122,7 +122,7 @@
       "defType": "io/bang",
       "position": {
         "x": 0,
-        "y": 151
+        "y": 101
       },
       "params": {
         "label": "Reset"
@@ -132,8 +132,8 @@
       "id": "rp_palettes",
       "defType": "spread/merge",
       "position": {
-        "x": 447,
-        "y": 536
+        "x": 444,
+        "y": 521
       },
       "params": {
         "slotCount": 4
@@ -162,7 +162,7 @@
       "defType": "color/palette",
       "position": {
         "x": 128,
-        "y": 276
+        "y": 272
       },
       "params": {
         "stopCount": 5,
@@ -179,7 +179,7 @@
       "defType": "color/palette",
       "position": {
         "x": 128,
-        "y": 512
+        "y": 503
       },
       "params": {
         "stopCount": 5,
@@ -196,7 +196,7 @@
       "defType": "color/palette",
       "position": {
         "x": 128,
-        "y": 748
+        "y": 735
       },
       "params": {
         "stopCount": 5,
@@ -212,8 +212,8 @@
       "id": "rp_paletteSizes",
       "defType": "data/csv-inline",
       "position": {
-        "x": 447,
-        "y": 729
+        "x": 471,
+        "y": 733
       },
       "params": {
         "data": "5,5,5,5"
@@ -224,8 +224,8 @@
       "id": "rp_palette",
       "defType": "spread/lookup",
       "position": {
-        "x": 736,
-        "y": 685
+        "x": 726,
+        "y": 714
       },
       "params": {
         "op": "group-at"
@@ -237,7 +237,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 398
+        "y": 334
       },
       "params": {
         "value": 9,
@@ -251,7 +251,7 @@
       "defType": "spread/range",
       "position": {
         "x": 144,
-        "y": 62
+        "y": 40
       },
       "params": {},
       "portValues": {
@@ -263,8 +263,8 @@
       "id": "rp_paint",
       "defType": "spread/sublist",
       "position": {
-        "x": 1447,
-        "y": 94
+        "x": 1393,
+        "y": 173
       },
       "params": {
         "op": "keep-where"
@@ -276,7 +276,7 @@
       "defType": "style/stroke",
       "position": {
         "x": 128,
-        "y": 188
+        "y": 85
       },
       "params": {},
       "portValues": {
@@ -294,8 +294,8 @@
       "id": "rp_ringNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 398,
-        "y": 188
+        "x": 356,
+        "y": 177
       },
       "params": {},
       "parentId": "rp_seedRings"
@@ -304,8 +304,8 @@
       "id": "rp_ringSizes",
       "defType": "data/csv-inline",
       "position": {
-        "x": 358,
-        "y": 84
+        "x": 341,
+        "y": 55
       },
       "params": {
         "data": "90,250,410"
@@ -316,12 +316,12 @@
       "id": "rp_ringLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 629,
+        "x": 562,
         "y": 62
       },
       "params": {
-        "width": 350,
-        "height": 224,
+        "width": 364,
+        "height": 244,
         "label": "Seed rings"
       },
       "ports": [
@@ -337,11 +337,11 @@
           "name": "ring",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 190
         }
       ],
-      "width": 350,
-      "height": 224,
+      "width": 364,
+      "height": 244,
       "parentId": "rp_seedRings"
     },
     {
@@ -358,8 +358,8 @@
       "id": "rp_seed",
       "defType": "image/from-layer",
       "position": {
-        "x": 1075,
-        "y": 102
+        "x": 1022,
+        "y": 215
       },
       "params": {},
       "portValues": {
@@ -372,8 +372,8 @@
       "id": "rp_speed",
       "defType": "io/slider",
       "position": {
-        "x": 565,
-        "y": 100
+        "x": 567,
+        "y": 87
       },
       "params": {
         "value": 10,
@@ -387,8 +387,8 @@
       "id": "rp_sim",
       "defType": "particles/simulation",
       "position": {
-        "x": 852,
-        "y": 126
+        "x": 870,
+        "y": 138
       },
       "params": {
         "mode": "reaction",
@@ -407,8 +407,8 @@
       "id": "rp_cursorStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 283,
-        "y": 752
+        "x": 292,
+        "y": 724
       },
       "params": {},
       "portValues": {
@@ -425,8 +425,8 @@
       "id": "rp_cursorNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 605,
-        "y": 752
+        "x": 607,
+        "y": 801
       },
       "params": {}
     },
@@ -434,8 +434,8 @@
       "id": "rp_cursor",
       "defType": "draw/ellipse",
       "position": {
-        "x": 884,
-        "y": 507
+        "x": 873,
+        "y": 584
       },
       "params": {}
     },
@@ -443,8 +443,8 @@
       "id": "rp_help",
       "defType": "value/string",
       "position": {
-        "x": 128,
-        "y": 279
+        "x": 131,
+        "y": 289
       },
       "params": {
         "value": "drag to paint · 1–7 reaction · P colours · R reset"
@@ -455,8 +455,8 @@
       "id": "rp_statusParts",
       "defType": "spread/merge",
       "position": {
-        "x": 386,
-        "y": 232
+        "x": 359,
+        "y": 250
       },
       "params": {
         "slotCount": 2
@@ -467,8 +467,8 @@
       "id": "rp_status",
       "defType": "string/concat",
       "position": {
-        "x": 664,
-        "y": 229
+        "x": 625,
+        "y": 297
       },
       "params": {
         "separator": "   ·   "
@@ -479,8 +479,8 @@
       "id": "rp_statusBack",
       "defType": "style/fill",
       "position": {
-        "x": 134,
-        "y": 128
+        "x": 128,
+        "y": 81
       },
       "params": {},
       "portValues": {
@@ -497,7 +497,7 @@
       "id": "rp_statusBar",
       "defType": "draw/rect",
       "position": {
-        "x": 409,
+        "x": 382,
         "y": 40
       },
       "params": {},
@@ -515,8 +515,8 @@
       "id": "rp_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 650,
-        "y": 355
+        "x": 623,
+        "y": 440
       },
       "params": {},
       "portValues": {
@@ -533,8 +533,8 @@
       "id": "rp_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 895,
-        "y": 247
+        "x": 853,
+        "y": 372
       },
       "params": {
         "size": 13,
@@ -552,8 +552,8 @@
       "id": "rp_scene",
       "defType": "transform/group",
       "position": {
-        "x": 1165,
-        "y": 131
+        "x": 1162,
+        "y": 259
       },
       "params": {
         "slotCount": 4
@@ -563,8 +563,8 @@
       "id": "rp_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1429,
-        "y": 131
+        "x": 1426,
+        "y": 351
       },
       "params": {
         "width": 600,
@@ -583,8 +583,8 @@
       "id": "rp_keyFrom",
       "defType": "logic/compare",
       "position": {
-        "x": 665,
-        "y": 54
+        "x": 377,
+        "y": 40
       },
       "params": {
         "op": "greater-equal"
@@ -598,8 +598,8 @@
       "id": "rp_keyTo",
       "defType": "logic/compare",
       "position": {
-        "x": 665,
-        "y": 202
+        "x": 377,
+        "y": 206
       },
       "params": {
         "op": "less"
@@ -613,8 +613,8 @@
       "id": "rp_isReactionKey",
       "defType": "logic/logic",
       "position": {
-        "x": 991,
-        "y": 188
+        "x": 681,
+        "y": 215
       },
       "params": {
         "op": "and"
@@ -625,8 +625,8 @@
       "id": "rp_setReaction",
       "defType": "logic/logic",
       "position": {
-        "x": 1241,
-        "y": 219
+        "x": 901,
+        "y": 265
       },
       "params": {
         "op": "and"
@@ -637,8 +637,8 @@
       "id": "rp_presetNext",
       "defType": "logic/select",
       "position": {
-        "x": 1506,
-        "y": 277
+        "x": 1128,
+        "y": 364
       },
       "params": {},
       "parentId": "rp_keys"
@@ -647,8 +647,8 @@
       "id": "rp_keyP",
       "defType": "spread/lookup",
       "position": {
-        "x": 674,
-        "y": 530
+        "x": 386,
+        "y": 569
       },
       "params": {
         "op": "at"
@@ -662,8 +662,8 @@
       "id": "rp_paletteNext",
       "defType": "io/counter",
       "position": {
-        "x": 987,
-        "y": 493
+        "x": 671,
+        "y": 586
       },
       "params": {
         "limit": "wrap",
@@ -680,8 +680,8 @@
       "id": "rp_keyR",
       "defType": "spread/lookup",
       "position": {
-        "x": 674,
-        "y": 382
+        "x": 386,
+        "y": 403
       },
       "params": {
         "op": "at"
@@ -695,8 +695,8 @@
       "id": "rp_reset",
       "defType": "logic/logic",
       "position": {
-        "x": 991,
-        "y": 40
+        "x": 681,
+        "y": 50
       },
       "params": {
         "op": "or"
@@ -708,7 +708,7 @@
       "defType": "math/math",
       "position": {
         "x": 129,
-        "y": 166
+        "y": 162
       },
       "params": {
         "op": "multiply",
@@ -725,7 +725,7 @@
       "defType": "math/math",
       "position": {
         "x": 405,
-        "y": 121
+        "y": 125
       },
       "params": {
         "op": "add",
@@ -738,8 +738,8 @@
       "id": "rp_tipRing",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 710,
-        "y": 190
+        "x": 683,
+        "y": 210
       },
       "params": {},
       "parentId": "rp_brushTips"
@@ -748,8 +748,8 @@
       "id": "rp_isCentre",
       "defType": "logic/compare",
       "position": {
-        "x": 679,
-        "y": 42
+        "x": 672,
+        "y": 44
       },
       "params": {
         "op": "equal"
@@ -763,8 +763,8 @@
       "id": "rp_tipOffset",
       "defType": "logic/select",
       "position": {
-        "x": 964,
-        "y": 90
+        "x": 923,
+        "y": 127
       },
       "params": {},
       "portValues": {
@@ -779,8 +779,8 @@
       "id": "rp_brush",
       "defType": "math/math",
       "position": {
-        "x": 1171,
-        "y": 40
+        "x": 1122,
+        "y": 79
       },
       "params": {
         "op": "add",
@@ -794,7 +794,7 @@
       "defType": "math/math",
       "position": {
         "x": 272,
-        "y": 435
+        "y": 415
       },
       "params": {
         "op": "multiply",
@@ -809,8 +809,8 @@
       "id": "rp_cursorSize",
       "defType": "math/math",
       "position": {
-        "x": 565,
-        "y": 604
+        "x": 567,
+        "y": 636
       },
       "params": {
         "op": "add",
@@ -826,12 +826,12 @@
       "defType": "meta/subpatch",
       "position": {
         "x": 291,
-        "y": 151
+        "y": 126
       },
       "params": {
         "label": "Keys",
-        "width": 2247,
-        "height": 907
+        "width": 1590,
+        "height": 1018
       },
       "ports": [
         {
@@ -839,39 +839,39 @@
           "name": "resetBang",
           "type": "boolean",
           "direction": "input",
-          "y": 71
+          "y": 101
         },
         {
           "id": "reaction",
           "name": "reaction",
           "type": "string",
           "direction": "output",
-          "y": 192
+          "y": 398
         },
         {
           "id": "palette",
           "name": "palette",
           "type": "number",
           "direction": "output",
-          "y": 513
+          "y": 768
         },
         {
           "id": "reset",
           "name": "reset",
           "type": "boolean",
           "direction": "output",
-          "y": 73
+          "y": 145
         }
       ],
-      "width": 2247,
-      "height": 907
+      "width": 1590,
+      "height": 1018
     },
     {
       "id": "rp_keysNote",
       "defType": "meta/comment",
       "position": {
-        "x": 130,
-        "y": 767
+        "x": 131,
+        "y": 878
       },
       "params": {
         "text": "1–7 pick the reaction by name (kept by a Write → Read pair), P steps a Counter round the palettes, R (or Reset) resets.",
@@ -884,13 +884,13 @@
       "id": "rp_colours",
       "defType": "meta/subpatch",
       "position": {
-        "x": 574,
-        "y": 330
+        "x": 576,
+        "y": 327
       },
       "params": {
         "label": "Palettes",
-        "width": 1010,
-        "height": 1178
+        "width": 962,
+        "height": 1160
       },
       "ports": [
         {
@@ -898,25 +898,25 @@
           "name": "palette",
           "type": "number",
           "direction": "input",
-          "y": 960
+          "y": 942
         },
         {
           "id": "colors",
           "name": "colors",
           "type": "color",
           "direction": "output",
-          "y": 722
+          "y": 843
         }
       ],
-      "width": 1010,
-      "height": 1178
+      "width": 962,
+      "height": 1160
     },
     {
       "id": "rp_coloursNote",
       "defType": "meta/comment",
       "position": {
         "x": 128,
-        "y": 1038
+        "y": 1020
       },
       "params": {
         "text": "Four five-colour palettes in one list; Lookup group-at picks one.",
@@ -929,13 +929,13 @@
       "id": "rp_brushTips",
       "defType": "meta/subpatch",
       "position": {
-        "x": 581,
-        "y": 434
+        "x": 583,
+        "y": 448
       },
       "params": {
         "label": "Brush",
-        "width": 1721,
-        "height": 540
+        "width": 1629,
+        "height": 553
       },
       "ports": [
         {
@@ -943,46 +943,46 @@
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 225
+          "y": 221
         },
         {
           "id": "brushSize",
           "name": "brushSize",
           "type": "number",
           "direction": "input",
-          "y": 290
+          "y": 303
         },
         {
           "id": "mpos",
           "name": "mpos",
           "type": "vec2",
           "direction": "input",
-          "y": 40
+          "y": 28
         },
         {
           "id": "pressed",
           "name": "pressed",
           "type": "boolean",
           "direction": "input",
-          "y": 322
+          "y": 335
         },
         {
           "id": "paint",
           "name": "paint",
           "type": "vec2",
           "direction": "output",
-          "y": 131
+          "y": 279
         }
       ],
-      "width": 1721,
-      "height": 540
+      "width": 1629,
+      "height": 553
     },
     {
       "id": "rp_brushTipsNote",
       "defType": "meta/comment",
       "position": {
         "x": 129,
-        "y": 400
+        "y": 413
       },
       "params": {
         "text": "The mouse and six points turning round it, Brush px out, kept only while the button is down.",
@@ -995,13 +995,13 @@
       "id": "rp_seedRings",
       "defType": "meta/subpatch",
       "position": {
-        "x": 583,
-        "y": 226
+        "x": 585,
+        "y": 230
       },
       "params": {
         "label": "Seed",
-        "width": 1297,
-        "height": 514
+        "width": 1244,
+        "height": 539
       },
       "ports": [
         {
@@ -1009,18 +1009,18 @@
           "name": "seed",
           "type": "image",
           "direction": "output",
-          "y": 139
+          "y": 321
         }
       ],
-      "width": 1297,
-      "height": 514
+      "width": 1244,
+      "height": 539
     },
     {
       "id": "rp_seedRingsNote",
       "defType": "meta/comment",
       "position": {
         "x": 128,
-        "y": 374
+        "y": 399
       },
       "params": {
         "text": "Three rings, as a picture: where B starts.",
@@ -1033,13 +1033,13 @@
       "id": "rp_statusLine",
       "defType": "meta/subpatch",
       "position": {
-        "x": 864,
+        "x": 865,
         "y": 0
       },
       "params": {
         "label": "Status",
-        "width": 1096,
-        "height": 637
+        "width": 1076,
+        "height": 740
       },
       "ports": [
         {
@@ -1047,32 +1047,32 @@
           "name": "reaction",
           "type": "string",
           "direction": "input",
-          "y": 255
+          "y": 265
         },
         {
           "id": "bar",
           "name": "bar",
           "type": "layer",
           "direction": "output",
-          "y": 89
+          "y": 190
         },
         {
           "id": "status",
           "name": "status",
           "type": "layer",
           "direction": "output",
-          "y": 284
+          "y": 522
         }
       ],
-      "width": 1096,
-      "height": 637
+      "width": 1076,
+      "height": 740
     },
     {
       "id": "rp_statusLineNote",
       "defType": "meta/comment",
       "position": {
         "x": 128,
-        "y": 497
+        "y": 600
       },
       "params": {
         "text": "The reaction's name and the keys.",

@@ -26,7 +26,7 @@
       "defType": "io/toggle",
       "position": {
         "x": 0,
-        "y": 149
+        "y": 80
       },
       "params": {
         "value": false,
@@ -37,8 +37,8 @@
       "id": "th_camera",
       "defType": "input/camera",
       "position": {
-        "x": 271,
-        "y": 96
+        "x": 275,
+        "y": 0
       },
       "params": {
         "mirror": true
@@ -48,8 +48,8 @@
       "id": "th_hands",
       "defType": "input/landmarks",
       "position": {
-        "x": 550,
-        "y": 103
+        "x": 511,
+        "y": 66
       },
       "params": {
         "tracker": "hands",
@@ -65,8 +65,8 @@
       "id": "th_tip",
       "defType": "spread/lookup",
       "position": {
-        "x": 821,
-        "y": 152
+        "x": 735,
+        "y": 253
       },
       "params": {
         "op": "at"
@@ -80,7 +80,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 37,
-        "y": 517
+        "y": 606
       },
       "params": {}
     },
@@ -88,8 +88,8 @@
       "id": "th_mpos",
       "defType": "vec2/make",
       "position": {
-        "x": 313,
-        "y": 491
+        "x": 296,
+        "y": 567
       },
       "params": {}
     },
@@ -97,8 +97,8 @@
       "id": "th_hand",
       "defType": "logic/select",
       "position": {
-        "x": 1101,
-        "y": 273
+        "x": 976,
+        "y": 366
       },
       "params": {}
     },
@@ -106,8 +106,8 @@
       "id": "th_time",
       "defType": "time/seconds",
       "position": {
-        "x": 2000,
-        "y": 358
+        "x": 1876,
+        "y": 536
       },
       "params": {}
     },
@@ -115,8 +115,8 @@
       "id": "th_scaleSel",
       "defType": "io/select",
       "position": {
-        "x": 1322,
-        "y": 531
+        "x": 1186,
+        "y": 629
       },
       "params": {
         "options": "pentatonic,minor-pentatonic,blues,major,dorian,chromatic",
@@ -128,8 +128,8 @@
       "id": "th_snap",
       "defType": "io/toggle",
       "position": {
-        "x": 1322,
-        "y": 805
+        "x": 1186,
+        "y": 938
       },
       "params": {
         "value": true,
@@ -140,8 +140,8 @@
       "id": "th_scale",
       "defType": "sound/scale",
       "position": {
-        "x": 509,
-        "y": 77
+        "x": 558,
+        "y": 40
       },
       "params": {
         "mode": "range",
@@ -157,7 +157,7 @@
       "id": "th_snapNote",
       "defType": "spread/lookup",
       "position": {
-        "x": 770,
+        "x": 795,
         "y": 40
       },
       "params": {
@@ -172,8 +172,8 @@
       "id": "th_glide",
       "defType": "motion/smooth",
       "position": {
-        "x": 1277,
-        "y": 169
+        "x": 1261,
+        "y": 236
       },
       "params": {},
       "portValues": {
@@ -185,8 +185,8 @@
       "id": "th_vibrato",
       "defType": "motion/lfo",
       "position": {
-        "x": 1253,
-        "y": 295
+        "x": 1231,
+        "y": 380
       },
       "params": {
         "shape": "sine"
@@ -202,8 +202,8 @@
       "id": "th_level",
       "defType": "motion/smooth",
       "position": {
-        "x": 700,
-        "y": 40
+        "x": 726,
+        "y": 121
       },
       "params": {},
       "portValues": {
@@ -215,8 +215,8 @@
       "id": "th_tone",
       "defType": "sound/oscillator",
       "position": {
-        "x": 1962,
-        "y": 548
+        "x": 1857,
+        "y": 713
       },
       "params": {
         "type": "triangle"
@@ -229,8 +229,8 @@
       "id": "th_body",
       "defType": "sound/oscillator",
       "position": {
-        "x": 1962,
-        "y": 696
+        "x": 1857,
+        "y": 879
       },
       "params": {
         "type": "sine"
@@ -243,8 +243,8 @@
       "id": "th_mix",
       "defType": "sound/mix",
       "position": {
-        "x": 2261,
-        "y": 579
+        "x": 2138,
+        "y": 789
       },
       "params": {
         "slotCount": 2
@@ -254,8 +254,8 @@
       "id": "th_volume",
       "defType": "sound/gain",
       "position": {
-        "x": 2581,
-        "y": 514
+        "x": 2475,
+        "y": 727
       },
       "params": {}
     },
@@ -263,8 +263,8 @@
       "id": "th_filter",
       "defType": "sound/filter",
       "position": {
-        "x": 2839,
-        "y": 532
+        "x": 2732,
+        "y": 761
       },
       "params": {
         "type": "lowpass"
@@ -278,8 +278,8 @@
       "id": "th_delay",
       "defType": "sound/delay",
       "position": {
-        "x": 3182,
-        "y": 538
+        "x": 3037,
+        "y": 851
       },
       "params": {},
       "portValues": {
@@ -292,8 +292,8 @@
       "id": "th_reverb",
       "defType": "sound/reverb",
       "position": {
-        "x": 3453,
-        "y": 516
+        "x": 3296,
+        "y": 920
       },
       "params": {},
       "portValues": {
@@ -306,8 +306,8 @@
       "id": "th_out",
       "defType": "sound/output",
       "position": {
-        "x": 3712,
-        "y": 516
+        "x": 3523,
+        "y": 1033
       },
       "params": {},
       "portValues": {
@@ -318,8 +318,8 @@
       "id": "th_camImage",
       "defType": "draw/image",
       "position": {
-        "x": 2870,
-        "y": 0
+        "x": 2732,
+        "y": 207
       },
       "params": {},
       "portValues": {
@@ -338,7 +338,7 @@
       "defType": "spread/linear",
       "position": {
         "x": 128,
-        "y": 381
+        "y": 275
       },
       "params": {},
       "portValues": {
@@ -352,8 +352,8 @@
       "id": "th_probeScale",
       "defType": "sound/scale",
       "position": {
-        "x": 364,
-        "y": 373
+        "x": 367,
+        "y": 292
       },
       "params": {
         "mode": "range",
@@ -369,8 +369,8 @@
       "id": "th_laneNotes",
       "defType": "spread/sublist",
       "position": {
-        "x": 627,
-        "y": 391
+        "x": 598,
+        "y": 339
       },
       "params": {
         "op": "unique"
@@ -381,8 +381,8 @@
       "id": "th_lanes",
       "defType": "spread/count",
       "position": {
-        "x": 929,
-        "y": 243
+        "x": 849,
+        "y": 197
       },
       "params": {},
       "parentId": "th_lanesBox"
@@ -391,12 +391,12 @@
       "id": "th_laneLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 2345,
-        "y": 142
+        "x": 2218,
+        "y": 325
       },
       "params": {
-        "width": 521,
-        "height": 246,
+        "width": 545,
+        "height": 250,
         "label": "Lanes"
       },
       "ports": [
@@ -405,25 +405,25 @@
           "name": "at",
           "type": "vec2",
           "direction": "input",
-          "y": 77
+          "y": 76
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
           "direction": "input",
-          "y": 165
+          "y": 137
         },
         {
           "id": "lane",
           "name": "lane",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 196
         }
       ],
-      "width": 521,
-      "height": 246,
+      "width": 545,
+      "height": 250,
       "parentId": "th_lanesBox"
     },
     {
@@ -431,7 +431,7 @@
       "defType": "style/fill",
       "position": {
         "x": 128,
-        "y": 128
+        "y": 100
       },
       "params": {},
       "parentId": "th_laneLoop"
@@ -441,7 +441,7 @@
       "defType": "draw/rect",
       "position": {
         "x": 310,
-        "y": 40
+        "y": 46
       },
       "params": {},
       "portValues": {
@@ -454,7 +454,7 @@
       "defType": "spread/range",
       "position": {
         "x": 149,
-        "y": 229
+        "y": 206
       },
       "params": {},
       "portValues": {
@@ -466,12 +466,12 @@
       "id": "th_ringLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 2068,
-        "y": 62
+        "x": 2021,
+        "y": 195
       },
       "params": {
-        "width": 716,
-        "height": 308,
+        "width": 778,
+        "height": 302,
         "label": "Rings"
       },
       "ports": [
@@ -480,25 +480,25 @@
           "name": "d",
           "type": "number",
           "direction": "input",
-          "y": 106
+          "y": 82
         },
         {
           "id": "col",
           "name": "col",
           "type": "color",
           "direction": "input",
-          "y": 183
+          "y": 159
         },
         {
           "id": "ring",
           "name": "ring",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 190
         }
       ],
-      "width": 716,
-      "height": 308,
+      "width": 778,
+      "height": 302,
       "parentId": "th_ringsBox"
     },
     {
@@ -506,7 +506,7 @@
       "defType": "style/stroke",
       "position": {
         "x": 129,
-        "y": 146
+        "y": 122
       },
       "params": {},
       "portValues": {
@@ -518,8 +518,8 @@
       "id": "th_ringNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 318,
-        "y": 146
+        "x": 351,
+        "y": 158
       },
       "params": {},
       "parentId": "th_ringLoop"
@@ -528,7 +528,7 @@
       "id": "th_ring",
       "defType": "draw/ellipse",
       "position": {
-        "x": 505,
+        "x": 543,
         "y": 40
       },
       "params": {},
@@ -538,8 +538,8 @@
       "id": "th_orbFill",
       "defType": "style/fill",
       "position": {
-        "x": 590,
-        "y": 186
+        "x": 553,
+        "y": 299
       },
       "params": {},
       "parentId": "th_orbBox"
@@ -548,8 +548,8 @@
       "id": "th_orb",
       "defType": "draw/ellipse",
       "position": {
-        "x": 788,
-        "y": 172
+        "x": 754,
+        "y": 288
       },
       "params": {},
       "parentId": "th_orbBox"
@@ -558,8 +558,8 @@
       "id": "th_stringX",
       "defType": "spread/linear",
       "position": {
-        "x": 149,
-        "y": 92
+        "x": 150,
+        "y": 50
       },
       "params": {},
       "portValues": {
@@ -573,8 +573,8 @@
       "id": "th_stringStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 171,
-        "y": 585
+        "x": 161,
+        "y": 607
       },
       "params": {},
       "portValues": {
@@ -586,8 +586,8 @@
       "id": "th_stringLine",
       "defType": "draw/polygon",
       "position": {
-        "x": 2265,
-        "y": 180
+        "x": 2245,
+        "y": 325
       },
       "params": {},
       "portValues": {
@@ -599,8 +599,8 @@
       "id": "th_glowing",
       "defType": "transform/group",
       "position": {
-        "x": 2543,
-        "y": 180
+        "x": 2433,
+        "y": 389
       },
       "params": {
         "slotCount": 3
@@ -610,8 +610,8 @@
       "id": "th_glow",
       "defType": "gpu/effect",
       "position": {
-        "x": 2835,
-        "y": 340
+        "x": 2726,
+        "y": 551
       },
       "params": {
         "mode": "bloom"
@@ -627,7 +627,7 @@
       "defType": "style/fill",
       "position": {
         "x": 128,
-        "y": 316
+        "y": 294
       },
       "params": {},
       "portValues": {
@@ -644,8 +644,8 @@
       "id": "th_antenna",
       "defType": "draw/rect",
       "position": {
-        "x": 370,
-        "y": 228
+        "x": 353,
+        "y": 253
       },
       "params": {},
       "portValues": {
@@ -663,7 +663,7 @@
       "defType": "style/stroke",
       "position": {
         "x": 128,
-        "y": 124
+        "y": 40
       },
       "params": {},
       "portValues": {
@@ -681,8 +681,8 @@
       "id": "th_loopNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 393,
-        "y": 124
+        "x": 371,
+        "y": 131
       },
       "params": {},
       "parentId": "th_antennaBox"
@@ -691,8 +691,8 @@
       "id": "th_loopAntenna",
       "defType": "draw/ellipse",
       "position": {
-        "x": 600,
-        "y": 40
+        "x": 572,
+        "y": 69
       },
       "params": {},
       "portValues": {
@@ -722,8 +722,8 @@
       "id": "th_noteName",
       "defType": "spread/lookup",
       "position": {
-        "x": 640,
-        "y": 107
+        "x": 609,
+        "y": 169
       },
       "params": {
         "op": "at"
@@ -734,8 +734,8 @@
       "id": "th_hzText",
       "defType": "string/format-number",
       "position": {
-        "x": 128,
-        "y": 273
+        "x": 130,
+        "y": 238
       },
       "params": {},
       "portValues": {
@@ -748,8 +748,8 @@
       "id": "th_help",
       "defType": "value/string",
       "position": {
-        "x": 642,
-        "y": 277
+        "x": 609,
+        "y": 395
       },
       "params": {
         "value": "hold the mouse and move · or Camera on and raise a hand"
@@ -760,8 +760,8 @@
       "id": "th_statusParts",
       "defType": "spread/merge",
       "position": {
-        "x": 910,
-        "y": 182
+        "x": 839,
+        "y": 307
       },
       "params": {
         "slotCount": 3
@@ -772,8 +772,8 @@
       "id": "th_status",
       "defType": "string/concat",
       "position": {
-        "x": 1188,
-        "y": 182
+        "x": 1106,
+        "y": 370
       },
       "params": {
         "separator": "   ·   "
@@ -784,8 +784,8 @@
       "id": "th_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 1174,
-        "y": 308
+        "x": 1104,
+        "y": 513
       },
       "params": {},
       "portValues": {
@@ -802,8 +802,8 @@
       "id": "th_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 1419,
-        "y": 201
+        "x": 1334,
+        "y": 442
       },
       "params": {
         "size": 13,
@@ -821,8 +821,8 @@
       "id": "th_scene",
       "defType": "transform/group",
       "position": {
-        "x": 3145,
-        "y": 302
+        "x": 3010,
+        "y": 556
       },
       "params": {
         "slotCount": 7
@@ -832,8 +832,8 @@
       "id": "th_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 3409,
-        "y": 302
+        "x": 3274,
+        "y": 713
       },
       "params": {
         "width": 720,
@@ -852,8 +852,8 @@
       "id": "th_handXY",
       "defType": "vec2/split",
       "position": {
-        "x": 1364,
-        "y": 334
+        "x": 1228,
+        "y": 474
       },
       "params": {}
     },
@@ -861,8 +861,8 @@
       "id": "th_sounding",
       "defType": "logic/logic",
       "position": {
-        "x": 1337,
-        "y": 657
+        "x": 1228,
+        "y": 772
       },
       "params": {
         "op": "or"
@@ -872,8 +872,8 @@
       "id": "th_acrossMap",
       "defType": "math/map",
       "position": {
-        "x": 128,
-        "y": 180
+        "x": 131,
+        "y": 140
       },
       "params": {
         "inMin": -360,
@@ -894,8 +894,8 @@
       "id": "th_across",
       "defType": "math/clamp",
       "position": {
-        "x": 307,
-        "y": 189
+        "x": 344,
+        "y": 154
       },
       "params": {
         "min": 0,
@@ -912,8 +912,8 @@
       "id": "th_glideNote",
       "defType": "math/lerp",
       "position": {
-        "x": 807,
-        "y": 188
+        "x": 816,
+        "y": 206
       },
       "params": {
         "a": 48,
@@ -930,8 +930,8 @@
       "id": "th_pitch",
       "defType": "logic/select",
       "position": {
-        "x": 1051,
-        "y": 176
+        "x": 1035,
+        "y": 221
       },
       "params": {},
       "parentId": "th_pitchBox"
@@ -940,8 +940,8 @@
       "id": "th_bent",
       "defType": "math/math",
       "position": {
-        "x": 1508,
-        "y": 213
+        "x": 1515,
+        "y": 416
       },
       "params": {
         "op": "add",
@@ -953,8 +953,8 @@
       "id": "th_freq",
       "defType": "sound/midi-to-freq",
       "position": {
-        "x": 1776,
-        "y": 239
+        "x": 1783,
+        "y": 461
       },
       "params": {},
       "parentId": "th_pitchBox"
@@ -963,8 +963,8 @@
       "id": "th_subFreq",
       "defType": "math/math",
       "position": {
-        "x": 1998,
-        "y": 182
+        "x": 2009,
+        "y": 401
       },
       "params": {
         "op": "divide",
@@ -981,7 +981,7 @@
       "defType": "math/map",
       "position": {
         "x": 128,
-        "y": 88
+        "y": 40
       },
       "params": {
         "inMin": 270,
@@ -1002,8 +1002,8 @@
       "id": "th_loudClamp",
       "defType": "math/clamp",
       "position": {
-        "x": 306,
-        "y": 88
+        "x": 338,
+        "y": 79
       },
       "params": {
         "min": 0.05,
@@ -1020,8 +1020,8 @@
       "id": "th_loud",
       "defType": "logic/select",
       "position": {
-        "x": 499,
-        "y": 40
+        "x": 538,
+        "y": 52
       },
       "params": {},
       "portValues": {
@@ -1033,8 +1033,8 @@
       "id": "th_laneIdx",
       "defType": "spread/range",
       "position": {
-        "x": 1220,
-        "y": 212
+        "x": 1100,
+        "y": 194
       },
       "params": {},
       "parentId": "th_lanesBox"
@@ -1043,8 +1043,8 @@
       "id": "th_laneMid",
       "defType": "math/math",
       "position": {
-        "x": 1495,
-        "y": 59
+        "x": 1359,
+        "y": 40
       },
       "params": {
         "op": "add",
@@ -1060,8 +1060,8 @@
       "id": "th_laneX",
       "defType": "math/map",
       "position": {
-        "x": 1819,
-        "y": 40
+        "x": 1668,
+        "y": 59
       },
       "params": {
         "inMin": 0,
@@ -1080,8 +1080,8 @@
       "id": "th_laneAt",
       "defType": "vec2/make",
       "position": {
-        "x": 2108,
-        "y": 93
+        "x": 1975,
+        "y": 188
       },
       "params": {
         "y": 240
@@ -1095,8 +1095,8 @@
       "id": "th_laneSpan",
       "defType": "math/math",
       "position": {
-        "x": 1778,
-        "y": 232
+        "x": 1636,
+        "y": 268
       },
       "params": {
         "op": "divide",
@@ -1112,8 +1112,8 @@
       "id": "th_laneW",
       "defType": "math/math",
       "position": {
-        "x": 2066,
-        "y": 219
+        "x": 1933,
+        "y": 331
       },
       "params": {
         "op": "subtract",
@@ -1129,8 +1129,8 @@
       "id": "th_laneIsNote",
       "defType": "logic/compare",
       "position": {
-        "x": 907,
-        "y": 347
+        "x": 846,
+        "y": 319
       },
       "params": {
         "op": "equal"
@@ -1141,8 +1141,8 @@
       "id": "th_laneLit",
       "defType": "logic/logic",
       "position": {
-        "x": 1219,
-        "y": 383
+        "x": 1127,
+        "y": 373
       },
       "params": {
         "op": "and"
@@ -1153,8 +1153,8 @@
       "id": "th_laneHue",
       "defType": "math/map",
       "position": {
-        "x": 1537,
-        "y": 274
+        "x": 1392,
+        "y": 290
       },
       "params": {
         "inMin": 0,
@@ -1173,8 +1173,8 @@
       "id": "th_laneLitCol",
       "defType": "color/color",
       "position": {
-        "x": 1786,
-        "y": 380
+        "x": 1671,
+        "y": 443
       },
       "params": {
         "mode": "hsl",
@@ -1194,8 +1194,8 @@
       "id": "th_laneOct",
       "defType": "math/math",
       "position": {
-        "x": 923,
-        "y": 495
+        "x": 861,
+        "y": 484
       },
       "params": {
         "op": "mod",
@@ -1211,8 +1211,8 @@
       "id": "th_laneIsC",
       "defType": "logic/compare",
       "position": {
-        "x": 1198,
-        "y": 535
+        "x": 1098,
+        "y": 555
       },
       "params": {
         "op": "equal",
@@ -1227,8 +1227,8 @@
       "id": "th_laneAlpha",
       "defType": "logic/select",
       "position": {
-        "x": 1526,
-        "y": 598
+        "x": 1397,
+        "y": 647
       },
       "params": {},
       "portValues": {
@@ -1241,8 +1241,8 @@
       "id": "th_laneDimCol",
       "defType": "color/color",
       "position": {
-        "x": 1786,
-        "y": 572
+        "x": 1671,
+        "y": 652
       },
       "params": {
         "mode": "rgb",
@@ -1262,8 +1262,8 @@
       "id": "th_laneCol",
       "defType": "logic/select",
       "position": {
-        "x": 2098,
-        "y": 367
+        "x": 1971,
+        "y": 497
       },
       "params": {},
       "parentId": "th_lanesBox"
@@ -1272,7 +1272,7 @@
       "id": "th_hue",
       "defType": "math/map",
       "position": {
-        "x": 136,
+        "x": 134,
         "y": 40
       },
       "params": {
@@ -1295,7 +1295,7 @@
       "defType": "math/math",
       "position": {
         "x": 134,
-        "y": 81
+        "y": 40
       },
       "params": {
         "op": "multiply",
@@ -1307,8 +1307,8 @@
       "id": "th_ringCycles",
       "defType": "math/math",
       "position": {
-        "x": 404,
-        "y": 92
+        "x": 403,
+        "y": 64
       },
       "params": {
         "op": "divide",
@@ -1324,8 +1324,8 @@
       "id": "th_ringStagger",
       "defType": "math/math",
       "position": {
-        "x": 404,
-        "y": 240
+        "x": 403,
+        "y": 230
       },
       "params": {
         "op": "divide",
@@ -1341,8 +1341,8 @@
       "id": "th_ringAt",
       "defType": "math/math",
       "position": {
-        "x": 682,
-        "y": 164
+        "x": 679,
+        "y": 180
       },
       "params": {
         "op": "add",
@@ -1354,8 +1354,8 @@
       "id": "th_ringPhase",
       "defType": "math/math",
       "position": {
-        "x": 955,
-        "y": 207
+        "x": 947,
+        "y": 225
       },
       "params": {
         "op": "fract",
@@ -1367,8 +1367,8 @@
       "id": "th_ringReach",
       "defType": "math/lerp",
       "position": {
-        "x": 171,
-        "y": 333
+        "x": 177,
+        "y": 327
       },
       "params": {
         "a": 120,
@@ -1385,8 +1385,8 @@
       "id": "th_ringGrow",
       "defType": "math/math",
       "position": {
-        "x": 1216,
-        "y": 281
+        "x": 1166,
+        "y": 321
       },
       "params": {
         "op": "multiply",
@@ -1398,8 +1398,8 @@
       "id": "th_ringSize",
       "defType": "math/math",
       "position": {
-        "x": 1788,
-        "y": 169
+        "x": 1727,
+        "y": 239
       },
       "params": {
         "op": "add",
@@ -1415,8 +1415,8 @@
       "id": "th_ringFade",
       "defType": "math/math",
       "position": {
-        "x": 1216,
-        "y": 133
+        "x": 1166,
+        "y": 156
       },
       "params": {
         "op": "subtract",
@@ -1432,8 +1432,8 @@
       "id": "th_ringAlphaL",
       "defType": "math/lerp",
       "position": {
-        "x": 165,
-        "y": 481
+        "x": 177,
+        "y": 493
       },
       "params": {
         "a": 38.25,
@@ -1450,8 +1450,8 @@
       "id": "th_ringAlpha",
       "defType": "math/math",
       "position": {
-        "x": 1507,
-        "y": 292
+        "x": 1454,
+        "y": 363
       },
       "params": {
         "op": "multiply",
@@ -1463,8 +1463,8 @@
       "id": "th_ringCol",
       "defType": "color/color",
       "position": {
-        "x": 1796,
-        "y": 317
+        "x": 1762,
+        "y": 404
       },
       "params": {
         "mode": "hsl",
@@ -1482,8 +1482,8 @@
       "id": "th_orbLight",
       "defType": "math/lerp",
       "position": {
-        "x": 134,
-        "y": 232
+        "x": 145,
+        "y": 250
       },
       "params": {
         "a": 60,
@@ -1500,8 +1500,8 @@
       "id": "th_orbCol",
       "defType": "color/color",
       "position": {
-        "x": 333,
-        "y": 125
+        "x": 346,
+        "y": 191
       },
       "params": {
         "mode": "hsl",
@@ -1519,8 +1519,8 @@
       "id": "th_orbSize",
       "defType": "math/lerp",
       "position": {
-        "x": 134,
-        "y": 380
+        "x": 145,
+        "y": 415
       },
       "params": {
         "a": 18,
@@ -1537,8 +1537,8 @@
       "id": "th_stringRest",
       "defType": "vec2/make",
       "position": {
-        "x": 477,
-        "y": 117
+        "x": 476,
+        "y": 100
       },
       "params": {},
       "parentId": "th_stringBox"
@@ -1547,8 +1547,8 @@
       "id": "th_bumpHeight",
       "defType": "math/lerp",
       "position": {
-        "x": 177,
-        "y": 276
+        "x": 178,
+        "y": 248
       },
       "params": {
         "a": 6,
@@ -1565,7 +1565,7 @@
       "id": "th_bump",
       "defType": "noise/noise",
       "position": {
-        "x": 716,
+        "x": 731,
         "y": 40
       },
       "params": {
@@ -1581,7 +1581,7 @@
       "defType": "math/math",
       "position": {
         "x": 435,
-        "y": 323
+        "y": 336
       },
       "params": {
         "op": "multiply",
@@ -1593,8 +1593,8 @@
       "id": "th_waveAlong",
       "defType": "math/math",
       "position": {
-        "x": 715,
-        "y": 408
+        "x": 713,
+        "y": 481
       },
       "params": {
         "op": "divide",
@@ -1610,8 +1610,8 @@
       "id": "th_waveRun",
       "defType": "math/math",
       "position": {
-        "x": 134,
-        "y": 437
+        "x": 135,
+        "y": 442
       },
       "params": {
         "op": "multiply",
@@ -1627,8 +1627,8 @@
       "id": "th_wavePhase",
       "defType": "math/math",
       "position": {
-        "x": 988,
-        "y": 394
+        "x": 986,
+        "y": 488
       },
       "params": {
         "op": "subtract",
@@ -1640,8 +1640,8 @@
       "id": "th_waveSin",
       "defType": "math/math",
       "position": {
-        "x": 1266,
-        "y": 280
+        "x": 1268,
+        "y": 416
       },
       "params": {
         "op": "sin",
@@ -1653,8 +1653,8 @@
       "id": "th_wobble",
       "defType": "math/math",
       "position": {
-        "x": 1526,
-        "y": 144
+        "x": 1494,
+        "y": 301
       },
       "params": {
         "op": "multiply",
@@ -1666,8 +1666,8 @@
       "id": "th_stringY",
       "defType": "math/math",
       "position": {
-        "x": 1797,
-        "y": 92
+        "x": 1778,
+        "y": 192
       },
       "params": {
         "op": "add",
@@ -1679,8 +1679,8 @@
       "id": "th_string",
       "defType": "vec2/make",
       "position": {
-        "x": 2069,
-        "y": 78
+        "x": 2051,
+        "y": 194
       },
       "params": {},
       "parentId": "th_stringBox"
@@ -1689,8 +1689,8 @@
       "id": "th_round",
       "defType": "math/math",
       "position": {
-        "x": 129,
-        "y": 147
+        "x": 148,
+        "y": 95
       },
       "params": {
         "op": "round",
@@ -1702,8 +1702,8 @@
       "id": "th_rounded",
       "defType": "math/math",
       "position": {
-        "x": 381,
-        "y": 166
+        "x": 384,
+        "y": 184
       },
       "params": {
         "op": "mod",
@@ -1719,13 +1719,13 @@
       "id": "th_lanesBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1973,
-        "y": 970
+        "x": 1849,
+        "y": 1188
       },
       "params": {
         "label": "Lanes",
-        "width": 2978,
-        "height": 756
+        "width": 2875,
+        "height": 854
       },
       "ports": [
         {
@@ -1733,28 +1733,28 @@
           "name": "scale",
           "type": "string",
           "direction": "input",
-          "y": 505
+          "y": 417
         },
         {
           "id": "lanes",
           "name": "lanes",
           "type": "layer",
           "direction": "output",
-          "y": 222
+          "y": 521
         },
         {
           "id": "note",
           "name": "note",
           "type": "any",
           "direction": "input",
-          "y": 349
+          "y": 251
         },
         {
           "id": "sounding",
           "name": "sounding",
           "type": "boolean",
           "direction": "input",
-          "y": 541
+          "y": 510
         }
       ]
     },
@@ -1762,13 +1762,13 @@
       "id": "th_ringsBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 2278,
-        "y": 139
+        "x": 2155,
+        "y": 299
       },
       "params": {
         "label": "Rings",
-        "width": 2896,
-        "height": 659
+        "width": 2911,
+        "height": 688
       },
       "ports": [
         {
@@ -1776,42 +1776,42 @@
           "name": "hand",
           "type": "vec2",
           "direction": "input",
-          "y": 92
+          "y": 72
         },
         {
           "id": "rings",
           "name": "rings",
           "type": "layer",
           "direction": "output",
-          "y": 139
+          "y": 384
         },
         {
           "id": "t",
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 140
+          "y": 99
         },
         {
           "id": "freq",
           "name": "freq",
           "type": "number",
           "direction": "input",
-          "y": 162
+          "y": 121
         },
         {
           "id": "level",
           "name": "level",
           "type": "number",
           "direction": "input",
-          "y": 488
+          "y": 491
         },
         {
           "id": "hue",
           "name": "hue",
           "type": "number",
           "direction": "input",
-          "y": 605
+          "y": 634
         }
       ]
     },
@@ -1819,13 +1819,13 @@
       "id": "th_stringBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 2276,
-        "y": 331
+        "x": 2153,
+        "y": 508
       },
       "params": {
         "label": "String",
-        "width": 2480,
-        "height": 747
+        "width": 2460,
+        "height": 787
       },
       "ports": [
         {
@@ -1833,49 +1833,49 @@
           "name": "string",
           "type": "layer",
           "direction": "output",
-          "y": 217
+          "y": 453
         },
         {
           "id": "color",
           "name": "color",
           "type": "color",
           "direction": "input",
-          "y": 622
+          "y": 644
         },
         {
           "id": "handY",
           "name": "handY",
           "type": "number",
           "direction": "input",
-          "y": 142
+          "y": 121
         },
         {
           "id": "level",
           "name": "level",
           "type": "number",
           "direction": "input",
-          "y": 357
+          "y": 329
         },
         {
           "id": "hand",
           "name": "hand",
           "type": "vec2",
           "direction": "input",
-          "y": 252
+          "y": 224
         },
         {
           "id": "freq",
           "name": "freq",
           "type": "number",
           "direction": "input",
-          "y": 404
+          "y": 416
         },
         {
           "id": "t",
           "name": "t",
           "type": "number",
           "direction": "input",
-          "y": 496
+          "y": 501
         }
       ]
     },
@@ -1883,13 +1883,13 @@
       "id": "th_pitchBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1643,
-        "y": 573
+        "x": 1513,
+        "y": 693
       },
       "params": {
         "label": "Pitch",
-        "width": 2279,
-        "height": 633
+        "width": 2289,
+        "height": 752
       },
       "ports": [
         {
@@ -1897,49 +1897,49 @@
           "name": "scale",
           "type": "string",
           "direction": "input",
-          "y": 156
+          "y": 150
         },
         {
           "id": "handX",
           "name": "handX",
           "type": "number",
           "direction": "input",
-          "y": 217
+          "y": 177
         },
         {
           "id": "snap",
           "name": "snap",
           "type": "boolean",
           "direction": "input",
-          "y": 348
+          "y": 343
         },
         {
           "id": "freq",
           "name": "freq",
           "type": "number",
           "direction": "output",
-          "y": 306
+          "y": 539
         },
         {
           "id": "bodyFreq",
           "name": "bodyFreq",
           "type": "number",
           "direction": "output",
-          "y": 219
+          "y": 504
         },
         {
           "id": "scaleNote",
           "name": "scaleNote",
           "type": "any",
           "direction": "output",
-          "y": 123
+          "y": 150
         },
         {
           "id": "note",
           "name": "note",
           "type": "number",
           "direction": "output",
-          "y": 158
+          "y": 297
         }
       ]
     },
@@ -1947,13 +1947,13 @@
       "id": "th_loudBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1629,
-        "y": 347
+        "x": 1499,
+        "y": 492
       },
       "params": {
         "label": "Loudness",
-        "width": 913,
-        "height": 272
+        "width": 939,
+        "height": 259
       },
       "ports": [
         {
@@ -1961,21 +1961,21 @@
           "name": "level",
           "type": "number",
           "direction": "output",
-          "y": 77
+          "y": 205
         },
         {
           "id": "handY",
           "name": "handY",
           "type": "number",
           "direction": "input",
-          "y": 125
+          "y": 77
         },
         {
           "id": "sounding",
           "name": "sounding",
           "type": "boolean",
           "direction": "input",
-          "y": 64
+          "y": 17
         }
       ]
     },
@@ -1983,13 +1983,13 @@
       "id": "th_orbBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1980,
-        "y": 114
+        "x": 1856,
+        "y": 242
       },
       "params": {
         "label": "Orb",
-        "width": 999,
-        "height": 520
+        "width": 989,
+        "height": 573
       },
       "ports": [
         {
@@ -1997,14 +1997,14 @@
           "name": "hand",
           "type": "vec2",
           "direction": "input",
-          "y": 33
+          "y": 47
         },
         {
           "id": "orb",
           "name": "orb",
           "type": "layer",
           "direction": "output",
-          "y": 209
+          "y": 438
         },
         {
           "id": "note",
@@ -2018,21 +2018,21 @@
           "name": "hue",
           "type": "number",
           "direction": "output",
-          "y": 116
+          "y": 212
         },
         {
           "id": "level",
           "name": "level",
           "type": "number",
           "direction": "input",
-          "y": 387
+          "y": 413
         },
         {
           "id": "color",
           "name": "color",
           "type": "color",
           "direction": "output",
-          "y": 148
+          "y": 264
         }
       ]
     },
@@ -2040,13 +2040,13 @@
       "id": "th_statusBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1960,
-        "y": 844
+        "x": 1836,
+        "y": 1044
       },
       "params": {
         "label": "Status line",
-        "width": 1620,
-        "height": 523
+        "width": 1563,
+        "height": 649
       },
       "ports": [
         {
@@ -2054,21 +2054,21 @@
           "name": "status",
           "type": "layer",
           "direction": "output",
-          "y": 238
+          "y": 591
         },
         {
           "id": "freq",
           "name": "freq",
           "type": "number",
           "direction": "input",
-          "y": 332
+          "y": 297
         },
         {
           "id": "note",
           "name": "note",
           "type": "number",
           "direction": "input",
-          "y": 206
+          "y": 176
         }
       ]
     },
@@ -2076,13 +2076,13 @@
       "id": "th_antennaBox",
       "defType": "meta/subpatch",
       "position": {
-        "x": 2840,
-        "y": 214
+        "x": 2714,
+        "y": 438
       },
       "params": {
         "label": "Antennas",
-        "width": 851,
-        "height": 434
+        "width": 807,
+        "height": 457
       },
       "ports": [
         {
@@ -2090,14 +2090,14 @@
           "name": "pitchAntenna",
           "type": "layer",
           "direction": "output",
-          "y": 263
+          "y": 403
         },
         {
           "id": "volumeLoop",
           "name": "volumeLoop",
           "type": "layer",
           "direction": "output",
-          "y": 82
+          "y": 219
         }
       ]
     }

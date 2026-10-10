@@ -37,6 +37,8 @@ mod profiler;
 mod recording;
 mod recovery;
 #[cfg(test)]
+mod sample_equiv;
+#[cfg(test)]
 mod sample_play;
 #[cfg(test)]
 mod sample_sweep;

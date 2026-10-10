@@ -179,3 +179,43 @@ fn every_sample_compiles_runs_and_draws() {
     }
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
+
+/// Samples rebuilt from visual nodes, without the Expression node (the
+/// owner's rule: Library patches are built from visual nodes, not code).
+/// Each rebuild lists its own here; the final merge switches this check
+/// to every sample in the catalogue.
+const NO_EXPRESSION: &[&str] = &[
+    // No-code rebuild (agent B3).
+    "sound-keyboard-synth",
+    "sound-hand-theremin",
+    "sound-mic-bloom",
+    "rose-curve",
+    "morph-tunnel",
+    "number-counters",
+    "echo-trails",
+    "layout-bloom",
+    "neon-orbits",
+    "point-tracker",
+    "shader-time-smear",
+    "camera-slit-scan",
+    "kinetic-type",
+    "plexus-colours",
+    "topographic",
+    "trim-write-on",
+];
+
+#[test]
+fn rebuilt_samples_have_no_expression_nodes() {
+    let mut failures = Vec::new();
+    for id in NO_EXPRESSION {
+        let text = std::fs::read_to_string(samples_dir().join(format!("{id}.flora")))
+            .unwrap_or_else(|e| panic!("{id}: {e}"));
+        let patch: serde_json::Value = serde_json::from_str(&text).unwrap();
+        for n in patch["nodes"].as_array().unwrap() {
+            if n["defType"] == "math/expression" {
+                failures.push(format!("{id}: Expression node {}", n["id"]));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}

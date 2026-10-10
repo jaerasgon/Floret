@@ -6254,7 +6254,7 @@
    "category": "Random",
    "group": "Noise & Random",
    "label": "Noise",
-   "description": "Smooth 2D noise at (pos + (x, y)) · scale, per element: wire spreads (a grid of positions, a list of seeds) into any pin for a spread of values. Modes: perlin, simplex, value, cellular (Worley — `feature` F1 = distance to the nearest cell point, F2 = to the second nearest, F2-F1 = cell edges) and curl (`flow` = the divergence-free curl of Perlin noise, for advecting things in swirls); plus three pattern fields: checker (1 / 0 on alternate unit squares), stripes (a smooth wave, one stripe per unit, turned by `angle` in radians) and rings (the same wave round the origin). With `warp`, stripes become marble and rings wood grain. `noise` is in [0, 1]. `octaves` > 1 adds finer layers (fBm), each `falloff` times as strong. `warp` pushes the sample point around by another noise field (`warp scale` = its frequency) for marbled, folded shapes. Perlin mode at default settings gives exactly what the old Perlin node gave.",
+   "description": "Smooth 2D noise at (pos + (x, y)) · scale, per element: wire spreads (a grid of positions, a list of seeds) into any pin for a spread of values. Modes: perlin, simplex, value, cellular (Worley — `feature` F1 = distance to the nearest cell point, F2 = to the second nearest, F2-F1 = cell edges) and curl (`flow` = the divergence-free curl of Perlin noise, for advecting things in swirls); plus three pattern fields: checker (1 / 0 on alternate unit squares), stripes (a smooth wave, one stripe per unit, turned by `angle` in radians) and rings (the same wave round the origin). With `warp`, stripes become marble and rings wood grain. `noise` is in [0, 1]. `octaves` > 1 adds finer layers (fBm), each `falloff` times as strong. `warp` pushes the sample point around by another noise field (`warp scale` = its frequency) for marbled, folded shapes. Perlin mode at default settings gives exactly what the old Perlin node gave. Field modes: `radial` (a smooth bump round each `center`, 1 there falling to 0 at `radius`) and `gaussian` (a bell, 1/e at `radius`) sum one bump per centre × its `weight` (negative = a dip): pressure highs and lows, metaballs (into Contours), attractor maps; `pos` is in your own units there (`scale` doesn't apply). Every mode outputs the `gradient` (vec2): the slope per unit of `pos`, pointing uphill — wire it (or its negative, or turned 90° for flow along the contours) into Move's `acceleration` to steer things by a field.",
    "inputs": [
     {
      "name": "pos",
@@ -6327,6 +6327,11 @@
      "name": "flow",
      "type": "vec2",
      "kind": "single"
+    },
+    {
+     "name": "gradient",
+     "type": "vec2",
+     "kind": "single"
     }
    ],
    "eval": "raw",
@@ -6343,7 +6348,9 @@
      "curl",
      "checker",
      "stripes",
-     "rings"
+     "rings",
+     "radial",
+     "gaussian"
     ],
     "feature": [
      "F1",
@@ -9023,7 +9030,7 @@
    "category": "Spread",
    "group": "Lists",
    "label": "Lookup",
-   "description": "Read from a list: the item at an index (negative counts from the end), the items at an index spread (wrapping), the Nth group of a flat + groupSize pair, the first / every index where a value occurs, or for each of `points` the index of the nearest point in `spread` (`nearest`). Pick `op` and the pins follow.",
+   "description": "Read from a list: the item at an index (negative counts from the end), the items at an index spread (wrapping), the Nth group of a flat + groupSize pair, the first / every index where a value occurs, or for each of `points` the index of the nearest point in `spread` (`nearest`), or for each of `values` the band it falls in between the `spread` thresholds (`bin`: noise → biome bands, a value → its colour class). Pick `op` and the pins follow.",
    "inputs": [
     {
      "name": "spread",
@@ -9057,7 +9064,8 @@
      "group-at",
      "index-of",
      "indices-of",
-     "nearest"
+     "nearest",
+     "bin"
     ]
    },
    "dynamicOutputs": true
@@ -14150,6 +14158,776 @@
      "length"
     ]
    }
+  },
+  {
+   "type": "logic/switch",
+   "category": "Logic",
+   "group": "Math",
+   "label": "Switch",
+   "description": "Pick one of several values — numbers, vectors, colours, text, layers, anything. `index` mode: the value numbered `index` (0 = the first; `range` clamps out-of-range indices to the ends or wraps them round). `first-true` mode: the value after the first `if` that holds, else `else` — a chain of `a ? x : b ? y : z` without a formula. The header's `− n +` sets how many cases. With one index / one condition each, the chosen input comes through whole (a spread of layers stays a spread); with spreads, it chooses per element and the inputs cycle. `which` is the case chosen (−1 = else). Example: a Keyboard key number into `index` picks a brush colour; `first-true` with `if 0` = game over, `if 1` = paused picks the message to draw.",
+   "inputs": [
+    {
+     "name": "index",
+     "type": "number",
+     "kind": "spread",
+     "default": 0,
+     "integer": true
+    },
+    {
+     "name": "v0",
+     "type": "any",
+     "kind": "spread",
+     "label": "0"
+    },
+    {
+     "name": "v1",
+     "type": "any",
+     "kind": "spread",
+     "label": "1"
+    },
+    {
+     "name": "range",
+     "type": "string",
+     "kind": "single",
+     "default": "clamp",
+     "param": "range"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "out",
+     "type": "any",
+     "kind": "spread"
+    },
+    {
+     "name": "which",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "index",
+    "slotCount": 2,
+    "range": "clamp"
+   },
+   "paramOptions": {
+    "mode": [
+     "index",
+     "first-true"
+    ],
+    "range": [
+     "clamp",
+     "wrap"
+    ]
+   }
+  },
+  {
+   "type": "io/latch",
+   "category": "IO",
+   "group": "Animate",
+   "label": "Latch",
+   "description": "A switch that remembers: a rising edge on `set` turns `state` on, on `reset` turns it off, on `toggle` flips it (reset wins when they fire together). Starts at `initial`. Per element over spreads (one flip-flop per button, cell or agent); `changed` is true on the tick it flips. Example: Mouse `pressed` into `toggle` → a play / pause state; Hit Test `inside` (per cell) AND a click into `toggle` → step-sequencer cells that switch on and off.",
+   "inputs": [
+    {
+     "name": "set",
+     "type": "boolean",
+     "kind": "spread",
+     "default": false
+    },
+    {
+     "name": "reset",
+     "type": "boolean",
+     "kind": "spread",
+     "default": false
+    },
+    {
+     "name": "toggle",
+     "type": "boolean",
+     "kind": "spread",
+     "default": false
+    },
+    {
+     "name": "initial",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    }
+   ],
+   "outputs": [
+    {
+     "name": "state",
+     "type": "boolean",
+     "kind": "spread"
+    },
+    {
+     "name": "changed",
+     "type": "boolean",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": null,
+   "paramOptions": null,
+   "effectful": true
+  },
+  {
+   "type": "motion/integrate",
+   "category": "Motion",
+   "group": "Animate",
+   "label": "Integrate",
+   "description": "Add `rate` × the frame time every frame: a value that runs at a speed you control (number, vec2 or colour, per element over spreads). Starts at `start`; `reset` holds it there; `run` off pauses. `limit` keeps it between `min` and `max`: `clamp` stops at the ends, `wrap` jumps round (a looping phase or playhead), `bounce` runs back and forth; `hit` is true on the frame it wraps, bounces or arrives. A stalled frame counts at most `max dt` seconds. Unlike Time, changing `rate` never jumps. Example: rate = a slider, `wrap` 0..1 → a phase for Curve or LFO-free animation; velocities (vec2*) into `rate`, start positions into `start` → things drifting; a timer since a change: rate 1, reset = Trigger.",
+   "inputs": [
+    {
+     "name": "rate",
+     "type": "any",
+     "kind": "spread",
+     "default": 1
+    },
+    {
+     "name": "start",
+     "type": "any",
+     "kind": "spread",
+     "default": 0
+    },
+    {
+     "name": "run",
+     "type": "boolean",
+     "kind": "spread",
+     "default": true
+    },
+    {
+     "name": "reset",
+     "type": "boolean",
+     "kind": "spread",
+     "default": false
+    },
+    {
+     "name": "limit",
+     "type": "string",
+     "kind": "single",
+     "default": "none",
+     "param": "limit"
+    },
+    {
+     "name": "maxDt",
+     "type": "number",
+     "kind": "single",
+     "default": 0.1,
+     "label": "max dt"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "value",
+     "type": "any",
+     "kind": "spread"
+    },
+    {
+     "name": "hit",
+     "type": "boolean",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "valueType": "any",
+    "limit": "none"
+   },
+   "paramOptions": {
+    "limit": [
+     "none",
+     "clamp",
+     "wrap",
+     "bounce"
+    ]
+   },
+   "effectful": true,
+   "adaptiveType": true
+  },
+  {
+   "type": "motion/envelope",
+   "category": "Motion",
+   "group": "Animate",
+   "label": "Envelope",
+   "description": "A shape in time after an event — a flash, a pluck, a bounce. `from` `age` takes seconds since the event (per element: an age per particle, note or letter); `trigger` times itself, restarting on each rising edge (per element too). Shapes: `decay` (1 falling to 1 % at `time`), `attack-decay` (eases up over `attack`, holds `hold`, then decays over `time`), `fade` (straight ramps: up over `attack`, `hold`, down over `time`), `boing` (a damped wobble about 0 at `frequency` Hz, dying away over `time`) and `spring` (0 → 1 overshooting at `frequency`, settled by `time`). Before the event it rests at 0 (a spring at 1 once settled). Outputs the `value`, the `age` and `active` (still moving). Example: Keyboard `hit` into `trigger`, `boing` × 20 onto a letter's y offset; Beat `trigger` → `decay` → a pulse's size.",
+   "inputs": [
+    {
+     "name": "from",
+     "type": "string",
+     "kind": "single",
+     "default": "age",
+     "param": "from"
+    },
+    {
+     "name": "age",
+     "type": "number",
+     "kind": "spread",
+     "default": 0
+    },
+    {
+     "name": "time",
+     "type": "number",
+     "kind": "spread",
+     "default": 0.5
+    }
+   ],
+   "outputs": [
+    {
+     "name": "value",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "age",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "active",
+     "type": "boolean",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "shape": "decay",
+    "from": "age"
+   },
+   "paramOptions": {
+    "shape": [
+     "decay",
+     "attack-decay",
+     "fade",
+     "boing",
+     "spring"
+    ],
+    "from": [
+     "age",
+     "trigger"
+    ]
+   },
+   "effectful": true
+  },
+  {
+   "type": "time/beat",
+   "category": "Time",
+   "group": "Animate",
+   "label": "Beat",
+   "description": "A musical step clock. `bpm` beats a minute, `beats` per bar, the bar cut into `steps`: `step` (0 .. steps − 1), `phase` 0..1 through the step, `bar` count, `gate` (on for the first `gate` fraction of each step), `trigger` (true on the frame a step starts) and `count` (steps since the start). `swing` 0..1 delays every second step (1 = 3:1). `run` off pauses, `reset` restarts at step 0. `sync` `loop` fits a whole number of bars into the patch's loop (the tempo bends a little) so a recording of one loop repeats seamlessly. Example: `step` into Lookup `at` over a pattern list, `trigger` into a sound Envelope; `phase` into an Envelope `age` for a pulse on every step.",
+   "inputs": [
+    {
+     "name": "bpm",
+     "type": "number",
+     "kind": "single",
+     "default": 120
+    },
+    {
+     "name": "steps",
+     "type": "number",
+     "kind": "single",
+     "default": 16,
+     "integer": true
+    },
+    {
+     "name": "beats",
+     "type": "number",
+     "kind": "single",
+     "default": 4,
+     "integer": true
+    },
+    {
+     "name": "swing",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "width",
+     "type": "number",
+     "kind": "single",
+     "default": 0.5,
+     "label": "gate"
+    },
+    {
+     "name": "run",
+     "type": "boolean",
+     "kind": "single",
+     "default": true
+    },
+    {
+     "name": "reset",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    },
+    {
+     "name": "sync",
+     "type": "string",
+     "kind": "single",
+     "default": "free",
+     "param": "sync"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "step",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "phase",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "bar",
+     "type": "number",
+     "kind": "single"
+    },
+    {
+     "name": "gate",
+     "type": "boolean",
+     "kind": "single"
+    },
+    {
+     "name": "trigger",
+     "type": "boolean",
+     "kind": "single"
+    },
+    {
+     "name": "count",
+     "type": "number",
+     "kind": "single"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "sync": "free"
+   },
+   "paramOptions": {
+    "sync": [
+     "free",
+     "loop"
+    ]
+   },
+   "effectful": true
+  },
+  {
+   "type": "geometry/hit-test",
+   "category": "Geometry",
+   "group": "Shape Ops",
+   "label": "Hit Test",
+   "description": "Which shapes each point is in. Shapes: `rects` (`centers` and `sizes`), `circles` (`centers` and `radii`) or every shape a `layer` draws (polygons, rects, ellipses, paths, glyphs with their holes; lines by their stroke). `margin` grows every shape (a ball's radius) or shrinks it (negative). Per point: `inside` (in any shape) and `index` (the first shape it is in, −1 for none); per shape: `hits` (how many points are in it). Example: the mouse position against a row of button rects → `index` is the button under the mouse; balls against bricks → `hits` > 0 marks the bricks to remove; particles against a text layer → which are inside the letters.",
+   "inputs": [
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "centers",
+     "type": "vec2",
+     "kind": "spread",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "sizes",
+     "type": "vec2",
+     "kind": "spread",
+     "default": {
+      "x": 100,
+      "y": 100
+     }
+    },
+    {
+     "name": "margin",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    }
+   ],
+   "outputs": [
+    {
+     "name": "inside",
+     "type": "boolean",
+     "kind": "spread"
+    },
+    {
+     "name": "index",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "hits",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "rects"
+   },
+   "paramOptions": {
+    "mode": [
+     "rects",
+     "circles",
+     "layer"
+    ]
+   }
+  },
+  {
+   "type": "geometry/curve",
+   "category": "Geometry",
+   "group": "Patterns",
+   "label": "Curve",
+   "description": "Classic parametric curves as `count` points and a path layer: `lissajous` (frequencies `a`, `b`), `rose` (`n` / `d` petals), `hypotrochoid` and `epitrochoid` (Spirograph: circle radii `R`, `r`, pen distance `d`), `spiral` and `log-spiral` (`turns`, from radius `inner` out to `radius`), `star` (`points`, `inner` radius ratio) and `superformula` (Gielis: `m`, `n1`, `n2`, `n3`). Fitted to `radius` around `center` (Lissajous fills a square), turned by `rotation`. `phase` 0..1 runs one seamless animation cycle (figures morph, roses / stars turn by a petal, spirals flow). Closed curves come round exactly once (the period is worked out from the ratios). Also outputs each point's direction of travel (`tangents`, radians). Example: Time `loop` into `phase` for a looping Lissajous; the points into a ForEach to place dots along a rose.",
+   "inputs": [
+    {
+     "name": "count",
+     "type": "number",
+     "kind": "single",
+     "default": 400,
+     "integer": true
+    },
+    {
+     "name": "center",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "radius",
+     "type": "number",
+     "kind": "single",
+     "default": 150
+    },
+    {
+     "name": "phase",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "rotation",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "a",
+     "type": "number",
+     "kind": "single",
+     "default": 3
+    },
+    {
+     "name": "b",
+     "type": "number",
+     "kind": "single",
+     "default": 2
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "tangents",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "lissajous"
+   },
+   "paramOptions": {
+    "mode": [
+     "lissajous",
+     "rose",
+     "hypotrochoid",
+     "epitrochoid",
+     "spiral",
+     "log-spiral",
+     "star",
+     "superformula"
+    ]
+   }
+  },
+  {
+   "type": "geometry/plot",
+   "category": "Geometry",
+   "group": "Draw",
+   "label": "Plot",
+   "description": "A list of numbers as a chart in a box (`center`, `size`): `line` through the values, `area` closed down to `baseline` (filled hills, waveforms, mountain ridges) or `bars` (`gap` between them). Larger values are higher. `range`: `auto` (the values' own min..max), `zero` (always including 0) or `fixed` (`min`..`max`; values outside go past the box). NaNs sit on the baseline. Outputs the layer, each value's point and the `base` point under it (for stems, labels, drop lines). Example: Noise over a Linear Spread → `area` → a mountain ridge; FFT bins → `bars`; a Delay Line's history → `line` for a live graph.",
+   "inputs": [
+    {
+     "name": "values",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "center",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "size",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 400,
+      "y": 200
+     }
+    },
+    {
+     "name": "range",
+     "type": "string",
+     "kind": "single",
+     "default": "auto",
+     "param": "range"
+    },
+    {
+     "name": "style",
+     "type": "style",
+     "kind": "single"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "shape",
+     "type": "layer",
+     "kind": "single"
+    },
+    {
+     "name": "points",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "base",
+     "type": "vec2",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "line",
+    "range": "auto"
+   },
+   "paramOptions": {
+    "mode": [
+     "line",
+     "area",
+     "bars"
+    ],
+    "range": [
+     "auto",
+     "zero",
+     "fixed"
+    ]
+   }
+  },
+  {
+   "type": "particles/move",
+   "category": "Particles",
+   "group": "Particles & Physics",
+   "label": "Move",
+   "description": "Lightweight movers on plain lists: each element has a position and velocity; `acceleration` (gravity, steering), `drag` (per second) and `max speed` act on it every frame; edges of the box (`center`, `size`; 0 × 0 = the canvas) `wrap`, `bounce` (`restitution` = energy kept), `clamp` or nothing (`none`), allowing for each element's `radius`. `run` mode keeps its own state, starting from `position` / `velocity` (a longer list adds movers, a shorter one drops them); `reset` (per element) puts an element back to its inputs — respawning. `step` mode moves the inputs one frame (for a State loop that owns them). Outputs positions, velocities, `hit` (touched a wall this frame) and the wall's `normal`. The particle system's spread-based little sibling. Example: a Scatter's points with random velocities, `bounce` → bouncing balls; `hit` into an Envelope trigger → a flash on every bounce.",
+   "inputs": [
+    {
+     "name": "position",
+     "type": "vec2",
+     "kind": "spread",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "velocity",
+     "type": "vec2",
+     "kind": "spread",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "acceleration",
+     "type": "vec2",
+     "kind": "spread",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "drag",
+     "type": "number",
+     "kind": "spread",
+     "default": 0
+    },
+    {
+     "name": "maxSpeed",
+     "type": "number",
+     "kind": "spread",
+     "default": 0,
+     "label": "max speed"
+    },
+    {
+     "name": "radius",
+     "type": "number",
+     "kind": "spread",
+     "default": 0
+    },
+    {
+     "name": "edge",
+     "type": "string",
+     "kind": "single",
+     "default": "bounce",
+     "param": "edge"
+    },
+    {
+     "name": "center",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "size",
+     "type": "vec2",
+     "kind": "single",
+     "default": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    {
+     "name": "restitution",
+     "type": "number",
+     "kind": "spread",
+     "default": 1
+    },
+    {
+     "name": "timeScale",
+     "type": "number",
+     "kind": "single",
+     "default": 1,
+     "label": "time scale"
+    },
+    {
+     "name": "reset",
+     "type": "boolean",
+     "kind": "spread",
+     "default": false
+    }
+   ],
+   "outputs": [
+    {
+     "name": "position",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "velocity",
+     "type": "vec2",
+     "kind": "spread"
+    },
+    {
+     "name": "hit",
+     "type": "boolean",
+     "kind": "spread"
+    },
+    {
+     "name": "normal",
+     "type": "vec2",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "run",
+    "edge": "bounce"
+   },
+   "paramOptions": {
+    "mode": [
+     "run",
+     "step"
+    ],
+    "edge": [
+     "none",
+     "wrap",
+     "bounce",
+     "clamp"
+    ]
+   },
+   "effectful": true
+  },
+  {
+   "type": "spread/bin",
+   "category": "Spread",
+   "group": "Lists",
+   "label": "Bin Spread",
+   "description": "For each of `values`, the band it falls in between the `spread` thresholds (a step function, like a histogram's bin): below the lowest threshold 0, at or above the highest `len`; the thresholds needn't be sorted; NaN → −1. Lookup's `bin` op. Example: Noise values with thresholds 0.3, 0.45, 0.6 → bands 0..3 (water, sand, grass, rock), then Lookup `pick` from a colour list.",
+   "inputs": [
+    {
+     "name": "spread",
+     "type": "number",
+     "kind": "spread"
+    },
+    {
+     "name": "values",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "outputs": [
+    {
+     "name": "indices",
+     "type": "number",
+     "kind": "spread"
+    }
+   ],
+   "eval": "raw",
+   "dynamicInputs": false,
+   "defaultParams": null,
+   "paramOptions": null,
+   "hidden": true
   },
   {
    "type": "geometry/contours",

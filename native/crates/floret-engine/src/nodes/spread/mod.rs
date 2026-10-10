@@ -7,6 +7,7 @@
 //! and reads past the end (`undefined`).
 
 mod automata;
+mod bin;
 mod combine;
 mod generators;
 mod jssort;
@@ -77,6 +78,8 @@ const NODES: &[(&str, RawFn)] = &[
     ("spread/indices-by-value", combine::indices_by_value),
     // native: Lookup's `nearest` op
     ("spread/nearest", nearest::nearest),
+    // native: Lookup's `bin` op
+    ("spread/bin", bin::bin),
     // partition.ts
     ("spread/partition", combine::partition),
     ("spread/pairwise", combine::pairwise),

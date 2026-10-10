@@ -401,6 +401,7 @@ fn rebuilt_samples_sound_as_before() {
         }
     }
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}
 
 /// Ten seconds of a sample's sound with its controls moved on the way:
 /// each slider to a quarter of its range at 3 s and its top at 6 s, each

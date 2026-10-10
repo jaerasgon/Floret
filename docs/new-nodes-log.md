@@ -530,3 +530,61 @@ or the new mode's absence is the old behaviour); pins recorded in
   exactly. *Missing:* rings of seeds around a centre disc, spirals that
   start off-centre. *Test:* `spread/tests.rs`
   `spiral_and_fibonacci_leave_an_inner_hole`.
+
+## No-code rebuild (agent B3)
+
+Sixteen samples rebuilt with no Expression node: the three Sound samples
+(Keyboard Synth, Hand Theremin, Mic Bloom), Rose Curve (was Expression
+Rose), Morph Tunnel, Number Counters, Echo Trails, Layout Bloom, Neon
+Orbits, Point Tracker, Time Smear, Camera Slit-Scan, Kinetic Type, Plexus
+Colours, Topographic and Write-On Lettering. The visual vocabulary
+already covered every formula; the bigger patches are split into named
+subpatches (Arpeggiator, Scope, Keys, Note, Pitch, Lanes, Rings, String,
+Demo loop, Stand-in spectrum, Petals …) so the top level reads as the
+signal flow. One existing node needed a fix; nothing new was built.
+
+### Beat: steps land on the frame they are due (`time/beat`)
+
+- **Missing:** Mic Bloom's demo loop ran on `floor(t * 6) % 16`. Beat in
+  free mode sums `dt × rate` frame by frame, and the sum drifts by
+  rounding: at 60 fps a 6-steps-a-second clock started a step a frame
+  late now and then (9-, 10- and 11-frame steps), so the arpeggio, bass
+  and hats jittered against the formula's exact 10-frame steps.
+- **Design:** the step position is snapped onto a whole step when within
+  1e-9 of one (relative past one step), the rule `loop_phase` already
+  uses for loop boundaries; it applies in both sync modes and is stored,
+  so the clock carries on from the exact value. Nothing else changes.
+- **Test:** `nodes/timing/tests.rs`
+  `beat_steps_land_on_the_frames_they_are_due` (90 bpm, 16 steps: one
+  step every 10 frames, with a trigger, for 3000 frames).
+- **Sample:** `sound-mic-bloom` — one Beat drives the arpeggio (`step`,
+  `gate`), the bass (step mod 4 = 0) and the offbeat hats (odd steps,
+  phase < 0.16), which equal the old three formulas frame for frame.
+
+### How the rebuilds were checked
+
+- `floret-app` `sample_equivalence::rebuilt_samples_match_before`
+  (ignored; `FLORET_SAMPLES_BEFORE=<old samples>`): old and new file run
+  the same scripted performance (mouse, keys, a fake camera and hand,
+  toggles switched in both) for 180 frames, every frame rendered; only a
+  frame or two may look different, and loop samples must show frame 0's
+  layers one loop on. All 15 equivalent samples render pixel-identical
+  except Keyboard Synth, whose octave Counter answers Z / X one frame
+  sooner than the old State loop did (frames 40 and 55 of the script).
+- `floret-media` `sample_sound_equivalence` (ignored): the Sound samples
+  through the offline audio engine with the same performances and a
+  microphone tone. Theremin and Mic Bloom are sample-identical; Keyboard
+  Synth's level follows the old one tick by tick (its waves drift out of
+  phase after the one-frame-sooner octave change).
+- Rose Curve is a redesign on the Curve node (a true rose through the
+  centre, `n` petals), not a copy of the formula's offset scallop.
+
+### Suggestions (not done)
+
+- Gate (`io/gate`) has no initial value: closed from the start it outputs
+  nothing, so "the last key played, 0 until then" still needs State +
+  Select. An `initial` pin would make it a one-node sample-and-hold.
+- `relayout_samples` now takes `FLORET_RELAYOUT_ONLY=a,b`; the
+  auto-arrange isn't idempotent on every sample (a second run moves a
+  few nodes), so re-running it over all samples rewrites files nobody
+  changed.

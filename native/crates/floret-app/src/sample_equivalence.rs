@@ -94,7 +94,11 @@ fn theremin(f: u32) -> Input {
 }
 
 /// (sample, the performance, text edits to both files first).
-type Case = (&'static str, Script, &'static [(&'static str, &'static str)]);
+type Case = (
+    &'static str,
+    Script,
+    &'static [(&'static str, &'static str)],
+);
 
 /// What each rebuilt sample is run with. Toggles are switched by editing
 /// both files the same way (`id`, `"value": false` → true).
@@ -211,7 +215,10 @@ fn canon(v: &Value) -> String {
             format!("[{}]", parts.join(", "))
         }
         Value::Object(map) => {
-            let parts: Vec<String> = map.iter().map(|(k, v)| format!("{k}: {}", canon(v))).collect();
+            let parts: Vec<String> = map
+                .iter()
+                .map(|(k, v)| format!("{k}: {}", canon(v)))
+                .collect();
             format!("{{{}}}", parts.join(", "))
         }
         other => format!("{other:?}"),
@@ -358,8 +365,13 @@ fn near_text(a: &str, b: &str, tol: f64) -> bool {
 /// largest difference).
 fn pixel_diff(a: &[u8], b: &[u8]) -> (usize, usize, u8) {
     let (mut small, mut big, mut max) = (0, 0, 0u8);
-    for (p, q) in a.chunks_exact(4).zip(b.chunks_exact(4)) {
-        let d = p.iter().zip(q).map(|(x, y)| x.abs_diff(*y)).max().unwrap_or(0);
+    for (p, q) in a.as_chunks::<4>().0.iter().zip(b.as_chunks::<4>().0) {
+        let d = p
+            .iter()
+            .zip(q)
+            .map(|(x, y)| x.abs_diff(*y))
+            .max()
+            .unwrap_or(0);
         max = max.max(d);
         if d > 2 {
             small += 1;
@@ -409,7 +421,10 @@ fn rebuilt_samples_match_before() {
         let name = if edits.is_empty() {
             (*id).to_owned()
         } else {
-            format!("{id} ({})", edits.iter().map(|e| e.0).collect::<Vec<_>>().join(", "))
+            format!(
+                "{id} ({})",
+                edits.iter().map(|e| e.0).collect::<Vec<_>>().join(", ")
+            )
         };
         let a = run(&fake, &before, *script, FRAMES, 0.0);
         let b = run(&fake, &after, *script, FRAMES, 0.0);
@@ -473,7 +488,11 @@ fn rebuilt_samples_match_before() {
 
 #[test]
 fn near_text_compares_numbers_within_tolerance() {
-    assert!(near_text("Circle { x: 1.0, y: -2.5 }", "Circle { x: 1.0000000001, y: -2.5 }", 1e-6));
+    assert!(near_text(
+        "Circle { x: 1.0, y: -2.5 }",
+        "Circle { x: 1.0000000001, y: -2.5 }",
+        1e-6
+    ));
     assert!(!near_text("Circle { x: 1.0 }", "Circle { x: 1.1 }", 1e-6));
     assert!(!near_text("Circle { x: 1.0 }", "Rect { x: 1.0 }", 1e-6));
     assert!(near_text("p2 [1e-20, 3]", "p2 [-1e-20, 3]", 1e-6));

@@ -12,8 +12,8 @@
 //! sample_sound_equivalence -- --ignored --nocapture` (`<dir>`: copies of
 //! the samples before the rebuild).
 
-use floret_engine::devices::{self, CameraFrame, CameraRequest, Devices, LandmarkLayer};
 use floret_engine::devices::LandmarksRequest;
+use floret_engine::devices::{self, CameraFrame, CameraRequest, Devices, LandmarkLayer};
 use floret_engine::image::Image;
 use floret_engine::landmarks::Tracker;
 use floret_engine::{Engine, FrameCtx, Value};
@@ -76,14 +76,34 @@ fn still(_: usize) -> Play {
 }
 
 /// (sample, performance, toggles switched in both files, a microphone tone).
-type Case = (&'static str, Script, &'static [(&'static str, &'static str)], bool);
+type Case = (
+    &'static str,
+    Script,
+    &'static [(&'static str, &'static str)],
+    bool,
+);
 
 const CASES: &[Case] = &[
     ("sound-keyboard-synth", keyboard, &[], false),
-    ("sound-keyboard-synth", keyboard, &[("ks_arpOn", "true")], false),
+    (
+        "sound-keyboard-synth",
+        keyboard,
+        &[("ks_arpOn", "true")],
+        false,
+    ),
     ("sound-hand-theremin", theremin, &[], false),
-    ("sound-hand-theremin", theremin, &[("th_snap", "false")], false),
-    ("sound-hand-theremin", theremin, &[("th_camOn", "true")], false),
+    (
+        "sound-hand-theremin",
+        theremin,
+        &[("th_snap", "false")],
+        false,
+    ),
+    (
+        "sound-hand-theremin",
+        theremin,
+        &[("th_camOn", "true")],
+        false,
+    ),
     ("sound-mic-bloom", still, &[], false),
     ("sound-mic-bloom", still, &[("mb_micOn", "true")], true),
 ];
@@ -127,8 +147,15 @@ fn edited(text: &str, edits: &[(&str, &str)]) -> String {
     for (id, value) in edits {
         let at = t.find(&format!("\"id\": \"{id}\"")).expect("the toggle");
         let from = if *value == "true" { "false" } else { "true" };
-        let on = at + t[at..].find(&format!("\"value\": {from}")).expect("its value");
-        t = format!("{}\"value\": {value}{}", &t[..on], &t[on + 9 + from.len()..]);
+        let on = at
+            + t[at..]
+                .find(&format!("\"value\": {from}"))
+                .expect("its value");
+        t = format!(
+            "{}\"value\": {value}{}",
+            &t[..on],
+            &t[on + 9 + from.len()..]
+        );
     }
     t
 }
@@ -201,7 +228,10 @@ fn canon(v: &Value) -> String {
             format!("[{}]", parts.join(", "))
         }
         Value::Object(map) => {
-            let parts: Vec<String> = map.iter().map(|(k, v)| format!("{k}: {}", canon(v))).collect();
+            let parts: Vec<String> = map
+                .iter()
+                .map(|(k, v)| format!("{k}: {}", canon(v)))
+                .collect();
             format!("{{{}}}", parts.join(", "))
         }
         // Image ids come from a global counter.
@@ -271,7 +301,12 @@ fn rebuilt_sound_samples_sound_as_before() {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../samples");
     let mut failures = Vec::new();
     for (id, script, edits, mic) in CASES {
-        let read = |d: &Path| edited(&std::fs::read_to_string(d.join(format!("{id}.flora"))).unwrap(), edits);
+        let read = |d: &Path| {
+            edited(
+                &std::fs::read_to_string(d.join(format!("{id}.flora"))).unwrap(),
+                edits,
+            )
+        };
         let (before, after) = (read(Path::new(&before_dir)), read(&dir));
         let name = format!("{id} {edits:?}");
         let (a, la) = perform(&fake, &before, *script, *mic);
@@ -281,9 +316,11 @@ fn rebuilt_sound_samples_sound_as_before() {
         // loudness: each tick's level must follow the old one.
         let level = |x: &[f32], f: usize| rms(&x[f * PER_TICK..(f + 1) * PER_TICK]);
         let identical = (0..FRAMES)
-            .filter(|&f| (level(&a, f) - level(&b, f)).abs() < 1e-6 && {
-                let r = f * PER_TICK..(f + 1) * PER_TICK;
-                a[r.clone()] == b[r]
+            .filter(|&f| {
+                (level(&a, f) - level(&b, f)).abs() < 1e-6 && {
+                    let r = f * PER_TICK..(f + 1) * PER_TICK;
+                    a[r.clone()] == b[r]
+                }
             })
             .count();
         let louder: Vec<usize> = (0..FRAMES)
@@ -292,7 +329,9 @@ fn rebuilt_sound_samples_sound_as_before() {
                 (x - y).abs() > 0.005 + 0.15 * x.max(y)
             })
             .collect();
-        let layer_frames = (0..FRAMES).filter(|&f| near_text(&la[f], &lb[f], 1e-6)).count();
+        let layer_frames = (0..FRAMES)
+            .filter(|&f| near_text(&la[f], &lb[f], 1e-6))
+            .count();
         eprintln!(
             "{name}: audio rms {:.4} → {:.4}; {identical} of {FRAMES} ticks sample-identical; \
              level differs on {} ticks {:?}; layers equal (±1e-6) on {layer_frames}/{FRAMES} frames",
@@ -302,7 +341,10 @@ fn rebuilt_sound_samples_sound_as_before() {
             &louder[..louder.len().min(12)],
         );
         if louder.len() * 20 > FRAMES {
-            failures.push(format!("{name}: loudness follows a different course on {} ticks", louder.len()));
+            failures.push(format!(
+                "{name}: loudness follows a different course on {} ticks",
+                louder.len()
+            ));
         }
     }
     devices::install(None);

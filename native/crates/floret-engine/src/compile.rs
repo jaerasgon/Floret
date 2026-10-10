@@ -128,6 +128,7 @@ fn compile_refs(
         });
     };
 
+    let (nodes_in, edges_in) = flatten_sections(nodes_in, edges_in, cat);
     let (flat_nodes, flat_edges) = flatten_subpatches(nodes_in, edges_in, cat);
     let (nodes, edges) = expand_region_ports(flat_nodes, flat_edges, cat);
 
@@ -977,6 +978,48 @@ fn expand_region_ports(
         }
     }
     (out_nodes, out_edges)
+}
+
+// ─── Pass -2: sections ───────────────────────────────────────────────────────
+
+/// Sections are canvas backdrops: drop them and hand their children to the
+/// enclosing scope, so they compute exactly as if no section were there.
+fn flatten_sections(
+    nodes: Vec<NodeRef>,
+    edges: Vec<EdgeRef>,
+    cat: &Catalogue,
+) -> (Vec<NodeRef>, Vec<EdgeRef>) {
+    let parent_of: HashMap<String, Option<String>> = nodes
+        .iter()
+        .filter(|n| cat.get(&n.def_type).and_then(|s| s.region_kind) == Some(RegionKind::Section))
+        .map(|n| (n.id.clone(), n.parent.clone()))
+        .collect();
+    if parent_of.is_empty() {
+        return (nodes, edges);
+    }
+    // The nearest ancestor that isn't a section (sections may nest).
+    let lift = |mut p: Option<String>| {
+        for _ in 0..64 {
+            match p.as_ref().and_then(|id| parent_of.get(id)) {
+                Some(up) => p = up.clone(),
+                None => break,
+            }
+        }
+        p
+    };
+    let nodes = nodes
+        .into_iter()
+        .filter(|n| !parent_of.contains_key(&n.id))
+        .map(|mut n| {
+            n.parent = lift(n.parent.take());
+            n
+        })
+        .collect();
+    let edges = edges
+        .into_iter()
+        .filter(|e| !parent_of.contains_key(&e.from) && !parent_of.contains_key(&e.to))
+        .collect();
+    (nodes, edges)
 }
 
 // ─── Pass -1: subpatches ─────────────────────────────────────────────────────

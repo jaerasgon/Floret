@@ -16,7 +16,7 @@
         "y": -334
       },
       "params": {
-        "text": "Hand Theremin\n\nPlay it with your hand: switch Camera on and raise one hand to the webcam — left and right is pitch, up and down is loudness, and the tone sounds while your hand is in view. No camera? Hold the mouse button down over the preview and move instead. Snap on keeps you in the Scale (choose one on the canvas); off, it glides through every pitch like a real theremin, with vibrato.\n\nHow it works: Landmarks (hands) gives 21 points per hand; point 8 is the index fingertip. Select takes it while a hand is detected, else the mouse. Scale in range mode turns left–right into a note, Smooth glides between notes, an LFO adds vibrato. Two oscillators (an octave apart) → Mix → Gain (the volume) → filter → delay → reverb. The rings pulse at a rate that follows the pitch.",
+        "text": "Hand Theremin\n\nPlay it with your hand: switch Camera on and raise one hand to the webcam — left and right is pitch, up and down is loudness, and the tone sounds while your hand is in view. No camera? Hold the mouse button down over the preview and move instead. Snap on keeps you in the Scale (choose one on the canvas); off, it glides through every pitch like a real theremin, with vibrato.\n\nHow it works: Landmarks (hands) gives 21 points per hand; point 8 is the index fingertip. Select takes it while a hand is detected, else the mouse. Scale in range mode turns left–right into a note, Smooth glides between notes, an LFO adds vibrato and MIDI → Freq turns the note into Hz. Two oscillators (an octave apart) → Mix → Gain (the volume) → filter → delay → reverb. The rings pulse at a rate that follows the pitch; the string swells round the hand (Noise in `gaussian` mode) and ripples along.",
         "width": 470,
         "height": 270
       }
@@ -26,7 +26,7 @@
       "defType": "io/toggle",
       "position": {
         "x": 0,
-        "y": 408
+        "y": 149
       },
       "params": {
         "value": false,
@@ -37,8 +37,8 @@
       "id": "th_camera",
       "defType": "input/camera",
       "position": {
-        "x": 296,
-        "y": 187
+        "x": 271,
+        "y": 96
       },
       "params": {
         "mirror": true
@@ -48,8 +48,8 @@
       "id": "th_hands",
       "defType": "input/landmarks",
       "position": {
-        "x": 597,
-        "y": 340
+        "x": 550,
+        "y": 103
       },
       "params": {
         "tracker": "hands",
@@ -65,8 +65,8 @@
       "id": "th_tip",
       "defType": "spread/lookup",
       "position": {
-        "x": 913,
-        "y": 686
+        "x": 821,
+        "y": 152
       },
       "params": {
         "op": "at"
@@ -80,7 +80,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 37,
-        "y": 682
+        "y": 517
       },
       "params": {}
     },
@@ -88,8 +88,8 @@
       "id": "th_mpos",
       "defType": "vec2/make",
       "position": {
-        "x": 338,
-        "y": 725
+        "x": 313,
+        "y": 491
       },
       "params": {}
     },
@@ -97,48 +97,26 @@
       "id": "th_hand",
       "defType": "logic/select",
       "position": {
-        "x": 1214,
-        "y": 674
+        "x": 1101,
+        "y": 273
       },
       "params": {}
-    },
-    {
-      "id": "th_sounding",
-      "defType": "math/expression",
-      "position": {
-        "x": 1183,
-        "y": 487
-      },
-      "params": {
-        "expr": "h || p"
-      }
     },
     {
       "id": "th_time",
       "defType": "time/seconds",
       "position": {
-        "x": 42,
-        "y": 134
+        "x": 2000,
+        "y": 358
       },
       "params": {}
-    },
-    {
-      "id": "th_across",
-      "defType": "math/expression",
-      "position": {
-        "x": 1477,
-        "y": 798
-      },
-      "params": {
-        "expr": "clamp(q.x / 720 + 0.5, 0, 1)"
-      }
     },
     {
       "id": "th_scaleSel",
       "defType": "io/select",
       "position": {
-        "x": 0,
-        "y": 556
+        "x": 1322,
+        "y": 531
       },
       "params": {
         "options": "pentatonic,minor-pentatonic,blues,major,dorian,chromatic",
@@ -150,8 +128,8 @@
       "id": "th_snap",
       "defType": "io/toggle",
       "position": {
-        "x": 2036,
-        "y": 762
+        "x": 1322,
+        "y": 805
       },
       "params": {
         "value": true,
@@ -162,8 +140,8 @@
       "id": "th_scale",
       "defType": "sound/scale",
       "position": {
-        "x": 1774,
-        "y": 596
+        "x": 509,
+        "y": 77
       },
       "params": {
         "mode": "range",
@@ -172,51 +150,43 @@
       "portValues": {
         "root": 48,
         "octaves": 2
-      }
+      },
+      "parentId": "th_pitchBox"
     },
     {
       "id": "th_snapNote",
       "defType": "spread/lookup",
       "position": {
-        "x": 2039,
-        "y": 608
+        "x": 770,
+        "y": 40
       },
       "params": {
         "op": "at"
       },
       "portValues": {
         "index": 0
-      }
-    },
-    {
-      "id": "th_pitch",
-      "defType": "math/expression",
-      "position": {
-        "x": 2330,
-        "y": 749
       },
-      "params": {
-        "expr": "s ? n : 48 + a * 24"
-      }
+      "parentId": "th_pitchBox"
     },
     {
       "id": "th_glide",
       "defType": "motion/smooth",
       "position": {
-        "x": 2825,
-        "y": 856
+        "x": 1277,
+        "y": 169
       },
       "params": {},
       "portValues": {
         "rate": 9
-      }
+      },
+      "parentId": "th_pitchBox"
     },
     {
       "id": "th_vibrato",
       "defType": "motion/lfo",
       "position": {
-        "x": 2813,
-        "y": 1335
+        "x": 1253,
+        "y": 295
       },
       "params": {
         "shape": "sine"
@@ -225,59 +195,28 @@
         "rate": 5.5,
         "min": -0.12,
         "max": 0.12
-      }
-    },
-    {
-      "id": "th_freq",
-      "defType": "math/expression",
-      "position": {
-        "x": 3329,
-        "y": 1275
       },
-      "params": {
-        "expr": "440 * pow(2, (n + v - 69) / 12)"
-      }
-    },
-    {
-      "id": "th_subFreq",
-      "defType": "math/expression",
-      "position": {
-        "x": 3713,
-        "y": 1689
-      },
-      "params": {
-        "expr": "f / 2"
-      }
-    },
-    {
-      "id": "th_loud",
-      "defType": "math/expression",
-      "position": {
-        "x": 1477,
-        "y": 634
-      },
-      "params": {
-        "expr": "s ? clamp(0.5 - q.y / 540, 0.05, 1) : 0"
-      }
+      "parentId": "th_pitchBox"
     },
     {
       "id": "th_level",
       "defType": "motion/smooth",
       "position": {
-        "x": 2825,
-        "y": 730
+        "x": 700,
+        "y": 40
       },
       "params": {},
       "portValues": {
         "rate": 12
-      }
+      },
+      "parentId": "th_loudBox"
     },
     {
       "id": "th_tone",
       "defType": "sound/oscillator",
       "position": {
-        "x": 4027,
-        "y": 1562
+        "x": 1962,
+        "y": 548
       },
       "params": {
         "type": "triangle"
@@ -290,8 +229,8 @@
       "id": "th_body",
       "defType": "sound/oscillator",
       "position": {
-        "x": 4027,
-        "y": 1710
+        "x": 1962,
+        "y": 696
       },
       "params": {
         "type": "sine"
@@ -304,8 +243,8 @@
       "id": "th_mix",
       "defType": "sound/mix",
       "position": {
-        "x": 4610,
-        "y": 1650
+        "x": 2261,
+        "y": 579
       },
       "params": {
         "slotCount": 2
@@ -315,8 +254,8 @@
       "id": "th_volume",
       "defType": "sound/gain",
       "position": {
-        "x": 5217,
-        "y": 1700
+        "x": 2581,
+        "y": 514
       },
       "params": {}
     },
@@ -324,8 +263,8 @@
       "id": "th_filter",
       "defType": "sound/filter",
       "position": {
-        "x": 5472,
-        "y": 1660
+        "x": 2839,
+        "y": 532
       },
       "params": {
         "type": "lowpass"
@@ -339,8 +278,8 @@
       "id": "th_delay",
       "defType": "sound/delay",
       "position": {
-        "x": 5811,
-        "y": 1643
+        "x": 3182,
+        "y": 538
       },
       "params": {},
       "portValues": {
@@ -353,8 +292,8 @@
       "id": "th_reverb",
       "defType": "sound/reverb",
       "position": {
-        "x": 6083,
-        "y": 1609
+        "x": 3453,
+        "y": 516
       },
       "params": {},
       "portValues": {
@@ -367,8 +306,8 @@
       "id": "th_out",
       "defType": "sound/output",
       "position": {
-        "x": 6343,
-        "y": 1603
+        "x": 3712,
+        "y": 516
       },
       "params": {},
       "portValues": {
@@ -376,49 +315,45 @@
       }
     },
     {
-      "id": "th_camTint",
-      "defType": "math/expression",
-      "position": {
-        "x": 296,
-        "y": 45
-      },
-      "params": {
-        "expr": "rgba(1, 1, 1, 0.22)"
-      }
-    },
-    {
       "id": "th_camImage",
       "defType": "draw/image",
       "position": {
-        "x": 630,
+        "x": 2870,
         "y": 0
       },
       "params": {},
       "portValues": {
         "w": 720,
-        "h": 540
+        "h": 540,
+        "tint": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.22
+        }
       }
     },
     {
       "id": "th_probe",
       "defType": "spread/linear",
       "position": {
-        "x": 15,
-        "y": 260
+        "x": 128,
+        "y": 381
       },
       "params": {},
       "portValues": {
         "from": 0,
         "to": 1,
         "count": 400
-      }
+      },
+      "parentId": "th_lanesBox"
     },
     {
       "id": "th_probeScale",
       "defType": "sound/scale",
       "position": {
-        "x": 300,
-        "y": 357
+        "x": 364,
+        "y": 373
       },
       "params": {
         "mode": "range",
@@ -427,67 +362,37 @@
       "portValues": {
         "root": 48,
         "octaves": 2
-      }
+      },
+      "parentId": "th_lanesBox"
     },
     {
       "id": "th_laneNotes",
       "defType": "spread/sublist",
       "position": {
-        "x": 598,
-        "y": 214
+        "x": 627,
+        "y": 391
       },
       "params": {
         "op": "unique"
-      }
+      },
+      "parentId": "th_lanesBox"
     },
     {
       "id": "th_lanes",
       "defType": "spread/count",
       "position": {
-        "x": 925,
-        "y": 329
+        "x": 929,
+        "y": 243
       },
-      "params": {}
-    },
-    {
-      "id": "th_laneAt",
-      "defType": "math/expression",
-      "position": {
-        "x": 1183,
-        "y": 222
-      },
-      "params": {
-        "expr": "vec2(((index + 0.5) / n - 0.5) * 720, 240.0 + k * 0)"
-      }
-    },
-    {
-      "id": "th_laneCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 2330,
-        "y": 347
-      },
-      "params": {
-        "expr": "k == p && s ? hsl(fract(index / n * 0.7 + 0.55), 0.9, 0.65) : rgba(1, 1, 1, 0.12 + (k % 12 == 0 ? 0.2 : 0))"
-      }
-    },
-    {
-      "id": "th_laneW",
-      "defType": "math/expression",
-      "position": {
-        "x": 2330,
-        "y": 205
-      },
-      "params": {
-        "expr": "720 / n - 4"
-      }
+      "params": {},
+      "parentId": "th_lanesBox"
     },
     {
       "id": "th_laneLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 2615,
-        "y": 155
+        "x": 2345,
+        "y": 142
       },
       "params": {
         "width": 521,
@@ -518,7 +423,8 @@
         }
       ],
       "width": 521,
-      "height": 246
+      "height": 246,
+      "parentId": "th_lanesBox"
     },
     {
       "id": "th_laneFill",
@@ -547,53 +453,21 @@
       "id": "th_rings",
       "defType": "spread/range",
       "position": {
-        "x": 3344,
-        "y": 452
+        "x": 149,
+        "y": 229
       },
       "params": {},
       "portValues": {
         "count": 7
-      }
-    },
-    {
-      "id": "th_ringPhase",
-      "defType": "math/expression",
-      "position": {
-        "x": 3713,
-        "y": 283
       },
-      "params": {
-        "expr": "fract(t * f / 330 + i / 7)"
-      }
-    },
-    {
-      "id": "th_ringSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 4023,
-        "y": 182
-      },
-      "params": {
-        "expr": "30 + ph * (120 + 380 * l)"
-      }
-    },
-    {
-      "id": "th_ringCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 4023,
-        "y": 346
-      },
-      "params": {
-        "expr": "hsl(fract(0.55 + (n - 48) / 24 * 0.6), 0.85, 0.6, (1 - ph) * (0.15 + 0.85 * l))"
-      }
+      "parentId": "th_ringsBox"
     },
     {
       "id": "th_ringLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 4336,
-        "y": 279
+        "x": 2068,
+        "y": 62
       },
       "params": {
         "width": 716,
@@ -624,7 +498,8 @@
         }
       ],
       "width": 716,
-      "height": 308
+      "height": 308,
+      "parentId": "th_ringsBox"
     },
     {
       "id": "th_ringStroke",
@@ -660,100 +535,72 @@
       "parentId": "th_ringLoop"
     },
     {
-      "id": "th_orbCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 3329,
-        "y": 652
-      },
-      "params": {
-        "expr": "hsl(fract(0.55 + (n - 48) / 24 * 0.6), 0.9, 0.6 + 0.3 * l)"
-      }
-    },
-    {
       "id": "th_orbFill",
       "defType": "style/fill",
       "position": {
-        "x": 3754,
-        "y": 653
+        "x": 590,
+        "y": 186
       },
-      "params": {}
-    },
-    {
-      "id": "th_orbSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 3713,
-        "y": 511
-      },
-      "params": {
-        "expr": "18 + 30 * l"
-      }
+      "params": {},
+      "parentId": "th_orbBox"
     },
     {
       "id": "th_orb",
       "defType": "draw/ellipse",
       "position": {
-        "x": 4058,
-        "y": 554
+        "x": 788,
+        "y": 172
       },
-      "params": {}
+      "params": {},
+      "parentId": "th_orbBox"
     },
     {
       "id": "th_stringX",
       "defType": "spread/linear",
       "position": {
-        "x": 3344,
-        "y": 827
+        "x": 149,
+        "y": 92
       },
       "params": {},
       "portValues": {
         "from": -360.0,
         "to": 360.0,
         "count": 260
-      }
-    },
-    {
-      "id": "th_string",
-      "defType": "math/expression",
-      "position": {
-        "x": 3713,
-        "y": 949
       },
-      "params": {
-        "expr": "vec2(x, q.y + (6 + 46 * l) * exp(-((x - q.x) / 170) ^ 2) * sin(x * f / 4200 - t * 14))"
-      }
+      "parentId": "th_stringBox"
     },
     {
       "id": "th_stringStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 3750,
-        "y": 779
+        "x": 171,
+        "y": 585
       },
       "params": {},
       "portValues": {
         "width": 2
-      }
+      },
+      "parentId": "th_stringBox"
     },
     {
       "id": "th_stringLine",
       "defType": "draw/polygon",
       "position": {
-        "x": 4056,
-        "y": 772
+        "x": 2265,
+        "y": 180
       },
       "params": {},
       "portValues": {
         "closed": false
-      }
+      },
+      "parentId": "th_stringBox"
     },
     {
       "id": "th_glowing",
       "defType": "transform/group",
       "position": {
-        "x": 5179,
-        "y": 529
+        "x": 2543,
+        "y": 180
       },
       "params": {
         "slotCount": 3
@@ -763,8 +610,8 @@
       "id": "th_glow",
       "defType": "gpu/effect",
       "position": {
-        "x": 5468,
-        "y": 469
+        "x": 2835,
+        "y": 340
       },
       "params": {
         "mode": "bloom"
@@ -779,8 +626,8 @@
       "id": "th_antennaFill",
       "defType": "style/fill",
       "position": {
-        "x": 5190,
-        "y": 124
+        "x": 128,
+        "y": 316
       },
       "params": {},
       "portValues": {
@@ -790,14 +637,15 @@
           "b": 0.7019607843137254,
           "a": 0.7
         }
-      }
+      },
+      "parentId": "th_antennaBox"
     },
     {
       "id": "th_antenna",
       "defType": "draw/rect",
       "position": {
-        "x": 5486,
-        "y": 85
+        "x": 370,
+        "y": 228
       },
       "params": {},
       "portValues": {
@@ -807,14 +655,15 @@
         },
         "w": 6,
         "h": 360
-      }
+      },
+      "parentId": "th_antennaBox"
     },
     {
       "id": "th_loopStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 4621,
-        "y": 87
+        "x": 128,
+        "y": 124
       },
       "params": {},
       "portValues": {
@@ -825,23 +674,25 @@
           "a": 0.7
         },
         "width": 6
-      }
+      },
+      "parentId": "th_antennaBox"
     },
     {
       "id": "th_loopNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 5219,
-        "y": 250
+        "x": 393,
+        "y": 124
       },
-      "params": {}
+      "params": {},
+      "parentId": "th_antennaBox"
     },
     {
       "id": "th_loopAntenna",
       "defType": "draw/ellipse",
       "position": {
-        "x": 5483,
-        "y": 277
+        "x": 600,
+        "y": 40
       },
       "params": {},
       "portValues": {
@@ -851,94 +702,90 @@
         },
         "w": 90,
         "h": 40
-      }
+      },
+      "parentId": "th_antennaBox"
     },
     {
       "id": "th_noteNames",
       "defType": "string/split",
       "position": {
-        "x": 3339,
-        "y": 1007
+        "x": 383,
+        "y": 40
       },
       "params": {
         "text": "C,C♯,D,D♯,E,F,F♯,G,G♯,A,A♯,B",
         "by": ","
-      }
-    },
-    {
-      "id": "th_rounded",
-      "defType": "math/expression",
-      "position": {
-        "x": 3329,
-        "y": 1133
       },
-      "params": {
-        "expr": "round(n) % 12"
-      }
+      "parentId": "th_statusBox"
     },
     {
       "id": "th_noteName",
       "defType": "spread/lookup",
       "position": {
-        "x": 3716,
-        "y": 1179
+        "x": 640,
+        "y": 107
       },
       "params": {
         "op": "at"
-      }
+      },
+      "parentId": "th_statusBox"
     },
     {
       "id": "th_hzText",
       "defType": "string/format-number",
       "position": {
-        "x": 3721,
-        "y": 1327
+        "x": 128,
+        "y": 273
       },
       "params": {},
       "portValues": {
         "decimals": 0,
         "suffix": " Hz"
-      }
+      },
+      "parentId": "th_statusBox"
     },
     {
       "id": "th_help",
       "defType": "value/string",
       "position": {
-        "x": 3718,
-        "y": 1585
+        "x": 642,
+        "y": 277
       },
       "params": {
         "value": "hold the mouse and move · or Camera on and raise a hand"
-      }
+      },
+      "parentId": "th_statusBox"
     },
     {
       "id": "th_statusParts",
       "defType": "spread/merge",
       "position": {
-        "x": 4023,
-        "y": 1233
+        "x": 910,
+        "y": 182
       },
       "params": {
         "slotCount": 3
-      }
+      },
+      "parentId": "th_statusBox"
     },
     {
       "id": "th_status",
       "defType": "string/concat",
       "position": {
-        "x": 4635,
-        "y": 907
+        "x": 1188,
+        "y": 182
       },
       "params": {
         "separator": "   ·   "
-      }
+      },
+      "parentId": "th_statusBox"
     },
     {
       "id": "th_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 4621,
-        "y": 1033
+        "x": 1174,
+        "y": 308
       },
       "params": {},
       "portValues": {
@@ -948,14 +795,15 @@
           "b": 0.9411764705882353,
           "a": 0.6
         }
-      }
+      },
+      "parentId": "th_statusBox"
     },
     {
       "id": "th_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 5219,
-        "y": 763
+        "x": 1419,
+        "y": 201
       },
       "params": {
         "size": 13,
@@ -966,14 +814,15 @@
           "x": 0,
           "y": -246.0
         }
-      }
+      },
+      "parentId": "th_statusBox"
     },
     {
       "id": "th_scene",
       "defType": "transform/group",
       "position": {
-        "x": 5773,
-        "y": 198
+        "x": 3145,
+        "y": 302
       },
       "params": {
         "slotCount": 7
@@ -983,8 +832,8 @@
       "id": "th_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 6039,
-        "y": 198
+        "x": 3409,
+        "y": 302
       },
       "params": {
         "width": 720,
@@ -998,6 +847,1259 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "th_handXY",
+      "defType": "vec2/split",
+      "position": {
+        "x": 1364,
+        "y": 334
+      },
+      "params": {}
+    },
+    {
+      "id": "th_sounding",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1337,
+        "y": 657
+      },
+      "params": {
+        "op": "or"
+      }
+    },
+    {
+      "id": "th_acrossMap",
+      "defType": "math/map",
+      "position": {
+        "x": 128,
+        "y": 180
+      },
+      "params": {
+        "inMin": -360,
+        "inMax": 360,
+        "outMin": 0,
+        "outMax": 1,
+        "valueType": "number"
+      },
+      "portValues": {
+        "inMin": -360,
+        "inMax": 360,
+        "outMin": 0,
+        "outMax": 1
+      },
+      "parentId": "th_pitchBox"
+    },
+    {
+      "id": "th_across",
+      "defType": "math/clamp",
+      "position": {
+        "x": 307,
+        "y": 189
+      },
+      "params": {
+        "min": 0,
+        "max": 1,
+        "valueType": "number"
+      },
+      "portValues": {
+        "min": 0,
+        "max": 1
+      },
+      "parentId": "th_pitchBox"
+    },
+    {
+      "id": "th_glideNote",
+      "defType": "math/lerp",
+      "position": {
+        "x": 807,
+        "y": 188
+      },
+      "params": {
+        "a": 48,
+        "b": 72,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 48,
+        "b": 72
+      },
+      "parentId": "th_pitchBox"
+    },
+    {
+      "id": "th_pitch",
+      "defType": "logic/select",
+      "position": {
+        "x": 1051,
+        "y": 176
+      },
+      "params": {},
+      "parentId": "th_pitchBox"
+    },
+    {
+      "id": "th_bent",
+      "defType": "math/math",
+      "position": {
+        "x": 1508,
+        "y": 213
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "th_pitchBox"
+    },
+    {
+      "id": "th_freq",
+      "defType": "sound/midi-to-freq",
+      "position": {
+        "x": 1776,
+        "y": 239
+      },
+      "params": {},
+      "parentId": "th_pitchBox"
+    },
+    {
+      "id": "th_subFreq",
+      "defType": "math/math",
+      "position": {
+        "x": 1998,
+        "y": 182
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number",
+        "b": 2
+      },
+      "portValues": {
+        "b": 2
+      },
+      "parentId": "th_pitchBox"
+    },
+    {
+      "id": "th_loudMap",
+      "defType": "math/map",
+      "position": {
+        "x": 128,
+        "y": 88
+      },
+      "params": {
+        "inMin": 270,
+        "inMax": -270,
+        "outMin": 0,
+        "outMax": 1,
+        "valueType": "number"
+      },
+      "portValues": {
+        "inMin": 270,
+        "inMax": -270,
+        "outMin": 0,
+        "outMax": 1
+      },
+      "parentId": "th_loudBox"
+    },
+    {
+      "id": "th_loudClamp",
+      "defType": "math/clamp",
+      "position": {
+        "x": 306,
+        "y": 88
+      },
+      "params": {
+        "min": 0.05,
+        "max": 1,
+        "valueType": "number"
+      },
+      "portValues": {
+        "min": 0.05,
+        "max": 1
+      },
+      "parentId": "th_loudBox"
+    },
+    {
+      "id": "th_loud",
+      "defType": "logic/select",
+      "position": {
+        "x": 499,
+        "y": 40
+      },
+      "params": {},
+      "portValues": {
+        "b": 0
+      },
+      "parentId": "th_loudBox"
+    },
+    {
+      "id": "th_laneIdx",
+      "defType": "spread/range",
+      "position": {
+        "x": 1220,
+        "y": 212
+      },
+      "params": {},
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneMid",
+      "defType": "math/math",
+      "position": {
+        "x": 1495,
+        "y": 59
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number",
+        "b": 0.5
+      },
+      "portValues": {
+        "b": 0.5
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneX",
+      "defType": "math/map",
+      "position": {
+        "x": 1819,
+        "y": 40
+      },
+      "params": {
+        "inMin": 0,
+        "outMin": -360,
+        "outMax": 360,
+        "valueType": "number"
+      },
+      "portValues": {
+        "inMin": 0,
+        "outMin": -360,
+        "outMax": 360
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneAt",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2108,
+        "y": 93
+      },
+      "params": {
+        "y": 240
+      },
+      "portValues": {
+        "y": 240
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneSpan",
+      "defType": "math/math",
+      "position": {
+        "x": 1778,
+        "y": 232
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number",
+        "a": 720
+      },
+      "portValues": {
+        "a": 720
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneW",
+      "defType": "math/math",
+      "position": {
+        "x": 2066,
+        "y": 219
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number",
+        "b": 4
+      },
+      "portValues": {
+        "b": 4
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneIsNote",
+      "defType": "logic/compare",
+      "position": {
+        "x": 907,
+        "y": 347
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneLit",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1219,
+        "y": 383
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneHue",
+      "defType": "math/map",
+      "position": {
+        "x": 1537,
+        "y": 274
+      },
+      "params": {
+        "inMin": 0,
+        "outMin": 198,
+        "outMax": 450,
+        "valueType": "number"
+      },
+      "portValues": {
+        "inMin": 0,
+        "outMin": 198,
+        "outMax": 450
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneLitCol",
+      "defType": "color/color",
+      "position": {
+        "x": 1786,
+        "y": 380
+      },
+      "params": {
+        "mode": "hsl",
+        "s": 90,
+        "l": 65,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "s": 90,
+        "l": 65,
+        "a": 255
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneOct",
+      "defType": "math/math",
+      "position": {
+        "x": 923,
+        "y": 495
+      },
+      "params": {
+        "op": "mod",
+        "valueType": "number",
+        "b": 12
+      },
+      "portValues": {
+        "b": 12
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneIsC",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1198,
+        "y": 535
+      },
+      "params": {
+        "op": "equal",
+        "b": 0
+      },
+      "portValues": {
+        "b": 0
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneAlpha",
+      "defType": "logic/select",
+      "position": {
+        "x": 1526,
+        "y": 598
+      },
+      "params": {},
+      "portValues": {
+        "a": 81.6,
+        "b": 30.6
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneDimCol",
+      "defType": "color/color",
+      "position": {
+        "x": 1786,
+        "y": 572
+      },
+      "params": {
+        "mode": "rgb",
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "portValues": {
+        "mode": "rgb",
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_laneCol",
+      "defType": "logic/select",
+      "position": {
+        "x": 2098,
+        "y": 367
+      },
+      "params": {},
+      "parentId": "th_lanesBox"
+    },
+    {
+      "id": "th_hue",
+      "defType": "math/map",
+      "position": {
+        "x": 136,
+        "y": 40
+      },
+      "params": {
+        "inMin": 48,
+        "inMax": 72,
+        "outMin": 198,
+        "outMax": 414,
+        "valueType": "number"
+      },
+      "portValues": {
+        "inMin": 48,
+        "inMax": 72,
+        "outMin": 198,
+        "outMax": 414
+      },
+      "parentId": "th_orbBox"
+    },
+    {
+      "id": "th_ringClock",
+      "defType": "math/math",
+      "position": {
+        "x": 134,
+        "y": 81
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "th_ringsBox"
+    },
+    {
+      "id": "th_ringCycles",
+      "defType": "math/math",
+      "position": {
+        "x": 404,
+        "y": 92
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number",
+        "b": 330
+      },
+      "portValues": {
+        "b": 330
+      },
+      "parentId": "th_ringsBox"
+    },
+    {
+      "id": "th_ringStagger",
+      "defType": "math/math",
+      "position": {
+        "x": 404,
+        "y": 240
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number",
+        "b": 7
+      },
+      "portValues": {
+        "b": 7
+      },
+      "parentId": "th_ringsBox"
+    },
+    {
+      "id": "th_ringAt",
+      "defType": "math/math",
+      "position": {
+        "x": 682,
+        "y": 164
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "th_ringsBox"
+    },
+    {
+      "id": "th_ringPhase",
+      "defType": "math/math",
+      "position": {
+        "x": 955,
+        "y": 207
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "th_ringsBox"
+    },
+    {
+      "id": "th_ringReach",
+      "defType": "math/lerp",
+      "position": {
+        "x": 171,
+        "y": 333
+      },
+      "params": {
+        "a": 120,
+        "b": 500,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 120,
+        "b": 500
+      },
+      "parentId": "th_ringsBox"
+    },
+    {
+      "id": "th_ringGrow",
+      "defType": "math/math",
+      "position": {
+        "x": 1216,
+        "y": 281
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "th_ringsBox"
+    },
+    {
+      "id": "th_ringSize",
+      "defType": "math/math",
+      "position": {
+        "x": 1788,
+        "y": 169
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number",
+        "b": 30
+      },
+      "portValues": {
+        "b": 30
+      },
+      "parentId": "th_ringsBox"
+    },
+    {
+      "id": "th_ringFade",
+      "defType": "math/math",
+      "position": {
+        "x": 1216,
+        "y": 133
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number",
+        "a": 1
+      },
+      "portValues": {
+        "a": 1
+      },
+      "parentId": "th_ringsBox"
+    },
+    {
+      "id": "th_ringAlphaL",
+      "defType": "math/lerp",
+      "position": {
+        "x": 165,
+        "y": 481
+      },
+      "params": {
+        "a": 38.25,
+        "b": 255,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 38.25,
+        "b": 255
+      },
+      "parentId": "th_ringsBox"
+    },
+    {
+      "id": "th_ringAlpha",
+      "defType": "math/math",
+      "position": {
+        "x": 1507,
+        "y": 292
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "th_ringsBox"
+    },
+    {
+      "id": "th_ringCol",
+      "defType": "color/color",
+      "position": {
+        "x": 1796,
+        "y": 317
+      },
+      "params": {
+        "mode": "hsl",
+        "s": 85,
+        "l": 60
+      },
+      "portValues": {
+        "mode": "hsl",
+        "s": 85,
+        "l": 60
+      },
+      "parentId": "th_ringsBox"
+    },
+    {
+      "id": "th_orbLight",
+      "defType": "math/lerp",
+      "position": {
+        "x": 134,
+        "y": 232
+      },
+      "params": {
+        "a": 60,
+        "b": 90,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 60,
+        "b": 90
+      },
+      "parentId": "th_orbBox"
+    },
+    {
+      "id": "th_orbCol",
+      "defType": "color/color",
+      "position": {
+        "x": 333,
+        "y": 125
+      },
+      "params": {
+        "mode": "hsl",
+        "s": 90,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "s": 90,
+        "a": 255
+      },
+      "parentId": "th_orbBox"
+    },
+    {
+      "id": "th_orbSize",
+      "defType": "math/lerp",
+      "position": {
+        "x": 134,
+        "y": 380
+      },
+      "params": {
+        "a": 18,
+        "b": 48,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 18,
+        "b": 48
+      },
+      "parentId": "th_orbBox"
+    },
+    {
+      "id": "th_stringRest",
+      "defType": "vec2/make",
+      "position": {
+        "x": 477,
+        "y": 117
+      },
+      "params": {},
+      "parentId": "th_stringBox"
+    },
+    {
+      "id": "th_bumpHeight",
+      "defType": "math/lerp",
+      "position": {
+        "x": 177,
+        "y": 276
+      },
+      "params": {
+        "a": 6,
+        "b": 52,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 6,
+        "b": 52
+      },
+      "parentId": "th_stringBox"
+    },
+    {
+      "id": "th_bump",
+      "defType": "noise/noise",
+      "position": {
+        "x": 716,
+        "y": 40
+      },
+      "params": {
+        "mode": "gaussian"
+      },
+      "portValues": {
+        "radius": 170
+      },
+      "parentId": "th_stringBox"
+    },
+    {
+      "id": "th_waveK",
+      "defType": "math/math",
+      "position": {
+        "x": 435,
+        "y": 323
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "th_stringBox"
+    },
+    {
+      "id": "th_waveAlong",
+      "defType": "math/math",
+      "position": {
+        "x": 715,
+        "y": 408
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number",
+        "b": 4200
+      },
+      "portValues": {
+        "b": 4200
+      },
+      "parentId": "th_stringBox"
+    },
+    {
+      "id": "th_waveRun",
+      "defType": "math/math",
+      "position": {
+        "x": 134,
+        "y": 437
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 14
+      },
+      "portValues": {
+        "b": 14
+      },
+      "parentId": "th_stringBox"
+    },
+    {
+      "id": "th_wavePhase",
+      "defType": "math/math",
+      "position": {
+        "x": 988,
+        "y": 394
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "th_stringBox"
+    },
+    {
+      "id": "th_waveSin",
+      "defType": "math/math",
+      "position": {
+        "x": 1266,
+        "y": 280
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "th_stringBox"
+    },
+    {
+      "id": "th_wobble",
+      "defType": "math/math",
+      "position": {
+        "x": 1526,
+        "y": 144
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "th_stringBox"
+    },
+    {
+      "id": "th_stringY",
+      "defType": "math/math",
+      "position": {
+        "x": 1797,
+        "y": 92
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "th_stringBox"
+    },
+    {
+      "id": "th_string",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2069,
+        "y": 78
+      },
+      "params": {},
+      "parentId": "th_stringBox"
+    },
+    {
+      "id": "th_round",
+      "defType": "math/math",
+      "position": {
+        "x": 129,
+        "y": 147
+      },
+      "params": {
+        "op": "round",
+        "valueType": "number"
+      },
+      "parentId": "th_statusBox"
+    },
+    {
+      "id": "th_rounded",
+      "defType": "math/math",
+      "position": {
+        "x": 381,
+        "y": 166
+      },
+      "params": {
+        "op": "mod",
+        "valueType": "number",
+        "b": 12
+      },
+      "portValues": {
+        "b": 12
+      },
+      "parentId": "th_statusBox"
+    },
+    {
+      "id": "th_lanesBox",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1973,
+        "y": 970
+      },
+      "params": {
+        "label": "Lanes",
+        "width": 2978,
+        "height": 756
+      },
+      "ports": [
+        {
+          "id": "scale",
+          "name": "scale",
+          "type": "string",
+          "direction": "input",
+          "y": 505
+        },
+        {
+          "id": "lanes",
+          "name": "lanes",
+          "type": "layer",
+          "direction": "output",
+          "y": 222
+        },
+        {
+          "id": "note",
+          "name": "note",
+          "type": "any",
+          "direction": "input",
+          "y": 349
+        },
+        {
+          "id": "sounding",
+          "name": "sounding",
+          "type": "boolean",
+          "direction": "input",
+          "y": 541
+        }
+      ]
+    },
+    {
+      "id": "th_ringsBox",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 2278,
+        "y": 139
+      },
+      "params": {
+        "label": "Rings",
+        "width": 2896,
+        "height": 659
+      },
+      "ports": [
+        {
+          "id": "hand",
+          "name": "hand",
+          "type": "vec2",
+          "direction": "input",
+          "y": 92
+        },
+        {
+          "id": "rings",
+          "name": "rings",
+          "type": "layer",
+          "direction": "output",
+          "y": 139
+        },
+        {
+          "id": "t",
+          "name": "t",
+          "type": "number",
+          "direction": "input",
+          "y": 140
+        },
+        {
+          "id": "freq",
+          "name": "freq",
+          "type": "number",
+          "direction": "input",
+          "y": 162
+        },
+        {
+          "id": "level",
+          "name": "level",
+          "type": "number",
+          "direction": "input",
+          "y": 488
+        },
+        {
+          "id": "hue",
+          "name": "hue",
+          "type": "number",
+          "direction": "input",
+          "y": 605
+        }
+      ]
+    },
+    {
+      "id": "th_stringBox",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 2276,
+        "y": 331
+      },
+      "params": {
+        "label": "String",
+        "width": 2480,
+        "height": 747
+      },
+      "ports": [
+        {
+          "id": "string",
+          "name": "string",
+          "type": "layer",
+          "direction": "output",
+          "y": 217
+        },
+        {
+          "id": "color",
+          "name": "color",
+          "type": "color",
+          "direction": "input",
+          "y": 622
+        },
+        {
+          "id": "handY",
+          "name": "handY",
+          "type": "number",
+          "direction": "input",
+          "y": 142
+        },
+        {
+          "id": "level",
+          "name": "level",
+          "type": "number",
+          "direction": "input",
+          "y": 357
+        },
+        {
+          "id": "hand",
+          "name": "hand",
+          "type": "vec2",
+          "direction": "input",
+          "y": 252
+        },
+        {
+          "id": "freq",
+          "name": "freq",
+          "type": "number",
+          "direction": "input",
+          "y": 404
+        },
+        {
+          "id": "t",
+          "name": "t",
+          "type": "number",
+          "direction": "input",
+          "y": 496
+        }
+      ]
+    },
+    {
+      "id": "th_pitchBox",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1643,
+        "y": 573
+      },
+      "params": {
+        "label": "Pitch",
+        "width": 2279,
+        "height": 633
+      },
+      "ports": [
+        {
+          "id": "scale",
+          "name": "scale",
+          "type": "string",
+          "direction": "input",
+          "y": 156
+        },
+        {
+          "id": "handX",
+          "name": "handX",
+          "type": "number",
+          "direction": "input",
+          "y": 217
+        },
+        {
+          "id": "snap",
+          "name": "snap",
+          "type": "boolean",
+          "direction": "input",
+          "y": 348
+        },
+        {
+          "id": "freq",
+          "name": "freq",
+          "type": "number",
+          "direction": "output",
+          "y": 306
+        },
+        {
+          "id": "bodyFreq",
+          "name": "bodyFreq",
+          "type": "number",
+          "direction": "output",
+          "y": 219
+        },
+        {
+          "id": "scaleNote",
+          "name": "scaleNote",
+          "type": "any",
+          "direction": "output",
+          "y": 123
+        },
+        {
+          "id": "note",
+          "name": "note",
+          "type": "number",
+          "direction": "output",
+          "y": 158
+        }
+      ]
+    },
+    {
+      "id": "th_loudBox",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1629,
+        "y": 347
+      },
+      "params": {
+        "label": "Loudness",
+        "width": 913,
+        "height": 272
+      },
+      "ports": [
+        {
+          "id": "level",
+          "name": "level",
+          "type": "number",
+          "direction": "output",
+          "y": 77
+        },
+        {
+          "id": "handY",
+          "name": "handY",
+          "type": "number",
+          "direction": "input",
+          "y": 125
+        },
+        {
+          "id": "sounding",
+          "name": "sounding",
+          "type": "boolean",
+          "direction": "input",
+          "y": 64
+        }
+      ]
+    },
+    {
+      "id": "th_orbBox",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1980,
+        "y": 114
+      },
+      "params": {
+        "label": "Orb",
+        "width": 999,
+        "height": 520
+      },
+      "ports": [
+        {
+          "id": "hand",
+          "name": "hand",
+          "type": "vec2",
+          "direction": "input",
+          "y": 33
+        },
+        {
+          "id": "orb",
+          "name": "orb",
+          "type": "layer",
+          "direction": "output",
+          "y": 209
+        },
+        {
+          "id": "note",
+          "name": "note",
+          "type": "number",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "hue",
+          "name": "hue",
+          "type": "number",
+          "direction": "output",
+          "y": 116
+        },
+        {
+          "id": "level",
+          "name": "level",
+          "type": "number",
+          "direction": "input",
+          "y": 387
+        },
+        {
+          "id": "color",
+          "name": "color",
+          "type": "color",
+          "direction": "output",
+          "y": 148
+        }
+      ]
+    },
+    {
+      "id": "th_statusBox",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1960,
+        "y": 844
+      },
+      "params": {
+        "label": "Status line",
+        "width": 1620,
+        "height": 523
+      },
+      "ports": [
+        {
+          "id": "status",
+          "name": "status",
+          "type": "layer",
+          "direction": "output",
+          "y": 238
+        },
+        {
+          "id": "freq",
+          "name": "freq",
+          "type": "number",
+          "direction": "input",
+          "y": 332
+        },
+        {
+          "id": "note",
+          "name": "note",
+          "type": "number",
+          "direction": "input",
+          "y": 206
+        }
+      ]
+    },
+    {
+      "id": "th_antennaBox",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 2840,
+        "y": 214
+      },
+      "params": {
+        "label": "Antennas",
+        "width": 851,
+        "height": 434
+      },
+      "ports": [
+        {
+          "id": "pitchAntenna",
+          "name": "pitchAntenna",
+          "type": "layer",
+          "direction": "output",
+          "y": 263
+        },
+        {
+          "id": "volumeLoop",
+          "name": "volumeLoop",
+          "type": "layer",
+          "direction": "output",
+          "y": 82
+        }
+      ]
     }
   ],
   "edges": [
@@ -1066,717 +2168,1312 @@
     },
     {
       "id": "e_10",
-      "source": "th_hands",
-      "target": "th_sounding",
-      "sourceHandle": "out-detected",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_11",
-      "source": "th_mouse",
-      "target": "th_sounding",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_12",
-      "source": "th_hand",
-      "target": "th_across",
-      "sourceHandle": "out-selected",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_13",
-      "source": "th_across",
-      "target": "th_scale",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-amount"
-    },
-    {
-      "id": "e_14",
       "source": "th_scaleSel",
-      "target": "th_scale",
+      "target": "th_pitchBox",
       "sourceHandle": "out-value",
       "targetHandle": "in-scale"
     },
     {
-      "id": "e_15",
+      "id": "e_11",
+      "source": "th_pitchBox",
+      "target": "th_scale",
+      "sourceHandle": "out-scale",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_12",
       "source": "th_scale",
       "target": "th_snapNote",
       "sourceHandle": "out-note",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_16",
-      "source": "th_snap",
-      "target": "th_pitch",
-      "sourceHandle": "out-bool",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_17",
-      "source": "th_snapNote",
-      "target": "th_pitch",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_18",
-      "source": "th_across",
-      "target": "th_pitch",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_19",
-      "source": "th_pitch",
-      "target": "th_glide",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-value"
-    },
-    {
-      "id": "e_20",
-      "source": "th_glide",
-      "target": "th_freq",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_21",
-      "source": "th_vibrato",
-      "target": "th_freq",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_22",
-      "source": "th_freq",
-      "target": "th_subFreq",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_23",
-      "source": "th_sounding",
-      "target": "th_loud",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_24",
-      "source": "th_hand",
-      "target": "th_loud",
-      "sourceHandle": "out-selected",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_25",
-      "source": "th_loud",
-      "target": "th_level",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-value"
-    },
-    {
-      "id": "e_26",
-      "source": "th_freq",
-      "target": "th_tone",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-freq"
-    },
-    {
-      "id": "e_27",
-      "source": "th_subFreq",
-      "target": "th_body",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-freq"
-    },
-    {
-      "id": "e_28",
+      "id": "e_13",
       "source": "th_tone",
       "target": "th_mix",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in1"
     },
     {
-      "id": "e_29",
+      "id": "e_14",
       "source": "th_body",
       "target": "th_mix",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in2"
     },
     {
-      "id": "e_30",
+      "id": "e_15",
       "source": "th_mix",
       "target": "th_volume",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_31",
+      "id": "e_16",
       "source": "th_level",
-      "target": "th_volume",
+      "target": "th_loudBox",
       "sourceHandle": "out-result",
       "targetHandle": "in-level"
     },
     {
-      "id": "e_32",
+      "id": "e_17",
+      "source": "th_loudBox",
+      "target": "th_volume",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-level"
+    },
+    {
+      "id": "e_18",
       "source": "th_volume",
       "target": "th_filter",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_33",
+      "id": "e_19",
       "source": "th_filter",
       "target": "th_delay",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_34",
+      "id": "e_20",
       "source": "th_delay",
       "target": "th_reverb",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_35",
+      "id": "e_21",
       "source": "th_reverb",
       "target": "th_out",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_36",
+      "id": "e_22",
       "source": "th_camera",
       "target": "th_camImage",
       "sourceHandle": "out-image",
       "targetHandle": "in-image"
     },
     {
-      "id": "e_37",
-      "source": "th_camTint",
-      "target": "th_camImage",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-tint"
-    },
-    {
-      "id": "e_38",
+      "id": "e_23",
       "source": "th_probe",
       "target": "th_probeScale",
       "sourceHandle": "out-values",
       "targetHandle": "in-amount"
     },
     {
-      "id": "e_39",
+      "id": "e_24",
       "source": "th_scaleSel",
-      "target": "th_probeScale",
+      "target": "th_lanesBox",
       "sourceHandle": "out-value",
       "targetHandle": "in-scale"
     },
     {
-      "id": "e_40",
+      "id": "e_25",
+      "source": "th_lanesBox",
+      "target": "th_probeScale",
+      "sourceHandle": "out-scale",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_26",
       "source": "th_probeScale",
       "target": "th_laneNotes",
       "sourceHandle": "out-note",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_41",
+      "id": "e_27",
       "source": "th_laneNotes",
       "target": "th_lanes",
       "sourceHandle": "out-result",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_42",
-      "source": "th_laneNotes",
-      "target": "th_laneAt",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_43",
-      "source": "th_lanes",
-      "target": "th_laneAt",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_44",
-      "source": "th_laneNotes",
-      "target": "th_laneCol",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_45",
-      "source": "th_snapNote",
-      "target": "th_laneCol",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_46",
-      "source": "th_sounding",
-      "target": "th_laneCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_47",
-      "source": "th_lanes",
-      "target": "th_laneCol",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_48",
-      "source": "th_lanes",
-      "target": "th_laneW",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_49",
-      "source": "th_laneAt",
-      "target": "th_laneLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-at"
-    },
-    {
-      "id": "e_50",
-      "source": "th_laneCol",
-      "target": "th_laneLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-col"
-    },
-    {
-      "id": "e_51",
+      "id": "e_28",
       "source": "th_laneLoop",
       "target": "th_laneFill",
       "sourceHandle": "out-col",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_52",
+      "id": "e_29",
       "source": "th_laneLoop",
       "target": "th_lane",
       "sourceHandle": "out-at",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_53",
-      "source": "th_laneW",
-      "target": "th_lane",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_54",
+      "id": "e_30",
       "source": "th_laneFill",
       "target": "th_lane",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_55",
+      "id": "e_31",
       "source": "th_lane",
       "target": "th_laneLoop",
       "sourceHandle": "out-shape",
       "targetHandle": "in-lane"
     },
     {
-      "id": "e_56",
-      "source": "th_freq",
-      "target": "th_ringPhase",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_57",
-      "source": "th_rings",
-      "target": "th_ringPhase",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_58",
-      "source": "th_ringPhase",
-      "target": "th_ringSize",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ph"
-    },
-    {
-      "id": "e_59",
-      "source": "th_level",
-      "target": "th_ringSize",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_60",
-      "source": "th_ringPhase",
-      "target": "th_ringCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ph"
-    },
-    {
-      "id": "e_61",
-      "source": "th_glide",
-      "target": "th_ringCol",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_62",
-      "source": "th_level",
-      "target": "th_ringCol",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_63",
-      "source": "th_ringSize",
-      "target": "th_ringLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_64",
-      "source": "th_ringCol",
-      "target": "th_ringLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-col"
-    },
-    {
-      "id": "e_65",
+      "id": "e_32",
       "source": "th_ringLoop",
       "target": "th_ringStroke",
       "sourceHandle": "out-col",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_66",
+      "id": "e_33",
       "source": "th_ringStroke",
       "target": "th_ringNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_67",
+      "id": "e_34",
       "source": "th_hand",
-      "target": "th_ring",
+      "target": "th_ringsBox",
       "sourceHandle": "out-selected",
+      "targetHandle": "in-hand"
+    },
+    {
+      "id": "e_35",
+      "source": "th_ringsBox",
+      "target": "th_ring",
+      "sourceHandle": "out-hand",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_68",
+      "id": "e_36",
       "source": "th_ringLoop",
       "target": "th_ring",
       "sourceHandle": "out-d",
       "targetHandle": "in-w"
     },
     {
-      "id": "e_69",
+      "id": "e_37",
       "source": "th_ringLoop",
       "target": "th_ring",
       "sourceHandle": "out-d",
       "targetHandle": "in-h"
     },
     {
-      "id": "e_70",
+      "id": "e_38",
       "source": "th_ringNoFill",
       "target": "th_ring",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_71",
+      "id": "e_39",
       "source": "th_ring",
       "target": "th_ringLoop",
       "sourceHandle": "out-shape",
       "targetHandle": "in-ring"
     },
     {
-      "id": "e_72",
-      "source": "th_glide",
-      "target": "th_orbCol",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_73",
-      "source": "th_level",
-      "target": "th_orbCol",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_74",
-      "source": "th_orbCol",
-      "target": "th_orbFill",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
-    },
-    {
-      "id": "e_75",
-      "source": "th_level",
-      "target": "th_orbSize",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_76",
+      "id": "e_40",
       "source": "th_hand",
-      "target": "th_orb",
+      "target": "th_orbBox",
       "sourceHandle": "out-selected",
+      "targetHandle": "in-hand"
+    },
+    {
+      "id": "e_41",
+      "source": "th_orbBox",
+      "target": "th_orb",
+      "sourceHandle": "out-hand",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_77",
-      "source": "th_orbSize",
-      "target": "th_orb",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_78",
-      "source": "th_orbSize",
-      "target": "th_orb",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_79",
+      "id": "e_42",
       "source": "th_orbFill",
       "target": "th_orb",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_80",
-      "source": "th_stringX",
-      "target": "th_string",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_81",
-      "source": "th_hand",
-      "target": "th_string",
-      "sourceHandle": "out-selected",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_82",
-      "source": "th_level",
-      "target": "th_string",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_83",
-      "source": "th_freq",
-      "target": "th_string",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_84",
-      "source": "th_orbCol",
-      "target": "th_stringStroke",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
-    },
-    {
-      "id": "e_85",
-      "source": "th_string",
-      "target": "th_stringLine",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-points"
-    },
-    {
-      "id": "e_86",
+      "id": "e_43",
       "source": "th_stringStroke",
       "target": "th_stringLine",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_87",
+      "id": "e_44",
       "source": "th_stringLine",
-      "target": "th_glowing",
+      "target": "th_stringBox",
       "sourceHandle": "out-shape",
+      "targetHandle": "in-string"
+    },
+    {
+      "id": "e_45",
+      "source": "th_stringBox",
+      "target": "th_glowing",
+      "sourceHandle": "out-string",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_88",
+      "id": "e_46",
       "source": "th_ringLoop",
-      "target": "th_glowing",
+      "target": "th_ringsBox",
       "sourceHandle": "out-ring",
+      "targetHandle": "in-rings"
+    },
+    {
+      "id": "e_47",
+      "source": "th_ringsBox",
+      "target": "th_glowing",
+      "sourceHandle": "out-rings",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_89",
+      "id": "e_48",
       "source": "th_orb",
-      "target": "th_glowing",
+      "target": "th_orbBox",
       "sourceHandle": "out-shape",
+      "targetHandle": "in-orb"
+    },
+    {
+      "id": "e_49",
+      "source": "th_orbBox",
+      "target": "th_glowing",
+      "sourceHandle": "out-orb",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_90",
+      "id": "e_50",
       "source": "th_glowing",
       "target": "th_glow",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_91",
+      "id": "e_51",
       "source": "th_antennaFill",
       "target": "th_antenna",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_92",
+      "id": "e_52",
       "source": "th_loopStroke",
       "target": "th_loopNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_93",
+      "id": "e_53",
       "source": "th_loopNoFill",
       "target": "th_loopAntenna",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_94",
-      "source": "th_glide",
-      "target": "th_rounded",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_95",
+      "id": "e_54",
       "source": "th_noteNames",
       "target": "th_noteName",
       "sourceHandle": "out-parts",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_96",
-      "source": "th_rounded",
-      "target": "th_noteName",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-index"
-    },
-    {
-      "id": "e_97",
-      "source": "th_freq",
-      "target": "th_hzText",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-value"
-    },
-    {
-      "id": "e_98",
+      "id": "e_55",
       "source": "th_noteName",
       "target": "th_statusParts",
       "sourceHandle": "out-result",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_99",
+      "id": "e_56",
       "source": "th_hzText",
       "target": "th_statusParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_100",
+      "id": "e_57",
       "source": "th_help",
       "target": "th_statusParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_101",
+      "id": "e_58",
       "source": "th_statusParts",
       "target": "th_status",
       "sourceHandle": "out-merged",
       "targetHandle": "in-parts"
     },
     {
-      "id": "e_102",
+      "id": "e_59",
       "source": "th_status",
       "target": "th_statusText",
       "sourceHandle": "out-text",
       "targetHandle": "in-string"
     },
     {
-      "id": "e_103",
+      "id": "e_60",
       "source": "th_statusFill",
       "target": "th_statusText",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_104",
+      "id": "e_61",
       "source": "th_camImage",
       "target": "th_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_105",
+      "id": "e_62",
       "source": "th_hands",
       "target": "th_scene",
       "sourceHandle": "out-guides",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_106",
+      "id": "e_63",
       "source": "th_antenna",
-      "target": "th_scene",
+      "target": "th_antennaBox",
       "sourceHandle": "out-shape",
+      "targetHandle": "in-pitchAntenna"
+    },
+    {
+      "id": "e_64",
+      "source": "th_antennaBox",
+      "target": "th_scene",
+      "sourceHandle": "out-pitchAntenna",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_107",
+      "id": "e_65",
       "source": "th_loopAntenna",
-      "target": "th_scene",
+      "target": "th_antennaBox",
       "sourceHandle": "out-shape",
+      "targetHandle": "in-volumeLoop"
+    },
+    {
+      "id": "e_66",
+      "source": "th_antennaBox",
+      "target": "th_scene",
+      "sourceHandle": "out-volumeLoop",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_108",
+      "id": "e_67",
       "source": "th_laneLoop",
-      "target": "th_scene",
+      "target": "th_lanesBox",
       "sourceHandle": "out-lane",
+      "targetHandle": "in-lanes"
+    },
+    {
+      "id": "e_68",
+      "source": "th_lanesBox",
+      "target": "th_scene",
+      "sourceHandle": "out-lanes",
       "targetHandle": "in-s5"
     },
     {
-      "id": "e_109",
+      "id": "e_69",
       "source": "th_glow",
       "target": "th_scene",
       "sourceHandle": "out-out",
       "targetHandle": "in-s6"
     },
     {
-      "id": "e_110",
+      "id": "e_70",
       "source": "th_statusText",
-      "target": "th_scene",
+      "target": "th_statusBox",
       "sourceHandle": "out-shape",
+      "targetHandle": "in-status"
+    },
+    {
+      "id": "e_71",
+      "source": "th_statusBox",
+      "target": "th_scene",
+      "sourceHandle": "out-status",
       "targetHandle": "in-s7"
     },
     {
-      "id": "e_111",
+      "id": "e_72",
       "source": "th_scene",
       "target": "th_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_73",
+      "source": "th_hand",
+      "target": "th_handXY",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_74",
+      "source": "th_hands",
+      "target": "th_sounding",
+      "sourceHandle": "out-detected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_75",
+      "source": "th_mouse",
+      "target": "th_sounding",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_76",
+      "source": "th_handXY",
+      "target": "th_pitchBox",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-handX"
+    },
+    {
+      "id": "e_77",
+      "source": "th_pitchBox",
+      "target": "th_acrossMap",
+      "sourceHandle": "out-handX",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_78",
+      "source": "th_acrossMap",
+      "target": "th_across",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_79",
+      "source": "th_across",
+      "target": "th_scale",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-amount"
+    },
+    {
+      "id": "e_80",
+      "source": "th_across",
+      "target": "th_glideNote",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_81",
+      "source": "th_snap",
+      "target": "th_pitchBox",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-snap"
+    },
+    {
+      "id": "e_82",
+      "source": "th_pitchBox",
+      "target": "th_pitch",
+      "sourceHandle": "out-snap",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_83",
+      "source": "th_snapNote",
+      "target": "th_pitch",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_84",
+      "source": "th_glideNote",
+      "target": "th_pitch",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_85",
+      "source": "th_pitch",
+      "target": "th_glide",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_86",
+      "source": "th_glide",
+      "target": "th_bent",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_87",
+      "source": "th_vibrato",
+      "target": "th_bent",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_88",
+      "source": "th_bent",
+      "target": "th_freq",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-midi"
+    },
+    {
+      "id": "e_89",
+      "source": "th_freq",
+      "target": "th_pitchBox",
+      "sourceHandle": "out-freq",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_90",
+      "source": "th_pitchBox",
+      "target": "th_tone",
+      "sourceHandle": "out-freq",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_91",
+      "source": "th_freq",
+      "target": "th_subFreq",
+      "sourceHandle": "out-freq",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_92",
+      "source": "th_subFreq",
+      "target": "th_pitchBox",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-bodyFreq"
+    },
+    {
+      "id": "e_93",
+      "source": "th_pitchBox",
+      "target": "th_body",
+      "sourceHandle": "out-bodyFreq",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_94",
+      "source": "th_pitchBox",
+      "target": "th_statusBox",
+      "sourceHandle": "out-freq",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_95",
+      "source": "th_statusBox",
+      "target": "th_hzText",
+      "sourceHandle": "out-freq",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_96",
+      "source": "th_handXY",
+      "target": "th_loudBox",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-handY"
+    },
+    {
+      "id": "e_97",
+      "source": "th_loudBox",
+      "target": "th_loudMap",
+      "sourceHandle": "out-handY",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_98",
+      "source": "th_loudMap",
+      "target": "th_loudClamp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_99",
+      "source": "th_sounding",
+      "target": "th_loudBox",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-sounding"
+    },
+    {
+      "id": "e_100",
+      "source": "th_loudBox",
+      "target": "th_loud",
+      "sourceHandle": "out-sounding",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_101",
+      "source": "th_loudClamp",
+      "target": "th_loud",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_102",
+      "source": "th_loud",
+      "target": "th_level",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_103",
+      "source": "th_lanes",
+      "target": "th_laneIdx",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_104",
+      "source": "th_laneIdx",
+      "target": "th_laneMid",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_105",
+      "source": "th_laneMid",
+      "target": "th_laneX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_106",
+      "source": "th_lanes",
+      "target": "th_laneX",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-inMax"
+    },
+    {
+      "id": "e_107",
+      "source": "th_laneX",
+      "target": "th_laneAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_108",
+      "source": "th_laneAt",
+      "target": "th_laneLoop",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_109",
+      "source": "th_lanes",
+      "target": "th_laneSpan",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_110",
+      "source": "th_laneSpan",
+      "target": "th_laneW",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_111",
+      "source": "th_laneW",
+      "target": "th_lane",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_112",
+      "source": "th_laneNotes",
+      "target": "th_laneIsNote",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_113",
+      "source": "th_snapNote",
+      "target": "th_pitchBox",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-scaleNote"
+    },
+    {
+      "id": "e_114",
+      "source": "th_pitchBox",
+      "target": "th_lanesBox",
+      "sourceHandle": "out-scaleNote",
+      "targetHandle": "in-note"
+    },
+    {
+      "id": "e_115",
+      "source": "th_lanesBox",
+      "target": "th_laneIsNote",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_116",
+      "source": "th_laneIsNote",
+      "target": "th_laneLit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_117",
+      "source": "th_sounding",
+      "target": "th_lanesBox",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-sounding"
+    },
+    {
+      "id": "e_118",
+      "source": "th_lanesBox",
+      "target": "th_laneLit",
+      "sourceHandle": "out-sounding",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_119",
+      "source": "th_laneIdx",
+      "target": "th_laneHue",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_120",
+      "source": "th_lanes",
+      "target": "th_laneHue",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-inMax"
+    },
+    {
+      "id": "e_121",
+      "source": "th_laneHue",
+      "target": "th_laneLitCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_122",
+      "source": "th_laneNotes",
+      "target": "th_laneOct",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_123",
+      "source": "th_laneOct",
+      "target": "th_laneIsC",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_124",
+      "source": "th_laneIsC",
+      "target": "th_laneAlpha",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_125",
+      "source": "th_laneAlpha",
+      "target": "th_laneDimCol",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_126",
+      "source": "th_laneLit",
+      "target": "th_laneCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_127",
+      "source": "th_laneLitCol",
+      "target": "th_laneCol",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_128",
+      "source": "th_laneDimCol",
+      "target": "th_laneCol",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_129",
+      "source": "th_laneCol",
+      "target": "th_laneLoop",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_130",
+      "source": "th_glide",
+      "target": "th_pitchBox",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-note"
+    },
+    {
+      "id": "e_131",
+      "source": "th_pitchBox",
+      "target": "th_orbBox",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-note"
+    },
+    {
+      "id": "e_132",
+      "source": "th_orbBox",
+      "target": "th_hue",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_133",
+      "source": "th_time",
+      "target": "th_ringsBox",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_134",
+      "source": "th_ringsBox",
+      "target": "th_ringClock",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_135",
+      "source": "th_pitchBox",
+      "target": "th_ringsBox",
+      "sourceHandle": "out-freq",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_136",
+      "source": "th_ringsBox",
+      "target": "th_ringClock",
+      "sourceHandle": "out-freq",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_137",
+      "source": "th_ringClock",
+      "target": "th_ringCycles",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_138",
+      "source": "th_rings",
+      "target": "th_ringStagger",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_139",
+      "source": "th_ringCycles",
+      "target": "th_ringAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_140",
+      "source": "th_ringStagger",
+      "target": "th_ringAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_141",
+      "source": "th_ringAt",
+      "target": "th_ringPhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_142",
+      "source": "th_loudBox",
+      "target": "th_ringsBox",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-level"
+    },
+    {
+      "id": "e_143",
+      "source": "th_ringsBox",
+      "target": "th_ringReach",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_144",
+      "source": "th_ringPhase",
+      "target": "th_ringGrow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_145",
+      "source": "th_ringReach",
+      "target": "th_ringGrow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_146",
+      "source": "th_ringGrow",
+      "target": "th_ringSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_147",
+      "source": "th_ringSize",
+      "target": "th_ringLoop",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_148",
+      "source": "th_ringPhase",
+      "target": "th_ringFade",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_149",
+      "source": "th_ringsBox",
+      "target": "th_ringAlphaL",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_150",
+      "source": "th_ringFade",
+      "target": "th_ringAlpha",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_151",
+      "source": "th_ringAlphaL",
+      "target": "th_ringAlpha",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_152",
+      "source": "th_hue",
+      "target": "th_orbBox",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-hue"
+    },
+    {
+      "id": "e_153",
+      "source": "th_orbBox",
+      "target": "th_ringsBox",
+      "sourceHandle": "out-hue",
+      "targetHandle": "in-hue"
+    },
+    {
+      "id": "e_154",
+      "source": "th_ringsBox",
+      "target": "th_ringCol",
+      "sourceHandle": "out-hue",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_155",
+      "source": "th_ringAlpha",
+      "target": "th_ringCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_156",
+      "source": "th_ringCol",
+      "target": "th_ringLoop",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_157",
+      "source": "th_loudBox",
+      "target": "th_orbBox",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-level"
+    },
+    {
+      "id": "e_158",
+      "source": "th_orbBox",
+      "target": "th_orbLight",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_159",
+      "source": "th_hue",
+      "target": "th_orbCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_160",
+      "source": "th_orbLight",
+      "target": "th_orbCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_161",
+      "source": "th_orbCol",
+      "target": "th_orbFill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_162",
+      "source": "th_orbCol",
+      "target": "th_orbBox",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_163",
+      "source": "th_orbBox",
+      "target": "th_stringBox",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_164",
+      "source": "th_stringBox",
+      "target": "th_stringStroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_165",
+      "source": "th_orbBox",
+      "target": "th_orbSize",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_166",
+      "source": "th_orbSize",
+      "target": "th_orb",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_167",
+      "source": "th_orbSize",
+      "target": "th_orb",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_168",
+      "source": "th_stringX",
+      "target": "th_stringRest",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_169",
+      "source": "th_handXY",
+      "target": "th_stringBox",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-handY"
+    },
+    {
+      "id": "e_170",
+      "source": "th_stringBox",
+      "target": "th_stringRest",
+      "sourceHandle": "out-handY",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_171",
+      "source": "th_loudBox",
+      "target": "th_stringBox",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-level"
+    },
+    {
+      "id": "e_172",
+      "source": "th_stringBox",
+      "target": "th_bumpHeight",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_173",
+      "source": "th_stringRest",
+      "target": "th_bump",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_174",
+      "source": "th_hand",
+      "target": "th_stringBox",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-hand"
+    },
+    {
+      "id": "e_175",
+      "source": "th_stringBox",
+      "target": "th_bump",
+      "sourceHandle": "out-hand",
+      "targetHandle": "in-center"
+    },
+    {
+      "id": "e_176",
+      "source": "th_bumpHeight",
+      "target": "th_bump",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-weight"
+    },
+    {
+      "id": "e_177",
+      "source": "th_stringX",
+      "target": "th_waveK",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_178",
+      "source": "th_pitchBox",
+      "target": "th_stringBox",
+      "sourceHandle": "out-freq",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_179",
+      "source": "th_stringBox",
+      "target": "th_waveK",
+      "sourceHandle": "out-freq",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_180",
+      "source": "th_waveK",
+      "target": "th_waveAlong",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_181",
+      "source": "th_time",
+      "target": "th_stringBox",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_182",
+      "source": "th_stringBox",
+      "target": "th_waveRun",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_183",
+      "source": "th_waveAlong",
+      "target": "th_wavePhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_184",
+      "source": "th_waveRun",
+      "target": "th_wavePhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_185",
+      "source": "th_wavePhase",
+      "target": "th_waveSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_186",
+      "source": "th_bump",
+      "target": "th_wobble",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_187",
+      "source": "th_waveSin",
+      "target": "th_wobble",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_188",
+      "source": "th_stringBox",
+      "target": "th_stringY",
+      "sourceHandle": "out-handY",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_189",
+      "source": "th_wobble",
+      "target": "th_stringY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_190",
+      "source": "th_stringX",
+      "target": "th_string",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_191",
+      "source": "th_stringY",
+      "target": "th_string",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_192",
+      "source": "th_string",
+      "target": "th_stringLine",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_193",
+      "source": "th_pitchBox",
+      "target": "th_statusBox",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-note"
+    },
+    {
+      "id": "e_194",
+      "source": "th_statusBox",
+      "target": "th_round",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_195",
+      "source": "th_round",
+      "target": "th_rounded",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_196",
+      "source": "th_rounded",
+      "target": "th_noteName",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-index"
     }
   ]
 }

@@ -401,6 +401,22 @@ fn beat_counts_steps_and_bars() {
 }
 
 #[test]
+fn beat_steps_land_on_the_frames_they_are_due() {
+    // 90 bpm, 4 beats, 16 steps: 6 steps a second, one every 10 frames at
+    // 60 fps — summed frame times must not make some a frame late.
+    let p = json!({});
+    let mut h = node("time/beat", p.clone());
+    h.frame.t = -1.0 / 60.0;
+    let given = [("bpm", vec![n(90.0)])];
+    for f in 0..3000u32 {
+        let out = beat_out(&step(&mut h, beat_inputs, &p, 1.0 / 60.0, &given));
+        let due = f64::from(f / 10);
+        assert_eq!(out.5, due, "frame {f}");
+        assert_eq!(out.4, f % 10 == 0, "trigger on frame {f}");
+    }
+}
+
+#[test]
 fn beat_swing_delays_odd_steps() {
     assert_eq!(swung(0.5, 0.0), (0.0, 0.5));
     assert_eq!(swung(1.2, 0.0).0, 1.0);

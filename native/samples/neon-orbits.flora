@@ -16,32 +16,22 @@
         "y": -284
       },
       "params": {
-        "text": "Neon orbits\n\nThree ellipse outlines turn at different speeds over a faint grid. Effect in `glow` mode lights their coverage; with `blend` `add` the glow is light: it brightens the lines themselves and the grid under the halo, and where halos cross they add up. (`normal` lays the glow underneath and covers what's behind it.)",
+        "text": "Neon orbits\n\nThree ellipse outlines turn at different speeds over a faint grid: each angle is an LFO saw in loop sync, once, twice (backwards) and three times round a loop. Effect in `glow` mode lights their coverage; with `blend` `add` the glow is light: it brightens the lines themselves and the grid under the halo, and where halos cross they add up. (`normal` lays the glow underneath and covers what's behind it.)",
         "width": 460,
         "height": 220
       },
       "portValues": {
-        "text": "Neon orbits\n\nThree ellipse outlines turn at different speeds over a faint grid. Effect in `glow` mode lights their coverage; with `blend` `add` the glow is light: it brightens the lines themselves and the grid under the halo, and where halos cross they add up. (`normal` lays the glow underneath and covers what's behind it.)",
+        "text": "Neon orbits\n\nThree ellipse outlines turn at different speeds over a faint grid: each angle is an LFO saw in loop sync, once, twice (backwards) and three times round a loop. Effect in `glow` mode lights their coverage; with `blend` `add` the glow is light: it brightens the lines themselves and the grid under the halo, and where halos cross they add up. (`normal` lays the glow underneath and covers what's behind it.)",
         "width": 460,
         "height": 220
       }
-    },
-    {
-      "id": "no_t",
-      "defType": "time/seconds",
-      "position": {
-        "x": 231,
-        "y": 350
-      },
-      "params": {},
-      "portValues": {}
     },
     {
       "id": "no_st0",
       "defType": "style/stroke",
       "position": {
         "x": 0,
-        "y": 230
+        "y": 434
       },
       "params": {
         "width": 3,
@@ -67,7 +57,7 @@
       "defType": "style/no-fill",
       "position": {
         "x": 230,
-        "y": 230
+        "y": 434
       },
       "params": {},
       "portValues": {}
@@ -76,8 +66,8 @@
       "id": "no_el0",
       "defType": "draw/ellipse",
       "position": {
-        "x": 491,
-        "y": 142
+        "x": 434,
+        "y": 346
       },
       "params": {},
       "portValues": {
@@ -86,23 +76,11 @@
       }
     },
     {
-      "id": "no_ang0",
-      "defType": "math/expression",
-      "position": {
-        "x": 461,
-        "y": 0
-      },
-      "params": {
-        "expr": "tau * l * 1 + 0.0"
-      },
-      "portValues": {}
-    },
-    {
       "id": "no_rot0",
       "defType": "transform/rotate",
       "position": {
-        "x": 747,
-        "y": 183
+        "x": 709,
+        "y": 334
       },
       "params": {},
       "portValues": {}
@@ -112,7 +90,7 @@
       "defType": "style/stroke",
       "position": {
         "x": 0,
-        "y": 564
+        "y": 972
       },
       "params": {
         "width": 3,
@@ -138,7 +116,7 @@
       "defType": "style/no-fill",
       "position": {
         "x": 230,
-        "y": 564
+        "y": 972
       },
       "params": {},
       "portValues": {}
@@ -147,8 +125,8 @@
       "id": "no_el1",
       "defType": "draw/ellipse",
       "position": {
-        "x": 491,
-        "y": 476
+        "x": 434,
+        "y": 884
       },
       "params": {},
       "portValues": {
@@ -157,23 +135,11 @@
       }
     },
     {
-      "id": "no_ang1",
-      "defType": "math/expression",
-      "position": {
-        "x": 461,
-        "y": 334
-      },
-      "params": {
-        "expr": "tau * l * -2 + 1.05"
-      },
-      "portValues": {}
-    },
-    {
       "id": "no_rot1",
       "defType": "transform/rotate",
       "position": {
-        "x": 747,
-        "y": 413
+        "x": 709,
+        "y": 700
       },
       "params": {},
       "portValues": {}
@@ -183,7 +149,7 @@
       "defType": "style/stroke",
       "position": {
         "x": 0,
-        "y": 898
+        "y": 1510
       },
       "params": {
         "width": 3,
@@ -209,7 +175,7 @@
       "defType": "style/no-fill",
       "position": {
         "x": 230,
-        "y": 898
+        "y": 1510
       },
       "params": {},
       "portValues": {}
@@ -218,8 +184,8 @@
       "id": "no_el2",
       "defType": "draw/ellipse",
       "position": {
-        "x": 491,
-        "y": 810
+        "x": 434,
+        "y": 1422
       },
       "params": {},
       "portValues": {
@@ -228,23 +194,11 @@
       }
     },
     {
-      "id": "no_ang2",
-      "defType": "math/expression",
-      "position": {
-        "x": 461,
-        "y": 668
-      },
-      "params": {
-        "expr": "tau * l * 3 + 2.1"
-      },
-      "portValues": {}
-    },
-    {
       "id": "no_rot2",
       "defType": "transform/rotate",
       "position": {
-        "x": 747,
-        "y": 643
+        "x": 709,
+        "y": 1066
       },
       "params": {},
       "portValues": {}
@@ -253,8 +207,8 @@
       "id": "no_orbits",
       "defType": "transform/group",
       "position": {
-        "x": 962,
-        "y": 391
+        "x": 950,
+        "y": 678
       },
       "params": {
         "slotCount": 3
@@ -265,8 +219,8 @@
       "id": "no_glow",
       "defType": "gpu/effect",
       "position": {
-        "x": 1426,
-        "y": 369
+        "x": 1414,
+        "y": 657
       },
       "params": {
         "mode": "glow",
@@ -289,8 +243,8 @@
       "id": "no_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 986,
-        "y": 115
+        "x": 971,
+        "y": 403
       },
       "params": {
         "cols": 13,
@@ -309,8 +263,8 @@
       "id": "no_each",
       "defType": "region/foreach",
       "position": {
-        "x": 1226,
-        "y": 75
+        "x": 1214,
+        "y": 363
       },
       "params": {
         "width": 569,
@@ -379,8 +333,8 @@
       "id": "no_all",
       "defType": "transform/group",
       "position": {
-        "x": 1908,
-        "y": 231
+        "x": 1896,
+        "y": 519
       },
       "params": {
         "slotCount": 2
@@ -391,8 +345,8 @@
       "id": "no_r",
       "defType": "render/renderer",
       "position": {
-        "x": 2172,
-        "y": 231
+        "x": 2160,
+        "y": 519
       },
       "params": {
         "width": 640,
@@ -414,190 +368,232 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "no_ang0",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 414,
+        "y": 0
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 1,
+        "min": 0.0,
+        "max": 6.283185307179586,
+        "sync": "loop"
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 1,
+        "min": 0.0,
+        "max": 6.283185307179586
+      }
+    },
+    {
+      "id": "no_ang1",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 414,
+        "y": 538
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 2,
+        "min": 1.05,
+        "max": -5.233185307179586,
+        "sync": "loop"
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 2,
+        "min": 1.05,
+        "max": -5.233185307179586
+      }
+    },
+    {
+      "id": "no_ang2",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 414,
+        "y": 1076
+      },
+      "params": {
+        "shape": "saw",
+        "rate": 3,
+        "min": 2.1,
+        "max": 8.383185307179586,
+        "sync": "loop"
+      },
+      "portValues": {
+        "shape": "saw",
+        "rate": 3,
+        "min": 2.1,
+        "max": 8.383185307179586
+      }
     }
   ],
   "edges": [
     {
-      "id": "e_no_st0_no_nf0_base",
+      "id": "e_1",
       "source": "no_st0",
       "target": "no_nf0",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_no_nf0_no_el0_style",
+      "id": "e_2",
       "source": "no_nf0",
       "target": "no_el0",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_no_t_no_ang0_l",
-      "source": "no_t",
-      "target": "no_ang0",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_no_ang0_no_rot0_angle",
-      "source": "no_ang0",
-      "target": "no_rot0",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-angle"
-    },
-    {
-      "id": "e_no_el0_no_rot0_layer",
+      "id": "e_3",
       "source": "no_el0",
       "target": "no_rot0",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_no_st1_no_nf1_base",
+      "id": "e_4",
       "source": "no_st1",
       "target": "no_nf1",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_no_nf1_no_el1_style",
+      "id": "e_5",
       "source": "no_nf1",
       "target": "no_el1",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_no_t_no_ang1_l",
-      "source": "no_t",
-      "target": "no_ang1",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_no_ang1_no_rot1_angle",
-      "source": "no_ang1",
-      "target": "no_rot1",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-angle"
-    },
-    {
-      "id": "e_no_el1_no_rot1_layer",
+      "id": "e_6",
       "source": "no_el1",
       "target": "no_rot1",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_no_st2_no_nf2_base",
+      "id": "e_7",
       "source": "no_st2",
       "target": "no_nf2",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_no_nf2_no_el2_style",
+      "id": "e_8",
       "source": "no_nf2",
       "target": "no_el2",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_no_t_no_ang2_l",
-      "source": "no_t",
-      "target": "no_ang2",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_no_ang2_no_rot2_angle",
-      "source": "no_ang2",
-      "target": "no_rot2",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-angle"
-    },
-    {
-      "id": "e_no_el2_no_rot2_layer",
+      "id": "e_9",
       "source": "no_el2",
       "target": "no_rot2",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_no_rot0_no_orbits_s1",
+      "id": "e_10",
       "source": "no_rot0",
       "target": "no_orbits",
       "sourceHandle": "out-rotated",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_no_rot1_no_orbits_s2",
+      "id": "e_11",
       "source": "no_rot1",
       "target": "no_orbits",
       "sourceHandle": "out-rotated",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_no_rot2_no_orbits_s3",
+      "id": "e_12",
       "source": "no_rot2",
       "target": "no_orbits",
       "sourceHandle": "out-rotated",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_no_orbits_no_glow_input",
+      "id": "e_13",
       "source": "no_orbits",
       "target": "no_glow",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_no_grid_no_each_g",
+      "id": "e_14",
       "source": "no_grid",
       "target": "no_each",
       "sourceHandle": "out-positions",
       "targetHandle": "in-g"
     },
     {
-      "id": "e_no_each_no_dot_pos",
+      "id": "e_15",
       "source": "no_each",
       "target": "no_dot",
       "sourceHandle": "out-g",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_no_dotfill_no_dot_style",
+      "id": "e_16",
       "source": "no_dotfill",
       "target": "no_dot",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_no_dot_no_each_d",
+      "id": "e_17",
       "source": "no_dot",
       "target": "no_each",
       "sourceHandle": "out-shape",
       "targetHandle": "in-d"
     },
     {
-      "id": "e_no_each_no_all_s1",
+      "id": "e_18",
       "source": "no_each",
       "target": "no_all",
       "sourceHandle": "out-d",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_no_glow_no_all_s2",
+      "id": "e_19",
       "source": "no_glow",
       "target": "no_all",
       "sourceHandle": "out-out",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_no_all_no_r_layers",
+      "id": "e_20",
       "source": "no_all",
       "target": "no_r",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_21",
+      "source": "no_ang0",
+      "target": "no_rot0",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_22",
+      "source": "no_ang1",
+      "target": "no_rot1",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_23",
+      "source": "no_ang2",
+      "target": "no_rot2",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-angle"
     }
   ]
 }

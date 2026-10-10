@@ -180,15 +180,9 @@ fn a_tracked_hand_plays_the_theremin_and_the_mouse_stands_in() {
 
     // No hand: the mouse plays, only while pressed.
     let r = engine.tick(&frame(0, (-300.0, 0.0), false));
-    assert_eq!(
-        first(&engine, &r.outputs, "th_sounding", 0).as_f64(),
-        Some(0.0)
-    );
+    assert!(!first(&engine, &r.outputs, "th_sounding", 0).truthy());
     let r = engine.tick(&frame(1, (-300.0, 0.0), true));
-    assert_eq!(
-        first(&engine, &r.outputs, "th_sounding", 0).as_f64(),
-        Some(1.0)
-    );
+    assert!(first(&engine, &r.outputs, "th_sounding", 0).truthy());
     let low = first(&engine, &r.outputs, "th_pitch", 0).as_f64().unwrap();
 
     // A hand up and to the right (of the mirrored picture: the left of the
@@ -203,7 +197,7 @@ fn a_tracked_hand_plays_the_theremin_and_the_mouse_stands_in() {
         first(&engine, &out, "th_hands", 12).truthy(),
         "hand detected"
     );
-    assert_eq!(first(&engine, &out, "th_sounding", 0).as_f64(), Some(1.0));
+    assert!(first(&engine, &out, "th_sounding", 0).truthy());
     let high = first(&engine, &out, "th_pitch", 0).as_f64().unwrap();
     assert!(high > low + 12.0, "pitch {low} → {high}");
     let loud = first(&engine, &out, "th_loud", 0).as_f64().unwrap();

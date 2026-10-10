@@ -368,7 +368,15 @@ fn is_region(ty: &str) -> bool {
 fn relayout_samples() {
     real_fonts();
     let cat = Catalogue::builtin();
+    // `FLORET_RELAYOUT_ONLY=a,b` re-arranges just those samples.
+    let only = std::env::var("FLORET_RELAYOUT_ONLY").ok();
     for s in SAMPLES {
+        if only
+            .as_deref()
+            .is_some_and(|o| !o.split(',').any(|id| id == s.id))
+        {
+            continue;
+        }
         let path = samples_dir().join(format!("{}.flora", s.id));
         let text = std::fs::read_to_string(&path).expect("sample file");
         let mut patch = loaded(&text);

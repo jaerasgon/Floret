@@ -30,8 +30,8 @@
       "id": "pt_dots",
       "defType": "geometry/scatter",
       "position": {
-        "x": 0,
-        "y": 142
+        "x": 513,
+        "y": 459
       },
       "params": {
         "mode": "poisson"
@@ -49,12 +49,12 @@
       "id": "pt_each",
       "defType": "region/foreach",
       "position": {
-        "x": 296,
-        "y": 102
+        "x": 814,
+        "y": 318
       },
       "params": {
-        "width": 620,
-        "height": 312,
+        "width": 1647,
+        "height": 442,
         "label": "ForEach dot"
       },
       "ports": [
@@ -63,39 +63,26 @@
           "name": "q",
           "type": "vec2",
           "direction": "input",
-          "y": 77
+          "y": 178
         },
         {
           "id": "d",
           "name": "d",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 152
         }
       ],
-      "width": 620,
-      "height": 312
-    },
-    {
-      "id": "pt_r",
-      "defType": "math/expression",
-      "parentId": "pt_each",
-      "position": {
-        "x": 135,
-        "y": 52
-      },
-      "params": {
-        "expr": "3 + 5 * fract(sin(i * 12.9898) * 43758.5453)"
-      },
-      "portValues": {}
+      "width": 1647,
+      "height": 442
     },
     {
       "id": "pt_dotfill",
       "defType": "style/fill",
       "parentId": "pt_each",
       "position": {
-        "x": 146,
-        "y": 194
+        "x": 1176,
+        "y": 324
       },
       "params": {
         "color": {
@@ -119,30 +106,18 @@
       "defType": "draw/ellipse",
       "parentId": "pt_each",
       "position": {
-        "x": 409,
-        "y": 40
+        "x": 1436,
+        "y": 115
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "pt_path",
-      "defType": "math/expression",
-      "position": {
-        "x": 1012,
-        "y": 0
-      },
-      "params": {
-        "expr": "vec2(150 * sin(t * 0.9), 90 * sin(t * 1.4))"
-      },
       "portValues": {}
     },
     {
       "id": "pt_field",
       "defType": "transform/group",
       "position": {
-        "x": 1012,
-        "y": 142
+        "x": 2579,
+        "y": 387
       },
       "params": {
         "slotCount": 1
@@ -153,8 +128,8 @@
       "id": "pt_move",
       "defType": "transform/translate",
       "position": {
-        "x": 1295,
-        "y": 79
+        "x": 2868,
+        "y": 319
       },
       "params": {},
       "portValues": {}
@@ -163,8 +138,8 @@
       "id": "pt_img",
       "defType": "image/from-layer",
       "position": {
-        "x": 1541,
-        "y": 130
+        "x": 3095,
+        "y": 455
       },
       "params": {},
       "portValues": {
@@ -176,8 +151,8 @@
       "id": "pt_ids",
       "defType": "spread/range",
       "position": {
-        "x": 1282,
-        "y": 316
+        "x": 0,
+        "y": 910
       },
       "params": {
         "count": 3
@@ -187,23 +162,11 @@
       }
     },
     {
-      "id": "pt_seeds",
-      "defType": "math/expression",
-      "position": {
-        "x": 1503,
-        "y": 278
-      },
-      "params": {
-        "expr": "vec2(-140 + 140 * i, 50 * cos(i * 2.2))"
-      },
-      "portValues": {}
-    },
-    {
       "id": "pt_track",
       "defType": "image/track-points",
       "position": {
-        "x": 1783,
-        "y": 237
+        "x": 3321,
+        "y": 591
       },
       "params": {},
       "portValues": {
@@ -214,12 +177,12 @@
       "id": "pt_marks",
       "defType": "region/foreach",
       "position": {
-        "x": 2019,
-        "y": 86
+        "x": 3568,
+        "y": 384
       },
       "params": {
-        "width": 1010,
-        "height": 478,
+        "width": 1191,
+        "height": 481,
         "label": "ForEach point"
       },
       "ports": [
@@ -228,14 +191,14 @@
           "name": "m",
           "type": "vec2",
           "direction": "input",
-          "y": 136
+          "y": 138
         },
         {
           "id": "c",
           "name": "c",
           "type": "number",
           "direction": "input",
-          "y": 312
+          "y": 380
         },
         {
           "id": "k",
@@ -249,32 +212,19 @@
           "name": "z",
           "type": "layer",
           "direction": "output",
-          "y": 251
+          "y": 250
         }
       ],
-      "width": 1010,
-      "height": 478
-    },
-    {
-      "id": "pt_col",
-      "defType": "math/expression",
-      "parentId": "pt_marks",
-      "position": {
-        "x": 129,
-        "y": 237
-      },
-      "params": {
-        "expr": "hsl(0.02 + 0.3 * c, 0.9, 0.58)"
-      },
-      "portValues": {}
+      "width": 1191,
+      "height": 481
     },
     {
       "id": "pt_ringst",
       "defType": "style/stroke",
       "parentId": "pt_marks",
       "position": {
-        "x": 406,
-        "y": 190
+        "x": 581,
+        "y": 193
       },
       "params": {
         "width": 3
@@ -288,7 +238,7 @@
       "defType": "style/no-fill",
       "parentId": "pt_marks",
       "position": {
-        "x": 609,
+        "x": 788,
         "y": 110
       },
       "params": {},
@@ -299,7 +249,7 @@
       "defType": "draw/ellipse",
       "parentId": "pt_marks",
       "position": {
-        "x": 799,
+        "x": 980,
         "y": 40
       },
       "params": {},
@@ -313,8 +263,8 @@
       "defType": "style/fill",
       "parentId": "pt_marks",
       "position": {
-        "x": 407,
-        "y": 360
+        "x": 584,
+        "y": 363
       },
       "params": {},
       "portValues": {}
@@ -324,7 +274,7 @@
       "defType": "draw/ellipse",
       "parentId": "pt_marks",
       "position": {
-        "x": 602,
+        "x": 782,
         "y": 214
       },
       "params": {},
@@ -337,8 +287,8 @@
       "id": "pt_trail",
       "defType": "gpu/echo",
       "position": {
-        "x": 3152,
-        "y": 75
+        "x": 4883,
+        "y": 372
       },
       "params": {
         "mode": "trails"
@@ -351,8 +301,8 @@
       "id": "pt_group",
       "defType": "transform/group",
       "position": {
-        "x": 3430,
-        "y": 81
+        "x": 5160,
+        "y": 377
       },
       "params": {
         "slotCount": 3
@@ -363,8 +313,8 @@
       "id": "pt_out",
       "defType": "render/renderer",
       "position": {
-        "x": 3694,
-        "y": 81
+        "x": 5424,
+        "y": 377
       },
       "params": {
         "width": 640,
@@ -386,225 +336,647 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "pt_h1",
+      "defType": "math/math",
+      "position": {
+        "x": 134,
+        "y": 54
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 12.9898
+      },
+      "portValues": {
+        "b": 12.9898
+      },
+      "parentId": "pt_each"
+    },
+    {
+      "id": "pt_h2",
+      "defType": "math/math",
+      "position": {
+        "x": 401,
+        "y": 47
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "pt_each"
+    },
+    {
+      "id": "pt_h3",
+      "defType": "math/math",
+      "position": {
+        "x": 649,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 43758.5453
+      },
+      "portValues": {
+        "b": 43758.5453
+      },
+      "parentId": "pt_each"
+    },
+    {
+      "id": "pt_h4",
+      "defType": "math/math",
+      "position": {
+        "x": 917,
+        "y": 48
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "pt_each"
+    },
+    {
+      "id": "pt_r",
+      "defType": "math/map",
+      "position": {
+        "x": 1208,
+        "y": 132
+      },
+      "params": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 3,
+        "outMax": 8
+      },
+      "portValues": {
+        "inMin": 0,
+        "inMax": 1,
+        "outMin": 3,
+        "outMax": 8
+      },
+      "parentId": "pt_each"
+    },
+    {
+      "id": "pt_t",
+      "defType": "time/seconds",
+      "position": {
+        "x": 27,
+        "y": 141
+      },
+      "params": {}
+    },
+    {
+      "id": "pt_xSpeed",
+      "defType": "math/math",
+      "position": {
+        "x": 245,
+        "y": 45
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 0.9
+      },
+      "portValues": {
+        "b": 0.9
+      }
+    },
+    {
+      "id": "pt_xSin",
+      "defType": "math/math",
+      "position": {
+        "x": 538,
+        "y": 23
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "pt_xAmp",
+      "defType": "math/math",
+      "position": {
+        "x": 1553,
+        "y": 0
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 150
+      },
+      "portValues": {
+        "b": 150
+      }
+    },
+    {
+      "id": "pt_ySpeed",
+      "defType": "math/math",
+      "position": {
+        "x": 245,
+        "y": 193
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 1.4
+      },
+      "portValues": {
+        "b": 1.4
+      }
+    },
+    {
+      "id": "pt_ySin",
+      "defType": "math/math",
+      "position": {
+        "x": 538,
+        "y": 171
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "pt_yAmp",
+      "defType": "math/math",
+      "position": {
+        "x": 1553,
+        "y": 148
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 90
+      },
+      "portValues": {
+        "b": 90
+      }
+    },
+    {
+      "id": "pt_path",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2620,
+        "y": 148
+      },
+      "params": {}
+    },
+    {
+      "id": "pt_seedX",
+      "defType": "math/lerp",
+      "position": {
+        "x": 1588,
+        "y": 808
+      },
+      "params": {
+        "a": -140,
+        "b": 0,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": -140,
+        "b": 0
+      }
+    },
+    {
+      "id": "pt_seedA",
+      "defType": "math/math",
+      "position": {
+        "x": 245,
+        "y": 943
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 2.2
+      },
+      "portValues": {
+        "b": 2.2
+      }
+    },
+    {
+      "id": "pt_seedCos",
+      "defType": "math/math",
+      "position": {
+        "x": 538,
+        "y": 950
+      },
+      "params": {
+        "op": "cos",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "pt_seedY",
+      "defType": "math/math",
+      "position": {
+        "x": 1553,
+        "y": 956
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 50
+      },
+      "portValues": {
+        "b": 50
+      }
+    },
+    {
+      "id": "pt_seeds",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2620,
+        "y": 807
+      },
+      "params": {}
+    },
+    {
+      "id": "pt_hue",
+      "defType": "math/lerp",
+      "position": {
+        "x": 129,
+        "y": 299
+      },
+      "params": {
+        "a": 7.2,
+        "b": 115.2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 7.2,
+        "b": 115.2
+      },
+      "parentId": "pt_marks"
+    },
+    {
+      "id": "pt_col",
+      "defType": "color/color",
+      "position": {
+        "x": 320,
+        "y": 278
+      },
+      "params": {
+        "mode": "hsl",
+        "s": 90,
+        "l": 58,
+        "a": 255
+      },
+      "portValues": {
+        "mode": "hsl",
+        "s": 90,
+        "l": 58,
+        "a": 255
+      },
+      "parentId": "pt_marks"
     }
   ],
   "edges": [
     {
-      "id": "e_pt_dots_pt_each_q",
+      "id": "e_1",
       "source": "pt_dots",
       "target": "pt_each",
       "sourceHandle": "out-points",
       "targetHandle": "in-q"
     },
     {
-      "id": "e_pt_each_pt_r_i",
-      "source": "pt_each",
-      "target": "pt_r",
-      "sourceHandle": "out-__loopvar_index",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_pt_each_pt_dot_pos",
+      "id": "e_2",
       "source": "pt_each",
       "target": "pt_dot",
       "sourceHandle": "out-q",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_pt_r_pt_dot_w",
-      "source": "pt_r",
-      "target": "pt_dot",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_pt_r_pt_dot_h",
-      "source": "pt_r",
-      "target": "pt_dot",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_pt_dotfill_pt_dot_style",
+      "id": "e_3",
       "source": "pt_dotfill",
       "target": "pt_dot",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_pt_dot_pt_each_d",
+      "id": "e_4",
       "source": "pt_dot",
       "target": "pt_each",
       "sourceHandle": "out-shape",
       "targetHandle": "in-d"
     },
     {
-      "id": "e_pt_each_pt_field_s1",
+      "id": "e_5",
       "source": "pt_each",
       "target": "pt_field",
       "sourceHandle": "out-d",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_pt_path_pt_move_by",
-      "source": "pt_path",
-      "target": "pt_move",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-by"
-    },
-    {
-      "id": "e_pt_field_pt_move_layer",
+      "id": "e_6",
       "source": "pt_field",
       "target": "pt_move",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_pt_move_pt_img_layer",
+      "id": "e_7",
       "source": "pt_move",
       "target": "pt_img",
       "sourceHandle": "out-translated",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_pt_ids_pt_seeds_i",
-      "source": "pt_ids",
-      "target": "pt_seeds",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_pt_img_pt_track_image",
+      "id": "e_8",
       "source": "pt_img",
       "target": "pt_track",
       "sourceHandle": "out-image",
       "targetHandle": "in-image"
     },
     {
-      "id": "e_pt_seeds_pt_track_points",
-      "source": "pt_seeds",
-      "target": "pt_track",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-points"
-    },
-    {
-      "id": "e_pt_track_pt_marks_m",
+      "id": "e_9",
       "source": "pt_track",
       "target": "pt_marks",
       "sourceHandle": "out-points",
       "targetHandle": "in-m"
     },
     {
-      "id": "e_pt_track_pt_marks_c",
+      "id": "e_10",
       "source": "pt_track",
       "target": "pt_marks",
       "sourceHandle": "out-confidence",
       "targetHandle": "in-c"
     },
     {
-      "id": "e_pt_marks_pt_col_c",
-      "source": "pt_marks",
-      "target": "pt_col",
-      "sourceHandle": "out-c",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_pt_col_pt_ringst_color",
-      "source": "pt_col",
-      "target": "pt_ringst",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
-    },
-    {
-      "id": "e_pt_ringst_pt_nofill_base",
+      "id": "e_11",
       "source": "pt_ringst",
       "target": "pt_nofill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_pt_marks_pt_ring_pos",
+      "id": "e_12",
       "source": "pt_marks",
       "target": "pt_ring",
       "sourceHandle": "out-m",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_pt_nofill_pt_ring_style",
+      "id": "e_13",
       "source": "pt_nofill",
       "target": "pt_ring",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_pt_col_pt_fill_color",
-      "source": "pt_col",
-      "target": "pt_fill",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
-    },
-    {
-      "id": "e_pt_marks_pt_mid_pos",
+      "id": "e_14",
       "source": "pt_marks",
       "target": "pt_mid",
       "sourceHandle": "out-m",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_pt_fill_pt_mid_style",
+      "id": "e_15",
       "source": "pt_fill",
       "target": "pt_mid",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_pt_ring_pt_marks_k",
+      "id": "e_16",
       "source": "pt_ring",
       "target": "pt_marks",
       "sourceHandle": "out-shape",
       "targetHandle": "in-k"
     },
     {
-      "id": "e_pt_mid_pt_marks_z",
+      "id": "e_17",
       "source": "pt_mid",
       "target": "pt_marks",
       "sourceHandle": "out-shape",
       "targetHandle": "in-z"
     },
     {
-      "id": "e_pt_marks_pt_trail_input",
+      "id": "e_18",
       "source": "pt_marks",
       "target": "pt_trail",
       "sourceHandle": "out-z",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_pt_move_pt_group_s1",
+      "id": "e_19",
       "source": "pt_move",
       "target": "pt_group",
       "sourceHandle": "out-translated",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_pt_trail_pt_group_s2",
+      "id": "e_20",
       "source": "pt_trail",
       "target": "pt_group",
       "sourceHandle": "out-out",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_pt_marks_pt_group_s3",
+      "id": "e_21",
       "source": "pt_marks",
       "target": "pt_group",
       "sourceHandle": "out-k",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_pt_group_pt_out_layers",
+      "id": "e_22",
       "source": "pt_group",
       "target": "pt_out",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_23",
+      "source": "pt_each",
+      "target": "pt_h1",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_24",
+      "source": "pt_h1",
+      "target": "pt_h2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_25",
+      "source": "pt_h2",
+      "target": "pt_h3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_26",
+      "source": "pt_h3",
+      "target": "pt_h4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_27",
+      "source": "pt_h4",
+      "target": "pt_r",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_28",
+      "source": "pt_r",
+      "target": "pt_dot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_29",
+      "source": "pt_r",
+      "target": "pt_dot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_30",
+      "source": "pt_t",
+      "target": "pt_xSpeed",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_31",
+      "source": "pt_xSpeed",
+      "target": "pt_xSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_32",
+      "source": "pt_xSin",
+      "target": "pt_xAmp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_33",
+      "source": "pt_t",
+      "target": "pt_ySpeed",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_34",
+      "source": "pt_ySpeed",
+      "target": "pt_ySin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_35",
+      "source": "pt_ySin",
+      "target": "pt_yAmp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_36",
+      "source": "pt_xAmp",
+      "target": "pt_path",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_37",
+      "source": "pt_yAmp",
+      "target": "pt_path",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_38",
+      "source": "pt_path",
+      "target": "pt_move",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_39",
+      "source": "pt_ids",
+      "target": "pt_seedX",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_40",
+      "source": "pt_ids",
+      "target": "pt_seedA",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_41",
+      "source": "pt_seedA",
+      "target": "pt_seedCos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_42",
+      "source": "pt_seedCos",
+      "target": "pt_seedY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_43",
+      "source": "pt_seedX",
+      "target": "pt_seeds",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_44",
+      "source": "pt_seedY",
+      "target": "pt_seeds",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_45",
+      "source": "pt_seeds",
+      "target": "pt_track",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_46",
+      "source": "pt_marks",
+      "target": "pt_hue",
+      "sourceHandle": "out-c",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_47",
+      "source": "pt_hue",
+      "target": "pt_col",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_48",
+      "source": "pt_col",
+      "target": "pt_ringst",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_49",
+      "source": "pt_col",
+      "target": "pt_fill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
     }
   ]
 }

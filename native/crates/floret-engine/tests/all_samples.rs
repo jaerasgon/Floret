@@ -197,6 +197,22 @@ const NO_FORMULA_SAMPLES: &[&str] = &[
     "play-voronoi-editor",
     "sound-music-box",
     "sound-step-sequencer",
+    "sound-keyboard-synth",
+    "sound-hand-theremin",
+    "sound-mic-bloom",
+    "rose-curve",
+    "morph-tunnel",
+    "number-counters",
+    "echo-trails",
+    "layout-bloom",
+    "neon-orbits",
+    "point-tracker",
+    "shader-time-smear",
+    "camera-slit-scan",
+    "kinetic-type",
+    "plexus-colours",
+    "topographic",
+    "trim-write-on",
 ];
 
 /// The ids of a patch's Expression nodes.

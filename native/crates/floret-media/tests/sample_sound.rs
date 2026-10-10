@@ -269,3 +269,136 @@ fn mic_bloom_plays_its_demo_and_listens_to_the_microphone() {
         rms(&heard[PER_TICK * 30..])
     );
 }
+
+/// A performance: how many frames, and what the player does on each.
+type Performance = (usize, fn(usize) -> Play);
+
+/// Paint the top row, scatter a random tune, paint a column, clear. The
+/// mouse moves over cell centres: a point exactly on a border between two
+/// cells may count for either.
+fn sequencer_play(f: usize) -> Play {
+    let x = -270.0 + (f.saturating_sub(10) / 4) as f64 * 36.0;
+    match f {
+        10..=50 => Play {
+            mouse: (x.min(270.0), -156.0),
+            pressed: true,
+            ..Play::default()
+        },
+        60 => Play {
+            keys: vec!["r"],
+            ..Play::default()
+        },
+        200..=240 => Play {
+            mouse: (54.0, -156.0 + (f - 200) as f64 * 7.0),
+            pressed: true,
+            ..Play::default()
+        },
+        330 => Play {
+            keys: vec!["c"],
+            ..Play::default()
+        },
+        _ => Play {
+            mouse: (0.0, 300.0),
+            ..Play::default()
+        },
+    }
+}
+
+/// Clear the disc, add pins round it, take one out, compose a new tune.
+fn music_box_play(f: usize) -> Play {
+    let click = |x: f64, y: f64| Play {
+        mouse: (x, y),
+        pressed: true,
+        ..Play::default()
+    };
+    match f {
+        5 => Play {
+            keys: vec!["c"],
+            ..Play::default()
+        },
+        20 | 21 => click(0.0, -120.0),
+        35 | 36 => click(110.0, 40.0),
+        50 | 51 => click(-90.0, 90.0),
+        65 | 66 => click(-140.0, -60.0),
+        80 | 81 => click(0.0, -120.0),
+        400 => Play {
+            keys: vec!["n"],
+            ..Play::default()
+        },
+        _ => Play {
+            mouse: (300.0, 300.0),
+            ..Play::default()
+        },
+    }
+}
+
+/// Keys, a chord change while held, clicks high and low.
+fn midi_garden_play(f: usize) -> Play {
+    let keys = match f {
+        20..=50 => vec!["d"],
+        51..=70 => vec!["d", "g"],
+        150..=160 => vec!["k"],
+        _ => vec![],
+    };
+    Play {
+        keys,
+        pressed: (90..120).contains(&f) || (200..215).contains(&f),
+        mouse: if f < 180 {
+            (100.0, -100.0)
+        } else {
+            (-80.0, 250.0)
+        },
+    }
+}
+
+/// `FLORET_SAMPLES_BEFORE=<dir> cargo test -p floret-media --test
+/// sample_sound -- --ignored`: the sound samples rebuilt from visual nodes
+/// (no Expression) make the same sound as their copies in `<dir>`, sample
+/// for sample, idle and played.
+#[test]
+#[ignore = "needs FLORET_SAMPLES_BEFORE"]
+fn rebuilt_samples_sound_as_before() {
+    let Some(dir) = std::env::var_os("FLORET_SAMPLES_BEFORE") else {
+        eprintln!("FLORET_SAMPLES_BEFORE not set: skipping");
+        return;
+    };
+    let plays: [(&str, Performance); 3] = [
+        ("sound-step-sequencer", (420, sequencer_play)),
+        ("sound-music-box", (600, music_box_play)),
+        ("play-midi-garden", (300, midi_garden_play)),
+    ];
+    let mut failures = Vec::new();
+    for (id, (frames, play)) in plays {
+        let before =
+            std::fs::read_to_string(std::path::Path::new(&dir).join(format!("{id}.flora")))
+                .expect("the old sample");
+        let after = sample_text(id);
+        for (how, play) in [
+            ("idle", (|_| Play::default()) as fn(usize) -> Play),
+            ("played", play),
+        ] {
+            let heard = |text: &str| {
+                let mut engine = Engine::load(text).expect("sample loads");
+                let sys = Arc::new(AudioSystem::offline(SR));
+                engine.set_audio(Some(sys.clone()));
+                perform(&mut engine, &sys, frames, play)
+            };
+            let (a, b) = (heard(&before), heard(&after));
+            let worst = a
+                .iter()
+                .zip(&b)
+                .map(|(x, y)| (x - y).abs())
+                .fold(0.0f32, f32::max);
+            eprintln!(
+                "{id} {how}: {} samples, rms {:.4} → {:.4}, largest difference {worst:e}",
+                a.len(),
+                rms(&a),
+                rms(&b)
+            );
+            if a.len() != b.len() || worst > 1e-5 {
+                failures.push(format!("{id} {how}: sounds different (by up to {worst:e})"));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}

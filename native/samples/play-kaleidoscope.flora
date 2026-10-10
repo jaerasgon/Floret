@@ -16,7 +16,7 @@
         "y": -304
       },
       "params": {
-        "text": "Kaleidoscope Toy\n\nA real kaleidoscope: loose beads tumbling in a round chamber, seen through mirrors. Drag sideways to turn the tube — gravity turns with it and the beads slide and tumble — and beads trickle in where you press. Keys 3–9 set the number of mirrors, C empties the chamber. Left alone it turns slowly by itself.\n\nHow it works: an Emitter's beads live in a World whose gravity points 'down the tube' (From Angle of the turn) and whose inverted Circle collider keeps them in the chamber. Symmetry in kaleidoscope mode mirrors that layer into the wedges, turned with the tube; a Mask rounds the view off and Effect bloom makes the glass glow.",
+        "text": "Kaleidoscope Toy\n\nA real kaleidoscope: loose beads tumbling in a round chamber, seen through mirrors. Drag sideways to turn the tube — gravity turns with it and the beads slide and tumble — and beads trickle in where you press. Keys 3–9 set the number of mirrors, C empties the chamber. Left alone it turns slowly by itself.\n\nHow it works: an Emitter's beads live in a World whose gravity points 'down the tube' (a vector rotated by the Turn) and whose inverted Circle collider keeps them in the chamber. Symmetry in kaleidoscope mode mirrors that layer into the wedges, turned with the tube; a Mask rounds the view off and Effect bloom makes the glass glow.",
         "width": 460,
         "height": 240
       }
@@ -25,8 +25,8 @@
       "id": "kt_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 37,
-        "y": 273
+        "x": 0,
+        "y": 87
       },
       "params": {}
     },
@@ -34,8 +34,8 @@
       "id": "kt_mpos",
       "defType": "vec2/make",
       "position": {
-        "x": 344,
-        "y": 290
+        "x": 233,
+        "y": 126
       },
       "params": {}
     },
@@ -43,8 +43,8 @@
       "id": "kt_time",
       "defType": "time/seconds",
       "position": {
-        "x": 1516,
-        "y": 731
+        "x": 234,
+        "y": 252
       },
       "params": {}
     },
@@ -52,132 +52,98 @@
       "id": "kt_dt",
       "defType": "time/delta",
       "position": {
-        "x": 344,
-        "y": 668
+        "x": 353,
+        "y": 378
       },
-      "params": {}
+      "params": {},
+      "parentId": "kt_turning",
+      "portValues": {
+        "max": 0.1
+      }
     },
     {
       "id": "kt_frame",
       "defType": "time/frame",
       "position": {
-        "x": 38,
-        "y": 38
+        "x": 206,
+        "y": 393
       },
-      "params": {}
+      "params": {},
+      "parentId": "kt_beadSource"
     },
     {
       "id": "kt_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 0,
-        "y": 813
+        "x": 128,
+        "y": 175
       },
       "params": {
         "mode": "keys"
       },
       "portValues": {
         "keys": "3456789c"
-      }
+      },
+      "parentId": "kt_keys"
     },
     {
       "id": "kt_mirrors",
       "defType": "state/value",
       "position": {
-        "x": 41,
-        "y": 1027
+        "x": 1004,
+        "y": 415
       },
       "params": {},
       "portValues": {
         "init": 6
-      }
-    },
-    {
-      "id": "kt_mirrorsNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 303,
-        "y": 936
       },
-      "params": {
-        "expr": "hit && k >= 0 && k < 7 ? k + 3 : n"
-      }
-    },
-    {
-      "id": "kt_clear",
-      "defType": "math/expression",
-      "position": {
-        "x": 303,
-        "y": 772
-      },
-      "params": {
-        "expr": "hit && k == 7"
-      }
+      "parentId": "kt_keys"
     },
     {
       "id": "kt_prevX",
       "defType": "state/value",
       "position": {
-        "x": 343,
-        "y": 164
+        "x": 128,
+        "y": 300
       },
       "params": {},
       "portValues": {
         "init": 0
-      }
+      },
+      "parentId": "kt_turning"
     },
     {
       "id": "kt_wasPressed",
       "defType": "state/value",
       "position": {
-        "x": 343,
-        "y": 542
+        "x": 128,
+        "y": 152
       },
       "params": {},
       "portValues": {
         "init": false
-      }
+      },
+      "parentId": "kt_turning"
     },
     {
       "id": "kt_turn",
       "defType": "state/value",
       "position": {
-        "x": 343,
-        "y": 416
+        "x": 874,
+        "y": 40
       },
       "params": {},
       "portValues": {
         "init": 0
-      }
-    },
-    {
-      "id": "kt_turnNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 619,
-        "y": 334
       },
-      "params": {
-        "expr": "a + (p && was ? (x - px) * 0.012 : min(d, 0.1) * 0.18)"
-      }
-    },
-    {
-      "id": "kt_down",
-      "defType": "math/expression",
-      "position": {
-        "x": 913,
-        "y": 317
-      },
-      "params": {
-        "expr": "vec2(-sin(a), cos(a)) * 520"
-      }
+      "parentId": "kt_turning"
     },
     {
       "id": "kt_chamber",
       "defType": "collider/circle",
       "position": {
-        "x": 929,
-        "y": 459
+        "x": 150,
+        "y": 426
       },
       "params": {
         "mode": "bounce",
@@ -186,26 +152,28 @@
       "portValues": {
         "radius": 292,
         "restitution": 0.45
-      }
+      },
+      "parentId": "kt_chamberWorld"
     },
     {
       "id": "kt_world",
       "defType": "physics/world",
       "position": {
-        "x": 1201,
-        "y": 348
+        "x": 422,
+        "y": 276
       },
       "params": {},
       "portValues": {
         "drag": 0.9
-      }
+      },
+      "parentId": "kt_chamberWorld"
     },
     {
       "id": "kt_killAll",
       "defType": "particles/bounds",
       "position": {
-        "x": 935,
-        "y": 115
+        "x": 156,
+        "y": 108
       },
       "params": {
         "mode": "kill"
@@ -215,76 +183,35 @@
           "x": 1,
           "y": 1
         }
-      }
+      },
+      "parentId": "kt_chamberWorld"
     },
     {
       "id": "kt_emptyWorld",
       "defType": "physics/world",
       "position": {
-        "x": 1189,
-        "y": 80
+        "x": 410,
+        "y": 40
       },
-      "params": {}
+      "params": {},
+      "parentId": "kt_chamberWorld"
     },
     {
       "id": "kt_useWorld",
       "defType": "logic/select",
       "position": {
-        "x": 1506,
-        "y": 277
+        "x": 674,
+        "y": 52
       },
-      "params": {}
-    },
-    {
-      "id": "kt_dropAt",
-      "defType": "math/expression",
-      "position": {
-        "x": 619,
-        "y": 159
-      },
-      "params": {
-        "expr": "p ? m : vec2(0, 0) + vec2(sin(t * 3), cos(t * 2)) * 150.0"
-      }
-    },
-    {
-      "id": "kt_rate",
-      "defType": "math/expression",
-      "position": {
-        "x": 303,
-        "y": 0
-      },
-      "params": {
-        "expr": "f < 45 ? 260 : (p ? 24 : 0)"
-      }
-    },
-    {
-      "id": "kt_beadCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 1474,
-        "y": 425
-      },
-      "params": {
-        "expr": "hsl(fract(0.13 * floor(t * 7) + 0.07 * sin(t)), 0.85, 0.55 + 0.15 * sin(t * 11))"
-      }
-    },
-    {
-      "id": "kt_beadSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 1474,
-        "y": 589
-      },
-      "params": {
-        "expr": "10 + 14 * fract(sin(t * 91.7) * 4375.85)"
-      }
+      "params": {},
+      "parentId": "kt_chamberWorld"
     },
     {
       "id": "kt_beads",
       "defType": "particles/emitter",
       "position": {
-        "x": 1767,
-        "y": 280
+        "x": 749,
+        "y": 102
       },
       "params": {
         "maxCount": 110,
@@ -304,8 +231,8 @@
       "id": "kt_beadStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 1780,
-        "y": 110
+        "x": 139,
+        "y": 62
       },
       "params": {},
       "portValues": {
@@ -316,105 +243,114 @@
           "a": 0.5
         },
         "width": 1
-      }
+      },
+      "parentId": "kt_view"
     },
     {
       "id": "kt_beadLook",
       "defType": "particles/render-as",
       "position": {
-        "x": 2057,
-        "y": 131
+        "x": 397,
+        "y": 40
       },
-      "params": {}
+      "params": {},
+      "parentId": "kt_view"
     },
     {
       "id": "kt_shards",
       "defType": "particles/render-as",
       "position": {
-        "x": 2057,
-        "y": 345
+        "x": 138,
+        "y": 232
       },
       "params": {
         "template": "rect"
-      }
+      },
+      "parentId": "kt_view"
     },
     {
       "id": "kt_shardTurn",
       "defType": "transform/rotate",
       "position": {
-        "x": 2310,
-        "y": 308
+        "x": 425,
+        "y": 314
       },
-      "params": {}
+      "params": {},
+      "parentId": "kt_view"
     },
     {
       "id": "kt_shardScale",
       "defType": "transform/scale",
       "position": {
-        "x": 2507,
-        "y": 295
+        "x": 654,
+        "y": 228
       },
       "params": {},
       "portValues": {
         "sx": 0.55,
         "sy": 0.55
-      }
+      },
+      "parentId": "kt_view"
     },
     {
       "id": "kt_glass",
       "defType": "transform/group",
       "position": {
-        "x": 2714,
-        "y": 293
+        "x": 865,
+        "y": 165
       },
       "params": {
         "slotCount": 2
-      }
+      },
+      "parentId": "kt_view"
     },
     {
       "id": "kt_mirrored",
       "defType": "transform/symmetry",
       "position": {
-        "x": 2999,
-        "y": 413
+        "x": 1142,
+        "y": 232
       },
       "params": {
         "mode": "kaleidoscope"
       },
       "portValues": {
         "clip": true
-      }
+      },
+      "parentId": "kt_view"
     },
     {
       "id": "kt_lens",
       "defType": "draw/ellipse",
       "position": {
-        "x": 3038,
-        "y": 627
+        "x": 1181,
+        "y": 446
       },
       "params": {},
       "portValues": {
         "w": 600,
         "h": 600
-      }
+      },
+      "parentId": "kt_view"
     },
     {
       "id": "kt_round",
       "defType": "transform/mask",
       "position": {
-        "x": 3300,
-        "y": 506
+        "x": 1440,
+        "y": 303
       },
       "params": {
         "mode": "alpha"
-      }
+      },
+      "parentId": "kt_view"
     },
     {
       "id": "kt_bloom",
       "defType": "gpu/effect",
       "position": {
-        "x": 3572,
-        "y": 530
+        "x": 1706,
+        "y": 278
       },
       "params": {
         "mode": "bloom"
@@ -423,14 +359,15 @@
         "threshold": 0.45,
         "radius": 18,
         "intensity": 0.9
-      }
+      },
+      "parentId": "kt_view"
     },
     {
       "id": "kt_rimStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 3020,
-        "y": 819
+        "x": 139,
+        "y": 652
       },
       "params": {},
       "portValues": {
@@ -441,49 +378,53 @@
           "a": 0.8
         },
         "width": 6
-      }
+      },
+      "parentId": "kt_view"
     },
     {
       "id": "kt_rimNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 3340,
-        "y": 813
+        "x": 427,
+        "y": 652
       },
-      "params": {}
+      "params": {},
+      "parentId": "kt_view"
     },
     {
       "id": "kt_rim",
       "defType": "draw/ellipse",
       "position": {
-        "x": 3602,
-        "y": 722
+        "x": 651,
+        "y": 568
       },
       "params": {},
       "portValues": {
         "w": 606,
         "h": 606
-      }
+      },
+      "parentId": "kt_view"
     },
     {
       "id": "kt_mirrorText",
       "defType": "string/format-number",
       "position": {
-        "x": 627,
-        "y": 981
+        "x": 128,
+        "y": 40
       },
       "params": {},
       "portValues": {
         "decimals": 0,
         "suffix": " mirrors   ·   drag to turn & drop beads   ·   3–9 · C"
-      }
+      },
+      "parentId": "kt_statusLine"
     },
     {
       "id": "kt_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 924,
-        "y": 1086
+        "x": 375,
+        "y": 166
       },
       "params": {},
       "portValues": {
@@ -493,23 +434,25 @@
           "b": 0.7529411764705882,
           "a": 0.55
         }
-      }
+      },
+      "parentId": "kt_statusLine"
     },
     {
       "id": "kt_statusStr",
       "defType": "string/concat",
       "position": {
-        "x": 949,
-        "y": 960
+        "x": 400,
+        "y": 40
       },
-      "params": {}
+      "params": {},
+      "parentId": "kt_statusLine"
     },
     {
       "id": "kt_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 1215,
-        "y": 968
+        "x": 620,
+        "y": 59
       },
       "params": {
         "size": 12,
@@ -520,14 +463,15 @@
           "x": 0,
           "y": 314.0
         }
-      }
+      },
+      "parentId": "kt_statusLine"
     },
     {
       "id": "kt_scene",
       "defType": "transform/group",
       "position": {
-        "x": 3863,
-        "y": 707
+        "x": 1302,
+        "y": 245
       },
       "params": {
         "slotCount": 3
@@ -537,8 +481,8 @@
       "id": "kt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 4127,
-        "y": 706
+        "x": 1566,
+        "y": 245
       },
       "params": {
         "width": 640,
@@ -552,6 +496,985 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "kt_keyFrom",
+      "defType": "logic/compare",
+      "position": {
+        "x": 419,
+        "y": 40
+      },
+      "params": {
+        "op": "greater-equal"
+      },
+      "portValues": {
+        "b": 0
+      },
+      "parentId": "kt_keys"
+    },
+    {
+      "id": "kt_keyTo",
+      "defType": "logic/compare",
+      "position": {
+        "x": 419,
+        "y": 188
+      },
+      "params": {
+        "op": "less"
+      },
+      "portValues": {
+        "b": 7
+      },
+      "parentId": "kt_keys"
+    },
+    {
+      "id": "kt_isDigit",
+      "defType": "logic/logic",
+      "position": {
+        "x": 709,
+        "y": 108
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "kt_keys"
+    },
+    {
+      "id": "kt_setMirrors",
+      "defType": "logic/logic",
+      "position": {
+        "x": 978,
+        "y": 119
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "kt_keys"
+    },
+    {
+      "id": "kt_keyMirrors",
+      "defType": "math/math",
+      "position": {
+        "x": 964,
+        "y": 267
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 3
+      },
+      "parentId": "kt_keys"
+    },
+    {
+      "id": "kt_mirrorsNext",
+      "defType": "logic/select",
+      "position": {
+        "x": 1246,
+        "y": 245
+      },
+      "params": {},
+      "parentId": "kt_keys"
+    },
+    {
+      "id": "kt_clear",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 428,
+        "y": 382
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 7
+      },
+      "parentId": "kt_keys"
+    },
+    {
+      "id": "kt_turning",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 212,
+        "y": 0
+      },
+      "params": {
+        "label": "Turn",
+        "width": 1354,
+        "height": 628
+      },
+      "ports": [
+        {
+          "id": "pressed",
+          "name": "pressed",
+          "type": "boolean",
+          "direction": "input",
+          "y": 128
+        },
+        {
+          "id": "x",
+          "name": "x",
+          "type": "number",
+          "direction": "input",
+          "y": 276
+        },
+        {
+          "id": "turn",
+          "name": "turn",
+          "type": "number",
+          "direction": "output",
+          "y": 109
+        }
+      ],
+      "width": 1354,
+      "height": 628
+    },
+    {
+      "id": "kt_turnNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 498
+      },
+      "params": {
+        "text": "While the button is held the turn follows the mouse's sideways moves (0.012 rad a pixel); otherwise it turns by itself at 0.18 rad a second.",
+        "width": 280,
+        "height": 90
+      },
+      "parentId": "kt_turning"
+    },
+    {
+      "id": "kt_dragging",
+      "defType": "logic/logic",
+      "position": {
+        "x": 329,
+        "y": 82
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "kt_turning"
+    },
+    {
+      "id": "kt_moved",
+      "defType": "math/math",
+      "position": {
+        "x": 315,
+        "y": 230
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_turning"
+    },
+    {
+      "id": "kt_byHand",
+      "defType": "math/math",
+      "position": {
+        "x": 584,
+        "y": 176
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_turning",
+      "portValues": {
+        "b": 0.012
+      }
+    },
+    {
+      "id": "kt_bySelf",
+      "defType": "math/math",
+      "position": {
+        "x": 584,
+        "y": 324
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_turning",
+      "portValues": {
+        "b": 0.18
+      }
+    },
+    {
+      "id": "kt_turnStep",
+      "defType": "logic/select",
+      "position": {
+        "x": 865,
+        "y": 166
+      },
+      "params": {},
+      "parentId": "kt_turning"
+    },
+    {
+      "id": "kt_turnNext",
+      "defType": "math/math",
+      "position": {
+        "x": 1074,
+        "y": 71
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_turning"
+    },
+    {
+      "id": "kt_down",
+      "defType": "vec2/math",
+      "position": {
+        "x": 128,
+        "y": 278
+      },
+      "params": {
+        "op": "rotate"
+      },
+      "portValues": {
+        "v": {
+          "x": 0,
+          "y": 520
+        }
+      },
+      "parentId": "kt_chamberWorld"
+    },
+    {
+      "id": "kt_beadSource",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 495,
+        "y": 201
+      },
+      "params": {
+        "label": "Beads",
+        "width": 2080,
+        "height": 1391
+      },
+      "ports": [
+        {
+          "id": "pressed",
+          "name": "pressed",
+          "type": "boolean",
+          "direction": "input",
+          "y": 205
+        },
+        {
+          "id": "mouse",
+          "name": "mouse",
+          "type": "vec2",
+          "direction": "input",
+          "y": 133
+        },
+        {
+          "id": "time",
+          "name": "time",
+          "type": "number",
+          "direction": "input",
+          "y": 686
+        },
+        {
+          "id": "at",
+          "name": "at",
+          "type": "vec2",
+          "direction": "output",
+          "y": 133
+        },
+        {
+          "id": "rate",
+          "name": "rate",
+          "type": "number",
+          "direction": "output",
+          "y": 402
+        },
+        {
+          "id": "color",
+          "name": "color",
+          "type": "color",
+          "direction": "output",
+          "y": 602
+        },
+        {
+          "id": "size",
+          "name": "size",
+          "type": "number",
+          "direction": "output",
+          "y": 864
+        }
+      ],
+      "width": 2080,
+      "height": 1391
+    },
+    {
+      "id": "kt_beadsNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 168,
+        "y": 1231
+      },
+      "params": {
+        "text": "A burst of 260 beads a second for the first 45 frames, then 24 a second where you press. Left alone they drop in on a slow Lissajous path. Colours step round the wheel seven times a second with a little drift; sizes come from a hash of the time.",
+        "width": 300,
+        "height": 120
+      },
+      "parentId": "kt_beadSource"
+    },
+    {
+      "id": "kt_wanderXT",
+      "defType": "math/math",
+      "position": {
+        "x": 168,
+        "y": 97
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "b": 3
+      }
+    },
+    {
+      "id": "kt_wanderX",
+      "defType": "math/math",
+      "position": {
+        "x": 451,
+        "y": 95
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "kt_beadSource"
+    },
+    {
+      "id": "kt_wanderYT",
+      "defType": "math/math",
+      "position": {
+        "x": 168,
+        "y": 245
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "kt_wanderY",
+      "defType": "math/math",
+      "position": {
+        "x": 451,
+        "y": 221
+      },
+      "params": {
+        "op": "cos"
+      },
+      "parentId": "kt_beadSource"
+    },
+    {
+      "id": "kt_wanderDir",
+      "defType": "vec2/make",
+      "position": {
+        "x": 762,
+        "y": 142
+      },
+      "params": {},
+      "parentId": "kt_beadSource"
+    },
+    {
+      "id": "kt_wander",
+      "defType": "vec2/math",
+      "position": {
+        "x": 996,
+        "y": 113
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "s": 150.0
+      }
+    },
+    {
+      "id": "kt_dropAt",
+      "defType": "logic/select",
+      "position": {
+        "x": 1307,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "kt_beadSource"
+    },
+    {
+      "id": "kt_burst",
+      "defType": "logic/compare",
+      "position": {
+        "x": 435,
+        "y": 385
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "b": 45
+      }
+    },
+    {
+      "id": "kt_trickle",
+      "defType": "logic/select",
+      "position": {
+        "x": 199,
+        "y": 497
+      },
+      "params": {},
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "a": 24,
+        "b": 0
+      }
+    },
+    {
+      "id": "kt_rate",
+      "defType": "logic/select",
+      "position": {
+        "x": 752,
+        "y": 404
+      },
+      "params": {},
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "a": 260
+      }
+    },
+    {
+      "id": "kt_hueStepT",
+      "defType": "math/math",
+      "position": {
+        "x": 168,
+        "y": 645
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "b": 7
+      }
+    },
+    {
+      "id": "kt_hueStepN",
+      "defType": "math/math",
+      "position": {
+        "x": 451,
+        "y": 619
+      },
+      "params": {
+        "op": "floor"
+      },
+      "parentId": "kt_beadSource"
+    },
+    {
+      "id": "kt_hueSteps",
+      "defType": "math/math",
+      "position": {
+        "x": 721,
+        "y": 573
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "a": 0.13
+      }
+    },
+    {
+      "id": "kt_hueDriftS",
+      "defType": "math/math",
+      "position": {
+        "x": 177,
+        "y": 793
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "kt_beadSource"
+    },
+    {
+      "id": "kt_hueDrift",
+      "defType": "math/math",
+      "position": {
+        "x": 721,
+        "y": 721
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "a": 0.07
+      }
+    },
+    {
+      "id": "kt_hueSum",
+      "defType": "math/math",
+      "position": {
+        "x": 1002,
+        "y": 606
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource"
+    },
+    {
+      "id": "kt_hueTurn",
+      "defType": "math/math",
+      "position": {
+        "x": 1285,
+        "y": 574
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "kt_beadSource"
+    },
+    {
+      "id": "kt_hue",
+      "defType": "math/math",
+      "position": {
+        "x": 1543,
+        "y": 544
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "b": 360
+      }
+    },
+    {
+      "id": "kt_flickerT",
+      "defType": "math/math",
+      "position": {
+        "x": 168,
+        "y": 919
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "b": 11
+      }
+    },
+    {
+      "id": "kt_flickerS",
+      "defType": "math/math",
+      "position": {
+        "x": 730,
+        "y": 869
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "kt_beadSource"
+    },
+    {
+      "id": "kt_flicker",
+      "defType": "math/math",
+      "position": {
+        "x": 1002,
+        "y": 800
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "a": 0.15
+      }
+    },
+    {
+      "id": "kt_light",
+      "defType": "math/math",
+      "position": {
+        "x": 1276,
+        "y": 733
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "a": 0.55
+      }
+    },
+    {
+      "id": "kt_lightPct",
+      "defType": "math/math",
+      "position": {
+        "x": 1543,
+        "y": 692
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "b": 100
+      }
+    },
+    {
+      "id": "kt_beadCol",
+      "defType": "color/color",
+      "position": {
+        "x": 1815,
+        "y": 568
+      },
+      "params": {
+        "mode": "hsl"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "s": 85.0,
+        "a": 255
+      }
+    },
+    {
+      "id": "kt_sizeT",
+      "defType": "math/math",
+      "position": {
+        "x": 168,
+        "y": 1067
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "b": 91.7
+      }
+    },
+    {
+      "id": "kt_sizeSin",
+      "defType": "math/math",
+      "position": {
+        "x": 451,
+        "y": 1030
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "kt_beadSource"
+    },
+    {
+      "id": "kt_sizeScale",
+      "defType": "math/math",
+      "position": {
+        "x": 721,
+        "y": 995
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "b": 4375.85
+      }
+    },
+    {
+      "id": "kt_sizeHash",
+      "defType": "math/math",
+      "position": {
+        "x": 1011,
+        "y": 955
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "kt_beadSource"
+    },
+    {
+      "id": "kt_sizeVar",
+      "defType": "math/math",
+      "position": {
+        "x": 1276,
+        "y": 896
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "a": 14
+      }
+    },
+    {
+      "id": "kt_beadSize",
+      "defType": "math/math",
+      "position": {
+        "x": 1543,
+        "y": 840
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "kt_beadSource",
+      "portValues": {
+        "a": 10
+      }
+    },
+    {
+      "id": "kt_keys",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 211,
+        "y": 378
+      },
+      "params": {
+        "label": "Keys",
+        "width": 1463,
+        "height": 735
+      },
+      "ports": [
+        {
+          "id": "mirrors",
+          "name": "mirrors",
+          "type": "number",
+          "direction": "output",
+          "y": 282
+        },
+        {
+          "id": "clear",
+          "name": "clear",
+          "type": "boolean",
+          "direction": "output",
+          "y": 517
+        }
+      ],
+      "width": 1463,
+      "height": 735
+    },
+    {
+      "id": "kt_keysNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 595
+      },
+      "params": {
+        "text": "A digit key 3–9 sets the number of mirrors (kept in a State); C empties the chamber.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "kt_keys"
+    },
+    {
+      "id": "kt_chamberWorld",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 486,
+        "y": 75
+      },
+      "params": {
+        "label": "Chamber",
+        "width": 891,
+        "height": 774
+      },
+      "ports": [
+        {
+          "id": "clear",
+          "name": "clear",
+          "type": "boolean",
+          "direction": "input",
+          "y": 18
+        },
+        {
+          "id": "turn",
+          "name": "turn",
+          "type": "number",
+          "direction": "input",
+          "y": 359
+        },
+        {
+          "id": "world",
+          "name": "world",
+          "type": "world",
+          "direction": "output",
+          "y": 89
+        }
+      ],
+      "width": 891,
+      "height": 774
+    },
+    {
+      "id": "kt_chamberWorldNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 634
+      },
+      "params": {
+        "text": "The beads' World: gravity 520 px/s² 'down the tube' (rotated by the turn) and an inverted Circle collider for the round chamber. Emptying swaps in a World that removes every bead.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "kt_chamberWorld"
+    },
+    {
+      "id": "kt_view",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1047,
+        "y": 194
+      },
+      "params": {
+        "label": "Mirrors",
+        "width": 1987,
+        "height": 978
+      },
+      "ports": [
+        {
+          "id": "particles",
+          "name": "particles",
+          "type": "particle",
+          "direction": "input",
+          "y": 139
+        },
+        {
+          "id": "mirrors",
+          "name": "mirrors",
+          "type": "number",
+          "direction": "input",
+          "y": 422
+        },
+        {
+          "id": "turn",
+          "name": "turn",
+          "type": "number",
+          "direction": "input",
+          "y": 470
+        },
+        {
+          "id": "glass",
+          "name": "glass",
+          "type": "layer",
+          "direction": "output",
+          "y": 313
+        },
+        {
+          "id": "rim",
+          "name": "rim",
+          "type": "layer",
+          "direction": "output",
+          "y": 602
+        }
+      ],
+      "width": 1987,
+      "height": 978
+    },
+    {
+      "id": "kt_viewNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 138,
+        "y": 838
+      },
+      "params": {
+        "text": "The beads, plus smaller turned shards of them, mirrored into wedges by Symmetry, rounded off by a Mask, glowing (bloom), inside a brass rim.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "kt_view"
+    },
+    {
+      "id": "kt_statusLine",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1049,
+        "y": 390
+      },
+      "params": {
+        "label": "Status",
+        "width": 821,
+        "height": 454
+      },
+      "ports": [
+        {
+          "id": "mirrors",
+          "name": "mirrors",
+          "type": "number",
+          "direction": "input",
+          "y": 99
+        },
+        {
+          "id": "status",
+          "name": "status",
+          "type": "layer",
+          "direction": "output",
+          "y": 96
+        }
+      ],
+      "width": 821,
+      "height": 454
+    },
+    {
+      "id": "kt_statusLineNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 314
+      },
+      "params": {
+        "text": "The number of mirrors and the keys.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "kt_statusLine"
     }
   ],
   "edges": [
@@ -570,125 +1493,6 @@
       "targetHandle": "in-y"
     },
     {
-      "id": "e_3",
-      "source": "kt_kb",
-      "target": "kt_mirrorsNext",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_4",
-      "source": "kt_kb",
-      "target": "kt_mirrorsNext",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_5",
-      "source": "kt_mirrors",
-      "target": "kt_mirrorsNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_6",
-      "source": "kt_mirrorsNext",
-      "target": "kt_mirrors",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_7",
-      "source": "kt_kb",
-      "target": "kt_clear",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_8",
-      "source": "kt_kb",
-      "target": "kt_clear",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_9",
-      "source": "kt_mouse",
-      "target": "kt_prevX",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_10",
-      "source": "kt_mouse",
-      "target": "kt_wasPressed",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_11",
-      "source": "kt_turn",
-      "target": "kt_turnNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_12",
-      "source": "kt_mouse",
-      "target": "kt_turnNext",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_13",
-      "source": "kt_wasPressed",
-      "target": "kt_turnNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-was"
-    },
-    {
-      "id": "e_14",
-      "source": "kt_mouse",
-      "target": "kt_turnNext",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_15",
-      "source": "kt_prevX",
-      "target": "kt_turnNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-px"
-    },
-    {
-      "id": "e_16",
-      "source": "kt_dt",
-      "target": "kt_turnNext",
-      "sourceHandle": "out-dt",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_17",
-      "source": "kt_turnNext",
-      "target": "kt_turn",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_18",
-      "source": "kt_turnNext",
-      "target": "kt_down",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_19",
-      "source": "kt_down",
-      "target": "kt_world",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-gravity"
-    },
-    {
       "id": "e_20",
       "source": "kt_chamber",
       "target": "kt_world",
@@ -701,13 +1505,6 @@
       "target": "kt_emptyWorld",
       "sourceHandle": "out-collider",
       "targetHandle": "in-colliders"
-    },
-    {
-      "id": "e_22",
-      "source": "kt_clear",
-      "target": "kt_useWorld",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cond"
     },
     {
       "id": "e_23",
@@ -724,71 +1521,15 @@
       "targetHandle": "in-b"
     },
     {
-      "id": "e_25",
-      "source": "kt_mouse",
-      "target": "kt_dropAt",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_26",
-      "source": "kt_mpos",
-      "target": "kt_dropAt",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_27",
-      "source": "kt_frame",
-      "target": "kt_rate",
-      "sourceHandle": "out-frame",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_28",
-      "source": "kt_mouse",
-      "target": "kt_rate",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
       "id": "e_29",
-      "source": "kt_useWorld",
+      "source": "kt_chamberWorld",
       "target": "kt_beads",
-      "sourceHandle": "out-selected",
+      "sourceHandle": "out-world",
       "targetHandle": "in-world"
     },
     {
-      "id": "e_30",
-      "source": "kt_dropAt",
-      "target": "kt_beads",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-positions"
-    },
-    {
-      "id": "e_31",
-      "source": "kt_rate",
-      "target": "kt_beads",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-rate"
-    },
-    {
-      "id": "e_32",
-      "source": "kt_beadCol",
-      "target": "kt_beads",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
-    },
-    {
-      "id": "e_33",
-      "source": "kt_beadSize",
-      "target": "kt_beads",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-size"
-    },
-    {
       "id": "e_34",
-      "source": "kt_beads",
+      "source": "kt_view",
       "target": "kt_beadLook",
       "sourceHandle": "out-particles",
       "targetHandle": "in-particles"
@@ -802,17 +1543,10 @@
     },
     {
       "id": "e_36",
-      "source": "kt_beads",
+      "source": "kt_view",
       "target": "kt_shards",
       "sourceHandle": "out-particles",
       "targetHandle": "in-particles"
-    },
-    {
-      "id": "e_37",
-      "source": "kt_turnNext",
-      "target": "kt_shardTurn",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-angle"
     },
     {
       "id": "e_38",
@@ -850,20 +1584,6 @@
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_43",
-      "source": "kt_mirrorsNext",
-      "target": "kt_mirrored",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-count"
-    },
-    {
-      "id": "e_44",
-      "source": "kt_turnNext",
-      "target": "kt_mirrored",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-angle"
-    },
-    {
       "id": "e_45",
       "source": "kt_mirrored",
       "target": "kt_round",
@@ -899,13 +1619,6 @@
       "targetHandle": "in-style"
     },
     {
-      "id": "e_50",
-      "source": "kt_mirrorsNext",
-      "target": "kt_mirrorText",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-value"
-    },
-    {
       "id": "e_51",
       "source": "kt_mirrorText",
       "target": "kt_statusStr",
@@ -928,23 +1641,23 @@
     },
     {
       "id": "e_54",
-      "source": "kt_bloom",
+      "source": "kt_view",
       "target": "kt_scene",
-      "sourceHandle": "out-out",
+      "sourceHandle": "out-glass",
       "targetHandle": "in-s1"
     },
     {
       "id": "e_55",
-      "source": "kt_rim",
+      "source": "kt_view",
       "target": "kt_scene",
-      "sourceHandle": "out-shape",
+      "sourceHandle": "out-rim",
       "targetHandle": "in-s2"
     },
     {
       "id": "e_56",
-      "source": "kt_statusText",
+      "source": "kt_statusLine",
       "target": "kt_scene",
-      "sourceHandle": "out-shape",
+      "sourceHandle": "out-status",
       "targetHandle": "in-s3"
     },
     {
@@ -953,6 +1666,671 @@
       "target": "kt_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_b1_1",
+      "source": "kt_kb",
+      "target": "kt_keyFrom",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_2",
+      "source": "kt_kb",
+      "target": "kt_keyTo",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_3",
+      "source": "kt_keyFrom",
+      "target": "kt_isDigit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_4",
+      "source": "kt_keyTo",
+      "target": "kt_isDigit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_5",
+      "source": "kt_kb",
+      "target": "kt_setMirrors",
+      "sourceHandle": "out-hit",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_6",
+      "source": "kt_isDigit",
+      "target": "kt_setMirrors",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_7",
+      "source": "kt_kb",
+      "target": "kt_keyMirrors",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_8",
+      "source": "kt_setMirrors",
+      "target": "kt_mirrorsNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_9",
+      "source": "kt_keyMirrors",
+      "target": "kt_mirrorsNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_10",
+      "source": "kt_mirrors",
+      "target": "kt_mirrorsNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_11",
+      "source": "kt_mirrorsNext",
+      "target": "kt_mirrors",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_12",
+      "source": "kt_view",
+      "target": "kt_mirrored",
+      "sourceHandle": "out-mirrors",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_b1_13",
+      "source": "kt_statusLine",
+      "target": "kt_mirrorText",
+      "sourceHandle": "out-mirrors",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_b1_14",
+      "source": "kt_kb",
+      "target": "kt_clear",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_15",
+      "source": "kt_chamberWorld",
+      "target": "kt_useWorld",
+      "sourceHandle": "out-clear",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_16",
+      "source": "kt_mouse",
+      "target": "kt_turning",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_b1_17",
+      "source": "kt_mouse",
+      "target": "kt_turning",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_18",
+      "source": "kt_turning",
+      "target": "kt_wasPressed",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_19",
+      "source": "kt_turning",
+      "target": "kt_prevX",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_20",
+      "source": "kt_turning",
+      "target": "kt_dragging",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_21",
+      "source": "kt_wasPressed",
+      "target": "kt_dragging",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_22",
+      "source": "kt_turning",
+      "target": "kt_moved",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_23",
+      "source": "kt_prevX",
+      "target": "kt_moved",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_24",
+      "source": "kt_moved",
+      "target": "kt_byHand",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_25",
+      "source": "kt_dt",
+      "target": "kt_bySelf",
+      "sourceHandle": "out-dt",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_26",
+      "source": "kt_dragging",
+      "target": "kt_turnStep",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_27",
+      "source": "kt_byHand",
+      "target": "kt_turnStep",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_28",
+      "source": "kt_bySelf",
+      "target": "kt_turnStep",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_29",
+      "source": "kt_turn",
+      "target": "kt_turnNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_30",
+      "source": "kt_turnStep",
+      "target": "kt_turnNext",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_31",
+      "source": "kt_turnNext",
+      "target": "kt_turn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_32",
+      "source": "kt_turnNext",
+      "target": "kt_turning",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-turn"
+    },
+    {
+      "id": "e_b1_33",
+      "source": "kt_chamberWorld",
+      "target": "kt_down",
+      "sourceHandle": "out-turn",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_b1_34",
+      "source": "kt_down",
+      "target": "kt_world",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-gravity"
+    },
+    {
+      "id": "e_b1_35",
+      "source": "kt_view",
+      "target": "kt_shardTurn",
+      "sourceHandle": "out-turn",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_b1_36",
+      "source": "kt_view",
+      "target": "kt_mirrored",
+      "sourceHandle": "out-turn",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_b1_37",
+      "source": "kt_mouse",
+      "target": "kt_beadSource",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_b1_38",
+      "source": "kt_mpos",
+      "target": "kt_beadSource",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-mouse"
+    },
+    {
+      "id": "e_b1_39",
+      "source": "kt_time",
+      "target": "kt_beadSource",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_b1_40",
+      "source": "kt_beadSource",
+      "target": "kt_wanderXT",
+      "sourceHandle": "out-time",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_41",
+      "source": "kt_wanderXT",
+      "target": "kt_wanderX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_42",
+      "source": "kt_beadSource",
+      "target": "kt_wanderYT",
+      "sourceHandle": "out-time",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_43",
+      "source": "kt_wanderYT",
+      "target": "kt_wanderY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_44",
+      "source": "kt_wanderX",
+      "target": "kt_wanderDir",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_45",
+      "source": "kt_wanderY",
+      "target": "kt_wanderDir",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_46",
+      "source": "kt_wanderDir",
+      "target": "kt_wander",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_47",
+      "source": "kt_beadSource",
+      "target": "kt_dropAt",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_48",
+      "source": "kt_beadSource",
+      "target": "kt_dropAt",
+      "sourceHandle": "out-mouse",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_49",
+      "source": "kt_wander",
+      "target": "kt_dropAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_50",
+      "source": "kt_frame",
+      "target": "kt_burst",
+      "sourceHandle": "out-frame",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_51",
+      "source": "kt_beadSource",
+      "target": "kt_trickle",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_52",
+      "source": "kt_burst",
+      "target": "kt_rate",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_53",
+      "source": "kt_trickle",
+      "target": "kt_rate",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_54",
+      "source": "kt_beadSource",
+      "target": "kt_hueStepT",
+      "sourceHandle": "out-time",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_55",
+      "source": "kt_hueStepT",
+      "target": "kt_hueStepN",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_56",
+      "source": "kt_hueStepN",
+      "target": "kt_hueSteps",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_57",
+      "source": "kt_beadSource",
+      "target": "kt_hueDriftS",
+      "sourceHandle": "out-time",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_58",
+      "source": "kt_hueDriftS",
+      "target": "kt_hueDrift",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_59",
+      "source": "kt_hueSteps",
+      "target": "kt_hueSum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_60",
+      "source": "kt_hueDrift",
+      "target": "kt_hueSum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_61",
+      "source": "kt_hueSum",
+      "target": "kt_hueTurn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_62",
+      "source": "kt_hueTurn",
+      "target": "kt_hue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_63",
+      "source": "kt_beadSource",
+      "target": "kt_flickerT",
+      "sourceHandle": "out-time",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_64",
+      "source": "kt_flickerT",
+      "target": "kt_flickerS",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_65",
+      "source": "kt_flickerS",
+      "target": "kt_flicker",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_66",
+      "source": "kt_flicker",
+      "target": "kt_light",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_67",
+      "source": "kt_light",
+      "target": "kt_lightPct",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_68",
+      "source": "kt_hue",
+      "target": "kt_beadCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_b1_69",
+      "source": "kt_lightPct",
+      "target": "kt_beadCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_b1_70",
+      "source": "kt_beadSource",
+      "target": "kt_sizeT",
+      "sourceHandle": "out-time",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_71",
+      "source": "kt_sizeT",
+      "target": "kt_sizeSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_72",
+      "source": "kt_sizeSin",
+      "target": "kt_sizeScale",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_73",
+      "source": "kt_sizeScale",
+      "target": "kt_sizeHash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_74",
+      "source": "kt_sizeHash",
+      "target": "kt_sizeVar",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_75",
+      "source": "kt_sizeVar",
+      "target": "kt_beadSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_76",
+      "source": "kt_dropAt",
+      "target": "kt_beadSource",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_b1_77",
+      "source": "kt_rate",
+      "target": "kt_beadSource",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_b1_78",
+      "source": "kt_beadCol",
+      "target": "kt_beadSource",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_b1_79",
+      "source": "kt_beadSize",
+      "target": "kt_beadSource",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-size"
+    },
+    {
+      "id": "e_b1_80",
+      "source": "kt_beadSource",
+      "target": "kt_beads",
+      "sourceHandle": "out-at",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_b1_81",
+      "source": "kt_beadSource",
+      "target": "kt_beads",
+      "sourceHandle": "out-rate",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_b1_82",
+      "source": "kt_beadSource",
+      "target": "kt_beads",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_b1_83",
+      "source": "kt_beadSource",
+      "target": "kt_beads",
+      "sourceHandle": "out-size",
+      "targetHandle": "in-size"
+    },
+    {
+      "id": "e_b1_84",
+      "source": "kt_mirrorsNext",
+      "target": "kt_keys",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-mirrors"
+    },
+    {
+      "id": "e_b1_85",
+      "source": "kt_clear",
+      "target": "kt_keys",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-clear"
+    },
+    {
+      "id": "e_b1_86",
+      "source": "kt_keys",
+      "target": "kt_chamberWorld",
+      "sourceHandle": "out-clear",
+      "targetHandle": "in-clear"
+    },
+    {
+      "id": "e_b1_87",
+      "source": "kt_turning",
+      "target": "kt_chamberWorld",
+      "sourceHandle": "out-turn",
+      "targetHandle": "in-turn"
+    },
+    {
+      "id": "e_b1_88",
+      "source": "kt_useWorld",
+      "target": "kt_chamberWorld",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_b1_89",
+      "source": "kt_beads",
+      "target": "kt_view",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_b1_90",
+      "source": "kt_keys",
+      "target": "kt_view",
+      "sourceHandle": "out-mirrors",
+      "targetHandle": "in-mirrors"
+    },
+    {
+      "id": "e_b1_91",
+      "source": "kt_turning",
+      "target": "kt_view",
+      "sourceHandle": "out-turn",
+      "targetHandle": "in-turn"
+    },
+    {
+      "id": "e_b1_92",
+      "source": "kt_bloom",
+      "target": "kt_view",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-glass"
+    },
+    {
+      "id": "e_b1_93",
+      "source": "kt_rim",
+      "target": "kt_view",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-rim"
+    },
+    {
+      "id": "e_b1_94",
+      "source": "kt_keys",
+      "target": "kt_statusLine",
+      "sourceHandle": "out-mirrors",
+      "targetHandle": "in-mirrors"
+    },
+    {
+      "id": "e_b1_95",
+      "source": "kt_statusText",
+      "target": "kt_statusLine",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-status"
     }
   ]
 }

@@ -530,3 +530,80 @@ or the new mode's absence is the old behaviour); pins recorded in
   exactly. *Missing:* rings of seeds around a centre disc, spirals that
   start off-centre. *Test:* `spread/tests.rs`
   `spiral_and_fibonacci_leave_an_inner_hole`.
+
+## No-code rebuild (agent B1)
+
+Twelve interaction-first samples rebuilt with no Expression node (182
+formulas): play-breakout, sound-music-box, sound-step-sequencer,
+play-voronoi-editor, play-physics-sandbox, play-brush-studio,
+play-kaleidoscope, play-flock-herder, play-reaction-painter,
+play-typing-toy, play-preset-morph, play-midi-garden. Each sample's logic
+sits in labelled subpatches with a note inside (Breakout: Turns — with
+Lives & score nested — Ball, Bricks, HUD; Music Box: Compose, Pins on the
+disc, Edit pins, Plucks, Bells, Comb, Disc; …), so the top level reads
+inputs → subpatches → Group → Renderer. One capability was missing.
+
+### Curve → `laps` (`geometry/curve`, hypotrochoid / epitrochoid)
+
+- **Missing:** Preset Morph's spirograph runs the pen round a *Laps*
+  slider's number of turns (4–37 in its presets) as an open path. Curve
+  always drew exactly one closed period (found from R / r, up to 64
+  turns): the Laps slider would have done nothing, and a partial lap would
+  have been closed with a chord across the figure.
+- **Design:** one optional pin on the two roulette modes, `laps` (0, the
+  default: one closed period, exactly as before). Above 0 the pen runs
+  round that many turns as an open path, `count` even steps with the end
+  not repeated (as closed curves do). Fit, rotation and phase unchanged.
+  Kept to the trochoids, where "how long the pen draws" is the natural
+  control; Lissajous / rose could take it the same way.
+- **Tests:** `geometry/curve.rs`
+  `laps_run_a_trochoid_open_for_that_many_turns`.
+- **Sample:** play-preset-morph (a Curve per layer in the ForEach, its
+  radius set to keep the old size, points wobbled with Vector Math scale).
+
+### Patterns used instead of formulas
+
+- `p && !was` with a State → **Edge** (rising; falling for a release).
+- `hit && k == j ? 1 - s : s` → **Latch** toggled by Keyboard `hits`
+  (Lookup at j); `hit && k == j ? (n + 1) % m : n` → **Counter**, limit wrap.
+- Phases and turns (`a + min(dt, 0.1) * s`, `mod(…, 16)`) → **Integrate**
+  (`maxDt` 0.1, limit wrap); the cell under the mouse → **Hit Test** rects.
+- `c ? x : d ? y : z` → **Switch** first-true, or Selects where the result
+  feeds a single-value pin; constant colours per case sit on the Switch /
+  Select (no ×255 / ÷255).
+- Keep-where over `list ++ [new]` with `index < n` flags → a Switch that
+  takes the longer list only when something was added.
+- `vec2(cos a, sin a) * r` → **From Angle**; `vec2(−sin a, cos a) * g` →
+  Vector Math rotate of (0, g); `q + (r − q) * t` → Lerp (vec2).
+- Damped sines and decays after an event → **Envelope** (boing, decay,
+  fade) with `frequency` / `time` giving the same rates.
+
+### How they were checked
+
+- `sample_play.rs` `rebuilt_samples_play_as_before` (ignored;
+  `FLORET_SAMPLES_BEFORE` = the old files): idle and scripted runs give the
+  renderer the same layers on every frame of 150 and the same last frame.
+  Ten samples match to 1e-11 or better (most exactly). Two decide a corner
+  case differently and are listed in `DECIDED_DIFFERENTLY`: the
+  sequencer's Hit Test gives a mouse exactly on a cell border to the cell
+  before it (the script drags along borders), and Edge doesn't count a
+  button already down on the very first frame as a press (the sandbox
+  script presses on frame 0).
+- `sample_sound.rs` `rebuilt_samples_sound_as_before` (ignored): the
+  sequencer, music box and MIDI garden render the same audio, sample for
+  sample, idle and played.
+- `all_samples.rs` `rebuilt_samples_have_no_formula_nodes` lists the
+  twelve (TODO: every sample once all are rebuilt).
+
+### Notes
+
+- Music Box's lowest tooth stays lit, as before: the old formula compared
+  a missing pluck (null) as 0; Convert (to number) keeps that.
+- Value nodes lift over spreads only from two values up, and an empty
+  spread alone reads as the default (unlike Expression, where an empty
+  input gave an empty result). Where a list can be empty (Music Box with no
+  pins) a Sublist `take` of the list's Count closes the chain, so nothing
+  phantom is drawn or plucked.
+- A spread-kind output (Latch, Integrate, Switch, Hit Test) wired into a
+  State's `next` or another single, non-lifting pin warns and the State
+  doesn't update; use State* (`state/spread`) or Lookup `pick` there.

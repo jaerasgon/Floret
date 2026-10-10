@@ -16,7 +16,7 @@
         "y": -314
       },
       "params": {
-        "text": "Typing Toy\n\nType! Each letter you type drops in with a bounce, a spin and a puff of sparks, then keeps bobbing on a slow wave; the colours run across the line like a rainbow seen through the letters. Backspace deletes, Enter starts a new line, Clear (or 48 letters) starts over. Press Focus on the preview first, so the editor's own shortcuts (Delete, Tab, F …) stay out of the way.\n\nHow it works: Keyboard in `text` mode keeps the typed string. Glyphs splits it into one layer per letter with its position, and a State* remembers the time each letter appeared. A ForEach turns each letter's age into an elastic scale, a fall and a wobble; Mask shows a moving gradient through the letters.",
+        "text": "Typing Toy\n\nType! Each letter you type drops in with a bounce, a spin and a puff of sparks, then keeps bobbing on a slow wave; the colours run across the line like a rainbow seen through the letters. Backspace deletes, Enter starts a new line, Clear (or 48 letters) starts over. Press Focus on the preview first, so the editor's own shortcuts (Delete, Tab, F …) stay out of the way.\n\nHow it works: Keyboard in `text` mode keeps the typed string. Glyphs splits it into one layer per letter with its position, and a State* remembers the time each letter appeared. A ForEach turns each letter's age (now − its birth time) into an elastic scale, a fall (a decay Envelope) and a wobble (a boing Envelope); Mask shows a moving gradient through the letters.",
         "width": 470,
         "height": 250
       }
@@ -25,8 +25,8 @@
       "id": "tt_clearBang",
       "defType": "io/bang",
       "position": {
-        "x": 16,
-        "y": 1284
+        "x": 0,
+        "y": 1064
       },
       "params": {
         "label": "Clear"
@@ -36,8 +36,8 @@
       "id": "tt_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 327,
-        "y": 1262
+        "x": 299,
+        "y": 1042
       },
       "params": {
         "mode": "text"
@@ -50,8 +50,8 @@
       "id": "tt_time",
       "defType": "time/seconds",
       "position": {
-        "x": 58,
-        "y": 991
+        "x": 42,
+        "y": 715
       },
       "params": {}
     },
@@ -59,8 +59,8 @@
       "id": "tt_textFill",
       "defType": "style/fill",
       "position": {
-        "x": 344,
-        "y": 1104
+        "x": 316,
+        "y": 820
       },
       "params": {},
       "portValues": {
@@ -76,8 +76,8 @@
       "id": "tt_glyphs",
       "defType": "text/glyphs",
       "position": {
-        "x": 667,
-        "y": 981
+        "x": 624,
+        "y": 727
       },
       "params": {
         "size": 64,
@@ -94,8 +94,8 @@
       "id": "tt_glyphCount",
       "defType": "spread/count",
       "position": {
-        "x": 1001,
-        "y": 913
+        "x": 918,
+        "y": 807
       },
       "params": {}
     },
@@ -103,8 +103,8 @@
       "id": "tt_births",
       "defType": "state/spread",
       "position": {
-        "x": 44,
-        "y": 1117
+        "x": 28,
+        "y": 886
       },
       "params": {}
     },
@@ -112,8 +112,8 @@
       "id": "tt_bornCount",
       "defType": "spread/count",
       "position": {
-        "x": 1001,
-        "y": 1487
+        "x": 918,
+        "y": 1123
       },
       "params": {}
     },
@@ -121,30 +121,19 @@
       "id": "tt_plusNow",
       "defType": "spread/combine",
       "position": {
-        "x": 330,
-        "y": 956
+        "x": 302,
+        "y": 672
       },
       "params": {
         "op": "append"
       }
     },
     {
-      "id": "tt_grew",
-      "defType": "math/expression",
-      "position": {
-        "x": 1349,
-        "y": 1466
-      },
-      "params": {
-        "expr": "n > b"
-      }
-    },
-    {
       "id": "tt_birthsNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 1352,
-        "y": 799
+        "x": 1241,
+        "y": 684
       },
       "params": {
         "op": "take"
@@ -154,12 +143,12 @@
       "id": "tt_letters",
       "defType": "region/foreach",
       "position": {
-        "x": 1656,
-        "y": 362
+        "x": 1549,
+        "y": 22
       },
       "params": {
-        "width": 1268,
-        "height": 770,
+        "width": 2378,
+        "height": 1109,
         "label": "Letters"
       },
       "ports": [
@@ -168,124 +157,76 @@
           "name": "glyph",
           "type": "layer",
           "direction": "input",
-          "y": 716
+          "y": 1055
         },
         {
           "id": "at",
           "name": "at",
           "type": "vec2",
           "direction": "input",
-          "y": 323
+          "y": 312
         },
         {
           "id": "adv",
           "name": "adv",
           "type": "number",
           "direction": "input",
-          "y": 509
+          "y": 543
         },
         {
           "id": "born",
           "name": "born",
           "type": "number",
           "direction": "input",
-          "y": 345
+          "y": 565
         },
         {
           "id": "letter",
           "name": "letter",
           "type": "layer",
           "direction": "output",
-          "y": 309
+          "y": 326
         }
       ],
-      "width": 1268,
-      "height": 770
-    },
-    {
-      "id": "tt_centred",
-      "defType": "math/expression",
-      "position": {
-        "x": 155,
-        "y": 598
-      },
-      "params": {
-        "expr": "vec2(-a / 2, 23.04)"
-      },
-      "parentId": "tt_letters"
+      "width": 2378,
+      "height": 1109
     },
     {
       "id": "tt_toCentre",
       "defType": "transform/translate",
       "position": {
-        "x": 430,
-        "y": 616
+        "x": 1130,
+        "y": 904
       },
       "params": {},
-      "parentId": "tt_letters"
-    },
-    {
-      "id": "tt_pop",
-      "defType": "math/expression",
-      "position": {
-        "x": 155,
-        "y": 456
-      },
-      "params": {
-        "expr": "1 - exp(-6 * (t - b)) * cos(15 * (t - b))"
-      },
       "parentId": "tt_letters"
     },
     {
       "id": "tt_popped",
       "defType": "transform/scale",
       "position": {
-        "x": 651,
-        "y": 470
+        "x": 1656,
+        "y": 678
       },
       "params": {},
-      "parentId": "tt_letters"
-    },
-    {
-      "id": "tt_wobble",
-      "defType": "math/expression",
-      "position": {
-        "x": 155,
-        "y": 40
-      },
-      "params": {
-        "expr": "0.9 * exp(-4 * (t - b)) * sin(18 * (t - b)) + 0.06 * sin(t * 2 + i * 0.7)"
-      },
       "parentId": "tt_letters"
     },
     {
       "id": "tt_turned",
       "defType": "transform/rotate",
       "position": {
-        "x": 853,
-        "y": 320
+        "x": 1904,
+        "y": 473
       },
       "params": {},
-      "parentId": "tt_letters"
-    },
-    {
-      "id": "tt_place",
-      "defType": "math/expression",
-      "position": {
-        "x": 155,
-        "y": 226
-      },
-      "params": {
-        "expr": "q + vec2(a / 2, -23.04 - 90 * exp(-8 * (t - b)) + 7 * sin(t * 2.6 + i * 0.55))"
-      },
       "parentId": "tt_letters"
     },
     {
       "id": "tt_placed",
       "defType": "transform/translate",
       "position": {
-        "x": 1046,
-        "y": 272
+        "x": 2156,
+        "y": 288
       },
       "params": {},
       "parentId": "tt_letters"
@@ -294,8 +235,8 @@
       "id": "tt_rainbow",
       "defType": "color/palette",
       "position": {
-        "x": 0,
-        "y": 515
+        "x": 1185,
+        "y": 40
       },
       "params": {
         "mode": "cosine",
@@ -326,73 +267,55 @@
           "b": 0.6,
           "a": 1.0
         }
-      }
-    },
-    {
-      "id": "tt_sweep",
-      "defType": "math/expression",
-      "position": {
-        "x": 16,
-        "y": 707
       },
-      "params": {
-        "expr": "vec2(-260 + 120 * sin(t * 0.7), 0)"
-      }
-    },
-    {
-      "id": "tt_sweepEnd",
-      "defType": "math/expression",
-      "position": {
-        "x": 16,
-        "y": 849
-      },
-      "params": {
-        "expr": "vec2(260 + 120 * sin(t * 0.7), 0)"
-      }
+      "parentId": "tt_rainbowInk"
     },
     {
       "id": "tt_rainbowFill",
       "defType": "style/gradient",
       "position": {
-        "x": 336,
-        "y": 571
+        "x": 1506,
+        "y": 121
       },
       "params": {
         "mode": "linear",
         "units": "canvas",
         "extend": "mirror"
-      }
+      },
+      "parentId": "tt_rainbowInk"
     },
     {
       "id": "tt_paint",
       "defType": "draw/rect",
       "position": {
-        "x": 2235,
-        "y": 148
+        "x": 1769,
+        "y": 139
       },
       "params": {},
       "portValues": {
         "w": 760,
         "h": 480
-      }
+      },
+      "parentId": "tt_rainbowInk"
     },
     {
       "id": "tt_inked",
       "defType": "transform/mask",
       "position": {
-        "x": 3077,
-        "y": 506
+        "x": 1990,
+        "y": 223
       },
       "params": {
         "mode": "alpha"
-      }
+      },
+      "parentId": "tt_rainbowInk"
     },
     {
       "id": "tt_glow",
       "defType": "gpu/effect",
       "position": {
-        "x": 3396,
-        "y": 779
+        "x": 2255,
+        "y": 203
       },
       "params": {
         "mode": "glow"
@@ -400,14 +323,15 @@
       "portValues": {
         "radius": 16,
         "intensity": 0.9
-      }
+      },
+      "parentId": "tt_rainbowInk"
     },
     {
       "id": "tt_newest",
       "defType": "spread/lookup",
       "position": {
-        "x": 988,
-        "y": 1339
+        "x": 906,
+        "y": 943
       },
       "params": {
         "op": "at"
@@ -417,44 +341,11 @@
       }
     },
     {
-      "id": "tt_sparkAt",
-      "defType": "math/expression",
-      "position": {
-        "x": 2206,
-        "y": 1608
-      },
-      "params": {
-        "expr": "q + vec2(19.2, -22.4)"
-      }
-    },
-    {
-      "id": "tt_sparkRate",
-      "defType": "math/expression",
-      "position": {
-        "x": 2206,
-        "y": 1750
-      },
-      "params": {
-        "expr": "g ? 1500 : 0"
-      }
-    },
-    {
-      "id": "tt_sparkCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 2206,
-        "y": 1892
-      },
-      "params": {
-        "expr": "hsl(fract(t * 0.3), 0.9, 0.7)"
-      }
-    },
-    {
       "id": "tt_sparkWorld",
       "defType": "physics/world",
       "position": {
-        "x": 2219,
-        "y": 1372
+        "x": 930,
+        "y": 40
       },
       "params": {},
       "portValues": {
@@ -463,14 +354,15 @@
           "y": 380
         },
         "drag": 1.5
-      }
+      },
+      "parentId": "tt_sparkFx"
     },
     {
       "id": "tt_sparks",
       "defType": "particles/emitter",
       "position": {
-        "x": 3094,
-        "y": 1558
+        "x": 1200,
+        "y": 219
       },
       "params": {
         "maxCount": 800,
@@ -484,92 +376,64 @@
         },
         "velSpread": 3,
         "size": 3
-      }
+      },
+      "parentId": "tt_sparkFx"
     },
     {
       "id": "tt_sparkDots",
       "defType": "particles/render-as",
       "position": {
-        "x": 3407,
-        "y": 1339
+        "x": 1431,
+        "y": 219
       },
-      "params": {}
+      "params": {},
+      "parentId": "tt_sparkFx"
     },
     {
       "id": "tt_lastAdv",
       "defType": "spread/lookup",
       "position": {
-        "x": 988,
-        "y": 1049
+        "x": 138,
+        "y": 205
       },
       "params": {
         "op": "at"
       },
       "portValues": {
         "index": -1
-      }
-    },
-    {
-      "id": "tt_caretAt",
-      "defType": "math/expression",
-      "position": {
-        "x": 1349,
-        "y": 1063
       },
-      "params": {
-        "expr": "n > 0 ? q + vec2(a + 6, -20.48) : vec2(0, -10.48)"
-      }
-    },
-    {
-      "id": "tt_caretCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 985,
-        "y": 1197
-      },
-      "params": {
-        "expr": "rgba(1, 1, 1, fract(t * 1.6) < 0.55 ? 0.85 : 0)"
-      }
+      "parentId": "tt_caretMark"
     },
     {
       "id": "tt_caretFill",
       "defType": "style/fill",
       "position": {
-        "x": 1390,
-        "y": 1260
+        "x": 1231,
+        "y": 237
       },
-      "params": {}
+      "params": {},
+      "parentId": "tt_caretMark"
     },
     {
       "id": "tt_caret",
       "defType": "draw/rect",
       "position": {
-        "x": 2240,
-        "y": 1180
+        "x": 1428,
+        "y": 115
       },
       "params": {},
       "portValues": {
         "w": 4,
         "h": 54.4
-      }
-    },
-    {
-      "id": "tt_emptyNow",
-      "defType": "math/expression",
-      "position": {
-        "x": 1349,
-        "y": 207
       },
-      "params": {
-        "expr": "n == 0"
-      }
+      "parentId": "tt_caretMark"
     },
     {
       "id": "tt_hintFill",
       "defType": "style/fill",
       "position": {
-        "x": 27,
-        "y": 389
+        "x": 146,
+        "y": 188
       },
       "params": {},
       "portValues": {
@@ -579,14 +443,15 @@
           "b": 0.9098039215686274,
           "a": 0.55
         }
-      }
+      },
+      "parentId": "tt_hintGroup"
     },
     {
       "id": "tt_hintText",
       "defType": "draw/text",
       "position": {
-        "x": 334,
-        "y": 372
+        "x": 407,
+        "y": 109
       },
       "params": {
         "string": "type something …",
@@ -598,14 +463,15 @@
           "x": 0,
           "y": 110
         }
-      }
+      },
+      "parentId": "tt_hintGroup"
     },
     {
       "id": "tt_hintWave",
       "defType": "text/animate",
       "position": {
-        "x": 647,
-        "y": 399
+        "x": 667,
+        "y": 128
       },
       "params": {
         "mode": "wave"
@@ -617,45 +483,49 @@
         },
         "stagger": 0.6,
         "scale": 1.15
-      }
+      },
+      "parentId": "tt_hintGroup"
     },
     {
       "id": "tt_hint",
       "defType": "logic/select",
       "position": {
-        "x": 2237,
-        "y": 0
+        "x": 960,
+        "y": 77
       },
-      "params": {}
+      "params": {},
+      "parentId": "tt_hintGroup"
     },
     {
       "id": "tt_lenText",
       "defType": "string/format-number",
       "position": {
-        "x": 994,
-        "y": 1681
+        "x": 320,
+        "y": 40
       },
       "params": {},
       "portValues": {
         "decimals": 0,
         "suffix": " / 48"
-      }
+      },
+      "parentId": "tt_lengthText"
     },
     {
       "id": "tt_lenNum",
       "defType": "string/length",
       "position": {
-        "x": 695,
-        "y": 1527
+        "x": 128,
+        "y": 62
       },
-      "params": {}
+      "params": {},
+      "parentId": "tt_lengthText"
     },
     {
       "id": "tt_lenFill",
       "defType": "style/fill",
       "position": {
-        "x": 1360,
-        "y": 2122
+        "x": 567,
+        "y": 166
       },
       "params": {},
       "portValues": {
@@ -665,23 +535,25 @@
           "b": 1.0,
           "a": 0.35
         }
-      }
+      },
+      "parentId": "tt_lengthText"
     },
     {
       "id": "tt_lenStr",
       "defType": "string/concat",
       "position": {
-        "x": 1385,
-        "y": 1858
+        "x": 592,
+        "y": 40
       },
-      "params": {}
+      "params": {},
+      "parentId": "tt_lengthText"
     },
     {
       "id": "tt_lenDraw",
       "defType": "draw/text",
       "position": {
-        "x": 2243,
-        "y": 2034
+        "x": 812,
+        "y": 59
       },
       "params": {
         "size": 12,
@@ -692,14 +564,15 @@
           "x": 364.0,
           "y": 224.0
         }
-      }
+      },
+      "parentId": "tt_lengthText"
     },
     {
       "id": "tt_scene",
       "defType": "transform/group",
       "position": {
-        "x": 3715,
-        "y": 1053
+        "x": 4434,
+        "y": 797
       },
       "params": {
         "slotCount": 5
@@ -709,8 +582,8 @@
       "id": "tt_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 3979,
-        "y": 1053
+        "x": 4698,
+        "y": 797
       },
       "params": {
         "width": 760,
@@ -724,6 +597,1113 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "tt_age",
+      "defType": "math/math",
+      "position": {
+        "x": 188,
+        "y": 484
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_halfBack",
+      "defType": "math/math",
+      "position": {
+        "x": 197,
+        "y": 928
+      },
+      "params": {
+        "op": "negate",
+        "valueType": "number"
+      },
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_halfLeft",
+      "defType": "math/math",
+      "position": {
+        "x": 493,
+        "y": 928
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "tt_centred",
+      "defType": "vec2/make",
+      "position": {
+        "x": 855,
+        "y": 934
+      },
+      "params": {},
+      "parentId": "tt_letters",
+      "portValues": {
+        "y": 23.04
+      }
+    },
+    {
+      "id": "tt_popDecayK",
+      "defType": "math/math",
+      "position": {
+        "x": 493,
+        "y": 484
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "a": -6
+      }
+    },
+    {
+      "id": "tt_popDecay",
+      "defType": "math/math",
+      "position": {
+        "x": 823,
+        "y": 682
+      },
+      "params": {
+        "op": "exp"
+      },
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_popWaveT",
+      "defType": "math/math",
+      "position": {
+        "x": 493,
+        "y": 632
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "a": 15
+      }
+    },
+    {
+      "id": "tt_popWave",
+      "defType": "math/math",
+      "position": {
+        "x": 823,
+        "y": 808
+      },
+      "params": {
+        "op": "cos"
+      },
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_popLeft",
+      "defType": "math/math",
+      "position": {
+        "x": 1101,
+        "y": 719
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_pop",
+      "defType": "math/math",
+      "position": {
+        "x": 1378,
+        "y": 685
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "tt_spinBoing",
+      "defType": "motion/envelope",
+      "position": {
+        "x": 802,
+        "y": 364
+      },
+      "params": {
+        "shape": "boing",
+        "from": "age"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "frequency": 2.864788975654116,
+        "time": 1.151292546497023
+      }
+    },
+    {
+      "id": "tt_spin",
+      "defType": "math/math",
+      "position": {
+        "x": 1101,
+        "y": 393
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "a": 0.9
+      }
+    },
+    {
+      "id": "tt_swayT",
+      "defType": "math/math",
+      "position": {
+        "x": 188,
+        "y": 632
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "tt_swayI",
+      "defType": "math/math",
+      "position": {
+        "x": 188,
+        "y": 780
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "b": 0.7
+      }
+    },
+    {
+      "id": "tt_swayPhase",
+      "defType": "math/math",
+      "position": {
+        "x": 493,
+        "y": 780
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_swaySin",
+      "defType": "math/math",
+      "position": {
+        "x": 823,
+        "y": 556
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_sway",
+      "defType": "math/math",
+      "position": {
+        "x": 1101,
+        "y": 541
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "a": 0.06
+      }
+    },
+    {
+      "id": "tt_wobble",
+      "defType": "math/math",
+      "position": {
+        "x": 1378,
+        "y": 449
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_fall",
+      "defType": "motion/envelope",
+      "position": {
+        "x": 481,
+        "y": 314
+      },
+      "params": {
+        "shape": "decay",
+        "from": "age"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "time": 0.5756462732485115
+      }
+    },
+    {
+      "id": "tt_drop",
+      "defType": "math/math",
+      "position": {
+        "x": 814,
+        "y": 90
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "a": 90
+      }
+    },
+    {
+      "id": "tt_dropY",
+      "defType": "math/math",
+      "position": {
+        "x": 1101,
+        "y": 97
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "a": -23.04
+      }
+    },
+    {
+      "id": "tt_bobT",
+      "defType": "math/math",
+      "position": {
+        "x": 188,
+        "y": 188
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "b": 2.6
+      }
+    },
+    {
+      "id": "tt_bobI",
+      "defType": "math/math",
+      "position": {
+        "x": 188,
+        "y": 336
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "b": 0.55
+      }
+    },
+    {
+      "id": "tt_bobPhase",
+      "defType": "math/math",
+      "position": {
+        "x": 493,
+        "y": 166
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_bobSin",
+      "defType": "math/math",
+      "position": {
+        "x": 823,
+        "y": 238
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_bob",
+      "defType": "math/math",
+      "position": {
+        "x": 1101,
+        "y": 245
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "a": 7
+      }
+    },
+    {
+      "id": "tt_placeY",
+      "defType": "math/math",
+      "position": {
+        "x": 1378,
+        "y": 146
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_placeX",
+      "defType": "math/math",
+      "position": {
+        "x": 188,
+        "y": 40
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "tt_letters",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "tt_placeBy",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1657,
+        "y": 135
+      },
+      "params": {},
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_place",
+      "defType": "math/math",
+      "position": {
+        "x": 1867,
+        "y": 122
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "vec2"
+      },
+      "parentId": "tt_letters"
+    },
+    {
+      "id": "tt_grew",
+      "defType": "logic/compare",
+      "position": {
+        "x": 131,
+        "y": 320
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "tt_sparkFx"
+    },
+    {
+      "id": "tt_sparkAt",
+      "defType": "math/math",
+      "position": {
+        "x": 138,
+        "y": 172
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "vec2"
+      },
+      "portValues": {
+        "b": {
+          "x": 19.2,
+          "y": -22.4
+        }
+      },
+      "parentId": "tt_sparkFx"
+    },
+    {
+      "id": "tt_sparkRate",
+      "defType": "logic/select",
+      "position": {
+        "x": 948,
+        "y": 276
+      },
+      "params": {},
+      "portValues": {
+        "a": 1500,
+        "b": 0
+      },
+      "parentId": "tt_sparkFx"
+    },
+    {
+      "id": "tt_sparkHueT",
+      "defType": "math/math",
+      "position": {
+        "x": 138,
+        "y": 475
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.3
+      },
+      "parentId": "tt_sparkFx"
+    },
+    {
+      "id": "tt_sparkHueTurn",
+      "defType": "math/math",
+      "position": {
+        "x": 410,
+        "y": 458
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "tt_sparkFx"
+    },
+    {
+      "id": "tt_sparkHue",
+      "defType": "math/math",
+      "position": {
+        "x": 659,
+        "y": 441
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 360
+      },
+      "parentId": "tt_sparkFx"
+    },
+    {
+      "id": "tt_sparkCol",
+      "defType": "color/color",
+      "position": {
+        "x": 925,
+        "y": 424
+      },
+      "params": {
+        "mode": "hsl"
+      },
+      "portValues": {
+        "s": 90.0,
+        "l": 70.0,
+        "a": 255
+      },
+      "parentId": "tt_sparkFx"
+    },
+    {
+      "id": "tt_sweepT",
+      "defType": "math/math",
+      "position": {
+        "x": 128,
+        "y": 364
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.7
+      },
+      "parentId": "tt_rainbowInk"
+    },
+    {
+      "id": "tt_sweepSin",
+      "defType": "math/math",
+      "position": {
+        "x": 393,
+        "y": 351
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "tt_rainbowInk"
+    },
+    {
+      "id": "tt_sweepBy",
+      "defType": "math/math",
+      "position": {
+        "x": 641,
+        "y": 317
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 120
+      },
+      "parentId": "tt_rainbowInk"
+    },
+    {
+      "id": "tt_sweepFromX",
+      "defType": "math/math",
+      "position": {
+        "x": 917,
+        "y": 204
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": -260
+      },
+      "parentId": "tt_rainbowInk"
+    },
+    {
+      "id": "tt_sweepToX",
+      "defType": "math/math",
+      "position": {
+        "x": 917,
+        "y": 352
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 260
+      },
+      "parentId": "tt_rainbowInk"
+    },
+    {
+      "id": "tt_sweep",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1242,
+        "y": 232
+      },
+      "params": {},
+      "portValues": {
+        "y": 0
+      },
+      "parentId": "tt_rainbowInk"
+    },
+    {
+      "id": "tt_sweepEnd",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1242,
+        "y": 358
+      },
+      "params": {},
+      "portValues": {
+        "y": 0
+      },
+      "parentId": "tt_rainbowInk"
+    },
+    {
+      "id": "tt_anyText",
+      "defType": "logic/compare",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {
+        "op": "greater"
+      },
+      "portValues": {
+        "b": 0
+      },
+      "parentId": "tt_caretMark"
+    },
+    {
+      "id": "tt_caretGap",
+      "defType": "math/math",
+      "position": {
+        "x": 406,
+        "y": 183
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 6
+      },
+      "parentId": "tt_caretMark"
+    },
+    {
+      "id": "tt_caretOffset",
+      "defType": "vec2/make",
+      "position": {
+        "x": 719,
+        "y": 180
+      },
+      "params": {},
+      "portValues": {
+        "y": -20.48
+      },
+      "parentId": "tt_caretMark"
+    },
+    {
+      "id": "tt_caretAfter",
+      "defType": "math/math",
+      "position": {
+        "x": 953,
+        "y": 117
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "vec2"
+      },
+      "parentId": "tt_caretMark"
+    },
+    {
+      "id": "tt_caretAt",
+      "defType": "logic/select",
+      "position": {
+        "x": 1222,
+        "y": 81
+      },
+      "params": {},
+      "portValues": {
+        "b": {
+          "x": 0,
+          "y": -10.48
+        }
+      },
+      "parentId": "tt_caretMark"
+    },
+    {
+      "id": "tt_blinkT",
+      "defType": "math/math",
+      "position": {
+        "x": 135,
+        "y": 353
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 1.6
+      },
+      "parentId": "tt_caretMark"
+    },
+    {
+      "id": "tt_blinkPhase",
+      "defType": "math/math",
+      "position": {
+        "x": 415,
+        "y": 331
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "tt_caretMark"
+    },
+    {
+      "id": "tt_blinkOn",
+      "defType": "logic/compare",
+      "position": {
+        "x": 671,
+        "y": 306
+      },
+      "params": {
+        "op": "less"
+      },
+      "portValues": {
+        "b": 0.55
+      },
+      "parentId": "tt_caretMark"
+    },
+    {
+      "id": "tt_caretCol",
+      "defType": "logic/select",
+      "position": {
+        "x": 984,
+        "y": 272
+      },
+      "params": {},
+      "portValues": {
+        "a": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 0.85
+        },
+        "b": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 0
+        }
+      },
+      "parentId": "tt_caretMark"
+    },
+    {
+      "id": "tt_emptyNow",
+      "defType": "logic/compare",
+      "position": {
+        "x": 128,
+        "y": 40
+      },
+      "params": {
+        "op": "equal"
+      },
+      "portValues": {
+        "b": 0
+      },
+      "parentId": "tt_hintGroup"
+    },
+    {
+      "id": "tt_sparkFx",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1250,
+        "y": 1116
+      },
+      "params": {
+        "label": "Sparks",
+        "width": 1691,
+        "height": 796
+      },
+      "ports": [
+        {
+          "id": "t",
+          "name": "t",
+          "type": "number",
+          "direction": "input",
+          "y": 578
+        },
+        {
+          "id": "glyphCount",
+          "name": "glyphCount",
+          "type": "number",
+          "direction": "input",
+          "y": 379
+        },
+        {
+          "id": "bornCount",
+          "name": "bornCount",
+          "type": "number",
+          "direction": "input",
+          "y": 401
+        },
+        {
+          "id": "newest",
+          "name": "newest",
+          "type": "vec2",
+          "direction": "input",
+          "y": 231
+        },
+        {
+          "id": "sparks",
+          "name": "sparks",
+          "type": "layer",
+          "direction": "output",
+          "y": 256
+        }
+      ],
+      "width": 1691,
+      "height": 796
+    },
+    {
+      "id": "tt_sparkFxNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 131,
+        "y": 656
+      },
+      "params": {
+        "text": "When the text grows, a puff of sparks from the new letter, in a colour running round the wheel.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "tt_sparkFx"
+    },
+    {
+      "id": "tt_rainbowInk",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 4101,
+        "y": 831
+      },
+      "params": {
+        "label": "Rainbow ink",
+        "width": 2536,
+        "height": 706
+      },
+      "ports": [
+        {
+          "id": "letters",
+          "name": "letters",
+          "type": "layer",
+          "direction": "input",
+          "y": 488
+        },
+        {
+          "id": "t",
+          "name": "t",
+          "type": "number",
+          "direction": "input",
+          "y": 423
+        },
+        {
+          "id": "ink",
+          "name": "ink",
+          "type": "layer",
+          "direction": "output",
+          "y": 243
+        }
+      ],
+      "width": 2536,
+      "height": 706
+    },
+    {
+      "id": "tt_rainbowInkNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 566
+      },
+      "params": {
+        "text": "A rainbow gradient sliding to and fro, seen through the letters (Mask), glowing.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "tt_rainbowInk"
+    },
+    {
+      "id": "tt_caretMark",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1255,
+        "y": 946
+      },
+      "params": {
+        "label": "Caret",
+        "width": 1639,
+        "height": 657
+      },
+      "ports": [
+        {
+          "id": "advances",
+          "name": "advances",
+          "type": "number",
+          "direction": "input",
+          "y": 264
+        },
+        {
+          "id": "glyphCount",
+          "name": "glyphCount",
+          "type": "number",
+          "direction": "input",
+          "y": 99
+        },
+        {
+          "id": "newest",
+          "name": "newest",
+          "type": "vec2",
+          "direction": "input",
+          "y": 164
+        },
+        {
+          "id": "t",
+          "name": "t",
+          "type": "number",
+          "direction": "input",
+          "y": 412
+        },
+        {
+          "id": "caret",
+          "name": "caret",
+          "type": "layer",
+          "direction": "output",
+          "y": 152
+        }
+      ],
+      "width": 1639,
+      "height": 657
+    },
+    {
+      "id": "tt_caretMarkNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 517
+      },
+      "params": {
+        "text": "A blinking bar after the last letter (or where the first will go).",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "tt_caretMark"
+    },
+    {
+      "id": "tt_hintGroup",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1259,
+        "y": 274
+      },
+      "params": {
+        "label": "Hint",
+        "width": 1177,
+        "height": 608
+      },
+      "ports": [
+        {
+          "id": "t",
+          "name": "t",
+          "type": "number",
+          "direction": "input",
+          "y": 290
+        },
+        {
+          "id": "glyphCount",
+          "name": "glyphCount",
+          "type": "number",
+          "direction": "input",
+          "y": 99
+        },
+        {
+          "id": "hint",
+          "name": "hint",
+          "type": "layer",
+          "direction": "output",
+          "y": 114
+        }
+      ],
+      "width": 1177,
+      "height": 608
+    },
+    {
+      "id": "tt_hintGroupNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 468
+      },
+      "params": {
+        "text": "'type something …' waving while nothing is typed.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "tt_hintGroup"
+    },
+    {
+      "id": "tt_lengthText",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 4119,
+        "y": 1104
+      },
+      "params": {
+        "label": "Count",
+        "width": 1018,
+        "height": 454
+      },
+      "ports": [
+        {
+          "id": "kb",
+          "name": "kb",
+          "type": "string",
+          "direction": "input",
+          "y": 99
+        },
+        {
+          "id": "count",
+          "name": "count",
+          "type": "layer",
+          "direction": "output",
+          "y": 96
+        }
+      ],
+      "width": 1018,
+      "height": 454
+    },
+    {
+      "id": "tt_lengthTextNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 314
+      },
+      "params": {
+        "text": "How many of the 48 letters are used.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "tt_lengthText"
     }
   ],
   "edges": [
@@ -777,20 +1757,6 @@
       "targetHandle": "in-tail"
     },
     {
-      "id": "e_8",
-      "source": "tt_glyphCount",
-      "target": "tt_grew",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_9",
-      "source": "tt_bornCount",
-      "target": "tt_grew",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-b"
-    },
-    {
       "id": "e_10",
       "source": "tt_plusNow",
       "target": "tt_birthsNext",
@@ -840,46 +1806,11 @@
       "targetHandle": "in-born"
     },
     {
-      "id": "e_17",
-      "source": "tt_letters",
-      "target": "tt_centred",
-      "sourceHandle": "out-adv",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_18",
-      "source": "tt_centred",
-      "target": "tt_toCentre",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-by"
-    },
-    {
       "id": "e_19",
       "source": "tt_letters",
       "target": "tt_toCentre",
       "sourceHandle": "out-glyph",
       "targetHandle": "in-layer"
-    },
-    {
-      "id": "e_20",
-      "source": "tt_letters",
-      "target": "tt_pop",
-      "sourceHandle": "out-born",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_21",
-      "source": "tt_pop",
-      "target": "tt_popped",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-sx"
-    },
-    {
-      "id": "e_22",
-      "source": "tt_pop",
-      "target": "tt_popped",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-sy"
     },
     {
       "id": "e_23",
@@ -889,67 +1820,11 @@
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_24",
-      "source": "tt_letters",
-      "target": "tt_wobble",
-      "sourceHandle": "out-born",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_25",
-      "source": "tt_letters",
-      "target": "tt_wobble",
-      "sourceHandle": "out-__loopvar_index",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_26",
-      "source": "tt_wobble",
-      "target": "tt_turned",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-angle"
-    },
-    {
       "id": "e_27",
       "source": "tt_popped",
       "target": "tt_turned",
       "sourceHandle": "out-scaled",
       "targetHandle": "in-layer"
-    },
-    {
-      "id": "e_28",
-      "source": "tt_letters",
-      "target": "tt_place",
-      "sourceHandle": "out-at",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_29",
-      "source": "tt_letters",
-      "target": "tt_place",
-      "sourceHandle": "out-adv",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_30",
-      "source": "tt_letters",
-      "target": "tt_place",
-      "sourceHandle": "out-born",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_31",
-      "source": "tt_letters",
-      "target": "tt_place",
-      "sourceHandle": "out-__loopvar_index",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_32",
-      "source": "tt_place",
-      "target": "tt_placed",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-by"
     },
     {
       "id": "e_33",
@@ -973,20 +1848,6 @@
       "targetHandle": "in-colors"
     },
     {
-      "id": "e_36",
-      "source": "tt_sweep",
-      "target": "tt_rainbowFill",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-start"
-    },
-    {
-      "id": "e_37",
-      "source": "tt_sweepEnd",
-      "target": "tt_rainbowFill",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-end"
-    },
-    {
       "id": "e_38",
       "source": "tt_rainbowFill",
       "target": "tt_paint",
@@ -1002,9 +1863,9 @@
     },
     {
       "id": "e_40",
-      "source": "tt_letters",
+      "source": "tt_rainbowInk",
       "target": "tt_inked",
-      "sourceHandle": "out-letter",
+      "sourceHandle": "out-letters",
       "targetHandle": "in-mask"
     },
     {
@@ -1022,20 +1883,6 @@
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_43",
-      "source": "tt_newest",
-      "target": "tt_sparkAt",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_44",
-      "source": "tt_grew",
-      "target": "tt_sparkRate",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
       "id": "e_45",
       "source": "tt_sparkWorld",
       "target": "tt_sparks",
@@ -1043,29 +1890,8 @@
       "targetHandle": "in-world"
     },
     {
-      "id": "e_46",
-      "source": "tt_sparkAt",
-      "target": "tt_sparks",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-positions"
-    },
-    {
-      "id": "e_47",
-      "source": "tt_sparkRate",
-      "target": "tt_sparks",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-rate"
-    },
-    {
-      "id": "e_48",
-      "source": "tt_sparkCol",
-      "target": "tt_sparks",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
-    },
-    {
       "id": "e_49",
-      "source": "tt_time",
+      "source": "tt_sparkFx",
       "target": "tt_sparks",
       "sourceHandle": "out-t",
       "targetHandle": "in-time"
@@ -1079,45 +1905,10 @@
     },
     {
       "id": "e_51",
-      "source": "tt_glyphs",
+      "source": "tt_caretMark",
       "target": "tt_lastAdv",
       "sourceHandle": "out-advances",
       "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_52",
-      "source": "tt_glyphCount",
-      "target": "tt_caretAt",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_53",
-      "source": "tt_newest",
-      "target": "tt_caretAt",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_54",
-      "source": "tt_lastAdv",
-      "target": "tt_caretAt",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_55",
-      "source": "tt_caretCol",
-      "target": "tt_caretFill",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
-    },
-    {
-      "id": "e_56",
-      "source": "tt_caretAt",
-      "target": "tt_caret",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-pos"
     },
     {
       "id": "e_57",
@@ -1125,13 +1916,6 @@
       "target": "tt_caret",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_58",
-      "source": "tt_glyphCount",
-      "target": "tt_emptyNow",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
     },
     {
       "id": "e_59",
@@ -1149,17 +1933,10 @@
     },
     {
       "id": "e_61",
-      "source": "tt_time",
+      "source": "tt_hintGroup",
       "target": "tt_hintWave",
       "sourceHandle": "out-t",
       "targetHandle": "in-progress"
-    },
-    {
-      "id": "e_62",
-      "source": "tt_emptyNow",
-      "target": "tt_hint",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cond"
     },
     {
       "id": "e_63",
@@ -1170,9 +1947,9 @@
     },
     {
       "id": "e_64",
-      "source": "tt_kb",
+      "source": "tt_lengthText",
       "target": "tt_lenNum",
-      "sourceHandle": "out-text",
+      "sourceHandle": "out-kb",
       "targetHandle": "in-text"
     },
     {
@@ -1205,37 +1982,37 @@
     },
     {
       "id": "e_69",
-      "source": "tt_hint",
+      "source": "tt_hintGroup",
       "target": "tt_scene",
-      "sourceHandle": "out-selected",
+      "sourceHandle": "out-hint",
       "targetHandle": "in-s1"
     },
     {
       "id": "e_70",
-      "source": "tt_glow",
+      "source": "tt_rainbowInk",
       "target": "tt_scene",
-      "sourceHandle": "out-out",
+      "sourceHandle": "out-ink",
       "targetHandle": "in-s2"
     },
     {
       "id": "e_71",
-      "source": "tt_caret",
+      "source": "tt_caretMark",
       "target": "tt_scene",
-      "sourceHandle": "out-shape",
+      "sourceHandle": "out-caret",
       "targetHandle": "in-s3"
     },
     {
       "id": "e_72",
-      "source": "tt_sparkDots",
+      "source": "tt_sparkFx",
       "target": "tt_scene",
-      "sourceHandle": "out-layer",
+      "sourceHandle": "out-sparks",
       "targetHandle": "in-s4"
     },
     {
       "id": "e_73",
-      "source": "tt_lenDraw",
+      "source": "tt_lengthText",
       "target": "tt_scene",
-      "sourceHandle": "out-shape",
+      "sourceHandle": "out-count",
       "targetHandle": "in-s5"
     },
     {
@@ -1244,6 +2021,678 @@
       "target": "tt_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_b1_1",
+      "source": "tt_time",
+      "target": "tt_age",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_2",
+      "source": "tt_letters",
+      "target": "tt_age",
+      "sourceHandle": "out-born",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_3",
+      "source": "tt_letters",
+      "target": "tt_halfBack",
+      "sourceHandle": "out-adv",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_4",
+      "source": "tt_halfBack",
+      "target": "tt_halfLeft",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_5",
+      "source": "tt_halfLeft",
+      "target": "tt_centred",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_6",
+      "source": "tt_centred",
+      "target": "tt_toCentre",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_b1_7",
+      "source": "tt_age",
+      "target": "tt_popDecayK",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_8",
+      "source": "tt_popDecayK",
+      "target": "tt_popDecay",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_9",
+      "source": "tt_age",
+      "target": "tt_popWaveT",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_10",
+      "source": "tt_popWaveT",
+      "target": "tt_popWave",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_11",
+      "source": "tt_popDecay",
+      "target": "tt_popLeft",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_12",
+      "source": "tt_popWave",
+      "target": "tt_popLeft",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_13",
+      "source": "tt_popLeft",
+      "target": "tt_pop",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_14",
+      "source": "tt_pop",
+      "target": "tt_popped",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-sx"
+    },
+    {
+      "id": "e_b1_15",
+      "source": "tt_pop",
+      "target": "tt_popped",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-sy"
+    },
+    {
+      "id": "e_b1_16",
+      "source": "tt_age",
+      "target": "tt_spinBoing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-age"
+    },
+    {
+      "id": "e_b1_17",
+      "source": "tt_spinBoing",
+      "target": "tt_spin",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_18",
+      "source": "tt_time",
+      "target": "tt_swayT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_19",
+      "source": "tt_letters",
+      "target": "tt_swayI",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_20",
+      "source": "tt_swayT",
+      "target": "tt_swayPhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_21",
+      "source": "tt_swayI",
+      "target": "tt_swayPhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_22",
+      "source": "tt_swayPhase",
+      "target": "tt_swaySin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_23",
+      "source": "tt_swaySin",
+      "target": "tt_sway",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_24",
+      "source": "tt_spin",
+      "target": "tt_wobble",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_25",
+      "source": "tt_sway",
+      "target": "tt_wobble",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_26",
+      "source": "tt_wobble",
+      "target": "tt_turned",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_b1_27",
+      "source": "tt_age",
+      "target": "tt_fall",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-age"
+    },
+    {
+      "id": "e_b1_28",
+      "source": "tt_fall",
+      "target": "tt_drop",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_29",
+      "source": "tt_drop",
+      "target": "tt_dropY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_30",
+      "source": "tt_time",
+      "target": "tt_bobT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_31",
+      "source": "tt_letters",
+      "target": "tt_bobI",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_32",
+      "source": "tt_bobT",
+      "target": "tt_bobPhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_33",
+      "source": "tt_bobI",
+      "target": "tt_bobPhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_34",
+      "source": "tt_bobPhase",
+      "target": "tt_bobSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_35",
+      "source": "tt_bobSin",
+      "target": "tt_bob",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_36",
+      "source": "tt_dropY",
+      "target": "tt_placeY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_37",
+      "source": "tt_bob",
+      "target": "tt_placeY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_38",
+      "source": "tt_letters",
+      "target": "tt_placeX",
+      "sourceHandle": "out-adv",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_39",
+      "source": "tt_placeX",
+      "target": "tt_placeBy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_40",
+      "source": "tt_placeY",
+      "target": "tt_placeBy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_41",
+      "source": "tt_letters",
+      "target": "tt_place",
+      "sourceHandle": "out-at",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_42",
+      "source": "tt_placeBy",
+      "target": "tt_place",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_43",
+      "source": "tt_place",
+      "target": "tt_placed",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_b1_44",
+      "source": "tt_sparkFx",
+      "target": "tt_grew",
+      "sourceHandle": "out-glyphCount",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_45",
+      "source": "tt_sparkFx",
+      "target": "tt_grew",
+      "sourceHandle": "out-bornCount",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_46",
+      "source": "tt_sparkFx",
+      "target": "tt_sparkAt",
+      "sourceHandle": "out-newest",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_47",
+      "source": "tt_sparkAt",
+      "target": "tt_sparks",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_b1_48",
+      "source": "tt_grew",
+      "target": "tt_sparkRate",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_49",
+      "source": "tt_sparkRate",
+      "target": "tt_sparks",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_b1_50",
+      "source": "tt_sparkFx",
+      "target": "tt_sparkHueT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_51",
+      "source": "tt_sparkHueT",
+      "target": "tt_sparkHueTurn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_52",
+      "source": "tt_sparkHueTurn",
+      "target": "tt_sparkHue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_53",
+      "source": "tt_sparkHue",
+      "target": "tt_sparkCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_b1_54",
+      "source": "tt_sparkCol",
+      "target": "tt_sparks",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_b1_55",
+      "source": "tt_rainbowInk",
+      "target": "tt_sweepT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_56",
+      "source": "tt_sweepT",
+      "target": "tt_sweepSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_57",
+      "source": "tt_sweepSin",
+      "target": "tt_sweepBy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_58",
+      "source": "tt_sweepBy",
+      "target": "tt_sweepFromX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_59",
+      "source": "tt_sweepBy",
+      "target": "tt_sweepToX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_60",
+      "source": "tt_sweepFromX",
+      "target": "tt_sweep",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_61",
+      "source": "tt_sweep",
+      "target": "tt_rainbowFill",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_b1_62",
+      "source": "tt_sweepToX",
+      "target": "tt_sweepEnd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_63",
+      "source": "tt_sweepEnd",
+      "target": "tt_rainbowFill",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-end"
+    },
+    {
+      "id": "e_b1_64",
+      "source": "tt_caretMark",
+      "target": "tt_anyText",
+      "sourceHandle": "out-glyphCount",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_65",
+      "source": "tt_lastAdv",
+      "target": "tt_caretGap",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_66",
+      "source": "tt_caretGap",
+      "target": "tt_caretOffset",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_67",
+      "source": "tt_caretMark",
+      "target": "tt_caretAfter",
+      "sourceHandle": "out-newest",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_68",
+      "source": "tt_caretOffset",
+      "target": "tt_caretAfter",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_69",
+      "source": "tt_anyText",
+      "target": "tt_caretAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_70",
+      "source": "tt_caretAfter",
+      "target": "tt_caretAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_71",
+      "source": "tt_caretAt",
+      "target": "tt_caret",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_b1_72",
+      "source": "tt_caretMark",
+      "target": "tt_blinkT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_73",
+      "source": "tt_blinkT",
+      "target": "tt_blinkPhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_74",
+      "source": "tt_blinkPhase",
+      "target": "tt_blinkOn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_75",
+      "source": "tt_blinkOn",
+      "target": "tt_caretCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_76",
+      "source": "tt_caretCol",
+      "target": "tt_caretFill",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_b1_77",
+      "source": "tt_hintGroup",
+      "target": "tt_emptyNow",
+      "sourceHandle": "out-glyphCount",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_78",
+      "source": "tt_emptyNow",
+      "target": "tt_hint",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_79",
+      "source": "tt_time",
+      "target": "tt_sparkFx",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_b1_80",
+      "source": "tt_glyphCount",
+      "target": "tt_sparkFx",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-glyphCount"
+    },
+    {
+      "id": "e_b1_81",
+      "source": "tt_bornCount",
+      "target": "tt_sparkFx",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-bornCount"
+    },
+    {
+      "id": "e_b1_82",
+      "source": "tt_newest",
+      "target": "tt_sparkFx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-newest"
+    },
+    {
+      "id": "e_b1_83",
+      "source": "tt_sparkDots",
+      "target": "tt_sparkFx",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-sparks"
+    },
+    {
+      "id": "e_b1_84",
+      "source": "tt_letters",
+      "target": "tt_rainbowInk",
+      "sourceHandle": "out-letter",
+      "targetHandle": "in-letters"
+    },
+    {
+      "id": "e_b1_85",
+      "source": "tt_time",
+      "target": "tt_rainbowInk",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_b1_86",
+      "source": "tt_glow",
+      "target": "tt_rainbowInk",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-ink"
+    },
+    {
+      "id": "e_b1_87",
+      "source": "tt_glyphs",
+      "target": "tt_caretMark",
+      "sourceHandle": "out-advances",
+      "targetHandle": "in-advances"
+    },
+    {
+      "id": "e_b1_88",
+      "source": "tt_glyphCount",
+      "target": "tt_caretMark",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-glyphCount"
+    },
+    {
+      "id": "e_b1_89",
+      "source": "tt_newest",
+      "target": "tt_caretMark",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-newest"
+    },
+    {
+      "id": "e_b1_90",
+      "source": "tt_time",
+      "target": "tt_caretMark",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_b1_91",
+      "source": "tt_caret",
+      "target": "tt_caretMark",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-caret"
+    },
+    {
+      "id": "e_b1_92",
+      "source": "tt_time",
+      "target": "tt_hintGroup",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_b1_93",
+      "source": "tt_glyphCount",
+      "target": "tt_hintGroup",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-glyphCount"
+    },
+    {
+      "id": "e_b1_94",
+      "source": "tt_hint",
+      "target": "tt_hintGroup",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-hint"
+    },
+    {
+      "id": "e_b1_95",
+      "source": "tt_kb",
+      "target": "tt_lengthText",
+      "sourceHandle": "out-text",
+      "targetHandle": "in-kb"
+    },
+    {
+      "id": "e_b1_96",
+      "source": "tt_lenDraw",
+      "target": "tt_lengthText",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-count"
     }
   ]
 }

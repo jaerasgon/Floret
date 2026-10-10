@@ -16,7 +16,7 @@
         "y": -334
       },
       "params": {
-        "text": "Step Sequencer\n\nA tone matrix: 16 steps × 8 notes of a scale. Click a cell to switch it on or off, drag to paint a run of them; the playhead sweeps left to right and every lit cell in its column plays (up to four at once). R scatters a random tune, C (or the Clear bang) empties the grid. Tempo, Tone (the filter) and the Scale are on the canvas.\n\nHow it works: the grid is a State* of 128 on/off values, rewritten by one Expression each frame (the cell under a press takes the paint value). A phase accumulator counts sixteenth notes; on each new step the lit rows of the column become notes (Scale), shared out to four MonoSynth voices, which Mix into one filter, delay and reverb.",
+        "text": "Step Sequencer\n\nA tone matrix: 16 steps × 8 notes of a scale. Click a cell to switch it on or off, drag to paint a run of them; the playhead sweeps left to right and every lit cell in its column plays (up to four at once). R scatters a random tune, C (or the Clear bang) empties the grid. Tempo, Tone (the filter) and the Scale are on the canvas.\n\nHow it works: the grid is a State* of 128 on/off values; Edit cells rewrites it each frame (the cell under a press takes the paint value). Clock counts sixteenth notes; on each new step the lit rows of the column become notes (Scale), shared out to four MonoSynth voices, which Mix into one filter, delay and reverb. Cell looks colours the grid.",
         "width": 460,
         "height": 270
       }
@@ -26,647 +26,16 @@
       "defType": "input/mouse",
       "position": {
         "x": 37,
-        "y": 382
+        "y": 411
       },
       "params": {}
-    },
-    {
-      "id": "sq_mpos",
-      "defType": "vec2/make",
-      "position": {
-        "x": 360,
-        "y": 341
-      },
-      "params": {}
-    },
-    {
-      "id": "sq_hovered",
-      "defType": "math/expression",
-      "position": {
-        "x": 659,
-        "y": 542
-      },
-      "params": {
-        "expr": "abs(m.x) < 288.0 && m.y >= -174.0 && m.y < 114.0 ? floor((m.y - (-174.0)) / 36) * 16 + floor((m.x + 288.0) / 36) : -1"
-      }
-    },
-    {
-      "id": "sq_wasPressed",
-      "defType": "state/value",
-      "position": {
-        "x": 359,
-        "y": 499
-      },
-      "params": {},
-      "portValues": {
-        "init": false
-      }
-    },
-    {
-      "id": "sq_click",
-      "defType": "math/expression",
-      "position": {
-        "x": 659,
-        "y": 378
-      },
-      "params": {
-        "expr": "p && !was"
-      }
-    },
-    {
-      "id": "sq_pattern",
-      "defType": "data/csv-inline",
-      "position": {
-        "x": 319,
-        "y": 1232
-      },
-      "params": {
-        "data": "0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0"
-      }
-    },
-    {
-      "id": "sq_cells",
-      "defType": "state/spread",
-      "position": {
-        "x": 687,
-        "y": 1079
-      },
-      "params": {}
-    },
-    {
-      "id": "sq_cellAt",
-      "defType": "spread/lookup",
-      "position": {
-        "x": 1043,
-        "y": 511
-      },
-      "params": {
-        "op": "at"
-      }
-    },
-    {
-      "id": "sq_paint",
-      "defType": "state/value",
-      "position": {
-        "x": 1080,
-        "y": 659
-      },
-      "params": {},
-      "portValues": {
-        "init": 1
-      }
-    },
-    {
-      "id": "sq_paintNow",
-      "defType": "math/expression",
-      "position": {
-        "x": 1542,
-        "y": 454
-      },
-      "params": {
-        "expr": "click && h >= 0 ? 1 - under : v"
-      }
-    },
-    {
-      "id": "sq_kb",
-      "defType": "input/keyboard",
-      "position": {
-        "x": 1542,
-        "y": 104
-      },
-      "params": {
-        "mode": "keys"
-      },
-      "portValues": {
-        "keys": "cr"
-      }
-    },
-    {
-      "id": "sq_clearBang",
-      "defType": "io/bang",
-      "position": {
-        "x": 1542,
-        "y": 0
-      },
-      "params": {
-        "label": "Clear"
-      }
-    },
-    {
-      "id": "sq_randomBang",
-      "defType": "io/bang",
-      "position": {
-        "x": 1542,
-        "y": 318
-      },
-      "params": {
-        "label": "Random"
-      }
-    },
-    {
-      "id": "sq_cellsNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 2025,
-        "y": 186
-      },
-      "params": {
-        "expr": "clr || (hit && key == 0) ? 0 : (rnd || (hit && key == 1) ? (fract(sin(index * 12.9898 + t * 78.233) * 43758.5453) > 0.84 ? 1 : 0) : (p && index == h ? v : c))"
-      }
-    },
-    {
-      "id": "sq_bpm",
-      "defType": "io/slider",
-      "position": {
-        "x": 0,
-        "y": 1529
-      },
-      "params": {
-        "value": 112,
-        "min": 60,
-        "max": 200,
-        "step": 1,
-        "label": "Tempo"
-      }
-    },
-    {
-      "id": "sq_dt",
-      "defType": "time/delta",
-      "position": {
-        "x": 41,
-        "y": 1425
-      },
-      "params": {}
-    },
-    {
-      "id": "sq_phase",
-      "defType": "state/value",
-      "position": {
-        "x": 41,
-        "y": 1299
-      },
-      "params": {},
-      "portValues": {
-        "init": 0
-      }
-    },
-    {
-      "id": "sq_phaseNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 318,
-        "y": 1462
-      },
-      "params": {
-        "expr": "mod(ph + min(dt, 0.1) * bpm / 15, 16)"
-      }
-    },
-    {
-      "id": "sq_step",
-      "defType": "math/expression",
-      "position": {
-        "x": 659,
-        "y": 1205
-      },
-      "params": {
-        "expr": "floor(ph)"
-      }
-    },
-    {
-      "id": "sq_within",
-      "defType": "math/expression",
-      "position": {
-        "x": 659,
-        "y": 1686
-      },
-      "params": {
-        "expr": "fract(ph)"
-      }
-    },
-    {
-      "id": "sq_prevStep",
-      "defType": "state/value",
-      "position": {
-        "x": 1080,
-        "y": 817
-      },
-      "params": {},
-      "portValues": {
-        "init": -1
-      }
-    },
-    {
-      "id": "sq_stepped",
-      "defType": "math/expression",
-      "position": {
-        "x": 1542,
-        "y": 737
-      },
-      "params": {
-        "expr": "s != prev"
-      }
-    },
-    {
-      "id": "sq_rows",
-      "defType": "spread/range",
-      "position": {
-        "x": 15,
-        "y": 1195
-      },
-      "params": {},
-      "portValues": {
-        "count": 8
-      }
-    },
-    {
-      "id": "sq_colIdx",
-      "defType": "math/expression",
-      "position": {
-        "x": 1040,
-        "y": 1692
-      },
-      "params": {
-        "expr": "r * 16 + s"
-      }
-    },
-    {
-      "id": "sq_colOn",
-      "defType": "spread/lookup",
-      "position": {
-        "x": 1545,
-        "y": 1290
-      },
-      "params": {
-        "op": "pick"
-      }
-    },
-    {
-      "id": "sq_degrees",
-      "defType": "math/expression",
-      "position": {
-        "x": 318,
-        "y": 1014
-      },
-      "params": {
-        "expr": "7 - r"
-      }
-    },
-    {
-      "id": "sq_scaleSel",
-      "defType": "io/select",
-      "position": {
-        "x": 318,
-        "y": 1336
-      },
-      "params": {
-        "options": "pentatonic,minor-pentatonic,major,dorian,blues,whole-tone",
-        "value": "pentatonic",
-        "label": "Scale"
-      }
-    },
-    {
-      "id": "sq_scale",
-      "defType": "sound/scale",
-      "position": {
-        "x": 663,
-        "y": 887
-      },
-      "params": {
-        "mode": "degree",
-        "scale": "pentatonic"
-      },
-      "portValues": {
-        "root": 57
-      }
-    },
-    {
-      "id": "sq_colLit",
-      "defType": "math/expression",
-      "position": {
-        "x": 2025,
-        "y": 1266
-      },
-      "params": {
-        "expr": "on > 0.5"
-      }
-    },
-    {
-      "id": "sq_playing",
-      "defType": "spread/sublist",
-      "position": {
-        "x": 2342,
-        "y": 928
-      },
-      "params": {
-        "op": "keep-where"
-      }
-    },
-    {
-      "id": "sq_howMany",
-      "defType": "spread/count",
-      "position": {
-        "x": 2734,
-        "y": 966
-      },
-      "params": {}
-    },
-    {
-      "id": "sq_voices",
-      "defType": "spread/range",
-      "position": {
-        "x": 2733,
-        "y": 862
-      },
-      "params": {},
-      "portValues": {
-        "count": 4
-      }
-    },
-    {
-      "id": "sq_gates",
-      "defType": "math/expression",
-      "position": {
-        "x": 3097,
-        "y": 846
-      },
-      "params": {
-        "expr": "go && v < n"
-      }
-    },
-    {
-      "id": "sq_mix",
-      "defType": "sound/mix",
-      "position": {
-        "x": 4027,
-        "y": 782
-      },
-      "params": {
-        "slotCount": 4
-      },
-      "portValues": {
-        "level": 0.55
-      }
-    },
-    {
-      "id": "sq_note0",
-      "defType": "spread/lookup",
-      "position": {
-        "x": 3457,
-        "y": 316
-      },
-      "params": {
-        "op": "at"
-      },
-      "portValues": {
-        "index": 0
-      }
-    },
-    {
-      "id": "sq_gate0",
-      "defType": "spread/lookup",
-      "position": {
-        "x": 3457,
-        "y": 464
-      },
-      "params": {
-        "op": "at"
-      },
-      "portValues": {
-        "index": 0
-      }
-    },
-    {
-      "id": "sq_voice0",
-      "defType": "sound/mono-synth",
-      "position": {
-        "x": 3755,
-        "y": 429
-      },
-      "params": {},
-      "portValues": {
-        "velocity": 0.55,
-        "attack": 0.004,
-        "decay": 0.22,
-        "sustain": 0.08,
-        "release": 0.45
-      }
-    },
-    {
-      "id": "sq_note1",
-      "defType": "spread/lookup",
-      "position": {
-        "x": 3457,
-        "y": 612
-      },
-      "params": {
-        "op": "at"
-      },
-      "portValues": {
-        "index": 1
-      }
-    },
-    {
-      "id": "sq_gate1",
-      "defType": "spread/lookup",
-      "position": {
-        "x": 3457,
-        "y": 760
-      },
-      "params": {
-        "op": "at"
-      },
-      "portValues": {
-        "index": 1
-      }
-    },
-    {
-      "id": "sq_voice1",
-      "defType": "sound/mono-synth",
-      "position": {
-        "x": 3755,
-        "y": 665
-      },
-      "params": {},
-      "portValues": {
-        "velocity": 0.55,
-        "attack": 0.004,
-        "decay": 0.22,
-        "sustain": 0.08,
-        "release": 0.45
-      }
-    },
-    {
-      "id": "sq_note2",
-      "defType": "spread/lookup",
-      "position": {
-        "x": 3457,
-        "y": 908
-      },
-      "params": {
-        "op": "at"
-      },
-      "portValues": {
-        "index": 2
-      }
-    },
-    {
-      "id": "sq_gate2",
-      "defType": "spread/lookup",
-      "position": {
-        "x": 3457,
-        "y": 1056
-      },
-      "params": {
-        "op": "at"
-      },
-      "portValues": {
-        "index": 2
-      }
-    },
-    {
-      "id": "sq_voice2",
-      "defType": "sound/mono-synth",
-      "position": {
-        "x": 3755,
-        "y": 901
-      },
-      "params": {},
-      "portValues": {
-        "velocity": 0.55,
-        "attack": 0.004,
-        "decay": 0.22,
-        "sustain": 0.08,
-        "release": 0.45
-      }
-    },
-    {
-      "id": "sq_note3",
-      "defType": "spread/lookup",
-      "position": {
-        "x": 3457,
-        "y": 1204
-      },
-      "params": {
-        "op": "at"
-      },
-      "portValues": {
-        "index": 3
-      }
-    },
-    {
-      "id": "sq_gate3",
-      "defType": "spread/lookup",
-      "position": {
-        "x": 3457,
-        "y": 1352
-      },
-      "params": {
-        "op": "at"
-      },
-      "portValues": {
-        "index": 3
-      }
-    },
-    {
-      "id": "sq_voice3",
-      "defType": "sound/mono-synth",
-      "position": {
-        "x": 3755,
-        "y": 1137
-      },
-      "params": {},
-      "portValues": {
-        "velocity": 0.55,
-        "attack": 0.004,
-        "decay": 0.22,
-        "sustain": 0.08,
-        "release": 0.45
-      }
-    },
-    {
-      "id": "sq_tone",
-      "defType": "io/slider",
-      "position": {
-        "x": 4027,
-        "y": 974
-      },
-      "params": {
-        "value": 2400,
-        "min": 400,
-        "max": 8000,
-        "label": "Tone"
-      }
-    },
-    {
-      "id": "sq_filter",
-      "defType": "sound/filter",
-      "position": {
-        "x": 4318,
-        "y": 914
-      },
-      "params": {
-        "type": "lowpass"
-      },
-      "portValues": {
-        "res": 3
-      }
-    },
-    {
-      "id": "sq_echoTime",
-      "defType": "math/expression",
-      "position": {
-        "x": 4314,
-        "y": 1177
-      },
-      "params": {
-        "expr": "45 / bpm"
-      }
-    },
-    {
-      "id": "sq_delay",
-      "defType": "sound/delay",
-      "position": {
-        "x": 4599,
-        "y": 1050
-      },
-      "params": {},
-      "portValues": {
-        "feedback": 0.32,
-        "filter": 2600
-      }
-    },
-    {
-      "id": "sq_reverb",
-      "defType": "sound/reverb",
-      "position": {
-        "x": 4795,
-        "y": 1024
-      },
-      "params": {},
-      "portValues": {
-        "seconds": 2.2,
-        "decay": 2.5,
-        "wet": 0.22
-      }
-    },
-    {
-      "id": "sq_out",
-      "defType": "sound/output",
-      "position": {
-        "x": 5011,
-        "y": 1022
-      },
-      "params": {},
-      "portValues": {
-        "volume": 0.8
-      }
     },
     {
       "id": "sq_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 1061,
-        "y": 1856
+        "x": 614,
+        "y": 1087
       },
       "params": {},
       "portValues": {
@@ -681,33 +50,792 @@
       }
     },
     {
-      "id": "sq_cellCol",
-      "defType": "math/expression",
+      "id": "sq_edit",
+      "defType": "meta/subpatch",
       "position": {
-        "x": 1040,
-        "y": 1243
+        "x": 939,
+        "y": 496
       },
       "params": {
-        "expr": "c > 0.5 ? hsl(0.52 + floor(index / 16) / 8 * 0.5, 0.75, 0.5 + (index % 16 == s ? 0.32 * (1 - f) : 0)) : (index == h ? rgb(0.25, 0.27, 0.38) : (index % 16 == s ? rgb(0.17, 0.18, 0.26) : rgb(0.1, 0.11, 0.16)))"
+        "label": "Edit cells",
+        "width": 2506,
+        "height": 1029
+      },
+      "ports": [
+        {
+          "id": "pressed",
+          "name": "pressed",
+          "type": "boolean",
+          "direction": "input",
+          "y": 370
+        },
+        {
+          "id": "mouse",
+          "name": "mouse",
+          "type": "vec2",
+          "direction": "input",
+          "y": 626
+        },
+        {
+          "id": "grid",
+          "name": "grid",
+          "type": "vec2",
+          "direction": "input",
+          "y": 648
+        },
+        {
+          "id": "cells",
+          "name": "cells",
+          "type": "number",
+          "direction": "input",
+          "y": 751
+        },
+        {
+          "id": "clear",
+          "name": "clear",
+          "type": "boolean",
+          "direction": "input",
+          "y": 69
+        },
+        {
+          "id": "random",
+          "name": "random",
+          "type": "boolean",
+          "direction": "input",
+          "y": 89
+        },
+        {
+          "id": "next",
+          "name": "next",
+          "type": "number",
+          "direction": "output",
+          "y": 101
+        },
+        {
+          "id": "hovered",
+          "name": "hovered",
+          "type": "number",
+          "direction": "output",
+          "y": 660
+        }
+      ],
+      "width": 2506,
+      "height": 1029
+    },
+    {
+      "id": "sq_cells",
+      "defType": "state/spread",
+      "position": {
+        "x": 312,
+        "y": 630
+      },
+      "params": {}
+    },
+    {
+      "id": "sq_clock",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 301,
+        "y": 882
+      },
+      "params": {
+        "label": "Clock",
+        "width": 1368,
+        "height": 628
+      },
+      "ports": [
+        {
+          "id": "bpm",
+          "name": "bpm",
+          "type": "number",
+          "direction": "input",
+          "y": 252
+        },
+        {
+          "id": "step",
+          "name": "step",
+          "type": "number",
+          "direction": "output",
+          "y": 206
+        },
+        {
+          "id": "within",
+          "name": "within",
+          "type": "number",
+          "direction": "output",
+          "y": 269
+        },
+        {
+          "id": "stepped",
+          "name": "stepped",
+          "type": "boolean",
+          "direction": "output",
+          "y": 92
+        }
+      ],
+      "width": 1368,
+      "height": 628
+    },
+    {
+      "id": "sq_notes",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 609,
+        "y": 685
+      },
+      "params": {
+        "label": "Notes",
+        "width": 1749,
+        "height": 638
+      },
+      "ports": [
+        {
+          "id": "cells",
+          "name": "cells",
+          "type": "number",
+          "direction": "input",
+          "y": 91
+        },
+        {
+          "id": "step",
+          "name": "step",
+          "type": "number",
+          "direction": "input",
+          "y": 430
+        },
+        {
+          "id": "scale",
+          "name": "scale",
+          "type": "string",
+          "direction": "input",
+          "y": 134
+        },
+        {
+          "id": "notes",
+          "name": "notes",
+          "type": "number",
+          "direction": "output",
+          "y": 91
+        },
+        {
+          "id": "lit",
+          "name": "lit",
+          "type": "boolean",
+          "direction": "output",
+          "y": 164
+        },
+        {
+          "id": "column",
+          "name": "column",
+          "type": "number",
+          "direction": "output",
+          "y": 317
+        }
+      ],
+      "width": 1749,
+      "height": 638
+    },
+    {
+      "id": "sq_sound",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 947,
+        "y": 870
+      },
+      "params": {
+        "label": "Sound",
+        "width": 1280,
+        "height": 450
+      },
+      "ports": [
+        {
+          "id": "notes",
+          "name": "notes",
+          "type": "number",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "go",
+          "name": "go",
+          "type": "boolean",
+          "direction": "input",
+          "y": 99
+        },
+        {
+          "id": "bpm",
+          "name": "bpm",
+          "type": "number",
+          "direction": "input",
+          "y": 247
+        },
+        {
+          "id": "tone",
+          "name": "tone",
+          "type": "number",
+          "direction": "input",
+          "y": 142
+        }
+      ],
+      "width": 1280,
+      "height": 450
+    },
+    {
+      "id": "sq_gridDraw",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1223,
+        "y": 667
+      },
+      "params": {
+        "label": "Grid",
+        "width": 2523,
+        "height": 1045
+      },
+      "ports": [
+        {
+          "id": "cells",
+          "name": "cells",
+          "type": "number",
+          "direction": "input",
+          "y": 747
+        },
+        {
+          "id": "step",
+          "name": "step",
+          "type": "number",
+          "direction": "input",
+          "y": 547
+        },
+        {
+          "id": "within",
+          "name": "within",
+          "type": "number",
+          "direction": "input",
+          "y": 643
+        },
+        {
+          "id": "hovered",
+          "name": "hovered",
+          "type": "number",
+          "direction": "input",
+          "y": 813
+        },
+        {
+          "id": "column",
+          "name": "column",
+          "type": "number",
+          "direction": "input",
+          "y": 199
+        },
+        {
+          "id": "lit",
+          "name": "lit",
+          "type": "boolean",
+          "direction": "input",
+          "y": 115
+        },
+        {
+          "id": "grid",
+          "name": "grid",
+          "type": "vec2",
+          "direction": "input",
+          "y": 319
+        },
+        {
+          "id": "playhead",
+          "name": "playhead",
+          "type": "layer",
+          "direction": "output",
+          "y": 115
+        },
+        {
+          "id": "squares",
+          "name": "squares",
+          "type": "layer",
+          "direction": "output",
+          "y": 615
+        },
+        {
+          "id": "ripples",
+          "name": "ripples",
+          "type": "layer",
+          "direction": "output",
+          "y": 234
+        }
+      ],
+      "width": 2523,
+      "height": 1045
+    },
+    {
+      "id": "sq_pattern",
+      "defType": "data/csv-inline",
+      "position": {
+        "x": 1,
+        "y": 622
+      },
+      "params": {
+        "data": "0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0"
       }
     },
     {
-      "id": "sq_cellSize",
-      "defType": "math/expression",
+      "id": "sq_cellAt",
+      "defType": "spread/lookup",
       "position": {
-        "x": 1040,
-        "y": 1495
+        "x": 432,
+        "y": 632
       },
       "params": {
-        "expr": "c > 0.5 && index % 16 == s ? 31 + 7 * (1 - f) : 30"
+        "op": "pick"
+      },
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_paint",
+      "defType": "state/value",
+      "position": {
+        "x": 750,
+        "y": 674
+      },
+      "params": {},
+      "portValues": {
+        "init": 1
+      },
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_kb",
+      "defType": "input/keyboard",
+      "position": {
+        "x": 0,
+        "y": 68
+      },
+      "params": {
+        "mode": "keys"
+      },
+      "portValues": {
+        "keys": "cr"
       }
+    },
+    {
+      "id": "sq_clearBang",
+      "defType": "io/bang",
+      "position": {
+        "x": 285,
+        "y": 0
+      },
+      "params": {
+        "label": "Clear"
+      }
+    },
+    {
+      "id": "sq_randomBang",
+      "defType": "io/bang",
+      "position": {
+        "x": 285,
+        "y": 526
+      },
+      "params": {
+        "label": "Random"
+      }
+    },
+    {
+      "id": "sq_bpm",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 891
+      },
+      "params": {
+        "value": 112,
+        "min": 60,
+        "max": 200,
+        "step": 1,
+        "label": "Tempo"
+      }
+    },
+    {
+      "id": "sq_prevStep",
+      "defType": "state/spread",
+      "position": {
+        "x": 862,
+        "y": 106
+      },
+      "params": {},
+      "portValues": {
+        "init": -1
+      },
+      "parentId": "sq_clock"
+    },
+    {
+      "id": "sq_rows",
+      "defType": "spread/range",
+      "position": {
+        "x": 128,
+        "y": 266
+      },
+      "params": {},
+      "portValues": {
+        "count": 8
+      },
+      "parentId": "sq_notes"
+    },
+    {
+      "id": "sq_colOn",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 932,
+        "y": 118
+      },
+      "params": {
+        "op": "pick"
+      },
+      "parentId": "sq_notes"
+    },
+    {
+      "id": "sq_scaleSel",
+      "defType": "io/select",
+      "position": {
+        "x": 0,
+        "y": 726
+      },
+      "params": {
+        "options": "pentatonic,minor-pentatonic,major,dorian,blues,whole-tone",
+        "value": "pentatonic",
+        "label": "Scale"
+      }
+    },
+    {
+      "id": "sq_scale",
+      "defType": "sound/scale",
+      "position": {
+        "x": 652,
+        "y": 96
+      },
+      "params": {
+        "mode": "degree",
+        "scale": "pentatonic"
+      },
+      "portValues": {
+        "root": 57
+      },
+      "parentId": "sq_notes"
+    },
+    {
+      "id": "sq_playing",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 1474,
+        "y": 40
+      },
+      "params": {
+        "op": "keep-where"
+      },
+      "parentId": "sq_notes"
+    },
+    {
+      "id": "sq_howMany",
+      "defType": "spread/count",
+      "position": {
+        "x": 165,
+        "y": 682
+      },
+      "params": {},
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_voices",
+      "defType": "spread/range",
+      "position": {
+        "x": 165,
+        "y": 578
+      },
+      "params": {},
+      "portValues": {
+        "count": 4
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_mix",
+      "defType": "sound/mix",
+      "position": {
+        "x": 1514,
+        "y": 361
+      },
+      "params": {
+        "slotCount": 4
+      },
+      "portValues": {
+        "level": 0.55
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_note0",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 153,
+        "y": 134
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_gate0",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 972,
+        "y": 255
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_voice0",
+      "defType": "sound/mono-synth",
+      "position": {
+        "x": 1247,
+        "y": 40
+      },
+      "params": {},
+      "portValues": {
+        "velocity": 0.55,
+        "attack": 0.004,
+        "decay": 0.22,
+        "sustain": 0.08,
+        "release": 0.45
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_note1",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 153,
+        "y": 282
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 1
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_gate1",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 972,
+        "y": 422
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 1
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_voice1",
+      "defType": "sound/mono-synth",
+      "position": {
+        "x": 1247,
+        "y": 276
+      },
+      "params": {},
+      "portValues": {
+        "velocity": 0.55,
+        "attack": 0.004,
+        "decay": 0.22,
+        "sustain": 0.08,
+        "release": 0.45
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_note2",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 153,
+        "y": 430
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 2
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_gate2",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 972,
+        "y": 576
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 2
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_voice2",
+      "defType": "sound/mono-synth",
+      "position": {
+        "x": 1247,
+        "y": 512
+      },
+      "params": {},
+      "portValues": {
+        "velocity": 0.55,
+        "attack": 0.004,
+        "decay": 0.22,
+        "sustain": 0.08,
+        "release": 0.45
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_note3",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 153,
+        "y": 786
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 3
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_gate3",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 972,
+        "y": 765
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 3
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_voice3",
+      "defType": "sound/mono-synth",
+      "position": {
+        "x": 1247,
+        "y": 748
+      },
+      "params": {},
+      "portValues": {
+        "velocity": 0.55,
+        "attack": 0.004,
+        "decay": 0.22,
+        "sustain": 0.08,
+        "release": 0.45
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_tone",
+      "defType": "io/slider",
+      "position": {
+        "x": 593,
+        "y": 961
+      },
+      "params": {
+        "value": 2400,
+        "min": 400,
+        "max": 8000,
+        "label": "Tone"
+      }
+    },
+    {
+      "id": "sq_filter",
+      "defType": "sound/filter",
+      "position": {
+        "x": 397,
+        "y": 51
+      },
+      "params": {
+        "type": "lowpass"
+      },
+      "portValues": {
+        "res": 3
+      },
+      "parentId": "sq_sound"
+    },
+    {
+      "id": "sq_delay",
+      "defType": "sound/delay",
+      "position": {
+        "x": 662,
+        "y": 109
+      },
+      "params": {},
+      "portValues": {
+        "feedback": 0.32,
+        "filter": 2600
+      },
+      "parentId": "sq_sound"
+    },
+    {
+      "id": "sq_reverb",
+      "defType": "sound/reverb",
+      "position": {
+        "x": 857,
+        "y": 87
+      },
+      "params": {},
+      "portValues": {
+        "seconds": 2.2,
+        "decay": 2.5,
+        "wet": 0.22
+      },
+      "parentId": "sq_sound"
+    },
+    {
+      "id": "sq_out",
+      "defType": "sound/output",
+      "position": {
+        "x": 1073,
+        "y": 87
+      },
+      "params": {},
+      "portValues": {
+        "volume": 0.8
+      },
+      "parentId": "sq_sound"
     },
     {
       "id": "sq_cellLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 1363,
-        "y": 1460
+        "x": 447,
+        "y": 570
       },
       "params": {
         "width": 526,
@@ -745,7 +873,8 @@
         }
       ],
       "width": 526,
-      "height": 281
+      "height": 281,
+      "parentId": "sq_gridDraw"
     },
     {
       "id": "sq_cellFill",
@@ -768,22 +897,11 @@
       "parentId": "sq_cellLoop"
     },
     {
-      "id": "sq_headX",
-      "defType": "math/expression",
-      "position": {
-        "x": 1040,
-        "y": 975
-      },
-      "params": {
-        "expr": "vec2(-270.0 + s * 36, -30)"
-      }
-    },
-    {
       "id": "sq_headFill",
       "defType": "style/fill",
       "position": {
-        "x": 1051,
-        "y": 1117
+        "x": 1090,
+        "y": 248
       },
       "params": {},
       "portValues": {
@@ -793,92 +911,76 @@
           "b": 1.0,
           "a": 0.07
         }
-      }
+      },
+      "parentId": "sq_gridDraw"
     },
     {
       "id": "sq_head",
       "defType": "draw/rect",
       "position": {
-        "x": 1577,
-        "y": 1098
+        "x": 1375,
+        "y": 140
       },
       "params": {},
       "portValues": {
         "w": 36,
         "h": 302
-      }
+      },
+      "parentId": "sq_gridDraw"
     },
     {
       "id": "sq_colPos",
       "defType": "spread/lookup",
       "position": {
-        "x": 1545,
-        "y": 1789
+        "x": 148,
+        "y": 118
       },
       "params": {
         "op": "pick"
-      }
+      },
+      "parentId": "sq_gridDraw"
     },
     {
       "id": "sq_ripplePos",
       "defType": "spread/sublist",
       "position": {
-        "x": 2342,
-        "y": 1565
+        "x": 629,
+        "y": 40
       },
       "params": {
         "op": "keep-where"
-      }
-    },
-    {
-      "id": "sq_rippleSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 2339,
-        "y": 1713
       },
-      "params": {
-        "expr": "34 + 70 * f"
-      }
-    },
-    {
-      "id": "sq_rippleCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 1542,
-        "y": 1938
-      },
-      "params": {
-        "expr": "rgba(1, 1, 1, 0.55 * (1 - f) * (1 - f))"
-      }
+      "parentId": "sq_gridDraw"
     },
     {
       "id": "sq_rippleStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 2063,
-        "y": 1900
+        "x": 1599,
+        "y": 343
       },
       "params": {},
       "portValues": {
         "width": 2
-      }
+      },
+      "parentId": "sq_gridDraw"
     },
     {
       "id": "sq_rippleNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 2379,
-        "y": 1855
+        "x": 1831,
+        "y": 348
       },
-      "params": {}
+      "params": {},
+      "parentId": "sq_gridDraw"
     },
     {
       "id": "sq_rippleLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 2633,
-        "y": 1625
+        "x": 2072,
+        "y": 157
       },
       "params": {
         "width": 339,
@@ -902,7 +1004,8 @@
         }
       ],
       "width": 339,
-      "height": 224
+      "height": 224,
+      "parentId": "sq_gridDraw"
     },
     {
       "id": "sq_ripple",
@@ -918,54 +1021,58 @@
       "id": "sq_bpmText",
       "defType": "string/format-number",
       "position": {
-        "x": 327,
-        "y": 1651
+        "x": 132,
+        "y": 40
       },
       "params": {},
       "portValues": {
         "decimals": 0,
         "suffix": " BPM"
-      }
+      },
+      "parentId": "sq_statusLine"
     },
     {
       "id": "sq_help",
       "defType": "value/string",
       "position": {
-        "x": 323,
-        "y": 1909
+        "x": 128,
+        "y": 298
       },
       "params": {
         "value": "click or drag cells   ·   R random   ·   C clear"
-      }
+      },
+      "parentId": "sq_statusLine"
     },
     {
       "id": "sq_statusParts",
       "defType": "spread/merge",
       "position": {
-        "x": 659,
-        "y": 1828
+        "x": 403,
+        "y": 180
       },
       "params": {
         "slotCount": 3
-      }
+      },
+      "parentId": "sq_statusLine"
     },
     {
       "id": "sq_status",
       "defType": "string/concat",
       "position": {
-        "x": 1065,
-        "y": 2080
+        "x": 682,
+        "y": 178
       },
       "params": {
         "separator": "   ·   "
-      }
+      },
+      "parentId": "sq_statusLine"
     },
     {
       "id": "sq_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 1051,
-        "y": 2206
+        "x": 668,
+        "y": 304
       },
       "params": {},
       "portValues": {
@@ -975,14 +1082,15 @@
           "b": 0.9098039215686274,
           "a": 0.6
         }
-      }
+      },
+      "parentId": "sq_statusLine"
     },
     {
       "id": "sq_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 1582,
-        "y": 2080
+        "x": 913,
+        "y": 196
       },
       "params": {
         "size": 13,
@@ -993,14 +1101,15 @@
           "x": 0,
           "y": 220.0
         }
-      }
+      },
+      "parentId": "sq_statusLine"
     },
     {
       "id": "sq_scene",
       "defType": "transform/group",
       "position": {
-        "x": 3097,
-        "y": 1589
+        "x": 1454,
+        "y": 711
       },
       "params": {
         "slotCount": 4
@@ -1010,8 +1119,8 @@
       "id": "sq_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 3435,
-        "y": 1589
+        "x": 1718,
+        "y": 711
       },
       "params": {
         "width": 680,
@@ -1025,51 +1134,1274 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "sq_keyC",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 288,
+        "y": 104
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      }
+    },
+    {
+      "id": "sq_clear",
+      "defType": "logic/logic",
+      "position": {
+        "x": 608,
+        "y": 207
+      },
+      "params": {
+        "op": "or"
+      }
+    },
+    {
+      "id": "sq_keyR",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 288,
+        "y": 252
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 1
+      }
+    },
+    {
+      "id": "sq_random",
+      "defType": "logic/logic",
+      "position": {
+        "x": 608,
+        "y": 505
+      },
+      "params": {
+        "op": "or"
+      }
+    },
+    {
+      "id": "sq_editNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 132,
+        "y": 829
+      },
+      "params": {
+        "text": "Hit Test finds the cell the mouse is over (36 px squares round the Grid's points; −1 off the grid). A click on a cell picks the paint (the opposite of that cell) and holding the button paints every cell the mouse passes. R fills the grid with a random tune (a hash of the cell number and the time), C or the Clear bang empties it.",
+        "width": 330,
+        "height": 160
+      },
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_mpos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 326,
+        "y": 400
+      },
+      "params": {}
+    },
+    {
+      "id": "sq_hovered",
+      "defType": "geometry/hit-test",
+      "position": {
+        "x": 132,
+        "y": 567
+      },
+      "params": {
+        "mode": "rects"
+      },
+      "parentId": "sq_edit",
+      "portValues": {
+        "sizes": {
+          "x": 36,
+          "y": 36
+        }
+      }
+    },
+    {
+      "id": "sq_click",
+      "defType": "io/edge",
+      "position": {
+        "x": 167,
+        "y": 392
+      },
+      "params": {
+        "mode": "rising",
+        "threshold": 0.5
+      },
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_onCell",
+      "defType": "logic/compare",
+      "position": {
+        "x": 423,
+        "y": 484
+      },
+      "params": {
+        "op": "greater-equal"
+      },
+      "parentId": "sq_edit",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "sq_pickPaint",
+      "defType": "logic/logic",
+      "position": {
+        "x": 724,
+        "y": 378
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_flip",
+      "defType": "math/math",
+      "position": {
+        "x": 709,
+        "y": 526
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_edit",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "sq_paintNow",
+      "defType": "logic/select",
+      "position": {
+        "x": 1018,
+        "y": 486
+      },
+      "params": {},
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_cellIdx",
+      "defType": "spread/range",
+      "position": {
+        "x": 145,
+        "y": 252
+      },
+      "params": {},
+      "parentId": "sq_edit",
+      "portValues": {
+        "count": 128
+      }
+    },
+    {
+      "id": "sq_editTime",
+      "defType": "time/seconds",
+      "position": {
+        "x": 172,
+        "y": 126
+      },
+      "params": {},
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_hashI",
+      "defType": "math/math",
+      "position": {
+        "x": 429,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_edit",
+      "portValues": {
+        "b": 12.9898
+      }
+    },
+    {
+      "id": "sq_hashT",
+      "defType": "math/math",
+      "position": {
+        "x": 429,
+        "y": 188
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_edit",
+      "portValues": {
+        "b": 78.233
+      }
+    },
+    {
+      "id": "sq_hashSum",
+      "defType": "math/math",
+      "position": {
+        "x": 709,
+        "y": 82
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_hashSin",
+      "defType": "math/math",
+      "position": {
+        "x": 995,
+        "y": 101
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_hashScale",
+      "defType": "math/math",
+      "position": {
+        "x": 1262,
+        "y": 121
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_edit",
+      "portValues": {
+        "b": 43758.5453
+      }
+    },
+    {
+      "id": "sq_hash",
+      "defType": "math/math",
+      "position": {
+        "x": 1537,
+        "y": 142
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_randomLit",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1794,
+        "y": 164
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "sq_edit",
+      "portValues": {
+        "b": 0.84
+      }
+    },
+    {
+      "id": "sq_isUnder",
+      "defType": "logic/compare",
+      "position": {
+        "x": 423,
+        "y": 336
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_brush",
+      "defType": "logic/logic",
+      "position": {
+        "x": 724,
+        "y": 230
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_painted",
+      "defType": "logic/select",
+      "position": {
+        "x": 1294,
+        "y": 412
+      },
+      "params": {},
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_rolled",
+      "defType": "logic/select",
+      "position": {
+        "x": 2082,
+        "y": 149
+      },
+      "params": {},
+      "parentId": "sq_edit"
+    },
+    {
+      "id": "sq_cellsNext",
+      "defType": "logic/select",
+      "position": {
+        "x": 2289,
+        "y": 65
+      },
+      "params": {},
+      "parentId": "sq_edit",
+      "portValues": {
+        "a": 0
+      }
+    },
+    {
+      "id": "sq_clockNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 468
+      },
+      "params": {
+        "text": "A phase that counts sixteenth notes: Integrate runs it at tempo / 15 steps a second (four steps a beat) and wraps it at 16. Its whole part is the step, its fraction how far through the step we are; a new step fires the notes.",
+        "width": 300,
+        "height": 120
+      },
+      "parentId": "sq_clock"
+    },
+    {
+      "id": "sq_stepRate",
+      "defType": "math/math",
+      "position": {
+        "x": 128,
+        "y": 193
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_clock",
+      "portValues": {
+        "b": 15
+      }
+    },
+    {
+      "id": "sq_phaseNext",
+      "defType": "motion/integrate",
+      "position": {
+        "x": 392,
+        "y": 194
+      },
+      "params": {
+        "valueType": "number",
+        "limit": "wrap"
+      },
+      "parentId": "sq_clock",
+      "portValues": {
+        "start": 0,
+        "min": 0,
+        "max": 16,
+        "maxDt": 0.1
+      }
+    },
+    {
+      "id": "sq_step",
+      "defType": "math/math",
+      "position": {
+        "x": 606,
+        "y": 110
+      },
+      "params": {
+        "op": "floor"
+      },
+      "parentId": "sq_clock"
+    },
+    {
+      "id": "sq_within",
+      "defType": "math/math",
+      "position": {
+        "x": 606,
+        "y": 236
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "sq_clock"
+    },
+    {
+      "id": "sq_stepped",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1074,
+        "y": 40
+      },
+      "params": {
+        "op": "not-equal"
+      },
+      "parentId": "sq_clock"
+    },
+    {
+      "id": "sq_notesNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 508
+      },
+      "params": {
+        "text": "The playhead's column: cell row × 16 + step for each of the 8 rows. Its lit cells become notes — the top row the highest degree of the Scale from A3.",
+        "width": 300,
+        "height": 90
+      },
+      "parentId": "sq_notes"
+    },
+    {
+      "id": "sq_rowCell",
+      "defType": "math/math",
+      "position": {
+        "x": 372,
+        "y": 307
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_notes",
+      "portValues": {
+        "b": 16
+      }
+    },
+    {
+      "id": "sq_colIdx",
+      "defType": "math/math",
+      "position": {
+        "x": 649,
+        "y": 288
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_notes"
+    },
+    {
+      "id": "sq_degrees",
+      "defType": "math/math",
+      "position": {
+        "x": 372,
+        "y": 159
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_notes",
+      "portValues": {
+        "a": 7
+      }
+    },
+    {
+      "id": "sq_colLit",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1192,
+        "y": 114
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "sq_notes",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "sq_soundNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 330
+      },
+      "params": {
+        "text": "The voices Mix into one low-pass filter (Tone), an echo three sixteenths long and a reverb.",
+        "width": 280,
+        "height": 80
+      },
+      "parentId": "sq_sound"
+    },
+    {
+      "id": "sq_voiceBank",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 142,
+        "y": 40
+      },
+      "params": {
+        "label": "Voices",
+        "width": 1794,
+        "height": 1140
+      },
+      "ports": [
+        {
+          "id": "notes",
+          "name": "notes",
+          "type": "number",
+          "direction": "input",
+          "y": 518
+        },
+        {
+          "id": "go",
+          "name": "go",
+          "type": "boolean",
+          "direction": "input",
+          "y": 554
+        },
+        {
+          "id": "audio",
+          "name": "audio",
+          "type": "audio",
+          "direction": "output",
+          "y": 398
+        }
+      ],
+      "width": 1794,
+      "height": 1140,
+      "parentId": "sq_sound"
+    },
+    {
+      "id": "sq_voicesNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 153,
+        "y": 1000
+      },
+      "params": {
+        "text": "Four MonoSynths share the notes of a step: voice i plays the i-th note and is triggered when the step starts and there are more than i notes. Mix sums them.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_voiceFree",
+      "defType": "logic/compare",
+      "position": {
+        "x": 417,
+        "y": 593
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_gates",
+      "defType": "logic/logic",
+      "position": {
+        "x": 698,
+        "y": 531
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "sq_voiceBank"
+    },
+    {
+      "id": "sq_echoTime",
+      "defType": "math/math",
+      "position": {
+        "x": 128,
+        "y": 166
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_sound",
+      "portValues": {
+        "a": 45
+      }
+    },
+    {
+      "id": "sq_gridNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 145,
+        "y": 915
+      },
+      "params": {
+        "text": "128 cells on a Grid; the playhead is a faint column; each note that plays sends out a ring that grows and fades over its step.",
+        "width": 280,
+        "height": 90
+      },
+      "parentId": "sq_gridDraw"
+    },
+    {
+      "id": "sq_look",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 149,
+        "y": 710
+      },
+      "params": {
+        "label": "Cell looks",
+        "width": 2666,
+        "height": 1057
+      },
+      "ports": [
+        {
+          "id": "cells",
+          "name": "cells",
+          "type": "number",
+          "direction": "input",
+          "y": 356
+        },
+        {
+          "id": "step",
+          "name": "step",
+          "type": "number",
+          "direction": "input",
+          "y": 421
+        },
+        {
+          "id": "within",
+          "name": "within",
+          "type": "number",
+          "direction": "input",
+          "y": 804
+        },
+        {
+          "id": "hovered",
+          "name": "hovered",
+          "type": "number",
+          "direction": "input",
+          "y": 481
+        },
+        {
+          "id": "colors",
+          "name": "colors",
+          "type": "color",
+          "direction": "output",
+          "y": 262
+        },
+        {
+          "id": "sizes",
+          "name": "sizes",
+          "type": "number",
+          "direction": "output",
+          "y": 419
+        }
+      ],
+      "width": 2666,
+      "height": 1057,
+      "parentId": "sq_gridDraw"
+    },
+    {
+      "id": "sq_lookNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 917
+      },
+      "params": {
+        "text": "Lit cells take their row's hue and flash brighter and bigger as the playhead crosses them; dark cells show the hovered cell and the playhead's column.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "sq_look"
+    },
+    {
+      "id": "sq_lookIdx",
+      "defType": "spread/range",
+      "position": {
+        "x": 150,
+        "y": 193
+      },
+      "params": {},
+      "parentId": "sq_look",
+      "portValues": {
+        "count": 128
+      }
+    },
+    {
+      "id": "sq_isOn",
+      "defType": "logic/compare",
+      "position": {
+        "x": 128,
+        "y": 297
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "sq_rowOfCell",
+      "defType": "math/math",
+      "position": {
+        "x": 446,
+        "y": 40
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "b": 16
+      }
+    },
+    {
+      "id": "sq_cellRow",
+      "defType": "math/math",
+      "position": {
+        "x": 755,
+        "y": 40
+      },
+      "params": {
+        "op": "floor"
+      },
+      "parentId": "sq_look"
+    },
+    {
+      "id": "sq_rowEighth",
+      "defType": "math/math",
+      "position": {
+        "x": 1054,
+        "y": 41
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "b": 8
+      }
+    },
+    {
+      "id": "sq_rowHueStep",
+      "defType": "math/math",
+      "position": {
+        "x": 1360,
+        "y": 63
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "sq_rowHue",
+      "defType": "math/math",
+      "position": {
+        "x": 1632,
+        "y": 70
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "a": 0.52
+      }
+    },
+    {
+      "id": "sq_rowHueDeg",
+      "defType": "math/math",
+      "position": {
+        "x": 1904,
+        "y": 99
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "b": 360
+      }
+    },
+    {
+      "id": "sq_cellCol",
+      "defType": "math/math",
+      "position": {
+        "x": 455,
+        "y": 188
+      },
+      "params": {
+        "op": "mod"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "b": 16
+      }
+    },
+    {
+      "id": "sq_inPlayhead",
+      "defType": "logic/compare",
+      "position": {
+        "x": 739,
+        "y": 320
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "sq_look"
+    },
+    {
+      "id": "sq_fade",
+      "defType": "math/math",
+      "position": {
+        "x": 135,
+        "y": 723
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "sq_flash",
+      "defType": "math/math",
+      "position": {
+        "x": 746,
+        "y": 605
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "a": 0.32
+      }
+    },
+    {
+      "id": "sq_flashHere",
+      "defType": "logic/select",
+      "position": {
+        "x": 1086,
+        "y": 573
+      },
+      "params": {},
+      "parentId": "sq_look",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "sq_light",
+      "defType": "math/math",
+      "position": {
+        "x": 1632,
+        "y": 490
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "a": 0.5
+      }
+    },
+    {
+      "id": "sq_lightPct",
+      "defType": "math/math",
+      "position": {
+        "x": 1904,
+        "y": 429
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "b": 100
+      }
+    },
+    {
+      "id": "sq_litCol",
+      "defType": "color/color",
+      "position": {
+        "x": 2189,
+        "y": 219
+      },
+      "params": {
+        "mode": "hsl"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "s": 75.0,
+        "a": 255
+      }
+    },
+    {
+      "id": "sq_isHovered",
+      "defType": "logic/compare",
+      "position": {
+        "x": 439,
+        "y": 400
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "sq_look"
+    },
+    {
+      "id": "sq_darkCol",
+      "defType": "logic/switch",
+      "position": {
+        "x": 1054,
+        "y": 337
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 2
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "v0": {
+          "r": 0.25,
+          "g": 0.27,
+          "b": 0.38,
+          "a": 1.0
+        },
+        "v1": {
+          "r": 0.17,
+          "g": 0.18,
+          "b": 0.26,
+          "a": 1.0
+        },
+        "else": {
+          "r": 0.1,
+          "g": 0.11,
+          "b": 0.16,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "sq_cellColor",
+      "defType": "logic/select",
+      "position": {
+        "x": 2449,
+        "y": 225
+      },
+      "params": {},
+      "parentId": "sq_look"
+    },
+    {
+      "id": "sq_bigNow",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1069,
+        "y": 189
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "sq_look"
+    },
+    {
+      "id": "sq_swell",
+      "defType": "math/math",
+      "position": {
+        "x": 746,
+        "y": 753
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "a": 7
+      }
+    },
+    {
+      "id": "sq_swellSize",
+      "defType": "math/math",
+      "position": {
+        "x": 1054,
+        "y": 721
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_look",
+      "portValues": {
+        "a": 31
+      }
+    },
+    {
+      "id": "sq_cellSize",
+      "defType": "logic/select",
+      "position": {
+        "x": 1392,
+        "y": 419
+      },
+      "params": {},
+      "parentId": "sq_look",
+      "portValues": {
+        "b": 30
+      }
+    },
+    {
+      "id": "sq_headStep",
+      "defType": "math/math",
+      "position": {
+        "x": 145,
+        "y": 266
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_gridDraw",
+      "portValues": {
+        "b": 36
+      }
+    },
+    {
+      "id": "sq_headLeft",
+      "defType": "math/math",
+      "position": {
+        "x": 626,
+        "y": 188
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_gridDraw",
+      "portValues": {
+        "a": -270.0
+      }
+    },
+    {
+      "id": "sq_headX",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1120,
+        "y": 122
+      },
+      "params": {},
+      "parentId": "sq_gridDraw",
+      "portValues": {
+        "y": -30
+      }
+    },
+    {
+      "id": "sq_rippleGrow",
+      "defType": "math/math",
+      "position": {
+        "x": 145,
+        "y": 414
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_gridDraw",
+      "portValues": {
+        "a": 70
+      }
+    },
+    {
+      "id": "sq_rippleSize",
+      "defType": "math/math",
+      "position": {
+        "x": 1791,
+        "y": 200
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_gridDraw",
+      "portValues": {
+        "a": 34
+      }
+    },
+    {
+      "id": "sq_rippleFade",
+      "defType": "math/math",
+      "position": {
+        "x": 145,
+        "y": 562
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_gridDraw",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "sq_rippleA",
+      "defType": "math/math",
+      "position": {
+        "x": 626,
+        "y": 378
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 3,
+        "valueType": "number"
+      },
+      "parentId": "sq_gridDraw",
+      "portValues": {
+        "a": 0.55
+      }
+    },
+    {
+      "id": "sq_rippleAlpha",
+      "defType": "math/math",
+      "position": {
+        "x": 1079,
+        "y": 391
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "sq_gridDraw",
+      "portValues": {
+        "b": 255
+      }
+    },
+    {
+      "id": "sq_rippleCol",
+      "defType": "color/color",
+      "position": {
+        "x": 1348,
+        "y": 340
+      },
+      "params": {
+        "mode": "rgb"
+      },
+      "parentId": "sq_gridDraw",
+      "portValues": {
+        "r": 255,
+        "g": 255,
+        "b": 255
+      }
+    },
+    {
+      "id": "sq_statusLine",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 299,
+        "y": 756
+      },
+      "params": {
+        "label": "Status",
+        "width": 1114,
+        "height": 586
+      },
+      "ports": [
+        {
+          "id": "bpm",
+          "name": "bpm",
+          "type": "number",
+          "direction": "input",
+          "y": 103
+        },
+        {
+          "id": "scale",
+          "name": "scale",
+          "type": "string",
+          "direction": "input",
+          "y": 274
+        },
+        {
+          "id": "status",
+          "name": "status",
+          "type": "layer",
+          "direction": "output",
+          "y": 233
+        }
+      ],
+      "width": 1114,
+      "height": 586
+    },
+    {
+      "id": "sq_statusLineNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 446
+      },
+      "params": {
+        "text": "Tempo, scale and the keys.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "sq_statusLine"
     }
   ],
   "edges": [
-    {
-      "id": "e_1",
-      "source": "sq_mouse",
-      "target": "sq_mpos",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_2",
-      "source": "sq_mouse",
-      "target": "sq_mpos",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_3",
-      "source": "sq_mpos",
-      "target": "sq_hovered",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_4",
-      "source": "sq_mouse",
-      "target": "sq_wasPressed",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_5",
-      "source": "sq_mouse",
-      "target": "sq_click",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_6",
-      "source": "sq_wasPressed",
-      "target": "sq_click",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-was"
-    },
     {
       "id": "e_7",
       "source": "sq_pattern",
@@ -1078,290 +2410,10 @@
       "targetHandle": "in-init"
     },
     {
-      "id": "e_8",
-      "source": "sq_cells",
-      "target": "sq_cellAt",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_9",
-      "source": "sq_hovered",
-      "target": "sq_cellAt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-index"
-    },
-    {
-      "id": "e_10",
-      "source": "sq_click",
-      "target": "sq_paintNow",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-click"
-    },
-    {
-      "id": "e_11",
-      "source": "sq_hovered",
-      "target": "sq_paintNow",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_12",
-      "source": "sq_cellAt",
-      "target": "sq_paintNow",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-under"
-    },
-    {
-      "id": "e_13",
-      "source": "sq_paint",
-      "target": "sq_paintNow",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_14",
-      "source": "sq_paintNow",
-      "target": "sq_paint",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_15",
-      "source": "sq_cells",
-      "target": "sq_cellsNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_16",
-      "source": "sq_clearBang",
-      "target": "sq_cellsNext",
-      "sourceHandle": "out-bang",
-      "targetHandle": "in-clr"
-    },
-    {
-      "id": "e_17",
-      "source": "sq_randomBang",
-      "target": "sq_cellsNext",
-      "sourceHandle": "out-bang",
-      "targetHandle": "in-rnd"
-    },
-    {
-      "id": "e_18",
-      "source": "sq_kb",
-      "target": "sq_cellsNext",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_19",
-      "source": "sq_kb",
-      "target": "sq_cellsNext",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-key"
-    },
-    {
-      "id": "e_20",
-      "source": "sq_mouse",
-      "target": "sq_cellsNext",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_21",
-      "source": "sq_hovered",
-      "target": "sq_cellsNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_22",
-      "source": "sq_paintNow",
-      "target": "sq_cellsNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_23",
-      "source": "sq_cellsNext",
-      "target": "sq_cells",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_24",
-      "source": "sq_phase",
-      "target": "sq_phaseNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-ph"
-    },
-    {
-      "id": "e_25",
-      "source": "sq_dt",
-      "target": "sq_phaseNext",
-      "sourceHandle": "out-dt",
-      "targetHandle": "in-dt"
-    },
-    {
-      "id": "e_26",
-      "source": "sq_bpm",
-      "target": "sq_phaseNext",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-bpm"
-    },
-    {
-      "id": "e_27",
-      "source": "sq_phaseNext",
-      "target": "sq_phase",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_28",
-      "source": "sq_phaseNext",
-      "target": "sq_step",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ph"
-    },
-    {
-      "id": "e_29",
-      "source": "sq_phaseNext",
-      "target": "sq_within",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ph"
-    },
-    {
-      "id": "e_30",
-      "source": "sq_step",
-      "target": "sq_prevStep",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_31",
-      "source": "sq_step",
-      "target": "sq_stepped",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_32",
-      "source": "sq_prevStep",
-      "target": "sq_stepped",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-prev"
-    },
-    {
-      "id": "e_33",
-      "source": "sq_rows",
-      "target": "sq_colIdx",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-r"
-    },
-    {
-      "id": "e_34",
-      "source": "sq_step",
-      "target": "sq_colIdx",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_35",
-      "source": "sq_cells",
-      "target": "sq_colOn",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-source"
-    },
-    {
-      "id": "e_36",
-      "source": "sq_colIdx",
-      "target": "sq_colOn",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-indices"
-    },
-    {
-      "id": "e_37",
-      "source": "sq_rows",
-      "target": "sq_degrees",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-r"
-    },
-    {
-      "id": "e_38",
-      "source": "sq_degrees",
-      "target": "sq_scale",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-degree"
-    },
-    {
-      "id": "e_39",
-      "source": "sq_scaleSel",
-      "target": "sq_scale",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-scale"
-    },
-    {
-      "id": "e_40",
-      "source": "sq_colOn",
-      "target": "sq_colLit",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-on"
-    },
-    {
       "id": "e_41",
       "source": "sq_scale",
       "target": "sq_playing",
       "sourceHandle": "out-note",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_42",
-      "source": "sq_colLit",
-      "target": "sq_playing",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_43",
-      "source": "sq_playing",
-      "target": "sq_howMany",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_44",
-      "source": "sq_voices",
-      "target": "sq_gates",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_45",
-      "source": "sq_stepped",
-      "target": "sq_gates",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-go"
-    },
-    {
-      "id": "e_46",
-      "source": "sq_howMany",
-      "target": "sq_gates",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_47",
-      "source": "sq_playing",
-      "target": "sq_note0",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_48",
-      "source": "sq_gates",
-      "target": "sq_gate0",
-      "sourceHandle": "out-value",
       "targetHandle": "in-spread"
     },
     {
@@ -1386,20 +2438,6 @@
       "targetHandle": "in-in1"
     },
     {
-      "id": "e_52",
-      "source": "sq_playing",
-      "target": "sq_note1",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_53",
-      "source": "sq_gates",
-      "target": "sq_gate1",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
-    },
-    {
       "id": "e_54",
       "source": "sq_note1",
       "target": "sq_voice1",
@@ -1419,20 +2457,6 @@
       "target": "sq_mix",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in2"
-    },
-    {
-      "id": "e_57",
-      "source": "sq_playing",
-      "target": "sq_note2",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_58",
-      "source": "sq_gates",
-      "target": "sq_gate2",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
     },
     {
       "id": "e_59",
@@ -1456,20 +2480,6 @@
       "targetHandle": "in-in3"
     },
     {
-      "id": "e_62",
-      "source": "sq_playing",
-      "target": "sq_note3",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_63",
-      "source": "sq_gates",
-      "target": "sq_gate3",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
-    },
-    {
       "id": "e_64",
       "source": "sq_note3",
       "target": "sq_voice3",
@@ -1491,39 +2501,11 @@
       "targetHandle": "in-in4"
     },
     {
-      "id": "e_67",
-      "source": "sq_mix",
-      "target": "sq_filter",
-      "sourceHandle": "out-audio",
-      "targetHandle": "in-in"
-    },
-    {
-      "id": "e_68",
-      "source": "sq_tone",
-      "target": "sq_filter",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-freq"
-    },
-    {
-      "id": "e_69",
-      "source": "sq_bpm",
-      "target": "sq_echoTime",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-bpm"
-    },
-    {
       "id": "e_70",
       "source": "sq_filter",
       "target": "sq_delay",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
-    },
-    {
-      "id": "e_71",
-      "source": "sq_echoTime",
-      "target": "sq_delay",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-time"
     },
     {
       "id": "e_72",
@@ -1538,76 +2520,6 @@
       "target": "sq_out",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
-    },
-    {
-      "id": "e_74",
-      "source": "sq_cells",
-      "target": "sq_cellCol",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_75",
-      "source": "sq_step",
-      "target": "sq_cellCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_76",
-      "source": "sq_within",
-      "target": "sq_cellCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_77",
-      "source": "sq_hovered",
-      "target": "sq_cellCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_78",
-      "source": "sq_cells",
-      "target": "sq_cellSize",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_79",
-      "source": "sq_step",
-      "target": "sq_cellSize",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_80",
-      "source": "sq_within",
-      "target": "sq_cellSize",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_81",
-      "source": "sq_grid",
-      "target": "sq_cellLoop",
-      "sourceHandle": "out-positions",
-      "targetHandle": "in-at"
-    },
-    {
-      "id": "e_82",
-      "source": "sq_cellCol",
-      "target": "sq_cellLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-col"
-    },
-    {
-      "id": "e_83",
-      "source": "sq_cellSize",
-      "target": "sq_cellLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-size"
     },
     {
       "id": "e_84",
@@ -1652,20 +2564,6 @@
       "targetHandle": "in-cell"
     },
     {
-      "id": "e_90",
-      "source": "sq_step",
-      "target": "sq_headX",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_91",
-      "source": "sq_headX",
-      "target": "sq_head",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-pos"
-    },
-    {
       "id": "e_92",
       "source": "sq_headFill",
       "target": "sq_head",
@@ -1673,53 +2571,11 @@
       "targetHandle": "in-style"
     },
     {
-      "id": "e_93",
-      "source": "sq_grid",
-      "target": "sq_colPos",
-      "sourceHandle": "out-positions",
-      "targetHandle": "in-source"
-    },
-    {
-      "id": "e_94",
-      "source": "sq_colIdx",
-      "target": "sq_colPos",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-indices"
-    },
-    {
       "id": "e_95",
       "source": "sq_colPos",
       "target": "sq_ripplePos",
       "sourceHandle": "out-result",
       "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_96",
-      "source": "sq_colLit",
-      "target": "sq_ripplePos",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_97",
-      "source": "sq_within",
-      "target": "sq_rippleSize",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_98",
-      "source": "sq_within",
-      "target": "sq_rippleCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_99",
-      "source": "sq_rippleCol",
-      "target": "sq_rippleStroke",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
     },
     {
       "id": "e_100",
@@ -1743,20 +2599,6 @@
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_103",
-      "source": "sq_rippleSize",
-      "target": "sq_ripple",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_104",
-      "source": "sq_rippleSize",
-      "target": "sq_ripple",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
       "id": "e_105",
       "source": "sq_rippleNoFill",
       "target": "sq_ripple",
@@ -1772,9 +2614,9 @@
     },
     {
       "id": "e_107",
-      "source": "sq_bpm",
+      "source": "sq_statusLine",
       "target": "sq_bpmText",
-      "sourceHandle": "out-number",
+      "sourceHandle": "out-bpm",
       "targetHandle": "in-value"
     },
     {
@@ -1786,9 +2628,9 @@
     },
     {
       "id": "e_109",
-      "source": "sq_scaleSel",
+      "source": "sq_statusLine",
       "target": "sq_statusParts",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-scale",
       "targetHandle": "in-s2"
     },
     {
@@ -1820,31 +2662,10 @@
       "targetHandle": "in-style"
     },
     {
-      "id": "e_114",
-      "source": "sq_head",
-      "target": "sq_scene",
-      "sourceHandle": "out-shape",
-      "targetHandle": "in-s1"
-    },
-    {
-      "id": "e_115",
-      "source": "sq_cellLoop",
-      "target": "sq_scene",
-      "sourceHandle": "out-cell",
-      "targetHandle": "in-s2"
-    },
-    {
-      "id": "e_116",
-      "source": "sq_rippleLoop",
-      "target": "sq_scene",
-      "sourceHandle": "out-ring",
-      "targetHandle": "in-s3"
-    },
-    {
       "id": "e_117",
-      "source": "sq_statusText",
+      "source": "sq_statusLine",
       "target": "sq_scene",
-      "sourceHandle": "out-shape",
+      "sourceHandle": "out-status",
       "targetHandle": "in-s4"
     },
     {
@@ -1853,6 +2674,1224 @@
       "target": "sq_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_b1_1",
+      "source": "sq_kb",
+      "target": "sq_keyC",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_2",
+      "source": "sq_clearBang",
+      "target": "sq_clear",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_3",
+      "source": "sq_keyC",
+      "target": "sq_clear",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_4",
+      "source": "sq_kb",
+      "target": "sq_keyR",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_5",
+      "source": "sq_randomBang",
+      "target": "sq_random",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_6",
+      "source": "sq_keyR",
+      "target": "sq_random",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_7",
+      "source": "sq_mouse",
+      "target": "sq_edit",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_b1_8",
+      "source": "sq_mouse",
+      "target": "sq_mpos",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_9",
+      "source": "sq_mouse",
+      "target": "sq_mpos",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_10",
+      "source": "sq_mpos",
+      "target": "sq_edit",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-mouse"
+    },
+    {
+      "id": "e_b1_11",
+      "source": "sq_grid",
+      "target": "sq_edit",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-grid"
+    },
+    {
+      "id": "e_b1_12",
+      "source": "sq_cells",
+      "target": "sq_edit",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-cells"
+    },
+    {
+      "id": "e_b1_13",
+      "source": "sq_edit",
+      "target": "sq_hovered",
+      "sourceHandle": "out-mouse",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_b1_14",
+      "source": "sq_edit",
+      "target": "sq_hovered",
+      "sourceHandle": "out-grid",
+      "targetHandle": "in-centers"
+    },
+    {
+      "id": "e_b1_15",
+      "source": "sq_edit",
+      "target": "sq_click",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_b1_16",
+      "source": "sq_clear",
+      "target": "sq_edit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-clear"
+    },
+    {
+      "id": "e_b1_17",
+      "source": "sq_random",
+      "target": "sq_edit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-random"
+    },
+    {
+      "id": "e_b1_18",
+      "source": "sq_edit",
+      "target": "sq_cellAt",
+      "sourceHandle": "out-cells",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_b1_19",
+      "source": "sq_hovered",
+      "target": "sq_cellAt",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_b1_20",
+      "source": "sq_hovered",
+      "target": "sq_onCell",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_21",
+      "source": "sq_click",
+      "target": "sq_pickPaint",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_22",
+      "source": "sq_onCell",
+      "target": "sq_pickPaint",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_23",
+      "source": "sq_cellAt",
+      "target": "sq_flip",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_24",
+      "source": "sq_pickPaint",
+      "target": "sq_paintNow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_25",
+      "source": "sq_flip",
+      "target": "sq_paintNow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_26",
+      "source": "sq_paint",
+      "target": "sq_paintNow",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_27",
+      "source": "sq_paintNow",
+      "target": "sq_paint",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_28",
+      "source": "sq_cellIdx",
+      "target": "sq_hashI",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_29",
+      "source": "sq_editTime",
+      "target": "sq_hashT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_30",
+      "source": "sq_hashI",
+      "target": "sq_hashSum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_31",
+      "source": "sq_hashT",
+      "target": "sq_hashSum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_32",
+      "source": "sq_hashSum",
+      "target": "sq_hashSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_33",
+      "source": "sq_hashSin",
+      "target": "sq_hashScale",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_34",
+      "source": "sq_hashScale",
+      "target": "sq_hash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_35",
+      "source": "sq_hash",
+      "target": "sq_randomLit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_36",
+      "source": "sq_cellIdx",
+      "target": "sq_isUnder",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_37",
+      "source": "sq_hovered",
+      "target": "sq_isUnder",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_38",
+      "source": "sq_edit",
+      "target": "sq_brush",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_39",
+      "source": "sq_isUnder",
+      "target": "sq_brush",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_40",
+      "source": "sq_brush",
+      "target": "sq_painted",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_41",
+      "source": "sq_paintNow",
+      "target": "sq_painted",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_42",
+      "source": "sq_edit",
+      "target": "sq_painted",
+      "sourceHandle": "out-cells",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_43",
+      "source": "sq_edit",
+      "target": "sq_rolled",
+      "sourceHandle": "out-random",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_44",
+      "source": "sq_randomLit",
+      "target": "sq_rolled",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_45",
+      "source": "sq_painted",
+      "target": "sq_rolled",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_46",
+      "source": "sq_edit",
+      "target": "sq_cellsNext",
+      "sourceHandle": "out-clear",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_47",
+      "source": "sq_rolled",
+      "target": "sq_cellsNext",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_48",
+      "source": "sq_cellsNext",
+      "target": "sq_edit",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_49",
+      "source": "sq_hovered",
+      "target": "sq_edit",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-hovered"
+    },
+    {
+      "id": "e_b1_50",
+      "source": "sq_edit",
+      "target": "sq_cells",
+      "sourceHandle": "out-next",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_51",
+      "source": "sq_bpm",
+      "target": "sq_clock",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-bpm"
+    },
+    {
+      "id": "e_b1_52",
+      "source": "sq_clock",
+      "target": "sq_stepRate",
+      "sourceHandle": "out-bpm",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_53",
+      "source": "sq_stepRate",
+      "target": "sq_phaseNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_b1_54",
+      "source": "sq_phaseNext",
+      "target": "sq_step",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_55",
+      "source": "sq_phaseNext",
+      "target": "sq_within",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_56",
+      "source": "sq_step",
+      "target": "sq_prevStep",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_57",
+      "source": "sq_step",
+      "target": "sq_stepped",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_58",
+      "source": "sq_prevStep",
+      "target": "sq_stepped",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_59",
+      "source": "sq_step",
+      "target": "sq_clock",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-step"
+    },
+    {
+      "id": "e_b1_60",
+      "source": "sq_within",
+      "target": "sq_clock",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-within"
+    },
+    {
+      "id": "e_b1_61",
+      "source": "sq_stepped",
+      "target": "sq_clock",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-stepped"
+    },
+    {
+      "id": "e_b1_62",
+      "source": "sq_cells",
+      "target": "sq_notes",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-cells"
+    },
+    {
+      "id": "e_b1_63",
+      "source": "sq_clock",
+      "target": "sq_notes",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-step"
+    },
+    {
+      "id": "e_b1_64",
+      "source": "sq_scaleSel",
+      "target": "sq_notes",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_b1_65",
+      "source": "sq_notes",
+      "target": "sq_scale",
+      "sourceHandle": "out-scale",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_b1_66",
+      "source": "sq_rows",
+      "target": "sq_rowCell",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_67",
+      "source": "sq_rowCell",
+      "target": "sq_colIdx",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_68",
+      "source": "sq_notes",
+      "target": "sq_colIdx",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_69",
+      "source": "sq_notes",
+      "target": "sq_colOn",
+      "sourceHandle": "out-cells",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_b1_70",
+      "source": "sq_colIdx",
+      "target": "sq_colOn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_b1_71",
+      "source": "sq_rows",
+      "target": "sq_degrees",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_72",
+      "source": "sq_degrees",
+      "target": "sq_scale",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-degree"
+    },
+    {
+      "id": "e_b1_73",
+      "source": "sq_colOn",
+      "target": "sq_colLit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_74",
+      "source": "sq_colLit",
+      "target": "sq_playing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_b1_75",
+      "source": "sq_playing",
+      "target": "sq_notes",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-notes"
+    },
+    {
+      "id": "e_b1_76",
+      "source": "sq_colLit",
+      "target": "sq_notes",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-lit"
+    },
+    {
+      "id": "e_b1_77",
+      "source": "sq_colIdx",
+      "target": "sq_notes",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-column"
+    },
+    {
+      "id": "e_b1_78",
+      "source": "sq_notes",
+      "target": "sq_sound",
+      "sourceHandle": "out-notes",
+      "targetHandle": "in-notes"
+    },
+    {
+      "id": "e_b1_79",
+      "source": "sq_clock",
+      "target": "sq_sound",
+      "sourceHandle": "out-stepped",
+      "targetHandle": "in-go"
+    },
+    {
+      "id": "e_b1_80",
+      "source": "sq_bpm",
+      "target": "sq_sound",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-bpm"
+    },
+    {
+      "id": "e_b1_81",
+      "source": "sq_tone",
+      "target": "sq_sound",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-tone"
+    },
+    {
+      "id": "e_b1_82",
+      "source": "sq_sound",
+      "target": "sq_filter",
+      "sourceHandle": "out-tone",
+      "targetHandle": "in-freq"
+    },
+    {
+      "id": "e_b1_83",
+      "source": "sq_sound",
+      "target": "sq_voiceBank",
+      "sourceHandle": "out-notes",
+      "targetHandle": "in-notes"
+    },
+    {
+      "id": "e_b1_84",
+      "source": "sq_sound",
+      "target": "sq_voiceBank",
+      "sourceHandle": "out-go",
+      "targetHandle": "in-go"
+    },
+    {
+      "id": "e_b1_85",
+      "source": "sq_voiceBank",
+      "target": "sq_howMany",
+      "sourceHandle": "out-notes",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_86",
+      "source": "sq_voiceBank",
+      "target": "sq_note0",
+      "sourceHandle": "out-notes",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_87",
+      "source": "sq_voiceBank",
+      "target": "sq_note1",
+      "sourceHandle": "out-notes",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_88",
+      "source": "sq_voiceBank",
+      "target": "sq_note2",
+      "sourceHandle": "out-notes",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_89",
+      "source": "sq_voiceBank",
+      "target": "sq_note3",
+      "sourceHandle": "out-notes",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_90",
+      "source": "sq_voices",
+      "target": "sq_voiceFree",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_91",
+      "source": "sq_howMany",
+      "target": "sq_voiceFree",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_92",
+      "source": "sq_voiceBank",
+      "target": "sq_gates",
+      "sourceHandle": "out-go",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_93",
+      "source": "sq_voiceFree",
+      "target": "sq_gates",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_94",
+      "source": "sq_gates",
+      "target": "sq_gate0",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_95",
+      "source": "sq_gates",
+      "target": "sq_gate1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_96",
+      "source": "sq_gates",
+      "target": "sq_gate2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_97",
+      "source": "sq_gates",
+      "target": "sq_gate3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_98",
+      "source": "sq_mix",
+      "target": "sq_voiceBank",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-audio"
+    },
+    {
+      "id": "e_b1_99",
+      "source": "sq_voiceBank",
+      "target": "sq_filter",
+      "sourceHandle": "out-audio",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_b1_100",
+      "source": "sq_sound",
+      "target": "sq_echoTime",
+      "sourceHandle": "out-bpm",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_101",
+      "source": "sq_echoTime",
+      "target": "sq_delay",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_b1_102",
+      "source": "sq_cells",
+      "target": "sq_gridDraw",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-cells"
+    },
+    {
+      "id": "e_b1_103",
+      "source": "sq_clock",
+      "target": "sq_gridDraw",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-step"
+    },
+    {
+      "id": "e_b1_104",
+      "source": "sq_clock",
+      "target": "sq_gridDraw",
+      "sourceHandle": "out-within",
+      "targetHandle": "in-within"
+    },
+    {
+      "id": "e_b1_105",
+      "source": "sq_edit",
+      "target": "sq_gridDraw",
+      "sourceHandle": "out-hovered",
+      "targetHandle": "in-hovered"
+    },
+    {
+      "id": "e_b1_106",
+      "source": "sq_notes",
+      "target": "sq_gridDraw",
+      "sourceHandle": "out-column",
+      "targetHandle": "in-column"
+    },
+    {
+      "id": "e_b1_107",
+      "source": "sq_notes",
+      "target": "sq_gridDraw",
+      "sourceHandle": "out-lit",
+      "targetHandle": "in-lit"
+    },
+    {
+      "id": "e_b1_108",
+      "source": "sq_gridDraw",
+      "target": "sq_colPos",
+      "sourceHandle": "out-column",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_b1_109",
+      "source": "sq_grid",
+      "target": "sq_gridDraw",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-grid"
+    },
+    {
+      "id": "e_b1_110",
+      "source": "sq_gridDraw",
+      "target": "sq_colPos",
+      "sourceHandle": "out-grid",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_b1_111",
+      "source": "sq_gridDraw",
+      "target": "sq_cellLoop",
+      "sourceHandle": "out-grid",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_b1_112",
+      "source": "sq_gridDraw",
+      "target": "sq_ripplePos",
+      "sourceHandle": "out-lit",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_b1_113",
+      "source": "sq_gridDraw",
+      "target": "sq_look",
+      "sourceHandle": "out-cells",
+      "targetHandle": "in-cells"
+    },
+    {
+      "id": "e_b1_114",
+      "source": "sq_gridDraw",
+      "target": "sq_look",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-step"
+    },
+    {
+      "id": "e_b1_115",
+      "source": "sq_gridDraw",
+      "target": "sq_look",
+      "sourceHandle": "out-within",
+      "targetHandle": "in-within"
+    },
+    {
+      "id": "e_b1_116",
+      "source": "sq_gridDraw",
+      "target": "sq_look",
+      "sourceHandle": "out-hovered",
+      "targetHandle": "in-hovered"
+    },
+    {
+      "id": "e_b1_117",
+      "source": "sq_look",
+      "target": "sq_isOn",
+      "sourceHandle": "out-cells",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_118",
+      "source": "sq_lookIdx",
+      "target": "sq_rowOfCell",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_119",
+      "source": "sq_rowOfCell",
+      "target": "sq_cellRow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_120",
+      "source": "sq_cellRow",
+      "target": "sq_rowEighth",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_121",
+      "source": "sq_rowEighth",
+      "target": "sq_rowHueStep",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_122",
+      "source": "sq_rowHueStep",
+      "target": "sq_rowHue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_123",
+      "source": "sq_rowHue",
+      "target": "sq_rowHueDeg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_124",
+      "source": "sq_lookIdx",
+      "target": "sq_cellCol",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_125",
+      "source": "sq_cellCol",
+      "target": "sq_inPlayhead",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_126",
+      "source": "sq_look",
+      "target": "sq_inPlayhead",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_127",
+      "source": "sq_look",
+      "target": "sq_fade",
+      "sourceHandle": "out-within",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_128",
+      "source": "sq_fade",
+      "target": "sq_flash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_129",
+      "source": "sq_inPlayhead",
+      "target": "sq_flashHere",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_130",
+      "source": "sq_flash",
+      "target": "sq_flashHere",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_131",
+      "source": "sq_flashHere",
+      "target": "sq_light",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_132",
+      "source": "sq_light",
+      "target": "sq_lightPct",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_133",
+      "source": "sq_rowHueDeg",
+      "target": "sq_litCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_b1_134",
+      "source": "sq_lightPct",
+      "target": "sq_litCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_b1_135",
+      "source": "sq_lookIdx",
+      "target": "sq_isHovered",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_136",
+      "source": "sq_look",
+      "target": "sq_isHovered",
+      "sourceHandle": "out-hovered",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_137",
+      "source": "sq_isHovered",
+      "target": "sq_darkCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_b1_138",
+      "source": "sq_inPlayhead",
+      "target": "sq_darkCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if1"
+    },
+    {
+      "id": "e_b1_139",
+      "source": "sq_isOn",
+      "target": "sq_cellColor",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_140",
+      "source": "sq_litCol",
+      "target": "sq_cellColor",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_141",
+      "source": "sq_darkCol",
+      "target": "sq_cellColor",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_142",
+      "source": "sq_isOn",
+      "target": "sq_bigNow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_143",
+      "source": "sq_inPlayhead",
+      "target": "sq_bigNow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_144",
+      "source": "sq_fade",
+      "target": "sq_swell",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_145",
+      "source": "sq_swell",
+      "target": "sq_swellSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_146",
+      "source": "sq_bigNow",
+      "target": "sq_cellSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_147",
+      "source": "sq_swellSize",
+      "target": "sq_cellSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_148",
+      "source": "sq_cellColor",
+      "target": "sq_look",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_b1_149",
+      "source": "sq_cellSize",
+      "target": "sq_look",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-sizes"
+    },
+    {
+      "id": "e_b1_150",
+      "source": "sq_look",
+      "target": "sq_cellLoop",
+      "sourceHandle": "out-colors",
+      "targetHandle": "in-col"
+    },
+    {
+      "id": "e_b1_151",
+      "source": "sq_look",
+      "target": "sq_cellLoop",
+      "sourceHandle": "out-sizes",
+      "targetHandle": "in-size"
+    },
+    {
+      "id": "e_b1_152",
+      "source": "sq_gridDraw",
+      "target": "sq_headStep",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_153",
+      "source": "sq_headStep",
+      "target": "sq_headLeft",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_154",
+      "source": "sq_headLeft",
+      "target": "sq_headX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_155",
+      "source": "sq_headX",
+      "target": "sq_head",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_b1_156",
+      "source": "sq_gridDraw",
+      "target": "sq_rippleGrow",
+      "sourceHandle": "out-within",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_157",
+      "source": "sq_rippleGrow",
+      "target": "sq_rippleSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_158",
+      "source": "sq_rippleSize",
+      "target": "sq_ripple",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_b1_159",
+      "source": "sq_rippleSize",
+      "target": "sq_ripple",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_b1_160",
+      "source": "sq_gridDraw",
+      "target": "sq_rippleFade",
+      "sourceHandle": "out-within",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_161",
+      "source": "sq_rippleFade",
+      "target": "sq_rippleA",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_162",
+      "source": "sq_rippleFade",
+      "target": "sq_rippleA",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_b1_163",
+      "source": "sq_rippleA",
+      "target": "sq_rippleAlpha",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_164",
+      "source": "sq_rippleAlpha",
+      "target": "sq_rippleCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_165",
+      "source": "sq_rippleCol",
+      "target": "sq_rippleStroke",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_b1_166",
+      "source": "sq_head",
+      "target": "sq_gridDraw",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-playhead"
+    },
+    {
+      "id": "e_b1_167",
+      "source": "sq_cellLoop",
+      "target": "sq_gridDraw",
+      "sourceHandle": "out-cell",
+      "targetHandle": "in-squares"
+    },
+    {
+      "id": "e_b1_168",
+      "source": "sq_rippleLoop",
+      "target": "sq_gridDraw",
+      "sourceHandle": "out-ring",
+      "targetHandle": "in-ripples"
+    },
+    {
+      "id": "e_b1_169",
+      "source": "sq_gridDraw",
+      "target": "sq_scene",
+      "sourceHandle": "out-playhead",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_b1_170",
+      "source": "sq_gridDraw",
+      "target": "sq_scene",
+      "sourceHandle": "out-squares",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_b1_171",
+      "source": "sq_gridDraw",
+      "target": "sq_scene",
+      "sourceHandle": "out-ripples",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_b1_172",
+      "source": "sq_bpm",
+      "target": "sq_statusLine",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-bpm"
+    },
+    {
+      "id": "e_b1_173",
+      "source": "sq_scaleSel",
+      "target": "sq_statusLine",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-scale"
+    },
+    {
+      "id": "e_b1_174",
+      "source": "sq_statusText",
+      "target": "sq_statusLine",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-status"
     }
   ]
 }

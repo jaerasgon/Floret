@@ -164,7 +164,13 @@ pub fn check_connection(patch: &PatchFile, cat: &Catalogue, c: &Conn, replace: b
     ) else {
         return false;
     };
-    if !are_ports_compatible(sp.ty, tp.ty) || !are_kinds_compatible(sp.kind, tp.kind) {
+    // A spread into a single-value pin of a node that runs per element
+    // (patches from v4 on) is fine: the node runs once per item.
+    let lifts = sp.kind == PortKind::Spread
+        && tp.kind == PortKind::Single
+        && !patch.legacy_slot0
+        && find_node(patch, &c.target).is_some_and(|n| floret_engine::nodes::lifts(&n.def_type));
+    if !are_ports_compatible(sp.ty, tp.ty) || !(lifts || are_kinds_compatible(sp.kind, tp.kind)) {
         return false;
     }
     let multi = tp.kind == PortKind::Multi;
@@ -351,6 +357,7 @@ mod tests {
                 node("mk", "vec2/make"),
                 node("range", "spread/range"),
                 node("num", "value/number"),
+                node("rect", "draw/rect"),
             ],
             vec![],
         );
@@ -379,11 +386,17 @@ mod tests {
             &Conn::new("mk", "out-vector", "range", "in-count"),
             true
         ));
-        // spread → single refused.
+        // spread → single: fine into a node that runs per element (from
+        // v4 on), refused into any other and in an older file.
         let spread_out = Conn::new("range", "out-indices", "mk", "in-x");
         let range = resolve_port(&p, c, "range", Side::Out, "indices").unwrap();
         assert_eq!(range.kind, Spread);
+        assert!(check_connection(&p, c, &spread_out, true));
+        let not_lifting = Conn::new("range", "out-indices", "rect", "in-w");
+        assert!(!check_connection(&p, c, &not_lifting, true));
+        p.legacy_slot0 = true;
         assert!(!check_connection(&p, c, &spread_out, true));
+        p.legacy_slot0 = false;
         // Occupied single input: refused by the strict TS rule, replaced
         // by the editor drop.
         connect(&mut p, c, &ok).unwrap();

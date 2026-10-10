@@ -4,7 +4,7 @@
 use crate::spec::Params;
 use serde::{Deserialize, Serialize};
 
-pub const CURRENT_PATCH_VERSION: u32 = 3;
+pub const CURRENT_PATCH_VERSION: u32 = 4;
 pub const PATCH_KIND: &str = "floret.patch";
 /// Loop length (seconds) of a patch that doesn't set one.
 pub const DEFAULT_LOOP_LENGTH: f64 = 4.0;
@@ -32,6 +32,14 @@ pub struct PatchFile {
     /// Saved parameter sets (the Presets panel, `crate::preset`).
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub presets: Vec<Preset>,
+    /// Saved before v4: a spread reaching a single-value pin of a scalar
+    /// node (Math, Compare, Vec2, Colour …) reads only its slot 0, and a
+    /// spread *output* wired into one is dropped with a warning. From v4 on
+    /// those nodes run once per element instead (`crate::nodes::lifts`).
+    /// Set by the migration ladder and kept on save, so an older file
+    /// computes exactly as it did; absent (false) in newer files.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub legacy_slot0: bool,
 }
 
 fn is_zero(n: &u32) -> bool {
@@ -206,6 +214,7 @@ pub fn migrate(mut patch: PatchFile) -> Result<PatchFile, LoadError> {
         patch = match patch.version {
             0 | 1 => v1_to_v2(patch),
             2 => v2_to_v3(patch),
+            3 => v3_to_v4(patch),
             v => unreachable!("no migration from v{v}"),
         };
     }
@@ -256,6 +265,14 @@ fn v2_to_v3(mut patch: PatchFile) -> PatchFile {
         }
     }
     patch.version = 3;
+    patch
+}
+
+/// v3 → v4: scalar nodes run per element over spreads. Older files keep
+/// reading slot 0 (`legacy_slot0`), so they compute what they did.
+fn v3_to_v4(mut patch: PatchFile) -> PatchFile {
+    patch.legacy_slot0 = true;
+    patch.version = 4;
     patch
 }
 
@@ -349,6 +366,24 @@ mod tests {
             p.loop_length = Some(bad);
             assert_eq!(p.loop_seconds(), DEFAULT_LOOP_LENGTH);
         }
+    }
+
+    #[test]
+    fn older_files_keep_slot0_scalars() {
+        let file =
+            |v: u32| format!(r#"{{"kind":"floret.patch","version":{v},"nodes":[],"edges":[]}}"#);
+        for v in 0..CURRENT_PATCH_VERSION {
+            let p = PatchFile::load(&file(v)).unwrap();
+            assert!(p.legacy_slot0, "v{v}");
+            // Saved at the current version, it stays legacy.
+            let json = p.to_json();
+            assert!(json.contains("\"legacySlot0\": true"), "{json}");
+            assert!(PatchFile::load(&json).unwrap().legacy_slot0);
+        }
+        // Current files lift, and don't write the flag.
+        let p = PatchFile::load(&file(CURRENT_PATCH_VERSION)).unwrap();
+        assert!(!p.legacy_slot0);
+        assert!(!p.to_json().contains("legacySlot0"));
     }
 
     #[test]

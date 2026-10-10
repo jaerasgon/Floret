@@ -113,10 +113,17 @@ fn files_without_seed_or_presets_are_written_as_before() {
             !obj.contains_key("seed") && !obj.contains_key("presets"),
             "{id}"
         );
-        // Exactly the original keys, in the original order.
+        // Exactly the original keys, in the original order (plus the
+        // migration's `legacySlot0` for a file saved before v4).
         let original: serde_json::Value = serde_json::from_str(&text).unwrap();
-        let keys =
-            |v: &serde_json::Value| v.as_object().unwrap().keys().cloned().collect::<Vec<_>>();
+        let keys = |v: &serde_json::Value| {
+            v.as_object()
+                .unwrap()
+                .keys()
+                .filter(|k| *k != "legacySlot0")
+                .cloned()
+                .collect::<Vec<_>>()
+        };
         assert_eq!(keys(&json), keys(&original), "{id}");
     }
 }

@@ -15,6 +15,15 @@ pub fn register(r: &mut Registrar) {
     r.node("convert/to-bool", to_bool);
     r.node("convert/to-degrees", to_degrees);
     r.node("convert/to-radians", to_radians);
+    // Per element over spreads (v4 patches on).
+    r.lifted(&[
+        "convert/to-string",
+        "convert/to-number",
+        "convert/to-int",
+        "convert/to-bool",
+        "convert/to-degrees",
+        "convert/to-radians",
+    ]);
 }
 
 // ─── JS coercions ───────────────────────────────────────────────────────────

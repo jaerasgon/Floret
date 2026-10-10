@@ -43,6 +43,7 @@ pub fn register(r: &mut Registrar) {
     r.node("sound/output", output);
     r.node("sound/midi-to-freq", midi_to_freq);
     r.node("sound/freq-to-midi", freq_to_midi);
+    r.lifted(&["sound/midi-to-freq", "sound/freq-to-midi"]);
     r.node("sound/mix", mix);
     r.dynamic("sound/mix", mix_inputs);
     r.node("sound/scale", scale);

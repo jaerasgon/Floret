@@ -49,6 +49,9 @@ pub mod text_animate;
 pub mod time;
 pub mod transform;
 pub mod value;
+
+#[cfg(test)]
+mod lift_tests;
 pub mod vec2;
 pub mod video;
 
@@ -58,6 +61,7 @@ pub struct Registrar {
     dynamic: Vec<(&'static str, DynamicInputsFn)>,
     dynamic_outputs: Vec<(&'static str, DynamicInputsFn)>,
     adaptive: Vec<(&'static str, AdaptiveFn)>,
+    lifted: std::collections::HashSet<&'static str>,
 }
 
 impl Registrar {
@@ -78,6 +82,15 @@ impl Registrar {
     /// For an `adaptiveType` node that only adapts in some modes.
     pub fn adaptive_when(&mut self, ty: &'static str, f: AdaptiveFn) {
         self.adaptive.push((ty, f));
+    }
+
+    /// Node types that run once per element when a spread reaches a
+    /// single-value pin (in patches from v4 on, see [`lifts`]). Their
+    /// factories build nodes whose [`NodeImpl::lift_spreads`] says yes.
+    ///
+    /// [`NodeImpl::lift_spreads`]: crate::node::NodeImpl::lift_spreads
+    pub fn lifted(&mut self, types: &[&'static str]) {
+        self.lifted.extend(types.iter().copied());
     }
 }
 
@@ -146,6 +159,21 @@ pub fn dynamic_outputs() -> Vec<(&'static str, DynamicInputsFn)> {
 /// Every registered adaptive-mode predicate.
 pub fn adaptive_when() -> Vec<(&'static str, AdaptiveFn)> {
     registry().adaptive.clone()
+}
+
+/// Whether nodes of this type run once per element when a spread reaches a
+/// single-value pin, in patches saved from v4 on (older files read slot 0;
+/// see `PatchFile::legacy_slot0`). The editor lets a spread wire into such
+/// a pin; the compiler keeps the wire instead of dropping it.
+pub fn lifts(ty: &str) -> bool {
+    registry().lifted.contains(ty)
+}
+
+/// Every lifting node type (see [`lifts`]), sorted.
+pub fn lifted_types() -> Vec<&'static str> {
+    let mut v: Vec<_> = registry().lifted.iter().copied().collect();
+    v.sort_unstable();
+    v
 }
 
 /// Number of node types with an implementation.

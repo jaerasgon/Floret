@@ -9,21 +9,24 @@
 use super::shared::first;
 use super::Registrar;
 use crate::js;
-use crate::node::{raw, NodeImpl, NodeInit};
+use crate::node::{per_element, per_element_state, raw, NodeImpl, NodeInit};
 use crate::spec::{Params, PortSpec, PortType};
 use crate::value::{one, Color, Spread, Value, Vec2};
 use std::collections::VecDeque;
 use std::f64::consts::PI;
 
 pub fn register(r: &mut Registrar) {
-    r.node("motion/smooth", smooth);
+    // Smooth and Spring follow each element of a spread with its own state
+    // (v4 patches on); Delay Line and Trigger read slot 0.
+    r.node("motion/smooth", |i| per_element_state(i, smooth));
     r.dynamic("motion/smooth", smooth_inputs);
-    r.node("motion/spring", spring);
+    r.node("motion/spring", |i| per_element_state(i, spring));
     r.dynamic("motion/spring", spring_inputs);
     r.node("motion/delay-line", delay_line);
     r.dynamic("motion/delay-line", delay_line_inputs);
-    r.node("motion/ease", ease);
+    r.node("motion/ease", |i| per_element(i, ease(i)));
     r.node("motion/trigger", trigger);
+    r.lifted(&["motion/smooth", "motion/spring", "motion/ease"]);
 }
 
 // ─── Adaptive helpers (from math/_adaptive.ts) ───────────────────────────────
@@ -268,7 +271,7 @@ fn integrate_spring(value: f64, target: f64, vel: f64, dt: f64, k: f64, damp: f6
 
 // ─── Nodes ───────────────────────────────────────────────────────────────────
 
-fn smooth(_: &NodeInit) -> Box<dyn NodeImpl> {
+fn smooth() -> Box<dyn NodeImpl> {
     let mut current: Option<Vec<f64>> = None;
     raw(move |inputs, cx| {
         let target = first(inputs, 0);
@@ -292,7 +295,7 @@ fn smooth(_: &NodeInit) -> Box<dyn NodeImpl> {
     })
 }
 
-fn spring(_: &NodeInit) -> Box<dyn NodeImpl> {
+fn spring() -> Box<dyn NodeImpl> {
     // (value, vel) per component.
     let mut state: Option<Vec<(f64, f64)>> = None;
     raw(move |inputs, cx| {

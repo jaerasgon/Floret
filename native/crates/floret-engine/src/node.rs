@@ -188,6 +188,37 @@ pub trait NodeImpl: Send {
     ///
     /// [`carry`]: NodeImpl::carry
     fn adopt(&mut self, _state: CarriedState) {}
+
+    /// Switch on per-element evaluation over spreads: a spread on a
+    /// single-value pin runs the node once per element (see
+    /// [`lift_len`] for the rule) instead of reading its slot 0. The
+    /// compiler calls this on nodes of the types [`crate::nodes::lifts`]
+    /// lists, in patches saved from v4 on (older files keep slot 0, see
+    /// `PatchFile::legacy_slot0`). Returns whether the node now lifts.
+    fn lift_spreads(&mut self) -> bool {
+        false
+    }
+}
+
+/// Element count for per-element evaluation over the pins marked `single`.
+/// Lifting starts only when a spread of two or more values arrives: then
+/// it's Expression's rule — the longest spread wins, shorter ones cycle
+/// (`s[i % len]`), an empty one empties the result (0). Until then it is 1,
+/// the plain one-value path, where an empty pin reads as "nothing" (an
+/// upstream error or a device that isn't there falls back as it always did).
+pub fn lift_len(inputs: &[Spread], single: impl Fn(usize) -> bool) -> usize {
+    let (mut n, mut empty) = (1, false);
+    for (k, s) in inputs.iter().enumerate() {
+        if single(k) {
+            n = n.max(s.len());
+            empty |= s.is_empty();
+        }
+    }
+    if n > 1 && empty {
+        0
+    } else {
+        n
+    }
 }
 
 /// A node's state handed from one compile of a patch to the next.
@@ -210,10 +241,17 @@ pub type Factory = fn(&NodeInit) -> Box<dyn NodeImpl>;
 /// `single` inputs arrive as their slot-0 value (`Undefined` when empty),
 /// `spread` / `multi` inputs arrive as `Value::List`. Outputs are wrapped
 /// the other way: a `spread` output must be a `List` (anything else is `[]`).
+///
+/// Lifted (see [`NodeImpl::lift_spreads`]), a spread on a `single` pin
+/// calls `f` once per element instead and every output carries one value
+/// per call (a `spread` output the items of each call's list, in order).
+/// While every `single` pin holds exactly one value it takes the plain path
+/// above, so the common case costs nothing extra.
 pub struct Scalar<F> {
     f: F,
     in_kinds: Vec<PortKind>,
     out_kinds: Vec<PortKind>,
+    lift: bool,
 }
 
 pub fn scalar<F>(init: &NodeInit, f: F) -> Box<dyn NodeImpl>
@@ -224,7 +262,55 @@ where
         f,
         in_kinds: init.inputs.iter().map(|p| p.kind).collect(),
         out_kinds: init.spec.outputs.iter().map(|p| p.kind).collect(),
+        lift: false,
     })
+}
+
+fn scalar_arg((v, k): (&Spread, &PortKind)) -> Value {
+    match k {
+        PortKind::Single => v.first().cloned().unwrap_or(Value::Undefined),
+        PortKind::Spread | PortKind::Multi => Value::List(v.clone()),
+    }
+}
+
+impl<F> Scalar<F>
+where
+    F: FnMut(&[Value]) -> Result<Vec<Value>, String> + Send,
+{
+    /// `f` once per element `0..n` (see [`lift_len`]).
+    fn eval_lifted(&mut self, inputs: &[Spread], n: usize) -> NodeResult {
+        let mut outs: Vec<Vec<Value>> = self
+            .out_kinds
+            .iter()
+            .map(|_| Vec::with_capacity(n))
+            .collect();
+        if n > 0 {
+            let mut args: Vec<Value> = inputs.iter().zip(&self.in_kinds).map(scalar_arg).collect();
+            for i in 0..n {
+                for (slot, (s, k)) in args.iter_mut().zip(inputs.iter().zip(&self.in_kinds)) {
+                    if *k == PortKind::Single && s.len() > 1 {
+                        *slot = s[i % s.len()].clone();
+                    }
+                }
+                let results = (self.f)(&args)?;
+                if results.len() != self.out_kinds.len() {
+                    return Err(format!(
+                        "applyKinded output mismatch: expected {}, got {}",
+                        self.out_kinds.len(),
+                        results.len()
+                    ));
+                }
+                for ((out, r), k) in outs.iter_mut().zip(results).zip(&self.out_kinds) {
+                    match (k, r) {
+                        (PortKind::Spread, Value::List(items)) => out.extend(items.iter().cloned()),
+                        (PortKind::Spread, _) => {}
+                        (_, r) => out.push(r),
+                    }
+                }
+            }
+        }
+        Ok(outs.into_iter().map(Spread::from).collect())
+    }
 }
 
 impl<F> NodeImpl for Scalar<F>
@@ -239,10 +325,13 @@ where
                 inputs.len()
             ));
         }
-        let arg = |(v, k): (&Spread, &PortKind)| match k {
-            PortKind::Single => v.first().cloned().unwrap_or(Value::Undefined),
-            PortKind::Spread | PortKind::Multi => Value::List(v.clone()),
-        };
+        if self.lift {
+            let n = lift_len(inputs, |k| self.in_kinds[k] == PortKind::Single);
+            if n != 1 {
+                return self.eval_lifted(inputs, n);
+            }
+        }
+        let arg = scalar_arg;
         // Arguments on the stack for the usual small arities.
         const STACK: usize = 8;
         let results = if inputs.len() <= STACK {
@@ -273,6 +362,122 @@ where
                 _ => crate::value::one(r),
             })
             .collect())
+    }
+
+    fn lift_spreads(&mut self) -> bool {
+        self.lift = true;
+        true
+    }
+}
+
+/// Per-element evaluation for a node written against single values that
+/// isn't a [`Scalar`] (it reads params, or keeps state): lifted, a spread on
+/// a `single` pin runs the inner node once per element with one-value
+/// inputs (Expression's rule, see [`lift_len`]) and concatenates what each
+/// run outputs. Unlifted, or while every `single` pin holds one value, the
+/// inner node sees the inputs untouched.
+pub struct PerElement {
+    single: Vec<bool>,
+    outputs: usize,
+    lift: bool,
+    /// One node for every element (pure nodes), or one per element.
+    nodes: Vec<Box<dyn NodeImpl>>,
+    /// Builds a node per element: state per element (see [`per_element_state`]).
+    make: Option<Box<dyn FnMut() -> Box<dyn NodeImpl> + Send>>,
+}
+
+/// [`PerElement`] over a pure node: one instance runs every element.
+pub fn per_element(init: &NodeInit, inner: Box<dyn NodeImpl>) -> Box<dyn NodeImpl> {
+    Box::new(PerElement {
+        single: init
+            .inputs
+            .iter()
+            .map(|p| p.kind == PortKind::Single)
+            .collect(),
+        outputs: init.spec.outputs.len(),
+        lift: false,
+        nodes: vec![inner],
+        make: None,
+    })
+}
+
+/// [`PerElement`] keeping state per element: element `i` always runs the
+/// `i`-th node `make` built (element 0 is the node an unlifted patch runs);
+/// a spread that grows starts the new elements fresh, one that shrinks drops
+/// the state of the elements gone.
+pub fn per_element_state<M>(init: &NodeInit, mut make: M) -> Box<dyn NodeImpl>
+where
+    M: FnMut() -> Box<dyn NodeImpl> + Send + 'static,
+{
+    Box::new(PerElement {
+        single: init
+            .inputs
+            .iter()
+            .map(|p| p.kind == PortKind::Single)
+            .collect(),
+        outputs: init.spec.outputs.len(),
+        lift: false,
+        nodes: vec![make()],
+        make: Some(Box::new(make)),
+    })
+}
+
+impl NodeImpl for PerElement {
+    fn eval(&mut self, inputs: &[Spread], cx: &mut EvalCtx) -> NodeResult {
+        let n = if self.lift {
+            lift_len(inputs, |k| self.single.get(k).copied().unwrap_or(false))
+        } else {
+            1
+        };
+        if self.make.is_some() {
+            self.nodes.truncate(n.max(1));
+        }
+        if n == 1 {
+            return self.nodes[0].eval(inputs, cx);
+        }
+        let mut outs: Vec<Vec<Value>> = vec![Vec::with_capacity(n); self.outputs];
+        let mut args: Vec<Spread> = inputs.to_vec();
+        for i in 0..n {
+            for (k, (arg, s)) in args.iter_mut().zip(inputs).enumerate() {
+                if self.single.get(k).copied().unwrap_or(false) && s.len() > 1 {
+                    *arg = crate::value::one(s[i % s.len()].clone());
+                }
+            }
+            let node = match &mut self.make {
+                Some(make) => {
+                    if self.nodes.len() <= i {
+                        self.nodes.push(make());
+                    }
+                    &mut self.nodes[i]
+                }
+                None => &mut self.nodes[0],
+            };
+            let res = node.eval(&args, cx)?;
+            if outs.len() < res.len() {
+                outs.resize_with(res.len(), Vec::new);
+            }
+            for (out, r) in outs.iter_mut().zip(res) {
+                out.extend(r.iter().cloned());
+            }
+        }
+        Ok(outs.into_iter().map(Spread::from).collect())
+    }
+
+    fn memoise(&self) -> bool {
+        self.nodes[0].memoise()
+    }
+
+    fn carry(&mut self) -> Option<CarriedState> {
+        self.nodes[0].carry()
+    }
+
+    fn adopt(&mut self, state: CarriedState) {
+        self.nodes[0].adopt(state);
+    }
+
+    fn lift_spreads(&mut self) -> bool {
+        self.lift = true;
+        true
     }
 }
 
@@ -305,6 +510,9 @@ pub fn always_eval(inner: Box<dyn NodeImpl>) -> Box<dyn NodeImpl> {
         }
         fn memoise(&self) -> bool {
             false
+        }
+        fn lift_spreads(&mut self) -> bool {
+            self.0.lift_spreads()
         }
     }
     Box::new(AlwaysEval(inner))

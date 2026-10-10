@@ -3275,7 +3275,7 @@
    "category": "Input",
    "group": "Input & Sound",
    "label": "Keyboard",
-   "description": "Keys pressed in the preview. `mode` last: the last key pressed (`key`) and whether any is down (`pressed`). keys: which of the `keys` listed are held (`down`, one per key: one character each, or names split by commas, e.g. `ArrowLeft, ArrowRight, space`) and `index`, the most recently pressed one still held (−1 none) — a keyboard piano or game controls. text: the `text` typed so far (Backspace deletes, Enter starts a line, at most `max` characters; a rising `clear` empties it). `hit` is true on the frame a key (a listed one; in text mode any typing) goes down.",
+   "description": "Keys pressed in the preview. `mode` last: the last key pressed (`key`) and whether any is down (`pressed`). keys: which of the `keys` listed are held (`down`, one per key: one character each, or names split by commas, e.g. `ArrowLeft, ArrowRight, space`) and `index`, the most recently pressed one still held (−1 none) — a keyboard piano or game controls. text: the `text` typed so far (Backspace deletes, Enter starts a line, at most `max` characters; a rising `clear` empties it). `hit` is true on the frame a key (a listed one; in text mode any typing) goes down; in keys mode `hits` says which: one boolean per listed key, true on the frame it was pressed.",
    "inputs": [],
    "outputs": [
     {
@@ -3307,6 +3307,11 @@
      "name": "hit",
      "type": "boolean",
      "kind": "single"
+    },
+    {
+     "name": "hits",
+     "type": "boolean",
+     "kind": "spread"
     }
    ],
    "eval": "raw",
@@ -3626,7 +3631,7 @@
    "category": "IO",
    "group": "Animate",
    "label": "Counter",
-   "description": "Add `step` to a running count on each rising edge of `inc`; `reset` returns it to `start`.",
+   "description": "Add `step` to a running count on each rising edge of `inc`, subtract it on each rising edge of `dec`; `reset` returns it to `start`. `limit` clamp keeps the count within [min, max]; wrap wraps it into [min, max) (min 0, max 4 counts 0 1 2 3 0 …).",
    "inputs": [
     {
      "name": "inc",
@@ -3653,6 +3658,26 @@
      "kind": "single",
      "default": 0,
      "param": "start"
+    },
+    {
+     "name": "dec",
+     "type": "boolean",
+     "kind": "single",
+     "default": false
+    },
+    {
+     "name": "min",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "param": "min"
+    },
+    {
+     "name": "max",
+     "type": "number",
+     "kind": "single",
+     "default": 10,
+     "param": "max"
     }
    ],
    "outputs": [
@@ -3663,12 +3688,21 @@
     }
    ],
    "eval": "raw",
-   "dynamicInputs": false,
+   "dynamicInputs": true,
    "defaultParams": {
     "step": 1,
-    "start": 0
+    "start": 0,
+    "limit": "none",
+    "min": 0,
+    "max": 10
    },
-   "paramOptions": null,
+   "paramOptions": {
+    "limit": [
+     "none",
+     "clamp",
+     "wrap"
+    ]
+   },
    "effectful": true,
    "compact": true
   },
@@ -4601,7 +4635,7 @@
    "category": "Math",
    "group": "Math",
    "label": "Clamp",
-   "description": "Constrain x to the range [min, max].",
+   "description": "Constrain x to the range [min, max]. Adapts to number, vec2 or colour (per component, like Math): clamp a position into a box.",
    "inputs": [
     {
      "name": "x",
@@ -4630,9 +4664,13 @@
     }
    ],
    "eval": "scalar",
-   "dynamicInputs": false,
-   "defaultParams": null,
-   "paramOptions": null
+   "dynamicInputs": true,
+   "defaultParams": {
+    "valueType": "any"
+   },
+   "paramOptions": null,
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "math/cos",
@@ -5026,7 +5064,7 @@
    "category": "Math",
    "group": "Math",
    "label": "Map",
-   "description": "Remap x from [inMin, inMax] to [outMin, outMax].",
+   "description": "Remap x from [inMin, inMax] to [outMin, outMax]. Adapts to number, vec2 or colour (per component, like Math).",
    "inputs": [
     {
      "name": "x",
@@ -5067,9 +5105,13 @@
     }
    ],
    "eval": "scalar",
-   "dynamicInputs": false,
-   "defaultParams": null,
-   "paramOptions": null
+   "dynamicInputs": true,
+   "defaultParams": {
+    "valueType": "any"
+   },
+   "paramOptions": null,
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "math/expression",
@@ -5552,7 +5594,7 @@
    "category": "Math",
    "group": "Math",
    "label": "Smoothstep",
-   "description": "Smooth Hermite 0→1 ramp as x moves across [edge0, edge1]; flat outside.",
+   "description": "Smooth Hermite 0→1 ramp as x moves across [edge0, edge1]; flat outside. `mode` window: a smooth bump instead — rises across [edge0, edge1], falls back to 0 across [edge2, edge3].",
    "inputs": [
     {
      "name": "edge0",
@@ -5581,9 +5623,16 @@
     }
    ],
    "eval": "scalar",
-   "dynamicInputs": false,
-   "defaultParams": null,
-   "paramOptions": null
+   "dynamicInputs": true,
+   "defaultParams": {
+    "mode": "step"
+   },
+   "paramOptions": {
+    "mode": [
+     "step",
+     "window"
+    ]
+   }
   },
   {
    "type": "math/sq",
@@ -5793,7 +5842,7 @@
    "category": "Math",
    "group": "Math",
    "label": "Wrap",
-   "description": "Wrap x into the half-open range [min, max) (modulo that keeps wrapping seamless).",
+   "description": "Wrap x into the half-open range [min, max) (modulo that keeps wrapping seamless). Adapts to number, vec2 or colour (per component, like Math): wrap a position around the canvas.",
    "inputs": [
     {
      "name": "x",
@@ -5822,9 +5871,13 @@
     }
    ],
    "eval": "scalar",
-   "dynamicInputs": false,
-   "defaultParams": null,
-   "paramOptions": null
+   "dynamicInputs": true,
+   "defaultParams": {
+    "valueType": "any"
+   },
+   "paramOptions": null,
+   "adaptiveType": true,
+   "dynamicOutputs": true
   },
   {
    "type": "meta/comment",
@@ -5970,7 +6023,7 @@
    "category": "Motion",
    "group": "Animate",
    "label": "LFO",
-   "description": "Low-frequency oscillator: a value that cycles between `min` and `max`, `rate` times a second. Shapes: sine, triangle, saw, ramp-down, square (`width` = the high part of the cycle), random (a new value each cycle) and smooth-random. `offset` shifts the phase (0..1); a rising edge on `reset` restarts the cycle. With `bpm` above 0, `rate` counts cycles per beat (0.25 = once a bar in 4/4). With `count` > 1, `value` carries that many copies, each `spread / count` of a cycle behind the last (random shapes get one sequence per copy) — wire it into a ForEach to animate many things at once. `phase` is the 0..1 position in the cycle.",
+   "description": "Low-frequency oscillator: a value that cycles between `min` and `max`, `rate` times a second. Shapes: sine, triangle, saw, ramp-down, square (`width` = the high part of the cycle), random (a new value each cycle) and smooth-random. `offset` shifts the phase (0..1); a rising edge on `reset` restarts the cycle. With `bpm` above 0, `rate` counts cycles per beat (0.25 = once a bar in 4/4). With `count` > 1, `value` carries that many copies, each `spread / count` of a cycle behind the last (random shapes get one sequence per copy) — wire it into a ForEach to animate many things at once. `phase` is the 0..1 position in the cycle. `sync` loop: `rate` counts whole cycles per patch loop (the Time node's `loop` length) and the phase follows the clock, so exported loops join seamlessly (random shapes repeat every loop; `bpm` and `reset` are ignored).",
    "inputs": [
     {
      "name": "shape",
@@ -6057,7 +6110,8 @@
    "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": {
-    "shape": "sine"
+    "shape": "sine",
+    "sync": "free"
    },
    "paramOptions": {
     "shape": [
@@ -6068,6 +6122,10 @@
      "square",
      "random",
      "smooth-random"
+    ],
+    "sync": [
+     "free",
+     "loop"
     ]
    },
    "effectful": true
@@ -9558,7 +9616,7 @@
    "category": "Spread",
    "group": "Patterns",
    "label": "Fibonacci Spread",
-   "description": "Generate a sunflower spiral using the golden angle.",
+   "description": "Generate a sunflower spiral using the golden angle. `inner` leaves a hole of that radius in the middle, keeping the points evenly spaced.",
    "inputs": [
     {
      "name": "count",
@@ -9575,6 +9633,12 @@
     },
     {
      "name": "phase",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "inner",
      "type": "number",
      "kind": "single",
      "default": 0
@@ -10932,7 +10996,7 @@
    "category": "Spread",
    "group": "Patterns",
    "label": "Spiral Spread",
-   "description": "Generate points along an Archimedean spiral.",
+   "description": "Generate points along an Archimedean spiral, from radius `inner` (0: the centre) out to `radius`.",
    "inputs": [
     {
      "name": "count",
@@ -10955,6 +11019,12 @@
     },
     {
      "name": "phase",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    },
+    {
+     "name": "inner",
      "type": "number",
      "kind": "single",
      "default": 0
@@ -12084,8 +12154,15 @@
    "category": "Time",
    "group": "Animate",
    "label": "Delta",
-   "description": "Seconds elapsed since the previous frame (dt) — for frame-rate-independent motion.",
-   "inputs": [],
+   "description": "Seconds elapsed since the previous frame (dt) — for frame-rate-independent motion. `max` above 0 caps it (e.g. 0.05), so motion doesn't jump after a stall.",
+   "inputs": [
+    {
+     "name": "max",
+     "type": "number",
+     "kind": "single",
+     "default": 0
+    }
+   ],
    "outputs": [
     {
      "name": "dt",
@@ -12093,10 +12170,11 @@
      "kind": "single"
     }
    ],
-   "eval": "context",
+   "eval": "raw",
    "dynamicInputs": false,
    "defaultParams": null,
-   "paramOptions": null
+   "paramOptions": null,
+   "effectful": true
   },
   {
    "type": "time/clock",

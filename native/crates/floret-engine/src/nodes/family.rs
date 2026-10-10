@@ -375,6 +375,15 @@ pub fn register(r: &mut Registrar) {
     r.dynamic_outputs("math/statistics", |p| STATISTICS.outputs(p));
 
     r.node("convert/convert", |i| CONVERT.build(i));
+    // Per element over spreads (v4 patches on): every op of these families
+    // is a lifting scalar node.
+    r.lifted(&[
+        "math/math",
+        "vec2/math",
+        "logic/compare",
+        "logic/logic",
+        "convert/convert",
+    ]);
     r.dynamic("convert/convert", |p| CONVERT.inputs(p));
     r.dynamic_outputs("convert/convert", |p| CONVERT.outputs(p));
 

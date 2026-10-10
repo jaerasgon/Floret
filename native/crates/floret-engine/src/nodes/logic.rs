@@ -22,6 +22,19 @@ pub fn register(r: &mut Registrar) {
     r.node("logic/eq", eq);
     r.node("logic/neq", neq);
     r.node("logic/select", select);
+    // Per element over spreads (v4 patches on).
+    r.lifted(&[
+        "logic/and",
+        "logic/or",
+        "logic/not",
+        "logic/gt",
+        "logic/lt",
+        "logic/gte",
+        "logic/lte",
+        "logic/eq",
+        "logic/neq",
+        "logic/select",
+    ]);
 }
 
 fn bool_node(init: &NodeInit, f: fn(&Value, &Value) -> bool) -> Box<dyn NodeImpl> {

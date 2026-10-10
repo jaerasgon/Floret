@@ -1245,5 +1245,6 @@ pub fn empty_patch() -> PatchFile {
         loop_length: None,
         seed: 0,
         presets: Vec::new(),
+        legacy_slot0: false,
     }
 }

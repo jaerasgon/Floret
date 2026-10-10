@@ -132,6 +132,30 @@ pub fn register(r: &mut Registrar) {
             v(q.x * k, q.y * k)
         })
     });
+
+    // Per element over spreads (v4 patches on).
+    r.lifted(&[
+        "vec2/make",
+        "vec2/split",
+        "vec2/from-angle",
+        "vec2/to-polar",
+        "vec2/add",
+        "vec2/sub",
+        "vec2/mul",
+        "vec2/scale",
+        "vec2/lerp",
+        "vec2/mag",
+        "vec2/dist",
+        "vec2/dot",
+        "vec2/heading",
+        "vec2/angle-between",
+        "vec2/normalize",
+        "vec2/set-mag",
+        "vec2/limit",
+        "vec2/rotate",
+        "vec2/reflect",
+        "vec2/project",
+    ]);
 }
 
 fn v(x: f64, y: f64) -> Value {

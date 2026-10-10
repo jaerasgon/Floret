@@ -15,6 +15,9 @@ pub fn register(r: &mut Registrar) {
     r.node("random/uniform", uniform);
     r.node("random/gaussian", gaussian);
     r.node("random/wanderer2d", wanderer2d);
+    // Per element over spreads (v4 patches on): a spread of seeds gives a
+    // value per seed.
+    r.lifted(&["random/uniform", "random/gaussian", "random/wanderer2d"]);
 }
 
 /// `hash32(x, y, seed)` from prng.ts. Arguments go through `| 0`.

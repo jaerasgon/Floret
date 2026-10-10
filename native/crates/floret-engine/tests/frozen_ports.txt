@@ -667,6 +667,7 @@ input/keyboard in max
 input/keyboard node
 input/keyboard out down
 input/keyboard out hit
+input/keyboard out hits
 input/keyboard out index
 input/keyboard out key
 input/keyboard out pressed
@@ -723,12 +724,18 @@ io/color-picker out color
 io/color-picker out g
 io/color-picker out r
 io/color-picker param hex
+io/counter in dec
 io/counter in inc
+io/counter in max
+io/counter in min
 io/counter in reset
 io/counter in start
 io/counter in step
 io/counter node
 io/counter out count
+io/counter param limit
+io/counter param max
+io/counter param min
 io/counter param start
 io/counter param step
 io/edge in in
@@ -880,6 +887,7 @@ math/clamp in min
 math/clamp in x
 math/clamp node
 math/clamp out result
+math/clamp param valueType
 math/cos in x
 math/cos node
 math/cos out result
@@ -941,6 +949,7 @@ math/map in outMin
 math/map in x
 math/map node
 math/map out result
+math/map param valueType
 math/math in a
 math/math in b
 math/math in x
@@ -1012,9 +1021,12 @@ math/sin node
 math/sin out result
 math/smoothstep in edge0
 math/smoothstep in edge1
+math/smoothstep in edge2
+math/smoothstep in edge3
 math/smoothstep in x
 math/smoothstep node
 math/smoothstep out result
+math/smoothstep param mode
 math/sq in x
 math/sq node
 math/sq out result
@@ -1049,6 +1061,7 @@ math/wrap in min
 math/wrap in x
 math/wrap node
 math/wrap out result
+math/wrap param valueType
 meta/comment node
 meta/comment param height
 meta/comment param text
@@ -1084,6 +1097,7 @@ motion/lfo node
 motion/lfo out phase
 motion/lfo out value
 motion/lfo param shape
+motion/lfo param sync
 motion/smooth in rate
 motion/smooth in value
 motion/smooth node
@@ -1606,6 +1620,7 @@ spread/elementary-ca in rule
 spread/elementary-ca node
 spread/elementary-ca out next
 spread/fibonacci in count
+spread/fibonacci in inner
 spread/fibonacci in phase
 spread/fibonacci in scale
 spread/fibonacci node
@@ -1801,6 +1816,7 @@ spread/sort-by-key in spread
 spread/sort-by-key node
 spread/sort-by-key out values
 spread/spiral in count
+spread/spiral in inner
 spread/spiral in phase
 spread/spiral in radius
 spread/spiral in turns
@@ -2082,6 +2098,7 @@ time/clock out weekday
 time/clock out year
 time/clock out yearPhase
 time/clock param zone
+time/delta in max
 time/delta node
 time/delta out dt
 time/frame node

@@ -234,6 +234,7 @@ pub fn spiral(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
     let turns = num_d(&first(inputs, 1), 0.0);
     let radius = num_d(&first(inputs, 2), 0.0);
     let phase = num_d(&first(inputs, 3), 0.0);
+    let inner = num_d(&first(inputs, 4), 0.0);
     if count == 0.0 {
         return ok(vec![vec![]]);
     }
@@ -247,7 +248,12 @@ pub fn spiral(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
                 i as f64 / (count - 1.0)
             };
             let a = phase + total * t;
-            let r = radius * t;
+            // From `inner` (0: the centre) out to `radius`.
+            let r = if inner == 0.0 {
+                radius * t
+            } else {
+                inner + (radius - inner) * t
+            };
             v2(a.cos() * r, a.sin() * r)
         })
         .collect()])
@@ -259,6 +265,7 @@ pub fn fibonacci(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
     let count = int_count(&first(inputs, 0));
     let scale = num_d(&first(inputs, 1), 1.0);
     let phase = num_d(&first(inputs, 2), 0.0);
+    let inner = num_d(&first(inputs, 3), 0.0);
     if count == 0.0 {
         return ok(vec![vec![]]);
     }
@@ -266,7 +273,15 @@ pub fn fibonacci(inputs: &[Spread], _: &mut EvalCtx) -> NodeResult {
     ok(vec![(0..n)
         .map(|i| {
             let a = phase + i as f64 * golden_angle;
-            let r = scale * (i as f64).sqrt();
+            // A hole of radius `inner`: r² grows by `scale²` a point from
+            // `inner²`, so the points stay evenly spaced.
+            let r = if inner == 0.0 {
+                scale * (i as f64).sqrt()
+            } else {
+                (inner * inner + scale * scale * i as f64)
+                    .sqrt()
+                    .copysign(scale)
+            };
             v2(a.cos() * r, a.sin() * r)
         })
         .collect()])

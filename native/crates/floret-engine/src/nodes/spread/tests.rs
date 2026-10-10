@@ -221,3 +221,48 @@ fn ungroup_reads_live_count_param() {
     let out = node.eval(&[groups], &mut cx).unwrap();
     assert_eq!(out.len(), 5);
 }
+
+#[test]
+fn spiral_and_fibonacci_leave_an_inner_hole() {
+    use super::super::value::harness::node;
+    let len = |v: &Value| match v {
+        Value::Vec2(p) => p.x.hypot(p.y),
+        _ => panic!("not a point: {v:?}"),
+    };
+    let n = Value::Num;
+    // Spiral: from `inner` out to `radius`; 0 is the old spiral exactly.
+    let mut s = node("spread/spiral", json!({}));
+    let ins = |inner: f64| {
+        vec![
+            vec![n(5.0)],
+            vec![n(2.0)],
+            vec![n(100.0)],
+            vec![n(0.0)],
+            vec![n(inner)],
+        ]
+    };
+    let old = s.eval(ins(0.0)).unwrap();
+    let before = s.eval(ins(0.0)[..4].to_vec()).unwrap();
+    assert_eq!(format!("{old:?}"), format!("{before:?}"));
+    let out = s.eval(ins(40.0)).unwrap();
+    let radii: Vec<f64> = out[0].iter().map(len).collect();
+    for (r, want) in radii.iter().zip([40.0, 55.0, 70.0, 85.0, 100.0]) {
+        assert!((r - want).abs() < 1e-9, "{radii:?}");
+    }
+    // Fibonacci: the first point sits on the hole's edge and r² keeps
+    // growing by scale² a point (even spacing); 0 is the old sunflower.
+    let mut f = node("spread/fibonacci", json!({}));
+    let ins = |inner: f64| vec![vec![n(50.0)], vec![n(10.0)], vec![n(0.0)], vec![n(inner)]];
+    let old = f.eval(ins(0.0)).unwrap();
+    let before = f.eval(ins(0.0)[..3].to_vec()).unwrap();
+    assert_eq!(format!("{old:?}"), format!("{before:?}"));
+    let out = f.eval(ins(30.0)).unwrap();
+    let radii: Vec<f64> = out[0].iter().map(len).collect();
+    assert!((radii[0] - 30.0).abs() < 1e-9);
+    for (i, r) in radii.iter().enumerate() {
+        assert!(
+            (r * r - (900.0 + 100.0 * i as f64)).abs() < 1e-6,
+            "{i}: {r}"
+        );
+    }
+}

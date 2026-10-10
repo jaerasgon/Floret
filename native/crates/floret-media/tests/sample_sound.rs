@@ -343,7 +343,11 @@ fn midi_garden_play(f: usize) -> Play {
     Play {
         keys,
         pressed: (90..120).contains(&f) || (200..215).contains(&f),
-        mouse: if f < 180 { (100.0, -100.0) } else { (-80.0, 250.0) },
+        mouse: if f < 180 {
+            (100.0, -100.0)
+        } else {
+            (-80.0, 250.0)
+        },
     }
 }
 
@@ -365,10 +369,14 @@ fn rebuilt_samples_sound_as_before() {
     ];
     let mut failures = Vec::new();
     for (id, (frames, play)) in plays {
-        let before = std::fs::read_to_string(std::path::Path::new(&dir).join(format!("{id}.flora")))
-            .expect("the old sample");
+        let before =
+            std::fs::read_to_string(std::path::Path::new(&dir).join(format!("{id}.flora")))
+                .expect("the old sample");
         let after = sample_text(id);
-        for (how, play) in [("idle", (|_| Play::default()) as fn(usize) -> Play), ("played", play)] {
+        for (how, play) in [
+            ("idle", (|_| Play::default()) as fn(usize) -> Play),
+            ("played", play),
+        ] {
             let heard = |text: &str| {
                 let mut engine = Engine::load(text).expect("sample loads");
                 let sys = Arc::new(AudioSystem::offline(SR));

@@ -565,7 +565,11 @@ mod tests {
             // Unset (0, the default), negative or NaN: one closed period.
             let whole = run(m, &[("count", n(300.0))]);
             for off in [0.0, -2.0, f64::NAN] {
-                assert_eq!(run(m, &[("count", n(300.0)), ("laps", n(off))]), whole, "{m}");
+                assert_eq!(
+                    run(m, &[("count", n(300.0)), ("laps", n(off))]),
+                    whole,
+                    "{m}"
+                );
             }
             assert!(whole.1);
             // Set: an open path, point i at i / count of the laps, fitted

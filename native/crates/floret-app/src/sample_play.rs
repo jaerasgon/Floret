@@ -494,12 +494,7 @@ fn traced(flora: &str, script: Option<Script>) -> (Vec<String>, Run) {
         let out = res.outputs.get(r).cloned().flatten().unwrap_or_default();
         texts.push(
             out.iter()
-                .map(|s| {
-                    s.iter()
-                        .map(scene_text)
-                        .collect::<Vec<_>>()
-                        .join(";")
-                })
+                .map(|s| s.iter().map(scene_text).collect::<Vec<_>>().join(";"))
                 .collect::<Vec<_>>()
                 .join(" | "),
         );

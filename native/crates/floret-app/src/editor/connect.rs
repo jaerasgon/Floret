@@ -139,10 +139,80 @@ impl Conn {
     }
 }
 
-/// `buildIsValidConnection`. With `replace` the editor's drop semantics
-/// apply: an occupied single input is not a refusal (the old wire goes),
-/// and the cycle check runs against the edges that would remain.
+/// Shown when a wire is refused for pointing backwards.
+pub const BACKWARD_HINT: &str = "Wires flow left to right — use a Write → Read pair for feedback";
+
+/// Whether the wire would point backwards: its target not to the right of
+/// its source (`floret_engine::flow`). Patches flow left to right;
+/// feedback goes through a Write → Read pair.
+pub fn is_backward(patch: &PatchFile, c: &Conn) -> bool {
+    !floret_engine::flow::is_forward_wire(
+        patch,
+        &c.source,
+        &c.source_handle,
+        &c.target,
+        &c.target_handle,
+    )
+}
+
+/// A wire every other rule allows but the flow rule refuses (the editor
+/// says why instead of refusing silently).
+pub fn refused_by_flow(patch: &PatchFile, cat: &Catalogue, c: &Conn) -> bool {
+    is_backward(patch, c) && check_rules(patch, cat, c, true)
+}
+
+/// A wire pointing backwards (saved before the rule, or a node dragged
+/// after wiring): the node it feeds, and the warning to show.
+pub struct BackwardWire {
+    pub target: String,
+    pub message: String,
+}
+
+/// Every backward wire in the patch. Nothing is changed: the editor only
+/// flags them.
+pub fn backward_wires(patch: &PatchFile, cat: &Catalogue) -> Vec<BackwardWire> {
+    let ids = floret_engine::flow::backward_edges(patch);
+    if ids.is_empty() {
+        return Vec::new();
+    }
+    let label = |id: &str| -> String {
+        find_node(patch, id).map_or_else(
+            || id.to_owned(),
+            |n| {
+                n.params
+                    .get("label")
+                    .and_then(|v| v.as_str())
+                    .map(str::to_owned)
+                    .or_else(|| cat.get(&n.def_type).map(|s| s.label.clone()))
+                    .unwrap_or_else(|| id.to_owned())
+            },
+        )
+    };
+    patch
+        .edges
+        .iter()
+        .filter(|e| ids.contains(&e.id))
+        .map(|e| BackwardWire {
+            target: e.target.clone(),
+            message: format!(
+                "Backward wire {} → {}: {BACKWARD_HINT}",
+                label(&e.source),
+                label(&e.target)
+            ),
+        })
+        .collect()
+}
+
+/// `buildIsValidConnection` plus the flow rule: the wire must also read
+/// left to right. With `replace` the editor's drop semantics apply: an
+/// occupied single input is not a refusal (the old wire goes), and the
+/// cycle check runs against the edges that would remain.
 pub fn check_connection(patch: &PatchFile, cat: &Catalogue, c: &Conn, replace: bool) -> bool {
+    !is_backward(patch, c) && check_rules(patch, cat, c, replace)
+}
+
+/// Every wiring rule but the flow rule.
+pub fn check_rules(patch: &PatchFile, cat: &Catalogue, c: &Conn, replace: bool) -> bool {
     let (Some((Side::Out, sname)), Some((Side::In, tname))) = (
         split_handle(Some(&c.source_handle)),
         split_handle(Some(&c.target_handle)),
@@ -287,7 +357,7 @@ pub fn reorder_multi_edge(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::editor::test_util::{edge, node, patch};
+    use crate::editor::test_util::{at_x, edge, node, patch};
     use PortKind::*;
     use PortType::*;
 
@@ -353,11 +423,11 @@ mod tests {
         let mut p = patch(
             vec![
                 node("t", "time/seconds"),
-                node("add", "math/add"),
-                node("mk", "vec2/make"),
+                at_x(node("add", "math/add"), 300.0),
+                at_x(node("mk", "vec2/make"), 300.0),
                 node("range", "spread/range"),
                 node("num", "value/number"),
-                node("rect", "draw/rect"),
+                at_x(node("rect", "draw/rect"), 300.0),
             ],
             vec![],
         );
@@ -379,8 +449,8 @@ mod tests {
             &Conn::new("add", "out-result", "add", "in-a"),
             true
         ));
-        // Type mismatch refused (vec2 → number).
-        assert!(!check_connection(
+        // Type mismatch refused (vec2 → number), whichever way it points.
+        assert!(!check_rules(
             &p,
             c,
             &Conn::new("mk", "out-vector", "range", "in-count"),
@@ -416,6 +486,41 @@ mod tests {
     }
 
     #[test]
+    fn backward_wires_are_refused_and_reported() {
+        let c = cat();
+        let mut p = patch(
+            vec![
+                node("t", "time/seconds"),
+                at_x(node("add", "math/add"), 300.0),
+                at_x(node("late", "time/seconds"), 600.0),
+            ],
+            vec![],
+        );
+        let fwd = Conn::new("t", "out-t", "add", "in-a");
+        let back = Conn::new("late", "out-t", "add", "in-b");
+        assert!(!is_backward(&p, &fwd) && is_backward(&p, &back));
+        assert!(check_connection(&p, c, &fwd, true));
+        // Allowed by every other rule, refused by the flow rule alone.
+        assert!(check_rules(&p, c, &back, true));
+        assert!(!check_connection(&p, c, &back, true));
+        assert!(refused_by_flow(&p, c, &back));
+        assert!(!refused_by_flow(&p, c, &fwd));
+        assert!(connect(&mut p, c, &back).is_none());
+        assert!(connect(&mut p, c, &fwd).is_some());
+        assert!(backward_wires(&p, c).is_empty());
+        // Dragging `add` left of `t` afterwards: flagged, not changed.
+        crate::editor::ports::find_node_mut(&mut p, "add")
+            .unwrap()
+            .position
+            .x = -100.0;
+        let flagged = backward_wires(&p, c);
+        assert_eq!(flagged.len(), 1);
+        assert_eq!(flagged[0].target, "add");
+        assert!(flagged[0].message.contains("Write → Read"));
+        assert_eq!(p.edges.len(), 1);
+    }
+
+    #[test]
     fn multi_pins_gather_and_reorder() {
         let cat = Catalogue::from_json(
             r#"{"nodes":[
@@ -428,7 +533,7 @@ mod tests {
         .unwrap();
         let mut p = patch(
             vec![
-                node("g", "g"),
+                at_x(node("g", "g"), 300.0),
                 node("a", "v"),
                 node("b", "v"),
                 node("c", "v"),

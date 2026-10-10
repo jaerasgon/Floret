@@ -14,7 +14,7 @@ const CANVASES: [(f32, f32); 2] = [(1040.0, 838.0), (1520.0, 1018.0)];
 
 /// Measure text with real fonts, as the app does. Every test here sets
 /// the same context, so none depends on which ran first.
-fn real_fonts() {
+pub(super) fn real_fonts() {
     static CTX: std::sync::OnceLock<egui::Context> = std::sync::OnceLock::new();
     geom::set_measure(CTX.get_or_init(|| {
         let ctx = egui::Context::default();
@@ -55,7 +55,6 @@ fn samples_open_fitted_and_centred() {
                 pan: view.pan,
                 zoom: view.zoom,
                 scope: None,
-                expanded: &view.expanded,
                 decor: &decor,
             };
             // Node boxes, and with the pins sticking out of them.
@@ -184,7 +183,7 @@ fn sample_nodes_fit_their_text() {
     for s in SAMPLES {
         let patch = loaded(s.flora);
         let all: HashSet<String> = patch.nodes.iter().map(|n| n.id.clone()).collect();
-        let (decor, expanded) = (geom::Decor::default(), HashSet::new());
+        let decor = geom::Decor::default();
         let cx = geom::Ctx {
             patch: &patch,
             cat,
@@ -193,7 +192,6 @@ fn sample_nodes_fit_their_text() {
             pan: Vec2::ZERO,
             zoom: 1.0,
             scope: None,
-            expanded: &expanded,
             decor: &decor,
         };
         for (id, b) in geom::layout(&cx, &all, &|_| false) {
@@ -221,31 +219,69 @@ fn sample_nodes_fit_their_text() {
                     .collect();
                 // Where the left column's content ends.
                 let mut end = row.label_rect.right();
-                if let Some(ro) = &row.readout {
-                    end = row.label_rect.right() + 4.0 + w(ro, mono.clone());
-                }
+                let mut name = row.label.clone().unwrap_or_default();
                 for f in &fields {
-                    if f.rect.left() < row.label_rect.right() - 4.0 {
+                    if row.label.is_some() && f.rect.left() < row.label_rect.right() - 4.0 {
                         failures.push(format!("{at}: a field covers its label"));
                     }
                     end = end.max(f.rect.right());
-                    if let FieldKind::Select(_) = &f.kind {
-                        let text = values::option_label(&values::as_text(&f.value)).to_owned();
-                        if w(&text, mono.clone()) + 4.0 > f.rect.width() - 12.0 {
-                            failures.push(format!("{at}: dropdown text '{text}' overflows"));
+                    if let Some(tag) = &f.label {
+                        // A value box's name fits left of its value.
+                        name.clone_from(&tag.text);
+                        let mut nw = w(&tag.text, label.clone());
+                        if tag.constant {
+                            nw += geom::MARK_W;
                         }
+                        let room = match f.kind {
+                            FieldKind::Bool => f.rect.width() - geom::CHECK - geom::CHECK_GAP,
+                            FieldKind::Vec2 => f32::INFINITY,
+                            _ => f.value_rect.left() - tag.frame.left() - geom::BOX_PAD,
+                        };
+                        if nw > room + 0.5 {
+                            failures.push(format!("{at}: name '{}' runs into its value", tag.text));
+                        }
+                        end = end.max(tag.frame.right());
+                    }
+                    let shown = geom::value_text(&f.kind, &f.value);
+                    match &f.kind {
+                        FieldKind::Select(_) => {
+                            // Longer than a dropdown makes room for: cut with "…".
+                            let tw = w(&shown, mono.clone());
+                            let capped = f.label.is_some() && tw > geom::SELECT_MAX;
+                            if !capped && tw + 4.0 > f.value_rect.width() - 12.0 {
+                                failures.push(format!("{at}: dropdown text '{shown}' overflows"));
+                            }
+                        }
+                        FieldKind::Number { .. } if f.label.is_some() => {
+                            if w(&shown, mono.clone()) > f.value_rect.width() + 0.5 {
+                                failures.push(format!("{at}: value '{shown}' overflows"));
+                            }
+                        }
+                        FieldKind::Vec2 => {
+                            let (x, y) = values::as_vec2(&f.value);
+                            let v = values::num(if f.axis == Some(1) { y } else { x }, 3);
+                            if w(&v, mono.clone()) > f.value_rect.width() + 0.5 {
+                                failures.push(format!("{at}: vec2 value '{v}' overflows"));
+                            }
+                        }
+                        _ => {}
                     }
                 }
-                let right = b.rect.right() - 10.0;
-                let out = row
-                    .output
-                    .as_ref()
-                    .map_or(0.0, |(l, _)| w(l, label.clone()) + 4.0);
-                if end > right - out + 1.0 {
+                // Value boxes run to 8 from the edge; output labels sit 10
+                // in, 4 clear of the row's content.
+                let out = row.output.as_ref().map(|(l, _)| w(l, label.clone()) + 4.0);
+                let limit = match out {
+                    Some(o) => b.rect.right() - 10.0 - o,
+                    None => b.rect.right() - geom::BOX_X,
+                };
+                if end > limit + 1.0 {
                     failures.push(format!(
-                        "{at}: row '{}' runs into {}",
-                        row.label.clone().unwrap_or_default(),
-                        if out > 0.0 { "its output" } else { "the edge" }
+                        "{at}: row '{name}' runs into {}",
+                        if out.is_some() {
+                            "its output"
+                        } else {
+                            "the edge"
+                        }
                     ));
                 }
             }
@@ -280,7 +316,7 @@ fn palette_mode_dropdown_fits_every_option() {
         });
         let patch = loaded(&flora.to_string());
         let all: HashSet<String> = ["p".to_owned()].into();
-        let (decor, expanded) = (geom::Decor::default(), HashSet::new());
+        let decor = geom::Decor::default();
         let cx = geom::Ctx {
             patch: &patch,
             cat,
@@ -289,7 +325,6 @@ fn palette_mode_dropdown_fits_every_option() {
             pan: Vec2::ZERO,
             zoom: 1.0,
             scope: None,
-            expanded: &expanded,
             decor: &decor,
         };
         let boxes = geom::layout(&cx, &all, &|_| false);
@@ -301,11 +336,11 @@ fn palette_mode_dropdown_fits_every_option() {
             .unwrap_or_else(|| panic!("{mode}: no mode dropdown"));
         // The same fit rule as `sample_nodes_fit_their_text`.
         assert!(
-            longest + 4.0 <= field.rect.width() - 12.0,
+            longest + 4.0 <= field.value_rect.width() - 12.0,
             "{mode}: dropdown {} wide, longest option {longest}",
-            field.rect.width()
+            field.value_rect.width()
         );
-        assert!(field.rect.right() <= b.rect.right() - 10.0, "{mode}");
+        assert!(field.rect.right() <= b.rect.right() - geom::BOX_X, "{mode}");
         if mode == "stops" {
             assert_eq!(b.rect.width(), geom::NODE_W, "stops keeps its width");
         } else {

@@ -253,7 +253,7 @@ enum Action {
 
 #[derive(Clone)]
 enum EditTarget {
-    Field(Field),
+    Field(Box<Field>),
     PortName { region: String, port: String },
 }
 
@@ -299,8 +299,6 @@ pub struct View {
     pub gravity: bool,
     /// Entered subpatches, outermost first.
     stack: Vec<String>,
-    /// Inputs whose inline editor is open: (node, port).
-    expanded: HashSet<(String, String)>,
     pub favorites: Favorites,
     /// A region type armed by the palette / search: the next drag on the
     /// canvas draws it.
@@ -377,7 +375,6 @@ impl Default for View {
             auto_grow: true,
             gravity: true,
             stack: Vec::new(),
-            expanded: HashSet::new(),
             favorites: Favorites::load(),
             armed: None,
             history: History::default(),
@@ -443,7 +440,6 @@ impl View {
         self.selected_ports.clear();
         self.raised.clear();
         self.stack.clear();
-        self.expanded.clear();
         self.gesture = Gesture::None;
         self.discard_overlays();
         self.armed = None;
@@ -693,7 +689,7 @@ impl View {
         for n in patch.nodes.iter().filter(|n| keep(&n.id)) {
             let p = ops::absolute_pos(patch, &n.id);
             let look = geom::look_of(n, cat, scope.as_deref());
-            let (w, h) = geom::box_size_with(patch, n, cat, look, &self.expanded);
+            let (w, h) = geom::box_size(patch, n, cat, look);
             let top = if look.is_frame() {
                 regions::HEADER_H
             } else {
@@ -977,7 +973,6 @@ pub fn show(
             pan: view.pan,
             zoom: z,
             scope: scope.as_deref(),
-            expanded: &view.expanded,
             decor: &decor,
         };
         let unimplemented = |id: &str| {
@@ -1206,7 +1201,6 @@ pub fn show(
         let (snap, auto_grow) = (view.snap, view.auto_grow);
         let reduce_motion = view.reduce_motion;
         let (grid, grid_origin) = (view.grid, view.grid_origin);
-        let expanded = view.expanded.clone();
         match &mut view.gesture {
             Gesture::Pan => {
                 view.pan += resp.drag_delta() / z;
@@ -1278,7 +1272,7 @@ pub fn show(
                             let size = ports::find_node(patch, id)
                                 .map(|n| {
                                     let look = geom::look_of(n, cat, scope.as_deref());
-                                    geom::box_size_with(patch, n, cat, look, &expanded)
+                                    geom::box_size(patch, n, cat, look)
                                 })
                                 .unwrap_or_default();
                             regions::auto_grow(patch, id, size, &moving);
@@ -1550,11 +1544,6 @@ pub fn show(
                 actions.push(Action::Focus(id.clone()));
             } else if let Some(f) = hits.field(p) {
                 click_field(view, f.clone(), p);
-            } else if let Some((node, port)) = hits.toggle(p) {
-                let key = (node, port);
-                if !view.expanded.remove(&key) {
-                    view.expanded.insert(key);
-                }
             } else if let Some(pp) = hits.pill(p) {
                 if mods.shift || mods.command {
                     if let Some(i) = view.selected_ports.iter().position(|x| *x == pp) {
@@ -2040,7 +2029,7 @@ pub fn show(
         Some(TextEditing {
             target: EditTarget::Field(f),
             ..
-        }) => Some(f.clone()),
+        }) => Some(Field::clone(f)),
         _ => None,
     };
     let now = ui.input(|i| i.time);
@@ -2352,8 +2341,9 @@ fn click_field(view: &mut View, f: Field, at: Pos2) {
             };
             view.close_overlays();
             view.editing = Some(TextEditing {
-                rect: view.canvas_rect(f.rect),
-                target: EditTarget::Field(f),
+                // Over the value part of a value box.
+                rect: view.canvas_rect(f.value_rect),
+                target: EditTarget::Field(Box::new(f)),
                 text,
                 first: true,
             });
@@ -2606,6 +2596,7 @@ fn overlays(
 fn finish_edit(ed: TextEditing) -> Option<Action> {
     match ed.target {
         EditTarget::Field(f) => {
+            let f = *f;
             let value = match f.axis {
                 Some(a) => {
                     let v: f64 = ed
@@ -3382,13 +3373,13 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             };
             view.close_overlays();
             view.editing = Some(TextEditing {
-                target: EditTarget::Field(Field::new(
+                target: EditTarget::Field(Box::new(Field::new(
                     Rect::NOTHING,
                     &id,
                     EditKey::Param(if pair { "name" } else { "label" }.into()),
                     FieldKind::Text,
                     Json::String(label.clone()),
-                )),
+                ))),
                 text: label,
                 rect,
                 first: true,
@@ -3523,7 +3514,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             view.close_overlays();
             view.select_only(&id);
             view.editing = Some(TextEditing {
-                target: EditTarget::Field(Field {
+                target: EditTarget::Field(Box::new(Field {
                     multiline: true,
                     ..Field::new(
                         rect,
@@ -3532,7 +3523,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                         FieldKind::Text,
                         Json::String(text.clone()),
                     )
-                }),
+                })),
                 text,
                 rect,
                 first: true,

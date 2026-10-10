@@ -16,7 +16,7 @@
         "y": -324
       },
       "params": {
-        "text": "Voronoi Editor\n\nDrag the white handles to reshape the cells. Click empty space to add a point; X removes the one nearest the mouse. Hold L to relax the points (each slides towards the middle of its cell, and the mosaic evens out). D shows the Delaunay triangles, H the convex hull; R (or Reset) starts over.\n\nHow it works: the points are a State*. Edit points measures every point's distance to the mouse, grabs the nearest on a press and remembers it until release, then moves, relaxes (Scatter's relax mode as a target), appends or removes points. Latches remember whether the triangles and hull are shown, and Cells draws Voronoi, Delaunay and hull from the result.",
+        "text": "Voronoi Editor\n\nDrag the white handles to reshape the cells. Click empty space to add a point; X removes the one nearest the mouse. Hold L to relax the points (each slides towards the middle of its cell, and the mosaic evens out). D shows the Delaunay triangles, H the convex hull; R (or Reset) starts over.\n\nHow it works: the points are kept by a Read* → Write* pair. Edit points measures every point's distance to the mouse, grabs the nearest on a press and remembers it until release, then moves, relaxes (Scatter's relax mode as a target), appends or removes points. Latches remember whether the triangles and hull are shown, and Cells draws Voronoi, Delaunay and hull from the result.",
         "width": 460,
         "height": 260
       }
@@ -25,7 +25,7 @@
       "id": "vo_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 0,
+        "x": 537,
         "y": 126
       },
       "params": {}
@@ -49,8 +49,8 @@
       "id": "vo_seedPts",
       "defType": "geometry/scatter",
       "position": {
-        "x": 193,
-        "y": 254
+        "x": 0,
+        "y": 259
       },
       "params": {
         "mode": "poisson"
@@ -66,19 +66,34 @@
     },
     {
       "id": "vo_pts",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 514,
+        "x": 296,
         "y": 249
       },
-      "params": {}
+      "params": {
+        "slot": 1,
+        "name": "points"
+      }
+    },
+    {
+      "id": "vo_ptsWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 2396,
+        "y": 75
+      },
+      "params": {
+        "slot": 1,
+        "name": "points"
+      }
     },
     {
       "id": "vo_nearD",
       "defType": "math/statistics",
       "position": {
-        "x": 507,
-        "y": 498
+        "x": 760,
+        "y": 542
       },
       "params": {
         "op": "min"
@@ -89,8 +104,8 @@
       "id": "vo_nearest",
       "defType": "spread/lookup",
       "position": {
-        "x": 831,
-        "y": 537
+        "x": 1090,
+        "y": 548
       },
       "params": {
         "op": "index-of"
@@ -99,14 +114,30 @@
     },
     {
       "id": "vo_grab",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 195,
-        "y": 360
+        "x": 155,
+        "y": 402
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "grabbed"
+      },
       "portValues": {
         "init": -1
+      },
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_grabWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 4213,
+        "y": 463
+      },
+      "params": {
+        "slot": 1,
+        "name": "grabbed"
       },
       "parentId": "vo_edit"
     },
@@ -114,8 +145,8 @@
       "id": "vo_relaxTarget",
       "defType": "geometry/scatter",
       "position": {
-        "x": 2166,
-        "y": 258
+        "x": 2431,
+        "y": 260
       },
       "params": {
         "mode": "relax"
@@ -148,8 +179,8 @@
       "id": "vo_withNew",
       "defType": "spread/combine",
       "position": {
-        "x": 2867,
-        "y": 173
+        "x": 3133,
+        "y": 167
       },
       "params": {
         "op": "append"
@@ -160,8 +191,8 @@
       "id": "vo_count",
       "defType": "spread/count",
       "position": {
-        "x": 170,
-        "y": 634
+        "x": 420,
+        "y": 676
       },
       "params": {},
       "parentId": "vo_edit"
@@ -170,7 +201,7 @@
       "id": "vo_removed",
       "defType": "spread/sublist",
       "position": {
-        "x": 3413,
+        "x": 3680,
         "y": 204
       },
       "params": {
@@ -182,8 +213,8 @@
       "id": "vo_resetBang",
       "defType": "io/bang",
       "position": {
-        "x": 209,
-        "y": 490
+        "x": 730,
+        "y": 495
       },
       "params": {
         "label": "Reset"
@@ -193,7 +224,7 @@
       "id": "vo_time",
       "defType": "time/seconds",
       "position": {
-        "x": 6,
+        "x": 542,
         "y": 0
       },
       "params": {}
@@ -586,8 +617,8 @@
       "id": "vo_scene",
       "defType": "transform/group",
       "position": {
-        "x": 1321,
-        "y": 338
+        "x": 1829,
+        "y": 352
       },
       "params": {
         "slotCount": 6
@@ -597,8 +628,8 @@
       "id": "vo_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 1585,
-        "y": 338
+        "x": 2093,
+        "y": 352
       },
       "params": {
         "width": 640,
@@ -617,7 +648,7 @@
       "id": "vo_mouseAt",
       "defType": "vec2/make",
       "position": {
-        "x": 250,
+        "x": 772,
         "y": 115
       },
       "params": {}
@@ -626,7 +657,7 @@
       "id": "vo_mpos",
       "defType": "math/clamp",
       "position": {
-        "x": 524,
+        "x": 1030,
         "y": 101
       },
       "params": {
@@ -641,13 +672,13 @@
       "id": "vo_edit",
       "defType": "meta/subpatch",
       "position": {
-        "x": 755,
-        "y": 232
+        "x": 1260,
+        "y": 230
       },
       "params": {
         "label": "Edit points",
-        "width": 3961,
-        "height": 1062
+        "width": 4475,
+        "height": 1082
       },
       "ports": [
         {
@@ -655,98 +686,98 @@
           "name": "points",
           "type": "vec2",
           "direction": "input",
-          "y": 609
+          "y": 498
         },
         {
           "id": "mouse",
           "name": "mouse",
           "type": "vec2",
           "direction": "input",
-          "y": 297
+          "y": 254
         },
         {
           "id": "pressed",
           "name": "pressed",
           "type": "boolean",
           "direction": "input",
-          "y": 277
+          "y": 338
         },
         {
           "id": "seed",
           "name": "seed",
           "type": "vec2",
           "direction": "input",
-          "y": 107
+          "y": 113
         },
         {
           "id": "relax",
           "name": "relax",
           "type": "boolean",
           "direction": "input",
-          "y": 156
+          "y": 166
         },
         {
           "id": "remove",
           "name": "remove",
           "type": "boolean",
           "direction": "input",
-          "y": 714
+          "y": 756
         },
         {
           "id": "reset",
           "name": "reset",
           "type": "boolean",
           "direction": "input",
-          "y": 87
+          "y": 93
         },
         {
           "id": "next",
           "name": "next",
           "type": "vec2",
           "direction": "output",
-          "y": 87
+          "y": 93
         },
         {
           "id": "grabbed",
           "name": "grabbed",
           "type": "number",
           "direction": "output",
-          "y": 481
+          "y": 538
         },
         {
           "id": "nearest",
           "name": "nearest",
           "type": "number",
           "direction": "output",
-          "y": 545
+          "y": 570
         },
         {
           "id": "nearD",
           "name": "nearD",
           "type": "number",
           "direction": "output",
-          "y": 513
+          "y": 506
         },
         {
           "id": "count",
           "name": "count",
           "type": "number",
           "direction": "output",
-          "y": 590
+          "y": 604
         }
       ],
-      "width": 3961,
-      "height": 1062
+      "width": 4475,
+      "height": 1082
     },
     {
       "id": "vo_editNote",
       "defType": "meta/comment",
       "position": {
-        "x": 148,
-        "y": 852
+        "x": 155,
+        "y": 872
       },
       "params": {
-        "text": "Every point's distance to the mouse; the smallest (Statistics min) and its index (Lookup index-of) are the nearest point. A press within 26 px grabs it until release (a State), and the grabbed point follows the mouse. Holding L moves every other point 12 % of the way to the middle of its cell (Scatter's relax mode as a target, then Lerp). A click on empty space appends a point, X removes the nearest (keeping three), R or Reset starts over.",
+        "text": "Every point's distance to the mouse; the smallest (Statistics min) and its index (Lookup index-of) are the nearest point. A press within 26 px grabs it until release (a Write → Read pair), and the grabbed point follows the mouse. Holding L moves every other point 12 % of the way to the middle of its cell (Scatter's relax mode as a target, then Lerp). A click on empty space appends a point, X removes the nearest (keeping three), R or Reset starts over.",
         "width": 330,
         "height": 170
       },
@@ -786,8 +817,8 @@
       "id": "vo_resetting",
       "defType": "logic/logic",
       "position": {
-        "x": 708,
-        "y": 51
+        "x": 697,
+        "y": 117
       },
       "params": {
         "op": "or"
@@ -798,8 +829,8 @@
       "id": "vo_click",
       "defType": "io/edge",
       "position": {
-        "x": 192,
-        "y": 180
+        "x": 442,
+        "y": 222
       },
       "params": {
         "mode": "rising",
@@ -811,8 +842,8 @@
       "id": "vo_dist",
       "defType": "vec2/math",
       "position": {
-        "x": 148,
-        "y": 486
+        "x": 398,
+        "y": 528
       },
       "params": {
         "op": "distance"
@@ -823,8 +854,8 @@
       "id": "vo_close",
       "defType": "logic/compare",
       "position": {
-        "x": 822,
-        "y": 357
+        "x": 1081,
+        "y": 400
       },
       "params": {
         "op": "less"
@@ -838,8 +869,8 @@
       "id": "vo_pick",
       "defType": "logic/select",
       "position": {
-        "x": 1136,
-        "y": 380
+        "x": 1391,
+        "y": 431
       },
       "params": {},
       "parentId": "vo_edit",
@@ -851,8 +882,8 @@
       "id": "vo_stillHeld",
       "defType": "logic/select",
       "position": {
-        "x": 524,
-        "y": 350
+        "x": 777,
+        "y": 394
       },
       "params": {},
       "parentId": "vo_edit",
@@ -864,8 +895,8 @@
       "id": "vo_grabNext",
       "defType": "logic/select",
       "position": {
-        "x": 1381,
-        "y": 387
+        "x": 1636,
+        "y": 434
       },
       "params": {},
       "parentId": "vo_edit"
@@ -874,8 +905,8 @@
       "id": "vo_idx",
       "defType": "spread/range",
       "position": {
-        "x": 1364,
-        "y": 254
+        "x": 1619,
+        "y": 236
       },
       "params": {},
       "parentId": "vo_edit"
@@ -884,8 +915,8 @@
       "id": "vo_isGrabbed",
       "defType": "logic/compare",
       "position": {
-        "x": 1624,
-        "y": 317
+        "x": 1891,
+        "y": 283
       },
       "params": {
         "op": "equal"
@@ -896,8 +927,8 @@
       "id": "vo_dragged",
       "defType": "logic/select",
       "position": {
-        "x": 1927,
-        "y": 342
+        "x": 2194,
+        "y": 327
       },
       "params": {},
       "parentId": "vo_edit"
@@ -906,8 +937,8 @@
       "id": "vo_notGrabbed",
       "defType": "logic/compare",
       "position": {
-        "x": 1624,
-        "y": 169
+        "x": 1891,
+        "y": 135
       },
       "params": {
         "op": "not-equal"
@@ -918,8 +949,8 @@
       "id": "vo_relaxing",
       "defType": "logic/logic",
       "position": {
-        "x": 1910,
-        "y": 140
+        "x": 2177,
+        "y": 115
       },
       "params": {
         "op": "and"
@@ -930,8 +961,8 @@
       "id": "vo_eased",
       "defType": "math/lerp",
       "position": {
-        "x": 2472,
-        "y": 241
+        "x": 2737,
+        "y": 237
       },
       "params": {
         "valueType": "vec2"
@@ -945,8 +976,8 @@
       "id": "vo_relaxed",
       "defType": "logic/select",
       "position": {
-        "x": 2660,
-        "y": 239
+        "x": 2926,
+        "y": 233
       },
       "params": {},
       "parentId": "vo_edit"
@@ -955,8 +986,8 @@
       "id": "vo_far",
       "defType": "logic/compare",
       "position": {
-        "x": 822,
-        "y": 81
+        "x": 1081,
+        "y": 92
       },
       "params": {
         "op": "greater-equal"
@@ -970,7 +1001,7 @@
       "id": "vo_adding",
       "defType": "logic/logic",
       "position": {
-        "x": 1119,
+        "x": 1374,
         "y": 40
       },
       "params": {
@@ -982,8 +1013,8 @@
       "id": "vo_added",
       "defType": "logic/switch",
       "position": {
-        "x": 3136,
-        "y": 139
+        "x": 3402,
+        "y": 134
       },
       "params": {
         "mode": "first-true",
@@ -995,8 +1026,8 @@
       "id": "vo_enough",
       "defType": "logic/compare",
       "position": {
-        "x": 486,
-        "y": 688
+        "x": 739,
+        "y": 708
       },
       "params": {
         "op": "greater"
@@ -1010,8 +1041,8 @@
       "id": "vo_removing",
       "defType": "logic/logic",
       "position": {
-        "x": 843,
-        "y": 685
+        "x": 1102,
+        "y": 696
       },
       "params": {
         "op": "and"
@@ -1022,8 +1053,8 @@
       "id": "vo_ptsNext",
       "defType": "logic/switch",
       "position": {
-        "x": 3681,
-        "y": 45
+        "x": 3949,
+        "y": 44
       },
       "params": {
         "mode": "first-true",
@@ -1050,7 +1081,7 @@
       "id": "vo_showTriNext",
       "defType": "io/latch",
       "position": {
-        "x": 706,
+        "x": 696,
         "y": 428
       },
       "params": {},
@@ -1078,7 +1109,7 @@
       "id": "vo_showHullNext",
       "defType": "io/latch",
       "position": {
-        "x": 706,
+        "x": 696,
         "y": 598
       },
       "params": {},
@@ -1180,12 +1211,12 @@
       "id": "vo_keys",
       "defType": "meta/subpatch",
       "position": {
-        "x": 506,
+        "x": 1012,
         "y": 375
       },
       "params": {
         "label": "Keys",
-        "width": 960,
+        "width": 951,
         "height": 936
       },
       "ports": [
@@ -1194,45 +1225,45 @@
           "name": "resetBang",
           "type": "boolean",
           "direction": "input",
-          "y": 26
+          "y": 163
         },
         {
           "id": "relax",
           "name": "relax",
           "type": "boolean",
           "direction": "output",
-          "y": 27
+          "y": 96
         },
         {
           "id": "remove",
           "name": "remove",
           "type": "boolean",
           "direction": "output",
-          "y": 372
+          "y": 371
         },
         {
           "id": "reset",
           "name": "reset",
           "type": "boolean",
           "direction": "output",
-          "y": 88
+          "y": 154
         },
         {
           "id": "triangles",
           "name": "triangles",
           "type": "boolean",
           "direction": "output",
-          "y": 465
+          "y": 464
         },
         {
           "id": "hull",
           "name": "hull",
           "type": "boolean",
           "direction": "output",
-          "y": 635
+          "y": 634
         }
       ],
-      "width": 960,
+      "width": 951,
       "height": 936
     },
     {
@@ -1253,8 +1284,8 @@
       "id": "vo_mosaic",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1046,
-        "y": 357
+        "x": 1553,
+        "y": 371
       },
       "params": {
         "label": "Mosaic",
@@ -1326,8 +1357,8 @@
       "id": "vo_handles",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1043,
-        "y": 187
+        "x": 1550,
+        "y": 201
       },
       "params": {
         "label": "Handles",
@@ -1392,8 +1423,8 @@
       "id": "vo_statusLine",
       "defType": "meta/subpatch",
       "position": {
-        "x": 1048,
-        "y": 505
+        "x": 1556,
+        "y": 519
       },
       "params": {
         "label": "Status",
@@ -1851,7 +1882,7 @@
     {
       "id": "e_b1_29",
       "source": "vo_grabNext",
-      "target": "vo_grab",
+      "target": "vo_grabWrite",
       "sourceHandle": "out-selected",
       "targetHandle": "in-next"
     },
@@ -2124,7 +2155,7 @@
     {
       "id": "e_b1_68",
       "source": "vo_edit",
-      "target": "vo_pts",
+      "target": "vo_ptsWrite",
       "sourceHandle": "out-next",
       "targetHandle": "in-next"
     },

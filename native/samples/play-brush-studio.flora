@@ -48,8 +48,8 @@
       },
       "params": {
         "label": "Pen",
-        "width": 1647,
-        "height": 741
+        "width": 1988,
+        "height": 873
       },
       "ports": [
         {
@@ -57,74 +57,74 @@
           "name": "x",
           "type": "number",
           "direction": "input",
-          "y": 89
+          "y": 203
         },
         {
           "id": "y",
           "name": "y",
           "type": "number",
           "direction": "input",
-          "y": 109
+          "y": 225
         },
         {
           "id": "pressed",
           "name": "pressed",
           "type": "boolean",
           "direction": "input",
-          "y": 303
+          "y": 509
         },
         {
           "id": "time",
           "name": "time",
           "type": "number",
           "direction": "input",
-          "y": 323
+          "y": 455
         },
         {
           "id": "from",
           "name": "from",
           "type": "vec2",
           "direction": "output",
-          "y": 269
+          "y": 162
         },
         {
           "id": "pen",
           "name": "pen",
           "type": "vec2",
           "direction": "output",
-          "y": 89
+          "y": 219
         },
         {
           "id": "drawing",
           "name": "drawing",
           "type": "boolean",
           "direction": "output",
-          "y": 127
+          "y": 280
         },
         {
           "id": "touched",
           "name": "touched",
           "type": "boolean",
           "direction": "output",
-          "y": 513
+          "y": 367
         },
         {
           "id": "touchedNow",
           "name": "touchedNow",
           "type": "boolean",
           "direction": "output",
-          "y": 430
+          "y": 554
         },
         {
           "id": "down",
           "name": "down",
           "type": "boolean",
           "direction": "output",
-          "y": 237
+          "y": 399
         }
       ],
-      "width": 1647,
-      "height": 741
+      "width": 1988,
+      "height": 873
     },
     {
       "id": "bs_keys",
@@ -135,8 +135,8 @@
       },
       "params": {
         "label": "Keys",
-        "width": 2023,
-        "height": 1050
+        "width": 2066,
+        "height": 1224
       },
       "ports": [
         {
@@ -144,53 +144,53 @@
           "name": "mirrorSwitch",
           "type": "boolean",
           "direction": "input",
-          "y": 83
+          "y": 131
         },
         {
           "id": "clearBang",
           "name": "clearBang",
           "type": "boolean",
           "direction": "input",
-          "y": 586
+          "y": 760
         },
         {
           "id": "touched",
           "name": "touched",
           "type": "boolean",
           "direction": "input",
-          "y": 203
+          "y": 273
         },
         {
           "id": "touchedNow",
           "name": "touchedNow",
           "type": "boolean",
           "direction": "input",
-          "y": 647
+          "y": 821
         },
         {
           "id": "brush",
           "name": "brush",
           "type": "number",
           "direction": "output",
-          "y": 504
+          "y": 725
         },
         {
           "id": "mirror",
           "name": "mirror",
           "type": "boolean",
           "direction": "output",
-          "y": 121
+          "y": 131
         },
         {
           "id": "clear",
           "name": "clear",
           "type": "boolean",
           "direction": "output",
-          "y": 387
+          "y": 600
         }
       ],
-      "width": 2023,
-      "height": 1050
+      "width": 2066,
+      "height": 1224
     },
     {
       "id": "bs_strokeDraw",
@@ -276,22 +276,38 @@
       "id": "bs_mpos",
       "defType": "vec2/make",
       "position": {
-        "x": 192,
-        "y": 40
+        "x": 466,
+        "y": 166
       },
       "params": {},
       "parentId": "bs_penLogic"
     },
     {
       "id": "bs_touched",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 191,
-        "y": 418
+        "x": 157,
+        "y": 396
       },
-      "params": {},
+      "params": {
+        "slot": 2,
+        "name": "touched"
+      },
       "portValues": {
         "init": false
+      },
+      "parentId": "bs_penLogic"
+    },
+    {
+      "id": "bs_touchedWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 1708,
+        "y": 581
+      },
+      "params": {
+        "slot": 2,
+        "name": "touched"
       },
       "parentId": "bs_penLogic"
     },
@@ -299,8 +315,8 @@
       "id": "bs_touchedNext",
       "defType": "logic/logic",
       "position": {
-        "x": 463,
-        "y": 413
+        "x": 721,
+        "y": 548
       },
       "params": {
         "op": "or"
@@ -311,20 +327,23 @@
       "id": "bs_pen",
       "defType": "logic/select",
       "position": {
-        "x": 480,
-        "y": 139
+        "x": 738,
+        "y": 242
       },
       "params": {},
       "parentId": "bs_penLogic"
     },
     {
       "id": "bs_prevPen",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 733,
-        "y": 173
+        "x": 158,
+        "y": 40
       },
-      "params": {},
+      "params": {
+        "slot": 3,
+        "name": "last pen"
+      },
       "portValues": {
         "init": {
           "x": 0,
@@ -334,15 +353,44 @@
       "parentId": "bs_penLogic"
     },
     {
-      "id": "bs_prevDown",
-      "defType": "state/value",
+      "id": "bs_prevPenWrite",
+      "defType": "state/write",
       "position": {
-        "x": 1205,
-        "y": 137
+        "x": 1710,
+        "y": 261
       },
-      "params": {},
+      "params": {
+        "slot": 3,
+        "name": "last pen"
+      },
+      "parentId": "bs_penLogic"
+    },
+    {
+      "id": "bs_prevDown",
+      "defType": "state/read",
+      "position": {
+        "x": 138,
+        "y": 249
+      },
+      "params": {
+        "slot": 4,
+        "name": "pen was down"
+      },
       "portValues": {
         "init": 0
+      },
+      "parentId": "bs_penLogic"
+    },
+    {
+      "id": "bs_prevDownWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 1690,
+        "y": 423
+      },
+      "params": {
+        "slot": 4,
+        "name": "pen was down"
       },
       "parentId": "bs_penLogic"
     },
@@ -350,8 +398,8 @@
       "id": "bs_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 133,
-        "y": 270
+        "x": 393,
+        "y": 444
       },
       "params": {
         "mode": "last"
@@ -362,8 +410,8 @@
       "id": "bs_brushKeys",
       "defType": "string/split",
       "position": {
-        "x": 153,
-        "y": 758
+        "x": 412,
+        "y": 932
       },
       "params": {
         "text": "1,2,3,4",
@@ -375,8 +423,8 @@
       "id": "bs_keyIdx",
       "defType": "spread/lookup",
       "position": {
-        "x": 461,
-        "y": 614
+        "x": 724,
+        "y": 802
       },
       "params": {
         "op": "index-of"
@@ -385,14 +433,30 @@
     },
     {
       "id": "bs_brush",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 791,
-        "y": 504
+        "x": 142,
+        "y": 702
       },
-      "params": {},
+      "params": {
+        "slot": 5,
+        "name": "brush"
+      },
       "portValues": {
         "init": 0
+      },
+      "parentId": "bs_keys"
+    },
+    {
+      "id": "bs_brushWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 1804,
+        "y": 793
+      },
+      "params": {
+        "slot": 5,
+        "name": "brush"
       },
       "parentId": "bs_keys"
     },
@@ -400,8 +464,8 @@
       "id": "bs_mKey",
       "defType": "value/string",
       "position": {
-        "x": 138,
-        "y": 40
+        "x": 398,
+        "y": 340
       },
       "params": {
         "value": "m"
@@ -412,8 +476,8 @@
       "id": "bs_isM",
       "defType": "logic/compare",
       "position": {
-        "x": 452,
-        "y": 139
+        "x": 714,
+        "y": 384
       },
       "params": {
         "op": "equal"
@@ -422,14 +486,30 @@
     },
     {
       "id": "bs_mirrorKey",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 1302,
-        "y": 103
+        "x": 133,
+        "y": 88
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "mirror key"
+      },
       "portValues": {
         "init": 0
+      },
+      "parentId": "bs_keys"
+    },
+    {
+      "id": "bs_mirrorKeyWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 1788,
+        "y": 302
+      },
+      "params": {
+        "slot": 1,
+        "name": "mirror key"
       },
       "parentId": "bs_keys"
     },
@@ -449,8 +529,8 @@
       "id": "bs_cKey",
       "defType": "value/string",
       "position": {
-        "x": 138,
-        "y": 506
+        "x": 398,
+        "y": 680
       },
       "params": {
         "value": "c"
@@ -461,8 +541,8 @@
       "id": "bs_isC",
       "defType": "logic/compare",
       "position": {
-        "x": 452,
-        "y": 396
+        "x": 714,
+        "y": 581
       },
       "params": {
         "op": "equal"
@@ -543,7 +623,7 @@
       "defType": "spread/range",
       "position": {
         "x": 173,
-        "y": 780
+        "y": 796
       },
       "params": {},
       "portValues": {
@@ -579,7 +659,7 @@
       "defType": "spread/range",
       "position": {
         "x": 173,
-        "y": 322
+        "y": 338
       },
       "params": {},
       "portValues": {
@@ -755,7 +835,8 @@
         "y": 111
       },
       "params": {
-        "slot": 1
+        "slot": 1,
+        "name": "paper"
       },
       "parentId": "bs_paperLoop"
     },
@@ -823,11 +904,12 @@
       "id": "bs_write",
       "defType": "state/write",
       "position": {
-        "x": 1464,
+        "x": 1656,
         "y": 254
       },
       "params": {
-        "slot": 1
+        "slot": 1,
+        "name": "paper"
       },
       "parentId": "bs_paperLoop"
     },
@@ -1045,8 +1127,8 @@
       "id": "bs_demoPen",
       "defType": "meta/subpatch",
       "position": {
-        "x": 154,
-        "y": 166
+        "x": 428,
+        "y": 292
       },
       "params": {
         "label": "Demo pen",
@@ -1330,8 +1412,8 @@
       "id": "bs_untouched",
       "defType": "logic/logic",
       "position": {
-        "x": 463,
-        "y": 287
+        "x": 721,
+        "y": 422
       },
       "params": {
         "op": "not"
@@ -1342,8 +1424,8 @@
       "id": "bs_early",
       "defType": "logic/compare",
       "position": {
-        "x": 144,
-        "y": 270
+        "x": 418,
+        "y": 522
       },
       "params": {
         "op": "less"
@@ -1357,8 +1439,8 @@
       "id": "bs_demoDown",
       "defType": "logic/logic",
       "position": {
-        "x": 707,
-        "y": 299
+        "x": 965,
+        "y": 433
       },
       "params": {
         "op": "and"
@@ -1369,8 +1451,8 @@
       "id": "bs_penDown",
       "defType": "logic/logic",
       "position": {
-        "x": 960,
-        "y": 134
+        "x": 1203,
+        "y": 375
       },
       "params": {
         "op": "or"
@@ -1381,8 +1463,8 @@
       "id": "bs_drawing",
       "defType": "logic/logic",
       "position": {
-        "x": 1394,
-        "y": 91
+        "x": 1455,
+        "y": 243
       },
       "params": {
         "op": "and"
@@ -1394,10 +1476,10 @@
       "defType": "meta/comment",
       "position": {
         "x": 133,
-        "y": 900
+        "y": 1074
       },
       "params": {
-        "text": "The last key pressed: 1–4 pick the brush (kept in a State), M flips mirroring (a Latch, against the Mirror toggle; the demo always mirrors), C clears. The first touch clears the demo's doodle too.",
+        "text": "The last key pressed: 1–4 pick the brush (kept by a Write → Read pair), M flips mirroring (a Latch, against the Mirror toggle; the demo always mirrors), C clears. The first touch clears the demo's doodle too.",
         "width": 300,
         "height": 110
       },
@@ -1407,8 +1489,8 @@
       "id": "bs_isBrushKey",
       "defType": "logic/compare",
       "position": {
-        "x": 744,
-        "y": 630
+        "x": 1008,
+        "y": 828
       },
       "params": {
         "op": "greater-equal"
@@ -1422,8 +1504,8 @@
       "id": "bs_brushNext",
       "defType": "logic/select",
       "position": {
-        "x": 1064,
-        "y": 619
+        "x": 1328,
+        "y": 816
       },
       "params": {},
       "parentId": "bs_keys"
@@ -1432,8 +1514,8 @@
       "id": "bs_mHit",
       "defType": "logic/logic",
       "position": {
-        "x": 765,
-        "y": 158
+        "x": 1029,
+        "y": 374
       },
       "params": {
         "op": "and"
@@ -1444,8 +1526,8 @@
       "id": "bs_mirrorKeyNext",
       "defType": "io/latch",
       "position": {
-        "x": 1045,
-        "y": 111
+        "x": 1309,
+        "y": 326
       },
       "params": {},
       "parentId": "bs_keys",
@@ -1457,8 +1539,8 @@
       "id": "bs_mirrorFlip",
       "defType": "logic/logic",
       "position": {
-        "x": 1529,
-        "y": 51
+        "x": 735,
+        "y": 40
       },
       "params": {
         "op": "xor"
@@ -1469,8 +1551,8 @@
       "id": "bs_demoMirrors",
       "defType": "logic/logic",
       "position": {
-        "x": 148,
-        "y": 144
+        "x": 408,
+        "y": 214
       },
       "params": {
         "op": "not"
@@ -1481,8 +1563,8 @@
       "id": "bs_mirror",
       "defType": "logic/logic",
       "position": {
-        "x": 1772,
-        "y": 85
+        "x": 1029,
+        "y": 91
       },
       "params": {
         "op": "or"
@@ -1493,8 +1575,8 @@
       "id": "bs_cHit",
       "defType": "logic/logic",
       "position": {
-        "x": 765,
-        "y": 324
+        "x": 1029,
+        "y": 522
       },
       "params": {
         "op": "and"
@@ -1505,8 +1587,8 @@
       "id": "bs_firstTouch",
       "defType": "io/edge",
       "position": {
-        "x": 171,
-        "y": 610
+        "x": 430,
+        "y": 784
       },
       "params": {
         "mode": "rising",
@@ -1518,8 +1600,8 @@
       "id": "bs_clearKeyOrBang",
       "defType": "logic/logic",
       "position": {
-        "x": 1047,
-        "y": 345
+        "x": 1310,
+        "y": 545
       },
       "params": {
         "op": "or"
@@ -1530,8 +1612,8 @@
       "id": "bs_clear",
       "defType": "logic/logic",
       "position": {
-        "x": 1289,
-        "y": 362
+        "x": 1553,
+        "y": 564
       },
       "params": {
         "op": "or"
@@ -1547,8 +1629,8 @@
       },
       "params": {
         "label": "Brush shapes",
-        "width": 2154,
-        "height": 1759
+        "width": 2158,
+        "height": 1776
       },
       "ports": [
         {
@@ -1556,67 +1638,67 @@
           "name": "from",
           "type": "vec2",
           "direction": "input",
-          "y": 760
+          "y": 776
         },
         {
           "id": "to",
           "name": "to",
           "type": "vec2",
           "direction": "input",
-          "y": 609
+          "y": 625
         },
         {
           "id": "size",
           "name": "size",
           "type": "number",
           "direction": "input",
-          "y": 780
+          "y": 796
         },
         {
           "id": "time",
           "name": "time",
           "type": "number",
           "direction": "input",
-          "y": 1410
+          "y": 1427
         },
         {
           "id": "inkWidth",
           "name": "inkWidth",
           "type": "number",
           "direction": "output",
-          "y": 582
+          "y": 613
         },
         {
           "id": "nib",
           "name": "nib",
           "type": "vec2",
           "direction": "output",
-          "y": 909
+          "y": 926
         },
         {
           "id": "spray",
           "name": "spray",
           "type": "vec2",
           "direction": "output",
-          "y": 282
+          "y": 293
         },
         {
           "id": "rainbowColor",
           "name": "rainbowColor",
           "type": "color",
           "direction": "output",
-          "y": 1361
+          "y": 1378
         },
         {
           "id": "rainbowWidth",
           "name": "rainbowWidth",
           "type": "number",
           "direction": "output",
-          "y": 1164
+          "y": 1181
         }
       ],
-      "width": 2154,
-      "height": 1759,
+      "width": 2158,
+      "height": 1776,
       "parentId": "bs_strokeDraw"
     },
     {
@@ -1624,7 +1706,7 @@
       "defType": "meta/comment",
       "position": {
         "x": 152,
-        "y": 1589
+        "y": 1606
       },
       "params": {
         "text": "Ink thins as the pen speeds up (the distance it moved this frame). The ribbon is a quad from last frame's pen to this one, its corners half a size along the 45° nib. Spray scatters 26 drops round the pen at noise angles and distances, new every frame. The rainbow line cycles hue and pulses its width.",
@@ -1638,7 +1720,7 @@
       "defType": "vec2/math",
       "position": {
         "x": 152,
-        "y": 586
+        "y": 602
       },
       "params": {
         "op": "distance"
@@ -1650,7 +1732,7 @@
       "defType": "math/math",
       "position": {
         "x": 481,
-        "y": 558
+        "y": 574
       },
       "params": {
         "op": "divide",
@@ -1666,8 +1748,8 @@
       "id": "bs_inkLeft",
       "defType": "math/math",
       "position": {
-        "x": 770,
-        "y": 638
+        "x": 772,
+        "y": 660
       },
       "params": {
         "op": "subtract",
@@ -1683,8 +1765,8 @@
       "id": "bs_inkClamp",
       "defType": "math/clamp",
       "position": {
-        "x": 1084,
-        "y": 660
+        "x": 1088,
+        "y": 684
       },
       "params": {},
       "parentId": "bs_brushLooks",
@@ -1697,8 +1779,8 @@
       "id": "bs_inkThin",
       "defType": "math/math",
       "position": {
-        "x": 1318,
-        "y": 638
+        "x": 1322,
+        "y": 665
       },
       "params": {
         "op": "multiply",
@@ -1714,8 +1796,8 @@
       "id": "bs_inkShare",
       "defType": "math/math",
       "position": {
-        "x": 1592,
-        "y": 616
+        "x": 1596,
+        "y": 646
       },
       "params": {
         "op": "add",
@@ -1731,8 +1813,8 @@
       "id": "bs_inkW",
       "defType": "math/math",
       "position": {
-        "x": 1865,
-        "y": 546
+        "x": 1869,
+        "y": 576
       },
       "params": {
         "op": "multiply",
@@ -1746,7 +1828,7 @@
       "defType": "logic/compare",
       "position": {
         "x": 474,
-        "y": 706
+        "y": 722
       },
       "params": {
         "op": "equal"
@@ -1761,7 +1843,7 @@
       "defType": "logic/compare",
       "position": {
         "x": 474,
-        "y": 854
+        "y": 870
       },
       "params": {
         "op": "equal"
@@ -1775,8 +1857,8 @@
       "id": "bs_startSide",
       "defType": "logic/logic",
       "position": {
-        "x": 784,
-        "y": 786
+        "x": 787,
+        "y": 808
       },
       "params": {
         "op": "or"
@@ -1787,8 +1869,8 @@
       "id": "bs_cornerEnd",
       "defType": "logic/select",
       "position": {
-        "x": 1078,
-        "y": 852
+        "x": 1082,
+        "y": 869
       },
       "params": {},
       "parentId": "bs_brushLooks"
@@ -1798,7 +1880,7 @@
       "defType": "logic/compare",
       "position": {
         "x": 474,
-        "y": 1066
+        "y": 1082
       },
       "params": {
         "op": "less"
@@ -1812,8 +1894,8 @@
       "id": "bs_nibSide",
       "defType": "logic/select",
       "position": {
-        "x": 801,
-        "y": 1067
+        "x": 804,
+        "y": 1083
       },
       "params": {},
       "parentId": "bs_brushLooks",
@@ -1826,8 +1908,8 @@
       "id": "bs_nibHalf",
       "defType": "math/math",
       "position": {
-        "x": 1047,
-        "y": 1000
+        "x": 1051,
+        "y": 1017
       },
       "params": {
         "op": "multiply",
@@ -1843,8 +1925,8 @@
       "id": "bs_nibHalfUp",
       "defType": "math/math",
       "position": {
-        "x": 1327,
-        "y": 1011
+        "x": 1331,
+        "y": 1028
       },
       "params": {
         "op": "negate",
@@ -1856,8 +1938,8 @@
       "id": "bs_nibOffset",
       "defType": "vec2/make",
       "position": {
-        "x": 1634,
-        "y": 950
+        "x": 1638,
+        "y": 967
       },
       "params": {},
       "parentId": "bs_brushLooks"
@@ -1866,8 +1948,8 @@
       "id": "bs_nib",
       "defType": "math/math",
       "position": {
-        "x": 1865,
-        "y": 872
+        "x": 1869,
+        "y": 889
       },
       "params": {
         "op": "add",
@@ -1881,7 +1963,7 @@
       "defType": "time/frame",
       "position": {
         "x": 196,
-        "y": 482
+        "y": 498
       },
       "params": {},
       "parentId": "bs_brushLooks"
@@ -1891,7 +1973,7 @@
       "defType": "math/math",
       "position": {
         "x": 481,
-        "y": 82
+        "y": 98
       },
       "params": {
         "op": "multiply",
@@ -1908,7 +1990,7 @@
       "defType": "math/math",
       "position": {
         "x": 481,
-        "y": 230
+        "y": 246
       },
       "params": {
         "op": "multiply",
@@ -1924,7 +2006,7 @@
       "id": "bs_sprayAngleNoise",
       "defType": "noise/noise",
       "position": {
-        "x": 771,
+        "x": 773,
         "y": 40
       },
       "params": {
@@ -1936,8 +2018,8 @@
       "id": "bs_sprayAngle",
       "defType": "math/math",
       "position": {
-        "x": 1318,
-        "y": 101
+        "x": 1322,
+        "y": 109
       },
       "params": {
         "op": "multiply",
@@ -1954,7 +2036,7 @@
       "defType": "math/math",
       "position": {
         "x": 481,
-        "y": 378
+        "y": 394
       },
       "params": {
         "op": "multiply",
@@ -1970,8 +2052,8 @@
       "id": "bs_sprayFarX",
       "defType": "math/math",
       "position": {
-        "x": 770,
-        "y": 342
+        "x": 772,
+        "y": 364
       },
       "params": {
         "op": "add",
@@ -1987,8 +2069,8 @@
       "id": "bs_sprayFarY",
       "defType": "math/math",
       "position": {
-        "x": 770,
-        "y": 490
+        "x": 772,
+        "y": 512
       },
       "params": {
         "op": "multiply",
@@ -2004,8 +2086,8 @@
       "id": "bs_sprayFarNoise",
       "defType": "noise/noise",
       "position": {
-        "x": 1048,
-        "y": 337
+        "x": 1052,
+        "y": 349
       },
       "params": {
         "mode": "perlin"
@@ -2016,8 +2098,8 @@
       "id": "bs_sprayFar",
       "defType": "math/math",
       "position": {
-        "x": 1318,
-        "y": 249
+        "x": 1322,
+        "y": 257
       },
       "params": {
         "op": "multiply",
@@ -2033,8 +2115,8 @@
       "id": "bs_sprayOffset",
       "defType": "vec2/from-angle",
       "position": {
-        "x": 1617,
-        "y": 167
+        "x": 1621,
+        "y": 175
       },
       "params": {},
       "parentId": "bs_brushLooks"
@@ -2043,8 +2125,8 @@
       "id": "bs_sprayPos",
       "defType": "math/math",
       "position": {
-        "x": 1865,
-        "y": 129
+        "x": 1869,
+        "y": 137
       },
       "params": {
         "op": "add",
@@ -2058,7 +2140,7 @@
       "defType": "math/math",
       "position": {
         "x": 158,
-        "y": 1425
+        "y": 1442
       },
       "params": {
         "op": "multiply",
@@ -2075,7 +2157,7 @@
       "defType": "math/math",
       "position": {
         "x": 490,
-        "y": 1401
+        "y": 1418
       },
       "params": {
         "op": "fract"
@@ -2086,8 +2168,8 @@
       "id": "bs_rainbowHue",
       "defType": "math/math",
       "position": {
-        "x": 770,
-        "y": 1378
+        "x": 772,
+        "y": 1395
       },
       "params": {
         "op": "multiply",
@@ -2103,8 +2185,8 @@
       "id": "bs_rainbowCol",
       "defType": "color/color",
       "position": {
-        "x": 1055,
-        "y": 1351
+        "x": 1059,
+        "y": 1368
       },
       "params": {
         "mode": "hsl"
@@ -2121,7 +2203,7 @@
       "defType": "math/math",
       "position": {
         "x": 158,
-        "y": 1277
+        "y": 1294
       },
       "params": {
         "op": "multiply",
@@ -2138,7 +2220,7 @@
       "defType": "math/math",
       "position": {
         "x": 490,
-        "y": 1264
+        "y": 1281
       },
       "params": {
         "op": "sin"
@@ -2149,8 +2231,8 @@
       "id": "bs_pulseAmp",
       "defType": "math/math",
       "position": {
-        "x": 770,
-        "y": 1230
+        "x": 772,
+        "y": 1247
       },
       "params": {
         "op": "multiply",
@@ -2166,8 +2248,8 @@
       "id": "bs_pulse",
       "defType": "math/math",
       "position": {
-        "x": 1047,
-        "y": 1203
+        "x": 1051,
+        "y": 1220
       },
       "params": {
         "op": "add",
@@ -2183,8 +2265,8 @@
       "id": "bs_rainbowW",
       "defType": "math/math",
       "position": {
-        "x": 1318,
-        "y": 1137
+        "x": 1322,
+        "y": 1154
       },
       "params": {
         "op": "multiply",
@@ -2255,11 +2337,11 @@
       "id": "bs_penLogicNote",
       "defType": "meta/comment",
       "position": {
-        "x": 144,
-        "y": 591
+        "x": 138,
+        "y": 723
       },
       "params": {
-        "text": "The pen is the mouse once the paper has been touched, the Demo pen before. It is down while the button is held (or for the demo's first 7 s); a stroke is drawn when it was down last frame too, from where it was (a State) to where it is.",
+        "text": "The pen is the mouse once the paper has been touched, the Demo pen before. It is down while the button is held (or for the demo's first 7 s); a stroke is drawn when it was down last frame too, from where it was (a Write → Read pair) to where it is.",
         "width": 300,
         "height": 110
       },
@@ -2288,7 +2370,7 @@
       },
       "params": {
         "label": "Paper",
-        "width": 1673,
+        "width": 1902,
         "height": 536
       },
       "ports": [
@@ -2314,7 +2396,7 @@
           "y": 86
         }
       ],
-      "width": 1673,
+      "width": 1902,
       "height": 536
     },
     {
@@ -2325,7 +2407,7 @@
         "y": 396
       },
       "params": {
-        "text": "Feedback: Read gives last frame's paper (slot 1), this frame's stroke goes on top, From Layer makes the new paper and Write keeps it for the next frame. Clearing drops the old paper for a frame.",
+        "text": "Feedback: Read gives last frame's paper (the paper pair), this frame's stroke goes on top, From Layer makes the new paper and Write keeps it for the next frame. Clearing drops the old paper for a frame.",
         "width": 300,
         "height": 100
       },
@@ -2475,7 +2557,7 @@
     {
       "id": "e_5",
       "source": "bs_touchedNext",
-      "target": "bs_touched",
+      "target": "bs_touchedWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
@@ -2496,7 +2578,7 @@
     {
       "id": "e_11",
       "source": "bs_pen",
-      "target": "bs_prevPen",
+      "target": "bs_prevPenWrite",
       "sourceHandle": "out-selected",
       "targetHandle": "in-next"
     },
@@ -3084,7 +3166,7 @@
     {
       "id": "e_b1_29",
       "source": "bs_penDown",
-      "target": "bs_prevDown",
+      "target": "bs_prevDownWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
     },
@@ -3168,7 +3250,7 @@
     {
       "id": "e_b1_41",
       "source": "bs_brushNext",
-      "target": "bs_brush",
+      "target": "bs_brushWrite",
       "sourceHandle": "out-selected",
       "targetHandle": "in-next"
     },
@@ -3196,7 +3278,7 @@
     {
       "id": "e_b1_45",
       "source": "bs_mirrorKeyNext",
-      "target": "bs_mirrorKey",
+      "target": "bs_mirrorKeyWrite",
       "sourceHandle": "out-state",
       "targetHandle": "in-next"
     },

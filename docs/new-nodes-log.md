@@ -800,3 +800,31 @@ No new nodes. Eight Interactive samples (`play-breakout`,
 - **Same behaviour:** `rebuilt_samples_play_as_before` (idle and scripted
   play, 150 frames) matches the old files exactly for all eight (layers
   within 0, no pixel differs).
+
+## Samples onto Write → Read pairs (agent E3a)
+
+No new nodes. Thirteen Library samples lost their State / State\* loops
+and backward wires; every loop became a named Write → Read pair
+(`state/write` + `state/read`, or the spread pair for State\*), the old
+`init` on the Read, the old `next` into the Write. The Read keeps the old
+State node's id, so tests and the before / after comparisons pair it up;
+the Write is `<id>Write`. Slots are numbered per family within each patch.
+Then each patch was re-laid out left to right (`relayout_samples`).
+
+| Sample | Pairs (name) |
+|---|---|
+| noc-attraction, noc-drag, noc-seek, noc-wind-gravity | position, velocity |
+| noc-spring | bob y, bob speed |
+| pendulum | angle, swing speed |
+| tut-09-state | counter (comment rewritten to teach the pair; retitled "09 · Memory (Write → Read)") |
+| sound-keyboard-synth | last note |
+| sound-mic-bloom | last beat |
+| sound-music-box | tune seed, voice 1–3 pitch; disc turn, pins, plucked at (spread) |
+| sound-step-sequencer | paint; cells, last step (spread) |
+| play-typing-toy | letter births (spread) |
+| sys-music-viz | none: its interval Lookup moved into the Melody subpatch, where its inputs and its consumer already were (the wire left the subpatch and came back) |
+
+Comments and catalogue descriptions that spoke of State now speak of the
+pairs. Guard: `native/crates/floret-engine/tests/flow_rule.rs` (no
+backward wire in any scope, no State / State\* node, every Write has its
+Read and every Read its Write, by slot); `FLORET_FLOW_ONLY=a,b` limits it.

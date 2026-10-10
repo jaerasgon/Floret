@@ -48,6 +48,36 @@ terminates the chain. Per-frame compute updates parameters on the
 existing audio object — the Web Audio nodes themselves only get
 re-created when the node type changes or the editor node is deleted.
 
+## Flow rule
+
+Every patch, subpatch and region reads **left to right**: a wire only runs
+from a node to a node to its right (the target's left edge sits right of
+the source's). A region or subpatch frame's input pins count as its left
+edge and its output pins as its right edge, so wires between a frame and
+what it holds always read forward. The editor refuses a wire that would
+point back, and the Library samples are checked by a guard test
+(`native/crates/floret-engine/tests/flow_rule.rs`).
+
+**Feedback goes through a named Write → Read pair**, never a wire back:
+put the **Write** at the end of the flow and its paired **Read** at the
+start. The Read gives the value the Write stored last frame (`init` on the
+first frame). Placing one half places the other; give the pair a short
+name ("ball position", "velocity") and both halves show it. The old
+single-box State / State\* loops are hidden from the browser (old files
+still load). See [State](#state).
+
+**Subpatches, sections and loops from a selection:** select nodes and
+right-click one of them:
+
+- **Wrap in ForEach / If / Cache** puts the selection inside that region;
+- **Wrap in Section** puts it on a titled backdrop (visual only);
+- **Wrap in subpatch** (**Group N into subpatch** for several nodes,
+  Ctrl+G / ⌘G) folds it into a subpatch;
+- right-click a frame for **Unwrap** (a region or section) or **Ungroup
+  subpatch**.
+
+The same commands are in the Edit menu.
+
 ## Node browser groups
 
 The Nodes browser and the Tab / double-click search sort nodes by what

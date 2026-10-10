@@ -13,29 +13,20 @@
       "defType": "meta/comment",
       "position": {
         "x": 0,
-        "y": -324
+        "y": -364
       },
       "params": {
-        "text": "Breakout\n\nClick the preview to start, then move the mouse left and right to steer the paddle; click again to launch each ball. Break every brick to go up a level (the ball gets faster); three balls, then click to play again. Until you click, the game plays itself.\n\nHow it works: the game is state — the ball's position and velocity, which bricks are still standing (a State* of 60), score, lives, level. Every frame one Expression moves the ball, another tests it against all 60 bricks at once (per element over the brick spread), and the velocity Expression bounces it off the walls, the paddle (where it lands steers it) and any brick it hit. Sparks fly from broken bricks.",
+        "text": "Breakout\n\nClick the preview to start, then move the mouse left and right to steer the paddle; click again to launch each ball. Break every brick to go up a level (the ball gets faster); three balls, then click to play again. Until you click, the game plays itself.\n\nHow it works: the game is state, held by State nodes and wired with visual nodes only. Turns (open it with a double-click) decides when a game starts, when the ball launches, and counts lives, score and level. Ball moves the ball by its velocity and bounces it off the walls, the paddle and broken bricks. Bricks tests the ball against all 60 bricks at once with Hit Test and remembers which still stand. HUD draws the score, the balls left and the message. Sparks fly from broken bricks.",
         "width": 460,
-        "height": 260
+        "height": 300
       }
     },
     {
       "id": "bo_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 32,
-        "y": 1440
-      },
-      "params": {}
-    },
-    {
-      "id": "bo_time",
-      "defType": "time/seconds",
-      "position": {
-        "x": 1811,
-        "y": 562
+        "x": 0,
+        "y": 52
       },
       "params": {}
     },
@@ -43,111 +34,548 @@
       "id": "bo_dt",
       "defType": "time/delta",
       "position": {
-        "x": 36,
-        "y": 1336
+        "x": 217,
+        "y": 4
       },
       "params": {}
     },
     {
-      "id": "bo_step",
-      "defType": "math/expression",
+      "id": "bo_turns",
+      "defType": "meta/subpatch",
       "position": {
-        "x": 336,
-        "y": 1371
+        "x": 193,
+        "y": 108
       },
       "params": {
-        "expr": "clamp(d, 0.001, 1 / 30)"
-      }
+        "label": "Turns",
+        "width": 3251,
+        "height": 857
+      },
+      "ports": [
+        {
+          "id": "pressed",
+          "name": "pressed",
+          "type": "boolean",
+          "direction": "input",
+          "y": 318
+        },
+        {
+          "id": "lost",
+          "name": "lost",
+          "type": "boolean",
+          "direction": "input",
+          "y": 338
+        },
+        {
+          "id": "cleared",
+          "name": "cleared",
+          "type": "boolean",
+          "direction": "input",
+          "y": 425
+        },
+        {
+          "id": "broken",
+          "name": "broken",
+          "type": "number",
+          "direction": "input",
+          "y": 206
+        },
+        {
+          "id": "start",
+          "name": "start",
+          "type": "boolean",
+          "direction": "output",
+          "y": 54
+        },
+        {
+          "id": "playing",
+          "name": "playing",
+          "type": "boolean",
+          "direction": "output",
+          "y": 586
+        },
+        {
+          "id": "held",
+          "name": "held",
+          "type": "boolean",
+          "direction": "output",
+          "y": 554
+        },
+        {
+          "id": "onPaddle",
+          "name": "onPaddle",
+          "type": "boolean",
+          "direction": "output",
+          "y": 471
+        },
+        {
+          "id": "launch",
+          "name": "launch",
+          "type": "boolean",
+          "direction": "output",
+          "y": 98
+        },
+        {
+          "id": "over",
+          "name": "over",
+          "type": "boolean",
+          "direction": "output",
+          "y": 14
+        },
+        {
+          "id": "speed",
+          "name": "speed",
+          "type": "number",
+          "direction": "output",
+          "y": 34
+        },
+        {
+          "id": "lives",
+          "name": "lives",
+          "type": "number",
+          "direction": "output",
+          "y": 130
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "type": "number",
+          "direction": "output",
+          "y": 162
+        },
+        {
+          "id": "level",
+          "name": "level",
+          "type": "number",
+          "direction": "output",
+          "y": 414
+        }
+      ],
+      "width": 3251,
+      "height": 857
     },
     {
-      "id": "bo_wasPressed",
-      "defType": "state/value",
+      "id": "bo_ballLogic",
+      "defType": "meta/subpatch",
       "position": {
-        "x": 376,
-        "y": 1671
+        "x": 459,
+        "y": 20
       },
-      "params": {},
-      "portValues": {
-        "init": false
-      }
+      "params": {
+        "label": "Ball",
+        "width": 4426,
+        "height": 1599
+      },
+      "ports": [
+        {
+          "id": "dt",
+          "name": "dt",
+          "type": "number",
+          "direction": "input",
+          "y": 734
+        },
+        {
+          "id": "mouseX",
+          "name": "mouseX",
+          "type": "number",
+          "direction": "input",
+          "y": 853
+        },
+        {
+          "id": "playing",
+          "name": "playing",
+          "type": "boolean",
+          "direction": "input",
+          "y": 821
+        },
+        {
+          "id": "held",
+          "name": "held",
+          "type": "boolean",
+          "direction": "input",
+          "y": 1246
+        },
+        {
+          "id": "onPaddle",
+          "name": "onPaddle",
+          "type": "boolean",
+          "direction": "input",
+          "y": 594
+        },
+        {
+          "id": "launch",
+          "name": "launch",
+          "type": "boolean",
+          "direction": "input",
+          "y": 241
+        },
+        {
+          "id": "speed",
+          "name": "speed",
+          "type": "number",
+          "direction": "input",
+          "y": 383
+        },
+        {
+          "id": "broken",
+          "name": "broken",
+          "type": "number",
+          "direction": "input",
+          "y": 482
+        },
+        {
+          "id": "moved",
+          "name": "moved",
+          "type": "vec2",
+          "direction": "output",
+          "y": 584
+        },
+        {
+          "id": "lost",
+          "name": "lost",
+          "type": "boolean",
+          "direction": "output",
+          "y": 879
+        },
+        {
+          "id": "paddle",
+          "name": "paddle",
+          "type": "layer",
+          "direction": "output",
+          "y": 932
+        },
+        {
+          "id": "ball",
+          "name": "ball",
+          "type": "layer",
+          "direction": "output",
+          "y": 645
+        }
+      ],
+      "width": 4426,
+      "height": 1599
+    },
+    {
+      "id": "bo_bricks",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 690,
+        "y": 0
+      },
+      "params": {
+        "label": "Bricks",
+        "width": 3593,
+        "height": 1455
+      },
+      "ports": [
+        {
+          "id": "ball",
+          "name": "ball",
+          "type": "vec2",
+          "direction": "input",
+          "y": 633
+        },
+        {
+          "id": "start",
+          "name": "start",
+          "type": "boolean",
+          "direction": "input",
+          "y": 701
+        },
+        {
+          "id": "broken",
+          "name": "broken",
+          "type": "number",
+          "direction": "output",
+          "y": 968
+        },
+        {
+          "id": "cleared",
+          "name": "cleared",
+          "type": "boolean",
+          "direction": "output",
+          "y": 1000
+        },
+        {
+          "id": "wall",
+          "name": "wall",
+          "type": "layer",
+          "direction": "output",
+          "y": 763
+        },
+        {
+          "id": "sparks",
+          "name": "sparks",
+          "type": "layer",
+          "direction": "output",
+          "y": 468
+        }
+      ],
+      "width": 3593,
+      "height": 1455
+    },
+    {
+      "id": "bo_hud",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 456,
+        "y": 278
+      },
+      "params": {
+        "label": "HUD",
+        "width": 2603,
+        "height": 1465
+      },
+      "ports": [
+        {
+          "id": "score",
+          "name": "score",
+          "type": "number",
+          "direction": "input",
+          "y": 862
+        },
+        {
+          "id": "level",
+          "name": "level",
+          "type": "number",
+          "direction": "input",
+          "y": 1120
+        },
+        {
+          "id": "lives",
+          "name": "lives",
+          "type": "number",
+          "direction": "input",
+          "y": 289
+        },
+        {
+          "id": "playing",
+          "name": "playing",
+          "type": "boolean",
+          "direction": "input",
+          "y": 314
+        },
+        {
+          "id": "held",
+          "name": "held",
+          "type": "boolean",
+          "direction": "input",
+          "y": 445
+        },
+        {
+          "id": "over",
+          "name": "over",
+          "type": "boolean",
+          "direction": "input",
+          "y": 346
+        },
+        {
+          "id": "scoreText",
+          "name": "scoreText",
+          "type": "layer",
+          "direction": "output",
+          "y": 760
+        },
+        {
+          "id": "levelText",
+          "name": "levelText",
+          "type": "layer",
+          "direction": "output",
+          "y": 914
+        },
+        {
+          "id": "livesDots",
+          "name": "livesDots",
+          "type": "layer",
+          "direction": "output",
+          "y": 289
+        },
+        {
+          "id": "message",
+          "name": "message",
+          "type": "layer",
+          "direction": "output",
+          "y": 404
+        }
+      ],
+      "width": 2603,
+      "height": 1465
     },
     {
       "id": "bo_click",
-      "defType": "math/expression",
+      "defType": "io/edge",
       "position": {
-        "x": 652,
-        "y": 1615
+        "x": 190,
+        "y": 295
       },
       "params": {
-        "expr": "p && !was"
-      }
+        "mode": "rising",
+        "threshold": 0.5
+      },
+      "parentId": "bo_turns"
     },
     {
       "id": "bo_playing",
       "defType": "state/value",
       "position": {
-        "x": 692,
-        "y": 1779
+        "x": 193,
+        "y": 443
       },
       "params": {},
       "portValues": {
-        "init": 0
-      }
+        "init": false
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_counts",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 146,
+        "y": 103
+      },
+      "params": {
+        "label": "Lives & score",
+        "width": 1240,
+        "height": 1176
+      },
+      "ports": [
+        {
+          "id": "start",
+          "name": "start",
+          "type": "boolean",
+          "direction": "input",
+          "y": 191
+        },
+        {
+          "id": "lost",
+          "name": "lost",
+          "type": "boolean",
+          "direction": "input",
+          "y": 122
+        },
+        {
+          "id": "cleared",
+          "name": "cleared",
+          "type": "boolean",
+          "direction": "input",
+          "y": 332
+        },
+        {
+          "id": "broken",
+          "name": "broken",
+          "type": "number",
+          "direction": "input",
+          "y": 672
+        },
+        {
+          "id": "over",
+          "name": "over",
+          "type": "boolean",
+          "direction": "output",
+          "y": 585
+        },
+        {
+          "id": "speed",
+          "name": "speed",
+          "type": "number",
+          "direction": "output",
+          "y": 806
+        },
+        {
+          "id": "lives",
+          "name": "lives",
+          "type": "number",
+          "direction": "output",
+          "y": 122
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "type": "number",
+          "direction": "output",
+          "y": 359
+        },
+        {
+          "id": "level",
+          "name": "level",
+          "type": "number",
+          "direction": "output",
+          "y": 223
+        }
+      ],
+      "width": 1240,
+      "height": 1176,
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 2446,
+        "y": 572
+      },
+      "params": {},
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_lives",
       "defType": "state/value",
       "position": {
-        "x": 36,
-        "y": 1885
+        "x": 131,
+        "y": 356
       },
       "params": {},
       "portValues": {
         "init": 3
-      }
+      },
+      "parentId": "bo_counts"
     },
     {
       "id": "bo_score",
       "defType": "state/value",
       "position": {
-        "x": 1426,
-        "y": 945
+        "x": 421,
+        "y": 418
       },
       "params": {},
       "portValues": {
         "init": 0
-      }
+      },
+      "parentId": "bo_counts"
     },
     {
       "id": "bo_level",
       "defType": "state/value",
       "position": {
-        "x": 1426,
-        "y": 1520
+        "x": 131,
+        "y": 696
       },
       "params": {},
       "portValues": {
         "init": 1
-      }
+      },
+      "parentId": "bo_counts"
     },
     {
       "id": "bo_held",
       "defType": "state/value",
       "position": {
-        "x": 36,
-        "y": 1588
+        "x": 1526,
+        "y": 308
       },
       "params": {},
       "portValues": {
-        "init": 1
-      }
+        "init": true
+      },
+      "parentId": "bo_turns"
     },
     {
       "id": "bo_ballPos",
       "defType": "state/value",
       "position": {
-        "x": 376,
-        "y": 1245
+        "x": 498,
+        "y": 793
       },
       "params": {},
       "portValues": {
@@ -155,14 +583,15 @@
           "x": 0,
           "y": 219
         }
-      }
+      },
+      "parentId": "bo_ballLogic"
     },
     {
       "id": "bo_ballVel",
       "defType": "state/value",
       "position": {
-        "x": 376,
-        "y": 1513
+        "x": 204,
+        "y": 571
       },
       "params": {},
       "portValues": {
@@ -170,123 +599,38 @@
           "x": 0,
           "y": 0
         }
-      }
+      },
+      "parentId": "bo_ballLogic"
     },
     {
       "id": "bo_alive",
       "defType": "state/spread",
       "position": {
-        "x": 679,
-        "y": 885
+        "x": 410,
+        "y": 866
       },
-      "params": {}
-    },
-    {
-      "id": "bo_fullWall",
-      "defType": "math/expression",
-      "position": {
-        "x": 336,
-        "y": 1103
-      },
-      "params": {
-        "expr": "k * 0 + 1"
-      }
+      "params": {},
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_brickRange",
       "defType": "spread/range",
       "position": {
-        "x": 10,
-        "y": 837
+        "x": 130,
+        "y": 1143
       },
       "params": {},
       "portValues": {
         "count": 60
-      }
-    },
-    {
-      "id": "bo_over",
-      "defType": "math/expression",
-      "position": {
-        "x": 336,
-        "y": 1797
       },
-      "params": {
-        "expr": "l <= 0"
-      }
-    },
-    {
-      "id": "bo_start",
-      "defType": "math/expression",
-      "position": {
-        "x": 1001,
-        "y": 1337
-      },
-      "params": {
-        "expr": "click && (!pl || o) || (!pl && o)"
-      }
-    },
-    {
-      "id": "bo_playingNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 1001,
-        "y": 1751
-      },
-      "params": {
-        "expr": "pl || (click && !pl)"
-      }
-    },
-    {
-      "id": "bo_launch",
-      "defType": "math/expression",
-      "position": {
-        "x": 1385,
-        "y": 1902
-      },
-      "params": {
-        "expr": "h && !s && !o && (click || !pl)"
-      }
-    },
-    {
-      "id": "bo_paddleX",
-      "defType": "math/expression",
-      "position": {
-        "x": 1385,
-        "y": 1323
-      },
-      "params": {
-        "expr": "clamp(pl ? mx : b.x + 26 * sin(t * 1.7), -308.0, 308.0)"
-      }
-    },
-    {
-      "id": "bo_speed",
-      "defType": "math/expression",
-      "position": {
-        "x": 1769,
-        "y": 1616
-      },
-      "params": {
-        "expr": "340 + 40 * (lv - 1)"
-      }
-    },
-    {
-      "id": "bo_moved",
-      "defType": "math/expression",
-      "position": {
-        "x": 652,
-        "y": 1286
-      },
-      "params": {
-        "expr": "b + v * s"
-      }
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_grid",
       "defType": "spread/grid",
       "position": {
-        "x": 673,
-        "y": 593
+        "x": 136,
+        "y": 465
       },
       "params": {},
       "portValues": {
@@ -298,201 +642,63 @@
           "x": 0,
           "y": -165
         }
-      }
-    },
-    {
-      "id": "bo_hits",
-      "defType": "math/expression",
-      "position": {
-        "x": 1001,
-        "y": 659
       },
-      "params": {
-        "expr": "a > 0.5 && abs(c.x - q.x) <= 37.0 && abs(c.y - q.y) <= 17.0"
-      }
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_broken",
       "defType": "math/statistics",
       "position": {
-        "x": 1400,
-        "y": 1071
+        "x": 957,
+        "y": 662
       },
       "params": {
         "op": "sum"
-      }
-    },
-    {
-      "id": "bo_paddleHit",
-      "defType": "math/expression",
-      "position": {
-        "x": 1769,
-        "y": 1758
       },
-      "params": {
-        "expr": "v.y > 0 && q.y >= 222.0 && q.y <= 241.0 && abs(q.x - px) <= 59.0"
-      }
-    },
-    {
-      "id": "bo_lost",
-      "defType": "math/expression",
-      "position": {
-        "x": 1001,
-        "y": 1587
-      },
-      "params": {
-        "expr": "!h && q.y > 300.0"
-      }
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_standing",
       "defType": "math/statistics",
       "position": {
-        "x": 1400,
-        "y": 1197
+        "x": 957,
+        "y": 914
       },
       "params": {
         "op": "sum"
-      }
-    },
-    {
-      "id": "bo_cleared",
-      "defType": "math/expression",
-      "position": {
-        "x": 1769,
-        "y": 1292
       },
-      "params": {
-        "expr": "n - b < 0.5"
-      }
-    },
-    {
-      "id": "bo_velNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 2153,
-        "y": 1590
-      },
-      "params": {
-        "expr": "h || lost || cl || s ? (launch ? normalize(vec2(0.45, -1)) * spd : vec2(0, 0)) : (ph ? normalize(vec2((q.x - px) / 52.0 * 0.95, -1)) * spd : vec2(q.x < -353.0 ? abs(v.x) : (q.x > 353.0 ? -abs(v.x) : v.x), q.y < -273.0 ? abs(v.y) : (hit > 0 ? -v.y : v.y)))"
-      }
-    },
-    {
-      "id": "bo_posNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 2153,
-        "y": 768
-      },
-      "params": {
-        "expr": "h || lost || cl || s ? vec2(px, 220.0) : q"
-      }
-    },
-    {
-      "id": "bo_heldNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 2153,
-        "y": 1996
-      },
-      "params": {
-        "expr": "s || lost || cl ? 1 : (h && !launch ? 1 : 0)"
-      }
-    },
-    {
-      "id": "bo_aliveNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 2153,
-        "y": 0
-      },
-      "params": {
-        "expr": "s || cl ? 1 : (a > 0.5 && !hit ? 1 : 0)"
-      }
-    },
-    {
-      "id": "bo_livesNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 1385,
-        "y": 2236
-      },
-      "params": {
-        "expr": "s ? 3 : l - lost"
-      }
-    },
-    {
-      "id": "bo_scoreNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 1769,
-        "y": 1084
-      },
-      "params": {
-        "expr": "s ? 0 : sc + b * 10 * lv"
-      }
-    },
-    {
-      "id": "bo_levelNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 2153,
-        "y": 1278
-      },
-      "params": {
-        "expr": "s ? 1 : lv + cl"
-      }
-    },
-    {
-      "id": "bo_brickCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 1001,
-        "y": 517
-      },
-      "params": {
-        "expr": "hsl(0.95 - floor(k / 10) * 0.11, 0.75, 0.58)"
-      }
-    },
-    {
-      "id": "bo_isUp",
-      "defType": "math/expression",
-      "position": {
-        "x": 2583,
-        "y": 152
-      },
-      "params": {
-        "expr": "a > 0.5"
-      }
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_upPos",
       "defType": "spread/sublist",
       "position": {
-        "x": 2979,
-        "y": 148
+        "x": 2407,
+        "y": 698
       },
       "params": {
         "op": "keep-where"
-      }
+      },
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_upCol",
       "defType": "spread/sublist",
       "position": {
-        "x": 2979,
-        "y": 296
+        "x": 2407,
+        "y": 846
       },
       "params": {
         "op": "keep-where"
-      }
+      },
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_brickLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 3286,
-        "y": 415
+        "x": 2693,
+        "y": 687
       },
       "params": {
         "width": 521,
@@ -523,7 +729,8 @@
         }
       ],
       "width": 521,
-      "height": 246
+      "height": 246,
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_brickFill",
@@ -550,22 +757,11 @@
       "parentId": "bo_brickLoop"
     },
     {
-      "id": "bo_paddlePos",
-      "defType": "math/expression",
-      "position": {
-        "x": 1769,
-        "y": 688
-      },
-      "params": {
-        "expr": "vec2(x, 235)"
-      }
-    },
-    {
       "id": "bo_paddleFill",
       "defType": "style/fill",
       "position": {
-        "x": 1786,
-        "y": 830
+        "x": 2332,
+        "y": 1136
       },
       "params": {},
       "portValues": {
@@ -575,27 +771,29 @@
           "b": 1.0,
           "a": 1.0
         }
-      }
+      },
+      "parentId": "bo_ballLogic"
     },
     {
       "id": "bo_paddle",
       "defType": "draw/rect",
       "position": {
-        "x": 2188,
-        "y": 576
+        "x": 2634,
+        "y": 1043
       },
       "params": {},
       "portValues": {
         "w": 104,
         "h": 12
-      }
+      },
+      "parentId": "bo_ballLogic"
     },
     {
       "id": "bo_ballFill",
       "defType": "style/fill",
       "position": {
-        "x": 2170,
-        "y": 1464
+        "x": 2617,
+        "y": 917
       },
       "params": {},
       "portValues": {
@@ -605,41 +803,44 @@
           "b": 0.8470588235294118,
           "a": 1.0
         }
-      }
+      },
+      "parentId": "bo_ballLogic"
     },
     {
       "id": "bo_ball",
       "defType": "draw/ellipse",
       "position": {
-        "x": 2617,
-        "y": 929
+        "x": 2920,
+        "y": 780
       },
       "params": {},
       "portValues": {
         "w": 14,
         "h": 14
-      }
+      },
+      "parentId": "bo_ballLogic"
     },
     {
       "id": "bo_ballTrail",
       "defType": "gpu/echo",
       "position": {
-        "x": 2975,
-        "y": 944
+        "x": 3155,
+        "y": 700
       },
       "params": {
         "mode": "trails"
       },
       "portValues": {
         "decay": 0.78
-      }
+      },
+      "parentId": "bo_ballLogic"
     },
     {
       "id": "bo_ballGlow",
       "defType": "gpu/effect",
       "position": {
-        "x": 3462,
-        "y": 980
+        "x": 3431,
+        "y": 645
       },
       "params": {
         "mode": "glow"
@@ -647,61 +848,54 @@
       "portValues": {
         "radius": 12,
         "intensity": 1.5
-      }
+      },
+      "parentId": "bo_ballLogic"
     },
     {
       "id": "bo_hitAt",
       "defType": "spread/sublist",
       "position": {
-        "x": 1388,
-        "y": 449
+        "x": 945,
+        "y": 482
       },
       "params": {
         "op": "keep-where"
-      }
+      },
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_hitCol",
       "defType": "spread/sublist",
       "position": {
-        "x": 1388,
-        "y": 597
+        "x": 2090,
+        "y": 630
       },
       "params": {
         "op": "keep-where"
-      }
+      },
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_sparkCol",
       "defType": "spread/lookup",
       "position": {
-        "x": 1772,
-        "y": 414
+        "x": 2407,
+        "y": 424
       },
       "params": {
         "op": "at"
       },
       "portValues": {
         "index": 0
-      }
-    },
-    {
-      "id": "bo_sparkRate",
-      "defType": "math/expression",
-      "position": {
-        "x": 1769,
-        "y": 272
       },
-      "params": {
-        "expr": "b > 0 ? 1100 : 0"
-      }
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_sparkWorld",
       "defType": "physics/world",
       "position": {
-        "x": 1783,
-        "y": 36
+        "x": 2418,
+        "y": 40
       },
       "params": {},
       "portValues": {
@@ -710,14 +904,15 @@
           "y": 500
         },
         "drag": 1.2
-      }
+      },
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_sparks",
       "defType": "particles/emitter",
       "position": {
-        "x": 2170,
-        "y": 208
+        "x": 2886,
+        "y": 226
       },
       "params": {
         "maxCount": 600,
@@ -731,25 +926,27 @@
         },
         "velSpread": 2.6,
         "size": 3
-      }
+      },
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_sparkDots",
       "defType": "particles/render-as",
       "position": {
-        "x": 3473,
-        "y": 709
+        "x": 3325,
+        "y": 328
       },
       "params": {
         "template": "rect"
-      }
+      },
+      "parentId": "bo_bricks"
     },
     {
       "id": "bo_hudFill",
       "defType": "style/fill",
       "position": {
-        "x": 2594,
-        "y": 1505
+        "x": 417,
+        "y": 1078
       },
       "params": {},
       "portValues": {
@@ -759,37 +956,40 @@
           "b": 0.9490196078431372,
           "a": 0.8
         }
-      }
+      },
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_scoreText",
       "defType": "string/format-number",
       "position": {
-        "x": 2162,
-        "y": 1020
+        "x": 132,
+        "y": 803
       },
       "params": {},
       "portValues": {
         "decimals": 0,
         "pad": 5,
         "prefix": "SCORE  "
-      }
+      },
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_scoreStr",
       "defType": "string/concat",
       "position": {
-        "x": 2618,
-        "y": 1121
+        "x": 441,
+        "y": 808
       },
-      "params": {}
+      "params": {},
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_scoreDraw",
       "defType": "draw/text",
       "position": {
-        "x": 3007,
-        "y": 1160
+        "x": 734,
+        "y": 813
       },
       "params": {
         "size": 15,
@@ -800,36 +1000,39 @@
           "x": -342.0,
           "y": -254.0
         }
-      }
+      },
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_levelText",
       "defType": "string/format-number",
       "position": {
-        "x": 2591,
-        "y": 1247
+        "x": 132,
+        "y": 1061
       },
       "params": {},
       "portValues": {
         "decimals": 0,
         "prefix": "LEVEL "
-      }
+      },
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_levelStr",
       "defType": "string/concat",
       "position": {
-        "x": 3011,
-        "y": 1352
+        "x": 441,
+        "y": 952
       },
-      "params": {}
+      "params": {},
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_levelDraw",
       "defType": "draw/text",
       "position": {
-        "x": 3502,
-        "y": 1248
+        "x": 742,
+        "y": 1005
       },
       "params": {
         "size": 15,
@@ -840,59 +1043,40 @@
           "x": 0,
           "y": -254.0
         }
-      }
+      },
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_lifeSlots",
       "defType": "spread/range",
       "position": {
-        "x": 1400,
-        "y": 2132
+        "x": 139,
+        "y": 136
       },
       "params": {},
       "portValues": {
         "count": 3
-      }
-    },
-    {
-      "id": "bo_lifeAt",
-      "defType": "math/expression",
-      "position": {
-        "x": 1769,
-        "y": 2179
       },
-      "params": {
-        "expr": "vec2(336.0 - i * 20, -259.0)"
-      }
-    },
-    {
-      "id": "bo_lifeLeft",
-      "defType": "math/expression",
-      "position": {
-        "x": 1769,
-        "y": 2321
-      },
-      "params": {
-        "expr": "i < l"
-      }
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_livesAt",
       "defType": "spread/sublist",
       "position": {
-        "x": 2156,
-        "y": 2226
+        "x": 1257,
+        "y": 119
       },
       "params": {
         "op": "keep-where"
-      }
+      },
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_lifeLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 2497,
-        "y": 1653
+        "x": 1529,
+        "y": 149
       },
       "params": {
         "width": 339,
@@ -916,7 +1100,8 @@
         }
       ],
       "width": 339,
-      "height": 224
+      "height": 224,
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_lifeDot",
@@ -936,99 +1121,96 @@
       "id": "bo_msgDemo",
       "defType": "value/string",
       "position": {
-        "x": 1006,
-        "y": 2454
+        "x": 708,
+        "y": 496
       },
       "params": {
         "value": "click to play"
-      }
+      },
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_msgOver",
       "defType": "value/string",
       "position": {
-        "x": 341,
-        "y": 1971
+        "x": 411,
+        "y": 368
       },
       "params": {
         "value": "game over — click to play again"
-      }
+      },
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_msgLaunch",
       "defType": "value/string",
       "position": {
-        "x": 0,
-        "y": 2056
+        "x": 129,
+        "y": 469
       },
       "params": {
         "value": "click to launch"
-      }
+      },
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_msgNone",
       "defType": "value/string",
       "position": {
-        "x": 0,
-        "y": 2160
+        "x": 129,
+        "y": 573
       },
       "params": {
         "value": ""
-      }
+      },
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_msg1",
       "defType": "logic/select",
       "position": {
-        "x": 367,
-        "y": 2075
+        "x": 437,
+        "y": 472
       },
-      "params": {}
+      "params": {},
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_msg2",
       "defType": "logic/select",
       "position": {
-        "x": 683,
-        "y": 2080
+        "x": 734,
+        "y": 348
       },
-      "params": {}
+      "params": {},
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_msg3",
       "defType": "logic/select",
       "position": {
-        "x": 1417,
-        "y": 2422
+        "x": 1014,
+        "y": 343
       },
-      "params": {}
-    },
-    {
-      "id": "bo_msgCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 1001,
-        "y": 2558
-      },
-      "params": {
-        "expr": "rgba(1, 1, 1, 0.55 + 0.3 * sin(t * 4))"
-      }
+      "params": {},
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_msgFill",
       "defType": "style/fill",
       "position": {
-        "x": 1426,
-        "y": 2585
+        "x": 2217,
+        "y": 454
       },
-      "params": {}
+      "params": {},
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_msgDraw",
       "defType": "draw/text",
       "position": {
-        "x": 1809,
-        "y": 2485
+        "x": 2401,
+        "y": 366
       },
       "params": {
         "size": 20,
@@ -1039,14 +1221,15 @@
           "x": 0,
           "y": 120
         }
-      }
+      },
+      "parentId": "bo_hud"
     },
     {
       "id": "bo_scene",
       "defType": "transform/group",
       "position": {
-        "x": 3987,
-        "y": 1015
+        "x": 935,
+        "y": 113
       },
       "params": {
         "slotCount": 8
@@ -1056,8 +1239,8 @@
       "id": "bo_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 4251,
-        "y": 1015
+        "x": 1199,
+        "y": 113
       },
       "params": {
         "width": 720,
@@ -1071,610 +1254,1492 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "bo_turnsNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 146,
+        "y": 667
+      },
+      "params": {
+        "text": "The game's turns. A click (Edge on the mouse button) starts a game when the demo is running or the game is over, and launches the ball while it sits on the paddle. The demo launches by itself. Losing the ball costs a life; clearing the wall goes up a level. State nodes keep lives, score, level, whether a game is on and whether the ball is held.",
+        "width": 320,
+        "height": 150
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_playingNext",
+      "defType": "logic/logic",
+      "position": {
+        "x": 461,
+        "y": 503
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_countsNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 131,
+        "y": 1026
+      },
+      "params": {
+        "text": "A new game resets lives to 3, score to 0 and level to 1. A lost ball costs a life, every broken brick scores 10 × the level, a cleared wall goes up a level, and each level makes the ball 40 px/s faster. No lives left = game over.",
+        "width": 300,
+        "height": 110
+      },
+      "parentId": "bo_counts"
+    },
+    {
+      "id": "bo_over",
+      "defType": "logic/compare",
+      "position": {
+        "x": 374,
+        "y": 544
+      },
+      "params": {
+        "op": "less-equal"
+      },
+      "parentId": "bo_counts",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "bo_demo",
+      "defType": "logic/logic",
+      "position": {
+        "x": 461,
+        "y": 239
+      },
+      "params": {
+        "op": "not"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_waiting",
+      "defType": "logic/logic",
+      "position": {
+        "x": 723,
+        "y": 80
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_clickStart",
+      "defType": "logic/logic",
+      "position": {
+        "x": 967,
+        "y": 57
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_demoOver",
+      "defType": "logic/logic",
+      "position": {
+        "x": 723,
+        "y": 228
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_start",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1216,
+        "y": 126
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_notStart",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1500,
+        "y": 107
+      },
+      "params": {
+        "op": "not"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_notOver",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1768,
+        "y": 214
+      },
+      "params": {
+        "op": "not"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_heldGo",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1768,
+        "y": 66
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_heldLive",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2018,
+        "y": 132
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_want",
+      "defType": "logic/logic",
+      "position": {
+        "x": 723,
+        "y": 376
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_launch",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2260,
+        "y": 161
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_round1",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1500,
+        "y": 434
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_newRound",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1768,
+        "y": 372
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_onPaddle",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2018,
+        "y": 447
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_notLaunch",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2520,
+        "y": 304
+      },
+      "params": {
+        "op": "not"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_still",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2759,
+        "y": 251
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_heldNext",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2998,
+        "y": 186
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "bo_turns"
+    },
+    {
+      "id": "bo_livesLeft",
+      "defType": "math/math",
+      "position": {
+        "x": 381,
+        "y": 90
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_counts"
+    },
+    {
+      "id": "bo_livesNext",
+      "defType": "logic/select",
+      "position": {
+        "x": 711,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "bo_counts",
+      "portValues": {
+        "a": 3
+      }
+    },
+    {
+      "id": "bo_points",
+      "defType": "math/math",
+      "position": {
+        "x": 381,
+        "y": 692
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 3,
+        "valueType": "number"
+      },
+      "parentId": "bo_counts",
+      "portValues": {
+        "b": 10
+      }
+    },
+    {
+      "id": "bo_scoreAdd",
+      "defType": "math/math",
+      "position": {
+        "x": 679,
+        "y": 464
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_counts"
+    },
+    {
+      "id": "bo_scoreNext",
+      "defType": "logic/select",
+      "position": {
+        "x": 989,
+        "y": 323
+      },
+      "params": {},
+      "parentId": "bo_counts",
+      "portValues": {
+        "a": 0
+      }
+    },
+    {
+      "id": "bo_levelUp",
+      "defType": "math/math",
+      "position": {
+        "x": 381,
+        "y": 270
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_counts"
+    },
+    {
+      "id": "bo_levelNext",
+      "defType": "logic/select",
+      "position": {
+        "x": 711,
+        "y": 188
+      },
+      "params": {},
+      "parentId": "bo_counts",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "bo_levelsUp",
+      "defType": "math/math",
+      "position": {
+        "x": 381,
+        "y": 862
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_counts",
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "bo_faster",
+      "defType": "math/math",
+      "position": {
+        "x": 679,
+        "y": 815
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_counts",
+      "portValues": {
+        "a": 40
+      }
+    },
+    {
+      "id": "bo_speed",
+      "defType": "math/math",
+      "position": {
+        "x": 958,
+        "y": 770
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_counts",
+      "portValues": {
+        "a": 340
+      }
+    },
+    {
+      "id": "bo_ballNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 157,
+        "y": 1409
+      },
+      "params": {
+        "text": "The ball: position and velocity are State. Each frame it moves by velocity × the frame time (clamped so a stall can't tunnel it through a brick). It bounces off the side and top walls and off a broken brick (Switch picks the case); off the paddle, where it lands steers it. While it sits on the paddle it follows it, and a launch sends it up and to the right. In the demo the paddle follows the ball with a little wobble.",
+        "width": 320,
+        "height": 150
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_ballTime",
+      "defType": "time/seconds",
+      "position": {
+        "x": 205,
+        "y": 877
+      },
+      "params": {},
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_step",
+      "defType": "math/clamp",
+      "position": {
+        "x": 201,
+        "y": 697
+      },
+      "params": {},
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "min": 0.001,
+        "max": 0.03333333333333333
+      }
+    },
+    {
+      "id": "bo_travel",
+      "defType": "vec2/math",
+      "position": {
+        "x": 451,
+        "y": 641
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_moved",
+      "defType": "math/math",
+      "position": {
+        "x": 742,
+        "y": 675
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "vec2"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_ballXY",
+      "defType": "vec2/split",
+      "position": {
+        "x": 1115,
+        "y": 879
+      },
+      "params": {},
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_wobbleT",
+      "defType": "math/math",
+      "position": {
+        "x": 457,
+        "y": 919
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "b": 1.7
+      }
+    },
+    {
+      "id": "bo_wobbleSin",
+      "defType": "math/math",
+      "position": {
+        "x": 751,
+        "y": 973
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_wobble",
+      "defType": "math/math",
+      "position": {
+        "x": 1073,
+        "y": 1005
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "a": 26
+      }
+    },
+    {
+      "id": "bo_autoX",
+      "defType": "math/math",
+      "position": {
+        "x": 1461,
+        "y": 1033
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_wantX",
+      "defType": "logic/select",
+      "position": {
+        "x": 1790,
+        "y": 919
+      },
+      "params": {},
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_paddleX",
+      "defType": "math/clamp",
+      "position": {
+        "x": 2056,
+        "y": 741
+      },
+      "params": {},
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "min": -308.0,
+        "max": 308.0
+      }
+    },
+    {
+      "id": "bo_movedXY",
+      "defType": "vec2/split",
+      "position": {
+        "x": 1115,
+        "y": 466
+      },
+      "params": {},
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_velXY",
+      "defType": "vec2/split",
+      "position": {
+        "x": 784,
+        "y": 497
+      },
+      "params": {},
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_falling",
+      "defType": "logic/compare",
+      "position": {
+        "x": 2593,
+        "y": 40
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "bo_padCentre",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2357,
+        "y": 274
+      },
+      "params": {},
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "y": 231.5
+      }
+    },
+    {
+      "id": "bo_padTest",
+      "defType": "geometry/hit-test",
+      "position": {
+        "x": 2602,
+        "y": 188
+      },
+      "params": {
+        "mode": "rects"
+      },
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "sizes": {
+          "x": 118,
+          "y": 19
+        }
+      }
+    },
+    {
+      "id": "bo_paddleHit",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2900,
+        "y": 119
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_free",
+      "defType": "logic/logic",
+      "position": {
+        "x": 178,
+        "y": 1187
+      },
+      "params": {
+        "op": "not"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_below",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1454,
+        "y": 1245
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "b": 300.0
+      }
+    },
+    {
+      "id": "bo_lost",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1773,
+        "y": 1125
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_leftWall",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1454,
+        "y": 115
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "b": -353.0
+      }
+    },
+    {
+      "id": "bo_rightWall",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1454,
+        "y": 263
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "b": 353.0
+      }
+    },
+    {
+      "id": "bo_topWall",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1454,
+        "y": 537
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "b": -273.0
+      }
+    },
+    {
+      "id": "bo_brickHit",
+      "defType": "logic/compare",
+      "position": {
+        "x": 157,
+        "y": 423
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "bo_absVX",
+      "defType": "math/math",
+      "position": {
+        "x": 1082,
+        "y": 340
+      },
+      "params": {
+        "op": "abs",
+        "valueType": "number"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_negAbsVX",
+      "defType": "math/math",
+      "position": {
+        "x": 1470,
+        "y": 411
+      },
+      "params": {
+        "op": "negate",
+        "valueType": "number"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_absVY",
+      "defType": "math/math",
+      "position": {
+        "x": 1470,
+        "y": 685
+      },
+      "params": {
+        "op": "abs",
+        "valueType": "number"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_negVY",
+      "defType": "math/math",
+      "position": {
+        "x": 1470,
+        "y": 811
+      },
+      "params": {
+        "op": "negate",
+        "valueType": "number"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_bounceX",
+      "defType": "logic/switch",
+      "position": {
+        "x": 1758,
+        "y": 252
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 2
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_bounceY",
+      "defType": "logic/switch",
+      "position": {
+        "x": 1758,
+        "y": 634
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 2
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_bounced",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2060,
+        "y": 475
+      },
+      "params": {},
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_offset",
+      "defType": "math/math",
+      "position": {
+        "x": 2315,
+        "y": 400
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_aimHalf",
+      "defType": "math/math",
+      "position": {
+        "x": 2600,
+        "y": 380
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "b": 52.0
+      }
+    },
+    {
+      "id": "bo_aim",
+      "defType": "math/math",
+      "position": {
+        "x": 2886,
+        "y": 350
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "b": 0.95
+      }
+    },
+    {
+      "id": "bo_aimDir",
+      "defType": "vec2/make",
+      "position": {
+        "x": 3197,
+        "y": 340
+      },
+      "params": {},
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "y": -1
+      }
+    },
+    {
+      "id": "bo_aimUnit",
+      "defType": "vec2/math",
+      "position": {
+        "x": 3425,
+        "y": 308
+      },
+      "params": {
+        "op": "normalize"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_paddleVel",
+      "defType": "vec2/math",
+      "position": {
+        "x": 3708,
+        "y": 288
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_launchDir",
+      "defType": "vec2/math",
+      "position": {
+        "x": 157,
+        "y": 265
+      },
+      "params": {
+        "op": "normalize"
+      },
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "v": {
+          "x": 0.45,
+          "y": -1
+        }
+      }
+    },
+    {
+      "id": "bo_launchVel",
+      "defType": "vec2/math",
+      "position": {
+        "x": 451,
+        "y": 239
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_serve",
+      "defType": "logic/select",
+      "position": {
+        "x": 774,
+        "y": 117
+      },
+      "params": {},
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "b": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": "bo_offPaddle",
+      "defType": "logic/select",
+      "position": {
+        "x": 3994,
+        "y": 258
+      },
+      "params": {},
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_velNext",
+      "defType": "logic/select",
+      "position": {
+        "x": 4209,
+        "y": 122
+      },
+      "params": {},
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_rest",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2357,
+        "y": 844
+      },
+      "params": {},
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "y": 220.0
+      }
+    },
+    {
+      "id": "bo_posNext",
+      "defType": "logic/select",
+      "position": {
+        "x": 2631,
+        "y": 769
+      },
+      "params": {},
+      "parentId": "bo_ballLogic"
+    },
+    {
+      "id": "bo_paddlePos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2357,
+        "y": 1010
+      },
+      "params": {},
+      "parentId": "bo_ballLogic",
+      "portValues": {
+        "y": 235
+      }
+    },
+    {
+      "id": "bo_bricksNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 1285
+      },
+      "params": {
+        "text": "Sixty bricks on a Grid; State* remembers which still stand (all of them at the start of a game and of each level). Hit Test finds the brick the ball is in; a standing brick it hits breaks. When none are left the wall is cleared. Each row has its own hue.",
+        "width": 320,
+        "height": 130
+      },
+      "parentId": "bo_bricks"
+    },
+    {
+      "id": "bo_fullWall",
+      "defType": "spread/repeat",
+      "position": {
+        "x": 128,
+        "y": 866
+      },
+      "params": {},
+      "parentId": "bo_bricks",
+      "portValues": {
+        "source": true,
+        "count": 60
+      }
+    },
+    {
+      "id": "bo_brickTest",
+      "defType": "geometry/hit-test",
+      "position": {
+        "x": 385,
+        "y": 534
+      },
+      "params": {
+        "mode": "rects"
+      },
+      "parentId": "bo_bricks",
+      "portValues": {
+        "sizes": {
+          "x": 74,
+          "y": 34
+        }
+      }
+    },
+    {
+      "id": "bo_hits",
+      "defType": "logic/logic",
+      "position": {
+        "x": 679,
+        "y": 665
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "bo_bricks"
+    },
+    {
+      "id": "bo_left",
+      "defType": "math/math",
+      "position": {
+        "x": 1228,
+        "y": 746
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_bricks"
+    },
+    {
+      "id": "bo_cleared",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1501,
+        "y": 782
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "bo_bricks",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "bo_refill",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1801,
+        "y": 687
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "bo_bricks"
+    },
+    {
+      "id": "bo_unhit",
+      "defType": "logic/logic",
+      "position": {
+        "x": 956,
+        "y": 788
+      },
+      "params": {
+        "op": "not"
+      },
+      "parentId": "bo_bricks"
+    },
+    {
+      "id": "bo_stays",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1243,
+        "y": 894
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "bo_bricks"
+    },
+    {
+      "id": "bo_aliveNext",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2101,
+        "y": 778
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "bo_bricks"
+    },
+    {
+      "id": "bo_rowOf",
+      "defType": "math/math",
+      "position": {
+        "x": 383,
+        "y": 1121
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_bricks",
+      "portValues": {
+        "b": 10
+      }
+    },
+    {
+      "id": "bo_row",
+      "defType": "math/math",
+      "position": {
+        "x": 674,
+        "y": 1101
+      },
+      "params": {
+        "op": "floor"
+      },
+      "parentId": "bo_bricks"
+    },
+    {
+      "id": "bo_hueStep",
+      "defType": "math/math",
+      "position": {
+        "x": 942,
+        "y": 1082
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_bricks",
+      "portValues": {
+        "b": 0.11
+      }
+    },
+    {
+      "id": "bo_hue",
+      "defType": "math/math",
+      "position": {
+        "x": 1228,
+        "y": 1042
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_bricks",
+      "portValues": {
+        "a": 0.95
+      }
+    },
+    {
+      "id": "bo_hueDeg",
+      "defType": "math/math",
+      "position": {
+        "x": 1507,
+        "y": 974
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_bricks",
+      "portValues": {
+        "b": 360
+      }
+    },
+    {
+      "id": "bo_brickCol",
+      "defType": "color/color",
+      "position": {
+        "x": 1794,
+        "y": 905
+      },
+      "params": {
+        "mode": "hsl"
+      },
+      "parentId": "bo_bricks",
+      "portValues": {
+        "s": 75.0,
+        "l": 57.99999999999999,
+        "a": 255
+      }
+    },
+    {
+      "id": "bo_anyHit",
+      "defType": "logic/compare",
+      "position": {
+        "x": 2080,
+        "y": 482
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "bo_bricks",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "bo_sparkRate",
+      "defType": "logic/select",
+      "position": {
+        "x": 2436,
+        "y": 276
+      },
+      "params": {},
+      "parentId": "bo_bricks",
+      "portValues": {
+        "a": 1100,
+        "b": 0
+      }
+    },
+    {
+      "id": "bo_hudNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 129,
+        "y": 1335
+      },
+      "params": {
+        "text": "Score and level as text, one dot per ball left, and the message: click to play (demo), click to launch (ball held), game over.",
+        "width": 300,
+        "height": 90
+      },
+      "parentId": "bo_hud"
+    },
+    {
+      "id": "bo_lifeStep",
+      "defType": "math/math",
+      "position": {
+        "x": 406,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_hud",
+      "portValues": {
+        "b": 20
+      }
+    },
+    {
+      "id": "bo_lifeX",
+      "defType": "math/math",
+      "position": {
+        "x": 703,
+        "y": 45
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_hud",
+      "portValues": {
+        "a": 336.0
+      }
+    },
+    {
+      "id": "bo_lifeAt",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1024,
+        "y": 94
+      },
+      "params": {},
+      "parentId": "bo_hud",
+      "portValues": {
+        "y": -259.0
+      }
+    },
+    {
+      "id": "bo_lifeLeft",
+      "defType": "logic/compare",
+      "position": {
+        "x": 399,
+        "y": 188
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "bo_hud"
+    },
+    {
+      "id": "bo_lifeFill",
+      "defType": "style/fill",
+      "position": {
+        "x": 1271,
+        "y": 267
+      },
+      "params": {},
+      "parentId": "bo_hud",
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.9647058823529412,
+          "b": 0.8470588235294118,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "bo_hudTime",
+      "defType": "time/seconds",
+      "position": {
+        "x": 166,
+        "y": 677
+      },
+      "params": {},
+      "parentId": "bo_hud"
+    },
+    {
+      "id": "bo_pulseT",
+      "defType": "math/math",
+      "position": {
+        "x": 406,
+        "y": 658
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_hud",
+      "portValues": {
+        "b": 4
+      }
+    },
+    {
+      "id": "bo_pulseSin",
+      "defType": "math/math",
+      "position": {
+        "x": 712,
+        "y": 640
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "bo_hud"
+    },
+    {
+      "id": "bo_pulseAmp",
+      "defType": "math/math",
+      "position": {
+        "x": 983,
+        "y": 599
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_hud",
+      "portValues": {
+        "a": 0.3
+      }
+    },
+    {
+      "id": "bo_pulse",
+      "defType": "math/math",
+      "position": {
+        "x": 1254,
+        "y": 558
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_hud",
+      "portValues": {
+        "a": 0.55
+      }
+    },
+    {
+      "id": "bo_pulseAlpha",
+      "defType": "math/math",
+      "position": {
+        "x": 1614,
+        "y": 538
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "bo_hud",
+      "portValues": {
+        "b": 255
+      }
+    },
+    {
+      "id": "bo_msgCol",
+      "defType": "color/color",
+      "position": {
+        "x": 1966,
+        "y": 452
+      },
+      "params": {
+        "mode": "rgb"
+      },
+      "parentId": "bo_hud",
+      "portValues": {
+        "r": 255,
+        "g": 255,
+        "b": 255
+      }
     }
   ],
   "edges": [
-    {
-      "id": "e_1",
-      "source": "bo_dt",
-      "target": "bo_step",
-      "sourceHandle": "out-dt",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_2",
-      "source": "bo_mouse",
-      "target": "bo_wasPressed",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_3",
-      "source": "bo_mouse",
-      "target": "bo_click",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_4",
-      "source": "bo_wasPressed",
-      "target": "bo_click",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-was"
-    },
-    {
-      "id": "e_5",
-      "source": "bo_brickRange",
-      "target": "bo_fullWall",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_6",
-      "source": "bo_fullWall",
-      "target": "bo_alive",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-init"
-    },
-    {
-      "id": "e_7",
-      "source": "bo_lives",
-      "target": "bo_over",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_8",
-      "source": "bo_click",
-      "target": "bo_start",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-click"
-    },
-    {
-      "id": "e_9",
-      "source": "bo_playing",
-      "target": "bo_start",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-pl"
-    },
-    {
-      "id": "e_10",
-      "source": "bo_over",
-      "target": "bo_start",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-o"
-    },
-    {
-      "id": "e_11",
-      "source": "bo_playing",
-      "target": "bo_playingNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-pl"
-    },
-    {
-      "id": "e_12",
-      "source": "bo_click",
-      "target": "bo_playingNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-click"
-    },
-    {
-      "id": "e_13",
-      "source": "bo_playingNext",
-      "target": "bo_playing",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_14",
-      "source": "bo_held",
-      "target": "bo_launch",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_15",
-      "source": "bo_start",
-      "target": "bo_launch",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_16",
-      "source": "bo_over",
-      "target": "bo_launch",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-o"
-    },
-    {
-      "id": "e_17",
-      "source": "bo_click",
-      "target": "bo_launch",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-click"
-    },
-    {
-      "id": "e_18",
-      "source": "bo_playing",
-      "target": "bo_launch",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-pl"
-    },
-    {
-      "id": "e_19",
-      "source": "bo_playingNext",
-      "target": "bo_paddleX",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-pl"
-    },
-    {
-      "id": "e_20",
-      "source": "bo_mouse",
-      "target": "bo_paddleX",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-mx"
-    },
-    {
-      "id": "e_21",
-      "source": "bo_ballPos",
-      "target": "bo_paddleX",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_22",
-      "source": "bo_level",
-      "target": "bo_speed",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-lv"
-    },
-    {
-      "id": "e_23",
-      "source": "bo_ballPos",
-      "target": "bo_moved",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_24",
-      "source": "bo_ballVel",
-      "target": "bo_moved",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_25",
-      "source": "bo_step",
-      "target": "bo_moved",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_26",
-      "source": "bo_alive",
-      "target": "bo_hits",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_27",
-      "source": "bo_grid",
-      "target": "bo_hits",
-      "sourceHandle": "out-positions",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_28",
-      "source": "bo_moved",
-      "target": "bo_hits",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_29",
-      "source": "bo_hits",
-      "target": "bo_broken",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_30",
-      "source": "bo_ballVel",
-      "target": "bo_paddleHit",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_31",
-      "source": "bo_moved",
-      "target": "bo_paddleHit",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_32",
-      "source": "bo_paddleX",
-      "target": "bo_paddleHit",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-px"
-    },
-    {
-      "id": "e_33",
-      "source": "bo_held",
-      "target": "bo_lost",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_34",
-      "source": "bo_moved",
-      "target": "bo_lost",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-q"
-    },
     {
       "id": "e_35",
       "source": "bo_alive",
       "target": "bo_standing",
       "sourceHandle": "out-current",
       "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_36",
-      "source": "bo_standing",
-      "target": "bo_cleared",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_37",
-      "source": "bo_broken",
-      "target": "bo_cleared",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_38",
-      "source": "bo_held",
-      "target": "bo_velNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_39",
-      "source": "bo_lost",
-      "target": "bo_velNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-lost"
-    },
-    {
-      "id": "e_40",
-      "source": "bo_cleared",
-      "target": "bo_velNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cl"
-    },
-    {
-      "id": "e_41",
-      "source": "bo_start",
-      "target": "bo_velNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_42",
-      "source": "bo_launch",
-      "target": "bo_velNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-launch"
-    },
-    {
-      "id": "e_43",
-      "source": "bo_speed",
-      "target": "bo_velNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spd"
-    },
-    {
-      "id": "e_44",
-      "source": "bo_paddleHit",
-      "target": "bo_velNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ph"
-    },
-    {
-      "id": "e_45",
-      "source": "bo_moved",
-      "target": "bo_velNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_46",
-      "source": "bo_paddleX",
-      "target": "bo_velNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-px"
-    },
-    {
-      "id": "e_47",
-      "source": "bo_ballVel",
-      "target": "bo_velNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_48",
-      "source": "bo_broken",
-      "target": "bo_velNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_49",
-      "source": "bo_velNext",
-      "target": "bo_ballVel",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_50",
-      "source": "bo_held",
-      "target": "bo_posNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_51",
-      "source": "bo_lost",
-      "target": "bo_posNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-lost"
-    },
-    {
-      "id": "e_52",
-      "source": "bo_cleared",
-      "target": "bo_posNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cl"
-    },
-    {
-      "id": "e_53",
-      "source": "bo_start",
-      "target": "bo_posNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_54",
-      "source": "bo_paddleX",
-      "target": "bo_posNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-px"
-    },
-    {
-      "id": "e_55",
-      "source": "bo_moved",
-      "target": "bo_posNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_56",
-      "source": "bo_posNext",
-      "target": "bo_ballPos",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_57",
-      "source": "bo_start",
-      "target": "bo_heldNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_58",
-      "source": "bo_lost",
-      "target": "bo_heldNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-lost"
-    },
-    {
-      "id": "e_59",
-      "source": "bo_cleared",
-      "target": "bo_heldNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cl"
-    },
-    {
-      "id": "e_60",
-      "source": "bo_held",
-      "target": "bo_heldNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_61",
-      "source": "bo_launch",
-      "target": "bo_heldNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-launch"
-    },
-    {
-      "id": "e_62",
-      "source": "bo_heldNext",
-      "target": "bo_held",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_63",
-      "source": "bo_start",
-      "target": "bo_aliveNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_64",
-      "source": "bo_cleared",
-      "target": "bo_aliveNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cl"
-    },
-    {
-      "id": "e_65",
-      "source": "bo_alive",
-      "target": "bo_aliveNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_66",
-      "source": "bo_hits",
-      "target": "bo_aliveNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_67",
-      "source": "bo_aliveNext",
-      "target": "bo_alive",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_68",
-      "source": "bo_start",
-      "target": "bo_livesNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_69",
-      "source": "bo_lives",
-      "target": "bo_livesNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_70",
-      "source": "bo_lost",
-      "target": "bo_livesNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-lost"
-    },
-    {
-      "id": "e_71",
-      "source": "bo_livesNext",
-      "target": "bo_lives",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_72",
-      "source": "bo_start",
-      "target": "bo_scoreNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_73",
-      "source": "bo_score",
-      "target": "bo_scoreNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-sc"
-    },
-    {
-      "id": "e_74",
-      "source": "bo_broken",
-      "target": "bo_scoreNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_75",
-      "source": "bo_level",
-      "target": "bo_scoreNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-lv"
-    },
-    {
-      "id": "e_76",
-      "source": "bo_scoreNext",
-      "target": "bo_score",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_77",
-      "source": "bo_start",
-      "target": "bo_levelNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_78",
-      "source": "bo_level",
-      "target": "bo_levelNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-lv"
-    },
-    {
-      "id": "e_79",
-      "source": "bo_cleared",
-      "target": "bo_levelNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cl"
-    },
-    {
-      "id": "e_80",
-      "source": "bo_levelNext",
-      "target": "bo_level",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_81",
-      "source": "bo_brickRange",
-      "target": "bo_brickCol",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_82",
-      "source": "bo_aliveNext",
-      "target": "bo_isUp",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_83",
-      "source": "bo_grid",
-      "target": "bo_upPos",
-      "sourceHandle": "out-positions",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_84",
-      "source": "bo_isUp",
-      "target": "bo_upPos",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_85",
-      "source": "bo_brickCol",
-      "target": "bo_upCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_86",
-      "source": "bo_isUp",
-      "target": "bo_upCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
     },
     {
       "id": "e_87",
@@ -1719,32 +2784,11 @@
       "targetHandle": "in-brick"
     },
     {
-      "id": "e_93",
-      "source": "bo_paddleX",
-      "target": "bo_paddlePos",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_94",
-      "source": "bo_paddlePos",
-      "target": "bo_paddle",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-pos"
-    },
-    {
       "id": "e_95",
       "source": "bo_paddleFill",
       "target": "bo_paddle",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_96",
-      "source": "bo_posNext",
-      "target": "bo_ball",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-pos"
     },
     {
       "id": "e_97",
@@ -1768,46 +2812,11 @@
       "targetHandle": "in-input"
     },
     {
-      "id": "e_100",
-      "source": "bo_grid",
-      "target": "bo_hitAt",
-      "sourceHandle": "out-positions",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_101",
-      "source": "bo_hits",
-      "target": "bo_hitAt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_102",
-      "source": "bo_brickCol",
-      "target": "bo_hitCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_103",
-      "source": "bo_hits",
-      "target": "bo_hitCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
       "id": "e_104",
       "source": "bo_hitCol",
       "target": "bo_sparkCol",
       "sourceHandle": "out-result",
       "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_105",
-      "source": "bo_broken",
-      "target": "bo_sparkRate",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
     },
     {
       "id": "e_106",
@@ -1822,13 +2831,6 @@
       "target": "bo_sparks",
       "sourceHandle": "out-result",
       "targetHandle": "in-positions"
-    },
-    {
-      "id": "e_108",
-      "source": "bo_sparkRate",
-      "target": "bo_sparks",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-rate"
     },
     {
       "id": "e_109",
@@ -1852,13 +2854,6 @@
       "targetHandle": "in-particles"
     },
     {
-      "id": "e_112",
-      "source": "bo_scoreNext",
-      "target": "bo_scoreText",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-value"
-    },
-    {
       "id": "e_113",
       "source": "bo_scoreText",
       "target": "bo_scoreStr",
@@ -1878,13 +2873,6 @@
       "target": "bo_scoreDraw",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_116",
-      "source": "bo_levelNext",
-      "target": "bo_levelText",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-value"
     },
     {
       "id": "e_117",
@@ -1908,41 +2896,6 @@
       "targetHandle": "in-style"
     },
     {
-      "id": "e_120",
-      "source": "bo_lifeSlots",
-      "target": "bo_lifeAt",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_121",
-      "source": "bo_lifeSlots",
-      "target": "bo_lifeLeft",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_122",
-      "source": "bo_livesNext",
-      "target": "bo_lifeLeft",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_123",
-      "source": "bo_lifeAt",
-      "target": "bo_livesAt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_124",
-      "source": "bo_lifeLeft",
-      "target": "bo_livesAt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
       "id": "e_125",
       "source": "bo_livesAt",
       "target": "bo_lifeLoop",
@@ -1957,25 +2910,11 @@
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_127",
-      "source": "bo_ballFill",
-      "target": "bo_lifeDot",
-      "sourceHandle": "out-style",
-      "targetHandle": "in-style"
-    },
-    {
       "id": "e_128",
       "source": "bo_lifeDot",
       "target": "bo_lifeLoop",
       "sourceHandle": "out-shape",
       "targetHandle": "in-life"
-    },
-    {
-      "id": "e_129",
-      "source": "bo_held",
-      "target": "bo_msg1",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-cond"
     },
     {
       "id": "e_130",
@@ -1992,13 +2931,6 @@
       "targetHandle": "in-b"
     },
     {
-      "id": "e_132",
-      "source": "bo_over",
-      "target": "bo_msg2",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cond"
-    },
-    {
       "id": "e_133",
       "source": "bo_msgOver",
       "target": "bo_msg2",
@@ -2011,13 +2943,6 @@
       "target": "bo_msg2",
       "sourceHandle": "out-selected",
       "targetHandle": "in-b"
-    },
-    {
-      "id": "e_135",
-      "source": "bo_playingNext",
-      "target": "bo_msg3",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cond"
     },
     {
       "id": "e_136",
@@ -2034,13 +2959,6 @@
       "targetHandle": "in-b"
     },
     {
-      "id": "e_138",
-      "source": "bo_msgCol",
-      "target": "bo_msgFill",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
-    },
-    {
       "id": "e_139",
       "source": "bo_msg3",
       "target": "bo_msgDraw",
@@ -2055,67 +2973,1712 @@
       "targetHandle": "in-style"
     },
     {
-      "id": "e_141",
-      "source": "bo_brickLoop",
-      "target": "bo_scene",
-      "sourceHandle": "out-brick",
-      "targetHandle": "in-s1"
-    },
-    {
-      "id": "e_142",
-      "source": "bo_sparkDots",
-      "target": "bo_scene",
-      "sourceHandle": "out-layer",
-      "targetHandle": "in-s2"
-    },
-    {
-      "id": "e_143",
-      "source": "bo_paddle",
-      "target": "bo_scene",
-      "sourceHandle": "out-shape",
-      "targetHandle": "in-s3"
-    },
-    {
-      "id": "e_144",
-      "source": "bo_ballGlow",
-      "target": "bo_scene",
-      "sourceHandle": "out-out",
-      "targetHandle": "in-s4"
-    },
-    {
-      "id": "e_145",
-      "source": "bo_scoreDraw",
-      "target": "bo_scene",
-      "sourceHandle": "out-shape",
-      "targetHandle": "in-s5"
-    },
-    {
-      "id": "e_146",
-      "source": "bo_levelDraw",
-      "target": "bo_scene",
-      "sourceHandle": "out-shape",
-      "targetHandle": "in-s6"
-    },
-    {
-      "id": "e_147",
-      "source": "bo_lifeLoop",
-      "target": "bo_scene",
-      "sourceHandle": "out-life",
-      "targetHandle": "in-s7"
-    },
-    {
-      "id": "e_148",
-      "source": "bo_msgDraw",
-      "target": "bo_scene",
-      "sourceHandle": "out-shape",
-      "targetHandle": "in-s8"
-    },
-    {
       "id": "e_149",
       "source": "bo_scene",
       "target": "bo_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_b1_1",
+      "source": "bo_mouse",
+      "target": "bo_turns",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_b1_2",
+      "source": "bo_turns",
+      "target": "bo_click",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_b1_3",
+      "source": "bo_playing",
+      "target": "bo_playingNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_4",
+      "source": "bo_click",
+      "target": "bo_playingNext",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_5",
+      "source": "bo_playingNext",
+      "target": "bo_playing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_6",
+      "source": "bo_turns",
+      "target": "bo_counts",
+      "sourceHandle": "out-lost",
+      "targetHandle": "in-lost"
+    },
+    {
+      "id": "e_b1_7",
+      "source": "bo_turns",
+      "target": "bo_counts",
+      "sourceHandle": "out-cleared",
+      "targetHandle": "in-cleared"
+    },
+    {
+      "id": "e_b1_8",
+      "source": "bo_turns",
+      "target": "bo_counts",
+      "sourceHandle": "out-broken",
+      "targetHandle": "in-broken"
+    },
+    {
+      "id": "e_b1_9",
+      "source": "bo_lives",
+      "target": "bo_over",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_10",
+      "source": "bo_over",
+      "target": "bo_counts",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-over"
+    },
+    {
+      "id": "e_b1_11",
+      "source": "bo_playing",
+      "target": "bo_demo",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_12",
+      "source": "bo_demo",
+      "target": "bo_waiting",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_13",
+      "source": "bo_counts",
+      "target": "bo_waiting",
+      "sourceHandle": "out-over",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_14",
+      "source": "bo_click",
+      "target": "bo_clickStart",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_15",
+      "source": "bo_waiting",
+      "target": "bo_clickStart",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_16",
+      "source": "bo_demo",
+      "target": "bo_demoOver",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_17",
+      "source": "bo_counts",
+      "target": "bo_demoOver",
+      "sourceHandle": "out-over",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_18",
+      "source": "bo_clickStart",
+      "target": "bo_start",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_19",
+      "source": "bo_demoOver",
+      "target": "bo_start",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_20",
+      "source": "bo_start",
+      "target": "bo_notStart",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_21",
+      "source": "bo_counts",
+      "target": "bo_notOver",
+      "sourceHandle": "out-over",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_22",
+      "source": "bo_held",
+      "target": "bo_heldGo",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_23",
+      "source": "bo_notStart",
+      "target": "bo_heldGo",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_24",
+      "source": "bo_heldGo",
+      "target": "bo_heldLive",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_25",
+      "source": "bo_notOver",
+      "target": "bo_heldLive",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_26",
+      "source": "bo_click",
+      "target": "bo_want",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_27",
+      "source": "bo_demo",
+      "target": "bo_want",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_28",
+      "source": "bo_heldLive",
+      "target": "bo_launch",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_29",
+      "source": "bo_want",
+      "target": "bo_launch",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_30",
+      "source": "bo_start",
+      "target": "bo_round1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_31",
+      "source": "bo_turns",
+      "target": "bo_round1",
+      "sourceHandle": "out-lost",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_32",
+      "source": "bo_round1",
+      "target": "bo_newRound",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_33",
+      "source": "bo_turns",
+      "target": "bo_newRound",
+      "sourceHandle": "out-cleared",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_34",
+      "source": "bo_newRound",
+      "target": "bo_onPaddle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_35",
+      "source": "bo_held",
+      "target": "bo_onPaddle",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_36",
+      "source": "bo_launch",
+      "target": "bo_notLaunch",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_37",
+      "source": "bo_held",
+      "target": "bo_still",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_38",
+      "source": "bo_notLaunch",
+      "target": "bo_still",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_39",
+      "source": "bo_newRound",
+      "target": "bo_heldNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_40",
+      "source": "bo_still",
+      "target": "bo_heldNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_41",
+      "source": "bo_heldNext",
+      "target": "bo_held",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_42",
+      "source": "bo_start",
+      "target": "bo_counts",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_b1_43",
+      "source": "bo_lives",
+      "target": "bo_livesLeft",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_44",
+      "source": "bo_counts",
+      "target": "bo_livesLeft",
+      "sourceHandle": "out-lost",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_45",
+      "source": "bo_counts",
+      "target": "bo_livesNext",
+      "sourceHandle": "out-start",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_46",
+      "source": "bo_livesLeft",
+      "target": "bo_livesNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_47",
+      "source": "bo_livesNext",
+      "target": "bo_lives",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_48",
+      "source": "bo_counts",
+      "target": "bo_points",
+      "sourceHandle": "out-broken",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_49",
+      "source": "bo_level",
+      "target": "bo_points",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_b1_50",
+      "source": "bo_score",
+      "target": "bo_scoreAdd",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_51",
+      "source": "bo_points",
+      "target": "bo_scoreAdd",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_52",
+      "source": "bo_counts",
+      "target": "bo_scoreNext",
+      "sourceHandle": "out-start",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_53",
+      "source": "bo_scoreAdd",
+      "target": "bo_scoreNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_54",
+      "source": "bo_scoreNext",
+      "target": "bo_score",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_55",
+      "source": "bo_level",
+      "target": "bo_levelUp",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_56",
+      "source": "bo_counts",
+      "target": "bo_levelUp",
+      "sourceHandle": "out-cleared",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_57",
+      "source": "bo_counts",
+      "target": "bo_levelNext",
+      "sourceHandle": "out-start",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_58",
+      "source": "bo_levelUp",
+      "target": "bo_levelNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_59",
+      "source": "bo_levelNext",
+      "target": "bo_level",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_60",
+      "source": "bo_level",
+      "target": "bo_levelsUp",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_61",
+      "source": "bo_levelsUp",
+      "target": "bo_faster",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_62",
+      "source": "bo_faster",
+      "target": "bo_speed",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_63",
+      "source": "bo_speed",
+      "target": "bo_counts",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-speed"
+    },
+    {
+      "id": "e_b1_64",
+      "source": "bo_livesNext",
+      "target": "bo_counts",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-lives"
+    },
+    {
+      "id": "e_b1_65",
+      "source": "bo_scoreNext",
+      "target": "bo_counts",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-score"
+    },
+    {
+      "id": "e_b1_66",
+      "source": "bo_levelNext",
+      "target": "bo_counts",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-level"
+    },
+    {
+      "id": "e_b1_67",
+      "source": "bo_start",
+      "target": "bo_turns",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_b1_68",
+      "source": "bo_playingNext",
+      "target": "bo_turns",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-playing"
+    },
+    {
+      "id": "e_b1_69",
+      "source": "bo_held",
+      "target": "bo_turns",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-held"
+    },
+    {
+      "id": "e_b1_70",
+      "source": "bo_onPaddle",
+      "target": "bo_turns",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-onPaddle"
+    },
+    {
+      "id": "e_b1_71",
+      "source": "bo_launch",
+      "target": "bo_turns",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-launch"
+    },
+    {
+      "id": "e_b1_72",
+      "source": "bo_counts",
+      "target": "bo_turns",
+      "sourceHandle": "out-over",
+      "targetHandle": "in-over"
+    },
+    {
+      "id": "e_b1_73",
+      "source": "bo_counts",
+      "target": "bo_turns",
+      "sourceHandle": "out-speed",
+      "targetHandle": "in-speed"
+    },
+    {
+      "id": "e_b1_74",
+      "source": "bo_counts",
+      "target": "bo_turns",
+      "sourceHandle": "out-lives",
+      "targetHandle": "in-lives"
+    },
+    {
+      "id": "e_b1_75",
+      "source": "bo_counts",
+      "target": "bo_turns",
+      "sourceHandle": "out-score",
+      "targetHandle": "in-score"
+    },
+    {
+      "id": "e_b1_76",
+      "source": "bo_counts",
+      "target": "bo_turns",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-level"
+    },
+    {
+      "id": "e_b1_77",
+      "source": "bo_dt",
+      "target": "bo_ballLogic",
+      "sourceHandle": "out-dt",
+      "targetHandle": "in-dt"
+    },
+    {
+      "id": "e_b1_78",
+      "source": "bo_mouse",
+      "target": "bo_ballLogic",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-mouseX"
+    },
+    {
+      "id": "e_b1_79",
+      "source": "bo_turns",
+      "target": "bo_ballLogic",
+      "sourceHandle": "out-playing",
+      "targetHandle": "in-playing"
+    },
+    {
+      "id": "e_b1_80",
+      "source": "bo_turns",
+      "target": "bo_ballLogic",
+      "sourceHandle": "out-held",
+      "targetHandle": "in-held"
+    },
+    {
+      "id": "e_b1_81",
+      "source": "bo_turns",
+      "target": "bo_ballLogic",
+      "sourceHandle": "out-onPaddle",
+      "targetHandle": "in-onPaddle"
+    },
+    {
+      "id": "e_b1_82",
+      "source": "bo_turns",
+      "target": "bo_ballLogic",
+      "sourceHandle": "out-launch",
+      "targetHandle": "in-launch"
+    },
+    {
+      "id": "e_b1_83",
+      "source": "bo_turns",
+      "target": "bo_ballLogic",
+      "sourceHandle": "out-speed",
+      "targetHandle": "in-speed"
+    },
+    {
+      "id": "e_b1_84",
+      "source": "bo_ballLogic",
+      "target": "bo_step",
+      "sourceHandle": "out-dt",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_85",
+      "source": "bo_ballVel",
+      "target": "bo_travel",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_86",
+      "source": "bo_step",
+      "target": "bo_travel",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_b1_87",
+      "source": "bo_ballPos",
+      "target": "bo_moved",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_88",
+      "source": "bo_travel",
+      "target": "bo_moved",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_89",
+      "source": "bo_ballPos",
+      "target": "bo_ballXY",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_90",
+      "source": "bo_ballTime",
+      "target": "bo_wobbleT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_91",
+      "source": "bo_wobbleT",
+      "target": "bo_wobbleSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_92",
+      "source": "bo_wobbleSin",
+      "target": "bo_wobble",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_93",
+      "source": "bo_ballXY",
+      "target": "bo_autoX",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_94",
+      "source": "bo_wobble",
+      "target": "bo_autoX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_95",
+      "source": "bo_ballLogic",
+      "target": "bo_wantX",
+      "sourceHandle": "out-playing",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_96",
+      "source": "bo_ballLogic",
+      "target": "bo_wantX",
+      "sourceHandle": "out-mouseX",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_97",
+      "source": "bo_autoX",
+      "target": "bo_wantX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_98",
+      "source": "bo_wantX",
+      "target": "bo_paddleX",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_99",
+      "source": "bo_moved",
+      "target": "bo_movedXY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_100",
+      "source": "bo_ballVel",
+      "target": "bo_velXY",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_101",
+      "source": "bo_velXY",
+      "target": "bo_falling",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_102",
+      "source": "bo_paddleX",
+      "target": "bo_padCentre",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_103",
+      "source": "bo_moved",
+      "target": "bo_padTest",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_b1_104",
+      "source": "bo_padCentre",
+      "target": "bo_padTest",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-centers"
+    },
+    {
+      "id": "e_b1_105",
+      "source": "bo_falling",
+      "target": "bo_paddleHit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_106",
+      "source": "bo_padTest",
+      "target": "bo_paddleHit",
+      "sourceHandle": "out-inside",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_107",
+      "source": "bo_ballLogic",
+      "target": "bo_free",
+      "sourceHandle": "out-held",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_108",
+      "source": "bo_movedXY",
+      "target": "bo_below",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_109",
+      "source": "bo_free",
+      "target": "bo_lost",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_110",
+      "source": "bo_below",
+      "target": "bo_lost",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_111",
+      "source": "bo_movedXY",
+      "target": "bo_leftWall",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_112",
+      "source": "bo_movedXY",
+      "target": "bo_rightWall",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_113",
+      "source": "bo_movedXY",
+      "target": "bo_topWall",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_114",
+      "source": "bo_ballLogic",
+      "target": "bo_brickHit",
+      "sourceHandle": "out-broken",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_115",
+      "source": "bo_velXY",
+      "target": "bo_absVX",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_116",
+      "source": "bo_absVX",
+      "target": "bo_negAbsVX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_117",
+      "source": "bo_velXY",
+      "target": "bo_absVY",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_118",
+      "source": "bo_velXY",
+      "target": "bo_negVY",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_119",
+      "source": "bo_leftWall",
+      "target": "bo_bounceX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_b1_120",
+      "source": "bo_absVX",
+      "target": "bo_bounceX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v0"
+    },
+    {
+      "id": "e_b1_121",
+      "source": "bo_rightWall",
+      "target": "bo_bounceX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if1"
+    },
+    {
+      "id": "e_b1_122",
+      "source": "bo_negAbsVX",
+      "target": "bo_bounceX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v1"
+    },
+    {
+      "id": "e_b1_123",
+      "source": "bo_velXY",
+      "target": "bo_bounceX",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-else"
+    },
+    {
+      "id": "e_b1_124",
+      "source": "bo_topWall",
+      "target": "bo_bounceY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_b1_125",
+      "source": "bo_absVY",
+      "target": "bo_bounceY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v0"
+    },
+    {
+      "id": "e_b1_126",
+      "source": "bo_brickHit",
+      "target": "bo_bounceY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if1"
+    },
+    {
+      "id": "e_b1_127",
+      "source": "bo_negVY",
+      "target": "bo_bounceY",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v1"
+    },
+    {
+      "id": "e_b1_128",
+      "source": "bo_velXY",
+      "target": "bo_bounceY",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-else"
+    },
+    {
+      "id": "e_b1_129",
+      "source": "bo_bounceX",
+      "target": "bo_bounced",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_130",
+      "source": "bo_bounceY",
+      "target": "bo_bounced",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_131",
+      "source": "bo_movedXY",
+      "target": "bo_offset",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_132",
+      "source": "bo_paddleX",
+      "target": "bo_offset",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_133",
+      "source": "bo_offset",
+      "target": "bo_aimHalf",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_134",
+      "source": "bo_aimHalf",
+      "target": "bo_aim",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_135",
+      "source": "bo_aim",
+      "target": "bo_aimDir",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_136",
+      "source": "bo_aimDir",
+      "target": "bo_aimUnit",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_137",
+      "source": "bo_aimUnit",
+      "target": "bo_paddleVel",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_138",
+      "source": "bo_ballLogic",
+      "target": "bo_paddleVel",
+      "sourceHandle": "out-speed",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_b1_139",
+      "source": "bo_launchDir",
+      "target": "bo_launchVel",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_140",
+      "source": "bo_ballLogic",
+      "target": "bo_launchVel",
+      "sourceHandle": "out-speed",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_b1_141",
+      "source": "bo_ballLogic",
+      "target": "bo_serve",
+      "sourceHandle": "out-launch",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_142",
+      "source": "bo_launchVel",
+      "target": "bo_serve",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_143",
+      "source": "bo_paddleHit",
+      "target": "bo_offPaddle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_144",
+      "source": "bo_paddleVel",
+      "target": "bo_offPaddle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_145",
+      "source": "bo_bounced",
+      "target": "bo_offPaddle",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_146",
+      "source": "bo_ballLogic",
+      "target": "bo_velNext",
+      "sourceHandle": "out-onPaddle",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_147",
+      "source": "bo_serve",
+      "target": "bo_velNext",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_148",
+      "source": "bo_offPaddle",
+      "target": "bo_velNext",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_149",
+      "source": "bo_velNext",
+      "target": "bo_ballVel",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_150",
+      "source": "bo_paddleX",
+      "target": "bo_rest",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_151",
+      "source": "bo_ballLogic",
+      "target": "bo_posNext",
+      "sourceHandle": "out-onPaddle",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_152",
+      "source": "bo_rest",
+      "target": "bo_posNext",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_153",
+      "source": "bo_moved",
+      "target": "bo_posNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_154",
+      "source": "bo_posNext",
+      "target": "bo_ballPos",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_155",
+      "source": "bo_paddleX",
+      "target": "bo_paddlePos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_156",
+      "source": "bo_paddlePos",
+      "target": "bo_paddle",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_b1_157",
+      "source": "bo_posNext",
+      "target": "bo_ball",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_b1_158",
+      "source": "bo_moved",
+      "target": "bo_ballLogic",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-moved"
+    },
+    {
+      "id": "e_b1_159",
+      "source": "bo_lost",
+      "target": "bo_ballLogic",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-lost"
+    },
+    {
+      "id": "e_b1_160",
+      "source": "bo_paddle",
+      "target": "bo_ballLogic",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-paddle"
+    },
+    {
+      "id": "e_b1_161",
+      "source": "bo_ballGlow",
+      "target": "bo_ballLogic",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-ball"
+    },
+    {
+      "id": "e_b1_162",
+      "source": "bo_ballLogic",
+      "target": "bo_turns",
+      "sourceHandle": "out-lost",
+      "targetHandle": "in-lost"
+    },
+    {
+      "id": "e_b1_163",
+      "source": "bo_ballLogic",
+      "target": "bo_bricks",
+      "sourceHandle": "out-moved",
+      "targetHandle": "in-ball"
+    },
+    {
+      "id": "e_b1_164",
+      "source": "bo_turns",
+      "target": "bo_bricks",
+      "sourceHandle": "out-start",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_b1_165",
+      "source": "bo_fullWall",
+      "target": "bo_alive",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_b1_166",
+      "source": "bo_bricks",
+      "target": "bo_brickTest",
+      "sourceHandle": "out-ball",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_b1_167",
+      "source": "bo_grid",
+      "target": "bo_brickTest",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-centers"
+    },
+    {
+      "id": "e_b1_168",
+      "source": "bo_alive",
+      "target": "bo_hits",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_169",
+      "source": "bo_brickTest",
+      "target": "bo_hits",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_170",
+      "source": "bo_hits",
+      "target": "bo_broken",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_171",
+      "source": "bo_standing",
+      "target": "bo_left",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_172",
+      "source": "bo_broken",
+      "target": "bo_left",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_173",
+      "source": "bo_left",
+      "target": "bo_cleared",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_174",
+      "source": "bo_bricks",
+      "target": "bo_refill",
+      "sourceHandle": "out-start",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_175",
+      "source": "bo_cleared",
+      "target": "bo_refill",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_176",
+      "source": "bo_hits",
+      "target": "bo_unhit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_177",
+      "source": "bo_alive",
+      "target": "bo_stays",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_178",
+      "source": "bo_unhit",
+      "target": "bo_stays",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_179",
+      "source": "bo_refill",
+      "target": "bo_aliveNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_180",
+      "source": "bo_stays",
+      "target": "bo_aliveNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_181",
+      "source": "bo_aliveNext",
+      "target": "bo_alive",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_182",
+      "source": "bo_brickRange",
+      "target": "bo_rowOf",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_183",
+      "source": "bo_rowOf",
+      "target": "bo_row",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_184",
+      "source": "bo_row",
+      "target": "bo_hueStep",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_185",
+      "source": "bo_hueStep",
+      "target": "bo_hue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_186",
+      "source": "bo_hue",
+      "target": "bo_hueDeg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_187",
+      "source": "bo_hueDeg",
+      "target": "bo_brickCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_b1_188",
+      "source": "bo_grid",
+      "target": "bo_upPos",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_189",
+      "source": "bo_aliveNext",
+      "target": "bo_upPos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_b1_190",
+      "source": "bo_brickCol",
+      "target": "bo_upCol",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_191",
+      "source": "bo_aliveNext",
+      "target": "bo_upCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_b1_192",
+      "source": "bo_grid",
+      "target": "bo_hitAt",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_193",
+      "source": "bo_hits",
+      "target": "bo_hitAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_b1_194",
+      "source": "bo_brickCol",
+      "target": "bo_hitCol",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_195",
+      "source": "bo_hits",
+      "target": "bo_hitCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_b1_196",
+      "source": "bo_broken",
+      "target": "bo_anyHit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_197",
+      "source": "bo_anyHit",
+      "target": "bo_sparkRate",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_198",
+      "source": "bo_sparkRate",
+      "target": "bo_sparks",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_b1_199",
+      "source": "bo_broken",
+      "target": "bo_bricks",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-broken"
+    },
+    {
+      "id": "e_b1_200",
+      "source": "bo_cleared",
+      "target": "bo_bricks",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cleared"
+    },
+    {
+      "id": "e_b1_201",
+      "source": "bo_brickLoop",
+      "target": "bo_bricks",
+      "sourceHandle": "out-brick",
+      "targetHandle": "in-wall"
+    },
+    {
+      "id": "e_b1_202",
+      "source": "bo_sparkDots",
+      "target": "bo_bricks",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-sparks"
+    },
+    {
+      "id": "e_b1_203",
+      "source": "bo_bricks",
+      "target": "bo_turns",
+      "sourceHandle": "out-broken",
+      "targetHandle": "in-broken"
+    },
+    {
+      "id": "e_b1_204",
+      "source": "bo_bricks",
+      "target": "bo_turns",
+      "sourceHandle": "out-cleared",
+      "targetHandle": "in-cleared"
+    },
+    {
+      "id": "e_b1_205",
+      "source": "bo_bricks",
+      "target": "bo_ballLogic",
+      "sourceHandle": "out-broken",
+      "targetHandle": "in-broken"
+    },
+    {
+      "id": "e_b1_206",
+      "source": "bo_bricks",
+      "target": "bo_scene",
+      "sourceHandle": "out-wall",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_b1_207",
+      "source": "bo_bricks",
+      "target": "bo_scene",
+      "sourceHandle": "out-sparks",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_b1_208",
+      "source": "bo_ballLogic",
+      "target": "bo_scene",
+      "sourceHandle": "out-paddle",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_b1_209",
+      "source": "bo_ballLogic",
+      "target": "bo_scene",
+      "sourceHandle": "out-ball",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_b1_210",
+      "source": "bo_turns",
+      "target": "bo_hud",
+      "sourceHandle": "out-score",
+      "targetHandle": "in-score"
+    },
+    {
+      "id": "e_b1_211",
+      "source": "bo_turns",
+      "target": "bo_hud",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-level"
+    },
+    {
+      "id": "e_b1_212",
+      "source": "bo_turns",
+      "target": "bo_hud",
+      "sourceHandle": "out-lives",
+      "targetHandle": "in-lives"
+    },
+    {
+      "id": "e_b1_213",
+      "source": "bo_turns",
+      "target": "bo_hud",
+      "sourceHandle": "out-playing",
+      "targetHandle": "in-playing"
+    },
+    {
+      "id": "e_b1_214",
+      "source": "bo_turns",
+      "target": "bo_hud",
+      "sourceHandle": "out-held",
+      "targetHandle": "in-held"
+    },
+    {
+      "id": "e_b1_215",
+      "source": "bo_turns",
+      "target": "bo_hud",
+      "sourceHandle": "out-over",
+      "targetHandle": "in-over"
+    },
+    {
+      "id": "e_b1_216",
+      "source": "bo_hud",
+      "target": "bo_scoreText",
+      "sourceHandle": "out-score",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_b1_217",
+      "source": "bo_hud",
+      "target": "bo_levelText",
+      "sourceHandle": "out-level",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_b1_218",
+      "source": "bo_hud",
+      "target": "bo_msg1",
+      "sourceHandle": "out-held",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_219",
+      "source": "bo_hud",
+      "target": "bo_msg2",
+      "sourceHandle": "out-over",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_220",
+      "source": "bo_hud",
+      "target": "bo_msg3",
+      "sourceHandle": "out-playing",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_221",
+      "source": "bo_lifeSlots",
+      "target": "bo_lifeStep",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_222",
+      "source": "bo_lifeStep",
+      "target": "bo_lifeX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_223",
+      "source": "bo_lifeX",
+      "target": "bo_lifeAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_224",
+      "source": "bo_lifeSlots",
+      "target": "bo_lifeLeft",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_225",
+      "source": "bo_hud",
+      "target": "bo_lifeLeft",
+      "sourceHandle": "out-lives",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_226",
+      "source": "bo_lifeAt",
+      "target": "bo_livesAt",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_227",
+      "source": "bo_lifeLeft",
+      "target": "bo_livesAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-keep"
+    },
+    {
+      "id": "e_b1_228",
+      "source": "bo_lifeFill",
+      "target": "bo_lifeDot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_b1_229",
+      "source": "bo_hudTime",
+      "target": "bo_pulseT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_230",
+      "source": "bo_pulseT",
+      "target": "bo_pulseSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_231",
+      "source": "bo_pulseSin",
+      "target": "bo_pulseAmp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_232",
+      "source": "bo_pulseAmp",
+      "target": "bo_pulse",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_233",
+      "source": "bo_pulse",
+      "target": "bo_pulseAlpha",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_234",
+      "source": "bo_pulseAlpha",
+      "target": "bo_msgCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_235",
+      "source": "bo_msgCol",
+      "target": "bo_msgFill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_b1_236",
+      "source": "bo_scoreDraw",
+      "target": "bo_hud",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-scoreText"
+    },
+    {
+      "id": "e_b1_237",
+      "source": "bo_levelDraw",
+      "target": "bo_hud",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-levelText"
+    },
+    {
+      "id": "e_b1_238",
+      "source": "bo_lifeLoop",
+      "target": "bo_hud",
+      "sourceHandle": "out-life",
+      "targetHandle": "in-livesDots"
+    },
+    {
+      "id": "e_b1_239",
+      "source": "bo_msgDraw",
+      "target": "bo_hud",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-message"
+    },
+    {
+      "id": "e_b1_240",
+      "source": "bo_hud",
+      "target": "bo_scene",
+      "sourceHandle": "out-scoreText",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_b1_241",
+      "source": "bo_hud",
+      "target": "bo_scene",
+      "sourceHandle": "out-levelText",
+      "targetHandle": "in-s6"
+    },
+    {
+      "id": "e_b1_242",
+      "source": "bo_hud",
+      "target": "bo_scene",
+      "sourceHandle": "out-livesDots",
+      "targetHandle": "in-s7"
+    },
+    {
+      "id": "e_b1_243",
+      "source": "bo_hud",
+      "target": "bo_scene",
+      "sourceHandle": "out-message",
+      "targetHandle": "in-s8"
     }
   ]
 }

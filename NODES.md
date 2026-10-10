@@ -543,12 +543,12 @@ Cross-frame memory. The runtime breaks the topo cycle for these — their write 
 
 | Label · type | Inputs → Outputs | Description |
 |---|---|---|
-| **State** · `state/value` | `init, next: any` → `current: any` | One slot of cross-frame state for a single value. `init` seeds tick 0; `next` captured at end-of-tick; `current` emitted next tick. |
-| **State\*** · `state/spread` | `init, next: any*` → `current: any*` | Same, for spreads. Walker trails, GoL grids, particle states. |
-| **Read** · `state/read` | `init: any` → `current: any` | Split-state pattern — left half. Emits the value last written to the same slot. Falls back to `init` on frame 0. Auto-numbered `slot` badge shows the pairing. |
-| **Write** · `state/write` | `next: any` → — | Split-state pattern — right half. Stashes `next` under the slot at end-of-tick. The matching Read emits it on the next tick. |
+| **State** · `state/value` | `init, next: any` → `current: any` | Legacy (hidden from the browser; old files still load): one slot of cross-frame state with `next` wired back into the same box. Use Write → Read instead. |
+| **State\*** · `state/spread` | `init, next: any*` → `current: any*` | Legacy (hidden), same for spreads. Use Write\* → Read\* instead. |
+| **Read** · `state/read` | `init: any` → `current: any` | Start of a feedback pair. Emits the value its Write (same `slot`) stored last frame; `init` on frame 0. Params: `slot` (the pairing), `name` (optional, shared with its Write). |
+| **Write** · `state/write` | `next: any` → — | End of a feedback pair. Stores `next` at end of frame; its Read emits it next frame. Params: `slot`, `name`. `Read*` / `Write*` (`state/read-spread`, `state/write-spread`) are the spread versions. |
 
-**Read/Write vs. single State**: dropping a `State*` node puts both pins on the same box, which forces one wire to bend backward when you wire up feedback. `Read` + `Write` are the same mechanism rendered as two boxes — drop Read on the left of your patch and Write on the right, and feedback flows strictly left-to-right with no visible loop. The two halves are paired by the slot number on each header.
+**Feedback: Write → Read.** Patches flow left to right; the only way a value crosses frames is a Write at the end of the flow and its paired Read at the start (never a wire back into an earlier node, never a single State box with `next` wired back). The two halves are paired by their slot, kept underneath; the header shows `#slot`, or the pair's name once it has one (`Write · ball position`). In the editor, placing a Write also places its Read (to the left of the flow, at the same height) and vice versa, on a slot of its own, both selected; double-click either header (or "Name pair…" in its menu) to name the pair, which names both. Selecting a half draws a dashed arc to its partner, and hovering one lights the other. Deleting a Write deletes its Read(s); deleting a Read deletes its Write unless another Read of it stays. Duplicated or pasted halves get a fresh slot, and a lone copied half gets a new partner. The compiler warns about a Read with no Write, a Write with no Read, and two Writes on one slot.
 
 ## Region
 

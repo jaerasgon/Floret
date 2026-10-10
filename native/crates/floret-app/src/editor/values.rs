@@ -73,6 +73,8 @@ fn param_row_kind(spec: &NodeSpec, key: &str, default: &Json, custom: bool) -> O
 /// internal to the node.
 const HIDDEN_PARAMS: &[&str] = &[
     "valueType",
+    // A Write / Read pair's name: edited on the header (double-click).
+    "name",
     "slotCount",
     "stopCount",
     "label",

@@ -734,3 +734,42 @@ sample. Afterwards the weather's finer noise layer got rounder drift numbers
 (1.73 units a second, offset 1253.3) for readability, which moves that
 layer by a hair; the owner asked for the same behaviour rather than a pixel
 match.
+
+## Feedback pairs: Write → Read (agent)
+
+Owner's golden rule: feedback across frames goes only through a Write →
+Read pair. No new node types; the pairs became easier to make and read.
+
+- **Names** (`state/read`, `state/write`, `state/read-spread`,
+  `state/write-spread`): an optional `name` param. Pairing is still by
+  `slot` alone (names only label). The header shows `Write · ball
+  position`, or the `#slot` badge while unnamed. Double-click a half's
+  header (or "Name pair…" in its menu) to edit; naming one names every
+  half of its family and slot, in one undo step. Hidden from the node rows
+  and from presets. Frozen ports record the param.
+- **Placed together:** placing a Write also places its Read, to the left
+  of its scope's flow at the same height (moved down if that spot is
+  taken; inside a frame, kept within its left edge), and a Read places its
+  Write to the right. Both take the smallest slot no Read or Write of the
+  family uses; both end up selected; one undo step.
+- **Copies:** duplicated, Alt-dragged or pasted halves get a fresh slot
+  per copied pair; a lone copied half gets a new partner.
+- **Delete:** a Write takes its Read(s); a Read takes its Write unless
+  another Read of that Write stays.
+- **Visual link:** a selected half draws a dashed arc (with an arrowhead
+  on the Read) to its partner; hovering or selecting a half lights its
+  partner with a soft gold ring. Drawn only, never hit-tested.
+- **Warnings** (compile, on the node): a Read with no Write ("it only ever
+  outputs `init`"), a Write with no Read, several Writes on one slot (only
+  the last one's value is kept), a half with no slot. Named pairs are
+  quoted by name. Editing a half's slot now recompiles, so the warnings
+  follow at once; Read / Write headers keep room for the warning chip.
+- **Suggestions (not done):** copies keep the original's name (a
+  " 2" suffix would tell the pairs apart); placing a pair could pan the
+  view when the new half lands off screen.
+- **State** (`state/value`) is hidden from the browser like `State*`; it
+  still loads, and its description points to Write → Read.
+- **Tests:** engine `compile.rs` `feedback_tests` (pairing by slot whatever
+  the names, names round-trip, warnings); app `editor/pairs.rs` (auto
+  pair, rename sync + undo, delete pair, copies get a fresh slot / a new
+  Read, State hidden from search).

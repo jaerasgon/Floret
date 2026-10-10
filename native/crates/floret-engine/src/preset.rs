@@ -50,6 +50,8 @@ pub const SETUP_PARAMS: &[&str] = &[
     "slotCount",
     "stopCount",
     "slot",
+    // A Write / Read pair's name.
+    "name",
     "label",
     "width",
     "height",

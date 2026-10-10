@@ -2,11 +2,11 @@
 //! inline fields, region frames and their port pills, wires — and
 //! hit-testing over it.
 
-use crate::editor::ops;
 use crate::editor::ports::{self, Side};
 use crate::editor::regions::{self, PORT_TAB_H, PORT_TAB_W, TOP_PIN_W};
 use crate::editor::values::{self, EditKey, FieldKind, LeftItem};
 use crate::editor::widgets::{self, ProbeView};
+use crate::editor::{ops, pairs};
 use eframe::egui::{self, pos2, vec2, Color32, FontId, Painter, Pos2, Rect, Stroke, Vec2};
 use floret_engine::patch::{parse_handle, Handle, PatchFile, PatchNode, PortDirection};
 use floret_engine::spec::{Catalogue, PortKind, PortType, RegionKind};
@@ -335,7 +335,10 @@ pub fn node_width(
         let label = n.params.get("label").and_then(|v| v.as_str());
         format!("▶ {}", label.unwrap_or(&spec.label))
     } else {
-        math.map_or_else(|| spec.label.clone(), str::to_owned)
+        math.map_or_else(
+            || pairs::title(n, &spec.label).unwrap_or_else(|| spec.label.clone()),
+            str::to_owned,
+        )
     };
     let title_font = if math.is_some() {
         FontId::monospace(13.0)
@@ -346,9 +349,13 @@ pub fn node_width(
     if look == Look::Node && floret_engine::bypass::can_bypass(spec) {
         header += BYPASS_ROOM;
     }
-    if let Some(slot) = n.params.get("slot").filter(|_| look == Look::Node) {
-        let text = format!("#{}", values::short(slot));
+    if let Some(slot) = slot_badge(n, look) {
+        let text = slot;
         header += 6.0 + text_width(&text, FontId::monospace(10.0)) + 8.0;
+    }
+    if look == Look::Node && pairs::is_pair_type(&n.def_type) {
+        // Room for the warning chip of a half without its partner.
+        header += 20.0;
     }
     if look == Look::Collapsed {
         header += 8.0 + text_width("subpatch", FontId::proportional(9.5));
@@ -581,6 +588,16 @@ impl NodeBox {
     }
 }
 
+/// The `#slot` badge of an unnamed Read / Write half (a named pair shows
+/// its name in the title instead).
+fn slot_badge(n: &PatchNode, look: Look) -> Option<String> {
+    let named = pairs::is_pair_type(&n.def_type) && pairs::name(n).is_some();
+    n.params
+        .get("slot")
+        .filter(|_| look == Look::Node && !named)
+        .map(|v| format!("#{}", values::short(v)))
+}
+
 /// Per-node decorations decided outside layout.
 #[derive(Default)]
 pub struct Decor {
@@ -668,6 +685,7 @@ pub fn layout(
             .filter(|_| look.is_frame() || look == Look::Collapsed)
             .map(str::to_owned)
             .or_else(|| values::header_symbol(n).map(str::to_owned))
+            .or_else(|| pairs::title(n, &spec.label).filter(|_| look == Look::Node))
             .unwrap_or_else(|| spec.label.clone());
         let header = if look.is_frame() {
             Rect::from_min_max(
@@ -697,11 +715,7 @@ pub fn layout(
                     .unwrap_or("")
                     .to_owned()
             }),
-            slot: n
-                .params
-                .get("slot")
-                .filter(|_| look == Look::Node)
-                .map(|v| format!("#{}", values::short(v))),
+            slot: slot_badge(n, look),
             warning: None,
             badge: None,
             body: 0.0,

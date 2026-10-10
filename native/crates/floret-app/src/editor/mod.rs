@@ -11,6 +11,7 @@ pub mod history;
 pub mod latch;
 pub mod layout;
 pub mod ops;
+pub mod pairs;
 pub mod popups;
 pub mod ports;
 pub mod regions;

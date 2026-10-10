@@ -14,6 +14,7 @@ mod geom;
 mod gravity;
 mod live;
 mod minimap;
+mod pair_link;
 #[cfg(test)]
 mod samples;
 
@@ -30,7 +31,7 @@ use crate::editor::ports::{self, type_name, Side};
 use crate::editor::search::{self, Fit};
 use crate::editor::values::{self, EditKey, FieldKind, LiveEdit};
 use crate::editor::widgets::{self, Pad, SliderState};
-use crate::editor::{clipboard, layout, ops, regions, subpatch};
+use crate::editor::{clipboard, layout, ops, pairs, regions, subpatch};
 use crate::theme::{self, BG_0, FG_2, FG_3, GOLD, GOLD_TEXT};
 use custom::WidgetKind;
 use draw::PinLook;
@@ -1109,6 +1110,7 @@ pub fn show(
                     // Alt-drag: duplicates follow the pointer, originals stay.
                     let at = ids.iter().position(|i| *i == grabbed);
                     ids = ops::duplicate(patch, &ids, 0.0, 0.0);
+                    pairs::reslot_copies(patch, cat, &ids);
                     grabbed = at.and_then(|i| ids.get(i).cloned()).unwrap_or_default();
                     view.selection = ids.clone();
                     for i in &ids {
@@ -1547,10 +1549,19 @@ pub fn show(
                     });
                 }
             } else if let Some(id) = hits.node(p) {
-                match boxes[id.as_str()].look {
+                let b = &boxes[id.as_str()];
+                match b.look {
                     Look::Collapsed => actions.push(Action::Enter(id)),
                     Look::Region => actions.push(Action::Rename(id)),
                     Look::Comment => actions.push(Action::EditComment(id)),
+                    // A Write / Read header: name the pair.
+                    Look::Node
+                        if b.header.contains(p)
+                            && ports::find_node(patch, &id)
+                                .is_some_and(|n| pairs::is_pair_type(&n.def_type)) =>
+                    {
+                        actions.push(Action::Rename(id))
+                    }
                     _ => {}
                 }
             } else if let Some((id, _)) = boxes
@@ -1873,6 +1884,19 @@ pub fn show(
         }
     }
 
+    // ── Write → Read pairs: the selected halves' teleport arcs (under the
+    // nodes) and the partners of hovered / selected halves (over them).
+    let pair_links = pair_link::PairLinks::find(
+        patch,
+        &boxes,
+        pointer
+            .filter(|_| resp.hovered())
+            .and_then(|p| hits.node(p))
+            .as_deref(),
+        &view.selection,
+    );
+    pair_links.draw_links(&painter, &boxes, z);
+
     // ── Pins and nodes.
     let pin_look = |node: &str, side: Side, port: &str| -> PinLook {
         match &affinity {
@@ -2013,6 +2037,8 @@ pub fn show(
             ctx.graphics_mut(|g| g.entry(painter.layer_id()).transform_range(first, last, t));
         }
     }
+
+    pair_links.draw_lit(&painter, &boxes, z);
 
     // ── Minimap (bottom-right).
     if view.show_minimap {
@@ -2633,6 +2659,10 @@ fn menu_items(
             {
                 items.push(MenuItem::new("Rename…", Action::Rename(id.clone())).key("Dbl-click"));
             }
+            if node.is_some_and(|n| pairs::is_pair_type(&n.def_type)) {
+                items
+                    .push(MenuItem::new("Name pair…", Action::Rename(id.clone())).key("Dbl-click"));
+            }
             if !regions::is_drawable_node(patch, cat, id) {
                 let parent = node.and_then(|n| n.parent_id.clone());
                 let scope = view.scope().map(str::to_owned);
@@ -2850,6 +2880,8 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             }
             if let Some(id) = ops::place_node(patch, cat, &ty, view.snapped(at), scope.as_deref()) {
                 view.select_only(&id);
+                // A Write / Read half arrives with its partner: both selected.
+                view.selection.extend(pairs::partners(patch, &id));
                 view.commit(patch);
             }
         }
@@ -2907,6 +2939,8 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                     .into_iter()
                     .filter(|id| Some(id.as_str()) != scope.as_deref())
                     .collect();
+                // A Write / Read half takes its partner along.
+                let ids = pairs::with_partners(patch, &ids);
                 changed |= ops::delete_nodes(patch, &ids) > 0;
             } else if let Some(e) = view.selected_edge.take() {
                 changed |= connect::remove_edge(patch, &e);
@@ -2922,8 +2956,11 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 return;
             }
             let new = ops::duplicate(patch, &ids, 24.0, 24.0);
+            // Copied Write / Read halves become a pair of their own.
+            let added = pairs::reslot_copies(patch, cat, &new);
             let tops = new.len().min(ids.len());
             view.selection = new[..tops].to_vec();
+            view.selection.extend(added);
             for i in &new[..tops] {
                 view.raise(i);
             }
@@ -3063,19 +3100,24 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                     vec2(w as f32 - 36.0, geom::HEADER_H - 8.0),
                 )
             };
-            let label = n
-                .params
-                .get("label")
-                .and_then(|v| v.as_str())
-                .map(str::to_owned)
-                .or_else(|| cat.get(&n.def_type).map(|s| s.label.clone()))
-                .unwrap_or_default();
+            // A Write / Read half edits the pair's name (blank: none).
+            let pair = pairs::is_pair_type(&n.def_type);
+            let label = if pair {
+                pairs::name(n).unwrap_or_default().to_owned()
+            } else {
+                n.params
+                    .get("label")
+                    .and_then(|v| v.as_str())
+                    .map(str::to_owned)
+                    .or_else(|| cat.get(&n.def_type).map(|s| s.label.clone()))
+                    .unwrap_or_default()
+            };
             view.close_overlays();
             view.editing = Some(TextEditing {
                 target: EditTarget::Field(Field::new(
                     Rect::NOTHING,
                     &id,
-                    EditKey::Param("label".into()),
+                    EditKey::Param(if pair { "name" } else { "label" }.into()),
                     FieldKind::Text,
                     Json::String(label.clone()),
                 )),
@@ -3093,6 +3135,16 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
         Action::RenamePort { region, port, name } => {
             if regions::rename_port(patch, &region, &port, &name) {
                 view.history.push(patch, None);
+            }
+        }
+        Action::SetValue { node, key, value }
+            if key == EditKey::Param("name".into())
+                && ports::find_node(patch, &node)
+                    .is_some_and(|n| pairs::is_pair_type(&n.def_type)) =>
+        {
+            // Naming one half names its partner: one undo step.
+            if pairs::rename(patch, &node, value.as_str().unwrap_or_default()) {
+                view.commit(patch);
             }
         }
         Action::SetValue { node, key, value } => {
@@ -3302,7 +3354,10 @@ fn paste(patch: &mut PatchFile, view: &mut View, clip: &PatchFile, at: Position)
             regions::set_parent(patch, id, Some(&scope));
         }
     }
+    // Pasted Write / Read halves become a pair of their own.
+    let added = pairs::reslot_copies(patch, Catalogue::builtin(), &ids);
     view.selection = ids[..tops].to_vec();
+    view.selection.extend(added);
     view.selected_edge = None;
     for i in &ids[..tops] {
         view.raise(i);
@@ -3377,6 +3432,7 @@ fn place_from_search(
         _ => {}
     }
     view.select_only(&id);
+    view.selection.extend(pairs::partners(patch, &id));
     view.commit(patch);
 }
 

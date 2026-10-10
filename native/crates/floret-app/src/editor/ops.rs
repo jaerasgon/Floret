@@ -116,19 +116,9 @@ pub fn add_node(
         params.insert("width".into(), w.into());
         params.insert("height".into(), h.into());
     }
-    // Read / Write slots: the smallest integer unused by this type.
-    if matches!(
-        def_type,
-        "state/read" | "state/write" | "state/read-spread" | "state/write-spread"
-    ) {
-        let used: HashSet<i64> = patch
-            .nodes
-            .iter()
-            .filter(|n| n.def_type == def_type)
-            .filter_map(|n| n.params.get("slot").and_then(|v| v.as_f64()))
-            .map(|v| v as i64)
-            .collect();
-        let slot = (1..).find(|s| !used.contains(s)).unwrap_or(1);
+    // Read / Write halves: a slot no Read or Write of the family uses.
+    if super::pairs::is_pair_type(def_type) {
+        let slot = super::pairs::fresh_slot(patch, def_type, &HashSet::new());
         params.insert("slot".into(), slot.into());
     }
     let (width, height) = if spec.region_kind.is_some() {
@@ -328,6 +318,11 @@ pub fn place_node(
     super::ports::find_node_mut(patch, &id)
         .expect("just added")
         .parent_id = parent;
+    // A Write comes with its Read and a Read with its Write
+    // (`pairs::partners` finds it).
+    if super::pairs::is_pair_type(def_type) {
+        super::pairs::add_partner(patch, cat, &id);
+    }
     Some(id)
 }
 

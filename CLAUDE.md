@@ -48,6 +48,20 @@ prompt you write must tell the agent to read this file first.
    `cargo clippy --workspace --all-targets -- -D warnings`,
    `cargo test --workspace --no-fail-fast`.
 
+## Terminal commands for the owner
+
+The owner's clone is at `/Users/jaafer/github/Floret`. Every command you
+give them to paste into Terminal must start with
+`cd /Users/jaafer/github/Floret`, because Terminal opens in their home
+folder. Give the whole block, ready to paste, e.g.:
+
+```
+cd /Users/jaafer/github/Floret
+git fetch origin
+git checkout claude/local-testing-setup-80hq09
+./floret.sh install
+```
+
 ## How the rules are checked
 
 - `native/crates/floret-engine/tests/no_expression_nodes.rs` — no Expression

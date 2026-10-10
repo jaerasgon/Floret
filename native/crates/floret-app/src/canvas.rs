@@ -1812,10 +1812,22 @@ pub fn show(
         .filter(|(_, b)| b.look.is_frame())
         .map(|(id, _)| id)
         .collect();
+    // Parents behind their children (a region in a section can be the
+    // bigger of the two), then the bigger first.
+    let depth = |id: &str| {
+        let mut d = 0;
+        let mut cur = ports::find_node(patch, id).and_then(|n| n.parent_id.as_deref());
+        while let Some(p) = cur.filter(|_| d < 64) {
+            d += 1;
+            cur = ports::find_node(patch, p).and_then(|n| n.parent_id.as_deref());
+        }
+        d
+    };
     frame_ids.sort_by(|a, b| {
         let (ba, bb) = (&boxes[a.as_str()], &boxes[b.as_str()]);
         (ba.look != Look::Frame)
             .cmp(&(bb.look != Look::Frame))
+            .then(depth(a).cmp(&depth(b)))
             .then(bb.rect.area().total_cmp(&ba.rect.area()))
     });
     let reparenting = matches!(view.gesture, Gesture::Move { reparent: true, .. });

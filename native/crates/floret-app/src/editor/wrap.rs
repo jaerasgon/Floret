@@ -196,6 +196,13 @@ fn wrap_in(
     if !section {
         add_crossing_ports(patch, cat, &id, &sel_ids);
     }
+    // Wrapped inside a region or section: that one grows to fit.
+    let in_frame = find_node(patch, &id)
+        .and_then(|n| n.parent_id.as_deref())
+        .is_some_and(|p| regions::is_drawable_node(patch, cat, p));
+    if in_frame {
+        regions::auto_grow(patch, &id, (w, h), &[]);
+    }
     Ok(id)
 }
 

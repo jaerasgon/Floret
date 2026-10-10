@@ -16,12 +16,12 @@
         "y": -304
       },
       "params": {
-        "text": "Kinetic type\n\nText Animate moves text glyph by glyph, no ForEach needed. The top line comes in (`in` mode): each letter rises, turns and fades in after the one before as `progress` runs 0 → 1, and leaves the same way. The bottom line rides a sine (`wave` mode) that rolls through it as `progress` loops.\n\nTry the `order` (center, random) and `ease` dropdowns.",
+        "text": "Kinetic type\n\nText Animate moves text glyph by glyph, no ForEach needed. The top line comes in (`in` mode): each letter rises, turns and fades in after the one before as `progress` runs 0 → 1, and leaves the same way. Smoothstep in `window` mode shapes the loop into that progress: up, a pause with the word whole, then back down. The bottom line rides a sine (`wave` mode) that rolls through it as `progress` loops.\n\nTry the `order` (center, random) and `ease` dropdowns.",
         "width": 470,
         "height": 240
       },
       "portValues": {
-        "text": "Kinetic type\n\nText Animate moves text glyph by glyph, no ForEach needed. The top line comes in (`in` mode): each letter rises, turns and fades in after the one before as `progress` runs 0 → 1, and leaves the same way. The bottom line rides a sine (`wave` mode) that rolls through it as `progress` loops.\n\nTry the `order` (center, random) and `ease` dropdowns.",
+        "text": "Kinetic type\n\nText Animate moves text glyph by glyph, no ForEach needed. The top line comes in (`in` mode): each letter rises, turns and fades in after the one before as `progress` runs 0 → 1, and leaves the same way. Smoothstep in `window` mode shapes the loop into that progress: up, a pause with the word whole, then back down. The bottom line rides a sine (`wave` mode) that rolls through it as `progress` loops.\n\nTry the `order` (center, random) and `ease` dropdowns.",
         "width": 470,
         "height": 240
       }
@@ -31,21 +31,9 @@
       "defType": "time/seconds",
       "position": {
         "x": 25,
-        "y": 358
+        "y": 420
       },
       "params": {}
-    },
-    {
-      "id": "kt_p",
-      "defType": "math/expression",
-      "position": {
-        "x": 251,
-        "y": 192
-      },
-      "params": {
-        "expr": "smoothstep(0.0, 0.45, x) - smoothstep(0.65, 0.95, x)"
-      },
-      "portValues": {}
     },
     {
       "id": "kt_fill",
@@ -75,7 +63,7 @@
       "id": "kt_text",
       "defType": "draw/text",
       "position": {
-        "x": 269,
+        "x": 263,
         "y": 0
       },
       "params": {
@@ -97,8 +85,8 @@
       "id": "kt_in",
       "defType": "text/animate",
       "position": {
-        "x": 555,
-        "y": 65
+        "x": 539,
+        "y": 92
       },
       "params": {
         "mode": "in",
@@ -123,7 +111,7 @@
       "defType": "style/fill",
       "position": {
         "x": 0,
-        "y": 484
+        "y": 546
       },
       "params": {
         "color": {
@@ -146,8 +134,8 @@
       "id": "kt_text2",
       "defType": "draw/text",
       "position": {
-        "x": 257,
-        "y": 345
+        "x": 251,
+        "y": 406
       },
       "params": {
         "string": "is in the air",
@@ -168,8 +156,8 @@
       "id": "kt_wave",
       "defType": "text/animate",
       "position": {
-        "x": 535,
-        "y": 389
+        "x": 519,
+        "y": 416
       },
       "params": {
         "mode": "wave",
@@ -191,8 +179,8 @@
       "id": "kt_group",
       "defType": "transform/group",
       "position": {
-        "x": 845,
-        "y": 216
+        "x": 830,
+        "y": 243
       },
       "params": {
         "slotCount": 2
@@ -203,8 +191,8 @@
       "id": "kt_r",
       "defType": "render/renderer",
       "position": {
-        "x": 1109,
-        "y": 216
+        "x": 1094,
+        "y": 243
       },
       "params": {
         "width": 640,
@@ -226,78 +214,99 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "kt_p",
+      "defType": "math/smoothstep",
+      "position": {
+        "x": 251,
+        "y": 192
+      },
+      "params": {
+        "mode": "window",
+        "edge0": 0,
+        "edge1": 0.45,
+        "edge2": 0.65,
+        "edge3": 0.95
+      },
+      "portValues": {
+        "edge0": 0,
+        "edge1": 0.45,
+        "edge2": 0.65,
+        "edge3": 0.95
+      }
     }
   ],
   "edges": [
     {
-      "id": "e_kt_t_kt_p_x",
-      "source": "kt_t",
-      "target": "kt_p",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_kt_p_kt_in_progress",
-      "source": "kt_p",
-      "target": "kt_in",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-progress"
-    },
-    {
-      "id": "e_kt_fill_kt_text_style",
+      "id": "e_1",
       "source": "kt_fill",
       "target": "kt_text",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_kt_text_kt_in_text",
+      "id": "e_2",
       "source": "kt_text",
       "target": "kt_in",
       "sourceHandle": "out-shape",
       "targetHandle": "in-text"
     },
     {
-      "id": "e_kt_fill2_kt_text2_style",
+      "id": "e_3",
       "source": "kt_fill2",
       "target": "kt_text2",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_kt_text2_kt_wave_text",
+      "id": "e_4",
       "source": "kt_text2",
       "target": "kt_wave",
       "sourceHandle": "out-shape",
       "targetHandle": "in-text"
     },
     {
-      "id": "e_kt_t_kt_wave_progress",
+      "id": "e_5",
       "source": "kt_t",
       "target": "kt_wave",
       "sourceHandle": "out-loop",
       "targetHandle": "in-progress"
     },
     {
-      "id": "e_kt_in_kt_group_s1",
+      "id": "e_6",
       "source": "kt_in",
       "target": "kt_group",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_kt_wave_kt_group_s2",
+      "id": "e_7",
       "source": "kt_wave",
       "target": "kt_group",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_kt_group_kt_r_layers",
+      "id": "e_8",
       "source": "kt_group",
       "target": "kt_r",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_9",
+      "source": "kt_t",
+      "target": "kt_p",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_10",
+      "source": "kt_p",
+      "target": "kt_in",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-progress"
     }
   ],
   "loopLength": 6

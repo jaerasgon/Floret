@@ -16,12 +16,12 @@
         "y": -304
       },
       "params": {
-        "text": "Number counters\n\nFormat Number turns numbers into text for labels and counters. Three readouts of one eased count-up: money with a thousands separator and two decimals, a percentage, and a compact count (12.3k). The clock below is the loop's time as m:ss.ff.\n\nIt formats whole spreads too: wire a list of numbers in for a list of labels.",
+        "text": "Number counters\n\nFormat Number turns numbers into text for labels and counters. Three readouts of one eased count-up (Smoothstep over the loop, scaled by Math): money with a thousands separator and two decimals, a percentage, and a compact count (12.3k). The clock below is the loop's time as m:ss.ff.\n\nIt formats whole spreads too: wire a list of numbers in for a list of labels.",
         "width": 470,
         "height": 240
       },
       "portValues": {
-        "text": "Number counters\n\nFormat Number turns numbers into text for labels and counters. Three readouts of one eased count-up: money with a thousands separator and two decimals, a percentage, and a compact count (12.3k). The clock below is the loop's time as m:ss.ff.\n\nIt formats whole spreads too: wire a list of numbers in for a list of labels.",
+        "text": "Number counters\n\nFormat Number turns numbers into text for labels and counters. Three readouts of one eased count-up (Smoothstep over the loop, scaled by Math): money with a thousands separator and two decimals, a percentage, and a compact count (12.3k). The clock below is the loop's time as m:ss.ff.\n\nIt formats whole spreads too: wire a list of numbers in for a list of labels.",
         "width": 470,
         "height": 240
       }
@@ -31,39 +31,15 @@
       "defType": "time/seconds",
       "position": {
         "x": 0,
-        "y": 440
+        "y": 500
       },
       "params": {}
-    },
-    {
-      "id": "nc_ease",
-      "defType": "math/expression",
-      "position": {
-        "x": 195,
-        "y": 323
-      },
-      "params": {
-        "expr": "smoothstep(0.0, 0.7, x)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "nc_money_v",
-      "defType": "math/expression",
-      "position": {
-        "x": 488,
-        "y": 128
-      },
-      "params": {
-        "expr": "84250.75 * x"
-      },
-      "portValues": {}
     },
     {
       "id": "nc_money",
       "defType": "string/format-number",
       "position": {
-        "x": 780,
+        "x": 775,
         "y": 0
       },
       "params": {
@@ -79,8 +55,8 @@
       "id": "nc_pct",
       "defType": "string/format-number",
       "position": {
-        "x": 497,
-        "y": 270
+        "x": 496,
+        "y": 293
       },
       "params": {
         "mode": "percent"
@@ -90,22 +66,10 @@
       }
     },
     {
-      "id": "nc_big_v",
-      "defType": "math/expression",
-      "position": {
-        "x": 488,
-        "y": 484
-      },
-      "params": {
-        "expr": "12345 * x"
-      },
-      "portValues": {}
-    },
-    {
       "id": "nc_big",
       "defType": "string/format-number",
       "position": {
-        "x": 780,
+        "x": 775,
         "y": 532
       },
       "params": {
@@ -117,23 +81,11 @@
       }
     },
     {
-      "id": "nc_secs",
-      "defType": "math/expression",
-      "position": {
-        "x": 195,
-        "y": 526
-      },
-      "params": {
-        "expr": "x * 6"
-      },
-      "portValues": {}
-    },
-    {
       "id": "nc_clock",
       "defType": "string/format-number",
       "position": {
-        "x": 497,
-        "y": 644
+        "x": 496,
+        "y": 657
       },
       "params": {
         "mode": "time"
@@ -146,7 +98,7 @@
       "id": "nc_money_at",
       "defType": "spread/lookup",
       "position": {
-        "x": 1037,
+        "x": 1033,
         "y": 13
       },
       "params": {
@@ -157,7 +109,7 @@
       "id": "nc_money_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1051,
+        "x": 1047,
         "y": 161
       },
       "params": {
@@ -181,7 +133,7 @@
       "id": "nc_money_txt",
       "defType": "draw/text",
       "position": {
-        "x": 1317,
+        "x": 1313,
         "y": 158
       },
       "params": {
@@ -201,7 +153,7 @@
       "id": "nc_pct_at",
       "defType": "spread/lookup",
       "position": {
-        "x": 774,
+        "x": 770,
         "y": 258
       },
       "params": {
@@ -212,7 +164,7 @@
       "id": "nc_pct_fill",
       "defType": "style/fill",
       "position": {
-        "x": 788,
+        "x": 784,
         "y": 406
       },
       "params": {
@@ -236,7 +188,7 @@
       "id": "nc_pct_txt",
       "defType": "draw/text",
       "position": {
-        "x": 1074,
+        "x": 1070,
         "y": 287
       },
       "params": {
@@ -256,7 +208,7 @@
       "id": "nc_big_at",
       "defType": "spread/lookup",
       "position": {
-        "x": 1037,
+        "x": 1033,
         "y": 479
       },
       "params": {
@@ -267,7 +219,7 @@
       "id": "nc_big_fill",
       "defType": "style/fill",
       "position": {
-        "x": 1051,
+        "x": 1047,
         "y": 627
       },
       "params": {
@@ -291,7 +243,7 @@
       "id": "nc_big_txt",
       "defType": "draw/text",
       "position": {
-        "x": 1317,
+        "x": 1313,
         "y": 477
       },
       "params": {
@@ -311,7 +263,7 @@
       "id": "nc_clock_at",
       "defType": "spread/lookup",
       "position": {
-        "x": 774,
+        "x": 770,
         "y": 724
       },
       "params": {
@@ -322,7 +274,7 @@
       "id": "nc_clock_fill",
       "defType": "style/fill",
       "position": {
-        "x": 788,
+        "x": 784,
         "y": 872
       },
       "params": {
@@ -346,7 +298,7 @@
       "id": "nc_clock_txt",
       "defType": "draw/text",
       "position": {
-        "x": 1074,
+        "x": 1070,
         "y": 753
       },
       "params": {
@@ -366,7 +318,7 @@
       "id": "nc_group",
       "defType": "transform/group",
       "position": {
-        "x": 1537,
+        "x": 1532,
         "y": 388
       },
       "params": {
@@ -378,7 +330,7 @@
       "id": "nc_r",
       "defType": "render/renderer",
       "position": {
-        "x": 1801,
+        "x": 1796,
         "y": 388
       },
       "params": {
@@ -401,183 +353,248 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "nc_ease",
+      "defType": "math/smoothstep",
+      "position": {
+        "x": 200,
+        "y": 367
+      },
+      "params": {
+        "mode": "step",
+        "edge0": 0,
+        "edge1": 0.7
+      },
+      "portValues": {
+        "edge0": 0,
+        "edge1": 0.7
+      }
+    },
+    {
+      "id": "nc_money_v",
+      "defType": "math/math",
+      "position": {
+        "x": 487,
+        "y": 145
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 84250.75
+      },
+      "portValues": {
+        "b": 84250.75
+      }
+    },
+    {
+      "id": "nc_big_v",
+      "defType": "math/math",
+      "position": {
+        "x": 487,
+        "y": 507
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 12345
+      },
+      "portValues": {
+        "b": 12345
+      }
+    },
+    {
+      "id": "nc_secs",
+      "defType": "math/math",
+      "position": {
+        "x": 193,
+        "y": 589
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 6
+      },
+      "portValues": {
+        "b": 6
+      }
     }
   ],
   "edges": [
     {
-      "id": "e_nc_money_nc_money_at_spread",
+      "id": "e_1",
       "source": "nc_money",
       "target": "nc_money_at",
       "sourceHandle": "out-text",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_nc_money_at_nc_money_txt_string",
+      "id": "e_2",
       "source": "nc_money_at",
       "target": "nc_money_txt",
       "sourceHandle": "out-result",
       "targetHandle": "in-string"
     },
     {
-      "id": "e_nc_money_fill_nc_money_txt_style",
+      "id": "e_3",
       "source": "nc_money_fill",
       "target": "nc_money_txt",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_nc_pct_nc_pct_at_spread",
+      "id": "e_4",
       "source": "nc_pct",
       "target": "nc_pct_at",
       "sourceHandle": "out-text",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_nc_pct_at_nc_pct_txt_string",
+      "id": "e_5",
       "source": "nc_pct_at",
       "target": "nc_pct_txt",
       "sourceHandle": "out-result",
       "targetHandle": "in-string"
     },
     {
-      "id": "e_nc_pct_fill_nc_pct_txt_style",
+      "id": "e_6",
       "source": "nc_pct_fill",
       "target": "nc_pct_txt",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_nc_big_nc_big_at_spread",
+      "id": "e_7",
       "source": "nc_big",
       "target": "nc_big_at",
       "sourceHandle": "out-text",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_nc_big_at_nc_big_txt_string",
+      "id": "e_8",
       "source": "nc_big_at",
       "target": "nc_big_txt",
       "sourceHandle": "out-result",
       "targetHandle": "in-string"
     },
     {
-      "id": "e_nc_big_fill_nc_big_txt_style",
+      "id": "e_9",
       "source": "nc_big_fill",
       "target": "nc_big_txt",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_nc_clock_nc_clock_at_spread",
+      "id": "e_10",
       "source": "nc_clock",
       "target": "nc_clock_at",
       "sourceHandle": "out-text",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_nc_clock_at_nc_clock_txt_string",
+      "id": "e_11",
       "source": "nc_clock_at",
       "target": "nc_clock_txt",
       "sourceHandle": "out-result",
       "targetHandle": "in-string"
     },
     {
-      "id": "e_nc_clock_fill_nc_clock_txt_style",
+      "id": "e_12",
       "source": "nc_clock_fill",
       "target": "nc_clock_txt",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_nc_t_nc_ease_x",
-      "source": "nc_t",
-      "target": "nc_ease",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_nc_ease_nc_money_v_x",
-      "source": "nc_ease",
-      "target": "nc_money_v",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_nc_money_v_nc_money_value",
-      "source": "nc_money_v",
-      "target": "nc_money",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-value"
-    },
-    {
-      "id": "e_nc_ease_nc_pct_value",
-      "source": "nc_ease",
-      "target": "nc_pct",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-value"
-    },
-    {
-      "id": "e_nc_ease_nc_big_v_x",
-      "source": "nc_ease",
-      "target": "nc_big_v",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_nc_big_v_nc_big_value",
-      "source": "nc_big_v",
-      "target": "nc_big",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-value"
-    },
-    {
-      "id": "e_nc_t_nc_secs_x",
-      "source": "nc_t",
-      "target": "nc_secs",
-      "sourceHandle": "out-loop",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_nc_secs_nc_clock_value",
-      "source": "nc_secs",
-      "target": "nc_clock",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-value"
-    },
-    {
-      "id": "e_nc_money_txt_nc_group_s1",
+      "id": "e_13",
       "source": "nc_money_txt",
       "target": "nc_group",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_nc_pct_txt_nc_group_s2",
+      "id": "e_14",
       "source": "nc_pct_txt",
       "target": "nc_group",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_nc_big_txt_nc_group_s3",
+      "id": "e_15",
       "source": "nc_big_txt",
       "target": "nc_group",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_nc_clock_txt_nc_group_s4",
+      "id": "e_16",
       "source": "nc_clock_txt",
       "target": "nc_group",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_nc_group_nc_r_layers",
+      "id": "e_17",
       "source": "nc_group",
       "target": "nc_r",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_18",
+      "source": "nc_t",
+      "target": "nc_ease",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_19",
+      "source": "nc_ease",
+      "target": "nc_money_v",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_20",
+      "source": "nc_money_v",
+      "target": "nc_money",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_21",
+      "source": "nc_ease",
+      "target": "nc_pct",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_22",
+      "source": "nc_ease",
+      "target": "nc_big_v",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_23",
+      "source": "nc_big_v",
+      "target": "nc_big",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_24",
+      "source": "nc_t",
+      "target": "nc_secs",
+      "sourceHandle": "out-loop",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_25",
+      "source": "nc_secs",
+      "target": "nc_clock",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
     }
   ],
   "loopLength": 6

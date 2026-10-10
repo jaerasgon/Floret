@@ -665,3 +665,72 @@ signal flow. One existing node needed a fix; nothing new was built.
   auto-arrange isn't idempotent on every sample (a second run moves a
   few nodes), so re-running it over all samples rewrites files nobody
   changed.
+
+## No-code rebuild (agent B2)
+
+The 15 Systems samples (`sys-*`) rebuilt without a single `math/expression`
+node (260 formulas before). Almost everything was already expressible with
+the building blocks above; the rebuilds lean on them where they fit —
+Integrate (plotter progress, garden growth, landscape camera, data-story
+caption timer), Switch (epidemic state machine, biome colours, bass chord,
+spoke alpha), Lookup `bin` (tile-world biome bands), Smoothstep `window`
+(garden leaf season), Hit Test (weather particles leaving the map), Noise
+`gaussian` (weather storm, city downtown), Delta `max` (every
+`min(dt, 0.05)`), Counter `wrap` (data-story years), Wrap / Clamp on vec2s
+(wrapping walkers, clamped spots). Per-element maths runs on whole lists
+outside ForEach regions where it can (stars, windows, ticks, days, dots),
+so the regions only draw. Larger formulas became subpatches named after
+what they do (Infection, Wander, Pressure and wind, Ridge 1–5, Year
+spiral, Rules …), so each top-level graph keeps the shape it had.
+
+Kept as small node chains, not new nodes: the shader-style hash
+`fract(sin(i · a + frame · b) · k)` (sin → × → fract, inside the subpatch
+that uses it) — a new random node would change every seeded pattern.
+
+### Noise → `step` pin (gradient over a distance)
+
+- **Missing:** the weather map's wind is the pressure's slope taken over 7
+  units either side (central differences), turned a quarter. Noise's
+  `gradient` is the *local* slope (forward differences over 1e-4 noise
+  units), which differs from the coarse slope by a few per cent at the
+  pressure's scale; rebuilding the old maths faithfully took four extra
+  copies of the whole pressure field (north, south, east, west of every
+  point) — 2× slower than the formula in a debug build.
+- **Design:** one pin, `step` (number, default 0, the last pin in every
+  mode so the others keep their indices): above 0 the `gradient` output is
+  `(v(p + h) − v(p − h)) / 2h` per axis with `h = step` units of `pos`
+  (noise modes sample at `h · scale` in noise space; the field modes use it
+  as their difference step). 0, negative or NaN keep the old local slope
+  exactly, so old files compute as before. The weather sample now samples
+  three Noise nodes once per point (with `step` 7) and sums their slopes:
+  the same wind to ~1e-9, faster than the original formula.
+- **Tests:** `nodes/noise.rs` `step_takes_the_gradient_over_a_distance`
+  (Perlin and cellular against central differences of the value output at
+  scale 0.5, ±7; non-positive / NaN steps unchanged; a Gaussian bump's
+  slope over ±30 and that a wide step flattens its flank), the pin-list
+  tests updated; `frozen_ports.txt` gains `noise/noise in step`.
+
+### Tools for checking rebuilds
+
+- `floret-app` `sample_equiv::rebuilt_samples_match` (ignored):
+  `FLORET_SAMPLES_BEFORE=<old dir> FLORET_SAMPLES_ONLY=a,b` plays old and
+  new files side by side with a scripted mouse / keys and every slider,
+  toggle, XY pad and bang moved, and compares the Renderer's flattened
+  layers number by number (tolerance 1e-6) and the rendered frames, with
+  median tick times (`FLORET_COMPARE_PROFILE=1` lists the slowest nodes).
+- `floret_engine::nodes::time::freeze_clock` — a test hook: `time/clock`
+  reads a fixed time plus the frame's `t`, so clock patches compare.
+- `floret-media` `sample_sound::rebuilt_samples_sound_as_before` (ignored):
+  old vs new audio, sample for sample, over ten seconds with the controls
+  moved.
+- `floret-engine/tests/no_expression_nodes.rs`: fails if a listed sample
+  holds an Expression node (the final merge switches it to every sample).
+
+Results at the time of the rebuild (180 frames each): all 15 matched the
+old versions — layers identical on every frame for 9, the rest within
+1e-15 relative (weather 3e-9, from the gradient step and the Noise `scale`
+pin), rendered pixels identical; the music-viz audio identical sample for
+sample. Afterwards the weather's finer noise layer got rounder drift numbers
+(1.73 units a second, offset 1253.3) for readability, which moves that
+layer by a hair; the owner asked for the same behaviour rather than a pixel
+match.

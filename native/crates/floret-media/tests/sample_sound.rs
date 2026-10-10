@@ -401,4 +401,85 @@ fn rebuilt_samples_sound_as_before() {
         }
     }
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+
+/// Ten seconds of a sample's sound with its controls moved on the way:
+/// each slider to a quarter of its range at 3 s and its top at 6 s, each
+/// toggle flipped at 4.5 s.
+fn play_with_controls(text: &str) -> Vec<f32> {
+    let patch = floret_engine::load_patch(text).expect("loads");
+    let mut moves: Vec<(usize, String, serde_json::Value)> = Vec::new();
+    for n in &patch.nodes {
+        let num = |k: &str, d: f64| n.params.get(k).and_then(|v| v.as_f64()).unwrap_or(d);
+        match n.def_type.as_str() {
+            "io/slider" => {
+                let (lo, hi) = (num("min", 0.0), num("max", 1.0));
+                moves.push((180, n.id.clone(), (lo + 0.25 * (hi - lo)).into()));
+                moves.push((360, n.id.clone(), hi.into()));
+            }
+            "io/toggle" => {
+                let on = n
+                    .params
+                    .get("value")
+                    .and_then(|v| v.as_bool())
+                    .unwrap_or(false);
+                moves.push((270, n.id.clone(), (!on).into()));
+            }
+            _ => {}
+        }
+    }
+    let mut engine = Engine::load(text).expect("sample loads");
+    let sys = Arc::new(AudioSystem::offline(SR));
+    engine.set_audio(Some(sys.clone()));
+    let mut heard = Vec::new();
+    for f in 0..600 {
+        for (at, id, v) in &moves {
+            if *at == f {
+                engine.params.set(id, "value", v.clone());
+            }
+        }
+        engine.tick(&frame(f, &Play::default()));
+        heard.extend(sys.render(PER_TICK).iter().map(|s| s[0]));
+    }
+    heard
+}
+
+/// `FLORET_SAMPLES_BEFORE=<dir of old .flora files> cargo test -p
+/// floret-media --test sample_sound -- --ignored
+/// rebuilt_samples_sound_as_before --nocapture`: a sample rebuilt with
+/// other nodes (`FLORET_SOUND_SAMPLES`, default `sys-music-viz`) plays the
+/// same audio as its old version, sample for sample, over ten seconds with
+/// its controls moved (see [`play_with_controls`]).
+#[test]
+#[ignore = "needs FLORET_SAMPLES_BEFORE"]
+fn rebuilt_systems_sound_as_before() {
+    let Some(before_dir) = std::env::var_os("FLORET_SAMPLES_BEFORE") else {
+        eprintln!("FLORET_SAMPLES_BEFORE not set: skipping");
+        return;
+    };
+    let ids = std::env::var("FLORET_SOUND_SAMPLES").unwrap_or_else(|_| "sys-music-viz".into());
+    let largest = |x: &[f32], y: &[f32]| {
+        x.iter()
+            .zip(y)
+            .map(|(p, q)| (p - q).abs())
+            .fold(0.0f32, f32::max)
+    };
+    let mut failures = Vec::new();
+    for id in ids.split(',') {
+        let old = std::path::Path::new(&before_dir).join(format!("{id}.flora"));
+        let before = std::fs::read_to_string(old).expect("old sample");
+        let (a, b) = (play_with_controls(&before), play_with_controls(&before));
+        let c = play_with_controls(&sample_text(id));
+        let (noise, change) = (largest(&a, &b), largest(&a, &c));
+        eprintln!(
+            "{id}: rms {:.4} → {:.4}; largest sample difference {change:e} (old vs old {noise:e})",
+            rms(&a),
+            rms(&c)
+        );
+        if a.len() != c.len() || change > noise.max(1e-6) {
+            failures.push(format!(
+                "{id}: sounds different (largest difference {change})"
+            ));
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

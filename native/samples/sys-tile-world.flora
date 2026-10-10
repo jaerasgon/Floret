@@ -16,12 +16,12 @@
         "y": -334
       },
       "params": {
-        "text": "Tile world\n\nA small island built in layers. Terrain: noise elevation on a 24 × 24 grid, falling off toward the edge, coloured by height (water, sand, grass, forest, rock, snow) and drawn as Cells — one square per tile, `colors` per cell. Roads: the Tiles node's wave function collapse lays edge-matched road tiles, masked to the land. Decorations: trees are a Symmetry rosette stamped on every forest tile, villages a kaleidoscope plaza on a few grass tiles. Clouds are metaballs (Contours' `points` mode) drifting with their shadows. A day/night cycle tints the world, and at night the villages light up.\n\n• Slider into `sea`: the sea level.  • Slider into `tod` + toggle: time of day / run the clock.\n• Vary: a new island and road network.",
+        "text": "Tile world\n\nA small island built in layers. Terrain: noise elevation on a 24 × 24 grid, falling off toward the edge, coloured by height (water, sand, grass, forest, rock, snow: Lookup's `bin` finds each tile's band above the sea level, a Switch its colour) and drawn as Cells — one square per tile, `colors` per cell. Roads: the Tiles node's wave function collapse lays edge-matched road tiles, masked to the land. Decorations: trees are a Symmetry rosette stamped on every forest tile, villages a kaleidoscope plaza on a few grass tiles. Clouds are metaballs (Contours' `points` mode) drifting with their shadows. A day/night cycle tints the world, and at night the villages light up.\n\n• Slider into `sea`: the sea level.  • Slider into `tod` + toggle: time of day / run the clock.\n• Vary: a new island and road network.",
         "width": 560,
         "height": 270
       },
       "portValues": {
-        "text": "Tile world\n\nA small island built in layers. Terrain: noise elevation on a 24 × 24 grid, falling off toward the edge, coloured by height (water, sand, grass, forest, rock, snow) and drawn as Cells — one square per tile, `colors` per cell. Roads: the Tiles node's wave function collapse lays edge-matched road tiles, masked to the land. Decorations: trees are a Symmetry rosette stamped on every forest tile, villages a kaleidoscope plaza on a few grass tiles. Clouds are metaballs (Contours' `points` mode) drifting with their shadows. A day/night cycle tints the world, and at night the villages light up.\n\n• Slider into `sea`: the sea level.  • Slider into `tod` + toggle: time of day / run the clock.\n• Vary: a new island and road network.",
+        "text": "Tile world\n\nA small island built in layers. Terrain: noise elevation on a 24 × 24 grid, falling off toward the edge, coloured by height (water, sand, grass, forest, rock, snow: Lookup's `bin` finds each tile's band above the sea level, a Switch its colour) and drawn as Cells — one square per tile, `colors` per cell. Roads: the Tiles node's wave function collapse lays edge-matched road tiles, masked to the land. Decorations: trees are a Symmetry rosette stamped on every forest tile, villages a kaleidoscope plaza on a few grass tiles. Clouds are metaballs (Contours' `points` mode) drifting with their shadows. A day/night cycle tints the world, and at night the villages light up.\n\n• Slider into `sea`: the sea level.  • Slider into `tod` + toggle: time of day / run the clock.\n• Vary: a new island and road network.",
         "width": 560,
         "height": 270
       }
@@ -30,8 +30,8 @@
       "id": "tw_seaLevel",
       "defType": "io/slider",
       "position": {
-        "x": 352,
-        "y": 772
+        "x": 284,
+        "y": 514
       },
       "params": {
         "value": 0.42,
@@ -48,8 +48,8 @@
       "id": "tw_timeOfDay",
       "defType": "io/slider",
       "position": {
-        "x": 0,
-        "y": 1796
+        "x": 284,
+        "y": 1265
       },
       "params": {
         "value": 0.4,
@@ -66,8 +66,8 @@
       "id": "tw_autoDay",
       "defType": "io/toggle",
       "position": {
-        "x": 0,
-        "y": 1658
+        "x": 921,
+        "y": 1042
       },
       "params": {
         "value": true
@@ -77,35 +77,11 @@
       }
     },
     {
-      "id": "tw_tod",
-      "defType": "math/expression",
-      "position": {
-        "x": 352,
-        "y": 1684
-      },
-      "params": {
-        "expr": "a ? fract(s + t / 45) : s"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "tw_daylight",
-      "defType": "math/expression",
-      "position": {
-        "x": 669,
-        "y": 1618
-      },
-      "params": {
-        "expr": "smoothstep(-0.15, 0.25, sin((d - 0.25) * tau))"
-      },
-      "portValues": {}
-    },
-    {
       "id": "tw_tiles",
       "defType": "spread/grid",
       "position": {
-        "x": 21,
-        "y": 637
+        "x": 6,
+        "y": 541
       },
       "params": {},
       "portValues": {
@@ -121,33 +97,40 @@
     },
     {
       "id": "tw_elevation",
-      "defType": "math/expression",
+      "defType": "meta/subpatch",
       "position": {
-        "x": 352,
-        "y": 586
+        "x": 290,
+        "y": 640
       },
       "params": {
-        "expr": "0.5 + (noise(q.x * 0.005 + 3.7, q.y * 0.005 + 1.3) - 0.5) * 1.6 + (noise(q.x * 0.013, q.y * 0.013 + 7.1) - 0.5) * 0.45 + 0.2 - length(q) / 420"
+        "label": "Elevation",
+        "width": 2621,
+        "height": 616
       },
-      "portValues": {}
-    },
-    {
-      "id": "tw_biomeColour",
-      "defType": "math/expression",
-      "position": {
-        "x": 669,
-        "y": 380
-      },
-      "params": {
-        "expr": "ev < s - 0.08 ? rgb(0.13, 0.33, 0.55) : (ev < s ? rgb(0.25, 0.52, 0.72) : (ev < s + 0.04 ? rgb(0.89, 0.83, 0.6) : (ev < s + 0.24 ? rgb(0.47, 0.71, 0.33) : (ev < s + 0.42 ? rgb(0.2, 0.47, 0.25) : (ev < s + 0.58 ? rgb(0.52, 0.5, 0.47) : rgb(0.95, 0.96, 0.98))))))"
-      },
-      "portValues": {}
+      "width": 2621,
+      "height": 616,
+      "ports": [
+        {
+          "id": "q",
+          "name": "tiles",
+          "type": "vec2",
+          "direction": "input",
+          "y": 409
+        },
+        {
+          "id": "value",
+          "name": "elevation",
+          "type": "number",
+          "direction": "output",
+          "y": 304
+        }
+      ]
     },
     {
       "id": "tw_terrain",
       "defType": "geometry/cells",
       "position": {
-        "x": 1014,
+        "x": 921,
         "y": 0
       },
       "params": {
@@ -166,23 +149,11 @@
       }
     },
     {
-      "id": "tw_landMaskColour",
-      "defType": "math/expression",
-      "position": {
-        "x": 669,
-        "y": 588
-      },
-      "params": {
-        "expr": "rgb(1, 1, 1, ev < s + 0.04 ? 0 : 1)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "tw_landMask",
       "defType": "geometry/cells",
       "position": {
-        "x": 1014,
-        "y": 538
+        "x": 1591,
+        "y": 318
       },
       "params": {
         "mode": "voronoi"
@@ -203,8 +174,8 @@
       "id": "tw_roadStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 369,
-        "y": 373
+        "x": 938,
+        "y": 236
       },
       "params": {},
       "portValues": {
@@ -221,8 +192,8 @@
       "id": "tw_roadCap",
       "defType": "style/stroke-cap",
       "position": {
-        "x": 695,
-        "y": 222
+        "x": 1240,
+        "y": 215
       },
       "params": {},
       "portValues": {
@@ -233,8 +204,8 @@
       "id": "tw_roads",
       "defType": "geometry/tiles",
       "position": {
-        "x": 1020,
-        "y": 236
+        "x": 1597,
+        "y": 16
       },
       "params": {
         "mode": "wfc"
@@ -257,8 +228,8 @@
       "id": "tw_roadsOnLand",
       "defType": "transform/mask",
       "position": {
-        "x": 1431,
-        "y": 565
+        "x": 1971,
+        "y": 156
       },
       "params": {
         "mode": "alpha"
@@ -266,23 +237,11 @@
       "portValues": {}
     },
     {
-      "id": "tw_isForest",
-      "defType": "math/expression",
-      "position": {
-        "x": 669,
-        "y": 752
-      },
-      "params": {
-        "expr": "ev >= s + 0.24 && ev < s + 0.42"
-      },
-      "portValues": {}
-    },
-    {
       "id": "tw_forestTiles",
       "defType": "spread/sublist",
       "position": {
-        "x": 1017,
-        "y": 774
+        "x": 1217,
+        "y": 529
       },
       "params": {
         "op": "keep-where"
@@ -293,8 +252,8 @@
       "id": "tw_crownFill",
       "defType": "style/fill",
       "position": {
-        "x": 369,
-        "y": 1034
+        "x": 613,
+        "y": 563
       },
       "params": {},
       "portValues": {
@@ -310,8 +269,8 @@
       "id": "tw_crownLeaf",
       "defType": "draw/ellipse",
       "position": {
-        "x": 699,
-        "y": 1102
+        "x": 951,
+        "y": 702
       },
       "params": {},
       "portValues": {
@@ -327,8 +286,8 @@
       "id": "tw_crown",
       "defType": "transform/symmetry",
       "position": {
-        "x": 1005,
-        "y": 960
+        "x": 1205,
+        "y": 677
       },
       "params": {
         "mode": "rotate"
@@ -346,8 +305,8 @@
       "id": "tw_trees",
       "defType": "region/foreach",
       "position": {
-        "x": 1340,
-        "y": 798
+        "x": 1501,
+        "y": 576
       },
       "params": {
         "width": 350,
@@ -386,22 +345,48 @@
     },
     {
       "id": "tw_isVillage",
-      "defType": "math/expression",
+      "defType": "meta/subpatch",
       "position": {
-        "x": 669,
-        "y": 916
+        "x": 594,
+        "y": 689
       },
       "params": {
-        "expr": "ev >= s + 0.06 && ev < s + 0.22 && fract(sin(index * 12.9898 + 1.7) * 43758.5) < 0.07"
+        "label": "Village sites",
+        "width": 2527,
+        "height": 525
       },
-      "portValues": {}
+      "width": 2527,
+      "height": 525,
+      "ports": [
+        {
+          "id": "s",
+          "name": "sea level",
+          "type": "number",
+          "direction": "input",
+          "y": 173
+        },
+        {
+          "id": "ev",
+          "name": "elevation",
+          "type": "number",
+          "direction": "input",
+          "y": 343
+        },
+        {
+          "id": "value",
+          "name": "village",
+          "type": "boolean",
+          "direction": "output",
+          "y": 199
+        }
+      ]
     },
     {
       "id": "tw_villageTiles",
       "defType": "spread/sublist",
       "position": {
-        "x": 1017,
-        "y": 1217
+        "x": 924,
+        "y": 894
       },
       "params": {
         "op": "keep-where"
@@ -412,8 +397,8 @@
       "id": "tw_roofFill",
       "defType": "style/fill",
       "position": {
-        "x": 686,
-        "y": 1760
+        "x": 3330,
+        "y": 1062
       },
       "params": {},
       "portValues": {
@@ -429,8 +414,8 @@
       "id": "tw_house",
       "defType": "draw/rect",
       "position": {
-        "x": 1044,
-        "y": 1649
+        "x": 3595,
+        "y": 987
       },
       "params": {
         "anchor": "center"
@@ -449,8 +434,8 @@
       "id": "tw_plaza",
       "defType": "transform/symmetry",
       "position": {
-        "x": 1422,
-        "y": 1516
+        "x": 3819,
+        "y": 969
       },
       "params": {
         "mode": "kaleidoscope"
@@ -465,23 +450,11 @@
       }
     },
     {
-      "id": "tw_lampColour",
-      "defType": "math/expression",
-      "position": {
-        "x": 1014,
-        "y": 1365
-      },
-      "params": {
-        "expr": "rgb(1, 0.78, 0.4, (1 - d) * 0.95)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "tw_lampFill",
       "defType": "style/fill",
       "position": {
-        "x": 1472,
-        "y": 1264
+        "x": 3870,
+        "y": 717
       },
       "params": {},
       "portValues": {}
@@ -490,8 +463,8 @@
       "id": "tw_villages",
       "defType": "region/foreach",
       "position": {
-        "x": 1835,
-        "y": 1018
+        "x": 4129,
+        "y": 557
       },
       "params": {
         "width": 640,
@@ -550,23 +523,11 @@
       }
     },
     {
-      "id": "tw_haloColour",
-      "defType": "math/expression",
-      "position": {
-        "x": 1014,
-        "y": 1507
-      },
-      "params": {
-        "expr": "rgb(1, 0.7, 0.3, (1 - d) * 0.28)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "tw_haloFill",
       "defType": "style/fill",
       "position": {
-        "x": 1472,
-        "y": 1390
+        "x": 3870,
+        "y": 843
       },
       "params": {},
       "portValues": {}
@@ -602,8 +563,8 @@
       "id": "tw_cloudPuffIds",
       "defType": "spread/range",
       "position": {
-        "x": 15,
-        "y": 1554
+        "x": 0,
+        "y": 1013
       },
       "params": {
         "count": 30
@@ -614,22 +575,41 @@
     },
     {
       "id": "tw_cloudPuffs",
-      "defType": "math/expression",
+      "defType": "meta/subpatch",
       "position": {
-        "x": 352,
-        "y": 1498
+        "x": 283,
+        "y": 1013
       },
       "params": {
-        "expr": "vec2(mod(floor(i / 5) * 137 + t * (8 + floor(i / 5) * 2), 840) - 420.0 + cos(i * 2.1) * 30, (fract(floor(i / 5) * 0.618) - 0.5) * 480 + sin(i * 1.3) * 14)"
+        "label": "Cloud puffs",
+        "width": 2800,
+        "height": 662
       },
-      "portValues": {}
+      "width": 2800,
+      "height": 662,
+      "ports": [
+        {
+          "id": "i",
+          "name": "puff",
+          "type": "number",
+          "direction": "input",
+          "y": 433
+        },
+        {
+          "id": "value",
+          "name": "puffs",
+          "type": "vec2",
+          "direction": "output",
+          "y": 316
+        }
+      ]
     },
     {
       "id": "tw_cloudFill",
       "defType": "style/fill",
       "position": {
-        "x": 363,
-        "y": 2106
+        "x": 295,
+        "y": 1507
       },
       "params": {},
       "portValues": {
@@ -645,8 +625,8 @@
       "id": "tw_clouds",
       "defType": "geometry/contours",
       "position": {
-        "x": 678,
-        "y": 1886
+        "x": 605,
+        "y": 1287
       },
       "params": {
         "mode": "points"
@@ -670,8 +650,8 @@
       "id": "tw_cloudShadowFill",
       "defType": "style/fill",
       "position": {
-        "x": 363,
-        "y": 1160
+        "x": 295,
+        "y": 803
       },
       "params": {},
       "portValues": {
@@ -687,8 +667,8 @@
       "id": "tw_cloudShadowShape",
       "defType": "geometry/contours",
       "position": {
-        "x": 678,
-        "y": 1294
+        "x": 605,
+        "y": 815
       },
       "params": {
         "mode": "points"
@@ -712,8 +692,8 @@
       "id": "tw_cloudShadows",
       "defType": "transform/translate",
       "position": {
-        "x": 2098,
-        "y": 870
+        "x": 4392,
+        "y": 409
       },
       "params": {},
       "portValues": {
@@ -724,23 +704,11 @@
       }
     },
     {
-      "id": "tw_tintColour",
-      "defType": "math/expression",
-      "position": {
-        "x": 1014,
-        "y": 1841
-      },
-      "params": {
-        "expr": "rgb(0.02, 0.04, 0.16, (1 - d) * 0.66)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "tw_tintFill",
       "defType": "style/fill",
       "position": {
-        "x": 1472,
-        "y": 1788
+        "x": 3870,
+        "y": 1210
       },
       "params": {},
       "portValues": {}
@@ -749,8 +717,8 @@
       "id": "tw_nightTint",
       "defType": "draw/rect",
       "position": {
-        "x": 2100,
-        "y": 1608
+        "x": 4394,
+        "y": 1147
       },
       "params": {
         "anchor": "center"
@@ -769,8 +737,8 @@
       "id": "tw_scene",
       "defType": "transform/group",
       "position": {
-        "x": 2648,
-        "y": 964
+        "x": 4939,
+        "y": 518
       },
       "params": {
         "slotCount": 8
@@ -781,8 +749,8 @@
       "id": "tw_r",
       "defType": "render/renderer",
       "position": {
-        "x": 2912,
-        "y": 964
+        "x": 5203,
+        "y": 518
       },
       "params": {
         "width": 640,
@@ -804,463 +772,2434 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "tw_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 27,
+        "y": 1139
+      },
+      "params": {}
+    },
+    {
+      "id": "tw_divide",
+      "defType": "math/math",
+      "position": {
+        "x": 284,
+        "y": 1117
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 45
+      }
+    },
+    {
+      "id": "tw_add",
+      "defType": "math/math",
+      "position": {
+        "x": 596,
+        "y": 1139
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "tw_dayRuns",
+      "defType": "math/math",
+      "position": {
+        "x": 930,
+        "y": 1180
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "tw_tod",
+      "defType": "logic/select",
+      "position": {
+        "x": 1246,
+        "y": 1160
+      },
+      "params": {}
+    },
+    {
+      "id": "tw_subtract",
+      "defType": "math/math",
+      "position": {
+        "x": 1592,
+        "y": 1140
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.25
+      }
+    },
+    {
+      "id": "tw_multiply",
+      "defType": "math/math",
+      "position": {
+        "x": 1972,
+        "y": 1119
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 6.283185307179586
+      }
+    },
+    {
+      "id": "tw_sunHeight",
+      "defType": "math/math",
+      "position": {
+        "x": 2242,
+        "y": 1104
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "tw_daylight",
+      "defType": "math/smoothstep",
+      "position": {
+        "x": 2494,
+        "y": 1045
+      },
+      "params": {
+        "mode": "step"
+      },
+      "portValues": {
+        "edge0": -0.15,
+        "edge1": 0.25
+      }
+    },
+    {
+      "id": "tw_zoomLand",
+      "defType": "math/math",
+      "position": {
+        "x": 145,
+        "y": 202
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "vec2"
+      },
+      "parentId": "tw_elevation",
+      "portValues": {
+        "b": {
+          "x": 0.005,
+          "y": 0.005
+        }
+      }
+    },
+    {
+      "id": "tw_atLand",
+      "defType": "math/math",
+      "position": {
+        "x": 424,
+        "y": 121
+      },
+      "params": {
+        "op": "add",
+        "valueType": "vec2"
+      },
+      "parentId": "tw_elevation",
+      "portValues": {
+        "b": {
+          "x": 3.7,
+          "y": 1.3
+        }
+      }
+    },
+    {
+      "id": "tw_zoomHills",
+      "defType": "math/math",
+      "position": {
+        "x": 145,
+        "y": 350
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "vec2"
+      },
+      "parentId": "tw_elevation",
+      "portValues": {
+        "b": {
+          "x": 0.013,
+          "y": 0.013
+        }
+      }
+    },
+    {
+      "id": "tw_atHills",
+      "defType": "math/math",
+      "position": {
+        "x": 697,
+        "y": 364
+      },
+      "params": {
+        "op": "add",
+        "valueType": "vec2"
+      },
+      "parentId": "tw_elevation",
+      "portValues": {
+        "b": {
+          "x": 0,
+          "y": 7.1
+        }
+      }
+    },
+    {
+      "id": "tw_land",
+      "defType": "noise/noise",
+      "position": {
+        "x": 698,
+        "y": 40
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "tw_elevation"
+    },
+    {
+      "id": "tw_hills",
+      "defType": "noise/noise",
+      "position": {
+        "x": 973,
+        "y": 268
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "tw_elevation"
+    },
+    {
+      "id": "tw_subtract2",
+      "defType": "math/math",
+      "position": {
+        "x": 972,
+        "y": 69
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "tw_elevation",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "tw_multiply2",
+      "defType": "math/math",
+      "position": {
+        "x": 1244,
+        "y": 98
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_elevation",
+      "portValues": {
+        "b": 1.6
+      }
+    },
+    {
+      "id": "tw_add2",
+      "defType": "math/math",
+      "position": {
+        "x": 1515,
+        "y": 105
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_elevation",
+      "portValues": {
+        "a": 0.5
+      }
+    },
+    {
+      "id": "tw_subtract3",
+      "defType": "math/math",
+      "position": {
+        "x": 1244,
+        "y": 261
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "tw_elevation",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "tw_multiply3",
+      "defType": "math/math",
+      "position": {
+        "x": 1515,
+        "y": 253
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_elevation",
+      "portValues": {
+        "b": 0.45
+      }
+    },
+    {
+      "id": "tw_add3",
+      "defType": "math/math",
+      "position": {
+        "x": 1794,
+        "y": 179
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_elevation"
+    },
+    {
+      "id": "tw_add4",
+      "defType": "math/math",
+      "position": {
+        "x": 2067,
+        "y": 223
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_elevation",
+      "portValues": {
+        "b": 0.2
+      }
+    },
+    {
+      "id": "tw_fromCentre",
+      "defType": "vec2/math",
+      "position": {
+        "x": 139,
+        "y": 498
+      },
+      "params": {
+        "op": "length"
+      },
+      "parentId": "tw_elevation"
+    },
+    {
+      "id": "tw_divide2",
+      "defType": "math/math",
+      "position": {
+        "x": 2067,
+        "y": 377
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "tw_elevation",
+      "portValues": {
+        "b": 420
+      }
+    },
+    {
+      "id": "tw_subtract4",
+      "defType": "math/math",
+      "position": {
+        "x": 2341,
+        "y": 267
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "tw_elevation"
+    },
+    {
+      "id": "tw_biomes",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 608,
+        "y": 437
+      },
+      "params": {
+        "label": "Biomes",
+        "width": 1316,
+        "height": 810
+      },
+      "ports": [
+        {
+          "id": "sea",
+          "name": "sea level",
+          "type": "number",
+          "direction": "input",
+          "y": 329
+        },
+        {
+          "id": "ev",
+          "name": "elevation",
+          "type": "number",
+          "direction": "input",
+          "y": 756
+        },
+        {
+          "id": "band",
+          "name": "band",
+          "type": "number",
+          "direction": "output",
+          "y": 565
+        },
+        {
+          "id": "colour",
+          "name": "colour",
+          "type": "color",
+          "direction": "output",
+          "y": 324
+        }
+      ],
+      "width": 1316,
+      "height": 810
+    },
+    {
+      "id": "tw_subtract5",
+      "defType": "math/math",
+      "position": {
+        "x": 155,
+        "y": 40
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "tw_biomes",
+      "portValues": {
+        "b": 0.08
+      }
+    },
+    {
+      "id": "tw_add5",
+      "defType": "math/math",
+      "position": {
+        "x": 155,
+        "y": 188
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_biomes",
+      "portValues": {
+        "b": 0.04
+      }
+    },
+    {
+      "id": "tw_add6",
+      "defType": "math/math",
+      "position": {
+        "x": 155,
+        "y": 336
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_biomes",
+      "portValues": {
+        "b": 0.24
+      }
+    },
+    {
+      "id": "tw_add7",
+      "defType": "math/math",
+      "position": {
+        "x": 155,
+        "y": 484
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_biomes",
+      "portValues": {
+        "b": 0.42
+      }
+    },
+    {
+      "id": "tw_add8",
+      "defType": "math/math",
+      "position": {
+        "x": 155,
+        "y": 632
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_biomes",
+      "portValues": {
+        "b": 0.58
+      }
+    },
+    {
+      "id": "tw_bandEdges",
+      "defType": "spread/merge",
+      "position": {
+        "x": 459,
+        "y": 257
+      },
+      "params": {
+        "slotCount": 6
+      },
+      "parentId": "tw_biomes"
+    },
+    {
+      "id": "tw_band",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 756,
+        "y": 455
+      },
+      "params": {
+        "op": "bin"
+      },
+      "parentId": "tw_biomes"
+    },
+    {
+      "id": "tw_biomeColour",
+      "defType": "logic/switch",
+      "position": {
+        "x": 1036,
+        "y": 287
+      },
+      "params": {
+        "mode": "index",
+        "slotCount": 7,
+        "range": "clamp"
+      },
+      "parentId": "tw_biomes",
+      "portValues": {
+        "v0": {
+          "r": 0.13,
+          "g": 0.33,
+          "b": 0.55,
+          "a": 1.0
+        },
+        "v1": {
+          "r": 0.25,
+          "g": 0.52,
+          "b": 0.72,
+          "a": 1.0
+        },
+        "v2": {
+          "r": 0.89,
+          "g": 0.83,
+          "b": 0.6,
+          "a": 1.0
+        },
+        "v3": {
+          "r": 0.47,
+          "g": 0.71,
+          "b": 0.33,
+          "a": 1.0
+        },
+        "v4": {
+          "r": 0.2,
+          "g": 0.47,
+          "b": 0.25,
+          "a": 1.0
+        },
+        "v5": {
+          "r": 0.52,
+          "g": 0.5,
+          "b": 0.47,
+          "a": 1.0
+        },
+        "v6": {
+          "r": 0.95,
+          "g": 0.96,
+          "b": 0.98,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "tw_isLand",
+      "defType": "logic/compare",
+      "position": {
+        "x": 915,
+        "y": 406
+      },
+      "params": {
+        "op": "greater-equal"
+      },
+      "portValues": {
+        "b": 3
+      }
+    },
+    {
+      "id": "tw_landMaskColour",
+      "defType": "logic/select",
+      "position": {
+        "x": 1246,
+        "y": 381
+      },
+      "params": {},
+      "portValues": {
+        "a": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1
+        },
+        "b": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 0
+        }
+      }
+    },
+    {
+      "id": "tw_isForest",
+      "defType": "logic/compare",
+      "position": {
+        "x": 915,
+        "y": 554
+      },
+      "params": {
+        "op": "equal"
+      },
+      "portValues": {
+        "b": 4
+      }
+    },
+    {
+      "id": "tw_count",
+      "defType": "spread/count",
+      "position": {
+        "x": 149,
+        "y": 368
+      },
+      "params": {},
+      "parentId": "tw_isVillage"
+    },
+    {
+      "id": "tw_tileNumber",
+      "defType": "spread/range",
+      "position": {
+        "x": 439,
+        "y": 416
+      },
+      "params": {},
+      "parentId": "tw_isVillage"
+    },
+    {
+      "id": "tw_add9",
+      "defType": "math/math",
+      "position": {
+        "x": 134,
+        "y": 40
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_isVillage",
+      "portValues": {
+        "b": 0.06
+      }
+    },
+    {
+      "id": "tw_aboveBeach",
+      "defType": "logic/compare",
+      "position": {
+        "x": 418,
+        "y": 120
+      },
+      "params": {
+        "op": "greater-equal"
+      },
+      "parentId": "tw_isVillage"
+    },
+    {
+      "id": "tw_add10",
+      "defType": "math/math",
+      "position": {
+        "x": 134,
+        "y": 188
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_isVillage",
+      "portValues": {
+        "b": 0.22
+      }
+    },
+    {
+      "id": "tw_belowWoods",
+      "defType": "logic/compare",
+      "position": {
+        "x": 418,
+        "y": 268
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "tw_isVillage"
+    },
+    {
+      "id": "tw_multiply4",
+      "defType": "math/math",
+      "position": {
+        "x": 704,
+        "y": 385
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_isVillage",
+      "portValues": {
+        "b": 12.9898
+      }
+    },
+    {
+      "id": "tw_add11",
+      "defType": "math/math",
+      "position": {
+        "x": 970,
+        "y": 354
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_isVillage",
+      "portValues": {
+        "b": 1.7
+      }
+    },
+    {
+      "id": "tw_villageSin",
+      "defType": "math/math",
+      "position": {
+        "x": 1235,
+        "y": 323
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "tw_isVillage"
+    },
+    {
+      "id": "tw_multiply5",
+      "defType": "math/math",
+      "position": {
+        "x": 1482,
+        "y": 293
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_isVillage",
+      "portValues": {
+        "b": 43758.5
+      }
+    },
+    {
+      "id": "tw_villageHash",
+      "defType": "math/math",
+      "position": {
+        "x": 1747,
+        "y": 262
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "tw_isVillage"
+    },
+    {
+      "id": "tw_fewTiles",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1995,
+        "y": 232
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "tw_isVillage",
+      "portValues": {
+        "b": 0.07
+      }
+    },
+    {
+      "id": "tw_grassy",
+      "defType": "logic/logic",
+      "position": {
+        "x": 719,
+        "y": 163
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "tw_isVillage"
+    },
+    {
+      "id": "tw_isVillage2",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2276,
+        "y": 162
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "tw_isVillage"
+    },
+    {
+      "id": "tw_subtract6",
+      "defType": "math/math",
+      "position": {
+        "x": 2751,
+        "y": 1020
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "tw_multiply6",
+      "defType": "math/math",
+      "position": {
+        "x": 3039,
+        "y": 855
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.95
+      }
+    },
+    {
+      "id": "tw_multiply7",
+      "defType": "math/math",
+      "position": {
+        "x": 3313,
+        "y": 766
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 255
+      }
+    },
+    {
+      "id": "tw_lampColour",
+      "defType": "color/set-alpha",
+      "position": {
+        "x": 3582,
+        "y": 733
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1,
+          "g": 0.78,
+          "b": 0.4,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "tw_multiply8",
+      "defType": "math/math",
+      "position": {
+        "x": 3039,
+        "y": 1003
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.28
+      }
+    },
+    {
+      "id": "tw_multiply9",
+      "defType": "math/math",
+      "position": {
+        "x": 3313,
+        "y": 914
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 255
+      }
+    },
+    {
+      "id": "tw_haloColour",
+      "defType": "color/set-alpha",
+      "position": {
+        "x": 3582,
+        "y": 861
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1,
+          "g": 0.7,
+          "b": 0.3,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "tw_multiply10",
+      "defType": "math/math",
+      "position": {
+        "x": 3039,
+        "y": 1158
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.66
+      }
+    },
+    {
+      "id": "tw_multiply11",
+      "defType": "math/math",
+      "position": {
+        "x": 3313,
+        "y": 1188
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 255
+      }
+    },
+    {
+      "id": "tw_tintColour",
+      "defType": "color/set-alpha",
+      "position": {
+        "x": 3582,
+        "y": 1187
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.02,
+          "g": 0.04,
+          "b": 0.16,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "tw_divide3",
+      "defType": "math/math",
+      "position": {
+        "x": 139,
+        "y": 226
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "b": 5
+      }
+    },
+    {
+      "id": "tw_cloudNumber",
+      "defType": "math/math",
+      "position": {
+        "x": 408,
+        "y": 236
+      },
+      "params": {
+        "op": "floor",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs"
+    },
+    {
+      "id": "tw_multiply12",
+      "defType": "math/math",
+      "position": {
+        "x": 1232,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "b": 137
+      }
+    },
+    {
+      "id": "tw_time2",
+      "defType": "time/seconds",
+      "position": {
+        "x": 998,
+        "y": 133
+      },
+      "params": {},
+      "parentId": "tw_cloudPuffs"
+    },
+    {
+      "id": "tw_multiply13",
+      "defType": "math/math",
+      "position": {
+        "x": 680,
+        "y": 238
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "tw_add12",
+      "defType": "math/math",
+      "position": {
+        "x": 956,
+        "y": 259
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "a": 8
+      }
+    },
+    {
+      "id": "tw_multiply14",
+      "defType": "math/math",
+      "position": {
+        "x": 1232,
+        "y": 188
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs"
+    },
+    {
+      "id": "tw_add13",
+      "defType": "math/math",
+      "position": {
+        "x": 1507,
+        "y": 96
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs"
+    },
+    {
+      "id": "tw_cloudWrap",
+      "defType": "math/wrap",
+      "position": {
+        "x": 1823,
+        "y": 126
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "min": 0,
+        "max": 840
+      }
+    },
+    {
+      "id": "tw_subtract7",
+      "defType": "math/math",
+      "position": {
+        "x": 2050,
+        "y": 135
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "b": 420.0
+      }
+    },
+    {
+      "id": "tw_multiply15",
+      "defType": "math/math",
+      "position": {
+        "x": 139,
+        "y": 374
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "b": 2.1
+      }
+    },
+    {
+      "id": "tw_puffCos",
+      "defType": "math/math",
+      "position": {
+        "x": 1791,
+        "y": 274
+      },
+      "params": {
+        "op": "cos",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs"
+    },
+    {
+      "id": "tw_multiply16",
+      "defType": "math/math",
+      "position": {
+        "x": 2050,
+        "y": 283
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "b": 30
+      }
+    },
+    {
+      "id": "tw_add14",
+      "defType": "math/math",
+      "position": {
+        "x": 2329,
+        "y": 210
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs"
+    },
+    {
+      "id": "tw_multiply17",
+      "defType": "math/math",
+      "position": {
+        "x": 680,
+        "y": 386
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "b": 0.618
+      }
+    },
+    {
+      "id": "tw_cloudRow",
+      "defType": "math/math",
+      "position": {
+        "x": 965,
+        "y": 407
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs"
+    },
+    {
+      "id": "tw_subtract8",
+      "defType": "math/math",
+      "position": {
+        "x": 1232,
+        "y": 384
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "tw_multiply18",
+      "defType": "math/math",
+      "position": {
+        "x": 1507,
+        "y": 366
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "b": 480
+      }
+    },
+    {
+      "id": "tw_multiply19",
+      "defType": "math/math",
+      "position": {
+        "x": 139,
+        "y": 522
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "b": 1.3
+      }
+    },
+    {
+      "id": "tw_puffSin",
+      "defType": "math/math",
+      "position": {
+        "x": 1241,
+        "y": 532
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs"
+    },
+    {
+      "id": "tw_multiply20",
+      "defType": "math/math",
+      "position": {
+        "x": 1507,
+        "y": 514
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs",
+      "portValues": {
+        "b": 14
+      }
+    },
+    {
+      "id": "tw_add15",
+      "defType": "math/math",
+      "position": {
+        "x": 1782,
+        "y": 400
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "tw_cloudPuffs"
+    },
+    {
+      "id": "tw_puff",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2603,
+        "y": 279
+      },
+      "params": {},
+      "parentId": "tw_cloudPuffs"
     }
   ],
   "edges": [
     {
       "id": "e_1",
-      "source": "tw_autoDay",
-      "target": "tw_tod",
-      "sourceHandle": "out-bool",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_2",
-      "source": "tw_timeOfDay",
-      "target": "tw_tod",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_3",
-      "source": "tw_tod",
-      "target": "tw_daylight",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_4",
       "source": "tw_tiles",
       "target": "tw_elevation",
       "sourceHandle": "out-positions",
       "targetHandle": "in-q"
     },
     {
+      "id": "e_2",
+      "source": "tw_tiles",
+      "target": "tw_terrain",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_3",
+      "source": "tw_biomes",
+      "target": "tw_terrain",
+      "sourceHandle": "out-colour",
+      "targetHandle": "in-colors"
+    },
+    {
+      "id": "e_4",
+      "source": "tw_tiles",
+      "target": "tw_landMask",
+      "sourceHandle": "out-positions",
+      "targetHandle": "in-points"
+    },
+    {
       "id": "e_5",
-      "source": "tw_seaLevel",
-      "target": "tw_biomeColour",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
+      "source": "tw_landMaskColour",
+      "target": "tw_landMask",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-colors"
     },
     {
       "id": "e_6",
-      "source": "tw_elevation",
-      "target": "tw_biomeColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ev"
-    },
-    {
-      "id": "e_7",
-      "source": "tw_tiles",
-      "target": "tw_terrain",
-      "sourceHandle": "out-positions",
-      "targetHandle": "in-points"
-    },
-    {
-      "id": "e_8",
-      "source": "tw_biomeColour",
-      "target": "tw_terrain",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-colors"
-    },
-    {
-      "id": "e_9",
-      "source": "tw_seaLevel",
-      "target": "tw_landMaskColour",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_10",
-      "source": "tw_elevation",
-      "target": "tw_landMaskColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ev"
-    },
-    {
-      "id": "e_11",
-      "source": "tw_tiles",
-      "target": "tw_landMask",
-      "sourceHandle": "out-positions",
-      "targetHandle": "in-points"
-    },
-    {
-      "id": "e_12",
-      "source": "tw_landMaskColour",
-      "target": "tw_landMask",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-colors"
-    },
-    {
-      "id": "e_13",
       "source": "tw_roadStroke",
       "target": "tw_roadCap",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_14",
+      "id": "e_7",
       "source": "tw_roadCap",
       "target": "tw_roads",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_15",
+      "id": "e_8",
       "source": "tw_roads",
       "target": "tw_roadsOnLand",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_16",
+      "id": "e_9",
       "source": "tw_landMask",
       "target": "tw_roadsOnLand",
       "sourceHandle": "out-shape",
       "targetHandle": "in-mask"
     },
     {
-      "id": "e_17",
-      "source": "tw_seaLevel",
-      "target": "tw_isForest",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_18",
-      "source": "tw_elevation",
-      "target": "tw_isForest",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ev"
-    },
-    {
-      "id": "e_19",
+      "id": "e_10",
       "source": "tw_tiles",
       "target": "tw_forestTiles",
       "sourceHandle": "out-positions",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_20",
+      "id": "e_11",
       "source": "tw_isForest",
       "target": "tw_forestTiles",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-keep"
     },
     {
-      "id": "e_21",
+      "id": "e_12",
       "source": "tw_crownFill",
       "target": "tw_crownLeaf",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_22",
+      "id": "e_13",
       "source": "tw_crownLeaf",
       "target": "tw_crown",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_23",
+      "id": "e_14",
       "source": "tw_forestTiles",
       "target": "tw_trees",
       "sourceHandle": "out-result",
       "targetHandle": "in-p"
     },
     {
-      "id": "e_24",
+      "id": "e_15",
       "source": "tw_trees",
       "target": "tw_tree",
       "sourceHandle": "out-p",
       "targetHandle": "in-by"
     },
     {
-      "id": "e_25",
+      "id": "e_16",
       "source": "tw_crown",
       "target": "tw_tree",
       "sourceHandle": "out-out",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_26",
+      "id": "e_17",
       "source": "tw_tree",
       "target": "tw_trees",
       "sourceHandle": "out-translated",
       "targetHandle": "in-l"
     },
     {
-      "id": "e_27",
+      "id": "e_18",
       "source": "tw_seaLevel",
       "target": "tw_isVillage",
       "sourceHandle": "out-number",
       "targetHandle": "in-s"
     },
     {
-      "id": "e_28",
+      "id": "e_19",
       "source": "tw_elevation",
       "target": "tw_isVillage",
       "sourceHandle": "out-value",
       "targetHandle": "in-ev"
     },
     {
-      "id": "e_29",
+      "id": "e_20",
       "source": "tw_tiles",
       "target": "tw_villageTiles",
       "sourceHandle": "out-positions",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_30",
+      "id": "e_21",
       "source": "tw_isVillage",
       "target": "tw_villageTiles",
       "sourceHandle": "out-value",
       "targetHandle": "in-keep"
     },
     {
-      "id": "e_31",
+      "id": "e_22",
       "source": "tw_roofFill",
       "target": "tw_house",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_32",
+      "id": "e_23",
       "source": "tw_house",
       "target": "tw_plaza",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_33",
-      "source": "tw_daylight",
-      "target": "tw_lampColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_34",
+      "id": "e_24",
       "source": "tw_lampColour",
       "target": "tw_lampFill",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_35",
+      "id": "e_25",
       "source": "tw_villageTiles",
       "target": "tw_villages",
       "sourceHandle": "out-result",
       "targetHandle": "in-p"
     },
     {
-      "id": "e_36",
+      "id": "e_26",
       "source": "tw_villages",
       "target": "tw_village",
       "sourceHandle": "out-p",
       "targetHandle": "in-by"
     },
     {
-      "id": "e_37",
+      "id": "e_27",
       "source": "tw_plaza",
       "target": "tw_village",
       "sourceHandle": "out-out",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_38",
+      "id": "e_28",
       "source": "tw_villages",
       "target": "tw_lamp",
       "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_39",
+      "id": "e_29",
       "source": "tw_lampFill",
       "target": "tw_lamp",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_40",
-      "source": "tw_daylight",
-      "target": "tw_haloColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_41",
+      "id": "e_30",
       "source": "tw_haloColour",
       "target": "tw_haloFill",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_42",
+      "id": "e_31",
       "source": "tw_villages",
       "target": "tw_halo",
       "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_43",
+      "id": "e_32",
       "source": "tw_haloFill",
       "target": "tw_halo",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_44",
+      "id": "e_33",
       "source": "tw_halo",
       "target": "tw_lights",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_45",
+      "id": "e_34",
       "source": "tw_lamp",
       "target": "tw_lights",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_46",
+      "id": "e_35",
       "source": "tw_village",
       "target": "tw_villages",
       "sourceHandle": "out-translated",
       "targetHandle": "in-l"
     },
     {
-      "id": "e_47",
+      "id": "e_36",
       "source": "tw_lights",
       "target": "tw_villages",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-lit"
     },
     {
-      "id": "e_48",
+      "id": "e_37",
       "source": "tw_cloudPuffIds",
       "target": "tw_cloudPuffs",
       "sourceHandle": "out-indices",
       "targetHandle": "in-i"
     },
     {
-      "id": "e_49",
+      "id": "e_38",
       "source": "tw_cloudPuffs",
       "target": "tw_clouds",
       "sourceHandle": "out-value",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_50",
+      "id": "e_39",
       "source": "tw_cloudFill",
       "target": "tw_clouds",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_51",
+      "id": "e_40",
       "source": "tw_cloudPuffs",
       "target": "tw_cloudShadowShape",
       "sourceHandle": "out-value",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_52",
+      "id": "e_41",
       "source": "tw_cloudShadowFill",
       "target": "tw_cloudShadowShape",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_53",
+      "id": "e_42",
       "source": "tw_cloudShadowShape",
       "target": "tw_cloudShadows",
       "sourceHandle": "out-shape",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_54",
-      "source": "tw_daylight",
-      "target": "tw_tintColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_55",
+      "id": "e_43",
       "source": "tw_tintColour",
       "target": "tw_tintFill",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_56",
+      "id": "e_44",
       "source": "tw_tintFill",
       "target": "tw_nightTint",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_57",
+      "id": "e_45",
       "source": "tw_terrain",
       "target": "tw_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_58",
+      "id": "e_46",
       "source": "tw_roadsOnLand",
       "target": "tw_scene",
       "sourceHandle": "out-masked",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_59",
+      "id": "e_47",
       "source": "tw_trees",
       "target": "tw_scene",
       "sourceHandle": "out-l",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_60",
+      "id": "e_48",
       "source": "tw_villages",
       "target": "tw_scene",
       "sourceHandle": "out-l",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_61",
+      "id": "e_49",
       "source": "tw_cloudShadows",
       "target": "tw_scene",
       "sourceHandle": "out-translated",
       "targetHandle": "in-s5"
     },
     {
-      "id": "e_62",
+      "id": "e_50",
       "source": "tw_clouds",
       "target": "tw_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s6"
     },
     {
-      "id": "e_63",
+      "id": "e_51",
       "source": "tw_nightTint",
       "target": "tw_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s7"
     },
     {
-      "id": "e_64",
+      "id": "e_52",
       "source": "tw_villages",
       "target": "tw_scene",
       "sourceHandle": "out-lit",
       "targetHandle": "in-s8"
     },
     {
-      "id": "e_65",
+      "id": "e_53",
       "source": "tw_scene",
       "target": "tw_r",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_54",
+      "source": "tw_time",
+      "target": "tw_divide",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_55",
+      "source": "tw_timeOfDay",
+      "target": "tw_add",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_56",
+      "source": "tw_divide",
+      "target": "tw_add",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_57",
+      "source": "tw_add",
+      "target": "tw_dayRuns",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_58",
+      "source": "tw_autoDay",
+      "target": "tw_tod",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_59",
+      "source": "tw_dayRuns",
+      "target": "tw_tod",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_60",
+      "source": "tw_timeOfDay",
+      "target": "tw_tod",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_61",
+      "source": "tw_tod",
+      "target": "tw_subtract",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_62",
+      "source": "tw_subtract",
+      "target": "tw_multiply",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_63",
+      "source": "tw_multiply",
+      "target": "tw_sunHeight",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_64",
+      "source": "tw_sunHeight",
+      "target": "tw_daylight",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_65",
+      "source": "tw_elevation",
+      "target": "tw_zoomLand",
+      "sourceHandle": "out-q",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_66",
+      "source": "tw_zoomLand",
+      "target": "tw_atLand",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_67",
+      "source": "tw_elevation",
+      "target": "tw_zoomHills",
+      "sourceHandle": "out-q",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_68",
+      "source": "tw_zoomHills",
+      "target": "tw_atHills",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_69",
+      "source": "tw_atLand",
+      "target": "tw_land",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_70",
+      "source": "tw_atHills",
+      "target": "tw_hills",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_71",
+      "source": "tw_land",
+      "target": "tw_subtract2",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_72",
+      "source": "tw_subtract2",
+      "target": "tw_multiply2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_73",
+      "source": "tw_multiply2",
+      "target": "tw_add2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_74",
+      "source": "tw_hills",
+      "target": "tw_subtract3",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_75",
+      "source": "tw_subtract3",
+      "target": "tw_multiply3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_76",
+      "source": "tw_add2",
+      "target": "tw_add3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_77",
+      "source": "tw_multiply3",
+      "target": "tw_add3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_78",
+      "source": "tw_add3",
+      "target": "tw_add4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_79",
+      "source": "tw_elevation",
+      "target": "tw_fromCentre",
+      "sourceHandle": "out-q",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_80",
+      "source": "tw_fromCentre",
+      "target": "tw_divide2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_81",
+      "source": "tw_add4",
+      "target": "tw_subtract4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_82",
+      "source": "tw_divide2",
+      "target": "tw_subtract4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_83",
+      "source": "tw_subtract4",
+      "target": "tw_elevation",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_84",
+      "source": "tw_seaLevel",
+      "target": "tw_biomes",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-sea"
+    },
+    {
+      "id": "e_85",
+      "source": "tw_elevation",
+      "target": "tw_biomes",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-ev"
+    },
+    {
+      "id": "e_86",
+      "source": "tw_biomes",
+      "target": "tw_subtract5",
+      "sourceHandle": "out-sea",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_87",
+      "source": "tw_biomes",
+      "target": "tw_add5",
+      "sourceHandle": "out-sea",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_88",
+      "source": "tw_biomes",
+      "target": "tw_add6",
+      "sourceHandle": "out-sea",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_89",
+      "source": "tw_biomes",
+      "target": "tw_add7",
+      "sourceHandle": "out-sea",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_90",
+      "source": "tw_biomes",
+      "target": "tw_add8",
+      "sourceHandle": "out-sea",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_91",
+      "source": "tw_subtract5",
+      "target": "tw_bandEdges",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_92",
+      "source": "tw_biomes",
+      "target": "tw_bandEdges",
+      "sourceHandle": "out-sea",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_93",
+      "source": "tw_add5",
+      "target": "tw_bandEdges",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_94",
+      "source": "tw_add6",
+      "target": "tw_bandEdges",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s4"
+    },
+    {
+      "id": "e_95",
+      "source": "tw_add7",
+      "target": "tw_bandEdges",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s5"
+    },
+    {
+      "id": "e_96",
+      "source": "tw_add8",
+      "target": "tw_bandEdges",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s6"
+    },
+    {
+      "id": "e_97",
+      "source": "tw_bandEdges",
+      "target": "tw_band",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_98",
+      "source": "tw_biomes",
+      "target": "tw_band",
+      "sourceHandle": "out-ev",
+      "targetHandle": "in-values"
+    },
+    {
+      "id": "e_99",
+      "source": "tw_band",
+      "target": "tw_biomeColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_100",
+      "source": "tw_band",
+      "target": "tw_biomes",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-band"
+    },
+    {
+      "id": "e_101",
+      "source": "tw_biomeColour",
+      "target": "tw_biomes",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-colour"
+    },
+    {
+      "id": "e_102",
+      "source": "tw_biomes",
+      "target": "tw_isLand",
+      "sourceHandle": "out-band",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_103",
+      "source": "tw_isLand",
+      "target": "tw_landMaskColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_104",
+      "source": "tw_biomes",
+      "target": "tw_isForest",
+      "sourceHandle": "out-band",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_105",
+      "source": "tw_isVillage",
+      "target": "tw_count",
+      "sourceHandle": "out-ev",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_106",
+      "source": "tw_count",
+      "target": "tw_tileNumber",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_107",
+      "source": "tw_isVillage",
+      "target": "tw_add9",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_108",
+      "source": "tw_isVillage",
+      "target": "tw_aboveBeach",
+      "sourceHandle": "out-ev",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_109",
+      "source": "tw_add9",
+      "target": "tw_aboveBeach",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_110",
+      "source": "tw_isVillage",
+      "target": "tw_add10",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_111",
+      "source": "tw_isVillage",
+      "target": "tw_belowWoods",
+      "sourceHandle": "out-ev",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_112",
+      "source": "tw_add10",
+      "target": "tw_belowWoods",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_113",
+      "source": "tw_tileNumber",
+      "target": "tw_multiply4",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_114",
+      "source": "tw_multiply4",
+      "target": "tw_add11",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_115",
+      "source": "tw_add11",
+      "target": "tw_villageSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_116",
+      "source": "tw_villageSin",
+      "target": "tw_multiply5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_117",
+      "source": "tw_multiply5",
+      "target": "tw_villageHash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_118",
+      "source": "tw_villageHash",
+      "target": "tw_fewTiles",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_119",
+      "source": "tw_aboveBeach",
+      "target": "tw_grassy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_120",
+      "source": "tw_belowWoods",
+      "target": "tw_grassy",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_121",
+      "source": "tw_grassy",
+      "target": "tw_isVillage2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_122",
+      "source": "tw_fewTiles",
+      "target": "tw_isVillage2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_123",
+      "source": "tw_isVillage2",
+      "target": "tw_isVillage",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_124",
+      "source": "tw_daylight",
+      "target": "tw_subtract6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_125",
+      "source": "tw_subtract6",
+      "target": "tw_multiply6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_126",
+      "source": "tw_multiply6",
+      "target": "tw_multiply7",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_127",
+      "source": "tw_multiply7",
+      "target": "tw_lampColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_128",
+      "source": "tw_subtract6",
+      "target": "tw_multiply8",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_129",
+      "source": "tw_multiply8",
+      "target": "tw_multiply9",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_130",
+      "source": "tw_multiply9",
+      "target": "tw_haloColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_131",
+      "source": "tw_subtract6",
+      "target": "tw_multiply10",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_132",
+      "source": "tw_multiply10",
+      "target": "tw_multiply11",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_133",
+      "source": "tw_multiply11",
+      "target": "tw_tintColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_134",
+      "source": "tw_cloudPuffs",
+      "target": "tw_divide3",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_135",
+      "source": "tw_divide3",
+      "target": "tw_cloudNumber",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_136",
+      "source": "tw_cloudNumber",
+      "target": "tw_multiply12",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_137",
+      "source": "tw_cloudNumber",
+      "target": "tw_multiply13",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_138",
+      "source": "tw_multiply13",
+      "target": "tw_add12",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_139",
+      "source": "tw_time2",
+      "target": "tw_multiply14",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_140",
+      "source": "tw_add12",
+      "target": "tw_multiply14",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_141",
+      "source": "tw_multiply12",
+      "target": "tw_add13",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_142",
+      "source": "tw_multiply14",
+      "target": "tw_add13",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_143",
+      "source": "tw_add13",
+      "target": "tw_cloudWrap",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_144",
+      "source": "tw_cloudWrap",
+      "target": "tw_subtract7",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_145",
+      "source": "tw_cloudPuffs",
+      "target": "tw_multiply15",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_146",
+      "source": "tw_multiply15",
+      "target": "tw_puffCos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_147",
+      "source": "tw_puffCos",
+      "target": "tw_multiply16",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_148",
+      "source": "tw_subtract7",
+      "target": "tw_add14",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_149",
+      "source": "tw_multiply16",
+      "target": "tw_add14",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_150",
+      "source": "tw_cloudNumber",
+      "target": "tw_multiply17",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_151",
+      "source": "tw_multiply17",
+      "target": "tw_cloudRow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_152",
+      "source": "tw_cloudRow",
+      "target": "tw_subtract8",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_153",
+      "source": "tw_subtract8",
+      "target": "tw_multiply18",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_154",
+      "source": "tw_cloudPuffs",
+      "target": "tw_multiply19",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_155",
+      "source": "tw_multiply19",
+      "target": "tw_puffSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_156",
+      "source": "tw_puffSin",
+      "target": "tw_multiply20",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_157",
+      "source": "tw_multiply18",
+      "target": "tw_add15",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_158",
+      "source": "tw_multiply20",
+      "target": "tw_add15",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_159",
+      "source": "tw_add14",
+      "target": "tw_puff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_160",
+      "source": "tw_add15",
+      "target": "tw_puff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_161",
+      "source": "tw_puff",
+      "target": "tw_cloudPuffs",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-value"
     }
   ]
 }

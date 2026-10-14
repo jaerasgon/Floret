@@ -252,10 +252,11 @@ fn sample_nodes_fit_their_text() {
                                 failures.push(format!("{at}: dropdown text '{shown}' overflows"));
                             }
                         }
-                        FieldKind::Number { .. } if f.label.is_some() => {
-                            if w(&shown, mono.clone()) > f.value_rect.width() + 0.5 {
-                                failures.push(format!("{at}: value '{shown}' overflows"));
-                            }
+                        FieldKind::Number { .. }
+                            if f.label.is_some()
+                                && w(&shown, mono.clone()) > f.value_rect.width() + 0.5 =>
+                        {
+                            failures.push(format!("{at}: value '{shown}' overflows"));
                         }
                         FieldKind::Vec2 => {
                             let (x, y) = values::as_vec2(&f.value);

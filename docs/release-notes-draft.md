@@ -1,7 +1,7 @@
-# Floret 0.2.0 (draft release notes)
+# Floret 0.2.0
 
-*Draft for the first release of the native app (not published yet); the
-full list is the 0.2.0 entry in `CHANGELOG.md`.*
+*The first release of the native app. The full list is the 0.2.0 entry in
+`CHANGELOG.md`.*
 
 Floret is a node-based tool for generative art: wire shapes, motion,
 noise, particles, text, images, sound and live input together, and watch
@@ -10,12 +10,22 @@ native Mac app.
 
 ## What's in it
 
-- **A fast node editor.** Press Tab or double-click to add a node, drag
-  between pins to wire, and type or scrub values right on the nodes.
-  Everything can be undone. Dragging a node gently pulls its neighbours
-  along.
-- **Live GPU preview** of every Renderer in your patch, with focus mode and
-  a fullscreen output window for a second display.
+- **A fast node editor.** Press Tab or double-click to add a node and drag
+  between pins to wire. Every value on a node is a live box: drag it to
+  scrub, click it to type. Inputs fill the node; outputs sit in a slim
+  footer underneath. Everything can be undone. Dragging a node gently
+  pulls its neighbours along.
+- **Patches read left to right.** Wires only run forward; memory across
+  frames goes through named Write → Read pairs (placing a Write places its
+  Read, naming one names both). The editor won't connect a wire backwards.
+- **Organise as you go:** right-click a selection to wrap it in a ForEach,
+  If, Cache, a labelled Section, or a subpatch. The Subpatches panel lists
+  the subpatches where you are; save one to the Library and drop it into
+  any other patch.
+- **Live GPU preview:** every Renderer in your patch gets its own preview
+  panel, with focus mode and a fullscreen output window for a second
+  display. Panels dock, split and float; View → Panels brings back any you
+  closed.
 - **About 240 nodes**: shapes and paths, typography with variable fonts,
   noise and formulas, palettes, particles and simulations (flocking, slime
   mould, coral growth, cloth, differential growth, reaction-diffusion),
@@ -26,7 +36,8 @@ native Mac app.
   symmetry, stippling, plexus lines, contour maps, layouts that animate.
 - **Bypass** any node to compare with and without it (B).
 - **175 samples**, including 48 short tutorials, in the Library
-  (File → Samples Library, Cmd+Shift+O).
+  (File → Samples Library, Cmd+Shift+O), all built from visual nodes. The
+  Library's tiles can be zoomed.
 - **Variations and presets:** roll a new variation with Cmd+Shift+R, save
   the ones you like as presets, and morph between them.
 - **Export** a still as PNG (up to 4×) or a seamless loop as MP4, GIF or a
@@ -46,8 +57,12 @@ source code:
 
 1. Get the repository: `git clone https://github.com/jaerasgon/Floret.git`
    in Terminal, or File → Clone Repository in GitHub Desktop.
-2. Open Terminal in the `Floret` folder (GitHub Desktop: Repository →
-   Open in Terminal) and run `./floret.sh install`.
+2. In Terminal, go into the `Floret` folder and install:
+
+   ```
+   cd Floret
+   ./floret.sh install
+   ```
 
 If Apple's command line tools aren't installed, a dialog offers them:
 install them and run the command again. The first run then installs Rust

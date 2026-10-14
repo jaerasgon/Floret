@@ -402,7 +402,7 @@ fn symmetry(init: &NodeInit) -> Box<dyn NodeImpl> {
             let span = if mirror { PI } else { TAU } / count as f64;
             // The motif cut to its wedge (a hair wider, so no seam shows
             // between neighbours).
-            let piece = if clip && !(count == 1 && !mirror) {
+            let piece = if clip && (mirror || count != 1) {
                 Arc::new(SceneNode::Mask {
                     content: motif,
                     mask: wedge(center, angle - 0.01, span + 0.02, 1.0e5),

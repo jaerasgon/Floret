@@ -311,6 +311,6 @@ mod tests {
         // Twelve hours on: the hour moves by 12 (mod 24).
         let h12 = num(&n.eval1(&[crate::value::Value::Num(12.0)])[0]);
         let d = (h12 - h0 - 12.0).rem_euclid(24.0);
-        assert!(d < 0.01 || d > 23.99, "{h0} → {h12}");
+        assert!(!(0.01..=23.99).contains(&d), "{h0} → {h12}");
     }
 }

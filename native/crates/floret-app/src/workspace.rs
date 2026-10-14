@@ -1154,7 +1154,7 @@ mod tests {
         assert_stacked(&d, &["r1", "r2", "r3", "r4", "r5"]);
         // The other panels are untouched, below the previews.
         let panels: Vec<Tab> = tabs(&d).into_iter().filter(closeable).collect();
-        assert_eq!(panels, PANELS.to_vec());
+        assert_eq!(panels, default_panels());
     }
 
     #[test]
@@ -1174,7 +1174,7 @@ mod tests {
         sync_previews(&mut d, &[]);
         assert_eq!(preview_ids(&d), ids(&[""]));
         let panels: Vec<Tab> = tabs(&d).into_iter().filter(closeable).collect();
-        assert_eq!(panels, PANELS.to_vec());
+        assert_eq!(panels, default_panels());
     }
 
     #[test]
@@ -1309,11 +1309,27 @@ mod tests {
         Workspace::with_dock(default_dock(), String::new())
     }
 
+    /// The panels the default layout opens (Subpatches starts closed).
+    fn default_panels() -> Vec<Tab> {
+        PANELS
+            .iter()
+            .filter(|t| open_by_default(t))
+            .cloned()
+            .collect()
+    }
+
     #[test]
     fn the_panels_menu_opens_and_closes_panels() {
         let mut w = workspace();
-        let all_open: Vec<(Tab, bool)> = PANELS.iter().map(|t| (t.clone(), true)).collect();
-        assert_eq!(w.panels(), all_open);
+        let defaults: Vec<(Tab, bool)> = PANELS
+            .iter()
+            .map(|t| (t.clone(), open_by_default(t)))
+            .collect();
+        assert_eq!(w.panels(), defaults);
+        // Open the ones that start closed, so every panel is open.
+        for t in PANELS.iter().filter(|t| !open_by_default(t)) {
+            w.toggle_panel(t.clone());
+        }
         for t in PANELS {
             w.toggle_panel(t.clone());
             assert!(w.dock.find_tab(&t).is_none(), "{t:?} closed");

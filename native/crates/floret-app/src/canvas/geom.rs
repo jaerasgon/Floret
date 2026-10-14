@@ -371,20 +371,22 @@ pub fn node_width(patch: &PatchFile, n: &PatchNode, cat: &Catalogue, look: Look)
             widest = widest.max(row_need(10.0, left, None));
         }
         for p in subpatch_ports(n, PortDirection::Output) {
-            widest = widest.max(foot_need(text_width(&p.name, out_font.clone())));
+            let spread = passthrough_spread(patch, cat, &n.id, &p.id);
+            widest = widest.max(foot_need(out_w(&p.name, spread, &out_font)));
         }
     } else {
         let wired = wired_inputs(patch, &n.id);
         let items = values::left_items(cat, spec, n);
         for p in ports::resolved_outputs(cat, spec, &n.params) {
             let label = values::display_label(&p, false);
-            widest = widest.max(foot_need(text_width(&label, out_font.clone())));
+            let spread = p.kind == PortKind::Spread;
+            widest = widest.max(foot_need(out_w(&label, spread, &out_font)));
         }
         for item in &items {
             match item {
                 LeftItem::Param { key, kind } => {
                     let v = values::current(n, spec, &EditKey::Param(key.clone()), None);
-                    let w = box_width(key, false, kind, &v);
+                    let w = box_width(key, (false, false), kind, &v);
                     widest = widest.max(row_need(BOX_X, w, None));
                 }
                 LeftItem::Input(port) => {
@@ -395,10 +397,11 @@ pub fn node_width(patch: &PatchFile, n: &PatchNode, cat: &Catalogue, look: Look)
                         0.0
                     };
                     let wired = wired.contains(port.name.as_str());
+                    let spread = port.kind == PortKind::Spread;
                     match values::input_editor(spec, port, wired) {
                         Some((key, kind)) => {
                             let v = values::current(n, spec, &key, Some(port));
-                            let w = box_width(&label, port.constant, &kind, &v);
+                            let w = box_width(&label, (port.constant, spread), &kind, &v);
                             // The `…` button keeps 10 from the right edge.
                             let w = if browse > 0.0 {
                                 w + browse + 10.0 - BOX_X
@@ -408,10 +411,9 @@ pub fn node_width(patch: &PatchFile, n: &PatchNode, cat: &Catalogue, look: Look)
                             widest = widest.max(row_need(BOX_X, w, None));
                         }
                         None => {
-                            let mut w = text_width(&label, label_font.clone());
-                            if port.constant {
-                                w += MARK_W;
-                            }
+                            let integer = port.integer && port.ty == PortType::Number;
+                            let w = text_width(&label, label_font.clone())
+                                + marks_w(port.constant, integer, spread);
                             widest = widest.max(row_need(10.0, w + browse, None));
                         }
                     }
@@ -441,10 +443,8 @@ fn custom_width(
     let outs = ports::resolved_outputs(cat, spec, &n.params)
         .iter()
         .map(|p| {
-            foot_need(text_width(
-                &values::display_label(p, false),
-                out_font.clone(),
-            ))
+            let label = values::display_label(p, false);
+            foot_need(out_w(&label, p.kind == PortKind::Spread, out_font))
         })
         .fold(NODE_W, f32::max);
     if super::custom::rows(c, n, cat).is_some() {
@@ -459,7 +459,11 @@ fn custom_width(
                 kind: kind @ FieldKind::Select(_),
             } => {
                 let v = values::current(n, spec, &EditKey::Param(key.clone()), None);
-                Some(row_need(BOX_X, box_width(key, false, kind, &v), None))
+                Some(row_need(
+                    BOX_X,
+                    box_width(key, (false, false), kind, &v),
+                    None,
+                ))
             }
             _ => None,
         })
@@ -516,6 +520,8 @@ pub struct FieldLabel {
     pub text: String,
     /// The constant `C` mark after the name.
     pub constant: bool,
+    /// The spread icon after the name (and `C`), in this type's colour.
+    pub spread: Option<PortType>,
     /// The whole box (a vec2's X and Y cells sit inside it).
     pub frame: Rect,
 }
@@ -548,6 +554,8 @@ pub struct Row {
     pub label_rect: Rect,
     pub constant: bool,
     pub integer: bool,
+    /// The spread icon after the name, in this pin type's colour.
+    pub spread: Option<PortType>,
 }
 
 /// An output's row in the footer: its label, right-aligned against its
@@ -555,6 +563,8 @@ pub struct Row {
 pub struct OutRow {
     pub y: f32,
     pub label: String,
+    /// The spread icon between the label and the pin, in this type's colour.
+    pub spread: Option<PortType>,
 }
 
 pub struct PillGeom {
@@ -562,6 +572,8 @@ pub struct PillGeom {
     pub port: String,
     pub name: String,
     pub ty: PortType,
+    /// The spread icon after the name: a side of the port carries a spread.
+    pub spread: bool,
     /// Frame-local y range the pill may be dragged in.
     pub min_y: f64,
     pub max_y: f64,
@@ -612,6 +624,8 @@ pub struct NodeBox {
     pub probe: Option<ProbeView>,
     /// Whether the node is bypassed; `None` for nodes that can't be.
     pub bypass: Option<bool>,
+    /// Where the spread icons are drawn (screen space), for their tooltip.
+    pub marks: Vec<Rect>,
 }
 
 impl NodeBox {
@@ -683,6 +697,83 @@ pub const BOX_PAD: f32 = 6.0;
 pub const BOX_GAP: f32 = 6.0;
 /// The constant `C` mark after a name.
 pub const MARK_W: f32 = 10.0;
+/// The marks after a pin's name: the gap before the first, how far the `C`
+/// and the integer `⌊⌋` advance, and the spread icon's width at
+/// [`LABEL_FONT`] (it scales with its label's font).
+pub const MARK_GAP: f32 = 3.0;
+pub const C_ADV: f32 = 9.0;
+pub const INT_ADV: f32 = 13.0;
+pub const SPREAD_ICON_W: f32 = 7.0;
+/// Room a footer label leaves for the spread icon before its pin.
+pub const SPREAD_W: f32 = MARK_GAP + SPREAD_ICON_W;
+
+/// The spread icon's width next to a label in `font_size`.
+pub fn spread_icon_w(font_size: f32) -> f32 {
+    SPREAD_ICON_W * font_size / LABEL_FONT
+}
+
+/// Where the spread icon starts after a name: past the gap, `C` and `⌊⌋`.
+pub fn spread_x(constant: bool, integer: bool) -> f32 {
+    MARK_GAP + if constant { C_ADV } else { 0.0 } + if integer { INT_ADV } else { 0.0 }
+}
+
+/// Room the marks after a pin's name take. Without a spread icon this is
+/// the `C` alone, as before (`⌊⌋` gets room only with an icon after it).
+pub fn marks_w(constant: bool, integer: bool, spread: bool) -> f32 {
+    match (spread, constant) {
+        (true, _) => spread_x(constant, integer) + SPREAD_ICON_W,
+        (false, true) => MARK_W,
+        (false, false) => 0.0,
+    }
+}
+
+/// A footer label's width, with its spread icon.
+fn out_w(label: &str, spread: bool, font: &FontId) -> f32 {
+    text_width(label, font.clone()) + if spread { SPREAD_W } else { 0.0 }
+}
+
+/// A spread icon's screen rect (with a little slack for the pointer)
+/// starting at `x`, centred on `y`.
+fn mark_rect(x: f32, y: f32, font_size: f32, z: f32) -> Rect {
+    Rect::from_min_size(
+        pos2(x, y - font_size * 0.4 * z),
+        vec2(spread_icon_w(font_size), font_size * 0.8) * z,
+    )
+    .expand(2.0)
+}
+
+/// Whether a pass-through frame port (a subpatch's or an If's) carries a
+/// spread: what feeds it does. An output port is fed from inside, an input
+/// from outside; a feeding subpatch / If is followed through.
+pub fn passthrough_spread(patch: &PatchFile, cat: &Catalogue, frame: &str, port: &str) -> bool {
+    fn go(patch: &PatchFile, cat: &Catalogue, frame: &str, port: &str, depth: u8) -> bool {
+        if depth > 16 {
+            return false;
+        }
+        let handle = format!("in-{port}");
+        patch
+            .edges
+            .iter()
+            .filter(|e| e.target == frame && e.target_handle.as_deref() == Some(handle.as_str()))
+            .any(|e| {
+                let Some((Side::Out, name)) = ports::split_handle(e.source_handle.as_deref())
+                else {
+                    return false;
+                };
+                let kind = ports::find_node(patch, &e.source)
+                    .and_then(|n| cat.get(&n.def_type))
+                    .and_then(|s| s.region_kind);
+                if matches!(kind, Some(RegionKind::Subpatch | RegionKind::If)) {
+                    go(patch, cat, &e.source, name, depth + 1)
+                } else {
+                    ports::resolve_port(patch, cat, &e.source, Side::Out, name)
+                        .is_some_and(|p| p.kind == PortKind::Spread)
+                }
+            })
+    }
+    go(patch, cat, frame, port, 0)
+}
+
 /// A checkbox's side, and the gap before its name.
 pub const CHECK: f32 = 12.0;
 pub const CHECK_GAP: f32 = 6.0;
@@ -761,12 +852,10 @@ fn value_width(kind: &FieldKind, value: &Json) -> f32 {
 }
 
 /// Width of a value box named `label` (a checkbox and its name for a
-/// bool).
-fn box_width(label: &str, constant: bool, kind: &FieldKind, value: &Json) -> f32 {
-    let mut name = text_width(label, FontId::proportional(LABEL_FONT));
-    if constant {
-        name += MARK_W;
-    }
+/// bool). `(constant, spread)`: the marks after its name.
+fn box_width(label: &str, (constant, spread): (bool, bool), kind: &FieldKind, value: &Json) -> f32 {
+    let name =
+        text_width(label, FontId::proportional(LABEL_FONT)) + marks_w(constant, false, spread);
     match kind {
         FieldKind::Bool => CHECK + CHECK_GAP + name,
         _ => BOX_PAD + name + BOX_GAP + value_width(kind, value) + BOX_PAD,
@@ -845,6 +934,7 @@ pub fn layout(
             notes: Vec::new(),
             probe: None,
             bypass: None,
+            marks: Vec::new(),
         };
         match look {
             Look::Region | Look::Frame => frame_box(cx, n, spec, (w, h), &mut b),
@@ -925,6 +1015,17 @@ fn frame_box(
     let fl = regions::frame_layout(n, spec, w, h);
     let at = |x: f64, y: f64| b.rect.min + vec2(x as f32, y as f32) * cx.zoom;
     let gathers = look_spreads(spec.region_kind);
+    let z = cx.zoom;
+    // A pass-through frame's (If, subpatch) output port carries a spread
+    // when what feeds it inside does: both its pins, and its pill.
+    let passes = |id: &str| {
+        !gathers
+            && n.ports
+                .iter()
+                .flatten()
+                .any(|rp| rp.id == id && rp.direction == PortDirection::Output)
+            && passthrough_spread(cx.patch, cx.cat, &n.id, id)
+    };
     for p in &fl.pins {
         // The outer pin of a ForEach / Cache port carries the whole spread.
         let input = |id: &String| {
@@ -943,20 +1044,28 @@ fn frame_box(
             label: p.label.clone(),
             ty: p.ty,
             pos: at(p.x, p.y),
-            spread: gathers && outer,
+            spread: (gathers && outer) || p.pill.as_deref().is_some_and(passes),
             constant: false,
         });
     }
     let half = PORT_TAB_H / 2.0;
     for p in &fl.pills {
+        let rect = Rect::from_min_size(
+            at(p.x, p.y - half),
+            vec2(PORT_TAB_W as f32, PORT_TAB_H as f32) * z,
+        );
+        // Every ForEach / Cache port has a spread side (its outer pin).
+        let spread = gathers || passes(&p.port);
+        if spread && z > 0.3 {
+            let x = pill_mark_x(rect, cx.text_w(&p.name, PILL_FONT) * z, z);
+            b.marks.push(mark_rect(x, rect.center().y, PILL_FONT, z));
+        }
         b.pills.push(PillGeom {
-            rect: Rect::from_min_size(
-                at(p.x, p.y - half),
-                vec2(PORT_TAB_W as f32, PORT_TAB_H as f32) * cx.zoom,
-            ),
+            rect,
             port: p.port.clone(),
             name: p.name.clone(),
             ty: p.ty,
+            spread,
             min_y: p.min_y,
             max_y: (h - 8.0).max(p.min_y),
         });
@@ -971,6 +1080,16 @@ fn frame_box(
             loop_var: t.loop_var,
         });
     }
+}
+
+/// A frame pill's name size.
+pub const PILL_FONT: f32 = 9.0;
+
+/// Where a pill's spread icon starts (screen x): its name (`name_w` wide
+/// on screen) and the icon are centred in the pill together.
+pub fn pill_mark_x(pill: Rect, name_w: f32, z: f32) -> f32 {
+    let group = name_w + (MARK_GAP + spread_icon_w(PILL_FONT)) * z;
+    pill.center().x - group / 2.0 + name_w + MARK_GAP * z
 }
 
 /// ForEach / Cache frame ports gather across iterations; If and subpatch
@@ -1002,6 +1121,7 @@ fn collapsed_box(cx: &Ctx, n: &PatchNode, b: &mut NodeBox) {
             label_rect: Rect::NOTHING,
             constant: false,
             integer: false,
+            spread: None,
         });
     }
 }
@@ -1015,7 +1135,8 @@ fn footer(cx: &Ctx, n: &PatchNode, spec: &floret_engine::spec::NodeSpec, b: &mut
         subpatch_ports(n, PortDirection::Output)
             .map(|p| {
                 let ty = PortType::parse(&p.ty).unwrap_or(PortType::Any);
-                (p.name.clone(), p.id.clone(), ty, false)
+                let spread = passthrough_spread(cx.patch, cx.cat, &n.id, &p.id);
+                (p.name.clone(), p.id.clone(), ty, spread)
             })
             .collect()
     } else {
@@ -1049,7 +1170,15 @@ fn footer(cx: &Ctx, n: &PatchNode, spec: &floret_engine::spec::NodeSpec, b: &mut
             spread,
             constant: false,
         });
-        b.outs.push(OutRow { y, label });
+        if spread && z > 0.3 {
+            let x = b.rect.right() - (10.0 + spread_icon_w(FOOT_FONT)) * z;
+            b.marks.push(mark_rect(x, y, FOOT_FONT, z));
+        }
+        b.outs.push(OutRow {
+            y,
+            label,
+            spread: spread.then_some(ty),
+        });
     }
 }
 
@@ -1070,9 +1199,12 @@ pub fn row_box(
             label_rect: Rect::NOTHING,
             constant: false,
             integer: false,
+            spread: None,
         };
         // (name, constant, key, kind, value) of this row's value box.
         let mut boxed: Option<(String, bool, EditKey, FieldKind, Json)> = None;
+        // The type of a spread input (its icon's colour).
+        let mut spread = None;
         // A `…` file button sits at the row's right end.
         let mut browse = false;
         match item {
@@ -1084,13 +1216,14 @@ pub fn row_box(
             LeftItem::Input(port) => {
                 let is_wired = wired.contains(&(n.id.as_str(), port.name.as_str()));
                 let label = values::display_label(port, true);
+                spread = (port.kind == PortKind::Spread).then_some(port.ty);
                 b.pins.push(PinGeom {
                     side: Side::In,
                     port: port.name.clone(),
                     label: label.clone(),
                     ty: port.ty,
                     pos: pos2(b.rect.left(), y),
-                    spread: port.kind == PortKind::Spread,
+                    spread: spread.is_some(),
                     constant: port.constant,
                 });
                 if !is_wired && values::browse_filter(&n.def_type, &port.name).is_some() {
@@ -1117,19 +1250,23 @@ pub fn row_box(
                         row.label = Some(label);
                         row.constant = port.constant;
                         row.integer = port.integer && port.ty == PortType::Number;
+                        row.spread = spread;
                     }
                 }
             }
         }
         if let Some(label) = &row.label {
-            let mut lw = cx.text_w(label, LABEL_FONT);
-            if row.constant {
-                lw += MARK_W;
-            }
+            let text = cx.text_w(label, LABEL_FONT);
+            let lw = text + marks_w(row.constant, row.integer, row.spread.is_some());
             row.label_rect = Rect::from_min_size(
                 pos2(b.rect.left() + 8.0 * z, y - ROW_H * z / 2.0),
                 vec2(lw + 4.0, ROW_H) * z,
             );
+            if row.spread.is_some() && z > 0.3 {
+                let x = 10.0 + text + spread_x(row.constant, row.integer);
+                b.marks
+                    .push(mark_rect(b.rect.left() + x * z, y, LABEL_FONT, z));
+            }
         }
         if let Some((label, constant, key, kind, value)) = boxed {
             // The box runs to the row's `…` button or the node's edge.
@@ -1146,14 +1283,24 @@ pub fn row_box(
                         pos2(b.rect.left() + x1 * z, y + h * z / 2.0),
                     )
                 };
-                let mut name = cx.text_w(&label, LABEL_FONT);
-                if constant {
-                    name += MARK_W;
-                }
+                let text = cx.text_w(&label, LABEL_FONT);
+                let name = text + marks_w(constant, false, spread.is_some());
                 let frame = span(BOX_X, right, BOX_H);
+                if spread.is_some() && z > 0.3 {
+                    // The name starts past the checkbox, or the box's padding.
+                    let start = if kind == FieldKind::Bool {
+                        BOX_X + CHECK + CHECK_GAP
+                    } else {
+                        BOX_X + BOX_PAD
+                    };
+                    let x = start + text + spread_x(constant, false);
+                    b.marks
+                        .push(mark_rect(b.rect.left() + x * z, y, LABEL_FONT, z));
+                }
                 let tag = FieldLabel {
                     text: label,
                     constant,
+                    spread,
                     frame,
                 };
                 // Where the value part starts: past the name.
@@ -1295,6 +1442,16 @@ impl Hits<'_> {
             .into_iter()
             .find(|(_, b)| b.look == Look::Region && b.header.contains(p))
             .map(|(id, _)| id.clone())
+    }
+
+    /// Whether `p` is on a spread icon (for its "spread" tooltip).
+    pub fn spread_mark(&self, p: Pos2) -> bool {
+        let on = |b: &NodeBox| b.marks.iter().any(|r| r.contains(p));
+        match self.body(p) {
+            // Only the topmost node's own icons, not one it covers.
+            Some(id) => on(&self.boxes[id.as_str()]),
+            None => self.frames().into_iter().any(|(_, b)| on(b)),
+        }
     }
 
     /// Every pin with its screen position, topmost node first.
@@ -1646,5 +1803,199 @@ mod tests {
             let w = laid_out(ty, &[]).rect.width();
             assert!((w - before).abs() <= 30.0, "{ty}: {before} -> {w}");
         }
+    }
+
+    /// Every node of `nodes` / `edges` laid out at `zoom` in `scope`.
+    fn laid_out_patch(
+        nodes: Json,
+        edges: Json,
+        scope: Option<&str>,
+        zoom: f32,
+    ) -> IndexMap<String, NodeBox> {
+        super::super::samples::real_fonts();
+        let cat = Catalogue::builtin();
+        let flora = json!({"kind": "floret.patch", "version": 4, "nodes": nodes, "edges": edges});
+        let patch = floret_engine::load_patch(&flora.to_string()).expect("loads");
+        let painter = measuring_painter();
+        let decor = Decor::default();
+        let cx = Ctx {
+            patch: &patch,
+            cat,
+            painter: &painter,
+            origin: Pos2::ZERO,
+            pan: Vec2::ZERO,
+            zoom,
+            scope,
+            decor: &decor,
+        };
+        let all: HashSet<String> = patch.nodes.iter().map(|n| n.id.clone()).collect();
+        layout(&cx, &all, &|_| false)
+    }
+
+    fn label_w(s: &str, size: f32) -> f32 {
+        measuring_painter()
+            .layout_no_wrap(s.to_owned(), FontId::proportional(size), Color32::WHITE)
+            .size()
+            .x
+    }
+
+    #[test]
+    fn spread_outputs_carry_the_icon_between_label_and_pin() {
+        let b = laid_out("geometry/layout", &[]);
+        let spread: Vec<&str> = out_pins(&b)
+            .iter()
+            .filter(|p| p.spread)
+            .map(|p| p.port.as_str())
+            .collect();
+        assert_eq!(spread, ["positions", "angles", "scales"]);
+        assert_eq!(b.marks.len(), 3, "one icon per spread output");
+        let want = [PortType::Vec2, PortType::Number, PortType::Number];
+        for ((o, m), ty) in b.outs.iter().zip(&b.marks).zip(want) {
+            assert_eq!(o.spread, Some(ty), "{}", o.label);
+            // The label, then the icon, then 10 to the pin; all inside.
+            let label_right = b.rect.right() - 10.0 - SPREAD_W;
+            assert!(label_right - label_w(&o.label, FOOT_FONT) > b.rect.left() + 8.0);
+            let icon = m.shrink(2.0);
+            assert!(icon.left() >= label_right + MARK_GAP - 0.01, "{}", o.label);
+            assert!(icon.right() <= b.rect.right() - 10.0 + 0.01);
+            assert!((m.center().y - o.y).abs() < 0.01);
+        }
+        let progress = b.outs.iter().find(|o| o.label == "progress").unwrap();
+        assert_eq!(progress.spread, None);
+    }
+
+    #[test]
+    fn spread_inputs_carry_the_icon_after_their_name() {
+        // A label row: the Renderer's layers (layers have no value box).
+        let b = laid_out("render/renderer", &[]);
+        let row = row_named(&b, "layer").expect("the layers input reads layer");
+        assert_eq!(row.spread, Some(PortType::Layer));
+        let pin = b.pin(Side::In, "layers").unwrap();
+        assert!(pin.spread);
+        assert_eq!(pin.label, "layer");
+        let icon = b.marks.first().expect("an icon").shrink(2.0);
+        assert!(icon.left() >= b.rect.left() + 10.0 + label_w("layer", LABEL_FONT));
+        assert!(
+            icon.right() <= row.label_rect.right() + 0.01,
+            "room reserved"
+        );
+        assert!(row.label_rect.right() < b.rect.right() - 8.0);
+        // Its output reads layer too, with an icon.
+        assert_eq!(b.outs[0].label, "layer");
+        assert_eq!(b.outs[0].spread, Some(PortType::Layer));
+        // A value box: an unwired number spread keeps its icon left of
+        // its value.
+        let b = laid_out("math/statistics", &[]);
+        let f = fields_of(&b, "spread")[0];
+        let tag = f.label.as_ref().unwrap();
+        assert_eq!(tag.spread, Some(PortType::Number));
+        let need = label_w(&tag.text, LABEL_FONT) + marks_w(tag.constant, false, true);
+        assert!(need <= f.value_rect.left() - tag.frame.left() - BOX_PAD + 0.5);
+        let icon = b.marks.first().expect("an icon").shrink(2.0);
+        assert!(icon.right() <= f.value_rect.left() + 0.01);
+        // Read Spread: in and out.
+        let b = laid_out("state/read-spread", &[]);
+        assert!(b.pin(Side::In, "init").unwrap().spread);
+        assert!(b.pin(Side::Out, "current").unwrap().spread);
+        assert_eq!(b.marks.len(), 2);
+    }
+
+    #[test]
+    fn single_pins_have_no_icon() {
+        let b = laid_out("draw/rect", &[]);
+        assert!(b.marks.is_empty());
+        assert!(b.pins.iter().all(|p| !p.spread));
+    }
+
+    #[test]
+    fn foreach_pills_and_outer_pins_are_spreads() {
+        let boxes = laid_out_patch(
+            json!([{"id": "fe", "defType": "region/foreach", "position": {"x": 0, "y": 0},
+                    "ports": [{"id": "p1", "name": "layer", "type": "layer", "direction": "input"},
+                              {"id": "p2", "name": "out", "type": "layer", "direction": "output"}],
+                    "width": 300, "height": 200}]),
+            json!([]),
+            None,
+            1.0,
+        );
+        let b = &boxes["fe"];
+        // Input port: the outer `in-` gathers; output port: the outer `out-`.
+        assert!(b.pin(Side::In, "p1").unwrap().spread);
+        assert!(!b.pin(Side::Out, "p1").unwrap().spread);
+        assert!(!b.pin(Side::In, "p2").unwrap().spread);
+        assert!(b.pin(Side::Out, "p2").unwrap().spread);
+        assert!(b.pills.iter().all(|p| p.spread));
+        assert_eq!(b.marks.len(), 2);
+        for (pill, m) in b.pills.iter().zip(&b.marks) {
+            assert!(pill.rect.contains_rect(m.shrink(2.0)), "{}", pill.name);
+        }
+    }
+
+    /// A subpatch whose output `p1` is fed from inside by `inner`'s `port`.
+    fn subpatch_fed_by(inner: &str, port: &str, scope: Option<&str>) -> NodeBox {
+        laid_out_patch(
+            json!([
+                {"id": "sub", "defType": "meta/subpatch", "position": {"x": 0, "y": 0},
+                 "params": {"label": "sub"},
+                 "ports": [{"id": "p1", "name": "values", "type": "number", "direction": "output"}],
+                 "width": 400, "height": 300},
+                {"id": "c", "defType": inner, "position": {"x": 80, "y": 40}, "parentId": "sub"},
+            ]),
+            json!([{"id": "e1", "source": "c", "sourceHandle": format!("out-{port}"),
+                    "target": "sub", "targetHandle": "in-p1"}]),
+            scope,
+            1.0,
+        )
+        .swap_remove("sub")
+        .expect("laid out")
+    }
+
+    #[test]
+    fn collapsed_subpatch_outputs_carry_their_real_spread_flag() {
+        let b = subpatch_fed_by("spread/range", "spread", None);
+        assert_eq!(b.look, Look::Collapsed);
+        assert!(b.pin(Side::Out, "p1").unwrap().spread);
+        assert_eq!(b.outs[0].spread, Some(PortType::Number));
+        assert_eq!(b.marks.len(), 1);
+        let label_right = b.rect.right() - 10.0 - SPREAD_W;
+        assert!(label_right - label_w("values", FOOT_FONT) > b.rect.left() + 8.0);
+        let b = subpatch_fed_by("value/number", "value", None);
+        assert!(!b.pin(Side::Out, "p1").unwrap().spread);
+        assert!(b.marks.is_empty());
+        // Entered, its frame's output pill and pins say the same.
+        let b = subpatch_fed_by("spread/range", "spread", Some("sub"));
+        assert_eq!(b.look, Look::Frame);
+        assert!(b.pills[0].spread);
+        assert!(b.pin(Side::Out, "p1").unwrap().spread);
+        let b = subpatch_fed_by("value/number", "value", Some("sub"));
+        assert!(!b.pills[0].spread);
+        assert!(!b.pin(Side::Out, "p1").unwrap().spread);
+    }
+
+    #[test]
+    fn spread_pins_take_their_type_colour() {
+        let b = laid_out("render/renderer", &[]);
+        let pin = b.pin(Side::In, "layers").unwrap();
+        assert!(pin.spread);
+        assert_eq!(
+            super::super::draw::pin_color(pin.ty, pin.constant),
+            crate::theme::port_color("layer")
+        );
+        assert_ne!(
+            super::super::draw::pin_color(PortType::Layer, false),
+            *crate::theme::SPREAD_PIN
+        );
+    }
+
+    #[test]
+    fn far_out_the_icons_are_hidden() {
+        let node = json!([{"id": "n", "defType": "geometry/layout", "position": {"x": 0, "y": 0}}]);
+        let at = |z: f32| {
+            laid_out_patch(node.clone(), json!([]), None, z)["n"]
+                .marks
+                .len()
+        };
+        assert_eq!(at(0.3), 0);
+        assert_eq!(at(0.31), 3);
     }
 }

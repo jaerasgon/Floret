@@ -71,20 +71,21 @@ pub struct Doc {
     pub region: Option<&'static str>,
 }
 
-fn port_doc(p: &PortSpec, with_default: bool) -> PortDoc {
+/// A pin's line (`input`: an input, shown with its default). Layer pins
+/// read "layer", as on the canvas.
+fn port_doc(p: &PortSpec, input: bool) -> PortDoc {
     PortDoc {
-        name: p.label.clone().unwrap_or_else(|| p.name.clone()),
+        name: p.label.clone().unwrap_or_else(|| {
+            crate::editor::values::layer_label(p, input)
+                .map_or_else(|| p.name.clone(), str::to_owned)
+        }),
         ty: type_name(p.ty),
         kind: match p.kind {
             PortKind::Single => None,
             PortKind::Spread => Some("spread"),
             PortKind::Multi => Some("multi"),
         },
-        default: p
-            .default
-            .as_ref()
-            .filter(|_| with_default)
-            .map(format_default),
+        default: p.default.as_ref().filter(|_| input).map(format_default),
     }
 }
 
@@ -461,6 +462,20 @@ mod tests {
         assert_eq!(m["transform/group"].1, "first");
         // The real file covers most of the catalogue.
         assert!(nodes_md().len() > 150);
+    }
+
+    #[test]
+    fn layer_pins_read_layer_as_on_the_canvas() {
+        let cat = Catalogue::builtin();
+        let r = doc(cat, "render/renderer").expect("renderer");
+        assert_eq!(r.inputs[0].name, "layer");
+        assert_eq!(r.inputs[0].kind, Some("spread"));
+        assert_eq!(r.outputs[0].name, "layer");
+        let g = doc(cat, "transform/group").expect("group");
+        assert_eq!(g.outputs[0].name, "layer");
+        assert_eq!(g.inputs[0].name, "1");
+        let l = doc(cat, "input/landmarks").expect("landmarks");
+        assert!(l.outputs.iter().any(|p| p.name == "guides"));
     }
 
     #[test]

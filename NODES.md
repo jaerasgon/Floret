@@ -78,6 +78,15 @@ right-click one of them:
 
 The same commands are in the Edit menu.
 
+**The Subpatches panel** (open it from the `+` at the end of the panel
+tabs) lists the subpatches at the level the canvas shows, including those
+inside a ForEach / If / Cache region there, with how many nodes each
+holds. Click one to frame it on the canvas, double-click to enter it, and
+press **Up** to go back a level. Right-click → **Save to library…** saves
+it to the Library, where it carries a small subpatch mark: clicking it
+there inserts a copy into the open patch, in the level you are viewing
+(right-click it for **Insert into patch** or **Open on its own**).
+
 ## Node browser groups
 
 The Nodes browser and the Tab / double-click search sort nodes by what

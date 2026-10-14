@@ -1,8 +1,8 @@
 //! The app shell's side dock (`src/editor/dock/*`): panels as tabs that
 //! split, stack, float as windows and hide — one Preview per renderer,
-//! Inspector, Help, Library, Shader, Profiler and Presets. The node canvas stays pinned in
-//! the centre. A closed panel comes back from the tab bar's `+` menu; the
-//! layout is saved to the app data dir.
+//! Inspector, Help, Library, Shader, Profiler, Presets and Subpatches. The
+//! node canvas stays pinned in the centre. A closed panel comes back from
+//! the tab bar's `+` menu; the layout is saved to the app data dir.
 
 use crate::canvas::View;
 use crate::library::{self, Library};
@@ -10,7 +10,7 @@ use crate::node_help::HelpPanel;
 use crate::presets_panel::PresetsPanel;
 use crate::preview::PreviewPanel;
 use crate::shader_panel::ShaderPanel;
-use crate::{crash, theme, Sample};
+use crate::{crash, subpatches_panel, theme, Sample};
 use eframe::egui::{self, vec2, Pos2, Rect, RichText, Vec2};
 use eframe::egui_wgpu;
 use egui_dock::{DockArea, DockState, NodeIndex, NodePath, TabPath, TabViewer};
@@ -31,18 +31,20 @@ pub enum Tab {
     Shader,
     Profiler,
     Presets,
+    Subpatches,
 }
 
 /// Panels that can be closed and reopened, in their default order.
 /// Presets comes right after Inspector so the whole tab is on screen at the
 /// default dock width, where the last tabs are cut off.
-const PANELS: [Tab; 6] = [
+const PANELS: [Tab; 7] = [
     Tab::Inspector,
     Tab::Presets,
     Tab::Help,
     Tab::Library,
     Tab::Shader,
     Tab::Profiler,
+    Tab::Subpatches,
 ];
 
 fn title(tab: &Tab) -> &'static str {
@@ -54,6 +56,7 @@ fn title(tab: &Tab) -> &'static str {
         Tab::Shader => "Shader",
         Tab::Profiler => "Profiler",
         Tab::Presets => "Presets",
+        Tab::Subpatches => "Subpatches",
     }
 }
 
@@ -81,11 +84,18 @@ fn closeable(tab: &Tab) -> bool {
     !matches!(tab, Tab::Preview(_))
 }
 
+/// Whether a panel is in the default layout. Subpatches starts closed (the
+/// tab bar is full at the default width); it opens from the `+` menu.
+fn open_by_default(tab: &Tab) -> bool {
+    *tab != Tab::Subpatches
+}
+
 /// The default layout: previews on top, the other panels tabbed below.
 pub fn default_dock() -> DockState<Tab> {
     let mut dock = DockState::new(vec![Tab::Preview(0)]);
+    let panels = PANELS.iter().filter(|t| open_by_default(t)).cloned();
     dock.main_surface_mut()
-        .split_below(NodeIndex::root(), 0.56, PANELS.to_vec());
+        .split_below(NodeIndex::root(), 0.56, panels.collect());
     dock
 }
 
@@ -244,6 +254,7 @@ impl Workspace {
             reset: false,
             close: None,
             profiling: false,
+            reveal: None,
         };
         // A tab dragged off the dock (onto the canvas) floats as a card
         // where it's dropped; egui_dock only handles drops on a dock.
@@ -286,6 +297,9 @@ impl Workspace {
             }
         }
         self.profiling = viewer.profiling;
+        if let Some(t) = viewer.reveal.take() {
+            reveal(&mut self.dock, t);
+        }
         shell
             .preview
             .output_window(ui.ctx(), shell.rs, shell.engine, shell.outputs);
@@ -417,6 +431,9 @@ struct Viewer<'s, 'a> {
     /// A panel closed from its tab (context menu, middle click).
     close: Option<Tab>,
     profiling: bool,
+    /// A panel to bring forward after the dock ran (the Library, when a
+    /// subpatch is being saved to it).
+    reveal: Option<Tab>,
 }
 
 impl TabViewer for Viewer<'_, '_> {
@@ -458,7 +475,9 @@ impl TabViewer for Viewer<'_, '_> {
 
     fn scroll_bars(&self, tab: &Tab) -> [bool; 2] {
         match tab {
-            Tab::Inspector | Tab::Shader | Tab::Profiler | Tab::Presets => [false, true],
+            Tab::Inspector | Tab::Shader | Tab::Profiler | Tab::Presets | Tab::Subpatches => {
+                [false, true]
+            }
             _ => [false, false],
         }
     }
@@ -511,8 +530,15 @@ impl TabViewer for Viewer<'_, '_> {
             Tab::Library => match self.library.ui(ui, sh.samples, sh.sample, sh.patch, sh.rs) {
                 Some(library::Pick::Sample(i)) => self.action = Some(ShellAction::LoadSample(i)),
                 Some(library::Pick::Patch(p)) => self.action = Some(ShellAction::LoadPatch(p)),
+                Some(library::Pick::Insert(p)) => sh.view.request_insert(*p),
                 None => {}
             },
+            Tab::Subpatches => {
+                if let Some((snippet, name)) = subpatches_panel::ui(ui, sh.patch, sh.view) {
+                    self.library.open_save_form(snippet, &name);
+                    self.reveal = Some(Tab::Library);
+                }
+            }
             Tab::Profiler => {
                 self.profiling = true;
                 let render_ms = sh.preview.render_ms();
@@ -648,9 +674,32 @@ mod tests {
         let at = |tab: Tab| t.iter().position(|x| *x == tab).unwrap();
         assert_eq!(at(Tab::Presets), at(Tab::Inspector) + 1);
         assert!(at(Tab::Presets) < at(Tab::Profiler));
-        // Every panel starts open, in `PANELS` order.
+        // Every panel but Subpatches starts open, in `PANELS` order.
         let panels: Vec<Tab> = t.iter().filter(|x| PANELS.contains(x)).cloned().collect();
-        assert_eq!(panels, PANELS.to_vec());
+        let open: Vec<Tab> = PANELS
+            .iter()
+            .filter(|x| open_by_default(x))
+            .cloned()
+            .collect();
+        assert_eq!(panels, open);
+        assert!(!t.contains(&Tab::Subpatches));
+    }
+
+    #[test]
+    fn subpatches_opens_from_the_add_menu() {
+        // It is a closeable panel, so the `+` menu (which lists closed
+        // `PANELS`) offers it, and reveal opens it next to the others.
+        let mut d = default_dock();
+        assert!(PANELS.contains(&Tab::Subpatches) && closeable(&Tab::Subpatches));
+        reveal(&mut d, Tab::Subpatches);
+        let p = d.find_tab(&Tab::Subpatches).expect("opened");
+        assert_eq!(
+            Some(p.node_path()),
+            d.find_tab(&Tab::Inspector).map(|p| p.node_path())
+        );
+        let leaf = d.leaf(p.node_path()).unwrap();
+        assert_eq!(leaf.tabs()[leaf.active.0], Tab::Subpatches);
+        assert_eq!(title(&Tab::Subpatches), "Subpatches");
     }
 
     #[test]

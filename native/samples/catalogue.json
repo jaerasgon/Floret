@@ -58,9 +58,9 @@
     },
     {
       "id": "tut-09-state",
-      "name": "09 · State (per-frame memory)",
+      "name": "09 · Memory (Write → Read)",
       "category": "Tutorial",
-      "description": "A state/value counter incremented every frame drives a rotating hue.",
+      "description": "A Write → Read pair keeps a counter from frame to frame; +1 every frame turns the hue.",
       "file": "tut-09-state.flora"
     },
     {
@@ -536,7 +536,7 @@
       "id": "pendulum",
       "name": "Pendulum",
       "category": "Nature",
-      "description": "Classic pendulum — angular acceleration = −(g/L)·sin(θ), velocity damped each tick. State<number> for θ and ω. NOC §3.",
+      "description": "Classic pendulum — angular acceleration = −(g/L)·sin(θ), velocity damped each tick. Write → Read pairs keep θ and ω from frame to frame. NOC §3.",
       "file": "pendulum.flora"
     },
     {
@@ -564,7 +564,7 @@
       "id": "noc-spring",
       "name": "Spring",
       "category": "Nature",
-      "description": "Hooke's law: F = −k·y (at rest at y = 0), plus gravity and damping. State<number> for y and v_y. A bob oscillates beneath a hanging point. NOC §3.",
+      "description": "Hooke's law: F = −k·y (at rest at y = 0), plus gravity and damping. Write → Read pairs keep y and v_y from frame to frame. A bob oscillates beneath a hanging point. NOC §3.",
       "file": "noc-spring.flora"
     },
     {
@@ -820,11 +820,11 @@
       "file": "variations.flora"
     },
     {
-      "id": "expression-rose",
-      "name": "Expression Rose",
+      "id": "rose-curve",
+      "name": "Rose Curve",
       "category": "Curves",
-      "description": "A rose curve of 900 dots from three typed formulas — position, colour and size — each run once per value of a spread. The formulas' names become pins (petals comes from a slider) and t animates them.",
-      "file": "expression-rose.flora"
+      "description": "A rose of 900 dots from the Curve node: a slider sets the petals, an LFO turns them, a Linear spread of hues runs round the colour wheel along the curve and a Sine Spread ripples the dot sizes.",
+      "file": "rose-curve.flora"
     },
     {
       "id": "noise-cellular-warp",

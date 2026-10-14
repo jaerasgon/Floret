@@ -16,7 +16,7 @@
         "y": -324
       },
       "params": {
-        "text": "Slingshot Sandbox\n\nPress anywhere, pull back and let go: a ball flies from where you pressed, opposite the pull, like a slingshot — the dotted arc shows where it will go. G cycles gravity (down, none, up), W switches the walls between bouncing and wrapping round, C clears the balls, R turns the rain of balls from the top on and off. Balls bounce off the bumpers.\n\nHow it works: one Emitter launches a ball on the frame you let go (rate 61/s for one 1/60 s frame = one ball) with the pull as its velocity, and on rain ticks drops one at the top. Three Worlds share the bumpers: a bouncing one, a wrapping one and a 'kill' one the Emitter is handed for a single frame to clear.",
+        "text": "Slingshot Sandbox\n\nPress anywhere, pull back and let go: a ball flies from where you pressed, opposite the pull, like a slingshot — the dotted arc shows where it will go. G cycles gravity (down, none, up), W switches the walls between bouncing and wrapping round, C clears the balls, R turns the rain of balls from the top on and off. Balls bounce off the bumpers.\n\nHow it works: a Counter steps through the gravities and Latches remember the walls and the rain. Slingshot launches a ball from one Emitter on the frame you let go (rate 61/s for one 1/60 s frame = one ball) with the pull as its velocity, and on rain ticks drops one at the top. Three Worlds share the bumpers: a bouncing one, a wrapping one and a 'kill' one the Emitter is handed for a single frame to clear.",
         "width": 460,
         "height": 260
       }
@@ -26,7 +26,7 @@
       "defType": "input/mouse",
       "position": {
         "x": 37,
-        "y": 2099
+        "y": 469
       },
       "params": {}
     },
@@ -34,8 +34,8 @@
       "id": "ps_mpos",
       "defType": "vec2/make",
       "position": {
-        "x": 366,
-        "y": 2074
+        "x": 297,
+        "y": 407
       },
       "params": {}
     },
@@ -43,8 +43,8 @@
       "id": "ps_time",
       "defType": "time/seconds",
       "position": {
-        "x": 1964,
-        "y": 1738
+        "x": 570,
+        "y": 563
       },
       "params": {}
     },
@@ -52,266 +52,108 @@
       "id": "ps_frame",
       "defType": "time/frame",
       "position": {
-        "x": 363,
-        "y": 1100
+        "x": 162,
+        "y": 290
       },
-      "params": {}
+      "params": {},
+      "parentId": "ps_sling"
     },
     {
       "id": "ps_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 0,
-        "y": 1524
+        "x": 131,
+        "y": 224
       },
       "params": {
         "mode": "keys"
       },
       "portValues": {
         "keys": "gwcr"
-      }
-    },
-    {
-      "id": "ps_gravityMode",
-      "defType": "state/value",
-      "position": {
-        "x": 41,
-        "y": 1864
       },
-      "params": {},
-      "portValues": {
-        "init": 0
-      }
-    },
-    {
-      "id": "ps_gravityNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 325,
-        "y": 1762
-      },
-      "params": {
-        "expr": "hit && k == 0 ? (g + 1) % 3 : g"
-      }
-    },
-    {
-      "id": "ps_gravity",
-      "defType": "math/expression",
-      "position": {
-        "x": 795,
-        "y": 1432
-      },
-      "params": {
-        "expr": "vec2(0, g == 0 ? 520 : (g == 2 ? -520 : 0))"
-      }
-    },
-    {
-      "id": "ps_wrapWalls",
-      "defType": "state/value",
-      "position": {
-        "x": 41,
-        "y": 1738
-      },
-      "params": {},
-      "portValues": {
-        "init": 0
-      }
-    },
-    {
-      "id": "ps_wrapNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 325,
-        "y": 1576
-      },
-      "params": {
-        "expr": "hit && k == 1 ? 1 - w : w"
-      }
-    },
-    {
-      "id": "ps_rainOn",
-      "defType": "state/value",
-      "position": {
-        "x": 41,
-        "y": 1398
-      },
-      "params": {},
-      "portValues": {
-        "init": 1
-      }
-    },
-    {
-      "id": "ps_rainNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 325,
-        "y": 1390
-      },
-      "params": {
-        "expr": "hit && k == 3 ? 1 - r : r"
-      }
+      "parentId": "ps_keys"
     },
     {
       "id": "ps_clearBang",
       "defType": "io/bang",
       "position": {
         "x": 0,
-        "y": 1294
+        "y": 87
       },
       "params": {
         "label": "Clear"
       }
     },
     {
-      "id": "ps_clear",
-      "defType": "math/expression",
+      "id": "ps_anchor",
+      "defType": "state/read",
       "position": {
-        "x": 325,
-        "y": 1204
+        "x": 138,
+        "y": 621
       },
       "params": {
-        "expr": "b || (hit && k == 2)"
-      }
-    },
-    {
-      "id": "ps_wasPressed",
-      "defType": "state/value",
-      "position": {
-        "x": 365,
-        "y": 1948
+        "slot": 1,
+        "name": "anchor"
       },
-      "params": {},
-      "portValues": {
-        "init": false
-      }
-    },
-    {
-      "id": "ps_anchor",
-      "defType": "state/value",
-      "position": {
-        "x": 365,
-        "y": 2200
-      },
-      "params": {},
       "portValues": {
         "init": {
           "x": 0,
           "y": 0
         }
-      }
+      },
+      "parentId": "ps_sling"
     },
     {
-      "id": "ps_anchorNext",
-      "defType": "math/expression",
+      "id": "ps_anchorWrite",
+      "defType": "state/write",
       "position": {
-        "x": 795,
-        "y": 1882
+        "x": 692,
+        "y": 614
       },
       "params": {
-        "expr": "p && !was ? m : a"
-      }
-    },
-    {
-      "id": "ps_pull",
-      "defType": "math/expression",
-      "position": {
-        "x": 1228,
-        "y": 1825
+        "slot": 1,
+        "name": "anchor"
       },
-      "params": {
-        "expr": "(a - m) * 3.2"
-      }
-    },
-    {
-      "id": "ps_release",
-      "defType": "math/expression",
-      "position": {
-        "x": 795,
-        "y": 1718
-      },
-      "params": {
-        "expr": "was && !p"
-      }
-    },
-    {
-      "id": "ps_rainTick",
-      "defType": "math/expression",
-      "position": {
-        "x": 795,
-        "y": 1268
-      },
-      "params": {
-        "expr": "r && f % 30 == 0"
-      }
-    },
-    {
-      "id": "ps_rainAt",
-      "defType": "math/expression",
-      "position": {
-        "x": 795,
-        "y": 1115
-      },
-      "params": {
-        "expr": "vec2((fract(sin(f * 12.9898) * 43758.5453) - 0.5) * 560, -280.0)"
-      }
+      "parentId": "ps_sling"
     },
     {
       "id": "ps_spawnAt",
       "defType": "logic/select",
       "position": {
-        "x": 1260,
-        "y": 1677
+        "x": 2241,
+        "y": 323
       },
-      "params": {}
+      "params": {},
+      "parentId": "ps_sling"
     },
     {
       "id": "ps_spawnVel",
       "defType": "logic/select",
       "position": {
-        "x": 1567,
-        "y": 1643
+        "x": 1285,
+        "y": 484
       },
-      "params": {}
-    },
-    {
-      "id": "ps_rate",
-      "defType": "math/expression",
-      "position": {
-        "x": 1228,
-        "y": 1513
-      },
-      "params": {
-        "expr": "rel || rain ? 61 : 0"
-      }
-    },
-    {
-      "id": "ps_ballCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 1922,
-        "y": 1596
-      },
-      "params": {
-        "expr": "hsl(fract(t * 0.11), 0.8, 0.62)"
-      }
+      "params": {},
+      "parentId": "ps_sling"
     },
     {
       "id": "ps_colliders",
       "defType": "spread/merge",
       "position": {
-        "x": 325,
-        "y": 738
+        "x": 424,
+        "y": 602
       },
       "params": {
         "slotCount": 5
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_bump0",
       "defType": "collider/circle",
       "position": {
-        "x": 1,
-        "y": 334
+        "x": 129,
+        "y": 189
       },
       "params": {
         "mode": "bounce"
@@ -323,14 +165,15 @@
         },
         "radius": 51,
         "restitution": 0.9
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_bump1",
       "defType": "collider/circle",
       "position": {
-        "x": 4,
-        "y": 526
+        "x": 132,
+        "y": 399
       },
       "params": {
         "mode": "bounce"
@@ -342,14 +185,15 @@
         },
         "radius": 43,
         "restitution": 0.9
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_bump2",
       "defType": "collider/circle",
       "position": {
-        "x": 10,
-        "y": 718
+        "x": 132,
+        "y": 608
       },
       "params": {
         "mode": "bounce"
@@ -361,14 +205,15 @@
         },
         "radius": 59,
         "restitution": 0.9
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_bump3",
       "defType": "collider/circle",
       "position": {
-        "x": 1,
-        "y": 910
+        "x": 129,
+        "y": 818
       },
       "params": {
         "mode": "bounce"
@@ -380,14 +225,15 @@
         },
         "radius": 35,
         "restitution": 0.9
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_bump4",
       "defType": "collider/circle",
       "position": {
-        "x": 4,
-        "y": 1102
+        "x": 132,
+        "y": 1027
       },
       "params": {
         "mode": "bounce"
@@ -399,14 +245,15 @@
         },
         "radius": 39,
         "restitution": 0.9
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_bounceWalls",
       "defType": "particles/bounds",
       "position": {
-        "x": 335,
-        "y": 930
+        "x": 445,
+        "y": 811
       },
       "params": {
         "mode": "bounce"
@@ -417,14 +264,15 @@
           "y": 630
         },
         "restitution": 0.8
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_wrapEdges",
       "defType": "particles/bounds",
       "position": {
-        "x": 335,
-        "y": 568
+        "x": 445,
+        "y": 414
       },
       "params": {
         "mode": "wrap"
@@ -434,14 +282,15 @@
           "x": 640,
           "y": 640
         }
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_killAll",
       "defType": "particles/bounds",
       "position": {
-        "x": 1250,
-        "y": 839
+        "x": 982,
+        "y": 40
       },
       "params": {
         "mode": "kill"
@@ -451,87 +300,95 @@
           "x": 1,
           "y": 1
         }
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_bounceSet",
       "defType": "spread/combine",
       "position": {
-        "x": 798,
-        "y": 967
+        "x": 721,
+        "y": 691
       },
       "params": {
         "op": "append"
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_wrapSet",
       "defType": "spread/combine",
       "position": {
-        "x": 798,
-        "y": 797
+        "x": 721,
+        "y": 474
       },
       "params": {
         "op": "append"
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_bounceWorld",
       "defType": "physics/world",
       "position": {
-        "x": 1254,
-        "y": 1277
+        "x": 972,
+        "y": 481
       },
       "params": {},
       "portValues": {
         "drag": 0.02
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_wrapWorld",
       "defType": "physics/world",
       "position": {
-        "x": 1254,
-        "y": 1041
+        "x": 972,
+        "y": 228
       },
       "params": {},
       "portValues": {
         "drag": 0.02
-      }
+      },
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_killWorld",
       "defType": "physics/world",
       "position": {
-        "x": 1549,
-        "y": 845
+        "x": 1258,
+        "y": 53
       },
-      "params": {}
+      "params": {},
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_wallWorld",
       "defType": "logic/select",
       "position": {
-        "x": 1567,
-        "y": 1081
+        "x": 1285,
+        "y": 307
       },
-      "params": {}
+      "params": {},
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_world",
       "defType": "logic/select",
       "position": {
-        "x": 1953,
-        "y": 1069
+        "x": 1532,
+        "y": 126
       },
-      "params": {}
+      "params": {},
+      "parentId": "ps_worlds"
     },
     {
       "id": "ps_balls",
       "defType": "particles/emitter",
       "position": {
-        "x": 2328,
-        "y": 1445
+        "x": 1092,
+        "y": 40
       },
       "params": {
         "maxCount": 300,
@@ -542,14 +399,15 @@
         "lifetime": 40,
         "velSpread": 0.15,
         "size": 11
-      }
+      },
+      "parentId": "ps_ballLook"
     },
     {
       "id": "ps_ballTrails",
       "defType": "particles/trail",
       "position": {
-        "x": 2649,
-        "y": 1439
+        "x": 1441,
+        "y": 191
       },
       "params": {
         "segments": 12
@@ -558,67 +416,61 @@
         "fadeOut": true,
         "tapered": true,
         "tailWidth": 0.2
-      }
+      },
+      "parentId": "ps_ballLook"
     },
     {
       "id": "ps_ballDots",
       "defType": "particles/render-as",
       "position": {
-        "x": 2644,
-        "y": 1697
+        "x": 1429,
+        "y": 466
       },
-      "params": {}
+      "params": {},
+      "parentId": "ps_ballLook"
     },
     {
       "id": "ps_bumperX",
       "defType": "data/csv-inline",
       "position": {
-        "x": 1,
-        "y": 0
+        "x": 128,
+        "y": 40
       },
       "params": {
         "data": "-150,140,30,-180,200"
-      }
+      },
+      "parentId": "ps_bumperLook"
     },
     {
       "id": "ps_bumperY",
       "defType": "data/csv-inline",
       "position": {
-        "x": 1,
-        "y": 104
+        "x": 128,
+        "y": 162
       },
       "params": {
         "data": "-40,-90,90,170,160"
-      }
+      },
+      "parentId": "ps_bumperLook"
     },
     {
       "id": "ps_bumperR",
       "defType": "data/csv-inline",
       "position": {
-        "x": 325,
-        "y": 243
+        "x": 348,
+        "y": 259
       },
       "params": {
         "data": "92,76,108,60,68"
-      }
-    },
-    {
-      "id": "ps_bumperPos",
-      "defType": "math/expression",
-      "position": {
-        "x": 325,
-        "y": 79
       },
-      "params": {
-        "expr": "vec2(x, y)"
-      }
+      "parentId": "ps_bumperLook"
     },
     {
       "id": "ps_bumperFill",
       "defType": "style/fill",
       "position": {
-        "x": 17,
-        "y": 208
+        "x": 128,
+        "y": 399
       },
       "params": {},
       "portValues": {
@@ -628,14 +480,15 @@
           "b": 0.3137254901960784,
           "a": 1.0
         }
-      }
+      },
+      "parentId": "ps_bumperLook"
     },
     {
       "id": "ps_bumperRing",
       "defType": "style/stroke",
       "position": {
-        "x": 342,
-        "y": 347
+        "x": 348,
+        "y": 380
       },
       "params": {},
       "portValues": {
@@ -646,18 +499,19 @@
           "a": 1.0
         },
         "width": 3
-      }
+      },
+      "parentId": "ps_bumperLook"
     },
     {
       "id": "ps_bumperLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 709,
-        "y": 292
+        "x": 583,
+        "y": 240
       },
       "params": {
-        "width": 340,
-        "height": 224,
+        "width": 364,
+        "height": 244,
         "label": "Bumpers"
       },
       "ports": [
@@ -680,11 +534,12 @@
           "name": "bumper",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 190
         }
       ],
-      "width": 340,
-      "height": 224
+      "width": 364,
+      "height": 244,
+      "parentId": "ps_bumperLook"
     },
     {
       "id": "ps_bumper",
@@ -700,8 +555,8 @@
       "id": "ps_bumperGlow",
       "defType": "gpu/effect",
       "position": {
-        "x": 2634,
-        "y": 1203
+        "x": 1043,
+        "y": 371
       },
       "params": {
         "mode": "glow"
@@ -709,14 +564,15 @@
       "portValues": {
         "radius": 14,
         "intensity": 1.2
-      }
+      },
+      "parentId": "ps_bumperLook"
     },
     {
       "id": "ps_bandStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 806,
-        "y": 2090
+        "x": 128,
+        "y": 102
       },
       "params": {},
       "portValues": {
@@ -727,46 +583,38 @@
           "a": 0.7
         },
         "width": 2
-      }
+      },
+      "parentId": "ps_aimLook"
     },
     {
       "id": "ps_band",
       "defType": "draw/line",
       "position": {
-        "x": 1270,
-        "y": 2093
+        "x": 509,
+        "y": 40
       },
-      "params": {}
+      "params": {},
+      "parentId": "ps_aimLook"
     },
     {
       "id": "ps_arcSteps",
       "defType": "spread/range",
       "position": {
-        "x": 1243,
-        "y": 1989
+        "x": 139,
+        "y": 923
       },
       "params": {},
       "portValues": {
         "count": 30
-      }
-    },
-    {
-      "id": "ps_arc",
-      "defType": "math/expression",
-      "position": {
-        "x": 1536,
-        "y": 1791
       },
-      "params": {
-        "expr": "a + v * (i * 0.045) + g * (0.5 * (i * 0.045) * (i * 0.045))"
-      }
+      "parentId": "ps_sling"
     },
     {
       "id": "ps_arcFill",
       "defType": "style/fill",
       "position": {
-        "x": 1547,
-        "y": 2010
+        "x": 128,
+        "y": 307
       },
       "params": {},
       "portValues": {
@@ -776,18 +624,19 @@
           "b": 1.0,
           "a": 0.55
         }
-      }
+      },
+      "parentId": "ps_aimLook"
     },
     {
       "id": "ps_arcLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 1836,
-        "y": 1886
+        "x": 370,
+        "y": 228
       },
       "params": {
-        "width": 339,
-        "height": 224,
+        "width": 363,
+        "height": 244,
         "label": "Aim"
       },
       "ports": [
@@ -803,11 +652,12 @@
           "name": "dot",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 190
         }
       ],
-      "width": 339,
-      "height": 224
+      "width": 363,
+      "height": 244,
+      "parentId": "ps_aimLook"
     },
     {
       "id": "ps_arcDot",
@@ -827,107 +677,116 @@
       "id": "ps_aimGroup",
       "defType": "transform/group",
       "position": {
-        "x": 2330,
-        "y": 2008
+        "x": 856,
+        "y": 178
       },
       "params": {
         "slotCount": 2
-      }
+      },
+      "parentId": "ps_aimLook"
     },
     {
       "id": "ps_aim",
       "defType": "logic/select",
       "position": {
-        "x": 2666,
-        "y": 1911
+        "x": 1137,
+        "y": 91
       },
-      "params": {}
+      "params": {},
+      "parentId": "ps_aimLook"
     },
     {
       "id": "ps_gravNames",
       "defType": "string/split",
       "position": {
-        "x": 335,
-        "y": 2326
+        "x": 128,
+        "y": 40
       },
       "params": {
         "text": "gravity ↓,no gravity,gravity ↑",
         "by": ","
-      }
+      },
+      "parentId": "ps_statusLine"
     },
     {
       "id": "ps_gravName",
       "defType": "spread/lookup",
       "position": {
-        "x": 798,
-        "y": 2260
+        "x": 339,
+        "y": 74
       },
       "params": {
         "op": "at"
-      }
+      },
+      "parentId": "ps_statusLine"
     },
     {
       "id": "ps_wallNames",
       "defType": "string/split",
       "position": {
-        "x": 335,
-        "y": 2452
+        "x": 128,
+        "y": 205
       },
       "params": {
         "text": "walls bounce,walls wrap",
         "by": ","
-      }
+      },
+      "parentId": "ps_statusLine"
     },
     {
       "id": "ps_wallName",
       "defType": "spread/lookup",
       "position": {
-        "x": 798,
-        "y": 2408
+        "x": 339,
+        "y": 239
       },
       "params": {
-        "op": "at"
-      }
+        "op": "pick"
+      },
+      "parentId": "ps_statusLine"
     },
     {
       "id": "ps_help",
       "defType": "value/string",
       "position": {
-        "x": 800,
-        "y": 2556
+        "x": 340,
+        "y": 405
       },
       "params": {
         "value": "drag & release to fling · G W C R"
-      }
+      },
+      "parentId": "ps_statusLine"
     },
     {
       "id": "ps_statusParts",
       "defType": "spread/merge",
       "position": {
-        "x": 1228,
-        "y": 2340
+        "x": 579,
+        "y": 271
       },
       "params": {
         "slotCount": 3
-      }
+      },
+      "parentId": "ps_statusLine"
     },
     {
       "id": "ps_status",
       "defType": "string/concat",
       "position": {
-        "x": 1561,
-        "y": 2204
+        "x": 844,
+        "y": 340
       },
       "params": {
         "separator": "   ·   "
-      }
+      },
+      "parentId": "ps_statusLine"
     },
     {
       "id": "ps_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 1547,
-        "y": 2330
+        "x": 843,
+        "y": 484
       },
       "params": {},
       "portValues": {
@@ -937,14 +796,15 @@
           "b": 0.8784313725490196,
           "a": 0.6
         }
-      }
+      },
+      "parentId": "ps_statusLine"
     },
     {
       "id": "ps_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 1961,
-        "y": 2158
+        "x": 1072,
+        "y": 415
       },
       "params": {
         "size": 13,
@@ -955,14 +815,15 @@
           "x": 0,
           "y": 306.0
         }
-      }
+      },
+      "parentId": "ps_statusLine"
     },
     {
       "id": "ps_scene",
       "defType": "transform/group",
       "position": {
-        "x": 2967,
-        "y": 1656
+        "x": 1111,
+        "y": 324
       },
       "params": {
         "slotCount": 5
@@ -972,8 +833,8 @@
       "id": "ps_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 3231,
-        "y": 1655
+        "x": 1375,
+        "y": 437
       },
       "params": {
         "width": 640,
@@ -987,6 +848,999 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "ps_keyG",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 376,
+        "y": 265
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      },
+      "parentId": "ps_keys"
+    },
+    {
+      "id": "ps_gravityNext",
+      "defType": "io/counter",
+      "position": {
+        "x": 612,
+        "y": 206
+      },
+      "params": {
+        "limit": "wrap",
+        "step": 1,
+        "start": 0
+      },
+      "portValues": {
+        "min": 0,
+        "max": 3
+      },
+      "parentId": "ps_keys"
+    },
+    {
+      "id": "ps_keyW",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 376,
+        "y": 431
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 1
+      },
+      "parentId": "ps_keys"
+    },
+    {
+      "id": "ps_wrapNext",
+      "defType": "io/latch",
+      "position": {
+        "x": 619,
+        "y": 481
+      },
+      "params": {},
+      "portValues": {
+        "initial": false
+      },
+      "parentId": "ps_keys"
+    },
+    {
+      "id": "ps_keyR",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 376,
+        "y": 596
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 3
+      },
+      "parentId": "ps_keys"
+    },
+    {
+      "id": "ps_rainNext",
+      "defType": "io/latch",
+      "position": {
+        "x": 619,
+        "y": 685
+      },
+      "params": {},
+      "portValues": {
+        "initial": true
+      },
+      "parentId": "ps_keys"
+    },
+    {
+      "id": "ps_keyC",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 376,
+        "y": 100
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 2
+      },
+      "parentId": "ps_keys"
+    },
+    {
+      "id": "ps_clear",
+      "defType": "logic/logic",
+      "position": {
+        "x": 621,
+        "y": 40
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "ps_keys"
+    },
+    {
+      "id": "ps_fall",
+      "defType": "logic/switch",
+      "position": {
+        "x": 828,
+        "y": 247
+      },
+      "params": {
+        "mode": "index",
+        "slotCount": 3,
+        "range": "clamp"
+      },
+      "portValues": {
+        "v0": 520,
+        "v1": 0,
+        "v2": -520
+      },
+      "parentId": "ps_keys"
+    },
+    {
+      "id": "ps_gravity",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1094,
+        "y": 350
+      },
+      "params": {},
+      "portValues": {
+        "x": 0
+      },
+      "parentId": "ps_keys"
+    },
+    {
+      "id": "ps_sling",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 533,
+        "y": 309
+      },
+      "params": {
+        "label": "Slingshot",
+        "width": 2445,
+        "height": 1289
+      },
+      "ports": [
+        {
+          "id": "mouse",
+          "name": "mouse",
+          "type": "vec2",
+          "direction": "input",
+          "y": 669
+        },
+        {
+          "id": "pressed",
+          "name": "pressed",
+          "type": "boolean",
+          "direction": "input",
+          "y": 284
+        },
+        {
+          "id": "gravity",
+          "name": "gravity",
+          "type": "vec2",
+          "direction": "input",
+          "y": 877
+        },
+        {
+          "id": "rain",
+          "name": "rain",
+          "type": "boolean",
+          "direction": "input",
+          "y": 176
+        },
+        {
+          "id": "spawnAt",
+          "name": "spawnAt",
+          "type": "vec2",
+          "direction": "output",
+          "y": 429
+        },
+        {
+          "id": "spawnVel",
+          "name": "spawnVel",
+          "type": "vec2",
+          "direction": "output",
+          "y": 562
+        },
+        {
+          "id": "rate",
+          "name": "rate",
+          "type": "number",
+          "direction": "output",
+          "y": 207
+        },
+        {
+          "id": "anchor",
+          "name": "anchor",
+          "type": "vec2",
+          "direction": "output",
+          "y": 597
+        },
+        {
+          "id": "arc",
+          "name": "arc",
+          "type": "vec2",
+          "direction": "output",
+          "y": 856
+        }
+      ],
+      "width": 2445,
+      "height": 1289
+    },
+    {
+      "id": "ps_slingNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 138,
+        "y": 1109
+      },
+      "params": {
+        "text": "A press remembers where it started (the anchor). The pull is the anchor minus the mouse, × 3.2: the launch velocity. Letting go fires one ball there (rate 61/s for one frame). Every half second, while rain is on, a ball drops in at a random x along the top. The aim arc samples where a ball fired now would be, every 0.045 s.",
+        "width": 320,
+        "height": 140
+      },
+      "parentId": "ps_sling"
+    },
+    {
+      "id": "ps_press",
+      "defType": "io/edge",
+      "position": {
+        "x": 147,
+        "y": 386
+      },
+      "params": {
+        "mode": "rising",
+        "threshold": 0.5
+      },
+      "parentId": "ps_sling"
+    },
+    {
+      "id": "ps_release",
+      "defType": "io/edge",
+      "position": {
+        "x": 147,
+        "y": 107
+      },
+      "params": {
+        "mode": "falling",
+        "threshold": 0.5
+      },
+      "parentId": "ps_sling"
+    },
+    {
+      "id": "ps_anchorNext",
+      "defType": "logic/select",
+      "position": {
+        "x": 430,
+        "y": 543
+      },
+      "params": {},
+      "parentId": "ps_sling"
+    },
+    {
+      "id": "ps_pullBack",
+      "defType": "math/math",
+      "position": {
+        "x": 678,
+        "y": 740
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "vec2"
+      },
+      "parentId": "ps_sling"
+    },
+    {
+      "id": "ps_pull",
+      "defType": "vec2/math",
+      "position": {
+        "x": 974,
+        "y": 670
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "ps_sling",
+      "portValues": {
+        "s": 3.2
+      }
+    },
+    {
+      "id": "ps_frameMod",
+      "defType": "math/math",
+      "position": {
+        "x": 420,
+        "y": 212
+      },
+      "params": {
+        "op": "mod"
+      },
+      "parentId": "ps_sling",
+      "portValues": {
+        "b": 30
+      }
+    },
+    {
+      "id": "ps_halfSecond",
+      "defType": "logic/compare",
+      "position": {
+        "x": 691,
+        "y": 187
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "ps_sling",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "ps_rainTick",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1003,
+        "y": 89
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "ps_sling"
+    },
+    {
+      "id": "ps_hashF",
+      "defType": "math/math",
+      "position": {
+        "x": 392,
+        "y": 378
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "ps_sling",
+      "portValues": {
+        "b": 12.9898
+      }
+    },
+    {
+      "id": "ps_hashSin",
+      "defType": "math/math",
+      "position": {
+        "x": 706,
+        "y": 353
+      },
+      "params": {
+        "op": "sin"
+      },
+      "parentId": "ps_sling"
+    },
+    {
+      "id": "ps_hashScale",
+      "defType": "math/math",
+      "position": {
+        "x": 961,
+        "y": 294
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "ps_sling",
+      "portValues": {
+        "b": 43758.5453
+      }
+    },
+    {
+      "id": "ps_hash",
+      "defType": "math/math",
+      "position": {
+        "x": 1275,
+        "y": 303
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "ps_sling"
+    },
+    {
+      "id": "ps_hashCentre",
+      "defType": "math/math",
+      "position": {
+        "x": 1510,
+        "y": 290
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "ps_sling",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "ps_rainX",
+      "defType": "math/math",
+      "position": {
+        "x": 1780,
+        "y": 301
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "ps_sling",
+      "portValues": {
+        "b": 560
+      }
+    },
+    {
+      "id": "ps_rainAt",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2051,
+        "y": 323
+      },
+      "params": {},
+      "parentId": "ps_sling",
+      "portValues": {
+        "y": -280.0
+      }
+    },
+    {
+      "id": "ps_fire",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1289,
+        "y": 40
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "ps_sling"
+    },
+    {
+      "id": "ps_rate",
+      "defType": "logic/select",
+      "position": {
+        "x": 1548,
+        "y": 105
+      },
+      "params": {},
+      "parentId": "ps_sling",
+      "portValues": {
+        "a": 61,
+        "b": 0
+      }
+    },
+    {
+      "id": "ps_arcT",
+      "defType": "math/math",
+      "position": {
+        "x": 392,
+        "y": 926
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "ps_sling",
+      "portValues": {
+        "b": 0.045
+      }
+    },
+    {
+      "id": "ps_arcT2",
+      "defType": "math/math",
+      "position": {
+        "x": 678,
+        "y": 905
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 3,
+        "valueType": "number"
+      },
+      "parentId": "ps_sling",
+      "portValues": {
+        "a": 0.5
+      }
+    },
+    {
+      "id": "ps_arcFly",
+      "defType": "vec2/math",
+      "position": {
+        "x": 1260,
+        "y": 783
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "ps_sling"
+    },
+    {
+      "id": "ps_arcDrop",
+      "defType": "vec2/math",
+      "position": {
+        "x": 974,
+        "y": 836
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "ps_sling"
+    },
+    {
+      "id": "ps_arc",
+      "defType": "math/math",
+      "position": {
+        "x": 1510,
+        "y": 753
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 3,
+        "valueType": "vec2"
+      },
+      "parentId": "ps_sling"
+    },
+    {
+      "id": "ps_hueT",
+      "defType": "math/math",
+      "position": {
+        "x": 129,
+        "y": 164
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.11
+      },
+      "parentId": "ps_ballLook"
+    },
+    {
+      "id": "ps_hueTurn",
+      "defType": "math/math",
+      "position": {
+        "x": 398,
+        "y": 177
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "ps_ballLook"
+    },
+    {
+      "id": "ps_hue",
+      "defType": "math/math",
+      "position": {
+        "x": 611,
+        "y": 169
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 360
+      },
+      "parentId": "ps_ballLook"
+    },
+    {
+      "id": "ps_ballCol",
+      "defType": "color/color",
+      "position": {
+        "x": 881,
+        "y": 174
+      },
+      "params": {
+        "mode": "hsl"
+      },
+      "portValues": {
+        "s": 80.0,
+        "l": 62.0,
+        "a": 255
+      },
+      "parentId": "ps_ballLook"
+    },
+    {
+      "id": "ps_bumperPos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 364,
+        "y": 115
+      },
+      "params": {},
+      "parentId": "ps_bumperLook"
+    },
+    {
+      "id": "ps_keys",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 275,
+        "y": 113
+      },
+      "params": {
+        "label": "Keys",
+        "width": 1291,
+        "height": 1045
+      },
+      "ports": [
+        {
+          "id": "clearBang",
+          "name": "clearBang",
+          "type": "boolean",
+          "direction": "input",
+          "y": 146
+        },
+        {
+          "id": "gravity",
+          "name": "gravity",
+          "type": "vec2",
+          "direction": "output",
+          "y": 432
+        },
+        {
+          "id": "wrap",
+          "name": "wrap",
+          "type": "boolean",
+          "direction": "output",
+          "y": 597
+        },
+        {
+          "id": "clear",
+          "name": "clear",
+          "type": "boolean",
+          "direction": "output",
+          "y": 146
+        },
+        {
+          "id": "gravityMode",
+          "name": "gravityMode",
+          "type": "number",
+          "direction": "output",
+          "y": 468
+        },
+        {
+          "id": "rain",
+          "name": "rain",
+          "type": "boolean",
+          "direction": "output",
+          "y": 801
+        }
+      ],
+      "width": 1291,
+      "height": 1045
+    },
+    {
+      "id": "ps_keysNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 131,
+        "y": 905
+      },
+      "params": {
+        "text": "G steps a Counter round the three gravities (down, none, up: a Switch picks the pull), W and R flip Latches for wrapping walls and the rain, C (or Clear) clears the balls.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "ps_keys"
+    },
+    {
+      "id": "ps_worlds",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 540,
+        "y": 0
+      },
+      "params": {
+        "label": "Worlds",
+        "width": 1736,
+        "height": 1393
+      },
+      "ports": [
+        {
+          "id": "gravity",
+          "name": "gravity",
+          "type": "vec2",
+          "direction": "input",
+          "y": 149
+        },
+        {
+          "id": "wrap",
+          "name": "wrap",
+          "type": "boolean",
+          "direction": "input",
+          "y": 101
+        },
+        {
+          "id": "clear",
+          "name": "clear",
+          "type": "boolean",
+          "direction": "input",
+          "y": 78
+        },
+        {
+          "id": "world",
+          "name": "world",
+          "type": "world",
+          "direction": "output",
+          "y": 232
+        }
+      ],
+      "width": 1736,
+      "height": 1393
+    },
+    {
+      "id": "ps_worldsNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 129,
+        "y": 1253
+      },
+      "params": {
+        "text": "Five round bumpers shared by two Worlds, one with bouncing walls and one that wraps; clearing hands the Emitter a third World for a frame, whose tiny 'kill' box removes every ball.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "ps_worlds"
+    },
+    {
+      "id": "ps_ballLook",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 836,
+        "y": 318
+      },
+      "params": {
+        "label": "Balls",
+        "width": 1689,
+        "height": 856
+      },
+      "ports": [
+        {
+          "id": "worlds",
+          "name": "worlds",
+          "type": "world",
+          "direction": "input",
+          "y": 52
+        },
+        {
+          "id": "spawnAt",
+          "name": "spawnAt",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "spawnVel",
+          "name": "spawnVel",
+          "type": "vec2",
+          "direction": "input",
+          "y": 140
+        },
+        {
+          "id": "rate",
+          "name": "rate",
+          "type": "number",
+          "direction": "input",
+          "y": 108
+        },
+        {
+          "id": "t",
+          "name": "t",
+          "type": "number",
+          "direction": "input",
+          "y": 223
+        },
+        {
+          "id": "trails",
+          "name": "trails",
+          "type": "layer",
+          "direction": "output",
+          "y": 407
+        },
+        {
+          "id": "balls",
+          "name": "balls",
+          "type": "layer",
+          "direction": "output",
+          "y": 638
+        }
+      ],
+      "width": 1689,
+      "height": 856
+    },
+    {
+      "id": "ps_ballLookNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 129,
+        "y": 716
+      },
+      "params": {
+        "text": "One Emitter makes every ball: a ball for each frame its rate is 61/s, in a colour that slowly runs round the wheel, with tapering trails.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "ps_ballLook"
+    },
+    {
+      "id": "ps_bumperLook",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 823,
+        "y": 222
+      },
+      "params": {
+        "label": "Bumpers",
+        "width": 1289,
+        "height": 783
+      },
+      "ports": [
+        {
+          "id": "bumpers",
+          "name": "bumpers",
+          "type": "layer",
+          "direction": "output",
+          "y": 565
+        }
+      ],
+      "width": 1289,
+      "height": 783
+    },
+    {
+      "id": "ps_bumperLookNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 643
+      },
+      "params": {
+        "text": "The bumpers drawn where the colliders are: discs with a glowing rim.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "ps_bumperLook"
+    },
+    {
+      "id": "ps_aimLook",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 839,
+        "y": 544
+      },
+      "params": {
+        "label": "Aim",
+        "width": 1341,
+        "height": 676
+      },
+      "ports": [
+        {
+          "id": "mpos",
+          "name": "mpos",
+          "type": "vec2",
+          "direction": "input",
+          "y": 78
+        },
+        {
+          "id": "pressed",
+          "name": "pressed",
+          "type": "boolean",
+          "direction": "input",
+          "y": 17
+        },
+        {
+          "id": "anchor",
+          "name": "anchor",
+          "type": "vec2",
+          "direction": "input",
+          "y": 46
+        },
+        {
+          "id": "arc",
+          "name": "arc",
+          "type": "vec2",
+          "direction": "input",
+          "y": 283
+        },
+        {
+          "id": "aim",
+          "name": "aim",
+          "type": "layer",
+          "direction": "output",
+          "y": 197
+        }
+      ],
+      "width": 1341,
+      "height": 676
+    },
+    {
+      "id": "ps_aimLookNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 536
+      },
+      "params": {
+        "text": "While the button is held: the band from the anchor to the mouse and the dotted arc.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "ps_aimLook"
+    },
+    {
+      "id": "ps_statusLine",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 542,
+        "y": 166
+      },
+      "params": {
+        "label": "Status",
+        "width": 1295,
+        "height": 784
+      },
+      "ports": [
+        {
+          "id": "gravityMode",
+          "name": "gravityMode",
+          "type": "number",
+          "direction": "input",
+          "y": 160
+        },
+        {
+          "id": "wrap",
+          "name": "wrap",
+          "type": "boolean",
+          "direction": "input",
+          "y": 325
+        },
+        {
+          "id": "status",
+          "name": "status",
+          "type": "layer",
+          "direction": "output",
+          "y": 565
+        }
+      ],
+      "width": 1295,
+      "height": 784
+    },
+    {
+      "id": "ps_statusLineNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 644
+      },
+      "params": {
+        "text": "The gravity and walls in words, and the keys.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "ps_statusLine"
     }
   ],
   "edges": [
@@ -1003,258 +1857,6 @@
       "target": "ps_mpos",
       "sourceHandle": "out-y",
       "targetHandle": "in-y"
-    },
-    {
-      "id": "e_3",
-      "source": "ps_kb",
-      "target": "ps_gravityNext",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_4",
-      "source": "ps_kb",
-      "target": "ps_gravityNext",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_5",
-      "source": "ps_gravityMode",
-      "target": "ps_gravityNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_6",
-      "source": "ps_gravityNext",
-      "target": "ps_gravityMode",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_7",
-      "source": "ps_gravityNext",
-      "target": "ps_gravity",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_8",
-      "source": "ps_kb",
-      "target": "ps_wrapNext",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_9",
-      "source": "ps_kb",
-      "target": "ps_wrapNext",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_10",
-      "source": "ps_wrapWalls",
-      "target": "ps_wrapNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_11",
-      "source": "ps_wrapNext",
-      "target": "ps_wrapWalls",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_12",
-      "source": "ps_kb",
-      "target": "ps_rainNext",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_13",
-      "source": "ps_kb",
-      "target": "ps_rainNext",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_14",
-      "source": "ps_rainOn",
-      "target": "ps_rainNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-r"
-    },
-    {
-      "id": "e_15",
-      "source": "ps_rainNext",
-      "target": "ps_rainOn",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_16",
-      "source": "ps_clearBang",
-      "target": "ps_clear",
-      "sourceHandle": "out-bang",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_17",
-      "source": "ps_kb",
-      "target": "ps_clear",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_18",
-      "source": "ps_kb",
-      "target": "ps_clear",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_19",
-      "source": "ps_mouse",
-      "target": "ps_wasPressed",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_20",
-      "source": "ps_mouse",
-      "target": "ps_anchorNext",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_21",
-      "source": "ps_wasPressed",
-      "target": "ps_anchorNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-was"
-    },
-    {
-      "id": "e_22",
-      "source": "ps_mpos",
-      "target": "ps_anchorNext",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_23",
-      "source": "ps_anchor",
-      "target": "ps_anchorNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_24",
-      "source": "ps_anchorNext",
-      "target": "ps_anchor",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_25",
-      "source": "ps_anchorNext",
-      "target": "ps_pull",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_26",
-      "source": "ps_mpos",
-      "target": "ps_pull",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_27",
-      "source": "ps_wasPressed",
-      "target": "ps_release",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-was"
-    },
-    {
-      "id": "e_28",
-      "source": "ps_mouse",
-      "target": "ps_release",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_29",
-      "source": "ps_rainNext",
-      "target": "ps_rainTick",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-r"
-    },
-    {
-      "id": "e_30",
-      "source": "ps_frame",
-      "target": "ps_rainTick",
-      "sourceHandle": "out-frame",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_31",
-      "source": "ps_frame",
-      "target": "ps_rainAt",
-      "sourceHandle": "out-frame",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_32",
-      "source": "ps_release",
-      "target": "ps_spawnAt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cond"
-    },
-    {
-      "id": "e_33",
-      "source": "ps_anchorNext",
-      "target": "ps_spawnAt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_34",
-      "source": "ps_rainAt",
-      "target": "ps_spawnAt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_35",
-      "source": "ps_release",
-      "target": "ps_spawnVel",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cond"
-    },
-    {
-      "id": "e_36",
-      "source": "ps_pull",
-      "target": "ps_spawnVel",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_37",
-      "source": "ps_release",
-      "target": "ps_rate",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-rel"
-    },
-    {
-      "id": "e_38",
-      "source": "ps_rainTick",
-      "target": "ps_rate",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-rain"
     },
     {
       "id": "e_39",
@@ -1320,25 +1922,11 @@
       "targetHandle": "in-tail"
     },
     {
-      "id": "e_48",
-      "source": "ps_gravity",
-      "target": "ps_bounceWorld",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-gravity"
-    },
-    {
       "id": "e_49",
       "source": "ps_bounceSet",
       "target": "ps_bounceWorld",
       "sourceHandle": "out-result",
       "targetHandle": "in-colliders"
-    },
-    {
-      "id": "e_50",
-      "source": "ps_gravity",
-      "target": "ps_wrapWorld",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-gravity"
     },
     {
       "id": "e_51",
@@ -1355,13 +1943,6 @@
       "targetHandle": "in-colliders"
     },
     {
-      "id": "e_53",
-      "source": "ps_wrapNext",
-      "target": "ps_wallWorld",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cond"
-    },
-    {
       "id": "e_54",
       "source": "ps_wrapWorld",
       "target": "ps_wallWorld",
@@ -1374,13 +1955,6 @@
       "target": "ps_wallWorld",
       "sourceHandle": "out-world",
       "targetHandle": "in-b"
-    },
-    {
-      "id": "e_56",
-      "source": "ps_clear",
-      "target": "ps_world",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cond"
     },
     {
       "id": "e_57",
@@ -1398,38 +1972,10 @@
     },
     {
       "id": "e_59",
-      "source": "ps_world",
+      "source": "ps_ballLook",
       "target": "ps_balls",
-      "sourceHandle": "out-selected",
+      "sourceHandle": "out-worlds",
       "targetHandle": "in-world"
-    },
-    {
-      "id": "e_60",
-      "source": "ps_spawnAt",
-      "target": "ps_balls",
-      "sourceHandle": "out-selected",
-      "targetHandle": "in-positions"
-    },
-    {
-      "id": "e_61",
-      "source": "ps_rate",
-      "target": "ps_balls",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-rate"
-    },
-    {
-      "id": "e_62",
-      "source": "ps_spawnVel",
-      "target": "ps_balls",
-      "sourceHandle": "out-selected",
-      "targetHandle": "in-initialVel"
-    },
-    {
-      "id": "e_63",
-      "source": "ps_ballCol",
-      "target": "ps_balls",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
     },
     {
       "id": "e_64",
@@ -1446,32 +1992,11 @@
       "targetHandle": "in-particles"
     },
     {
-      "id": "e_66",
-      "source": "ps_bumperX",
-      "target": "ps_bumperPos",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_67",
-      "source": "ps_bumperY",
-      "target": "ps_bumperPos",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-y"
-    },
-    {
       "id": "e_68",
       "source": "ps_bumperFill",
       "target": "ps_bumperRing",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
-    },
-    {
-      "id": "e_69",
-      "source": "ps_bumperPos",
-      "target": "ps_bumperLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-at"
     },
     {
       "id": "e_70",
@@ -1523,17 +2048,10 @@
       "targetHandle": "in-input"
     },
     {
-      "id": "e_77",
-      "source": "ps_anchorNext",
-      "target": "ps_band",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
       "id": "e_78",
-      "source": "ps_mpos",
+      "source": "ps_aimLook",
       "target": "ps_band",
-      "sourceHandle": "out-vector",
+      "sourceHandle": "out-mpos",
       "targetHandle": "in-b"
     },
     {
@@ -1542,41 +2060,6 @@
       "target": "ps_band",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_80",
-      "source": "ps_arcSteps",
-      "target": "ps_arc",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_81",
-      "source": "ps_anchorNext",
-      "target": "ps_arc",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_82",
-      "source": "ps_pull",
-      "target": "ps_arc",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_83",
-      "source": "ps_gravity",
-      "target": "ps_arc",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_84",
-      "source": "ps_arc",
-      "target": "ps_arcLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-at"
     },
     {
       "id": "e_85",
@@ -1615,7 +2098,7 @@
     },
     {
       "id": "e_90",
-      "source": "ps_mouse",
+      "source": "ps_aimLook",
       "target": "ps_aim",
       "sourceHandle": "out-pressed",
       "targetHandle": "in-cond"
@@ -1633,27 +2116,6 @@
       "target": "ps_gravName",
       "sourceHandle": "out-parts",
       "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_93",
-      "source": "ps_gravityNext",
-      "target": "ps_gravName",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-index"
-    },
-    {
-      "id": "e_94",
-      "source": "ps_wallNames",
-      "target": "ps_wallName",
-      "sourceHandle": "out-parts",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_95",
-      "source": "ps_wrapNext",
-      "target": "ps_wallName",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-index"
     },
     {
       "id": "e_96",
@@ -1699,37 +2161,37 @@
     },
     {
       "id": "e_102",
-      "source": "ps_bumperGlow",
+      "source": "ps_bumperLook",
       "target": "ps_scene",
-      "sourceHandle": "out-out",
+      "sourceHandle": "out-bumpers",
       "targetHandle": "in-s1"
     },
     {
       "id": "e_103",
-      "source": "ps_ballTrails",
+      "source": "ps_ballLook",
       "target": "ps_scene",
-      "sourceHandle": "out-layer",
+      "sourceHandle": "out-trails",
       "targetHandle": "in-s2"
     },
     {
       "id": "e_104",
-      "source": "ps_ballDots",
+      "source": "ps_ballLook",
       "target": "ps_scene",
-      "sourceHandle": "out-layer",
+      "sourceHandle": "out-balls",
       "targetHandle": "in-s3"
     },
     {
       "id": "e_105",
-      "source": "ps_aim",
+      "source": "ps_aimLook",
       "target": "ps_scene",
-      "sourceHandle": "out-selected",
+      "sourceHandle": "out-aim",
       "targetHandle": "in-s4"
     },
     {
       "id": "e_106",
-      "source": "ps_statusText",
+      "source": "ps_statusLine",
       "target": "ps_scene",
-      "sourceHandle": "out-shape",
+      "sourceHandle": "out-status",
       "targetHandle": "in-s5"
     },
     {
@@ -1738,6 +2200,734 @@
       "target": "ps_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_b1_1",
+      "source": "ps_kb",
+      "target": "ps_keyG",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_2",
+      "source": "ps_keyG",
+      "target": "ps_gravityNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-inc"
+    },
+    {
+      "id": "e_b1_3",
+      "source": "ps_kb",
+      "target": "ps_keyW",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_4",
+      "source": "ps_keyW",
+      "target": "ps_wrapNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-toggle"
+    },
+    {
+      "id": "e_b1_5",
+      "source": "ps_kb",
+      "target": "ps_keyR",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_6",
+      "source": "ps_keyR",
+      "target": "ps_rainNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-toggle"
+    },
+    {
+      "id": "e_b1_7",
+      "source": "ps_kb",
+      "target": "ps_keyC",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_8",
+      "source": "ps_keys",
+      "target": "ps_clear",
+      "sourceHandle": "out-clearBang",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_9",
+      "source": "ps_keyC",
+      "target": "ps_clear",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_10",
+      "source": "ps_gravityNext",
+      "target": "ps_fall",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_b1_11",
+      "source": "ps_fall",
+      "target": "ps_gravity",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_12",
+      "source": "ps_worlds",
+      "target": "ps_bounceWorld",
+      "sourceHandle": "out-gravity",
+      "targetHandle": "in-gravity"
+    },
+    {
+      "id": "e_b1_13",
+      "source": "ps_worlds",
+      "target": "ps_wrapWorld",
+      "sourceHandle": "out-gravity",
+      "targetHandle": "in-gravity"
+    },
+    {
+      "id": "e_b1_14",
+      "source": "ps_worlds",
+      "target": "ps_wallWorld",
+      "sourceHandle": "out-wrap",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_15",
+      "source": "ps_worlds",
+      "target": "ps_world",
+      "sourceHandle": "out-clear",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_16",
+      "source": "ps_statusLine",
+      "target": "ps_gravName",
+      "sourceHandle": "out-gravityMode",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_b1_17",
+      "source": "ps_wallNames",
+      "target": "ps_wallName",
+      "sourceHandle": "out-parts",
+      "targetHandle": "in-source"
+    },
+    {
+      "id": "e_b1_18",
+      "source": "ps_statusLine",
+      "target": "ps_wallName",
+      "sourceHandle": "out-wrap",
+      "targetHandle": "in-indices"
+    },
+    {
+      "id": "e_b1_19",
+      "source": "ps_mpos",
+      "target": "ps_sling",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-mouse"
+    },
+    {
+      "id": "e_b1_20",
+      "source": "ps_mouse",
+      "target": "ps_sling",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_b1_21",
+      "source": "ps_keys",
+      "target": "ps_sling",
+      "sourceHandle": "out-gravity",
+      "targetHandle": "in-gravity"
+    },
+    {
+      "id": "e_b1_22",
+      "source": "ps_keys",
+      "target": "ps_sling",
+      "sourceHandle": "out-rain",
+      "targetHandle": "in-rain"
+    },
+    {
+      "id": "e_b1_23",
+      "source": "ps_sling",
+      "target": "ps_press",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_b1_24",
+      "source": "ps_sling",
+      "target": "ps_release",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_b1_25",
+      "source": "ps_press",
+      "target": "ps_anchorNext",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_26",
+      "source": "ps_sling",
+      "target": "ps_anchorNext",
+      "sourceHandle": "out-mouse",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_27",
+      "source": "ps_anchor",
+      "target": "ps_anchorNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_28",
+      "source": "ps_anchorNext",
+      "target": "ps_anchorWrite",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_29",
+      "source": "ps_anchorNext",
+      "target": "ps_pullBack",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_30",
+      "source": "ps_sling",
+      "target": "ps_pullBack",
+      "sourceHandle": "out-mouse",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_31",
+      "source": "ps_pullBack",
+      "target": "ps_pull",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_32",
+      "source": "ps_frame",
+      "target": "ps_frameMod",
+      "sourceHandle": "out-frame",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_33",
+      "source": "ps_frameMod",
+      "target": "ps_halfSecond",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_34",
+      "source": "ps_sling",
+      "target": "ps_rainTick",
+      "sourceHandle": "out-rain",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_35",
+      "source": "ps_halfSecond",
+      "target": "ps_rainTick",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_36",
+      "source": "ps_frame",
+      "target": "ps_hashF",
+      "sourceHandle": "out-frame",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_37",
+      "source": "ps_hashF",
+      "target": "ps_hashSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_38",
+      "source": "ps_hashSin",
+      "target": "ps_hashScale",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_39",
+      "source": "ps_hashScale",
+      "target": "ps_hash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_40",
+      "source": "ps_hash",
+      "target": "ps_hashCentre",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_41",
+      "source": "ps_hashCentre",
+      "target": "ps_rainX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_42",
+      "source": "ps_rainX",
+      "target": "ps_rainAt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_43",
+      "source": "ps_release",
+      "target": "ps_spawnAt",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_44",
+      "source": "ps_anchorNext",
+      "target": "ps_spawnAt",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_45",
+      "source": "ps_rainAt",
+      "target": "ps_spawnAt",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_46",
+      "source": "ps_release",
+      "target": "ps_spawnVel",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_47",
+      "source": "ps_pull",
+      "target": "ps_spawnVel",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_48",
+      "source": "ps_release",
+      "target": "ps_fire",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_49",
+      "source": "ps_rainTick",
+      "target": "ps_fire",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_50",
+      "source": "ps_fire",
+      "target": "ps_rate",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_51",
+      "source": "ps_arcSteps",
+      "target": "ps_arcT",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_52",
+      "source": "ps_arcT",
+      "target": "ps_arcT2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_53",
+      "source": "ps_arcT",
+      "target": "ps_arcT2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_b1_54",
+      "source": "ps_pull",
+      "target": "ps_arcFly",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_55",
+      "source": "ps_arcT",
+      "target": "ps_arcFly",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_b1_56",
+      "source": "ps_sling",
+      "target": "ps_arcDrop",
+      "sourceHandle": "out-gravity",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_b1_57",
+      "source": "ps_arcT2",
+      "target": "ps_arcDrop",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_b1_58",
+      "source": "ps_anchorNext",
+      "target": "ps_arc",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_59",
+      "source": "ps_arcFly",
+      "target": "ps_arc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_60",
+      "source": "ps_arcDrop",
+      "target": "ps_arc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_b1_61",
+      "source": "ps_spawnAt",
+      "target": "ps_sling",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-spawnAt"
+    },
+    {
+      "id": "e_b1_62",
+      "source": "ps_spawnVel",
+      "target": "ps_sling",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-spawnVel"
+    },
+    {
+      "id": "e_b1_63",
+      "source": "ps_rate",
+      "target": "ps_sling",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_b1_64",
+      "source": "ps_anchorNext",
+      "target": "ps_sling",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-anchor"
+    },
+    {
+      "id": "e_b1_65",
+      "source": "ps_arc",
+      "target": "ps_sling",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-arc"
+    },
+    {
+      "id": "e_b1_66",
+      "source": "ps_ballLook",
+      "target": "ps_balls",
+      "sourceHandle": "out-spawnAt",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_b1_67",
+      "source": "ps_ballLook",
+      "target": "ps_balls",
+      "sourceHandle": "out-spawnVel",
+      "targetHandle": "in-initialVel"
+    },
+    {
+      "id": "e_b1_68",
+      "source": "ps_ballLook",
+      "target": "ps_balls",
+      "sourceHandle": "out-rate",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_b1_69",
+      "source": "ps_aimLook",
+      "target": "ps_band",
+      "sourceHandle": "out-anchor",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_70",
+      "source": "ps_aimLook",
+      "target": "ps_arcLoop",
+      "sourceHandle": "out-arc",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_b1_71",
+      "source": "ps_ballLook",
+      "target": "ps_hueT",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_72",
+      "source": "ps_hueT",
+      "target": "ps_hueTurn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_73",
+      "source": "ps_hueTurn",
+      "target": "ps_hue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_74",
+      "source": "ps_hue",
+      "target": "ps_ballCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_b1_75",
+      "source": "ps_ballCol",
+      "target": "ps_balls",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_b1_76",
+      "source": "ps_bumperX",
+      "target": "ps_bumperPos",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_77",
+      "source": "ps_bumperY",
+      "target": "ps_bumperPos",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_78",
+      "source": "ps_bumperPos",
+      "target": "ps_bumperLoop",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_b1_79",
+      "source": "ps_clearBang",
+      "target": "ps_keys",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-clearBang"
+    },
+    {
+      "id": "e_b1_80",
+      "source": "ps_gravity",
+      "target": "ps_keys",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-gravity"
+    },
+    {
+      "id": "e_b1_81",
+      "source": "ps_wrapNext",
+      "target": "ps_keys",
+      "sourceHandle": "out-state",
+      "targetHandle": "in-wrap"
+    },
+    {
+      "id": "e_b1_82",
+      "source": "ps_clear",
+      "target": "ps_keys",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-clear"
+    },
+    {
+      "id": "e_b1_83",
+      "source": "ps_gravityNext",
+      "target": "ps_keys",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-gravityMode"
+    },
+    {
+      "id": "e_b1_84",
+      "source": "ps_rainNext",
+      "target": "ps_keys",
+      "sourceHandle": "out-state",
+      "targetHandle": "in-rain"
+    },
+    {
+      "id": "e_b1_85",
+      "source": "ps_keys",
+      "target": "ps_worlds",
+      "sourceHandle": "out-gravity",
+      "targetHandle": "in-gravity"
+    },
+    {
+      "id": "e_b1_86",
+      "source": "ps_keys",
+      "target": "ps_worlds",
+      "sourceHandle": "out-wrap",
+      "targetHandle": "in-wrap"
+    },
+    {
+      "id": "e_b1_87",
+      "source": "ps_keys",
+      "target": "ps_worlds",
+      "sourceHandle": "out-clear",
+      "targetHandle": "in-clear"
+    },
+    {
+      "id": "e_b1_88",
+      "source": "ps_world",
+      "target": "ps_worlds",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_b1_89",
+      "source": "ps_worlds",
+      "target": "ps_ballLook",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-worlds"
+    },
+    {
+      "id": "e_b1_90",
+      "source": "ps_sling",
+      "target": "ps_ballLook",
+      "sourceHandle": "out-spawnAt",
+      "targetHandle": "in-spawnAt"
+    },
+    {
+      "id": "e_b1_91",
+      "source": "ps_sling",
+      "target": "ps_ballLook",
+      "sourceHandle": "out-spawnVel",
+      "targetHandle": "in-spawnVel"
+    },
+    {
+      "id": "e_b1_92",
+      "source": "ps_sling",
+      "target": "ps_ballLook",
+      "sourceHandle": "out-rate",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_b1_93",
+      "source": "ps_time",
+      "target": "ps_ballLook",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_b1_94",
+      "source": "ps_ballTrails",
+      "target": "ps_ballLook",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-trails"
+    },
+    {
+      "id": "e_b1_95",
+      "source": "ps_ballDots",
+      "target": "ps_ballLook",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-balls"
+    },
+    {
+      "id": "e_b1_96",
+      "source": "ps_bumperGlow",
+      "target": "ps_bumperLook",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-bumpers"
+    },
+    {
+      "id": "e_b1_97",
+      "source": "ps_mpos",
+      "target": "ps_aimLook",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-mpos"
+    },
+    {
+      "id": "e_b1_98",
+      "source": "ps_mouse",
+      "target": "ps_aimLook",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_b1_99",
+      "source": "ps_sling",
+      "target": "ps_aimLook",
+      "sourceHandle": "out-anchor",
+      "targetHandle": "in-anchor"
+    },
+    {
+      "id": "e_b1_100",
+      "source": "ps_sling",
+      "target": "ps_aimLook",
+      "sourceHandle": "out-arc",
+      "targetHandle": "in-arc"
+    },
+    {
+      "id": "e_b1_101",
+      "source": "ps_aim",
+      "target": "ps_aimLook",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-aim"
+    },
+    {
+      "id": "e_b1_102",
+      "source": "ps_keys",
+      "target": "ps_statusLine",
+      "sourceHandle": "out-gravityMode",
+      "targetHandle": "in-gravityMode"
+    },
+    {
+      "id": "e_b1_103",
+      "source": "ps_keys",
+      "target": "ps_statusLine",
+      "sourceHandle": "out-wrap",
+      "targetHandle": "in-wrap"
+    },
+    {
+      "id": "e_b1_104",
+      "source": "ps_statusText",
+      "target": "ps_statusLine",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-status"
     }
   ]
 }

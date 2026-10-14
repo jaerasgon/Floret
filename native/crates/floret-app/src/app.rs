@@ -466,6 +466,11 @@ impl App {
             Command::ExportVideo => self.recorder.open(None, None),
             Command::ExportVariations => self.variations.open(None, &self.patch),
             Command::Quit => self.request(ctx, After::Quit),
+            Command::WrapForEach => self.view.request_wrap("region/foreach"),
+            Command::WrapIf => self.view.request_wrap("region/if"),
+            Command::WrapCache => self.view.request_wrap("region/cache"),
+            Command::WrapSection => self.view.request_wrap(editor::wrap::SECTION),
+            Command::Unwrap => self.view.request_unwrap(),
             Command::ToggleNodes => self.prefs.palette_visible ^= true,
             Command::ZoomIn => self.prefs.step_scale(1),
             Command::ZoomOut => self.prefs.step_scale(-1),
@@ -775,6 +780,9 @@ impl App {
             };
             canvas::show(ui, &mut self.patch, &live, cat, &mut self.view);
         }
+        if let Some(hint) = self.view.take_hint() {
+            self.notify(hint, false);
+        }
         // Inline value edits reach the running engine without a recompile.
         let edits = self.view.take_live_edits();
         if let Some(engine) = self.engine.as_mut() {
@@ -1040,6 +1048,11 @@ impl eframe::App for App {
             .iter()
             .map(|w| (w.message.clone(), w.node_ids.clone()))
             .collect();
+        warnings.extend(
+            editor::connect::backward_wires(&self.patch, Catalogue::builtin())
+                .into_iter()
+                .map(|b| (b.message, vec![b.target])),
+        );
         warnings.extend(
             self.shader_panel
                 .warnings(&self.patch, self.preview.shader_errors())

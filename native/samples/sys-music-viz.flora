@@ -16,12 +16,12 @@
         "y": -394
       },
       "params": {
-        "text": "Generative band\n\nA self-playing trio, heard and seen. The clock is the time itself: each eighth note is one step of 30 / bpm seconds. Melody: noise walks a pentatonic scale (Lookup into a list of intervals), some steps rest, and a MonoSynth plays the rest through a Delay and a Reverb. Bass: a sawtooth on the chord of the bar (four bars round), shaped by an Envelope and a Filter. Hats: filtered noise on every step. Three Outputs sum into the speakers.\n\nThe picture uses the same numbers: the ring of 16 steps (lit: notes, dim: rests), a burst for each note coloured by its pitch, and the melody's FFT spectrum round the centre and waveform along the bottom, all through Echo trails and bloom.\n\n• Sliders: `bpm`, `density` (how few rests), `volume`.  • Toggle: major / minor.",
+        "text": "Generative band\n\nA self-playing trio, heard and seen. The clock is the time itself: each eighth note is one step, thirty seconds divided by the tempo long (the Step clock subpatch). Melody: noise walks a pentatonic scale (Degree of a step, then Lookup into a list of intervals), a random number per step decides which steps rest, and a MonoSynth plays the rest through a Delay and a Reverb. Bass: a sawtooth on the chord of the bar (a Switch, four bars round), shaped by an Envelope and a Filter. Hats: filtered noise on every step. Three Outputs sum into the speakers.\n\nThe picture uses the same numbers: the ring of 16 steps (lit: notes, dim: rests), a burst for each note coloured by its pitch, and the melody's FFT spectrum round the centre and waveform along the bottom, all through Echo trails and bloom.\n\n• Sliders: `bpm`, `density` (how few rests), `volume`.  • Toggle: major / minor.",
         "width": 560,
         "height": 330
       },
       "portValues": {
-        "text": "Generative band\n\nA self-playing trio, heard and seen. The clock is the time itself: each eighth note is one step of 30 / bpm seconds. Melody: noise walks a pentatonic scale (Lookup into a list of intervals), some steps rest, and a MonoSynth plays the rest through a Delay and a Reverb. Bass: a sawtooth on the chord of the bar (four bars round), shaped by an Envelope and a Filter. Hats: filtered noise on every step. Three Outputs sum into the speakers.\n\nThe picture uses the same numbers: the ring of 16 steps (lit: notes, dim: rests), a burst for each note coloured by its pitch, and the melody's FFT spectrum round the centre and waveform along the bottom, all through Echo trails and bloom.\n\n• Sliders: `bpm`, `density` (how few rests), `volume`.  • Toggle: major / minor.",
+        "text": "Generative band\n\nA self-playing trio, heard and seen. The clock is the time itself: each eighth note is one step, thirty seconds divided by the tempo long (the Step clock subpatch). Melody: noise walks a pentatonic scale (Degree of a step, then Lookup into a list of intervals), a random number per step decides which steps rest, and a MonoSynth plays the rest through a Delay and a Reverb. Bass: a sawtooth on the chord of the bar (a Switch, four bars round), shaped by an Envelope and a Filter. Hats: filtered noise on every step. Three Outputs sum into the speakers.\n\nThe picture uses the same numbers: the ring of 16 steps (lit: notes, dim: rests), a burst for each note coloured by its pitch, and the melody's FFT spectrum round the centre and waveform along the bottom, all through Echo trails and bloom.\n\n• Sliders: `bpm`, `density` (how few rests), `volume`.  • Toggle: major / minor.",
         "width": 560,
         "height": 330
       }
@@ -31,7 +31,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 643
+        "y": 653
       },
       "params": {
         "value": 104,
@@ -48,8 +48,8 @@
       "id": "band_density",
       "defType": "io/slider",
       "position": {
-        "x": 581,
-        "y": 1305
+        "x": 541,
+        "y": 122
       },
       "params": {
         "value": 0.7,
@@ -66,8 +66,8 @@
       "id": "band_volume",
       "defType": "io/slider",
       "position": {
-        "x": 2697,
-        "y": 268
+        "x": 2035,
+        "y": 989
       },
       "params": {
         "value": 0.35,
@@ -84,8 +84,8 @@
       "id": "band_major",
       "defType": "io/toggle",
       "position": {
-        "x": 0,
-        "y": 57
+        "x": 541,
+        "y": 265
       },
       "params": {
         "value": false
@@ -95,47 +95,11 @@
       }
     },
     {
-      "id": "band_stepLength",
-      "defType": "math/expression",
-      "position": {
-        "x": 276,
-        "y": 608
-      },
-      "params": {
-        "expr": "30 / b"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "band_step",
-      "defType": "math/expression",
-      "position": {
-        "x": 581,
-        "y": 737
-      },
-      "params": {
-        "expr": "floor(t / s)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "band_stepPhase",
-      "defType": "math/expression",
-      "position": {
-        "x": 581,
-        "y": 339
-      },
-      "params": {
-        "expr": "fract(t / s)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "band_minorScale",
       "defType": "data/csv-inline",
       "position": {
-        "x": 1,
-        "y": 299
+        "x": 566,
+        "y": 520
       },
       "params": {
         "data": "0, 3, 5, 7, 10, 12, 15, 17"
@@ -148,8 +112,8 @@
       "id": "band_majorScale",
       "defType": "data/csv-inline",
       "position": {
-        "x": 1,
-        "y": 195
+        "x": 566,
+        "y": 399
       },
       "params": {
         "data": "0, 2, 4, 7, 9, 12, 14, 16"
@@ -159,83 +123,24 @@
       }
     },
     {
-      "id": "band_scale",
-      "defType": "math/expression",
-      "position": {
-        "x": 276,
-        "y": 135
-      },
-      "params": {
-        "expr": "m ? a : b"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "band_degree",
-      "defType": "math/expression",
-      "position": {
-        "x": 1634,
-        "y": 499
-      },
-      "params": {
-        "expr": "clamp(floor((noise(n * 0.29, 2.2) - 0.22) / 0.56 * 8), 0, 7)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "band_interval",
       "defType": "spread/lookup",
       "position": {
-        "x": 2700,
-        "y": 394
+        "x": 443,
+        "y": 137
       },
       "params": {
         "op": "at"
       },
-      "portValues": {}
-    },
-    {
-      "id": "band_note",
-      "defType": "math/expression",
-      "position": {
-        "x": 2998,
-        "y": 392
-      },
-      "params": {
-        "expr": "57 + i + (fract(sin(n * 4.13) * 9631.7) < 0.15 ? 12 : 0)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "band_playsNote",
-      "defType": "math/expression",
-      "position": {
-        "x": 2697,
-        "y": 927
-      },
-      "params": {
-        "expr": "fract(sin(n * 78.233) * 43758.5453) < d"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "band_gate",
-      "defType": "math/expression",
-      "position": {
-        "x": 2998,
-        "y": 709
-      },
-      "params": {
-        "expr": "p && f < 0.55"
-      },
-      "portValues": {}
+      "portValues": {},
+      "parentId": "band_melody"
     },
     {
       "id": "band_melodySynth",
       "defType": "sound/mono-synth",
       "position": {
-        "x": 3373,
-        "y": 651
+        "x": 2058,
+        "y": 582
       },
       "params": {},
       "portValues": {
@@ -247,23 +152,11 @@
       }
     },
     {
-      "id": "band_echoTime",
-      "defType": "math/expression",
-      "position": {
-        "x": 3350,
-        "y": 1123
-      },
-      "params": {
-        "expr": "s * 3"
-      },
-      "portValues": {}
-    },
-    {
       "id": "band_melodyDelay",
       "defType": "sound/delay",
       "position": {
-        "x": 3741,
-        "y": 877
+        "x": 2342,
+        "y": 725
       },
       "params": {},
       "portValues": {
@@ -275,8 +168,8 @@
       "id": "band_melodyReverb",
       "defType": "sound/reverb",
       "position": {
-        "x": 4013,
-        "y": 744
+        "x": 2579,
+        "y": 727
       },
       "params": {
         "reverse": false
@@ -291,30 +184,18 @@
       "id": "band_melodyOut",
       "defType": "sound/output",
       "position": {
-        "x": 4330,
-        "y": 472
+        "x": 2826,
+        "y": 930
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "band_bassNote",
-      "defType": "math/expression",
-      "position": {
-        "x": 1634,
-        "y": 652
-      },
-      "params": {
-        "expr": "33 + (floor(n / 8) % 4 == 0 ? 0 : (floor(n / 8) % 4 == 1 ? -4 : (floor(n / 8) % 4 == 2 ? 5 : 7)))"
-      },
       "portValues": {}
     },
     {
       "id": "band_bassFreq",
       "defType": "sound/midi-to-freq",
       "position": {
-        "x": 2721,
-        "y": 651
+        "x": 2059,
+        "y": 835
       },
       "params": {},
       "portValues": {}
@@ -323,8 +204,8 @@
       "id": "band_bassOsc",
       "defType": "sound/oscillator",
       "position": {
-        "x": 3002,
-        "y": 873
+        "x": 2337,
+        "y": 918
       },
       "params": {
         "type": "sawtooth"
@@ -334,23 +215,11 @@
       }
     },
     {
-      "id": "band_bassGate",
-      "defType": "math/expression",
-      "position": {
-        "x": 2998,
-        "y": 567
-      },
-      "params": {
-        "expr": "fract(t / (s * 2)) < 0.8"
-      },
-      "portValues": {}
-    },
-    {
       "id": "band_bassEnvelope",
       "defType": "sound/envelope",
       "position": {
-        "x": 3380,
-        "y": 887
+        "x": 2579,
+        "y": 936
       },
       "params": {},
       "portValues": {
@@ -362,23 +231,11 @@
       }
     },
     {
-      "id": "band_bassCutoff",
-      "defType": "math/expression",
-      "position": {
-        "x": 3350,
-        "y": 159
-      },
-      "params": {
-        "expr": "300 + 500 * (0.5 + 0.5 * sin(t * 0.4))"
-      },
-      "portValues": {}
-    },
-    {
       "id": "band_bassFilter",
       "defType": "sound/filter",
       "position": {
-        "x": 3711,
-        "y": 247
+        "x": 2813,
+        "y": 1078
       },
       "params": {
         "type": "lowpass"
@@ -391,8 +248,8 @@
       "id": "band_bassOut",
       "defType": "sound/output",
       "position": {
-        "x": 4026,
-        "y": 184
+        "x": 3703,
+        "y": 1204
       },
       "params": {},
       "portValues": {}
@@ -401,8 +258,8 @@
       "id": "band_hatNoise",
       "defType": "sound/noise",
       "position": {
-        "x": 591,
-        "y": 23
+        "x": 573,
+        "y": 1016
       },
       "params": {
         "type": "white"
@@ -415,8 +272,8 @@
       "id": "band_hatFilter",
       "defType": "sound/filter",
       "position": {
-        "x": 1638,
-        "y": 1
+        "x": 1313,
+        "y": 1042
       },
       "params": {
         "type": "highpass"
@@ -427,23 +284,11 @@
       }
     },
     {
-      "id": "band_hatGate",
-      "defType": "math/expression",
-      "position": {
-        "x": 1634,
-        "y": 229
-      },
-      "params": {
-        "expr": "f < 0.08"
-      },
-      "portValues": {}
-    },
-    {
       "id": "band_hatEnvelope",
       "defType": "sound/envelope",
       "position": {
-        "x": 2727,
-        "y": 0
+        "x": 2065,
+        "y": 1132
       },
       "params": {},
       "portValues": {
@@ -458,8 +303,8 @@
       "id": "band_hatOut",
       "defType": "sound/output",
       "position": {
-        "x": 3034,
-        "y": 130
+        "x": 2351,
+        "y": 1157
       },
       "params": {},
       "portValues": {}
@@ -468,8 +313,8 @@
       "id": "band_spectrum",
       "defType": "sound/fft",
       "position": {
-        "x": 4294,
-        "y": 722
+        "x": 2814,
+        "y": 748
       },
       "params": {
         "bins": "128"
@@ -482,8 +327,8 @@
       "id": "band_ringSteps",
       "defType": "spread/range",
       "position": {
-        "x": 596,
-        "y": 1118
+        "x": 556,
+        "y": 0
       },
       "params": {
         "count": 16
@@ -496,12 +341,12 @@
       "id": "band_stepRing",
       "defType": "region/foreach",
       "position": {
-        "x": 897,
-        "y": 913
+        "x": 870,
+        "y": 82
       },
       "params": {
-        "width": 1642,
-        "height": 500,
+        "width": 1007,
+        "height": 367,
         "label": "ForEach step"
       },
       "ports": [
@@ -510,116 +355,25 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 242
+          "y": 116
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 177
+          "y": 234
         }
       ],
-      "width": 1642,
-      "height": 500
-    },
-    {
-      "id": "band_stepAt",
-      "defType": "math/expression",
-      "position": {
-        "x": 137,
-        "y": 261
-      },
-      "params": {
-        "expr": "n - n % 16 + i"
-      },
-      "parentId": "band_stepRing",
-      "portValues": {}
-    },
-    {
-      "id": "band_stepPlays",
-      "defType": "math/expression",
-      "position": {
-        "x": 419,
-        "y": 137
-      },
-      "params": {
-        "expr": "fract(sin(s * 78.233) * 43758.5453) < d"
-      },
-      "parentId": "band_stepRing",
-      "portValues": {}
-    },
-    {
-      "id": "band_stepDegree",
-      "defType": "math/expression",
-      "position": {
-        "x": 419,
-        "y": 301
-      },
-      "params": {
-        "expr": "clamp(floor((noise(s * 0.29, 2.2) - 0.22) / 0.56 * 8), 0, 7)"
-      },
-      "parentId": "band_stepRing",
-      "portValues": {}
-    },
-    {
-      "id": "band_spokeDir",
-      "defType": "math/expression",
-      "position": {
-        "x": 137,
-        "y": 40
-      },
-      "params": {
-        "expr": "vec2(cos(i / 16 * tau - pi / 2), sin(i / 16 * tau - pi / 2))"
-      },
-      "parentId": "band_stepRing",
-      "portValues": {}
-    },
-    {
-      "id": "band_spokeIn",
-      "defType": "math/expression",
-      "position": {
-        "x": 1175,
-        "y": 59
-      },
-      "params": {
-        "expr": "u * 205"
-      },
-      "parentId": "band_stepRing",
-      "portValues": {}
-    },
-    {
-      "id": "band_spokeOut",
-      "defType": "math/expression",
-      "position": {
-        "x": 706,
-        "y": 114
-      },
-      "params": {
-        "expr": "u * (205 + (p ? 12 + g * 9 : 1))"
-      },
-      "parentId": "band_stepRing",
-      "portValues": {}
-    },
-    {
-      "id": "band_spokeColour",
-      "defType": "math/expression",
-      "position": {
-        "x": 706,
-        "y": 300
-      },
-      "params": {
-        "expr": "hsl(fract(g / 8 * 0.5 + 0.55), 0.8, 0.62, s == n ? 1 : (s < n ? 0.55 : 0.22))"
-      },
-      "parentId": "band_stepRing",
-      "portValues": {}
+      "width": 1007,
+      "height": 367
     },
     {
       "id": "band_spokeStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 978,
-        "y": 309
+        "x": 365,
+        "y": 187
       },
       "params": {},
       "parentId": "band_stepRing",
@@ -631,8 +385,8 @@
       "id": "band_spokeCap",
       "defType": "style/stroke-cap",
       "position": {
-        "x": 1200,
-        "y": 236
+        "x": 587,
+        "y": 199
       },
       "params": {},
       "parentId": "band_stepRing",
@@ -644,43 +398,19 @@
       "id": "band_spoke",
       "defType": "draw/line",
       "position": {
-        "x": 1446,
-        "y": 140
+        "x": 811,
+        "y": 128
       },
       "params": {},
       "parentId": "band_stepRing",
       "portValues": {}
     },
     {
-      "id": "band_burstColour",
-      "defType": "math/expression",
-      "position": {
-        "x": 3350,
-        "y": 301
-      },
-      "params": {
-        "expr": "hsl(fract((k - 57) / 24 + 0.55), 0.85, 0.6, p ? (1 - f) : 0)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "band_burstSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 3989,
-        "y": 42
-      },
-      "params": {
-        "expr": "60 + f * 360"
-      },
-      "portValues": {}
-    },
-    {
       "id": "band_burstStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 3744,
-        "y": 417
+        "x": 2340,
+        "y": 359
       },
       "params": {},
       "portValues": {
@@ -691,8 +421,8 @@
       "id": "band_burstNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 4029,
-        "y": 370
+        "x": 2590,
+        "y": 338
       },
       "params": {},
       "portValues": {}
@@ -701,8 +431,8 @@
       "id": "band_burst",
       "defType": "draw/ellipse",
       "position": {
-        "x": 4323,
-        "y": 110
+        "x": 2812,
+        "y": 223
       },
       "params": {},
       "portValues": {
@@ -713,45 +443,21 @@
       }
     },
     {
-      "id": "band_coreColour",
-      "defType": "math/expression",
-      "position": {
-        "x": 3350,
-        "y": 498
-      },
-      "params": {
-        "expr": "hsl(fract((k - 57) / 24 + 0.55), 0.7, 0.55, 0.85)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "band_coreFill",
       "defType": "style/fill",
       "position": {
-        "x": 3748,
-        "y": 751
+        "x": 2356,
+        "y": 579
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "band_coreSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 3707,
-        "y": 587
-      },
-      "params": {
-        "expr": "40 + 26 * (g ? 1 - f : 0)"
-      },
       "portValues": {}
     },
     {
       "id": "band_core",
       "defType": "draw/ellipse",
       "position": {
-        "x": 4019,
-        "y": 552
+        "x": 2572,
+        "y": 459
       },
       "params": {},
       "portValues": {
@@ -765,12 +471,12 @@
       "id": "band_spectrumBars",
       "defType": "region/foreach",
       "position": {
-        "x": 4591,
-        "y": 400
+        "x": 3056,
+        "y": 415
       },
       "params": {
-        "width": 884,
-        "height": 338,
+        "width": 1389,
+        "height": 432,
         "label": "ForEach bin"
       },
       "ports": [
@@ -779,64 +485,25 @@
           "name": "m",
           "type": "number",
           "direction": "input",
-          "y": 280
+          "y": 304
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 176
+          "y": 337
         }
       ],
-      "width": 884,
-      "height": 338
-    },
-    {
-      "id": "band_binDir",
-      "defType": "math/expression",
-      "position": {
-        "x": 140,
-        "y": 109
-      },
-      "params": {
-        "expr": "vec2(cos(k / 128 * tau), sin(k / 128 * tau))"
-      },
-      "parentId": "band_spectrumBars",
-      "portValues": {}
-    },
-    {
-      "id": "band_binIn",
-      "defType": "math/expression",
-      "position": {
-        "x": 415,
-        "y": 40
-      },
-      "params": {
-        "expr": "u * 70"
-      },
-      "parentId": "band_spectrumBars",
-      "portValues": {}
-    },
-    {
-      "id": "band_binOut",
-      "defType": "math/expression",
-      "position": {
-        "x": 415,
-        "y": 182
-      },
-      "params": {
-        "expr": "u * (72 + m * 0.55)"
-      },
-      "parentId": "band_spectrumBars",
-      "portValues": {}
+      "width": 1389,
+      "height": 432
     },
     {
       "id": "band_spectrumStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 4304,
-        "y": 302
+        "x": 2809,
+        "y": 511
       },
       "params": {},
       "portValues": {
@@ -853,31 +520,19 @@
       "id": "band_binBar",
       "defType": "draw/line",
       "position": {
-        "x": 688,
-        "y": 138
+        "x": 1193,
+        "y": 231
       },
       "params": {},
       "parentId": "band_spectrumBars",
       "portValues": {}
     },
     {
-      "id": "band_wavePoints",
-      "defType": "math/expression",
-      "position": {
-        "x": 4949,
-        "y": 786
-      },
-      "params": {
-        "expr": "vec2(-300 + index / count * 600, 285 + w * 30)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "band_waveStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 4960,
-        "y": 928
+        "x": 3686,
+        "y": 1016
       },
       "params": {},
       "portValues": {
@@ -894,8 +549,8 @@
       "id": "band_wave",
       "defType": "draw/polygon",
       "position": {
-        "x": 5626,
-        "y": 827
+        "x": 4614,
+        "y": 916
       },
       "params": {},
       "portValues": {
@@ -906,8 +561,8 @@
       "id": "band_glowing",
       "defType": "transform/group",
       "position": {
-        "x": 5593,
-        "y": 350
+        "x": 4581,
+        "y": 405
       },
       "params": {
         "slotCount": 3
@@ -918,8 +573,8 @@
       "id": "band_trails",
       "defType": "gpu/echo",
       "position": {
-        "x": 5889,
-        "y": 519
+        "x": 4866,
+        "y": 565
       },
       "params": {
         "mode": "trails"
@@ -932,8 +587,8 @@
       "id": "band_scene",
       "defType": "transform/group",
       "position": {
-        "x": 6186,
-        "y": 733
+        "x": 5116,
+        "y": 814
       },
       "params": {
         "slotCount": 3
@@ -944,8 +599,8 @@
       "id": "band_bloom",
       "defType": "gpu/effect",
       "position": {
-        "x": 6451,
-        "y": 703
+        "x": 5381,
+        "y": 857
       },
       "params": {
         "mode": "bloom"
@@ -960,8 +615,8 @@
       "id": "band_chromatic",
       "defType": "gpu/effect",
       "position": {
-        "x": 6717,
-        "y": 674
+        "x": 5611,
+        "y": 944
       },
       "params": {
         "mode": "chromatic"
@@ -974,8 +629,8 @@
       "id": "band_r",
       "defType": "render/renderer",
       "position": {
-        "x": 6983,
-        "y": 671
+        "x": 5842,
+        "y": 1011
       },
       "params": {
         "width": 640,
@@ -997,694 +652,3732 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "band_stepLength",
+      "defType": "math/math",
+      "position": {
+        "x": 264,
+        "y": 656
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 30
+      }
+    },
+    {
+      "id": "band_clock",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 543,
+        "y": 642
+      },
+      "params": {
+        "label": "Step clock",
+        "width": 810,
+        "height": 322
+      },
+      "ports": [
+        {
+          "id": "s",
+          "name": "step length",
+          "type": "number",
+          "direction": "input",
+          "y": 155
+        },
+        {
+          "id": "step",
+          "name": "step",
+          "type": "number",
+          "direction": "output",
+          "y": 124
+        },
+        {
+          "id": "phase",
+          "name": "phase",
+          "type": "number",
+          "direction": "output",
+          "y": 268
+        }
+      ],
+      "width": 810,
+      "height": 322
+    },
+    {
+      "id": "band_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 128,
+        "y": 66
+      },
+      "params": {},
+      "parentId": "band_clock"
+    },
+    {
+      "id": "band_steps",
+      "defType": "math/math",
+      "position": {
+        "x": 311,
+        "y": 65
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "band_clock"
+    },
+    {
+      "id": "band_step",
+      "defType": "math/math",
+      "position": {
+        "x": 586,
+        "y": 40
+      },
+      "params": {
+        "op": "floor",
+        "valueType": "number"
+      },
+      "parentId": "band_clock"
+    },
+    {
+      "id": "band_stepPhase",
+      "defType": "math/math",
+      "position": {
+        "x": 586,
+        "y": 184
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "band_clock"
+    },
+    {
+      "id": "band_scale",
+      "defType": "logic/select",
+      "position": {
+        "x": 194,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_degree",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 140,
+        "y": 206
+      },
+      "params": {
+        "label": "Degree of a step",
+        "width": 1840,
+        "height": 554
+      },
+      "ports": [
+        {
+          "id": "n",
+          "name": "step",
+          "type": "number",
+          "direction": "input",
+          "y": 118
+        },
+        {
+          "id": "degree",
+          "name": "degree",
+          "type": "number",
+          "direction": "output",
+          "y": 498
+        }
+      ],
+      "width": 1840,
+      "height": 554,
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_multiply",
+      "defType": "math/math",
+      "position": {
+        "x": 129,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_degree",
+      "portValues": {
+        "b": 0.29
+      }
+    },
+    {
+      "id": "band_degreeWalk",
+      "defType": "noise/noise",
+      "position": {
+        "x": 396,
+        "y": 47
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "band_degree",
+      "portValues": {
+        "y": 2.2
+      }
+    },
+    {
+      "id": "band_subtract",
+      "defType": "math/math",
+      "position": {
+        "x": 628,
+        "y": 252
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "band_degree",
+      "portValues": {
+        "b": 0.22
+      }
+    },
+    {
+      "id": "band_divide",
+      "defType": "math/math",
+      "position": {
+        "x": 894,
+        "y": 284
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "band_degree",
+      "portValues": {
+        "b": 0.56
+      }
+    },
+    {
+      "id": "band_multiply2",
+      "defType": "math/math",
+      "position": {
+        "x": 1160,
+        "y": 318
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_degree",
+      "portValues": {
+        "b": 8
+      }
+    },
+    {
+      "id": "band_degreeFloor",
+      "defType": "math/math",
+      "position": {
+        "x": 1426,
+        "y": 355
+      },
+      "params": {
+        "op": "floor",
+        "valueType": "number"
+      },
+      "parentId": "band_degree"
+    },
+    {
+      "id": "band_degreeClamp",
+      "defType": "math/clamp",
+      "position": {
+        "x": 1635,
+        "y": 396
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "band_degree",
+      "portValues": {
+        "min": 0,
+        "max": 7
+      }
+    },
+    {
+      "id": "band_multiply3",
+      "defType": "math/math",
+      "position": {
+        "x": 156,
+        "y": 327
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 4.13
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_leapSin",
+      "defType": "math/math",
+      "position": {
+        "x": 449,
+        "y": 331
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_multiply4",
+      "defType": "math/math",
+      "position": {
+        "x": 670,
+        "y": 315
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 9631.7
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_leapHash",
+      "defType": "math/math",
+      "position": {
+        "x": 939,
+        "y": 324
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_octaveLeap",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1152,
+        "y": 314
+      },
+      "params": {
+        "op": "less"
+      },
+      "portValues": {
+        "b": 0.15
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_add",
+      "defType": "math/math",
+      "position": {
+        "x": 1397,
+        "y": 186
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 57
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_octaveUp",
+      "defType": "logic/select",
+      "position": {
+        "x": 1435,
+        "y": 351
+      },
+      "params": {},
+      "portValues": {
+        "a": 12,
+        "b": 0
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_add2",
+      "defType": "math/math",
+      "position": {
+        "x": 1673,
+        "y": 302
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_multiply5",
+      "defType": "math/math",
+      "position": {
+        "x": 156,
+        "y": 493
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 78.233
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_playsNoteSin",
+      "defType": "math/math",
+      "position": {
+        "x": 449,
+        "y": 496
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_multiply6",
+      "defType": "math/math",
+      "position": {
+        "x": 670,
+        "y": 480
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 43758.5453
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_playsNoteHash",
+      "defType": "math/math",
+      "position": {
+        "x": 939,
+        "y": 496
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_playsNote",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1152,
+        "y": 517
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_held",
+      "defType": "logic/compare",
+      "position": {
+        "x": 169,
+        "y": 658
+      },
+      "params": {
+        "op": "less"
+      },
+      "portValues": {
+        "b": 0.55
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_gate",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1439,
+        "y": 611
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_echoTime",
+      "defType": "math/math",
+      "position": {
+        "x": 156,
+        "y": 824
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 3
+      },
+      "parentId": "band_melody"
+    },
+    {
+      "id": "band_divide2",
+      "defType": "math/math",
+      "position": {
+        "x": 132,
+        "y": 89
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 8
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_bar",
+      "defType": "math/math",
+      "position": {
+        "x": 442,
+        "y": 77
+      },
+      "params": {
+        "op": "floor",
+        "valueType": "number"
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_barOfFour",
+      "defType": "math/math",
+      "position": {
+        "x": 686,
+        "y": 47
+      },
+      "params": {
+        "op": "mod",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 4
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_chord",
+      "defType": "logic/switch",
+      "position": {
+        "x": 902,
+        "y": 40
+      },
+      "params": {
+        "mode": "index",
+        "slotCount": 4,
+        "range": "clamp"
+      },
+      "portValues": {
+        "v0": 0,
+        "v1": -4,
+        "v2": 5,
+        "v3": 7
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_add3",
+      "defType": "math/math",
+      "position": {
+        "x": 1168,
+        "y": 146
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 33
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_time2",
+      "defType": "time/seconds",
+      "position": {
+        "x": 174,
+        "y": 290
+      },
+      "params": {},
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_multiply7",
+      "defType": "math/math",
+      "position": {
+        "x": 132,
+        "y": 403
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 2
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_divide3",
+      "defType": "math/math",
+      "position": {
+        "x": 414,
+        "y": 386
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_twoStepPhase",
+      "defType": "math/math",
+      "position": {
+        "x": 686,
+        "y": 441
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_bassGate",
+      "defType": "logic/compare",
+      "position": {
+        "x": 915,
+        "y": 476
+      },
+      "params": {
+        "op": "less"
+      },
+      "portValues": {
+        "b": 0.8
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_multiply8",
+      "defType": "math/math",
+      "position": {
+        "x": 414,
+        "y": 220
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.4
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_cutoffSwing",
+      "defType": "math/math",
+      "position": {
+        "x": 686,
+        "y": 287
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_multiply9",
+      "defType": "math/math",
+      "position": {
+        "x": 902,
+        "y": 310
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 0.5
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_add4",
+      "defType": "math/math",
+      "position": {
+        "x": 1168,
+        "y": 331
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 0.5
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_multiply10",
+      "defType": "math/math",
+      "position": {
+        "x": 1432,
+        "y": 352
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 500
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_add5",
+      "defType": "math/math",
+      "position": {
+        "x": 1697,
+        "y": 375
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 300
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_hatGate",
+      "defType": "logic/compare",
+      "position": {
+        "x": 145,
+        "y": 569
+      },
+      "params": {
+        "op": "less"
+      },
+      "portValues": {
+        "b": 0.08
+      },
+      "parentId": "band_bass"
+    },
+    {
+      "id": "band_barStart",
+      "defType": "math/math",
+      "position": {
+        "x": 163,
+        "y": 296
+      },
+      "params": {
+        "op": "mod",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 16
+      }
+    },
+    {
+      "id": "band_subtract2",
+      "defType": "math/math",
+      "position": {
+        "x": 409,
+        "y": 256
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules"
+    },
+    {
+      "id": "band_add6",
+      "defType": "math/math",
+      "position": {
+        "x": 682,
+        "y": 274
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules"
+    },
+    {
+      "id": "band_multiply11",
+      "defType": "math/math",
+      "position": {
+        "x": 1004,
+        "y": 493
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 78.233
+      }
+    },
+    {
+      "id": "band_stepPlaysSin",
+      "defType": "math/math",
+      "position": {
+        "x": 1330,
+        "y": 519
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules"
+    },
+    {
+      "id": "band_multiply12",
+      "defType": "math/math",
+      "position": {
+        "x": 1578,
+        "y": 523
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 43758.5453
+      }
+    },
+    {
+      "id": "band_stepPlaysHash",
+      "defType": "math/math",
+      "position": {
+        "x": 1882,
+        "y": 653
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules"
+    },
+    {
+      "id": "band_stepPlays",
+      "defType": "logic/compare",
+      "position": {
+        "x": 2141,
+        "y": 611
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "band_stepRules"
+    },
+    {
+      "id": "band_stepDegree",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 988,
+        "y": 371
+      },
+      "params": {
+        "label": "Degree of a step",
+        "width": 1840,
+        "height": 554
+      },
+      "parentId": "band_stepRules",
+      "ports": [
+        {
+          "id": "n",
+          "name": "step",
+          "type": "number",
+          "direction": "input",
+          "y": 118
+        },
+        {
+          "id": "degree",
+          "name": "degree",
+          "type": "number",
+          "direction": "output",
+          "y": 498
+        }
+      ],
+      "width": 1840,
+      "height": 554
+    },
+    {
+      "id": "band_multiply13",
+      "defType": "math/math",
+      "position": {
+        "x": 129,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_stepDegree",
+      "portValues": {
+        "b": 0.29
+      }
+    },
+    {
+      "id": "band_stepDegreeWalk",
+      "defType": "noise/noise",
+      "position": {
+        "x": 396,
+        "y": 47
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "band_stepDegree",
+      "portValues": {
+        "y": 2.2
+      }
+    },
+    {
+      "id": "band_subtract3",
+      "defType": "math/math",
+      "position": {
+        "x": 628,
+        "y": 252
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "band_stepDegree",
+      "portValues": {
+        "b": 0.22
+      }
+    },
+    {
+      "id": "band_divide4",
+      "defType": "math/math",
+      "position": {
+        "x": 894,
+        "y": 284
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "band_stepDegree",
+      "portValues": {
+        "b": 0.56
+      }
+    },
+    {
+      "id": "band_multiply14",
+      "defType": "math/math",
+      "position": {
+        "x": 1160,
+        "y": 318
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_stepDegree",
+      "portValues": {
+        "b": 8
+      }
+    },
+    {
+      "id": "band_stepDegreeFloor",
+      "defType": "math/math",
+      "position": {
+        "x": 1426,
+        "y": 355
+      },
+      "params": {
+        "op": "floor",
+        "valueType": "number"
+      },
+      "parentId": "band_stepDegree"
+    },
+    {
+      "id": "band_stepDegreeClamp",
+      "defType": "math/clamp",
+      "position": {
+        "x": 1635,
+        "y": 396
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "band_stepDegree",
+      "portValues": {
+        "min": 0,
+        "max": 7
+      }
+    },
+    {
+      "id": "band_divide5",
+      "defType": "math/math",
+      "position": {
+        "x": 135,
+        "y": 507
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 16
+      }
+    },
+    {
+      "id": "band_multiply15",
+      "defType": "math/math",
+      "position": {
+        "x": 409,
+        "y": 558
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 6.283185307179586
+      }
+    },
+    {
+      "id": "band_subtract4",
+      "defType": "math/math",
+      "position": {
+        "x": 682,
+        "y": 609
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 1.5707963267948966
+      }
+    },
+    {
+      "id": "band_spokeDir",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 1029,
+        "y": 683
+      },
+      "params": {},
+      "parentId": "band_stepRules",
+      "portValues": {
+        "mag": 1
+      }
+    },
+    {
+      "id": "band_spokeIn",
+      "defType": "vec2/math",
+      "position": {
+        "x": 1315,
+        "y": 765
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "s": 205
+      }
+    },
+    {
+      "id": "band_multiply16",
+      "defType": "math/math",
+      "position": {
+        "x": 1854,
+        "y": 444
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 9
+      }
+    },
+    {
+      "id": "band_add7",
+      "defType": "math/math",
+      "position": {
+        "x": 2128,
+        "y": 445
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "a": 12
+      }
+    },
+    {
+      "id": "band_spokeReach",
+      "defType": "logic/select",
+      "position": {
+        "x": 2445,
+        "y": 587
+      },
+      "params": {},
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "band_add8",
+      "defType": "math/math",
+      "position": {
+        "x": 2688,
+        "y": 615
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "a": 205
+      }
+    },
+    {
+      "id": "band_spokeOut",
+      "defType": "vec2/math",
+      "position": {
+        "x": 2958,
+        "y": 677
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "band_stepRules"
+    },
+    {
+      "id": "band_divide6",
+      "defType": "math/math",
+      "position": {
+        "x": 1302,
+        "y": 336
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 8
+      }
+    },
+    {
+      "id": "band_multiply17",
+      "defType": "math/math",
+      "position": {
+        "x": 1578,
+        "y": 308
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "band_add9",
+      "defType": "math/math",
+      "position": {
+        "x": 1854,
+        "y": 279
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 0.55
+      }
+    },
+    {
+      "id": "band_spokeHue",
+      "defType": "math/math",
+      "position": {
+        "x": 2156,
+        "y": 302
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules"
+    },
+    {
+      "id": "band_isNow",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1017,
+        "y": 40
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "band_stepRules"
+    },
+    {
+      "id": "band_isPast",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1017,
+        "y": 206
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "band_stepRules"
+    },
+    {
+      "id": "band_spokeAlpha",
+      "defType": "logic/switch",
+      "position": {
+        "x": 1302,
+        "y": 66
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 2
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "v0": 1,
+        "v1": 0.55,
+        "else": 0.22
+      }
+    },
+    {
+      "id": "band_multiply18",
+      "defType": "math/math",
+      "position": {
+        "x": 2407,
+        "y": 337
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 360
+      }
+    },
+    {
+      "id": "band_multiply19",
+      "defType": "math/math",
+      "position": {
+        "x": 2407,
+        "y": 171
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "b": 255
+      }
+    },
+    {
+      "id": "band_spokeColour",
+      "defType": "color/color",
+      "position": {
+        "x": 2723,
+        "y": 267
+      },
+      "params": {
+        "mode": "hsl"
+      },
+      "parentId": "band_stepRules",
+      "portValues": {
+        "s": 80.0,
+        "l": 62.0
+      }
+    },
+    {
+      "id": "band_subtract5",
+      "defType": "math/math",
+      "position": {
+        "x": 141,
+        "y": 86
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 57
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_divide7",
+      "defType": "math/math",
+      "position": {
+        "x": 415,
+        "y": 96
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 24
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_add10",
+      "defType": "math/math",
+      "position": {
+        "x": 684,
+        "y": 106
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.55
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_pitchHue",
+      "defType": "math/math",
+      "position": {
+        "x": 982,
+        "y": 116
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_subtract6",
+      "defType": "math/math",
+      "position": {
+        "x": 141,
+        "y": 290
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_burstFade",
+      "defType": "logic/select",
+      "position": {
+        "x": 453,
+        "y": 273
+      },
+      "params": {},
+      "portValues": {
+        "b": 0
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_multiply20",
+      "defType": "math/math",
+      "position": {
+        "x": 1233,
+        "y": 206
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 360
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_multiply21",
+      "defType": "math/math",
+      "position": {
+        "x": 1233,
+        "y": 371
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 255
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_burstColour",
+      "defType": "color/color",
+      "position": {
+        "x": 1504,
+        "y": 302
+      },
+      "params": {
+        "mode": "hsl"
+      },
+      "portValues": {
+        "s": 85.0,
+        "l": 60.0
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_multiply22",
+      "defType": "math/math",
+      "position": {
+        "x": 1233,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 360
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_coreColour",
+      "defType": "color/color",
+      "position": {
+        "x": 1504,
+        "y": 87
+      },
+      "params": {
+        "mode": "hsl"
+      },
+      "portValues": {
+        "s": 70.0,
+        "l": 55.00000000000001,
+        "a": 216.75
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_multiply23",
+      "defType": "math/math",
+      "position": {
+        "x": 141,
+        "y": 455
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 360
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_add11",
+      "defType": "math/math",
+      "position": {
+        "x": 415,
+        "y": 439
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 60
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_subtract7",
+      "defType": "math/math",
+      "position": {
+        "x": 141,
+        "y": 621
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_corePulse",
+      "defType": "logic/select",
+      "position": {
+        "x": 453,
+        "y": 604
+      },
+      "params": {},
+      "portValues": {
+        "b": 0
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_multiply24",
+      "defType": "math/math",
+      "position": {
+        "x": 684,
+        "y": 615
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 26
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_add12",
+      "defType": "math/math",
+      "position": {
+        "x": 954,
+        "y": 626
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 40
+      },
+      "parentId": "band_flash"
+    },
+    {
+      "id": "band_divide8",
+      "defType": "math/math",
+      "position": {
+        "x": 133,
+        "y": 40
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "band_spectrumBars",
+      "portValues": {
+        "b": 128
+      }
+    },
+    {
+      "id": "band_multiply25",
+      "defType": "math/math",
+      "position": {
+        "x": 399,
+        "y": 74
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_spectrumBars",
+      "portValues": {
+        "b": 6.283185307179586
+      }
+    },
+    {
+      "id": "band_binDir",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 690,
+        "y": 130
+      },
+      "params": {},
+      "parentId": "band_spectrumBars",
+      "portValues": {
+        "mag": 1
+      }
+    },
+    {
+      "id": "band_binIn",
+      "defType": "vec2/math",
+      "position": {
+        "x": 944,
+        "y": 91
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "band_spectrumBars",
+      "portValues": {
+        "s": 70
+      }
+    },
+    {
+      "id": "band_multiply26",
+      "defType": "math/math",
+      "position": {
+        "x": 133,
+        "y": 245
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_spectrumBars",
+      "portValues": {
+        "b": 0.55
+      }
+    },
+    {
+      "id": "band_add13",
+      "defType": "math/math",
+      "position": {
+        "x": 665,
+        "y": 274
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "band_spectrumBars",
+      "portValues": {
+        "a": 72
+      }
+    },
+    {
+      "id": "band_binOut",
+      "defType": "vec2/math",
+      "position": {
+        "x": 944,
+        "y": 257
+      },
+      "params": {
+        "op": "scale"
+      },
+      "parentId": "band_spectrumBars"
+    },
+    {
+      "id": "band_waveLine",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 3657,
+        "y": 895
+      },
+      "params": {
+        "label": "Waveform line",
+        "width": 1880,
+        "height": 388
+      },
+      "ports": [
+        {
+          "id": "w",
+          "name": "waveform",
+          "type": "number",
+          "direction": "input",
+          "y": 185
+        },
+        {
+          "id": "points",
+          "name": "points",
+          "type": "vec2",
+          "direction": "output",
+          "y": 286
+        }
+      ],
+      "width": 1880,
+      "height": 388
+    },
+    {
+      "id": "band_waveCount",
+      "defType": "spread/count",
+      "position": {
+        "x": 149,
+        "y": 77
+      },
+      "params": {},
+      "parentId": "band_waveLine"
+    },
+    {
+      "id": "band_waveIndex",
+      "defType": "spread/range",
+      "position": {
+        "x": 407,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "band_waveLine"
+    },
+    {
+      "id": "band_divide9",
+      "defType": "math/math",
+      "position": {
+        "x": 643,
+        "y": 41
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "band_waveLine"
+    },
+    {
+      "id": "band_multiply27",
+      "defType": "math/math",
+      "position": {
+        "x": 912,
+        "y": 57
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_waveLine",
+      "portValues": {
+        "b": 600
+      }
+    },
+    {
+      "id": "band_add14",
+      "defType": "math/math",
+      "position": {
+        "x": 1178,
+        "y": 64
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "band_waveLine",
+      "portValues": {
+        "a": -300
+      }
+    },
+    {
+      "id": "band_multiply28",
+      "defType": "math/math",
+      "position": {
+        "x": 133,
+        "y": 198
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "band_waveLine",
+      "portValues": {
+        "b": 30
+      }
+    },
+    {
+      "id": "band_add15",
+      "defType": "math/math",
+      "position": {
+        "x": 1178,
+        "y": 230
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "band_waveLine",
+      "portValues": {
+        "a": 285
+      }
+    },
+    {
+      "id": "band_wavePoint",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1462,
+        "y": 146
+      },
+      "params": {},
+      "parentId": "band_waveLine"
+    },
+    {
+      "id": "band_wavePoints",
+      "defType": "spread/sublist",
+      "position": {
+        "x": 1644,
+        "y": 180
+      },
+      "params": {
+        "op": "take"
+      },
+      "parentId": "band_waveLine"
+    },
+    {
+      "id": "band_melody",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1301,
+        "y": 497
+      },
+      "params": {
+        "label": "Melody",
+        "width": 1953,
+        "height": 982
+      },
+      "ports": [
+        {
+          "id": "major",
+          "name": "major",
+          "type": "boolean",
+          "direction": "input",
+          "y": 152
+        },
+        {
+          "id": "values",
+          "name": "values",
+          "type": "number",
+          "direction": "input",
+          "y": 172
+        },
+        {
+          "id": "values2",
+          "name": "values2",
+          "type": "number",
+          "direction": "input",
+          "y": 192
+        },
+        {
+          "id": "step",
+          "name": "step",
+          "type": "number",
+          "direction": "input",
+          "y": 393
+        },
+        {
+          "id": "density",
+          "name": "density",
+          "type": "number",
+          "direction": "input",
+          "y": 634
+        },
+        {
+          "id": "phase",
+          "name": "phase",
+          "type": "number",
+          "direction": "input",
+          "y": 717
+        },
+        {
+          "id": "stepLength",
+          "name": "step length",
+          "type": "number",
+          "direction": "input",
+          "y": 883
+        },
+        {
+          "id": "add2",
+          "name": "add2",
+          "type": "number",
+          "direction": "output",
+          "y": 406
+        },
+        {
+          "id": "gate",
+          "name": "gate",
+          "type": "boolean",
+          "direction": "output",
+          "y": 706
+        },
+        {
+          "id": "echoTime",
+          "name": "echo time",
+          "type": "number",
+          "direction": "output",
+          "y": 804
+        },
+        {
+          "id": "playsNote",
+          "name": "plays note",
+          "type": "boolean",
+          "direction": "output",
+          "y": 576
+        }
+      ],
+      "width": 1953,
+      "height": 982
+    },
+    {
+      "id": "band_bass",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1282,
+        "y": 800
+      },
+      "params": {
+        "label": "Bass and hats",
+        "width": 1977,
+        "height": 727
+      },
+      "ports": [
+        {
+          "id": "step",
+          "name": "step",
+          "type": "number",
+          "direction": "input",
+          "y": 207
+        },
+        {
+          "id": "stepLength",
+          "name": "step length",
+          "type": "number",
+          "direction": "input",
+          "y": 462
+        },
+        {
+          "id": "phase",
+          "name": "phase",
+          "type": "number",
+          "direction": "input",
+          "y": 628
+        },
+        {
+          "id": "add3",
+          "name": "add3",
+          "type": "number",
+          "direction": "output",
+          "y": 246
+        },
+        {
+          "id": "bassGate",
+          "name": "bass gate",
+          "type": "boolean",
+          "direction": "output",
+          "y": 569
+        },
+        {
+          "id": "add5",
+          "name": "add5",
+          "type": "number",
+          "direction": "output",
+          "y": 480
+        },
+        {
+          "id": "hatGate",
+          "name": "hat gate",
+          "type": "boolean",
+          "direction": "output",
+          "y": 628
+        }
+      ],
+      "width": 1977,
+      "height": 727
+    },
+    {
+      "id": "band_stepRules",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 129,
+        "y": 40
+      },
+      "params": {
+        "label": "Step",
+        "width": 3212,
+        "height": 923
+      },
+      "ports": [
+        {
+          "id": "step",
+          "name": "step",
+          "type": "number",
+          "direction": "input",
+          "y": 264
+        },
+        {
+          "id": "i",
+          "name": "i",
+          "type": "number",
+          "direction": "input",
+          "y": 511
+        },
+        {
+          "id": "density",
+          "name": "density",
+          "type": "number",
+          "direction": "input",
+          "y": 451
+        },
+        {
+          "id": "spokeColour",
+          "name": "colour",
+          "type": "color",
+          "direction": "output",
+          "y": 415
+        },
+        {
+          "id": "spokeIn",
+          "name": "inner end",
+          "type": "vec2",
+          "direction": "output",
+          "y": 823
+        },
+        {
+          "id": "spokeOut",
+          "name": "outer end",
+          "type": "vec2",
+          "direction": "output",
+          "y": 783
+        }
+      ],
+      "width": 3212,
+      "height": 923,
+      "parentId": "band_stepRing"
+    },
+    {
+      "id": "band_flash",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 2025,
+        "y": 345
+      },
+      "params": {
+        "label": "Burst and core",
+        "width": 1714,
+        "height": 784
+      },
+      "ports": [
+        {
+          "id": "add2",
+          "name": "add2",
+          "type": "number",
+          "direction": "input",
+          "y": 183
+        },
+        {
+          "id": "phase",
+          "name": "phase",
+          "type": "number",
+          "direction": "input",
+          "y": 529
+        },
+        {
+          "id": "playsNote",
+          "name": "plays note",
+          "type": "boolean",
+          "direction": "input",
+          "y": 266
+        },
+        {
+          "id": "gate",
+          "name": "gate",
+          "type": "boolean",
+          "direction": "input",
+          "y": 597
+        },
+        {
+          "id": "burstColour",
+          "name": "burst colour",
+          "type": "color",
+          "direction": "output",
+          "y": 452
+        },
+        {
+          "id": "add11",
+          "name": "add11",
+          "type": "number",
+          "direction": "output",
+          "y": 536
+        },
+        {
+          "id": "coreColour",
+          "name": "core colour",
+          "type": "color",
+          "direction": "output",
+          "y": 237
+        },
+        {
+          "id": "add12",
+          "name": "add12",
+          "type": "number",
+          "direction": "output",
+          "y": 720
+        }
+      ],
+      "width": 1714,
+      "height": 784
     }
   ],
   "edges": [
     {
       "id": "e_1",
-      "source": "band_bpm",
-      "target": "band_stepLength",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_2",
-      "source": "band_stepLength",
-      "target": "band_step",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_3",
-      "source": "band_stepLength",
-      "target": "band_stepPhase",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_4",
-      "source": "band_major",
-      "target": "band_scale",
-      "sourceHandle": "out-bool",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_5",
-      "source": "band_majorScale",
-      "target": "band_scale",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_6",
-      "source": "band_minorScale",
-      "target": "band_scale",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_7",
-      "source": "band_step",
-      "target": "band_degree",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_8",
       "source": "band_scale",
       "target": "band_interval",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-selected",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_9",
+      "id": "e_2",
       "source": "band_degree",
       "target": "band_interval",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-degree",
       "targetHandle": "in-index"
     },
     {
-      "id": "e_10",
-      "source": "band_interval",
-      "target": "band_note",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_11",
-      "source": "band_step",
-      "target": "band_note",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_12",
-      "source": "band_step",
-      "target": "band_playsNote",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_13",
-      "source": "band_density",
-      "target": "band_playsNote",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_14",
-      "source": "band_playsNote",
-      "target": "band_gate",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_15",
-      "source": "band_stepPhase",
-      "target": "band_gate",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_16",
-      "source": "band_note",
+      "id": "e_3",
+      "source": "band_melody",
       "target": "band_melodySynth",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-add2",
       "targetHandle": "in-note"
     },
     {
-      "id": "e_17",
-      "source": "band_gate",
+      "id": "e_4",
+      "source": "band_melody",
       "target": "band_melodySynth",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-gate",
       "targetHandle": "in-trigger"
     },
     {
-      "id": "e_18",
-      "source": "band_stepLength",
-      "target": "band_echoTime",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_19",
+      "id": "e_5",
       "source": "band_melodySynth",
       "target": "band_melodyDelay",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_20",
-      "source": "band_echoTime",
+      "id": "e_6",
+      "source": "band_melody",
       "target": "band_melodyDelay",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-echoTime",
       "targetHandle": "in-time"
     },
     {
-      "id": "e_21",
+      "id": "e_7",
       "source": "band_melodyDelay",
       "target": "band_melodyReverb",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_22",
+      "id": "e_8",
       "source": "band_melodyReverb",
       "target": "band_melodyOut",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_23",
+      "id": "e_9",
       "source": "band_volume",
       "target": "band_melodyOut",
       "sourceHandle": "out-number",
       "targetHandle": "in-volume"
     },
     {
-      "id": "e_24",
-      "source": "band_step",
-      "target": "band_bassNote",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_25",
-      "source": "band_bassNote",
+      "id": "e_10",
+      "source": "band_bass",
       "target": "band_bassFreq",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-add3",
       "targetHandle": "in-midi"
     },
     {
-      "id": "e_26",
+      "id": "e_11",
       "source": "band_bassFreq",
       "target": "band_bassOsc",
       "sourceHandle": "out-freq",
       "targetHandle": "in-freq"
     },
     {
-      "id": "e_27",
-      "source": "band_stepLength",
-      "target": "band_bassGate",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_28",
+      "id": "e_12",
       "source": "band_bassOsc",
       "target": "band_bassEnvelope",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_29",
-      "source": "band_bassGate",
+      "id": "e_13",
+      "source": "band_bass",
       "target": "band_bassEnvelope",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-bassGate",
       "targetHandle": "in-trigger"
     },
     {
-      "id": "e_30",
+      "id": "e_14",
       "source": "band_bassEnvelope",
       "target": "band_bassFilter",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_31",
-      "source": "band_bassCutoff",
+      "id": "e_15",
+      "source": "band_bass",
       "target": "band_bassFilter",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-add5",
       "targetHandle": "in-freq"
     },
     {
-      "id": "e_32",
+      "id": "e_16",
       "source": "band_bassFilter",
       "target": "band_bassOut",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_33",
+      "id": "e_17",
       "source": "band_volume",
       "target": "band_bassOut",
       "sourceHandle": "out-number",
       "targetHandle": "in-volume"
     },
     {
-      "id": "e_34",
+      "id": "e_18",
       "source": "band_hatNoise",
       "target": "band_hatFilter",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_35",
-      "source": "band_stepPhase",
-      "target": "band_hatGate",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_36",
+      "id": "e_19",
       "source": "band_hatFilter",
       "target": "band_hatEnvelope",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_37",
-      "source": "band_hatGate",
+      "id": "e_20",
+      "source": "band_bass",
       "target": "band_hatEnvelope",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-hatGate",
       "targetHandle": "in-trigger"
     },
     {
-      "id": "e_38",
+      "id": "e_21",
       "source": "band_hatEnvelope",
       "target": "band_hatOut",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_39",
+      "id": "e_22",
       "source": "band_volume",
       "target": "band_hatOut",
       "sourceHandle": "out-number",
       "targetHandle": "in-volume"
     },
     {
-      "id": "e_40",
+      "id": "e_23",
       "source": "band_melodyReverb",
       "target": "band_spectrum",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
     },
     {
-      "id": "e_41",
+      "id": "e_24",
       "source": "band_ringSteps",
       "target": "band_stepRing",
       "sourceHandle": "out-indices",
       "targetHandle": "in-i"
     },
     {
-      "id": "e_42",
-      "source": "band_step",
-      "target": "band_stepAt",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_43",
-      "source": "band_stepRing",
-      "target": "band_stepAt",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_44",
-      "source": "band_stepAt",
-      "target": "band_stepPlays",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_45",
-      "source": "band_density",
-      "target": "band_stepPlays",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_46",
-      "source": "band_stepAt",
-      "target": "band_stepDegree",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_47",
-      "source": "band_stepRing",
-      "target": "band_spokeDir",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_48",
-      "source": "band_spokeDir",
-      "target": "band_spokeIn",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-u"
-    },
-    {
-      "id": "e_49",
-      "source": "band_spokeDir",
-      "target": "band_spokeOut",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-u"
-    },
-    {
-      "id": "e_50",
-      "source": "band_stepPlays",
-      "target": "band_spokeOut",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_51",
-      "source": "band_stepDegree",
-      "target": "band_spokeOut",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_52",
-      "source": "band_stepDegree",
-      "target": "band_spokeColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_53",
-      "source": "band_stepAt",
-      "target": "band_spokeColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_54",
-      "source": "band_step",
-      "target": "band_spokeColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_55",
-      "source": "band_spokeColour",
+      "id": "e_25",
+      "source": "band_stepRules",
       "target": "band_spokeStroke",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-spokeColour",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_56",
+      "id": "e_26",
       "source": "band_spokeStroke",
       "target": "band_spokeCap",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_57",
-      "source": "band_spokeIn",
+      "id": "e_27",
+      "source": "band_stepRules",
       "target": "band_spoke",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-spokeIn",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_58",
-      "source": "band_spokeOut",
+      "id": "e_28",
+      "source": "band_stepRules",
       "target": "band_spoke",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-spokeOut",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_59",
+      "id": "e_29",
       "source": "band_spokeCap",
       "target": "band_spoke",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_60",
+      "id": "e_30",
       "source": "band_spoke",
       "target": "band_stepRing",
       "sourceHandle": "out-shape",
       "targetHandle": "in-l"
     },
     {
-      "id": "e_61",
-      "source": "band_note",
-      "target": "band_burstColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_62",
-      "source": "band_playsNote",
-      "target": "band_burstColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_63",
-      "source": "band_stepPhase",
-      "target": "band_burstColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_64",
-      "source": "band_stepPhase",
-      "target": "band_burstSize",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_65",
-      "source": "band_burstColour",
+      "id": "e_31",
+      "source": "band_flash",
       "target": "band_burstStroke",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-burstColour",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_66",
+      "id": "e_32",
       "source": "band_burstStroke",
       "target": "band_burstNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_67",
-      "source": "band_burstSize",
+      "id": "e_33",
+      "source": "band_flash",
       "target": "band_burst",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-add11",
       "targetHandle": "in-w"
     },
     {
-      "id": "e_68",
-      "source": "band_burstSize",
+      "id": "e_34",
+      "source": "band_flash",
       "target": "band_burst",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-add11",
       "targetHandle": "in-h"
     },
     {
-      "id": "e_69",
+      "id": "e_35",
       "source": "band_burstNoFill",
       "target": "band_burst",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_70",
-      "source": "band_note",
-      "target": "band_coreColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_71",
-      "source": "band_coreColour",
+      "id": "e_36",
+      "source": "band_flash",
       "target": "band_coreFill",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-coreColour",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_72",
-      "source": "band_gate",
-      "target": "band_coreSize",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_73",
-      "source": "band_stepPhase",
-      "target": "band_coreSize",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-f"
-    },
-    {
-      "id": "e_74",
-      "source": "band_coreSize",
+      "id": "e_37",
+      "source": "band_flash",
       "target": "band_core",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-add12",
       "targetHandle": "in-w"
     },
     {
-      "id": "e_75",
-      "source": "band_coreSize",
+      "id": "e_38",
+      "source": "band_flash",
       "target": "band_core",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-add12",
       "targetHandle": "in-h"
     },
     {
-      "id": "e_76",
+      "id": "e_39",
       "source": "band_coreFill",
       "target": "band_core",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_77",
+      "id": "e_40",
       "source": "band_spectrum",
       "target": "band_spectrumBars",
       "sourceHandle": "out-spectrum",
       "targetHandle": "in-m"
     },
     {
-      "id": "e_78",
-      "source": "band_spectrumBars",
-      "target": "band_binDir",
-      "sourceHandle": "out-__loopvar_index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_79",
-      "source": "band_binDir",
-      "target": "band_binIn",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-u"
-    },
-    {
-      "id": "e_80",
-      "source": "band_binDir",
-      "target": "band_binOut",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-u"
-    },
-    {
-      "id": "e_81",
-      "source": "band_spectrumBars",
-      "target": "band_binOut",
-      "sourceHandle": "out-m",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_82",
+      "id": "e_41",
       "source": "band_binIn",
       "target": "band_binBar",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_83",
+      "id": "e_42",
       "source": "band_binOut",
       "target": "band_binBar",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_84",
+      "id": "e_43",
       "source": "band_spectrumStroke",
       "target": "band_binBar",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_85",
+      "id": "e_44",
       "source": "band_binBar",
       "target": "band_spectrumBars",
       "sourceHandle": "out-shape",
       "targetHandle": "in-l"
     },
     {
-      "id": "e_86",
-      "source": "band_spectrum",
-      "target": "band_wavePoints",
-      "sourceHandle": "out-waveform",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_87",
-      "source": "band_wavePoints",
+      "id": "e_45",
+      "source": "band_waveLine",
       "target": "band_wave",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-points",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_88",
+      "id": "e_46",
       "source": "band_waveStroke",
       "target": "band_wave",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_89",
+      "id": "e_47",
       "source": "band_burst",
       "target": "band_glowing",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_90",
+      "id": "e_48",
       "source": "band_core",
       "target": "band_glowing",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_91",
+      "id": "e_49",
       "source": "band_spectrumBars",
       "target": "band_glowing",
       "sourceHandle": "out-l",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_92",
+      "id": "e_50",
       "source": "band_glowing",
       "target": "band_trails",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_93",
+      "id": "e_51",
       "source": "band_trails",
       "target": "band_scene",
       "sourceHandle": "out-out",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_94",
+      "id": "e_52",
       "source": "band_stepRing",
       "target": "band_scene",
       "sourceHandle": "out-l",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_95",
+      "id": "e_53",
       "source": "band_wave",
       "target": "band_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_96",
+      "id": "e_54",
       "source": "band_scene",
       "target": "band_bloom",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_97",
+      "id": "e_55",
       "source": "band_bloom",
       "target": "band_chromatic",
       "sourceHandle": "out-out",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_98",
+      "id": "e_56",
       "source": "band_chromatic",
       "target": "band_r",
       "sourceHandle": "out-out",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_57",
+      "source": "band_bpm",
+      "target": "band_stepLength",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_58",
+      "source": "band_stepLength",
+      "target": "band_clock",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_59",
+      "source": "band_time",
+      "target": "band_steps",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_60",
+      "source": "band_clock",
+      "target": "band_steps",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_61",
+      "source": "band_steps",
+      "target": "band_step",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_62",
+      "source": "band_step",
+      "target": "band_clock",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-step"
+    },
+    {
+      "id": "e_63",
+      "source": "band_steps",
+      "target": "band_stepPhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_64",
+      "source": "band_stepPhase",
+      "target": "band_clock",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_65",
+      "source": "band_melody",
+      "target": "band_scale",
+      "sourceHandle": "out-major",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_66",
+      "source": "band_melody",
+      "target": "band_scale",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_67",
+      "source": "band_melody",
+      "target": "band_scale",
+      "sourceHandle": "out-values2",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_68",
+      "source": "band_melody",
+      "target": "band_degree",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_69",
+      "source": "band_degree",
+      "target": "band_multiply",
+      "sourceHandle": "out-n",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_70",
+      "source": "band_multiply",
+      "target": "band_degreeWalk",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_71",
+      "source": "band_degreeWalk",
+      "target": "band_subtract",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_72",
+      "source": "band_subtract",
+      "target": "band_divide",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_73",
+      "source": "band_divide",
+      "target": "band_multiply2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_74",
+      "source": "band_multiply2",
+      "target": "band_degreeFloor",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_75",
+      "source": "band_degreeFloor",
+      "target": "band_degreeClamp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_76",
+      "source": "band_degreeClamp",
+      "target": "band_degree",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-degree"
+    },
+    {
+      "id": "e_77",
+      "source": "band_melody",
+      "target": "band_multiply3",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_78",
+      "source": "band_multiply3",
+      "target": "band_leapSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_79",
+      "source": "band_leapSin",
+      "target": "band_multiply4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_80",
+      "source": "band_multiply4",
+      "target": "band_leapHash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_81",
+      "source": "band_leapHash",
+      "target": "band_octaveLeap",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_82",
+      "source": "band_interval",
+      "target": "band_add",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_83",
+      "source": "band_octaveLeap",
+      "target": "band_octaveUp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_84",
+      "source": "band_add",
+      "target": "band_add2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_85",
+      "source": "band_octaveUp",
+      "target": "band_add2",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_86",
+      "source": "band_melody",
+      "target": "band_multiply5",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_87",
+      "source": "band_multiply5",
+      "target": "band_playsNoteSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_88",
+      "source": "band_playsNoteSin",
+      "target": "band_multiply6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_89",
+      "source": "band_multiply6",
+      "target": "band_playsNoteHash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_90",
+      "source": "band_playsNoteHash",
+      "target": "band_playsNote",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_91",
+      "source": "band_melody",
+      "target": "band_playsNote",
+      "sourceHandle": "out-density",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_92",
+      "source": "band_melody",
+      "target": "band_held",
+      "sourceHandle": "out-phase",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_93",
+      "source": "band_playsNote",
+      "target": "band_gate",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_94",
+      "source": "band_held",
+      "target": "band_gate",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_95",
+      "source": "band_melody",
+      "target": "band_echoTime",
+      "sourceHandle": "out-stepLength",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_96",
+      "source": "band_bass",
+      "target": "band_divide2",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_97",
+      "source": "band_divide2",
+      "target": "band_bar",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_98",
+      "source": "band_bar",
+      "target": "band_barOfFour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_99",
+      "source": "band_barOfFour",
+      "target": "band_chord",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_100",
+      "source": "band_chord",
+      "target": "band_add3",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_101",
+      "source": "band_bass",
+      "target": "band_multiply7",
+      "sourceHandle": "out-stepLength",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_102",
+      "source": "band_time2",
+      "target": "band_divide3",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_103",
+      "source": "band_multiply7",
+      "target": "band_divide3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_104",
+      "source": "band_divide3",
+      "target": "band_twoStepPhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_105",
+      "source": "band_twoStepPhase",
+      "target": "band_bassGate",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_106",
+      "source": "band_time2",
+      "target": "band_multiply8",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_107",
+      "source": "band_multiply8",
+      "target": "band_cutoffSwing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_108",
+      "source": "band_cutoffSwing",
+      "target": "band_multiply9",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_109",
+      "source": "band_multiply9",
+      "target": "band_add4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_110",
+      "source": "band_add4",
+      "target": "band_multiply10",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_111",
+      "source": "band_multiply10",
+      "target": "band_add5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_112",
+      "source": "band_bass",
+      "target": "band_hatGate",
+      "sourceHandle": "out-phase",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_113",
+      "source": "band_stepRules",
+      "target": "band_barStart",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_114",
+      "source": "band_stepRules",
+      "target": "band_subtract2",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_115",
+      "source": "band_barStart",
+      "target": "band_subtract2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_116",
+      "source": "band_subtract2",
+      "target": "band_add6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_117",
+      "source": "band_stepRules",
+      "target": "band_add6",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_118",
+      "source": "band_add6",
+      "target": "band_multiply11",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_119",
+      "source": "band_multiply11",
+      "target": "band_stepPlaysSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_120",
+      "source": "band_stepPlaysSin",
+      "target": "band_multiply12",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_121",
+      "source": "band_multiply12",
+      "target": "band_stepPlaysHash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_122",
+      "source": "band_stepPlaysHash",
+      "target": "band_stepPlays",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_123",
+      "source": "band_stepRules",
+      "target": "band_stepPlays",
+      "sourceHandle": "out-density",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_124",
+      "source": "band_add6",
+      "target": "band_stepDegree",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-n"
+    },
+    {
+      "id": "e_125",
+      "source": "band_stepDegree",
+      "target": "band_multiply13",
+      "sourceHandle": "out-n",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_126",
+      "source": "band_multiply13",
+      "target": "band_stepDegreeWalk",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_127",
+      "source": "band_stepDegreeWalk",
+      "target": "band_subtract3",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_128",
+      "source": "band_subtract3",
+      "target": "band_divide4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_129",
+      "source": "band_divide4",
+      "target": "band_multiply14",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_130",
+      "source": "band_multiply14",
+      "target": "band_stepDegreeFloor",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_131",
+      "source": "band_stepDegreeFloor",
+      "target": "band_stepDegreeClamp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_132",
+      "source": "band_stepDegreeClamp",
+      "target": "band_stepDegree",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-degree"
+    },
+    {
+      "id": "e_133",
+      "source": "band_stepRules",
+      "target": "band_divide5",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_134",
+      "source": "band_divide5",
+      "target": "band_multiply15",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_135",
+      "source": "band_multiply15",
+      "target": "band_subtract4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_136",
+      "source": "band_subtract4",
+      "target": "band_spokeDir",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_137",
+      "source": "band_spokeDir",
+      "target": "band_spokeIn",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_138",
+      "source": "band_stepDegree",
+      "target": "band_multiply16",
+      "sourceHandle": "out-degree",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_139",
+      "source": "band_multiply16",
+      "target": "band_add7",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_140",
+      "source": "band_stepPlays",
+      "target": "band_spokeReach",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_141",
+      "source": "band_add7",
+      "target": "band_spokeReach",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_142",
+      "source": "band_spokeReach",
+      "target": "band_add8",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_143",
+      "source": "band_spokeDir",
+      "target": "band_spokeOut",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_144",
+      "source": "band_add8",
+      "target": "band_spokeOut",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_145",
+      "source": "band_stepDegree",
+      "target": "band_divide6",
+      "sourceHandle": "out-degree",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_146",
+      "source": "band_divide6",
+      "target": "band_multiply17",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_147",
+      "source": "band_multiply17",
+      "target": "band_add9",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_148",
+      "source": "band_add9",
+      "target": "band_spokeHue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_149",
+      "source": "band_add6",
+      "target": "band_isNow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_150",
+      "source": "band_stepRules",
+      "target": "band_isNow",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_151",
+      "source": "band_add6",
+      "target": "band_isPast",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_152",
+      "source": "band_stepRules",
+      "target": "band_isPast",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_153",
+      "source": "band_isNow",
+      "target": "band_spokeAlpha",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_154",
+      "source": "band_isPast",
+      "target": "band_spokeAlpha",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if1"
+    },
+    {
+      "id": "e_155",
+      "source": "band_spokeHue",
+      "target": "band_multiply18",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_156",
+      "source": "band_spokeAlpha",
+      "target": "band_multiply19",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_157",
+      "source": "band_multiply18",
+      "target": "band_spokeColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_158",
+      "source": "band_multiply19",
+      "target": "band_spokeColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_159",
+      "source": "band_flash",
+      "target": "band_subtract5",
+      "sourceHandle": "out-add2",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_160",
+      "source": "band_subtract5",
+      "target": "band_divide7",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_161",
+      "source": "band_divide7",
+      "target": "band_add10",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_162",
+      "source": "band_add10",
+      "target": "band_pitchHue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_163",
+      "source": "band_flash",
+      "target": "band_subtract6",
+      "sourceHandle": "out-phase",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_164",
+      "source": "band_flash",
+      "target": "band_burstFade",
+      "sourceHandle": "out-playsNote",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_165",
+      "source": "band_subtract6",
+      "target": "band_burstFade",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_166",
+      "source": "band_pitchHue",
+      "target": "band_multiply20",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_167",
+      "source": "band_burstFade",
+      "target": "band_multiply21",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_168",
+      "source": "band_multiply20",
+      "target": "band_burstColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_169",
+      "source": "band_multiply21",
+      "target": "band_burstColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_170",
+      "source": "band_pitchHue",
+      "target": "band_multiply22",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_171",
+      "source": "band_multiply22",
+      "target": "band_coreColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_172",
+      "source": "band_flash",
+      "target": "band_multiply23",
+      "sourceHandle": "out-phase",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_173",
+      "source": "band_multiply23",
+      "target": "band_add11",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_174",
+      "source": "band_flash",
+      "target": "band_subtract7",
+      "sourceHandle": "out-phase",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_175",
+      "source": "band_flash",
+      "target": "band_corePulse",
+      "sourceHandle": "out-gate",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_176",
+      "source": "band_subtract7",
+      "target": "band_corePulse",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_177",
+      "source": "band_corePulse",
+      "target": "band_multiply24",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_178",
+      "source": "band_multiply24",
+      "target": "band_add12",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_179",
+      "source": "band_spectrumBars",
+      "target": "band_divide8",
+      "sourceHandle": "out-__loopvar_index",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_180",
+      "source": "band_divide8",
+      "target": "band_multiply25",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_181",
+      "source": "band_multiply25",
+      "target": "band_binDir",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_182",
+      "source": "band_binDir",
+      "target": "band_binIn",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_183",
+      "source": "band_spectrumBars",
+      "target": "band_multiply26",
+      "sourceHandle": "out-m",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_184",
+      "source": "band_multiply26",
+      "target": "band_add13",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_185",
+      "source": "band_binDir",
+      "target": "band_binOut",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_186",
+      "source": "band_add13",
+      "target": "band_binOut",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_187",
+      "source": "band_spectrum",
+      "target": "band_waveLine",
+      "sourceHandle": "out-waveform",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_188",
+      "source": "band_waveLine",
+      "target": "band_waveCount",
+      "sourceHandle": "out-w",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_189",
+      "source": "band_waveCount",
+      "target": "band_waveIndex",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_190",
+      "source": "band_waveIndex",
+      "target": "band_divide9",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_191",
+      "source": "band_waveCount",
+      "target": "band_divide9",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_192",
+      "source": "band_divide9",
+      "target": "band_multiply27",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_193",
+      "source": "band_multiply27",
+      "target": "band_add14",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_194",
+      "source": "band_waveLine",
+      "target": "band_multiply28",
+      "sourceHandle": "out-w",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_195",
+      "source": "band_multiply28",
+      "target": "band_add15",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_196",
+      "source": "band_add14",
+      "target": "band_wavePoint",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_197",
+      "source": "band_add15",
+      "target": "band_wavePoint",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_198",
+      "source": "band_wavePoint",
+      "target": "band_wavePoints",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_199",
+      "source": "band_waveCount",
+      "target": "band_wavePoints",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_200",
+      "source": "band_wavePoints",
+      "target": "band_waveLine",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_201",
+      "source": "band_major",
+      "target": "band_melody",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-major"
+    },
+    {
+      "id": "e_202",
+      "source": "band_majorScale",
+      "target": "band_melody",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-values"
+    },
+    {
+      "id": "e_203",
+      "source": "band_minorScale",
+      "target": "band_melody",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-values2"
+    },
+    {
+      "id": "e_204",
+      "source": "band_clock",
+      "target": "band_melody",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-step"
+    },
+    {
+      "id": "e_206",
+      "source": "band_density",
+      "target": "band_melody",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-density"
+    },
+    {
+      "id": "e_207",
+      "source": "band_clock",
+      "target": "band_melody",
+      "sourceHandle": "out-phase",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_208",
+      "source": "band_stepLength",
+      "target": "band_melody",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-stepLength"
+    },
+    {
+      "id": "e_211",
+      "source": "band_add2",
+      "target": "band_melody",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-add2"
+    },
+    {
+      "id": "e_212",
+      "source": "band_gate",
+      "target": "band_melody",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-gate"
+    },
+    {
+      "id": "e_213",
+      "source": "band_echoTime",
+      "target": "band_melody",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-echoTime"
+    },
+    {
+      "id": "e_214",
+      "source": "band_playsNote",
+      "target": "band_melody",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-playsNote"
+    },
+    {
+      "id": "e_215",
+      "source": "band_clock",
+      "target": "band_bass",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-step"
+    },
+    {
+      "id": "e_216",
+      "source": "band_stepLength",
+      "target": "band_bass",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-stepLength"
+    },
+    {
+      "id": "e_217",
+      "source": "band_clock",
+      "target": "band_bass",
+      "sourceHandle": "out-phase",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_218",
+      "source": "band_add3",
+      "target": "band_bass",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-add3"
+    },
+    {
+      "id": "e_219",
+      "source": "band_bassGate",
+      "target": "band_bass",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-bassGate"
+    },
+    {
+      "id": "e_220",
+      "source": "band_add5",
+      "target": "band_bass",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-add5"
+    },
+    {
+      "id": "e_221",
+      "source": "band_hatGate",
+      "target": "band_bass",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-hatGate"
+    },
+    {
+      "id": "e_222",
+      "source": "band_clock",
+      "target": "band_stepRules",
+      "sourceHandle": "out-step",
+      "targetHandle": "in-step"
+    },
+    {
+      "id": "e_223",
+      "source": "band_stepRing",
+      "target": "band_stepRules",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_224",
+      "source": "band_density",
+      "target": "band_stepRules",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-density"
+    },
+    {
+      "id": "e_225",
+      "source": "band_spokeColour",
+      "target": "band_stepRules",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-spokeColour"
+    },
+    {
+      "id": "e_226",
+      "source": "band_spokeIn",
+      "target": "band_stepRules",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spokeIn"
+    },
+    {
+      "id": "e_227",
+      "source": "band_spokeOut",
+      "target": "band_stepRules",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spokeOut"
+    },
+    {
+      "id": "e_228",
+      "source": "band_melody",
+      "target": "band_flash",
+      "sourceHandle": "out-add2",
+      "targetHandle": "in-add2"
+    },
+    {
+      "id": "e_229",
+      "source": "band_clock",
+      "target": "band_flash",
+      "sourceHandle": "out-phase",
+      "targetHandle": "in-phase"
+    },
+    {
+      "id": "e_230",
+      "source": "band_melody",
+      "target": "band_flash",
+      "sourceHandle": "out-playsNote",
+      "targetHandle": "in-playsNote"
+    },
+    {
+      "id": "e_231",
+      "source": "band_melody",
+      "target": "band_flash",
+      "sourceHandle": "out-gate",
+      "targetHandle": "in-gate"
+    },
+    {
+      "id": "e_232",
+      "source": "band_burstColour",
+      "target": "band_flash",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-burstColour"
+    },
+    {
+      "id": "e_233",
+      "source": "band_add11",
+      "target": "band_flash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-add11"
+    },
+    {
+      "id": "e_234",
+      "source": "band_coreColour",
+      "target": "band_flash",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-coreColour"
+    },
+    {
+      "id": "e_235",
+      "source": "band_add12",
+      "target": "band_flash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-add12"
     }
   ]
 }

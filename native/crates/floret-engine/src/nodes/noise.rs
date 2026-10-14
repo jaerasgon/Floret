@@ -272,7 +272,31 @@ fn noise_inputs(params: &Params) -> Vec<PortSpec> {
         ports.push(num("radius", 100.0));
         ports.push(num("weight", 1.0));
     }
+    // Last in every mode, so the pins above keep their indices.
+    ports.push(
+        PortSpec::new("step", PortType::Number)
+            .default(Value::Num(0.0))
+            .label("gradient step"),
+    );
     ports
+}
+
+/// The `step` pin's index: after the base pins and the mode's own.
+fn step_index(mode: Mode) -> usize {
+    WARP_SCALE
+        + 1
+        + match mode {
+            Mode::Cellular | Mode::Stripes => 1,
+            m if m.is_field() => 3,
+            _ => 0,
+        }
+}
+
+/// `step` as a finite distance above 0 (in `pos` units), else none: the
+/// gradient is then the local slope.
+fn gradient_step(inputs: &[Spread], mode: Mode) -> Option<f64> {
+    let h = inputs.get(step_index(mode))?.first()?.to_number();
+    (h.is_finite() && h > 0.0).then_some(h)
 }
 
 /// The field modes' bumps: centre, radius (> 0) and weight each.
@@ -538,6 +562,7 @@ fn noise(_: &NodeInit) -> Box<dyn NodeImpl> {
             Bumps(Vec::new())
         };
         let gaussian = mode == Mode::Gaussian;
+        let step = gradient_step(inputs, mode);
         let mut values = Vec::with_capacity(count);
         let mut flows = Vec::with_capacity(count);
         let mut gradients = Vec::with_capacity(count);
@@ -571,7 +596,7 @@ fn noise(_: &NodeInit) -> Box<dyn NodeImpl> {
                     bumps.at(x, y, gaussian)
                 };
                 let v = val(px, py);
-                let e = bumps.step();
+                let e = step.unwrap_or_else(|| bumps.step());
                 // Central differences: bumps are cheap, and exact on the
                 // symmetric slopes of a bump's top.
                 let g = if e.is_finite() && e > 0.0 {
@@ -594,12 +619,24 @@ fn noise(_: &NodeInit) -> Box<dyn NodeImpl> {
             } else {
                 Vec2::default()
             }));
-            // Forward differences in noise space, × scale: the slope per
-            // unit of `pos`.
-            const E: f64 = 1e-4;
-            let g = Vec2 {
-                x: (s.at(x + E, y) - v) / E * scale,
-                y: (s.at(x, y + E) - v) / E * scale,
+            let g = match step {
+                // Central differences `step` units of `pos` either side.
+                Some(h) => {
+                    let d = h * scale;
+                    Vec2 {
+                        x: (s.at(x + d, y) - s.at(x - d, y)) / (2.0 * h),
+                        y: (s.at(x, y + d) - s.at(x, y - d)) / (2.0 * h),
+                    }
+                }
+                // Forward differences in noise space, × scale: the slope
+                // per unit of `pos`.
+                None => {
+                    const E: f64 = 1e-4;
+                    Vec2 {
+                        x: (s.at(x + E, y) - v) / E * scale,
+                        y: (s.at(x, y + E) - v) / E * scale,
+                    }
+                }
             };
             gradients.push(Value::Vec2(finite(g)));
         }
@@ -1012,13 +1049,14 @@ mod tests {
                 .map(|p| p.name)
                 .collect()
         };
-        assert_eq!(names("perlin").len(), 9);
-        assert_eq!(
-            names("cellular").last().map(String::as_str),
-            Some("feature")
-        );
-        assert_eq!(names("cellular").len(), 10);
-        assert_eq!(names("stripes").last().map(String::as_str), Some("angle"));
+        assert_eq!(names("perlin").len(), 10);
+        assert_eq!(names("cellular")[9], "feature");
+        assert_eq!(names("cellular").len(), 11);
+        assert_eq!(names("stripes")[9], "angle");
+        // `step` comes last in every mode.
+        for m in ["perlin", "cellular", "stripes", "radial", "gaussian"] {
+            assert_eq!(names(m).last().map(String::as_str), Some("step"), "{m}");
+        }
         assert_eq!(names("checker"), names("perlin"));
         assert_eq!(names("rings"), names("perlin"));
         let cat = crate::spec::Catalogue::builtin();
@@ -1191,11 +1229,67 @@ mod tests {
                 .collect()
         };
         for m in ["radial", "gaussian"] {
-            assert_eq!(names(m)[9..], ["center", "radius", "weight"]);
+            assert_eq!(names(m)[9..], ["center", "radius", "weight", "step"]);
         }
-        assert_eq!(names("perlin").len(), 9);
+        assert_eq!(names("perlin").len(), 10);
         let cat = crate::spec::Catalogue::builtin();
         let spec = cat.get("noise/noise").unwrap();
         assert_eq!(spec.outputs[2].name, "gradient");
+    }
+
+    #[test]
+    fn step_takes_the_gradient_over_a_distance() {
+        // Noise modes: central differences `step` units of pos either side
+        // (here at scale 0.5).
+        let step = |h: f64| vec![n(h)];
+        for (mode, extra) in [
+            ("perlin", vec![]),
+            ("cellular", vec![vec![Value::str("F1")]]),
+        ] {
+            let at = |x: f64, y: f64, h: f64| {
+                let mut e = extra.clone();
+                e.push(step(h));
+                let out = eval_all(
+                    mode,
+                    &[(super::POS, vec![v2(x, y)]), (super::SCALE, vec![n(0.5)])],
+                    &e,
+                );
+                (num(&out[0][0]), vec_of(&out[2][0]))
+            };
+            for (x, y) in [(0.31, 0.77), (-3.7, 5.1)] {
+                let (_, g) = at(x, y, 7.0);
+                let gx = (at(x + 7.0, y, 0.0).0 - at(x - 7.0, y, 0.0).0) / 14.0;
+                let gy = (at(x, y + 7.0, 0.0).0 - at(x, y - 7.0, 0.0).0) / 14.0;
+                assert!(
+                    (g.x - gx).abs() < 1e-12 && (g.y - gy).abs() < 1e-12,
+                    "{mode}: {g:?} vs ({gx}, {gy})"
+                );
+                // 0, negative and NaN steps: the local slope, as before.
+                for h in [-1.0, f64::NAN] {
+                    assert_eq!(at(x, y, h).1, at(x, y, 0.0).1);
+                }
+            }
+        }
+        // Field modes: a Gaussian bump's slope over ± 30 units.
+        let field = |p: Vec2, h: f64| {
+            let out = eval_all(
+                "gaussian",
+                &[(super::POS, vec![Value::Vec2(p)])],
+                &[vec![v2(0.0, 0.0)], vec![n(50.0)], vec![n(2.0)], step(h)],
+            );
+            (num(&out[0][0]), vec_of(&out[2][0]))
+        };
+        let p = Vec2 { x: 20.0, y: -10.0 };
+        let g = field(p, 30.0).1;
+        let gx =
+            (field(Vec2 { x: 50.0, ..p }, 0.0).0 - field(Vec2 { x: -10.0, ..p }, 0.0).0) / 60.0;
+        let gy =
+            (field(Vec2 { y: 20.0, ..p }, 0.0).0 - field(Vec2 { y: -40.0, ..p }, 0.0).0) / 60.0;
+        assert!(
+            (g.x - gx).abs() < 1e-12 && (g.y - gy).abs() < 1e-12,
+            "{g:?}"
+        );
+        // A wide step flattens the slope of the bump's flank.
+        assert!(g.x.abs() < field(p, 0.0).1.x.abs());
     }
 }

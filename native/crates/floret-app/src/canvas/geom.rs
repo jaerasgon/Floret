@@ -2,11 +2,11 @@
 //! inline fields, region frames and their port pills, wires — and
 //! hit-testing over it.
 
-use crate::editor::ops;
 use crate::editor::ports::{self, Side};
 use crate::editor::regions::{self, PORT_TAB_H, PORT_TAB_W, TOP_PIN_W};
 use crate::editor::values::{self, EditKey, FieldKind, LeftItem};
 use crate::editor::widgets::{self, ProbeView};
+use crate::editor::{ops, pairs};
 use eframe::egui::{self, pos2, vec2, Color32, FontId, Painter, Pos2, Rect, Stroke, Vec2};
 use floret_engine::patch::{parse_handle, Handle, PatchFile, PatchNode, PortDirection};
 use floret_engine::spec::{Catalogue, PortKind, PortType, RegionKind};
@@ -23,7 +23,7 @@ pub const MATH_MIN_W: f32 = 72.0;
 pub const MAX_W: f32 = 360.0;
 pub const HEADER_H: f32 = 26.0;
 pub const ROW_H: f32 = 22.0;
-pub const PIN_R: f32 = 4.5;
+pub const PIN_R: f32 = 3.75;
 /// Pointer distance (screen px) that counts as "on" a pin / wire.
 pub const PIN_HIT: f32 = 9.0;
 pub const PIN_DROP: f32 = 16.0;
@@ -31,6 +31,15 @@ pub const WIRE_HIT: f32 = 6.0;
 const FIELD_H: f32 = 15.0;
 const RESIZE_BAND: f32 = 5.0;
 pub const LABEL_FONT: f32 = 11.0;
+/// The outputs' footer: rows about 3/4 of [`ROW_H`], labels a point smaller
+/// than [`LABEL_FONT`], a little padding above and below the rows, and the
+/// gap between the last input row (or custom body) and the footer.
+pub const FOOT_ROW_H: f32 = 16.5;
+pub const FOOT_FONT: f32 = LABEL_FONT - 1.0;
+pub const FOOT_PAD: f32 = 3.0;
+pub const FOOT_GAP: f32 = 3.0;
+/// Margin under the input rows of a node without outputs.
+pub const BOTTOM_PAD: f32 = 8.0;
 
 /// How a node is drawn at the current view level.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -71,36 +80,44 @@ fn subpatch_ports(
     n.ports.iter().flatten().filter(move |p| p.direction == dir)
 }
 
-fn row_count(n: &PatchNode, cat: &Catalogue, look: Look) -> usize {
+/// Rows above the outputs' footer: one per input or param (or what a
+/// custom body lays out).
+fn input_rows(n: &PatchNode, cat: &Catalogue, look: Look) -> usize {
     let Some(spec) = cat.get(&n.def_type) else {
         return 2;
     };
     if look == Look::Collapsed {
-        let ins = subpatch_ports(n, PortDirection::Input).count();
-        let outs = subpatch_ports(n, PortDirection::Output).count();
-        return ins.max(outs).max(1);
+        return subpatch_ports(n, PortDirection::Input).count();
     }
     if let Some(rows) = widgets::custom_for(n).and_then(|c| super::custom::rows(c, n, cat)) {
         return rows;
     }
-    let left = values::left_items(cat, spec, n).len();
-    left.max(ports::resolved_outputs(cat, spec, &n.params).len())
+    values::left_items(cat, spec, n).len()
 }
 
-/// A node's size in canvas units as drawn with `look`, with no inline
-/// editors open.
+/// How many outputs the footer lists.
+fn output_count(n: &PatchNode, cat: &Catalogue, look: Look) -> usize {
+    let Some(spec) = cat.get(&n.def_type) else {
+        return 0;
+    };
+    if look == Look::Collapsed {
+        return subpatch_ports(n, PortDirection::Output).count();
+    }
+    ports::resolved_outputs(cat, spec, &n.params).len()
+}
+
+/// Height under the input rows: the outputs' footer (with its gap when
+/// something sits `above` it), or a bottom margin without outputs.
+pub fn footer_h(outs: usize, above: bool) -> f32 {
+    if outs == 0 {
+        return BOTTOM_PAD;
+    }
+    let gap = if above { FOOT_GAP } else { 0.0 };
+    gap + 2.0 * FOOT_PAD + outs as f32 * FOOT_ROW_H
+}
+
+/// A node's size in canvas units as drawn with `look`.
 pub fn box_size(patch: &PatchFile, n: &PatchNode, cat: &Catalogue, look: Look) -> (f64, f64) {
-    box_size_with(patch, n, cat, look, &HashSet::new())
-}
-
-/// A node's size with the inline editors in `expanded` open.
-pub fn box_size_with(
-    patch: &PatchFile,
-    n: &PatchNode,
-    cat: &Catalogue,
-    look: Look,
-    expanded: &HashSet<(String, String)>,
-) -> (f64, f64) {
     match look {
         Look::Region | Look::Frame => ops::region_size(n),
         Look::Comment => {
@@ -109,14 +126,15 @@ pub fn box_size_with(
         }
         Look::Probe => super::custom::PROBE_SIZE,
         Look::Node | Look::Collapsed => {
-            let rows = row_count(n, cat, look) as f32;
+            let rows = input_rows(n, cat, look);
             let body = match look {
                 Look::Node => widgets::custom_for(n).map_or(0.0, |c| super::custom::body_h(c, n)),
                 _ => 0.0,
             };
+            let foot = footer_h(output_count(n, cat, look), rows > 0 || body > 0.0);
             (
-                f64::from(node_width(patch, n, cat, look, expanded)),
-                f64::from(HEADER_H + body + rows * ROW_H + 8.0),
+                f64::from(node_width(patch, n, cat, look)),
+                f64::from(HEADER_H + body + rows as f32 * ROW_H + foot),
             )
         }
     }
@@ -146,7 +164,7 @@ pub struct Metrics {
 impl Metrics {
     pub fn of(patch: &PatchFile, cat: &Catalogue) -> Metrics {
         let painter = measuring_painter();
-        let (decor, expanded) = (Decor::default(), HashSet::new());
+        let decor = Decor::default();
         let pins_of = |scope: Option<&str>, ids: &HashSet<String>| {
             let cx = Ctx {
                 patch,
@@ -156,7 +174,6 @@ impl Metrics {
                 pan: Vec2::ZERO,
                 zoom: 1.0,
                 scope,
-                expanded: &expanded,
                 decor: &decor,
             };
             let mut out = HashMap::new();
@@ -308,34 +325,27 @@ fn wired_inputs<'a>(patch: &'a PatchFile, node: &str) -> HashSet<&'a str> {
 
 /// A plain or collapsed-subpatch node's width: its widest row or its
 /// title, like the web app's content-sized `GenericNode`.
-pub fn node_width(
-    patch: &PatchFile,
-    n: &PatchNode,
-    cat: &Catalogue,
-    look: Look,
-    expanded: &HashSet<(String, String)>,
-) -> f32 {
+pub fn node_width(patch: &PatchFile, n: &PatchNode, cat: &Catalogue, look: Look) -> f32 {
     let Some(spec) = cat.get(&n.def_type) else {
         return NODE_W;
     };
     let label_font = FontId::proportional(LABEL_FONT);
-    let out_font = FontId::proportional(LABEL_FONT);
+    let out_font = FontId::proportional(FOOT_FONT);
     if look == Look::Node {
         if let Some(c) = widgets::custom_for(n) {
-            return custom_width(n, spec, cat, c, &label_font, &out_font);
+            return custom_width(n, spec, cat, c, &out_font);
         }
     }
     let mut widest: f32 = 0.0;
-    let mut row = |left: f32, out: Option<f32>| {
-        let w = 10.0 + left + out.map_or(0.0, |o| 14.0 + o) + 10.0;
-        widest = widest.max(w);
-    };
     let math = values::header_symbol(n);
     let title = if look == Look::Collapsed {
         let label = n.params.get("label").and_then(|v| v.as_str());
         format!("▶ {}", label.unwrap_or(&spec.label))
     } else {
-        math.map_or_else(|| spec.label.clone(), str::to_owned)
+        math.map_or_else(
+            || pairs::title(n, &spec.label).unwrap_or_else(|| spec.label.clone()),
+            str::to_owned,
+        )
     };
     let title_font = if math.is_some() {
         FontId::monospace(13.0)
@@ -346,59 +356,67 @@ pub fn node_width(
     if look == Look::Node && floret_engine::bypass::can_bypass(spec) {
         header += BYPASS_ROOM;
     }
-    if let Some(slot) = n.params.get("slot").filter(|_| look == Look::Node) {
-        let text = format!("#{}", values::short(slot));
+    if let Some(slot) = slot_badge(n, look) {
+        let text = slot;
         header += 6.0 + text_width(&text, FontId::monospace(10.0)) + 8.0;
+    }
+    if look == Look::Node && pairs::is_pair_type(&n.def_type) {
+        // Room for the warning chip of a half without its partner.
+        header += 20.0;
     }
     if look == Look::Collapsed {
         header += 8.0 + text_width("subpatch", FontId::proportional(9.5));
-        let ins: Vec<_> = subpatch_ports(n, PortDirection::Input).collect();
-        let outs: Vec<_> = subpatch_ports(n, PortDirection::Output).collect();
-        for i in 0..ins.len().max(outs.len()) {
-            let left = ins
-                .get(i)
-                .map_or(0.0, |p| text_width(&p.name, label_font.clone()));
-            let out = outs.get(i).map(|p| text_width(&p.name, out_font.clone()));
-            row(left, out);
+        for p in subpatch_ports(n, PortDirection::Input) {
+            let left = text_width(&p.name, label_font.clone());
+            widest = widest.max(row_need(10.0, left, None));
+        }
+        for p in subpatch_ports(n, PortDirection::Output) {
+            widest = widest.max(foot_need(text_width(&p.name, out_font.clone())));
         }
     } else {
         let wired = wired_inputs(patch, &n.id);
         let items = values::left_items(cat, spec, n);
-        let outs = ports::resolved_outputs(cat, spec, &n.params);
-        for i in 0..items.len().max(outs.len()) {
-            let out = outs.get(i).map(|p| {
-                let label = values::display_label(p, false);
-                text_width(&label, out_font.clone())
-            });
-            let left = match items.get(i) {
-                None => 0.0,
-                Some(LeftItem::Param { key, kind }) => {
-                    text_width(key, label_font.clone()) + 6.0 + field_width(kind)
+        for p in ports::resolved_outputs(cat, spec, &n.params) {
+            let label = values::display_label(&p, false);
+            widest = widest.max(foot_need(text_width(&label, out_font.clone())));
+        }
+        for item in &items {
+            match item {
+                LeftItem::Param { key, kind } => {
+                    let v = values::current(n, spec, &EditKey::Param(key.clone()), None);
+                    let w = box_width(key, false, kind, &v);
+                    widest = widest.max(row_need(BOX_X, w, None));
                 }
-                Some(LeftItem::Input(port)) => {
-                    let mut w = text_width(&values::display_label(port, true), label_font.clone());
-                    if port.constant {
-                        w += 10.0;
-                    }
-                    if values::browse_filter(&n.def_type, &port.name).is_some() {
-                        w += BROWSE_W + 4.0;
-                    }
-                    let open = expanded.contains(&(n.id.clone(), port.name.clone()));
+                LeftItem::Input(port) => {
+                    let label = values::display_label(port, true);
+                    let browse = if values::browse_filter(&n.def_type, &port.name).is_some() {
+                        BROWSE_W + 4.0
+                    } else {
+                        0.0
+                    };
                     let wired = wired.contains(port.name.as_str());
-                    if let Some((key, kind)) = values::input_editor(spec, port, wired) {
-                        if open {
-                            w += 6.0 + field_width(&kind);
-                        } else {
+                    match values::input_editor(spec, port, wired) {
+                        Some((key, kind)) => {
                             let v = values::current(n, spec, &key, Some(port));
-                            if !v.is_null() {
-                                w += 6.0 + text_width(&values::short(&v), FontId::monospace(10.0));
+                            let w = box_width(&label, port.constant, &kind, &v);
+                            // The `…` button keeps 10 from the right edge.
+                            let w = if browse > 0.0 {
+                                w + browse + 10.0 - BOX_X
+                            } else {
+                                w
+                            };
+                            widest = widest.max(row_need(BOX_X, w, None));
+                        }
+                        None => {
+                            let mut w = text_width(&label, label_font.clone());
+                            if port.constant {
+                                w += MARK_W;
                             }
+                            widest = widest.max(row_need(10.0, w + browse, None));
                         }
                     }
-                    w
                 }
-            };
-            row(left, out);
+            }
         }
     }
     let min = if n.def_type.starts_with("math/") {
@@ -409,40 +427,43 @@ pub fn node_width(
     widest.max(header).clamp(min, MAX_W).ceil()
 }
 
-/// A custom-body node is [`NODE_W`] wide. One whose body lays out the
-/// standard rows (e.g. a Palette in a generating mode) grows when one of
-/// its dropdown rows needs more room, so the dropdown fits its longest
-/// option next to the row's output label.
+/// A custom-body node is [`NODE_W`] wide, or wider for a long output
+/// name. One whose body lays out the standard rows (e.g. a Palette in a
+/// generating mode) grows when one of its dropdown rows needs more room,
+/// so the dropdown fits its longest option.
 fn custom_width(
     n: &PatchNode,
     spec: &floret_engine::spec::NodeSpec,
     cat: &Catalogue,
     c: widgets::Custom,
-    label_font: &FontId,
     out_font: &FontId,
 ) -> f32 {
+    let outs = ports::resolved_outputs(cat, spec, &n.params)
+        .iter()
+        .map(|p| {
+            foot_need(text_width(
+                &values::display_label(p, false),
+                out_font.clone(),
+            ))
+        })
+        .fold(NODE_W, f32::max);
     if super::custom::rows(c, n, cat).is_some() {
-        return NODE_W;
+        return outs.min(MAX_W).ceil();
     }
     let items = values::left_items(cat, spec, n);
-    let outs = ports::resolved_outputs(cat, spec, &n.params);
     let widest = items
         .iter()
-        .enumerate()
-        .filter_map(|(i, item)| match item {
+        .filter_map(|item| match item {
             LeftItem::Param {
                 key,
                 kind: kind @ FieldKind::Select(_),
             } => {
-                let left = text_width(key, label_font.clone()) + 6.0 + field_width(kind);
-                let out = outs.get(i).map_or(0.0, |p| {
-                    14.0 + text_width(&values::display_label(p, false), out_font.clone())
-                });
-                Some(10.0 + left + out + 10.0)
+                let v = values::current(n, spec, &EditKey::Param(key.clone()), None);
+                Some(row_need(BOX_X, box_width(key, false, kind, &v), None))
             }
             _ => None,
         })
-        .fold(NODE_W, f32::max);
+        .fold(outs, f32::max);
     widest.min(MAX_W).ceil()
 }
 
@@ -481,6 +502,22 @@ pub struct Field {
     pub multiline: bool,
     /// Drawn as plain text until hovered (slider / pad range fields).
     pub bare: bool,
+    /// Where the value is drawn and typed into: right of a value box's
+    /// name, else the whole field.
+    pub value_rect: Rect,
+    /// A row's value box: the row's name drawn inside it.
+    pub label: Option<FieldLabel>,
+}
+
+/// A value box's name (Blender style: one rounded box per row, the name at
+/// its left, the value right-aligned).
+#[derive(Clone, Debug, PartialEq)]
+pub struct FieldLabel {
+    pub text: String,
+    /// The constant `C` mark after the name.
+    pub constant: bool,
+    /// The whole box (a vec2's X and Y cells sit inside it).
+    pub frame: Rect,
 }
 
 impl Field {
@@ -495,22 +532,29 @@ impl Field {
             step: 1.0,
             multiline: false,
             bare: false,
+            value_rect: rect,
+            label: None,
         }
     }
 }
 
+/// An input row (inputs and params get rows of their own; outputs are
+/// listed in the footer under them).
 pub struct Row {
     pub y: f32,
+    /// A plain label (wired inputs, inputs with no editor); a row with a
+    /// value box has its name inside the box instead.
     pub label: Option<String>,
     pub label_rect: Rect,
-    /// Input port whose label toggles its inline editor.
-    pub toggle: Option<String>,
-    pub expanded: bool,
-    pub readout: Option<String>,
     pub constant: bool,
     pub integer: bool,
-    /// Output on this row: label and port.
-    pub output: Option<(String, String)>,
+}
+
+/// An output's row in the footer: its label, right-aligned against its
+/// pin on the node's right edge.
+pub struct OutRow {
+    pub y: f32,
+    pub label: String,
 }
 
 pub struct PillGeom {
@@ -541,6 +585,9 @@ pub struct NodeBox {
     pub header: Rect,
     pub pins: Vec<PinGeom>,
     pub rows: Vec<Row>,
+    /// Where the outputs' footer starts (screen y; `None` without outputs).
+    pub footer: Option<f32>,
+    pub outs: Vec<OutRow>,
     pub fields: Vec<Field>,
     pub pills: Vec<PillGeom>,
     pub top: Vec<TopGeom>,
@@ -581,6 +628,16 @@ impl NodeBox {
     }
 }
 
+/// The `#slot` badge of an unnamed Read / Write half (a named pair shows
+/// its name in the title instead).
+fn slot_badge(n: &PatchNode, look: Look) -> Option<String> {
+    let named = pairs::is_pair_type(&n.def_type) && pairs::name(n).is_some();
+    n.params
+        .get("slot")
+        .filter(|_| look == Look::Node && !named)
+        .map(|v| format!("#{}", values::short(v)))
+}
+
 /// Per-node decorations decided outside layout.
 #[derive(Default)]
 pub struct Decor {
@@ -601,7 +658,6 @@ pub struct Ctx<'a> {
     pub pan: Vec2,
     pub zoom: f32,
     pub scope: Option<&'a str>,
-    pub expanded: &'a HashSet<(String, String)>,
     pub decor: &'a Decor,
 }
 
@@ -619,21 +675,101 @@ impl Ctx<'_> {
     }
 }
 
-/// Room a dropdown keeps for its ▾ and insets around the option text.
-const SELECT_CHROME: f32 = 20.0;
+/// Value boxes, in canvas units: the box's left inset in its row, height,
+/// inner padding and the least gap between its name and its value.
+pub const BOX_X: f32 = 8.0;
+pub const BOX_H: f32 = 18.0;
+pub const BOX_PAD: f32 = 6.0;
+pub const BOX_GAP: f32 = 6.0;
+/// The constant `C` mark after a name.
+pub const MARK_W: f32 = 10.0;
+/// A checkbox's side, and the gap before its name.
+pub const CHECK: f32 = 12.0;
+pub const CHECK_GAP: f32 = 6.0;
+/// Room a dropdown keeps right of its option text for the ▾.
+pub const SELECT_ARROW: f32 = 12.0;
+/// The widest a dropdown's option text gets room for (a longer one, e.g.
+/// a font name, is cut with "…").
+pub const SELECT_MAX: f32 = 100.0;
+/// A colour box's swatch and the gap before its hex.
+pub const SWATCH_W: f32 = 10.0;
+/// The gap between a vec2 box's X and Y cells, and a cell's inner padding.
+pub const CELL_GAP: f32 = 3.0;
+const CELL_PAD: f32 = 3.0;
+/// Size of a value box's value text.
+pub const VALUE_FONT: f32 = 10.0;
 
-fn field_width(kind: &FieldKind) -> f32 {
+/// A row's width: `lead` to its content, `left` wide, then the output
+/// label (10 from the right edge, 14 from the content) or `lead` again.
+fn row_need(lead: f32, left: f32, out: Option<f32>) -> f32 {
+    lead + left + out.map_or(lead, |o| 14.0 + o + 10.0)
+}
+
+/// A footer row's width for an output label `out` wide.
+fn foot_need(out: f32) -> f32 {
+    row_need(10.0, 0.0, Some(out))
+}
+
+/// What a value box shows (a vec2's cells show [`values::num`] of each
+/// axis).
+pub fn value_text(kind: &FieldKind, value: &Json) -> String {
     match kind {
-        FieldKind::Number { .. } => 48.0,
-        FieldKind::Vec2 => 84.0,
-        FieldKind::Bool => 12.0,
-        FieldKind::Text | FieldKind::Color => 70.0,
-        // Wide enough for the longest option.
-        FieldKind::Select(opts) => opts
-            .iter()
-            .map(|o| text_width(values::option_label(o), FontId::monospace(10.0)) + SELECT_CHROME)
-            .fold(56.0, f32::max)
-            .min(160.0),
+        _ if value.is_null() && !matches!(kind, FieldKind::Color) => "—".into(),
+        FieldKind::Number { .. } => values::num(values::as_f64(value), 3),
+        FieldKind::Color => values::hex(values::as_rgba(value)),
+        FieldKind::Select(_) => values::option_label(&values::as_text(value)).to_owned(),
+        FieldKind::Vec2 => {
+            let (x, y) = values::as_vec2(value);
+            format!("{}, {}", values::num(x, 3), values::num(y, 3))
+        }
+        FieldKind::Bool | FieldKind::Text => values::as_text(value),
+    }
+}
+
+/// Width of a vec2 box's X or Y cell.
+fn cell_width(value: &Json) -> f32 {
+    let (x, y) = values::as_vec2(value);
+    let font = || FontId::monospace(VALUE_FONT);
+    text_width(&values::num(x, 3), font())
+        .max(text_width(&values::num(y, 3), font()))
+        .max(text_width("00", font()))
+        + 2.0 * CELL_PAD
+}
+
+/// Room a value box's value needs: what it shows, and at least a short
+/// number's worth so a scrub doesn't keep resizing the node. A dropdown
+/// fits its longest option.
+fn value_width(kind: &FieldKind, value: &Json) -> f32 {
+    let mono = || FontId::monospace(VALUE_FONT);
+    match kind {
+        FieldKind::Number { .. } => {
+            text_width(&value_text(kind, value), mono()).max(text_width("0.000", mono()))
+        }
+        FieldKind::Vec2 => 2.0 * cell_width(value) + CELL_GAP,
+        FieldKind::Bool => 0.0,
+        FieldKind::Text => text_width(&values::short(value), mono()).clamp(24.0, 100.0),
+        FieldKind::Color => SWATCH_W + 4.0 + text_width(&value_text(kind, value), mono()),
+        FieldKind::Select(opts) => {
+            opts.iter()
+                .map(|o| text_width(values::option_label(o), mono()))
+                .fold(text_width(&value_text(kind, value), mono()), f32::max)
+                .min(SELECT_MAX)
+                + 4.0
+                + SELECT_ARROW
+        }
+    }
+}
+
+/// Width of a value box named `label` (a checkbox and its name for a
+/// bool).
+fn box_width(label: &str, constant: bool, kind: &FieldKind, value: &Json) -> f32 {
+    let mut name = text_width(label, FontId::proportional(LABEL_FONT));
+    if constant {
+        name += MARK_W;
+    }
+    match kind {
+        FieldKind::Bool => CHECK + CHECK_GAP + name,
+        _ => BOX_PAD + name + BOX_GAP + value_width(kind, value) + BOX_PAD,
     }
 }
 
@@ -657,7 +793,7 @@ pub fn layout(
             continue;
         };
         let look = look_of(n, cx.cat, cx.scope);
-        let (w, h) = box_size_with(cx.patch, n, cx.cat, look, cx.expanded);
+        let (w, h) = box_size(cx.patch, n, cx.cat, look);
         let p = ops::absolute_pos(cx.patch, &n.id);
         let z = cx.zoom;
         let rect = Rect::from_min_size(cx.screen(p.x, p.y), vec2(w as f32, h as f32) * z);
@@ -668,6 +804,7 @@ pub fn layout(
             .filter(|_| look.is_frame() || look == Look::Collapsed)
             .map(str::to_owned)
             .or_else(|| values::header_symbol(n).map(str::to_owned))
+            .or_else(|| pairs::title(n, &spec.label).filter(|_| look == Look::Node))
             .unwrap_or_else(|| spec.label.clone());
         let header = if look.is_frame() {
             Rect::from_min_max(
@@ -686,6 +823,8 @@ pub fn layout(
             header,
             pins: Vec::new(),
             rows: Vec::new(),
+            footer: None,
+            outs: Vec::new(),
             fields: Vec::new(),
             pills: Vec::new(),
             top: Vec::new(),
@@ -697,11 +836,7 @@ pub fn layout(
                     .unwrap_or("")
                     .to_owned()
             }),
-            slot: n
-                .params
-                .get("slot")
-                .filter(|_| look == Look::Node)
-                .map(|v| format!("#{}", values::short(v))),
+            slot: slot_badge(n, look),
             warning: None,
             badge: None,
             body: 0.0,
@@ -720,6 +855,9 @@ pub fn layout(
             },
             Look::Probe => super::custom::probe_box(cx, n, &mut b),
             Look::Comment => super::custom::comment_box(cx, n, &mut b),
+        }
+        if matches!(look, Look::Node | Look::Collapsed) {
+            footer(cx, n, spec, &mut b);
         }
         if look == Look::Node && floret_engine::bypass::can_bypass(spec) {
             b.bypass = Some(n.bypassed);
@@ -847,44 +985,71 @@ pub fn row_y(b: &NodeBox, i: usize, z: f32) -> f32 {
 
 fn collapsed_box(cx: &Ctx, n: &PatchNode, b: &mut NodeBox) {
     let z = cx.zoom;
-    let ins: Vec<_> = subpatch_ports(n, PortDirection::Input).collect();
-    let outs: Vec<_> = subpatch_ports(n, PortDirection::Output).collect();
-    for i in 0..ins.len().max(outs.len()).max(1) {
+    for (i, p) in subpatch_ports(n, PortDirection::Input).enumerate() {
         let y = row_y(b, i, z);
-        let input = ins.get(i);
-        if let Some(p) = input {
-            b.pins.push(PinGeom {
-                side: Side::In,
-                port: p.id.clone(),
-                label: p.name.clone(),
-                ty: PortType::parse(&p.ty).unwrap_or(PortType::Any),
-                pos: pos2(b.rect.left(), y),
-                spread: false,
-                constant: false,
-            });
-        }
-        if let Some(p) = outs.get(i) {
-            b.pins.push(PinGeom {
-                side: Side::Out,
-                port: p.id.clone(),
-                label: p.name.clone(),
-                ty: PortType::parse(&p.ty).unwrap_or(PortType::Any),
-                pos: pos2(b.rect.right(), y),
-                spread: false,
-                constant: false,
-            });
-        }
+        b.pins.push(PinGeom {
+            side: Side::In,
+            port: p.id.clone(),
+            label: p.name.clone(),
+            ty: PortType::parse(&p.ty).unwrap_or(PortType::Any),
+            pos: pos2(b.rect.left(), y),
+            spread: false,
+            constant: false,
+        });
         b.rows.push(Row {
             y,
-            label: input.map(|p| p.name.clone()),
+            label: Some(p.name.clone()),
             label_rect: Rect::NOTHING,
-            toggle: None,
-            expanded: false,
-            readout: None,
             constant: false,
             integer: false,
-            output: outs.get(i).map(|p| (p.name.clone(), p.id.clone())),
         });
+    }
+}
+
+/// The outputs' footer at the bottom of a node or collapsed subpatch: one
+/// compact row per output, its label right-aligned against its pin.
+fn footer(cx: &Ctx, n: &PatchNode, spec: &floret_engine::spec::NodeSpec, b: &mut NodeBox) {
+    let z = cx.zoom;
+    // (label, port, type, spread)
+    let outs: Vec<(String, String, PortType, bool)> = if b.look == Look::Collapsed {
+        subpatch_ports(n, PortDirection::Output)
+            .map(|p| {
+                let ty = PortType::parse(&p.ty).unwrap_or(PortType::Any);
+                (p.name.clone(), p.id.clone(), ty, false)
+            })
+            .collect()
+    } else {
+        ports::resolved_outputs(cx.cat, spec, &n.params)
+            .iter()
+            .map(|p| {
+                let spread = p.kind == PortKind::Spread;
+                (
+                    values::display_label(p, false),
+                    p.name.clone(),
+                    p.ty,
+                    spread,
+                )
+            })
+            .collect()
+    };
+    if outs.is_empty() {
+        return;
+    }
+    // The footer fills the bottom of the box (see `box_size`).
+    let top = b.rect.bottom() - (2.0 * FOOT_PAD + outs.len() as f32 * FOOT_ROW_H) * z;
+    b.footer = Some(top);
+    for (i, (label, port, ty, spread)) in outs.into_iter().enumerate() {
+        let y = top + (FOOT_PAD + FOOT_ROW_H * (i as f32 + 0.5)) * z;
+        b.pins.push(PinGeom {
+            side: Side::Out,
+            port,
+            label: label.clone(),
+            ty,
+            pos: pos2(b.rect.right(), y),
+            spread,
+            constant: false,
+        });
+        b.outs.push(OutRow { y, label });
     }
 }
 
@@ -897,64 +1062,38 @@ pub fn row_box(
 ) {
     let z = cx.zoom;
     let items = values::left_items(cx.cat, spec, n);
-    let outs = ports::resolved_outputs(cx.cat, spec, &n.params);
-    for i in 0..items.len().max(outs.len()) {
+    for (i, item) in items.iter().enumerate() {
         let y = row_y(b, i, z);
-        let output = outs
-            .get(i)
-            .map(|p| (values::display_label(p, false), p.name.clone()));
-        if let Some(p) = outs.get(i) {
-            b.pins.push(PinGeom {
-                side: Side::Out,
-                port: p.name.clone(),
-                label: values::display_label(p, false),
-                ty: p.ty,
-                pos: pos2(b.rect.right(), y),
-                spread: p.kind == PortKind::Spread,
-                constant: false,
-            });
-        }
         let mut row = Row {
             y,
             label: None,
             label_rect: Rect::NOTHING,
-            toggle: None,
-            expanded: false,
-            readout: None,
             constant: false,
             integer: false,
-            output,
         };
-        // (key, kind, value) of the editor shown on this row.
-        let mut editor: Option<(EditKey, FieldKind, Json)> = None;
+        // (name, constant, key, kind, value) of this row's value box.
+        let mut boxed: Option<(String, bool, EditKey, FieldKind, Json)> = None;
         // A `…` file button sits at the row's right end.
         let mut browse = false;
-        match items.get(i) {
-            None => {}
-            Some(LeftItem::Param { key, kind }) => {
-                row.label = Some(key.clone());
+        match item {
+            LeftItem::Param { key, kind } => {
                 let k = EditKey::Param(key.clone());
                 let v = values::current(n, spec, &k, None);
-                editor = Some((k, kind.clone(), v));
+                boxed = Some((key.clone(), false, k, kind.clone(), v));
             }
-            Some(LeftItem::Input(port)) => {
+            LeftItem::Input(port) => {
                 let is_wired = wired.contains(&(n.id.as_str(), port.name.as_str()));
+                let label = values::display_label(port, true);
                 b.pins.push(PinGeom {
                     side: Side::In,
                     port: port.name.clone(),
-                    label: values::display_label(port, true),
+                    label: label.clone(),
                     ty: port.ty,
                     pos: pos2(b.rect.left(), y),
                     spread: port.kind == PortKind::Spread,
                     constant: port.constant,
                 });
-                row.label = Some(values::display_label(port, true));
-                row.constant = port.constant;
-                row.integer = port.integer && port.ty == PortType::Number;
-                if !is_wired
-                    && outs.get(i).is_none()
-                    && values::browse_filter(&n.def_type, &port.name).is_some()
-                {
+                if !is_wired && values::browse_filter(&n.def_type, &port.name).is_some() {
                     browse = true;
                     b.widgets.push(super::custom::Widget {
                         rect: Rect::from_center_size(
@@ -965,17 +1104,19 @@ pub fn row_box(
                         kind: super::custom::WidgetKind::Browse(port.name.clone()),
                     });
                 }
-                if let Some((key, kind)) = values::input_editor(spec, port, is_wired) {
-                    row.toggle = Some(port.name.clone());
-                    row.expanded = cx.expanded.contains(&(n.id.clone(), port.name.clone()));
-                    let v = values::current(n, spec, &key, Some(port));
-                    if row.expanded {
-                        editor = Some((key, kind, v));
-                    } else if !v.is_null() {
-                        // The live value: the param for param-backed pins
-                        // (Renderer width / height), else portValues or the
-                        // declared default.
-                        row.readout = Some(values::short(&v));
+                match values::input_editor(spec, port, is_wired) {
+                    // The live value: the param for param-backed pins
+                    // (Renderer width / height), else portValues or the
+                    // declared default.
+                    Some((key, kind)) => {
+                        let v = values::current(n, spec, &key, Some(port));
+                        boxed = Some((label, port.constant, key, kind, v));
+                    }
+                    // Wired, or no editor for its type: just the name.
+                    None => {
+                        row.label = Some(label);
+                        row.constant = port.constant;
+                        row.integer = port.integer && port.ty == PortType::Number;
                     }
                 }
             }
@@ -983,51 +1124,71 @@ pub fn row_box(
         if let Some(label) = &row.label {
             let mut lw = cx.text_w(label, LABEL_FONT);
             if row.constant {
-                lw += 10.0;
+                lw += MARK_W;
             }
             row.label_rect = Rect::from_min_size(
                 pos2(b.rect.left() + 8.0 * z, y - ROW_H * z / 2.0),
                 vec2(lw + 4.0, ROW_H) * z,
             );
-            if let Some((key, kind, value)) = editor {
-                let x0 = 10.0 + lw + 6.0;
-                // Leave room for the row's output label.
-                let width = b.rect.width() / z;
-                let right = match outs.get(i) {
-                    Some(p) => {
-                        let label = values::display_label(p, false);
-                        let out = text_width(&label, FontId::proportional(LABEL_FONT));
-                        width - 10.0 - out - 14.0
-                    }
-                    None if browse => width - 10.0 - BROWSE_W - 4.0,
-                    None => width - 10.0,
+        }
+        if let Some((label, constant, key, kind, value)) = boxed {
+            // The box runs to the row's `…` button or the node's edge.
+            let width = b.rect.width() / z;
+            let right = if browse {
+                width - 10.0 - BROWSE_W - 4.0
+            } else {
+                width - BOX_X
+            };
+            if right - BOX_X >= 12.0 {
+                let span = |x0: f32, x1: f32, h: f32| {
+                    Rect::from_min_max(
+                        pos2(b.rect.left() + x0 * z, y - h * z / 2.0),
+                        pos2(b.rect.left() + x1 * z, y + h * z / 2.0),
+                    )
                 };
-                let w = field_width(&kind).min(right - x0);
-                if w >= 12.0 {
-                    let mk = |x: f32, w: f32| {
-                        Rect::from_min_size(
-                            pos2(b.rect.left() + x * z, y - FIELD_H * z / 2.0),
-                            vec2(w, FIELD_H) * z,
-                        )
-                    };
-                    if kind == FieldKind::Vec2 {
-                        let half = (w - 4.0) / 2.0;
-                        for (axis, x) in [(0, x0), (1, x0 + half + 4.0)] {
+                let mut name = cx.text_w(&label, LABEL_FONT);
+                if constant {
+                    name += MARK_W;
+                }
+                let frame = span(BOX_X, right, BOX_H);
+                let tag = FieldLabel {
+                    text: label,
+                    constant,
+                    frame,
+                };
+                // Where the value part starts: past the name.
+                let vx = (BOX_X + BOX_PAD + name + BOX_GAP).min(right - BOX_PAD);
+                match kind {
+                    FieldKind::Bool => {
+                        // A checkbox, then its name: clicking either toggles.
+                        let r = span(BOX_X, (BOX_X + CHECK + CHECK_GAP + name).min(right), BOX_H);
+                        b.fields.push(Field {
+                            value_rect: r,
+                            label: Some(FieldLabel { frame: r, ..tag }),
+                            ..Field::new(r, &n.id, key, kind, value)
+                        });
+                    }
+                    FieldKind::Vec2 => {
+                        // X and Y cells right of the name, each its own field.
+                        let end = right - CELL_PAD / 2.0;
+                        let cell = ((end - vx - CELL_GAP) / 2.0).max(8.0);
+                        for axis in 0..2 {
+                            let x1 = end - (1 - axis) as f32 * (cell + CELL_GAP);
+                            let r = span(x1 - cell, x1, BOX_H - 4.0);
                             b.fields.push(Field {
                                 axis: Some(axis),
-                                ..Field::new(
-                                    mk(x, half),
-                                    &n.id,
-                                    key.clone(),
-                                    kind.clone(),
-                                    value.clone(),
-                                )
+                                value_rect: r,
+                                label: Some(tag.clone()),
+                                ..Field::new(r, &n.id, key.clone(), kind.clone(), value.clone())
                             });
                         }
-                    } else {
-                        let w = if kind == FieldKind::Bool { 12.0 } else { w };
-                        b.fields
-                            .push(Field::new(mk(x0, w), &n.id, key, kind, value));
+                    }
+                    _ => {
+                        b.fields.push(Field {
+                            value_rect: span(vx, right - BOX_PAD, BOX_H),
+                            label: Some(tag),
+                            ..Field::new(frame, &n.id, key, kind, value)
+                        });
                     }
                 }
             }
@@ -1194,16 +1355,6 @@ impl Hits<'_> {
             .find(|w| w.kind.interactive() && w.rect.expand(1.0).contains(p))
     }
 
-    /// An input label that toggles its editor: (node, port).
-    pub fn toggle(&self, p: Pos2) -> Option<(String, String)> {
-        let id = self.body(p)?;
-        self.boxes[id.as_str()]
-            .rows
-            .iter()
-            .find(|r| r.toggle.is_some() && r.label_rect.contains(p))
-            .map(|r| (id.clone(), r.toggle.clone().expect("checked")))
-    }
-
     /// A frame-port pill: (region, port).
     pub fn pill(&self, p: Pos2) -> Option<(String, String)> {
         if self.body(p).is_some() {
@@ -1264,5 +1415,236 @@ impl Hits<'_> {
                 .filter(|(r, ..)| r.contains(p))
                 .map(|(_, _, hint, _)| hint)
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    /// Node `n` of type `ty` laid out at zoom 1, with `wired` inputs fed
+    /// by a Number node.
+    fn laid_out(ty: &str, wired: &[&str]) -> NodeBox {
+        super::super::samples::real_fonts();
+        let cat = Catalogue::builtin();
+        let edges: Vec<Json> = wired
+            .iter()
+            .map(|p| {
+                json!({"id": format!("e_{p}"), "source": "src", "sourceHandle": "out-value",
+                       "target": "n", "targetHandle": format!("in-{p}")})
+            })
+            .collect();
+        let flora = json!({
+            "kind": "floret.patch", "version": 2, "edges": edges,
+            "nodes": [
+                {"id": "src", "defType": "value/number", "position": {"x": -300, "y": 0}},
+                {"id": "n", "defType": ty, "position": {"x": 0, "y": 0}},
+            ],
+        });
+        let mut patch = floret_engine::load_patch(&flora.to_string()).expect("loads");
+        crate::editor::settle(&mut patch, cat);
+        let painter = measuring_painter();
+        let decor = Decor::default();
+        let cx = Ctx {
+            patch: &patch,
+            cat,
+            painter: &painter,
+            origin: Pos2::ZERO,
+            pan: Vec2::ZERO,
+            zoom: 1.0,
+            scope: None,
+            decor: &decor,
+        };
+        let all: HashSet<String> = ["n".to_owned()].into();
+        layout(&cx, &all, &|_| false)
+            .swap_remove("n")
+            .expect("laid out")
+    }
+
+    fn fields_of<'a>(b: &'a NodeBox, port: &str) -> Vec<&'a Field> {
+        b.fields
+            .iter()
+            .filter(|f| match &f.key {
+                EditKey::Param(k) | EditKey::Port(k) => k == port,
+            })
+            .collect()
+    }
+
+    fn row_named<'a>(b: &'a NodeBox, name: &str) -> Option<&'a Row> {
+        b.rows.iter().find(|r| r.label.as_deref() == Some(name))
+    }
+
+    #[test]
+    fn unwired_inputs_are_value_boxes_with_their_name_inside() {
+        let b = laid_out("draw/rect", &[]);
+        let w = fields_of(&b, "w");
+        assert_eq!(w.len(), 1);
+        let f = w[0];
+        assert!(matches!(f.kind, FieldKind::Number { .. }));
+        let tag = f.label.as_ref().expect("an inline name");
+        assert_eq!(tag.text, "w");
+        // The whole box scrubs; the value sits right of the name, inside it.
+        assert_eq!(f.rect, tag.frame);
+        assert!(f.value_rect.left() > tag.frame.left() + BOX_PAD);
+        assert!(f.value_rect.right() <= tag.frame.right());
+        assert!((f.rect.left() - (b.rect.left() + BOX_X)).abs() < 0.01);
+        // No separate label or read-out on the row.
+        assert!(row_named(&b, "w").is_none());
+    }
+
+    #[test]
+    fn a_wired_input_shows_just_its_name() {
+        let b = laid_out("draw/rect", &["w"]);
+        assert!(fields_of(&b, "w").is_empty());
+        assert!(row_named(&b, "w").is_some());
+        // The other inputs keep their boxes.
+        assert_eq!(fields_of(&b, "h").len(), 1);
+    }
+
+    #[test]
+    fn each_kind_gets_its_value_box() {
+        let b = laid_out("collider/circle", &[]);
+        let one = |port: &str| {
+            let f = fields_of(&b, port);
+            assert_eq!(f.len(), 1, "{port}");
+            f[0].clone()
+        };
+        assert!(matches!(one("mode").kind, FieldKind::Select(_)));
+        let inverted = one("inverted");
+        assert_eq!(inverted.kind, FieldKind::Bool);
+        // A checkbox and its name: one hit area.
+        let tag = inverted.label.as_ref().expect("named");
+        assert!(tag.constant);
+        assert!(inverted.rect.width() >= CHECK + CHECK_GAP);
+        // Vec2: two cells side by side in one box with the name.
+        let center = fields_of(&b, "center");
+        assert_eq!(center.len(), 2);
+        assert_eq!(center[0].axis, Some(0));
+        assert_eq!(center[1].axis, Some(1));
+        assert!(center[0].rect.right() < center[1].rect.left());
+        let frame = center[0].label.as_ref().expect("named").frame;
+        assert!(frame.contains_rect(center[0].rect) && frame.contains_rect(center[1].rect));
+        assert_eq!(center[0].label.as_ref().unwrap().text, "center");
+        let fill = laid_out("style/fill", &[]);
+        assert_eq!(fields_of(&fill, "color")[0].kind, FieldKind::Color);
+    }
+
+    fn out_pins(b: &NodeBox) -> Vec<&PinGeom> {
+        b.pins.iter().filter(|p| p.side == Side::Out).collect()
+    }
+
+    /// Height of a plain node: header, a row per input, then the footer.
+    fn expected_h(b: &NodeBox) -> f32 {
+        let outs = b.outs.len();
+        let foot = if outs == 0 {
+            BOTTOM_PAD
+        } else {
+            let gap = if b.rows.is_empty() { 0.0 } else { FOOT_GAP };
+            gap + 2.0 * FOOT_PAD + outs as f32 * FOOT_ROW_H
+        };
+        HEADER_H + b.body + b.rows.len() as f32 * ROW_H + foot
+    }
+
+    #[test]
+    fn a_single_output_sits_in_a_one_row_footer() {
+        let b = laid_out("draw/rect", &[]);
+        let outs = out_pins(&b);
+        assert_eq!(outs.len(), 1);
+        assert_eq!(b.outs.len(), 1);
+        assert_eq!(outs[0].port, "shape");
+        let top = b.footer.expect("a footer");
+        let last = b.rows.iter().map(|r| r.y).fold(f32::MIN, f32::max);
+        assert!(top >= last + ROW_H / 2.0, "footer under the inputs");
+        let pin = outs[0].pos;
+        assert_eq!(pin.x, b.rect.right());
+        assert!((pin.y - (top + FOOT_PAD + FOOT_ROW_H / 2.0)).abs() < 0.01);
+        assert!((pin.y - b.outs[0].y).abs() < 0.01);
+        // Nothing on the title row: the header has no pins.
+        assert!(b.pins.iter().all(|p| p.pos.y > b.header.bottom()));
+        // Every value box runs the node's full inner width.
+        let right = b.rect.right() - BOX_X;
+        for f in b.fields.iter().filter(|f| f.kind != FieldKind::Bool) {
+            let frame = f.label.as_ref().expect("a value box").frame;
+            assert!((frame.right() - right).abs() < 0.01, "{:?}", f.key);
+            assert!((frame.left() - (b.rect.left() + BOX_X)).abs() < 0.01);
+        }
+        assert!((b.rect.height() - expected_h(&b)).abs() < 0.01);
+    }
+
+    #[test]
+    fn several_outputs_are_listed_under_the_inputs() {
+        let b = laid_out("geometry/layout", &[]);
+        assert_eq!(b.outs.len(), 4);
+        let outs = out_pins(&b);
+        assert_eq!(outs.len(), 4);
+        let last = b.rows.iter().map(|r| r.y).fold(f32::MIN, f32::max);
+        let top = b.footer.expect("a footer");
+        assert!(top >= last + ROW_H / 2.0);
+        for (i, o) in b.outs.iter().enumerate() {
+            let want = top + FOOT_PAD + FOOT_ROW_H * (i as f32 + 0.5);
+            assert!((o.y - want).abs() < 0.01, "{}", o.label);
+            let pin = outs[i];
+            assert_eq!(pin.label, o.label);
+            assert_eq!(pin.pos, pos2(b.rect.right(), o.y));
+        }
+        for w in b.outs.windows(2) {
+            assert!((w[1].y - w[0].y - FOOT_ROW_H).abs() < 0.01);
+        }
+        // The footer ends at the bottom edge, its padding below the last row.
+        let end = b.outs.last().unwrap().y + FOOT_ROW_H / 2.0 + FOOT_PAD;
+        assert!((end - b.rect.bottom()).abs() < 0.01);
+        assert!((b.rect.height() - expected_h(&b)).abs() < 0.01);
+    }
+
+    #[test]
+    fn a_node_without_outputs_has_no_footer() {
+        let b = laid_out("sound/output", &[]);
+        assert!(b.footer.is_none());
+        assert!(b.outs.is_empty());
+        assert!(out_pins(&b).is_empty());
+        assert!((b.rect.height() - expected_h(&b)).abs() < 0.01);
+    }
+
+    #[test]
+    fn custom_bodies_list_their_outputs_in_the_footer_too() {
+        for ty in [
+            "io/slider",
+            "io/bang",
+            "io/xy-pad",
+            "io/select",
+            "color/palette",
+        ] {
+            let b = laid_out(ty, &[]);
+            let top = b.footer.unwrap_or_else(|| panic!("{ty}: no footer"));
+            assert!(
+                top >= b.rect.top() + (HEADER_H + b.body) * 1.0 - 0.01,
+                "{ty}"
+            );
+            for p in out_pins(&b) {
+                assert!(p.pos.y > top, "{ty}: {} above the footer", p.port);
+            }
+            for r in &b.rows {
+                assert!(r.y + ROW_H / 2.0 <= top + 0.01, "{ty}: a row in the footer");
+            }
+            let controls = b.widgets.iter().map(|w| w.rect);
+            for r in controls.chain(b.fields.iter().map(|f| f.rect)) {
+                assert!(r.bottom() <= top + 0.01, "{ty}: a control in the footer");
+            }
+        }
+    }
+
+    #[test]
+    fn nodes_stay_about_as_wide_as_with_the_read_outs() {
+        // Widths with the old name + read-out rows.
+        for (ty, before) in [
+            ("draw/rect", 109.0),
+            ("collider/circle", 136.0),
+            ("style/fill", 134.0),
+            ("draw/text", 125.0),
+        ] {
+            let w = laid_out(ty, &[]).rect.width();
+            assert!((w - before).abs() <= 30.0, "{ty}: {before} -> {w}");
+        }
     }
 }

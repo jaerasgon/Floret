@@ -16,12 +16,12 @@
         "y": -324
       },
       "params": {
-        "text": "Living clock\n\nDriven by the real time: the Clock node reads the computer's clock every frame (time of day, date, weekday, how far through the year). From the outside in: 60 second ticks, the minutes and hours as arcs, and a spiral of the year's 365 days — past days in their month's colour, today pulsing with the seconds. The sky behind follows the hour, the Moon shows its real phase (days since a known new moon ÷ 29.53), and the date is spelled out from lists of day and month names (Lookup).\n\n• Slider into the Clock's `offset`: time travel, ± 12 hours (try evening).\n• Toggle: 24-hour or 12-hour digits.",
+        "text": "Living clock\n\nDriven by the real time: the Clock node reads the computer's clock every frame (time of day, date, weekday, how far through the year). From the outside in: 60 second ticks, the minutes and hours as arcs, and a spiral of the year's 365 days (the Second ticks and Year spiral subpatches work out every tick and day at once; the ForEach regions draw them) — past days in their month's colour, today pulsing with the seconds. The sky behind follows the hour, the Moon shows its real phase (days since a known new moon, in lunar months of 29.53 days), and the date is spelled out from lists of day and month names (Lookup).\n\n• Slider into the Clock's `offset`: time travel, ± 12 hours (try evening).\n• Toggle: 24-hour or 12-hour digits.",
         "width": 560,
         "height": 260
       },
       "portValues": {
-        "text": "Living clock\n\nDriven by the real time: the Clock node reads the computer's clock every frame (time of day, date, weekday, how far through the year). From the outside in: 60 second ticks, the minutes and hours as arcs, and a spiral of the year's 365 days — past days in their month's colour, today pulsing with the seconds. The sky behind follows the hour, the Moon shows its real phase (days since a known new moon ÷ 29.53), and the date is spelled out from lists of day and month names (Lookup).\n\n• Slider into the Clock's `offset`: time travel, ± 12 hours (try evening).\n• Toggle: 24-hour or 12-hour digits.",
+        "text": "Living clock\n\nDriven by the real time: the Clock node reads the computer's clock every frame (time of day, date, weekday, how far through the year). From the outside in: 60 second ticks, the minutes and hours as arcs, and a spiral of the year's 365 days (the Second ticks and Year spiral subpatches work out every tick and day at once; the ForEach regions draw them) — past days in their month's colour, today pulsing with the seconds. The sky behind follows the hour, the Moon shows its real phase (days since a known new moon, in lunar months of 29.53 days), and the date is spelled out from lists of day and month names (Lookup).\n\n• Slider into the Clock's `offset`: time travel, ± 12 hours (try evening).\n• Toggle: 24-hour or 12-hour digits.",
         "width": 560,
         "height": 260
       }
@@ -31,7 +31,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 1742
+        "y": 1338
       },
       "params": {
         "value": 0,
@@ -48,8 +48,8 @@
       "id": "clk_hours24",
       "defType": "io/toggle",
       "position": {
-        "x": 264,
-        "y": 1607
+        "x": 2378,
+        "y": 1369
       },
       "params": {
         "value": true
@@ -62,8 +62,8 @@
       "id": "clk_clock",
       "defType": "time/clock",
       "position": {
-        "x": 280,
-        "y": 1745
+        "x": 269,
+        "y": 1341
       },
       "params": {
         "zone": "local"
@@ -76,7 +76,7 @@
       "id": "clk_skyColours",
       "defType": "color/palette",
       "position": {
-        "x": 1076,
+        "x": 623,
         "y": 0
       },
       "params": {
@@ -101,23 +101,11 @@
       }
     },
     {
-      "id": "clk_dayFraction",
-      "defType": "math/expression",
-      "position": {
-        "x": 1076,
-        "y": 280
-      },
-      "params": {
-        "expr": "h / 24"
-      },
-      "portValues": {}
-    },
-    {
       "id": "clk_sky",
       "defType": "color/gradient",
       "position": {
-        "x": 2283,
-        "y": 312
+        "x": 1238,
+        "y": 154
       },
       "params": {
         "space": "oklab"
@@ -128,8 +116,8 @@
       "id": "clk_skyFill",
       "defType": "style/fill",
       "position": {
-        "x": 3719,
-        "y": 604
+        "x": 4423,
+        "y": 423
       },
       "params": {},
       "portValues": {}
@@ -138,8 +126,8 @@
       "id": "clk_skyRect",
       "defType": "draw/rect",
       "position": {
-        "x": 4039,
-        "y": 711
+        "x": 4721,
+        "y": 402
       },
       "params": {
         "anchor": "center"
@@ -158,8 +146,8 @@
       "id": "clk_faceFill",
       "defType": "style/fill",
       "position": {
-        "x": 3689,
-        "y": 881
+        "x": 4393,
+        "y": 635
       },
       "params": {},
       "portValues": {
@@ -175,8 +163,8 @@
       "id": "clk_face",
       "defType": "draw/ellipse",
       "position": {
-        "x": 4039,
-        "y": 903
+        "x": 4721,
+        "y": 594
       },
       "params": {},
       "portValues": {
@@ -192,8 +180,8 @@
       "id": "clk_sixty",
       "defType": "spread/range",
       "position": {
-        "x": 279,
-        "y": 701
+        "x": 269,
+        "y": 725
       },
       "params": {
         "count": 60
@@ -206,78 +194,53 @@
       "id": "clk_ticks",
       "defType": "region/foreach",
       "position": {
-        "x": 648,
-        "y": 444
+        "x": 949,
+        "y": 324
       },
       "params": {
-        "width": 1024,
-        "height": 535,
+        "width": 731,
+        "height": 314,
         "label": "ForEach second"
       },
       "ports": [
-        {
-          "id": "i",
-          "name": "i",
-          "type": "number",
-          "direction": "input",
-          "y": 294
-        },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 240
+          "y": 88
+        },
+        {
+          "id": "a",
+          "name": "inner",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "b",
+          "name": "outer",
+          "type": "vec2",
+          "direction": "input",
+          "y": 107
+        },
+        {
+          "id": "c",
+          "name": "colour",
+          "type": "color",
+          "direction": "input",
+          "y": 189
         }
       ],
-      "width": 1024,
-      "height": 535
-    },
-    {
-      "id": "clk_tickInner",
-      "defType": "math/expression",
-      "position": {
-        "x": 140,
-        "y": 40
-      },
-      "params": {
-        "expr": "vec2(cos(i / 60 * tau - pi / 2), sin(i / 60 * tau - pi / 2)) * (i % 5 == 0 ? 232 : 240)"
-      },
-      "parentId": "clk_ticks",
-      "portValues": {}
-    },
-    {
-      "id": "clk_tickOuter",
-      "defType": "math/expression",
-      "position": {
-        "x": 140,
-        "y": 204
-      },
-      "params": {
-        "expr": "vec2(cos(i / 60 * tau - pi / 2), sin(i / 60 * tau - pi / 2)) * 258"
-      },
-      "parentId": "clk_ticks",
-      "portValues": {}
-    },
-    {
-      "id": "clk_tickLight",
-      "defType": "math/expression",
-      "position": {
-        "x": 140,
-        "y": 357
-      },
-      "params": {
-        "expr": "rgb(1, 0.93, 0.8, i < floor(s) ? 0.95 : (i == floor(s) ? 0.3 + 0.7 * fract(s) : 0.16))"
-      },
-      "parentId": "clk_ticks",
-      "portValues": {}
+      "width": 731,
+      "height": 314
     },
     {
       "id": "clk_tickStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 411,
-        "y": 368
+        "x": 128,
+        "y": 152
       },
       "params": {},
       "parentId": "clk_ticks",
@@ -289,8 +252,8 @@
       "id": "clk_tickCap",
       "defType": "style/stroke-cap",
       "position": {
-        "x": 608,
-        "y": 296
+        "x": 317,
+        "y": 130
       },
       "params": {},
       "parentId": "clk_ticks",
@@ -302,31 +265,19 @@
       "id": "clk_tick",
       "defType": "draw/line",
       "position": {
-        "x": 828,
-        "y": 203
+        "x": 535,
+        "y": 51
       },
       "params": {},
       "parentId": "clk_ticks",
       "portValues": {}
     },
     {
-      "id": "clk_minutesStop",
-      "defType": "math/expression",
-      "position": {
-        "x": 1076,
-        "y": 1027
-      },
-      "params": {
-        "expr": "-pi / 2 + tau * max(m / 60, 0.002)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "clk_minutesTrackStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 3387,
-        "y": 871
+        "x": 4099,
+        "y": 725
       },
       "params": {},
       "portValues": {
@@ -343,8 +294,8 @@
       "id": "clk_minutesTrackNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 3718,
-        "y": 1027
+        "x": 4422,
+        "y": 799
       },
       "params": {},
       "portValues": {}
@@ -353,8 +304,8 @@
       "id": "clk_minutesTrack",
       "defType": "draw/ellipse",
       "position": {
-        "x": 4039,
-        "y": 1095
+        "x": 4721,
+        "y": 786
       },
       "params": {},
       "portValues": {
@@ -370,8 +321,8 @@
       "id": "clk_minutesStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 17,
-        "y": 1192
+        "x": 1248,
+        "y": 834
       },
       "params": {},
       "portValues": {
@@ -388,8 +339,8 @@
       "id": "clk_minutesCap",
       "defType": "style/stroke-cap",
       "position": {
-        "x": 290,
-        "y": 1170
+        "x": 1840,
+        "y": 726
       },
       "params": {},
       "portValues": {
@@ -400,8 +351,8 @@
       "id": "clk_minutesNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 1116,
-        "y": 1169
+        "x": 2418,
+        "y": 640
       },
       "params": {},
       "portValues": {}
@@ -410,8 +361,8 @@
       "id": "clk_minutesArc",
       "defType": "draw/arc",
       "position": {
-        "x": 2306,
-        "y": 579
+        "x": 2973,
+        "y": 534
       },
       "params": {},
       "portValues": {
@@ -425,23 +376,11 @@
       }
     },
     {
-      "id": "clk_hoursStop",
-      "defType": "math/expression",
-      "position": {
-        "x": 1076,
-        "y": 1273
-      },
-      "params": {
-        "expr": "-pi / 2 + tau * max((h % 12) / 12, 0.002)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "clk_hoursTrackStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 3387,
-        "y": 1081
+        "x": 4099,
+        "y": 925
       },
       "params": {},
       "portValues": {
@@ -458,8 +397,8 @@
       "id": "clk_hoursTrackNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 3718,
-        "y": 1228
+        "x": 4422,
+        "y": 995
       },
       "params": {},
       "portValues": {}
@@ -468,8 +407,8 @@
       "id": "clk_hoursTrack",
       "defType": "draw/ellipse",
       "position": {
-        "x": 4039,
-        "y": 1287
+        "x": 4721,
+        "y": 978
       },
       "params": {},
       "portValues": {
@@ -485,8 +424,8 @@
       "id": "clk_hoursStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 17,
-        "y": 1438
+        "x": 1832,
+        "y": 1000
       },
       "params": {},
       "portValues": {
@@ -503,8 +442,8 @@
       "id": "clk_hoursCap",
       "defType": "style/stroke-cap",
       "position": {
-        "x": 290,
-        "y": 1416
+        "x": 2404,
+        "y": 892
       },
       "params": {},
       "portValues": {
@@ -515,8 +454,8 @@
       "id": "clk_hoursNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 1116,
-        "y": 1415
+        "x": 2983,
+        "y": 939
       },
       "params": {},
       "portValues": {}
@@ -525,8 +464,8 @@
       "id": "clk_hoursArc",
       "defType": "draw/arc",
       "position": {
-        "x": 2306,
-        "y": 815
+        "x": 3281,
+        "y": 824
       },
       "params": {},
       "portValues": {
@@ -543,8 +482,8 @@
       "id": "clk_year",
       "defType": "spread/range",
       "position": {
-        "x": 1091,
-        "y": 1661
+        "x": 1246,
+        "y": 1152
       },
       "params": {
         "count": 365
@@ -554,93 +493,56 @@
       }
     },
     {
-      "id": "clk_today",
-      "defType": "math/expression",
-      "position": {
-        "x": 1076,
-        "y": 1519
-      },
-      "params": {
-        "expr": "floor(y * 365)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "clk_days",
       "defType": "region/foreach",
       "position": {
-        "x": 1844,
-        "y": 1073
+        "x": 2097,
+        "y": 1040
       },
       "params": {
-        "width": 1032,
-        "height": 568,
+        "width": 731,
+        "height": 281,
         "label": "ForEach day"
       },
       "ports": [
-        {
-          "id": "i",
-          "name": "i",
-          "type": "number",
-          "direction": "input",
-          "y": 301
-        },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 209
+          "y": 86
+        },
+        {
+          "id": "p",
+          "name": "position",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "c",
+          "name": "colour",
+          "type": "color",
+          "direction": "input",
+          "y": 156
+        },
+        {
+          "id": "w",
+          "name": "size",
+          "type": "number",
+          "direction": "input",
+          "y": 178
         }
       ],
-      "width": 1032,
-      "height": 568
-    },
-    {
-      "id": "clk_daySpiral",
-      "defType": "math/expression",
-      "position": {
-        "x": 140,
-        "y": 40
-      },
-      "params": {
-        "expr": "vec2(cos(i / 365 * tau * 3 - pi / 2), sin(i / 365 * tau * 3 - pi / 2)) * (58 + i / 365 * 96)"
-      },
-      "parentId": "clk_days",
-      "portValues": {}
-    },
-    {
-      "id": "clk_dayColour",
-      "defType": "math/expression",
-      "position": {
-        "x": 140,
-        "y": 204
-      },
-      "params": {
-        "expr": "i < d ? hsl(fract(0.58 + i / 365), 0.6, 0.6) : (i == d ? rgb(1, 1, 1) : rgb(1, 1, 1, 0.13))"
-      },
-      "parentId": "clk_days",
-      "portValues": {}
-    },
-    {
-      "id": "clk_daySize",
-      "defType": "math/expression",
-      "position": {
-        "x": 140,
-        "y": 390
-      },
-      "params": {
-        "expr": "i == d ? 7 + 4 * (1 - fract(s)) : 3.2"
-      },
-      "parentId": "clk_days",
-      "portValues": {}
+      "width": 731,
+      "height": 281
     },
     {
       "id": "clk_dayStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 419,
-        "y": 311
+        "x": 128,
+        "y": 119
       },
       "params": {},
       "parentId": "clk_days",
@@ -650,8 +552,8 @@
       "id": "clk_dayCap",
       "defType": "style/stroke-cap",
       "position": {
-        "x": 615,
-        "y": 241
+        "x": 317,
+        "y": 98
       },
       "params": {},
       "parentId": "clk_days",
@@ -663,31 +565,19 @@
       "id": "clk_dayDot",
       "defType": "draw/point",
       "position": {
-        "x": 835,
-        "y": 172
+        "x": 534,
+        "y": 50
       },
       "params": {},
       "parentId": "clk_days",
       "portValues": {}
     },
     {
-      "id": "clk_hourDigits",
-      "defType": "math/expression",
-      "position": {
-        "x": 1076,
-        "y": 1765
-      },
-      "params": {
-        "expr": "on ? floor(h) : (floor(h) + 11) % 12 + 1"
-      },
-      "portValues": {}
-    },
-    {
       "id": "clk_fmtH",
       "defType": "string/format-number",
       "position": {
-        "x": 2285,
-        "y": 1689
+        "x": 3260,
+        "y": 1077
       },
       "params": {
         "mode": "number"
@@ -696,25 +586,13 @@
         "decimals": 0,
         "pad": 2
       }
-    },
-    {
-      "id": "clk_minuteDigits",
-      "defType": "math/expression",
-      "position": {
-        "x": 1076,
-        "y": 1929
-      },
-      "params": {
-        "expr": "floor(m)"
-      },
-      "portValues": {}
     },
     {
       "id": "clk_fmtM",
       "defType": "string/format-number",
       "position": {
-        "x": 2285,
-        "y": 1947
+        "x": 3260,
+        "y": 1335
       },
       "params": {
         "mode": "number"
@@ -725,23 +603,11 @@
       }
     },
     {
-      "id": "clk_secondDigits",
-      "defType": "math/expression",
-      "position": {
-        "x": 1076,
-        "y": 2071
-      },
-      "params": {
-        "expr": "floor(s)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "clk_fmtS",
       "defType": "string/format-number",
       "position": {
-        "x": 2285,
-        "y": 2205
+        "x": 3260,
+        "y": 1593
       },
       "params": {
         "mode": "number"
@@ -755,8 +621,8 @@
       "id": "clk_hms",
       "defType": "string/concat",
       "position": {
-        "x": 3412,
-        "y": 1782
+        "x": 3861,
+        "y": 1285
       },
       "params": {
         "separator": ":"
@@ -769,8 +635,8 @@
       "id": "clk_hmsParts",
       "defType": "spread/merge",
       "position": {
-        "x": 3043,
-        "y": 1889
+        "x": 3559,
+        "y": 1306
       },
       "params": {
         "slotCount": 3
@@ -783,8 +649,8 @@
       "id": "clk_mono",
       "defType": "style/text-params",
       "position": {
-        "x": 3054,
-        "y": 2500
+        "x": 1826,
+        "y": 1879
       },
       "params": {
         "font": "Menlo, Consolas, monospace",
@@ -801,8 +667,8 @@
       "id": "clk_digitFill",
       "defType": "style/fill",
       "position": {
-        "x": 3393,
-        "y": 1944
+        "x": 3842,
+        "y": 1507
       },
       "params": {},
       "portValues": {
@@ -818,8 +684,8 @@
       "id": "clk_digits",
       "defType": "draw/text",
       "position": {
-        "x": 3717,
-        "y": 1674
+        "x": 4127,
+        "y": 1265
       },
       "params": {
         "size": 30,
@@ -838,8 +704,8 @@
       "id": "clk_dayNames",
       "defType": "string/split",
       "position": {
-        "x": 275,
-        "y": 2235
+        "x": 264,
+        "y": 1621
       },
       "params": {
         "text": "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"
@@ -853,8 +719,8 @@
       "id": "clk_monthNames",
       "defType": "string/split",
       "position": {
-        "x": 1087,
-        "y": 2361
+        "x": 634,
+        "y": 1707
       },
       "params": {
         "text": "January,February,March,April,May,June,July,August,September,October,November,December"
@@ -868,8 +734,8 @@
       "id": "clk_weekdayName",
       "defType": "spread/lookup",
       "position": {
-        "x": 1079,
-        "y": 2213
+        "x": 626,
+        "y": 1559
       },
       "params": {
         "op": "at"
@@ -877,23 +743,11 @@
       "portValues": {}
     },
     {
-      "id": "clk_monthIndex",
-      "defType": "math/expression",
-      "position": {
-        "x": 1076,
-        "y": 2487
-      },
-      "params": {
-        "expr": "m - 1"
-      },
-      "portValues": {}
-    },
-    {
       "id": "clk_monthName",
       "defType": "spread/lookup",
       "position": {
-        "x": 2279,
-        "y": 2721
+        "x": 1234,
+        "y": 1884
       },
       "params": {
         "op": "at"
@@ -904,8 +758,8 @@
       "id": "clk_fmtDay",
       "defType": "string/format-number",
       "position": {
-        "x": 2285,
-        "y": 2463
+        "x": 1239,
+        "y": 1626
       },
       "params": {
         "mode": "number"
@@ -918,8 +772,8 @@
       "id": "clk_fmtYear",
       "defType": "string/format-number",
       "position": {
-        "x": 2285,
-        "y": 2869
+        "x": 1239,
+        "y": 2032
       },
       "params": {
         "mode": "number"
@@ -933,8 +787,8 @@
       "id": "clk_dateText",
       "defType": "string/concat",
       "position": {
-        "x": 3412,
-        "y": 2070
+        "x": 2414,
+        "y": 1829
       },
       "params": {
         "separator": " "
@@ -947,8 +801,8 @@
       "id": "clk_dateParts",
       "defType": "spread/merge",
       "position": {
-        "x": 3043,
-        "y": 2330
+        "x": 1815,
+        "y": 1709
       },
       "params": {
         "slotCount": 4
@@ -961,8 +815,8 @@
       "id": "clk_dateFill",
       "defType": "style/fill",
       "position": {
-        "x": 3393,
-        "y": 2196
+        "x": 2395,
+        "y": 1955
       },
       "params": {},
       "portValues": {
@@ -978,8 +832,8 @@
       "id": "clk_date",
       "defType": "draw/text",
       "position": {
-        "x": 3717,
-        "y": 1866
+        "x": 2983,
+        "y": 1838
       },
       "params": {
         "size": 12,
@@ -995,47 +849,11 @@
       }
     },
     {
-      "id": "clk_moonPhase",
-      "defType": "math/expression",
-      "position": {
-        "x": 1076,
-        "y": 2629
-      },
-      "params": {
-        "expr": "fract((d - 10962.76) / 29.530588)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "clk_shadowX",
-      "defType": "math/expression",
-      "position": {
-        "x": 2276,
-        "y": 3127
-      },
-      "params": {
-        "expr": "p < 0.5 ? 236 - 4 * 22 * p : 236 + 4 * 22 * (1 - p)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "clk_shadowPos",
-      "defType": "math/expression",
-      "position": {
-        "x": 3043,
-        "y": 2933
-      },
-      "params": {
-        "expr": "vec2(x, -236)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "clk_haloFill",
       "defType": "style/fill",
       "position": {
-        "x": 3387,
-        "y": 2322
+        "x": 4099,
+        "y": 1457
       },
       "params": {},
       "portValues": {
@@ -1051,8 +869,8 @@
       "id": "clk_moonHalo",
       "defType": "draw/ellipse",
       "position": {
-        "x": 3692,
-        "y": 2100
+        "x": 4396,
+        "y": 1346
       },
       "params": {},
       "portValues": {
@@ -1068,8 +886,8 @@
       "id": "clk_moonDarkFill",
       "defType": "style/fill",
       "position": {
-        "x": 3393,
-        "y": 2448
+        "x": 4105,
+        "y": 1583
       },
       "params": {},
       "portValues": {
@@ -1085,8 +903,8 @@
       "id": "clk_moonDark",
       "defType": "draw/ellipse",
       "position": {
-        "x": 3692,
-        "y": 2292
+        "x": 4396,
+        "y": 1538
       },
       "params": {},
       "portValues": {
@@ -1102,8 +920,8 @@
       "id": "clk_moonDisc",
       "defType": "draw/ellipse",
       "position": {
-        "x": 3391,
-        "y": 2574
+        "x": 4102,
+        "y": 1709
       },
       "params": {},
       "portValues": {
@@ -1119,8 +937,8 @@
       "id": "clk_moonShadow",
       "defType": "draw/ellipse",
       "position": {
-        "x": 3411,
-        "y": 2766
+        "x": 4122,
+        "y": 1901
       },
       "params": {},
       "portValues": {
@@ -1132,8 +950,8 @@
       "id": "clk_moonFill",
       "defType": "style/fill",
       "position": {
-        "x": 3393,
-        "y": 2958
+        "x": 4105,
+        "y": 2093
       },
       "params": {},
       "portValues": {
@@ -1149,8 +967,8 @@
       "id": "clk_moonLit",
       "defType": "geometry/boolean",
       "position": {
-        "x": 3677,
-        "y": 2573
+        "x": 4381,
+        "y": 1756
       },
       "params": {
         "mode": "subtract"
@@ -1161,8 +979,8 @@
       "id": "clk_moon",
       "defType": "transform/group",
       "position": {
-        "x": 4009,
-        "y": 2083
+        "x": 4691,
+        "y": 1413
       },
       "params": {
         "slotCount": 3
@@ -1173,8 +991,8 @@
       "id": "clk_scene",
       "defType": "transform/group",
       "position": {
-        "x": 4370,
-        "y": 1216
+        "x": 5024,
+        "y": 864
       },
       "params": {
         "slotCount": 11
@@ -1185,8 +1003,8 @@
       "id": "clk_r",
       "defType": "render/renderer",
       "position": {
-        "x": 4634,
-        "y": 1216
+        "x": 5288,
+        "y": 864
       },
       "params": {
         "width": 600,
@@ -1208,6 +1026,1093 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "clk_dayFraction",
+      "defType": "math/math",
+      "position": {
+        "x": 623,
+        "y": 577
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 24
+      }
+    },
+    {
+      "id": "clk_tickMarks",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 618,
+        "y": 725
+      },
+      "params": {
+        "label": "Second ticks",
+        "width": 1766,
+        "height": 802
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "second",
+          "type": "number",
+          "direction": "input",
+          "y": 406
+        },
+        {
+          "id": "s",
+          "name": "seconds",
+          "type": "number",
+          "direction": "input",
+          "y": 637
+        },
+        {
+          "id": "a",
+          "name": "inner end",
+          "type": "vec2",
+          "direction": "output",
+          "y": 200
+        },
+        {
+          "id": "b",
+          "name": "outer end",
+          "type": "vec2",
+          "direction": "output",
+          "y": 127
+        },
+        {
+          "id": "c",
+          "name": "colour",
+          "type": "color",
+          "direction": "output",
+          "y": 386
+        }
+      ],
+      "width": 1766,
+      "height": 802
+    },
+    {
+      "id": "clk_divide",
+      "defType": "math/math",
+      "position": {
+        "x": 142,
+        "y": 162
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "clk_tickMarks",
+      "portValues": {
+        "b": 60
+      }
+    },
+    {
+      "id": "clk_multiply",
+      "defType": "math/math",
+      "position": {
+        "x": 428,
+        "y": 70
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "clk_tickMarks",
+      "portValues": {
+        "b": 6.283185307179586
+      }
+    },
+    {
+      "id": "clk_subtract",
+      "defType": "math/math",
+      "position": {
+        "x": 707,
+        "y": 73
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "clk_tickMarks",
+      "portValues": {
+        "b": 1.5707963267948966
+      }
+    },
+    {
+      "id": "clk_ofFive",
+      "defType": "math/math",
+      "position": {
+        "x": 151,
+        "y": 310
+      },
+      "params": {
+        "op": "mod",
+        "valueType": "number"
+      },
+      "parentId": "clk_tickMarks",
+      "portValues": {
+        "b": 5
+      }
+    },
+    {
+      "id": "clk_everyFifth",
+      "defType": "logic/compare",
+      "position": {
+        "x": 422,
+        "y": 218
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "clk_tickMarks",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "clk_tickStart",
+      "defType": "logic/select",
+      "position": {
+        "x": 738,
+        "y": 221
+      },
+      "params": {},
+      "parentId": "clk_tickMarks",
+      "portValues": {
+        "a": 232,
+        "b": 240
+      }
+    },
+    {
+      "id": "clk_tickInner",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 1009,
+        "y": 166
+      },
+      "params": {},
+      "parentId": "clk_tickMarks"
+    },
+    {
+      "id": "clk_tickOuter",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 1009,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "clk_tickMarks",
+      "portValues": {
+        "mag": 258
+      }
+    },
+    {
+      "id": "clk_wholeSeconds",
+      "defType": "math/math",
+      "position": {
+        "x": 151,
+        "y": 515
+      },
+      "params": {
+        "op": "floor",
+        "valueType": "number"
+      },
+      "parentId": "clk_tickMarks"
+    },
+    {
+      "id": "clk_tickPast",
+      "defType": "logic/compare",
+      "position": {
+        "x": 422,
+        "y": 366
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "clk_tickMarks"
+    },
+    {
+      "id": "clk_tickNow",
+      "defType": "logic/compare",
+      "position": {
+        "x": 422,
+        "y": 514
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "clk_tickMarks"
+    },
+    {
+      "id": "clk_secondFraction",
+      "defType": "math/math",
+      "position": {
+        "x": 151,
+        "y": 641
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "clk_tickMarks"
+    },
+    {
+      "id": "clk_multiply2",
+      "defType": "math/math",
+      "position": {
+        "x": 428,
+        "y": 662
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "clk_tickMarks",
+      "portValues": {
+        "a": 0.7
+      }
+    },
+    {
+      "id": "clk_add",
+      "defType": "math/math",
+      "position": {
+        "x": 707,
+        "y": 563
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "clk_tickMarks",
+      "portValues": {
+        "a": 0.3
+      }
+    },
+    {
+      "id": "clk_tickAlpha",
+      "defType": "logic/switch",
+      "position": {
+        "x": 985,
+        "y": 398
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 2
+      },
+      "parentId": "clk_tickMarks",
+      "portValues": {
+        "v0": 0.95,
+        "else": 0.16
+      }
+    },
+    {
+      "id": "clk_multiply3",
+      "defType": "math/math",
+      "position": {
+        "x": 1251,
+        "y": 374
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "clk_tickMarks",
+      "portValues": {
+        "b": 255
+      }
+    },
+    {
+      "id": "clk_tickLight",
+      "defType": "color/set-alpha",
+      "position": {
+        "x": 1518,
+        "y": 350
+      },
+      "params": {},
+      "parentId": "clk_tickMarks",
+      "portValues": {
+        "color": {
+          "r": 1,
+          "g": 0.93,
+          "b": 0.8,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "clk_divide2",
+      "defType": "math/math",
+      "position": {
+        "x": 623,
+        "y": 925
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 60
+      }
+    },
+    {
+      "id": "clk_minutesShare",
+      "defType": "math/math",
+      "position": {
+        "x": 1231,
+        "y": 686
+      },
+      "params": {
+        "op": "max",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.002
+      }
+    },
+    {
+      "id": "clk_multiply4",
+      "defType": "math/math",
+      "position": {
+        "x": 1815,
+        "y": 578
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 6.283185307179586
+      }
+    },
+    {
+      "id": "clk_add2",
+      "defType": "math/math",
+      "position": {
+        "x": 2378,
+        "y": 492
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": -1.5707963267948966
+      }
+    },
+    {
+      "id": "clk_hoursOfTwelve",
+      "defType": "math/wrap",
+      "position": {
+        "x": 664,
+        "y": 1073
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "portValues": {
+        "min": 0,
+        "max": 12
+      }
+    },
+    {
+      "id": "clk_divide3",
+      "defType": "math/math",
+      "position": {
+        "x": 1231,
+        "y": 1004
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 12
+      }
+    },
+    {
+      "id": "clk_hoursShare",
+      "defType": "math/math",
+      "position": {
+        "x": 1815,
+        "y": 852
+      },
+      "params": {
+        "op": "max",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.002
+      }
+    },
+    {
+      "id": "clk_multiply5",
+      "defType": "math/math",
+      "position": {
+        "x": 2378,
+        "y": 744
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 6.283185307179586
+      }
+    },
+    {
+      "id": "clk_add3",
+      "defType": "math/math",
+      "position": {
+        "x": 2943,
+        "y": 791
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": -1.5707963267948966
+      }
+    },
+    {
+      "id": "clk_multiply6",
+      "defType": "math/math",
+      "position": {
+        "x": 623,
+        "y": 1221
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 365
+      }
+    },
+    {
+      "id": "clk_today",
+      "defType": "math/math",
+      "position": {
+        "x": 1240,
+        "y": 1256
+      },
+      "params": {
+        "op": "floor",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "clk_yearSpiral",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1817,
+        "y": 1185
+      },
+      "params": {
+        "label": "Year spiral",
+        "width": 1799,
+        "height": 823
+      },
+      "ports": [
+        {
+          "id": "i",
+          "name": "day",
+          "type": "number",
+          "direction": "input",
+          "y": 415
+        },
+        {
+          "id": "d",
+          "name": "today",
+          "type": "number",
+          "direction": "input",
+          "y": 511
+        },
+        {
+          "id": "s",
+          "name": "seconds",
+          "type": "number",
+          "direction": "input",
+          "y": 764
+        },
+        {
+          "id": "pos",
+          "name": "position",
+          "type": "vec2",
+          "direction": "output",
+          "y": 178
+        },
+        {
+          "id": "c",
+          "name": "colour",
+          "type": "color",
+          "direction": "output",
+          "y": 338
+        },
+        {
+          "id": "w",
+          "name": "size",
+          "type": "number",
+          "direction": "output",
+          "y": 568
+        }
+      ],
+      "width": 1799,
+      "height": 823
+    },
+    {
+      "id": "clk_divide4",
+      "defType": "math/math",
+      "position": {
+        "x": 146,
+        "y": 208
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "b": 365
+      }
+    },
+    {
+      "id": "clk_multiply7",
+      "defType": "math/math",
+      "position": {
+        "x": 444,
+        "y": 133
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "b": 6.283185307179586
+      }
+    },
+    {
+      "id": "clk_multiply8",
+      "defType": "math/math",
+      "position": {
+        "x": 715,
+        "y": 61
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "b": 3
+      }
+    },
+    {
+      "id": "clk_subtract2",
+      "defType": "math/math",
+      "position": {
+        "x": 983,
+        "y": 40
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "b": 1.5707963267948966
+      }
+    },
+    {
+      "id": "clk_multiply9",
+      "defType": "math/math",
+      "position": {
+        "x": 715,
+        "y": 209
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "b": 96
+      }
+    },
+    {
+      "id": "clk_add4",
+      "defType": "math/math",
+      "position": {
+        "x": 983,
+        "y": 188
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "a": 58
+      }
+    },
+    {
+      "id": "clk_daySpiral",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 1275,
+        "y": 116
+      },
+      "params": {},
+      "parentId": "clk_yearSpiral"
+    },
+    {
+      "id": "clk_dayPast",
+      "defType": "logic/compare",
+      "position": {
+        "x": 139,
+        "y": 356
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "clk_yearSpiral"
+    },
+    {
+      "id": "clk_dayIsToday",
+      "defType": "logic/compare",
+      "position": {
+        "x": 139,
+        "y": 504
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "clk_yearSpiral"
+    },
+    {
+      "id": "clk_add5",
+      "defType": "math/math",
+      "position": {
+        "x": 444,
+        "y": 348
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "a": 0.58
+      }
+    },
+    {
+      "id": "clk_dayHue",
+      "defType": "math/math",
+      "position": {
+        "x": 724,
+        "y": 357
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral"
+    },
+    {
+      "id": "clk_multiply10",
+      "defType": "math/math",
+      "position": {
+        "x": 983,
+        "y": 348
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "b": 360
+      }
+    },
+    {
+      "id": "clk_monthColour",
+      "defType": "color/color",
+      "position": {
+        "x": 1258,
+        "y": 340
+      },
+      "params": {
+        "mode": "hsl"
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "s": 60.0,
+        "l": 60.0,
+        "a": 255.0
+      }
+    },
+    {
+      "id": "clk_dayColour",
+      "defType": "logic/switch",
+      "position": {
+        "x": 1518,
+        "y": 301
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 2
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "v1": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1.0
+        },
+        "else": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 0.13
+        }
+      }
+    },
+    {
+      "id": "clk_pulsePhase",
+      "defType": "math/math",
+      "position": {
+        "x": 155,
+        "y": 705
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral"
+    },
+    {
+      "id": "clk_subtract3",
+      "defType": "math/math",
+      "position": {
+        "x": 444,
+        "y": 663
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "clk_multiply11",
+      "defType": "math/math",
+      "position": {
+        "x": 715,
+        "y": 620
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "a": 4
+      }
+    },
+    {
+      "id": "clk_add6",
+      "defType": "math/math",
+      "position": {
+        "x": 983,
+        "y": 578
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "a": 7
+      }
+    },
+    {
+      "id": "clk_daySize",
+      "defType": "logic/select",
+      "position": {
+        "x": 1282,
+        "y": 532
+      },
+      "params": {},
+      "parentId": "clk_yearSpiral",
+      "portValues": {
+        "b": 3.2
+      }
+    },
+    {
+      "id": "clk_wholeHours",
+      "defType": "math/math",
+      "position": {
+        "x": 632,
+        "y": 1369
+      },
+      "params": {
+        "op": "floor",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "clk_add7",
+      "defType": "math/math",
+      "position": {
+        "x": 1231,
+        "y": 1414
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 11
+      }
+    },
+    {
+      "id": "clk_twelveHour",
+      "defType": "math/math",
+      "position": {
+        "x": 1824,
+        "y": 1461
+      },
+      "params": {
+        "op": "mod",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 12
+      }
+    },
+    {
+      "id": "clk_add8",
+      "defType": "math/math",
+      "position": {
+        "x": 2378,
+        "y": 1507
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "clk_hourDigits",
+      "defType": "logic/select",
+      "position": {
+        "x": 2975,
+        "y": 1352
+      },
+      "params": {}
+    },
+    {
+      "id": "clk_minuteDigits",
+      "defType": "math/math",
+      "position": {
+        "x": 2952,
+        "y": 1500
+      },
+      "params": {
+        "op": "floor",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "clk_secondDigits",
+      "defType": "math/math",
+      "position": {
+        "x": 2952,
+        "y": 1626
+      },
+      "params": {
+        "op": "floor",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "clk_monthIndex",
+      "defType": "math/math",
+      "position": {
+        "x": 623,
+        "y": 1833
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "clk_subtract4",
+      "defType": "math/math",
+      "position": {
+        "x": 623,
+        "y": 1981
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 10962.76
+      }
+    },
+    {
+      "id": "clk_divide5",
+      "defType": "math/math",
+      "position": {
+        "x": 1231,
+        "y": 2290
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 29.530588
+      }
+    },
+    {
+      "id": "clk_moonPhase",
+      "defType": "math/math",
+      "position": {
+        "x": 1824,
+        "y": 2185
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "clk_waxing",
+      "defType": "logic/compare",
+      "position": {
+        "x": 3245,
+        "y": 1953
+      },
+      "params": {
+        "op": "less"
+      },
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "clk_multiply12",
+      "defType": "math/math",
+      "position": {
+        "x": 2943,
+        "y": 2115
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 88
+      }
+    },
+    {
+      "id": "clk_subtract5",
+      "defType": "math/math",
+      "position": {
+        "x": 3252,
+        "y": 2101
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 236
+      }
+    },
+    {
+      "id": "clk_subtract6",
+      "defType": "math/math",
+      "position": {
+        "x": 2378,
+        "y": 2230
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "clk_multiply13",
+      "defType": "math/math",
+      "position": {
+        "x": 2943,
+        "y": 2263
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 88
+      }
+    },
+    {
+      "id": "clk_add9",
+      "defType": "math/math",
+      "position": {
+        "x": 3252,
+        "y": 2249
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 236
+      }
+    },
+    {
+      "id": "clk_shadowX",
+      "defType": "logic/select",
+      "position": {
+        "x": 3590,
+        "y": 2053
+      },
+      "params": {}
+    },
+    {
+      "id": "clk_shadowPos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 3867,
+        "y": 1976
+      },
+      "params": {},
+      "portValues": {
+        "y": -236
+      }
     }
   ],
   "edges": [
@@ -1220,689 +2125,1214 @@
     },
     {
       "id": "e_2",
-      "source": "clk_clock",
-      "target": "clk_dayFraction",
-      "sourceHandle": "out-hours",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_3",
       "source": "clk_skyColours",
       "target": "clk_sky",
       "sourceHandle": "out-colors",
       "targetHandle": "in-colors"
     },
     {
-      "id": "e_4",
+      "id": "e_3",
       "source": "clk_dayFraction",
       "target": "clk_sky",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-t"
     },
     {
-      "id": "e_5",
+      "id": "e_4",
       "source": "clk_sky",
       "target": "clk_skyFill",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_6",
+      "id": "e_5",
       "source": "clk_skyFill",
       "target": "clk_skyRect",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_7",
+      "id": "e_6",
       "source": "clk_faceFill",
       "target": "clk_face",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_8",
-      "source": "clk_sixty",
-      "target": "clk_ticks",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_9",
+      "id": "e_7",
       "source": "clk_ticks",
-      "target": "clk_tickInner",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_10",
-      "source": "clk_ticks",
-      "target": "clk_tickOuter",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_11",
-      "source": "clk_ticks",
-      "target": "clk_tickLight",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_12",
-      "source": "clk_clock",
-      "target": "clk_tickLight",
-      "sourceHandle": "out-seconds",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_13",
-      "source": "clk_tickLight",
       "target": "clk_tickStroke",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-c",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_14",
+      "id": "e_8",
       "source": "clk_tickStroke",
       "target": "clk_tickCap",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_15",
-      "source": "clk_tickInner",
+      "id": "e_9",
+      "source": "clk_ticks",
       "target": "clk_tick",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-a",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_16",
-      "source": "clk_tickOuter",
+      "id": "e_10",
+      "source": "clk_ticks",
       "target": "clk_tick",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-b",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_17",
+      "id": "e_11",
       "source": "clk_tickCap",
       "target": "clk_tick",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_18",
+      "id": "e_12",
       "source": "clk_tick",
       "target": "clk_ticks",
       "sourceHandle": "out-shape",
       "targetHandle": "in-l"
     },
     {
-      "id": "e_19",
-      "source": "clk_clock",
-      "target": "clk_minutesStop",
-      "sourceHandle": "out-minutes",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_20",
+      "id": "e_13",
       "source": "clk_minutesTrackStroke",
       "target": "clk_minutesTrackNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_21",
+      "id": "e_14",
       "source": "clk_minutesTrackNoFill",
       "target": "clk_minutesTrack",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_22",
+      "id": "e_15",
       "source": "clk_minutesStroke",
       "target": "clk_minutesCap",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_23",
+      "id": "e_16",
       "source": "clk_minutesCap",
       "target": "clk_minutesNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_24",
-      "source": "clk_minutesStop",
+      "id": "e_17",
+      "source": "clk_add2",
       "target": "clk_minutesArc",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-stop"
     },
     {
-      "id": "e_25",
+      "id": "e_18",
       "source": "clk_minutesNoFill",
       "target": "clk_minutesArc",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_26",
-      "source": "clk_clock",
-      "target": "clk_hoursStop",
-      "sourceHandle": "out-hours",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_27",
+      "id": "e_19",
       "source": "clk_hoursTrackStroke",
       "target": "clk_hoursTrackNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_28",
+      "id": "e_20",
       "source": "clk_hoursTrackNoFill",
       "target": "clk_hoursTrack",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_29",
+      "id": "e_21",
       "source": "clk_hoursStroke",
       "target": "clk_hoursCap",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_30",
+      "id": "e_22",
       "source": "clk_hoursCap",
       "target": "clk_hoursNoFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_31",
-      "source": "clk_hoursStop",
+      "id": "e_23",
+      "source": "clk_add3",
       "target": "clk_hoursArc",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-stop"
     },
     {
-      "id": "e_32",
+      "id": "e_24",
       "source": "clk_hoursNoFill",
       "target": "clk_hoursArc",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_33",
-      "source": "clk_clock",
-      "target": "clk_today",
-      "sourceHandle": "out-yearPhase",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_34",
-      "source": "clk_year",
-      "target": "clk_days",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_35",
+      "id": "e_25",
       "source": "clk_days",
-      "target": "clk_daySpiral",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_36",
-      "source": "clk_days",
-      "target": "clk_dayColour",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_37",
-      "source": "clk_today",
-      "target": "clk_dayColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_38",
-      "source": "clk_days",
-      "target": "clk_daySize",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_39",
-      "source": "clk_today",
-      "target": "clk_daySize",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_40",
-      "source": "clk_clock",
-      "target": "clk_daySize",
-      "sourceHandle": "out-seconds",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_41",
-      "source": "clk_dayColour",
       "target": "clk_dayStroke",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-c",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_42",
-      "source": "clk_daySize",
+      "id": "e_26",
+      "source": "clk_days",
       "target": "clk_dayStroke",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-w",
       "targetHandle": "in-width"
     },
     {
-      "id": "e_43",
+      "id": "e_27",
       "source": "clk_dayStroke",
       "target": "clk_dayCap",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_44",
-      "source": "clk_daySpiral",
+      "id": "e_28",
+      "source": "clk_days",
       "target": "clk_dayDot",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_45",
+      "id": "e_29",
       "source": "clk_dayCap",
       "target": "clk_dayDot",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_46",
+      "id": "e_30",
       "source": "clk_dayDot",
       "target": "clk_days",
       "sourceHandle": "out-shape",
       "targetHandle": "in-l"
     },
     {
-      "id": "e_47",
-      "source": "clk_hours24",
-      "target": "clk_hourDigits",
-      "sourceHandle": "out-bool",
-      "targetHandle": "in-on"
-    },
-    {
-      "id": "e_48",
-      "source": "clk_clock",
-      "target": "clk_hourDigits",
-      "sourceHandle": "out-hours",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_49",
+      "id": "e_31",
       "source": "clk_hourDigits",
       "target": "clk_fmtH",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-selected",
       "targetHandle": "in-value"
     },
     {
-      "id": "e_50",
-      "source": "clk_clock",
-      "target": "clk_minuteDigits",
-      "sourceHandle": "out-minutes",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_51",
+      "id": "e_32",
       "source": "clk_minuteDigits",
       "target": "clk_fmtM",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-value"
     },
     {
-      "id": "e_52",
-      "source": "clk_clock",
-      "target": "clk_secondDigits",
-      "sourceHandle": "out-seconds",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_53",
+      "id": "e_33",
       "source": "clk_secondDigits",
       "target": "clk_fmtS",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-value"
     },
     {
-      "id": "e_54",
+      "id": "e_34",
       "source": "clk_fmtH",
       "target": "clk_hmsParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_55",
+      "id": "e_35",
       "source": "clk_fmtM",
       "target": "clk_hmsParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_56",
+      "id": "e_36",
       "source": "clk_fmtS",
       "target": "clk_hmsParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_57",
+      "id": "e_37",
       "source": "clk_hmsParts",
       "target": "clk_hms",
       "sourceHandle": "out-merged",
       "targetHandle": "in-parts"
     },
     {
-      "id": "e_58",
+      "id": "e_38",
       "source": "clk_mono",
       "target": "clk_digitFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_59",
+      "id": "e_39",
       "source": "clk_hms",
       "target": "clk_digits",
       "sourceHandle": "out-text",
       "targetHandle": "in-string"
     },
     {
-      "id": "e_60",
+      "id": "e_40",
       "source": "clk_digitFill",
       "target": "clk_digits",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_61",
+      "id": "e_41",
       "source": "clk_dayNames",
       "target": "clk_weekdayName",
       "sourceHandle": "out-parts",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_62",
+      "id": "e_42",
       "source": "clk_clock",
       "target": "clk_weekdayName",
       "sourceHandle": "out-weekday",
       "targetHandle": "in-index"
     },
     {
-      "id": "e_63",
-      "source": "clk_clock",
-      "target": "clk_monthIndex",
-      "sourceHandle": "out-month",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_64",
+      "id": "e_43",
       "source": "clk_monthNames",
       "target": "clk_monthName",
       "sourceHandle": "out-parts",
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_65",
+      "id": "e_44",
       "source": "clk_monthIndex",
       "target": "clk_monthName",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-index"
     },
     {
-      "id": "e_66",
+      "id": "e_45",
       "source": "clk_clock",
       "target": "clk_fmtDay",
       "sourceHandle": "out-day",
       "targetHandle": "in-value"
     },
     {
-      "id": "e_67",
+      "id": "e_46",
       "source": "clk_clock",
       "target": "clk_fmtYear",
       "sourceHandle": "out-year",
       "targetHandle": "in-value"
     },
     {
-      "id": "e_68",
+      "id": "e_47",
       "source": "clk_weekdayName",
       "target": "clk_dateParts",
       "sourceHandle": "out-result",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_69",
+      "id": "e_48",
       "source": "clk_fmtDay",
       "target": "clk_dateParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_70",
+      "id": "e_49",
       "source": "clk_monthName",
       "target": "clk_dateParts",
       "sourceHandle": "out-result",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_71",
+      "id": "e_50",
       "source": "clk_fmtYear",
       "target": "clk_dateParts",
       "sourceHandle": "out-text",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_72",
+      "id": "e_51",
       "source": "clk_dateParts",
       "target": "clk_dateText",
       "sourceHandle": "out-merged",
       "targetHandle": "in-parts"
     },
     {
-      "id": "e_73",
+      "id": "e_52",
       "source": "clk_mono",
       "target": "clk_dateFill",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_74",
+      "id": "e_53",
       "source": "clk_dateText",
       "target": "clk_date",
       "sourceHandle": "out-text",
       "targetHandle": "in-string"
     },
     {
-      "id": "e_75",
+      "id": "e_54",
       "source": "clk_dateFill",
       "target": "clk_date",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_76",
-      "source": "clk_clock",
-      "target": "clk_moonPhase",
-      "sourceHandle": "out-days",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_77",
-      "source": "clk_moonPhase",
-      "target": "clk_shadowX",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_78",
-      "source": "clk_shadowX",
-      "target": "clk_shadowPos",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_79",
+      "id": "e_55",
       "source": "clk_haloFill",
       "target": "clk_moonHalo",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_80",
+      "id": "e_56",
       "source": "clk_moonDarkFill",
       "target": "clk_moonDark",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_81",
+      "id": "e_57",
       "source": "clk_shadowPos",
       "target": "clk_moonShadow",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-vector",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_82",
+      "id": "e_58",
       "source": "clk_moonDisc",
       "target": "clk_moonLit",
       "sourceHandle": "out-shape",
       "targetHandle": "in-a"
     },
     {
-      "id": "e_83",
+      "id": "e_59",
       "source": "clk_moonShadow",
       "target": "clk_moonLit",
       "sourceHandle": "out-shape",
       "targetHandle": "in-b"
     },
     {
-      "id": "e_84",
+      "id": "e_60",
       "source": "clk_moonFill",
       "target": "clk_moonLit",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_85",
+      "id": "e_61",
       "source": "clk_moonHalo",
       "target": "clk_moon",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_86",
+      "id": "e_62",
       "source": "clk_moonDark",
       "target": "clk_moon",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_87",
+      "id": "e_63",
       "source": "clk_moonLit",
       "target": "clk_moon",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_88",
+      "id": "e_64",
       "source": "clk_skyRect",
       "target": "clk_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_89",
+      "id": "e_65",
       "source": "clk_face",
       "target": "clk_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_90",
+      "id": "e_66",
       "source": "clk_ticks",
       "target": "clk_scene",
       "sourceHandle": "out-l",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_91",
+      "id": "e_67",
       "source": "clk_minutesTrack",
       "target": "clk_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_92",
+      "id": "e_68",
       "source": "clk_minutesArc",
       "target": "clk_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s5"
     },
     {
-      "id": "e_93",
+      "id": "e_69",
       "source": "clk_hoursTrack",
       "target": "clk_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s6"
     },
     {
-      "id": "e_94",
+      "id": "e_70",
       "source": "clk_hoursArc",
       "target": "clk_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s7"
     },
     {
-      "id": "e_95",
+      "id": "e_71",
       "source": "clk_days",
       "target": "clk_scene",
       "sourceHandle": "out-l",
       "targetHandle": "in-s8"
     },
     {
-      "id": "e_96",
+      "id": "e_72",
       "source": "clk_digits",
       "target": "clk_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s9"
     },
     {
-      "id": "e_97",
+      "id": "e_73",
       "source": "clk_date",
       "target": "clk_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s10"
     },
     {
-      "id": "e_98",
+      "id": "e_74",
       "source": "clk_moon",
       "target": "clk_scene",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-s11"
     },
     {
-      "id": "e_99",
+      "id": "e_75",
       "source": "clk_scene",
       "target": "clk_r",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_76",
+      "source": "clk_clock",
+      "target": "clk_dayFraction",
+      "sourceHandle": "out-hours",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_77",
+      "source": "clk_sixty",
+      "target": "clk_tickMarks",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_78",
+      "source": "clk_clock",
+      "target": "clk_tickMarks",
+      "sourceHandle": "out-seconds",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_79",
+      "source": "clk_tickMarks",
+      "target": "clk_divide",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_80",
+      "source": "clk_divide",
+      "target": "clk_multiply",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_81",
+      "source": "clk_multiply",
+      "target": "clk_subtract",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_82",
+      "source": "clk_tickMarks",
+      "target": "clk_ofFive",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_83",
+      "source": "clk_ofFive",
+      "target": "clk_everyFifth",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_84",
+      "source": "clk_everyFifth",
+      "target": "clk_tickStart",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_85",
+      "source": "clk_subtract",
+      "target": "clk_tickInner",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_86",
+      "source": "clk_tickStart",
+      "target": "clk_tickInner",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_87",
+      "source": "clk_subtract",
+      "target": "clk_tickOuter",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_88",
+      "source": "clk_tickMarks",
+      "target": "clk_wholeSeconds",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_89",
+      "source": "clk_tickMarks",
+      "target": "clk_tickPast",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_90",
+      "source": "clk_wholeSeconds",
+      "target": "clk_tickPast",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_91",
+      "source": "clk_tickMarks",
+      "target": "clk_tickNow",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_92",
+      "source": "clk_wholeSeconds",
+      "target": "clk_tickNow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_93",
+      "source": "clk_tickMarks",
+      "target": "clk_secondFraction",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_94",
+      "source": "clk_secondFraction",
+      "target": "clk_multiply2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_95",
+      "source": "clk_multiply2",
+      "target": "clk_add",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_96",
+      "source": "clk_tickPast",
+      "target": "clk_tickAlpha",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_97",
+      "source": "clk_tickNow",
+      "target": "clk_tickAlpha",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if1"
+    },
+    {
+      "id": "e_98",
+      "source": "clk_add",
+      "target": "clk_tickAlpha",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v1"
+    },
+    {
+      "id": "e_99",
+      "source": "clk_tickAlpha",
+      "target": "clk_multiply3",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_100",
+      "source": "clk_multiply3",
+      "target": "clk_tickLight",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_101",
+      "source": "clk_tickInner",
+      "target": "clk_tickMarks",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_102",
+      "source": "clk_tickOuter",
+      "target": "clk_tickMarks",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_103",
+      "source": "clk_tickLight",
+      "target": "clk_tickMarks",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_104",
+      "source": "clk_tickMarks",
+      "target": "clk_ticks",
+      "sourceHandle": "out-a",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_105",
+      "source": "clk_tickMarks",
+      "target": "clk_ticks",
+      "sourceHandle": "out-b",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_106",
+      "source": "clk_tickMarks",
+      "target": "clk_ticks",
+      "sourceHandle": "out-c",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_107",
+      "source": "clk_clock",
+      "target": "clk_divide2",
+      "sourceHandle": "out-minutes",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_108",
+      "source": "clk_divide2",
+      "target": "clk_minutesShare",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_109",
+      "source": "clk_minutesShare",
+      "target": "clk_multiply4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_110",
+      "source": "clk_multiply4",
+      "target": "clk_add2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_111",
+      "source": "clk_clock",
+      "target": "clk_hoursOfTwelve",
+      "sourceHandle": "out-hours",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_112",
+      "source": "clk_hoursOfTwelve",
+      "target": "clk_divide3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_113",
+      "source": "clk_divide3",
+      "target": "clk_hoursShare",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_114",
+      "source": "clk_hoursShare",
+      "target": "clk_multiply5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_115",
+      "source": "clk_multiply5",
+      "target": "clk_add3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_116",
+      "source": "clk_clock",
+      "target": "clk_multiply6",
+      "sourceHandle": "out-yearPhase",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_117",
+      "source": "clk_multiply6",
+      "target": "clk_today",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_118",
+      "source": "clk_year",
+      "target": "clk_yearSpiral",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-i"
+    },
+    {
+      "id": "e_119",
+      "source": "clk_today",
+      "target": "clk_yearSpiral",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_120",
+      "source": "clk_clock",
+      "target": "clk_yearSpiral",
+      "sourceHandle": "out-seconds",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_121",
+      "source": "clk_yearSpiral",
+      "target": "clk_divide4",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_122",
+      "source": "clk_divide4",
+      "target": "clk_multiply7",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_123",
+      "source": "clk_multiply7",
+      "target": "clk_multiply8",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_124",
+      "source": "clk_multiply8",
+      "target": "clk_subtract2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_125",
+      "source": "clk_divide4",
+      "target": "clk_multiply9",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_126",
+      "source": "clk_multiply9",
+      "target": "clk_add4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_127",
+      "source": "clk_subtract2",
+      "target": "clk_daySpiral",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_128",
+      "source": "clk_add4",
+      "target": "clk_daySpiral",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_129",
+      "source": "clk_yearSpiral",
+      "target": "clk_dayPast",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_130",
+      "source": "clk_yearSpiral",
+      "target": "clk_dayPast",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_131",
+      "source": "clk_yearSpiral",
+      "target": "clk_dayIsToday",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_132",
+      "source": "clk_yearSpiral",
+      "target": "clk_dayIsToday",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_133",
+      "source": "clk_divide4",
+      "target": "clk_add5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_134",
+      "source": "clk_add5",
+      "target": "clk_dayHue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_135",
+      "source": "clk_dayHue",
+      "target": "clk_multiply10",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_136",
+      "source": "clk_multiply10",
+      "target": "clk_monthColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_137",
+      "source": "clk_dayPast",
+      "target": "clk_dayColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_138",
+      "source": "clk_monthColour",
+      "target": "clk_dayColour",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-v0"
+    },
+    {
+      "id": "e_139",
+      "source": "clk_dayIsToday",
+      "target": "clk_dayColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if1"
+    },
+    {
+      "id": "e_140",
+      "source": "clk_yearSpiral",
+      "target": "clk_pulsePhase",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_141",
+      "source": "clk_pulsePhase",
+      "target": "clk_subtract3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_142",
+      "source": "clk_subtract3",
+      "target": "clk_multiply11",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_143",
+      "source": "clk_multiply11",
+      "target": "clk_add6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_144",
+      "source": "clk_dayIsToday",
+      "target": "clk_daySize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_145",
+      "source": "clk_add6",
+      "target": "clk_daySize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_146",
+      "source": "clk_daySpiral",
+      "target": "clk_yearSpiral",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_147",
+      "source": "clk_dayColour",
+      "target": "clk_yearSpiral",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_148",
+      "source": "clk_daySize",
+      "target": "clk_yearSpiral",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_149",
+      "source": "clk_yearSpiral",
+      "target": "clk_days",
+      "sourceHandle": "out-pos",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_150",
+      "source": "clk_yearSpiral",
+      "target": "clk_days",
+      "sourceHandle": "out-c",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_151",
+      "source": "clk_yearSpiral",
+      "target": "clk_days",
+      "sourceHandle": "out-w",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_152",
+      "source": "clk_clock",
+      "target": "clk_wholeHours",
+      "sourceHandle": "out-hours",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_153",
+      "source": "clk_wholeHours",
+      "target": "clk_add7",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_154",
+      "source": "clk_add7",
+      "target": "clk_twelveHour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_155",
+      "source": "clk_twelveHour",
+      "target": "clk_add8",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_156",
+      "source": "clk_hours24",
+      "target": "clk_hourDigits",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_157",
+      "source": "clk_wholeHours",
+      "target": "clk_hourDigits",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_158",
+      "source": "clk_add8",
+      "target": "clk_hourDigits",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_159",
+      "source": "clk_clock",
+      "target": "clk_minuteDigits",
+      "sourceHandle": "out-minutes",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_160",
+      "source": "clk_clock",
+      "target": "clk_secondDigits",
+      "sourceHandle": "out-seconds",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_161",
+      "source": "clk_clock",
+      "target": "clk_monthIndex",
+      "sourceHandle": "out-month",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_162",
+      "source": "clk_clock",
+      "target": "clk_subtract4",
+      "sourceHandle": "out-days",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_163",
+      "source": "clk_subtract4",
+      "target": "clk_divide5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_164",
+      "source": "clk_divide5",
+      "target": "clk_moonPhase",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_165",
+      "source": "clk_moonPhase",
+      "target": "clk_waxing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_166",
+      "source": "clk_moonPhase",
+      "target": "clk_multiply12",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_167",
+      "source": "clk_multiply12",
+      "target": "clk_subtract5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_168",
+      "source": "clk_moonPhase",
+      "target": "clk_subtract6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_169",
+      "source": "clk_subtract6",
+      "target": "clk_multiply13",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_170",
+      "source": "clk_multiply13",
+      "target": "clk_add9",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_171",
+      "source": "clk_waxing",
+      "target": "clk_shadowX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_172",
+      "source": "clk_subtract5",
+      "target": "clk_shadowX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_173",
+      "source": "clk_add9",
+      "target": "clk_shadowX",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_174",
+      "source": "clk_shadowX",
+      "target": "clk_shadowPos",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-x"
     }
   ]
 }

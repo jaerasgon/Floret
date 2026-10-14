@@ -1,11 +1,15 @@
 //! Painting the laid-out canvas: region frames with their port pills,
 //! node boxes with rows and inline fields, pins, chips and tooltips.
 
-use super::geom::{Field, Look, NodeBox, PinGeom, HEADER_H, LABEL_FONT, PIN_R};
+use super::geom::{
+    value_text, Field, FieldLabel, Look, NodeBox, PinGeom, BOX_PAD, CHECK, CHECK_GAP, FOOT_FONT,
+    HEADER_H, LABEL_FONT, PIN_R, SELECT_ARROW, SWATCH_W, VALUE_FONT,
+};
 use crate::editor::ports::type_name;
 use crate::editor::values::{self, FieldKind};
 use crate::theme::{
-    self, BG_0, BG_2, BG_3, BORDER, DANGER, FG_0, FG_1, FG_2, GOLD, GOLD_TEXT, SPREAD_PIN,
+    self, BG_0, BG_1, BG_2, BG_3, BORDER, DANGER, FG_0, FG_1, FG_2, FG_3, GOLD, GOLD_TEXT,
+    SPREAD_PIN,
 };
 use eframe::egui::{
     self, pos2, vec2, Align2, Color32, CornerRadius, FontId, Id, LayerId, Order, Painter, Pos2,
@@ -114,12 +118,98 @@ fn chip(p: &Painter, r: Rect) {
 pub struct FrameState<'a> {
     pub kind: Option<RegionKind>,
     pub def_type: &'a str,
+    /// A section's tint (`None` for other frames).
+    pub tint: Option<Color32>,
     pub selected: bool,
     pub drop_target: bool,
     pub selected_ports: &'a [String],
 }
 
+/// A new section's tint (the theme's blue).
+pub const SECTION_DEFAULT: &str = "#7cb6ff";
+
+/// A section's tint from its `color` param; `None` for other nodes.
+pub fn section_tint(n: &floret_engine::patch::PatchNode) -> Option<Color32> {
+    (n.def_type == "meta/section").then(|| {
+        let [r, g, b, _] = n
+            .params
+            .get("color")
+            .and_then(|v| v.as_str())
+            .and_then(values::parse_hex)
+            .or_else(|| values::parse_hex(SECTION_DEFAULT))
+            .unwrap_or([0.5, 0.7, 1.0, 1.0]);
+        let c = |v: f64| (v.clamp(0.0, 1.0) * 255.0).round() as u8;
+        Color32::from_rgb(c(r), c(g), c(b))
+    })
+}
+
+/// A section: a flat, tinted card behind its nodes with the title on a
+/// tinted strip, no pins or pills.
+fn section(p: &Painter, b: &NodeBox, st: &FrameState, tint: Color32, z: f32) {
+    let card = b.header.union(b.rect);
+    let r = (9.0 * z).min(255.0) as u8;
+    let (fill, stroke) = if st.drop_target {
+        (tint.gamma_multiply(0.16), Stroke::new(1.5, tint))
+    } else if st.selected {
+        (tint.gamma_multiply(0.09), Stroke::new(1.25, tint))
+    } else {
+        (
+            tint.gamma_multiply(0.07),
+            Stroke::new(0.75, tint.gamma_multiply(0.45)),
+        )
+    };
+    p.rect(
+        card,
+        CornerRadius::same(r),
+        fill,
+        Stroke::NONE,
+        StrokeKind::Inside,
+    );
+    p.rect(
+        b.header,
+        CornerRadius {
+            nw: r,
+            ne: r,
+            sw: 0,
+            se: 0,
+        },
+        tint.gamma_multiply(0.14),
+        Stroke::NONE,
+        StrokeKind::Inside,
+    );
+    p.rect(
+        card,
+        CornerRadius::same(r),
+        Color32::TRANSPARENT,
+        stroke,
+        StrokeKind::Inside,
+    );
+    if z >= 0.2 {
+        p.text(
+            pos2(b.header.left() + 10.0 * z, b.header.center().y),
+            Align2::LEFT_CENTER,
+            &b.label,
+            theme::medium(12.0 * z),
+            mix(tint, *FG_0, 0.55),
+        );
+    }
+    if let Some((r, _)) = &b.warning {
+        chip(p, *r);
+    }
+    // Resize grip.
+    let c = b.rect.right_bottom() - vec2(4.0, 4.0) * z;
+    for k in [4.0, 8.0] {
+        p.line_segment(
+            [c - vec2(k * z, 0.0), c - vec2(0.0, k * z)],
+            Stroke::new(1.0, tint.gamma_multiply(0.6)),
+        );
+    }
+}
+
 pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
+    if let (Some(RegionKind::Section), Some(tint)) = (st.kind, st.tint) {
+        return section(p, b, st, tint, z);
+    }
     let accent = frame_color(st.kind);
     let (fill, stroke) = if st.drop_target {
         (accent.gamma_multiply(0.12), Stroke::new(1.5, accent))
@@ -326,11 +416,26 @@ fn node_card(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     } else {
         Stroke::new(1.0, *BORDER)
     };
-    // A flat card: header and rows share the fill, split by a hairline.
+    // A flat card: header and rows share the fill, split by a hairline;
+    // the outputs' footer is a shade darker under its own hairline.
     p.rect_filled(b.rect, r, *BG_2);
+    if let Some(top) = b.footer {
+        let foot = Rect::from_min_max(pos2(b.rect.left(), top), b.rect.max);
+        let corners = CornerRadius {
+            nw: 0,
+            ne: 0,
+            sw: r.sw,
+            se: r.se,
+        };
+        p.rect_filled(foot, corners, footer_fill());
+    }
     if z > 0.2 {
         let y = p.round_to_pixel_center(b.rect.top() + HEADER_H * z);
         p.hline(b.rect.x_range(), y, Stroke::new(1.0, *BORDER));
+        if let Some(top) = b.footer.filter(|t| *t > b.rect.top() + HEADER_H * z + 0.5) {
+            let y = p.round_to_pixel_center(top);
+            p.hline(b.rect.x_range(), y, Stroke::new(1.0, *BORDER));
+        }
     }
     p.rect_stroke(b.rect, r, border, StrokeKind::Inside);
     let header = Rect::from_min_size(b.rect.min, vec2(b.rect.width(), HEADER_H * z));
@@ -395,14 +500,14 @@ fn node_card(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     super::custom::draw_body(p, b, &st.body, z);
     if z <= 0.3 {
         for f in &b.fields {
-            field(p, f, z, None);
+            field(p, f, z, None, false);
         }
         return;
     }
     let font = FontId::proportional(LABEL_FONT * z);
     for row in &b.rows {
         if let Some(label) = &row.label {
-            let color = if row.expanded { *GOLD_TEXT } else { *FG_1 };
+            let color = *FG_1;
             let g = p.layout_no_wrap(label.clone(), font.clone(), color);
             let mut x = b.rect.left() + 10.0 * z;
             let w = g.size().x;
@@ -418,7 +523,7 @@ fn node_card(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                 );
                 x += 9.0 * z;
             }
-            if row.integer && row.readout.is_none() && !row.expanded {
+            if row.integer {
                 p.text(
                     pos2(x, row.y),
                     Align2::LEFT_CENTER,
@@ -427,45 +532,199 @@ fn node_card(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                     *FG_2,
                 );
             }
-            if let Some(ro) = &row.readout {
-                p.text(
-                    pos2(x + 3.0 * z, row.y),
-                    Align2::LEFT_CENTER,
-                    ro,
-                    FontId::monospace(10.0 * z),
-                    *GOLD_TEXT,
-                );
-            }
-        }
-        if let Some((label, _)) = &row.output {
-            // Output rows show the port name (as in the web app); the live
-            // value is in the pin's hover tooltip. Keep clear of an inline
-            // field on the same row.
-            let left = b
-                .fields
-                .iter()
-                .filter(|f| (f.rect.center().y - row.y).abs() < 1.0)
-                .map(|f| f.rect.right() + 4.0 * z)
-                .fold(b.rect.left(), f32::max);
-            let right = b.rect.right() - 10.0 * z;
-            let g = p.layout_no_wrap(label.clone(), FontId::proportional(LABEL_FONT * z), *FG_1);
-            if right - g.size().x >= left {
-                p.galley(pos2(right - g.size().x, row.y - g.size().y / 2.0), g, *FG_1);
-            }
         }
     }
+    // Footer rows show the output's name (as in the web app), right-aligned
+    // against its pin; the live value is in the pin's hover tooltip.
+    let foot_font = FontId::proportional(FOOT_FONT * z);
+    for o in &b.outs {
+        let g = p.layout_no_wrap(o.label.clone(), foot_font.clone(), *FG_1);
+        let x = b.rect.right() - 10.0 * z - g.size().x;
+        p.galley(pos2(x, o.y - g.size().y / 2.0), g, *FG_1);
+    }
     for f in &b.fields {
-        if st.editing.is_some_and(|e| e.rect == f.rect) {
+        let editing = st.editing.is_some_and(|e| e.rect == f.rect);
+        // A value box keeps its box and name under the text editor.
+        if editing && f.label.is_none() {
             continue;
         }
-        field(p, f, z, st.body.hover);
+        field(p, f, z, st.body.hover, editing);
     }
 }
 
 /// Where a node's title starts (after the category lamp), canvas units.
 pub const TITLE_X: f32 = 24.0;
 
-pub fn field(p: &Painter, f: &Field, z: f32, hover: Option<Pos2>) {
+/// The outputs' footer: a touch darker than the card, towards the panels.
+fn footer_fill() -> Color32 {
+    mix(*BG_1, *BG_2, 0.7)
+}
+
+/// A value box's fill: a shade off the node's own card colour, lighter
+/// under the pointer.
+fn box_fill(hot: bool) -> Color32 {
+    if hot {
+        mix(*FG_3, *BG_2, 0.28)
+    } else {
+        mix(*FG_3, *BG_2, 0.15)
+    }
+}
+
+/// `s` cut with "…" to fit `max` wide.
+fn fit(p: &Painter, s: &str, font: &FontId, max: f32) -> String {
+    let w = |t: &str| p.layout_no_wrap(t.to_owned(), font.clone(), *FG_0).size().x;
+    if w(s) <= max {
+        return s.to_owned();
+    }
+    let mut chars: Vec<char> = s.chars().take(64).collect();
+    while chars.pop().is_some() {
+        let t = format!("{}…", chars.iter().collect::<String>());
+        if w(&t) <= max {
+            return t;
+        }
+    }
+    String::new()
+}
+
+/// A row's value box (Blender style): one rounded box, the name at its
+/// left, the value right-aligned; a checkbox and its name for a bool; X
+/// and Y cells for a vec2. `editing`: the text editor covers the value.
+fn value_box(p: &Painter, f: &Field, tag: &FieldLabel, z: f32, hover: Option<Pos2>, editing: bool) {
+    let hot = |r: Rect| hover.is_some_and(|h| r.contains(h));
+    // Far out: the boxes alone, no text.
+    let text = z > 0.3;
+    let label_font = FontId::proportional(LABEL_FONT * z);
+    let mono = FontId::monospace(VALUE_FONT * z);
+    // The name (and `C` mark) from `x`.
+    let name = |x: f32| {
+        let g = p.layout_no_wrap(tag.text.clone(), label_font.clone(), *FG_2);
+        let w = g.size().x;
+        let y = tag.frame.center().y;
+        p.galley(pos2(x, y - g.size().y / 2.0), g, *FG_2);
+        if tag.constant {
+            p.text(
+                pos2(x + w + 3.0 * z, y),
+                Align2::LEFT_CENTER,
+                "C",
+                FontId::proportional(8.5 * z),
+                *FG_2,
+            );
+        }
+    };
+    let radius = 4.0 * z;
+    if f.kind == FieldKind::Bool {
+        let check = Rect::from_center_size(
+            pos2(f.rect.left() + CHECK * z / 2.0, f.rect.center().y),
+            vec2(CHECK, CHECK) * z,
+        );
+        p.rect_filled(check, 3.0 * z, box_fill(hot(f.rect)));
+        if values::as_bool(&f.value) {
+            let c = check.center();
+            let s = check.height() * 0.3;
+            p.line(
+                vec![
+                    c + vec2(-s, 0.0),
+                    c + vec2(-s * 0.3, s * 0.7),
+                    c + vec2(s, -s * 0.8),
+                ],
+                Stroke::new(1.6 * z, GOLD),
+            );
+        }
+        if text {
+            name(check.right() + CHECK_GAP * z);
+        }
+        return;
+    }
+    // A vec2's box and name come with its X cell.
+    if f.axis != Some(1) {
+        let whole = f.axis.is_none() && hot(tag.frame);
+        p.rect_filled(tag.frame, radius, box_fill(whole));
+        if text {
+            name(tag.frame.left() + BOX_PAD * z);
+        }
+    }
+    let vr = f.value_rect;
+    let clip = p.with_clip_rect(vr);
+    match &f.kind {
+        FieldKind::Vec2 => {
+            p.rect_filled(f.rect, 3.0 * z, mix(*BG_2, box_fill(hot(f.rect)), 0.55));
+            if text && !editing {
+                let (x, y) = values::as_vec2(&f.value);
+                let v = if f.axis == Some(1) { y } else { x };
+                clip.text(
+                    vr.center(),
+                    Align2::CENTER_CENTER,
+                    values::num(v, 3),
+                    mono,
+                    *GOLD_TEXT,
+                );
+            }
+        }
+        _ if !text || editing => {}
+        FieldKind::Number { .. } => {
+            clip.text(
+                vr.right_center(),
+                Align2::RIGHT_CENTER,
+                value_text(&f.kind, &f.value),
+                mono,
+                *GOLD_TEXT,
+            );
+        }
+        FieldKind::Text => {
+            let s = fit(p, &value_text(&f.kind, &f.value), &mono, vr.width());
+            clip.text(vr.right_center(), Align2::RIGHT_CENTER, s, mono, *FG_0);
+        }
+        FieldKind::Select(_) => {
+            clip.text(
+                vr.right_center(),
+                Align2::RIGHT_CENTER,
+                "▾",
+                FontId::monospace(9.0 * z),
+                *FG_1,
+            );
+            let s = value_text(&f.kind, &f.value);
+            let room = vr.width() - SELECT_ARROW * z;
+            let s = fit(p, &s, &mono, room);
+            clip.text(
+                vr.right_center() - vec2(SELECT_ARROW * z, 0.0),
+                Align2::RIGHT_CENTER,
+                s,
+                mono,
+                *FG_0,
+            );
+        }
+        FieldKind::Color => {
+            let rgba = values::as_rgba(&f.value);
+            let g = p.layout_no_wrap(value_text(&f.kind, &f.value), mono, *FG_0);
+            let hex_w = g.size().x;
+            // The hex at the right, its swatch before it; just the swatch
+            // when the hex won't fit.
+            let swatch_right = if (SWATCH_W + 4.0) * z + hex_w <= vr.width() + 0.5 {
+                let at = pos2(vr.right() - hex_w, vr.center().y - g.size().y / 2.0);
+                clip.galley(at, g, *FG_0);
+                at.x - 4.0 * z
+            } else {
+                vr.right()
+            };
+            let swatch = Rect::from_center_size(
+                pos2(swatch_right - SWATCH_W * z / 2.0, vr.center().y),
+                vec2(SWATCH_W, SWATCH_W) * z,
+            );
+            let c = |v: f64| (v.clamp(0.0, 1.0) * 255.0).round() as u8;
+            p.rect_filled(
+                swatch,
+                2.0 * z,
+                Color32::from_rgb(c(rgba[0]), c(rgba[1]), c(rgba[2])),
+            );
+        }
+        FieldKind::Bool => {}
+    }
+}
+
+pub fn field(p: &Painter, f: &Field, z: f32, hover: Option<Pos2>, editing: bool) {
+    if let Some(tag) = &f.label {
+        return value_box(p, f, tag, z, hover, editing);
+    }
     let r = f.rect;
     let mono = FontId::monospace(10.0 * z);
     if f.bare && !super::custom::bare_hot(hover, r) {

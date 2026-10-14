@@ -16,12 +16,12 @@
         "y": -334
       },
       "params": {
-        "text": "Seasons garden\n\nFive L-system plants grow (Trim Path draws each one out, turtle order, as a State number climbs to 1), sway in the wind (each is sheared about its root by noise) and go through the year: leaves on every turtle vertex swell in spring, darken in summer, turn and drop in autumn — a particle emitter sheds them, blown by a Wind force — and in winter the branches stand bare while snow falls. The season sets the leaf, sky and ground colours (Gradient lookups) and the two emitters' rates.\n\n• Slider into `season` (0 spring … 4) with the toggle off; toggle on: a year every 48 s.\n• Slider into `wind`.  • Bang: replant (grow again).  • Vary: new plants.",
+        "text": "Seasons garden\n\nFive L-system plants grow (Trim Path draws each one out, turtle order, as an Integrate climbs to 1 in 9 s), sway in the wind (each is sheared about its root by noise) and go through the year: leaves on every turtle vertex swell in spring, darken in summer, turn and drop in autumn — a particle emitter sheds them, blown by a Wind force — and in winter the branches stand bare while snow falls. The season sets the leaf, sky and ground colours (Gradient lookups) and, through the Seasons subpatch (how much autumn, winter and leaf there is), the two emitters' rates.\n\n• Slider into `season` (0 spring … 4) with the toggle off; toggle on: a year every 48 s.\n• Slider into `wind`.  • Bang: replant (grow again).  • Vary: new plants.",
         "width": 560,
         "height": 270
       },
       "portValues": {
-        "text": "Seasons garden\n\nFive L-system plants grow (Trim Path draws each one out, turtle order, as a State number climbs to 1), sway in the wind (each is sheared about its root by noise) and go through the year: leaves on every turtle vertex swell in spring, darken in summer, turn and drop in autumn — a particle emitter sheds them, blown by a Wind force — and in winter the branches stand bare while snow falls. The season sets the leaf, sky and ground colours (Gradient lookups) and the two emitters' rates.\n\n• Slider into `season` (0 spring … 4) with the toggle off; toggle on: a year every 48 s.\n• Slider into `wind`.  • Bang: replant (grow again).  • Vary: new plants.",
+        "text": "Seasons garden\n\nFive L-system plants grow (Trim Path draws each one out, turtle order, as an Integrate climbs to 1 in 9 s), sway in the wind (each is sheared about its root by noise) and go through the year: leaves on every turtle vertex swell in spring, darken in summer, turn and drop in autumn — a particle emitter sheds them, blown by a Wind force — and in winter the branches stand bare while snow falls. The season sets the leaf, sky and ground colours (Gradient lookups) and, through the Seasons subpatch (how much autumn, winter and leaf there is), the two emitters' rates.\n\n• Slider into `season` (0 spring … 4) with the toggle off; toggle on: a year every 48 s.\n• Slider into `wind`.  • Bang: replant (grow again).  • Vary: new plants.",
         "width": 560,
         "height": 270
       }
@@ -31,7 +31,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 963
+        "y": 1144
       },
       "params": {
         "value": 0.45,
@@ -48,8 +48,8 @@
       "id": "gdn_autoYear",
       "defType": "io/toggle",
       "position": {
-        "x": 0,
-        "y": 825
+        "x": 1149,
+        "y": 1073
       },
       "params": {
         "value": true
@@ -63,7 +63,7 @@
       "defType": "io/slider",
       "position": {
         "x": 0,
-        "y": 1089
+        "y": 1288
       },
       "params": {
         "value": 0.5,
@@ -81,7 +81,7 @@
       "defType": "io/bang",
       "position": {
         "x": 0,
-        "y": 1215
+        "y": 815
       },
       "params": {},
       "portValues": {}
@@ -90,130 +90,18 @@
       "id": "gdn_time",
       "defType": "time/seconds",
       "position": {
-        "x": 2343,
-        "y": 2024
+        "x": 42,
+        "y": 1600
       },
       "params": {},
       "portValues": {}
-    },
-    {
-      "id": "gdn_dt",
-      "defType": "time/delta",
-      "position": {
-        "x": 41,
-        "y": 1445
-      },
-      "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "gdn_seasonNow",
-      "defType": "math/expression",
-      "position": {
-        "x": 282,
-        "y": 934
-      },
-      "params": {
-        "expr": "a ? fract(s / 4 + t / 48) * 4 : s"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "gdn_yearPhase",
-      "defType": "math/expression",
-      "position": {
-        "x": 641,
-        "y": 633
-      },
-      "params": {
-        "expr": "s / 4"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "gdn_autumn",
-      "defType": "math/expression",
-      "position": {
-        "x": 641,
-        "y": 1250
-      },
-      "params": {
-        "expr": "clamp(1 - abs(s - 2.5) * 1.6, 0, 1)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "gdn_winter",
-      "defType": "math/expression",
-      "position": {
-        "x": 980,
-        "y": 1843
-      },
-      "params": {
-        "expr": "clamp(1 - abs(s - 3.6) * 2.2, 0, 1) + clamp(1 - s * 3, 0, 1) * 0.5"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "gdn_leafiness",
-      "defType": "math/expression",
-      "position": {
-        "x": 980,
-        "y": 686
-      },
-      "params": {
-        "expr": "s < 3 ? smoothstep(0.05, 0.8, s) * (1 - smoothstep(2.4, 3.0, s)) : 0"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "gdn_rgrowth",
-      "defType": "state/read",
-      "position": {
-        "x": 12,
-        "y": 1319
-      },
-      "params": {
-        "slot": 1,
-        "init": 0
-      },
-      "portValues": {
-        "slot": 1,
-        "init": 0
-      }
-    },
-    {
-      "id": "gdn_growth",
-      "defType": "math/expression",
-      "position": {
-        "x": 282,
-        "y": 1240
-      },
-      "params": {
-        "expr": "r ? 0 : min(1, g + min(dt, 0.05) / 9)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "gdn_wgrowth",
-      "defType": "state/write",
-      "position": {
-        "x": 678,
-        "y": 1666
-      },
-      "params": {
-        "slot": 1
-      },
-      "portValues": {
-        "slot": 1
-      }
     },
     {
       "id": "gdn_leafColours",
       "defType": "color/palette",
       "position": {
-        "x": 641,
-        "y": 992
+        "x": 1699,
+        "y": 1070
       },
       "params": {
         "stopCount": 6,
@@ -238,7 +126,7 @@
       "id": "gdn_skyColours",
       "defType": "color/palette",
       "position": {
-        "x": 641,
+        "x": 1699,
         "y": 0
       },
       "params": {
@@ -262,8 +150,8 @@
       "id": "gdn_groundColours",
       "defType": "color/palette",
       "position": {
-        "x": 641,
-        "y": 236
+        "x": 1699,
+        "y": 232
       },
       "params": {
         "stopCount": 5,
@@ -286,8 +174,8 @@
       "id": "gdn_leafColour",
       "defType": "color/gradient",
       "position": {
-        "x": 987,
-        "y": 1122
+        "x": 2079,
+        "y": 1205
       },
       "params": {
         "space": "oklab"
@@ -298,8 +186,8 @@
       "id": "gdn_skyColour",
       "defType": "color/gradient",
       "position": {
-        "x": 987,
-        "y": 154
+        "x": 2079,
+        "y": 146
       },
       "params": {
         "space": "oklab"
@@ -310,8 +198,8 @@
       "id": "gdn_groundColour",
       "defType": "color/gradient",
       "position": {
-        "x": 987,
-        "y": 302
+        "x": 2079,
+        "y": 312
       },
       "params": {
         "space": "oklab"
@@ -322,8 +210,8 @@
       "id": "gdn_skyFill",
       "defType": "style/fill",
       "position": {
-        "x": 3636,
-        "y": 110
+        "x": 6267,
+        "y": 356
       },
       "params": {},
       "portValues": {}
@@ -332,8 +220,8 @@
       "id": "gdn_sky",
       "defType": "draw/rect",
       "position": {
-        "x": 3927,
-        "y": 233
+        "x": 6531,
+        "y": 638
       },
       "params": {
         "anchor": "center"
@@ -352,8 +240,8 @@
       "id": "gdn_sunFill",
       "defType": "style/fill",
       "position": {
-        "x": 3612,
-        "y": 236
+        "x": 6250,
+        "y": 588
       },
       "params": {},
       "portValues": {
@@ -369,8 +257,8 @@
       "id": "gdn_sun",
       "defType": "draw/ellipse",
       "position": {
-        "x": 3912,
-        "y": 425
+        "x": 6531,
+        "y": 848
       },
       "params": {},
       "portValues": {
@@ -386,8 +274,8 @@
       "id": "gdn_groundFill",
       "defType": "style/fill",
       "position": {
-        "x": 3636,
-        "y": 362
+        "x": 6267,
+        "y": 732
       },
       "params": {},
       "portValues": {}
@@ -396,8 +284,8 @@
       "id": "gdn_ground",
       "defType": "draw/rect",
       "position": {
-        "x": 3921,
-        "y": 617
+        "x": 6531,
+        "y": 1057
       },
       "params": {
         "anchor": "center"
@@ -416,8 +304,8 @@
       "id": "gdn_plantIds",
       "defType": "spread/range",
       "position": {
-        "x": 995,
-        "y": 582
+        "x": 2066,
+        "y": 789
       },
       "params": {
         "count": 5
@@ -430,12 +318,12 @@
       "id": "gdn_each",
       "defType": "region/foreach",
       "position": {
-        "x": 1313,
-        "y": 128
+        "x": 2424,
+        "y": 144
       },
       "params": {
-        "width": 2145,
-        "height": 1202,
+        "width": 3314,
+        "height": 1448,
         "label": "ForEach plant"
       },
       "ports": [
@@ -444,51 +332,25 @@
           "name": "i",
           "type": "number",
           "direction": "input",
-          "y": 508
+          "y": 707
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 283
+          "y": 763
         }
       ],
-      "width": 2145,
-      "height": 1202
-    },
-    {
-      "id": "gdn_branchAngle",
-      "defType": "math/expression",
-      "position": {
-        "x": 157,
-        "y": 488
-      },
-      "params": {
-        "expr": "21 + 7 * fract(sin(i * 3.7) * 4375.85)"
-      },
-      "parentId": "gdn_each",
-      "portValues": {}
-    },
-    {
-      "id": "gdn_branchStep",
-      "defType": "math/expression",
-      "position": {
-        "x": 157,
-        "y": 630
-      },
-      "params": {
-        "expr": "2.9 + 0.9 * fract(sin(i * 9.1) * 2375.85)"
-      },
-      "parentId": "gdn_each",
-      "portValues": {}
+      "width": 3314,
+      "height": 1448
     },
     {
       "id": "gdn_bark",
       "defType": "style/stroke",
       "position": {
-        "x": 174,
-        "y": 772
+        "x": 1586,
+        "y": 720
       },
       "params": {},
       "parentId": "gdn_each",
@@ -506,8 +368,8 @@
       "id": "gdn_lsystem",
       "defType": "geometry/lsystem",
       "position": {
-        "x": 440,
-        "y": 523
+        "x": 1867,
+        "y": 873
       },
       "params": {},
       "parentId": "gdn_each",
@@ -528,8 +390,8 @@
       "id": "gdn_grow",
       "defType": "geometry/trim",
       "position": {
-        "x": 712,
-        "y": 583
+        "x": 2130,
+        "y": 738
       },
       "params": {
         "mode": "sequence"
@@ -543,8 +405,8 @@
       "id": "gdn_leafColourSoft",
       "defType": "color/set-alpha",
       "position": {
-        "x": 187,
-        "y": 942
+        "x": 203,
+        "y": 1146
       },
       "params": {},
       "parentId": "gdn_each",
@@ -553,24 +415,11 @@
       }
     },
     {
-      "id": "gdn_leafWidth",
-      "defType": "math/expression",
-      "position": {
-        "x": 157,
-        "y": 1068
-      },
-      "params": {
-        "expr": "l * 7"
-      },
-      "parentId": "gdn_each",
-      "portValues": {}
-    },
-    {
       "id": "gdn_leafStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 472,
-        "y": 963
+        "x": 476,
+        "y": 1254
       },
       "params": {},
       "parentId": "gdn_each",
@@ -580,8 +429,8 @@
       "id": "gdn_leafCap",
       "defType": "style/stroke-cap",
       "position": {
-        "x": 735,
-        "y": 841
+        "x": 1868,
+        "y": 1264
       },
       "params": {},
       "parentId": "gdn_each",
@@ -593,8 +442,8 @@
       "id": "gdn_foliage",
       "defType": "geometry/trim",
       "position": {
-        "x": 989,
-        "y": 562
+        "x": 2130,
+        "y": 1096
       },
       "params": {
         "mode": "sequence"
@@ -608,8 +457,8 @@
       "id": "gdn_plantBody",
       "defType": "transform/group",
       "position": {
-        "x": 1256,
-        "y": 490
+        "x": 2393,
+        "y": 992
       },
       "params": {
         "slotCount": 2
@@ -618,39 +467,13 @@
       "portValues": {}
     },
     {
-      "id": "gdn_sway",
-      "defType": "math/expression",
-      "position": {
-        "x": 157,
-        "y": 324
-      },
-      "params": {
-        "expr": "w * (noise(t * 0.7 + i * 1.3, 2.5) - 0.5) * 0.9"
-      },
-      "parentId": "gdn_each",
-      "portValues": {}
-    },
-    {
       "id": "gdn_bend",
       "defType": "transform/shear-x",
       "position": {
-        "x": 1531,
-        "y": 395
+        "x": 2685,
+        "y": 832
       },
       "params": {},
-      "parentId": "gdn_each",
-      "portValues": {}
-    },
-    {
-      "id": "gdn_root",
-      "defType": "math/expression",
-      "position": {
-        "x": 157,
-        "y": 40
-      },
-      "params": {
-        "expr": "vec2(-280 + i * 135 + 20 * sin(i * 5.1), 190)"
-      },
       "parentId": "gdn_each",
       "portValues": {}
     },
@@ -658,23 +481,10 @@
       "id": "gdn_plantHere",
       "defType": "transform/translate",
       "position": {
-        "x": 1922,
-        "y": 235
+        "x": 3092,
+        "y": 680
       },
       "params": {},
-      "parentId": "gdn_each",
-      "portValues": {}
-    },
-    {
-      "id": "gdn_mirror",
-      "defType": "math/expression",
-      "position": {
-        "x": 157,
-        "y": 182
-      },
-      "params": {
-        "expr": "i % 2 == 0 ? 1 : -1"
-      },
       "parentId": "gdn_each",
       "portValues": {}
     },
@@ -682,8 +492,8 @@
       "id": "gdn_facing",
       "defType": "transform/scale",
       "position": {
-        "x": 1734,
-        "y": 291
+        "x": 2896,
+        "y": 719
       },
       "params": {},
       "parentId": "gdn_each",
@@ -695,8 +505,8 @@
       "id": "gdn_windForce",
       "defType": "force/wind",
       "position": {
-        "x": 648,
-        "y": 1392
+        "x": 600,
+        "y": 1423
       },
       "params": {},
       "portValues": {
@@ -709,23 +519,11 @@
       }
     },
     {
-      "id": "gdn_windStrength",
-      "defType": "math/expression",
-      "position": {
-        "x": 282,
-        "y": 1098
-      },
-      "params": {
-        "expr": "w * 60"
-      },
-      "portValues": {}
-    },
-    {
       "id": "gdn_airDrag",
       "defType": "force/drag",
       "position": {
-        "x": 661,
-        "y": 1562
+        "x": 617,
+        "y": 1610
       },
       "params": {},
       "portValues": {
@@ -736,8 +534,8 @@
       "id": "gdn_bounds",
       "defType": "particles/bounds",
       "position": {
-        "x": 990,
-        "y": 1673
+        "x": 1720,
+        "y": 1489
       },
       "params": {
         "mode": "kill"
@@ -754,8 +552,8 @@
       "id": "gdn_world",
       "defType": "physics/world",
       "position": {
-        "x": 2318,
-        "y": 1646
+        "x": 2061,
+        "y": 1536
       },
       "params": {
         "integrator": "euler"
@@ -773,8 +571,8 @@
       "id": "gdn_forces",
       "defType": "spread/merge",
       "position": {
-        "x": 980,
-        "y": 1547
+        "x": 868,
+        "y": 1517
       },
       "params": {
         "slotCount": 2
@@ -787,8 +585,8 @@
       "id": "gdn_canopy",
       "defType": "geometry/scatter",
       "position": {
-        "x": 2285,
-        "y": 1378
+        "x": 4002,
+        "y": 1640
       },
       "params": {
         "mode": "random"
@@ -807,23 +605,11 @@
       }
     },
     {
-      "id": "gdn_leafFallRate",
-      "defType": "math/expression",
-      "position": {
-        "x": 980,
-        "y": 1364
-      },
-      "params": {
-        "expr": "a * g * 30"
-      },
-      "portValues": {}
-    },
-    {
       "id": "gdn_leafEmitter",
       "defType": "particles/emitter",
       "position": {
-        "x": 3611,
-        "y": 1409
+        "x": 5884,
+        "y": 1681
       },
       "params": {
         "maxCount": 600,
@@ -847,8 +633,8 @@
       "id": "gdn_fallingLeaves",
       "defType": "particles/render-as",
       "position": {
-        "x": 3908,
-        "y": 1060
+        "x": 6518,
+        "y": 1429
       },
       "params": {
         "template": "circle",
@@ -863,8 +649,8 @@
       "id": "gdn_snowLine",
       "defType": "spread/linear",
       "position": {
-        "x": 995,
-        "y": 2188
+        "x": 1714,
+        "y": 1988
       },
       "params": {},
       "portValues": {
@@ -874,35 +660,11 @@
       }
     },
     {
-      "id": "gdn_snowSpots",
-      "defType": "math/expression",
-      "position": {
-        "x": 2301,
-        "y": 2150
-      },
-      "params": {
-        "expr": "vec2(x, -270.0)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "gdn_snowRate",
-      "defType": "math/expression",
-      "position": {
-        "x": 2301,
-        "y": 2292
-      },
-      "params": {
-        "expr": "w * 110"
-      },
-      "portValues": {}
-    },
-    {
       "id": "gdn_snowEmitter",
       "defType": "particles/emitter",
       "position": {
-        "x": 3611,
-        "y": 1903
+        "x": 3971,
+        "y": 2257
       },
       "params": {
         "maxCount": 1500,
@@ -932,8 +694,8 @@
       "id": "gdn_snowflakes",
       "defType": "particles/render-as",
       "position": {
-        "x": 3908,
-        "y": 1466
+        "x": 6518,
+        "y": 1870
       },
       "params": {
         "template": "circle",
@@ -945,23 +707,11 @@
       }
     },
     {
-      "id": "gdn_snowCoverColour",
-      "defType": "math/expression",
-      "position": {
-        "x": 2301,
-        "y": 1882
-      },
-      "params": {
-        "expr": "rgb(0.96, 0.97, 1, w * 0.9)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "gdn_snowCoverFill",
       "defType": "style/fill",
       "position": {
-        "x": 3636,
-        "y": 1777
+        "x": 6267,
+        "y": 1908
       },
       "params": {},
       "portValues": {}
@@ -970,8 +720,8 @@
       "id": "gdn_snowCover",
       "defType": "draw/rect",
       "position": {
-        "x": 3921,
-        "y": 1274
+        "x": 6531,
+        "y": 1660
       },
       "params": {
         "anchor": "center"
@@ -990,8 +740,8 @@
       "id": "gdn_scene",
       "defType": "transform/group",
       "position": {
-        "x": 4239,
-        "y": 755
+        "x": 6853,
+        "y": 1268
       },
       "params": {
         "slotCount": 7
@@ -1002,8 +752,8 @@
       "id": "gdn_r",
       "defType": "render/renderer",
       "position": {
-        "x": 4503,
-        "y": 755
+        "x": 7117,
+        "y": 1426
       },
       "params": {
         "width": 720,
@@ -1025,596 +775,2026 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "gdn_divide",
+      "defType": "math/math",
+      "position": {
+        "x": 306,
+        "y": 1131
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 4
+      }
+    },
+    {
+      "id": "gdn_divide2",
+      "defType": "math/math",
+      "position": {
+        "x": 306,
+        "y": 1297
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 48
+      }
+    },
+    {
+      "id": "gdn_add",
+      "defType": "math/math",
+      "position": {
+        "x": 587,
+        "y": 1226
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "gdn_yearRuns",
+      "defType": "math/math",
+      "position": {
+        "x": 896,
+        "y": 1227
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "gdn_multiply",
+      "defType": "math/math",
+      "position": {
+        "x": 1149,
+        "y": 1207
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 4
+      }
+    },
+    {
+      "id": "gdn_seasonNow",
+      "defType": "logic/select",
+      "position": {
+        "x": 1431,
+        "y": 1194
+      },
+      "params": {}
+    },
+    {
+      "id": "gdn_yearPhase",
+      "defType": "math/math",
+      "position": {
+        "x": 1699,
+        "y": 707
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 4
+      }
+    },
+    {
+      "id": "gdn_seasons",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1707,
+        "y": 1677
+      },
+      "params": {
+        "label": "Seasons",
+        "width": 1733,
+        "height": 926
+      },
+      "ports": [
+        {
+          "id": "s",
+          "name": "season",
+          "type": "number",
+          "direction": "input",
+          "y": 448
+        },
+        {
+          "id": "autumn",
+          "name": "autumn",
+          "type": "number",
+          "direction": "output",
+          "y": 299
+        },
+        {
+          "id": "winter",
+          "name": "winter",
+          "type": "number",
+          "direction": "output",
+          "y": 592
+        },
+        {
+          "id": "leaves",
+          "name": "leaves",
+          "type": "number",
+          "direction": "output",
+          "y": 798
+        }
+      ],
+      "width": 1733,
+      "height": 926
+    },
+    {
+      "id": "gdn_subtract",
+      "defType": "math/math",
+      "position": {
+        "x": 158,
+        "y": 40
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "b": 2.5
+      }
+    },
+    {
+      "id": "gdn_fromAutumn",
+      "defType": "math/math",
+      "position": {
+        "x": 438,
+        "y": 77
+      },
+      "params": {
+        "op": "abs",
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons"
+    },
+    {
+      "id": "gdn_multiply2",
+      "defType": "math/math",
+      "position": {
+        "x": 648,
+        "y": 92
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "b": 1.6
+      }
+    },
+    {
+      "id": "gdn_subtract2",
+      "defType": "math/math",
+      "position": {
+        "x": 914,
+        "y": 120
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "gdn_autumn",
+      "defType": "math/clamp",
+      "position": {
+        "x": 1216,
+        "y": 191
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "gdn_subtract3",
+      "defType": "math/math",
+      "position": {
+        "x": 158,
+        "y": 206
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "b": 3.6
+      }
+    },
+    {
+      "id": "gdn_fromWinter",
+      "defType": "math/math",
+      "position": {
+        "x": 438,
+        "y": 243
+      },
+      "params": {
+        "op": "abs",
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons"
+    },
+    {
+      "id": "gdn_multiply3",
+      "defType": "math/math",
+      "position": {
+        "x": 648,
+        "y": 258
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "b": 2.2
+      }
+    },
+    {
+      "id": "gdn_subtract4",
+      "defType": "math/math",
+      "position": {
+        "x": 914,
+        "y": 290
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "gdn_deepWinter",
+      "defType": "math/clamp",
+      "position": {
+        "x": 1216,
+        "y": 366
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "gdn_multiply4",
+      "defType": "math/math",
+      "position": {
+        "x": 158,
+        "y": 371
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "b": 3
+      }
+    },
+    {
+      "id": "gdn_subtract5",
+      "defType": "math/math",
+      "position": {
+        "x": 648,
+        "y": 423
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "gdn_earlySpring",
+      "defType": "math/clamp",
+      "position": {
+        "x": 951,
+        "y": 488
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "gdn_multiply5",
+      "defType": "math/math",
+      "position": {
+        "x": 1179,
+        "y": 531
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "gdn_add2",
+      "defType": "math/math",
+      "position": {
+        "x": 1453,
+        "y": 486
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "gdn_seasons"
+    },
+    {
+      "id": "gdn_beforeWinter",
+      "defType": "logic/compare",
+      "position": {
+        "x": 171,
+        "y": 537
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "b": 3
+      }
+    },
+    {
+      "id": "gdn_leafSeason",
+      "defType": "math/smoothstep",
+      "position": {
+        "x": 179,
+        "y": 702
+      },
+      "params": {
+        "mode": "window"
+      },
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "edge0": 0.05,
+        "edge1": 0.8,
+        "edge2": 2.4,
+        "edge3": 3.0
+      }
+    },
+    {
+      "id": "gdn_leafiness",
+      "defType": "logic/select",
+      "position": {
+        "x": 448,
+        "y": 706
+      },
+      "params": {},
+      "parentId": "gdn_seasons",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "gdn_growthRate",
+      "defType": "math/math",
+      "position": {
+        "x": 0,
+        "y": 650
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1,
+        "b": 9
+      }
+    },
+    {
+      "id": "gdn_growth",
+      "defType": "motion/integrate",
+      "position": {
+        "x": 336,
+        "y": 747
+      },
+      "params": {
+        "limit": "clamp",
+        "valueType": "number"
+      },
+      "portValues": {
+        "start": 0,
+        "min": 0,
+        "max": 1,
+        "maxDt": 0.05
+      }
+    },
+    {
+      "id": "gdn_growthNow",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 1721,
+        "y": 902
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      }
+    },
+    {
+      "id": "gdn_multiply6",
+      "defType": "math/math",
+      "position": {
+        "x": 174,
+        "y": 815
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 3.7
+      }
+    },
+    {
+      "id": "gdn_angleSin",
+      "defType": "math/math",
+      "position": {
+        "x": 478,
+        "y": 849
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each"
+    },
+    {
+      "id": "gdn_multiply7",
+      "defType": "math/math",
+      "position": {
+        "x": 721,
+        "y": 859
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 4375.85
+      }
+    },
+    {
+      "id": "gdn_angleHash",
+      "defType": "math/math",
+      "position": {
+        "x": 1028,
+        "y": 897
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each"
+    },
+    {
+      "id": "gdn_multiply8",
+      "defType": "math/math",
+      "position": {
+        "x": 1280,
+        "y": 891
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "a": 7
+      }
+    },
+    {
+      "id": "gdn_add3",
+      "defType": "math/math",
+      "position": {
+        "x": 1560,
+        "y": 907
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "a": 21
+      }
+    },
+    {
+      "id": "gdn_multiply9",
+      "defType": "math/math",
+      "position": {
+        "x": 174,
+        "y": 981
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 9.1
+      }
+    },
+    {
+      "id": "gdn_stepSin",
+      "defType": "math/math",
+      "position": {
+        "x": 478,
+        "y": 1014
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each"
+    },
+    {
+      "id": "gdn_multiply10",
+      "defType": "math/math",
+      "position": {
+        "x": 721,
+        "y": 1025
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 2375.85
+      }
+    },
+    {
+      "id": "gdn_stepHash",
+      "defType": "math/math",
+      "position": {
+        "x": 1028,
+        "y": 1063
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each"
+    },
+    {
+      "id": "gdn_multiply11",
+      "defType": "math/math",
+      "position": {
+        "x": 1280,
+        "y": 1057
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "a": 0.9
+      }
+    },
+    {
+      "id": "gdn_add4",
+      "defType": "math/math",
+      "position": {
+        "x": 1560,
+        "y": 1073
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "a": 2.9
+      }
+    },
+    {
+      "id": "gdn_leafWidth",
+      "defType": "math/math",
+      "position": {
+        "x": 174,
+        "y": 1290
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 7
+      }
+    },
+    {
+      "id": "gdn_time2",
+      "defType": "time/seconds",
+      "position": {
+        "x": 216,
+        "y": 537
+      },
+      "params": {},
+      "parentId": "gdn_each"
+    },
+    {
+      "id": "gdn_multiply12",
+      "defType": "math/math",
+      "position": {
+        "x": 450,
+        "y": 525
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 0.7
+      }
+    },
+    {
+      "id": "gdn_multiply13",
+      "defType": "math/math",
+      "position": {
+        "x": 174,
+        "y": 650
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 1.3
+      }
+    },
+    {
+      "id": "gdn_add5",
+      "defType": "math/math",
+      "position": {
+        "x": 721,
+        "y": 582
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each"
+    },
+    {
+      "id": "gdn_gust",
+      "defType": "noise/noise",
+      "position": {
+        "x": 1017,
+        "y": 521
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "y": 2.5
+      }
+    },
+    {
+      "id": "gdn_subtract6",
+      "defType": "math/math",
+      "position": {
+        "x": 1280,
+        "y": 637
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "gdn_multiply14",
+      "defType": "math/math",
+      "position": {
+        "x": 1560,
+        "y": 554
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each"
+    },
+    {
+      "id": "gdn_multiply15",
+      "defType": "math/math",
+      "position": {
+        "x": 2393,
+        "y": 693
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 0.9
+      }
+    },
+    {
+      "id": "gdn_multiply16",
+      "defType": "math/math",
+      "position": {
+        "x": 174,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 135
+      }
+    },
+    {
+      "id": "gdn_add6",
+      "defType": "math/math",
+      "position": {
+        "x": 721,
+        "y": 113
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "a": -280
+      }
+    },
+    {
+      "id": "gdn_multiply17",
+      "defType": "math/math",
+      "position": {
+        "x": 174,
+        "y": 206
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 5.1
+      }
+    },
+    {
+      "id": "gdn_rootJitter",
+      "defType": "math/math",
+      "position": {
+        "x": 478,
+        "y": 264
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each"
+    },
+    {
+      "id": "gdn_multiply18",
+      "defType": "math/math",
+      "position": {
+        "x": 721,
+        "y": 278
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "a": 20
+      }
+    },
+    {
+      "id": "gdn_add7",
+      "defType": "math/math",
+      "position": {
+        "x": 1000,
+        "y": 259
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each"
+    },
+    {
+      "id": "gdn_root",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2897,
+        "y": 548
+      },
+      "params": {},
+      "parentId": "gdn_each",
+      "portValues": {
+        "y": 190
+      }
+    },
+    {
+      "id": "gdn_odd",
+      "defType": "math/math",
+      "position": {
+        "x": 202,
+        "y": 371
+      },
+      "params": {
+        "op": "mod",
+        "valueType": "number"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "gdn_even",
+      "defType": "logic/compare",
+      "position": {
+        "x": 2406,
+        "y": 528
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "gdn_each",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "gdn_mirror",
+      "defType": "logic/select",
+      "position": {
+        "x": 2688,
+        "y": 623
+      },
+      "params": {},
+      "parentId": "gdn_each",
+      "portValues": {
+        "a": 1,
+        "b": -1
+      }
+    },
+    {
+      "id": "gdn_windStrength",
+      "defType": "math/math",
+      "position": {
+        "x": 306,
+        "y": 1462
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 60
+      }
+    },
+    {
+      "id": "gdn_multiply19",
+      "defType": "math/math",
+      "position": {
+        "x": 2051,
+        "y": 1370
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "gdn_multiply20",
+      "defType": "math/math",
+      "position": {
+        "x": 3997,
+        "y": 1894
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 30
+      }
+    },
+    {
+      "id": "gdn_snowSpots",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2092,
+        "y": 2057
+      },
+      "params": {},
+      "portValues": {
+        "y": -270.0
+      }
+    },
+    {
+      "id": "gdn_snowRate",
+      "defType": "math/math",
+      "position": {
+        "x": 2051,
+        "y": 2200
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 110
+      }
+    },
+    {
+      "id": "gdn_multiply21",
+      "defType": "math/math",
+      "position": {
+        "x": 2051,
+        "y": 1891
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.9
+      }
+    },
+    {
+      "id": "gdn_multiply22",
+      "defType": "math/math",
+      "position": {
+        "x": 3997,
+        "y": 2091
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 255
+      }
+    },
+    {
+      "id": "gdn_snowCoverColour",
+      "defType": "color/set-alpha",
+      "position": {
+        "x": 5935,
+        "y": 2067
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 0.96,
+          "g": 0.97,
+          "b": 1,
+          "a": 1.0
+        }
+      }
     }
   ],
   "edges": [
     {
       "id": "e_1",
-      "source": "gdn_autoYear",
-      "target": "gdn_seasonNow",
-      "sourceHandle": "out-bool",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_2",
-      "source": "gdn_season",
-      "target": "gdn_seasonNow",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_3",
-      "source": "gdn_seasonNow",
-      "target": "gdn_yearPhase",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_4",
-      "source": "gdn_seasonNow",
-      "target": "gdn_autumn",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_5",
-      "source": "gdn_seasonNow",
-      "target": "gdn_winter",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_6",
-      "source": "gdn_seasonNow",
-      "target": "gdn_leafiness",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_7",
-      "source": "gdn_replant",
-      "target": "gdn_growth",
-      "sourceHandle": "out-bang",
-      "targetHandle": "in-r"
-    },
-    {
-      "id": "e_8",
-      "source": "gdn_rgrowth",
-      "target": "gdn_growth",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_9",
-      "source": "gdn_dt",
-      "target": "gdn_growth",
-      "sourceHandle": "out-dt",
-      "targetHandle": "in-dt"
-    },
-    {
-      "id": "e_10",
-      "source": "gdn_growth",
-      "target": "gdn_wgrowth",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_11",
       "source": "gdn_leafColours",
       "target": "gdn_leafColour",
       "sourceHandle": "out-colors",
       "targetHandle": "in-colors"
     },
     {
-      "id": "e_12",
+      "id": "e_2",
       "source": "gdn_yearPhase",
       "target": "gdn_leafColour",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-t"
     },
     {
-      "id": "e_13",
+      "id": "e_3",
       "source": "gdn_skyColours",
       "target": "gdn_skyColour",
       "sourceHandle": "out-colors",
       "targetHandle": "in-colors"
     },
     {
-      "id": "e_14",
+      "id": "e_4",
       "source": "gdn_yearPhase",
       "target": "gdn_skyColour",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-t"
     },
     {
-      "id": "e_15",
+      "id": "e_5",
       "source": "gdn_groundColours",
       "target": "gdn_groundColour",
       "sourceHandle": "out-colors",
       "targetHandle": "in-colors"
     },
     {
-      "id": "e_16",
+      "id": "e_6",
       "source": "gdn_yearPhase",
       "target": "gdn_groundColour",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-t"
     },
     {
-      "id": "e_17",
+      "id": "e_7",
       "source": "gdn_skyColour",
       "target": "gdn_skyFill",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_18",
+      "id": "e_8",
       "source": "gdn_skyFill",
       "target": "gdn_sky",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_19",
+      "id": "e_9",
       "source": "gdn_sunFill",
       "target": "gdn_sun",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_20",
+      "id": "e_10",
       "source": "gdn_groundColour",
       "target": "gdn_groundFill",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_21",
+      "id": "e_11",
       "source": "gdn_groundFill",
       "target": "gdn_ground",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_22",
+      "id": "e_12",
       "source": "gdn_plantIds",
       "target": "gdn_each",
       "sourceHandle": "out-indices",
       "targetHandle": "in-i"
     },
     {
-      "id": "e_23",
-      "source": "gdn_each",
-      "target": "gdn_branchAngle",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_24",
-      "source": "gdn_each",
-      "target": "gdn_branchStep",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_25",
-      "source": "gdn_branchAngle",
+      "id": "e_13",
+      "source": "gdn_add3",
       "target": "gdn_lsystem",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-angle"
     },
     {
-      "id": "e_26",
-      "source": "gdn_branchStep",
+      "id": "e_14",
+      "source": "gdn_add4",
       "target": "gdn_lsystem",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-step"
     },
     {
-      "id": "e_27",
+      "id": "e_15",
       "source": "gdn_each",
       "target": "gdn_lsystem",
       "sourceHandle": "out-i",
       "targetHandle": "in-seed"
     },
     {
-      "id": "e_28",
+      "id": "e_16",
       "source": "gdn_bark",
       "target": "gdn_lsystem",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_29",
+      "id": "e_17",
       "source": "gdn_lsystem",
       "target": "gdn_grow",
       "sourceHandle": "out-shape",
       "targetHandle": "in-path"
     },
     {
-      "id": "e_30",
-      "source": "gdn_growth",
+      "id": "e_18",
+      "source": "gdn_growthNow",
       "target": "gdn_grow",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-end"
     },
     {
-      "id": "e_31",
+      "id": "e_19",
       "source": "gdn_bark",
       "target": "gdn_grow",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_32",
+      "id": "e_20",
       "source": "gdn_leafColour",
       "target": "gdn_leafColourSoft",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_33",
-      "source": "gdn_leafiness",
-      "target": "gdn_leafWidth",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_34",
+      "id": "e_21",
       "source": "gdn_leafColourSoft",
       "target": "gdn_leafStroke",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_35",
+      "id": "e_22",
       "source": "gdn_leafWidth",
       "target": "gdn_leafStroke",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-width"
     },
     {
-      "id": "e_36",
+      "id": "e_23",
       "source": "gdn_leafStroke",
       "target": "gdn_leafCap",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
     },
     {
-      "id": "e_37",
+      "id": "e_24",
       "source": "gdn_lsystem",
       "target": "gdn_foliage",
       "sourceHandle": "out-shape",
       "targetHandle": "in-path"
     },
     {
-      "id": "e_38",
-      "source": "gdn_growth",
+      "id": "e_25",
+      "source": "gdn_growthNow",
       "target": "gdn_foliage",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-end"
     },
     {
-      "id": "e_39",
+      "id": "e_26",
       "source": "gdn_leafCap",
       "target": "gdn_foliage",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_40",
+      "id": "e_27",
       "source": "gdn_grow",
       "target": "gdn_plantBody",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_41",
+      "id": "e_28",
       "source": "gdn_foliage",
       "target": "gdn_plantBody",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_42",
-      "source": "gdn_wind",
-      "target": "gdn_sway",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_43",
-      "source": "gdn_each",
-      "target": "gdn_sway",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_44",
-      "source": "gdn_sway",
+      "id": "e_29",
+      "source": "gdn_multiply15",
       "target": "gdn_bend",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-angle"
     },
     {
-      "id": "e_45",
+      "id": "e_30",
       "source": "gdn_plantBody",
       "target": "gdn_bend",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_46",
-      "source": "gdn_each",
-      "target": "gdn_root",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_47",
+      "id": "e_31",
       "source": "gdn_root",
       "target": "gdn_plantHere",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-vector",
       "targetHandle": "in-by"
     },
     {
-      "id": "e_48",
-      "source": "gdn_each",
-      "target": "gdn_mirror",
-      "sourceHandle": "out-i",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_49",
+      "id": "e_32",
       "source": "gdn_mirror",
       "target": "gdn_facing",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-selected",
       "targetHandle": "in-sx"
     },
     {
-      "id": "e_50",
+      "id": "e_33",
       "source": "gdn_bend",
       "target": "gdn_facing",
       "sourceHandle": "out-sheared",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_51",
+      "id": "e_34",
       "source": "gdn_facing",
       "target": "gdn_plantHere",
       "sourceHandle": "out-scaled",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_52",
+      "id": "e_35",
       "source": "gdn_plantHere",
       "target": "gdn_each",
       "sourceHandle": "out-translated",
       "targetHandle": "in-l"
     },
     {
-      "id": "e_53",
-      "source": "gdn_wind",
-      "target": "gdn_windStrength",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_54",
+      "id": "e_36",
       "source": "gdn_windStrength",
       "target": "gdn_windForce",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-strength"
     },
     {
-      "id": "e_55",
+      "id": "e_37",
       "source": "gdn_windForce",
       "target": "gdn_forces",
       "sourceHandle": "out-force",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_56",
+      "id": "e_38",
       "source": "gdn_airDrag",
       "target": "gdn_forces",
       "sourceHandle": "out-force",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_57",
+      "id": "e_39",
       "source": "gdn_forces",
       "target": "gdn_world",
       "sourceHandle": "out-merged",
       "targetHandle": "in-forces"
     },
     {
-      "id": "e_58",
+      "id": "e_40",
       "source": "gdn_bounds",
       "target": "gdn_world",
       "sourceHandle": "out-collider",
       "targetHandle": "in-colliders"
     },
     {
-      "id": "e_59",
-      "source": "gdn_autumn",
-      "target": "gdn_leafFallRate",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_60",
-      "source": "gdn_growth",
-      "target": "gdn_leafFallRate",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_61",
+      "id": "e_41",
       "source": "gdn_world",
       "target": "gdn_leafEmitter",
       "sourceHandle": "out-world",
       "targetHandle": "in-world"
     },
     {
-      "id": "e_62",
+      "id": "e_42",
       "source": "gdn_canopy",
       "target": "gdn_leafEmitter",
       "sourceHandle": "out-points",
       "targetHandle": "in-positions"
     },
     {
-      "id": "e_63",
-      "source": "gdn_leafFallRate",
+      "id": "e_43",
+      "source": "gdn_multiply20",
       "target": "gdn_leafEmitter",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-rate"
     },
     {
-      "id": "e_64",
+      "id": "e_44",
       "source": "gdn_leafColour",
       "target": "gdn_leafEmitter",
       "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_65",
+      "id": "e_45",
       "source": "gdn_time",
       "target": "gdn_leafEmitter",
       "sourceHandle": "out-t",
       "targetHandle": "in-time"
     },
     {
-      "id": "e_66",
+      "id": "e_46",
       "source": "gdn_leafEmitter",
       "target": "gdn_fallingLeaves",
       "sourceHandle": "out-particles",
       "targetHandle": "in-particles"
     },
     {
-      "id": "e_67",
-      "source": "gdn_snowLine",
-      "target": "gdn_snowSpots",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_68",
-      "source": "gdn_winter",
-      "target": "gdn_snowRate",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_69",
+      "id": "e_47",
       "source": "gdn_world",
       "target": "gdn_snowEmitter",
       "sourceHandle": "out-world",
       "targetHandle": "in-world"
     },
     {
-      "id": "e_70",
+      "id": "e_48",
       "source": "gdn_snowSpots",
       "target": "gdn_snowEmitter",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-vector",
       "targetHandle": "in-positions"
     },
     {
-      "id": "e_71",
+      "id": "e_49",
       "source": "gdn_snowRate",
       "target": "gdn_snowEmitter",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-result",
       "targetHandle": "in-rate"
     },
     {
-      "id": "e_72",
+      "id": "e_50",
       "source": "gdn_time",
       "target": "gdn_snowEmitter",
       "sourceHandle": "out-t",
       "targetHandle": "in-time"
     },
     {
-      "id": "e_73",
+      "id": "e_51",
       "source": "gdn_snowEmitter",
       "target": "gdn_snowflakes",
       "sourceHandle": "out-particles",
       "targetHandle": "in-particles"
     },
     {
-      "id": "e_74",
-      "source": "gdn_winter",
-      "target": "gdn_snowCoverColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_75",
+      "id": "e_52",
       "source": "gdn_snowCoverColour",
       "target": "gdn_snowCoverFill",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_76",
+      "id": "e_53",
       "source": "gdn_snowCoverFill",
       "target": "gdn_snowCover",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_77",
+      "id": "e_54",
       "source": "gdn_sky",
       "target": "gdn_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_78",
+      "id": "e_55",
       "source": "gdn_sun",
       "target": "gdn_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_79",
+      "id": "e_56",
       "source": "gdn_ground",
       "target": "gdn_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_80",
+      "id": "e_57",
       "source": "gdn_each",
       "target": "gdn_scene",
       "sourceHandle": "out-l",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_81",
+      "id": "e_58",
       "source": "gdn_fallingLeaves",
       "target": "gdn_scene",
       "sourceHandle": "out-layer",
       "targetHandle": "in-s5"
     },
     {
-      "id": "e_82",
+      "id": "e_59",
       "source": "gdn_snowCover",
       "target": "gdn_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s6"
     },
     {
-      "id": "e_83",
+      "id": "e_60",
       "source": "gdn_snowflakes",
       "target": "gdn_scene",
       "sourceHandle": "out-layer",
       "targetHandle": "in-s7"
     },
     {
-      "id": "e_84",
+      "id": "e_61",
       "source": "gdn_scene",
       "target": "gdn_r",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_62",
+      "source": "gdn_season",
+      "target": "gdn_divide",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_63",
+      "source": "gdn_time",
+      "target": "gdn_divide2",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_64",
+      "source": "gdn_divide",
+      "target": "gdn_add",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_65",
+      "source": "gdn_divide2",
+      "target": "gdn_add",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_66",
+      "source": "gdn_add",
+      "target": "gdn_yearRuns",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_67",
+      "source": "gdn_yearRuns",
+      "target": "gdn_multiply",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_68",
+      "source": "gdn_autoYear",
+      "target": "gdn_seasonNow",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_69",
+      "source": "gdn_multiply",
+      "target": "gdn_seasonNow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_70",
+      "source": "gdn_season",
+      "target": "gdn_seasonNow",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_71",
+      "source": "gdn_seasonNow",
+      "target": "gdn_yearPhase",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_72",
+      "source": "gdn_seasonNow",
+      "target": "gdn_seasons",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-s"
+    },
+    {
+      "id": "e_73",
+      "source": "gdn_seasons",
+      "target": "gdn_subtract",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_74",
+      "source": "gdn_subtract",
+      "target": "gdn_fromAutumn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_75",
+      "source": "gdn_fromAutumn",
+      "target": "gdn_multiply2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_76",
+      "source": "gdn_multiply2",
+      "target": "gdn_subtract2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_77",
+      "source": "gdn_subtract2",
+      "target": "gdn_autumn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_78",
+      "source": "gdn_seasons",
+      "target": "gdn_subtract3",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_79",
+      "source": "gdn_subtract3",
+      "target": "gdn_fromWinter",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_80",
+      "source": "gdn_fromWinter",
+      "target": "gdn_multiply3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_81",
+      "source": "gdn_multiply3",
+      "target": "gdn_subtract4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_82",
+      "source": "gdn_subtract4",
+      "target": "gdn_deepWinter",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_83",
+      "source": "gdn_seasons",
+      "target": "gdn_multiply4",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_84",
+      "source": "gdn_multiply4",
+      "target": "gdn_subtract5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_85",
+      "source": "gdn_subtract5",
+      "target": "gdn_earlySpring",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_86",
+      "source": "gdn_earlySpring",
+      "target": "gdn_multiply5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_87",
+      "source": "gdn_deepWinter",
+      "target": "gdn_add2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_88",
+      "source": "gdn_multiply5",
+      "target": "gdn_add2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_89",
+      "source": "gdn_seasons",
+      "target": "gdn_beforeWinter",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_90",
+      "source": "gdn_seasons",
+      "target": "gdn_leafSeason",
+      "sourceHandle": "out-s",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_91",
+      "source": "gdn_beforeWinter",
+      "target": "gdn_leafiness",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_92",
+      "source": "gdn_leafSeason",
+      "target": "gdn_leafiness",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_93",
+      "source": "gdn_autumn",
+      "target": "gdn_seasons",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-autumn"
+    },
+    {
+      "id": "e_94",
+      "source": "gdn_add2",
+      "target": "gdn_seasons",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-winter"
+    },
+    {
+      "id": "e_95",
+      "source": "gdn_leafiness",
+      "target": "gdn_seasons",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-leaves"
+    },
+    {
+      "id": "e_96",
+      "source": "gdn_growthRate",
+      "target": "gdn_growth",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_97",
+      "source": "gdn_replant",
+      "target": "gdn_growth",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-reset"
+    },
+    {
+      "id": "e_98",
+      "source": "gdn_growth",
+      "target": "gdn_growthNow",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_99",
+      "source": "gdn_each",
+      "target": "gdn_multiply6",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_100",
+      "source": "gdn_multiply6",
+      "target": "gdn_angleSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_101",
+      "source": "gdn_angleSin",
+      "target": "gdn_multiply7",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_102",
+      "source": "gdn_multiply7",
+      "target": "gdn_angleHash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_103",
+      "source": "gdn_angleHash",
+      "target": "gdn_multiply8",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_104",
+      "source": "gdn_multiply8",
+      "target": "gdn_add3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_105",
+      "source": "gdn_each",
+      "target": "gdn_multiply9",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_106",
+      "source": "gdn_multiply9",
+      "target": "gdn_stepSin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_107",
+      "source": "gdn_stepSin",
+      "target": "gdn_multiply10",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_108",
+      "source": "gdn_multiply10",
+      "target": "gdn_stepHash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_109",
+      "source": "gdn_stepHash",
+      "target": "gdn_multiply11",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_110",
+      "source": "gdn_multiply11",
+      "target": "gdn_add4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_111",
+      "source": "gdn_seasons",
+      "target": "gdn_leafWidth",
+      "sourceHandle": "out-leaves",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_112",
+      "source": "gdn_time2",
+      "target": "gdn_multiply12",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_113",
+      "source": "gdn_each",
+      "target": "gdn_multiply13",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_114",
+      "source": "gdn_multiply12",
+      "target": "gdn_add5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_115",
+      "source": "gdn_multiply13",
+      "target": "gdn_add5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_116",
+      "source": "gdn_add5",
+      "target": "gdn_gust",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_117",
+      "source": "gdn_gust",
+      "target": "gdn_subtract6",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_118",
+      "source": "gdn_wind",
+      "target": "gdn_multiply14",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_119",
+      "source": "gdn_subtract6",
+      "target": "gdn_multiply14",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_120",
+      "source": "gdn_multiply14",
+      "target": "gdn_multiply15",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_121",
+      "source": "gdn_each",
+      "target": "gdn_multiply16",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_122",
+      "source": "gdn_multiply16",
+      "target": "gdn_add6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_123",
+      "source": "gdn_each",
+      "target": "gdn_multiply17",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_124",
+      "source": "gdn_multiply17",
+      "target": "gdn_rootJitter",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_125",
+      "source": "gdn_rootJitter",
+      "target": "gdn_multiply18",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_126",
+      "source": "gdn_add6",
+      "target": "gdn_add7",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_127",
+      "source": "gdn_multiply18",
+      "target": "gdn_add7",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_128",
+      "source": "gdn_add7",
+      "target": "gdn_root",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_129",
+      "source": "gdn_each",
+      "target": "gdn_odd",
+      "sourceHandle": "out-i",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_130",
+      "source": "gdn_odd",
+      "target": "gdn_even",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_131",
+      "source": "gdn_even",
+      "target": "gdn_mirror",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_132",
+      "source": "gdn_wind",
+      "target": "gdn_windStrength",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_133",
+      "source": "gdn_seasons",
+      "target": "gdn_multiply19",
+      "sourceHandle": "out-autumn",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_134",
+      "source": "gdn_growthNow",
+      "target": "gdn_multiply19",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_135",
+      "source": "gdn_multiply19",
+      "target": "gdn_multiply20",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_136",
+      "source": "gdn_snowLine",
+      "target": "gdn_snowSpots",
+      "sourceHandle": "out-values",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_137",
+      "source": "gdn_seasons",
+      "target": "gdn_snowRate",
+      "sourceHandle": "out-winter",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_138",
+      "source": "gdn_seasons",
+      "target": "gdn_multiply21",
+      "sourceHandle": "out-winter",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_139",
+      "source": "gdn_multiply21",
+      "target": "gdn_multiply22",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_140",
+      "source": "gdn_multiply22",
+      "target": "gdn_snowCoverColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
     }
   ]
 }

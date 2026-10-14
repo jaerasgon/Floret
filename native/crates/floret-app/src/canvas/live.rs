@@ -159,6 +159,10 @@ impl Live<'_> {
                 add(&n.id, msg);
             }
         }
+        // Wires pointing backwards: flagged on the node they feed.
+        for b in crate::editor::connect::backward_wires(patch, cat) {
+            add(&b.target, &b.message);
+        }
         let mut badges = HashMap::new();
         for id in visible {
             if !regions::is_drawable_node(patch, cat, id) {

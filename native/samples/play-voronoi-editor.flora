@@ -16,7 +16,7 @@
         "y": -324
       },
       "params": {
-        "text": "Voronoi Editor\n\nDrag the white handles to reshape the cells. Click empty space to add a point; X removes the one nearest the mouse. Hold L to relax the points (each slides towards the middle of its cell, and the mosaic evens out). D shows the Delaunay triangles, H the convex hull; R (or Reset) starts over.\n\nHow it works: the points are a State*. Each frame an Expression measures every point's distance to the mouse, Statistics (min) and Lookup (index-of) find the nearest, and a State remembers which one a press grabbed until release. The edit chain then moves, relaxes (Scatter's relax mode as a target), appends or removes points, and Cells draws Voronoi, Delaunay and hull from the result.",
+        "text": "Voronoi Editor\n\nDrag the white handles to reshape the cells. Click empty space to add a point; X removes the one nearest the mouse. Hold L to relax the points (each slides towards the middle of its cell, and the mosaic evens out). D shows the Delaunay triangles, H the convex hull; R (or Reset) starts over.\n\nHow it works: the points are kept by a Read* → Write* pair. Edit points measures every point's distance to the mouse, grabs the nearest on a press and remembers it until release, then moves, relaxes (Scatter's relax mode as a target), appends or removes points. Latches remember whether the triangles and hull are shown, and Cells draws Voronoi, Delaunay and hull from the result.",
         "width": 460,
         "height": 260
       }
@@ -25,65 +25,32 @@
       "id": "vo_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 53,
-        "y": 592
+        "x": 0,
+        "y": 113
       },
       "params": {}
-    },
-    {
-      "id": "vo_mpos",
-      "defType": "math/expression",
-      "position": {
-        "x": 373,
-        "y": 444
-      },
-      "params": {
-        "expr": "vec2(clamp(x, -312.0, 312.0), clamp(y, -312.0, 312.0))"
-      }
-    },
-    {
-      "id": "vo_wasPressed",
-      "defType": "state/value",
-      "position": {
-        "x": 1026,
-        "y": 597
-      },
-      "params": {},
-      "portValues": {
-        "init": false
-      }
-    },
-    {
-      "id": "vo_click",
-      "defType": "math/expression",
-      "position": {
-        "x": 1292,
-        "y": 657
-      },
-      "params": {
-        "expr": "p && !was"
-      }
     },
     {
       "id": "vo_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 16,
-        "y": 378
+        "x": 128,
+        "y": 260
       },
       "params": {
         "mode": "keys"
       },
       "portValues": {
         "keys": "xldhr"
-      }
+      },
+      "parentId": "vo_keys"
     },
     {
       "id": "vo_seedPts",
       "defType": "geometry/scatter",
       "position": {
-        "x": 0,
-        "y": 740
+        "x": 200,
+        "y": 231
       },
       "params": {
         "mode": "poisson"
@@ -99,86 +66,87 @@
     },
     {
       "id": "vo_pts",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 400,
-        "y": 683
-      },
-      "params": {}
-    },
-    {
-      "id": "vo_dist",
-      "defType": "math/expression",
-      "position": {
-        "x": 671,
-        "y": 640
+        "x": 469,
+        "y": 301
       },
       "params": {
-        "expr": "distance(q, m)"
+        "slot": 1,
+        "name": "points"
+      }
+    },
+    {
+      "id": "vo_ptsWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 1021,
+        "y": 238
+      },
+      "params": {
+        "slot": 1,
+        "name": "points"
       }
     },
     {
       "id": "vo_nearD",
       "defType": "math/statistics",
       "position": {
-        "x": 1000,
-        "y": 723
+        "x": 489,
+        "y": 557
       },
       "params": {
         "op": "min"
-      }
+      },
+      "parentId": "vo_edit"
     },
     {
       "id": "vo_nearest",
       "defType": "spread/lookup",
       "position": {
-        "x": 1295,
-        "y": 821
+        "x": 794,
+        "y": 574
       },
       "params": {
         "op": "index-of"
-      }
+      },
+      "parentId": "vo_edit"
     },
     {
       "id": "vo_grab",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 1332,
-        "y": 531
+        "x": 157,
+        "y": 385
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "grabbed"
+      },
       "portValues": {
         "init": -1
-      }
+      },
+      "parentId": "vo_edit"
     },
     {
-      "id": "vo_grabNext",
-      "defType": "math/expression",
+      "id": "vo_grabWrite",
+      "defType": "state/write",
       "position": {
-        "x": 1590,
-        "y": 514
+        "x": 1529,
+        "y": 521
       },
       "params": {
-        "expr": "click ? (d < 26 ? n : -1) : (pr ? g : -1)"
-      }
-    },
-    {
-      "id": "vo_dragged",
-      "defType": "math/expression",
-      "position": {
-        "x": 1896,
-        "y": 391
+        "slot": 1,
+        "name": "grabbed"
       },
-      "params": {
-        "expr": "index == g ? m : q"
-      }
+      "parentId": "vo_edit"
     },
     {
       "id": "vo_relaxTarget",
       "defType": "geometry/scatter",
       "position": {
-        "x": 2172,
-        "y": 421
+        "x": 1998,
+        "y": 325
       },
       "params": {
         "mode": "relax"
@@ -189,213 +157,75 @@
           "y": 620
         },
         "relax": 1
-      }
+      },
+      "parentId": "vo_edit"
     },
     {
       "id": "vo_relaxHeld",
       "defType": "spread/lookup",
       "position": {
-        "x": 2191,
-        "y": 241
+        "x": 384,
+        "y": 40
       },
       "params": {
         "op": "at"
       },
       "portValues": {
         "index": 1
-      }
-    },
-    {
-      "id": "vo_relaxed",
-      "defType": "math/expression",
-      "position": {
-        "x": 2482,
-        "y": 292
       },
-      "params": {
-        "expr": "l && index != g ? q + (r - q) * 0.12 : q"
-      }
+      "parentId": "vo_keys"
     },
     {
       "id": "vo_withNew",
       "defType": "spread/combine",
       "position": {
-        "x": 2766,
-        "y": 447
+        "x": 2664,
+        "y": 239
       },
       "params": {
         "op": "append"
-      }
+      },
+      "parentId": "vo_edit"
     },
     {
       "id": "vo_count",
       "defType": "spread/count",
       "position": {
-        "x": 687,
-        "y": 804
+        "x": 162,
+        "y": 694
       },
-      "params": {}
-    },
-    {
-      "id": "vo_adding",
-      "defType": "math/expression",
-      "position": {
-        "x": 3038,
-        "y": 489
-      },
-      "params": {
-        "expr": "q.x * 0 + (index < n || (click && d >= 26) ? 1 : 0)"
-      }
-    },
-    {
-      "id": "vo_added",
-      "defType": "spread/sublist",
-      "position": {
-        "x": 3311,
-        "y": 465
-      },
-      "params": {
-        "op": "keep-where"
-      }
-    },
-    {
-      "id": "vo_removing",
-      "defType": "math/expression",
-      "position": {
-        "x": 985,
-        "y": 849
-      },
-      "params": {
-        "expr": "hit && k == 0 && n > 3 ? 1 : 0"
-      }
+      "params": {},
+      "parentId": "vo_edit"
     },
     {
       "id": "vo_removed",
       "defType": "spread/sublist",
       "position": {
-        "x": 3582,
-        "y": 532
+        "x": 3166,
+        "y": 297
       },
       "params": {
         "op": "remove"
-      }
+      },
+      "parentId": "vo_edit"
     },
     {
       "id": "vo_resetBang",
       "defType": "io/bang",
       "position": {
-        "x": 16,
-        "y": 976
+        "x": 195,
+        "y": 484
       },
       "params": {
         "label": "Reset"
       }
     },
     {
-      "id": "vo_resetting",
-      "defType": "math/expression",
-      "position": {
-        "x": 373,
-        "y": 873
-      },
-      "params": {
-        "expr": "b || (hit && k == 4)"
-      }
-    },
-    {
-      "id": "vo_ptsNextBoth",
-      "defType": "spread/combine",
-      "position": {
-        "x": 3848,
-        "y": 448
-      },
-      "params": {
-        "op": "concat"
-      }
-    },
-    {
-      "id": "vo_ptsNextFirstCount",
-      "defType": "spread/count",
-      "position": {
-        "x": 3860,
-        "y": 596
-      },
-      "params": {}
-    },
-    {
-      "id": "vo_ptsNextPart",
-      "defType": "math/expression",
-      "position": {
-        "x": 4119,
-        "y": 497
-      },
-      "params": {
-        "expr": "q.x * 0 + ((index < n) == (c > 0.5) ? 1 : 0)"
-      }
-    },
-    {
-      "id": "vo_ptsNext",
-      "defType": "spread/sublist",
-      "position": {
-        "x": 4411,
-        "y": 458
-      },
-      "params": {
-        "op": "keep-where"
-      }
-    },
-    {
-      "id": "vo_showTri",
-      "defType": "state/value",
-      "position": {
-        "x": 57,
-        "y": 0
-      },
-      "params": {},
-      "portValues": {
-        "init": 0
-      }
-    },
-    {
-      "id": "vo_showTriNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 373,
-        "y": 40
-      },
-      "params": {
-        "expr": "hit && k == 2 ? 1 - s : s"
-      }
-    },
-    {
-      "id": "vo_showHull",
-      "defType": "state/value",
-      "position": {
-        "x": 57,
-        "y": 126
-      },
-      "params": {},
-      "portValues": {
-        "init": 0
-      }
-    },
-    {
-      "id": "vo_showHullNext",
-      "defType": "math/expression",
-      "position": {
-        "x": 373,
-        "y": 226
-      },
-      "params": {
-        "expr": "hit && k == 3 ? 1 - s : s"
-      }
-    },
-    {
       "id": "vo_time",
       "defType": "time/seconds",
       "position": {
-        "x": 58,
-        "y": 252
+        "x": 6,
+        "y": 0
       },
       "params": {}
     },
@@ -403,8 +233,8 @@
       "id": "vo_palette",
       "defType": "color/palette",
       "position": {
-        "x": 4392,
-        "y": 80
+        "x": 145,
+        "y": 355
       },
       "params": {
         "mode": "cosine",
@@ -435,14 +265,15 @@
           "b": 0.4196078431372549,
           "a": 1.0
         }
-      }
+      },
+      "parentId": "vo_mosaic"
     },
     {
       "id": "vo_cells",
       "defType": "geometry/cells",
       "position": {
-        "x": 4750,
-        "y": 22
+        "x": 424,
+        "y": 279
       },
       "params": {
         "mode": "voronoi"
@@ -453,28 +284,30 @@
           "y": 640
         },
         "gap": 5
-      }
+      },
+      "parentId": "vo_mosaic"
     },
     {
       "id": "vo_rounded",
       "defType": "geometry/path-ops",
       "position": {
-        "x": 5120,
-        "y": 89
+        "x": 662,
+        "y": 343
       },
       "params": {
         "mode": "round-corners"
       },
       "portValues": {
         "radius": 12
-      }
+      },
+      "parentId": "vo_mosaic"
     },
     {
       "id": "vo_triStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 4130,
-        "y": 271
+        "x": 164,
+        "y": 167
       },
       "params": {},
       "portValues": {
@@ -485,43 +318,47 @@
           "a": 0.45
         },
         "width": 1.2
-      }
+      },
+      "parentId": "vo_mosaic"
     },
     {
       "id": "vo_triNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 4448,
-        "y": 308
+        "x": 447,
+        "y": 158
       },
-      "params": {}
+      "params": {},
+      "parentId": "vo_mosaic"
     },
     {
       "id": "vo_tri",
       "defType": "geometry/cells",
       "position": {
-        "x": 4750,
-        "y": 258
+        "x": 674,
+        "y": 51
       },
       "params": {
         "mode": "delaunay"
-      }
+      },
+      "parentId": "vo_mosaic"
     },
     {
       "id": "vo_triShown",
       "defType": "logic/select",
       "position": {
-        "x": 5164,
-        "y": 303
+        "x": 932,
+        "y": 40
       },
-      "params": {}
+      "params": {},
+      "parentId": "vo_mosaic"
     },
     {
       "id": "vo_hullStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 4136,
-        "y": 683
+        "x": 170,
+        "y": 596
       },
       "params": {},
       "portValues": {
@@ -532,54 +369,47 @@
           "a": 1.0
         },
         "width": 2.5
-      }
+      },
+      "parentId": "vo_mosaic"
     },
     {
       "id": "vo_hullNoFill",
       "defType": "style/no-fill",
       "position": {
-        "x": 4448,
-        "y": 621
+        "x": 447,
+        "y": 687
       },
-      "params": {}
+      "params": {},
+      "parentId": "vo_mosaic"
     },
     {
       "id": "vo_hull",
       "defType": "geometry/cells",
       "position": {
-        "x": 4750,
-        "y": 472
+        "x": 674,
+        "y": 624
       },
       "params": {
         "mode": "hull"
-      }
+      },
+      "parentId": "vo_mosaic"
     },
     {
       "id": "vo_hullShown",
       "defType": "logic/select",
       "position": {
-        "x": 5164,
-        "y": 451
+        "x": 932,
+        "y": 613
       },
-      "params": {}
-    },
-    {
-      "id": "vo_handleSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 4751,
-        "y": 686
-      },
-      "params": {
-        "expr": "q.x * 0 + (index == g ? 18 : (index == n && d < 26 ? 15 : 10))"
-      }
+      "params": {},
+      "parentId": "vo_mosaic"
     },
     {
       "id": "vo_handleFill",
       "defType": "style/fill",
       "position": {
-        "x": 4425,
-        "y": 971
+        "x": 869,
+        "y": 392
       },
       "params": {},
       "portValues": {
@@ -589,14 +419,15 @@
           "b": 0.08627450980392157,
           "a": 1.0
         }
-      }
+      },
+      "parentId": "vo_handles"
     },
     {
       "id": "vo_handleRing",
       "defType": "style/stroke",
       "position": {
-        "x": 4768,
-        "y": 905
+        "x": 1123,
+        "y": 373
       },
       "params": {},
       "portValues": {
@@ -607,18 +438,19 @@
           "a": 1.0
         },
         "width": 2
-      }
+      },
+      "parentId": "vo_handles"
     },
     {
       "id": "vo_handleLoop",
       "defType": "region/foreach",
       "position": {
-        "x": 5046,
-        "y": 621
+        "x": 1397,
+        "y": 142
       },
       "params": {
-        "width": 340,
-        "height": 224,
+        "width": 364,
+        "height": 244,
         "label": "Handles"
       },
       "ports": [
@@ -641,11 +473,12 @@
           "name": "handle",
           "type": "layer",
           "direction": "output",
-          "y": 77
+          "y": 190
         }
       ],
-      "width": 340,
-      "height": 224
+      "width": 364,
+      "height": 244,
+      "parentId": "vo_handles"
     },
     {
       "id": "vo_handle",
@@ -661,54 +494,58 @@
       "id": "vo_countText",
       "defType": "string/format-number",
       "position": {
-        "x": 994,
-        "y": 1067
+        "x": 130,
+        "y": 40
       },
       "params": {},
       "portValues": {
         "decimals": 0,
         "suffix": " points"
-      }
+      },
+      "parentId": "vo_statusLine"
     },
     {
       "id": "vo_help",
       "defType": "value/string",
       "position": {
-        "x": 990,
-        "y": 1325
+        "x": 143,
+        "y": 316
       },
       "params": {
         "value": "drag · click to add · X remove · hold L relax · D H R"
-      }
+      },
+      "parentId": "vo_statusLine"
     },
     {
       "id": "vo_statusParts",
       "defType": "spread/merge",
       "position": {
-        "x": 1292,
-        "y": 1171
+        "x": 384,
+        "y": 253
       },
       "params": {
         "slotCount": 2
-      }
+      },
+      "parentId": "vo_statusLine"
     },
     {
       "id": "vo_status",
       "defType": "string/concat",
       "position": {
-        "x": 1615,
-        "y": 1142
+        "x": 653,
+        "y": 281
       },
       "params": {
         "separator": "   ·   "
-      }
+      },
+      "parentId": "vo_statusLine"
     },
     {
       "id": "vo_statusBack",
       "defType": "style/fill",
       "position": {
-        "x": 4762,
-        "y": 1075
+        "x": 140,
+        "y": 437
       },
       "params": {},
       "portValues": {
@@ -718,14 +555,15 @@
           "b": 0.0,
           "a": 0.55
         }
-      }
+      },
+      "parentId": "vo_statusLine"
     },
     {
       "id": "vo_statusBar",
       "defType": "draw/rect",
       "position": {
-        "x": 5156,
-        "y": 893
+        "x": 407,
+        "y": 396
       },
       "params": {},
       "portValues": {
@@ -735,14 +573,15 @@
         },
         "w": 640,
         "h": 32
-      }
+      },
+      "parentId": "vo_statusLine"
     },
     {
       "id": "vo_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 1601,
-        "y": 1268
+        "x": 651,
+        "y": 424
       },
       "params": {},
       "portValues": {
@@ -752,14 +591,15 @@
           "b": 1.0,
           "a": 0.75
         }
-      }
+      },
+      "parentId": "vo_statusLine"
     },
     {
       "id": "vo_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 1936,
-        "y": 1147
+        "x": 881,
+        "y": 352
       },
       "params": {
         "size": 13,
@@ -770,14 +610,15 @@
           "x": 0,
           "y": 308.0
         }
-      }
+      },
+      "parentId": "vo_statusLine"
     },
     {
       "id": "vo_scene",
       "defType": "transform/group",
       "position": {
-        "x": 5555,
-        "y": 572
+        "x": 1295,
+        "y": 601
       },
       "params": {
         "slotCount": 6
@@ -787,8 +628,8 @@
       "id": "vo_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 5819,
-        "y": 572
+        "x": 1559,
+        "y": 736
       },
       "params": {
         "width": 640,
@@ -802,78 +643,842 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "vo_mouseAt",
+      "defType": "vec2/make",
+      "position": {
+        "x": 236,
+        "y": 87
+      },
+      "params": {}
+    },
+    {
+      "id": "vo_mpos",
+      "defType": "math/clamp",
+      "position": {
+        "x": 492,
+        "y": 135
+      },
+      "params": {
+        "valueType": "vec2"
+      },
+      "portValues": {
+        "min": -312.0,
+        "max": 312.0
+      }
+    },
+    {
+      "id": "vo_edit",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 721,
+        "y": 284
+      },
+      "params": {
+        "label": "Edit points",
+        "width": 3688,
+        "height": 1132
+      },
+      "ports": [
+        {
+          "id": "points",
+          "name": "points",
+          "type": "vec2",
+          "direction": "input",
+          "y": 494
+        },
+        {
+          "id": "mouse",
+          "name": "mouse",
+          "type": "vec2",
+          "direction": "input",
+          "y": 227
+        },
+        {
+          "id": "pressed",
+          "name": "pressed",
+          "type": "boolean",
+          "direction": "input",
+          "y": 316
+        },
+        {
+          "id": "seed",
+          "name": "seed",
+          "type": "vec2",
+          "direction": "input",
+          "y": 125
+        },
+        {
+          "id": "relax",
+          "name": "relax",
+          "type": "boolean",
+          "direction": "input",
+          "y": 145
+        },
+        {
+          "id": "remove",
+          "name": "remove",
+          "type": "boolean",
+          "direction": "input",
+          "y": 792
+        },
+        {
+          "id": "reset",
+          "name": "reset",
+          "type": "boolean",
+          "direction": "input",
+          "y": 105
+        },
+        {
+          "id": "next",
+          "name": "next",
+          "type": "vec2",
+          "direction": "output",
+          "y": 300
+        },
+        {
+          "id": "grabbed",
+          "name": "grabbed",
+          "type": "number",
+          "direction": "output",
+          "y": 589
+        },
+        {
+          "id": "nearest",
+          "name": "nearest",
+          "type": "number",
+          "direction": "output",
+          "y": 621
+        },
+        {
+          "id": "nearD",
+          "name": "nearD",
+          "type": "number",
+          "direction": "output",
+          "y": 557
+        },
+        {
+          "id": "count",
+          "name": "count",
+          "type": "number",
+          "direction": "output",
+          "y": 655
+        }
+      ],
+      "width": 3688,
+      "height": 1132
+    },
+    {
+      "id": "vo_editNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 157,
+        "y": 922
+      },
+      "params": {
+        "text": "Every point's distance to the mouse; the smallest (Statistics min) and its index (Lookup index-of) are the nearest point. A press within 26 px grabs it until release (a Write → Read pair), and the grabbed point follows the mouse. Holding L moves every other point 12 % of the way to the middle of its cell (Scatter's relax mode as a target, then Lerp). A click on empty space appends a point, X removes the nearest (keeping three), R or Reset starts over.",
+        "width": 330,
+        "height": 170
+      },
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_keyX",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 384,
+        "y": 371
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 0
+      },
+      "parentId": "vo_keys"
+    },
+    {
+      "id": "vo_keyR",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 384,
+        "y": 206
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 4
+      },
+      "parentId": "vo_keys"
+    },
+    {
+      "id": "vo_resetting",
+      "defType": "logic/logic",
+      "position": {
+        "x": 615,
+        "y": 166
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "vo_keys"
+    },
+    {
+      "id": "vo_click",
+      "defType": "io/edge",
+      "position": {
+        "x": 169,
+        "y": 188
+      },
+      "params": {
+        "mode": "rising",
+        "threshold": 0.5
+      },
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_dist",
+      "defType": "vec2/math",
+      "position": {
+        "x": 159,
+        "y": 529
+      },
+      "params": {
+        "op": "distance"
+      },
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_close",
+      "defType": "logic/compare",
+      "position": {
+        "x": 785,
+        "y": 409
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "vo_edit",
+      "portValues": {
+        "b": 26
+      }
+    },
+    {
+      "id": "vo_pick",
+      "defType": "logic/select",
+      "position": {
+        "x": 1049,
+        "y": 451
+      },
+      "params": {},
+      "parentId": "vo_edit",
+      "portValues": {
+        "b": -1
+      }
+    },
+    {
+      "id": "vo_stillHeld",
+      "defType": "logic/select",
+      "position": {
+        "x": 497,
+        "y": 391
+      },
+      "params": {},
+      "parentId": "vo_edit",
+      "portValues": {
+        "b": -1
+      }
+    },
+    {
+      "id": "vo_grabNext",
+      "defType": "logic/select",
+      "position": {
+        "x": 1270,
+        "y": 454
+      },
+      "params": {},
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_idx",
+      "defType": "spread/range",
+      "position": {
+        "x": 1247,
+        "y": 242
+      },
+      "params": {},
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_isGrabbed",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1532,
+        "y": 324
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_dragged",
+      "defType": "logic/select",
+      "position": {
+        "x": 1785,
+        "y": 362
+      },
+      "params": {},
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_notGrabbed",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1532,
+        "y": 158
+      },
+      "params": {
+        "op": "not-equal"
+      },
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_relaxing",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1789,
+        "y": 148
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_eased",
+      "defType": "math/lerp",
+      "position": {
+        "x": 2271,
+        "y": 313
+      },
+      "params": {
+        "valueType": "vec2"
+      },
+      "parentId": "vo_edit",
+      "portValues": {
+        "t": 0.12
+      }
+    },
+    {
+      "id": "vo_relaxed",
+      "defType": "logic/select",
+      "position": {
+        "x": 2460,
+        "y": 294
+      },
+      "params": {},
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_far",
+      "defType": "logic/compare",
+      "position": {
+        "x": 785,
+        "y": 83
+      },
+      "params": {
+        "op": "greater-equal"
+      },
+      "parentId": "vo_edit",
+      "portValues": {
+        "b": 26
+      }
+    },
+    {
+      "id": "vo_adding",
+      "defType": "logic/logic",
+      "position": {
+        "x": 1053,
+        "y": 40
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_added",
+      "defType": "logic/switch",
+      "position": {
+        "x": 2895,
+        "y": 209
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 1
+      },
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_enough",
+      "defType": "logic/compare",
+      "position": {
+        "x": 472,
+        "y": 740
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "vo_edit",
+      "portValues": {
+        "b": 3
+      }
+    },
+    {
+      "id": "vo_removing",
+      "defType": "logic/logic",
+      "position": {
+        "x": 814,
+        "y": 740
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_ptsNext",
+      "defType": "logic/switch",
+      "position": {
+        "x": 3408,
+        "y": 150
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 1
+      },
+      "parentId": "vo_edit"
+    },
+    {
+      "id": "vo_keyD",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 384,
+        "y": 537
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 2
+      },
+      "parentId": "vo_keys"
+    },
+    {
+      "id": "vo_showTriNext",
+      "defType": "io/latch",
+      "position": {
+        "x": 613,
+        "y": 541
+      },
+      "params": {},
+      "portValues": {
+        "initial": false
+      },
+      "parentId": "vo_keys"
+    },
+    {
+      "id": "vo_keyH",
+      "defType": "spread/lookup",
+      "position": {
+        "x": 384,
+        "y": 702
+      },
+      "params": {
+        "op": "at"
+      },
+      "portValues": {
+        "index": 3
+      },
+      "parentId": "vo_keys"
+    },
+    {
+      "id": "vo_showHullNext",
+      "defType": "io/latch",
+      "position": {
+        "x": 613,
+        "y": 745
+      },
+      "params": {},
+      "portValues": {
+        "initial": false
+      },
+      "parentId": "vo_keys"
+    },
+    {
+      "id": "vo_nextCount",
+      "defType": "spread/count",
+      "position": {
+        "x": 133,
+        "y": 53
+      },
+      "params": {},
+      "parentId": "vo_handles"
+    },
+    {
+      "id": "vo_handleIdx",
+      "defType": "spread/range",
+      "position": {
+        "x": 371,
+        "y": 72
+      },
+      "params": {},
+      "parentId": "vo_handles"
+    },
+    {
+      "id": "vo_handleGrabbed",
+      "defType": "logic/compare",
+      "position": {
+        "x": 625,
+        "y": 40
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "vo_handles"
+    },
+    {
+      "id": "vo_handleNearest",
+      "defType": "logic/compare",
+      "position": {
+        "x": 625,
+        "y": 206
+      },
+      "params": {
+        "op": "equal"
+      },
+      "parentId": "vo_handles"
+    },
+    {
+      "id": "vo_handleClose",
+      "defType": "logic/compare",
+      "position": {
+        "x": 131,
+        "y": 274
+      },
+      "params": {
+        "op": "less"
+      },
+      "portValues": {
+        "b": 26
+      },
+      "parentId": "vo_handles"
+    },
+    {
+      "id": "vo_handleHover",
+      "defType": "logic/logic",
+      "position": {
+        "x": 885,
+        "y": 226
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "vo_handles"
+    },
+    {
+      "id": "vo_handleSize",
+      "defType": "logic/switch",
+      "position": {
+        "x": 1097,
+        "y": 103
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 2
+      },
+      "portValues": {
+        "v0": 18,
+        "v1": 15,
+        "else": 10
+      },
+      "parentId": "vo_handles"
+    },
+    {
+      "id": "vo_keys",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 474,
+        "y": 444
+      },
+      "params": {
+        "label": "Keys",
+        "width": 814,
+        "height": 1105
+      },
+      "ports": [
+        {
+          "id": "resetBang",
+          "name": "resetBang",
+          "type": "boolean",
+          "direction": "input",
+          "y": 180
+        },
+        {
+          "id": "relax",
+          "name": "relax",
+          "type": "boolean",
+          "direction": "output",
+          "y": 149
+        },
+        {
+          "id": "remove",
+          "name": "remove",
+          "type": "boolean",
+          "direction": "output",
+          "y": 476
+        },
+        {
+          "id": "reset",
+          "name": "reset",
+          "type": "boolean",
+          "direction": "output",
+          "y": 272
+        },
+        {
+          "id": "triangles",
+          "name": "triangles",
+          "type": "boolean",
+          "direction": "output",
+          "y": 669
+        },
+        {
+          "id": "hull",
+          "name": "hull",
+          "type": "boolean",
+          "direction": "output",
+          "y": 873
+        }
+      ],
+      "width": 814,
+      "height": 1105
+    },
+    {
+      "id": "vo_keysNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 965
+      },
+      "params": {
+        "text": "L held relaxes, X removes, R (or Reset) starts over; D and H flip Latches that show the triangles and the hull.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "vo_keys"
+    },
+    {
+      "id": "vo_mosaic",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1020,
+        "y": 552
+      },
+      "params": {
+        "label": "Mosaic",
+        "width": 1136,
+        "height": 1072
+      },
+      "ports": [
+        {
+          "id": "next",
+          "name": "next",
+          "type": "vec2",
+          "direction": "input",
+          "y": 349
+        },
+        {
+          "id": "triangles",
+          "name": "triangles",
+          "type": "boolean",
+          "direction": "input",
+          "y": 94
+        },
+        {
+          "id": "hull",
+          "name": "hull",
+          "type": "boolean",
+          "direction": "input",
+          "y": 540
+        },
+        {
+          "id": "cells",
+          "name": "cells",
+          "type": "layer",
+          "direction": "output",
+          "y": 513
+        },
+        {
+          "id": "triangles2",
+          "name": "triangles2",
+          "type": "layer",
+          "direction": "output",
+          "y": 146
+        },
+        {
+          "id": "hull2",
+          "name": "hull2",
+          "type": "layer",
+          "direction": "output",
+          "y": 719
+        }
+      ],
+      "width": 1136,
+      "height": 1072
+    },
+    {
+      "id": "vo_mosaicNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 145,
+        "y": 932
+      },
+      "params": {
+        "text": "Cells draws the Voronoi cells (rounded by Path Ops), the Delaunay triangles and the convex hull of the points.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "vo_mosaic"
+    },
+    {
+      "id": "vo_handles",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1017,
+        "y": 364
+      },
+      "params": {
+        "label": "Handles",
+        "width": 1873,
+        "height": 717
+      },
+      "ports": [
+        {
+          "id": "next",
+          "name": "next",
+          "type": "vec2",
+          "direction": "input",
+          "y": 56
+        },
+        {
+          "id": "grabbed",
+          "name": "grabbed",
+          "type": "number",
+          "direction": "input",
+          "y": 169
+        },
+        {
+          "id": "nearest",
+          "name": "nearest",
+          "type": "number",
+          "direction": "input",
+          "y": 250
+        },
+        {
+          "id": "nearD",
+          "name": "nearD",
+          "type": "number",
+          "direction": "input",
+          "y": 333
+        },
+        {
+          "id": "handles",
+          "name": "handles",
+          "type": "layer",
+          "direction": "output",
+          "y": 332
+        }
+      ],
+      "width": 1873,
+      "height": 717
+    },
+    {
+      "id": "vo_handlesNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 131,
+        "y": 577
+      },
+      "params": {
+        "text": "A ring per point: big while grabbed, middling for the one a press would grab.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "vo_handles"
+    },
+    {
+      "id": "vo_statusLine",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1023,
+        "y": 750
+      },
+      "params": {
+        "label": "Status",
+        "width": 1104,
+        "height": 762
+      },
+      "ports": [
+        {
+          "id": "edit",
+          "name": "edit",
+          "type": "number",
+          "direction": "input",
+          "y": 132
+        },
+        {
+          "id": "bar",
+          "name": "bar",
+          "type": "layer",
+          "direction": "output",
+          "y": 536
+        },
+        {
+          "id": "status",
+          "name": "status",
+          "type": "layer",
+          "direction": "output",
+          "y": 501
+        }
+      ],
+      "width": 1104,
+      "height": 762
+    },
+    {
+      "id": "vo_statusLineNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 130,
+        "y": 622
+      },
+      "params": {
+        "text": "How many points, and the keys.",
+        "width": 300,
+        "height": 100
+      },
+      "parentId": "vo_statusLine"
     }
   ],
   "edges": [
-    {
-      "id": "e_1",
-      "source": "vo_mouse",
-      "target": "vo_mpos",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-x"
-    },
-    {
-      "id": "e_2",
-      "source": "vo_mouse",
-      "target": "vo_mpos",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_3",
-      "source": "vo_mouse",
-      "target": "vo_wasPressed",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_4",
-      "source": "vo_mouse",
-      "target": "vo_click",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_5",
-      "source": "vo_wasPressed",
-      "target": "vo_click",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-was"
-    },
     {
       "id": "e_6",
       "source": "vo_seedPts",
       "target": "vo_pts",
       "sourceHandle": "out-points",
       "targetHandle": "in-init"
-    },
-    {
-      "id": "e_7",
-      "source": "vo_pts",
-      "target": "vo_dist",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_8",
-      "source": "vo_mpos",
-      "target": "vo_dist",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_9",
-      "source": "vo_dist",
-      "target": "vo_nearD",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_10",
-      "source": "vo_dist",
-      "target": "vo_nearest",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
     },
     {
       "id": "e_11",
@@ -883,361 +1488,11 @@
       "targetHandle": "in-value"
     },
     {
-      "id": "e_12",
-      "source": "vo_click",
-      "target": "vo_grabNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-click"
-    },
-    {
-      "id": "e_13",
-      "source": "vo_nearD",
-      "target": "vo_grabNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_14",
-      "source": "vo_nearest",
-      "target": "vo_grabNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_15",
-      "source": "vo_mouse",
-      "target": "vo_grabNext",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-pr"
-    },
-    {
-      "id": "e_16",
-      "source": "vo_grab",
-      "target": "vo_grabNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_17",
-      "source": "vo_grabNext",
-      "target": "vo_grab",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_18",
-      "source": "vo_pts",
-      "target": "vo_dragged",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_19",
-      "source": "vo_grabNext",
-      "target": "vo_dragged",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_20",
-      "source": "vo_mpos",
-      "target": "vo_dragged",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_21",
-      "source": "vo_dragged",
-      "target": "vo_relaxTarget",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-points"
-    },
-    {
       "id": "e_22",
       "source": "vo_kb",
       "target": "vo_relaxHeld",
       "sourceHandle": "out-down",
       "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_23",
-      "source": "vo_relaxHeld",
-      "target": "vo_relaxed",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-l"
-    },
-    {
-      "id": "e_24",
-      "source": "vo_dragged",
-      "target": "vo_relaxed",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_25",
-      "source": "vo_relaxTarget",
-      "target": "vo_relaxed",
-      "sourceHandle": "out-points",
-      "targetHandle": "in-r"
-    },
-    {
-      "id": "e_26",
-      "source": "vo_grabNext",
-      "target": "vo_relaxed",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_27",
-      "source": "vo_relaxed",
-      "target": "vo_withNew",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_28",
-      "source": "vo_mpos",
-      "target": "vo_withNew",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-tail"
-    },
-    {
-      "id": "e_29",
-      "source": "vo_pts",
-      "target": "vo_count",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_30",
-      "source": "vo_withNew",
-      "target": "vo_adding",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_31",
-      "source": "vo_count",
-      "target": "vo_adding",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_32",
-      "source": "vo_click",
-      "target": "vo_adding",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-click"
-    },
-    {
-      "id": "e_33",
-      "source": "vo_nearD",
-      "target": "vo_adding",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_34",
-      "source": "vo_withNew",
-      "target": "vo_added",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_35",
-      "source": "vo_adding",
-      "target": "vo_added",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_36",
-      "source": "vo_kb",
-      "target": "vo_removing",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_37",
-      "source": "vo_kb",
-      "target": "vo_removing",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_38",
-      "source": "vo_count",
-      "target": "vo_removing",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_39",
-      "source": "vo_added",
-      "target": "vo_removed",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_40",
-      "source": "vo_nearest",
-      "target": "vo_removed",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-index"
-    },
-    {
-      "id": "e_41",
-      "source": "vo_removing",
-      "target": "vo_removed",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-count"
-    },
-    {
-      "id": "e_42",
-      "source": "vo_resetBang",
-      "target": "vo_resetting",
-      "sourceHandle": "out-bang",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_43",
-      "source": "vo_kb",
-      "target": "vo_resetting",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_44",
-      "source": "vo_kb",
-      "target": "vo_resetting",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_45",
-      "source": "vo_seedPts",
-      "target": "vo_ptsNextBoth",
-      "sourceHandle": "out-points",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_46",
-      "source": "vo_removed",
-      "target": "vo_ptsNextBoth",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_47",
-      "source": "vo_seedPts",
-      "target": "vo_ptsNextFirstCount",
-      "sourceHandle": "out-points",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_48",
-      "source": "vo_ptsNextBoth",
-      "target": "vo_ptsNextPart",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_49",
-      "source": "vo_ptsNextFirstCount",
-      "target": "vo_ptsNextPart",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_50",
-      "source": "vo_resetting",
-      "target": "vo_ptsNextPart",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_51",
-      "source": "vo_ptsNextBoth",
-      "target": "vo_ptsNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_52",
-      "source": "vo_ptsNextPart",
-      "target": "vo_ptsNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_53",
-      "source": "vo_ptsNext",
-      "target": "vo_pts",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_54",
-      "source": "vo_kb",
-      "target": "vo_showTriNext",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_55",
-      "source": "vo_kb",
-      "target": "vo_showTriNext",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_56",
-      "source": "vo_showTri",
-      "target": "vo_showTriNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_57",
-      "source": "vo_showTriNext",
-      "target": "vo_showTri",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_58",
-      "source": "vo_kb",
-      "target": "vo_showHullNext",
-      "sourceHandle": "out-hit",
-      "targetHandle": "in-hit"
-    },
-    {
-      "id": "e_59",
-      "source": "vo_kb",
-      "target": "vo_showHullNext",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_60",
-      "source": "vo_showHull",
-      "target": "vo_showHullNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_61",
-      "source": "vo_showHullNext",
-      "target": "vo_showHull",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_62",
-      "source": "vo_ptsNext",
-      "target": "vo_cells",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-points"
     },
     {
       "id": "e_63",
@@ -1261,25 +1516,11 @@
       "targetHandle": "in-base"
     },
     {
-      "id": "e_66",
-      "source": "vo_ptsNext",
-      "target": "vo_tri",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-points"
-    },
-    {
       "id": "e_67",
       "source": "vo_triNoFill",
       "target": "vo_tri",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_68",
-      "source": "vo_showTriNext",
-      "target": "vo_triShown",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cond"
     },
     {
       "id": "e_69",
@@ -1296,25 +1537,11 @@
       "targetHandle": "in-base"
     },
     {
-      "id": "e_71",
-      "source": "vo_ptsNext",
-      "target": "vo_hull",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-points"
-    },
-    {
       "id": "e_72",
       "source": "vo_hullNoFill",
       "target": "vo_hull",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
-    },
-    {
-      "id": "e_73",
-      "source": "vo_showHullNext",
-      "target": "vo_hullShown",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cond"
     },
     {
       "id": "e_74",
@@ -1324,53 +1551,11 @@
       "targetHandle": "in-a"
     },
     {
-      "id": "e_75",
-      "source": "vo_ptsNext",
-      "target": "vo_handleSize",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_76",
-      "source": "vo_grabNext",
-      "target": "vo_handleSize",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_77",
-      "source": "vo_nearest",
-      "target": "vo_handleSize",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_78",
-      "source": "vo_nearD",
-      "target": "vo_handleSize",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-d"
-    },
-    {
       "id": "e_79",
       "source": "vo_handleFill",
       "target": "vo_handleRing",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
-    },
-    {
-      "id": "e_80",
-      "source": "vo_ptsNext",
-      "target": "vo_handleLoop",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-at"
-    },
-    {
-      "id": "e_81",
-      "source": "vo_handleSize",
-      "target": "vo_handleLoop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
     },
     {
       "id": "e_82",
@@ -1406,13 +1591,6 @@
       "target": "vo_handleLoop",
       "sourceHandle": "out-shape",
       "targetHandle": "in-handle"
-    },
-    {
-      "id": "e_87",
-      "source": "vo_count",
-      "target": "vo_countText",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-value"
     },
     {
       "id": "e_88",
@@ -1458,44 +1636,44 @@
     },
     {
       "id": "e_94",
-      "source": "vo_rounded",
+      "source": "vo_mosaic",
       "target": "vo_scene",
-      "sourceHandle": "out-shape",
+      "sourceHandle": "out-cells",
       "targetHandle": "in-s1"
     },
     {
       "id": "e_95",
-      "source": "vo_triShown",
+      "source": "vo_mosaic",
       "target": "vo_scene",
-      "sourceHandle": "out-selected",
+      "sourceHandle": "out-triangles2",
       "targetHandle": "in-s2"
     },
     {
       "id": "e_96",
-      "source": "vo_hullShown",
+      "source": "vo_mosaic",
       "target": "vo_scene",
-      "sourceHandle": "out-selected",
+      "sourceHandle": "out-hull2",
       "targetHandle": "in-s3"
     },
     {
       "id": "e_97",
-      "source": "vo_handleLoop",
+      "source": "vo_handles",
       "target": "vo_scene",
-      "sourceHandle": "out-handle",
+      "sourceHandle": "out-handles",
       "targetHandle": "in-s4"
     },
     {
       "id": "e_98",
-      "source": "vo_statusBar",
+      "source": "vo_statusLine",
       "target": "vo_scene",
-      "sourceHandle": "out-shape",
+      "sourceHandle": "out-bar",
       "targetHandle": "in-s5"
     },
     {
       "id": "e_99",
-      "source": "vo_statusText",
+      "source": "vo_statusLine",
       "target": "vo_scene",
-      "sourceHandle": "out-shape",
+      "sourceHandle": "out-status",
       "targetHandle": "in-s6"
     },
     {
@@ -1504,6 +1682,783 @@
       "target": "vo_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_b1_1",
+      "source": "vo_mouse",
+      "target": "vo_mouseAt",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_2",
+      "source": "vo_mouse",
+      "target": "vo_mouseAt",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_3",
+      "source": "vo_mouseAt",
+      "target": "vo_mpos",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_4",
+      "source": "vo_pts",
+      "target": "vo_edit",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_b1_5",
+      "source": "vo_mpos",
+      "target": "vo_edit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mouse"
+    },
+    {
+      "id": "e_b1_6",
+      "source": "vo_mouse",
+      "target": "vo_edit",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_b1_7",
+      "source": "vo_kb",
+      "target": "vo_keyX",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_8",
+      "source": "vo_kb",
+      "target": "vo_keyR",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_9",
+      "source": "vo_keys",
+      "target": "vo_resetting",
+      "sourceHandle": "out-resetBang",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_10",
+      "source": "vo_keyR",
+      "target": "vo_resetting",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_11",
+      "source": "vo_seedPts",
+      "target": "vo_edit",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-seed"
+    },
+    {
+      "id": "e_b1_12",
+      "source": "vo_keys",
+      "target": "vo_edit",
+      "sourceHandle": "out-relax",
+      "targetHandle": "in-relax"
+    },
+    {
+      "id": "e_b1_13",
+      "source": "vo_keys",
+      "target": "vo_edit",
+      "sourceHandle": "out-remove",
+      "targetHandle": "in-remove"
+    },
+    {
+      "id": "e_b1_14",
+      "source": "vo_keys",
+      "target": "vo_edit",
+      "sourceHandle": "out-reset",
+      "targetHandle": "in-reset"
+    },
+    {
+      "id": "e_b1_15",
+      "source": "vo_edit",
+      "target": "vo_count",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_16",
+      "source": "vo_edit",
+      "target": "vo_click",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-in"
+    },
+    {
+      "id": "e_b1_17",
+      "source": "vo_edit",
+      "target": "vo_dist",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_18",
+      "source": "vo_edit",
+      "target": "vo_dist",
+      "sourceHandle": "out-mouse",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_19",
+      "source": "vo_dist",
+      "target": "vo_nearD",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_20",
+      "source": "vo_dist",
+      "target": "vo_nearest",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_21",
+      "source": "vo_nearD",
+      "target": "vo_close",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_22",
+      "source": "vo_close",
+      "target": "vo_pick",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_23",
+      "source": "vo_nearest",
+      "target": "vo_pick",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_24",
+      "source": "vo_edit",
+      "target": "vo_stillHeld",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_25",
+      "source": "vo_grab",
+      "target": "vo_stillHeld",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_26",
+      "source": "vo_click",
+      "target": "vo_grabNext",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_27",
+      "source": "vo_pick",
+      "target": "vo_grabNext",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_28",
+      "source": "vo_stillHeld",
+      "target": "vo_grabNext",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_29",
+      "source": "vo_grabNext",
+      "target": "vo_grabWrite",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_30",
+      "source": "vo_count",
+      "target": "vo_idx",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_b1_31",
+      "source": "vo_idx",
+      "target": "vo_isGrabbed",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_32",
+      "source": "vo_grabNext",
+      "target": "vo_isGrabbed",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_33",
+      "source": "vo_isGrabbed",
+      "target": "vo_dragged",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_34",
+      "source": "vo_edit",
+      "target": "vo_dragged",
+      "sourceHandle": "out-mouse",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_35",
+      "source": "vo_edit",
+      "target": "vo_dragged",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_36",
+      "source": "vo_dragged",
+      "target": "vo_relaxTarget",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_b1_37",
+      "source": "vo_idx",
+      "target": "vo_notGrabbed",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_38",
+      "source": "vo_grabNext",
+      "target": "vo_notGrabbed",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_39",
+      "source": "vo_edit",
+      "target": "vo_relaxing",
+      "sourceHandle": "out-relax",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_40",
+      "source": "vo_notGrabbed",
+      "target": "vo_relaxing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_41",
+      "source": "vo_dragged",
+      "target": "vo_eased",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_42",
+      "source": "vo_relaxTarget",
+      "target": "vo_eased",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_43",
+      "source": "vo_relaxing",
+      "target": "vo_relaxed",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_44",
+      "source": "vo_eased",
+      "target": "vo_relaxed",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_45",
+      "source": "vo_dragged",
+      "target": "vo_relaxed",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_46",
+      "source": "vo_relaxed",
+      "target": "vo_withNew",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_47",
+      "source": "vo_edit",
+      "target": "vo_withNew",
+      "sourceHandle": "out-mouse",
+      "targetHandle": "in-tail"
+    },
+    {
+      "id": "e_b1_48",
+      "source": "vo_nearD",
+      "target": "vo_far",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_49",
+      "source": "vo_click",
+      "target": "vo_adding",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_50",
+      "source": "vo_far",
+      "target": "vo_adding",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_51",
+      "source": "vo_adding",
+      "target": "vo_added",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_b1_52",
+      "source": "vo_withNew",
+      "target": "vo_added",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v0"
+    },
+    {
+      "id": "e_b1_53",
+      "source": "vo_relaxed",
+      "target": "vo_added",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-else"
+    },
+    {
+      "id": "e_b1_54",
+      "source": "vo_added",
+      "target": "vo_removed",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_55",
+      "source": "vo_nearest",
+      "target": "vo_removed",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-index"
+    },
+    {
+      "id": "e_b1_56",
+      "source": "vo_count",
+      "target": "vo_enough",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_57",
+      "source": "vo_edit",
+      "target": "vo_removing",
+      "sourceHandle": "out-remove",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_58",
+      "source": "vo_enough",
+      "target": "vo_removing",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_59",
+      "source": "vo_removing",
+      "target": "vo_removed",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_b1_60",
+      "source": "vo_edit",
+      "target": "vo_ptsNext",
+      "sourceHandle": "out-reset",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_b1_61",
+      "source": "vo_edit",
+      "target": "vo_ptsNext",
+      "sourceHandle": "out-seed",
+      "targetHandle": "in-v0"
+    },
+    {
+      "id": "e_b1_62",
+      "source": "vo_removed",
+      "target": "vo_ptsNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-else"
+    },
+    {
+      "id": "e_b1_63",
+      "source": "vo_ptsNext",
+      "target": "vo_edit",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_64",
+      "source": "vo_grabNext",
+      "target": "vo_edit",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-grabbed"
+    },
+    {
+      "id": "e_b1_65",
+      "source": "vo_nearest",
+      "target": "vo_edit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-nearest"
+    },
+    {
+      "id": "e_b1_66",
+      "source": "vo_nearD",
+      "target": "vo_edit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-nearD"
+    },
+    {
+      "id": "e_b1_67",
+      "source": "vo_count",
+      "target": "vo_edit",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_b1_68",
+      "source": "vo_edit",
+      "target": "vo_ptsWrite",
+      "sourceHandle": "out-next",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_69",
+      "source": "vo_mosaic",
+      "target": "vo_cells",
+      "sourceHandle": "out-next",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_b1_70",
+      "source": "vo_mosaic",
+      "target": "vo_tri",
+      "sourceHandle": "out-next",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_b1_71",
+      "source": "vo_mosaic",
+      "target": "vo_hull",
+      "sourceHandle": "out-next",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_b1_72",
+      "source": "vo_handles",
+      "target": "vo_handleLoop",
+      "sourceHandle": "out-next",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_b1_73",
+      "source": "vo_statusLine",
+      "target": "vo_countText",
+      "sourceHandle": "out-edit",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_b1_74",
+      "source": "vo_kb",
+      "target": "vo_keyD",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_75",
+      "source": "vo_keyD",
+      "target": "vo_showTriNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-toggle"
+    },
+    {
+      "id": "e_b1_76",
+      "source": "vo_kb",
+      "target": "vo_keyH",
+      "sourceHandle": "out-hits",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_77",
+      "source": "vo_keyH",
+      "target": "vo_showHullNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-toggle"
+    },
+    {
+      "id": "e_b1_78",
+      "source": "vo_mosaic",
+      "target": "vo_triShown",
+      "sourceHandle": "out-triangles",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_79",
+      "source": "vo_mosaic",
+      "target": "vo_hullShown",
+      "sourceHandle": "out-hull",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_80",
+      "source": "vo_handles",
+      "target": "vo_nextCount",
+      "sourceHandle": "out-next",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_81",
+      "source": "vo_nextCount",
+      "target": "vo_handleIdx",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_b1_82",
+      "source": "vo_handleIdx",
+      "target": "vo_handleGrabbed",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_83",
+      "source": "vo_handles",
+      "target": "vo_handleGrabbed",
+      "sourceHandle": "out-grabbed",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_84",
+      "source": "vo_handleIdx",
+      "target": "vo_handleNearest",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_85",
+      "source": "vo_handles",
+      "target": "vo_handleNearest",
+      "sourceHandle": "out-nearest",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_86",
+      "source": "vo_handles",
+      "target": "vo_handleClose",
+      "sourceHandle": "out-nearD",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_87",
+      "source": "vo_handleNearest",
+      "target": "vo_handleHover",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_88",
+      "source": "vo_handleClose",
+      "target": "vo_handleHover",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_89",
+      "source": "vo_handleGrabbed",
+      "target": "vo_handleSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_b1_90",
+      "source": "vo_handleHover",
+      "target": "vo_handleSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-if1"
+    },
+    {
+      "id": "e_b1_91",
+      "source": "vo_handleSize",
+      "target": "vo_handleLoop",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_b1_92",
+      "source": "vo_resetBang",
+      "target": "vo_keys",
+      "sourceHandle": "out-bang",
+      "targetHandle": "in-resetBang"
+    },
+    {
+      "id": "e_b1_93",
+      "source": "vo_relaxHeld",
+      "target": "vo_keys",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-relax"
+    },
+    {
+      "id": "e_b1_94",
+      "source": "vo_keyX",
+      "target": "vo_keys",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-remove"
+    },
+    {
+      "id": "e_b1_95",
+      "source": "vo_resetting",
+      "target": "vo_keys",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-reset"
+    },
+    {
+      "id": "e_b1_96",
+      "source": "vo_showTriNext",
+      "target": "vo_keys",
+      "sourceHandle": "out-state",
+      "targetHandle": "in-triangles"
+    },
+    {
+      "id": "e_b1_97",
+      "source": "vo_showHullNext",
+      "target": "vo_keys",
+      "sourceHandle": "out-state",
+      "targetHandle": "in-hull"
+    },
+    {
+      "id": "e_b1_98",
+      "source": "vo_edit",
+      "target": "vo_mosaic",
+      "sourceHandle": "out-next",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_99",
+      "source": "vo_keys",
+      "target": "vo_mosaic",
+      "sourceHandle": "out-triangles",
+      "targetHandle": "in-triangles"
+    },
+    {
+      "id": "e_b1_100",
+      "source": "vo_keys",
+      "target": "vo_mosaic",
+      "sourceHandle": "out-hull",
+      "targetHandle": "in-hull"
+    },
+    {
+      "id": "e_b1_101",
+      "source": "vo_rounded",
+      "target": "vo_mosaic",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-cells"
+    },
+    {
+      "id": "e_b1_102",
+      "source": "vo_triShown",
+      "target": "vo_mosaic",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-triangles2"
+    },
+    {
+      "id": "e_b1_103",
+      "source": "vo_hullShown",
+      "target": "vo_mosaic",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-hull2"
+    },
+    {
+      "id": "e_b1_104",
+      "source": "vo_edit",
+      "target": "vo_handles",
+      "sourceHandle": "out-next",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_105",
+      "source": "vo_edit",
+      "target": "vo_handles",
+      "sourceHandle": "out-grabbed",
+      "targetHandle": "in-grabbed"
+    },
+    {
+      "id": "e_b1_106",
+      "source": "vo_edit",
+      "target": "vo_handles",
+      "sourceHandle": "out-nearest",
+      "targetHandle": "in-nearest"
+    },
+    {
+      "id": "e_b1_107",
+      "source": "vo_edit",
+      "target": "vo_handles",
+      "sourceHandle": "out-nearD",
+      "targetHandle": "in-nearD"
+    },
+    {
+      "id": "e_b1_108",
+      "source": "vo_handleLoop",
+      "target": "vo_handles",
+      "sourceHandle": "out-handle",
+      "targetHandle": "in-handles"
+    },
+    {
+      "id": "e_b1_109",
+      "source": "vo_edit",
+      "target": "vo_statusLine",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-edit"
+    },
+    {
+      "id": "e_b1_110",
+      "source": "vo_statusBar",
+      "target": "vo_statusLine",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-bar"
+    },
+    {
+      "id": "e_b1_111",
+      "source": "vo_statusText",
+      "target": "vo_statusLine",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-status"
     }
   ]
 }

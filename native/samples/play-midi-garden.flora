@@ -16,7 +16,7 @@
         "y": -334
       },
       "params": {
-        "text": "MIDI Garden\n\nPlug in a MIDI keyboard or controller: every note you play plants a flower (louder notes, bigger flowers) and plays it. Knobs sending CC 21, 22, 23, 24 turn the garden's Hue, Petals, Spin and Bloom (the filter too) — set other CC numbers on the MidiCC nodes to match your controller. No MIDI? Everything has a stand-in: the four sliders do the knobs, keys A–K play notes, and clicking plants a flower where you click (higher up = higher note).\n\nHow it works: a note-on is a press, or a new note while held, from whichever source is playing. Each one appends the flower's place, time and note to three State* lists (kept to the newest 28). A ForEach draws every flower as a rose curve that grows in, turns and slowly wilts; a knob's CC wins over its slider once it has moved.",
+        "text": "MIDI Garden\n\nPlug in a MIDI keyboard or controller: every note you play plants a flower (louder notes, bigger flowers) and plays it. Knobs sending CC 21, 22, 23, 24 turn the garden's Hue, Petals, Spin and Bloom (the filter too) — set other CC numbers on the MidiCC nodes to match your controller. No MIDI? Everything has a stand-in: the four sliders do the knobs, keys A–K play notes, and clicking plants a flower where you click (higher up = higher note).\n\nHow it works: a note-on is a press, or a new note while held, from whichever source is playing. Each one appends the flower's place, time and note to three lists kept by Read* → Write* pairs (the newest 28). A ForEach draws every flower as a rose curve that grows in, turns and slowly wilts (two Envelopes); a knob's CC wins over its slider once it has moved.",
         "width": 470,
         "height": 270
       }
@@ -25,165 +25,17 @@
       "id": "mg_time",
       "defType": "time/seconds",
       "position": {
-        "x": 751,
-        "y": 1547
+        "x": 346,
+        "y": 1081
       },
       "params": {}
-    },
-    {
-      "id": "mg_hueCC",
-      "defType": "input/midi-cc",
-      "position": {
-        "x": 3,
-        "y": 0
-      },
-      "params": {
-        "cc": 21,
-        "channel": 0
-      }
-    },
-    {
-      "id": "mg_hueSlider",
-      "defType": "io/slider",
-      "position": {
-        "x": 1,
-        "y": 148
-      },
-      "params": {
-        "value": 0.62,
-        "min": 0,
-        "max": 1,
-        "label": "Hue"
-      }
-    },
-    {
-      "id": "mg_hue",
-      "defType": "math/expression",
-      "position": {
-        "x": 325,
-        "y": 2
-      },
-      "params": {
-        "expr": "raw > 0 ? cc : s"
-      }
-    },
-    {
-      "id": "mg_petalsCC",
-      "defType": "input/midi-cc",
-      "position": {
-        "x": 3,
-        "y": 274
-      },
-      "params": {
-        "cc": 22,
-        "channel": 0
-      }
-    },
-    {
-      "id": "mg_petalsSlider",
-      "defType": "io/slider",
-      "position": {
-        "x": 1,
-        "y": 422
-      },
-      "params": {
-        "value": 0.45,
-        "min": 0,
-        "max": 1,
-        "label": "Petals"
-      }
-    },
-    {
-      "id": "mg_petals",
-      "defType": "math/expression",
-      "position": {
-        "x": 325,
-        "y": 314
-      },
-      "params": {
-        "expr": "raw > 0 ? cc : s"
-      }
-    },
-    {
-      "id": "mg_spinCC",
-      "defType": "input/midi-cc",
-      "position": {
-        "x": 3,
-        "y": 548
-      },
-      "params": {
-        "cc": 23,
-        "channel": 0
-      }
-    },
-    {
-      "id": "mg_spinSlider",
-      "defType": "io/slider",
-      "position": {
-        "x": 1,
-        "y": 696
-      },
-      "params": {
-        "value": 0.3,
-        "min": 0,
-        "max": 1,
-        "label": "Spin"
-      }
-    },
-    {
-      "id": "mg_spin",
-      "defType": "math/expression",
-      "position": {
-        "x": 325,
-        "y": 500
-      },
-      "params": {
-        "expr": "raw > 0 ? cc : s"
-      }
-    },
-    {
-      "id": "mg_brightCC",
-      "defType": "input/midi-cc",
-      "position": {
-        "x": 1021,
-        "y": 277
-      },
-      "params": {
-        "cc": 24,
-        "channel": 0
-      }
-    },
-    {
-      "id": "mg_brightSlider",
-      "defType": "io/slider",
-      "position": {
-        "x": 1019,
-        "y": 425
-      },
-      "params": {
-        "value": 0.6,
-        "min": 0,
-        "max": 1,
-        "label": "Bloom"
-      }
-    },
-    {
-      "id": "mg_bright",
-      "defType": "math/expression",
-      "position": {
-        "x": 1346,
-        "y": 355
-      },
-      "params": {
-        "expr": "raw > 0 ? cc : s"
-      }
     },
     {
       "id": "mg_midi",
       "defType": "input/midi-note",
       "position": {
-        "x": 0,
-        "y": 826
+        "x": 21,
+        "y": 574
       },
       "params": {
         "channel": 0
@@ -193,8 +45,8 @@
       "id": "mg_kb",
       "defType": "input/keyboard",
       "position": {
-        "x": 1,
-        "y": 996
+        "x": 25,
+        "y": 767
       },
       "params": {
         "mode": "keys"
@@ -207,8 +59,8 @@
       "id": "mg_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 38,
-        "y": 1210
+        "x": 37,
+        "y": 1010
       },
       "params": {}
     },
@@ -216,389 +68,875 @@
       "id": "mg_mpos",
       "defType": "vec2/make",
       "position": {
-        "x": 367,
-        "y": 1101
+        "x": 345,
+        "y": 937
       },
       "params": {}
     },
     {
-      "id": "mg_pressed",
-      "defType": "math/expression",
+      "id": "mg_knobs",
+      "defType": "meta/subpatch",
       "position": {
-        "x": 325,
-        "y": 1227
+        "x": 318,
+        "y": 368
       },
       "params": {
-        "expr": "m || k >= 0 || c"
+        "label": "Knobs",
+        "width": 805,
+        "height": 1031
+      },
+      "ports": [
+        {
+          "id": "hueSlider",
+          "name": "hueSlider",
+          "type": "number",
+          "direction": "input",
+          "y": 214
+        },
+        {
+          "id": "petalsSlider",
+          "name": "petalsSlider",
+          "type": "number",
+          "direction": "input",
+          "y": 411
+        },
+        {
+          "id": "spinSlider",
+          "name": "spinSlider",
+          "type": "number",
+          "direction": "input",
+          "y": 806
+        },
+        {
+          "id": "bloomSlider",
+          "name": "bloomSlider",
+          "type": "number",
+          "direction": "input",
+          "y": 609
+        },
+        {
+          "id": "hue",
+          "name": "hue",
+          "type": "number",
+          "direction": "output",
+          "y": 230
+        },
+        {
+          "id": "petals",
+          "name": "petals",
+          "type": "number",
+          "direction": "output",
+          "y": 428
+        },
+        {
+          "id": "spin",
+          "name": "spin",
+          "type": "number",
+          "direction": "output",
+          "y": 823
+        },
+        {
+          "id": "bloom",
+          "name": "bloom",
+          "type": "number",
+          "direction": "output",
+          "y": 625
+        }
+      ],
+      "width": 805,
+      "height": 1031
+    },
+    {
+      "id": "mg_notes",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 314,
+        "y": 624
+      },
+      "params": {
+        "label": "Note on",
+        "width": 2823,
+        "height": 965
+      },
+      "ports": [
+        {
+          "id": "midiOn",
+          "name": "midiOn",
+          "type": "boolean",
+          "direction": "input",
+          "y": 186
+        },
+        {
+          "id": "midiNote",
+          "name": "midiNote",
+          "type": "number",
+          "direction": "input",
+          "y": 278
+        },
+        {
+          "id": "midiVelocity",
+          "name": "midiVelocity",
+          "type": "number",
+          "direction": "input",
+          "y": 143
+        },
+        {
+          "id": "key",
+          "name": "key",
+          "type": "number",
+          "direction": "input",
+          "y": 454
+        },
+        {
+          "id": "click",
+          "name": "click",
+          "type": "boolean",
+          "direction": "input",
+          "y": 214
+        },
+        {
+          "id": "y",
+          "name": "y",
+          "type": "number",
+          "direction": "input",
+          "y": 692
+        },
+        {
+          "id": "pressed",
+          "name": "pressed",
+          "type": "boolean",
+          "direction": "output",
+          "y": 419
+        },
+        {
+          "id": "note",
+          "name": "note",
+          "type": "number",
+          "direction": "output",
+          "y": 472
+        },
+        {
+          "id": "velocity",
+          "name": "velocity",
+          "type": "number",
+          "direction": "output",
+          "y": 143
+        },
+        {
+          "id": "noteOn",
+          "name": "noteOn",
+          "type": "boolean",
+          "direction": "output",
+          "y": 248
+        }
+      ],
+      "width": 2823,
+      "height": 965
+    },
+    {
+      "id": "mg_plant",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 590,
+        "y": 827
+      },
+      "params": {
+        "label": "Planting",
+        "width": 3339,
+        "height": 1682
+      },
+      "ports": [
+        {
+          "id": "noteOn",
+          "name": "noteOn",
+          "type": "boolean",
+          "direction": "input",
+          "y": 672
+        },
+        {
+          "id": "note",
+          "name": "note",
+          "type": "number",
+          "direction": "input",
+          "y": 695
+        },
+        {
+          "id": "velocity",
+          "name": "velocity",
+          "type": "number",
+          "direction": "input",
+          "y": 881
+        },
+        {
+          "id": "click",
+          "name": "click",
+          "type": "boolean",
+          "direction": "input",
+          "y": 187
+        },
+        {
+          "id": "midiOn",
+          "name": "midiOn",
+          "type": "boolean",
+          "direction": "input",
+          "y": 207
+        },
+        {
+          "id": "key",
+          "name": "key",
+          "type": "number",
+          "direction": "input",
+          "y": 305
+        },
+        {
+          "id": "mouse",
+          "name": "mouse",
+          "type": "vec2",
+          "direction": "input",
+          "y": 387
+        },
+        {
+          "id": "time",
+          "name": "time",
+          "type": "number",
+          "direction": "input",
+          "y": 1324
+        },
+        {
+          "id": "where",
+          "name": "where",
+          "type": "vec2",
+          "direction": "output",
+          "y": 710
+        },
+        {
+          "id": "born",
+          "name": "born",
+          "type": "number",
+          "direction": "output",
+          "y": 1029
+        },
+        {
+          "id": "pitch",
+          "name": "pitch",
+          "type": "number",
+          "direction": "output",
+          "y": 371
+        },
+        {
+          "id": "loud",
+          "name": "loud",
+          "type": "number",
+          "direction": "output",
+          "y": 870
+        }
+      ],
+      "width": 3339,
+      "height": 1682
+    },
+    {
+      "id": "mg_gardenDraw",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 888,
+        "y": 660
+      },
+      "params": {
+        "label": "Garden",
+        "width": 4954,
+        "height": 1463
+      },
+      "ports": [
+        {
+          "id": "where",
+          "name": "where",
+          "type": "vec2",
+          "direction": "input",
+          "y": 272
+        },
+        {
+          "id": "born",
+          "name": "born",
+          "type": "number",
+          "direction": "input",
+          "y": 292
+        },
+        {
+          "id": "pitch",
+          "name": "pitch",
+          "type": "number",
+          "direction": "input",
+          "y": 443
+        },
+        {
+          "id": "loud",
+          "name": "loud",
+          "type": "number",
+          "direction": "input",
+          "y": 411
+        },
+        {
+          "id": "hue",
+          "name": "hue",
+          "type": "number",
+          "direction": "input",
+          "y": 475
+        },
+        {
+          "id": "petals",
+          "name": "petals",
+          "type": "number",
+          "direction": "input",
+          "y": 558
+        },
+        {
+          "id": "spin",
+          "name": "spin",
+          "type": "number",
+          "direction": "input",
+          "y": 643
+        },
+        {
+          "id": "bloom",
+          "name": "bloom",
+          "type": "number",
+          "direction": "input",
+          "y": 691
+        },
+        {
+          "id": "time",
+          "name": "time",
+          "type": "number",
+          "direction": "input",
+          "y": 739
+        },
+        {
+          "id": "garden",
+          "name": "garden",
+          "type": "layer",
+          "direction": "output",
+          "y": 581
+        }
+      ],
+      "width": 4954,
+      "height": 1463
+    },
+    {
+      "id": "mg_sound",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 595,
+        "y": 635
+      },
+      "params": {
+        "label": "Sound",
+        "width": 1705,
+        "height": 787
+      },
+      "ports": [
+        {
+          "id": "note",
+          "name": "note",
+          "type": "number",
+          "direction": "input",
+          "y": 68
+        },
+        {
+          "id": "velocity",
+          "name": "velocity",
+          "type": "number",
+          "direction": "input",
+          "y": 94
+        },
+        {
+          "id": "pressed",
+          "name": "pressed",
+          "type": "boolean",
+          "direction": "input",
+          "y": 127
+        },
+        {
+          "id": "noteOn",
+          "name": "noteOn",
+          "type": "boolean",
+          "direction": "input",
+          "y": 210
+        },
+        {
+          "id": "bloom",
+          "name": "bloom",
+          "type": "number",
+          "direction": "input",
+          "y": 365
+        }
+      ],
+      "width": 1705,
+      "height": 787
+    },
+    {
+      "id": "mg_hueCC",
+      "defType": "input/midi-cc",
+      "position": {
+        "x": 128,
+        "y": 42
+      },
+      "params": {
+        "cc": 21,
+        "channel": 0
+      },
+      "parentId": "mg_knobs"
+    },
+    {
+      "id": "mg_hueSlider",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "params": {
+        "value": 0.62,
+        "min": 0,
+        "max": 1,
+        "label": "Hue"
       }
     },
     {
-      "id": "mg_note",
-      "defType": "math/expression",
+      "id": "mg_petalsCC",
+      "defType": "input/midi-cc",
       "position": {
-        "x": 325,
-        "y": 850
+        "x": 128,
+        "y": 240
       },
       "params": {
-        "expr": "m ? n : (k >= 0 ? 60 + k : 48 + round(clamp(0.5 - y / 640, 0, 1) * 36))"
+        "cc": 22,
+        "channel": 0
+      },
+      "parentId": "mg_knobs"
+    },
+    {
+      "id": "mg_petalsSlider",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 144
+      },
+      "params": {
+        "value": 0.45,
+        "min": 0,
+        "max": 1,
+        "label": "Petals"
       }
     },
     {
-      "id": "mg_velocity",
-      "defType": "math/expression",
+      "id": "mg_spinCC",
+      "defType": "input/midi-cc",
       "position": {
-        "x": 325,
-        "y": 686
+        "x": 128,
+        "y": 635
       },
       "params": {
-        "expr": "m ? v : 0.75"
+        "cc": 23,
+        "channel": 0
+      },
+      "parentId": "mg_knobs"
+    },
+    {
+      "id": "mg_spinSlider",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 287
+      },
+      "params": {
+        "value": 0.3,
+        "min": 0,
+        "max": 1,
+        "label": "Spin"
+      }
+    },
+    {
+      "id": "mg_brightCC",
+      "defType": "input/midi-cc",
+      "position": {
+        "x": 128,
+        "y": 437
+      },
+      "params": {
+        "cc": 24,
+        "channel": 0
+      },
+      "parentId": "mg_knobs"
+    },
+    {
+      "id": "mg_brightSlider",
+      "defType": "io/slider",
+      "position": {
+        "x": 0,
+        "y": 431
+      },
+      "params": {
+        "value": 0.6,
+        "min": 0,
+        "max": 1,
+        "label": "Bloom"
       }
     },
     {
       "id": "mg_wasPressed",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 750,
-        "y": 1147
+        "x": 149,
+        "y": 195
       },
-      "params": {},
+      "params": {
+        "slot": 1,
+        "name": "was pressed"
+      },
       "portValues": {
         "init": 0
-      }
+      },
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_wasPressedWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 902,
+        "y": 263
+      },
+      "params": {
+        "slot": 1,
+        "name": "was pressed"
+      },
+      "parentId": "mg_notes"
     },
     {
       "id": "mg_lastNote",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 750,
-        "y": 769
-      },
-      "params": {},
-      "portValues": {
-        "init": -1
-      }
-    },
-    {
-      "id": "mg_noteOn",
-      "defType": "math/expression",
-      "position": {
-        "x": 1019,
-        "y": 904
+        "x": 1889,
+        "y": 257
       },
       "params": {
-        "expr": "p && (!was || n != last)"
-      }
+        "slot": 2,
+        "name": "last note"
+      },
+      "portValues": {
+        "init": -1
+      },
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_lastNoteWrite",
+      "defType": "state/write",
+      "position": {
+        "x": 2171,
+        "y": 501
+      },
+      "params": {
+        "slot": 2,
+        "name": "last note"
+      },
+      "parentId": "mg_notes"
     },
     {
       "id": "mg_planted",
-      "defType": "state/value",
+      "defType": "state/read",
       "position": {
-        "x": 366,
-        "y": 188
+        "x": 175,
+        "y": 411
       },
-      "params": {},
+      "params": {
+        "slot": 3,
+        "name": "planted"
+      },
       "portValues": {
         "init": 5
-      }
+      },
+      "parentId": "mg_plant"
     },
     {
-      "id": "mg_plantedNext",
-      "defType": "math/expression",
+      "id": "mg_plantedWrite",
+      "defType": "state/write",
       "position": {
-        "x": 1346,
-        "y": 574
+        "x": 793,
+        "y": 285
       },
       "params": {
-        "expr": "n + on"
-      }
-    },
-    {
-      "id": "mg_spot",
-      "defType": "math/expression",
-      "position": {
-        "x": 709,
-        "y": 895
+        "slot": 3,
+        "name": "planted"
       },
-      "params": {
-        "expr": "c && !m && k < 0 ? q : vec2(cos(n * 2.39996), sin(n * 2.39996)) * (40 + 21 * sqrt(n % 60))"
-      }
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_initPitch",
       "defType": "data/csv-inline",
       "position": {
-        "x": 2,
-        "y": 1511
+        "x": 187,
+        "y": 719
       },
       "params": {
         "data": "60,64,67,71,74"
-      }
-    },
-    {
-      "id": "mg_initWhere",
-      "defType": "math/expression",
-      "position": {
-        "x": 325,
-        "y": 1539
       },
-      "params": {
-        "expr": "vec2(cos((index + 1) * 2.39996), sin((index + 1) * 2.39996)) * (40 + 21 * sqrt(index + 1)) + n * 0"
-      }
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_where",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 737,
-        "y": 1421
+        "x": 1920,
+        "y": 445
       },
-      "params": {}
+      "params": {
+        "slot": 1,
+        "name": "flower spots"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_whereWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 3048,
+        "y": 611
+      },
+      "params": {
+        "slot": 1,
+        "name": "flower spots"
+      },
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_wherePlus",
       "defType": "spread/combine",
       "position": {
-        "x": 1022,
-        "y": 1163
+        "x": 2276,
+        "y": 450
       },
       "params": {
         "op": "append"
-      }
-    },
-    {
-      "id": "mg_whereKept",
-      "defType": "spread/sublist",
-      "position": {
-        "x": 1663,
-        "y": 947
       },
-      "params": {
-        "op": "keep-where"
-      }
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_born",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 737,
-        "y": 1821
+        "x": 460,
+        "y": 1149
       },
-      "params": {}
+      "params": {
+        "slot": 2,
+        "name": "flower births"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_bornWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 2248,
+        "y": 1110
+      },
+      "params": {
+        "slot": 2,
+        "name": "flower births"
+      },
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_bornInit",
       "defType": "data/csv-inline",
       "position": {
-        "x": 326,
-        "y": 2032
+        "x": 187,
+        "y": 1026
       },
       "params": {
         "data": "-3,-3.6,-4.2,-4.8,-5.4"
-      }
+      },
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_bornPlus",
       "defType": "spread/combine",
       "position": {
-        "x": 1022,
-        "y": 1494
+        "x": 803,
+        "y": 1242
       },
       "params": {
         "op": "append"
-      }
-    },
-    {
-      "id": "mg_bornKept",
-      "defType": "spread/sublist",
-      "position": {
-        "x": 1663,
-        "y": 1407
       },
-      "params": {
-        "op": "keep-where"
-      }
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_pitch",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 353,
-        "y": 1413
+        "x": 456,
+        "y": 798
       },
-      "params": {}
+      "params": {
+        "slot": 3,
+        "name": "flower pitches"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_pitchWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 2243,
+        "y": 634
+      },
+      "params": {
+        "slot": 3,
+        "name": "flower pitches"
+      },
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_pitchPlus",
       "defType": "spread/combine",
       "position": {
-        "x": 712,
-        "y": 1273
+        "x": 803,
+        "y": 711
       },
       "params": {
         "op": "append"
-      }
-    },
-    {
-      "id": "mg_pitchKept",
-      "defType": "spread/sublist",
-      "position": {
-        "x": 1663,
-        "y": 1095
       },
-      "params": {
-        "op": "keep-where"
-      }
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_loud",
-      "defType": "state/spread",
+      "defType": "state/read-spread",
       "position": {
-        "x": 353,
-        "y": 1714
+        "x": 450,
+        "y": 1006
       },
-      "params": {}
+      "params": {
+        "slot": 4,
+        "name": "flower loudness"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_loudWrite",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 2238,
+        "y": 946
+      },
+      "params": {
+        "slot": 4,
+        "name": "flower loudness"
+      },
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_loudInit",
       "defType": "data/csv-inline",
       "position": {
-        "x": 2,
-        "y": 1714
+        "x": 187,
+        "y": 905
       },
       "params": {
         "data": "0.6,0.8,0.7,0.9,0.75"
-      }
+      },
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_loudPlus",
       "defType": "spread/combine",
       "position": {
-        "x": 712,
-        "y": 1673
+        "x": 803,
+        "y": 1030
       },
       "params": {
         "op": "append"
-      }
-    },
-    {
-      "id": "mg_loudKept",
-      "defType": "spread/sublist",
-      "position": {
-        "x": 1663,
-        "y": 1555
       },
-      "params": {
-        "op": "keep-where"
-      }
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_gardenSize",
       "defType": "spread/count",
       "position": {
-        "x": 1035,
-        "y": 1674
+        "x": 796,
+        "y": 877
       },
-      "params": {}
-    },
-    {
-      "id": "mg_keepNew",
-      "defType": "math/expression",
-      "position": {
-        "x": 1346,
-        "y": 1280
-      },
-      "params": {
-        "expr": "b * 0 + (index < n || on ? 1 : 0)"
-      }
-    },
-    {
-      "id": "mg_overflow",
-      "defType": "math/expression",
-      "position": {
-        "x": 1660,
-        "y": 1243
-      },
-      "params": {
-        "expr": "max(0, n + on - 28)"
-      }
+      "params": {},
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_whereNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 1984,
-        "y": 856
+        "x": 2823,
+        "y": 597
       },
       "params": {
         "op": "skip"
-      }
+      },
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_bornNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 1984,
-        "y": 1256
+        "x": 1947,
+        "y": 1025
       },
       "params": {
         "op": "skip"
-      }
+      },
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_pitchNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 1984,
-        "y": 1108
+        "x": 1947,
+        "y": 589
       },
       "params": {
         "op": "skip"
-      }
+      },
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_loudNext",
       "defType": "spread/sublist",
       "position": {
-        "x": 1984,
-        "y": 1404
+        "x": 1947,
+        "y": 860
       },
       "params": {
         "op": "skip"
-      }
+      },
+      "parentId": "mg_plant"
     },
     {
       "id": "mg_curve",
       "defType": "spread/range",
       "position": {
-        "x": 1996,
-        "y": 1004
+        "x": 144,
+        "y": 763
       },
       "params": {},
       "portValues": {
         "count": 160
-      }
-    },
-    {
-      "id": "mg_petalCount",
-      "defType": "math/expression",
-      "position": {
-        "x": 1981,
-        "y": 714
       },
-      "params": {
-        "expr": "2 + round(k * 7)"
-      }
+      "parentId": "mg_gardenDraw"
     },
     {
       "id": "mg_flowers",
       "defType": "region/foreach",
       "position": {
-        "x": 2307,
-        "y": 390
+        "x": 965,
+        "y": 62
       },
       "params": {
-        "width": 1395,
-        "height": 852,
+        "width": 3355,
+        "height": 1167,
         "label": "Flowers"
       },
       "ports": [
@@ -607,101 +945,54 @@
           "name": "at",
           "type": "vec2",
           "direction": "input",
-          "y": 211
+          "y": 148
         },
         {
           "id": "born",
           "name": "born",
           "type": "number",
           "direction": "input",
-          "y": 489
+          "y": 230
         },
         {
           "id": "pitch",
           "name": "pitch",
           "type": "number",
           "direction": "input",
-          "y": 632
+          "y": 571
         },
         {
           "id": "loud",
           "name": "loud",
           "type": "number",
           "direction": "input",
-          "y": 679
+          "y": 456
         },
         {
           "id": "flower",
           "name": "flower",
           "type": "layer",
           "direction": "output",
-          "y": 487
+          "y": 567
         },
         {
           "id": "heart",
           "name": "heart",
           "type": "layer",
           "direction": "output",
-          "y": 137
+          "y": 219
         }
       ],
-      "width": 1395,
-      "height": 852
-    },
-    {
-      "id": "mg_grow",
-      "defType": "math/expression",
-      "position": {
-        "x": 135,
-        "y": 332
-      },
-      "params": {
-        "expr": "(1 - exp(-3 * (t - b))) * clamp(1 - (t - b - 24) / 8, 0, 1)"
-      },
-      "parentId": "mg_flowers"
-    },
-    {
-      "id": "mg_petalPts",
-      "defType": "math/expression",
-      "position": {
-        "x": 456,
-        "y": 312
-      },
-      "params": {
-        "expr": "q + vec2(cos(i / 160 * tau + a), sin(i / 160 * tau + a)) * g * (22 + 60 * v * (0.5 + br)) * (0.25 + 0.75 * abs(cos(k * (i / 160 * tau) / 2)))"
-      },
-      "parentId": "mg_flowers"
-    },
-    {
-      "id": "mg_turn",
-      "defType": "math/expression",
-      "position": {
-        "x": 135,
-        "y": 485
-      },
-      "params": {
-        "expr": "(t - b) * (s - 0.5) * 2 + n"
-      },
-      "parentId": "mg_flowers"
-    },
-    {
-      "id": "mg_petalCol",
-      "defType": "math/expression",
-      "position": {
-        "x": 456,
-        "y": 630
-      },
-      "params": {
-        "expr": "hsl(fract(h + (n - 60) * 0.035), 0.7, 0.45 + 0.25 * br, 0.75 * clamp(g * 3, 0, 1))"
-      },
-      "parentId": "mg_flowers"
+      "width": 3355,
+      "height": 1167,
+      "parentId": "mg_gardenDraw"
     },
     {
       "id": "mg_petalFill",
       "defType": "style/fill",
       "position": {
-        "x": 735,
-        "y": 646
+        "x": 2712,
+        "y": 562
       },
       "params": {},
       "parentId": "mg_flowers"
@@ -710,8 +1001,8 @@
       "id": "mg_edgeStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 930,
-        "y": 537
+        "x": 2903,
+        "y": 467
       },
       "params": {},
       "portValues": {
@@ -729,8 +1020,8 @@
       "id": "mg_flower",
       "defType": "draw/polygon",
       "position": {
-        "x": 1178,
-        "y": 451
+        "x": 3140,
+        "y": 439
       },
       "params": {},
       "portValues": {
@@ -739,23 +1030,11 @@
       "parentId": "mg_flowers"
     },
     {
-      "id": "mg_heartSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 456,
-        "y": 44
-      },
-      "params": {
-        "expr": "g * 10"
-      },
-      "parentId": "mg_flowers"
-    },
-    {
       "id": "mg_heartFill",
       "defType": "style/fill",
       "position": {
-        "x": 473,
-        "y": 186
+        "x": 1299,
+        "y": 232
       },
       "params": {},
       "portValues": {
@@ -772,8 +1051,8 @@
       "id": "mg_heart",
       "defType": "draw/ellipse",
       "position": {
-        "x": 728,
-        "y": 40
+        "x": 1578,
+        "y": 91
       },
       "params": {},
       "parentId": "mg_flowers"
@@ -782,19 +1061,20 @@
       "id": "mg_garden",
       "defType": "transform/group",
       "position": {
-        "x": 3840,
-        "y": 750
+        "x": 4444,
+        "y": 407
       },
       "params": {
         "slotCount": 2
-      }
+      },
+      "parentId": "mg_gardenDraw"
     },
     {
       "id": "mg_glow",
       "defType": "gpu/effect",
       "position": {
-        "x": 4133,
-        "y": 920
+        "x": 4708,
+        "y": 431
       },
       "params": {
         "mode": "bloom"
@@ -803,25 +1083,15 @@
         "threshold": 0.55,
         "radius": 16,
         "intensity": 0.7
-      }
-    },
-    {
-      "id": "mg_gate",
-      "defType": "math/expression",
-      "position": {
-        "x": 1346,
-        "y": 1034
       },
-      "params": {
-        "expr": "p && !on"
-      }
+      "parentId": "mg_gardenDraw"
     },
     {
       "id": "mg_voice",
       "defType": "sound/mono-synth",
       "position": {
-        "x": 1682,
-        "y": 711
+        "x": 606,
+        "y": 40
       },
       "params": {},
       "portValues": {
@@ -829,79 +1099,73 @@
         "decay": 0.5,
         "sustain": 0.3,
         "release": 0.8
-      }
-    },
-    {
-      "id": "mg_cutoff",
-      "defType": "math/expression",
-      "position": {
-        "x": 1660,
-        "y": 496
       },
-      "params": {
-        "expr": "300 + b * b * 6000"
-      }
+      "parentId": "mg_sound"
     },
     {
       "id": "mg_filter",
       "defType": "sound/filter",
       "position": {
-        "x": 1985,
-        "y": 544
+        "x": 858,
+        "y": 246
       },
       "params": {
         "type": "lowpass"
       },
       "portValues": {
         "res": 4
-      }
+      },
+      "parentId": "mg_sound"
     },
     {
       "id": "mg_delay",
       "defType": "sound/delay",
       "position": {
-        "x": 2955,
-        "y": 198
+        "x": 1077,
+        "y": 335
       },
       "params": {},
       "portValues": {
         "time": 0.38,
         "feedback": 0.35,
         "filter": 2000
-      }
+      },
+      "parentId": "mg_sound"
     },
     {
       "id": "mg_reverb",
       "defType": "sound/reverb",
       "position": {
-        "x": 3864,
-        "y": 175
+        "x": 1286,
+        "y": 403
       },
       "params": {},
       "portValues": {
         "seconds": 3.5,
         "decay": 2.5,
         "wet": 0.35
-      }
+      },
+      "parentId": "mg_sound"
     },
     {
       "id": "mg_out",
       "defType": "sound/output",
       "position": {
-        "x": 4170,
-        "y": 175
+        "x": 1491,
+        "y": 515
       },
       "params": {},
       "portValues": {
         "volume": 0.6
-      }
+      },
+      "parentId": "mg_sound"
     },
     {
       "id": "mg_help",
       "defType": "value/string",
       "position": {
-        "x": 6,
-        "y": 1832
+        "x": 23,
+        "y": 1141
       },
       "params": {
         "value": "MIDI notes & CC 21–24 · or keys A–K, click, sliders"
@@ -911,8 +1175,8 @@
       "id": "mg_statusFill",
       "defType": "style/fill",
       "position": {
-        "x": 12,
-        "y": 1936
+        "x": 20,
+        "y": 1262
       },
       "params": {},
       "portValues": {
@@ -928,8 +1192,8 @@
       "id": "mg_statusText",
       "defType": "draw/text",
       "position": {
-        "x": 365,
-        "y": 1840
+        "x": 332,
+        "y": 1194
       },
       "params": {
         "size": 13,
@@ -946,8 +1210,8 @@
       "id": "mg_scene",
       "defType": "transform/group",
       "position": {
-        "x": 4427,
-        "y": 1113
+        "x": 1154,
+        "y": 1030
       },
       "params": {
         "slotCount": 2
@@ -957,8 +1221,8 @@
       "id": "mg_renderer",
       "defType": "render/renderer",
       "position": {
-        "x": 4691,
-        "y": 1113
+        "x": 1418,
+        "y": 1078
       },
       "params": {
         "width": 640,
@@ -972,93 +1236,1459 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "mg_knobsNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 128,
+        "y": 901
+      },
+      "params": {
+        "text": "Each MidiCC reads 0 (raw) until its knob moves; from then on the knob wins over its slider. Set the CC numbers on the MidiCC nodes to match your controller.",
+        "width": 300,
+        "height": 90
+      },
+      "parentId": "mg_knobs"
+    },
+    {
+      "id": "mg_hueMoved",
+      "defType": "logic/compare",
+      "position": {
+        "x": 361,
+        "y": 40
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "mg_knobs",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "mg_hue",
+      "defType": "logic/select",
+      "position": {
+        "x": 601,
+        "y": 124
+      },
+      "params": {},
+      "parentId": "mg_knobs"
+    },
+    {
+      "id": "mg_petalsMoved",
+      "defType": "logic/compare",
+      "position": {
+        "x": 361,
+        "y": 238
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "mg_knobs",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "mg_petals",
+      "defType": "logic/select",
+      "position": {
+        "x": 601,
+        "y": 321
+      },
+      "params": {},
+      "parentId": "mg_knobs"
+    },
+    {
+      "id": "mg_spinMoved",
+      "defType": "logic/compare",
+      "position": {
+        "x": 361,
+        "y": 633
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "mg_knobs",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "mg_spin",
+      "defType": "logic/select",
+      "position": {
+        "x": 601,
+        "y": 716
+      },
+      "params": {},
+      "parentId": "mg_knobs"
+    },
+    {
+      "id": "mg_brightMoved",
+      "defType": "logic/compare",
+      "position": {
+        "x": 361,
+        "y": 435
+      },
+      "params": {
+        "op": "greater"
+      },
+      "parentId": "mg_knobs",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "mg_bright",
+      "defType": "logic/select",
+      "position": {
+        "x": 601,
+        "y": 519
+      },
+      "params": {},
+      "parentId": "mg_knobs"
+    },
+    {
+      "id": "mg_notesNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 136,
+        "y": 815
+      },
+      "params": {
+        "text": "Whichever source is playing gives the note: MIDI first, then the keys A–K (from middle C), else the click's height (three octaves from C3, higher up = higher). A note-on is a new press, or a different note while one is held.",
+        "width": 300,
+        "height": 110
+      },
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_keyDown",
+      "defType": "logic/compare",
+      "position": {
+        "x": 149,
+        "y": 302
+      },
+      "params": {
+        "op": "greater-equal"
+      },
+      "parentId": "mg_notes",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "mg_midiOrKey",
+      "defType": "logic/logic",
+      "position": {
+        "x": 473,
+        "y": 125
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_pressed",
+      "defType": "logic/logic",
+      "position": {
+        "x": 708,
+        "y": 153
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_keyNote",
+      "defType": "math/math",
+      "position": {
+        "x": 136,
+        "y": 467
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_notes",
+      "portValues": {
+        "a": 60
+      }
+    },
+    {
+      "id": "mg_clickHigh",
+      "defType": "math/math",
+      "position": {
+        "x": 136,
+        "y": 633
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_notes",
+      "portValues": {
+        "b": 640
+      }
+    },
+    {
+      "id": "mg_clickUp",
+      "defType": "math/math",
+      "position": {
+        "x": 431,
+        "y": 599
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_notes",
+      "portValues": {
+        "a": 0.5
+      }
+    },
+    {
+      "id": "mg_clickClamp",
+      "defType": "math/clamp",
+      "position": {
+        "x": 703,
+        "y": 610
+      },
+      "params": {},
+      "parentId": "mg_notes",
+      "portValues": {
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "mg_clickSpan",
+      "defType": "math/math",
+      "position": {
+        "x": 905,
+        "y": 599
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_notes",
+      "portValues": {
+        "b": 36
+      }
+    },
+    {
+      "id": "mg_clickStep",
+      "defType": "math/math",
+      "position": {
+        "x": 1180,
+        "y": 590
+      },
+      "params": {
+        "op": "round"
+      },
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_clickNote",
+      "defType": "math/math",
+      "position": {
+        "x": 1397,
+        "y": 536
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_notes",
+      "portValues": {
+        "a": 48
+      }
+    },
+    {
+      "id": "mg_keyOrClick",
+      "defType": "logic/select",
+      "position": {
+        "x": 1676,
+        "y": 462
+      },
+      "params": {},
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_note",
+      "defType": "logic/select",
+      "position": {
+        "x": 1917,
+        "y": 401
+      },
+      "params": {},
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_velocity",
+      "defType": "logic/select",
+      "position": {
+        "x": 174,
+        "y": 40
+      },
+      "params": {},
+      "parentId": "mg_notes",
+      "portValues": {
+        "b": 0.75
+      }
+    },
+    {
+      "id": "mg_freshPress",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2204,
+        "y": 138
+      },
+      "params": {
+        "op": "not"
+      },
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_newNote",
+      "defType": "logic/compare",
+      "position": {
+        "x": 2175,
+        "y": 282
+      },
+      "params": {
+        "op": "not-equal"
+      },
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_struck",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2433,
+        "y": 195
+      },
+      "params": {
+        "op": "or"
+      },
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_noteOn",
+      "defType": "logic/logic",
+      "position": {
+        "x": 2625,
+        "y": 141
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "mg_notes"
+    },
+    {
+      "id": "mg_plantNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 175,
+        "y": 1502
+      },
+      "params": {
+        "text": "Four Read* → Write* pairs hold every flower's place, birth time, note and loudness. A note-on appends one to each (a Switch takes the longer list only then), and once there are more than 28 the oldest are skipped. A clicked flower grows where you click; others take the next place on a golden-angle spiral (137.5°, radius growing with √n), round the garden every 60.",
+        "width": 320,
+        "height": 140
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_plantedNext",
+      "defType": "math/math",
+      "position": {
+        "x": 466,
+        "y": 270
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_noMidi",
+      "defType": "logic/logic",
+      "position": {
+        "x": 204,
+        "y": 102
+      },
+      "params": {
+        "op": "not"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_noKey",
+      "defType": "logic/compare",
+      "position": {
+        "x": 175,
+        "y": 246
+      },
+      "params": {
+        "op": "less"
+      },
+      "parentId": "mg_plant",
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "mg_clickOnly1",
+      "defType": "logic/logic",
+      "position": {
+        "x": 508,
+        "y": 40
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_byClick",
+      "defType": "logic/logic",
+      "position": {
+        "x": 823,
+        "y": 60
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_spotAngle",
+      "defType": "math/math",
+      "position": {
+        "x": 1338,
+        "y": 159
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_plant",
+      "portValues": {
+        "b": 2.39996
+      }
+    },
+    {
+      "id": "mg_spotRing",
+      "defType": "math/math",
+      "position": {
+        "x": 494,
+        "y": 435
+      },
+      "params": {
+        "op": "mod"
+      },
+      "parentId": "mg_plant",
+      "portValues": {
+        "b": 60
+      }
+    },
+    {
+      "id": "mg_spotRoot",
+      "defType": "math/math",
+      "position": {
+        "x": 809,
+        "y": 411
+      },
+      "params": {
+        "op": "sqrt"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_spotOut",
+      "defType": "math/math",
+      "position": {
+        "x": 1051,
+        "y": 312
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_plant",
+      "portValues": {
+        "a": 21
+      }
+    },
+    {
+      "id": "mg_spotRadius",
+      "defType": "math/math",
+      "position": {
+        "x": 1338,
+        "y": 324
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_plant",
+      "portValues": {
+        "a": 40
+      }
+    },
+    {
+      "id": "mg_spotSpiral",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 1648,
+        "y": 286
+      },
+      "params": {},
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_spot",
+      "defType": "logic/select",
+      "position": {
+        "x": 1963,
+        "y": 263
+      },
+      "params": {},
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_initIdx",
+      "defType": "spread/range",
+      "position": {
+        "x": 177,
+        "y": 566
+      },
+      "params": {},
+      "parentId": "mg_plant",
+      "portValues": {
+        "count": 5
+      }
+    },
+    {
+      "id": "mg_initN",
+      "defType": "math/math",
+      "position": {
+        "x": 466,
+        "y": 601
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_plant",
+      "portValues": {
+        "b": 1
+      }
+    },
+    {
+      "id": "mg_initAngle",
+      "defType": "math/math",
+      "position": {
+        "x": 1338,
+        "y": 490
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_plant",
+      "portValues": {
+        "b": 2.39996
+      }
+    },
+    {
+      "id": "mg_initRoot",
+      "defType": "math/math",
+      "position": {
+        "x": 809,
+        "y": 568
+      },
+      "params": {
+        "op": "sqrt"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_initOut",
+      "defType": "math/math",
+      "position": {
+        "x": 1051,
+        "y": 477
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_plant",
+      "portValues": {
+        "a": 21
+      }
+    },
+    {
+      "id": "mg_initRadius",
+      "defType": "math/math",
+      "position": {
+        "x": 1338,
+        "y": 655
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_plant",
+      "portValues": {
+        "a": 40
+      }
+    },
+    {
+      "id": "mg_initWhere",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 1648,
+        "y": 560
+      },
+      "params": {},
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_sizeAfter",
+      "defType": "math/math",
+      "position": {
+        "x": 1051,
+        "y": 869
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_tooMany",
+      "defType": "math/math",
+      "position": {
+        "x": 1338,
+        "y": 838
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_plant",
+      "portValues": {
+        "b": 28
+      }
+    },
+    {
+      "id": "mg_overflow",
+      "defType": "math/math",
+      "position": {
+        "x": 1623,
+        "y": 785
+      },
+      "params": {
+        "op": "max",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_plant",
+      "portValues": {
+        "a": 0
+      }
+    },
+    {
+      "id": "mg_whereKept",
+      "defType": "logic/switch",
+      "position": {
+        "x": 2547,
+        "y": 429
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 1
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_bornKept",
+      "defType": "logic/switch",
+      "position": {
+        "x": 1051,
+        "y": 1260
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 1
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_pitchKept",
+      "defType": "logic/switch",
+      "position": {
+        "x": 1051,
+        "y": 643
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 1
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_loudKept",
+      "defType": "logic/switch",
+      "position": {
+        "x": 1051,
+        "y": 1034
+      },
+      "params": {
+        "mode": "first-true",
+        "slotCount": 1
+      },
+      "parentId": "mg_plant"
+    },
+    {
+      "id": "mg_gardenNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 129,
+        "y": 1293
+      },
+      "params": {
+        "text": "Every flower is a rose of 160 points round its place: 2 + 7 × Petals lobes, its size from the note's loudness and Bloom, its hue from the note and Hue. It grows in (a decay Envelope, turned upside down), turns at Spin, and after 24 s wilts away over 8 s (a fade Envelope). Bloom makes the garden glow.",
+        "width": 320,
+        "height": 130
+      },
+      "parentId": "mg_gardenDraw"
+    },
+    {
+      "id": "mg_petalSteps",
+      "defType": "math/math",
+      "position": {
+        "x": 129,
+        "y": 499
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_gardenDraw",
+      "portValues": {
+        "b": 7
+      }
+    },
+    {
+      "id": "mg_petalRound",
+      "defType": "math/math",
+      "position": {
+        "x": 424,
+        "y": 525
+      },
+      "params": {
+        "op": "round"
+      },
+      "parentId": "mg_gardenDraw"
+    },
+    {
+      "id": "mg_petalCount",
+      "defType": "math/math",
+      "position": {
+        "x": 667,
+        "y": 509
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_gardenDraw",
+      "portValues": {
+        "a": 2
+      }
+    },
+    {
+      "id": "mg_curveTurn",
+      "defType": "math/math",
+      "position": {
+        "x": 396,
+        "y": 764
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_gardenDraw",
+      "portValues": {
+        "b": 160
+      }
+    },
+    {
+      "id": "mg_curveAngle",
+      "defType": "math/math",
+      "position": {
+        "x": 667,
+        "y": 770
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_gardenDraw",
+      "portValues": {
+        "b": 6.283185307179586
+      }
+    },
+    {
+      "id": "mg_age",
+      "defType": "math/math",
+      "position": {
+        "x": 140,
+        "y": 149
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers"
+    },
+    {
+      "id": "mg_riseFade",
+      "defType": "motion/envelope",
+      "position": {
+        "x": 429,
+        "y": 83
+      },
+      "params": {
+        "shape": "decay",
+        "from": "age"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "time": 1.5350567286626973
+      }
+    },
+    {
+      "id": "mg_growIn",
+      "defType": "math/math",
+      "position": {
+        "x": 700,
+        "y": 40
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "mg_wilt",
+      "defType": "motion/envelope",
+      "position": {
+        "x": 707,
+        "y": 206
+      },
+      "params": {
+        "shape": "fade",
+        "from": "age"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "attack": 0,
+        "hold": 24,
+        "time": 8
+      }
+    },
+    {
+      "id": "mg_grow",
+      "defType": "math/math",
+      "position": {
+        "x": 982,
+        "y": 203
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers"
+    },
+    {
+      "id": "mg_spinDir",
+      "defType": "math/math",
+      "position": {
+        "x": 140,
+        "y": 315
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "mg_spun",
+      "defType": "math/math",
+      "position": {
+        "x": 422,
+        "y": 303
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 3,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "c": 2
+      }
+    },
+    {
+      "id": "mg_turn",
+      "defType": "math/math",
+      "position": {
+        "x": 700,
+        "y": 470
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers"
+    },
+    {
+      "id": "mg_petalAngle",
+      "defType": "math/math",
+      "position": {
+        "x": 982,
+        "y": 452
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers"
+    },
+    {
+      "id": "mg_lobeAngle",
+      "defType": "math/math",
+      "position": {
+        "x": 140,
+        "y": 843
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers"
+    },
+    {
+      "id": "mg_lobeHalf",
+      "defType": "math/math",
+      "position": {
+        "x": 422,
+        "y": 844
+      },
+      "params": {
+        "op": "divide",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "mg_lobeCos",
+      "defType": "math/math",
+      "position": {
+        "x": 728,
+        "y": 830
+      },
+      "params": {
+        "op": "cos"
+      },
+      "parentId": "mg_flowers"
+    },
+    {
+      "id": "mg_lobeAbs",
+      "defType": "math/math",
+      "position": {
+        "x": 1010,
+        "y": 795
+      },
+      "params": {
+        "op": "abs",
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers"
+    },
+    {
+      "id": "mg_lobeDepth",
+      "defType": "math/math",
+      "position": {
+        "x": 1273,
+        "y": 739
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "a": 0.75
+      }
+    },
+    {
+      "id": "mg_lobe",
+      "defType": "math/math",
+      "position": {
+        "x": 1555,
+        "y": 707
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "a": 0.25
+      }
+    },
+    {
+      "id": "mg_brightHalf",
+      "defType": "math/math",
+      "position": {
+        "x": 140,
+        "y": 512
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "a": 0.5
+      }
+    },
+    {
+      "id": "mg_bigness",
+      "defType": "math/math",
+      "position": {
+        "x": 422,
+        "y": 491
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 3,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "a": 60
+      }
+    },
+    {
+      "id": "mg_flowerSize",
+      "defType": "math/math",
+      "position": {
+        "x": 1555,
+        "y": 541
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "a": 22
+      }
+    },
+    {
+      "id": "mg_reach",
+      "defType": "math/math",
+      "position": {
+        "x": 1856,
+        "y": 466
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 3,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers"
+    },
+    {
+      "id": "mg_petalOffsets",
+      "defType": "vec2/from-angle",
+      "position": {
+        "x": 2157,
+        "y": 447
+      },
+      "params": {},
+      "parentId": "mg_flowers"
+    },
+    {
+      "id": "mg_petalPts",
+      "defType": "math/math",
+      "position": {
+        "x": 2436,
+        "y": 278
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "vec2"
+      },
+      "parentId": "mg_flowers"
+    },
+    {
+      "id": "mg_noteFromC",
+      "defType": "math/math",
+      "position": {
+        "x": 140,
+        "y": 678
+      },
+      "params": {
+        "op": "subtract",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "b": 60
+      }
+    },
+    {
+      "id": "mg_noteHue",
+      "defType": "math/math",
+      "position": {
+        "x": 422,
+        "y": 678
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "b": 0.035
+      }
+    },
+    {
+      "id": "mg_hueSum",
+      "defType": "math/math",
+      "position": {
+        "x": 700,
+        "y": 650
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers"
+    },
+    {
+      "id": "mg_hueTurn",
+      "defType": "math/math",
+      "position": {
+        "x": 1884,
+        "y": 653
+      },
+      "params": {
+        "op": "fract"
+      },
+      "parentId": "mg_flowers"
+    },
+    {
+      "id": "mg_hueDeg",
+      "defType": "math/math",
+      "position": {
+        "x": 2133,
+        "y": 590
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "b": 360
+      }
+    },
+    {
+      "id": "mg_lightBy",
+      "defType": "math/math",
+      "position": {
+        "x": 140,
+        "y": 1009
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "a": 0.25
+      }
+    },
+    {
+      "id": "mg_light",
+      "defType": "math/math",
+      "position": {
+        "x": 1856,
+        "y": 797
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "a": 0.45
+      }
+    },
+    {
+      "id": "mg_lightPct",
+      "defType": "math/math",
+      "position": {
+        "x": 2133,
+        "y": 756
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "b": 100
+      }
+    },
+    {
+      "id": "mg_fadeIn3",
+      "defType": "math/math",
+      "position": {
+        "x": 1273,
+        "y": 375
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "b": 3
+      }
+    },
+    {
+      "id": "mg_fadeIn",
+      "defType": "math/clamp",
+      "position": {
+        "x": 1593,
+        "y": 376
+      },
+      "params": {},
+      "parentId": "mg_flowers",
+      "portValues": {
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "mg_alpha",
+      "defType": "math/math",
+      "position": {
+        "x": 1856,
+        "y": 300
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "a": 0.75
+      }
+    },
+    {
+      "id": "mg_alpha255",
+      "defType": "math/math",
+      "position": {
+        "x": 2133,
+        "y": 281
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "b": 255
+      }
+    },
+    {
+      "id": "mg_petalCol",
+      "defType": "color/color",
+      "position": {
+        "x": 2471,
+        "y": 526
+      },
+      "params": {
+        "mode": "hsl"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "s": 70.0
+      }
+    },
+    {
+      "id": "mg_heartSize",
+      "defType": "math/math",
+      "position": {
+        "x": 1273,
+        "y": 66
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_flowers",
+      "portValues": {
+        "b": 10
+      }
+    },
+    {
+      "id": "mg_soundNote",
+      "defType": "meta/comment",
+      "position": {
+        "x": 129,
+        "y": 657
+      },
+      "params": {
+        "text": "One MonoSynth plays the note. Its gate opens while a note is held but drops for the frame of each new note-on, so a new note strikes again. Bloom opens the filter.",
+        "width": 300,
+        "height": 90
+      },
+      "parentId": "mg_sound"
+    },
+    {
+      "id": "mg_notOn",
+      "defType": "logic/logic",
+      "position": {
+        "x": 171,
+        "y": 151
+      },
+      "params": {
+        "op": "not"
+      },
+      "parentId": "mg_sound"
+    },
+    {
+      "id": "mg_gate",
+      "defType": "logic/logic",
+      "position": {
+        "x": 400,
+        "y": 114
+      },
+      "params": {
+        "op": "and"
+      },
+      "parentId": "mg_sound"
+    },
+    {
+      "id": "mg_brightSq",
+      "defType": "math/math",
+      "position": {
+        "x": 129,
+        "y": 295
+      },
+      "params": {
+        "op": "multiply",
+        "slotCount": 3,
+        "valueType": "number"
+      },
+      "parentId": "mg_sound",
+      "portValues": {
+        "c": 6000
+      }
+    },
+    {
+      "id": "mg_cutoff",
+      "defType": "math/math",
+      "position": {
+        "x": 583,
+        "y": 294
+      },
+      "params": {
+        "op": "add",
+        "slotCount": 2,
+        "valueType": "number"
+      },
+      "parentId": "mg_sound",
+      "portValues": {
+        "a": 300
+      }
     }
   ],
   "edges": [
-    {
-      "id": "e_1",
-      "source": "mg_hueCC",
-      "target": "mg_hue",
-      "sourceHandle": "out-raw",
-      "targetHandle": "in-raw"
-    },
-    {
-      "id": "e_2",
-      "source": "mg_hueCC",
-      "target": "mg_hue",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cc"
-    },
-    {
-      "id": "e_3",
-      "source": "mg_hueSlider",
-      "target": "mg_hue",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_4",
-      "source": "mg_petalsCC",
-      "target": "mg_petals",
-      "sourceHandle": "out-raw",
-      "targetHandle": "in-raw"
-    },
-    {
-      "id": "e_5",
-      "source": "mg_petalsCC",
-      "target": "mg_petals",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cc"
-    },
-    {
-      "id": "e_6",
-      "source": "mg_petalsSlider",
-      "target": "mg_petals",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_7",
-      "source": "mg_spinCC",
-      "target": "mg_spin",
-      "sourceHandle": "out-raw",
-      "targetHandle": "in-raw"
-    },
-    {
-      "id": "e_8",
-      "source": "mg_spinCC",
-      "target": "mg_spin",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cc"
-    },
-    {
-      "id": "e_9",
-      "source": "mg_spinSlider",
-      "target": "mg_spin",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_10",
-      "source": "mg_brightCC",
-      "target": "mg_bright",
-      "sourceHandle": "out-raw",
-      "targetHandle": "in-raw"
-    },
-    {
-      "id": "e_11",
-      "source": "mg_brightCC",
-      "target": "mg_bright",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-cc"
-    },
-    {
-      "id": "e_12",
-      "source": "mg_brightSlider",
-      "target": "mg_bright",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
     {
       "id": "e_13",
       "source": "mg_mouse",
@@ -1074,199 +2704,10 @@
       "targetHandle": "in-y"
     },
     {
-      "id": "e_15",
-      "source": "mg_midi",
-      "target": "mg_pressed",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_16",
-      "source": "mg_kb",
-      "target": "mg_pressed",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_17",
-      "source": "mg_mouse",
-      "target": "mg_pressed",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_18",
-      "source": "mg_midi",
-      "target": "mg_note",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_19",
-      "source": "mg_midi",
-      "target": "mg_note",
-      "sourceHandle": "out-note",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_20",
-      "source": "mg_kb",
-      "target": "mg_note",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_21",
-      "source": "mg_mouse",
-      "target": "mg_note",
-      "sourceHandle": "out-y",
-      "targetHandle": "in-y"
-    },
-    {
-      "id": "e_22",
-      "source": "mg_midi",
-      "target": "mg_velocity",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_23",
-      "source": "mg_midi",
-      "target": "mg_velocity",
-      "sourceHandle": "out-velocity",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_24",
-      "source": "mg_pressed",
-      "target": "mg_wasPressed",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_25",
-      "source": "mg_note",
-      "target": "mg_lastNote",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_26",
-      "source": "mg_pressed",
-      "target": "mg_noteOn",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_27",
-      "source": "mg_wasPressed",
-      "target": "mg_noteOn",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-was"
-    },
-    {
-      "id": "e_28",
-      "source": "mg_note",
-      "target": "mg_noteOn",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_29",
-      "source": "mg_lastNote",
-      "target": "mg_noteOn",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-last"
-    },
-    {
-      "id": "e_30",
-      "source": "mg_planted",
-      "target": "mg_plantedNext",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_31",
-      "source": "mg_noteOn",
-      "target": "mg_plantedNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-on"
-    },
-    {
-      "id": "e_32",
-      "source": "mg_plantedNext",
-      "target": "mg_planted",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_33",
-      "source": "mg_mouse",
-      "target": "mg_spot",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_34",
-      "source": "mg_midi",
-      "target": "mg_spot",
-      "sourceHandle": "out-pressed",
-      "targetHandle": "in-m"
-    },
-    {
-      "id": "e_35",
-      "source": "mg_kb",
-      "target": "mg_spot",
-      "sourceHandle": "out-index",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_36",
-      "source": "mg_mpos",
-      "target": "mg_spot",
-      "sourceHandle": "out-vector",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_37",
-      "source": "mg_planted",
-      "target": "mg_spot",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_38",
-      "source": "mg_initPitch",
-      "target": "mg_initWhere",
-      "sourceHandle": "out-values",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_39",
-      "source": "mg_initWhere",
-      "target": "mg_where",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-init"
-    },
-    {
       "id": "e_40",
       "source": "mg_where",
       "target": "mg_wherePlus",
       "sourceHandle": "out-current",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_41",
-      "source": "mg_spot",
-      "target": "mg_wherePlus",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-tail"
-    },
-    {
-      "id": "e_42",
-      "source": "mg_wherePlus",
-      "target": "mg_whereKept",
-      "sourceHandle": "out-result",
       "targetHandle": "in-spread"
     },
     {
@@ -1284,20 +2725,6 @@
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_45",
-      "source": "mg_time",
-      "target": "mg_bornPlus",
-      "sourceHandle": "out-t",
-      "targetHandle": "in-tail"
-    },
-    {
-      "id": "e_46",
-      "source": "mg_bornPlus",
-      "target": "mg_bornKept",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
       "id": "e_47",
       "source": "mg_initPitch",
       "target": "mg_pitch",
@@ -1309,20 +2736,6 @@
       "source": "mg_pitch",
       "target": "mg_pitchPlus",
       "sourceHandle": "out-current",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_49",
-      "source": "mg_note",
-      "target": "mg_pitchPlus",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-tail"
-    },
-    {
-      "id": "e_50",
-      "source": "mg_pitchPlus",
-      "target": "mg_pitchKept",
-      "sourceHandle": "out-result",
       "targetHandle": "in-spread"
     },
     {
@@ -1340,20 +2753,6 @@
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_53",
-      "source": "mg_velocity",
-      "target": "mg_loudPlus",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-tail"
-    },
-    {
-      "id": "e_54",
-      "source": "mg_loudPlus",
-      "target": "mg_loudKept",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
       "id": "e_55",
       "source": "mg_born",
       "target": "mg_gardenSize",
@@ -1361,298 +2760,32 @@
       "targetHandle": "in-spread"
     },
     {
-      "id": "e_56",
-      "source": "mg_bornPlus",
-      "target": "mg_keepNew",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_57",
-      "source": "mg_gardenSize",
-      "target": "mg_keepNew",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_58",
-      "source": "mg_noteOn",
-      "target": "mg_keepNew",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-on"
-    },
-    {
-      "id": "e_59",
-      "source": "mg_gardenSize",
-      "target": "mg_overflow",
-      "sourceHandle": "out-count",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_60",
-      "source": "mg_noteOn",
-      "target": "mg_overflow",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-on"
-    },
-    {
-      "id": "e_61",
-      "source": "mg_keepNew",
-      "target": "mg_whereKept",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_62",
-      "source": "mg_whereKept",
-      "target": "mg_whereNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_63",
-      "source": "mg_overflow",
-      "target": "mg_whereNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-count"
-    },
-    {
       "id": "e_64",
       "source": "mg_whereNext",
-      "target": "mg_where",
+      "target": "mg_whereWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
-    },
-    {
-      "id": "e_65",
-      "source": "mg_keepNew",
-      "target": "mg_bornKept",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_66",
-      "source": "mg_bornKept",
-      "target": "mg_bornNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_67",
-      "source": "mg_overflow",
-      "target": "mg_bornNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-count"
     },
     {
       "id": "e_68",
       "source": "mg_bornNext",
-      "target": "mg_born",
+      "target": "mg_bornWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
-    },
-    {
-      "id": "e_69",
-      "source": "mg_keepNew",
-      "target": "mg_pitchKept",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_70",
-      "source": "mg_pitchKept",
-      "target": "mg_pitchNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_71",
-      "source": "mg_overflow",
-      "target": "mg_pitchNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-count"
     },
     {
       "id": "e_72",
       "source": "mg_pitchNext",
-      "target": "mg_pitch",
+      "target": "mg_pitchWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
-    },
-    {
-      "id": "e_73",
-      "source": "mg_keepNew",
-      "target": "mg_loudKept",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-keep"
-    },
-    {
-      "id": "e_74",
-      "source": "mg_loudKept",
-      "target": "mg_loudNext",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-spread"
-    },
-    {
-      "id": "e_75",
-      "source": "mg_overflow",
-      "target": "mg_loudNext",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-count"
     },
     {
       "id": "e_76",
       "source": "mg_loudNext",
-      "target": "mg_loud",
+      "target": "mg_loudWrite",
       "sourceHandle": "out-result",
       "targetHandle": "in-next"
-    },
-    {
-      "id": "e_77",
-      "source": "mg_petals",
-      "target": "mg_petalCount",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_78",
-      "source": "mg_whereNext",
-      "target": "mg_flowers",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-at"
-    },
-    {
-      "id": "e_79",
-      "source": "mg_bornNext",
-      "target": "mg_flowers",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-born"
-    },
-    {
-      "id": "e_80",
-      "source": "mg_pitchNext",
-      "target": "mg_flowers",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-pitch"
-    },
-    {
-      "id": "e_81",
-      "source": "mg_loudNext",
-      "target": "mg_flowers",
-      "sourceHandle": "out-result",
-      "targetHandle": "in-loud"
-    },
-    {
-      "id": "e_82",
-      "source": "mg_flowers",
-      "target": "mg_grow",
-      "sourceHandle": "out-born",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_83",
-      "source": "mg_curve",
-      "target": "mg_petalPts",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_84",
-      "source": "mg_flowers",
-      "target": "mg_petalPts",
-      "sourceHandle": "out-at",
-      "targetHandle": "in-q"
-    },
-    {
-      "id": "e_85",
-      "source": "mg_grow",
-      "target": "mg_petalPts",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_86",
-      "source": "mg_flowers",
-      "target": "mg_petalPts",
-      "sourceHandle": "out-loud",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_87",
-      "source": "mg_bright",
-      "target": "mg_petalPts",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-br"
-    },
-    {
-      "id": "e_88",
-      "source": "mg_petalCount",
-      "target": "mg_petalPts",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_89",
-      "source": "mg_flowers",
-      "target": "mg_turn",
-      "sourceHandle": "out-born",
-      "targetHandle": "in-b"
-    },
-    {
-      "id": "e_90",
-      "source": "mg_spin",
-      "target": "mg_turn",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_91",
-      "source": "mg_flowers",
-      "target": "mg_turn",
-      "sourceHandle": "out-pitch",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_92",
-      "source": "mg_turn",
-      "target": "mg_petalPts",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_93",
-      "source": "mg_hue",
-      "target": "mg_petalCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_94",
-      "source": "mg_flowers",
-      "target": "mg_petalCol",
-      "sourceHandle": "out-pitch",
-      "targetHandle": "in-n"
-    },
-    {
-      "id": "e_95",
-      "source": "mg_bright",
-      "target": "mg_petalCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-br"
-    },
-    {
-      "id": "e_96",
-      "source": "mg_grow",
-      "target": "mg_petalCol",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
-      "id": "e_97",
-      "source": "mg_petalCol",
-      "target": "mg_petalFill",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-color"
     },
     {
       "id": "e_98",
@@ -1660,13 +2793,6 @@
       "target": "mg_edgeStroke",
       "sourceHandle": "out-style",
       "targetHandle": "in-base"
-    },
-    {
-      "id": "e_99",
-      "source": "mg_petalPts",
-      "target": "mg_flower",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-points"
     },
     {
       "id": "e_100",
@@ -1683,32 +2809,11 @@
       "targetHandle": "in-flower"
     },
     {
-      "id": "e_102",
-      "source": "mg_grow",
-      "target": "mg_heartSize",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-g"
-    },
-    {
       "id": "e_103",
       "source": "mg_flowers",
       "target": "mg_heart",
       "sourceHandle": "out-at",
       "targetHandle": "in-pos"
-    },
-    {
-      "id": "e_104",
-      "source": "mg_heartSize",
-      "target": "mg_heart",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-w"
-    },
-    {
-      "id": "e_105",
-      "source": "mg_heartSize",
-      "target": "mg_heart",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
     },
     {
       "id": "e_106",
@@ -1746,60 +2851,11 @@
       "targetHandle": "in-input"
     },
     {
-      "id": "e_111",
-      "source": "mg_pressed",
-      "target": "mg_gate",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_112",
-      "source": "mg_noteOn",
-      "target": "mg_gate",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-on"
-    },
-    {
-      "id": "e_113",
-      "source": "mg_note",
-      "target": "mg_voice",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-note"
-    },
-    {
-      "id": "e_114",
-      "source": "mg_velocity",
-      "target": "mg_voice",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-velocity"
-    },
-    {
-      "id": "e_115",
-      "source": "mg_gate",
-      "target": "mg_voice",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-trigger"
-    },
-    {
-      "id": "e_116",
-      "source": "mg_bright",
-      "target": "mg_cutoff",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-b"
-    },
-    {
       "id": "e_117",
       "source": "mg_voice",
       "target": "mg_filter",
       "sourceHandle": "out-audio",
       "targetHandle": "in-in"
-    },
-    {
-      "id": "e_118",
-      "source": "mg_cutoff",
-      "target": "mg_filter",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-freq"
     },
     {
       "id": "e_119",
@@ -1837,13 +2893,6 @@
       "targetHandle": "in-style"
     },
     {
-      "id": "e_124",
-      "source": "mg_glow",
-      "target": "mg_scene",
-      "sourceHandle": "out-out",
-      "targetHandle": "in-s1"
-    },
-    {
       "id": "e_125",
       "source": "mg_statusText",
       "target": "mg_scene",
@@ -1856,6 +2905,1532 @@
       "target": "mg_renderer",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_b1_1",
+      "source": "mg_hueSlider",
+      "target": "mg_knobs",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-hueSlider"
+    },
+    {
+      "id": "e_b1_2",
+      "source": "mg_hueCC",
+      "target": "mg_hueMoved",
+      "sourceHandle": "out-raw",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_3",
+      "source": "mg_hueMoved",
+      "target": "mg_hue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_4",
+      "source": "mg_hueCC",
+      "target": "mg_hue",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_5",
+      "source": "mg_knobs",
+      "target": "mg_hue",
+      "sourceHandle": "out-hueSlider",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_6",
+      "source": "mg_hue",
+      "target": "mg_knobs",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-hue"
+    },
+    {
+      "id": "e_b1_7",
+      "source": "mg_petalsSlider",
+      "target": "mg_knobs",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-petalsSlider"
+    },
+    {
+      "id": "e_b1_8",
+      "source": "mg_petalsCC",
+      "target": "mg_petalsMoved",
+      "sourceHandle": "out-raw",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_9",
+      "source": "mg_petalsMoved",
+      "target": "mg_petals",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_10",
+      "source": "mg_petalsCC",
+      "target": "mg_petals",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_11",
+      "source": "mg_knobs",
+      "target": "mg_petals",
+      "sourceHandle": "out-petalsSlider",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_12",
+      "source": "mg_petals",
+      "target": "mg_knobs",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-petals"
+    },
+    {
+      "id": "e_b1_13",
+      "source": "mg_spinSlider",
+      "target": "mg_knobs",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-spinSlider"
+    },
+    {
+      "id": "e_b1_14",
+      "source": "mg_spinCC",
+      "target": "mg_spinMoved",
+      "sourceHandle": "out-raw",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_15",
+      "source": "mg_spinMoved",
+      "target": "mg_spin",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_16",
+      "source": "mg_spinCC",
+      "target": "mg_spin",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_17",
+      "source": "mg_knobs",
+      "target": "mg_spin",
+      "sourceHandle": "out-spinSlider",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_18",
+      "source": "mg_spin",
+      "target": "mg_knobs",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-spin"
+    },
+    {
+      "id": "e_b1_19",
+      "source": "mg_brightSlider",
+      "target": "mg_knobs",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-bloomSlider"
+    },
+    {
+      "id": "e_b1_20",
+      "source": "mg_brightCC",
+      "target": "mg_brightMoved",
+      "sourceHandle": "out-raw",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_21",
+      "source": "mg_brightMoved",
+      "target": "mg_bright",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_22",
+      "source": "mg_brightCC",
+      "target": "mg_bright",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_23",
+      "source": "mg_knobs",
+      "target": "mg_bright",
+      "sourceHandle": "out-bloomSlider",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_24",
+      "source": "mg_bright",
+      "target": "mg_knobs",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-bloom"
+    },
+    {
+      "id": "e_b1_25",
+      "source": "mg_midi",
+      "target": "mg_notes",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-midiOn"
+    },
+    {
+      "id": "e_b1_26",
+      "source": "mg_midi",
+      "target": "mg_notes",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-midiNote"
+    },
+    {
+      "id": "e_b1_27",
+      "source": "mg_midi",
+      "target": "mg_notes",
+      "sourceHandle": "out-velocity",
+      "targetHandle": "in-midiVelocity"
+    },
+    {
+      "id": "e_b1_28",
+      "source": "mg_kb",
+      "target": "mg_notes",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-key"
+    },
+    {
+      "id": "e_b1_29",
+      "source": "mg_mouse",
+      "target": "mg_notes",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-click"
+    },
+    {
+      "id": "e_b1_30",
+      "source": "mg_mouse",
+      "target": "mg_notes",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_b1_31",
+      "source": "mg_notes",
+      "target": "mg_keyDown",
+      "sourceHandle": "out-key",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_32",
+      "source": "mg_notes",
+      "target": "mg_midiOrKey",
+      "sourceHandle": "out-midiOn",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_33",
+      "source": "mg_keyDown",
+      "target": "mg_midiOrKey",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_34",
+      "source": "mg_midiOrKey",
+      "target": "mg_pressed",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_35",
+      "source": "mg_notes",
+      "target": "mg_pressed",
+      "sourceHandle": "out-click",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_36",
+      "source": "mg_notes",
+      "target": "mg_keyNote",
+      "sourceHandle": "out-key",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_37",
+      "source": "mg_notes",
+      "target": "mg_clickHigh",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_38",
+      "source": "mg_clickHigh",
+      "target": "mg_clickUp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_39",
+      "source": "mg_clickUp",
+      "target": "mg_clickClamp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_40",
+      "source": "mg_clickClamp",
+      "target": "mg_clickSpan",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_41",
+      "source": "mg_clickSpan",
+      "target": "mg_clickStep",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_42",
+      "source": "mg_clickStep",
+      "target": "mg_clickNote",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_43",
+      "source": "mg_keyDown",
+      "target": "mg_keyOrClick",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_44",
+      "source": "mg_keyNote",
+      "target": "mg_keyOrClick",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_45",
+      "source": "mg_clickNote",
+      "target": "mg_keyOrClick",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_46",
+      "source": "mg_notes",
+      "target": "mg_note",
+      "sourceHandle": "out-midiOn",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_47",
+      "source": "mg_notes",
+      "target": "mg_note",
+      "sourceHandle": "out-midiNote",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_48",
+      "source": "mg_keyOrClick",
+      "target": "mg_note",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_49",
+      "source": "mg_notes",
+      "target": "mg_velocity",
+      "sourceHandle": "out-midiOn",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_50",
+      "source": "mg_notes",
+      "target": "mg_velocity",
+      "sourceHandle": "out-midiVelocity",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_51",
+      "source": "mg_pressed",
+      "target": "mg_wasPressedWrite",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_52",
+      "source": "mg_note",
+      "target": "mg_lastNoteWrite",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_53",
+      "source": "mg_wasPressed",
+      "target": "mg_freshPress",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_54",
+      "source": "mg_note",
+      "target": "mg_newNote",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_55",
+      "source": "mg_lastNote",
+      "target": "mg_newNote",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_56",
+      "source": "mg_freshPress",
+      "target": "mg_struck",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_57",
+      "source": "mg_newNote",
+      "target": "mg_struck",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_58",
+      "source": "mg_pressed",
+      "target": "mg_noteOn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_59",
+      "source": "mg_struck",
+      "target": "mg_noteOn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_60",
+      "source": "mg_pressed",
+      "target": "mg_notes",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_b1_61",
+      "source": "mg_note",
+      "target": "mg_notes",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-note"
+    },
+    {
+      "id": "e_b1_62",
+      "source": "mg_velocity",
+      "target": "mg_notes",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-velocity"
+    },
+    {
+      "id": "e_b1_63",
+      "source": "mg_noteOn",
+      "target": "mg_notes",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-noteOn"
+    },
+    {
+      "id": "e_b1_64",
+      "source": "mg_notes",
+      "target": "mg_plant",
+      "sourceHandle": "out-noteOn",
+      "targetHandle": "in-noteOn"
+    },
+    {
+      "id": "e_b1_65",
+      "source": "mg_notes",
+      "target": "mg_plant",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-note"
+    },
+    {
+      "id": "e_b1_66",
+      "source": "mg_notes",
+      "target": "mg_plant",
+      "sourceHandle": "out-velocity",
+      "targetHandle": "in-velocity"
+    },
+    {
+      "id": "e_b1_67",
+      "source": "mg_mouse",
+      "target": "mg_plant",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-click"
+    },
+    {
+      "id": "e_b1_68",
+      "source": "mg_midi",
+      "target": "mg_plant",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-midiOn"
+    },
+    {
+      "id": "e_b1_69",
+      "source": "mg_kb",
+      "target": "mg_plant",
+      "sourceHandle": "out-index",
+      "targetHandle": "in-key"
+    },
+    {
+      "id": "e_b1_70",
+      "source": "mg_mpos",
+      "target": "mg_plant",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-mouse"
+    },
+    {
+      "id": "e_b1_71",
+      "source": "mg_time",
+      "target": "mg_plant",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_b1_72",
+      "source": "mg_planted",
+      "target": "mg_plantedNext",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_73",
+      "source": "mg_plant",
+      "target": "mg_plantedNext",
+      "sourceHandle": "out-noteOn",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_74",
+      "source": "mg_plantedNext",
+      "target": "mg_plantedWrite",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_b1_75",
+      "source": "mg_plant",
+      "target": "mg_noMidi",
+      "sourceHandle": "out-midiOn",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_76",
+      "source": "mg_plant",
+      "target": "mg_noKey",
+      "sourceHandle": "out-key",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_77",
+      "source": "mg_plant",
+      "target": "mg_clickOnly1",
+      "sourceHandle": "out-click",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_78",
+      "source": "mg_noMidi",
+      "target": "mg_clickOnly1",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_79",
+      "source": "mg_clickOnly1",
+      "target": "mg_byClick",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_80",
+      "source": "mg_noKey",
+      "target": "mg_byClick",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_81",
+      "source": "mg_planted",
+      "target": "mg_spotAngle",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_82",
+      "source": "mg_planted",
+      "target": "mg_spotRing",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_83",
+      "source": "mg_spotRing",
+      "target": "mg_spotRoot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_84",
+      "source": "mg_spotRoot",
+      "target": "mg_spotOut",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_85",
+      "source": "mg_spotOut",
+      "target": "mg_spotRadius",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_86",
+      "source": "mg_spotAngle",
+      "target": "mg_spotSpiral",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_b1_87",
+      "source": "mg_spotRadius",
+      "target": "mg_spotSpiral",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_b1_88",
+      "source": "mg_byClick",
+      "target": "mg_spot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_b1_89",
+      "source": "mg_plant",
+      "target": "mg_spot",
+      "sourceHandle": "out-mouse",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_90",
+      "source": "mg_spotSpiral",
+      "target": "mg_spot",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_91",
+      "source": "mg_spot",
+      "target": "mg_wherePlus",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-tail"
+    },
+    {
+      "id": "e_b1_92",
+      "source": "mg_plant",
+      "target": "mg_bornPlus",
+      "sourceHandle": "out-time",
+      "targetHandle": "in-tail"
+    },
+    {
+      "id": "e_b1_93",
+      "source": "mg_plant",
+      "target": "mg_pitchPlus",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-tail"
+    },
+    {
+      "id": "e_b1_94",
+      "source": "mg_plant",
+      "target": "mg_loudPlus",
+      "sourceHandle": "out-velocity",
+      "targetHandle": "in-tail"
+    },
+    {
+      "id": "e_b1_95",
+      "source": "mg_initIdx",
+      "target": "mg_initN",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_96",
+      "source": "mg_initN",
+      "target": "mg_initAngle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_97",
+      "source": "mg_initN",
+      "target": "mg_initRoot",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_98",
+      "source": "mg_initRoot",
+      "target": "mg_initOut",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_99",
+      "source": "mg_initOut",
+      "target": "mg_initRadius",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_100",
+      "source": "mg_initAngle",
+      "target": "mg_initWhere",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_b1_101",
+      "source": "mg_initRadius",
+      "target": "mg_initWhere",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_b1_102",
+      "source": "mg_initWhere",
+      "target": "mg_where",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-init"
+    },
+    {
+      "id": "e_b1_103",
+      "source": "mg_gardenSize",
+      "target": "mg_sizeAfter",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_104",
+      "source": "mg_plant",
+      "target": "mg_sizeAfter",
+      "sourceHandle": "out-noteOn",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_105",
+      "source": "mg_sizeAfter",
+      "target": "mg_tooMany",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_106",
+      "source": "mg_tooMany",
+      "target": "mg_overflow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_107",
+      "source": "mg_plant",
+      "target": "mg_whereKept",
+      "sourceHandle": "out-noteOn",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_b1_108",
+      "source": "mg_wherePlus",
+      "target": "mg_whereKept",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v0"
+    },
+    {
+      "id": "e_b1_109",
+      "source": "mg_where",
+      "target": "mg_whereKept",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-else"
+    },
+    {
+      "id": "e_b1_110",
+      "source": "mg_whereKept",
+      "target": "mg_whereNext",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_111",
+      "source": "mg_overflow",
+      "target": "mg_whereNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_b1_112",
+      "source": "mg_whereNext",
+      "target": "mg_plant",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-where"
+    },
+    {
+      "id": "e_b1_113",
+      "source": "mg_plant",
+      "target": "mg_bornKept",
+      "sourceHandle": "out-noteOn",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_b1_114",
+      "source": "mg_bornPlus",
+      "target": "mg_bornKept",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v0"
+    },
+    {
+      "id": "e_b1_115",
+      "source": "mg_born",
+      "target": "mg_bornKept",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-else"
+    },
+    {
+      "id": "e_b1_116",
+      "source": "mg_bornKept",
+      "target": "mg_bornNext",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_117",
+      "source": "mg_overflow",
+      "target": "mg_bornNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_b1_118",
+      "source": "mg_bornNext",
+      "target": "mg_plant",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-born"
+    },
+    {
+      "id": "e_b1_119",
+      "source": "mg_plant",
+      "target": "mg_pitchKept",
+      "sourceHandle": "out-noteOn",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_b1_120",
+      "source": "mg_pitchPlus",
+      "target": "mg_pitchKept",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v0"
+    },
+    {
+      "id": "e_b1_121",
+      "source": "mg_pitch",
+      "target": "mg_pitchKept",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-else"
+    },
+    {
+      "id": "e_b1_122",
+      "source": "mg_pitchKept",
+      "target": "mg_pitchNext",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_123",
+      "source": "mg_overflow",
+      "target": "mg_pitchNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_b1_124",
+      "source": "mg_pitchNext",
+      "target": "mg_plant",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-pitch"
+    },
+    {
+      "id": "e_b1_125",
+      "source": "mg_plant",
+      "target": "mg_loudKept",
+      "sourceHandle": "out-noteOn",
+      "targetHandle": "in-if0"
+    },
+    {
+      "id": "e_b1_126",
+      "source": "mg_loudPlus",
+      "target": "mg_loudKept",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-v0"
+    },
+    {
+      "id": "e_b1_127",
+      "source": "mg_loud",
+      "target": "mg_loudKept",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-else"
+    },
+    {
+      "id": "e_b1_128",
+      "source": "mg_loudKept",
+      "target": "mg_loudNext",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_b1_129",
+      "source": "mg_overflow",
+      "target": "mg_loudNext",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-count"
+    },
+    {
+      "id": "e_b1_130",
+      "source": "mg_loudNext",
+      "target": "mg_plant",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-loud"
+    },
+    {
+      "id": "e_b1_131",
+      "source": "mg_plant",
+      "target": "mg_gardenDraw",
+      "sourceHandle": "out-where",
+      "targetHandle": "in-where"
+    },
+    {
+      "id": "e_b1_132",
+      "source": "mg_gardenDraw",
+      "target": "mg_flowers",
+      "sourceHandle": "out-where",
+      "targetHandle": "in-at"
+    },
+    {
+      "id": "e_b1_133",
+      "source": "mg_plant",
+      "target": "mg_gardenDraw",
+      "sourceHandle": "out-born",
+      "targetHandle": "in-born"
+    },
+    {
+      "id": "e_b1_134",
+      "source": "mg_gardenDraw",
+      "target": "mg_flowers",
+      "sourceHandle": "out-born",
+      "targetHandle": "in-born"
+    },
+    {
+      "id": "e_b1_135",
+      "source": "mg_plant",
+      "target": "mg_gardenDraw",
+      "sourceHandle": "out-pitch",
+      "targetHandle": "in-pitch"
+    },
+    {
+      "id": "e_b1_136",
+      "source": "mg_gardenDraw",
+      "target": "mg_flowers",
+      "sourceHandle": "out-pitch",
+      "targetHandle": "in-pitch"
+    },
+    {
+      "id": "e_b1_137",
+      "source": "mg_plant",
+      "target": "mg_gardenDraw",
+      "sourceHandle": "out-loud",
+      "targetHandle": "in-loud"
+    },
+    {
+      "id": "e_b1_138",
+      "source": "mg_gardenDraw",
+      "target": "mg_flowers",
+      "sourceHandle": "out-loud",
+      "targetHandle": "in-loud"
+    },
+    {
+      "id": "e_b1_139",
+      "source": "mg_knobs",
+      "target": "mg_gardenDraw",
+      "sourceHandle": "out-hue",
+      "targetHandle": "in-hue"
+    },
+    {
+      "id": "e_b1_140",
+      "source": "mg_knobs",
+      "target": "mg_gardenDraw",
+      "sourceHandle": "out-petals",
+      "targetHandle": "in-petals"
+    },
+    {
+      "id": "e_b1_141",
+      "source": "mg_knobs",
+      "target": "mg_gardenDraw",
+      "sourceHandle": "out-spin",
+      "targetHandle": "in-spin"
+    },
+    {
+      "id": "e_b1_142",
+      "source": "mg_knobs",
+      "target": "mg_gardenDraw",
+      "sourceHandle": "out-bloom",
+      "targetHandle": "in-bloom"
+    },
+    {
+      "id": "e_b1_143",
+      "source": "mg_time",
+      "target": "mg_gardenDraw",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_b1_144",
+      "source": "mg_gardenDraw",
+      "target": "mg_petalSteps",
+      "sourceHandle": "out-petals",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_145",
+      "source": "mg_petalSteps",
+      "target": "mg_petalRound",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_146",
+      "source": "mg_petalRound",
+      "target": "mg_petalCount",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_147",
+      "source": "mg_curve",
+      "target": "mg_curveTurn",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_148",
+      "source": "mg_curveTurn",
+      "target": "mg_curveAngle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_149",
+      "source": "mg_gardenDraw",
+      "target": "mg_age",
+      "sourceHandle": "out-time",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_150",
+      "source": "mg_flowers",
+      "target": "mg_age",
+      "sourceHandle": "out-born",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_151",
+      "source": "mg_age",
+      "target": "mg_riseFade",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-age"
+    },
+    {
+      "id": "e_b1_152",
+      "source": "mg_riseFade",
+      "target": "mg_growIn",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_153",
+      "source": "mg_age",
+      "target": "mg_wilt",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-age"
+    },
+    {
+      "id": "e_b1_154",
+      "source": "mg_growIn",
+      "target": "mg_grow",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_155",
+      "source": "mg_wilt",
+      "target": "mg_grow",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_156",
+      "source": "mg_gardenDraw",
+      "target": "mg_spinDir",
+      "sourceHandle": "out-spin",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_157",
+      "source": "mg_age",
+      "target": "mg_spun",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_158",
+      "source": "mg_spinDir",
+      "target": "mg_spun",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_159",
+      "source": "mg_spun",
+      "target": "mg_turn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_160",
+      "source": "mg_flowers",
+      "target": "mg_turn",
+      "sourceHandle": "out-pitch",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_161",
+      "source": "mg_curveAngle",
+      "target": "mg_petalAngle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_162",
+      "source": "mg_turn",
+      "target": "mg_petalAngle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_163",
+      "source": "mg_petalCount",
+      "target": "mg_lobeAngle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_164",
+      "source": "mg_curveAngle",
+      "target": "mg_lobeAngle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_165",
+      "source": "mg_lobeAngle",
+      "target": "mg_lobeHalf",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_166",
+      "source": "mg_lobeHalf",
+      "target": "mg_lobeCos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_167",
+      "source": "mg_lobeCos",
+      "target": "mg_lobeAbs",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_168",
+      "source": "mg_lobeAbs",
+      "target": "mg_lobeDepth",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_169",
+      "source": "mg_lobeDepth",
+      "target": "mg_lobe",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_170",
+      "source": "mg_gardenDraw",
+      "target": "mg_brightHalf",
+      "sourceHandle": "out-bloom",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_171",
+      "source": "mg_flowers",
+      "target": "mg_bigness",
+      "sourceHandle": "out-loud",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_172",
+      "source": "mg_brightHalf",
+      "target": "mg_bigness",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_b1_173",
+      "source": "mg_bigness",
+      "target": "mg_flowerSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_174",
+      "source": "mg_grow",
+      "target": "mg_reach",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_175",
+      "source": "mg_flowerSize",
+      "target": "mg_reach",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_176",
+      "source": "mg_lobe",
+      "target": "mg_reach",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_b1_177",
+      "source": "mg_petalAngle",
+      "target": "mg_petalOffsets",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-angle"
+    },
+    {
+      "id": "e_b1_178",
+      "source": "mg_reach",
+      "target": "mg_petalOffsets",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-mag"
+    },
+    {
+      "id": "e_b1_179",
+      "source": "mg_flowers",
+      "target": "mg_petalPts",
+      "sourceHandle": "out-at",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_180",
+      "source": "mg_petalOffsets",
+      "target": "mg_petalPts",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_181",
+      "source": "mg_petalPts",
+      "target": "mg_flower",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_b1_182",
+      "source": "mg_flowers",
+      "target": "mg_noteFromC",
+      "sourceHandle": "out-pitch",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_183",
+      "source": "mg_noteFromC",
+      "target": "mg_noteHue",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_184",
+      "source": "mg_gardenDraw",
+      "target": "mg_hueSum",
+      "sourceHandle": "out-hue",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_185",
+      "source": "mg_noteHue",
+      "target": "mg_hueSum",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_186",
+      "source": "mg_hueSum",
+      "target": "mg_hueTurn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_187",
+      "source": "mg_hueTurn",
+      "target": "mg_hueDeg",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_188",
+      "source": "mg_gardenDraw",
+      "target": "mg_lightBy",
+      "sourceHandle": "out-bloom",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_189",
+      "source": "mg_lightBy",
+      "target": "mg_light",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_190",
+      "source": "mg_light",
+      "target": "mg_lightPct",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_191",
+      "source": "mg_grow",
+      "target": "mg_fadeIn3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_192",
+      "source": "mg_fadeIn3",
+      "target": "mg_fadeIn",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_193",
+      "source": "mg_fadeIn",
+      "target": "mg_alpha",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_194",
+      "source": "mg_alpha",
+      "target": "mg_alpha255",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_195",
+      "source": "mg_hueDeg",
+      "target": "mg_petalCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_b1_196",
+      "source": "mg_lightPct",
+      "target": "mg_petalCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-l"
+    },
+    {
+      "id": "e_b1_197",
+      "source": "mg_alpha255",
+      "target": "mg_petalCol",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_198",
+      "source": "mg_petalCol",
+      "target": "mg_petalFill",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-color"
+    },
+    {
+      "id": "e_b1_199",
+      "source": "mg_grow",
+      "target": "mg_heartSize",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_200",
+      "source": "mg_heartSize",
+      "target": "mg_heart",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_b1_201",
+      "source": "mg_heartSize",
+      "target": "mg_heart",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_b1_202",
+      "source": "mg_glow",
+      "target": "mg_gardenDraw",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-garden"
+    },
+    {
+      "id": "e_b1_203",
+      "source": "mg_gardenDraw",
+      "target": "mg_scene",
+      "sourceHandle": "out-garden",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_b1_204",
+      "source": "mg_notes",
+      "target": "mg_sound",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-note"
+    },
+    {
+      "id": "e_b1_205",
+      "source": "mg_sound",
+      "target": "mg_voice",
+      "sourceHandle": "out-note",
+      "targetHandle": "in-note"
+    },
+    {
+      "id": "e_b1_206",
+      "source": "mg_notes",
+      "target": "mg_sound",
+      "sourceHandle": "out-velocity",
+      "targetHandle": "in-velocity"
+    },
+    {
+      "id": "e_b1_207",
+      "source": "mg_sound",
+      "target": "mg_voice",
+      "sourceHandle": "out-velocity",
+      "targetHandle": "in-velocity"
+    },
+    {
+      "id": "e_b1_208",
+      "source": "mg_notes",
+      "target": "mg_sound",
+      "sourceHandle": "out-noteOn",
+      "targetHandle": "in-noteOn"
+    },
+    {
+      "id": "e_b1_209",
+      "source": "mg_sound",
+      "target": "mg_notOn",
+      "sourceHandle": "out-noteOn",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_b1_210",
+      "source": "mg_notes",
+      "target": "mg_sound",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-pressed"
+    },
+    {
+      "id": "e_b1_211",
+      "source": "mg_sound",
+      "target": "mg_gate",
+      "sourceHandle": "out-pressed",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_212",
+      "source": "mg_notOn",
+      "target": "mg_gate",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_213",
+      "source": "mg_gate",
+      "target": "mg_voice",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-trigger"
+    },
+    {
+      "id": "e_b1_214",
+      "source": "mg_knobs",
+      "target": "mg_sound",
+      "sourceHandle": "out-bloom",
+      "targetHandle": "in-bloom"
+    },
+    {
+      "id": "e_b1_215",
+      "source": "mg_sound",
+      "target": "mg_brightSq",
+      "sourceHandle": "out-bloom",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_b1_216",
+      "source": "mg_sound",
+      "target": "mg_brightSq",
+      "sourceHandle": "out-bloom",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_217",
+      "source": "mg_brightSq",
+      "target": "mg_cutoff",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_b1_218",
+      "source": "mg_cutoff",
+      "target": "mg_filter",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-freq"
     }
   ]
 }

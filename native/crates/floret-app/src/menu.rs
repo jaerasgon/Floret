@@ -41,6 +41,14 @@ pub enum Command {
     Delete,
     SelectAll,
     Group,
+    /// Wrap the selection in a new frame (no shortcut; also in the
+    /// selection's context menu).
+    WrapForEach,
+    WrapIf,
+    WrapCache,
+    WrapSection,
+    /// Dissolve the selected region, section or subpatch.
+    Unwrap,
     ToggleNodes,
     FitView,
     ZoomIn,
@@ -98,6 +106,11 @@ impl Command {
             Delete => "Delete",
             SelectAll => "Select All",
             Group => "Group into Subpatch",
+            WrapForEach => "Wrap in ForEach",
+            WrapIf => "Wrap in If",
+            WrapCache => "Wrap in Cache",
+            WrapSection => "Wrap in Section",
+            Unwrap => "Unwrap / Ungroup",
             ToggleNodes => "Nodes Panel",
             FitView => "Fit to View",
             ZoomIn => "Zoom In",
@@ -239,7 +252,13 @@ pub fn model(s: &MenuState) -> Vec<Section> {
         C(Delete),
         Sep,
         C(SelectAll),
+        Sep,
         C(Group),
+        C(WrapForEach),
+        C(WrapIf),
+        C(WrapCache),
+        C(WrapSection),
+        C(Unwrap),
     ];
     let view = vec![
         Item::Check(ToggleNodes, s.palette_visible),

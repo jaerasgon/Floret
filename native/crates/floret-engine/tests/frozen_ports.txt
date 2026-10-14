@@ -389,6 +389,7 @@ geometry/curve in center
 geometry/curve in count
 geometry/curve in d
 geometry/curve in inner
+geometry/curve in laps
 geometry/curve in m
 geometry/curve in n
 geometry/curve in n1
@@ -1139,6 +1140,11 @@ meta/comment param width
 meta/probe in in
 meta/probe node
 meta/probe out out
+meta/section node
+meta/section param color
+meta/section param height
+meta/section param label
+meta/section param width
 meta/subpatch node
 meta/subpatch param height
 meta/subpatch param label
@@ -1226,6 +1232,7 @@ noise/noise in pos
 noise/noise in radius
 noise/noise in scale
 noise/noise in seed
+noise/noise in step
 noise/noise in warp
 noise/noise in warpScale
 noise/noise in weight
@@ -1996,10 +2003,12 @@ spread/windows out windowSize
 state/read in init
 state/read node
 state/read out current
+state/read param name
 state/read param slot
 state/read-spread in init
 state/read-spread node
 state/read-spread out current
+state/read-spread param name
 state/read-spread param slot
 state/spread in init
 state/spread in next
@@ -2011,9 +2020,11 @@ state/value node
 state/value out current
 state/write in next
 state/write node
+state/write param name
 state/write param slot
 state/write-spread in next
 state/write-spread node
+state/write-spread param name
 state/write-spread param slot
 string/concat in parts
 string/concat in separator

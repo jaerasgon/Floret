@@ -16,12 +16,12 @@
         "y": -324
       },
       "params": {
-        "text": "Parallax valley\n\nA day in a mountain valley. Five ridges (noise along a line, closed into polygons) slide past at different speeds, nearer ones faster — parallax — and each is mixed toward the sky's horizon colour by its distance, so far ridges fade into the air (atmospheric perspective), with fog bands between them. The sun and moon cross on an arc; the sky gradient, the ridge colours and the stars all follow the sun's height. Birds are the Simulation node's flocking boids, tiny.\n\n• Slider into `tod`: the time of day (with the toggle off).  • Toggle: let the day run by itself (a minute a day).\n• Slider into `speed`: how fast you travel.  • Move the mouse sideways: look around (parallax).",
+        "text": "Parallax valley\n\nA day in a mountain valley. Five ridges (Ridge subpatches: two noise octaves along a line, closed into polygons) slide past at different speeds, nearer ones faster — parallax — and each is mixed toward the sky's horizon colour by its distance, so far ridges fade into the air (atmospheric perspective), with fog bands between them. The sun and moon cross on an arc (Sun and moon); an Integrate node moves the camera at your travel speed; the sky gradient, the ridge colours and the stars all follow the sun's height. Birds are the Simulation node's flocking boids, tiny.\n\n• Slider into `tod`: the time of day (with the toggle off).  • Toggle: let the day run by itself (a minute a day).\n• Slider into `speed`: how fast you travel.  • Move the mouse sideways: look around (parallax).",
         "width": 560,
         "height": 260
       },
       "portValues": {
-        "text": "Parallax valley\n\nA day in a mountain valley. Five ridges (noise along a line, closed into polygons) slide past at different speeds, nearer ones faster — parallax — and each is mixed toward the sky's horizon colour by its distance, so far ridges fade into the air (atmospheric perspective), with fog bands between them. The sun and moon cross on an arc; the sky gradient, the ridge colours and the stars all follow the sun's height. Birds are the Simulation node's flocking boids, tiny.\n\n• Slider into `tod`: the time of day (with the toggle off).  • Toggle: let the day run by itself (a minute a day).\n• Slider into `speed`: how fast you travel.  • Move the mouse sideways: look around (parallax).",
+        "text": "Parallax valley\n\nA day in a mountain valley. Five ridges (Ridge subpatches: two noise octaves along a line, closed into polygons) slide past at different speeds, nearer ones faster — parallax — and each is mixed toward the sky's horizon colour by its distance, so far ridges fade into the air (atmospheric perspective), with fog bands between them. The sun and moon cross on an arc (Sun and moon); an Integrate node moves the camera at your travel speed; the sky gradient, the ridge colours and the stars all follow the sun's height. Birds are the Simulation node's flocking boids, tiny.\n\n• Slider into `tod`: the time of day (with the toggle off).  • Toggle: let the day run by itself (a minute a day).\n• Slider into `speed`: how fast you travel.  • Move the mouse sideways: look around (parallax).",
         "width": 560,
         "height": 260
       }
@@ -30,8 +30,8 @@
       "id": "lnd_timeOfDay",
       "defType": "io/slider",
       "position": {
-        "x": 0,
-        "y": 583
+        "x": 264,
+        "y": 600
       },
       "params": {
         "value": 0.3,
@@ -48,8 +48,8 @@
       "id": "lnd_autoDay",
       "defType": "io/toggle",
       "position": {
-        "x": 0,
-        "y": 445
+        "x": 818,
+        "y": 469
       },
       "params": {
         "value": true
@@ -62,8 +62,8 @@
       "id": "lnd_travel",
       "defType": "io/slider",
       "position": {
-        "x": 0,
-        "y": 1362
+        "x": 2636,
+        "y": 1202
       },
       "params": {
         "value": 40,
@@ -80,154 +80,18 @@
       "id": "lnd_mouse",
       "defType": "input/mouse",
       "position": {
-        "x": 315,
-        "y": 1377
+        "x": 2672,
+        "y": 1367
       },
       "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "lnd_dt",
-      "defType": "time/delta",
-      "position": {
-        "x": 41,
-        "y": 1258
-      },
-      "params": {},
-      "portValues": {}
-    },
-    {
-      "id": "lnd_tod",
-      "defType": "math/expression",
-      "position": {
-        "x": 279,
-        "y": 483
-      },
-      "params": {
-        "expr": "a ? fract(s + t / 60) : s"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_sunHeight",
-      "defType": "math/expression",
-      "position": {
-        "x": 587,
-        "y": 781
-      },
-      "params": {
-        "expr": "sin((d - 0.25) * tau)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_daylight",
-      "defType": "math/expression",
-      "position": {
-        "x": 964,
-        "y": 1019
-      },
-      "params": {
-        "expr": "smoothstep(-0.25, 0.3, ev)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_dusk",
-      "defType": "math/expression",
-      "position": {
-        "x": 964,
-        "y": 1161
-      },
-      "params": {
-        "expr": "clamp(1 - abs(ev) * 3.2, 0, 1)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_rcam",
-      "defType": "state/read",
-      "position": {
-        "x": 12,
-        "y": 1132
-      },
-      "params": {
-        "slot": 1,
-        "init": 0
-      },
-      "portValues": {
-        "slot": 1,
-        "init": 0
-      }
-    },
-    {
-      "id": "lnd_camera",
-      "defType": "math/expression",
-      "position": {
-        "x": 279,
-        "y": 1191
-      },
-      "params": {
-        "expr": "c + min(dt, 0.05) * v"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_wcam",
-      "defType": "state/write",
-      "position": {
-        "x": 624,
-        "y": 1085
-      },
-      "params": {
-        "slot": 1
-      },
-      "portValues": {
-        "slot": 1
-      }
-    },
-    {
-      "id": "lnd_look",
-      "defType": "math/expression",
-      "position": {
-        "x": 587,
-        "y": 1315
-      },
-      "params": {
-        "expr": "c + mx * 0.6"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_skyTop",
-      "defType": "math/expression",
-      "position": {
-        "x": 1688,
-        "y": 0
-      },
-      "params": {
-        "expr": "mix(rgb(0.03, 0.04, 0.12), rgb(0.24, 0.48, 0.82), d)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_skyHorizon",
-      "defType": "math/expression",
-      "position": {
-        "x": 1688,
-        "y": 1076
-      },
-      "params": {
-        "expr": "mix(mix(rgb(0.08, 0.09, 0.2), rgb(0.72, 0.84, 0.95), d), rgb(0.98, 0.55, 0.38), k * 0.85)"
-      },
       "portValues": {}
     },
     {
       "id": "lnd_skyStops",
       "defType": "spread/merge",
       "position": {
-        "x": 2393,
-        "y": 335
+        "x": 4008,
+        "y": 356
       },
       "params": {
         "slotCount": 2
@@ -240,8 +104,8 @@
       "id": "lnd_skyGradient",
       "defType": "style/gradient",
       "position": {
-        "x": 3190,
-        "y": 170
+        "x": 4825,
+        "y": 196
       },
       "params": {
         "mode": "linear",
@@ -268,8 +132,8 @@
       "id": "lnd_sky",
       "defType": "draw/rect",
       "position": {
-        "x": 3517,
-        "y": 326
+        "x": 5086,
+        "y": 435
       },
       "params": {
         "anchor": "center"
@@ -288,8 +152,8 @@
       "id": "lnd_starPoints",
       "defType": "geometry/scatter",
       "position": {
-        "x": 948,
-        "y": 22
+        "x": 0,
+        "y": 29
       },
       "params": {
         "mode": "halton"
@@ -311,12 +175,12 @@
       "id": "lnd_stars",
       "defType": "region/foreach",
       "position": {
-        "x": 1364,
-        "y": 175
+        "x": 3224,
+        "y": 210
       },
       "params": {
-        "width": 816,
-        "height": 349,
+        "width": 551,
+        "height": 280,
         "label": "ForEach star"
       },
       "ports": [
@@ -325,51 +189,39 @@
           "name": "p",
           "type": "vec2",
           "direction": "input",
-          "y": 118
+          "y": 76
         },
         {
           "id": "l",
           "name": "layer",
           "type": "layer",
           "direction": "output",
-          "y": 80
+          "y": 167
+        },
+        {
+          "id": "c",
+          "name": "colour",
+          "type": "color",
+          "direction": "input",
+          "y": 137
+        },
+        {
+          "id": "w",
+          "name": "size",
+          "type": "number",
+          "direction": "input",
+          "y": 159
         }
       ],
-      "width": 816,
-      "height": 349
-    },
-    {
-      "id": "lnd_twinkle",
-      "defType": "math/expression",
-      "position": {
-        "x": 141,
-        "y": 40
-      },
-      "params": {
-        "expr": "rgb(1, 1, 1, (1 - d) * (0.35 + 0.65 * noise(p.x * 0.5 + 0.17, t * 1.5)))"
-      },
-      "parentId": "lnd_stars",
-      "portValues": {}
-    },
-    {
-      "id": "lnd_starSize",
-      "defType": "math/expression",
-      "position": {
-        "x": 141,
-        "y": 215
-      },
-      "params": {
-        "expr": "1 + 1.6 * fract(p.y * 13.17)"
-      },
-      "parentId": "lnd_stars",
-      "portValues": {}
+      "width": 551,
+      "height": 280
     },
     {
       "id": "lnd_starStroke",
       "defType": "style/stroke",
       "position": {
-        "x": 420,
-        "y": 128
+        "x": 128,
+        "y": 100
       },
       "params": {},
       "parentId": "lnd_stars",
@@ -379,55 +231,19 @@
       "id": "lnd_star",
       "defType": "draw/point",
       "position": {
-        "x": 619,
-        "y": 43
+        "x": 354,
+        "y": 82
       },
       "params": {},
       "parentId": "lnd_stars",
       "portValues": {}
     },
     {
-      "id": "lnd_sunPos",
-      "defType": "math/expression",
-      "position": {
-        "x": 1688,
-        "y": 572
-      },
-      "params": {
-        "expr": "vec2(-cos((d - 0.25) * tau) * 330, 140 - sin((d - 0.25) * tau) * 360)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_moonPos",
-      "defType": "math/expression",
-      "position": {
-        "x": 587,
-        "y": 260
-      },
-      "params": {
-        "expr": "vec2(cos((d - 0.25) * tau) * 330, 140 + sin((d - 0.25) * tau) * 360)"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_sunColour",
-      "defType": "math/expression",
-      "position": {
-        "x": 964,
-        "y": 450
-      },
-      "params": {
-        "expr": "mix(rgb(1, 0.55, 0.3), rgb(1, 0.96, 0.85), clamp(ev * 2, 0, 1))"
-      },
-      "portValues": {}
-    },
-    {
       "id": "lnd_sunFill",
       "defType": "style/fill",
       "position": {
-        "x": 1729,
-        "y": 725
+        "x": 2678,
+        "y": 626
       },
       "params": {},
       "portValues": {}
@@ -436,8 +252,8 @@
       "id": "lnd_sun",
       "defType": "draw/ellipse",
       "position": {
-        "x": 2428,
-        "y": 493
+        "x": 2945,
+        "y": 475
       },
       "params": {},
       "portValues": {
@@ -449,8 +265,8 @@
       "id": "lnd_sunGlow",
       "defType": "gpu/effect",
       "position": {
-        "x": 3487,
-        "y": 550
+        "x": 5081,
+        "y": 676
       },
       "params": {
         "mode": "glow",
@@ -471,8 +287,8 @@
       "id": "lnd_moonFill",
       "defType": "style/fill",
       "position": {
-        "x": 604,
-        "y": 413
+        "x": 1376,
+        "y": 483
       },
       "params": {},
       "portValues": {
@@ -488,8 +304,8 @@
       "id": "lnd_moon",
       "defType": "draw/ellipse",
       "position": {
-        "x": 999,
-        "y": 258
+        "x": 1697,
+        "y": 442
       },
       "params": {},
       "portValues": {
@@ -501,8 +317,8 @@
       "id": "lnd_birdFill",
       "defType": "style/fill",
       "position": {
-        "x": 2907,
-        "y": 583
+        "x": 4555,
+        "y": 591
       },
       "params": {},
       "portValues": {
@@ -518,8 +334,8 @@
       "id": "lnd_birds",
       "defType": "particles/simulation",
       "position": {
-        "x": 3184,
-        "y": 514
+        "x": 4824,
+        "y": 557
       },
       "params": {
         "mode": "flocking"
@@ -541,8 +357,8 @@
       "id": "lnd_birdsUp",
       "defType": "transform/translate",
       "position": {
-        "x": 3511,
-        "y": 786
+        "x": 5093,
+        "y": 930
       },
       "params": {},
       "portValues": {
@@ -556,46 +372,22 @@
       "id": "lnd_ridgeX",
       "defType": "spread/range",
       "position": {
-        "x": 602,
-        "y": 1211
+        "x": 2651,
+        "y": 1080
       },
       "params": {
-        "count": 102
+        "count": 100
       },
       "portValues": {
-        "count": 102
+        "count": 100
       }
-    },
-    {
-      "id": "lnd_ridge0Points",
-      "defType": "math/expression",
-      "position": {
-        "x": 964,
-        "y": 603
-      },
-      "params": {
-        "expr": "index == 100 ? vec2(400.0, 260.0) : (index == 101 ? vec2(-400.0, 260.0) : vec2(-400.0 + i * 8.080808080808081, 40 - 150 * (noise((-400.0 + i * 8.080808080808081 + c * 0.12) * 0.0028, 0.5) + 0.35 * noise((-400.0 + i * 8.080808080808081 + c * 0.12) * 0.00868, 9.2))))"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_ridge0Colour",
-      "defType": "math/expression",
-      "position": {
-        "x": 2393,
-        "y": 685
-      },
-      "params": {
-        "expr": "mix(mix(rgb(0.110, 0.137, 0.251), rgb(0.490, 0.576, 0.710), d), h, 0.63)"
-      },
-      "portValues": {}
     },
     {
       "id": "lnd_ridge0Fill",
       "defType": "style/fill",
       "position": {
-        "x": 2684,
-        "y": 743
+        "x": 4317,
+        "y": 735
       },
       "params": {},
       "portValues": {}
@@ -604,8 +396,8 @@
       "id": "lnd_ridge0",
       "defType": "draw/polygon",
       "position": {
-        "x": 2923,
-        "y": 709
+        "x": 4562,
+        "y": 735
       },
       "params": {},
       "portValues": {
@@ -613,35 +405,11 @@
       }
     },
     {
-      "id": "lnd_ridge1Points",
-      "defType": "math/expression",
-      "position": {
-        "x": 964,
-        "y": 811
-      },
-      "params": {
-        "expr": "index == 100 ? vec2(400.0, 260.0) : (index == 101 ? vec2(-400.0, 260.0) : vec2(-400.0 + i * 8.080808080808081, 80 - 120 * (noise((-400.0 + i * 8.080808080808081 + c * 0.25) * 0.004, 7.8) + 0.35 * noise((-400.0 + i * 8.080808080808081 + c * 0.25) * 0.012400000000000001, 12.299999999999999))))"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_ridge1Colour",
-      "defType": "math/expression",
-      "position": {
-        "x": 2393,
-        "y": 860
-      },
-      "params": {
-        "expr": "mix(mix(rgb(0.090, 0.114, 0.212), rgb(0.373, 0.478, 0.612), d), h, 0.49250000000000005)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "lnd_ridge1Fill",
       "defType": "style/fill",
       "position": {
-        "x": 2684,
-        "y": 869
+        "x": 4317,
+        "y": 879
       },
       "params": {},
       "portValues": {}
@@ -650,8 +418,8 @@
       "id": "lnd_ridge1",
       "defType": "draw/polygon",
       "position": {
-        "x": 2923,
-        "y": 879
+        "x": 4562,
+        "y": 922
       },
       "params": {},
       "portValues": {
@@ -659,23 +427,11 @@
       }
     },
     {
-      "id": "lnd_fog1Colour",
-      "defType": "math/expression",
-      "position": {
-        "x": 2393,
-        "y": 1046
-      },
-      "params": {
-        "expr": "mix(h, rgb(1, 1, 1), 0.15)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "lnd_fog1Clear",
       "defType": "color/set-alpha",
       "position": {
-        "x": 2672,
-        "y": 995
+        "x": 4304,
+        "y": 1022
       },
       "params": {},
       "portValues": {
@@ -686,8 +442,8 @@
       "id": "lnd_fog1Mist",
       "defType": "color/set-alpha",
       "position": {
-        "x": 2672,
-        "y": 1121
+        "x": 4304,
+        "y": 1166
       },
       "params": {},
       "portValues": {
@@ -698,8 +454,8 @@
       "id": "lnd_fog1Stops",
       "defType": "spread/merge",
       "position": {
-        "x": 2890,
-        "y": 1049
+        "x": 4530,
+        "y": 1110
       },
       "params": {
         "slotCount": 2
@@ -712,8 +468,8 @@
       "id": "lnd_fog1Gradient",
       "defType": "style/gradient",
       "position": {
-        "x": 3190,
-        "y": 980
+        "x": 4825,
+        "y": 1123
       },
       "params": {
         "mode": "linear",
@@ -740,8 +496,8 @@
       "id": "lnd_fog1",
       "defType": "draw/rect",
       "position": {
-        "x": 3511,
-        "y": 944
+        "x": 5086,
+        "y": 1105
       },
       "params": {
         "anchor": "center"
@@ -757,35 +513,11 @@
       }
     },
     {
-      "id": "lnd_ridge2Points",
-      "defType": "math/expression",
-      "position": {
-        "x": 964,
-        "y": 1303
-      },
-      "params": {
-        "expr": "index == 100 ? vec2(400.0, 260.0) : (index == 101 ? vec2(-400.0, 260.0) : vec2(-400.0 + i * 8.080808080808081, 125 - 95 * (noise((-400.0 + i * 8.080808080808081 + c * 0.45) * 0.0058, 15.1) + 0.35 * noise((-400.0 + i * 8.080808080808081 + c * 0.45) * 0.01798, 15.399999999999999))))"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_ridge2Colour",
-      "defType": "math/expression",
-      "position": {
-        "x": 2393,
-        "y": 1188
-      },
-      "params": {
-        "expr": "mix(mix(rgb(0.071, 0.090, 0.188), rgb(0.278, 0.396, 0.522), d), h, 0.35500000000000004)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "lnd_ridge2Fill",
       "defType": "style/fill",
       "position": {
-        "x": 2684,
-        "y": 1247
+        "x": 4317,
+        "y": 1309
       },
       "params": {},
       "portValues": {}
@@ -794,8 +526,8 @@
       "id": "lnd_ridge2",
       "defType": "draw/polygon",
       "position": {
-        "x": 2923,
-        "y": 1175
+        "x": 4562,
+        "y": 1253
       },
       "params": {},
       "portValues": {
@@ -803,35 +535,11 @@
       }
     },
     {
-      "id": "lnd_ridge3Points",
-      "defType": "math/expression",
-      "position": {
-        "x": 964,
-        "y": 1511
-      },
-      "params": {
-        "expr": "index == 100 ? vec2(400.0, 260.0) : (index == 101 ? vec2(-400.0, 260.0) : vec2(-400.0 + i * 8.080808080808081, 170 - 80 * (noise((-400.0 + i * 8.080808080808081 + c * 0.7) * 0.008, 22.4) + 0.35 * noise((-400.0 + i * 8.080808080808081 + c * 0.7) * 0.024800000000000003, 18.5))))"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_ridge3Colour",
-      "defType": "math/expression",
-      "position": {
-        "x": 2393,
-        "y": 1374
-      },
-      "params": {
-        "expr": "mix(mix(rgb(0.051, 0.067, 0.149), rgb(0.184, 0.290, 0.361), d), h, 0.21750000000000003)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "lnd_ridge3Fill",
       "defType": "style/fill",
       "position": {
-        "x": 2684,
-        "y": 1373
+        "x": 4317,
+        "y": 1453
       },
       "params": {},
       "portValues": {}
@@ -840,8 +548,8 @@
       "id": "lnd_ridge3",
       "defType": "draw/polygon",
       "position": {
-        "x": 2923,
-        "y": 1345
+        "x": 4562,
+        "y": 1441
       },
       "params": {},
       "portValues": {
@@ -849,23 +557,11 @@
       }
     },
     {
-      "id": "lnd_fog3Colour",
-      "defType": "math/expression",
-      "position": {
-        "x": 2393,
-        "y": 1560
-      },
-      "params": {
-        "expr": "mix(h, rgb(1, 1, 1), 0.15)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "lnd_fog3Clear",
       "defType": "color/set-alpha",
       "position": {
-        "x": 2672,
-        "y": 1499
+        "x": 4304,
+        "y": 1596
       },
       "params": {},
       "portValues": {
@@ -876,8 +572,8 @@
       "id": "lnd_fog3Mist",
       "defType": "color/set-alpha",
       "position": {
-        "x": 2672,
-        "y": 1625
+        "x": 4304,
+        "y": 1740
       },
       "params": {},
       "portValues": {
@@ -888,8 +584,8 @@
       "id": "lnd_fog3Stops",
       "defType": "spread/merge",
       "position": {
-        "x": 2890,
-        "y": 1515
+        "x": 4530,
+        "y": 1628
       },
       "params": {
         "slotCount": 2
@@ -902,8 +598,8 @@
       "id": "lnd_fog3Gradient",
       "defType": "style/gradient",
       "position": {
-        "x": 3190,
-        "y": 1292
+        "x": 4825,
+        "y": 1453
       },
       "params": {
         "mode": "linear",
@@ -930,8 +626,8 @@
       "id": "lnd_fog3",
       "defType": "draw/rect",
       "position": {
-        "x": 3511,
-        "y": 1168
+        "x": 5086,
+        "y": 1347
       },
       "params": {
         "anchor": "center"
@@ -947,35 +643,11 @@
       }
     },
     {
-      "id": "lnd_ridge4Points",
-      "defType": "math/expression",
-      "position": {
-        "x": 964,
-        "y": 1719
-      },
-      "params": {
-        "expr": "index == 100 ? vec2(400.0, 260.0) : (index == 101 ? vec2(-400.0, 260.0) : vec2(-400.0 + i * 8.080808080808081, 215 - 70 * (noise((-400.0 + i * 8.080808080808081 + c * 1.0) * 0.011, 29.7) + 0.35 * noise((-400.0 + i * 8.080808080808081 + c * 1.0) * 0.0341, 21.6))))"
-      },
-      "portValues": {}
-    },
-    {
-      "id": "lnd_ridge4Colour",
-      "defType": "math/expression",
-      "position": {
-        "x": 2393,
-        "y": 1702
-      },
-      "params": {
-        "expr": "mix(mix(rgb(0.031, 0.043, 0.102), rgb(0.118, 0.188, 0.220), d), h, 0.08)"
-      },
-      "portValues": {}
-    },
-    {
       "id": "lnd_ridge4Fill",
       "defType": "style/fill",
       "position": {
-        "x": 2684,
-        "y": 1751
+        "x": 4317,
+        "y": 1883
       },
       "params": {},
       "portValues": {}
@@ -984,8 +656,8 @@
       "id": "lnd_ridge4",
       "defType": "draw/polygon",
       "position": {
-        "x": 2923,
-        "y": 1641
+        "x": 4562,
+        "y": 1772
       },
       "params": {},
       "portValues": {
@@ -996,8 +668,8 @@
       "id": "lnd_scene",
       "defType": "transform/group",
       "position": {
-        "x": 3811,
-        "y": 722
+        "x": 5365,
+        "y": 906
       },
       "params": {
         "slotCount": 12
@@ -1008,8 +680,8 @@
       "id": "lnd_r",
       "defType": "render/renderer",
       "position": {
-        "x": 4075,
-        "y": 722
+        "x": 5629,
+        "y": 1173
       },
       "params": {
         "width": 760,
@@ -1031,708 +703,4065 @@
           "a": 1.0
         }
       }
+    },
+    {
+      "id": "lnd_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 37,
+        "y": 397
+      },
+      "params": {}
+    },
+    {
+      "id": "lnd_divide",
+      "defType": "math/math",
+      "position": {
+        "x": 264,
+        "y": 434
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 60
+      }
+    },
+    {
+      "id": "lnd_add",
+      "defType": "math/math",
+      "position": {
+        "x": 541,
+        "y": 549
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "lnd_dayRuns",
+      "defType": "math/math",
+      "position": {
+        "x": 846,
+        "y": 602
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "lnd_tod",
+      "defType": "logic/select",
+      "position": {
+        "x": 1127,
+        "y": 604
+      },
+      "params": {}
+    },
+    {
+      "id": "lnd_sunArc",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 1341,
+        "y": 666
+      },
+      "params": {
+        "label": "Sun and moon",
+        "width": 1654,
+        "height": 732
+      },
+      "ports": [
+        {
+          "id": "d",
+          "name": "time of day",
+          "type": "number",
+          "direction": "input",
+          "y": 313
+        },
+        {
+          "id": "height",
+          "name": "sun height",
+          "type": "number",
+          "direction": "output",
+          "y": 678
+        },
+        {
+          "id": "sun",
+          "name": "sun",
+          "type": "vec2",
+          "direction": "output",
+          "y": 265
+        },
+        {
+          "id": "moon",
+          "name": "moon",
+          "type": "vec2",
+          "direction": "output",
+          "y": 596
+        }
+      ],
+      "width": 1654,
+      "height": 732
+    },
+    {
+      "id": "lnd_subtract",
+      "defType": "math/math",
+      "position": {
+        "x": 128,
+        "y": 254
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "lnd_sunArc",
+      "portValues": {
+        "b": 0.25
+      }
+    },
+    {
+      "id": "lnd_multiply",
+      "defType": "math/math",
+      "position": {
+        "x": 392,
+        "y": 301
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_sunArc",
+      "portValues": {
+        "b": 6.283185307179586
+      }
+    },
+    {
+      "id": "lnd_sunUp",
+      "defType": "math/math",
+      "position": {
+        "x": 667,
+        "y": 420
+      },
+      "params": {
+        "op": "sin",
+        "valueType": "number"
+      },
+      "parentId": "lnd_sunArc"
+    },
+    {
+      "id": "lnd_sunAcross",
+      "defType": "math/math",
+      "position": {
+        "x": 667,
+        "y": 277
+      },
+      "params": {
+        "op": "cos",
+        "valueType": "number"
+      },
+      "parentId": "lnd_sunArc"
+    },
+    {
+      "id": "lnd_negate",
+      "defType": "math/math",
+      "position": {
+        "x": 927,
+        "y": 137
+      },
+      "params": {
+        "op": "negate",
+        "valueType": "number"
+      },
+      "parentId": "lnd_sunArc"
+    },
+    {
+      "id": "lnd_multiply2",
+      "defType": "math/math",
+      "position": {
+        "x": 1182,
+        "y": 40
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_sunArc",
+      "portValues": {
+        "b": 330
+      }
+    },
+    {
+      "id": "lnd_multiply3",
+      "defType": "math/math",
+      "position": {
+        "x": 899,
+        "y": 281
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_sunArc",
+      "portValues": {
+        "b": 360
+      }
+    },
+    {
+      "id": "lnd_subtract2",
+      "defType": "math/math",
+      "position": {
+        "x": 1182,
+        "y": 206
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "lnd_sunArc",
+      "portValues": {
+        "a": 140
+      }
+    },
+    {
+      "id": "lnd_sunPos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1457,
+        "y": 181
+      },
+      "params": {},
+      "parentId": "lnd_sunArc"
+    },
+    {
+      "id": "lnd_multiply4",
+      "defType": "math/math",
+      "position": {
+        "x": 1182,
+        "y": 371
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_sunArc",
+      "portValues": {
+        "b": 330
+      }
+    },
+    {
+      "id": "lnd_multiply5",
+      "defType": "math/math",
+      "position": {
+        "x": 899,
+        "y": 459
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_sunArc",
+      "portValues": {
+        "b": 360
+      }
+    },
+    {
+      "id": "lnd_add2",
+      "defType": "math/math",
+      "position": {
+        "x": 1182,
+        "y": 537
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "lnd_sunArc",
+      "portValues": {
+        "a": 140
+      }
+    },
+    {
+      "id": "lnd_moonPos",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1457,
+        "y": 512
+      },
+      "params": {},
+      "parentId": "lnd_sunArc"
+    },
+    {
+      "id": "lnd_daylight",
+      "defType": "math/smoothstep",
+      "position": {
+        "x": 1696,
+        "y": 817
+      },
+      "params": {
+        "mode": "step"
+      },
+      "portValues": {
+        "edge0": -0.25,
+        "edge1": 0.3
+      }
+    },
+    {
+      "id": "lnd_sunLow",
+      "defType": "math/math",
+      "position": {
+        "x": 1703,
+        "y": 1004
+      },
+      "params": {
+        "op": "abs",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "lnd_multiply6",
+      "defType": "math/math",
+      "position": {
+        "x": 2055,
+        "y": 982
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 3.2
+      }
+    },
+    {
+      "id": "lnd_subtract3",
+      "defType": "math/math",
+      "position": {
+        "x": 2345,
+        "y": 932
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "lnd_dusk",
+      "defType": "math/clamp",
+      "position": {
+        "x": 2673,
+        "y": 915
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "portValues": {
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "lnd_camera",
+      "defType": "motion/integrate",
+      "position": {
+        "x": 2952,
+        "y": 1235
+      },
+      "params": {
+        "limit": "none",
+        "valueType": "number"
+      },
+      "portValues": {
+        "start": 0,
+        "maxDt": 0.05
+      }
+    },
+    {
+      "id": "lnd_multiply7",
+      "defType": "math/math",
+      "position": {
+        "x": 2922,
+        "y": 1483
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.6
+      }
+    },
+    {
+      "id": "lnd_add3",
+      "defType": "math/math",
+      "position": {
+        "x": 3415,
+        "y": 1260
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "lnd_skyTop",
+      "defType": "color/lerp",
+      "position": {
+        "x": 3443,
+        "y": 0
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "portValues": {
+        "a": {
+          "r": 0.03,
+          "g": 0.04,
+          "b": 0.12,
+          "a": 1.0
+        },
+        "b": {
+          "r": 0.24,
+          "g": 0.48,
+          "b": 0.82,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "lnd_horizonDay",
+      "defType": "color/lerp",
+      "position": {
+        "x": 2950,
+        "y": 716
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "portValues": {
+        "a": {
+          "r": 0.08,
+          "g": 0.09,
+          "b": 0.2,
+          "a": 1.0
+        },
+        "b": {
+          "r": 0.72,
+          "g": 0.84,
+          "b": 0.95,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "lnd_multiply8",
+      "defType": "math/math",
+      "position": {
+        "x": 2922,
+        "y": 904
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.85
+      }
+    },
+    {
+      "id": "lnd_skyHorizon",
+      "defType": "color/lerp",
+      "position": {
+        "x": 3443,
+        "y": 907
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "portValues": {
+        "b": {
+          "r": 0.98,
+          "g": 0.55,
+          "b": 0.38,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "lnd_multiply9",
+      "defType": "math/math",
+      "position": {
+        "x": 1675,
+        "y": 651
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 2
+      }
+    },
+    {
+      "id": "lnd_sunWhite",
+      "defType": "math/clamp",
+      "position": {
+        "x": 2093,
+        "y": 753
+      },
+      "params": {
+        "valueType": "number"
+      },
+      "portValues": {
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "id": "lnd_sunColour",
+      "defType": "color/lerp",
+      "position": {
+        "x": 2373,
+        "y": 663
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "portValues": {
+        "a": {
+          "r": 1,
+          "g": 0.55,
+          "b": 0.3,
+          "a": 1.0
+        },
+        "b": {
+          "r": 1,
+          "g": 0.96,
+          "b": 0.85,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "lnd_split",
+      "defType": "vec2/split",
+      "position": {
+        "x": 306,
+        "y": 253
+      },
+      "params": {}
+    },
+    {
+      "id": "lnd_multiply10",
+      "defType": "math/math",
+      "position": {
+        "x": 541,
+        "y": 177
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.5
+      }
+    },
+    {
+      "id": "lnd_add4",
+      "defType": "math/math",
+      "position": {
+        "x": 818,
+        "y": 138
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 0.17
+      }
+    },
+    {
+      "id": "lnd_multiply11",
+      "defType": "math/math",
+      "position": {
+        "x": 818,
+        "y": 303
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 1.5
+      }
+    },
+    {
+      "id": "lnd_flicker",
+      "defType": "noise/noise",
+      "position": {
+        "x": 1107,
+        "y": 143
+      },
+      "params": {
+        "mode": "perlin"
+      }
+    },
+    {
+      "id": "lnd_subtract4",
+      "defType": "math/math",
+      "position": {
+        "x": 2055,
+        "y": 224
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "lnd_multiply12",
+      "defType": "math/math",
+      "position": {
+        "x": 1675,
+        "y": 276
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 0.65
+      }
+    },
+    {
+      "id": "lnd_add5",
+      "defType": "math/math",
+      "position": {
+        "x": 2055,
+        "y": 390
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 0.35
+      }
+    },
+    {
+      "id": "lnd_multiply13",
+      "defType": "math/math",
+      "position": {
+        "x": 2345,
+        "y": 288
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "lnd_multiply14",
+      "defType": "math/math",
+      "position": {
+        "x": 2636,
+        "y": 223
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 255
+      }
+    },
+    {
+      "id": "lnd_twinkle",
+      "defType": "color/set-alpha",
+      "position": {
+        "x": 2948,
+        "y": 166
+      },
+      "params": {},
+      "portValues": {
+        "color": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "lnd_multiply15",
+      "defType": "math/math",
+      "position": {
+        "x": 2055,
+        "y": 555
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 13.17
+      }
+    },
+    {
+      "id": "lnd_starSizeHash",
+      "defType": "math/math",
+      "position": {
+        "x": 2373,
+        "y": 488
+      },
+      "params": {
+        "op": "fract",
+        "valueType": "number"
+      }
+    },
+    {
+      "id": "lnd_multiply16",
+      "defType": "math/math",
+      "position": {
+        "x": 2636,
+        "y": 389
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1.6
+      }
+    },
+    {
+      "id": "lnd_add6",
+      "defType": "math/math",
+      "position": {
+        "x": 2922,
+        "y": 309
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": 1
+      }
+    },
+    {
+      "id": "lnd_multiply17",
+      "defType": "math/math",
+      "position": {
+        "x": 2922,
+        "y": 1069
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "portValues": {
+        "b": 8.080808080808081
+      }
+    },
+    {
+      "id": "lnd_add7",
+      "defType": "math/math",
+      "position": {
+        "x": 3415,
+        "y": 1094
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "portValues": {
+        "a": -400.0
+      }
+    },
+    {
+      "id": "lnd_ridge02",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 3991,
+        "y": 564
+      },
+      "params": {
+        "label": "Ridge 1 · farthest",
+        "width": 2972,
+        "height": 607
+      },
+      "ports": [
+        {
+          "id": "x",
+          "name": "x along",
+          "type": "number",
+          "direction": "input",
+          "y": 117
+        },
+        {
+          "id": "look",
+          "name": "look",
+          "type": "number",
+          "direction": "input",
+          "y": 195
+        },
+        {
+          "id": "d",
+          "name": "daylight",
+          "type": "number",
+          "direction": "input",
+          "y": 451
+        },
+        {
+          "id": "h",
+          "name": "horizon",
+          "type": "color",
+          "direction": "input",
+          "y": 511
+        },
+        {
+          "id": "points",
+          "name": "outline",
+          "type": "vec2",
+          "direction": "output",
+          "y": 308
+        },
+        {
+          "id": "colour",
+          "name": "colour",
+          "type": "color",
+          "direction": "output",
+          "y": 470
+        }
+      ],
+      "width": 2972,
+      "height": 607
+    },
+    {
+      "id": "lnd_multiply18",
+      "defType": "math/math",
+      "position": {
+        "x": 131,
+        "y": 136
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge02",
+      "portValues": {
+        "b": 0.12
+      }
+    },
+    {
+      "id": "lnd_add8",
+      "defType": "math/math",
+      "position": {
+        "x": 407,
+        "y": 79
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge02"
+    },
+    {
+      "id": "lnd_multiply19",
+      "defType": "math/math",
+      "position": {
+        "x": 947,
+        "y": 47
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge02",
+      "portValues": {
+        "b": 0.0028
+      }
+    },
+    {
+      "id": "lnd_ridge0Shape",
+      "defType": "noise/noise",
+      "position": {
+        "x": 1233,
+        "y": 40
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "lnd_ridge02",
+      "portValues": {
+        "y": 0.5
+      }
+    },
+    {
+      "id": "lnd_multiply20",
+      "defType": "math/math",
+      "position": {
+        "x": 678,
+        "y": 165
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge02",
+      "portValues": {
+        "b": 0.00868
+      }
+    },
+    {
+      "id": "lnd_ridge0Detail",
+      "defType": "noise/noise",
+      "position": {
+        "x": 964,
+        "y": 213
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "lnd_ridge02",
+      "portValues": {
+        "y": 9.2
+      }
+    },
+    {
+      "id": "lnd_multiply21",
+      "defType": "math/math",
+      "position": {
+        "x": 1216,
+        "y": 415
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge02",
+      "portValues": {
+        "a": 0.35
+      }
+    },
+    {
+      "id": "lnd_add9",
+      "defType": "math/math",
+      "position": {
+        "x": 1500,
+        "y": 305
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge02"
+    },
+    {
+      "id": "lnd_multiply22",
+      "defType": "math/math",
+      "position": {
+        "x": 1778,
+        "y": 240
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge02",
+      "portValues": {
+        "a": 150.0
+      }
+    },
+    {
+      "id": "lnd_subtract5",
+      "defType": "math/math",
+      "position": {
+        "x": 2055,
+        "y": 176
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge02",
+      "portValues": {
+        "a": 40.0
+      }
+    },
+    {
+      "id": "lnd_ridge0Line",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2332,
+        "y": 136
+      },
+      "params": {},
+      "parentId": "lnd_ridge02"
+    },
+    {
+      "id": "lnd_ridge0CornerR",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2515,
+        "y": 158
+      },
+      "params": {
+        "op": "append"
+      },
+      "parentId": "lnd_ridge02",
+      "portValues": {
+        "tail": {
+          "x": 400.0,
+          "y": 260.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge0CornerL",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2736,
+        "y": 203
+      },
+      "params": {
+        "op": "append"
+      },
+      "parentId": "lnd_ridge02",
+      "portValues": {
+        "tail": {
+          "x": -400.0,
+          "y": 260.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge0Lit",
+      "defType": "color/lerp",
+      "position": {
+        "x": 159,
+        "y": 348
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "parentId": "lnd_ridge02",
+      "portValues": {
+        "a": {
+          "r": 0.11,
+          "g": 0.137,
+          "b": 0.251,
+          "a": 1.0
+        },
+        "b": {
+          "r": 0.49,
+          "g": 0.576,
+          "b": 0.71,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge0Haze",
+      "defType": "color/lerp",
+      "position": {
+        "x": 435,
+        "y": 427
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "parentId": "lnd_ridge02",
+      "portValues": {
+        "t": 0.63
+      }
+    },
+    {
+      "id": "lnd_ridge12",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 4005,
+        "y": 768
+      },
+      "params": {
+        "label": "Ridge 2 · far",
+        "width": 2972,
+        "height": 607
+      },
+      "ports": [
+        {
+          "id": "x",
+          "name": "x along",
+          "type": "number",
+          "direction": "input",
+          "y": 117
+        },
+        {
+          "id": "look",
+          "name": "look",
+          "type": "number",
+          "direction": "input",
+          "y": 195
+        },
+        {
+          "id": "d",
+          "name": "daylight",
+          "type": "number",
+          "direction": "input",
+          "y": 451
+        },
+        {
+          "id": "h",
+          "name": "horizon",
+          "type": "color",
+          "direction": "input",
+          "y": 511
+        },
+        {
+          "id": "points",
+          "name": "outline",
+          "type": "vec2",
+          "direction": "output",
+          "y": 308
+        },
+        {
+          "id": "colour",
+          "name": "colour",
+          "type": "color",
+          "direction": "output",
+          "y": 470
+        }
+      ],
+      "width": 2972,
+      "height": 607
+    },
+    {
+      "id": "lnd_multiply23",
+      "defType": "math/math",
+      "position": {
+        "x": 131,
+        "y": 136
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge12",
+      "portValues": {
+        "b": 0.25
+      }
+    },
+    {
+      "id": "lnd_add10",
+      "defType": "math/math",
+      "position": {
+        "x": 407,
+        "y": 79
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge12"
+    },
+    {
+      "id": "lnd_multiply24",
+      "defType": "math/math",
+      "position": {
+        "x": 947,
+        "y": 47
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge12",
+      "portValues": {
+        "b": 0.004
+      }
+    },
+    {
+      "id": "lnd_ridge1Shape",
+      "defType": "noise/noise",
+      "position": {
+        "x": 1233,
+        "y": 40
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "lnd_ridge12",
+      "portValues": {
+        "y": 7.8
+      }
+    },
+    {
+      "id": "lnd_multiply25",
+      "defType": "math/math",
+      "position": {
+        "x": 678,
+        "y": 165
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge12",
+      "portValues": {
+        "b": 0.012400000000000001
+      }
+    },
+    {
+      "id": "lnd_ridge1Detail",
+      "defType": "noise/noise",
+      "position": {
+        "x": 964,
+        "y": 213
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "lnd_ridge12",
+      "portValues": {
+        "y": 12.299999999999999
+      }
+    },
+    {
+      "id": "lnd_multiply26",
+      "defType": "math/math",
+      "position": {
+        "x": 1216,
+        "y": 415
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge12",
+      "portValues": {
+        "a": 0.35
+      }
+    },
+    {
+      "id": "lnd_add11",
+      "defType": "math/math",
+      "position": {
+        "x": 1500,
+        "y": 305
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge12"
+    },
+    {
+      "id": "lnd_multiply27",
+      "defType": "math/math",
+      "position": {
+        "x": 1778,
+        "y": 240
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge12",
+      "portValues": {
+        "a": 120.0
+      }
+    },
+    {
+      "id": "lnd_subtract6",
+      "defType": "math/math",
+      "position": {
+        "x": 2055,
+        "y": 176
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge12",
+      "portValues": {
+        "a": 80.0
+      }
+    },
+    {
+      "id": "lnd_ridge1Line",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2332,
+        "y": 136
+      },
+      "params": {},
+      "parentId": "lnd_ridge12"
+    },
+    {
+      "id": "lnd_ridge1CornerR",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2515,
+        "y": 158
+      },
+      "params": {
+        "op": "append"
+      },
+      "parentId": "lnd_ridge12",
+      "portValues": {
+        "tail": {
+          "x": 400.0,
+          "y": 260.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge1CornerL",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2736,
+        "y": 203
+      },
+      "params": {
+        "op": "append"
+      },
+      "parentId": "lnd_ridge12",
+      "portValues": {
+        "tail": {
+          "x": -400.0,
+          "y": 260.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge1Lit",
+      "defType": "color/lerp",
+      "position": {
+        "x": 159,
+        "y": 348
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "parentId": "lnd_ridge12",
+      "portValues": {
+        "a": {
+          "r": 0.09,
+          "g": 0.114,
+          "b": 0.212,
+          "a": 1.0
+        },
+        "b": {
+          "r": 0.373,
+          "g": 0.478,
+          "b": 0.612,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge1Haze",
+      "defType": "color/lerp",
+      "position": {
+        "x": 435,
+        "y": 427
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "parentId": "lnd_ridge12",
+      "portValues": {
+        "t": 0.49250000000000005
+      }
+    },
+    {
+      "id": "lnd_ridge22",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 3993,
+        "y": 1159
+      },
+      "params": {
+        "label": "Ridge 3 · middle",
+        "width": 2972,
+        "height": 607
+      },
+      "ports": [
+        {
+          "id": "x",
+          "name": "x along",
+          "type": "number",
+          "direction": "input",
+          "y": 117
+        },
+        {
+          "id": "look",
+          "name": "look",
+          "type": "number",
+          "direction": "input",
+          "y": 195
+        },
+        {
+          "id": "d",
+          "name": "daylight",
+          "type": "number",
+          "direction": "input",
+          "y": 451
+        },
+        {
+          "id": "h",
+          "name": "horizon",
+          "type": "color",
+          "direction": "input",
+          "y": 511
+        },
+        {
+          "id": "points",
+          "name": "outline",
+          "type": "vec2",
+          "direction": "output",
+          "y": 308
+        },
+        {
+          "id": "colour",
+          "name": "colour",
+          "type": "color",
+          "direction": "output",
+          "y": 470
+        }
+      ],
+      "width": 2972,
+      "height": 607
+    },
+    {
+      "id": "lnd_multiply28",
+      "defType": "math/math",
+      "position": {
+        "x": 131,
+        "y": 136
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge22",
+      "portValues": {
+        "b": 0.45
+      }
+    },
+    {
+      "id": "lnd_add12",
+      "defType": "math/math",
+      "position": {
+        "x": 407,
+        "y": 79
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge22"
+    },
+    {
+      "id": "lnd_multiply29",
+      "defType": "math/math",
+      "position": {
+        "x": 947,
+        "y": 47
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge22",
+      "portValues": {
+        "b": 0.0058
+      }
+    },
+    {
+      "id": "lnd_ridge2Shape",
+      "defType": "noise/noise",
+      "position": {
+        "x": 1233,
+        "y": 40
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "lnd_ridge22",
+      "portValues": {
+        "y": 15.1
+      }
+    },
+    {
+      "id": "lnd_multiply30",
+      "defType": "math/math",
+      "position": {
+        "x": 678,
+        "y": 165
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge22",
+      "portValues": {
+        "b": 0.01798
+      }
+    },
+    {
+      "id": "lnd_ridge2Detail",
+      "defType": "noise/noise",
+      "position": {
+        "x": 964,
+        "y": 213
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "lnd_ridge22",
+      "portValues": {
+        "y": 15.399999999999999
+      }
+    },
+    {
+      "id": "lnd_multiply31",
+      "defType": "math/math",
+      "position": {
+        "x": 1216,
+        "y": 415
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge22",
+      "portValues": {
+        "a": 0.35
+      }
+    },
+    {
+      "id": "lnd_add13",
+      "defType": "math/math",
+      "position": {
+        "x": 1500,
+        "y": 305
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge22"
+    },
+    {
+      "id": "lnd_multiply32",
+      "defType": "math/math",
+      "position": {
+        "x": 1778,
+        "y": 240
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge22",
+      "portValues": {
+        "a": 95.0
+      }
+    },
+    {
+      "id": "lnd_subtract7",
+      "defType": "math/math",
+      "position": {
+        "x": 2055,
+        "y": 176
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge22",
+      "portValues": {
+        "a": 125.0
+      }
+    },
+    {
+      "id": "lnd_ridge2Line",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2332,
+        "y": 136
+      },
+      "params": {},
+      "parentId": "lnd_ridge22"
+    },
+    {
+      "id": "lnd_ridge2CornerR",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2515,
+        "y": 158
+      },
+      "params": {
+        "op": "append"
+      },
+      "parentId": "lnd_ridge22",
+      "portValues": {
+        "tail": {
+          "x": 400.0,
+          "y": 260.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge2CornerL",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2736,
+        "y": 203
+      },
+      "params": {
+        "op": "append"
+      },
+      "parentId": "lnd_ridge22",
+      "portValues": {
+        "tail": {
+          "x": -400.0,
+          "y": 260.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge2Lit",
+      "defType": "color/lerp",
+      "position": {
+        "x": 159,
+        "y": 348
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "parentId": "lnd_ridge22",
+      "portValues": {
+        "a": {
+          "r": 0.071,
+          "g": 0.09,
+          "b": 0.188,
+          "a": 1.0
+        },
+        "b": {
+          "r": 0.278,
+          "g": 0.396,
+          "b": 0.522,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge2Haze",
+      "defType": "color/lerp",
+      "position": {
+        "x": 435,
+        "y": 427
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "parentId": "lnd_ridge22",
+      "portValues": {
+        "t": 0.35500000000000004
+      }
+    },
+    {
+      "id": "lnd_ridge32",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 4000,
+        "y": 1363
+      },
+      "params": {
+        "label": "Ridge 4 · near",
+        "width": 2972,
+        "height": 607
+      },
+      "ports": [
+        {
+          "id": "x",
+          "name": "x along",
+          "type": "number",
+          "direction": "input",
+          "y": 117
+        },
+        {
+          "id": "look",
+          "name": "look",
+          "type": "number",
+          "direction": "input",
+          "y": 195
+        },
+        {
+          "id": "d",
+          "name": "daylight",
+          "type": "number",
+          "direction": "input",
+          "y": 451
+        },
+        {
+          "id": "h",
+          "name": "horizon",
+          "type": "color",
+          "direction": "input",
+          "y": 511
+        },
+        {
+          "id": "points",
+          "name": "outline",
+          "type": "vec2",
+          "direction": "output",
+          "y": 308
+        },
+        {
+          "id": "colour",
+          "name": "colour",
+          "type": "color",
+          "direction": "output",
+          "y": 470
+        }
+      ],
+      "width": 2972,
+      "height": 607
+    },
+    {
+      "id": "lnd_multiply33",
+      "defType": "math/math",
+      "position": {
+        "x": 131,
+        "y": 136
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge32",
+      "portValues": {
+        "b": 0.7
+      }
+    },
+    {
+      "id": "lnd_add14",
+      "defType": "math/math",
+      "position": {
+        "x": 407,
+        "y": 79
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge32"
+    },
+    {
+      "id": "lnd_multiply34",
+      "defType": "math/math",
+      "position": {
+        "x": 947,
+        "y": 47
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge32",
+      "portValues": {
+        "b": 0.008
+      }
+    },
+    {
+      "id": "lnd_ridge3Shape",
+      "defType": "noise/noise",
+      "position": {
+        "x": 1233,
+        "y": 40
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "lnd_ridge32",
+      "portValues": {
+        "y": 22.4
+      }
+    },
+    {
+      "id": "lnd_multiply35",
+      "defType": "math/math",
+      "position": {
+        "x": 678,
+        "y": 165
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge32",
+      "portValues": {
+        "b": 0.024800000000000003
+      }
+    },
+    {
+      "id": "lnd_ridge3Detail",
+      "defType": "noise/noise",
+      "position": {
+        "x": 964,
+        "y": 213
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "lnd_ridge32",
+      "portValues": {
+        "y": 18.5
+      }
+    },
+    {
+      "id": "lnd_multiply36",
+      "defType": "math/math",
+      "position": {
+        "x": 1216,
+        "y": 415
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge32",
+      "portValues": {
+        "a": 0.35
+      }
+    },
+    {
+      "id": "lnd_add15",
+      "defType": "math/math",
+      "position": {
+        "x": 1500,
+        "y": 305
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge32"
+    },
+    {
+      "id": "lnd_multiply37",
+      "defType": "math/math",
+      "position": {
+        "x": 1778,
+        "y": 240
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge32",
+      "portValues": {
+        "a": 80.0
+      }
+    },
+    {
+      "id": "lnd_subtract8",
+      "defType": "math/math",
+      "position": {
+        "x": 2055,
+        "y": 176
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge32",
+      "portValues": {
+        "a": 170.0
+      }
+    },
+    {
+      "id": "lnd_ridge3Line",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2332,
+        "y": 136
+      },
+      "params": {},
+      "parentId": "lnd_ridge32"
+    },
+    {
+      "id": "lnd_ridge3CornerR",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2515,
+        "y": 158
+      },
+      "params": {
+        "op": "append"
+      },
+      "parentId": "lnd_ridge32",
+      "portValues": {
+        "tail": {
+          "x": 400.0,
+          "y": 260.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge3CornerL",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2736,
+        "y": 203
+      },
+      "params": {
+        "op": "append"
+      },
+      "parentId": "lnd_ridge32",
+      "portValues": {
+        "tail": {
+          "x": -400.0,
+          "y": 260.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge3Lit",
+      "defType": "color/lerp",
+      "position": {
+        "x": 159,
+        "y": 348
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "parentId": "lnd_ridge32",
+      "portValues": {
+        "a": {
+          "r": 0.051,
+          "g": 0.067,
+          "b": 0.149,
+          "a": 1.0
+        },
+        "b": {
+          "r": 0.184,
+          "g": 0.29,
+          "b": 0.361,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge3Haze",
+      "defType": "color/lerp",
+      "position": {
+        "x": 435,
+        "y": 427
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "parentId": "lnd_ridge32",
+      "portValues": {
+        "t": 0.21750000000000003
+      }
+    },
+    {
+      "id": "lnd_ridge42",
+      "defType": "meta/subpatch",
+      "position": {
+        "x": 3991,
+        "y": 1755
+      },
+      "params": {
+        "label": "Ridge 5 · nearest",
+        "width": 2972,
+        "height": 607
+      },
+      "ports": [
+        {
+          "id": "x",
+          "name": "x along",
+          "type": "number",
+          "direction": "input",
+          "y": 117
+        },
+        {
+          "id": "look",
+          "name": "look",
+          "type": "number",
+          "direction": "input",
+          "y": 195
+        },
+        {
+          "id": "d",
+          "name": "daylight",
+          "type": "number",
+          "direction": "input",
+          "y": 451
+        },
+        {
+          "id": "h",
+          "name": "horizon",
+          "type": "color",
+          "direction": "input",
+          "y": 511
+        },
+        {
+          "id": "points",
+          "name": "outline",
+          "type": "vec2",
+          "direction": "output",
+          "y": 308
+        },
+        {
+          "id": "colour",
+          "name": "colour",
+          "type": "color",
+          "direction": "output",
+          "y": 470
+        }
+      ],
+      "width": 2972,
+      "height": 607
+    },
+    {
+      "id": "lnd_multiply38",
+      "defType": "math/math",
+      "position": {
+        "x": 131,
+        "y": 136
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge42",
+      "portValues": {
+        "b": 1.0
+      }
+    },
+    {
+      "id": "lnd_add16",
+      "defType": "math/math",
+      "position": {
+        "x": 407,
+        "y": 79
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge42"
+    },
+    {
+      "id": "lnd_multiply39",
+      "defType": "math/math",
+      "position": {
+        "x": 947,
+        "y": 47
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge42",
+      "portValues": {
+        "b": 0.011
+      }
+    },
+    {
+      "id": "lnd_ridge4Shape",
+      "defType": "noise/noise",
+      "position": {
+        "x": 1233,
+        "y": 40
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "lnd_ridge42",
+      "portValues": {
+        "y": 29.7
+      }
+    },
+    {
+      "id": "lnd_multiply40",
+      "defType": "math/math",
+      "position": {
+        "x": 678,
+        "y": 165
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge42",
+      "portValues": {
+        "b": 0.0341
+      }
+    },
+    {
+      "id": "lnd_ridge4Detail",
+      "defType": "noise/noise",
+      "position": {
+        "x": 964,
+        "y": 213
+      },
+      "params": {
+        "mode": "perlin"
+      },
+      "parentId": "lnd_ridge42",
+      "portValues": {
+        "y": 21.6
+      }
+    },
+    {
+      "id": "lnd_multiply41",
+      "defType": "math/math",
+      "position": {
+        "x": 1216,
+        "y": 415
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge42",
+      "portValues": {
+        "a": 0.35
+      }
+    },
+    {
+      "id": "lnd_add17",
+      "defType": "math/math",
+      "position": {
+        "x": 1500,
+        "y": 305
+      },
+      "params": {
+        "op": "add",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge42"
+    },
+    {
+      "id": "lnd_multiply42",
+      "defType": "math/math",
+      "position": {
+        "x": 1778,
+        "y": 240
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge42",
+      "portValues": {
+        "a": 70.0
+      }
+    },
+    {
+      "id": "lnd_subtract9",
+      "defType": "math/math",
+      "position": {
+        "x": 2055,
+        "y": 176
+      },
+      "params": {
+        "op": "subtract",
+        "valueType": "number"
+      },
+      "parentId": "lnd_ridge42",
+      "portValues": {
+        "a": 215.0
+      }
+    },
+    {
+      "id": "lnd_ridge4Line",
+      "defType": "vec2/make",
+      "position": {
+        "x": 2332,
+        "y": 136
+      },
+      "params": {},
+      "parentId": "lnd_ridge42"
+    },
+    {
+      "id": "lnd_ridge4CornerR",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2515,
+        "y": 158
+      },
+      "params": {
+        "op": "append"
+      },
+      "parentId": "lnd_ridge42",
+      "portValues": {
+        "tail": {
+          "x": 400.0,
+          "y": 260.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge4CornerL",
+      "defType": "spread/combine",
+      "position": {
+        "x": 2736,
+        "y": 203
+      },
+      "params": {
+        "op": "append"
+      },
+      "parentId": "lnd_ridge42",
+      "portValues": {
+        "tail": {
+          "x": -400.0,
+          "y": 260.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge4Lit",
+      "defType": "color/lerp",
+      "position": {
+        "x": 159,
+        "y": 348
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "parentId": "lnd_ridge42",
+      "portValues": {
+        "a": {
+          "r": 0.031,
+          "g": 0.043,
+          "b": 0.102,
+          "a": 1.0
+        },
+        "b": {
+          "r": 0.118,
+          "g": 0.188,
+          "b": 0.22,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "lnd_ridge4Haze",
+      "defType": "color/lerp",
+      "position": {
+        "x": 435,
+        "y": 427
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "parentId": "lnd_ridge42",
+      "portValues": {
+        "t": 0.08
+      }
+    },
+    {
+      "id": "lnd_fog1Colour",
+      "defType": "color/lerp",
+      "position": {
+        "x": 4036,
+        "y": 972
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "portValues": {
+        "b": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1.0
+        },
+        "t": 0.15
+      }
+    },
+    {
+      "id": "lnd_fog3Colour",
+      "defType": "color/lerp",
+      "position": {
+        "x": 4036,
+        "y": 1567
+      },
+      "params": {
+        "space": "rgb"
+      },
+      "portValues": {
+        "b": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1.0
+        },
+        "t": 0.15
+      }
     }
   ],
   "edges": [
     {
       "id": "e_1",
-      "source": "lnd_autoDay",
-      "target": "lnd_tod",
-      "sourceHandle": "out-bool",
-      "targetHandle": "in-a"
-    },
-    {
-      "id": "e_2",
-      "source": "lnd_timeOfDay",
-      "target": "lnd_tod",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-s"
-    },
-    {
-      "id": "e_3",
-      "source": "lnd_tod",
-      "target": "lnd_sunHeight",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_4",
-      "source": "lnd_sunHeight",
-      "target": "lnd_daylight",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ev"
-    },
-    {
-      "id": "e_5",
-      "source": "lnd_sunHeight",
-      "target": "lnd_dusk",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ev"
-    },
-    {
-      "id": "e_6",
-      "source": "lnd_rcam",
-      "target": "lnd_camera",
-      "sourceHandle": "out-current",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_7",
-      "source": "lnd_dt",
-      "target": "lnd_camera",
-      "sourceHandle": "out-dt",
-      "targetHandle": "in-dt"
-    },
-    {
-      "id": "e_8",
-      "source": "lnd_travel",
-      "target": "lnd_camera",
-      "sourceHandle": "out-number",
-      "targetHandle": "in-v"
-    },
-    {
-      "id": "e_9",
-      "source": "lnd_camera",
-      "target": "lnd_wcam",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-next"
-    },
-    {
-      "id": "e_10",
-      "source": "lnd_camera",
-      "target": "lnd_look",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_11",
-      "source": "lnd_mouse",
-      "target": "lnd_look",
-      "sourceHandle": "out-x",
-      "targetHandle": "in-mx"
-    },
-    {
-      "id": "e_12",
-      "source": "lnd_daylight",
-      "target": "lnd_skyTop",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_13",
-      "source": "lnd_daylight",
-      "target": "lnd_skyHorizon",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_14",
-      "source": "lnd_dusk",
-      "target": "lnd_skyHorizon",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-k"
-    },
-    {
-      "id": "e_15",
       "source": "lnd_skyTop",
       "target": "lnd_skyStops",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-color",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_16",
+      "id": "e_2",
       "source": "lnd_skyHorizon",
       "target": "lnd_skyStops",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-color",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_17",
+      "id": "e_3",
       "source": "lnd_skyStops",
       "target": "lnd_skyGradient",
       "sourceHandle": "out-merged",
       "targetHandle": "in-colors"
     },
     {
-      "id": "e_18",
+      "id": "e_4",
       "source": "lnd_skyGradient",
       "target": "lnd_sky",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_19",
+      "id": "e_5",
       "source": "lnd_starPoints",
       "target": "lnd_stars",
       "sourceHandle": "out-points",
       "targetHandle": "in-p"
     },
     {
-      "id": "e_20",
-      "source": "lnd_daylight",
-      "target": "lnd_twinkle",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_21",
+      "id": "e_6",
       "source": "lnd_stars",
-      "target": "lnd_twinkle",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_22",
-      "source": "lnd_stars",
-      "target": "lnd_starSize",
-      "sourceHandle": "out-p",
-      "targetHandle": "in-p"
-    },
-    {
-      "id": "e_23",
-      "source": "lnd_twinkle",
       "target": "lnd_starStroke",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-c",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_24",
-      "source": "lnd_starSize",
+      "id": "e_7",
+      "source": "lnd_stars",
       "target": "lnd_starStroke",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-w",
       "targetHandle": "in-width"
     },
     {
-      "id": "e_25",
+      "id": "e_8",
       "source": "lnd_stars",
       "target": "lnd_star",
       "sourceHandle": "out-p",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_26",
+      "id": "e_9",
       "source": "lnd_starStroke",
       "target": "lnd_star",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_27",
+      "id": "e_10",
       "source": "lnd_star",
       "target": "lnd_stars",
       "sourceHandle": "out-shape",
       "targetHandle": "in-l"
     },
     {
-      "id": "e_28",
-      "source": "lnd_tod",
-      "target": "lnd_sunPos",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_29",
-      "source": "lnd_tod",
-      "target": "lnd_moonPos",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_30",
-      "source": "lnd_sunHeight",
-      "target": "lnd_sunColour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-ev"
-    },
-    {
-      "id": "e_31",
+      "id": "e_11",
       "source": "lnd_sunColour",
       "target": "lnd_sunFill",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_32",
-      "source": "lnd_sunPos",
+      "id": "e_12",
+      "source": "lnd_sunArc",
       "target": "lnd_sun",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-sun",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_33",
+      "id": "e_13",
       "source": "lnd_sunFill",
       "target": "lnd_sun",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_34",
+      "id": "e_14",
       "source": "lnd_sun",
       "target": "lnd_sunGlow",
       "sourceHandle": "out-shape",
       "targetHandle": "in-input"
     },
     {
-      "id": "e_35",
-      "source": "lnd_moonPos",
+      "id": "e_15",
+      "source": "lnd_sunArc",
       "target": "lnd_moon",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-moon",
       "targetHandle": "in-pos"
     },
     {
-      "id": "e_36",
+      "id": "e_16",
       "source": "lnd_moonFill",
       "target": "lnd_moon",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_37",
+      "id": "e_17",
       "source": "lnd_birdFill",
       "target": "lnd_birds",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_38",
+      "id": "e_18",
       "source": "lnd_birds",
       "target": "lnd_birdsUp",
       "sourceHandle": "out-layer",
       "targetHandle": "in-layer"
     },
     {
-      "id": "e_39",
-      "source": "lnd_ridgeX",
-      "target": "lnd_ridge0Points",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_40",
-      "source": "lnd_look",
-      "target": "lnd_ridge0Points",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_41",
-      "source": "lnd_daylight",
-      "target": "lnd_ridge0Colour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_42",
-      "source": "lnd_skyHorizon",
-      "target": "lnd_ridge0Colour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_43",
-      "source": "lnd_ridge0Colour",
+      "id": "e_19",
+      "source": "lnd_ridge02",
       "target": "lnd_ridge0Fill",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-colour",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_44",
-      "source": "lnd_ridge0Points",
+      "id": "e_20",
+      "source": "lnd_ridge02",
       "target": "lnd_ridge0",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-points",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_45",
+      "id": "e_21",
       "source": "lnd_ridge0Fill",
       "target": "lnd_ridge0",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_46",
-      "source": "lnd_ridgeX",
-      "target": "lnd_ridge1Points",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_47",
-      "source": "lnd_look",
-      "target": "lnd_ridge1Points",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_48",
-      "source": "lnd_daylight",
-      "target": "lnd_ridge1Colour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_49",
-      "source": "lnd_skyHorizon",
-      "target": "lnd_ridge1Colour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_50",
-      "source": "lnd_ridge1Colour",
+      "id": "e_22",
+      "source": "lnd_ridge12",
       "target": "lnd_ridge1Fill",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-colour",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_51",
-      "source": "lnd_ridge1Points",
+      "id": "e_23",
+      "source": "lnd_ridge12",
       "target": "lnd_ridge1",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-points",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_52",
+      "id": "e_24",
       "source": "lnd_ridge1Fill",
       "target": "lnd_ridge1",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_53",
-      "source": "lnd_skyHorizon",
-      "target": "lnd_fog1Colour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_54",
+      "id": "e_25",
       "source": "lnd_fog1Colour",
       "target": "lnd_fog1Clear",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_55",
+      "id": "e_26",
       "source": "lnd_fog1Colour",
       "target": "lnd_fog1Mist",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_56",
+      "id": "e_27",
       "source": "lnd_fog1Clear",
       "target": "lnd_fog1Stops",
       "sourceHandle": "out-color",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_57",
+      "id": "e_28",
       "source": "lnd_fog1Mist",
       "target": "lnd_fog1Stops",
       "sourceHandle": "out-color",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_58",
+      "id": "e_29",
       "source": "lnd_fog1Stops",
       "target": "lnd_fog1Gradient",
       "sourceHandle": "out-merged",
       "targetHandle": "in-colors"
     },
     {
-      "id": "e_59",
+      "id": "e_30",
       "source": "lnd_fog1Gradient",
       "target": "lnd_fog1",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_60",
-      "source": "lnd_ridgeX",
-      "target": "lnd_ridge2Points",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_61",
-      "source": "lnd_look",
-      "target": "lnd_ridge2Points",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_62",
-      "source": "lnd_daylight",
-      "target": "lnd_ridge2Colour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_63",
-      "source": "lnd_skyHorizon",
-      "target": "lnd_ridge2Colour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_64",
-      "source": "lnd_ridge2Colour",
+      "id": "e_31",
+      "source": "lnd_ridge22",
       "target": "lnd_ridge2Fill",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-colour",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_65",
-      "source": "lnd_ridge2Points",
+      "id": "e_32",
+      "source": "lnd_ridge22",
       "target": "lnd_ridge2",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-points",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_66",
+      "id": "e_33",
       "source": "lnd_ridge2Fill",
       "target": "lnd_ridge2",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_67",
-      "source": "lnd_ridgeX",
-      "target": "lnd_ridge3Points",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_68",
-      "source": "lnd_look",
-      "target": "lnd_ridge3Points",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_69",
-      "source": "lnd_daylight",
-      "target": "lnd_ridge3Colour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_70",
-      "source": "lnd_skyHorizon",
-      "target": "lnd_ridge3Colour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_71",
-      "source": "lnd_ridge3Colour",
+      "id": "e_34",
+      "source": "lnd_ridge32",
       "target": "lnd_ridge3Fill",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-colour",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_72",
-      "source": "lnd_ridge3Points",
+      "id": "e_35",
+      "source": "lnd_ridge32",
       "target": "lnd_ridge3",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-points",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_73",
+      "id": "e_36",
       "source": "lnd_ridge3Fill",
       "target": "lnd_ridge3",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_74",
-      "source": "lnd_skyHorizon",
-      "target": "lnd_fog3Colour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_75",
+      "id": "e_37",
       "source": "lnd_fog3Colour",
       "target": "lnd_fog3Clear",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_76",
+      "id": "e_38",
       "source": "lnd_fog3Colour",
       "target": "lnd_fog3Mist",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-color",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_77",
+      "id": "e_39",
       "source": "lnd_fog3Clear",
       "target": "lnd_fog3Stops",
       "sourceHandle": "out-color",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_78",
+      "id": "e_40",
       "source": "lnd_fog3Mist",
       "target": "lnd_fog3Stops",
       "sourceHandle": "out-color",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_79",
+      "id": "e_41",
       "source": "lnd_fog3Stops",
       "target": "lnd_fog3Gradient",
       "sourceHandle": "out-merged",
       "targetHandle": "in-colors"
     },
     {
-      "id": "e_80",
+      "id": "e_42",
       "source": "lnd_fog3Gradient",
       "target": "lnd_fog3",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_81",
-      "source": "lnd_ridgeX",
-      "target": "lnd_ridge4Points",
-      "sourceHandle": "out-indices",
-      "targetHandle": "in-i"
-    },
-    {
-      "id": "e_82",
-      "source": "lnd_look",
-      "target": "lnd_ridge4Points",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-c"
-    },
-    {
-      "id": "e_83",
-      "source": "lnd_daylight",
-      "target": "lnd_ridge4Colour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-d"
-    },
-    {
-      "id": "e_84",
-      "source": "lnd_skyHorizon",
-      "target": "lnd_ridge4Colour",
-      "sourceHandle": "out-value",
-      "targetHandle": "in-h"
-    },
-    {
-      "id": "e_85",
-      "source": "lnd_ridge4Colour",
+      "id": "e_43",
+      "source": "lnd_ridge42",
       "target": "lnd_ridge4Fill",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-colour",
       "targetHandle": "in-color"
     },
     {
-      "id": "e_86",
-      "source": "lnd_ridge4Points",
+      "id": "e_44",
+      "source": "lnd_ridge42",
       "target": "lnd_ridge4",
-      "sourceHandle": "out-value",
+      "sourceHandle": "out-points",
       "targetHandle": "in-points"
     },
     {
-      "id": "e_87",
+      "id": "e_45",
       "source": "lnd_ridge4Fill",
       "target": "lnd_ridge4",
       "sourceHandle": "out-style",
       "targetHandle": "in-style"
     },
     {
-      "id": "e_88",
+      "id": "e_46",
       "source": "lnd_sky",
       "target": "lnd_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s1"
     },
     {
-      "id": "e_89",
+      "id": "e_47",
       "source": "lnd_stars",
       "target": "lnd_scene",
       "sourceHandle": "out-l",
       "targetHandle": "in-s2"
     },
     {
-      "id": "e_90",
+      "id": "e_48",
       "source": "lnd_moon",
       "target": "lnd_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s3"
     },
     {
-      "id": "e_91",
+      "id": "e_49",
       "source": "lnd_sunGlow",
       "target": "lnd_scene",
       "sourceHandle": "out-out",
       "targetHandle": "in-s4"
     },
     {
-      "id": "e_92",
+      "id": "e_50",
       "source": "lnd_birdsUp",
       "target": "lnd_scene",
       "sourceHandle": "out-translated",
       "targetHandle": "in-s5"
     },
     {
-      "id": "e_93",
+      "id": "e_51",
       "source": "lnd_ridge0",
       "target": "lnd_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s6"
     },
     {
-      "id": "e_94",
+      "id": "e_52",
       "source": "lnd_ridge1",
       "target": "lnd_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s7"
     },
     {
-      "id": "e_95",
+      "id": "e_53",
       "source": "lnd_fog1",
       "target": "lnd_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s8"
     },
     {
-      "id": "e_96",
+      "id": "e_54",
       "source": "lnd_ridge2",
       "target": "lnd_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s9"
     },
     {
-      "id": "e_97",
+      "id": "e_55",
       "source": "lnd_ridge3",
       "target": "lnd_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s10"
     },
     {
-      "id": "e_98",
+      "id": "e_56",
       "source": "lnd_fog3",
       "target": "lnd_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s11"
     },
     {
-      "id": "e_99",
+      "id": "e_57",
       "source": "lnd_ridge4",
       "target": "lnd_scene",
       "sourceHandle": "out-shape",
       "targetHandle": "in-s12"
     },
     {
-      "id": "e_100",
+      "id": "e_58",
       "source": "lnd_scene",
       "target": "lnd_r",
       "sourceHandle": "out-grouped",
       "targetHandle": "in-layers"
+    },
+    {
+      "id": "e_59",
+      "source": "lnd_time",
+      "target": "lnd_divide",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_60",
+      "source": "lnd_timeOfDay",
+      "target": "lnd_add",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_61",
+      "source": "lnd_divide",
+      "target": "lnd_add",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_62",
+      "source": "lnd_add",
+      "target": "lnd_dayRuns",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_63",
+      "source": "lnd_autoDay",
+      "target": "lnd_tod",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_64",
+      "source": "lnd_dayRuns",
+      "target": "lnd_tod",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_65",
+      "source": "lnd_timeOfDay",
+      "target": "lnd_tod",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_66",
+      "source": "lnd_tod",
+      "target": "lnd_sunArc",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_67",
+      "source": "lnd_sunArc",
+      "target": "lnd_subtract",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_68",
+      "source": "lnd_subtract",
+      "target": "lnd_multiply",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_69",
+      "source": "lnd_multiply",
+      "target": "lnd_sunUp",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_70",
+      "source": "lnd_multiply",
+      "target": "lnd_sunAcross",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_71",
+      "source": "lnd_sunAcross",
+      "target": "lnd_negate",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_72",
+      "source": "lnd_negate",
+      "target": "lnd_multiply2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_73",
+      "source": "lnd_sunUp",
+      "target": "lnd_multiply3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_74",
+      "source": "lnd_multiply3",
+      "target": "lnd_subtract2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_75",
+      "source": "lnd_multiply2",
+      "target": "lnd_sunPos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_76",
+      "source": "lnd_subtract2",
+      "target": "lnd_sunPos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_77",
+      "source": "lnd_sunAcross",
+      "target": "lnd_multiply4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_78",
+      "source": "lnd_sunUp",
+      "target": "lnd_multiply5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_79",
+      "source": "lnd_multiply5",
+      "target": "lnd_add2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_80",
+      "source": "lnd_multiply4",
+      "target": "lnd_moonPos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_81",
+      "source": "lnd_add2",
+      "target": "lnd_moonPos",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_82",
+      "source": "lnd_sunUp",
+      "target": "lnd_sunArc",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-height"
+    },
+    {
+      "id": "e_83",
+      "source": "lnd_sunPos",
+      "target": "lnd_sunArc",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-sun"
+    },
+    {
+      "id": "e_84",
+      "source": "lnd_moonPos",
+      "target": "lnd_sunArc",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-moon"
+    },
+    {
+      "id": "e_85",
+      "source": "lnd_sunArc",
+      "target": "lnd_daylight",
+      "sourceHandle": "out-height",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_86",
+      "source": "lnd_sunArc",
+      "target": "lnd_sunLow",
+      "sourceHandle": "out-height",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_87",
+      "source": "lnd_sunLow",
+      "target": "lnd_multiply6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_88",
+      "source": "lnd_multiply6",
+      "target": "lnd_subtract3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_89",
+      "source": "lnd_subtract3",
+      "target": "lnd_dusk",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_90",
+      "source": "lnd_travel",
+      "target": "lnd_camera",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_91",
+      "source": "lnd_mouse",
+      "target": "lnd_multiply7",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_92",
+      "source": "lnd_camera",
+      "target": "lnd_add3",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_93",
+      "source": "lnd_multiply7",
+      "target": "lnd_add3",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_94",
+      "source": "lnd_daylight",
+      "target": "lnd_skyTop",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_95",
+      "source": "lnd_daylight",
+      "target": "lnd_horizonDay",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_96",
+      "source": "lnd_dusk",
+      "target": "lnd_multiply8",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_97",
+      "source": "lnd_horizonDay",
+      "target": "lnd_skyHorizon",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_98",
+      "source": "lnd_multiply8",
+      "target": "lnd_skyHorizon",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_99",
+      "source": "lnd_sunArc",
+      "target": "lnd_multiply9",
+      "sourceHandle": "out-height",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_100",
+      "source": "lnd_multiply9",
+      "target": "lnd_sunWhite",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_101",
+      "source": "lnd_sunWhite",
+      "target": "lnd_sunColour",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_102",
+      "source": "lnd_starPoints",
+      "target": "lnd_split",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-v"
+    },
+    {
+      "id": "e_103",
+      "source": "lnd_split",
+      "target": "lnd_multiply10",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_104",
+      "source": "lnd_multiply10",
+      "target": "lnd_add4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_105",
+      "source": "lnd_time",
+      "target": "lnd_multiply11",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_106",
+      "source": "lnd_add4",
+      "target": "lnd_flicker",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_107",
+      "source": "lnd_multiply11",
+      "target": "lnd_flicker",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_108",
+      "source": "lnd_daylight",
+      "target": "lnd_subtract4",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_109",
+      "source": "lnd_flicker",
+      "target": "lnd_multiply12",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_110",
+      "source": "lnd_multiply12",
+      "target": "lnd_add5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_111",
+      "source": "lnd_subtract4",
+      "target": "lnd_multiply13",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_112",
+      "source": "lnd_add5",
+      "target": "lnd_multiply13",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_113",
+      "source": "lnd_multiply13",
+      "target": "lnd_multiply14",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_114",
+      "source": "lnd_multiply14",
+      "target": "lnd_twinkle",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_115",
+      "source": "lnd_split",
+      "target": "lnd_multiply15",
+      "sourceHandle": "out-y",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_116",
+      "source": "lnd_multiply15",
+      "target": "lnd_starSizeHash",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_117",
+      "source": "lnd_starSizeHash",
+      "target": "lnd_multiply16",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_118",
+      "source": "lnd_multiply16",
+      "target": "lnd_add6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_119",
+      "source": "lnd_twinkle",
+      "target": "lnd_stars",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-c"
+    },
+    {
+      "id": "e_120",
+      "source": "lnd_add6",
+      "target": "lnd_stars",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-w"
+    },
+    {
+      "id": "e_121",
+      "source": "lnd_ridgeX",
+      "target": "lnd_multiply17",
+      "sourceHandle": "out-indices",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_122",
+      "source": "lnd_multiply17",
+      "target": "lnd_add7",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_123",
+      "source": "lnd_add7",
+      "target": "lnd_ridge02",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_124",
+      "source": "lnd_add3",
+      "target": "lnd_ridge02",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-look"
+    },
+    {
+      "id": "e_125",
+      "source": "lnd_daylight",
+      "target": "lnd_ridge02",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_126",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_ridge02",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_127",
+      "source": "lnd_ridge02",
+      "target": "lnd_multiply18",
+      "sourceHandle": "out-look",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_128",
+      "source": "lnd_ridge02",
+      "target": "lnd_add8",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_129",
+      "source": "lnd_multiply18",
+      "target": "lnd_add8",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_130",
+      "source": "lnd_add8",
+      "target": "lnd_multiply19",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_131",
+      "source": "lnd_multiply19",
+      "target": "lnd_ridge0Shape",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_132",
+      "source": "lnd_add8",
+      "target": "lnd_multiply20",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_133",
+      "source": "lnd_multiply20",
+      "target": "lnd_ridge0Detail",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_134",
+      "source": "lnd_ridge0Detail",
+      "target": "lnd_multiply21",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_135",
+      "source": "lnd_ridge0Shape",
+      "target": "lnd_add9",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_136",
+      "source": "lnd_multiply21",
+      "target": "lnd_add9",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_137",
+      "source": "lnd_add9",
+      "target": "lnd_multiply22",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_138",
+      "source": "lnd_multiply22",
+      "target": "lnd_subtract5",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_139",
+      "source": "lnd_ridge02",
+      "target": "lnd_ridge0Line",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_140",
+      "source": "lnd_subtract5",
+      "target": "lnd_ridge0Line",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_141",
+      "source": "lnd_ridge0Line",
+      "target": "lnd_ridge0CornerR",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_142",
+      "source": "lnd_ridge0CornerR",
+      "target": "lnd_ridge0CornerL",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_143",
+      "source": "lnd_ridge0CornerL",
+      "target": "lnd_ridge02",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_144",
+      "source": "lnd_ridge02",
+      "target": "lnd_ridge0Lit",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_145",
+      "source": "lnd_ridge0Lit",
+      "target": "lnd_ridge0Haze",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_146",
+      "source": "lnd_ridge02",
+      "target": "lnd_ridge0Haze",
+      "sourceHandle": "out-h",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_147",
+      "source": "lnd_ridge0Haze",
+      "target": "lnd_ridge02",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-colour"
+    },
+    {
+      "id": "e_148",
+      "source": "lnd_add7",
+      "target": "lnd_ridge12",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_149",
+      "source": "lnd_add3",
+      "target": "lnd_ridge12",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-look"
+    },
+    {
+      "id": "e_150",
+      "source": "lnd_daylight",
+      "target": "lnd_ridge12",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_151",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_ridge12",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_152",
+      "source": "lnd_ridge12",
+      "target": "lnd_multiply23",
+      "sourceHandle": "out-look",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_153",
+      "source": "lnd_ridge12",
+      "target": "lnd_add10",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_154",
+      "source": "lnd_multiply23",
+      "target": "lnd_add10",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_155",
+      "source": "lnd_add10",
+      "target": "lnd_multiply24",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_156",
+      "source": "lnd_multiply24",
+      "target": "lnd_ridge1Shape",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_157",
+      "source": "lnd_add10",
+      "target": "lnd_multiply25",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_158",
+      "source": "lnd_multiply25",
+      "target": "lnd_ridge1Detail",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_159",
+      "source": "lnd_ridge1Detail",
+      "target": "lnd_multiply26",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_160",
+      "source": "lnd_ridge1Shape",
+      "target": "lnd_add11",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_161",
+      "source": "lnd_multiply26",
+      "target": "lnd_add11",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_162",
+      "source": "lnd_add11",
+      "target": "lnd_multiply27",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_163",
+      "source": "lnd_multiply27",
+      "target": "lnd_subtract6",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_164",
+      "source": "lnd_ridge12",
+      "target": "lnd_ridge1Line",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_165",
+      "source": "lnd_subtract6",
+      "target": "lnd_ridge1Line",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_166",
+      "source": "lnd_ridge1Line",
+      "target": "lnd_ridge1CornerR",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_167",
+      "source": "lnd_ridge1CornerR",
+      "target": "lnd_ridge1CornerL",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_168",
+      "source": "lnd_ridge1CornerL",
+      "target": "lnd_ridge12",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_169",
+      "source": "lnd_ridge12",
+      "target": "lnd_ridge1Lit",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_170",
+      "source": "lnd_ridge1Lit",
+      "target": "lnd_ridge1Haze",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_171",
+      "source": "lnd_ridge12",
+      "target": "lnd_ridge1Haze",
+      "sourceHandle": "out-h",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_172",
+      "source": "lnd_ridge1Haze",
+      "target": "lnd_ridge12",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-colour"
+    },
+    {
+      "id": "e_173",
+      "source": "lnd_add7",
+      "target": "lnd_ridge22",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_174",
+      "source": "lnd_add3",
+      "target": "lnd_ridge22",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-look"
+    },
+    {
+      "id": "e_175",
+      "source": "lnd_daylight",
+      "target": "lnd_ridge22",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_176",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_ridge22",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_177",
+      "source": "lnd_ridge22",
+      "target": "lnd_multiply28",
+      "sourceHandle": "out-look",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_178",
+      "source": "lnd_ridge22",
+      "target": "lnd_add12",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_179",
+      "source": "lnd_multiply28",
+      "target": "lnd_add12",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_180",
+      "source": "lnd_add12",
+      "target": "lnd_multiply29",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_181",
+      "source": "lnd_multiply29",
+      "target": "lnd_ridge2Shape",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_182",
+      "source": "lnd_add12",
+      "target": "lnd_multiply30",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_183",
+      "source": "lnd_multiply30",
+      "target": "lnd_ridge2Detail",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_184",
+      "source": "lnd_ridge2Detail",
+      "target": "lnd_multiply31",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_185",
+      "source": "lnd_ridge2Shape",
+      "target": "lnd_add13",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_186",
+      "source": "lnd_multiply31",
+      "target": "lnd_add13",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_187",
+      "source": "lnd_add13",
+      "target": "lnd_multiply32",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_188",
+      "source": "lnd_multiply32",
+      "target": "lnd_subtract7",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_189",
+      "source": "lnd_ridge22",
+      "target": "lnd_ridge2Line",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_190",
+      "source": "lnd_subtract7",
+      "target": "lnd_ridge2Line",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_191",
+      "source": "lnd_ridge2Line",
+      "target": "lnd_ridge2CornerR",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_192",
+      "source": "lnd_ridge2CornerR",
+      "target": "lnd_ridge2CornerL",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_193",
+      "source": "lnd_ridge2CornerL",
+      "target": "lnd_ridge22",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_194",
+      "source": "lnd_ridge22",
+      "target": "lnd_ridge2Lit",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_195",
+      "source": "lnd_ridge2Lit",
+      "target": "lnd_ridge2Haze",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_196",
+      "source": "lnd_ridge22",
+      "target": "lnd_ridge2Haze",
+      "sourceHandle": "out-h",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_197",
+      "source": "lnd_ridge2Haze",
+      "target": "lnd_ridge22",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-colour"
+    },
+    {
+      "id": "e_198",
+      "source": "lnd_add7",
+      "target": "lnd_ridge32",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_199",
+      "source": "lnd_add3",
+      "target": "lnd_ridge32",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-look"
+    },
+    {
+      "id": "e_200",
+      "source": "lnd_daylight",
+      "target": "lnd_ridge32",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_201",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_ridge32",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_202",
+      "source": "lnd_ridge32",
+      "target": "lnd_multiply33",
+      "sourceHandle": "out-look",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_203",
+      "source": "lnd_ridge32",
+      "target": "lnd_add14",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_204",
+      "source": "lnd_multiply33",
+      "target": "lnd_add14",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_205",
+      "source": "lnd_add14",
+      "target": "lnd_multiply34",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_206",
+      "source": "lnd_multiply34",
+      "target": "lnd_ridge3Shape",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_207",
+      "source": "lnd_add14",
+      "target": "lnd_multiply35",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_208",
+      "source": "lnd_multiply35",
+      "target": "lnd_ridge3Detail",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_209",
+      "source": "lnd_ridge3Detail",
+      "target": "lnd_multiply36",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_210",
+      "source": "lnd_ridge3Shape",
+      "target": "lnd_add15",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_211",
+      "source": "lnd_multiply36",
+      "target": "lnd_add15",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_212",
+      "source": "lnd_add15",
+      "target": "lnd_multiply37",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_213",
+      "source": "lnd_multiply37",
+      "target": "lnd_subtract8",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_214",
+      "source": "lnd_ridge32",
+      "target": "lnd_ridge3Line",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_215",
+      "source": "lnd_subtract8",
+      "target": "lnd_ridge3Line",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_216",
+      "source": "lnd_ridge3Line",
+      "target": "lnd_ridge3CornerR",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_217",
+      "source": "lnd_ridge3CornerR",
+      "target": "lnd_ridge3CornerL",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_218",
+      "source": "lnd_ridge3CornerL",
+      "target": "lnd_ridge32",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_219",
+      "source": "lnd_ridge32",
+      "target": "lnd_ridge3Lit",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_220",
+      "source": "lnd_ridge3Lit",
+      "target": "lnd_ridge3Haze",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_221",
+      "source": "lnd_ridge32",
+      "target": "lnd_ridge3Haze",
+      "sourceHandle": "out-h",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_222",
+      "source": "lnd_ridge3Haze",
+      "target": "lnd_ridge32",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-colour"
+    },
+    {
+      "id": "e_223",
+      "source": "lnd_add7",
+      "target": "lnd_ridge42",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_224",
+      "source": "lnd_add3",
+      "target": "lnd_ridge42",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-look"
+    },
+    {
+      "id": "e_225",
+      "source": "lnd_daylight",
+      "target": "lnd_ridge42",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-d"
+    },
+    {
+      "id": "e_226",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_ridge42",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_227",
+      "source": "lnd_ridge42",
+      "target": "lnd_multiply38",
+      "sourceHandle": "out-look",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_228",
+      "source": "lnd_ridge42",
+      "target": "lnd_add16",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_229",
+      "source": "lnd_multiply38",
+      "target": "lnd_add16",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_230",
+      "source": "lnd_add16",
+      "target": "lnd_multiply39",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_231",
+      "source": "lnd_multiply39",
+      "target": "lnd_ridge4Shape",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_232",
+      "source": "lnd_add16",
+      "target": "lnd_multiply40",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_233",
+      "source": "lnd_multiply40",
+      "target": "lnd_ridge4Detail",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_234",
+      "source": "lnd_ridge4Detail",
+      "target": "lnd_multiply41",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_235",
+      "source": "lnd_ridge4Shape",
+      "target": "lnd_add17",
+      "sourceHandle": "out-noise",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_236",
+      "source": "lnd_multiply41",
+      "target": "lnd_add17",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_237",
+      "source": "lnd_add17",
+      "target": "lnd_multiply42",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_238",
+      "source": "lnd_multiply42",
+      "target": "lnd_subtract9",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_239",
+      "source": "lnd_ridge42",
+      "target": "lnd_ridge4Line",
+      "sourceHandle": "out-x",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_240",
+      "source": "lnd_subtract9",
+      "target": "lnd_ridge4Line",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_241",
+      "source": "lnd_ridge4Line",
+      "target": "lnd_ridge4CornerR",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_242",
+      "source": "lnd_ridge4CornerR",
+      "target": "lnd_ridge4CornerL",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_243",
+      "source": "lnd_ridge4CornerL",
+      "target": "lnd_ridge42",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-points"
+    },
+    {
+      "id": "e_244",
+      "source": "lnd_ridge42",
+      "target": "lnd_ridge4Lit",
+      "sourceHandle": "out-d",
+      "targetHandle": "in-t"
+    },
+    {
+      "id": "e_245",
+      "source": "lnd_ridge4Lit",
+      "target": "lnd_ridge4Haze",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_246",
+      "source": "lnd_ridge42",
+      "target": "lnd_ridge4Haze",
+      "sourceHandle": "out-h",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_247",
+      "source": "lnd_ridge4Haze",
+      "target": "lnd_ridge42",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-colour"
+    },
+    {
+      "id": "e_248",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_fog1Colour",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_249",
+      "source": "lnd_skyHorizon",
+      "target": "lnd_fog3Colour",
+      "sourceHandle": "out-color",
+      "targetHandle": "in-a"
     }
   ]
 }

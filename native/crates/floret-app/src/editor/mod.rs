@@ -11,6 +11,7 @@ pub mod history;
 pub mod latch;
 pub mod layout;
 pub mod ops;
+pub mod pairs;
 pub mod popups;
 pub mod ports;
 pub mod regions;
@@ -18,6 +19,7 @@ pub mod search;
 pub mod subpatch;
 pub mod values;
 pub mod widgets;
+pub mod wrap;
 
 use floret_engine::patch::PatchFile;
 use floret_engine::spec::Catalogue;
@@ -47,6 +49,12 @@ pub(crate) mod test_util {
             height: None,
             bypassed: false,
         }
+    }
+
+    /// `n` moved to canvas x `x` (wires must run left to right).
+    pub fn at_x(mut n: PatchNode, x: f64) -> PatchNode {
+        n.position.x = x;
+        n
     }
 
     pub fn edge(s: &str, sh: &str, t: &str, th: &str) -> PatchEdge {

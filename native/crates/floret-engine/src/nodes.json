@@ -5923,6 +5923,25 @@
    "dynamicOutputs": true
   },
   {
+   "type": "meta/section",
+   "category": "Meta",
+   "group": "Structure",
+   "label": "Section",
+   "description": "A titled, coloured backdrop that groups nodes on the canvas. Purely visual: wires pass straight through and the patch computes the same with or without it.",
+   "inputs": [],
+   "outputs": [],
+   "eval": "none",
+   "dynamicInputs": false,
+   "defaultParams": {
+    "label": "Section",
+    "color": "#7cb6ff",
+    "width": 480,
+    "height": 280
+   },
+   "paramOptions": null,
+   "regionKind": "section"
+  },
+  {
    "type": "meta/subpatch",
    "category": "Meta",
    "group": "Structure",
@@ -6373,6 +6392,13 @@
      "kind": "spread",
      "default": 1,
      "label": "warp scale"
+    },
+    {
+     "name": "step",
+     "type": "number",
+     "kind": "single",
+     "default": 0,
+     "label": "gradient step"
     }
    ],
    "outputs": [
@@ -11349,7 +11375,7 @@
    "category": "State",
    "group": "Structure",
    "label": "Read",
-   "description": "Emit the value last written under `slot`, or `init` on frame 0.",
+   "description": "Start of a feedback pair: emit the value its Write (same `slot`) stored last frame, or `init` on frame 0. Placing a Read places its Write; name the pair to label both.",
    "inputs": [
     {
      "name": "init",
@@ -11367,7 +11393,8 @@
    "eval": "none",
    "dynamicInputs": false,
    "defaultParams": {
-    "slot": 1
+    "slot": 1,
+    "name": ""
    },
    "paramOptions": null
   },
@@ -11376,7 +11403,7 @@
    "category": "State",
    "group": "Structure",
    "label": "Read*",
-   "description": "Emit the spread last written under `slot`, or `init` on frame 0.",
+   "description": "Start of a spread feedback pair: emit the spread its Write* (same `slot`) stored last frame, or `init` on frame 0. Placing a Read* places its Write*.",
    "inputs": [
     {
      "name": "init",
@@ -11394,7 +11421,8 @@
    "eval": "none",
    "dynamicInputs": false,
    "defaultParams": {
-    "slot": 1
+    "slot": 1,
+    "name": ""
    },
    "paramOptions": null
   },
@@ -11435,7 +11463,7 @@
    "category": "State",
    "group": "Structure",
    "label": "State",
-   "description": "Hold a single value across frames — emit last tick's `next` as `current`.",
+   "description": "Legacy: use Write → Read instead (a Write at the end of the flow, its paired Read at the start) for left-to-right feedback.",
    "inputs": [
     {
      "name": "init",
@@ -11459,14 +11487,15 @@
    "dynamicInputs": false,
    "defaultParams": null,
    "paramOptions": null,
-   "stateful": true
+   "stateful": true,
+   "hidden": true
   },
   {
    "type": "state/write",
    "category": "State",
    "group": "Structure",
    "label": "Write",
-   "description": "Stash a value at end-of-tick; the matching Read emits it next tick.",
+   "description": "End of a feedback pair: store `next` at end of frame; its Read (same `slot`) emits it next frame. Placing a Write places its Read; name the pair to label both.",
    "inputs": [
     {
      "name": "next",
@@ -11478,7 +11507,8 @@
    "eval": "none",
    "dynamicInputs": false,
    "defaultParams": {
-    "slot": 1
+    "slot": 1,
+    "name": ""
    },
    "paramOptions": null,
    "stateful": true,
@@ -11489,7 +11519,7 @@
    "category": "State",
    "group": "Structure",
    "label": "Write*",
-   "description": "Stash a spread at end-of-tick; the matching Read* emits it next tick.",
+   "description": "End of a spread feedback pair: store `next` at end of frame; its Read* (same `slot`) emits it next frame. Placing a Write* places its Read*.",
    "inputs": [
     {
      "name": "next",
@@ -11501,7 +11531,8 @@
    "eval": "none",
    "dynamicInputs": false,
    "defaultParams": {
-    "slot": 1
+    "slot": 1,
+    "name": ""
    },
    "paramOptions": null,
    "stateful": true,
@@ -14668,7 +14699,7 @@
    "category": "Geometry",
    "group": "Patterns",
    "label": "Curve",
-   "description": "Classic parametric curves as `count` points and a path layer: `lissajous` (frequencies `a`, `b`), `rose` (`n` / `d` petals), `hypotrochoid` and `epitrochoid` (Spirograph: circle radii `R`, `r`, pen distance `d`), `spiral` and `log-spiral` (`turns`, from radius `inner` out to `radius`), `star` (`points`, `inner` radius ratio) and `superformula` (Gielis: `m`, `n1`, `n2`, `n3`). Fitted to `radius` around `center` (Lissajous fills a square), turned by `rotation`. `phase` 0..1 runs one seamless animation cycle (figures morph, roses / stars turn by a petal, spirals flow). Closed curves come round exactly once (the period is worked out from the ratios). Also outputs each point's direction of travel (`tangents`, radians). Example: Time `loop` into `phase` for a looping Lissajous; the points into a ForEach to place dots along a rose.",
+   "description": "Classic parametric curves as `count` points and a path layer: `lissajous` (frequencies `a`, `b`), `rose` (`n` / `d` petals), `hypotrochoid` and `epitrochoid` (Spirograph: circle radii `R`, `r`, pen distance `d`; `laps` above 0 runs the pen round that many times as an open path instead of one closed period), `spiral` and `log-spiral` (`turns`, from radius `inner` out to `radius`), `star` (`points`, `inner` radius ratio) and `superformula` (Gielis: `m`, `n1`, `n2`, `n3`). Fitted to `radius` around `center` (Lissajous fills a square), turned by `rotation`. `phase` 0..1 runs one seamless animation cycle (figures morph, roses / stars turn by a petal, spirals flow). Closed curves come round exactly once (the period is worked out from the ratios). Also outputs each point's direction of travel (`tangents`, radians). Example: Time `loop` into `phase` for a looping Lissajous; the points into a ForEach to place dots along a rose.",
    "inputs": [
     {
      "name": "count",

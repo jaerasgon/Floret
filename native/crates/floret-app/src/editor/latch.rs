@@ -135,7 +135,7 @@ pub fn reconcile_adaptive_types(patch: &mut PatchFile, cat: &Catalogue) -> bool 
 mod tests {
     use super::*;
     use crate::editor::connect::{connect, Conn};
-    use crate::editor::test_util::{node, patch};
+    use crate::editor::test_util::{at_x, node, patch};
 
     fn vt(p: &PatchFile, id: &str) -> String {
         find_node(p, id).unwrap().params["valueType"]
@@ -151,7 +151,7 @@ mod tests {
         add.params = cat.get("math/add").unwrap().default_params.clone();
         let mut p = patch(
             vec![
-                add,
+                at_x(add, 400.0),
                 node("mk", "vec2/make"),
                 node("t", "time/seconds"),
                 node("mk2", "vec2/make"),
@@ -192,7 +192,7 @@ mod tests {
         let mut m = node("m", "math/math");
         m.params = cat.get("math/math").unwrap().default_params.clone();
         m.params.insert("op".into(), "multiply".into());
-        let mut p = patch(vec![m, node("mk", "vec2/make")], vec![]);
+        let mut p = patch(vec![at_x(m, 400.0), node("mk", "vec2/make")], vec![]);
         connect(&mut p, cat, &Conn::new("mk", "out-vector", "m", "in-a")).unwrap();
         reconcile_adaptive_types(&mut p, cat);
         assert_eq!(vt(&p, "m"), "vec2");
@@ -222,7 +222,11 @@ mod tests {
         let mut lerp = node("lerp", "math/lerp");
         lerp.params = cat.get("math/lerp").unwrap().default_params.clone();
         let mut p = patch(
-            vec![lerp, node("t", "time/seconds"), node("mk", "vec2/make")],
+            vec![
+                at_x(lerp, 200.0),
+                node("t", "time/seconds"),
+                at_x(node("mk", "vec2/make"), 400.0),
+            ],
             vec![],
         );
         // `t` is a fixed number control: wiring it doesn't latch.

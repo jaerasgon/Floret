@@ -8,6 +8,7 @@ use super::shared::first;
 use super::Registrar;
 use crate::node::{always_eval, raw, NodeImpl, NodeInit};
 use crate::value::{one, Value};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::OnceLock;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -79,12 +80,30 @@ pub fn install_local_offset(f: LocalOffset) {
     let _ = LOCAL_OFFSET.set(f);
 }
 
+/// [`freeze_clock`]'s time as `f64` bits; NaN (the initial value) = the
+/// wall clock.
+static FROZEN_CLOCK: AtomicU64 = AtomicU64::new(0x7ff8_0000_0000_0000);
+
+/// Test hook: while `Some(unix_seconds)`, every `time/clock` reads that
+/// time plus the frame's `t` instead of the wall clock, so two runs of a
+/// patch see the same times (comparing a rebuilt sample with the
+/// original). `None` returns to the wall clock. Process-wide.
+pub fn freeze_clock(at: Option<f64>) {
+    let bits = at.filter(|s| s.is_finite()).unwrap_or(f64::NAN).to_bits();
+    FROZEN_CLOCK.store(bits, Ordering::Relaxed);
+}
+
 /// `time/clock`: the wall clock, effectful (read every tick).
 fn clock(_: &NodeInit) -> Box<dyn NodeImpl> {
     always_eval(raw(|inputs, cx| {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_or(0.0, |d| d.as_secs_f64());
+        let frozen = f64::from_bits(FROZEN_CLOCK.load(Ordering::Relaxed));
+        let now = if frozen.is_finite() {
+            frozen + cx.frame.t
+        } else {
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .map_or(0.0, |d| d.as_secs_f64())
+        };
         let local = cx.param("zone").and_then(|v| v.as_str()) != Some("utc");
         let zone = match LOCAL_OFFSET.get() {
             Some(f) if local => f(now.floor() as i64) as f64,

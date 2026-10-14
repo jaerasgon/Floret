@@ -14,3 +14,6 @@ cpal = "0.18"
 rtrb = "0.4"
 realfft = "3.5"
 symphonia = { version = "0.6", default-features = false, features = ["wav", "pcm", "flac", "ogg", "vorbis", "mp3", "adpcm"] }
+
+[dev-dependencies]
+serde_json.workspace = true

@@ -14,6 +14,7 @@ mod geom;
 mod gravity;
 mod live;
 mod minimap;
+mod pair_link;
 #[cfg(test)]
 mod samples;
 
@@ -30,7 +31,7 @@ use crate::editor::ports::{self, type_name, Side};
 use crate::editor::search::{self, Fit};
 use crate::editor::values::{self, EditKey, FieldKind, LiveEdit};
 use crate::editor::widgets::{self, Pad, SliderState};
-use crate::editor::{clipboard, layout, ops, regions, subpatch};
+use crate::editor::{clipboard, layout, ops, pairs, regions, subpatch, wrap};
 use crate::theme::{self, BG_0, FG_2, FG_3, GOLD, GOLD_TEXT};
 use custom::WidgetKind;
 use draw::PinLook;
@@ -191,6 +192,12 @@ enum Action {
     /// Re-home a node: into a region, or out to the current scope.
     Reparent(String, Option<String>),
     Group,
+    /// Wrap the selection in a new frame of this type (`wrap::WRAP_TYPES`).
+    Wrap(String),
+    /// Dissolve a region, section or subpatch, keeping its contents.
+    Unwrap(String),
+    /// Open the colour picker for a section's tint.
+    SectionColor(String, Pos2),
     Enter(String),
     Exit,
     ViewDepth(usize),
@@ -246,7 +253,7 @@ enum Action {
 
 #[derive(Clone)]
 enum EditTarget {
-    Field(Field),
+    Field(Box<Field>),
     PortName { region: String, port: String },
 }
 
@@ -292,8 +299,6 @@ pub struct View {
     pub gravity: bool,
     /// Entered subpatches, outermost first.
     stack: Vec<String>,
-    /// Inputs whose inline editor is open: (node, port).
-    expanded: HashSet<(String, String)>,
     pub favorites: Favorites,
     /// A region type armed by the palette / search: the next drag on the
     /// canvas draws it.
@@ -346,6 +351,8 @@ pub struct View {
     pub thumbs: HashMap<String, egui::TextureId>,
     /// `ui.input().time` this frame.
     time: f64,
+    /// A short status-bar hint for the app to show (a refused wire).
+    hint: Option<String>,
 }
 
 impl Default for View {
@@ -368,7 +375,6 @@ impl Default for View {
             auto_grow: true,
             gravity: true,
             stack: Vec::new(),
-            expanded: HashSet::new(),
             favorites: Favorites::load(),
             armed: None,
             history: History::default(),
@@ -401,6 +407,7 @@ impl Default for View {
             probe_areas: Vec::new(),
             thumbs: HashMap::new(),
             time: 0.0,
+            hint: None,
         }
     }
 }
@@ -433,7 +440,6 @@ impl View {
         self.selected_ports.clear();
         self.raised.clear();
         self.stack.clear();
-        self.expanded.clear();
         self.gesture = Gesture::None;
         self.discard_overlays();
         self.armed = None;
@@ -497,6 +503,19 @@ impl View {
         self.queued.push(Action::Arrange);
     }
 
+    /// Edit menu: wrap the selection in a frame of `def_type`.
+    pub fn request_wrap(&mut self, def_type: &str) {
+        self.queued.push(Action::Wrap(def_type.to_owned()));
+    }
+
+    /// Edit menu: unwrap / ungroup the selected region, section or
+    /// subpatch.
+    pub fn request_unwrap(&mut self) {
+        if let Some(id) = self.primary().cloned() {
+            self.queued.push(Action::Unwrap(id));
+        }
+    }
+
     /// Record a structural edit: settle, push an undo step, and ask the
     /// app to recompile the engine.
     pub fn commit(&mut self, patch: &mut PatchFile) {
@@ -547,6 +566,16 @@ impl View {
     }
 
     /// Value edits to push into the running engine (no recompile).
+    /// The status-bar hint raised this frame, if any.
+    pub fn take_hint(&mut self) -> Option<String> {
+        self.hint.take()
+    }
+
+    /// Say why a wire was refused for pointing backwards.
+    fn flow_hint(&mut self) {
+        self.hint = Some(connect::BACKWARD_HINT.to_owned());
+    }
+
     pub fn take_live_edits(&mut self) -> Vec<LiveEdit> {
         std::mem::take(&mut self.live_edits)
     }
@@ -660,7 +689,7 @@ impl View {
         for n in patch.nodes.iter().filter(|n| keep(&n.id)) {
             let p = ops::absolute_pos(patch, &n.id);
             let look = geom::look_of(n, cat, scope.as_deref());
-            let (w, h) = geom::box_size_with(patch, n, cat, look, &self.expanded);
+            let (w, h) = geom::box_size(patch, n, cat, look);
             let top = if look.is_frame() {
                 regions::HEADER_H
             } else {
@@ -752,10 +781,15 @@ impl View {
         let constant = |p: &floret_engine::spec::PortSpec| {
             p.constant && matches!(key, EditKey::Param(k) if p.param.as_ref() == Some(k))
         };
+        // A Write / Read's slot re-pairs it: the compile warnings follow.
+        let repairs = |n: &floret_engine::patch::PatchNode| {
+            pairs::is_pair_type(&n.def_type) && matches!(key, EditKey::Param(k) if k == "slot")
+        };
         let reshapes = ports::find_node(patch, node).is_some_and(|n| {
-            cat.get(&n.def_type).is_some_and(|s| {
-                s.has_dynamic_inputs || cat.resolved_inputs(s, &n.params).iter().any(constant)
-            })
+            repairs(n)
+                || cat.get(&n.def_type).is_some_and(|s| {
+                    s.has_dynamic_inputs || cat.resolved_inputs(s, &n.params).iter().any(constant)
+                })
         });
         match key {
             EditKey::Param(k) if !reshapes => {
@@ -939,7 +973,6 @@ pub fn show(
             pan: view.pan,
             zoom: z,
             scope: scope.as_deref(),
-            expanded: &view.expanded,
             decor: &decor,
         };
         let unimplemented = |id: &str| {
@@ -1109,6 +1142,7 @@ pub fn show(
                     // Alt-drag: duplicates follow the pointer, originals stay.
                     let at = ids.iter().position(|i| *i == grabbed);
                     ids = ops::duplicate(patch, &ids, 0.0, 0.0);
+                    pairs::reslot_copies(patch, cat, &ids);
                     grabbed = at.and_then(|i| ids.get(i).cloned()).unwrap_or_default();
                     view.selection = ids.clone();
                     for i in &ids {
@@ -1167,7 +1201,6 @@ pub fn show(
         let (snap, auto_grow) = (view.snap, view.auto_grow);
         let reduce_motion = view.reduce_motion;
         let (grid, grid_origin) = (view.grid, view.grid_origin);
-        let expanded = view.expanded.clone();
         match &mut view.gesture {
             Gesture::Pan => {
                 view.pan += resp.drag_delta() / z;
@@ -1239,7 +1272,7 @@ pub fn show(
                             let size = ports::find_node(patch, id)
                                 .map(|n| {
                                     let look = geom::look_of(n, cat, scope.as_deref());
-                                    geom::box_size_with(patch, n, cat, look, &expanded)
+                                    geom::box_size(patch, n, cat, look)
                                 })
                                 .unwrap_or_default();
                             regions::auto_grow(patch, id, size, &moving);
@@ -1345,9 +1378,14 @@ pub fn show(
             hits.all_pins()
                 .into_iter()
                 .map(|(r, pos)| {
-                    let ok = conn_between(from, &r)
-                        .is_some_and(|c| connect::check_connection(patch, cat, &c, true));
-                    (r, pos, ok)
+                    // Backward pins dim like incompatible ones; a drop on
+                    // one says why instead of wiring.
+                    let (ok, backward) = conn_between(from, &r).map_or((false, false), |c| {
+                        let rules = connect::check_rules(patch, cat, &c, true);
+                        let back = rules && connect::is_backward(patch, &c);
+                        (rules && !back, back)
+                    });
+                    (r, pos, ok, backward)
                 })
                 .collect(),
         )),
@@ -1356,26 +1394,47 @@ pub fn show(
     let drop_target = |p: Pos2| -> Option<PinRef> {
         let (_, pins) = affinity.as_ref()?;
         pins.iter()
-            .filter(|(_, _, ok)| *ok)
-            .map(|(r, pos, _)| (r, pos.distance(p)))
+            .filter(|(_, _, ok, _)| *ok)
+            .map(|(r, pos, _, _)| (r, pos.distance(p)))
             .filter(|(_, d)| *d <= PIN_DROP)
             .min_by(|a, b| a.1.total_cmp(&b.1))
             .map(|(r, _)| r.clone())
     };
+    // Frames that take ports (sections are backdrops without any).
     let frames: Vec<&str> = boxes
         .iter()
-        .filter(|(_, b)| b.look.is_frame())
+        .filter(|(id, b)| {
+            b.look.is_frame()
+                && !ports::find_node(patch, id).is_some_and(|n| wrap::is_section(cat, n))
+        })
         .map(|(id, _)| id.as_str())
         .collect();
-    // A wire hovering a frame border adds a port there on release.
-    let edge_drop = |from: &PinRef, p: Pos2| -> Option<regions::EdgeHit> {
+    // Over a pin the wire may not reach only because it would point
+    // backwards.
+    let backward_pin = |p: Pos2| -> bool {
+        affinity.as_ref().is_some_and(|(_, pins)| {
+            pins.iter()
+                .any(|(_, pos, _, back)| *back && pos.distance(p) <= PIN_DROP)
+        })
+    };
+    // A wire hovering a frame border adds a port there on release
+    // (`Err`: the new wire would point backwards).
+    let border_drop = |from: &PinRef, p: Pos2| -> Option<Result<regions::EdgeHit, ()>> {
         regions::edge_at(
             patch,
             frames.iter().copied(),
             view_to_canvas(area, view.pan, z, p),
         )
         .filter(|h| h.region != from.node)
+        .map(|h| {
+            if new_port_backward(patch, from, &h) {
+                Err(())
+            } else {
+                Ok(h)
+            }
+        })
     };
+    let edge_drop = |from: &PinRef, p: Pos2| border_drop(from, p).and_then(Result::ok);
     let pending_edge = match (&affinity, pointer) {
         (Some((from, _)), Some(p)) if drop_target(p).is_none() => edge_drop(from, p),
         _ => None,
@@ -1425,6 +1484,9 @@ pub fn show(
                         }
                     } else if let Some(hit) = edge_drop(&from, p) {
                         actions.push(Action::ConnectNewPort { from, hit });
+                    } else if backward_pin(p) || border_drop(&from, p).is_some() {
+                        // Nothing wires; the status bar says why.
+                        view.hint = Some(connect::BACKWARD_HINT.to_owned());
                     } else if hits.node(p).is_none() && hits.pin(p, PIN_HIT, None).is_none() {
                         let at = view.to_canvas(p);
                         if alt || mods.alt {
@@ -1482,11 +1544,6 @@ pub fn show(
                 actions.push(Action::Focus(id.clone()));
             } else if let Some(f) = hits.field(p) {
                 click_field(view, f.clone(), p);
-            } else if let Some((node, port)) = hits.toggle(p) {
-                let key = (node, port);
-                if !view.expanded.remove(&key) {
-                    view.expanded.insert(key);
-                }
             } else if let Some(pp) = hits.pill(p) {
                 if mods.shift || mods.command {
                     if let Some(i) = view.selected_ports.iter().position(|x| *x == pp) {
@@ -1547,10 +1604,19 @@ pub fn show(
                     });
                 }
             } else if let Some(id) = hits.node(p) {
-                match boxes[id.as_str()].look {
+                let b = &boxes[id.as_str()];
+                match b.look {
                     Look::Collapsed => actions.push(Action::Enter(id)),
                     Look::Region => actions.push(Action::Rename(id)),
                     Look::Comment => actions.push(Action::EditComment(id)),
+                    // A Write / Read header: name the pair.
+                    Look::Node
+                        if b.header.contains(p)
+                            && ports::find_node(patch, &id)
+                                .is_some_and(|n| pairs::is_pair_type(&n.def_type)) =>
+                    {
+                        actions.push(Action::Rename(id))
+                    }
                     _ => {}
                 }
             } else if let Some((id, _)) = boxes
@@ -1751,10 +1817,22 @@ pub fn show(
         .filter(|(_, b)| b.look.is_frame())
         .map(|(id, _)| id)
         .collect();
+    // Parents behind their children (a region in a section can be the
+    // bigger of the two), then the bigger first.
+    let depth = |id: &str| {
+        let mut d = 0;
+        let mut cur = ports::find_node(patch, id).and_then(|n| n.parent_id.as_deref());
+        while let Some(p) = cur.filter(|_| d < 64) {
+            d += 1;
+            cur = ports::find_node(patch, p).and_then(|n| n.parent_id.as_deref());
+        }
+        d
+    };
     frame_ids.sort_by(|a, b| {
         let (ba, bb) = (&boxes[a.as_str()], &boxes[b.as_str()]);
         (ba.look != Look::Frame)
             .cmp(&(bb.look != Look::Frame))
+            .then(depth(a).cmp(&depth(b)))
             .then(bb.rect.area().total_cmp(&ba.rect.area()))
     });
     let reparenting = matches!(view.gesture, Gesture::Move { reparent: true, .. });
@@ -1775,6 +1853,7 @@ pub fn show(
             &draw::FrameState {
                 kind: cat.get(def_type).and_then(|s| s.region_kind),
                 def_type,
+                tint: n.and_then(draw::section_tint),
                 selected: view.is_selected(id),
                 drop_target: (reparenting && hover_region.as_ref() == Some(*id)) || edge_hit,
                 selected_ports: &sel_ports,
@@ -1806,8 +1885,17 @@ pub fn show(
     // Thinner as you zoom in, so close-ups stay clean; a touch heavier when
     // zoomed out so wires stay visible.
     let width = (1.4 / z.sqrt()).clamp(0.8, 1.7);
+    // Wires pointing backwards (old files, nodes moved after wiring) draw
+    // in the danger colour; nothing changes them.
+    let backward: HashSet<String> = floret_engine::flow::backward_edges(patch)
+        .into_iter()
+        .collect();
     for w in &wire_list {
-        let base = theme::port_color(type_name(w.ty));
+        let base = if backward.contains(&w.id) {
+            *theme::DANGER
+        } else {
+            theme::port_color(type_name(w.ty))
+        };
         let selected = view.selected_edge.as_ref() == Some(&w.id);
         let hovered = hovered_wire.as_ref() == Some(&w.id);
         if selected {
@@ -1820,6 +1908,9 @@ pub fn show(
             (*GOLD, width + 0.6)
         } else if hovered {
             (base, width + 0.8)
+        } else if backward.contains(&w.id) {
+            // Full strength: it should catch the eye.
+            (base, width + 0.4)
         } else {
             (draw::mix_wire(base), width)
         };
@@ -1873,6 +1964,19 @@ pub fn show(
         }
     }
 
+    // ── Write → Read pairs: the selected halves' teleport arcs (under the
+    // nodes) and the partners of hovered / selected halves (over them).
+    let pair_links = pair_link::PairLinks::find(
+        patch,
+        &boxes,
+        pointer
+            .filter(|_| resp.hovered())
+            .and_then(|p| hits.node(p))
+            .as_deref(),
+        &view.selection,
+    );
+    pair_links.draw_links(&painter, &boxes, z);
+
     // ── Pins and nodes.
     let pin_look = |node: &str, side: Side, port: &str| -> PinLook {
         match &affinity {
@@ -1882,7 +1986,7 @@ pub fn show(
                     PinLook::Source
                 } else if pins
                     .iter()
-                    .any(|(r, _, ok)| *ok && r.node == node && r.side == side && r.port == port)
+                    .any(|(r, _, ok, _)| *ok && r.node == node && r.side == side && r.port == port)
                 {
                     PinLook::Match
                 } else {
@@ -1925,7 +2029,7 @@ pub fn show(
         Some(TextEditing {
             target: EditTarget::Field(f),
             ..
-        }) => Some(f.clone()),
+        }) => Some(Field::clone(f)),
         _ => None,
     };
     let now = ui.input(|i| i.time);
@@ -2013,6 +2117,8 @@ pub fn show(
             ctx.graphics_mut(|g| g.entry(painter.layer_id()).transform_range(first, last, t));
         }
     }
+
+    pair_links.draw_lit(&painter, &boxes, z);
 
     // ── Minimap (bottom-right).
     if view.show_minimap {
@@ -2235,8 +2341,9 @@ fn click_field(view: &mut View, f: Field, at: Pos2) {
             };
             view.close_overlays();
             view.editing = Some(TextEditing {
-                rect: view.canvas_rect(f.rect),
-                target: EditTarget::Field(f),
+                // Over the value part of a value box.
+                rect: view.canvas_rect(f.value_rect),
+                target: EditTarget::Field(Box::new(f)),
                 text,
                 first: true,
             });
@@ -2489,6 +2596,7 @@ fn overlays(
 fn finish_edit(ed: TextEditing) -> Option<Action> {
     match ed.target {
         EditTarget::Field(f) => {
+            let f = *f;
             let value = match f.axis {
                 Some(a) => {
                     let v: f64 = ed
@@ -2521,8 +2629,57 @@ fn finish_edit(ed: TextEditing) -> Option<Action> {
     }
 }
 
-/// A pin, its screen position, and whether the dragged wire may land on it.
-type PinMatch = (PinRef, Pos2, bool);
+/// Why a wrap / group didn't happen.
+const WRAP_BACKWARD: &str =
+    "Can't wrap: a wire would point backwards. Wires flow left to right — use a Write → Read pair for feedback";
+const UNWRAP_BACKWARD: &str =
+    "Can't unwrap: a wire would point backwards. Wires flow left to right — use a Write → Read pair for feedback";
+
+/// A pin, its screen position, whether the dragged wire may land on it,
+/// and whether it may not only because the wire would point backwards.
+type PinMatch = (PinRef, Pos2, bool, bool);
+
+/// The wire a drop on a frame border makes: `from` to the new port `pid`
+/// on `region`.
+fn new_port_conn(from: &PinRef, region: &str, pid: &str) -> Conn {
+    match from.side {
+        Side::Out => Conn::new(
+            &from.node,
+            &Side::Out.handle(&from.port),
+            region,
+            &Side::In.handle(pid),
+        ),
+        Side::In => Conn::new(
+            region,
+            &Side::Out.handle(pid),
+            &from.node,
+            &Side::In.handle(&from.port),
+        ),
+    }
+}
+
+/// Whether dropping `from`'s wire on a frame border would make a backward
+/// wire (tried on a copy: the port doesn't exist yet).
+fn new_port_backward(patch: &PatchFile, from: &PinRef, hit: &regions::EdgeHit) -> bool {
+    let mut p = patch.clone();
+    regions::add_port(&mut p, &hit.region, from.ty, hit.direction, Some(hit.y))
+        .is_some_and(|pid| connect::is_backward(&p, &new_port_conn(from, &hit.region, &pid)))
+}
+
+/// Wire `c`, or (when it would point backwards) leave the patch alone and
+/// say why in the status bar. Returns the new edge id.
+fn connect_or_hint(
+    patch: &mut PatchFile,
+    cat: &Catalogue,
+    view: &mut View,
+    c: &Conn,
+) -> Option<String> {
+    if connect::refused_by_flow(patch, cat, c) {
+        view.flow_hint();
+        return None;
+    }
+    connect::connect(patch, cat, c)
+}
 
 /// The search for splitting wire `eid` with a new node.
 fn insertion_search(
@@ -2633,6 +2790,41 @@ fn menu_items(
             {
                 items.push(MenuItem::new("Rename…", Action::Rename(id.clone())).key("Dbl-click"));
             }
+            if node.is_some_and(|n| pairs::is_pair_type(&n.def_type)) {
+                items
+                    .push(MenuItem::new("Name pair…", Action::Rename(id.clone())).key("Dbl-click"));
+            }
+            if node.is_some_and(|n| wrap::is_section(cat, n)) {
+                let screen = view.menu.as_ref().map_or(Pos2::ZERO, |m| m.0);
+                items.push(MenuItem::new(
+                    "Colour…",
+                    Action::SectionColor(id.clone(), screen),
+                ));
+            }
+            // Bypass the selection's bypassable nodes (B).
+            let bypassable: Vec<String> = view
+                .selection
+                .iter()
+                .filter(|s| {
+                    ports::find_node(patch, s)
+                        .and_then(|n| cat.get(&n.def_type))
+                        .is_some_and(floret_engine::bypass::can_bypass)
+                })
+                .cloned()
+                .collect();
+            if !bypassable.is_empty() {
+                let all_off = bypassable
+                    .iter()
+                    .all(|s| ports::find_node(patch, s).is_some_and(|n| n.bypassed));
+                items.push(MenuItem::separator());
+                items.push(
+                    MenuItem::new(
+                        if all_off { "Turn back on" } else { "Bypass" },
+                        Action::ToggleBypass(bypassable),
+                    )
+                    .key("B"),
+                );
+            }
             if !regions::is_drawable_node(patch, cat, id) {
                 let parent = node.and_then(|n| n.parent_id.clone());
                 let scope = view.scope().map(str::to_owned);
@@ -2668,7 +2860,24 @@ fn menu_items(
                     items.extend(region_items);
                 }
             }
+            // Built from the selection: wrap it in a frame, or dissolve the
+            // frame under the pointer.
             items.push(MenuItem::separator());
+            let scope = view.scope();
+            let wrappable: Vec<String> = view
+                .top_level_selection(patch)
+                .into_iter()
+                .filter(|s| Some(s.as_str()) != scope)
+                .collect();
+            if wrap::can_wrap(patch, &wrappable) {
+                for ty in wrap::WRAP_TYPES {
+                    let label = cat.get(ty).map_or(ty, |s| s.label.as_str());
+                    items.push(MenuItem::new(
+                        format!("Wrap in {label}"),
+                        Action::Wrap(ty.to_owned()),
+                    ));
+                }
+            }
             items.push(
                 MenuItem::new(
                     if n > 1 {
@@ -2680,6 +2889,12 @@ fn menu_items(
                 )
                 .key(shortcut("G")),
             );
+            if Some(id.as_str()) != scope && wrap::can_unwrap(patch, cat, id) {
+                items.push(MenuItem::new(
+                    unwrap_label(patch, cat, id),
+                    Action::Unwrap(id.clone()),
+                ));
+            }
             items.push(MenuItem::separator());
             items.push(
                 MenuItem::new(
@@ -2766,6 +2981,21 @@ fn menu_items(
     }
 }
 
+/// "Ungroup subpatch", "Unwrap section", "Unwrap ForEach" …
+fn unwrap_label(patch: &PatchFile, cat: &Catalogue, id: &str) -> String {
+    let n = ports::find_node(patch, id);
+    if n.is_some_and(|n| subpatch::is_subpatch(cat, n)) {
+        return "Ungroup subpatch".into();
+    }
+    if n.is_some_and(|n| wrap::is_section(cat, n)) {
+        return "Unwrap section".into();
+    }
+    let label = n
+        .and_then(|n| cat.get(&n.def_type))
+        .map_or("region", |s| s.label.as_str());
+    format!("Unwrap {label}")
+}
+
 /// "⌘V" on macOS, "Ctrl+V" elsewhere.
 fn shortcut(k: &str) -> &'static str {
     let mac = cfg!(target_os = "macos");
@@ -2850,6 +3080,9 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             }
             if let Some(id) = ops::place_node(patch, cat, &ty, view.snapped(at), scope.as_deref()) {
                 view.select_only(&id);
+                // A Write / Read half arrives with its partner: both
+                // selected, the placed one primary (last).
+                view.selection.splice(0..0, pairs::partners(patch, &id));
                 view.commit(patch);
             }
         }
@@ -2907,6 +3140,8 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                     .into_iter()
                     .filter(|id| Some(id.as_str()) != scope.as_deref())
                     .collect();
+                // A Write / Read half takes its partner along.
+                let ids = pairs::with_partners(patch, &ids);
                 changed |= ops::delete_nodes(patch, &ids) > 0;
             } else if let Some(e) = view.selected_edge.take() {
                 changed |= connect::remove_edge(patch, &e);
@@ -2922,8 +3157,11 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 return;
             }
             let new = ops::duplicate(patch, &ids, 24.0, 24.0);
+            // Copied Write / Read halves become a pair of their own.
+            let added = pairs::reslot_copies(patch, cat, &new);
             let tops = new.len().min(ids.len());
             view.selection = new[..tops].to_vec();
+            view.selection.splice(0..0, added);
             for i in &new[..tops] {
                 view.raise(i);
             }
@@ -2951,7 +3189,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             }
         }
         Action::Connect(c) => {
-            if connect::connect(patch, cat, &c).is_some() {
+            if connect_or_hint(patch, cat, view, &c).is_some() {
                 view.selected_edge = None;
                 view.commit(patch);
             }
@@ -2962,21 +3200,8 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             else {
                 return;
             };
-            let c = match from.side {
-                Side::Out => Conn::new(
-                    &from.node,
-                    &Side::Out.handle(&from.port),
-                    &hit.region,
-                    &Side::In.handle(&pid),
-                ),
-                Side::In => Conn::new(
-                    &hit.region,
-                    &Side::Out.handle(&pid),
-                    &from.node,
-                    &Side::In.handle(&from.port),
-                ),
-            };
-            if connect::connect(patch, cat, &c).is_none() {
+            let c = new_port_conn(&from, &hit.region, &pid);
+            if connect_or_hint(patch, cat, view, &c).is_none() {
                 regions::remove_port(patch, &hit.region, &pid);
                 return;
             }
@@ -2997,7 +3222,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 Side::Out => Conn::new(&from.node, &Side::Out.handle(&from.port), &id, "in-in"),
                 Side::In => Conn::new(&id, "out-out", &from.node, &Side::In.handle(&from.port)),
             };
-            connect::connect(patch, cat, &c);
+            connect_or_hint(patch, cat, view, &c);
             view.select_only(&id);
             view.commit(patch);
         }
@@ -3012,10 +3237,73 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                 .into_iter()
                 .filter(|id| Some(id.as_str()) != scope.as_deref())
                 .collect();
-            if let Some(id) = subpatch::group(patch, cat, &ids) {
-                view.select_only(&id);
-                view.commit(patch);
+            // Like the other wraps: refused if a wire would point back.
+            let mut work = patch.clone();
+            let Some(id) = subpatch::group(&mut work, cat, &ids) else {
+                return;
+            };
+            if wrap::new_backward(patch, &work) {
+                view.hint = Some(WRAP_BACKWARD.to_owned());
+                return;
             }
+            *patch = work;
+            view.select_only(&id);
+            view.commit(patch);
+        }
+        Action::Wrap(def_type) => {
+            let ids: Vec<String> = view
+                .top_level_selection(patch)
+                .into_iter()
+                .filter(|id| Some(id.as_str()) != scope.as_deref())
+                .collect();
+            let size_fn = sizes_of(patch, cat);
+            match wrap::wrap(patch, cat, &ids, &def_type, &size_fn) {
+                Ok(id) => {
+                    view.select_only(&id);
+                    view.commit(patch);
+                }
+                Err(wrap::Refused::Backward) => view.hint = Some(WRAP_BACKWARD.to_owned()),
+                Err(wrap::Refused::Invalid) => {}
+            }
+        }
+        Action::Unwrap(id) => {
+            if Some(id.as_str()) == scope.as_deref() {
+                return;
+            }
+            match wrap::unwrap(patch, cat, &id) {
+                Ok(children) => {
+                    view.selection = children;
+                    view.selected_edge = None;
+                    view.selected_ports.clear();
+                    view.stack = subpatch::valid_stack(patch, cat, &view.stack);
+                    view.commit(patch);
+                    view.prune_selection(patch);
+                }
+                Err(wrap::Refused::Backward) => {
+                    view.hint = Some(UNWRAP_BACKWARD.to_owned());
+                }
+                Err(wrap::Refused::Invalid) => {}
+            }
+        }
+        Action::SectionColor(id, screen) => {
+            let Some(n) = ports::find_node(patch, &id) else {
+                return;
+            };
+            let before = n
+                .params
+                .get("color")
+                .cloned()
+                .unwrap_or_else(|| Json::String(draw::SECTION_DEFAULT.to_owned()));
+            let rgba = values::as_rgba(&before);
+            view.close_overlays();
+            view.color = Some(ColorState {
+                node: id,
+                key: EditKey::Param("color".into()),
+                color: popups::color32(rgba),
+                hex: values::hex(rgba),
+                screen,
+                before,
+            });
         }
         Action::Enter(id) => {
             if subpatch::is_subpatch_id(patch, cat, &id) && view.scope() != Some(id.as_str()) {
@@ -3060,25 +3348,38 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             } else {
                 Rect::from_min_size(
                     pos2(p.x as f32 + 18.0, p.y as f32 + 4.0),
-                    vec2(w as f32 - 36.0, geom::HEADER_H - 8.0),
+                    // A pair's name gets room to type (the card grows to fit).
+                    vec2(
+                        (w as f32 - 36.0).max(if pairs::is_pair_type(&n.def_type) {
+                            180.0
+                        } else {
+                            0.0
+                        }),
+                        geom::HEADER_H - 8.0,
+                    ),
                 )
             };
-            let label = n
-                .params
-                .get("label")
-                .and_then(|v| v.as_str())
-                .map(str::to_owned)
-                .or_else(|| cat.get(&n.def_type).map(|s| s.label.clone()))
-                .unwrap_or_default();
+            // A Write / Read half edits the pair's name (blank: none).
+            let pair = pairs::is_pair_type(&n.def_type);
+            let label = if pair {
+                pairs::name(n).unwrap_or_default().to_owned()
+            } else {
+                n.params
+                    .get("label")
+                    .and_then(|v| v.as_str())
+                    .map(str::to_owned)
+                    .or_else(|| cat.get(&n.def_type).map(|s| s.label.clone()))
+                    .unwrap_or_default()
+            };
             view.close_overlays();
             view.editing = Some(TextEditing {
-                target: EditTarget::Field(Field::new(
+                target: EditTarget::Field(Box::new(Field::new(
                     Rect::NOTHING,
                     &id,
-                    EditKey::Param("label".into()),
+                    EditKey::Param(if pair { "name" } else { "label" }.into()),
                     FieldKind::Text,
                     Json::String(label.clone()),
-                )),
+                ))),
                 text: label,
                 rect,
                 first: true,
@@ -3093,6 +3394,16 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
         Action::RenamePort { region, port, name } => {
             if regions::rename_port(patch, &region, &port, &name) {
                 view.history.push(patch, None);
+            }
+        }
+        Action::SetValue { node, key, value }
+            if key == EditKey::Param("name".into())
+                && ports::find_node(patch, &node)
+                    .is_some_and(|n| pairs::is_pair_type(&n.def_type)) =>
+        {
+            // Naming one half names its partner: one undo step.
+            if pairs::rename(patch, &node, value.as_str().unwrap_or_default()) {
+                view.commit(patch);
             }
         }
         Action::SetValue { node, key, value } => {
@@ -3203,7 +3514,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             view.close_overlays();
             view.select_only(&id);
             view.editing = Some(TextEditing {
-                target: EditTarget::Field(Field {
+                target: EditTarget::Field(Box::new(Field {
                     multiline: true,
                     ..Field::new(
                         rect,
@@ -3212,7 +3523,7 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
                         FieldKind::Text,
                         Json::String(text.clone()),
                     )
-                }),
+                })),
                 text,
                 rect,
                 first: true,
@@ -3302,7 +3613,10 @@ fn paste(patch: &mut PatchFile, view: &mut View, clip: &PatchFile, at: Position)
             regions::set_parent(patch, id, Some(&scope));
         }
     }
+    // Pasted Write / Read halves become a pair of their own.
+    let added = pairs::reslot_copies(patch, Catalogue::builtin(), &ids);
     view.selection = ids[..tops].to_vec();
+    view.selection.splice(0..0, added);
     view.selected_edge = None;
     for i in &ids[..tops] {
         view.raise(i);
@@ -3354,29 +3668,33 @@ fn place_from_search(
                     }
                     Side::In => Conn::new(&id, &Side::Out.handle(&p), node, &Side::In.handle(port)),
                 };
-                connect::connect(patch, cat, &c);
+                connect_or_hint(patch, cat, view, &c);
             }
         }
         (Purpose::Insert { edge }, Fit::Insert { src, dst }) => {
             if let Some((i, o)) = search::insertion_ports(cat, spec, &params, *src, *dst) {
-                connect::remove_edge(patch, &edge.id);
                 if let (Some(sh), Some(th)) = (&edge.source_handle, &edge.target_handle) {
-                    connect::connect(
-                        patch,
-                        cat,
-                        &Conn::new(&edge.source, sh, &id, &Side::In.handle(&i)),
-                    );
-                    connect::connect(
-                        patch,
-                        cat,
-                        &Conn::new(&id, &Side::Out.handle(&o), &edge.target, th),
-                    );
+                    let a = Conn::new(&edge.source, sh, &id, &Side::In.handle(&i));
+                    let b = Conn::new(&id, &Side::Out.handle(&o), &edge.target, th);
+                    // Splitting the wire must keep both halves flowing
+                    // right: otherwise the wire stays and nothing is added.
+                    if connect::is_backward(patch, &a) || connect::is_backward(patch, &b) {
+                        ops::delete_nodes(patch, std::slice::from_ref(&id));
+                        view.flow_hint();
+                        return;
+                    }
+                    connect::remove_edge(patch, &edge.id);
+                    connect::connect(patch, cat, &a);
+                    connect::connect(patch, cat, &b);
+                } else {
+                    connect::remove_edge(patch, &edge.id);
                 }
             }
         }
         _ => {}
     }
     view.select_only(&id);
+    view.selection.splice(0..0, pairs::partners(patch, &id));
     view.commit(patch);
 }
 

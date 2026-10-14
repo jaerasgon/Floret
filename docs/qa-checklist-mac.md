@@ -62,7 +62,7 @@ from the repo folder.
 
 ## Nodes browser and search
 
-- [ ] Cmd+\ shows and hides the Nodes panel. Its groups (Source, Draw, …) open and close.
+- [ ] Cmd+\ shows and hides the Nodes panel (a dock tab, left of the canvas). Its groups (Source, Draw, …) open and close.
 - [ ] Typing in the Nodes panel's search filters the list. Dragging a node from it places it where you drop it, and a click adds it mid-canvas.
 - [ ] Tab search finds nodes by name (`ellipse`), by type id (`draw/ellipse`) and by old category name (`Style`).
 - [ ] Hovering over a node in the Nodes panel shows its description. Selecting a node on the canvas shows its docs in the Help tab.
@@ -140,17 +140,24 @@ from the repo folder.
 
 ## Docking and panels
 
+- [ ] A fresh install (or one updated from an earlier build): the canvas fills the left of the window as a tab titled CANVAS; on the right the preview sits on top and Inspector, Presets, Help, Library, Shader and Profiler are tabbed below. If the Nodes panel was showing before the update, it is a narrow NODES column at the far left.
 - [ ] Drag the Help tab over the Library pane. While you drag, the region it will land in lights up gold (the top or bottom half to split, the middle to join as a tab, the tab bar to slot in between tabs), and the pane is outlined. Drop it: it lands exactly there.
-- [ ] Drag a tab around inside the dock and let go anywhere in a pane: it always docks, never pops out as a floating window.
-- [ ] Drag a tab off the dock over the canvas: a gold outline shows where the window will be. Let go: the tab floats there as a window.
-- [ ] Right-click a tab → Float: it floats as a window. Right-click → Close closes it; a middle click closes it too. Preview tabs have Float but no Close.
-- [ ] A floating window has a − and a × at the right of its tab bar. − shrinks it to its tab bar; the button (or the arrow on its left) brings it back at its old size. × closes the window. A floating preview's × puts the preview back under the others.
-- [ ] Move and resize a floating window, quit Floret and reopen it: the window is where you left it, at the same size.
+- [ ] Every panel docks anywhere, the canvas too: drag the CANVAS tab to the right half of the side column, then drag Inspector to the left of the canvas. Both land where the highlight showed, and the canvas keeps working (pan, zoom, add a node).
+- [ ] Drag a tab around and let go anywhere in a pane: it always docks, never pops out as a floating window.
+- [ ] Drag the Library tab and hold ⌥ Option while you let go: a gold card shows where it will float (the gold drop highlight goes away while ⌥ is down), and it floats there as a window. Let go of ⌥ before the mouse: it docks instead.
+- [ ] ⌥-drop the canvas to float it. In the floating canvas, drag a value on a node and wire two nodes: both work as in the docked canvas.
+- [ ] Right-click a tab → Float: it floats as a window. Right-click → Close closes it; a middle click closes it too.
+- [ ] Every tab has a faint × at its right end. Hover the tab, or bring it to the front: the × gets brighter. Hover the × itself: it's full strength on a shaded square. Click it: the panel closes. View → Panels (or the tab bar's +) brings it back.
+- [ ] Close the canvas with its ×, then open View → Panels → Canvas: it comes back at the left of the window. Close the Nodes panel and press Cmd+\: it comes back left of the canvas.
+- [ ] Stack the canvas behind another tab (drop Inspector onto the canvas's tab bar, so Inspector shows). From the Library, insert a saved subpatch: switch back to the canvas, and the subpatch is there, selected. The Subpatches panel's Focus and the toolbar's Arrange also work while the canvas is hidden. (Edit-menu commands such as Undo act on the canvas, so they need it showing.)
+- [ ] Close a preview with its ×: it stays closed while you edit. View → Panels → Preview (unticked now) brings every preview back; opening another patch does too.
+- [ ] A floating window has a − and a × at the right of its tab bar. − shrinks it to its tab bar; the button (or the arrow on its left) brings it back at its old size. × closes the window. A floating preview's × puts the preview back under the others. The tab right under the − × has no × of its own; it closes from its right-click menu or a middle click.
+- [ ] Move and resize a floating window, quit Floret and reopen it: the window is where you left it, at the same size. Close the canvas, quit and reopen: it is still closed (View → Panels brings it back).
 - [ ] Drag a tab back from a floating window into the dock: it docks where the highlight showed.
-- [ ] Drag the dividers between panes: they're easy to grab, and a pane can be made much smaller than before. Split a pane left/right in the side dock: both halves can be resized.
-- [ ] With the dock narrow, the tabs that don't fit are not cut off: scroll the tab bar (two-finger swipe over it, or its thin scroll bar).
-- [ ] View → Panels lists Inspector, Presets, Help, Library, Shader and Profiler, each ticked while open. Untick one: it closes. Tick it again: it reopens and comes to the front.
-- [ ] Close a few panels and float one, then View → Reset Layout: every panel is back where it started. The tab bar's + menu still lists the closed panels and Reset layout.
+- [ ] Drag the dividers between panes: they're easy to grab, and a pane can be made much smaller than before. Split a pane left/right in the side column: both halves can be resized.
+- [ ] With a pane narrow, the tabs that don't fit are not cut off: scroll the tab bar (two-finger swipe over it, or its thin scroll bar).
+- [ ] View → Panels lists Canvas, Nodes, Preview, Inspector, Presets, Help, Library, Shader, Profiler and Subpatches, each ticked while open. Untick one: it closes. Tick it again: it reopens and comes to the front. View → Nodes Panel, the toolbar's sidebar button and Settings → Nodes panel open and close the same Nodes tab.
+- [ ] Close a few panels (the canvas too) and float one, then View → Reset Layout: every panel is back where it started (the Nodes column stays if it was open). The tab bar's + menu still lists the closed panels and Reset layout.
 - [ ] Open `grid-ripple` and add two more Renderer nodes (Tab, `renderer`). Three preview panes show, stacked one under another with even heights, each titled after its Renderer (or Preview, Preview 2, Preview 3).
 - [ ] Wire something into the second Renderer: only its pane shows it. Delete the middle Renderer: its pane closes and the other two keep their pictures, zoom and pan.
 - [ ] With three Renderers: Focus mode, Output → Fullscreen and Export (PNG, video, variations) from each pane's header act on that pane's Renderer. Each pane can be dragged elsewhere or floated.

@@ -25,7 +25,7 @@ native Mac app.
   subdivision, Truchet and wave-function-collapse tiles, wallpaper
   symmetry, stippling, plexus lines, contour maps, layouts that animate.
 - **Bypass** any node to compare with and without it (B).
-- **146 samples**, including 48 short tutorials, in the Library
+- **175 samples**, including 48 short tutorials, in the Library
   (File → Samples Library, Cmd+Shift+O).
 - **Variations and presets:** roll a new variation with Cmd+Shift+R, save
   the ones you like as presets, and morph between them.

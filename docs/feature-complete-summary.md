@@ -117,6 +117,7 @@ frozen copies in `native/fixtures/samples`, which are unchanged.
 - **Fractal trees:** `noc-fractal-tree` is removed from the Library because it was the same patch as `fractal-tree-spread`.
   - `fractal-tree-spread` is now named "Fractal Tree" and carries the NOC description.
   - The frozen fixture and trace of `noc-fractal-tree` stay, so parity still covers it.
+  - Later, the owner removed `fractal-tree-spread` too (its recursion is baked into number spreads); `fractal-tree-generative` stays, now named "Fractal Tree". Its frozen fixture and trace stay for parity in the same way.
 - **Off-centre pictures:** their positions were written for top-left anchors, or an offset pushed a grid off the origin. They are now centred:
   - single shapes: `tut-01`, `tut-02`, `tut-05`, `tut-14`, `tut-15`, `tut-16`, `tut-19`, `tut-30`, `tut-33`, `tut-45`, `noc-drag` (the water now fills the canvas), `pixel-sort` and `datamosh`;
   - rows and grids: `tut-06`, `tut-17`, `tut-42`, `tut-43` (also twice the size), `curl-flow` (it was in one corner), `force-field`, `ripple-field` and `tone-surface`;

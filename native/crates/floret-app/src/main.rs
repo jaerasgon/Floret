@@ -42,6 +42,7 @@ mod sample_equiv;
 mod sample_equivalence;
 #[cfg(test)]
 mod sample_play;
+mod sample_scripts;
 #[cfg(test)]
 mod sample_sweep;
 mod shader_panel;
@@ -59,6 +60,15 @@ pub struct Sample {
     pub category: &'static str,
     pub description: &'static str,
     pub flora: &'static str,
+    /// The frame the Library cover shows (`coverFrame`, 1-based at 60 fps;
+    /// 0 for [`thumbs::FRAMES`]).
+    pub cover_frame: u32,
+    /// The cover is rendered with the sample's scripted performance
+    /// (`coverPlay`, [`sample_scripts`]).
+    pub cover_play: bool,
+    /// A bundled cover (`samples/covers/<id>.png`), shown instead of a
+    /// render: for samples that draw what a device gives them.
+    pub cover: Option<&'static [u8]>,
 }
 
 include!(concat!(env!("OUT_DIR"), "/samples.rs"));

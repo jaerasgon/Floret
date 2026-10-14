@@ -50,17 +50,17 @@ prompt you write must tell the agent to read this file first.
 
 ## Terminal commands for the owner
 
-The owner's clone is at `/Users/jaafer/github/Floret`. Every command you
-give them to paste into Terminal must start with
-`cd /Users/jaafer/github/Floret`, because Terminal opens in their home
-folder. Give the whole block, ready to paste, e.g.:
+The owner switches between Macs and user accounts, so the clone's folder
+differs from machine to machine. Never give a command that assumes a path
+or that Terminal is already in the folder. Always give this one line,
+which finds the clone (or clones it into `~/github/Floret`), updates
+`main` and installs:
 
 ```
-cd /Users/jaafer/github/Floret
-git fetch origin
-git checkout claude/local-testing-setup-80hq09
-./floret.sh install
+F=$(find ~ -maxdepth 4 -name floret.sh -path "*Floret*" 2>/dev/null | head -1); if [ -z "$F" ]; then mkdir -p ~/github && git clone https://github.com/jaerasgon/Floret.git ~/github/Floret && F=~/github/Floret/floret.sh; fi; cd "$(dirname "$F")" && git fetch origin && git checkout main && git pull && ./floret.sh install
 ```
+
+To try another branch, swap both `main`s for that branch's name.
 
 ## How the rules are checked
 

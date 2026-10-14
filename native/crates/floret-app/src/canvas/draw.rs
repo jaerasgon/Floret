@@ -2,20 +2,19 @@
 //! node boxes with rows and inline fields, pins, chips and tooltips.
 
 use super::geom::{
-    value_text, Field, FieldLabel, Look, NodeBox, PinGeom, BOX_PAD, CHECK, CHECK_GAP, FOOT_FONT,
-    HEADER_H, LABEL_FONT, PIN_R, SELECT_ARROW, SWATCH_W, VALUE_FONT,
+    self as geom, value_text, Field, FieldLabel, Look, NodeBox, PinGeom, BOX_PAD, CHECK, CHECK_GAP,
+    FOOT_FONT, HEADER_H, LABEL_FONT, PIN_R, SELECT_ARROW, SWATCH_W, VALUE_FONT,
 };
 use crate::editor::ports::type_name;
 use crate::editor::values::{self, FieldKind};
 use crate::theme::{
     self, BG_0, BG_1, BG_2, BG_3, BORDER, DANGER, FG_0, FG_1, FG_2, FG_3, GOLD, GOLD_TEXT,
-    SPREAD_PIN,
 };
 use eframe::egui::{
     self, pos2, vec2, Align2, Color32, CornerRadius, FontId, Id, LayerId, Order, Painter, Pos2,
     Rect, Stroke, StrokeKind, Vec2,
 };
-use floret_engine::spec::RegionKind;
+use floret_engine::spec::{PortType, RegionKind};
 
 #[derive(Clone, Copy)]
 pub enum PinLook {
@@ -66,15 +65,7 @@ pub const FILL_PINS_BELOW: f32 = 0.3;
 /// pins it can reach light up and the rest dim.
 pub fn pin(p: &Painter, g: &PinGeom, look: PinLook, st: PinState, pulse: f32, z: f32) {
     let pos = g.pos;
-    let mut color = if g.spread {
-        *SPREAD_PIN
-    } else {
-        theme::port_color(type_name(g.ty))
-    };
-    if g.constant {
-        // Constant pins: set once at compile.
-        color = color.gamma_multiply(0.55);
-    }
+    let color = pin_color(g.ty, g.constant);
     match look {
         PinLook::Dim => {
             p.circle(pos, PIN_R * z, color.gamma_multiply(0.18), Stroke::NONE);
@@ -101,6 +92,37 @@ pub fn pin(p: &Painter, g: &PinGeom, look: PinLook, st: PinState, pulse: f32, z:
                 p.circle(pos, r - w / 2.0, BG_2, Stroke::new(w, color));
             }
         }
+    }
+}
+
+/// A pin's colour: its type's, spread or not (the spread icon after its
+/// name says it carries a list); constant pins (set once at compile) are
+/// dimmer.
+pub fn pin_color(ty: PortType, constant: bool) -> Color32 {
+    let color = theme::port_color(type_name(ty));
+    if constant {
+        color.gamma_multiply(0.55)
+    } else {
+        color
+    }
+}
+
+/// The spread icon: three short stacked bars, sized to a label in
+/// `font_size` (canvas units), from `x`, centred on `y`.
+pub fn spread_icon(p: &Painter, x: f32, y: f32, font_size: f32, color: Color32, z: f32) {
+    let w = geom::spread_icon_w(font_size) * z;
+    // Whole-pixel spacing with at least a pixel between bars, so the three
+    // stay apart (not one block) when zoomed out.
+    let pitch = (0.24 * font_size * z).round().max(2.0);
+    let bar = (0.12 * font_size * z).clamp(1.0, pitch / 2.0);
+    let mid = p.round_to_pixel_center(y);
+    for k in [-1.0, 0.0, 1.0] {
+        let c = mid + k * pitch;
+        p.rect_filled(
+            Rect::from_min_max(pos2(x, c - bar / 2.0), pos2(x + w, c + bar / 2.0)),
+            bar / 2.0,
+            color,
+        );
     }
 }
 
@@ -314,13 +336,22 @@ pub fn frame(p: &Painter, b: &NodeBox, st: &FrameState, z: f32) {
             Stroke::new(if on { 1.5 } else { 1.0 }, if on { *GOLD } else { color }),
             StrokeKind::Inside,
         );
-        p.text(
-            pl.rect.center(),
-            Align2::CENTER_CENTER,
-            &pl.name,
-            FontId::proportional(9.0 * z),
+        let g = p.layout_no_wrap(
+            pl.name.clone(),
+            FontId::proportional(geom::PILL_FONT * z),
             *FG_0,
         );
+        let (gw, gh) = (g.size().x, g.size().y);
+        let y = pl.rect.center().y;
+        if pl.spread && z > 0.3 {
+            // The name and its spread icon, centred together.
+            let mark = geom::pill_mark_x(pl.rect, gw, z);
+            let x = mark - geom::MARK_GAP * z - gw;
+            p.galley(pos2(x, y - gh / 2.0), g, *FG_0);
+            spread_icon(p, mark, y, geom::PILL_FONT, color, z);
+        } else {
+            p.galley(pos2(pl.rect.center().x - gw / 2.0, y - gh / 2.0), g, *FG_0);
+        }
     }
     // Resize grip.
     let c = b.rect.right_bottom() - vec2(4.0, 4.0) * z;
@@ -521,7 +552,7 @@ fn node_card(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                     FontId::proportional(8.5 * z),
                     *FG_2,
                 );
-                x += 9.0 * z;
+                x += geom::C_ADV * z;
             }
             if row.integer {
                 p.text(
@@ -531,6 +562,10 @@ fn node_card(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
                     FontId::monospace(9.0 * z),
                     *FG_2,
                 );
+                x += geom::INT_ADV * z;
+            }
+            if let Some(ty) = row.spread {
+                spread_icon(p, x, row.y, LABEL_FONT, pin_color(ty, row.constant), z);
             }
         }
     }
@@ -539,8 +574,14 @@ fn node_card(p: &Painter, b: &NodeBox, st: &NodeState, z: f32) {
     let foot_font = FontId::proportional(FOOT_FONT * z);
     for o in &b.outs {
         let g = p.layout_no_wrap(o.label.clone(), foot_font.clone(), *FG_1);
-        let x = b.rect.right() - 10.0 * z - g.size().x;
-        p.galley(pos2(x, o.y - g.size().y / 2.0), g, *FG_1);
+        let mut right = b.rect.right() - 10.0 * z;
+        if let Some(ty) = o.spread {
+            // `name ≡ ●`: the icon between the label and its pin.
+            let w = geom::spread_icon_w(FOOT_FONT) * z;
+            spread_icon(p, right - w, o.y, FOOT_FONT, pin_color(ty, false), z);
+            right -= geom::SPREAD_W * z;
+        }
+        p.galley(pos2(right - g.size().x, o.y - g.size().y / 2.0), g, *FG_1);
     }
     for f in &b.fields {
         let editing = st.editing.is_some_and(|e| e.rect == f.rect);
@@ -609,6 +650,10 @@ fn value_box(p: &Painter, f: &Field, tag: &FieldLabel, z: f32, hover: Option<Pos
                 FontId::proportional(8.5 * z),
                 *FG_2,
             );
+        }
+        if let Some(ty) = tag.spread {
+            let at = x + w + geom::spread_x(tag.constant, false) * z;
+            spread_icon(p, at, y, LABEL_FONT, pin_color(ty, tag.constant), z);
         }
     };
     let radius = 4.0 * z;
@@ -918,6 +963,28 @@ pub fn tooltip(ctx: &egui::Context, at: Pos2, title: &str, kind: &str, body: &st
         Stroke::new(1.0, BORDER),
     );
     p.galley(pos2(r.left() + 8.0, line_y + 4.0), body_g, *GOLD_TEXT);
+}
+
+/// A one-line tooltip (the spread icon's "spread").
+pub fn hint(ctx: &egui::Context, at: Pos2, text: &str) {
+    let p = ctx.layer_painter(LayerId::new(Order::Tooltip, Id::new("floret-canvas-tip")));
+    let g = p.layout_no_wrap(text.to_owned(), FontId::proportional(11.5), *FG_0);
+    let size = g.size() + vec2(16.0, 10.0);
+    let screen = ctx.content_rect();
+    let mut min = at + vec2(14.0, -size.y - 6.0);
+    min.x = min.x.min(screen.right() - size.x - 4.0);
+    if min.y < screen.top() + 4.0 {
+        min.y = at.y + 14.0;
+    }
+    let r = Rect::from_min_size(min, size);
+    p.rect(
+        r,
+        6.0,
+        theme::BG_1,
+        Stroke::new(1.0, BORDER),
+        StrokeKind::Inside,
+    );
+    p.galley(r.min + vec2(8.0, 5.0), g, *FG_0);
 }
 
 /// Translucent rectangle while drawing a new region.

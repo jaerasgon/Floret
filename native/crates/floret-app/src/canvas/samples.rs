@@ -228,10 +228,8 @@ fn sample_nodes_fit_their_text() {
                     if let Some(tag) = &f.label {
                         // A value box's name fits left of its value.
                         name.clone_from(&tag.text);
-                        let mut nw = w(&tag.text, label.clone());
-                        if tag.constant {
-                            nw += geom::MARK_W;
-                        }
+                        let nw = w(&tag.text, label.clone())
+                            + geom::marks_w(tag.constant, false, tag.spread.is_some());
                         let room = match f.kind {
                             FieldKind::Bool => f.rect.width() - geom::CHECK - geom::CHECK_GAP,
                             FieldKind::Vec2 => f32::INFINITY,
@@ -277,7 +275,14 @@ fn sample_nodes_fit_their_text() {
             // and below the inputs.
             let foot = egui::FontId::proportional(geom::FOOT_FONT);
             for o in &b.outs {
-                if b.rect.right() - 10.0 - w(&o.label, foot.clone()) < b.rect.left() + 8.0 {
+                // A spread output's icon sits between its label and pin.
+                let icon = if o.spread.is_some() {
+                    geom::SPREAD_W
+                } else {
+                    0.0
+                };
+                let left = b.rect.right() - 10.0 - icon - w(&o.label, foot.clone());
+                if left < b.rect.left() + 8.0 {
                     failures.push(format!("{at}: output '{}' doesn't fit", o.label));
                 }
                 if b.rows.iter().any(|r| r.y + geom::ROW_H / 2.0 > o.y) {

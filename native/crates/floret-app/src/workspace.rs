@@ -1054,9 +1054,10 @@ fn inspector(ui: &mut egui::Ui, sh: &mut Shell) {
             ui.add_space(6.0);
             for (p, v) in spec.outputs.iter().zip(out.iter()) {
                 ui.horizontal_wrapped(|ui| {
-                    ui.label(
-                        RichText::new(p.label.as_deref().unwrap_or(&p.name)).color(theme::FG_1),
-                    );
+                    let name = p.label.as_deref().unwrap_or_else(|| {
+                        crate::editor::values::layer_label(p, false).unwrap_or(&p.name)
+                    });
+                    ui.label(RichText::new(name).color(theme::FG_1));
                     let text = format!("{:?}", v.iter().take(8).collect::<Vec<_>>());
                     ui.label(RichText::new(text).monospace().size(11.0));
                 });

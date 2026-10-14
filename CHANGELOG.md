@@ -121,6 +121,13 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   value boxes line up. Outputs no longer share rows with inputs: they are
   listed in a compact, slightly darker footer under the inputs (labels
   right-aligned against their pins). Nodes without outputs have no footer.
+- One layer type, one name: every layer pin reads `layer` (Group's
+  output, the Renderer's `layers` in and out, and the geometry nodes'
+  `layers` outputs included). Spread pins now take their type's colour
+  instead of yellow, and a small three-bar stack icon after the pin's
+  name marks a spread (hover it for "spread") on inputs, outputs, ForEach
+  / Cache frame ports and subpatch outputs that carry a spread. Saved
+  files keep their port names.
 - Bypass any node (header button or B) to pass its input straight through;
   a curve editor for Effect → curves; a file picker for LUTs.
 - Minimap, dot grid and snapping, a shortcuts overlay (`?`), tooltips on

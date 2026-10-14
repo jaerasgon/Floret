@@ -725,6 +725,7 @@ fn palette(
         label_rect: Rect::NOTHING,
         constant: false,
         integer: false,
+        spread: None,
     };
     // Row 0: the mode dropdown (stops, cosine, harmonies).
     {

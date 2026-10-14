@@ -524,7 +524,7 @@ pub fn data_url_summary(s: &str) -> Option<String> {
 
 /// A pin's display label (`withCanonicalLabels`): an explicit label wins;
 /// otherwise generic number outputs read "value", audio inputs "audio" and
-/// a node's main layer output "layer". Handle ids are untouched.
+/// layer pins "layer" ([`layer_label`]). Handle ids are untouched.
 pub fn display_label(p: &PortSpec, input: bool) -> String {
     if let Some(l) = &p.label {
         return l.clone();
@@ -534,16 +534,25 @@ pub fn display_label(p: &PortSpec, input: bool) -> String {
             Some("value")
         } else if input && p.ty == PortType::Audio {
             Some("audio")
-        } else if !input
-            && p.ty == PortType::Layer
-            && p.kind != floret_engine::spec::PortKind::Spread
-            && !matches!(p.name.as_str(), "viz" | "guides" | "inner" | "outer")
-        {
-            Some("layer")
         } else {
-            None
+            layer_label(p, input)
         };
     canonical.map_or_else(|| p.name.clone(), str::to_owned)
+}
+
+/// "layer" for a layer pin that should read as the one layer type: every
+/// pin named `layers` (the Renderer's, the geometry nodes' outputs — the
+/// spread icon says they carry several) and a node's main single output.
+/// Names that tell pins apart (`guides`, `inner`, `outer`, `viz`,
+/// `glyphs`, `cells`, a shape input's `path` …) and explicit labels stay.
+pub fn layer_label(p: &PortSpec, input: bool) -> Option<&'static str> {
+    if p.ty != PortType::Layer || p.label.is_some() {
+        return None;
+    }
+    let main_out = !input
+        && p.kind != floret_engine::spec::PortKind::Spread
+        && !matches!(p.name.as_str(), "viz" | "guides" | "inner" | "outer");
+    (p.name == "layers" || main_out).then_some("layer")
 }
 
 /// Header symbols for math nodes (`MATH_SYMBOLS`).
@@ -858,6 +867,31 @@ mod tests {
         assert_eq!(display_label(&add.outputs[0], false), "value");
         let rect = cat.get("draw/rect").unwrap();
         assert_eq!(display_label(&rect.outputs[0], false), "layer");
+        // One layer type, one name: the Renderer's `layers` pins and a
+        // geometry node's `layers` output read "layer" too.
+        let port = |ty: &str, input: bool, name: &str| {
+            let s = cat.get(ty).unwrap();
+            let list = if input { &s.inputs } else { &s.outputs };
+            let p = list.iter().find(|p| p.name == name).unwrap();
+            display_label(p, input)
+        };
+        assert_eq!(port("render/renderer", true, "layers"), "layer");
+        assert_eq!(port("render/renderer", false, "layers"), "layer");
+        assert_eq!(port("geometry/path-ops", false, "layers"), "layer");
+        assert_eq!(port("geometry/path-ops", false, "shape"), "layer");
+        assert_eq!(port("transform/group", false, "grouped"), "layer");
+        // Names that tell pins apart stay.
+        assert_eq!(port("input/landmarks", false, "guides"), "guides");
+        assert_eq!(port("geometry/cells", false, "cells"), "cells");
+        assert_eq!(port("text/glyphs", false, "glyphs"), "glyphs");
+        assert_eq!(port("region/splicer-in/layer", false, "inner"), "inner");
+        assert_eq!(port("region/splicer-out/layer", false, "outer"), "outer");
+        assert_eq!(port("transform/group", true, "s1"), "1");
+        assert_eq!(port("geometry/path-ops", true, "path"), "path");
+        assert_eq!(
+            layer_label(&cat.get("render/renderer").unwrap().inputs[0], true),
+            Some("layer")
+        );
         assert_eq!(
             display_label(&rect.inputs[0], true),
             rect.inputs[0]

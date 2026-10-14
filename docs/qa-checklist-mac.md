@@ -43,6 +43,7 @@ from the repo folder.
 - [ ] Press Tab over the canvas, type `rect` and press Enter. A Rect node appears at the pointer.
 - [ ] Add a Renderer (Tab, `renderer`). Drag from Rect's output pin (`layer`, in the footer under its inputs) to the Renderer's `layers` input: a wire appears and the square shows in the Preview.
 - [ ] Inputs and params each have a full-width row, and every value box on a node lines up. Outputs are listed in a slightly darker footer strip under the inputs (one compact row each, pin on the right edge); a node without outputs (Sound Output) has no footer. Check both themes.
+- [ ] **Spreads and layers:** open the `layout-bloom` sample. Layout's `positions`, `angles` and `scales` outputs show a small three-bar stack icon between the name and the pin, in the pin's colour; `progress` has none. Hover an icon: the tooltip says "spread". Every layer pin reads `layer` (Group's output, the Renderer's input and output); the Renderer's spread pins are layer-blue, not yellow. A ForEach's port tabs show the icon after their name. Zoomed far out the icons hide with the labels. Check both themes.
 - [ ] Drag a wire from a pin and drop it on empty canvas: the node search opens, and the node you pick comes with the wire already connected.
 - [ ] Double-click a wire and pick a node: it is inserted into the wire.
 - [ ] Every unwired value on a node is a value box (name left, value right; for example Rect's `w`): drag a value to scrub, click to type and press Return. The preview follows. A wired input shows just its name.

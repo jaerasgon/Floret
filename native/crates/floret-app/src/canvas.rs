@@ -2246,6 +2246,8 @@ pub fn show(
                 draw::tooltip(&ctx, p, "Choose file…", &kind.join(" "), &body);
             } else if let Some(pin) = hits.pin(p, PIN_HIT, None) {
                 pin_tooltip(&ctx, patch, cat, live, &boxes, &pin, p);
+            } else if hits.spread_mark(p) {
+                draw::hint(&ctx, p, "spread");
             } else if hits.node(p).is_none() {
                 if let Some(w) = hits.wire(p) {
                     pin_tooltip(&ctx, patch, cat, live, &boxes, &w.source, p);

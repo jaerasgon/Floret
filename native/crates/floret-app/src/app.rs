@@ -717,6 +717,8 @@ impl App {
             Origin::Sample(id) => SAMPLES.iter().position(|s| s.id == *id),
             _ => None,
         };
+        // The Library's tile size lives in the preferences.
+        self.workspace.library.tile_width = self.prefs.library_tile_width;
         let action = self.workspace.show(
             ui,
             &mut workspace::Shell {
@@ -732,6 +734,7 @@ impl App {
                 sample,
             },
         );
+        self.prefs.library_tile_width = self.workspace.library.tile_width;
         if let Some(engine) = self.engine.as_mut() {
             engine.set_profiling(self.workspace.profiling());
         }

@@ -332,7 +332,7 @@ pub struct Shell<'a> {
 pub struct Workspace {
     dock: DockState<Tab>,
     help: HelpPanel,
-    library: Library,
+    pub(crate) library: Library,
     presets: PresetsPanel,
     /// The layout as last saved.
     saved: String,

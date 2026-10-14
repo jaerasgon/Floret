@@ -138,7 +138,8 @@
       "name": "21 · Trails (Write*/Read*)",
       "category": "Tutorial",
       "description": "Append mouse position to a running spread each frame; draw the buffer as a Path.",
-      "file": "tut-21-trails.flora"
+      "file": "tut-21-trails.flora",
+      "coverPlay": true
     },
     {
       "id": "tut-22-cache",
@@ -201,7 +202,8 @@
       "name": "30 · Keyboard Branching",
       "category": "Tutorial",
       "description": "Two If regions gated on input/keyboard.key — press R for red rect, B for blue ellipse.",
-      "file": "tut-30-keyboard.flora"
+      "file": "tut-30-keyboard.flora",
+      "coverPlay": true
     },
     {
       "id": "tut-31-vec2math",
@@ -215,7 +217,8 @@
       "name": "32 · Normalize + Polar",
       "category": "Tutorial",
       "description": "Vector Math's normalize gives a unit-vector direction; scale it to any length.",
-      "file": "tut-32-normalize.flora"
+      "file": "tut-32-normalize.flora",
+      "coverPlay": true
     },
     {
       "id": "tut-33-gradient",
@@ -582,13 +585,6 @@
       "file": "noc-flow-field.flora"
     },
     {
-      "id": "fractal-tree-spread",
-      "name": "Fractal Tree",
-      "category": "Nature",
-      "description": "The Nature of Code recursive tree, four levels deep: each branch splits in two, ±0.5 rad and 0.7× as long. The recursion's 15 branches (start, end, stroke weight) sit in five number spreads, zipped through one ForEach → one draw/line per branch. NOC §8.",
-      "file": "fractal-tree-spread.flora"
-    },
-    {
       "id": "shader-raymarch",
       "name": "Shader · Raymarched Gyroid",
       "category": "Shaders",
@@ -614,11 +610,12 @@
       "name": "Shader · Reaction-Diffusion",
       "category": "Shaders",
       "description": "Gray-Scott reaction-diffusion on a multi-buffer shader: Buffers A–D each advance the chemical field one step (A reads D’s previous frame, so four steps a frame), the Image pass colour-maps it. The canonical multi-pass GPU case — give it a few seconds to bloom.",
-      "file": "shader-reaction-diffusion.flora"
+      "file": "shader-reaction-diffusion.flora",
+      "coverFrame": 600
     },
     {
       "id": "fractal-tree-generative",
-      "name": "Fractal Tree (generative)",
+      "name": "Fractal Tree",
       "category": "Nature",
       "description": "The recursion lives IN the graph — no baked coordinates. One ForEach walks 8 root-to-tip paths × 4 levels with three scalar accumulators (angle, x, y) as a turtle: back to the root at each trunk, turning ±0.5 rad by the path's bits, 0.7× shorter per level. A Sublist set to keep-where keeps each of the 15 branches once. Edit the turn (Map), the shrink (0.7) or the trunk (140) and the tree reshapes.",
       "file": "fractal-tree-generative.flora"
@@ -691,7 +688,8 @@
       "name": "Paint Trail",
       "category": "Feedback",
       "description": "Move the mouse to paint. image/from-layer + state/value accumulate each brush stroke on an offscreen canvas — infinite paint with a hue that cycles over time.",
-      "file": "paint-trail.flora"
+      "file": "paint-trail.flora",
+      "coverPlay": true
     },
     {
       "id": "echo-trails",

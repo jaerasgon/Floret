@@ -64,6 +64,13 @@ product; the TypeScript web app is reference-only.
   - a visual check under Xvfb + lavapipe
 - New nodes are native-only (no TS trace). `tests/all_samples.rs` must still
   pass (every sample compiles, ticks and draws).
+- Every sample's Library cover must show something
+  (`sample_sweep.rs` `every_sample_cover_shows_something`). A sample that
+  grows or starts empty sets `coverFrame` in `samples/catalogue.json`; one
+  that is empty until played sets `coverPlay` (its input lives in
+  `sample_scripts.rs`); one that needs a camera, microphone or tracking gets
+  a bundled `samples/covers/<id>.png` (`BUNDLED_COVERS`, then
+  `FLORET_UPDATE_COVERS=1 cargo test -p floret-app -- --ignored update_covers`).
 - New nodes that read time, devices, files or a clock must not be frozen by
   the memo: flag them stateful / effectful in `nodes.json`, or wrap them in
   `always_eval`.

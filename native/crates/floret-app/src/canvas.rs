@@ -174,6 +174,9 @@ enum Action {
     Cut,
     Paste(Position),
     PasteText(String, Position),
+    /// Insert a saved subpatch (a Library entry) at the view centre, in
+    /// the current scope.
+    Insert(Box<PatchFile>),
     Delete,
     Duplicate,
     SelectAll,
@@ -514,6 +517,33 @@ impl View {
         if let Some(id) = self.primary().cloned() {
             self.queued.push(Action::Unwrap(id));
         }
+    }
+
+    /// The entered subpatches, outermost first (empty at the root).
+    pub fn stack(&self) -> &[String] {
+        &self.stack
+    }
+
+    /// Subpatches panel: enter subpatch `id` on the next frame.
+    pub fn request_enter(&mut self, id: &str) {
+        self.queued.push(Action::Enter(id.to_owned()));
+    }
+
+    /// Subpatches panel: select node `id` and frame it on the canvas.
+    pub fn request_focus(&mut self, id: &str) {
+        self.queued.push(Action::Focus(id.to_owned()));
+    }
+
+    /// Subpatches panel: go up one level.
+    pub fn request_exit(&mut self) {
+        self.queued.push(Action::Exit);
+    }
+
+    /// Library: insert a saved subpatch at the view centre, in the current
+    /// scope, as one undo step (the paste path: fresh ids, fresh pair
+    /// slots).
+    pub fn request_insert(&mut self, clip: PatchFile) {
+        self.queued.push(Action::Insert(Box::new(clip)));
     }
 
     /// Record a structural edit: settle, push an undo step, and ask the
@@ -3130,6 +3160,16 @@ fn apply(action: Action, patch: &mut PatchFile, cat: &Catalogue, view: &mut View
             }
             None => apply(Action::Paste(at), patch, cat, view),
         },
+        Action::Insert(clip) => {
+            // Centred like a palette click: the card's middle on the
+            // view's middle.
+            let c = view.to_canvas(view.area.center());
+            let at = Position {
+                x: c.x - f64::from(NODE_W) / 2.0,
+                y: c.y - 30.0,
+            };
+            paste(patch, view, &clip, at);
+        }
         Action::Delete => {
             let mut changed = false;
             for (r, p) in std::mem::take(&mut view.selected_ports) {
@@ -3931,6 +3971,7 @@ fn ingest_file(
 mod edit_tests {
     use super::*;
     use crate::editor::test_util::node;
+    use floret_engine::patch::PatchNode;
 
     fn setup(ty: &str) -> (PatchFile, View) {
         let mut patch = crate::app::empty_patch();
@@ -3997,5 +4038,169 @@ mod edit_tests {
             &mut view,
         );
         assert!(view.curve_channels.is_empty());
+    }
+
+    /// Run what the panels queued (the canvas does this each frame).
+    fn drain(patch: &mut PatchFile, view: &mut View) {
+        for a in std::mem::take(&mut view.queued) {
+            apply(a, patch, Catalogue::builtin(), view);
+        }
+    }
+
+    /// A saved subpatch: a frame holding Read → add → add → Write.
+    fn saved_subpatch() -> PatchFile {
+        use crate::editor::test_util::{at_x, edge, patch};
+        let inside = |mut n: PatchNode| {
+            n.parent_id = Some("sub".into());
+            if pairs::is_pair_type(&n.def_type) {
+                n.params.insert("slot".into(), 1.into());
+            }
+            n
+        };
+        let mut sub = node("sub", subpatch::SUBPATCH);
+        sub.params.insert("label".into(), "Wobble".into());
+        let src = patch(
+            vec![
+                sub,
+                inside(at_x(node("rd", "state/read"), 0.0)),
+                inside(at_x(node("a", "math/add"), 240.0)),
+                inside(at_x(node("b", "math/add"), 480.0)),
+                inside(at_x(node("wr", "state/write"), 720.0)),
+            ],
+            vec![
+                edge("rd", "out-current", "a", "in-a"),
+                edge("a", "out-result", "b", "in-a"),
+                edge("b", "out-result", "wr", "in-next"),
+            ],
+        );
+        crate::subpatches_panel::snippet(&src, "sub").unwrap().0
+    }
+
+    fn slot(n: &PatchNode) -> Option<i64> {
+        n.params.get("slot").and_then(Json::as_i64)
+    }
+
+    #[test]
+    fn inserting_a_saved_subpatch_is_one_step_in_scope() {
+        let clip = saved_subpatch();
+        // The open patch has its own pair on slot 1 and a subpatch `host`
+        // entered on the canvas.
+        let mut patch = crate::app::empty_patch();
+        patch.nodes.push(node("host", subpatch::SUBPATCH));
+        let mut rd = node("rd", "state/read");
+        rd.params.insert("slot".into(), 1.into());
+        let mut wr = node("wr", "state/write");
+        wr.params.insert("slot".into(), 1.into());
+        wr.position.x = 400.0;
+        patch.nodes.extend([rd, wr]);
+        let mut view = View::default();
+        view.on_load(&mut patch);
+        view.request_enter("host");
+        drain(&mut patch, &mut view);
+        assert_eq!(view.stack(), ["host"]);
+        let before = patch.clone();
+
+        view.request_insert(clip.clone());
+        drain(&mut patch, &mut view);
+        assert!(view.take_recompile());
+        assert_eq!(patch.nodes.len(), before.nodes.len() + clip.nodes.len());
+        assert_eq!(patch.edges.len(), clip.edges.len());
+        // Fresh ids: nothing that was there is touched, none collide.
+        let ids: HashSet<&str> = patch.nodes.iter().map(|n| n.id.as_str()).collect();
+        assert_eq!(ids.len(), patch.nodes.len());
+        let added: Vec<&PatchNode> = patch
+            .nodes
+            .iter()
+            .filter(|n| !before.nodes.iter().any(|b| b.id == n.id))
+            .collect();
+        assert_eq!(added.len(), clip.nodes.len());
+        // The frame lands in the entered subpatch, and is selected.
+        let frame = added
+            .iter()
+            .find(|n| n.def_type == subpatch::SUBPATCH)
+            .unwrap();
+        assert_eq!(frame.parent_id.as_deref(), Some("host"));
+        assert_eq!(view.selection, std::slice::from_ref(&frame.id));
+        assert!(added
+            .iter()
+            .filter(|n| n.id != frame.id)
+            .all(|n| n.parent_id.as_deref() == Some(frame.id.as_str())));
+        // Its Write / Read are a pair of their own, on a fresh slot.
+        let slots: Vec<Option<i64>> = added
+            .iter()
+            .filter(|n| pairs::is_pair_type(&n.def_type))
+            .map(|n| slot(n))
+            .collect();
+        assert_eq!(slots.len(), 2);
+        assert_eq!(slots[0], slots[1]);
+        assert!(slots[0].is_some_and(|s| s != 1), "{slots:?}");
+        // No wire points backwards, and none reaches outside.
+        assert!(floret_engine::flow::backward_edges(&patch).is_empty());
+        let added_ids: HashSet<&str> = added.iter().map(|n| n.id.as_str()).collect();
+        assert!(patch.edges.iter().all(
+            |e| added_ids.contains(e.source.as_str()) && added_ids.contains(e.target.as_str())
+        ));
+        // One undo step takes it all away, redo puts it back.
+        let cat = Catalogue::builtin();
+        apply(Action::Undo, &mut patch, cat, &mut view);
+        assert_eq!(patch.to_json(), before.to_json());
+        apply(Action::Redo, &mut patch, cat, &mut view);
+        assert_eq!(patch.nodes.len(), before.nodes.len() + clip.nodes.len());
+    }
+
+    #[test]
+    fn inserting_at_the_root_and_twice_never_collides() {
+        let clip = saved_subpatch();
+        let mut patch = crate::app::empty_patch();
+        let mut view = View::default();
+        view.on_load(&mut patch);
+        view.request_insert(clip.clone());
+        view.request_insert(clip.clone());
+        drain(&mut patch, &mut view);
+        assert_eq!(patch.nodes.len(), 2 * clip.nodes.len());
+        let frames: Vec<&PatchNode> = patch
+            .nodes
+            .iter()
+            .filter(|n| n.def_type == subpatch::SUBPATCH)
+            .collect();
+        assert_eq!(frames.len(), 2);
+        assert!(frames.iter().all(|f| f.parent_id.is_none()));
+        // Each copy's pair has a slot of its own.
+        let reads: HashSet<Option<i64>> = patch
+            .nodes
+            .iter()
+            .filter(|n| n.def_type == "state/read")
+            .map(slot)
+            .collect();
+        assert_eq!(reads.len(), 2);
+        assert!(floret_engine::flow::backward_edges(&patch).is_empty());
+        assert!(floret_engine::Engine::from_patch(&patch).is_ok());
+    }
+
+    #[test]
+    fn the_subpatches_panel_requests_reach_the_canvas() {
+        let mut patch = crate::app::empty_patch();
+        let mut sub = node("sub", subpatch::SUBPATCH);
+        sub.params.insert("label".into(), "Wobble".into());
+        let mut child = node("c", "math/add");
+        child.parent_id = Some("sub".into());
+        patch.nodes.extend([sub, child]);
+        let mut view = View::default();
+        view.on_load(&mut patch);
+        view.request_focus("sub");
+        drain(&mut patch, &mut view);
+        assert_eq!(view.primary().map(String::as_str), Some("sub"));
+        assert!(view.stack().is_empty());
+        view.request_enter("sub");
+        drain(&mut patch, &mut view);
+        assert_eq!(view.stack(), ["sub"]);
+        // Entering a plain node does nothing.
+        view.request_enter("c");
+        drain(&mut patch, &mut view);
+        assert_eq!(view.stack(), ["sub"]);
+        view.request_exit();
+        drain(&mut patch, &mut view);
+        assert!(view.stack().is_empty());
+        assert_eq!(view.primary().map(String::as_str), Some("sub"));
     }
 }

@@ -14,6 +14,24 @@ pub const KIND: &str = "floret.library";
 pub const VERSION: u32 = 1;
 const SUFFIX: &str = ".library.json";
 
+/// What a library entry holds: a whole patch to open, or a subpatch
+/// saved from the Subpatches panel, which inserts into the open patch.
+/// Saved as `"kind": "subpatch"`; a missing `kind` is a patch, so older
+/// files load unchanged.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum EntryKind {
+    #[default]
+    Patch,
+    Subpatch,
+}
+
+impl EntryKind {
+    pub fn is_patch(&self) -> bool {
+        *self == EntryKind::Patch
+    }
+}
+
 /// One patch in a library.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct LibEntry {
@@ -21,6 +39,8 @@ pub struct LibEntry {
     pub name: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(default, skip_serializing_if = "EntryKind::is_patch")]
+    pub kind: EntryKind,
     /// A complete `.flora` patch, kept as JSON until it's opened.
     pub patch: Json,
 }
@@ -139,7 +159,7 @@ pub fn parse_library(text: &str) -> Result<PatchLibrary, String> {
 
 /// A library entry for `patch` (`SaveToLibraryModal`): the id is the
 /// slug of its name, and the patch carries the name.
-pub fn entry_for(patch: &PatchFile, name: &str, description: &str) -> LibEntry {
+pub fn entry_for(patch: &PatchFile, name: &str, description: &str, kind: EntryKind) -> LibEntry {
     let mut patch = patch.clone();
     let mut meta = patch.meta.take().unwrap_or_default();
     meta.name = Some(name.trim().to_owned());
@@ -148,6 +168,7 @@ pub fn entry_for(patch: &PatchFile, name: &str, description: &str) -> LibEntry {
         id: slugify(name),
         name: name.trim().to_owned(),
         description: Some(description.trim().to_owned()).filter(|d| !d.is_empty()),
+        kind,
         patch: serde_json::from_str(&patch.to_json()).unwrap_or(Json::Null),
     }
 }
@@ -247,6 +268,19 @@ mod tests {
     }
 
     #[test]
+    fn an_entry_without_a_kind_is_a_patch() {
+        // `lib_json`'s entry has no `kind`, as in files saved before
+        // subpatches could be saved.
+        let lib = parse_library(&lib_json("")).unwrap();
+        assert_eq!(lib.patches[0].kind, EntryKind::Patch);
+        assert!(!lib.to_json().contains("\"kind\": \"patch\""));
+        let sub =
+            lib_json("").replace(r#""name":"Stars","#, r#""name":"Stars","kind":"subpatch","#);
+        let lib = parse_library(&sub).unwrap();
+        assert_eq!(lib.patches[0].kind, EntryKind::Subpatch);
+    }
+
+    #[test]
     fn stores_round_trips_and_removes() {
         let dir = std::env::temp_dir().join(format!("floret-libstore-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
@@ -257,8 +291,8 @@ mod tests {
         assert_eq!(load_all(&dir), all);
         // Re-import replaces by slug; entries upsert by id.
         let patch = crate::editor::test_util::patch(vec![], vec![]);
-        lib.upsert(entry_for(&patch, "Stars", "twinkle"));
-        lib.upsert(entry_for(&patch, "Moon!", ""));
+        lib.upsert(entry_for(&patch, "Stars", "twinkle", EntryKind::Patch));
+        lib.upsert(entry_for(&patch, "Moon!", "", EntryKind::Subpatch));
         store(&dir, &mut all, lib).unwrap();
         let back = load_all(&dir);
         assert_eq!(back.len(), 1);
@@ -276,6 +310,10 @@ mod tests {
         let text = back[0].library.to_json();
         assert_eq!(parse_library(&text).unwrap(), back[0].library);
         assert!(!text.contains("description\": null"));
+        // Only the subpatch entry carries a `kind`, and it survives.
+        assert_eq!(back[0].library.patches[0].kind, EntryKind::Patch);
+        assert_eq!(back[0].library.patches[1].kind, EntryKind::Subpatch);
+        assert_eq!(text.matches("\"kind\": \"subpatch\"").count(), 1);
         remove(&dir, &mut all, "night-sky").unwrap();
         assert!(load_all(&dir).is_empty() && all.is_empty());
         assert_eq!(file_name("Tutorials"), "tutorials.library.json");

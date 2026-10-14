@@ -80,7 +80,7 @@ view. Select a node to read what it does in the **Inspector**.
 
 ## Samples and tutorials
 
-Floret ships with 127 samples, including 48 short tutorials ("01 · Hello
+Floret ships with 175 samples, including 48 short tutorials ("01 · Hello
 Rect", "02 · Colour & Fill", …) that each introduce one idea, with a note
 on the canvas explaining it. Open them from:
 

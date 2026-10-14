@@ -2,10 +2,11 @@
 //! scope of every sample, a wire only runs to a node to its right
 //! (`floret_engine::flow`). Memory across frames goes through Write → Read
 //! pairs matched by slot, never through a single-node State / State Spread
-//! loop, and every Write has its Read (and every Read its Write).
+//! loop, every Write has its Read (and every Read its Write), and each
+//! Read sits left of its Write (the start of the flow, the Write at its end).
 
 use floret_engine::compile::FEEDBACK_FAMILIES;
-use floret_engine::flow::backward_edges;
+use floret_engine::flow::{backward_edges, is_forward};
 use floret_engine::patch::PatchFile;
 use std::collections::BTreeSet;
 use std::path::Path;
@@ -65,6 +66,18 @@ fn violations(text: &str) -> Vec<String> {
                 .map(|n| n.id.as_str())
                 .collect()
         };
+        // Each Read starts the flow: left of every Write on its slot.
+        for r in patch.nodes.iter().filter(|n| n.def_type == read) {
+            for w in patch
+                .nodes
+                .iter()
+                .filter(|n| n.def_type == write && slot(&n.params) == slot(&r.params))
+            {
+                if !is_forward(&patch, &r.id, &w.id) {
+                    out.push(format!("{read} {} not left of its {write} {}", r.id, w.id));
+                }
+            }
+        }
         for (ty, other) in [(write, &reads), (read, &writes)] {
             let ids = unpaired(ty, other);
             if !ids.is_empty() {
@@ -109,7 +122,8 @@ fn samples_flow_left_to_right() {
     );
 }
 
-/// The checks catch a backward wire, a State loop and a lone Write.
+/// The checks catch a backward wire, a State loop, a Read right of its
+/// Write and a lone Write.
 #[test]
 fn the_check_finds_each_kind() {
     let patch = |nodes: &str, edges: &str| {
@@ -147,6 +161,12 @@ fn the_check_finds_each_kind() {
     let r = node("r", "state/read", 0, r#""slot": 2"#);
     let w = node("w", "state/write", 300, r#""slot": 2"#);
     assert!(violations(&patch(&format!("{r},{w}"), "")).is_empty());
+    // A Read right of its Write is caught.
+    let w_left = node("w", "state/write", -300, r#""slot": 2"#);
+    assert_eq!(
+        violations(&patch(&format!("{r},{w_left}"), "")),
+        ["state/read r not left of its state/write w"]
+    );
     let w3 = node("w", "state/write", 300, r#""slot": 3"#);
     assert_eq!(
         violations(&patch(&format!("{r},{w3}"), "")),

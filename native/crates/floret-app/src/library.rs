@@ -5,8 +5,11 @@
 //! description) in "My patches" (a `.flora` file in the app data dir, next
 //! to a small JSON index) or in another library. Libraries download and
 //! import as the web app's `floret.library` JSON (see `library_store`).
+//! A subpatch saved from the Subpatches panel is an entry of kind
+//! "subpatch": it carries a small mark, and clicking it inserts it into
+//! the open patch instead of opening it.
 
-use crate::library_store::{self, LibEntry, PatchLibrary};
+use crate::library_store::{self, EntryKind, LibEntry, PatchLibrary};
 use crate::theme;
 use eframe::egui::{self, vec2, Color32, RichText};
 use floret_engine::patch::PatchFile;
@@ -20,12 +23,42 @@ pub struct Entry {
     pub name: String,
     #[serde(default)]
     pub description: String,
+    /// A whole patch, or a saved subpatch (missing: a patch).
+    #[serde(default, skip_serializing_if = "EntryKind::is_patch")]
+    pub kind: EntryKind,
 }
 
 /// What the user picked.
 pub enum Pick {
     Sample(usize),
+    /// Open this patch in place of the current one.
     Patch(Box<PatchFile>),
+    /// Insert this saved subpatch into the current patch.
+    Insert(Box<PatchFile>),
+}
+
+/// How a library entry was used: a click (a subpatch inserts, a patch
+/// opens), or one of a subpatch's right-click items.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Use {
+    Click,
+    Open,
+    Insert,
+}
+
+impl Use {
+    fn pick(self, patch: PatchFile, kind: EntryKind) -> Pick {
+        let insert = match self {
+            Use::Click => kind == EntryKind::Subpatch,
+            Use::Open => false,
+            Use::Insert => true,
+        };
+        if insert {
+            Pick::Insert(Box::new(patch))
+        } else {
+            Pick::Patch(Box::new(patch))
+        }
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -98,13 +131,15 @@ fn save_index(dir: &Path, entries: &[Entry]) -> std::io::Result<()> {
     std::fs::write(index_path(dir), text)
 }
 
-/// Save `patch` into the library at `dir` and return its entry.
+/// Save `patch` (a whole patch, or a subpatch snippet) into the library
+/// at `dir` and return its entry.
 pub fn save_patch(
     dir: &Path,
     entries: &mut Vec<Entry>,
     patch: &PatchFile,
     name: &str,
     description: &str,
+    kind: EntryKind,
 ) -> std::io::Result<Entry> {
     std::fs::create_dir_all(dir)?;
     let mut patch = patch.clone();
@@ -115,6 +150,7 @@ pub fn save_patch(
         file: unique_file(entries, name),
         name: name.trim().to_owned(),
         description: description.trim().to_owned(),
+        kind,
     };
     std::fs::write(dir.join(&entry.file), patch.to_json())?;
     entries.push(entry.clone());
@@ -152,6 +188,8 @@ struct SaveForm {
     description: String,
     target: Target,
     new_library: String,
+    /// A subpatch to save instead of the open patch.
+    snippet: Option<PatchFile>,
 }
 
 /// The built-in samples' folder.
@@ -190,6 +228,9 @@ pub struct Library {
     library: Option<LibRef>,
     /// Sample thumbnails (rendered in the background, cached).
     thumbs: crate::thumbs::Thumbnails,
+    /// Tiles view: the tile width ([`TILE_MIN`]..=[`TILE_MAX`]), kept in
+    /// the preferences (`libraryTileWidth`).
+    pub tile_width: f32,
 }
 
 impl Default for Library {
@@ -203,6 +244,7 @@ impl Default for Library {
         Library {
             mode: Mode::Grid,
             thumbs: crate::thumbs::Thumbnails::default(),
+            tile_width: TILE_DEFAULT,
             query: String::new(),
             save: None,
             dir,
@@ -223,6 +265,7 @@ fn category_library(samples: &[crate::Sample], cat: &str) -> PatchLibrary {
             id: s.id.to_owned(),
             name: s.name.to_owned(),
             description: Some(s.description.to_owned()).filter(|d| !d.is_empty()),
+            kind: EntryKind::Patch,
             patch: serde_json::from_str(s.flora).unwrap_or_default(),
         });
     }
@@ -239,15 +282,93 @@ fn categories(samples: &[crate::Sample]) -> Vec<&'static str> {
     cats
 }
 
-/// A compact selectable row for the column view and search results.
-fn pick_row(ui: &mut egui::Ui, on: bool, text: &str, tip: &str) -> egui::Response {
+/// A compact selectable row for the column view and search results. A
+/// saved subpatch gets its mark in front of the name.
+fn pick_row(ui: &mut egui::Ui, on: bool, text: &str, tip: &str, kind: EntryKind) -> egui::Response {
+    let sub = kind == EntryKind::Subpatch;
+    let text = if sub {
+        format!("{MARK_ROOM}{text}")
+    } else {
+        text.to_owned()
+    };
     let b = egui::Button::selectable(on, RichText::new(text).small()).truncate();
     let r = ui.add(b);
+    if sub {
+        row_mark(ui, &r);
+    }
+    let tip = if sub {
+        subpatch_tip(tip)
+    } else {
+        tip.to_owned()
+    };
     if tip.is_empty() {
         r
     } else {
         r.on_hover_text(tip)
     }
+}
+
+/// Spaces left in front of a row's text for the subpatch mark.
+const MARK_ROOM: &str = "     ";
+
+/// A subpatch entry's hover text: its description and what a click does.
+fn subpatch_tip(desc: &str) -> String {
+    let how = "Subpatch: click to insert it into the patch, right-click for more";
+    if desc.is_empty() {
+        how.to_owned()
+    } else {
+        format!("{desc}\n{how}")
+    }
+}
+
+/// The subpatch mark, a small frame (title bar over a body) in the
+/// subpatch accent, centred on `c`.
+fn paint_mark(p: &egui::Painter, c: egui::Pos2) {
+    let r = egui::Rect::from_center_size(c, vec2(11.0, 9.0));
+    let col = *theme::REGION_SUBPATCH;
+    p.rect_stroke(
+        r,
+        2.0,
+        egui::Stroke::new(1.2, col),
+        egui::StrokeKind::Inside,
+    );
+    let bar = egui::Rect::from_min_size(r.min, vec2(r.width(), 3.0));
+    p.rect_filled(
+        bar,
+        egui::CornerRadius {
+            nw: 2,
+            ne: 2,
+            sw: 0,
+            se: 0,
+        },
+        col,
+    );
+}
+
+/// The mark at the start of a row (in the room `MARK_ROOM` left).
+fn row_mark(ui: &egui::Ui, r: &egui::Response) {
+    let x = r.rect.left() + ui.spacing().button_padding.x + 6.0;
+    paint_mark(ui.painter(), egui::pos2(x, r.rect.center().y));
+}
+
+/// How an entry's row or tile was used this frame: clicked, or (for a
+/// saved subpatch) an item of its right-click menu, which inserts it
+/// (what a click does) or opens it as a patch of its own.
+fn entry_use(r: &egui::Response, kind: EntryKind) -> Option<Use> {
+    let mut how = None;
+    if kind == EntryKind::Subpatch {
+        r.context_menu(|ui| {
+            if ui.button("Insert into patch").clicked() {
+                how = Some(Use::Insert);
+                ui.close();
+            }
+            if ui.button("Open on its own").clicked() {
+                how = Some(Use::Open);
+                ui.close();
+            }
+        });
+    }
+    how.or(r.clicked().then_some(Use::Click))
 }
 
 fn hint(ui: &mut egui::Ui, t: &str) {
@@ -273,6 +394,7 @@ impl Library {
                     id: library_store::slugify(&e.name),
                     name: e.name.clone(),
                     description: Some(e.description.clone()).filter(|d| !d.is_empty()),
+                    kind: e.kind,
                     patch,
                 });
             }
@@ -368,7 +490,7 @@ impl Library {
         }
     }
 
-    fn open_user_entry(&mut self, slug: &str, id: &str) -> Option<Pick> {
+    fn open_user_entry(&mut self, slug: &str, id: &str, how: Use) -> Option<Pick> {
         let entry = self
             .libs
             .iter()
@@ -378,7 +500,7 @@ impl Library {
             .iter()
             .find(|e| e.id == id)?;
         match entry.load() {
-            Ok(p) => Some(Pick::Patch(Box::new(p))),
+            Ok(p) => Some(how.pick(p, entry.kind)),
             Err(e) => {
                 self.status = Some(format!("Couldn't open {}: {e}", entry.name));
                 None
@@ -386,18 +508,36 @@ impl Library {
         }
     }
 
-    fn open_mine(&mut self, file: &str) -> Option<Pick> {
+    fn open_mine(&mut self, file: &str, how: Use) -> Option<Pick> {
         let dir = self.dir.clone()?;
+        let kind = self
+            .entries
+            .iter()
+            .find(|e| e.file == file)
+            .map(|e| e.kind)
+            .unwrap_or_default();
         match std::fs::read_to_string(dir.join(file))
             .map_err(|e| e.to_string())
             .and_then(|t| PatchFile::load(&t).map_err(|e| e.to_string()))
         {
-            Ok(p) => Some(Pick::Patch(Box::new(p))),
+            Ok(p) => Some(how.pick(p, kind)),
             Err(e) => {
                 self.status = Some(format!("Couldn't open {file}: {e}"));
                 None
             }
         }
+    }
+
+    /// Open the save form for `snippet` (a subpatch from the Subpatches
+    /// panel) instead of the open patch, named `name`.
+    pub fn open_save_form(&mut self, snippet: PatchFile, name: &str) {
+        self.save = Some(SaveForm {
+            name: name.to_owned(),
+            description: String::new(),
+            target: Target::Mine,
+            new_library: String::new(),
+            snippet: Some(snippet),
+        });
     }
 
     pub fn ui(
@@ -447,6 +587,7 @@ impl Library {
                         description: String::new(),
                         target: Target::Mine,
                         new_library: String::new(),
+                        snippet: None,
                     });
                 }
                 if ui
@@ -458,6 +599,9 @@ impl Library {
                 }
             });
         });
+        if self.mode == Mode::Grid {
+            ui.horizontal(|ui| self.size_control(ui));
+        }
         self.save_form(ui, patch);
         if let Some(s) = &self.status {
             ui.label(RichText::new(s).color(theme::FG_2).small());
@@ -469,7 +613,7 @@ impl Library {
                 self.search_results(ui, samples, current)
             };
         }
-        egui::ScrollArea::vertical()
+        let scrolled = egui::ScrollArea::vertical()
             .auto_shrink([false, false])
             .show(ui, |ui| {
                 if let Some(p) = self.user_section(ui, samples) {
@@ -501,7 +645,42 @@ impl Library {
                     }
                 }
             });
+        // Cmd / Ctrl + scroll (or a pinch) over the tiles resizes them.
+        if self.mode == Mode::Grid && ui.rect_contains_pointer(scrolled.inner_rect) {
+            let zoom = ui.input(|i| i.zoom_delta());
+            if zoom != 1.0 {
+                self.tile_width = clamp_tile(self.tile_width * zoom);
+            }
+        }
         pick
+    }
+
+    /// The Tiles view's size control: − / + and a small slider, on its own
+    /// row under the view buttons (the side panel is too narrow for one).
+    fn size_control(&mut self, ui: &mut egui::Ui) {
+        let tip = "Tile size (or Cmd / Ctrl + scroll over the tiles)";
+        ui.label(RichText::new("Size").small().color(theme::FG_2))
+            .on_hover_text(tip);
+        let w = &mut self.tile_width;
+        if ui
+            .add_enabled(*w > TILE_MIN, egui::Button::new(RichText::new("−").small()))
+            .on_hover_text("Smaller tiles")
+            .clicked()
+        {
+            *w = clamp_tile(*w - TILE_STEP);
+        }
+        ui.scope(|ui| {
+            ui.spacing_mut().slider_width = 96.0;
+            ui.add(egui::Slider::new(w, TILE_MIN..=TILE_MAX).show_value(false))
+                .on_hover_text(tip);
+        });
+        if ui
+            .add_enabled(*w < TILE_MAX, egui::Button::new(RichText::new("+").small()))
+            .on_hover_text("Larger tiles")
+            .clicked()
+        {
+            *w = clamp_tile(*w + TILE_STEP);
+        }
     }
 
     /// A collapsible library (searching opens everything), with download
@@ -575,9 +754,17 @@ impl Library {
                 ui.horizontal_wrapped(|ui| {
                     for (i, s) in items {
                         let thumb = self.thumbs.get(s.id).map(|t| t.id());
-                        if tile(ui, s.name, cat, current == Some(*i), thumb)
-                            .on_hover_text(s.description)
-                            .clicked()
+                        if tile(
+                            ui,
+                            self.tile_width,
+                            s.name,
+                            cat,
+                            current == Some(*i),
+                            thumb,
+                            false,
+                        )
+                        .on_hover_text(s.description)
+                        .clicked()
                         {
                             picked = Some(*i);
                         }
@@ -590,34 +777,64 @@ impl Library {
     }
 
     /// Patches of a user library as rows (with remove buttons) or tiles.
-    /// Returns the index opened and the index removed.
+    /// Returns the index used (and how) and the index removed.
     fn entries_ui(
         &self,
         ui: &mut egui::Ui,
-        list: &[(String, String)],
+        list: &[(String, String, EntryKind)],
         group: &str,
-    ) -> (Option<usize>, Option<usize>) {
+    ) -> (Option<(usize, Use)>, Option<usize>) {
         let (mut open, mut remove) = (None, None);
+        // A subpatch's hover text says what a click does; its right-click
+        // menu inserts or opens it.
+        let used = |r: &egui::Response, kind: EntryKind, desc: &str| {
+            let tip = if kind == EntryKind::Subpatch {
+                subpatch_tip(desc)
+            } else {
+                desc.to_owned()
+            };
+            entry_use(&r.clone().on_hover_text(tip), kind)
+        };
         if self.mode == Mode::Grid {
             ui.horizontal_wrapped(|ui| {
-                for (i, (name, desc)) in list.iter().enumerate() {
-                    if tile(ui, name, group, false, None)
-                        .on_hover_text(desc)
-                        .clicked()
-                    {
-                        open = Some(i);
+                for (i, (name, desc, kind)) in list.iter().enumerate() {
+                    let r = tile(
+                        ui,
+                        self.tile_width,
+                        name,
+                        group,
+                        false,
+                        None,
+                        *kind == EntryKind::Subpatch,
+                    );
+                    if let Some(how) = used(&r, *kind, desc) {
+                        open = Some((i, how));
                     }
                 }
             });
         } else {
-            for (i, (name, desc)) in list.iter().enumerate() {
+            for (i, (name, desc, kind)) in list.iter().enumerate() {
                 ui.horizontal(|ui| {
-                    if ui
-                        .selectable_label(false, format!("   {name}"))
-                        .on_hover_text(desc)
-                        .clicked()
-                    {
-                        open = Some(i);
+                    let sub = *kind == EntryKind::Subpatch;
+                    let text = if sub {
+                        format!("   {MARK_ROOM}{name}")
+                    } else {
+                        format!("   {name}")
+                    };
+                    let r = ui.selectable_label(false, text);
+                    if sub {
+                        // After the row's three-space indent.
+                        let font = egui::TextStyle::Body.resolve(ui.style());
+                        let indent = ui.fonts_mut(|f| {
+                            f.layout_no_wrap("   ".into(), font, Color32::WHITE)
+                                .size()
+                                .x
+                        });
+                        let x = r.rect.left() + ui.spacing().button_padding.x + indent + 6.0;
+                        paint_mark(ui.painter(), egui::pos2(x, r.rect.center().y));
+                    }
+                    if let Some(how) = used(&r, *kind, desc) {
+                        open = Some((i, how));
                     }
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                         if ui
@@ -645,9 +862,9 @@ impl Library {
         if shown.is_empty() {
             return None;
         }
-        let list: Vec<(String, String)> = shown
+        let list: Vec<(String, String, EntryKind)> = shown
             .iter()
-            .map(|e| (e.name.clone(), e.description.clone()))
+            .map(|e| (e.name.clone(), e.description.clone(), e.kind))
             .collect();
         let (body, act) = self.folder(ui, MINE, shown.len(), false, |this, ui| {
             this.entries_ui(ui, &list, MINE)
@@ -661,7 +878,8 @@ impl Library {
                 self.status = Some(format!("Couldn't update the library: {e}"));
             }
         }
-        self.open_mine(&shown[open?].file)
+        let (i, how) = open?;
+        self.open_mine(&shown[i].file, how)
     }
 
     /// Imported and user-made libraries, one section each.
@@ -681,9 +899,12 @@ impl Library {
             if shown.is_empty() && searching {
                 continue;
             }
-            let list: Vec<(String, String)> = shown
+            let list: Vec<(String, String, EntryKind)> = shown
                 .iter()
-                .map(|e| (e.name.clone(), e.description.clone().unwrap_or_default()))
+                .map(|e| {
+                    let desc = e.description.clone().unwrap_or_default();
+                    (e.name.clone(), desc, e.kind)
+                })
                 .collect();
             let name = &lib.library.name;
             let (body, act) = self.folder(ui, name, shown.len(), true, |this, ui| {
@@ -703,8 +924,8 @@ impl Library {
             if let Some(i) = remove {
                 self.remove_user_entry(&lib.slug, &shown[i].id);
             }
-            if let Some(i) = open {
-                pick = self.open_user_entry(&lib.slug, &shown[i].id).or(pick);
+            if let Some((i, how)) = open {
+                pick = self.open_user_entry(&lib.slug, &shown[i].id, how).or(pick);
             }
         }
         pick
@@ -757,10 +978,16 @@ impl Library {
         let rows = self.column_rows(samples);
         let mut pick: Option<Pick> = None;
         let mut download = None;
-        let mut open: Option<LibOpen> = None;
+        let mut open: Option<(LibOpen, Use)> = None;
         let height = ui.available_height();
         let lib_row = |ui: &mut egui::Ui, on: bool, icon: &str, name: &str, n: usize| {
-            pick_row(ui, on, &format!("{icon} {name}  ·  {n}  ›"), "")
+            pick_row(
+                ui,
+                on,
+                &format!("{icon} {name}  ·  {n}  ›"),
+                "",
+                EntryKind::Patch,
+            )
         };
         ui.columns(3, |cols| {
             egui::ScrollArea::vertical()
@@ -821,7 +1048,8 @@ impl Library {
                     None => theme::empty_state(ui, "No library picked", "Pick one on the left"),
                     Some(LibRef::Category(c)) => {
                         for (i, s) in samples.iter().enumerate().filter(|(_, s)| s.category == c) {
-                            if pick_row(ui, current == Some(i), s.name, s.description).clicked() {
+                            let on = current == Some(i);
+                            if pick_row(ui, on, s.name, s.description, EntryKind::Patch).clicked() {
                                 pick = Some(Pick::Sample(i));
                             }
                         }
@@ -835,8 +1063,9 @@ impl Library {
                             );
                         }
                         for e in &self.entries {
-                            if pick_row(ui, false, &e.name, &e.description).clicked() {
-                                open = Some(LibOpen::Mine(e.file.clone()));
+                            let r = pick_row(ui, false, &e.name, &e.description, e.kind);
+                            if let Some(how) = entry_use(&r, e.kind) {
+                                open = Some((LibOpen::Mine(e.file.clone()), how));
                             }
                         }
                     }
@@ -852,8 +1081,9 @@ impl Library {
                         }
                         for e in entries {
                             let desc = e.description.as_deref().unwrap_or("");
-                            if pick_row(ui, false, &e.name, desc).clicked() {
-                                open = Some(LibOpen::User(slug.clone(), e.id.clone()));
+                            let r = pick_row(ui, false, &e.name, desc, e.kind);
+                            if let Some(how) = entry_use(&r, e.kind) {
+                                open = Some((LibOpen::User(slug.clone(), e.id.clone()), how));
                             }
                         }
                     }
@@ -863,10 +1093,17 @@ impl Library {
             self.download(&r, samples);
         }
         match open {
-            Some(LibOpen::Mine(file)) => self.open_mine(&file),
-            Some(LibOpen::User(slug, id)) => self.open_user_entry(&slug, &id),
-            Some(LibOpen::Sample(i)) => Some(Pick::Sample(i)),
+            Some((what, how)) => self.use_entry(what, how),
             None => pick,
+        }
+    }
+
+    /// Open a sample, or open / insert a saved entry.
+    fn use_entry(&mut self, what: LibOpen, how: Use) -> Option<Pick> {
+        match what {
+            LibOpen::Sample(i) => Some(Pick::Sample(i)),
+            LibOpen::Mine(file) => self.open_mine(&file, how),
+            LibOpen::User(slug, id) => self.open_user_entry(&slug, &id, how),
         }
     }
 
@@ -878,11 +1115,12 @@ impl Library {
         current: Option<usize>,
     ) -> Option<Pick> {
         let q = self.query.clone();
-        // (what opens, name, library)
-        let mut hits: Vec<(LibOpen, String, String)> = Vec::new();
+        // (what opens, name, library, kind)
+        let mut hits: Vec<(LibOpen, String, String, EntryKind)> = Vec::new();
         for e in &self.entries {
             if matches(&q, &[&e.name, &e.description, MINE]) {
-                hits.push((LibOpen::Mine(e.file.clone()), e.name.clone(), MINE.into()));
+                let open = LibOpen::Mine(e.file.clone());
+                hits.push((open, e.name.clone(), MINE.into(), e.kind));
             }
         }
         for l in &self.libs {
@@ -890,13 +1128,14 @@ impl Library {
                 let desc = e.description.as_deref().unwrap_or("");
                 if matches(&q, &[&e.name, desc, &l.library.name]) {
                     let open = LibOpen::User(l.slug.clone(), e.id.clone());
-                    hits.push((open, e.name.clone(), l.library.name.clone()));
+                    hits.push((open, e.name.clone(), l.library.name.clone(), e.kind));
                 }
             }
         }
         for (i, s) in samples.iter().enumerate() {
             if matches(&q, &[s.name, s.description, s.category, s.id]) {
-                hits.push((LibOpen::Sample(i), s.name.into(), s.category.into()));
+                let open = LibOpen::Sample(i);
+                hits.push((open, s.name.into(), s.category.into(), EntryKind::Patch));
             }
         }
         if hits.is_empty() {
@@ -912,18 +1151,16 @@ impl Library {
         egui::ScrollArea::vertical()
             .auto_shrink([false, false])
             .show(ui, |ui| {
-                for (i, (open, name, lib)) in hits.iter().enumerate() {
+                for (i, (open, name, lib, kind)) in hits.iter().enumerate() {
                     let on = matches!(open, LibOpen::Sample(s) if current == Some(*s));
-                    if pick_row(ui, on, &format!("{name}   ·  {lib}"), "").clicked() {
-                        chosen = Some(i);
+                    let r = pick_row(ui, on, &format!("{name}   ·  {lib}"), "", *kind);
+                    if let Some(how) = entry_use(&r, *kind) {
+                        chosen = Some((i, how));
                     }
                 }
             });
-        match hits.swap_remove(chosen?).0 {
-            LibOpen::Sample(i) => Some(Pick::Sample(i)),
-            LibOpen::Mine(file) => self.open_mine(&file),
-            LibOpen::User(slug, id) => self.open_user_entry(&slug, &id),
-        }
+        let (i, how) = chosen?;
+        self.use_entry(hits.swap_remove(i).0, how)
     }
 
     fn save_form(&mut self, ui: &mut egui::Ui, patch: &PatchFile) {
@@ -937,7 +1174,12 @@ impl Library {
         };
         let mut done = None;
         egui::Frame::group(ui.style()).show(ui, |ui| {
-            ui.label(RichText::new("Save to library").color(theme::FG_1).small());
+            let title = if form.snippet.is_some() {
+                "Save subpatch to library"
+            } else {
+                "Save to library"
+            };
+            ui.label(RichText::new(title).color(theme::FG_1).small());
             let label = |t: &Target| match t {
                 Target::Mine => MINE.to_owned(),
                 Target::User(slug) => libs
@@ -993,6 +1235,11 @@ impl Library {
         let (Some(dir), Some(libs_dir)) = (self.dir.clone(), self.libs_dir()) else {
             return "No app data directory to save into.".into();
         };
+        // A subpatch from the Subpatches panel, else the open patch.
+        let (patch, kind) = match &form.snippet {
+            Some(s) => (s, EntryKind::Subpatch),
+            None => (patch, EntryKind::Patch),
+        };
         let mut lib = match &form.target {
             Target::Mine => {
                 let saved = save_patch(
@@ -1001,6 +1248,7 @@ impl Library {
                     patch,
                     &form.name,
                     &form.description,
+                    kind,
                 );
                 return match saved {
                     Ok(e) => format!("Saved “{}”.", e.name),
@@ -1017,6 +1265,7 @@ impl Library {
             patch,
             &form.name,
             &form.description,
+            kind,
         ));
         let lib_name = lib.name.clone();
         match library_store::store(&libs_dir, &mut self.libs, lib) {
@@ -1033,16 +1282,47 @@ enum LibOpen {
     User(String, String),
 }
 
+/// Tile widths the Tiles view's size control allows, and its default.
+pub const TILE_MIN: f32 = 64.0;
+pub const TILE_MAX: f32 = 240.0;
+pub const TILE_DEFAULT: f32 = 96.0;
+/// One click of the − / + buttons.
+const TILE_STEP: f32 = 16.0;
+
+/// A tile width within [`TILE_MIN`]..=[`TILE_MAX`] (the default when not a
+/// number).
+pub fn clamp_tile(w: f32) -> f32 {
+    if w.is_finite() {
+        w.clamp(TILE_MIN, TILE_MAX)
+    } else {
+        TILE_DEFAULT
+    }
+}
+
+/// The title's font size for a tile `width` wide: 10.5 at the default
+/// width, scaled with it but kept readable.
+fn tile_font(width: f32) -> f32 {
+    (10.5 * width / TILE_DEFAULT).clamp(9.0, 14.0)
+}
+
+/// A tile `width` wide: the swatch (two thirds as tall) and two lines of
+/// title. 96 × 92 at the default width.
+fn tile_size(width: f32) -> egui::Vec2 {
+    vec2(width, width * 0.66 + 3.0 + tile_font(width) * 2.44)
+}
+
 /// A tile: the sample's thumbnail (else a muted swatch from the group
-/// name), the title below.
+/// name), the title below; a saved subpatch (`mark`) carries its mark.
 fn tile(
     ui: &mut egui::Ui,
+    width: f32,
     title: &str,
     group: &str,
     on: bool,
     thumb: Option<egui::TextureId>,
+    mark: bool,
 ) -> egui::Response {
-    let (rect, resp) = ui.allocate_exact_size(vec2(96.0, 92.0), egui::Sense::click());
+    let (rect, resp) = ui.allocate_exact_size(tile_size(width), egui::Sense::click());
     let p = ui.painter();
     let swatch = egui::Rect::from_min_size(rect.min, vec2(rect.width(), rect.width() * 0.66));
     match thumb {
@@ -1069,9 +1349,18 @@ fn tile(
         egui::Stroke::new(1.0, theme::BORDER)
     };
     p.rect_stroke(swatch, 5.0, stroke, egui::StrokeKind::Inside);
+    if mark {
+        // The subpatch mark on a small badge in the swatch's corner.
+        let badge = egui::Rect::from_min_size(
+            egui::pos2(swatch.right() - 21.0, swatch.top() + 5.0),
+            vec2(16.0, 14.0),
+        );
+        p.rect_filled(badge, 3.0, theme::BG_1.gamma_multiply(0.9));
+        paint_mark(p, badge.center());
+    }
     let g = p.layout(
         title.to_owned(),
-        egui::FontId::proportional(10.5),
+        egui::FontId::proportional(tile_font(width)),
         *theme::FG_1,
         rect.width(),
     );
@@ -1095,10 +1384,23 @@ mod tests {
             file: f.into(),
             name: String::new(),
             description: String::new(),
+            kind: EntryKind::Patch,
         };
         let entries = vec![e("a.flora"), e("a-2.flora")];
         assert_eq!(unique_file(&entries, "A"), "a-3.flora");
         assert_eq!(unique_file(&entries, "b"), "b.flora");
+    }
+
+    #[test]
+    fn tiles_scale_from_the_default_size() {
+        let d = tile_size(TILE_DEFAULT);
+        assert_eq!(d.x, 96.0);
+        assert!((d.y - 92.0).abs() < 0.1, "{d:?}");
+        let (small, big) = (tile_size(TILE_MIN), tile_size(TILE_MAX));
+        assert!(small.y < d.y && d.y < big.y);
+        assert_eq!(clamp_tile(10.0), TILE_MIN);
+        assert_eq!(clamp_tile(1e6), TILE_MAX);
+        assert_eq!(clamp_tile(f32::NAN), TILE_DEFAULT);
     }
 
     #[test]
@@ -1139,6 +1441,7 @@ mod tests {
             description: String::new(),
             target,
             new_library: "Sketches".into(),
+            snippet: None,
         };
         assert_eq!(
             lib.save_to(&patch, &form(Target::New)),
@@ -1168,8 +1471,11 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
         let mut entries = Vec::new();
         let patch = crate::editor::test_util::patch(vec![], vec![]);
-        let a = save_patch(&dir, &mut entries, &patch, "Night Sky", "stars").unwrap();
-        let b = save_patch(&dir, &mut entries, &patch, "Night Sky", "").unwrap();
+        let save = |entries: &mut Vec<Entry>, desc| {
+            save_patch(&dir, entries, &patch, "Night Sky", desc, EntryKind::Patch).unwrap()
+        };
+        let a = save(&mut entries, "stars");
+        let b = save(&mut entries, "");
         assert_eq!(
             (a.file.as_str(), b.file.as_str()),
             ("night-sky.flora", "night-sky-2.flora")
@@ -1181,6 +1487,96 @@ mod tests {
         remove_entry(&dir, &mut entries, &a.file).unwrap();
         assert_eq!(load_index(&dir).len(), 1);
         assert!(!dir.join(&a.file).exists());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// A subpatch saved from the Subpatches panel: the form saves the
+    /// snippet (not the open patch), marked `kind: "subpatch"` in
+    /// `library.json` and in a `.library.json` bundle; clicking it
+    /// inserts, its menu can still open it.
+    #[test]
+    fn a_saved_subpatch_keeps_its_kind_and_inserts() {
+        use crate::editor::test_util::{node, patch};
+        let dir = std::env::temp_dir().join(format!("floret-lib-sub-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let mut lib = Library {
+            dir: Some(dir.clone()),
+            entries: Vec::new(),
+            libs: Vec::new(),
+            ..Library::default()
+        };
+        let open = patch(vec![node("a", "math/add"), node("b", "math/add")], vec![]);
+        let snippet = patch(vec![node("s", "meta/subpatch")], vec![]);
+        lib.open_save_form(snippet.clone(), "Wobble");
+        let mut form = lib.save.take().expect("form open");
+        assert_eq!(form.name, "Wobble");
+        assert_eq!(lib.save_to(&open, &form), "Saved “Wobble”.");
+        form.target = Target::New;
+        form.new_library = "Bits".into();
+        assert_eq!(lib.save_to(&open, &form), "Saved “Wobble” to Bits.");
+
+        // "My patches": the index says subpatch, the file is the snippet.
+        let index = std::fs::read_to_string(dir.join("library.json")).unwrap();
+        assert!(index.contains("\"kind\": \"subpatch\""));
+        assert_eq!(load_index(&dir), lib.entries);
+        assert_eq!(lib.entries[0].kind, EntryKind::Subpatch);
+        let file = lib.entries[0].file.clone();
+        match lib.open_mine(&file, Use::Click) {
+            Some(Pick::Insert(p)) => assert_eq!(p.nodes.len(), 1),
+            _ => panic!("a click inserts a saved subpatch"),
+        }
+        assert!(matches!(
+            lib.open_mine(&file, Use::Open),
+            Some(Pick::Patch(_))
+        ));
+        // A bundle keeps it too, and exports it ("My patches" as well).
+        let back = library_store::load_all(&dir.join("libraries"));
+        assert_eq!(back[0].library.patches[0].kind, EntryKind::Subpatch);
+        assert_eq!(back[0].library.patches[0].load().unwrap().nodes.len(), 1);
+        match lib.open_user_entry("bits", "wobble", Use::Click) {
+            Some(Pick::Insert(p)) => assert_eq!(p.nodes[0].def_type, "meta/subpatch"),
+            _ => panic!("a click inserts a saved subpatch"),
+        }
+        assert_eq!(lib.mine_library().patches[0].kind, EntryKind::Subpatch);
+
+        // A whole patch still opens on a click.
+        lib.save_to(
+            &open,
+            &SaveForm {
+                name: "Whole".into(),
+                description: String::new(),
+                target: Target::Mine,
+                new_library: String::new(),
+                snippet: None,
+            },
+        );
+        let whole = lib.entries.iter().find(|e| e.name == "Whole").unwrap();
+        assert_eq!(whole.kind, EntryKind::Patch);
+        let file = whole.file.clone();
+        match lib.open_mine(&file, Use::Click) {
+            Some(Pick::Patch(p)) => assert_eq!(p.nodes.len(), 2),
+            _ => panic!("a click opens a patch"),
+        }
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn an_index_without_kinds_loads_as_patches() {
+        let dir = std::env::temp_dir().join(format!("floret-lib-old-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(
+            dir.join("library.json"),
+            r#"[{"file":"old.flora","name":"Old","description":"from 0.1"}]"#,
+        )
+        .unwrap();
+        let entries = load_index(&dir);
+        assert_eq!(entries.len(), 1);
+        assert_eq!(entries[0].kind, EntryKind::Patch);
+        // And a patch entry is written back without a `kind`.
+        save_index(&dir, &entries).unwrap();
+        let text = std::fs::read_to_string(dir.join("library.json")).unwrap();
+        assert!(!text.contains("kind"));
         let _ = std::fs::remove_dir_all(&dir);
     }
 }

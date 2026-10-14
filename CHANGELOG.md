@@ -29,7 +29,7 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   wiring with drop-to-search, inline values you can type or scrub, regions
   (ForEach, If, Cache …) and subpatches, undo for everything, node gravity
   (dragging a node gently pulls its neighbours along) and auto-arrange.
-- **146 built-in samples** in the Library, including 48 step-by-step
+- **175 built-in samples** in the Library, including 48 step-by-step
   tutorials, each opening fitted and centred with a tidy layout.
 - **Export:** PNG at 1×/2×/4×, and MP4 (H.264), GIF or PNG sequences of
   seamless loops, rendered offline at a fixed frame rate.
@@ -88,10 +88,28 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
 
 - Dockable panels: one Preview per Renderer, Inspector, Help (live node
   docs), Library, Presets, Shader and Profiler; the layout is remembered.
+- Docking: a dragged tab lights up the whole region it will land in, and
+  dropping inside the dock always docks (no stray floating windows). Tabs
+  float by dragging them onto the canvas (an outline shows where) or with
+  their right-click Float; floating windows have minimise and close
+  buttons and reopen where they were. Tabs share the tab bar and scroll
+  when they don't fit, dividers are easier to grab, and panes can be made
+  narrower. View → Panels reopens or closes any panel, and View → Reset
+  Layout puts them all back.
+- Every Renderer has its own preview pane: a new Renderer's preview opens
+  under the others (five Renderers, five panes), each pane follows its
+  Renderer, and deleting a Renderer closes its pane. Older saved layouts
+  open as the default layout once.
 - Nodes panel with search and favourites (Q menu, 1–9 to place).
 - Library panel: every sample by category plus your own saved patches, in
   list, icon or column views, with one search; import and download
   libraries.
+- Subpatches panel (from the tab bar's `+` menu): the subpatches at the
+  level the canvas shows, with their node counts. Click one to frame it,
+  double-click to enter, Up to go back. Right-click → Save to library…
+  keeps it in the Library with a subpatch mark; clicking it there inserts
+  it into the open patch (fresh ids, its own Write / Read slots, one undo
+  step), and its right-click menu can also open it on its own.
 - Preview: zoom and pan with a pixel grid, pause / step / restart, focus
   mode, and a fullscreen output window on any display.
 - Always-editable node values: every unwired value is a rounded value box

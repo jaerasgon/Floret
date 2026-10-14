@@ -74,6 +74,8 @@ pub struct Prefs {
     pub autosave_interval_secs: u32,
     /// Show the welcome screen on an empty canvas.
     pub show_welcome: bool,
+    /// The Library's Tiles view: tile width in points.
+    pub library_tile_width: f32,
 }
 
 impl Default for Prefs {
@@ -96,6 +98,7 @@ impl Default for Prefs {
             autosave_enabled: true,
             autosave_interval_secs: 30,
             show_welcome: true,
+            library_tile_width: crate::library::TILE_DEFAULT,
         }
     }
 }
@@ -148,6 +151,7 @@ impl Prefs {
         };
         self.autosave_interval_secs = self.autosave_interval_secs.clamp(5, 3600);
         self.grid_size = self.grid_size.clamp(4, 128);
+        self.library_tile_width = crate::library::clamp_tile(self.library_tile_width);
     }
 
     /// The next / previous step of the UI scale ladder.
@@ -542,6 +546,25 @@ mod tests {
         let text = std::fs::read_to_string(&path).unwrap();
         assert!(text.contains("\"startupPatch\": \"blank\""), "{text}");
         assert_eq!(Prefs::load_from(None), Prefs::default());
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn library_tile_width_is_kept_and_clamped() {
+        let dir = std::env::temp_dir().join(format!("floret-prefs-tiles-{}", std::process::id()));
+        let path = dir.join("prefs.json");
+        std::fs::create_dir_all(&dir).unwrap();
+        assert_eq!(Prefs::default().library_tile_width, 96.0);
+        for (saved, loaded) in [("150", 150.0), ("9", 64.0), ("5000", 240.0)] {
+            std::fs::write(&path, format!(r#"{{"libraryTileWidth":{saved}}}"#)).unwrap();
+            assert_eq!(Prefs::load_from(Some(&path)).library_tile_width, loaded);
+        }
+        let p = Prefs {
+            library_tile_width: 180.0,
+            ..Prefs::default()
+        };
+        p.save_to(&path);
+        assert_eq!(Prefs::load_from(Some(&path)).library_tile_width, 180.0);
         let _ = std::fs::remove_dir_all(dir);
     }
 

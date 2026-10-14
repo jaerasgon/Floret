@@ -11,6 +11,8 @@
 //! - **Rendering:** where a GPU adapter exists (lavapipe in CI / Xvfb), each
 //!   sample renders a thumbnail-sized frame on the GPU without validation
 //!   errors or panics, and the frame isn't one flat colour.
+//! - **Covers:** each sample's Library cover, made as the Library makes it,
+//!   shows real content (not a blank or nearly blank frame).
 
 use crate::{files, thumbs, SAMPLES};
 use serde_json::Value as Json;
@@ -18,41 +20,25 @@ use serde_json::Value as Json;
 /// Fixed save time, so two saves compare equal.
 const NOW: &str = "2026-10-01T00:00:00.000Z";
 
-/// Samples whose frame may be one flat colour after
-/// [`thumbs::FRAMES`] frames here: (sample, why).
-const MAY_BE_BLANK: &[(&str, &str)] = &[
-    (
-        "body-tracking",
-        "draws the landmarks the camera finds (no camera here)",
-    ),
-    ("webcam-mosaic", "draws the camera image (no camera here)"),
-    (
-        "video-pixelate",
-        "draws the video's frames (no video decoder installed in this test)",
-    ),
-    (
-        "flipbook-sequence",
-        "draws the image sequence's frames (no video decoder installed in this test)",
-    ),
-    (
-        "tut-49-fft",
-        "draws the microphone's spectrum (no microphone here)",
-    ),
-    (
-        "fft-bloom",
-        "draws the spectrum the audio engine analyses (no audio engine here)",
-    ),
-    ("tut-30-keyboard", "draws only while R or B is pressed"),
-    (
-        "shader-reaction-diffusion",
-        "its feedback buffer blooms over seconds of rendered frames; this renders one",
-    ),
-];
+/// Samples whose Library cover may show next to nothing (as
+/// [`every_sample_cover_shows_something`] measures it): (sample, why).
+/// Only what no cover frame, scripted input or bundled cover can fix.
+const MAY_BE_BLANK: &[(&str, &str)] = &[];
 
-/// Samples that download a picture in the background: their first frames
-/// can be empty whether or not the network is reachable.
-fn loads_from_network(flora: &str) -> bool {
-    flora.contains("\"io/image-url\"")
+/// Samples that draw (almost) nothing at [`thumbs::FRAMES`] with no input
+/// and no devices, as [`every_sample_renders_on_the_gpu`] runs them: their
+/// covers are bundled or played instead.
+fn needs_input(s: &crate::Sample) -> bool {
+    s.cover.is_some() || s.cover_play || thumbs::downloads(s.flora)
+}
+
+/// Video files and image sequences play, as the app installs the decoder
+/// at startup (once for the whole test binary).
+fn install_video() {
+    static ONCE: std::sync::Once = std::sync::Once::new();
+    ONCE.call_once(|| {
+        floret_video::install();
+    });
 }
 
 /// `a` and `b` hold the same JSON, numbers compared by value (a save
@@ -147,6 +133,7 @@ fn every_sample_renders_on_the_gpu() {
         eprintln!("no GPU adapter: skipping");
         return;
     };
+    install_video();
     let mut failures = Vec::new();
     for s in SAMPLES {
         let Some((w, h, px)) =
@@ -164,12 +151,401 @@ fn every_sample_renders_on_the_gpu() {
         }
         let (pixels, _) = px.as_chunks::<4>();
         let flat = pixels.iter().all(|p| p == &pixels[0]);
-        let excused = MAY_BE_BLANK.iter().any(|(id, _)| *id == s.id) || loads_from_network(s.flora);
+        let excused = MAY_BE_BLANK.iter().any(|(id, _)| *id == s.id) || needs_input(s);
         if flat && !excused {
             failures.push(format!("{}: renders one flat colour", s.id));
         }
     }
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}
+
+/// A Library cover must ink at least this share of its pixels...
+const COVER_MIN_INK: f64 = 0.005;
+/// ...over a box whose longer side is at least this share of the cover's
+/// shorter side (not one speck).
+const COVER_MIN_SPAN: f64 = 0.06;
+
+/// Samples whose whole picture is one or two small shapes, so their
+/// covers can't reach [`COVER_MIN_INK`] without changing the sample:
+/// (sample, what it draws). They're held to [`SMALL_MIN_INK`] and
+/// [`SMALL_MIN_SPAN`] instead.
+const SMALL_COVERS: &[(&str, &str)] = &[
+    ("tut-44-accumulator", "one two-digit number"),
+    ("noc-wind-gravity", "one ball"),
+    ("noc-drag", "one ball in a tank of water"),
+    ("noc-attraction", "two small bodies"),
+    ("noc-seek", "a target and the vehicle that reaches it"),
+];
+const SMALL_MIN_INK: f64 = 0.002;
+const SMALL_MIN_SPAN: f64 = 0.05;
+
+/// The colour most of a picture's pixels have: a cover's background,
+/// whether the Renderer clears to it or the patch paints it.
+fn dominant(px: &[u8]) -> [f64; 4] {
+    let mut counts = std::collections::HashMap::<[u8; 3], usize>::new();
+    for p in px.as_chunks::<4>().0 {
+        *counts.entry([p[0], p[1], p[2]]).or_default() += 1;
+    }
+    let c = counts
+        .into_iter()
+        .max_by_key(|(c, n)| (*n, *c))
+        .map_or([0; 3], |(c, _)| c);
+    let [r, g, b] = c.map(|v| f64::from(v) / 255.0);
+    [r, g, b, 1.0]
+}
+
+/// What a cover shows: the share of pixels away from its dominant colour
+/// and the inked box's longer side as a share of the cover's shorter side.
+fn cover_content(w: u32, h: u32, px: &[u8]) -> (f64, f64) {
+    let (bb, cov) = ink(px, w, dominant(px));
+    let span = bb.map_or(0, |b| (b[2] - b[0] + 1).max(b[3] - b[1] + 1));
+    (cov, f64::from(span) / f64::from(w.min(h).max(1)))
+}
+
+/// Every Library cover (as the Library makes it: bundled, or rendered at
+/// the sample's cover frame, played when its catalogue says so) shows
+/// real content, not a blank or nearly blank frame.
+/// `FLORET_COVERS_OUT=<dir>` keeps the covers as `<id>.png`.
+#[test]
+fn every_sample_cover_shows_something() {
+    let Some(mut hl) = floret_render::Headless::with_sample_count(1) else {
+        eprintln!("no GPU adapter: skipping");
+        return;
+    };
+    install_video();
+    // No network here: downloads get a stand-in picture.
+    let offline: std::sync::Arc<dyn floret_engine::host::Host> =
+        std::sync::Arc::new(StandIn(crate::host::shared(), stand_in_picture()));
+    let mut failures = Vec::new();
+    for s in SAMPLES {
+        if MAY_BE_BLANK.iter().any(|(id, _)| *id == s.id) {
+            continue;
+        }
+        let cover = if thumbs::downloads(s.flora) {
+            thumbs::render_cover(&hl.device, &hl.queue, &mut hl.renderer, s, offline.clone())
+                .map(|(img, _)| img)
+        } else {
+            thumbs::cover(&hl.device, &hl.queue, &mut hl.renderer, s)
+        };
+        let Some((w, h, px)) = cover else {
+            failures.push(format!("{}: no cover", s.id));
+            continue;
+        };
+        if let Some(dir) = std::env::var_os("FLORET_COVERS_OUT") {
+            let dir = std::path::PathBuf::from(dir);
+            let _ = std::fs::create_dir_all(&dir);
+            save_png(&dir.join(format!("{}.png", s.id)), w, h, &px);
+        }
+        if w.max(h) != thumbs::SIZE || px.len() != (w * h * 4) as usize {
+            failures.push(format!("{}: {w}×{h} cover with {} bytes", s.id, px.len()));
+            continue;
+        }
+        let (cov, span) = cover_content(w, h, &px);
+        let (min_ink, min_span) = if SMALL_COVERS.iter().any(|(id, _)| *id == s.id) {
+            (SMALL_MIN_INK, SMALL_MIN_SPAN)
+        } else {
+            (COVER_MIN_INK, COVER_MIN_SPAN)
+        };
+        if cov < min_ink || span < min_span {
+            failures.push(format!(
+                "{}: cover (frame {}) inks {:.2}% of its pixels over {:.0}% of its side",
+                s.id,
+                thumbs::cover_frame(s),
+                cov * 100.0,
+                span * 100.0
+            ));
+        }
+    }
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}
+
+/// A 500 × 500 PNG (the size the samples ask picsum.photos for) standing
+/// in for a downloaded photo: a sky gradient over a dark hill, and a sun.
+fn stand_in_picture() -> Vec<u8> {
+    let (w, h) = (500u32, 500u32);
+    let mut px = Vec::with_capacity((w * h * 4) as usize);
+    for y in 0..h {
+        for x in 0..w {
+            let (u, v) = (f64::from(x) / f64::from(w), f64::from(y) / f64::from(h));
+            let hill = v > 0.62 - 0.18 * (u * 3.0).sin() * (1.0 - u);
+            let sun = (u - 0.72).powi(2) + (v - 0.28).powi(2) < 0.008;
+            // Flowers on the hill: a disc of colour every 40 px.
+            let (cx, cy) = ((x % 40) as f64 - 20.0, (y % 40) as f64 - 20.0);
+            let flower = hill && cx * cx + cy * cy < 90.0;
+            let hue = f64::from((x / 40 * 7 + y / 40 * 3) % 5) / 5.0;
+            let (r, g, b) = if sun {
+                (1.0, 0.86, 0.45)
+            } else if flower {
+                (0.9, 0.3 + 0.6 * hue, 0.9 - 0.7 * hue)
+            } else if hill {
+                let grass = 0.06 * (u * 90.0).sin() * (v * 70.0).cos();
+                (0.16 + 0.1 * u + grass, 0.36 - 0.1 * v + grass, 0.2)
+            } else {
+                (0.35 + 0.5 * v, 0.55 + 0.25 * v, 0.95 - 0.4 * v)
+            };
+            let c = |c: f64| (c.clamp(0.0, 1.0) * 255.0).round() as u8;
+            px.extend_from_slice(&[c(r), c(g), c(b), 255]);
+        }
+    }
+    let mut buf = Vec::new();
+    let mut enc = png::Encoder::new(&mut buf, w, h);
+    enc.set_color(png::ColorType::Rgba);
+    enc.set_depth(png::BitDepth::Eight);
+    enc.write_header()
+        .and_then(|mut wr| wr.write_image_data(&px))
+        .expect("png encodes");
+    buf
+}
+
+#[test]
+fn cover_lists_name_samples() {
+    for (id, _) in MAY_BE_BLANK
+        .iter()
+        .chain(SMALL_COVERS)
+        .chain(BUNDLED_COVERS)
+    {
+        assert!(
+            SAMPLES.iter().any(|s| s.id == *id),
+            "{id} is in the catalogue"
+        );
+    }
+}
+
+#[test]
+fn played_covers_have_a_script() {
+    for s in SAMPLES.iter().filter(|s| s.cover_play) {
+        assert!(
+            crate::sample_scripts::script_for(s.id).is_some(),
+            "{} has coverPlay but no script in sample_scripts",
+            s.id
+        );
+    }
+}
+
+// ─── Bundled covers ─────────────────────────────────────────────────────────
+
+/// Samples whose Library cover is bundled (`samples/covers/<id>.png`)
+/// because they draw what a device gives them, and the stand-in
+/// [`update_covers`] feeds them.
+const BUNDLED_COVERS: &[(&str, &str)] = &[
+    (
+        "body-tracking",
+        "two open hands from a stand-in hand tracker",
+    ),
+    (
+        "webcam-mosaic",
+        "a stand-in camera frame: a figure against a bright wall",
+    ),
+    ("tut-49-fft", "a chord on a stand-in microphone"),
+];
+
+#[test]
+fn bundled_covers_match_the_list() {
+    for s in SAMPLES {
+        let listed = BUNDLED_COVERS.iter().any(|(id, _)| *id == s.id);
+        assert_eq!(
+            s.cover.is_some(),
+            listed,
+            "{}: samples/covers/{}.png {} but the sample is {}in BUNDLED_COVERS \
+             (FLORET_UPDATE_COVERS=1 cargo test -p floret-app -- --ignored update_covers)",
+            s.id,
+            s.id,
+            if s.cover.is_some() {
+                "exists"
+            } else {
+                "is missing"
+            },
+            if listed { "" } else { "not " }
+        );
+        if let Some(png) = s.cover {
+            let (w, h, _) = thumbs::decode_png(png).expect("an 8-bit RGBA PNG");
+            assert_eq!(w.max(h), thumbs::SIZE, "{}: cover size", s.id);
+        }
+    }
+}
+
+/// The devices [`update_covers`] lends the engine: a camera showing a
+/// figure against a bright wall, and a hand tracker that finds two open
+/// hands.
+struct CoverDevices(std::sync::Arc<floret_engine::image::Image>);
+
+impl CoverDevices {
+    fn new() -> CoverDevices {
+        let (w, h) = (640u32, 480u32);
+        let mut px = Vec::with_capacity((w * h * 4) as usize);
+        for y in 0..h {
+            for x in 0..w {
+                let (u, v) = (f64::from(x) / f64::from(w), f64::from(y) / f64::from(h));
+                // A warm wall, lighter towards the top right.
+                let wall = 0.72 + 0.25 * (u * 0.6 + (1.0 - v) * 0.4);
+                // Head and shoulders, dark, a little left of centre.
+                let head = ((u - 0.45) / 0.13).powi(2) + ((v - 0.38) / 0.17).powi(2) < 1.0;
+                let shoulders = ((u - 0.45) / 0.36).powi(2) + ((v - 1.05) / 0.42).powi(2) < 1.0;
+                let neck = (u - 0.45).abs() < 0.06 && v > 0.5 && v < 0.7;
+                let (r, g, b) = if head || shoulders || neck {
+                    let shade = 0.18 + 0.12 * (1.0 - v);
+                    (shade, shade * 0.9, shade * 1.2)
+                } else {
+                    (wall, wall * 0.86, wall * 0.62)
+                };
+                let c = |c: f64| (c.clamp(0.0, 1.0) * 255.0).round() as u8;
+                px.extend_from_slice(&[c(r), c(g), c(b), 255]);
+            }
+        }
+        CoverDevices(std::sync::Arc::new(floret_engine::image::Image::new(
+            w, h, px,
+        )))
+    }
+}
+
+/// An open hand's 21 landmarks (MediaPipe's order: wrist, then thumb,
+/// index, middle, ring and pinky from base to tip), wrist at (`x`, `y`)
+/// in normalised image coordinates, fingers spread upwards; `side` -1
+/// for a left hand.
+fn open_hand(x: f32, y: f32, size: f32, side: f32) -> Vec<[f32; 3]> {
+    let mut pts = vec![[x, y, 0.0]];
+    let up = -std::f32::consts::FRAC_PI_2;
+    // (angle from straight up, base distance, joint lengths)
+    let fingers: [(f32, f32, [f32; 3]); 5] = [
+        (-0.62, 0.3, [0.26, 0.22, 0.18]),
+        (-0.32, 0.9, [0.38, 0.24, 0.2]),
+        (-0.06, 0.92, [0.42, 0.27, 0.22]),
+        (0.2, 0.86, [0.38, 0.25, 0.2]),
+        (0.46, 0.76, [0.3, 0.2, 0.17]),
+    ];
+    for (a, base, joints) in fingers {
+        let ang = up + a * side;
+        let (dx, dy) = (ang.cos(), ang.sin());
+        let (mut px, mut py) = (x + dx * base * size, y + dy * base * size);
+        pts.push([px, py, 0.0]);
+        // Each joint bends a little further out.
+        for (i, len) in joints.iter().enumerate() {
+            let bend = ang + a * side * 0.12 * (i as f32 + 1.0);
+            px += bend.cos() * len * size;
+            py += bend.sin() * len * size;
+            pts.push([px, py, 0.0]);
+        }
+    }
+    pts
+}
+
+impl floret_engine::devices::Devices for CoverDevices {
+    fn camera(
+        &self,
+        _: &str,
+        req: &floret_engine::devices::CameraRequest,
+    ) -> Result<floret_engine::devices::CameraFrame, String> {
+        Ok(floret_engine::devices::CameraFrame {
+            image: if req.start {
+                self.0.clone()
+            } else {
+                floret_engine::image::Image::placeholder()
+            },
+            ready: req.start,
+        })
+    }
+
+    fn landmarks(
+        &self,
+        _: &str,
+        req: &floret_engine::devices::LandmarksRequest,
+    ) -> Result<Option<Vec<floret_engine::devices::LandmarkLayer>>, String> {
+        use floret_engine::landmarks::Tracker;
+        if !req.start || !req.trackers.contains(&Tracker::Hands) {
+            return Ok(None);
+        }
+        Ok(Some(vec![floret_engine::devices::LandmarkLayer {
+            tracker: Tracker::Hands,
+            dets: vec![
+                open_hand(0.27, 0.8, 0.28, -1.0),
+                open_hand(0.73, 0.76, 0.28, 1.0),
+            ],
+            ids: vec![0, 1],
+        }]))
+    }
+}
+
+/// `FLORET_UPDATE_COVERS=1 cargo test -p floret-app -- --ignored
+/// update_covers`: renders the [`BUNDLED_COVERS`] to
+/// `samples/covers/<id>.png` as the Library would at their cover frame,
+/// with stand-in devices installed ([`CoverDevices`]) and the audio
+/// engine running offline with a chord on its microphone. Rebuild after
+/// running it: the covers are embedded.
+#[test]
+#[ignore = "writes samples/covers; needs FLORET_UPDATE_COVERS=1 and a GPU adapter"]
+fn update_covers() {
+    use std::f64::consts::TAU;
+    if std::env::var("FLORET_UPDATE_COVERS").as_deref() != Ok("1") {
+        eprintln!("FLORET_UPDATE_COVERS=1 not set: skipping");
+        return;
+    }
+    let Some(mut hl) = floret_render::Headless::with_sample_count(4) else {
+        eprintln!("no GPU adapter: skipping");
+        return;
+    };
+    let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../samples/covers");
+    std::fs::create_dir_all(&dir).expect("covers dir");
+    floret_engine::devices::install(Some(std::sync::Arc::new(CoverDevices::new())));
+    const RATE: f32 = 48_000.0;
+    for (id, _) in BUNDLED_COVERS {
+        let s = SAMPLES
+            .iter()
+            .find(|s| s.id == *id)
+            .expect("in the catalogue");
+        let (mut engine, _) = floret_engine::Engine::load_with_warnings(s.flora).expect("loads");
+        engine.set_host(Some(crate::host::shared()));
+        let audio = std::sync::Arc::new(floret_media::AudioSystem::offline(RATE));
+        engine.set_audio(Some(audio.clone()));
+        let mut mic = audio.attach_test_mic(RATE);
+        let mut n = 0u64;
+        // An A minor chord of bright tones (harmonics up to ~6 kHz).
+        let mut chord = |_f: u32| {
+            for _ in 0..800 {
+                let t = n as f64 / f64::from(RATE);
+                let v: f64 = [220.0, 261.63, 329.63]
+                    .iter()
+                    .flat_map(|hz| (1..=20).map(move |k| (hz * f64::from(k), 0.12 / f64::from(k))))
+                    .map(|(hz, a)| a * (TAU * hz * t).sin())
+                    .sum::<f64>();
+                let _ = mic.push(v as f32);
+                n += 1;
+            }
+        };
+        let mut cover = thumbs::Cover::new(&mut engine, thumbs::cover_frame(s), None, Some(&audio));
+        let img = cover
+            .render(&hl.device, &hl.queue, &mut hl.renderer, &mut chord)
+            .expect("rendered");
+        let (cov, span) = cover_content(img.0, img.1, &img.2);
+        eprintln!(
+            "{id}: {:.2}% inked over {:.0}% of the side",
+            cov * 100.0,
+            span * 100.0
+        );
+        thumbs::write_png(&dir.join(format!("{id}.png")), &img).expect("cover written");
+    }
+    floret_engine::devices::install(None);
+}
+
+#[test]
+fn cover_content_needs_more_than_a_speck() {
+    let (w, h) = (100u32, 100u32);
+    let mut px = vec![20u8; (w * h * 4) as usize];
+    assert_eq!(cover_content(w, h, &px), (0.0, 0.0));
+    let paint = |px: &mut [u8], x0: u32, y0: u32, x1: u32, y1: u32| {
+        for y in y0..y1 {
+            for x in x0..x1 {
+                let i = ((y * w + x) * 4) as usize;
+                px[i..i + 3].copy_from_slice(&[240, 200, 80]);
+            }
+        }
+    };
+    // A 3 × 3 speck: too little.
+    paint(&mut px, 10, 10, 13, 13);
+    assert!(cover_content(w, h, &px).0 < COVER_MIN_INK);
+    // A 30 × 30 square: content.
+    paint(&mut px, 40, 40, 70, 70);
+    let (cov, span) = cover_content(w, h, &px);
+    assert!(cov >= COVER_MIN_INK && span >= COVER_MIN_SPAN);
 }
 
 #[test]

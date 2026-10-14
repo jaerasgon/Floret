@@ -88,6 +88,18 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
 
 - Dockable panels: one Preview per Renderer, Inspector, Help (live node
   docs), Library, Presets, Shader and Profiler; the layout is remembered.
+- Docking: a dragged tab lights up the whole region it will land in, and
+  dropping inside the dock always docks (no stray floating windows). Tabs
+  float by dragging them onto the canvas (an outline shows where) or with
+  their right-click Float; floating windows have minimise and close
+  buttons and reopen where they were. Tabs share the tab bar and scroll
+  when they don't fit, dividers are easier to grab, and panes can be made
+  narrower. View → Panels reopens or closes any panel, and View → Reset
+  Layout puts them all back.
+- Every Renderer has its own preview pane: a new Renderer's preview opens
+  under the others (five Renderers, five panes), each pane follows its
+  Renderer, and deleting a Renderer closes its pane. Older saved layouts
+  open as the default layout once.
 - Nodes panel with search and favourites (Q menu, 1–9 to place).
 - Library panel: every sample by category plus your own saved patches, in
   list, icon or column views, with one search; import and download

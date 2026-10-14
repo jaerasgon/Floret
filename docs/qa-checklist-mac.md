@@ -137,6 +137,24 @@ from the repo folder.
 - [ ] A variable font with a weight axis "breathes" in `type-glyph-particles`.
 - [ ] Set a Font node's `file` to a `.ttf` / `.otf` file: the text uses it, and the node lists the font's variation axes.
 
+## Docking and panels
+
+- [ ] Drag the Help tab over the Library pane. While you drag, the region it will land in lights up gold (the top or bottom half to split, the middle to join as a tab, the tab bar to slot in between tabs), and the pane is outlined. Drop it: it lands exactly there.
+- [ ] Drag a tab around inside the dock and let go anywhere in a pane: it always docks, never pops out as a floating window.
+- [ ] Drag a tab off the dock over the canvas: a gold outline shows where the window will be. Let go: the tab floats there as a window.
+- [ ] Right-click a tab → Float: it floats as a window. Right-click → Close closes it; a middle click closes it too. Preview tabs have Float but no Close.
+- [ ] A floating window has a − and a × at the right of its tab bar. − shrinks it to its tab bar; the button (or the arrow on its left) brings it back at its old size. × closes the window. A floating preview's × puts the preview back under the others.
+- [ ] Move and resize a floating window, quit Floret and reopen it: the window is where you left it, at the same size.
+- [ ] Drag a tab back from a floating window into the dock: it docks where the highlight showed.
+- [ ] Drag the dividers between panes: they're easy to grab, and a pane can be made much smaller than before. Split a pane left/right in the side dock: both halves can be resized.
+- [ ] With the dock narrow, the tabs that don't fit are not cut off: scroll the tab bar (two-finger swipe over it, or its thin scroll bar).
+- [ ] View → Panels lists Inspector, Presets, Help, Library, Shader and Profiler, each ticked while open. Untick one: it closes. Tick it again: it reopens and comes to the front.
+- [ ] Close a few panels and float one, then View → Reset Layout: every panel is back where it started. The tab bar's + menu still lists the closed panels and Reset layout.
+- [ ] Open `grid-ripple` and add two more Renderer nodes (Tab, `renderer`). Three preview panes show, stacked one under another with even heights, each titled after its Renderer (or Preview, Preview 2, Preview 3).
+- [ ] Wire something into the second Renderer: only its pane shows it. Delete the middle Renderer: its pane closes and the other two keep their pictures, zoom and pan.
+- [ ] With three Renderers: Focus mode, Output → Fullscreen and Export (PNG, video, variations) from each pane's header act on that pane's Renderer. Each pane can be dragged elsewhere or floated.
+- Known limit (not a bug to report): the canvas size the patch itself sees (mouse coordinates, for example) comes from the first Renderer.
+
 ## UI themes
 
 - [ ] View → Theme → Light, Dark, Use System Setting: the whole window changes (canvas, panels, dialogs).

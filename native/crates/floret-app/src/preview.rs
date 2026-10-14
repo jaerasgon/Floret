@@ -339,7 +339,8 @@ impl PreviewPanel {
     }
 
     /// Keep one view per renderer node (new ones appear, deleted ones go).
-    fn sync(&mut self, engine: Option<&Engine>) {
+    /// The dock calls this before laying out its preview panes.
+    pub fn sync(&mut self, engine: Option<&Engine>) {
         let Some(e) = engine else {
             return;
         };

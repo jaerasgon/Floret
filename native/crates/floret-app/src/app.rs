@@ -231,6 +231,7 @@ impl App {
             recent: self.recent.paths(),
             palette_visible: self.prefs.palette_visible,
             theme: self.prefs.theme,
+            panels: self.workspace.panels(),
         }
     }
 
@@ -472,6 +473,8 @@ impl App {
             Command::WrapSection => self.view.request_wrap(editor::wrap::SECTION),
             Command::Unwrap => self.view.request_unwrap(),
             Command::ToggleNodes => self.prefs.palette_visible ^= true,
+            Command::Panel(t) => self.workspace.toggle_panel(t),
+            Command::ResetLayout => self.workspace.reset(),
             Command::ZoomIn => self.prefs.step_scale(1),
             Command::ZoomOut => self.prefs.step_scale(-1),
             Command::ZoomReset => self.prefs.ui_scale = 1.0,
@@ -1161,6 +1164,7 @@ impl eframe::App for App {
                 recent: self.recent.paths(),
                 palette_visible: self.prefs.palette_visible,
                 theme: self.prefs.theme,
+                panels: self.workspace.panels(),
             });
         }
     }

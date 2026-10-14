@@ -15,6 +15,7 @@
 //! its key equivalents before the window does, which the replay also covers.
 
 use crate::prefs::ThemePref;
+use crate::workspace::{self, Tab};
 use eframe::egui::{self, Key, KeyboardShortcut, Modifiers};
 use std::path::PathBuf;
 
@@ -62,6 +63,10 @@ pub enum Command {
     About,
     /// Re-roll the patch seed (`floret_engine::seed`).
     NewVariation,
+    /// Open or close a dock panel (View → Panels).
+    Panel(Tab),
+    /// Put every dock panel back where it started.
+    ResetLayout,
 }
 
 const fn cmd(key: Key) -> KeyboardShortcut {
@@ -131,6 +136,8 @@ impl Command {
             Welcome => "Welcome",
             About => "About Floret",
             NewVariation => "New Variation",
+            Panel(t) => workspace::title(t),
+            ResetLayout => "Reset Layout",
         }
     }
 
@@ -205,6 +212,8 @@ pub enum Item {
     Recent,
     /// The Theme submenu.
     Theme,
+    /// The Panels submenu: a checkbox per dock panel.
+    Panels,
 }
 
 pub struct Section {
@@ -217,6 +226,8 @@ pub struct MenuState<'a> {
     pub recent: &'a [PathBuf],
     pub palette_visible: bool,
     pub theme: ThemePref,
+    /// Each dock panel and whether it's open.
+    pub panels: Vec<(Tab, bool)>,
 }
 
 /// The menu bar. On macOS, About / Settings / Quit live in the app menu
@@ -262,6 +273,8 @@ pub fn model(s: &MenuState) -> Vec<Section> {
     ];
     let view = vec![
         Item::Check(ToggleNodes, s.palette_visible),
+        Item::Panels,
+        C(ResetLayout),
         Sep,
         C(FitView),
         Sep,
@@ -465,6 +478,18 @@ fn egui_item(ui: &mut egui::Ui, item: &Item, state: &MenuState) -> Option<Comman
             });
             picked
         }
+        Item::Panels => {
+            let mut picked = None;
+            ui.menu_button("Panels", |ui| {
+                for (t, open) in &state.panels {
+                    let c = Command::Panel(t.clone());
+                    if let Some(c) = button(ui, &c, Some(*open)) {
+                        picked = Some(c);
+                    }
+                }
+            });
+            picked
+        }
     }
 }
 
@@ -474,16 +499,29 @@ pub mod native {
 
     use super::{model, recent_label, Command, Item, MenuState};
     use crate::prefs::ThemePref;
+    use crate::workspace::Tab;
     use eframe::egui::{Key, KeyboardShortcut};
     use muda::accelerator::{Accelerator, Code, Modifiers as M};
     use muda::{CheckMenuItem, Menu, MenuEvent, MenuItem, PredefinedMenuItem, Submenu};
+
+    /// What a menu shows: recent files, Nodes panel, theme, dock panels.
+    type Built = (Vec<std::path::PathBuf>, bool, ThemePref, Vec<(Tab, bool)>);
+
+    fn built(s: &MenuState) -> Built {
+        (
+            s.recent.to_vec(),
+            s.palette_visible,
+            s.theme,
+            s.panels.clone(),
+        )
+    }
 
     pub struct NativeMenu {
         menu: Menu,
         /// Item id → command.
         ids: Vec<(muda::MenuId, Command)>,
         /// What the menu was last built from.
-        built: (Vec<std::path::PathBuf>, bool, ThemePref),
+        built: Built,
         #[cfg(target_os = "windows")]
         hwnd: isize,
     }
@@ -505,7 +543,7 @@ pub mod native {
             let mut m = NativeMenu {
                 menu: Menu::new(),
                 ids: Vec::new(),
-                built: (Vec::new(), false, ThemePref::Dark),
+                built: (Vec::new(), false, ThemePref::Dark, Vec::new()),
                 #[cfg(target_os = "windows")]
                 hwnd,
             };
@@ -604,6 +642,21 @@ pub mod native {
                             }
                             sub.append(&theme)?;
                         }
+                        Item::Panels => {
+                            let panels = Submenu::new("Panels", true);
+                            for (t, open) in &s.panels {
+                                let c = Command::Panel(t.clone());
+                                let id = self.id(&c);
+                                panels.append(&CheckMenuItem::with_id(
+                                    id,
+                                    c.label(),
+                                    true,
+                                    *open,
+                                    None,
+                                ))?;
+                            }
+                            sub.append(&panels)?;
+                        }
                     }
                 }
                 #[cfg(target_os = "macos")]
@@ -621,7 +674,7 @@ pub mod native {
                     self.menu.append(&window)?;
                 }
             }
-            self.built = (s.recent.to_vec(), s.palette_visible, s.theme);
+            self.built = built(s);
             Ok(())
         }
 
@@ -638,7 +691,7 @@ pub mod native {
 
         /// Rebuild when what the menu shows changed (recent files, checks).
         pub fn sync(&mut self, s: &MenuState) {
-            if self.built != (s.recent.to_vec(), s.palette_visible, s.theme) {
+            if self.built != built(s) {
                 let _ = self.build(s);
             }
             #[cfg(target_os = "windows")]
@@ -738,6 +791,7 @@ mod tests {
             recent: &[],
             palette_visible: true,
             theme: ThemePref::Dark,
+            panels: Vec::new(),
         };
         let mut seen: Vec<(KeyboardShortcut, &'static str)> = Vec::new();
         for s in model(&state) {
@@ -755,6 +809,32 @@ mod tests {
             }
         }
         assert!(seen.len() > 15);
+    }
+
+    #[test]
+    fn view_has_the_panels_submenu_and_reset_layout() {
+        let panels: Vec<(Tab, bool)> = workspace::PANELS
+            .iter()
+            .enumerate()
+            .map(|(i, t)| (t.clone(), i % 2 == 0))
+            .collect();
+        let state = MenuState {
+            recent: &[],
+            palette_visible: true,
+            theme: ThemePref::Dark,
+            panels: panels.clone(),
+        };
+        let view = model(&state)
+            .into_iter()
+            .find(|s| s.title == "View")
+            .unwrap();
+        assert!(view.items.contains(&Item::Panels));
+        assert!(view.items.contains(&Item::Cmd(Command::ResetLayout)));
+        // One checkbox per panel, named after it, in `PANELS` order.
+        assert_eq!(state.panels.len(), workspace::PANELS.len());
+        for (t, _) in &panels {
+            assert_eq!(Command::Panel(t.clone()).label(), workspace::title(t));
+        }
     }
 
     #[test]

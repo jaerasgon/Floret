@@ -88,11 +88,15 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
 
 - Dockable panels: one Preview per Renderer, Inspector, Help (live node
   docs), Library, Presets, Shader and Profiler; the layout is remembered.
-- Docking: a dragged tab lights up the whole region it will land in, and
-  dropping inside the dock always docks (no stray floating windows). Tabs
-  float by dragging them onto the canvas (an outline shows where) or with
-  their right-click Float; floating windows have minimise and close
-  buttons and reopen where they were. Tabs share the tab bar and scroll
+- Docking: every panel is a dock tab, the node canvas and the Nodes
+  palette included, so any of them docks anywhere in the window, splits,
+  stacks, floats or closes. A dragged tab lights up the whole region it
+  will land in, and dropping it always docks (no stray floating windows).
+  Tabs float by holding ⌥ Option / Alt as they're let go (a card shows
+  where) or with their right-click Float; floating windows have minimise
+  and close buttons and reopen where they were. Each tab has a faint ×
+  at its right end that brightens on the hovered or front tab; a closed
+  canvas, Nodes palette or preview comes back from View → Panels. Tabs share the tab bar and scroll
   when they don't fit, dividers are easier to grab, and panes can be made
   narrower. View → Panels reopens or closes any panel, and View → Reset
   Layout puts them all back.

@@ -428,6 +428,11 @@ impl View {
         self.raise(id);
     }
 
+    /// Where the canvas was last drawn (screen points).
+    pub fn area(&self) -> Rect {
+        self.area
+    }
+
     /// The region type armed for drawing, if any.
     pub fn armed(&self) -> Option<&str> {
         self.armed.as_deref()
@@ -2283,6 +2288,16 @@ pub fn show(
     }
 }
 
+/// Run what the panels and menus queued (Library insert, Subpatches,
+/// Arrange, Wrap …). [`show`] does this every frame it runs; the app calls
+/// this instead on frames the canvas isn't on screen (its tab is behind
+/// another one, minimised or closed), so those requests still happen.
+pub fn drain(patch: &mut PatchFile, view: &mut View) {
+    for a in std::mem::take(&mut view.queued) {
+        apply(a, patch, Catalogue::builtin(), view);
+    }
+}
+
 fn view_to_canvas(area: Rect, pan: Vec2, zoom: f32, p: Pos2) -> Position {
     let c = (p - area.min) / zoom - pan;
     Position {
@@ -4038,13 +4053,6 @@ mod edit_tests {
             &mut view,
         );
         assert!(view.curve_channels.is_empty());
-    }
-
-    /// Run what the panels queued (the canvas does this each frame).
-    fn drain(patch: &mut PatchFile, view: &mut View) {
-        for a in std::mem::take(&mut view.queued) {
-            apply(a, patch, Catalogue::builtin(), view);
-        }
     }
 
     /// A saved subpatch: a frame holding Read → add → add → Write.

@@ -224,7 +224,8 @@ pub struct Section {
 /// State the menus reflect.
 pub struct MenuState<'a> {
     pub recent: &'a [PathBuf],
-    pub palette_visible: bool,
+    /// The Nodes panel is open.
+    pub nodes_open: bool,
     pub theme: ThemePref,
     /// Each dock panel and whether it's open.
     pub panels: Vec<(Tab, bool)>,
@@ -272,7 +273,7 @@ pub fn model(s: &MenuState) -> Vec<Section> {
         C(Unwrap),
     ];
     let view = vec![
-        Item::Check(ToggleNodes, s.palette_visible),
+        Item::Check(ToggleNodes, s.nodes_open),
         Item::Panels,
         C(ResetLayout),
         Sep,
@@ -508,12 +509,7 @@ pub mod native {
     type Built = (Vec<std::path::PathBuf>, bool, ThemePref, Vec<(Tab, bool)>);
 
     fn built(s: &MenuState) -> Built {
-        (
-            s.recent.to_vec(),
-            s.palette_visible,
-            s.theme,
-            s.panels.clone(),
-        )
+        (s.recent.to_vec(), s.nodes_open, s.theme, s.panels.clone())
     }
 
     pub struct NativeMenu {
@@ -789,7 +785,7 @@ mod tests {
     fn every_menu_shortcut_is_unique() {
         let state = MenuState {
             recent: &[],
-            palette_visible: true,
+            nodes_open: true,
             theme: ThemePref::Dark,
             panels: Vec::new(),
         };
@@ -820,7 +816,7 @@ mod tests {
             .collect();
         let state = MenuState {
             recent: &[],
-            palette_visible: true,
+            nodes_open: true,
             theme: ThemePref::Dark,
             panels: panels.clone(),
         };

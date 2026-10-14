@@ -45,6 +45,7 @@ mod sample_play;
 #[cfg(test)]
 mod sample_sweep;
 mod shader_panel;
+mod subpatches_panel;
 mod theme;
 mod thumbs;
 mod variations;

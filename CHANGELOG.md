@@ -92,6 +92,12 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
 - Library panel: every sample by category plus your own saved patches, in
   list, icon or column views, with one search; import and download
   libraries.
+- Subpatches panel (from the tab bar's `+` menu): the subpatches at the
+  level the canvas shows, with their node counts. Click one to frame it,
+  double-click to enter, Up to go back. Right-click → Save to library…
+  keeps it in the Library with a subpatch mark; clicking it there inserts
+  it into the open patch (fresh ids, its own Write / Read slots, one undo
+  step), and its right-click menu can also open it on its own.
 - Preview: zoom and pan with a pixel grid, pause / step / restart, focus
   mode, and a fullscreen output window on any display.
 - Always-editable node values: every unwired value is a rounded value box

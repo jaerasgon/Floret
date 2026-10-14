@@ -10,10 +10,18 @@ Format per row:
 
 Port types: `number`, `boolean`, `string`, `vec2`, `color`, `mat3`,
 `layer`, `style`, `audio`, `image`, `any`. A trailing `*` marks a spread-kind port.
+There is one layer type: on the canvas every layer pin reads `layer` (the
+Renderer's `layers` and the geometry nodes' `layers` outputs included,
+their spread icon saying they carry several). The names in the tables are
+the ports' saved names; pins that tell several layers apart (`guides`,
+`inner`, `glyphs`, `cells` …) keep theirs.
 
 **Pin kinds** — three flavours, distinguished visually:
 - *single* (default): round pin, accepts one wire.
-- *spread*: round pin, accepts one wire carrying a list.
+- *spread*: round pin in its type's colour, accepts one wire carrying a
+  list. On the canvas a small three-bar stack icon (≡) right after the
+  pin's name marks it (hover it for "spread"); ForEach / Cache port tabs
+  and subpatch outputs that carry a spread show it too.
 - *multi* (input only): **taller pill-shaped pin**, accepts N wires; the
   runtime gathers them into a spread. Used by `transform/group` so you
   can drop many layer wires onto one input without a Stack chain.
@@ -391,7 +399,7 @@ All transform nodes use `push`/`pop` so they don't leak state into sibling layer
 
 | Label · type | Inputs → Outputs | Description |
 |---|---|---|
-| **Group** · `transform/group` | `layers: layer (multi)` → `out: layer` | Combine N Layer wires into one Layer. The `layers` pin is a tall pill — drop multiple wires straight onto it, no Stack chain required. Spread inputs also welcome (elements get appended). |
+| **Group** · `transform/group` | `1 … N: layer*` → `grouped: layer` (shown as `layer`) | Combine N layers into one layer. The header's `− n +` sets how many pins (2 by default); each takes a layer or a spread of layers, appended in pin order. Lets a single Transform reposition a whole ForEach result as one unit. |
 | **Translate** · `transform/translate` | `x, y: number, layer: layer` → `out: layer` | Translate an inner Layer by (x, y). |
 | **Rotate** · `transform/rotate` | `angle: number, layer: layer` → `out: layer` | Rotate an inner Layer by `angle` radians. |
 | **Scale** · `transform/scale` | `sx, sy: number, layer: layer` → `out: layer` | Scale an inner Layer by (sx, sy). |
@@ -399,7 +407,6 @@ All transform nodes use `push`/`pop` so they don't leak state into sibling layer
 | **ShearY** · `transform/shear-y` | `angle: number, layer: layer` → `out: layer` | Shear an inner Layer along the Y axis by `angle` radians. |
 | **ApplyMatrix** · `transform/apply-matrix` | `a, b, c, d, e, f: number, layer: layer` → `out: layer` | Multiply the current transform by `[[a, c, e], [b, d, f], [0, 0, 1]]`. Defaults are identity. |
 | **Blend** · `transform/blend` | `mode: string, layer: layer` → `out: layer` | Draw the inner Layer with a blend mode (add / multiply / screen / difference / overlay / …), then restore. Not a Style because p5's `blendMode` isn't saved by push/pop. |
-| **Group** · `transform/group` | `layers: layer*` → `out: layer` | Combine a spread of Layers into a single Layer. Lets a single Transform reposition a whole ForEach result as one unit. |
 | **Cache** · `transform/cache` | `layer: layer*, w, h: number` → `out: layer` | Rasterise a Layer (or spread) into a persistent offscreen canvas, then blit it each frame. Re-renders only when upstream inputs change — the runtime already memoises compute, so a stable layer chain stays bitmap-cached at ~0.07ms / frame regardless of how many primitives it contains. Massive speedup for static or rarely-updated scenes (ForEach grids, dense generative art, hand-drawn backgrounds). `w` / `h` default to 0 → match the active renderer's canvas size. Skip Cache for layers that change every frame — it would re-rasterise every frame and add overhead. |
 | **Mask** · `transform/mask` | `layer: layer*, mask: layer*, invert: boolean` → `masked: layer` | Show `layer` through `mask`. The `mode` dropdown picks the coverage: the mask's `alpha`, or its `luminance` (white shows, black hides, transparent hides). `invert` shows the layer where the mask is empty instead. Native-only. |
 | **Symmetry** · `transform/symmetry` | `layer: layer*` + mode pins (`count, center, angle, clip` / `group, cell, center, angle, size, clip`) → `out: layer` | Repeat a layer by a symmetry. `rotate`: `count` copies turned evenly round `center` (n-fold), the first at `angle` (radians). `kaleidoscope` (default): the same with `count` mirrors through `center`, every other copy reflected. `wallpaper`: one of the 17 plane `group`s (p1, p2, pm, pg, cm, pmm, pmg, pgg, cmm, p4, p4m, p4g, p3, p3m1, p31m, p6, p6m) over `cell`-wide lattice cells (hexagonal for p3 / p6 groups), turned by `angle`, filling `size` round `center` — its mirrors and rotation centres pass through `center`, so draw the motif near it, about a cell across. `clip`: round modes cut each copy to its wedge so copies meet edge to edge (on by default for kaleidoscope); wallpaper cuts the pattern to `size`. At most 20 000 copies. Native-only. |

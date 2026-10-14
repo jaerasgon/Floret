@@ -88,11 +88,15 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
 
 - Dockable panels: one Preview per Renderer, Inspector, Help (live node
   docs), Library, Presets, Shader and Profiler; the layout is remembered.
-- Docking: a dragged tab lights up the whole region it will land in, and
-  dropping inside the dock always docks (no stray floating windows). Tabs
-  float by dragging them onto the canvas (an outline shows where) or with
-  their right-click Float; floating windows have minimise and close
-  buttons and reopen where they were. Tabs share the tab bar and scroll
+- Docking: every panel is a dock tab, the node canvas and the Nodes
+  palette included, so any of them docks anywhere in the window, splits,
+  stacks, floats or closes. A dragged tab lights up the whole region it
+  will land in, and dropping it always docks (no stray floating windows).
+  Tabs float by holding ⌥ Option / Alt as they're let go (a card shows
+  where) or with their right-click Float; floating windows have minimise
+  and close buttons and reopen where they were. Each tab has a faint ×
+  at its right end that brightens on the hovered or front tab; a closed
+  canvas, Nodes palette or preview comes back from View → Panels. Tabs share the tab bar and scroll
   when they don't fit, dividers are easier to grab, and panes can be made
   narrower. View → Panels reopens or closes any panel, and View → Reset
   Layout puts them all back.
@@ -121,6 +125,13 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   value boxes line up. Outputs no longer share rows with inputs: they are
   listed in a compact, slightly darker footer under the inputs (labels
   right-aligned against their pins). Nodes without outputs have no footer.
+- One layer type, one name: every layer pin reads `layer` (Group's
+  output, the Renderer's `layers` in and out, and the geometry nodes'
+  `layers` outputs included). Spread pins now take their type's colour
+  instead of yellow, and a small three-bar stack icon after the pin's
+  name marks a spread (hover it for "spread") on inputs, outputs, ForEach
+  / Cache frame ports and subpatch outputs that carry a spread. Saved
+  files keep their port names.
 - Bypass any node (header button or B) to pass its input straight through;
   a curve editor for Effect → curves; a file picker for LUTs.
 - Minimap, dot grid and snapping, a shortcuts overlay (`?`), tooltips on

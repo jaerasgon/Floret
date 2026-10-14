@@ -2,17 +2,17 @@
 //! around the editor (menus, toolbar, status bar, side panels, dialogs).
 //!
 //! Layout, top to bottom: toolbar ([`App::toolbar`]), status bar
-//! ([`App::status_bar`]), the node palette (left), the docked previews,
-//! inspector, help, library and shader panels (right,
-//! [`App::side_panel`], see [`crate::workspace`]) and the node canvas
-//! (centre).
+//! ([`App::status_bar`]), and between them the dock ([`App::dock`], see
+//! [`crate::workspace`]): every panel — the node canvas, the Nodes
+//! palette, the previews, inspector, help, library, shader … — is a tab
+//! that docks, floats and closes like the others.
 
 use crate::files::{self, Document, Origin};
 use crate::menu::{self, Command, MenuState};
 use crate::prefs::{Prefs, PrefsWindow, Startup};
 use crate::{
-    audio, canvas, crash, devices, editor, help, host, palette, preview, recording, recovery,
-    shader_panel, theme, variations, welcome, workspace, SAMPLES,
+    audio, canvas, crash, devices, editor, help, host, preview, recording, recovery, shader_panel,
+    theme, variations, welcome, workspace, SAMPLES,
 };
 use eframe::egui::{self, Align, Layout, RichText};
 use egui_phosphor::regular as icons;
@@ -84,7 +84,6 @@ pub struct App {
     variations: variations::Variations,
     /// When the monitor list for the output window was last read.
     monitors_read: Option<Instant>,
-    query: String,
     crash: crash::Guard,
     shader_panel: shader_panel::ShaderPanel,
     workspace: workspace::Workspace,
@@ -161,10 +160,11 @@ impl App {
             recorder: recording::Recorder::default(),
             variations: variations::Variations::default(),
             monitors_read: None,
-            query: String::new(),
             crash: crash::Guard::default(),
             shader_panel: shader_panel::ShaderPanel::default(),
-            workspace: workspace::Workspace::load(),
+            // A layout from before the canvas was a tab opens with the
+            // Nodes column if the Nodes panel was showing.
+            workspace: workspace::Workspace::load(prefs.palette_visible),
             prefs,
             prefs_window: PrefsWindow::default(),
             welcome: welcome::Welcome::default(),
@@ -229,7 +229,7 @@ impl App {
     fn menu_state(&self) -> MenuState<'_> {
         MenuState {
             recent: self.recent.paths(),
-            palette_visible: self.prefs.palette_visible,
+            nodes_open: self.workspace.is_open(&workspace::Tab::Nodes),
             theme: self.prefs.theme,
             panels: self.workspace.panels(),
         }
@@ -246,6 +246,7 @@ impl App {
         self.patch = patch;
         self.error = None;
         self.view.on_load(&mut self.patch);
+        self.workspace.patch_loaded();
         audio::clear();
         self.doc = doc(self.view.revision());
         recovery::set_current(self.doc.path(), &self.doc.name);
@@ -472,7 +473,7 @@ impl App {
             Command::WrapCache => self.view.request_wrap("region/cache"),
             Command::WrapSection => self.view.request_wrap(editor::wrap::SECTION),
             Command::Unwrap => self.view.request_unwrap(),
-            Command::ToggleNodes => self.prefs.palette_visible ^= true,
+            Command::ToggleNodes => self.workspace.toggle_panel(workspace::Tab::Nodes),
             Command::Panel(t) => self.workspace.toggle_panel(t),
             Command::ResetLayout => self.workspace.reset(),
             Command::ZoomIn => self.prefs.step_scale(1),
@@ -547,12 +548,17 @@ impl App {
             }
             cluster_gap(ui);
             // View.
-            toggle(
+            let mut nodes = self.workspace.is_open(&workspace::Tab::Nodes);
+            if toggle(
                 ui,
-                &mut self.prefs.palette_visible,
+                &mut nodes,
                 icons::SIDEBAR_SIMPLE,
                 &shortcut_hint(&Command::ToggleNodes),
-            );
+            )
+            .clicked()
+            {
+                self.workspace.toggle_panel(workspace::Tab::Nodes);
+            }
             if tool(ui, icons::FRAME_CORNERS, &shortcut_hint(&Command::FitView)).clicked() {
                 self.view.request_fit();
             }
@@ -710,8 +716,9 @@ impl App {
         });
     }
 
-    /// The side dock: previews, inspector, help, library, shader, profiler.
-    fn side_panel(&mut self, ui: &mut egui::Ui, frame: &eframe::Frame) {
+    /// The dock: the canvas, the Nodes palette, previews, inspector, help,
+    /// library, shader, profiler …
+    fn dock(&mut self, ui: &mut egui::Ui, frame: &eframe::Frame) {
         self.preview.doc_name = self.doc.name.clone();
         let sample = match &self.doc.origin {
             Origin::Sample(id) => SAMPLES.iter().position(|s| s.id == *id),
@@ -729,12 +736,36 @@ impl App {
                 crash: &mut self.crash,
                 engine: self.engine.as_ref(),
                 outputs: &self.outputs,
+                region_stats: &self.region_stats,
+                warnings: &self.warnings,
+                errors: &self.tick_errors,
                 rs: frame.wgpu_render_state(),
                 samples: SAMPLES,
                 sample,
+                welcome_open: self.welcome.open,
             },
         );
         self.prefs.library_tile_width = self.workspace.library.tile_width;
+        // What the canvas (or a panel, for it) changed — also when the
+        // canvas isn't on screen.
+        if let Some(hint) = self.view.take_hint() {
+            self.notify(hint, false);
+        }
+        // Inline value edits reach the running engine without a recompile.
+        let edits = self.view.take_live_edits();
+        if let Some(engine) = self.engine.as_mut() {
+            editor::values::apply_live(engine, Catalogue::builtin(), &self.patch, edits);
+        }
+        // Structural edits (wires, nodes, undo) rebuild the engine; nodes
+        // that keep state across edits (Layout's transitions, Point
+        // Tracker's tracks) carry it over.
+        if self.view.take_recompile() {
+            let mut old = self.engine.take();
+            self.recompile();
+            if let (Some(new), Some(old)) = (self.engine.as_mut(), old.as_mut()) {
+                new.adopt_state(old);
+            }
+        }
         if let Some(engine) = self.engine.as_mut() {
             engine.set_profiling(self.workspace.profiling());
         }
@@ -764,48 +795,6 @@ impl App {
         if let Err(caught) = crash::catch(crash::Stage::Editor, || f(self)) {
             self.view.recover(&mut self.patch);
             self.crash.report(caught, &self.patch);
-        }
-    }
-
-    fn canvas(&mut self, ui: &mut egui::Ui, frame: &eframe::Frame) {
-        let cat = Catalogue::builtin();
-        self.view.thumbs = self.preview.probe_thumbs(
-            ui.ctx(),
-            frame.wgpu_render_state(),
-            self.engine.as_ref(),
-            &self.outputs,
-            &self.patch,
-        );
-        if let Some(engine) = &self.engine {
-            let live = canvas::Live {
-                engine,
-                outputs: &self.outputs,
-                region_stats: &self.region_stats,
-                warnings: &self.warnings,
-                errors: &self.tick_errors,
-            };
-            canvas::show(ui, &mut self.patch, &live, cat, &mut self.view);
-        }
-        if let Some(hint) = self.view.take_hint() {
-            self.notify(hint, false);
-        }
-        // Inline value edits reach the running engine without a recompile.
-        let edits = self.view.take_live_edits();
-        if let Some(engine) = self.engine.as_mut() {
-            editor::values::apply_live(engine, cat, &self.patch, edits);
-        }
-        // Structural edits (wires, nodes, undo) rebuild the engine; nodes
-        // that keep state across edits (Layout's transitions, Point
-        // Tracker's tracks) carry it over.
-        if self.view.take_recompile() {
-            let mut old = self.engine.take();
-            self.recompile();
-            if let (Some(new), Some(old)) = (self.engine.as_mut(), old.as_mut()) {
-                new.adopt_state(old);
-            }
-        }
-        if self.patch.nodes.is_empty() && !self.welcome.open {
-            empty_hint(ui);
         }
     }
 
@@ -1080,34 +1069,21 @@ impl eframe::App for App {
             .frame(bar(theme::BG_1.get()))
             .show(ui, |ui| self.guarded(|app| app.status_bar(ui, &warnings)));
 
-        if self.prefs.palette_visible {
-            egui::Panel::left("palette")
-                .resizable(true)
-                .default_size(220.0)
-                .size_range(160.0..=360.0)
-                .frame(
-                    egui::Frame::new()
-                        .fill(*theme::BG_1)
-                        .inner_margin(egui::Margin::symmetric(10, 4)),
-                )
-                .show(ui, |ui| {
-                    self.guarded(|app| {
-                        palette::show(ui, &mut app.query, &mut app.view, &mut app.patch);
-                    });
-                });
-        }
-
-        egui::Panel::right("side")
-            .resizable(true)
-            .default_size(400.0)
-            .size_range(260.0..=900.0)
-            .frame(egui::Frame::new().fill(*theme::BG_1))
-            .show(ui, |ui| self.guarded(|app| app.side_panel(ui, frame)));
-
-        let canvas_rect = egui::CentralPanel::no_frame()
-            .show(ui, |ui| self.guarded(|app| app.canvas(ui, frame)))
+        // Everything between the toolbar and the status bar is the dock.
+        let dock_rect = egui::CentralPanel::no_frame()
+            .show(ui, |ui| {
+                ui.painter().rect_filled(ui.max_rect(), 0.0, *theme::BG_0);
+                self.guarded(|app| app.dock(ui, frame));
+            })
             .response
             .rect;
+        // The `?` overlay covers the canvas, or the dock when the canvas
+        // isn't on screen.
+        let canvas_rect = if self.workspace.canvas_shown() {
+            self.view.area()
+        } else {
+            dock_rect
+        };
         help::overlay(&ctx, canvas_rect, &mut self.shortcuts_overlay);
         // The toolbar's Snap / Flow toggles act on the view.
         self.prefs.snap_to_grid = self.view.snap;
@@ -1160,12 +1136,19 @@ impl eframe::App for App {
         self.recovery_dialog(&ctx);
         self.confirm_dialog(&ctx);
 
+        // The Nodes panel preference mirrors the dock: Preferences' checkbox
+        // opens or closes the tab.
+        if self.prefs.palette_visible != prefs_before.palette_visible {
+            self.workspace
+                .set_open(workspace::Tab::Nodes, self.prefs.palette_visible);
+        }
+        self.prefs.palette_visible = self.workspace.is_open(&workspace::Tab::Nodes);
         self.prefs_changed(&ctx, &prefs_before);
         #[cfg(any(target_os = "macos", target_os = "windows"))]
         if let Some(m) = &mut self.native_menu {
             m.sync(&MenuState {
                 recent: self.recent.paths(),
-                palette_visible: self.prefs.palette_visible,
+                nodes_open: self.workspace.is_open(&workspace::Tab::Nodes),
                 theme: self.prefs.theme,
                 panels: self.workspace.panels(),
             });
@@ -1242,16 +1225,6 @@ fn shortcut_hint(c: &Command) -> String {
         Some(sc) => format!("{} ({})", c.label(), menu::shortcut_text(&sc)),
         None => c.label().to_owned(),
     }
-}
-
-/// Centred hint on an empty canvas.
-fn empty_hint(ui: &mut egui::Ui) {
-    theme::paint_empty_state(
-        ui,
-        ui.max_rect(),
-        "Empty patch",
-        "Double-click or press Tab to add a node · ? for shortcuts · Library for samples",
-    );
 }
 
 pub fn empty_patch() -> PatchFile {

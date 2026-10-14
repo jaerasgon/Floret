@@ -62,9 +62,11 @@ pub struct Prefs {
     /// doesn't expose; here it's a preference. Stops camera moves, node
     /// entrances, the selection breath and ambient drift.
     pub reduce_motion: bool,
-    /// The Nodes browser. Hidden by default (a new key, so earlier
-    /// default-on settings don't carry over); Tab / double-click search
-    /// adds nodes.
+    /// The Nodes panel (node palette) is open. It's a dock tab now; this
+    /// mirrors the dock (the checkbox below opens or closes the tab) and
+    /// gives a layout from before the canvas was a tab its Nodes column.
+    /// Hidden by default (a new key, so earlier default-on settings don't
+    /// carry over); Tab / double-click search adds nodes.
     #[serde(rename = "nodesPanelVisible")]
     pub palette_visible: bool,
     pub default_render_width: u32,
@@ -368,7 +370,7 @@ impl PrefsWindow {
                 row(
                     ui,
                     "Nodes panel",
-                    "Show the node palette on the left.",
+                    "Show the Nodes panel (the node palette).",
                     |ui| {
                         ui.checkbox(&mut p.palette_visible, "");
                     },

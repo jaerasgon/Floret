@@ -117,7 +117,8 @@ pub const CURVE_RED: Token = Token::new(0xff7a7a, 0xc93c3c);
 pub const CURVE_GREEN: Token = Token::new(0x6fd88a, 0x2e8a4a);
 pub const CURVE_BLUE: Token = Token::new(0x7ca8ff, 0x2f6db8);
 
-/// Pins of spread ports.
+/// The probe card's readout accent (its count and scrollbar). Spread pins
+/// take their type's colour; their name carries a spread icon.
 pub const SPREAD_PIN: Token = Token::new(0xf0d800, 0xa08600);
 
 /// Wire / pin colour per port type (light: darker, ≥ 3:1 on the canvas).
@@ -616,7 +617,7 @@ mod tests {
                 assert!(c >= 3.0, "{ty} pin: {c:.2}");
             }
             let c = contrast(t(SPREAD_PIN), card);
-            assert!(c >= 3.0, "spread pin: {c:.2}");
+            assert!(c >= 3.0, "probe accent: {c:.2}");
             // The lit bypass icon on a (dimmed) card, and the curve
             // editor's channel curves on its graph (the canvas colour).
             let dimmed = blend(t(BG_2).gamma_multiply(0.6), card);

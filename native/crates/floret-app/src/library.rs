@@ -435,10 +435,6 @@ impl Library {
                     self.mode = m;
                 }
             }
-            if self.mode == Mode::Grid {
-                ui.add_space(6.0);
-                self.size_control(ui);
-            }
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 if ui
                     .button(RichText::new("Save to library…").small())
@@ -466,6 +462,9 @@ impl Library {
                 }
             });
         });
+        if self.mode == Mode::Grid {
+            ui.horizontal(|ui| self.size_control(ui));
+        }
         self.save_form(ui, patch);
         if let Some(s) = &self.status {
             ui.label(RichText::new(s).color(theme::FG_2).small());
@@ -519,9 +518,12 @@ impl Library {
         pick
     }
 
-    /// The Tiles view's size control: − / + and a small slider.
+    /// The Tiles view's size control: − / + and a small slider, on its own
+    /// row under the view buttons (the side panel is too narrow for one).
     fn size_control(&mut self, ui: &mut egui::Ui) {
         let tip = "Tile size (or Cmd / Ctrl + scroll over the tiles)";
+        ui.label(RichText::new("Size").small().color(theme::FG_2))
+            .on_hover_text(tip);
         let w = &mut self.tile_width;
         if ui
             .add_enabled(*w > TILE_MIN, egui::Button::new(RichText::new("−").small()))
@@ -531,7 +533,7 @@ impl Library {
             *w = clamp_tile(*w - TILE_STEP);
         }
         ui.scope(|ui| {
-            ui.spacing_mut().slider_width = 56.0;
+            ui.spacing_mut().slider_width = 96.0;
             ui.add(egui::Slider::new(w, TILE_MIN..=TILE_MAX).show_value(false))
                 .on_hover_text(tip);
         });

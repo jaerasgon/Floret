@@ -190,6 +190,9 @@ pub struct Library {
     library: Option<LibRef>,
     /// Sample thumbnails (rendered in the background, cached).
     thumbs: crate::thumbs::Thumbnails,
+    /// Tiles view: the tile width ([`TILE_MIN`]..=[`TILE_MAX`]), kept in
+    /// the preferences (`libraryTileWidth`).
+    pub tile_width: f32,
 }
 
 impl Default for Library {
@@ -203,6 +206,7 @@ impl Default for Library {
         Library {
             mode: Mode::Grid,
             thumbs: crate::thumbs::Thumbnails::default(),
+            tile_width: TILE_DEFAULT,
             query: String::new(),
             save: None,
             dir,
@@ -431,6 +435,10 @@ impl Library {
                     self.mode = m;
                 }
             }
+            if self.mode == Mode::Grid {
+                ui.add_space(6.0);
+                self.size_control(ui);
+            }
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 if ui
                     .button(RichText::new("Save to library…").small())
@@ -469,7 +477,7 @@ impl Library {
                 self.search_results(ui, samples, current)
             };
         }
-        egui::ScrollArea::vertical()
+        let scrolled = egui::ScrollArea::vertical()
             .auto_shrink([false, false])
             .show(ui, |ui| {
                 if let Some(p) = self.user_section(ui, samples) {
@@ -501,7 +509,39 @@ impl Library {
                     }
                 }
             });
+        // Cmd / Ctrl + scroll (or a pinch) over the tiles resizes them.
+        if self.mode == Mode::Grid && ui.rect_contains_pointer(scrolled.inner_rect) {
+            let zoom = ui.input(|i| i.zoom_delta());
+            if zoom != 1.0 {
+                self.tile_width = clamp_tile(self.tile_width * zoom);
+            }
+        }
         pick
+    }
+
+    /// The Tiles view's size control: − / + and a small slider.
+    fn size_control(&mut self, ui: &mut egui::Ui) {
+        let tip = "Tile size (or Cmd / Ctrl + scroll over the tiles)";
+        let w = &mut self.tile_width;
+        if ui
+            .add_enabled(*w > TILE_MIN, egui::Button::new(RichText::new("−").small()))
+            .on_hover_text("Smaller tiles")
+            .clicked()
+        {
+            *w = clamp_tile(*w - TILE_STEP);
+        }
+        ui.scope(|ui| {
+            ui.spacing_mut().slider_width = 56.0;
+            ui.add(egui::Slider::new(w, TILE_MIN..=TILE_MAX).show_value(false))
+                .on_hover_text(tip);
+        });
+        if ui
+            .add_enabled(*w < TILE_MAX, egui::Button::new(RichText::new("+").small()))
+            .on_hover_text("Larger tiles")
+            .clicked()
+        {
+            *w = clamp_tile(*w + TILE_STEP);
+        }
     }
 
     /// A collapsible library (searching opens everything), with download
@@ -575,7 +615,7 @@ impl Library {
                 ui.horizontal_wrapped(|ui| {
                     for (i, s) in items {
                         let thumb = self.thumbs.get(s.id).map(|t| t.id());
-                        if tile(ui, s.name, cat, current == Some(*i), thumb)
+                        if tile(ui, self.tile_width, s.name, cat, current == Some(*i), thumb)
                             .on_hover_text(s.description)
                             .clicked()
                         {
@@ -601,7 +641,7 @@ impl Library {
         if self.mode == Mode::Grid {
             ui.horizontal_wrapped(|ui| {
                 for (i, (name, desc)) in list.iter().enumerate() {
-                    if tile(ui, name, group, false, None)
+                    if tile(ui, self.tile_width, name, group, false, None)
                         .on_hover_text(desc)
                         .clicked()
                     {
@@ -1033,16 +1073,46 @@ enum LibOpen {
     User(String, String),
 }
 
+/// Tile widths the Tiles view's size control allows, and its default.
+pub const TILE_MIN: f32 = 64.0;
+pub const TILE_MAX: f32 = 240.0;
+pub const TILE_DEFAULT: f32 = 96.0;
+/// One click of the − / + buttons.
+const TILE_STEP: f32 = 16.0;
+
+/// A tile width within [`TILE_MIN`]..=[`TILE_MAX`] (the default when not a
+/// number).
+pub fn clamp_tile(w: f32) -> f32 {
+    if w.is_finite() {
+        w.clamp(TILE_MIN, TILE_MAX)
+    } else {
+        TILE_DEFAULT
+    }
+}
+
+/// The title's font size for a tile `width` wide: 10.5 at the default
+/// width, scaled with it but kept readable.
+fn tile_font(width: f32) -> f32 {
+    (10.5 * width / TILE_DEFAULT).clamp(9.0, 14.0)
+}
+
+/// A tile `width` wide: the swatch (two thirds as tall) and two lines of
+/// title. 96 × 92 at the default width.
+fn tile_size(width: f32) -> egui::Vec2 {
+    vec2(width, width * 0.66 + 3.0 + tile_font(width) * 2.44)
+}
+
 /// A tile: the sample's thumbnail (else a muted swatch from the group
 /// name), the title below.
 fn tile(
     ui: &mut egui::Ui,
+    width: f32,
     title: &str,
     group: &str,
     on: bool,
     thumb: Option<egui::TextureId>,
 ) -> egui::Response {
-    let (rect, resp) = ui.allocate_exact_size(vec2(96.0, 92.0), egui::Sense::click());
+    let (rect, resp) = ui.allocate_exact_size(tile_size(width), egui::Sense::click());
     let p = ui.painter();
     let swatch = egui::Rect::from_min_size(rect.min, vec2(rect.width(), rect.width() * 0.66));
     match thumb {
@@ -1071,7 +1141,7 @@ fn tile(
     p.rect_stroke(swatch, 5.0, stroke, egui::StrokeKind::Inside);
     let g = p.layout(
         title.to_owned(),
-        egui::FontId::proportional(10.5),
+        egui::FontId::proportional(tile_font(width)),
         *theme::FG_1,
         rect.width(),
     );
@@ -1099,6 +1169,18 @@ mod tests {
         let entries = vec![e("a.flora"), e("a-2.flora")];
         assert_eq!(unique_file(&entries, "A"), "a-3.flora");
         assert_eq!(unique_file(&entries, "b"), "b.flora");
+    }
+
+    #[test]
+    fn tiles_scale_from_the_default_size() {
+        let d = tile_size(TILE_DEFAULT);
+        assert_eq!(d.x, 96.0);
+        assert!((d.y - 92.0).abs() < 0.1, "{d:?}");
+        let (small, big) = (tile_size(TILE_MIN), tile_size(TILE_MAX));
+        assert!(small.y < d.y && d.y < big.y);
+        assert_eq!(clamp_tile(10.0), TILE_MIN);
+        assert_eq!(clamp_tile(1e6), TILE_MAX);
+        assert_eq!(clamp_tile(f32::NAN), TILE_DEFAULT);
     }
 
     #[test]

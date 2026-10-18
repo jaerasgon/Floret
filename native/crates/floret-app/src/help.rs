@@ -166,6 +166,19 @@ pub fn groups() -> Vec<Section> {
             ],
         },
         Section {
+            title: "Panels",
+            rows: vec![
+                (
+                    Trigger::Text("⌥ / Alt + drop a tab"),
+                    "Float the panel at the pointer",
+                ),
+                (
+                    Trigger::Text("Ctrl/⌘ + scroll over the Library tiles"),
+                    "Resize the tiles",
+                ),
+            ],
+        },
+        Section {
             title: "File",
             rows: file,
         },
@@ -398,10 +411,21 @@ mod tests {
     }
 
     #[test]
+    fn panel_gestures_are_listed() {
+        let all = groups();
+        let panels = all.iter().find(|g| g.title == "Panels").expect("Panels");
+        let has = |what: &str| panels.rows.iter().any(|(_, w)| w.contains(what));
+        assert!(has("Float the panel"), "⌥-drop floats a tab");
+        assert!(has("Resize the tiles"), "Cmd+scroll resizes Library tiles");
+    }
+
+    #[test]
     fn overlay_groups_and_columns() {
         let all = groups();
         let titles: Vec<_> = all.iter().map(|g| g.title).collect();
-        for t in ["Canvas", "Nodes", "Wires", "Regions", "Preview", "File"] {
+        for t in [
+            "Canvas", "Nodes", "Wires", "Regions", "Preview", "Panels", "File",
+        ] {
             assert!(titles.contains(&t), "{t} group");
         }
         for cols in 1..=4 {

@@ -20,9 +20,11 @@ from the repo folder.
 - [ ] Floret shows in Launchpad and Spotlight with the Floret icon, and Finder's Get Info shows the version and build.
 - [ ] Quit (Cmd+Q) and open Floret from the Dock or Launchpad: it opens with no warning about the app being damaged.
 - [ ] The first launch with no patch open shows the Welcome screen (unless it's turned off in Preferences). Its tutorial tiles get thumbnails within a few seconds.
-- [ ] Help → About Floret (in the Floret menu) shows the version and the GPU in use (for example "Apple M1 · Metal").
+- [ ] Floret → About Floret is the standard macOS About panel: it shows the name and version. (The GPU in use appears only in the About window of the Windows and Linux builds, under Help → About Floret.)
+- [ ] Help → Licenses… opens the Licenses window: Floret's own licence, the fonts, the tracking models, the icons and the Rust libraries it is built from. It can be scrolled and closed.
 - [ ] Preferences (Cmd+,): change "On startup, open" to Starter sample, quit and reopen. Grid Ripple opens.
 - [ ] Make a change without saving, then force-quit Floret from Activity Monitor and reopen it. Floret offers to restore the unsaved work, and Restore brings it back.
+- [ ] **Autosave interval:** in Settings (Cmd+,), Autosave is on, with an "Autosave every" menu (10 seconds, 30 seconds, 1, 2 or 5 minutes) and the path of the recovery files below it. Pick 10 seconds, make a change, wait 15 seconds, force-quit and reopen: the change is offered back. Untick Autosave: nothing is autosaved while you edit, and the "Autosave every" menu is greyed out. Quit normally: no restore offer on the next launch. The choice is still there after a restart.
 
 ## Double-click a .flora file
 
@@ -41,7 +43,7 @@ from the repo folder.
 
 - [ ] File → New (Cmd+N) gives an empty canvas with the hint "Double-click or press Tab to add a node".
 - [ ] Press Tab over the canvas, type `rect` and press Enter. A Rect node appears at the pointer.
-- [ ] Add a Renderer (Tab, `renderer`). Drag from Rect's output pin (`layer`, in the footer under its inputs) to the Renderer's `layers` input: a wire appears and the square shows in the Preview.
+- [ ] Add a Renderer (Tab, `renderer`). Drag from Rect's output pin (`layer`, in the footer under its inputs) to the Renderer's `layer` input: a wire appears and the square shows in the Preview.
 - [ ] Inputs and params each have a full-width row, and every value box on a node lines up. Outputs are listed in a slightly darker footer strip under the inputs (one compact row each, pin on the right edge); a node without outputs (Sound Output) has no footer. Check both themes.
 - [ ] **Spreads and layers:** open the `layout-bloom` sample. Layout's `positions`, `angles` and `scales` outputs show a small three-bar stack icon between the name and the pin, in the pin's colour; `progress` has none. Hover an icon: the tooltip says "spread". Every layer pin reads `layer` (Group's output, the Renderer's input and output); the Renderer's spread pins are layer-blue, not yellow. A ForEach's port tabs show the icon after their name. Zoomed far out the icons hide with the labels. Check both themes.
 - [ ] Drag a wire from a pin and drop it on empty canvas: the node search opens, and the node you pick comes with the wire already connected.
@@ -60,6 +62,24 @@ from the repo folder.
 - [ ] Right-click a node, a wire and the empty canvas: each shows its context menu.
 - [ ] Press `?`: the shortcuts overlay shows. Esc closes it.
 
+## Wires, pairs, sections and subpatches
+
+- [ ] **Refused backward wires:** put two nodes side by side (a Number and a Math, say). Drag a wire from the left node's output to the right node's input: it connects. Drag one from the right node's output to the left node's input: while you drag, the pins that would point backwards dim, and dropping on one makes no wire and shows the hint "Wires flow left to right — use a Write → Read pair for feedback". The same inside a ForEach or subpatch frame (the frame's input pins count as its left edge).
+- [ ] **Read/Write pairs, created together:** press Tab and add a `write`. A Read appears to its left at the same height, and both are selected. The headers show the same `#` number.
+- [ ] **Naming:** double-click either header (or right-click → Name pair…), type `ball position` and press Return. Both halves now read "ball position".
+- [ ] **Seeing the pair:** select one half: a dashed link joins it to its partner. Hover one half: the other lights up.
+- [ ] Build a counter that flows left to right: Read → Math (add 1) → Write. The number keeps growing frame by frame (watch it in the Inspector).
+- [ ] Delete the Write: its Read goes too. Undo brings both back. Copy and paste a Write: the copy has a fresh number and brings its own Read.
+- [ ] **Warnings:** change a Write's `slot` so it no longer matches its Read. The status bar shows a warnings count (a Read with no Write, a Write with no Read); click it for the list, and click a warning to select its node. Set the slot back, and the warnings go.
+- [ ] **Bypass:** select an Effect (or any node with an input and an output) and press B. It dims and passes its input through unchanged; the picture shows the patch without it. Press B again to turn it back on. Select several nodes: B toggles them together, and one Cmd+Z undoes the lot. A Renderer and a Write can't be bypassed.
+- [ ] **Sections:** select a few nodes, right-click one of them → Wrap in Section. A titled, coloured backdrop appears around them. Double-click its title to rename it, right-click it for a colour, drag its corner to resize it, drag it to move the nodes with it. The picture doesn't change. Right-click it → Unwrap section removes it and keeps the nodes.
+- [ ] **Wrap / Unwrap:** the same selection → Wrap in ForEach, Wrap in If and Wrap in Cache each put the nodes in that frame; right-click the frame → Unwrap puts them back. The Edit menu has the same Wrap and Unwrap commands. Cmd+Z undoes each.
+- [ ] **Subpatches panel:** select some nodes and press Cmd+G. Open View → Panels → Subpatches (or the tab bar's +). It lists the subpatch with its node count.
+  - [ ] Click the row: the canvas frames that subpatch. Double-click it (or press I over the subpatch): you enter it, and the panel lists what's inside. Click Up (or press O): back a level.
+  - [ ] Right-click the row → Save to library…, name it and save. Open the Library: it is under My patches with a small subpatch mark.
+  - [ ] Open another (or a new) patch, click the saved subpatch in the Library: a copy is inserted into the open patch, at the level you're viewing. Right-click it for Insert into patch or Open on its own.
+  - [ ] Inside a ForEach, the panel lists the subpatches at that level too.
+
 ## Nodes browser and search
 
 - [ ] Cmd+\ shows and hides the Nodes panel (a dock tab, left of the canvas). Its groups (Source, Draw, …) open and close.
@@ -67,6 +87,17 @@ from the repo folder.
 - [ ] Tab search finds nodes by name (`ellipse`), by type id (`draw/ellipse`) and by old category name (`Style`).
 - [ ] Hovering over a node in the Nodes panel shows its description. Selecting a node on the canvas shows its docs in the Help tab.
 - [ ] Press Q over the canvas: the Favorites menu opens, and 1–9 place a favourite.
+
+## Inspector, Help, Shader and Profiler panels
+
+- [ ] **Inspector:** with nothing selected it says "No node selected". Select a node: its name, type, description and live output values show, and they change as the patch runs. Select a Camera or MIDI node: its device status shows too.
+- [ ] **Help panel:** select a node on the canvas: its docs show (description, pins with their types and defaults, and the notes from NODES.md).
+  - [ ] Type `pixelate` in its search box and pick the result: Pixelate's docs show. Try `camera`, `metro` and `ring`: each has notes as well as pins.
+  - [ ] Turn the link toggle off: selecting other nodes on the canvas no longer replaces the docs you searched for. Turn it on: it follows the selection again.
+- [ ] **Shader panel:** add a Shader node (Tab, `shader`) and select it. The panel shows the code with tabs for the Image pass and Buffer A–D, line numbers, the detected uniforms and the iChannel routing.
+  - [ ] Break the code (delete a semicolon): an error appears with the right line number,. Fix it: the error goes away within a moment of your last keystroke.
+  - [ ] Add a line `uniform float amount;`: a matching `amount` pin appears on the node.
+- [ ] **Profiler:** open `grid-ripple` and the Profiler tab. It shows the tick time, memo hits and the slowest nodes, slowest first. (The engine times nodes only while this tab is showing.)
 
 ## Preview and export
 
@@ -175,8 +206,25 @@ from the repo folder.
 
 - [ ] File → Samples Library (Cmd+Shift+O) shows every sample by category in the list, icon and column views. Search filters across them.
 - [ ] Save to library stores the open patch in "My patches", and it reopens from there.
+- [ ] **Library zoom:** in the Library, switch to the Tiles (icon) view. The − and + buttons and the slider beside them make the tiles smaller and larger. Hold Cmd and scroll over the tiles, or pinch on the trackpad: the tiles resize smoothly between a small and a large size, and the titles scale with them. Quit and reopen Floret: the tile size is the same.
+- [ ] **Covers:** every sample tile shows its cover picture within a few seconds (scroll through all categories). None is blank, black or stretched, and they stay sharp at the largest size. A tile with no picture yet shows a muted colour swatch.
+- [ ] The Library's list and columns views still work: search filters across all three views, and clicking a sample opens it.
+- [ ] A saved subpatch carries a small mark in the Library (see Wires, pairs, sections and subpatches).
 - [ ] File → Save (Cmd+S) on a new patch asks where, and adds `.flora`. File → Save As… (Cmd+Shift+S) saves a copy.
 - [ ] A file saved by Floret opens again with the same nodes, wires, values and presets.
+- [ ] **Pictures beside the patch:** make a folder with a picture in it (a PNG), add an ImageURL node, click the … button on its `url` pin and choose that picture, wire it into an Image (draw) node and a Renderer, then File → Save the patch in the same folder. Move or rename the whole folder, or copy it to another Mac or account, and open the patch from there: the picture still shows. Do the same with a font file on a Font node, a LUT file on an Effect set to lut, and a CSV on a CSVFile node. A patch saved earlier with a full path to a picture still opens.
+- [ ] Save As into a different folder: the picture still shows, and the copy works when that folder is moved.
+- [ ] A picture in a faraway folder (not beside or below the patch) still shows after Save and reopen.
+
+## The crash screen
+
+If an internal error happens, Floret shows a "Something went wrong" window instead of closing. There is no way to trigger it on purpose in the installed app, so this is a check for if you ever see it (note which sample or patch you were on, and take a screenshot):
+
+- [ ] The window says what was affected (evaluating the patch, drawing the preview, or the editor), that nothing was lost, the error message and where it happened, and where a recovery copy of the patch was saved.
+- [ ] Show backtrace expands the technical detail. Copy details puts it on the clipboard (paste it into the bug report). Save patch as… writes a `.flora` copy of your patch.
+- [ ] Continue closes the window and lets you keep editing; after an evaluation or drawing error the preview stays paused, and a "Evaluation paused after an error" bar offers Resume, Reload patch and Details.
+- [ ] Reload patch restarts the patch from a fresh state and evaluation runs again.
+- [ ] After an error in the editor, the edit in progress is undone and the rest of the patch is still there.
 
 ## Performance spot-checks
 

@@ -207,6 +207,7 @@ mod tests {
             width: None,
             height: None,
             bypassed: false,
+            extra: Default::default(),
         }
     }
 
@@ -251,6 +252,7 @@ mod tests {
             seed: 0,
             presets: Vec::new(),
             legacy_slot0: false,
+            extra: Default::default(),
         }
     }
 

@@ -66,10 +66,7 @@ impl Favorites {
 }
 
 fn save(path: &Path, types: &[String]) -> std::io::Result<()> {
-    if let Some(dir) = path.parent() {
-        std::fs::create_dir_all(dir)?;
-    }
-    std::fs::write(path, serde_json::to_string_pretty(types)?)
+    crate::files::write_atomic(path, serde_json::to_string_pretty(types)?)
 }
 
 #[cfg(test)]

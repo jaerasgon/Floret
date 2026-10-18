@@ -37,6 +37,8 @@ mod profiler;
 mod recording;
 mod recovery;
 #[cfg(test)]
+mod round_trip;
+#[cfg(test)]
 mod sample_equiv;
 #[cfg(test)]
 mod sample_equivalence;
@@ -45,8 +47,13 @@ mod sample_play;
 mod sample_scripts;
 #[cfg(test)]
 mod sample_sweep;
+mod session;
+#[cfg(test)]
+mod settings_restart;
 mod shader_panel;
 mod subpatches_panel;
+#[cfg(test)]
+mod test_env;
 mod theme;
 mod thumbs;
 mod variations;

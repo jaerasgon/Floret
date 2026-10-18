@@ -178,6 +178,13 @@ improves for everyone. [CONTRIBUTING.md](CONTRIBUTING.md) has what makes a
 useful report and how to send a pull request. Security problems go by email,
 privately: see [SECURITY.md](SECURITY.md).
 
+## Support Floret
+
+Floret is free and open source, and it will stay that way. If it's useful to
+you and you'd like to help me keep building it, you can leave a tip on
+[Ko-fi](https://ko-fi.com/jaerasgon). Feedback matters just as much as
+money, so telling me what works and what doesn't is a great way to help too.
+
 ## Licence
 
 Floret is free and open source under the **[Apache License 2.0](LICENSE)**:

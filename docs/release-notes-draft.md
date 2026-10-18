@@ -17,6 +17,9 @@ early and your feedback shapes it: open an issue on GitHub or email
 **Floret.make@gmail.com**, and please send ideas, bugs and requests there
 rather than forking, so Floret improves for everyone.
 
+If Floret is useful to you, you can help keep it growing with a tip on
+[Ko-fi](https://ko-fi.com/jaerasgon). Feedback helps just as much.
+
 ## What's in it
 
 - **A fast node editor.** Press Tab or double-click to add a node and drag

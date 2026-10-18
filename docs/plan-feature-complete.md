@@ -77,9 +77,7 @@ product; the TypeScript web app is reference-only.
 - From `native/`, before every push: `cargo fmt --all --check`,
   `cargo clippy --workspace --all-targets -- -D warnings`,
   `cargo test --workspace` (use `CARGO_INCREMENTAL=0`; watch disk).
-- Commit trailers:
-  `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` and the session
-  line.
+- Commit messages: plain and descriptive.
 
 ## The nine items
 

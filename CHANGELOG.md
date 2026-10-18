@@ -213,11 +213,6 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
 - Locked in dataflow model: reactive per-frame evaluation driven by p5's
   `draw()` loop; spreads with Cyclic broadcasting; drawing nodes return
   Layer closures (not side effects).
-- Wrote the architectural plan at `C:\Users\Jaafer\.claude\plans\i-want-to-wrap-gleaming-floyd.md`
-  identifying the three pitfalls most likely to hurt later:
-  (1) undo/redo divergence from ParamStore; (2) React Flow re-render cost
-  if IO-box values live in `node.data`; (3) p5 instance lifecycle vs.
-  Vite HMR.
 
 ---
 

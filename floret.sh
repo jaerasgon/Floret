@@ -61,59 +61,15 @@ fi
 echo "→ Building Floret (first build takes a few minutes)…"
 cargo build --profile fast -p floret-app
 
-MACOS=crates/floret-app/macos
 APP=target/Floret.app
 VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)"
 BUILD="$(git rev-list --count HEAD)"
 COMMIT="$(git rev-parse --short HEAD)"
 
 echo "→ Making Floret.app ($VERSION, build $BUILD, $COMMIT)…"
-rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp target/fast/floret "$APP/Contents/MacOS/floret"
-cp "$MACOS/Info.plist" "$APP/Contents/Info.plist"
-printf 'APPL????' > "$APP/Contents/PkgInfo"
-PB=/usr/libexec/PlistBuddy
-PLIST="$APP/Contents/Info.plist"
-$PB -c "Add :CFBundleIconFile string Floret" "$PLIST"
-$PB -c "Add :CFBundleShortVersionString string $VERSION" "$PLIST"
-$PB -c "Add :CFBundleVersion string $BUILD" "$PLIST"
-$PB -c "Add :CFBundleGetInfoString string Floret $VERSION ($COMMIT)" "$PLIST"
-$PB -c "Add :LSMinimumSystemVersion string 11.0" "$PLIST"
-$PB -c "Add :LSApplicationCategoryType string public.app-category.graphics-design" "$PLIST"
-# Double-clicking a .flora file opens Floret: the document type and the
-# app.floret.patch type come from the base Info.plist.
-if ! $PB -c "Print :UTExportedTypeDeclarations:0:UTTypeIdentifier" "$PLIST" 2>/dev/null |
-  grep -qx app.floret.patch; then
-  echo "  (Info.plist has no .flora document type: Finder won't open patches in Floret)"
-fi
-plutil -lint -s "$PLIST" || echo "  (Info.plist didn't pass plutil -lint)"
-
-# The icon: every size macOS asks for, from the 1024 px master.
-ICONSET="$(mktemp -d)/Floret.iconset"
-mkdir -p "$ICONSET"
-for s in 16 32 128 256 512; do
-  sips -z $s $s "$MACOS/icon-1024.png" --out "$ICONSET/icon_${s}x${s}.png" >/dev/null
-  d=$((s * 2))
-  sips -z $d $d "$MACOS/icon-1024.png" --out "$ICONSET/icon_${s}x${s}@2x.png" >/dev/null
-done
-iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/Floret.icns"
-rm -rf "$(dirname "$ICONSET")"
-
-# The licence and the third-party notices travel with the app (the same texts
-# are in Help > Licenses).
-for f in ../LICENSE ../THIRD_PARTY_NOTICES.md licenses/crates.md licenses/licence-texts.txt; do
-  if [ -f "$f" ]; then
-    cp "$f" "$APP/Contents/Resources/"
-  else
-    echo "  (missing $f: not copied into the app)"
-  fi
-done
-
-# Ad-hoc signature: enough for this Mac (not for sharing the app). macOS may
-# ask again for camera / microphone access after an update.
-codesign --force --sign - --identifier app.floret.Floret "$APP" >/dev/null 2>&1 ||
-  echo "  (codesign failed; the app should still open on this Mac)"
+# The bundle (Info.plist, icon, licences, ad-hoc signature) is built by the
+# script that release builds use too, so the two can't drift apart.
+bash ../tools/package/build-macos-app.sh target/fast/floret "$APP" "$VERSION" "$BUILD" "$COMMIT"
 
 DEST=/Applications
 [ -w "$DEST" ] || DEST="$HOME/Applications"

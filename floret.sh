@@ -100,9 +100,9 @@ done
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/Floret.icns"
 rm -rf "$(dirname "$ICONSET")"
 
-# The licence and the third-party notices travel with the app (the same texts
-# are in Help > Licenses).
-for f in ../LICENSE ../THIRD_PARTY_NOTICES.md licenses/crates.md licenses/licence-texts.txt; do
+# The licence, its NOTICE and the third-party notices travel with the app (the
+# same texts are in Help > Licenses).
+for f in ../LICENSE ../NOTICE ../THIRD_PARTY_NOTICES.md licenses/crates.md licenses/licence-texts.txt; do
   if [ -f "$f" ]; then
     cp "$f" "$APP/Contents/Resources/"
   else

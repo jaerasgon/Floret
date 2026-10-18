@@ -8,6 +8,15 @@ noise, particles, text, images, sound and live input together, and watch
 the result change as you edit. This is the first release of Floret as a
 native Mac app.
 
+## Free and open source
+
+Floret is released under the **Apache License 2.0**: free to use and build
+on. If you build Floret, or parts of it, into another tool, keep the
+`NOTICE` file and credit Floret and its author, Jaafer Elsadig. Floret is
+early and your feedback shapes it: open an issue on GitHub or email
+**Floret.make@gmail.com**, and please send ideas, bugs and requests there
+rather than forking, so Floret improves for everyone.
+
 ## What's in it
 
 - **A fast node editor.** Press Tab or double-click to add a node and drag
@@ -75,7 +84,8 @@ Run `./floret.sh install` again at any time to update.
 - The app isn't signed or notarised, so it can only run on the Mac that
   built it. macOS may ask again for camera or microphone access after an
   update.
-- Mac only for now. Windows and Linux versions come later.
+- The Mac build is the most tested. Windows and Linux builds are
+  experimental, and MP4 sound is Mac-only for now.
 - Patches from the web version open as they were, except that a Save SVG
   node is left out (a notice says so); save pictures with Export PNG.
 

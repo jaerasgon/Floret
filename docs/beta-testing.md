@@ -1,6 +1,7 @@
 # Floret beta testing guide
 
-Thank you for trying Floret.
+Thank you for trying Floret. It is free and open source (Apache License
+2.0), and it is early: your feedback shapes it.
 
 ## What Floret is
 
@@ -18,6 +19,26 @@ from things that feel wrong, confusing or slow, as well as from outright
 errors.
 
 ## Install
+
+Pick whichever suits you. All three builds are beta; the Mac build is the
+most tested.
+
+### Download (Mac, Windows, Linux)
+
+Get the build for your computer from the
+[Releases page](https://github.com/jaerasgon/Floret/releases).
+
+- **macOS:** the app isn't signed by Apple, so the first launch needs
+  right-click → **Open** (then Open again), or in Terminal:
+  `xattr -dr com.apple.quarantine /Applications/Floret.app`.
+- **Windows (experimental):** the app isn't signed, so SmartScreen may
+  warn. Choose **More info** → **Run anyway**.
+- **Linux (experimental):** needs ALSA (`libasound2`). Make the file
+  executable (`chmod +x floret`) and run it.
+
+The Windows and Linux builds are less tested than the Mac one.
+
+### Build on your Mac
 
 You need a Mac with **macOS 11 or later** (Apple Silicon or Intel). Floret
 builds on your Mac from its source code. Open Terminal and paste this one
@@ -38,6 +59,18 @@ updates it and installs.
   opens.
 
 To update to the newest version, paste the same line again.
+
+### Build from source (any system)
+
+Install the stable [Rust](https://rustup.rs) toolchain (on Linux also
+`libasound2-dev`), then:
+
+```
+cd native
+cargo build --release -p floret-app
+```
+
+The app is `native/target/release/floret`.
 
 ## What to try
 
@@ -96,7 +129,17 @@ Floret first.
 
 ## How to report a problem
 
-Please send:
+Open an issue with the
+[bug report form](https://github.com/jaerasgon/Floret/issues/new?template=bug_report.yml)
+(or the
+[feedback form](https://github.com/jaerasgon/Floret/issues/new?template=feedback.yml)
+for ideas and how it felt to use), or email
+[Floret.make@gmail.com](mailto:Floret.make@gmail.com) if you'd rather not
+use GitHub. Please send ideas, bugs and requests there rather than
+forking, so Floret improves for everyone. See
+[CONTRIBUTING.md](../CONTRIBUTING.md) for more.
+
+Please include:
 
 1. **Which sample or patch** you were using (its name in the Library, or
    the `.flora` file if it's your own: attach it if you can).
@@ -113,10 +156,12 @@ work.
 
 ## Known limitations
 
-- The app is **not signed or notarised** by Apple. It runs on the Mac that
-  built it but can't be copied to another Mac. macOS may ask for camera or
-  microphone permission again after an update.
-- **Mac only** for now. Windows and Linux versions come later.
+- The app is **not signed or notarised** by Apple. A build you make
+  yourself runs on your Mac; a downloaded copy needs the right-click →
+  Open step above. macOS may ask for camera or microphone permission again
+  after an update.
+- The **Windows and Linux builds are experimental**: less tested than the
+  Mac build, and MP4 export with sound is Mac-only for now.
 - Patches from the earlier web version open as they were, except that a
   Save SVG node is left out (a notice says so). Use Export PNG to save
   pictures.

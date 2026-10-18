@@ -53,7 +53,10 @@ prompt you write must tell the agent to read this file first.
     marks them `export-ignore` (source archives and releases leave them
     out). Commits and pull-request descriptions carry no AI attribution
     lines: no `Co-Authored-By`, no session links, no mention of an AI
-    assistant. Nothing else that ships may mention one either.
+    assistant. Nothing else that ships may mention one either. New commits
+    use the owner's GitHub identity (`jaerasgon
+    <jaerasgon@users.noreply.github.com>`): set `git config user.name` and
+    `user.email` to it in each fresh clone before committing.
 
 ## Terminal commands for the owner
 

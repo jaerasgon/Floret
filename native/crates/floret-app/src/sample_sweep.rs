@@ -754,7 +754,7 @@ fn rewritten_samples_draw_as_before() {
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
 
-// ─── Review renders (docs/sample-review.md) ─────────────────────────────────
+// ─── Review renders (docs/archive/sample-review.md) ─────────────────────────────────
 
 /// The frames [`review_samples`] saves (1-based: frame 1 is the first tick).
 const REVIEW_FRAMES: &[u32] = &[1, 60, 240];

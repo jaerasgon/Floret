@@ -6,7 +6,7 @@ product; the TypeScript web app is reference-only.
 ## Where things stand
 
 - **2026-10-03: all nine items below are merged** on `main` (fmt, clippy,
-  all tests pass). See `docs/feature-complete-summary.md` for what's new,
+  all tests pass). See `feature-complete-summary.md` for what's new,
   what to test on the Mac, and the owner's decisions.
 - **2026-10-03: the owner approved every decision in the summary.** Done
   since:

@@ -9,7 +9,7 @@ own section.
 The 15 "Systems" samples (`native/samples/sys-*.flora`) combine several
 subsystems each. Three capabilities were missing; all three were built as
 modes / pins on existing nodes or one small node, following the ground rules
-in `plan-feature-complete.md`.
+in `docs/archive/plan-feature-complete.md`.
 
 ### Lookup → `nearest` op (`spread/lookup`)
 

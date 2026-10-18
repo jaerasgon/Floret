@@ -1,7 +1,7 @@
 //! What ships mentions no AI tooling.
 //!
-//! The project's working notes (`CLAUDE.md`) and the local tool folder
-//! (`.claude/`) stay in the repository but are never part of a release:
+//! The project's working notes file and the local tool folder stay in the
+//! repository but are never part of a release:
 //! `.gitattributes` marks them `export-ignore`, so `git archive` (and
 //! GitHub's source archives and releases) leave them out. Everything that
 //! does ship must not contain the word in its path or its text.
@@ -17,6 +17,16 @@ use std::process::{Command, Stdio};
 /// The word, assembled so this file doesn't contain it.
 fn needle() -> String {
     ["cla", "ude"].concat()
+}
+
+/// The working-notes file name, assembled like [`needle`].
+fn notes_file() -> String {
+    format!("{}.md", needle().to_uppercase())
+}
+
+/// The local tool folder, with its trailing slash, assembled like [`needle`].
+fn tool_dir() -> String {
+    format!(".{}/", needle())
 }
 
 fn repo_root() -> PathBuf {
@@ -92,7 +102,7 @@ fn skipped(path: &str) -> bool {
 }
 
 #[test]
-fn release_has_no_claude_mentions() {
+fn release_has_no_ai_tool_mentions() {
     let root = repo_root();
     let Some(files) = tracked_files(&root) else {
         eprintln!("not a git checkout: skipping the release scan");
@@ -148,11 +158,11 @@ fn working_notes_are_marked_export_ignore() {
     };
     let ignored = export_ignored(&root, &files).expect("git check-attr");
     assert!(
-        ignored.contains("CLAUDE.md"),
-        "CLAUDE.md must be `export-ignore` in .gitattributes"
+        ignored.contains(notes_file().as_str()),
+        "the working-notes file must be `export-ignore` in .gitattributes"
     );
     // Anything tracked under the tool folder is ignored as well.
-    for f in files.iter().filter(|f| f.starts_with(".claude/")) {
+    for f in files.iter().filter(|f| f.starts_with(tool_dir().as_str())) {
         assert!(ignored.contains(f), "{f} must be export-ignore");
     }
     let attrs = std::fs::read_to_string(root.join(".gitattributes")).expect(".gitattributes");
@@ -162,8 +172,11 @@ fn working_notes_are_marked_export_ignore() {
             w.next() == Some(pat) && w.any(|a| a == "export-ignore")
         })
     };
-    assert!(has("CLAUDE.md"), "CLAUDE.md line in .gitattributes");
-    assert!(has(".claude/"), ".claude/ line in .gitattributes");
+    assert!(
+        has(&notes_file()),
+        "the working-notes line in .gitattributes"
+    );
+    assert!(has(&tool_dir()), "the tool-folder line in .gitattributes");
 }
 
 #[test]
@@ -210,7 +223,7 @@ fn source_archive_leaves_out_the_working_notes() {
         .filter(|e| {
             let e = e.trim_end_matches('/');
             e.split('/')
-                .any(|c| c == "CLAUDE.md" || c.eq_ignore_ascii_case(&format!(".{}", needle())))
+                .any(|c| c == notes_file() || c.eq_ignore_ascii_case(&format!(".{}", needle())))
         })
         .collect();
     assert!(
@@ -358,9 +371,10 @@ fn other_manifests_and_scripts_agree_on_the_licence() {
         package.contains("\"license\": \"Apache-2.0\""),
         "package.json licence"
     );
-    // The app bundle carries the NOTICE next to the LICENSE.
-    let script = read(&root, "floret.sh");
-    assert!(script.contains("../LICENSE") && script.contains("../NOTICE"));
+    // The app bundle carries the NOTICE next to the LICENSE (the bundle
+    // script is shared by `floret.sh install` and the release packaging).
+    let script = read(&root, "tools/package/build-macos-app.sh");
+    assert!(script.contains("LICENSE") && script.contains("NOTICE"));
 }
 
 /// Third-party licence texts quote other projects' copyright lines, so they

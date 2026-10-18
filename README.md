@@ -52,17 +52,24 @@ including **48 short tutorials** that each teach one idea.
 
 ## Download
 
-Get Floret from the **[Releases page](https://github.com/jaerasgon/Floret/releases)**.
+**Latest beta: [Floret v0.2.0-beta.1](https://github.com/jaerasgon/Floret/releases/tag/v0.2.0-beta.1)**
+(all downloads and first-launch steps are on that page).
 
-| | |
+| Your computer | Download |
 |---|---|
-| **Mac** (macOS 11 or later, Apple Silicon and Intel) | The most tested. |
-| **Windows** | Experimental. |
-| **Linux** | Experimental. Needs ALSA (`libasound2`). |
+| **Mac with Apple silicon** (M1 or later) | [Floret for Mac (.dmg)](https://github.com/jaerasgon/Floret/releases/download/v0.2.0-beta.1/Floret-0.2.0-beta.1-macos-arm64.dmg) · [.zip](https://github.com/jaerasgon/Floret/releases/download/v0.2.0-beta.1/Floret-0.2.0-beta.1-macos-arm64.zip) |
+| **Mac with an Intel chip** | [Floret for Intel Mac (.dmg)](https://github.com/jaerasgon/Floret/releases/download/v0.2.0-beta.1/Floret-0.2.0-beta.1-macos-x86_64.dmg) · [.zip](https://github.com/jaerasgon/Floret/releases/download/v0.2.0-beta.1/Floret-0.2.0-beta.1-macos-x86_64.zip) |
+| **Windows** (experimental) | [Floret for Windows (.zip)](https://github.com/jaerasgon/Floret/releases/download/v0.2.0-beta.1/Floret-0.2.0-beta.1-windows-x86_64.zip) |
+| **Linux** (experimental) | [Floret for Linux (.tar.gz)](https://github.com/jaerasgon/Floret/releases/download/v0.2.0-beta.1/Floret-0.2.0-beta.1-linux-x86_64.tar.gz) (needs ALSA, `libasound2`) |
+
+Not sure which Mac you have? Click the Apple menu, then **About This Mac**.
+"Chip: Apple M…" means Apple silicon; "Processor: Intel…" means Intel. On Mac,
+open the `.dmg` and drag Floret into Applications.
 
 Floret isn't signed yet, so your system asks you to confirm the first launch.
-The Releases page has the two or three clicks for each system. Camera and
-microphone data stay on your computer.
+The [release page](https://github.com/jaerasgon/Floret/releases/tag/v0.2.0-beta.1)
+has the two or three clicks for each system. Camera and microphone data stay
+on your computer.
 
 Want to build it yourself? See [docs/building.md](docs/building.md).
 

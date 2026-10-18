@@ -28,6 +28,9 @@ press Run workflow.
    and the notes. Download one or two files and try them. Edit the notes if
    you like.
 6. Press **Publish release**.
+7. Update the download links in the **Download** section of `README.md` to the
+   new tag and file names (the release page and each file link contain the
+   tag and version). Merge that change to `main`.
 
 Running it again with the same tag updates the release instead of failing:
 the notes are rewritten and files with the same name are replaced. If the

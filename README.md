@@ -87,13 +87,10 @@ Floret is **early (beta)**, and your feedback shapes it. See
 
 | | |
 |---|---|
-| ![A close-up of the Neon Bloom patch: nodes with their value boxes, wired left to right into a chain of effects](docs/images/floret-nodes.png) | ![The Library: every sample by category, with search](docs/images/floret-library.png) |
-| **The node canvas.** Inputs on the left, outputs on the right, every value a live box. | **The Library.** 175 samples by category, next to your own saved patches. |
-
-![Floret with several panels docked: the Generative Poster sample with the canvas, Library, live preview and Presets](docs/images/floret-panels.png)
-
-*Panels dock, split, stack and float wherever you like. View → Reset Layout
-puts them back.*
+| ![The Weather Map sample: a node graph of subpatches, a ForEach region and Vector Math nodes on the left, and on the right the live preview of a pressure map with coloured bands, isobars, wind flow lines and arrows](docs/images/floret-system.png) | ![The Flock Herder sample: the Simulation, Palette, Connect Points and subpatch nodes on the left, and on the right the live preview of colourful flocks of boids with trails](docs/images/floret-particles.png) |
+| **A complex system: Weather Map.** 149 nodes with subpatches and ForEach regions, wired into a living pressure map: bands, isobars, wind flow lines and arrows. | **A particles sample: Flock Herder.** A Simulation node steers 320 boids, Connect Points draws the lines between neighbours, and everything moves live in the preview. |
+| ![The Library: every sample by category, with search](docs/images/floret-library.png) | ![Floret with several panels docked: the Generative Poster sample with the canvas, Library, live preview and Presets](docs/images/floret-panels.png) |
+| **The Library.** 175 samples by category, next to your own saved patches. | **Panels dock, split, stack and float** wherever you like. View → Reset Layout puts them back. |
 
 ## Download
 

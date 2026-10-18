@@ -20,8 +20,8 @@ from the repo folder.
 - [ ] Floret shows in Launchpad and Spotlight with the Floret icon, and Finder's Get Info shows the version and build.
 - [ ] Quit (Cmd+Q) and open Floret from the Dock or Launchpad: it opens with no warning about the app being damaged.
 - [ ] The first launch with no patch open shows the Welcome screen (unless it's turned off in Preferences). Its tutorial tiles get thumbnails within a few seconds.
-- [ ] Floret → About Floret is the standard macOS About panel: it shows the name and version. (The GPU in use appears only in the About window of the Windows and Linux builds, under Help → About Floret.)
-- [ ] Help → Licenses… opens the Licenses window: Floret's own licence, the fonts, the tracking models, the icons and the Rust libraries it is built from. It can be scrolled and closed.
+- [ ] Floret → About Floret is the standard macOS About panel: it shows the name, the version and "© 2026 Jaafer Elsadig. Licensed under the Apache License 2.0." (The GPU in use appears only in the About window of the Windows and Linux builds, under Help → About Floret.)
+- [ ] Help → Licenses… opens the Licenses window: Floret's own licence (Apache License 2.0) followed by its NOTICE, the fonts, the tracking models, the icons and the Rust libraries it is built from. It can be scrolled and closed.
 - [ ] Preferences (Cmd+,): change "On startup, open" to Starter sample, quit and reopen. Grid Ripple opens.
 - [ ] Make a change without saving, then force-quit Floret from Activity Monitor and reopen it. Floret offers to restore the unsaved work, and Restore brings it back.
 - [ ] **Autosave interval:** in Settings (Cmd+,), Autosave is on, with an "Autosave every" menu (10 seconds, 30 seconds, 1, 2 or 5 minutes) and the path of the recovery files below it. Pick 10 seconds, make a change, wait 15 seconds, force-quit and reopen: the change is offered back. Untick Autosave: nothing is autosaved while you edit, and the "Autosave every" menu is greyed out. Quit normally: no restore offer on the next launch. The choice is still there after a restart.

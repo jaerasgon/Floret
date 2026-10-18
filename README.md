@@ -1,107 +1,193 @@
 # Floret
 
-Floret is a node-based app for making generative art. You build a picture
-by wiring small boxes together on a canvas: shapes, motion, noise, colour,
-text, particles, images, sound, MIDI and the camera. The preview updates
-live as you edit, so you can play with a patch while it runs, then save
-still frames or seamless video loops. Patches are plain `.flora` files.
+**A node-based tool for generative art.** Wire shapes, motion, noise,
+particles, text, images, sound and live input together, and watch the
+result change as you edit. Floret is a native app, drawn on your GPU
+(Rust and wgpu), and it is free and open source.
 
-![Floret with the Slime Mould sample open: the patch on the node canvas, its live preview on the right](docs/images/floret-window.png)
+![Floret with the Kaleido Slime sample open: the patch on the node canvas, its live preview on the right, the Inspector below](docs/images/floret-window.png)
 
-Floret is a native desktop app written in Rust and rendered on the GPU.
-For now it's released for macOS.
+You build a picture by wiring small boxes, called nodes, together on a
+canvas. A noise node feeds a shape, the shape feeds a colour, an LFO moves
+it all. Every value stays editable while the patch runs, so you can play
+with it instead of waiting for it. When you like what you see, save a still,
+a seamless loop, or a sheet of variations. Your patches are plain `.flora`
+files.
 
-## Install on a Mac
+Floret is **early (beta)**, and your feedback shapes it. See
+[Feedback and help](#feedback-and-help).
 
-You need macOS 11 or later (Apple Silicon or Intel). Floret builds on your
-Mac from this repository.
+## What Floret offers
 
-1. **Get the code.** Either:
-   - in Terminal: `git clone https://github.com/jaerasgon/Floret.git`, or
-   - in [GitHub Desktop](https://desktop.github.com): File → Clone
-     Repository, and pick `jaerasgon/Floret`.
-2. **Install.** Open Terminal in the `Floret` folder (in GitHub Desktop:
-   Repository → Open in Terminal; after `git clone`: `cd Floret`) and run
-   the installer:
+**Make**
 
-   ```sh
-   ./floret.sh install
-   ```
+- **252 nodes** for shapes, paths and text; noise and maths; colour and
+  palettes; patterns and layouts; particles and simulations; images,
+  video and shader effects; and sound, MIDI, camera and body tracking.
+  [NODES.md](NODES.md) lists every one.
+- **175 sample patches** to open, pull apart and remix, including **48 short
+  tutorials** that each teach one idea, with a note on the canvas.
+- **Classic generative techniques built in:** flow fields, Voronoi and
+  Delaunay cells, Truchet and wave-function-collapse tiles, L-systems,
+  wallpaper symmetry and kaleidoscopes, stippling, flocking, slime mould,
+  reaction-diffusion, cloth and more.
+- **Shaders when you want them:** a ShaderToy-style Shader node with buffer
+  passes and its own editor panel, and an Effect node with bloom, blur,
+  grain, halftone, dither, ASCII art, LUTs and more.
 
-   If Apple's command line tools aren't installed yet, a dialog offers
-   them: install them, then run `./floret.sh install` again. The first run
-   also installs Rust (for your user only) and builds Floret, which takes
-   several minutes. Then **Floret.app** is in your Applications folder and
-   opens.
-3. **Update** whenever you like by running `./floret.sh install` again. It
-   pulls the latest version and only rebuilds what changed.
+**Work live**
 
-Floret isn't signed by Apple, so the app runs on the Mac that built it but
-not on a copy sent to another Mac. The first time a patch uses the
-microphone or camera, macOS asks for permission; video and sound stay on
-your computer.
+- **A live GPU preview.** Every Renderer in a patch gets its own preview
+  panel, with a fullscreen output for a second display.
+- **Always-editable values.** Every unwired value is a box you can scrub or
+  type into while the patch runs. Everything can be undone.
+- **Patches read left to right.** Wires only run forward, so a patch reads
+  like a sentence. Memory across frames uses **Read / Write pairs**: place a
+  Write and its Read comes with it. The editor refuses a wire that points
+  backwards.
+- **Stay organised.** Wrap a selection in a ForEach, If, Cache, Section or
+  **subpatch** from the right-click menu. The Subpatches panel lists them,
+  and you can save a subpatch to the Library and reuse it in any patch.
+- **Bypass** any node to compare with and without it.
+- **Presets and variations.** Roll a new variation (Cmd+Shift+R), save the
+  ones you like as presets, and morph between them.
+- **A layout that is yours.** Every panel docks, splits, stacks or floats.
+  Light and dark themes.
 
-**Developer runs:** `./floret.sh` pulls, builds and starts Floret straight
-from the repository without installing it (`./floret.sh --no-pull` skips
-the pull). This also works on Linux.
+**Share**
+
+- **Export** a still as PNG (up to 4x), or a seamless loop as **MP4**
+  (with the patch's sound, on a Mac), **GIF** or a **PNG sequence**.
+- **Export Variations** renders a dozen (or a few hundred) seeds or presets
+  in one go, with a contact sheet to pick favourites from.
+- **Sound, MIDI, camera and body tracking** (hands, face, pose) work as
+  inputs. Camera and microphone data stay on your computer.
+
+### The 252 nodes, by area
+
+| Area | Nodes | What is in it |
+|---|---|---|
+| Source | 16 | Numbers, strings, sliders, toggles, XY pads, files, images, SVG, video, CSV |
+| Draw | 14 | Rect, Ellipse, Line, Path, Polygon, Image, plots, and the Renderer |
+| Text | 13 | Text, glyphs, text on a path, outlines, variable fonts |
+| Color & Style | 17 | Colours, gradients, palettes, fills and strokes |
+| Shape Ops | 16 | Transforms, groups, masks, blends, symmetry, path and shape booleans |
+| Patterns | 25 | Grids, spirals, scatter and stippling, Voronoi, contours and flow lines, tiles, L-systems, curves |
+| Noise & Random | 7 | Perlin, simplex and more; uniform, Gaussian, wanderers, shuffles |
+| Animate | 18 | Time, LFOs, easing, springs, envelopes, triggers, counters, delays |
+| Image | 14 | Rasterize, crop, resize, sample, blend, pixel get and set |
+| Effects | 9 | Effect, Shader, filters, convolve, pixelate, pixel sort |
+| Particles & Physics | 18 | Emitters, simulations, forces, colliders, trails |
+| Input & Sound | 28 | Mouse, keyboard, MIDI, camera, landmark tracking, audio in, analysis, synthesis |
+| Math | 23 | Maths, vectors, compare, logic, statistics, mapping, conversion |
+| Lists | 17 | Lookup, sublist, reorder, combine, repeat, merge, partition |
+| Structure | 17 | ForEach, If and Cache regions, Read / Write, subpatches, sections, comments |
+
+## A look inside
+
+| | |
+|---|---|
+| ![A close-up of the Neon Bloom patch: nodes with their value boxes, wired left to right into a chain of effects](docs/images/floret-nodes.png) | ![The Library: every sample by category, with search](docs/images/floret-library.png) |
+| **The node canvas.** Inputs on the left, outputs on the right, every value a live box. | **The Library.** 175 samples by category, next to your own saved patches. |
+
+![Floret with several panels docked: the Generative Poster sample with the canvas, Library, live preview and Presets](docs/images/floret-panels.png)
+
+*Panels dock, split, stack and float wherever you like. View → Reset Layout
+puts them back.*
+
+## Download
+
+Get Floret from the **[Releases page](https://github.com/jaerasgon/Floret/releases)**.
+All three builds are beta. The Mac build is the most tested; the Windows and
+Linux builds are **experimental** and less tested.
+
+| Platform | Notes |
+|---|---|
+| **macOS** 11 or later (Apple Silicon and Intel) | The app isn't signed by Apple, so the first launch needs **right-click, then Open**. Or run `xattr -dr com.apple.quarantine /Applications/Floret.app` in Terminal. MP4 export with sound works here. |
+| **Windows** (experimental) | Not signed, so SmartScreen may warn. Choose **More info**, then **Run anyway**. |
+| **Linux** (experimental) | Needs ALSA (`libasound2`). Make the download executable (`chmod +x floret`) and run it. |
+
+The first time a patch uses the microphone or camera, your system asks for
+permission. Video and sound stay on your computer.
+
+### Build it yourself
+
+**On a Mac**, paste this one line into Terminal. It finds your copy of
+Floret (or clones it into `~/github/Floret`), updates it and installs
+**Floret.app** into Applications. The first run installs Rust and builds
+Floret, which takes several minutes; run the same line again whenever you
+want to update.
+
+```sh
+F=$(find ~ -maxdepth 4 -name floret.sh -path "*Floret*" 2>/dev/null | head -1); if [ -z "$F" ]; then mkdir -p ~/github && git clone https://github.com/jaerasgon/Floret.git ~/github/Floret && F=~/github/Floret/floret.sh; fi; cd "$(dirname "$F")" && git fetch origin && git checkout main && git pull && ./floret.sh install
+```
+
+If Apple's command line tools aren't installed yet, a dialog offers them:
+install them, then run the line again.
+
+**On any system**, with the stable [Rust](https://rustup.rs) toolchain
+(and `libasound2-dev` on Linux):
+
+```sh
+git clone https://github.com/jaerasgon/Floret.git
+cd Floret/native
+cargo build --release -p floret-app
+```
+
+The app is `native/target/release/floret`. `./floret.sh` in the repository
+root builds and runs it in one step, on a Mac or on Linux.
 
 ## Your first patch in five minutes
 
-1. **New patch.** Choose File → New (Cmd+N). The canvas is empty.
-2. **Add a Renderer.** Move the pointer over the canvas, press **Tab**,
-   type `renderer` and press Return. Every patch draws through a Renderer:
-   it is the canvas (1080 × 1920 to start with), and its picture shows in
-   the **Preview** panel on the right. Double-clicking the canvas also
-   opens the search.
-3. **Add a shape.** Press Tab again, type `ellipse`, press Return.
-4. **Wire it.** Drag from the Ellipse's output pin (`layer`, at the bottom
-   of its right edge) to the Renderer's `layer` pin (on its left edge). A
-   small white circle appears in the middle of the Preview. Inputs are on
-   the left of a node, one row each; outputs are listed in a footer under
-   them, with their pins on the right.
-5. **Change values.** Every unwired value on a node is a value box, its
-   name on the left and its value on the right. Click the Ellipse's `w`
-   box, type `400` and press Return; the circle stretches into an oval.
-   (Dragging sideways on the box scrubs the number.)
-6. **Animate it.** Add an **LFO** (Tab, `lfo`). Set its `min` box the
-   same way to `100`, and `max` to `600`. Then wire the LFO's
-   `value` pin into the Ellipse's `w`, and again into its `h`. The circle
-   now grows and shrinks; the LFO's `rate` sets how many times a second.
-7. **Colour it.** Add a **Fill** (Tab, `fill`). Click its `color` box,
-   pick a colour, and click the canvas to close the
-   picker (Esc cancels). Wire Fill's `style` pin into the Ellipse's
-   `style`.
-8. **Save and export.** File → Save (Cmd+S) writes a `.flora` file.
-   Cmd+E exports the current frame as a PNG, and File → Export Video /
-   GIF… (Cmd+Shift+E) records a seamless loop as MP4, GIF or PNG frames.
+1. **New patch.** File → New (Cmd+N). The canvas is empty.
+2. **Add a Renderer.** Over the canvas, press **Tab**, type `renderer` and
+   press Return. Every patch draws through a Renderer; its picture shows in
+   the **Preview** panel.
+3. **Add a shape.** Tab, `ellipse`, Return.
+4. **Wire it.** Drag from the Ellipse's output pin (`layer`, right edge) to
+   the Renderer's `layer` pin (left edge). A white circle appears.
+5. **Change values.** Click the Ellipse's `w` box, type `400`, press
+   Return. Dragging sideways on a box scrubs the number.
+6. **Animate it.** Add an **LFO** (Tab, `lfo`), set `min` to `100` and `max`
+   to `600`, and wire its `value` into the Ellipse's `w` and `h`.
+7. **Colour it.** Add a **Fill**, pick a colour, and wire its `style` into the
+   Ellipse's `style`.
+8. **Save and export.** Cmd+S saves a `.flora` file. Cmd+E exports the
+   current frame as a PNG; Cmd+Shift+E records a loop.
 
-Made a mess? Cmd+Z undoes anything. Press **F** to fit the whole patch in
-view. Select a node to read what it does in the **Inspector**.
+Made a mess? Cmd+Z undoes anything. Press **F** to fit the patch in view,
+and `?` over the canvas for the keyboard shortcuts. Select a node to read
+what it does in the **Inspector**. The tutorials ("01 · Hello Rect" and on)
+are in the Library (File → Samples Library, Cmd+Shift+O).
 
-## Samples and tutorials
+## Feedback and help
 
-Floret ships with 175 samples, including 48 short tutorials ("01 · Hello
-Rect", "02 · Colour & Fill", …) that each introduce one idea, with a note
-on the canvas explaining it. Open them from:
+**Floret is early and your feedback shapes it.** The most useful thing you
+can do is tell us what happens when you use it.
 
-- the **Welcome** screen that shows when you start with an empty canvas
-  (or Help → Welcome),
-- **File → Samples Library** (Cmd+Shift+O), which lists every sample by
-  category next to your own saved patches, with search.
+- **Open an issue:** a [bug report](https://github.com/jaerasgon/Floret/issues/new?template=bug_report.yml)
+  or an [idea or feedback](https://github.com/jaerasgon/Floret/issues/new?template=feedback.yml).
+- **Email:** [Floret.make@gmail.com](mailto:Floret.make@gmail.com), if you
+  would rather not use GitHub.
+- **Send patches and samples that don't work**, or that surprised you. A
+  `.flora` file and a sentence about what you expected is perfect.
+- **Tell us what you were trying to make.** That shows us what is missing.
 
-`.flora` files open from Finder too: double-click one, or use Open With →
-Floret.
+Please send ideas, bugs and requests here rather than forking, so Floret
+improves for everyone. [CONTRIBUTING.md](CONTRIBUTING.md) has what makes a
+useful report and how to send a pull request. Security problems go by email,
+privately: see [SECURITY.md](SECURITY.md).
 
-## Reference
+## Licence
 
-- **Nodes:** [NODES.md](NODES.md) lists all 252 nodes in the Nodes browser
-  with their inputs, outputs and what they do. In the app, the Inspector
-  and Help panels show the same for the selected node.
-- **Trying the beta:** [docs/beta-testing.md](docs/beta-testing.md) says
-  how to install, what to try and how to report a problem.
-- **Keyboard shortcuts:** press `?` over the canvas for an overlay, or
-  open Help → Keyboard Shortcuts (Cmd+/).
-- **Changes:** [CHANGELOG.md](CHANGELOG.md).
+Floret is free and open source under the **[Apache License 2.0](LICENSE)**:
+use it, change it and build on it. If you rebuild Floret, or parts of it,
+into another tool, keep the [NOTICE](NOTICE) file with it and credit Floret
+and its author, Jaafer Elsadig.
+
+Floret includes open-source software, fonts and tracking models under their
+own licences, listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and
+in the app under Help → Licenses….
 
 ## Project layout
 
@@ -117,15 +203,23 @@ Floret.
 | `native/crates/floret-open-files` | Opening `.flora` files from Finder (macOS). |
 | `native/samples/` | The built-in samples and their catalogue. |
 | `floret.sh` | Build, run and install script. |
-| `docs/` | The beta tester guide, the Mac QA checklist, the release notes draft and the log of new nodes. `docs/archive/` keeps old planning notes and web-version docs for history. |
-| `src/`, `package.json`, … | The earlier TypeScript web version. It's kept for reference only and isn't the app anymore. |
+| `docs/` | The beta tester guide, the Mac QA checklist, the release notes draft and the log of new nodes. `docs/archive/` keeps old planning notes for history. |
+| `src/`, `package.json`, … | The earlier TypeScript web version, kept for reference only. It isn't the app anymore. |
 
 To check your changes, from `native/`: `cargo fmt --all --check`,
 `cargo clippy --workspace --all-targets -- -D warnings` and
 `cargo test --workspace`.
 
-## Licence
+## Docs
 
-Floret is proprietary: see [LICENSE](LICENSE). It uses open-source
-components under their own licences, listed in
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- [NODES.md](NODES.md): every node, with its inputs, outputs and what it
+  does. The Inspector and Help panels in the app show the same.
+- [docs/beta-testing.md](docs/beta-testing.md): installing, what to try, and
+  how to report a problem.
+- [docs/qa-checklist-mac.md](docs/qa-checklist-mac.md): the longer checklist
+  used to test the Mac build.
+- [CHANGELOG.md](CHANGELOG.md): what changed, release by release.
+- [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and
+  [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+- Keyboard shortcuts: `?` over the canvas, or Help → Keyboard Shortcuts
+  (Cmd+/).

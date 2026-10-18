@@ -576,7 +576,9 @@ pub mod native {
                 let about = muda::AboutMetadata {
                     name: Some("Floret".into()),
                     version: Some(env!("CARGO_PKG_VERSION").into()),
-                    copyright: Some("© 2026 Jaafer Elsadig. All rights reserved.".into()),
+                    copyright: Some(
+                        "© 2026 Jaafer Elsadig. Licensed under the Apache License 2.0.".into(),
+                    ),
                     credits: Some(
                         "Floret includes open-source software, fonts and tracking models. \
                          Their licences are in Help → Licenses…"

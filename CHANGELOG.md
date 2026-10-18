@@ -20,6 +20,16 @@ things may still change, without the promises a 1.0 (even a 1.0 beta)
 makes about stability and file-format freezes. 1.0 can follow once the
 Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
 
+**Licence.** Floret is now free and open source under the **Apache License
+2.0** (the repository was private and unlicensed until now). `LICENSE` holds the
+standard text and a new `NOTICE` file credits Floret and its author: anyone
+who builds Floret, or parts of it, into another tool keeps the NOTICE with
+it. Help → Licenses… shows the licence and the NOTICE, and the macOS About
+panel reads "Licensed under the Apache License 2.0". Feedback goes to
+Floret.make@gmail.com or the issue forms on GitHub; `CONTRIBUTING.md`,
+`SECURITY.md`, `CODE_OF_CONDUCT.md` and the issue / pull request templates
+are new. The README is rewritten for the public repository.
+
 ### Highlights
 
 - **Native and GPU-rendered:** egui + wgpu (Metal on macOS). Every frame is
@@ -199,7 +209,8 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   Open Anyway); Windows shows SmartScreen. macOS may ask again for camera /
   microphone access after an update.
 - **Windows and Linux are experimental** beta downloads with far less
-  testing than the Mac app (H.264 through OpenH264 on both).
+  testing than the Mac app. MP4 sound is Mac-only for now, and H.264 goes
+  through OpenH264 on both.
 - Most of the app has been tested under Linux with a software GPU; the Mac
   checklist in `docs/qa-checklist-mac.md` hasn't been run end to end yet.
 - One patch per window, one window.

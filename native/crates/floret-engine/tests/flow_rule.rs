@@ -1,4 +1,4 @@
-//! Library samples flow left to right (CLAUDE.md, golden rule 1): in every
+//! Library samples flow left to right (the project's flow rule, golden rule 1): in every
 //! scope of every sample, a wire only runs to a node to its right
 //! (`floret_engine::flow`). Memory across frames goes through Write → Read
 //! pairs matched by slot, never through a single-node State / State Spread

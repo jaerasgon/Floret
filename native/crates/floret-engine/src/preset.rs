@@ -489,6 +489,7 @@ mod tests {
             width: None,
             height: None,
             bypassed: false,
+            extra: Default::default(),
         };
         assert!(structural(cat, spec, &n, "mode"));
         n.def_type = "draw/ellipse".into();

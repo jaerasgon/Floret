@@ -1,6 +1,6 @@
 # GPU Renderer Migration — Implementation Plan
 
-**Status:** landed in the web app (historical). The web app is now reference-only; the native app's renderer is wgpu — see `docs/native-app-transition.md` and issue #60.
+**Status:** landed in the web app (historical). The web app is now reference-only; the native app's renderer is wgpu — see `native-app-transition.md` and issue #60.
 **Date:** 2026-06-27
 **Decision:** big-bang replace — convert all rasterizer sites and delete the
 Canvas2D renderer in one merge. `main` is untouched until the branch lands and

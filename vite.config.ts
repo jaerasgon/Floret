@@ -24,7 +24,7 @@ export default defineConfig({
     // src/test/setup-canvas.ts.
     setupFiles: ['./src/test/setup-canvas.ts'],
     // Agent worktrees and the native port contain copies / non-TS code.
-    exclude: [...configDefaults.exclude, '.claude/**', 'native/**'],
+    exclude: [...configDefaults.exclude, '.*/**', 'native/**'],
   },
   server: {
     port: 5173,

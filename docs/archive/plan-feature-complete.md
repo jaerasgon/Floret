@@ -6,7 +6,7 @@ product; the TypeScript web app is reference-only.
 ## Where things stand
 
 - **2026-10-03: all nine items below are merged** on `main` (fmt, clippy,
-  all tests pass). See `docs/feature-complete-summary.md` for what's new,
+  all tests pass). See `feature-complete-summary.md` for what's new,
   what to test on the Mac, and the owner's decisions.
 - **2026-10-03: the owner approved every decision in the summary.** Done
   since:
@@ -77,9 +77,7 @@ product; the TypeScript web app is reference-only.
 - From `native/`, before every push: `cargo fmt --all --check`,
   `cargo clippy --workspace --all-targets -- -D warnings`,
   `cargo test --workspace` (use `CARGO_INCREMENTAL=0`; watch disk).
-- Commit trailers:
-  `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` and the session
-  line.
+- Commit messages: plain and descriptive.
 
 ## The nine items
 

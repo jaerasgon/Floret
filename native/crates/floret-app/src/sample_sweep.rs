@@ -43,7 +43,7 @@ fn install_video() {
 
 /// `a` and `b` hold the same JSON, numbers compared by value (a save
 /// writes `1.0` as `1`, as JavaScript does).
-fn same(a: &Json, b: &Json) -> bool {
+pub(crate) fn same(a: &Json, b: &Json) -> bool {
     match (a, b) {
         (Json::Number(x), Json::Number(y)) => x.as_f64() == y.as_f64(),
         (Json::Array(x), Json::Array(y)) => {
@@ -58,7 +58,7 @@ fn same(a: &Json, b: &Json) -> bool {
 
 /// The patch as JSON without what a save stamps on it (version, app
 /// version, name and times) and without the empty lists it leaves out.
-fn content(p: &floret_engine::patch::PatchFile) -> Json {
+pub(crate) fn content(p: &floret_engine::patch::PatchFile) -> Json {
     let mut p = p.clone();
     p.meta = None;
     p.app_version = None;
@@ -74,7 +74,9 @@ fn content(p: &floret_engine::patch::PatchFile) -> Json {
     serde_json::to_value(&p).expect("patch serialises")
 }
 
-fn warnings(p: &floret_engine::patch::PatchFile) -> Result<(usize, Vec<String>), String> {
+pub(crate) fn warnings(
+    p: &floret_engine::patch::PatchFile,
+) -> Result<(usize, Vec<String>), String> {
     let (engine, w) = floret_engine::Engine::from_patch(p)?;
     Ok((
         engine.graph.nodes.len(),
@@ -754,7 +756,7 @@ fn rewritten_samples_draw_as_before() {
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
 
-// ─── Review renders (docs/sample-review.md) ─────────────────────────────────
+// ─── Review renders (docs/archive/sample-review.md) ─────────────────────────────────
 
 /// The frames [`review_samples`] saves (1-based: frame 1 is the first tick).
 const REVIEW_FRAMES: &[u32] = &[1, 60, 240];

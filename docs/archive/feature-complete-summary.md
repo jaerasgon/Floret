@@ -1,6 +1,6 @@
 # Feature-complete for generative art: summary for the owner
 
-All nine items of `docs/plan-feature-complete.md` are on `main`, merged one
+All nine items of `plan-feature-complete.md` are on `main`, merged one
 branch at a time. The owner approved the decisions listed below, and the
 changes they asked for are done (see
 [Decisions](#decisions-approved-by-the-owner-2026-10-03) and

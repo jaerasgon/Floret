@@ -212,6 +212,7 @@ pub fn add_partner(patch: &mut PatchFile, cat: &Catalogue, id: &str) -> Option<S
         width: None,
         height: None,
         bypassed: false,
+        extra: Default::default(),
     });
     Some(new)
 }

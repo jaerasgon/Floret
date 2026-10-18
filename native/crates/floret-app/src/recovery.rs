@@ -294,7 +294,7 @@ impl Autosaver {
             .unwrap_or_else(Instant::now);
     }
 
-    fn wait(&mut self) {
+    pub(crate) fn wait(&mut self) {
         if let Some(h) = self.pending.take() {
             let _ = h.join();
         }
@@ -335,8 +335,11 @@ pub struct Candidate {
 }
 
 impl Candidate {
+    /// The patch as the copy holds it. File references are left as the
+    /// editor had them: the copy lives here, not next to the files they
+    /// name ([`crate::session::restore`] anchors the relative ones).
     pub fn read(&self) -> Result<PatchFile, String> {
-        files::read(&self.flora)
+        files::read_unresolved(&self.flora).map(|(patch, _)| patch)
     }
 
     /// Forget it (and delete an autosave; crash copies stay on disk).

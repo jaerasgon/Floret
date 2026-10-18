@@ -10,9 +10,10 @@
 use crate::files::{self, Document, Origin};
 use crate::menu::{self, Command, MenuState};
 use crate::prefs::{Prefs, PrefsWindow, Startup};
+use crate::session::{self, After, Choice, Guard, How, Saved};
 use crate::{
-    audio, canvas, crash, devices, editor, help, host, preview, recording, recovery, shader_panel,
-    theme, variations, welcome, workspace, SAMPLES,
+    audio, canvas, crash, devices, editor, help, host, licenses, preview, recording, recovery,
+    shader_panel, theme, variations, welcome, workspace, SAMPLES,
 };
 use eframe::egui::{self, Align, Layout, RichText};
 use egui_phosphor::regular as icons;
@@ -37,20 +38,6 @@ pub struct Launch {
     pub sample: Option<String>,
 }
 
-/// Something that would discard unsaved changes, held while the user is
-/// asked about them.
-#[derive(Clone, Debug)]
-enum After {
-    New,
-    /// Open a file (`None`: ask which).
-    Open(Option<PathBuf>),
-    Sample(usize),
-    /// A patch from the library panel.
-    Patch(Box<PatchFile>, String),
-    Recover(recovery::Candidate),
-    Quit,
-}
-
 pub struct App {
     // ── Document
     patch: PatchFile,
@@ -59,9 +46,9 @@ pub struct App {
     autosave: recovery::Autosaver,
     /// Recovery files offered on launch.
     recovery: Vec<recovery::Candidate>,
-    /// Asking whether to save before doing this.
-    confirm: Option<After>,
-    allow_close: bool,
+    /// Asking whether to save before doing something that would discard
+    /// unsaved changes (see [`session`]).
+    guard: Guard,
     title: String,
     /// A transient message for the status bar (text, error?, when).
     notice: Option<(String, bool, Instant)>,
@@ -95,6 +82,7 @@ pub struct App {
     /// The `?` overlay over the canvas.
     shortcuts_overlay: bool,
     show_about: bool,
+    licenses: licenses::Licenses,
     gpu_name: String,
     /// Menu commands waiting for the next frame.
     commands: Vec<Command>,
@@ -141,8 +129,7 @@ impl App {
             } else {
                 recovery::scan()
             },
-            confirm: None,
-            allow_close: false,
+            guard: Guard::default(),
             title: String::new(),
             notice: None,
             engine: None,
@@ -171,6 +158,7 @@ impl App {
             show_shortcuts: false,
             shortcuts_overlay: false,
             show_about: false,
+            licenses: licenses::Licenses::default(),
             gpu_name,
             commands: Vec::new(),
             inject: Vec::new(),
@@ -294,43 +282,36 @@ impl App {
 
     /// Save in place, or ask where. True when saved.
     fn save(&mut self) -> bool {
-        match self.doc.path().map(Path::to_owned) {
-            Some(p) => self.save_to(p),
-            None => self.save_as(),
-        }
+        self.save_with(How::Save)
     }
 
     fn save_as(&mut self) -> bool {
-        match files::save_dialog(&self.doc) {
-            Some(p) => self.save_to(p),
-            None => false,
-        }
+        self.save_with(How::SaveAs)
     }
 
-    fn save_to(&mut self, path: PathBuf) -> bool {
-        match files::save(&self.patch, &path) {
-            Ok(()) => {
-                let name = files::file_stem(&path);
-                self.patch.meta.get_or_insert_with(Default::default).name = Some(name.clone());
+    fn save_with(&mut self, how: How) -> bool {
+        let rev = self.rev();
+        let out = session::save(&mut self.doc, &mut self.patch, rev, how, files::save_dialog);
+        match out {
+            Saved::Done { path, name } => {
                 self.recent.push(&path);
-                self.doc.saved_as(path, self.rev());
                 recovery::set_current(self.doc.path(), &self.doc.name);
                 host::set_document(self.doc.path());
                 self.notify(format!("Saved {name}"), false);
                 true
             }
-            Err(e) => {
-                self.notify(format!("Couldn't save {}: {e}", path.display()), true);
+            Saved::Failed { path, error } => {
+                self.notify(format!("Couldn't save {}: {error}", path.display()), true);
                 false
             }
+            Saved::Cancelled => false,
         }
     }
 
     /// Do `after`, first asking about unsaved changes if there are any.
     fn request(&mut self, ctx: &egui::Context, after: After) {
-        if self.dirty() {
-            self.confirm = Some(after);
-        } else {
+        let dirty = self.dirty();
+        if let Some(after) = self.guard.request(dirty, after) {
             self.perform(ctx, after);
         }
     }
@@ -351,22 +332,18 @@ impl App {
                 d
             }),
             After::Recover(c) => self.recover(&c),
-            After::Quit => {
-                self.allow_close = true;
-                ctx.send_viewport_cmd(egui::ViewportCommand::Close);
-            }
+            After::Quit => ctx.send_viewport_cmd(egui::ViewportCommand::Close),
         }
     }
 
     fn recover(&mut self, c: &recovery::Candidate) {
-        match c.read() {
-            Ok(p) => {
-                let origin = match &c.meta.source {
-                    Some(s) if s.exists() => Origin::File(s.clone()),
-                    _ => Origin::Untitled,
-                };
-                let name = c.meta.name.clone();
-                self.set_patch(p, |rev| Document::recovered(origin, name, rev));
+        match session::restore(c) {
+            Ok(session::Restored {
+                patch,
+                origin,
+                name,
+            }) => {
+                self.set_patch(patch, |rev| Document::recovered(origin, name, rev));
                 c.discard();
                 self.autosave.soon();
                 self.notify("Restored unsaved changes — save to keep them", false);
@@ -488,6 +465,7 @@ impl App {
             Command::Shortcuts => self.show_shortcuts = true,
             Command::Welcome => self.welcome.show_home(),
             Command::About => self.show_about = true,
+            Command::Licenses => self.licenses.open = true,
             Command::NewVariation => {
                 crate::presets_panel::new_variation(&mut self.patch, &mut self.view);
                 self.notify(format!("Variation · seed {}", self.patch.seed), false);
@@ -802,22 +780,9 @@ impl App {
 
     /// "Save changes before …?" Returns what to do now.
     fn confirm_dialog(&mut self, ctx: &egui::Context) {
-        let Some(after) = self.confirm.clone() else {
+        let Some(doing) = self.guard.pending().map(After::doing) else {
             return;
         };
-        let doing = match &after {
-            After::Quit => "quitting",
-            After::New => "starting a new patch",
-            After::Open(_) => "opening another file",
-            After::Sample(_) => "opening the sample",
-            After::Patch(..) => "opening the patch",
-            After::Recover(_) => "restoring",
-        };
-        enum Choice {
-            Save,
-            Discard,
-            Cancel,
-        }
         let mut choice = None;
         let modal = egui::Modal::new(egui::Id::new("floret-unsaved")).show(ctx, |ui| {
             ui.set_width(400.0);
@@ -836,7 +801,7 @@ impl App {
             ui.add_space(12.0);
             ui.horizontal(|ui| {
                 if ui.button("Don't Save").clicked() {
-                    choice = Some(Choice::Discard);
+                    choice = Some(Choice::DontSave);
                 }
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                     let save = egui::Button::new(RichText::new("Save…").strong());
@@ -852,25 +817,21 @@ impl App {
         if modal.should_close() && choice.is_none() {
             choice = Some(Choice::Cancel);
         }
-        match choice {
-            Some(Choice::Save) => {
-                self.confirm = None;
-                if self.save() {
-                    self.perform(ctx, after);
-                }
-            }
-            Some(Choice::Discard) => {
-                self.confirm = None;
+        if let Some(choice) = choice {
+            // Save may ask where first; the held action goes ahead only
+            // once the document is saved.
+            let mut guard = std::mem::take(&mut self.guard);
+            let after = guard.answer(choice, || self.save());
+            self.guard = guard;
+            if let Some(after) = after {
                 self.perform(ctx, after);
             }
-            Some(Choice::Cancel) => self.confirm = None,
-            None => {}
         }
     }
 
     /// Offer autosaves / crash copies from sessions that didn't exit cleanly.
     fn recovery_dialog(&mut self, ctx: &egui::Context) {
-        if self.recovery.is_empty() || self.confirm.is_some() {
+        if self.recovery.is_empty() || self.guard.is_asking() {
             return;
         }
         let mut restore = None;
@@ -973,7 +934,7 @@ impl eframe::App for App {
         if let Some(m) = &mut self.native_menu {
             self.commands.extend(m.poll());
         }
-        if self.confirm.is_none() {
+        if !self.guard.is_asking() {
             self.commands.extend(menu::shortcuts(&ctx));
         }
         for c in std::mem::take(&mut self.commands) {
@@ -981,14 +942,14 @@ impl eframe::App for App {
         }
         // Files from Finder (double-click, Open With), like File → Open:
         // asks about unsaved changes first; the newest when several came.
-        if self.confirm.is_none() {
+        if !self.guard.is_asking() {
             if let Some(path) = floret_open_files::take().pop() {
                 self.request(&ctx, After::Open(Some(path)));
             }
         }
         // `?` toggles the shortcuts overlay; Esc closes it before the
         // canvas sees the key.
-        if self.confirm.is_none() && help::question_typed(&ctx) {
+        if !self.guard.is_asking() && help::question_typed(&ctx) {
             self.shortcuts_overlay ^= true;
         }
         if self.shortcuts_overlay
@@ -998,9 +959,11 @@ impl eframe::App for App {
         }
 
         // Closing the window asks about unsaved changes first.
-        if ctx.input(|i| i.viewport().close_requested()) && !self.allow_close && self.dirty() {
-            ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
-            self.confirm = Some(After::Quit);
+        if ctx.input(|i| i.viewport().close_requested()) {
+            let dirty = self.dirty();
+            if self.guard.close_requested(dirty) {
+                ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
+            }
         }
 
         self.tick(&ctx);
@@ -1117,6 +1080,7 @@ impl eframe::App for App {
         self.prefs_window.show(&ctx, &mut self.prefs);
         help::shortcuts_window(&ctx, &mut self.show_shortcuts);
         help::about_window(&ctx, &mut self.show_about, &self.gpu_name);
+        self.licenses.show(&ctx);
         self.recorder.show(
             &ctx,
             rs,
@@ -1239,5 +1203,6 @@ pub fn empty_patch() -> PatchFile {
         seed: 0,
         presets: Vec::new(),
         legacy_slot0: false,
+        extra: Default::default(),
     }
 }

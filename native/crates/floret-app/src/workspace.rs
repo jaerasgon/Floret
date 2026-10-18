@@ -776,10 +776,8 @@ impl Workspace {
             return;
         }
         if let Some(path) = layout_path() {
-            if let Some(dir) = path.parent() {
-                let _ = std::fs::create_dir_all(dir);
-            }
-            let _ = std::fs::write(path, &json);
+            // Best effort: a read-only config dir just loses the layout.
+            let _ = crate::files::write_atomic(&path, &json);
         }
         self.saved = json;
     }
@@ -2025,6 +2023,44 @@ mod tests {
         assert!(json.starts_with(r#"{"dock":"#) || json.contains(r#""layout":2"#));
         let back = parse_layout(&json, false);
         assert_eq!(tabs(&back), tabs(&d));
+    }
+
+    /// The layout the user arranged is in `dock.json` (written by the
+    /// workspace's own save) and is what the next launch opens with: the
+    /// panels they closed stay closed, a floated panel is where they left it.
+    #[test]
+    fn the_layout_survives_a_restart() {
+        let cfg = crate::test_env::config_dir("dock");
+        let ctx = egui::Context::default();
+        // First launch: the default layout, written once it is shown.
+        let mut w = Workspace::load(false);
+        assert_eq!(tabs(&w.dock), tabs(&default_dock(false)));
+        w.save_layout(&ctx);
+        assert!(cfg.file("dock.json").is_file());
+        // The user floats Help and closes Profiler, then quits.
+        let help = w.dock.find_tab(&Tab::Help).unwrap();
+        w.dock
+            .detach_tab(help, Rect::from_min_size(pos2(40.0, 50.0), FLOAT_SIZE));
+        if let Some(p) = w.dock.find_tab(&Tab::Profiler) {
+            w.dock.remove_tab(p);
+        }
+        w.save_layout(&ctx);
+        let saved = tabs(&w.dock);
+        assert!(!saved.contains(&Tab::Profiler));
+        // The next launch.
+        let next = Workspace::load(false);
+        assert_eq!(tabs(&next.dock), saved);
+        let p = next.dock.find_tab(&Tab::Help).unwrap();
+        assert!(!p.surface.is_main(), "Help is still a floating window");
+        assert!(next.dock.find_tab(&Tab::Profiler).is_none());
+        assert_eq!(layout_json(&next.dock), layout_json(&w.dock));
+        assert!(!cfg.file("dock.json.tmp").exists());
+        // A damaged file opens the default layout, not a broken one.
+        for bad in ["", "{", "{\"layout\":2,\"dock\":{}}", "[1]"] {
+            std::fs::write(cfg.file("dock.json"), bad).unwrap();
+            let w = Workspace::load(false);
+            assert_eq!(tabs(&w.dock), tabs(&default_dock(false)), "{bad:?}");
+        }
     }
 
     /// The dock with plain tab bodies, for running egui_dock headless.

@@ -26,7 +26,7 @@ native Mac app.
   panel, with focus mode and a fullscreen output window for a second
   display. Panels dock, split and float; View → Panels brings back any you
   closed.
-- **About 240 nodes**: shapes and paths, typography with variable fonts,
+- **252 nodes**: shapes and paths, typography with variable fonts,
   noise and formulas, palettes, particles and simulations (flocking, slime
   mould, coral growth, cloth, differential growth, reaction-diffusion),
   shaders and post-effects (including ASCII art), images, video and image

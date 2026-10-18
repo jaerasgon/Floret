@@ -55,7 +55,7 @@ the pull). This also works on Linux.
    opens the search.
 3. **Add a shape.** Press Tab again, type `ellipse`, press Return.
 4. **Wire it.** Drag from the Ellipse's output pin (`layer`, at the bottom
-   of its right edge) to the Renderer's `layers` pin (on its left edge). A
+   of its right edge) to the Renderer's `layer` pin (on its left edge). A
    small white circle appears in the middle of the Preview. Inputs are on
    the left of a node, one row each; outputs are listed in a footer under
    them, with their pins on the right.
@@ -94,9 +94,11 @@ Floret.
 
 ## Reference
 
-- **Nodes:** [NODES.md](NODES.md) lists every node with its inputs, outputs
-  and what it does. In the app, the Inspector and Help panels show the
-  same for the selected node.
+- **Nodes:** [NODES.md](NODES.md) lists all 252 nodes in the Nodes browser
+  with their inputs, outputs and what they do. In the app, the Inspector
+  and Help panels show the same for the selected node.
+- **Trying the beta:** [docs/beta-testing.md](docs/beta-testing.md) says
+  how to install, what to try and how to report a problem.
 - **Keyboard shortcuts:** press `?` over the canvas for an overlay, or
   open Help → Keyboard Shortcuts (Cmd+/).
 - **Changes:** [CHANGELOG.md](CHANGELOG.md).
@@ -115,7 +117,7 @@ Floret.
 | `native/crates/floret-open-files` | Opening `.flora` files from Finder (macOS). |
 | `native/samples/` | The built-in samples and their catalogue. |
 | `floret.sh` | Build, run and install script. |
-| `docs/` | Design notes, the Mac QA checklist and release notes drafts. |
+| `docs/` | The beta tester guide, the Mac QA checklist, the release notes draft and the log of new nodes. `docs/archive/` keeps old planning notes and web-version docs for history. |
 | `src/`, `package.json`, … | The earlier TypeScript web version. It's kept for reference only and isn't the app anymore. |
 
 To check your changes, from `native/`: `cargo fmt --all --check`,

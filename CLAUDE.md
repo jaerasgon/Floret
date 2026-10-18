@@ -48,6 +48,16 @@ prompt you write must tell the agent to read this file first.
    `cargo clippy --workspace --all-targets -- -D warnings`,
    `cargo test --workspace --no-fail-fast`.
 
+10. **Releases and attribution.** This file and the `.claude/` folder stay
+    in the repository but are never part of a release: `.gitattributes`
+    marks them `export-ignore` (source archives and releases leave them
+    out). Commits and pull-request descriptions carry no AI attribution
+    lines: no `Co-Authored-By`, no session links, no mention of an AI
+    assistant. Nothing else that ships may mention one either. New commits
+    use the owner's GitHub identity (`jaerasgon
+    <jaerasgon@users.noreply.github.com>`): set `git config user.name` and
+    `user.email` to it in each fresh clone before committing.
+
 ## Terminal commands for the owner
 
 The owner switches between Macs and user accounts, so the clone's folder
@@ -70,5 +80,12 @@ To try another branch, swap both `main`s for that branch's name.
   `State` / `State Spread` loops) — next to it in the same folder.
 - `native/crates/floret-engine/tests/frozen_ports.rs` — saved-patch node / pin
   / param names never disappear without a migration.
-- `docs/plan-feature-complete.md` "Ground rules" — how to add nodes and
-  samples (samples, tests, groups, memo flags).
+- `native/crates/floret-engine/tests/release_hygiene.rs` — nothing that
+  ships (tracked files not marked `export-ignore`) mentions an AI assistant,
+  and a source archive of `HEAD` leaves out this file and `.claude/`.
+- `native/crates/floret-app/src/licenses.rs` (tests) — every crate in
+  `Cargo.lock` is in `native/licenses/crates.md` and is under an allowed
+  licence. After changing dependencies run
+  `python3 -I tools/gen-licenses.py` and commit the result.
+- `docs/archive/plan-feature-complete.md` "Ground rules" — how to add nodes
+  and samples (samples, tests, groups, memo flags).

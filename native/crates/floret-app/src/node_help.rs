@@ -464,6 +464,64 @@ mod tests {
         assert!(nodes_md().len() > 150);
     }
 
+    /// Visible catalogue nodes with no `NODES.md` row, and rows whose type
+    /// isn't in the catalogue at all (hidden legacy nodes may keep theirs).
+    fn nodes_md_gaps(
+        cat: &Catalogue,
+        rows: &HashMap<String, (String, String)>,
+    ) -> (Vec<String>, Vec<String>) {
+        let mut missing: Vec<String> = cat
+            .iter()
+            .filter(|s| !s.hidden && !rows.contains_key(&s.ty))
+            .map(|s| s.ty.clone())
+            .collect();
+        let mut unknown: Vec<String> = rows
+            .keys()
+            .filter(|ty| cat.get(ty).is_none())
+            .cloned()
+            .collect();
+        missing.sort();
+        unknown.sort();
+        (missing, unknown)
+    }
+
+    #[test]
+    fn nodes_md_gap_check_finds_both_kinds() {
+        let cat = Catalogue::from_json(
+            r#"{"nodes":[
+                {"type":"a/shown","category":"A","label":"Shown","inputs":[],"outputs":[],"eval":"raw"},
+                {"type":"a/old","category":"A","label":"Old","hidden":true,"inputs":[],"outputs":[],"eval":"raw"},
+                {"type":"a/new","category":"A","label":"New","inputs":[],"outputs":[],"eval":"raw"}
+            ]}"#,
+        )
+        .expect("catalogue");
+        let rows = parse_nodes_md(
+            "| **Shown** · `a/shown` | — → — | x |\n\
+             | **Old** · `a/old` | — → — | x |\n\
+             | **Gone** · `a/gone` | — → — | x |\n",
+        );
+        assert_eq!(
+            nodes_md_gaps(&cat, &rows),
+            (vec!["a/new".to_owned()], vec!["a/gone".to_owned()])
+        );
+    }
+
+    #[test]
+    fn nodes_md_documents_every_visible_node() {
+        let (missing, unknown) = nodes_md_gaps(Catalogue::builtin(), nodes_md());
+        assert!(
+            missing.is_empty(),
+            "NODES.md has no row for these {} visible nodes (add one per node, in the `| **Label** · `type` | ports | description |` format): {}",
+            missing.len(),
+            missing.join(", ")
+        );
+        assert!(
+            unknown.is_empty(),
+            "NODES.md has rows for node types that aren't in the catalogue (remove or fix them): {}",
+            unknown.join(", ")
+        );
+    }
+
     #[test]
     fn layer_pins_read_layer_as_on_the_canvas() {
         let cat = Catalogue::builtin();

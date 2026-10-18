@@ -40,7 +40,16 @@ pub struct PatchFile {
     /// computes exactly as it did; absent (false) in newer files.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub legacy_slot0: bool,
+    /// Top-level fields this build doesn't know (a file saved by a newer
+    /// build, or by another tool): kept as they are and written back, so
+    /// re-saving loses nothing.
+    #[serde(flatten, default, skip_serializing_if = "Extra::is_empty")]
+    pub extra: Extra,
 }
+
+/// Fields of a patch file, meta or node that this build doesn't know,
+/// kept so a save writes them back.
+pub type Extra = serde_json::Map<String, serde_json::Value>;
 
 fn is_zero(n: &u32) -> bool {
     *n == 0
@@ -80,6 +89,9 @@ pub struct PatchMeta {
     pub created_at: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub modified_at: Option<String>,
+    /// Meta fields this build doesn't know (kept; see [`PatchFile::extra`]).
+    #[serde(flatten, default, skip_serializing_if = "Extra::is_empty")]
+    pub extra: Extra,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize)]
@@ -113,6 +125,9 @@ pub struct PatchNode {
     /// `crate::bypass`). Absent when off; builds without bypass ignore it.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub bypassed: bool,
+    /// Node fields this build doesn't know (kept; see [`PatchFile::extra`]).
+    #[serde(flatten, default, skip_serializing_if = "Extra::is_empty")]
+    pub extra: Extra,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -384,6 +399,52 @@ mod tests {
         let p = PatchFile::load(&file(CURRENT_PATCH_VERSION)).unwrap();
         assert!(!p.legacy_slot0);
         assert!(!p.to_json().contains("legacySlot0"));
+    }
+
+    /// A file with fields this build has never heard of (saved by a newer
+    /// build) writes them all back: top level, meta and nodes, with their
+    /// values untouched.
+    #[test]
+    fn unknown_fields_survive_a_round_trip() {
+        let text = r#"{
+          "kind": "floret.patch", "version": 4,
+          "futureTop": { "a": [1, 2.5, "x"], "b": null },
+          "meta": { "name": "n", "description": "from a newer build" },
+          "nodes": [
+            { "id": "a", "defType": "value/number", "position": { "x": 1, "y": 2 },
+              "params": { "value": 3 }, "locked": true, "tags": ["x", "y"] }
+          ],
+          "edges": [], "zoom": 1.5
+        }"#;
+        let p = PatchFile::load(text).unwrap();
+        assert_eq!(p.extra["zoom"], 1.5);
+        assert_eq!(p.extra["futureTop"]["a"][1], 2.5);
+        assert_eq!(
+            p.meta.as_ref().unwrap().extra["description"],
+            "from a newer build"
+        );
+        assert_eq!(p.nodes[0].extra["locked"], true);
+        // Known fields are not duplicated into the catch-all.
+        assert!(!p.extra.contains_key("nodes") && !p.nodes[0].extra.contains_key("params"));
+        let out: serde_json::Value = serde_json::from_str(&p.to_json()).unwrap();
+        let orig: serde_json::Value = serde_json::from_str(text).unwrap();
+        for key in ["futureTop", "zoom"] {
+            assert_eq!(out[key], orig[key], "{key}");
+        }
+        assert_eq!(out["meta"]["description"], "from a newer build");
+        assert_eq!(out["nodes"][0]["locked"], true);
+        assert_eq!(out["nodes"][0]["tags"], orig["nodes"][0]["tags"]);
+        // Saved again, the same text.
+        let again = PatchFile::load(&p.to_json()).unwrap();
+        assert_eq!(again.to_json(), p.to_json());
+        // Files without any write nothing extra.
+        let plain = PatchFile::load(r#"{"kind":"floret.patch","version":4,"nodes":[],"edges":[]}"#)
+            .unwrap();
+        assert!(plain.extra.is_empty());
+        assert_eq!(
+            plain.to_json(),
+            "{\n  \"kind\": \"floret.patch\",\n  \"version\": 4,\n  \"nodes\": [],\n  \"edges\": []\n}"
+        );
     }
 
     #[test]

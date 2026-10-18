@@ -22,6 +22,19 @@ pub struct PresetsPanel {
     renaming: Option<(usize, String)>,
 }
 
+/// Give preset `i` a new name. False (nothing changes) when there is no
+/// such preset, the name is empty, or it is the one it has.
+pub fn rename_preset(patch: &mut PatchFile, i: usize, name: &str) -> bool {
+    let name = name.trim();
+    match patch.presets.get_mut(i) {
+        Some(p) if !name.is_empty() && p.name != name => {
+            p.name = name.to_owned();
+            true
+        }
+        _ => false,
+    }
+}
+
 /// Re-roll the patch seed: an undo step, and the engine is rebuilt.
 pub fn new_variation(patch: &mut PatchFile, view: &mut View) {
     let entropy = std::time::SystemTime::now()
@@ -212,8 +225,7 @@ impl PresetsPanel {
             view.commit_meta(patch);
         }
         if let Some((i, name)) = renamed {
-            if patch.presets[i].name != name {
-                patch.presets[i].name = name;
+            if rename_preset(patch, i, &name) {
                 view.commit_meta(patch);
             }
         }
@@ -334,5 +346,36 @@ mod tests {
         let edits = live_edits(&fields);
         assert!(matches!(&edits[0], LiveEdit::Param { key, .. } if key == "value"));
         assert!(matches!(&edits[1], LiveEdit::Port { port, .. } if port == "x"));
+    }
+
+    /// A renamed preset is part of the patch: it is saved with it and
+    /// comes back under its new name, in the same place in the list.
+    #[test]
+    fn a_renamed_preset_is_saved_with_the_patch() {
+        let cat = Catalogue::builtin();
+        let mut p = crate::editor::test_util::patch(
+            vec![crate::editor::test_util::node("n", "value/number")],
+            vec![],
+        );
+        for name in ["One", "Two", "Three"] {
+            p.presets.push(preset::capture(cat, &p, name));
+        }
+        // Empty, unchanged, out-of-range and whitespace-only names do nothing.
+        assert!(!rename_preset(&mut p, 1, ""));
+        assert!(!rename_preset(&mut p, 1, "   "));
+        assert!(!rename_preset(&mut p, 1, "Two"));
+        assert!(!rename_preset(&mut p, 9, "Nine"));
+        assert!(rename_preset(&mut p, 1, "  Warm — ✿  "));
+        let names = |p: &PatchFile| p.presets.iter().map(|x| x.name.clone()).collect::<Vec<_>>();
+        assert_eq!(names(&p), ["One", "Warm — ✿", "Three"]);
+        // On disk and back.
+        let dir = std::env::temp_dir().join(format!("floret-preset-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let path = dir.join("p.flora");
+        crate::files::save(&p, &path).unwrap();
+        let back = crate::files::read(&path).unwrap();
+        assert_eq!(names(&back), ["One", "Warm — ✿", "Three"]);
+        assert_eq!(back.presets[1].values.len(), p.presets[1].values.len());
+        let _ = std::fs::remove_dir_all(dir);
     }
 }

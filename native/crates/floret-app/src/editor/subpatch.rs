@@ -206,6 +206,7 @@ pub fn group(patch: &mut PatchFile, cat: &Catalogue, ids: &[String]) -> Option<S
         width: None,
         height: None,
         bypassed: false,
+        extra: Default::default(),
     };
     for n in patch
         .nodes

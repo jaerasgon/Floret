@@ -126,9 +126,8 @@ pub fn load_index(dir: &Path) -> Vec<Entry> {
 }
 
 fn save_index(dir: &Path, entries: &[Entry]) -> std::io::Result<()> {
-    std::fs::create_dir_all(dir)?;
     let text = serde_json::to_string_pretty(entries).map_err(std::io::Error::other)?;
-    std::fs::write(index_path(dir), text)
+    crate::files::write_atomic(&index_path(dir), text)
 }
 
 /// Save `patch` (a whole patch, or a subpatch snippet) into the library
@@ -152,7 +151,7 @@ pub fn save_patch(
         description: description.trim().to_owned(),
         kind,
     };
-    std::fs::write(dir.join(&entry.file), patch.to_json())?;
+    crate::files::write_atomic(&dir.join(&entry.file), patch.to_json())?;
     entries.push(entry.clone());
     save_index(dir, entries)?;
     Ok(entry)
@@ -1578,5 +1577,130 @@ mod tests {
         let text = std::fs::read_to_string(dir.join("library.json")).unwrap();
         assert!(!text.contains("kind"));
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// Everything the Library keeps comes back on the next launch, found
+    /// through the config folder like the app does: "My patches" (a whole
+    /// patch and a saved subpatch, each with its kind), a library the user
+    /// made, and what was removed stays removed.
+    #[test]
+    fn the_library_survives_a_restart() {
+        use crate::editor::test_util::{node, patch};
+        let cfg = crate::test_env::config_dir("library");
+        let open = patch(vec![node("a", "math/add"), node("b", "math/add")], vec![]);
+        let snippet = patch(vec![node("s", "meta/subpatch")], vec![]);
+        let form = |name: &str, target: Target, snippet: Option<PatchFile>| SaveForm {
+            name: name.into(),
+            description: format!("about {name}"),
+            target,
+            new_library: "Bits ✿".into(),
+            snippet,
+        };
+
+        // First launch: nothing saved.
+        let mut lib = Library::default();
+        assert!(lib.entries.is_empty() && lib.libs.is_empty());
+        assert_eq!(
+            lib.save_to(&open, &form("Night Sky", Target::Mine, None)),
+            "Saved “Night Sky”."
+        );
+        assert_eq!(
+            lib.save_to(&open, &form("Wobble", Target::Mine, Some(snippet.clone()))),
+            "Saved “Wobble”."
+        );
+        assert_eq!(
+            lib.save_to(&open, &form("Spin", Target::New, Some(snippet.clone()))),
+            "Saved “Spin” to Bits ✿."
+        );
+        assert_eq!(
+            lib.save_to(&open, &form("Orbit", Target::User("bits".into()), None)),
+            "Saved “Orbit” to Bits ✿."
+        );
+        let lib_dir = cfg.file("library");
+        assert!(lib_dir.join("library.json").is_file());
+        assert!(lib_dir.join("night-sky.flora").is_file());
+        assert!(lib_dir
+            .join("libraries")
+            .join("bits.library.json")
+            .is_file());
+        drop(lib);
+
+        // The next launch.
+        let mut lib = Library::default();
+        let mine: Vec<(&str, EntryKind, &str)> = lib
+            .entries
+            .iter()
+            .map(|e| (e.name.as_str(), e.kind, e.description.as_str()))
+            .collect();
+        assert_eq!(
+            mine,
+            [
+                ("Night Sky", EntryKind::Patch, "about Night Sky"),
+                ("Wobble", EntryKind::Subpatch, "about Wobble"),
+            ]
+        );
+        assert_eq!(lib.libs.len(), 1);
+        let bits = &lib.libs[0].library;
+        assert_eq!(bits.name, "Bits ✿");
+        let names: Vec<(&str, EntryKind)> = bits
+            .patches
+            .iter()
+            .map(|e| (e.name.as_str(), e.kind))
+            .collect();
+        assert_eq!(
+            names,
+            [("Spin", EntryKind::Subpatch), ("Orbit", EntryKind::Patch)]
+        );
+        // What they open as is what was saved.
+        let whole = lib.entries[0].file.clone();
+        match lib.open_mine(&whole, Use::Click) {
+            Some(Pick::Patch(p)) => assert_eq!(p.nodes.len(), 2),
+            _ => panic!("a patch opens"),
+        }
+        let sub = lib.entries[1].file.clone();
+        match lib.open_mine(&sub, Use::Click) {
+            Some(Pick::Insert(p)) => assert_eq!(p.nodes[0].def_type, "meta/subpatch"),
+            _ => panic!("a subpatch inserts"),
+        }
+        match lib.open_user_entry("bits", "spin", Use::Click) {
+            Some(Pick::Insert(_)) => {}
+            _ => panic!("a library's subpatch inserts"),
+        }
+
+        // Removing from both, then another launch.
+        let dir = lib.dir.clone().unwrap();
+        remove_entry(&dir, &mut lib.entries, &whole).unwrap();
+        library_store::remove(&dir.join("libraries"), &mut lib.libs, "bits").unwrap();
+        drop(lib);
+        let lib = Library::default();
+        assert_eq!(lib.entries.len(), 1);
+        assert_eq!(lib.entries[0].name, "Wobble");
+        assert!(lib.libs.is_empty());
+        assert!(!dir.join("night-sky.flora").exists());
+    }
+
+    /// A damaged library file never stops the app starting; the entries
+    /// that are fine still show.
+    #[test]
+    fn damaged_library_files_are_skipped() {
+        let cfg = crate::test_env::config_dir("library-bad");
+        let dir = cfg.file("library");
+        std::fs::create_dir_all(dir.join("libraries")).unwrap();
+        std::fs::write(dir.join("library.json"), "[{\"file\":").unwrap();
+        std::fs::write(dir.join("libraries").join("broken.library.json"), "{").unwrap();
+        std::fs::write(dir.join("libraries").join("notes.txt"), "hello").unwrap();
+        let ok = lib_with_patches("Fine");
+        std::fs::write(dir.join("libraries").join("fine.library.json"), ok).unwrap();
+        let lib = Library::default();
+        assert!(lib.entries.is_empty());
+        assert_eq!(lib.libs.len(), 1);
+        assert_eq!(lib.libs[0].library.name, "Fine");
+    }
+
+    fn lib_with_patches(name: &str) -> String {
+        format!(
+            r#"{{"kind":"floret.library","version":1,"name":"{name}","patches":[
+                {{"id":"p","name":"P","patch":{{"kind":"floret.patch","version":4,"nodes":[],"edges":[]}}}}]}}"#
+        )
     }
 }

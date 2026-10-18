@@ -2201,6 +2201,7 @@ pub fn show(
                 width: None,
                 height: None,
                 bypassed: false,
+                extra: Default::default(),
             };
             let (size, title) = match geom::look_of(&n, cat, None) {
                 Look::Node => {

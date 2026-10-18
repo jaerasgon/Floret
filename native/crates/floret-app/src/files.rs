@@ -33,7 +33,10 @@ pub fn data_dir() -> PathBuf {
 }
 
 /// Read and migrate a patch file (versions, then the web app's legacy
-/// fix-ups), like opening one in the web app.
+/// fix-ups), like opening one in the web app. Paths to picked files that
+/// the file holds relative to its own folder come back absolute, so the
+/// rest of the app only ever sees full paths ([`resolve_paths`]).
+#[cfg(test)]
 pub fn read(path: &Path) -> Result<PatchFile, String> {
     read_noting(path).map(|(patch, _)| patch)
 }
@@ -41,6 +44,14 @@ pub fn read(path: &Path) -> Result<PatchFile, String> {
 /// [`read`], plus a line for each change the load made that the user
 /// should hear about (a node type Floret no longer has, dropped).
 pub fn read_noting(path: &Path) -> Result<(PatchFile, Vec<String>), String> {
+    let (mut patch, notes) = read_unresolved(path)?;
+    resolve_paths(&mut patch, path.parent());
+    Ok((patch, notes))
+}
+
+/// [`read_noting`] without resolving relative file references (for copies
+/// the app wrote itself, which don't live next to the files they name).
+pub fn read_unresolved(path: &Path) -> Result<(PatchFile, Vec<String>), String> {
     let text = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
     floret_engine::load_patch_noting(&text).map_err(|e| e.to_string())
 }
@@ -51,7 +62,16 @@ pub fn read_noting(path: &Path) -> Result<(PatchFile, Vec<String>), String> {
 /// integral numbers written without a fraction. The creation time is kept
 /// when the patch has one.
 pub fn to_flora(patch: &PatchFile, name: Option<&str>, now: &str) -> String {
+    flora_text(patch, name, now, None)
+}
+
+/// [`to_flora`], with the patch's file references written for a patch
+/// saved in `rebase.to` ([`portable_paths`]).
+fn flora_text(patch: &PatchFile, name: Option<&str>, now: &str, rebase: Option<Rebase>) -> String {
     let mut p = patch.clone();
+    if let Some(r) = rebase {
+        portable_paths(&mut p, r);
+    }
     p.kind = PATCH_KIND.to_owned();
     p.version = CURRENT_PATCH_VERSION;
     p.app_version = Some(env!("CARGO_PKG_VERSION").to_owned());
@@ -90,6 +110,205 @@ fn integral_numbers(v: &mut Json) {
     }
 }
 
+// ── Files a patch refers to ─────────────────────────────────────────────────
+//
+// Images, SVGs and audio picked on a node are embedded in the patch; videos,
+// image sequences, fonts, LUTs and CSV files are referenced by path (they can
+// be large). In the open patch every such path is absolute. On disk, one
+// that sits beside the patch file or below it is written relative to it, with
+// `/` for separators on every system, so a folder holding a patch and its
+// media can be moved, zipped or shared and still work. Opening resolves
+// relative paths against the patch's folder; absolute paths load as they
+// are; paths outside the folder stay absolute.
+
+/// Node params and input-pin constants that name a file, as (node type,
+/// key). The sweep in the tests checks this against the catalogue.
+pub const FILE_REFS: &[(&str, &str)] = &[
+    ("video/file", "url"),
+    ("video/frame-at", "url"),
+    ("text/font", "file"),
+    ("io/image-url", "url"),
+    ("io/svg", "url"),
+    ("data/csv-file", "url"),
+    ("sound/sound-file", "url"),
+    ("gpu/effect", "lut"),
+];
+
+/// Where a patch is being saved: the folder it goes in, and the folder it
+/// was open from (`None` for a new patch).
+#[derive(Clone, Copy)]
+struct Rebase<'a> {
+    from: Option<&'a Path>,
+    to: &'a Path,
+}
+
+/// Run `f` on every file reference in `patch`, the saved presets' too.
+pub(crate) fn map_file_refs(patch: &mut PatchFile, mut f: impl FnMut(&str) -> String) {
+    let mut change = |params: &mut floret_engine::spec::Params, ty: &str| {
+        for (t, key) in FILE_REFS {
+            if *t != ty {
+                continue;
+            }
+            if let Some(Json::String(s)) = params.get_mut(*key) {
+                let new = f(s);
+                if new != *s {
+                    *s = new;
+                }
+            }
+        }
+    };
+    let mut types = std::collections::HashMap::new();
+    for n in &mut patch.nodes {
+        types.insert(n.id.clone(), n.def_type.clone());
+        change(&mut n.params, &n.def_type);
+        if let Some(pv) = &mut n.port_values {
+            change(pv, &n.def_type);
+        }
+    }
+    for preset in &mut patch.presets {
+        for (id, v) in &mut preset.values {
+            if let Some(ty) = types.get(id) {
+                change(&mut v.params, ty);
+                change(&mut v.ports, ty);
+            }
+        }
+    }
+}
+
+/// Make the relative file references in `patch` absolute, against the
+/// folder the patch file is in (`None`: nothing to resolve against, so
+/// they stay as they are). Done when a file is opened.
+pub fn resolve_paths(patch: &mut PatchFile, dir: Option<&Path>) {
+    let Some(dir) = dir.filter(|d| !d.as_os_str().is_empty()) else {
+        return;
+    };
+    map_file_refs(patch, |s| map_lines(s, |r| resolve(r, dir)));
+}
+
+/// Write the file references in `patch` the way they are saved in
+/// `rebase.to`: relative when beside or below it, else absolute.
+fn portable_paths(patch: &mut PatchFile, rebase: Rebase) {
+    map_file_refs(patch, |s| map_lines(s, |r| portable(r, rebase)));
+}
+
+/// Apply `f` to each non-empty line of a reference (a video's `url` may
+/// list an image sequence's frames, one per line), keeping the lines'
+/// own spacing. Only local paths are given to `f`: not `data:` URLs,
+/// `http(s)` or `file://` URLs.
+fn map_lines(s: &str, f: impl Fn(&str) -> String) -> String {
+    if !s.contains('\n') {
+        return map_line(s, &f);
+    }
+    s.split('\n')
+        .map(|l| map_line(l, &f))
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+fn map_line(line: &str, f: &impl Fn(&str) -> String) -> String {
+    let t = line.trim();
+    if t.is_empty() || !is_local_ref(t) {
+        return line.to_owned();
+    }
+    let at = line.find(t).unwrap_or(0);
+    format!("{}{}{}", &line[..at], f(t), &line[at + t.len()..])
+}
+
+/// Not a URL of any kind (`data:`, `http:`, `file:`, …): a path. A
+/// Windows drive (`C:\…`) is not mistaken for a URL scheme.
+pub(crate) fn is_local_ref(s: &str) -> bool {
+    if is_absolute_ref(s) {
+        return true;
+    }
+    match s.split_once(':') {
+        Some((scheme, _)) => {
+            !(scheme.len() > 1
+                && scheme
+                    .chars()
+                    .all(|c| c.is_ascii_alphanumeric() || "+.-".contains(c)))
+        }
+        None => true,
+    }
+}
+
+/// An absolute path on any system: `/…`, `C:\…` or `C:/…`, `\\server\…`.
+/// (A patch saved on Windows and opened on a Mac still has its drive
+/// paths, which `Path::is_absolute` there would call relative.)
+fn is_absolute_ref(s: &str) -> bool {
+    let b = s.as_bytes();
+    s.starts_with('/')
+        || s.starts_with("\\\\")
+        || (b.len() >= 3
+            && b[0].is_ascii_alphabetic()
+            && b[1] == b':'
+            && (b[2] == b'/' || b[2] == b'\\'))
+}
+
+/// A relative reference joined onto `dir` (its `/` become the system's
+/// separator); absolute ones as they are.
+fn resolve(r: &str, dir: &Path) -> String {
+    if is_absolute_ref(r) {
+        return r.to_owned();
+    }
+    let mut p = dir.to_path_buf();
+    for part in r.split('/').filter(|c| !c.is_empty() && *c != ".") {
+        p.push(part);
+    }
+    p.to_string_lossy().into_owned()
+}
+
+/// One reference for a file saved in `rebase.to`.
+fn portable(r: &str, rebase: Rebase) -> String {
+    let absolute = if is_absolute_ref(r) {
+        PathBuf::from(r)
+    } else if let Some(from) = rebase.from {
+        PathBuf::from(resolve(r, from))
+    } else {
+        // A relative path typed in the editor, with nothing to anchor it.
+        return r.to_owned();
+    };
+    if let Some(rel) = below(&absolute, rebase.to) {
+        return rel;
+    }
+    if !is_absolute_ref(r) && rebase.from == Some(rebase.to) {
+        // Saved in place: the user's own relative path is left alone.
+        return r.to_owned();
+    }
+    absolute.to_string_lossy().into_owned()
+}
+
+/// `path` relative to `dir` with `/` separators, when it is inside it.
+fn below(path: &Path, dir: &Path) -> Option<String> {
+    let clean = |rel: &Path| -> Option<String> {
+        let parts: Option<Vec<String>> = rel
+            .components()
+            .map(|c| match c {
+                std::path::Component::Normal(n) => Some(n.to_string_lossy().into_owned()),
+                _ => None,
+            })
+            .collect();
+        parts.filter(|p| !p.is_empty()).map(|p| p.join("/"))
+    };
+    if let Some(rel) = path.strip_prefix(dir).ok().and_then(clean) {
+        return Some(rel);
+    }
+    // The same place under another name (a symlinked folder, `/var` and
+    // `/private/var`, a different capitalisation on a Mac).
+    let dir = dir.canonicalize().ok()?;
+    let path = canonical_or_parent(path)?;
+    path.strip_prefix(&dir).ok().and_then(clean)
+}
+
+/// The canonical path, or for one that doesn't exist (yet) its nearest
+/// existing folder's with the rest appended.
+fn canonical_or_parent(path: &Path) -> Option<PathBuf> {
+    if let Ok(p) = path.canonicalize() {
+        return Some(p);
+    }
+    let name = path.file_name()?;
+    Some(canonical_or_parent(path.parent()?)?.join(name))
+}
+
 /// Write `text` to `path` through a temporary file and a rename, so a
 /// failed or interrupted save never leaves a half-written patch.
 pub fn write_atomic(path: &Path, contents: impl AsRef<[u8]>) -> std::io::Result<()> {
@@ -105,9 +324,19 @@ pub fn write_atomic(path: &Path, contents: impl AsRef<[u8]>) -> std::io::Result<
     })
 }
 
-/// Save `patch` to `path`: the file is named after its stem.
+/// Save `patch` to `path`: the file is named after its stem. Picked files
+/// that sit beside the patch or below it are written relative to it.
 pub fn save(patch: &PatchFile, path: &Path) -> Result<(), String> {
-    let text = to_flora(patch, Some(&file_stem(path)), &now_iso());
+    save_from(patch, path, None)
+}
+
+/// [`save`] for a patch that was open from the folder `from` (`None`:
+/// untitled, or a built-in sample): file references still relative to it
+/// are made to point at the same files from the new place.
+pub fn save_from(patch: &PatchFile, path: &Path, from: Option<&Path>) -> Result<(), String> {
+    let to = path.parent().filter(|d| !d.as_os_str().is_empty());
+    let rebase = to.map(|to| Rebase { from, to });
+    let text = flora_text(patch, Some(&file_stem(path)), &now_iso(), rebase);
     write_atomic(path, &text).map_err(|e| e.to_string())
 }
 
@@ -526,6 +755,7 @@ mod tests {
             width: Some(200.0),
             height: Some(100.0),
             bypassed: false,
+            extra: Default::default(),
         });
         p.edges.push(PatchEdge {
             id: "dangling".into(),

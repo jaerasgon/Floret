@@ -48,6 +48,7 @@ pub(crate) mod test_util {
             width: None,
             height: None,
             bypassed: false,
+            extra: Default::default(),
         }
     }
 
@@ -79,6 +80,7 @@ pub(crate) mod test_util {
             seed: 0,
             presets: Vec::new(),
             legacy_slot0: false,
+            extra: Default::default(),
         }
     }
 }

@@ -1,5 +1,8 @@
 # Floret
 
+[![ko-fi](https://ko-fi.com)]([https://ko-fi.com](https://ko-fi.com/jaerasgon))
+
+
 **A node-based tool for generative art.** Wire shapes, motion, noise,
 particles, text, images, sound and live input together, and watch the
 result change as you edit. Floret is a native app, drawn on your GPU

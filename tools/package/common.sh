@@ -35,7 +35,7 @@ SKIP_BUILD=0
 VERSION=""
 
 usage() {
-  sed -n '3,15p' "$PKG_DIR/common.sh" | sed 's/^# \{0,1\}//'
+  sed -n '6,16p' "$PKG_DIR/common.sh" | sed 's/^# \{0,1\}//'
 }
 
 # parse_args "$@" — fills PROFILE, SKIP_BUILD and VERSION.

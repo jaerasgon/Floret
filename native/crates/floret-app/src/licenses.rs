@@ -16,8 +16,9 @@
 use crate::theme::{BG_1, BORDER, FG_0, FG_1, FG_2, GOLD_TEXT};
 use eframe::egui::{self, RichText};
 
-/// Floret's own licence.
+/// Floret's own licence (Apache License 2.0), and the NOTICE that goes with it.
 const FLORET_LICENSE: &str = include_str!("../../../../LICENSE");
+const FLORET_NOTICE: &str = include_str!("../../../../NOTICE");
 /// `THIRD_PARTY_NOTICES.md`.
 const NOTICES: &str = include_str!("../../../../THIRD_PARTY_NOTICES.md");
 
@@ -58,8 +59,8 @@ pub fn sections() -> Vec<Section> {
     vec![
         Section {
             title: "Floret",
-            blurb: "Floret's own licence.",
-            text: plain(FLORET_LICENSE),
+            blurb: "Floret's own licence (Apache License 2.0) and its NOTICE.",
+            text: floret_text(),
         },
         Section {
             title: "Fonts",
@@ -106,6 +107,16 @@ fn block(out: &mut String, title: &str, note: &str, texts: &[&str]) {
         out.push('\n');
     }
     out.push_str("\n\n");
+}
+
+/// The licence as published, then the NOTICE. Neither is reformatted: both
+/// are legal text that has to stay as written.
+fn floret_text() -> String {
+    format!(
+        "{}\n\n\nNOTICE\n======\n\n{}\n",
+        FLORET_LICENSE.trim_matches('\n').trim_end(),
+        FLORET_NOTICE.trim_end()
+    )
 }
 
 fn fonts_text() -> String {
@@ -723,7 +734,15 @@ mod tests {
             assert!(!s.blurb.is_empty(), "{} has no blurb", s.title);
         }
         let text_of = |t: &str| &all.iter().find(|s| s.title == t).unwrap().text;
-        assert!(text_of("Floret").contains("Jaafer Elsadig"));
+        let floret = text_of("Floret");
+        assert!(floret.contains("Apache License"));
+        assert!(floret.contains("Version 2.0, January 2004"));
+        assert!(floret.contains("Jaafer Elsadig"));
+        // The NOTICE follows the licence.
+        let licence_at = floret.find("Apache License").unwrap();
+        let notice_at = floret.find("Copyright 2026 Jaafer Elsadig").unwrap();
+        assert!(licence_at < notice_at);
+        assert!(floret.trim_end().ends_with("credit Floret and its author."));
         for font in [
             "Inter",
             "DejaVu",

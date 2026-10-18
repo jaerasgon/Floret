@@ -1,0 +1,36 @@
+name: Idea or feedback
+description: Tell us what you wish Floret did, or how it felt to use.
+title: "[Feedback] "
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Floret is early and your feedback shapes it. Please send ideas here
+        rather than forking, so Floret improves for everyone. You do not need
+        to know how to code.
+  - type: textarea
+    id: making
+    attributes:
+      label: What were you trying to make?
+      description: Describe the picture, motion, sound or tool you had in mind.
+      placeholder: "A poster that reacts to music, with slowly shifting colours."
+    validations:
+      required: true
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Your idea or feedback
+      description: What got in the way, what was missing, what would have helped, or what you loved.
+    validations:
+      required: true
+  - type: textarea
+    id: ideal
+    attributes:
+      label: How would you like it to work? (optional)
+      description: A sketch, a description, or a link to something that does it well.
+  - type: input
+    id: version
+    attributes:
+      label: Floret version (optional)
+      placeholder: "v0.2.0"

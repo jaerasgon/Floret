@@ -5,7 +5,8 @@ component is the property of its respective owners and is used under the
 licence noted below. This file is informational; the authoritative terms are
 in each component's own licence text.
 
-Floret's own licence is in [`LICENSE`](LICENSE). The same texts are in the
+Floret itself is free and open source under the Apache License 2.0: see
+[`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). The same texts are in the
 app under **Help → Licenses…**, and in the macOS app bundle under
 `Floret.app/Contents/Resources/`.
 

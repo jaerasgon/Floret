@@ -1,0 +1,235 @@
+name: release
+
+# Manual only (Actions tab → release → Run workflow). Builds Floret for
+# macOS (Apple silicon and Intel), Windows and Linux, packages each one with
+# the scripts in tools/package/, and puts them on a GitHub Release for the
+# tag you type. The release is a draft by default: look it over, then publish
+# it from the Releases page. How-to: docs/releasing.md.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (vMAJOR.MINOR.PATCH, optionally -beta.1 etc.)'
+        type: string
+        required: true
+        default: v0.2.0-beta.1
+      prerelease:
+        description: 'Mark the release as a pre-release'
+        type: boolean
+        default: true
+      draft:
+        description: 'Create it as a draft (publish it yourself after a look)'
+        type: boolean
+        default: true
+      run_tests:
+        description: 'Run cargo test --workspace on Linux before building'
+        type: boolean
+        default: false
+
+# Two runs for the same tag queue up instead of colliding.
+concurrency:
+  group: release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  prepare:
+    name: check the tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - name: Check the tag
+        id: v
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-+.][0-9A-Za-z.+-]+)?$ ]]; then
+            echo "::error::Tag '$TAG' is not like v0.2.0 or v0.2.0-beta.1"
+            exit 1
+          fi
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+  test:
+    name: test (linux)
+    if: inputs.run_tests
+    needs: prepare
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: native
+      # ALSA for cpal (audio) and midir (MIDI). nokhwa's V4L2 bindings are
+      # generated with bindgen, which needs libclang and the kernel headers.
+      - name: Linux system deps
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev libclang-dev pkg-config
+      - name: Test
+        working-directory: native
+        run: cargo test --workspace
+
+  build:
+    name: build (${{ matrix.name }})
+    needs: [prepare, test]
+    # `test` is skipped unless run_tests is on; a skipped test must not skip
+    # the builds, a failed one must.
+    if: ${{ !cancelled() && needs.prepare.result == 'success' && needs.test.result != 'failure' }}
+    runs-on: ${{ matrix.os }}
+    # Only the Apple-silicon Mac build has to succeed. The release job
+    # checks which files exist and refuses to continue without it.
+    continue-on-error: ${{ matrix.experimental }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos-arm64
+            os: macos-latest
+            script: macos.sh
+            experimental: false
+          - name: macos-intel
+            os: macos-15-intel
+            script: macos.sh
+            experimental: true
+          - name: windows-x64
+            os: windows-latest
+            script: windows.sh
+            experimental: true
+          # An older Ubuntu, so the binary's glibc requirement is low and it
+          # runs on more distributions.
+          - name: linux-x64
+            os: ubuntu-22.04
+            script: linux.sh
+            experimental: true
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The macOS build number is the commit count.
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: native
+      - name: Linux system deps
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev libclang-dev pkg-config
+      - name: Build release
+        working-directory: native
+        run: cargo build --release -p floret-app
+      - name: Package
+        shell: bash
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: bash "tools/package/${{ matrix.script }}" --skip-build "$VERSION"
+      - name: Show the package
+        shell: bash
+        run: ls -l dist && cat dist/SHA256SUMS
+      - uses: actions/upload-artifact@v7
+        with:
+          name: floret-${{ matrix.name }}
+          # (SHA256SUMS in dist/ is left out: the release job writes the
+          # list for all files.)
+          path: |
+            dist/Floret-*
+          if-no-files-found: error
+          retention-days: 30
+
+  release:
+    name: GitHub release
+    needs: [prepare, build]
+    # Runs when the builds are done, whatever the experimental ones did; the
+    # first step stops it unless the Apple-silicon Mac build is there.
+    if: ${{ !cancelled() && needs.prepare.result == 'success' && needs.build.result != 'skipped' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ inputs.tag }}
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: floret-*
+          path: files
+          merge-multiple: true
+      - name: Check what was built
+        run: |
+          ls -l files || true
+          for f in "Floret-${VERSION}-macos-arm64.dmg" "Floret-${VERSION}-macos-arm64.zip"; do
+            if [ ! -f "files/$f" ]; then
+              echo "::error::The Apple-silicon Mac build is missing ($f): no release is made."
+              exit 1
+            fi
+          done
+          for p in macos-x86_64.dmg windows-x86_64.zip linux-x86_64.tar.gz; do
+            if ! ls "files/Floret-${VERSION}-${p%%.*}"* >/dev/null 2>&1; then
+              echo "::warning::No ${p} build in this run; the release goes ahead without it."
+            fi
+          done
+      - name: Checksums and notes
+        run: |
+          cd files
+          sha256sum Floret-* > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+          cd ..
+          bash tools/package/release-notes.sh "$TAG" files > notes.md
+      - name: Check the tag
+        run: |
+          # An existing tag must already point at this commit; a new tag is
+          # created at this commit by the release.
+          if sha="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${TAG}" --jq .sha 2>/dev/null)"; then
+            if [ "$sha" != "$GITHUB_SHA" ]; then
+              echo "::error::Tag $TAG already exists at ${sha}, but this run is on ${GITHUB_SHA}. Pick a new tag, or delete the old tag and release first."
+              exit 1
+            fi
+          fi
+      - name: Create or update the release
+        env:
+          DRAFT: ${{ inputs.draft }}
+          PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          flags=()
+          [ "$DRAFT" = true ] && flags+=(--draft)
+          [ "$PRERELEASE" = true ] && flags+=(--prerelease)
+
+          # Is there a release (a draft counts) for this tag already?
+          existing="$(gh api "repos/${GITHUB_REPOSITORY}/releases" --paginate \
+            --jq ".[] | select(.tag_name == \"${TAG}\") | .id")"
+
+          if [ -n "$existing" ]; then
+            echo "Release for $TAG exists (id $existing): updating it."
+            gh release edit "$TAG" \
+              --title "Floret ${TAG}" \
+              --notes-file notes.md \
+              --target "$GITHUB_SHA" \
+              --draft="$DRAFT" \
+              --prerelease="$PRERELEASE"
+            gh release upload "$TAG" files/* --clobber
+          else
+            gh release create "$TAG" files/* \
+              --title "Floret ${TAG}" \
+              --notes-file notes.md \
+              --target "$GITHUB_SHA" \
+              "${flags[@]}"
+          fi
+          gh release view "$TAG" --json url,isDraft,isPrerelease,assets \
+            --jq '"\(.url)  draft=\(.isDraft) prerelease=\(.isPrerelease) assets=\(.assets | length)"'
+      - name: Summary
+        run: |
+          {
+            echo "### Release ${TAG}"
+            echo
+            echo "Draft: ${{ inputs.draft }}, pre-release: ${{ inputs.prerelease }}, commit \`${GITHUB_SHA}\`."
+            echo
+            echo '```'
+            cat files/SHA256SUMS.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -20,6 +20,16 @@ things may still change, without the promises a 1.0 (even a 1.0 beta)
 makes about stability and file-format freezes. 1.0 can follow once the
 Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
 
+**Licence.** Floret is now free and open source under the **Apache License
+2.0** (the repository was private and unlicensed until now). `LICENSE` holds the
+standard text and a new `NOTICE` file credits Floret and its author: anyone
+who builds Floret, or parts of it, into another tool keeps the NOTICE with
+it. Help → Licenses… shows the licence and the NOTICE, and the macOS About
+panel reads "Licensed under the Apache License 2.0". Feedback goes to
+Floret.make@gmail.com or the issue forms on GitHub; `CONTRIBUTING.md`,
+`SECURITY.md`, `CODE_OF_CONDUCT.md` and the issue / pull request templates
+are new. The README is rewritten for the public repository.
+
 ### Highlights
 
 - **Native and GPU-rendered:** egui + wgpu (Metal on macOS). Every frame is
@@ -184,16 +194,23 @@ Mac QA pass (`docs/qa-checklist-mac.md`) is clean and the app is signed.
   `/Applications/Floret.app`.
 - The app asks for microphone and camera access the first time a patch
   uses them; video and audio never leave the computer.
-- Linux builds and runs for development (`./floret.sh`), using OpenH264;
-  Windows and Linux releases come later.
+- Linux builds and runs for development (`./floret.sh`), using OpenH264.
+- **Beta downloads.** A manual workflow (`.github/workflows/release.yml`,
+  how-to in `docs/releasing.md`) builds macOS (Apple silicon and Intel),
+  Windows and Linux packages with the scripts in `tools/package/` and
+  attaches them, with checksums, to a GitHub Release. `./floret.sh install`
+  and the macOS package share one bundle script
+  (`tools/package/build-macos-app.sh`). Windows and Linux are experimental.
 
 ### Known limitations
 
-- **Unsigned:** the app is ad-hoc signed on the machine that builds it. It
-  isn't notarised, so a copy sent to another Mac is blocked by Gatekeeper.
-  macOS may ask again for camera / microphone access after an update.
-- **Mac only for now.** Windows and Linux packages (and their H.264 codecs:
-  Media Foundation on Windows, Cisco's OpenH264 binary on Linux) come later.
+- **Unsigned:** the app is ad-hoc signed, not notarised, so macOS asks you
+  to confirm the first launch of a downloaded copy (Privacy & Security >
+  Open Anyway); Windows shows SmartScreen. macOS may ask again for camera /
+  microphone access after an update.
+- **Windows and Linux are experimental** beta downloads with far less
+  testing than the Mac app. MP4 sound is Mac-only for now, and H.264 goes
+  through OpenH264 on both.
 - Most of the app has been tested under Linux with a software GPU; the Mac
   checklist in `docs/qa-checklist-mac.md` hasn't been run end to end yet.
 - One patch per window, one window.

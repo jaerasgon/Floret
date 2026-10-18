@@ -6,7 +6,16 @@
 Floret is a node-based tool for generative art: wire shapes, motion,
 noise, particles, text, images, sound and live input together, and watch
 the result change as you edit. This is the first release of Floret as a
-native Mac app.
+native app, built first for the Mac.
+
+## Free and open source
+
+Floret is released under the **Apache License 2.0**: free to use and build
+on. If you build Floret, or parts of it, into another tool, keep the
+`NOTICE` file and credit Floret and its author, Jaafer Elsadig. Floret is
+early and your feedback shapes it: open an issue on GitHub or email
+**Floret.make@gmail.com**, and please send ideas, bugs and requests there
+rather than forking, so Floret improves for everyone.
 
 ## What's in it
 
@@ -52,8 +61,13 @@ native Mac app.
 
 ## Install
 
-You need a Mac with macOS 11 or later. Floret is built on your Mac from its
-source code:
+Download the file for your system from the Downloads table at the top of
+the release page and follow its First launch steps (the apps are not
+signed). Floret for Mac needs macOS 11 or later.
+
+### Build it on your Mac instead
+
+On a Mac, Floret can also be built from its source code:
 
 1. Get the repository: `git clone https://github.com/jaerasgon/Floret.git`
    in Terminal, or File → Clone Repository in GitHub Desktop.
@@ -72,10 +86,12 @@ Run `./floret.sh install` again at any time to update.
 
 ## Known limitations
 
-- The app isn't signed or notarised, so it can only run on the Mac that
-  built it. macOS may ask again for camera or microphone access after an
-  update.
-- Mac only for now. Windows and Linux versions come later.
+- The apps aren't signed or notarised, so macOS and Windows ask you to
+  confirm the first launch (see First launch in the Downloads section).
+  macOS may ask again for camera or microphone access after an update.
+- The Mac app is the main target. The Windows and Linux builds are
+  experimental and have had far less testing. MP4 sound is Mac-only for
+  now.
 - Patches from the web version open as they were, except that a Save SVG
   node is left out (a notice says so); save pictures with Export PNG.
 

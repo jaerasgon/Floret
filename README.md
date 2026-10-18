@@ -63,25 +63,6 @@ Floret is **early (beta)**, and your feedback shapes it. See
 - **Sound, MIDI, camera and body tracking** (hands, face, pose) work as
   inputs. Camera and microphone data stay on your computer.
 
-### The 252 nodes, by area
-
-| Area | Nodes | What is in it |
-|---|---|---|
-| Source | 16 | Numbers, strings, sliders, toggles, XY pads, files, images, SVG, video, CSV |
-| Draw | 14 | Rect, Ellipse, Line, Path, Polygon, Image, plots, and the Renderer |
-| Text | 13 | Text, glyphs, text on a path, outlines, variable fonts |
-| Color & Style | 17 | Colours, gradients, palettes, fills and strokes |
-| Shape Ops | 16 | Transforms, groups, masks, blends, symmetry, path and shape booleans |
-| Patterns | 25 | Grids, spirals, scatter and stippling, Voronoi, contours and flow lines, tiles, L-systems, curves |
-| Noise & Random | 7 | Perlin, simplex and more; uniform, Gaussian, wanderers, shuffles |
-| Animate | 18 | Time, LFOs, easing, springs, envelopes, triggers, counters, delays |
-| Image | 14 | Rasterize, crop, resize, sample, blend, pixel get and set |
-| Effects | 9 | Effect, Shader, filters, convolve, pixelate, pixel sort |
-| Particles & Physics | 18 | Emitters, simulations, forces, colliders, trails |
-| Input & Sound | 28 | Mouse, keyboard, MIDI, camera, landmark tracking, audio in, analysis, synthesis |
-| Math | 23 | Maths, vectors, compare, logic, statistics, mapping, conversion |
-| Lists | 17 | Lookup, sublist, reorder, combine, repeat, merge, partition |
-| Structure | 17 | ForEach, If and Cache regions, Read / Write, subpatches, sections, comments |
 
 ## A look inside
 
@@ -134,28 +115,6 @@ cargo build --release -p floret-app
 The app is `native/target/release/floret`. `./floret.sh` in the repository
 root builds and runs it in one step, on a Mac or on Linux.
 
-## Your first patch in five minutes
-
-1. **New patch.** File → New (Cmd+N). The canvas is empty.
-2. **Add a Renderer.** Over the canvas, press **Tab**, type `renderer` and
-   press Return. Every patch draws through a Renderer; its picture shows in
-   the **Preview** panel.
-3. **Add a shape.** Tab, `ellipse`, Return.
-4. **Wire it.** Drag from the Ellipse's output pin (`layer`, right edge) to
-   the Renderer's `layer` pin (left edge). A white circle appears.
-5. **Change values.** Click the Ellipse's `w` box, type `400`, press
-   Return. Dragging sideways on a box scrubs the number.
-6. **Animate it.** Add an **LFO** (Tab, `lfo`), set `min` to `100` and `max`
-   to `600`, and wire its `value` into the Ellipse's `w` and `h`.
-7. **Colour it.** Add a **Fill**, pick a colour, and wire its `style` into the
-   Ellipse's `style`.
-8. **Save and export.** Cmd+S saves a `.flora` file. Cmd+E exports the
-   current frame as a PNG; Cmd+Shift+E records a loop.
-
-Made a mess? Cmd+Z undoes anything. Press **F** to fit the patch in view,
-and `?` over the canvas for the keyboard shortcuts. Select a node to read
-what it does in the **Inspector**. The tutorials ("01 · Hello Rect" and on)
-are in the Library (File → Samples Library, Cmd+Shift+O).
 
 ## Feedback and help
 

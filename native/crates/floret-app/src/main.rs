@@ -27,6 +27,7 @@ mod help;
 mod host;
 mod library;
 mod library_store;
+mod licenses;
 mod menu;
 mod node_help;
 mod palette;

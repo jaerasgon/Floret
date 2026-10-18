@@ -100,6 +100,16 @@ done
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/Floret.icns"
 rm -rf "$(dirname "$ICONSET")"
 
+# The licence and the third-party notices travel with the app (the same texts
+# are in Help > Licenses).
+for f in ../LICENSE ../THIRD_PARTY_NOTICES.md licenses/crates.md licenses/licence-texts.txt; do
+  if [ -f "$f" ]; then
+    cp "$f" "$APP/Contents/Resources/"
+  else
+    echo "  (missing $f: not copied into the app)"
+  fi
+done
+
 # Ad-hoc signature: enough for this Mac (not for sharing the app). macOS may
 # ask again for camera / microphone access after an update.
 codesign --force --sign - --identifier app.floret.Floret "$APP" >/dev/null 2>&1 ||

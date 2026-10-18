@@ -12,8 +12,8 @@ use crate::menu::{self, Command, MenuState};
 use crate::prefs::{Prefs, PrefsWindow, Startup};
 use crate::session::{self, After, Choice, Guard, How, Saved};
 use crate::{
-    audio, canvas, crash, devices, editor, help, host, preview, recording, recovery, shader_panel,
-    theme, variations, welcome, workspace, SAMPLES,
+    audio, canvas, crash, devices, editor, help, host, licenses, preview, recording, recovery,
+    shader_panel, theme, variations, welcome, workspace, SAMPLES,
 };
 use eframe::egui::{self, Align, Layout, RichText};
 use egui_phosphor::regular as icons;
@@ -82,6 +82,7 @@ pub struct App {
     /// The `?` overlay over the canvas.
     shortcuts_overlay: bool,
     show_about: bool,
+    licenses: licenses::Licenses,
     gpu_name: String,
     /// Menu commands waiting for the next frame.
     commands: Vec<Command>,
@@ -157,6 +158,7 @@ impl App {
             show_shortcuts: false,
             shortcuts_overlay: false,
             show_about: false,
+            licenses: licenses::Licenses::default(),
             gpu_name,
             commands: Vec::new(),
             inject: Vec::new(),
@@ -463,6 +465,7 @@ impl App {
             Command::Shortcuts => self.show_shortcuts = true,
             Command::Welcome => self.welcome.show_home(),
             Command::About => self.show_about = true,
+            Command::Licenses => self.licenses.open = true,
             Command::NewVariation => {
                 crate::presets_panel::new_variation(&mut self.patch, &mut self.view);
                 self.notify(format!("Variation · seed {}", self.patch.seed), false);
@@ -1077,6 +1080,7 @@ impl eframe::App for App {
         self.prefs_window.show(&ctx, &mut self.prefs);
         help::shortcuts_window(&ctx, &mut self.show_shortcuts);
         help::about_window(&ctx, &mut self.show_about, &self.gpu_name);
+        self.licenses.show(&ctx);
         self.recorder.show(
             &ctx,
             rs,

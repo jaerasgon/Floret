@@ -7,12 +7,6 @@ Each section is short by design: name, one-line summary, where it lives,
 why it exists, gotchas. Code is the source of truth; this doc tells you
 which file to open.
 
-> **Note to Claude (or any AI assistant working on this codebase): always
-> read this file at the start of any planning or coding session — both to
-> ground decisions in the existing conventions and to add a section here
-> whenever a new architectural concept is introduced. If a concept
-> doesn't belong here yet, that's the signal to ask whether it should.**
-
 ---
 
 ## Ports & types

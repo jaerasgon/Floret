@@ -61,6 +61,8 @@ pub enum Command {
     Shortcuts,
     Welcome,
     About,
+    /// The Licenses window (`crate::licenses`).
+    Licenses,
     /// Re-roll the patch seed (`floret_engine::seed`).
     NewVariation,
     /// Open or close a dock panel (View → Panels).
@@ -135,6 +137,7 @@ impl Command {
             Shortcuts => "Keyboard Shortcuts",
             Welcome => "Welcome",
             About => "About Floret",
+            Licenses => "Licenses…",
             NewVariation => "New Variation",
             Panel(t) => workspace::title(t),
             ResetLayout => "Reset Layout",
@@ -287,7 +290,7 @@ pub fn model(s: &MenuState) -> Vec<Section> {
         C(Restart),
         C(NewVariation),
     ];
-    let mut help = vec![C(Shortcuts), C(Welcome)];
+    let mut help = vec![C(Shortcuts), C(Welcome), C(Licenses)];
     if !mac {
         help.extend([Sep, C(About)]);
     }
@@ -573,6 +576,12 @@ pub mod native {
                 let about = muda::AboutMetadata {
                     name: Some("Floret".into()),
                     version: Some(env!("CARGO_PKG_VERSION").into()),
+                    copyright: Some("© 2026 Jaafer Elsadig. All rights reserved.".into()),
+                    credits: Some(
+                        "Floret includes open-source software, fonts and tracking models. \
+                         Their licences are in Help → Licenses…"
+                            .into(),
+                    ),
                     ..Default::default()
                 };
                 app.append(&PredefinedMenuItem::about(None, Some(about)))?;
@@ -805,6 +814,25 @@ mod tests {
             }
         }
         assert!(seen.len() > 15);
+    }
+
+    #[test]
+    fn help_lists_licenses_in_both_menu_bars() {
+        // One model feeds the native (macOS, Windows) and the egui menu bar,
+        // so Help → Licenses… exists wherever Help does.
+        let state = MenuState {
+            recent: &[],
+            nodes_open: true,
+            theme: ThemePref::Dark,
+            panels: Vec::new(),
+        };
+        let help = model(&state)
+            .into_iter()
+            .find(|s| s.title == "Help")
+            .unwrap();
+        assert!(help.items.contains(&Item::Cmd(Command::Licenses)));
+        assert_eq!(Command::Licenses.label(), "Licenses…");
+        assert_eq!(Command::Licenses.shortcut(), None);
     }
 
     #[test]

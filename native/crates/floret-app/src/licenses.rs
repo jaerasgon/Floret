@@ -241,9 +241,42 @@ fn crates_text() -> String {
     s
 }
 
-/// Tidy text for the pane: drop Markdown emphasis and code ticks.
+/// Tidy text for the pane: drop Markdown emphasis and code ticks, and turn
+/// `[text](target)` links into `text` (with the address after it for web
+/// links).
 fn plain(text: &str) -> String {
-    text.replace("**", "").replace('`', "")
+    let text = text.replace("**", "").replace('`', "");
+    let mut out = String::with_capacity(text.len());
+    let mut rest = text.as_str();
+    while let Some(open) = rest.find('[') {
+        let after = &rest[open + 1..];
+        let link = after.find("](").and_then(|mid| {
+            let target = &after[mid + 2..];
+            let end = target.find(')')?;
+            let label = &after[..mid];
+            // A label that spans a line break isn't a link.
+            (!label.contains('\n') && !target[..end].contains('\n'))
+                .then(|| (label, &target[..end], open + 1 + mid + 2 + end + 1))
+        });
+        match link {
+            Some((label, target, used)) => {
+                out.push_str(&rest[..open]);
+                out.push_str(label);
+                if target.starts_with("http") && target != label {
+                    out.push_str(" (");
+                    out.push_str(target);
+                    out.push(')');
+                }
+                rest = &rest[used..];
+            }
+            None => {
+                out.push_str(&rest[..=open]);
+                rest = &rest[open + 1..];
+            }
+        }
+    }
+    out.push_str(rest);
+    out
 }
 
 /// One row of `native/licenses/crates.md`.
@@ -413,14 +446,14 @@ fn pane(ui: &mut egui::Ui, lines: &[String], section: usize, height: f32) {
         .stroke(egui::Stroke::new(1.0, BORDER.get()))
         .inner_margin(egui::Margin::same(8))
         .show(ui, |ui| {
+            // No gap between rows, so `show_rows` sizes the list exactly.
+            ui.spacing_mut().item_spacing.y = 0.0;
             egui::ScrollArea::both()
                 .id_salt(("licenses-pane", section))
                 .max_height(height.max(120.0))
                 .auto_shrink([false, false])
                 .show_rows(ui, row_h, lines.len(), |ui, range| {
-                    // One label for the rows in view, with no gap between
-                    // rows, so they line up with the scroll area's height.
-                    ui.spacing_mut().item_spacing.y = 0.0;
+                    // One label for the rows in view.
                     let text = lines[range].join("\n");
                     ui.add(
                         egui::Label::new(RichText::new(text).font(font).color(FG_0))
@@ -706,6 +739,18 @@ mod tests {
         assert!(text_of("Tracking models").contains("Apache License"));
         assert!(text_of("Rust crates").contains("Apache License"));
         assert!(text_of("Notices").contains("Third-Party Notices"));
+    }
+
+    #[test]
+    fn markdown_links_read_as_plain_text() {
+        assert_eq!(
+            plain(
+                "see [`LICENSE`](LICENSE), **bold** and [the site](https://x.org/a) [not a link]"
+            ),
+            "see LICENSE, bold and the site (https://x.org/a) [not a link]"
+        );
+        assert_eq!(plain("[https://a.b](https://a.b)"), "https://a.b");
+        assert_eq!(plain("a [b\n](c) d"), "a [b\n](c) d");
     }
 
     #[test]

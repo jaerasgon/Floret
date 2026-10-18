@@ -74,7 +74,7 @@ fn export_ignored(root: &Path, files: &[String]) -> Option<BTreeSet<String>> {
     // path NUL attribute NUL value NUL, repeated.
     let parts: Vec<&[u8]> = out.stdout.split(|b| *b == 0).collect();
     let mut set = BTreeSet::new();
-    for t in parts.chunks_exact(3) {
+    for t in parts.as_chunks::<3>().0 {
         if t[2] == b"set" {
             set.insert(String::from_utf8_lossy(t[0]).into_owned());
         }

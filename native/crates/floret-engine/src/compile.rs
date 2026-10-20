@@ -955,13 +955,17 @@ fn to_runtime_node(
     Ok(node)
 }
 
-/// portValue override → live param → none (caller falls back to the default).
+/// Live param (if param-backed) → portValue override → none (caller falls back to the default).
 pub fn source_value(src: &InputSource, node_id: &str, store: &ParamStore) -> Option<Spread> {
+    if let Some(key) = &src.param {
+        if let Some(j) = store.get(node_id, key) {
+            return Some(one(Value::from_json(j)));
+        }
+    }
     if let Some(v) = &src.port_value {
         return Some(one(v.clone()));
     }
-    let key = src.param.as_ref()?;
-    store.get(node_id, key).map(|j| one(Value::from_json(j)))
+    None
 }
 
 /// Default for an unwired input (`defaultForPort`).

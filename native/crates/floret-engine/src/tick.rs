@@ -928,15 +928,18 @@ fn override_value(
     if cache.len() <= k {
         cache.resize_with(node.in_arity.max(k + 1), || None);
     }
-    let fresh = match (&cache[k], &src.port_value) {
-        (Some((SourceKey::Port(seen), _)), Some(v)) => !seen.same(v),
-        (Some((SourceKey::Param(seen), _)), None) => *seen != version,
+    let fresh = match (&cache[k], &src.param, &src.port_value) {
+        (Some((SourceKey::Param(seen), _)), Some(_), _) => *seen != version,
+        (Some((SourceKey::Port(seen), _)), None, Some(v)) => !seen.same(v),
         _ => true,
     };
     if fresh {
-        let key = match &src.port_value {
-            Some(v) => SourceKey::Port(v.clone()),
-            None => SourceKey::Param(version),
+        let key = if src.param.is_some() {
+            SourceKey::Param(version)
+        } else if let Some(v) = &src.port_value {
+            SourceKey::Port(v.clone())
+        } else {
+            SourceKey::Param(version)
         };
         cache[k] = Some((key, source_value(src, &node.id, params)));
     }

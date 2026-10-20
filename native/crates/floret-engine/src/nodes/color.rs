@@ -678,9 +678,11 @@ fn build_stop_ports(params: &Params) -> Vec<PortSpec> {
     match PaletteMode::parse(params.get("mode")) {
         PaletteMode::Stops => (0..stop_count(params))
             .map(|i| {
-                PortSpec::new(format!("c{i}"), PortType::Color)
+                let mut p = PortSpec::new(format!("c{i}"), PortType::Color)
                     .label(format!("{}", i + 1))
-                    .default(Value::Null)
+                    .default(Value::Null);
+                p.param = Some(format!("c{i}"));
+                p
             })
             .collect(),
         // The classic rainbow: a = b = ½ grey, c = 1, d = (0, ⅓, ⅔).

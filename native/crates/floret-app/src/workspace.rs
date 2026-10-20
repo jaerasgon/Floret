@@ -473,6 +473,8 @@ pub struct Workspace {
     /// Previews closed by hand (renderer ids): they stay closed until
     /// reopened from View → Panels or another patch is loaded.
     closed_previews: HashSet<String>,
+    /// Panels detached into separate native OS windows.
+    pub detached: HashSet<Tab>,
     /// The Canvas was drawn this frame.
     canvas_shown: bool,
 }
@@ -501,6 +503,7 @@ impl Workspace {
             profiling: false,
             ids: Vec::new(),
             closed_previews: HashSet::new(),
+            detached: HashSet::new(),
             canvas_shown: false,
         }
     }
@@ -535,7 +538,7 @@ impl Workspace {
     pub fn is_open(&self, tab: &Tab) -> bool {
         match tab {
             Tab::Preview(_) => self.closed_previews.is_empty(),
-            t => self.dock.find_tab(t).is_some(),
+            t => self.detached.contains(t) || self.dock.find_tab(t).is_some(),
         }
     }
 
@@ -563,6 +566,9 @@ impl Workspace {
     /// Open or close a panel (View → Panels). The Preview entry closes
     /// every preview, or reopens the ones closed.
     pub fn toggle_panel(&mut self, tab: Tab) {
+        if self.detached.remove(&tab) {
+            return;
+        }
         if !matches!(tab, Tab::Preview(_)) {
             toggle_panel(&mut self.dock, tab);
             return;
@@ -581,6 +587,7 @@ impl Workspace {
     /// Put every panel back where it started. The Nodes palette stays open
     /// if it is.
     pub fn reset(&mut self) {
+        self.detached.clear();
         let nodes = self.dock.find_tab(&Tab::Nodes).is_some();
         self.dock = named(default_dock(nodes));
         self.closed_previews.clear();
@@ -641,7 +648,7 @@ impl Workspace {
             None
         };
         let dragging = held.is_some() || self.dragging.is_some() || dropped.is_some();
-        let float = dropped.filter(|_| alt);
+        let float = dropped.clone().filter(|_| alt);
         let before = float.as_ref().map(|_| self.dock.clone());
         // Where a tab dragged with ⌥ would float, as a card.
         if let (Some((_, from)), Some(p), true) = (&self.dragging, pointer, alt && moving) {
@@ -658,13 +665,13 @@ impl Workspace {
             library: &mut self.library,
             presets: &mut self.presets,
             query: &mut self.query,
-            renderers,
+            renderers: renderers.clone(),
             selected,
             action: None,
             add: None,
             open: PANELS
                 .iter()
-                .filter(|t| self.dock.find_tab(t).is_some())
+                .filter(|t| self.dock.find_tab(t).is_some() || self.detached.contains(t))
                 .cloned()
                 .collect(),
             previews_closed: !self.closed_previews.is_empty(),
@@ -680,6 +687,7 @@ impl Workspace {
             active,
             under_controls: under_window_controls(&self.dock),
             canvas_shown: false,
+            detach: None,
         };
         DockArea::new(&mut self.dock)
             .id(dock_id())
@@ -692,19 +700,52 @@ impl Workspace {
             // Floating windows go anywhere over the app window.
             .window_bounds(ui.ctx().content_rect())
             .show_inside(ui, &mut viewer);
-        let (action, add, reset) = (viewer.action.take(), viewer.add.take(), viewer.reset);
-        // Requests for the canvas (Library insert, Subpatches, Arrange,
-        // Wrap …) still happen when it isn't on screen.
-        if !viewer.canvas_shown {
-            canvas::drain(viewer.shell.patch, viewer.shell.view);
-        }
-        self.canvas_shown = viewer.canvas_shown;
-        self.profiling = viewer.profiling;
+        let (action, add, reset, detach) = (
+            viewer.action.take(),
+            viewer.add.take(),
+            viewer.reset,
+            viewer.detach.take(),
+        );
+        let mut action = action;
         let (closed, close_now, revealed) = (
             std::mem::take(&mut viewer.closed),
             std::mem::take(&mut viewer.close_now),
             viewer.reveal.take(),
         );
+        self.canvas_shown = viewer.canvas_shown;
+        self.profiling = viewer.profiling;
+        // Requests for the canvas (Library insert, Subpatches, Arrange,
+        // Wrap …) still happen when it isn't on screen.
+        if !self.canvas_shown {
+            canvas::drain(viewer.shell.patch, viewer.shell.view);
+        }
+        drop(viewer);
+        if let Some(t) = detach {
+            self.detached.insert(t.clone());
+            if let Some(p) = self.dock.find_tab(&t) {
+                self.dock.remove_tab(p);
+            }
+        }
+        if let Some(id) = shell.preview.take_detach() {
+            let t = Tab::Preview(id);
+            self.detached.insert(t.clone());
+            if let Some(p) = self.dock.find_tab(&t) {
+                self.dock.remove_tab(p);
+            }
+        }
+        if let Some((tab, _)) = &dropped {
+            if pointer.is_some_and(|p| !dock_rect.contains(p)) {
+                self.detached.insert(tab.clone());
+                if let Some(p) = self.dock.find_tab(tab) {
+                    self.dock.remove_tab(p);
+                }
+            }
+        }
+        for t in &self.detached {
+            if let Some(p) = self.dock.find_tab(t) {
+                self.dock.remove_tab(p);
+            }
+        }
         if let (Some(before), Some((tab, from)), Some(p)) = (before, float, pointer) {
             self.dock = before;
             if self.dock.find_tab(&tab) == Some(from) {
@@ -728,6 +769,67 @@ impl Workspace {
         shell
             .preview
             .output_window(ui.ctx(), shell.rs, shell.engine, shell.outputs);
+        let mut reattach = Vec::new();
+        for tab in self.detached.clone() {
+            let mut close = false;
+            let mut dock_back = false;
+            let viewport_id = egui::ViewportId::from_hash_of(("detached", &tab));
+            let title_text = match &tab {
+                Tab::Preview(id) => format!(
+                    "Floret · {}",
+                    renderers
+                        .iter()
+                        .find(|(r, _)| r == id)
+                        .map_or("Preview", |(_, t)| t.as_str())
+                ),
+                other => format!("Floret · {}", title(other)),
+            };
+            let builder = egui::ViewportBuilder::default()
+                .with_title(title_text)
+                .with_inner_size([720.0, 540.0]);
+            let mut rev = None;
+            ui.ctx().show_viewport_immediate(viewport_id, builder, |ui, _class| {
+                egui::CentralPanel::default().show(ui, |ui| {
+                    ui.horizontal(|ui| {
+                        if ui
+                            .button(RichText::new(format!("{} Dock to Main Window", icons::ARROW_U_UP_LEFT)).small())
+                            .clicked()
+                        {
+                            dock_back = true;
+                        }
+                    });
+                    ui.separator();
+                    if let Some(act) = render_tab_content(
+                        ui,
+                        &tab,
+                        shell,
+                        &mut self.help,
+                        &mut self.library,
+                        &mut self.presets,
+                        &mut self.query,
+                        self.last_selected.as_deref(),
+                        &mut self.profiling,
+                        &mut self.canvas_shown,
+                        &mut rev,
+                    ) {
+                        action = Some(act);
+                    }
+                });
+                if ui.input(|i| i.viewport().close_requested()) {
+                    close = true;
+                }
+            });
+            if let Some(t) = rev {
+                reveal(&mut self.dock, t);
+            }
+            if dock_back || close {
+                reattach.push(tab);
+            }
+        }
+        for t in reattach {
+            self.detached.remove(&t);
+            reveal(&mut self.dock, t);
+        }
         match add {
             Some((_, Tab::Preview(_))) => {
                 self.closed_previews.clear();
@@ -1209,6 +1311,8 @@ struct Viewer<'s, 'a> {
     under_controls: Vec<Tab>,
     /// The Canvas was drawn.
     canvas_shown: bool,
+    /// Tab detached into a window.
+    detach: Option<Tab>,
 }
 
 impl TabViewer for Viewer<'_, '_> {
@@ -1248,6 +1352,10 @@ impl TabViewer for Viewer<'_, '_> {
     /// The tab under a window's controls gets the Close the dock leaves
     /// out for it; the menu's Float (egui_dock's own item) follows.
     fn context_menu(&mut self, ui: &mut egui::Ui, tab: &mut Tab, _path: NodePath) {
+        if ui.button("Detach to Window").clicked() {
+            self.detach = Some(tab.clone());
+            ui.close();
+        }
         if self.under_controls.contains(tab) && ui.button("Close").clicked() {
             self.close_now.push(tab.clone());
             ui.close();
@@ -1321,87 +1429,115 @@ impl TabViewer for Viewer<'_, '_> {
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, tab: &mut Tab) {
-        let cat = Catalogue::builtin();
-        let sh = &mut *self.shell;
-        match tab {
-            Tab::Preview(id) => {
-                if !sh.crash.render_ok() {
-                    return;
-                }
-                let (preview, rs, engine, outputs) =
-                    (&mut *sh.preview, sh.rs, sh.engine, sh.outputs);
-                sh.crash.run(crash::Stage::Render, sh.patch, || {
-                    preview.show_renderer(ui, rs, engine, outputs, id);
-                });
+        if let Some(act) = render_tab_content(
+            ui,
+            tab,
+            self.shell,
+            self.help,
+            self.library,
+            self.presets,
+            self.query,
+            self.selected.as_deref(),
+            &mut self.profiling,
+            &mut self.canvas_shown,
+            &mut self.reveal,
+        ) {
+            self.action = Some(act);
+        }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn render_tab_content(
+    ui: &mut egui::Ui,
+    tab: &Tab,
+    sh: &mut Shell,
+    help: &mut HelpPanel,
+    library: &mut Library,
+    presets: &mut PresetsPanel,
+    query: &mut String,
+    selected: Option<&str>,
+    profiling: &mut bool,
+    canvas_shown: &mut bool,
+    reveal: &mut Option<Tab>,
+) -> Option<ShellAction> {
+    let cat = Catalogue::builtin();
+    let mut action = None;
+    match tab {
+        Tab::Preview(id) => {
+            if !sh.crash.render_ok() {
+                return None;
             }
-            Tab::Canvas => {
-                sh.view.thumbs =
-                    sh.preview
-                        .probe_thumbs(ui.ctx(), sh.rs, sh.engine, sh.outputs, sh.patch);
-                if let Some(engine) = sh.engine {
-                    let live = canvas::Live {
-                        engine,
-                        outputs: sh.outputs,
-                        region_stats: sh.region_stats,
-                        warnings: sh.warnings,
-                        errors: sh.errors,
-                    };
-                    let (patch, view) = (&mut *sh.patch, &mut *sh.view);
-                    // A panic in the editor shows the crash screen: the
-                    // half-done edit is rolled back and the app keeps going.
-                    match crash::catch(crash::Stage::Editor, || {
-                        canvas::show(ui, patch, &live, cat, view);
-                    }) {
-                        Ok(()) => self.canvas_shown = true,
-                        Err(caught) => {
-                            sh.view.recover(sh.patch);
-                            sh.crash.report(caught, sh.patch);
-                        }
+            let (preview, rs, engine, outputs) =
+                (&mut *sh.preview, sh.rs, sh.engine, sh.outputs);
+            sh.crash.run(crash::Stage::Render, sh.patch, || {
+                preview.show_renderer(ui, rs, engine, outputs, id);
+            });
+        }
+        Tab::Canvas => {
+            sh.view.thumbs =
+                sh.preview
+                    .probe_thumbs(ui.ctx(), sh.rs, sh.engine, sh.outputs, sh.patch);
+            if let Some(engine) = sh.engine {
+                let live = canvas::Live {
+                    engine,
+                    outputs: sh.outputs,
+                    region_stats: sh.region_stats,
+                    warnings: sh.warnings,
+                    errors: sh.errors,
+                };
+                let (patch, view) = (&mut *sh.patch, &mut *sh.view);
+                match crash::catch(crash::Stage::Editor, || {
+                    canvas::show(ui, patch, &live, cat, view);
+                }) {
+                    Ok(()) => *canvas_shown = true,
+                    Err(caught) => {
+                        sh.view.recover(sh.patch);
+                        sh.crash.report(caught, sh.patch);
                     }
                 }
-                if sh.patch.nodes.is_empty() && !sh.welcome_open {
-                    empty_hint(ui);
-                }
             }
-            Tab::Nodes => palette::show(ui, self.query, sh.view, sh.patch),
-            Tab::Inspector => inspector(ui, sh),
-            Tab::Help => {
-                let ty = self
-                    .selected
-                    .as_deref()
-                    .and_then(|id| sh.patch.nodes.iter().find(|n| n.id == id))
-                    .map(crate::node_help::key_for);
-                self.help.ui(ui, cat, ty.as_deref());
+            if sh.patch.nodes.is_empty() && !sh.welcome_open {
+                empty_hint(ui);
             }
-            Tab::Library => match self.library.ui(ui, sh.samples, sh.sample, sh.patch, sh.rs) {
-                Some(library::Pick::Sample(i)) => self.action = Some(ShellAction::LoadSample(i)),
-                Some(library::Pick::Patch(p)) => self.action = Some(ShellAction::LoadPatch(p)),
-                Some(library::Pick::Insert(p)) => sh.view.request_insert(*p),
-                None => {}
-            },
-            Tab::Subpatches => {
-                if let Some((snippet, name)) = subpatches_panel::ui(ui, sh.patch, sh.view) {
-                    self.library.open_save_form(snippet, &name);
-                    self.reveal = Some(Tab::Library);
-                }
+        }
+        Tab::Nodes => palette::show(ui, query, sh.view, sh.patch),
+        Tab::Inspector => inspector(ui, sh),
+        Tab::Help => {
+            let ty = selected
+                .and_then(|id| sh.patch.nodes.iter().find(|n| n.id == id))
+                .map(crate::node_help::key_for);
+            help.ui(ui, cat, ty.as_deref());
+        }
+        Tab::Library => match library.ui(ui, sh.samples, sh.sample, sh.patch, sh.rs) {
+            Some(library::Pick::Sample(i)) => action = Some(ShellAction::LoadSample(i)),
+            Some(library::Pick::Patch(p)) => action = Some(ShellAction::LoadPatch(p)),
+            Some(library::Pick::Insert(p)) => sh.view.request_insert(*p),
+            None => {}
+        },
+        Tab::Subpatches => {
+            if let Some((snippet, name)) = subpatches_panel::ui(ui, sh.patch, sh.view) {
+                library.open_save_form(snippet, &name);
+                *reveal = Some(Tab::Library);
             }
-            Tab::Profiler => {
-                self.profiling = true;
-                let render_ms = sh.preview.render_ms();
-                crate::profiler::ui(ui, sh.engine, sh.patch, sh.view, render_ms);
-            }
-            Tab::Presets => self.presets.ui(ui, sh.patch, sh.view),
-            Tab::Shader => {
-                let runtime = sh.preview.shader_errors();
-                if sh
-                    .shader
-                    .show_in(ui, sh.patch, self.selected.as_deref(), runtime)
-                {
-                    sh.view.commit(sh.patch);
-                }
+        }
+        Tab::Profiler => {
+            *profiling = true;
+            let render_ms = sh.preview.render_ms();
+            crate::profiler::ui(ui, sh.engine, sh.patch, sh.view, render_ms);
+        }
+        Tab::Presets => presets.ui(ui, sh.patch, sh.view),
+        Tab::Shader => {
+            let runtime = sh.preview.shader_errors();
+            if sh
+                .shader
+                .show_in(ui, sh.patch, selected, runtime)
+            {
+                sh.view.commit(sh.patch);
             }
         }
     }
+    action
 }
 
 /// Centred hint on an empty canvas.

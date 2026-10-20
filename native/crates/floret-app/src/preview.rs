@@ -273,6 +273,7 @@ pub struct PreviewPanel {
     pub transport: Transport,
     /// Focus mode: this renderer alone, full window.
     focus: Option<String>,
+    pub detach: Option<String>,
     output: Option<Output>,
     thumbs: ProbeThumbs,
     /// `MSAA` sample count the adapter supports for previews.
@@ -304,6 +305,7 @@ impl PreviewPanel {
             clock: RenderClock::default(),
             transport: Transport::default(),
             focus: None,
+            detach: None,
             output,
             thumbs: ProbeThumbs::default(),
             samples: rs.map(msaa_samples),
@@ -490,6 +492,11 @@ impl PreviewPanel {
         self.variations.take()
     }
 
+    /// Detach a renderer preview to a separate window asked for by the user.
+    pub fn take_detach(&mut self) -> Option<String> {
+        self.detach.take()
+    }
+
     /// Focus mode is on: the app shows only [`PreviewPanel::show_focus`].
     pub fn focused(&self) -> bool {
         self.focus.is_some()
@@ -509,12 +516,25 @@ impl PreviewPanel {
             empty(ui, engine, ui.available_height());
             return;
         }
+        let toggle_focus = ui.input_mut(|i| {
+            i.consume_key(egui::Modifiers::COMMAND, egui::Key::F)
+                || i.consume_key(egui::Modifiers::CTRL, egui::Key::F)
+                || i.consume_key(egui::Modifiers::NONE, egui::Key::F11)
+        });
+        if toggle_focus {
+            self.focus = Some(id.to_string());
+        }
+        if !ui.ctx().egui_wants_keyboard_input() && ui.rect_contains_pointer(ui.max_rect()) {
+            if ui.input_mut(|i| i.consume_key(egui::Modifiers::NONE, egui::Key::F)) {
+                self.focus = Some(id.to_string());
+            }
+        }
         self.header(ui, rs, engine, outputs, id);
         let size = ui.available_size();
         self.viewport(ui, rs, engine, outputs, id, size, false);
     }
 
-    /// Focus mode: the featured renderer fills the window; Esc exits.
+    /// Focus mode: the featured renderer fills the window; Esc / F exits.
     pub fn show_focus(
         &mut self,
         ui: &mut egui::Ui,
@@ -526,7 +546,14 @@ impl PreviewPanel {
         let Some(id) = self.focus.clone() else {
             return;
         };
-        if ui.input_mut(|i| i.consume_key(egui::Modifiers::NONE, egui::Key::Escape)) {
+        let exit_focus = ui.input_mut(|i| {
+            i.consume_key(egui::Modifiers::NONE, egui::Key::Escape)
+                || i.consume_key(egui::Modifiers::NONE, egui::Key::F)
+                || i.consume_key(egui::Modifiers::COMMAND, egui::Key::F)
+                || i.consume_key(egui::Modifiers::CTRL, egui::Key::F)
+                || i.consume_key(egui::Modifiers::NONE, egui::Key::F11)
+        });
+        if exit_focus {
             self.focus = None;
         }
         let rect = ui.max_rect();
@@ -537,7 +564,7 @@ impl PreviewPanel {
         ui.painter().text(
             rect.left_top() + vec2(12.0, 10.0),
             egui::Align2::LEFT_TOP,
-            "Esc to exit focus mode",
+            "Esc or F to exit focus mode",
             egui::FontId::proportional(11.0),
             *theme::FG_2,
         );
@@ -618,8 +645,15 @@ impl PreviewPanel {
                     .0
                     .on_hover_text("Show this renderer fullscreen on a display (Esc closes it)");
                 if ui
+                    .add(quiet_button(icons::ARROW_SQUARE_OUT, "Detach", false))
+                    .on_hover_text("Open this preview in its own window (can move to other screens)")
+                    .clicked()
+                {
+                    self.detach = Some(id.clone());
+                }
+                if ui
                     .add(quiet_button(icons::CORNERS_OUT, "Focus", false))
-                    .on_hover_text("Focus mode: this preview alone (Esc exits)")
+                    .on_hover_text("Focus mode: full screen preview (F, ⌘F, F11 · Esc to exit)")
                     .clicked()
                 {
                     self.focus = Some(id.clone());
@@ -657,6 +691,13 @@ impl PreviewPanel {
     ) {
         let samples = self.samples.unwrap_or(1);
         let (area, response) = ui.allocate_exact_size(size, egui::Sense::click_and_drag());
+        if response.double_clicked() {
+            if self.focus.as_deref() == Some(id) {
+                self.focus = None;
+            } else {
+                self.focus = Some(id.to_string());
+            }
+        }
         let ppp = ui.ctx().pixels_per_point();
         let painter = ui.painter_at(area);
         if !bare {

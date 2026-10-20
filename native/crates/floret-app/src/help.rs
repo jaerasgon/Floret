@@ -163,11 +163,16 @@ pub fn groups() -> Vec<Section> {
                 menu(ExportPng),
                 menu(ExportVideo),
                 (keys(none, Key::Escape), "Leave focus mode / close output"),
+                (Trigger::Text("F / ⌘F / F11"), "Toggle full screen (focus mode)"),
             ],
         },
         Section {
             title: "Panels",
             rows: vec![
+                (
+                    Trigger::Text("Right-click tab / Detach"),
+                    "Detach panel to its own window",
+                ),
                 (
                     Trigger::Text("⌥ / Alt + drop a tab"),
                     "Float the panel at the pointer",

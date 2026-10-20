@@ -30,6 +30,7 @@ pub(crate) struct Dla {
     seed: u64,
     radius: f64,
     size: Vec2,
+    seeds: Vec<Vec2>,
     rng: Rng,
     pos: Vec<Vec2>,
     /// The particle each one stuck to (`NONE` for seeds).
@@ -80,6 +81,7 @@ impl Dla {
             seed,
             radius,
             size,
+            seeds: seeds.clone(),
             rng: sim_rng(seed),
             pos: Vec::new(),
             parent: Vec::new(),
@@ -176,7 +178,15 @@ impl Dla {
 
 impl Sim for Dla {
     fn stale(&self, ins: &Ins) -> bool {
-        ins.seed() != self.seed || radius(ins) != self.radius || size(ins) != self.size
+        let mut seeds = ins.points("seeds");
+        if seeds.is_empty() {
+            seeds.push(Vec2::default());
+        }
+        seeds.truncate(MAX_COUNT);
+        ins.seed() != self.seed
+            || radius(ins) != self.radius
+            || size(ins) != self.size
+            || seeds != self.seeds
     }
 
     fn step(&mut self, ins: &Ins) {

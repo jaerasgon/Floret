@@ -58,6 +58,7 @@ pub(crate) struct Reaction {
     /// Whether a seed image was there at the start (one that arrives
     /// later, like a rasterised layer a frame on, starts it over).
     had_image: bool,
+    image_id: Option<u64>,
 }
 
 fn seed_image(ins: &Ins) -> Option<Arc<Image>> {
@@ -108,10 +109,12 @@ impl Reaction {
             na: vec![0.0; w * h],
             nb: vec![0.0; w * h],
             had_image: false,
+            image_id: None,
         };
         let mut seeded = false;
         if let Some(img) = seed_image(ins) {
             r.had_image = true;
+            r.image_id = Some(img.id());
             let (iw, ih) = (img.width() as usize, img.height() as usize);
             for y in 0..h {
                 for x in 0..w {
@@ -191,7 +194,7 @@ impl Sim for Reaction {
         ins.seed() != self.seed
             || res(ins) != self.res
             || size(ins) != self.size
-            || (!self.had_image && seed_image(ins).is_some())
+            || seed_image(ins).as_ref().map(|i| i.id()) != self.image_id
     }
 
     fn step(&mut self, ins: &Ins) {

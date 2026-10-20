@@ -619,7 +619,18 @@ pub enum LiveEdit {
 pub fn apply_live(engine: &mut Engine, cat: &Catalogue, patch: &PatchFile, edits: Vec<LiveEdit>) {
     for e in edits {
         match e {
-            LiveEdit::Param { node, key, value } => engine.params.set(&node, &key, value),
+            LiveEdit::Param { node, key, value } => {
+                engine.params.set(&node, &key, value.clone());
+                if let Some(idx) = engine.graph.idx(&node) {
+                    if let Some(sources) = engine.graph.nodes[idx].sources.as_mut() {
+                        for src in sources.iter_mut() {
+                            if src.param.as_ref() == Some(&key) {
+                                src.port_value = Some(Value::from_json(&value));
+                            }
+                        }
+                    }
+                }
+            }
             LiveEdit::Port { node, port, value } => {
                 let Some(n) = patch.nodes.iter().find(|n| n.id == node) else {
                     continue;

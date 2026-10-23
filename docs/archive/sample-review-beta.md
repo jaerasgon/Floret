@@ -1,6 +1,6 @@
 # Sample review sheet (beta)
 
-All 177 Library samples, by category, to tick off by hand before the beta. Generated from `native/samples/catalogue.json`: open each one from File → Samples Library (Cmd+Shift+O) and fill in the columns.
+All 179 Library samples, by category, to tick off by hand before the beta. Generated from `native/samples/catalogue.json`: open each one from File → Library (Cmd+Shift+O) and fill in the columns.
 
 - **Opens**: the sample opens with no error or warning.
 - **Runs and looks right**: it animates smoothly and the picture matches its description.
@@ -19,7 +19,7 @@ Mark a column with `x` when it is fine.
 | Fields | 9 |
 | Nature | 9 |
 | Shaders | 10 |
-| Image | 9 |
+| Image | 13 |
 | Pixel | 1 |
 | Sound | 7 |
 | Feedback | 3 |
@@ -188,6 +188,8 @@ Mark a column with `x` when it is fine.
 | `photo-mosaic` | Photo Mosaic | Image | Samples a 32×32 grid of pixels from a loaded image and draws each as a dot sized by luminance. Pointillist / Warhol effect that breathes with time. |  |  |  |  |
 | `webcam-mosaic` | Webcam Mosaic | Image | A live, mirrored webcam halftone. Flip the Toggle into the camera's `start` pin and grant permission; each cell becomes a yellow circle where the image is light or a blue square where it is dark (luminance threshold via logic/select). |  |  |  |  |
 | `body-tracking` | Body Tracking | Image | Live MediaPipe skeleton from the webcam. One Toggle starts the camera + the input/landmarks tracker; cyan lines draw the connection edges and yellow dots the points. Switch hands / face / pose on the Landmarks node. |  |  |  |  |
+| `pose-ribbons` | Pose Ribbons | Image | Dance in front of the webcam and your head, hands and feet leave long, glowing ribbons in five colours that thin out and fade behind you, over a faint skeleton. One Toggle starts the camera and the pose tracker; step out of view and the ribbons melt away. |  |  |  |  |
+| `face-constellation` | Face Constellation | Image | Your face becomes a constellation: twinkling stars joined by fine threads, with your eyes, irises, lips and the outline of your face picked out in light. Open your mouth and the threads reach further and the glow brightens. One Toggle starts the camera and the face tracker. |  |  |  |  |
 | `video-pixelate` | Video Pixelate | Image | A looping video file (video/file) through image/pixelate into draw/image. Click Replace… on the Video File node to play your own MP4 / MOV; wire a 0..1 number into `scrub` to scrub. |  |  |  |  |
 | `flipbook-sequence` | Flipbook Sequence | Image | Video plays image sequences too: 16 PNG frames of a flower, carried inside the patch, loop at 12 fps, onion-skinned by Echo. Pick one frame of your own numbered run (Floret's PNG-sequence export, say) to play the lot. |  |  |  |  |
 | `point-tracker` | Point Tracker | Image | Point Tracker follows three points across a drifting field of dots, frame by frame (pyramidal Lucas–Kanade), from the picture alone; each marker's colour is its confidence, and Echo trails show the paths. |  |  |  |  |

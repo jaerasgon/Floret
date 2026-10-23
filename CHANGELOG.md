@@ -29,7 +29,7 @@ repository for reference (`web-legacy/`). Published as a beta:
   particles and simulations (flocking, slime mould, coral growth, cloth,
   reaction diffusion), effects and shaders, images and video, sound, MIDI,
   camera and body tracking. See [NODES.md](NODES.md).
-- 177 samples in the Library, including 48 short tutorials.
+- 179 samples in the Library, including 48 short tutorials.
 - Seeds, variations and presets: roll a new variation with one key, save
   presets and morph between them.
 - Export: PNG stills up to 4×, seamless loops as MP4, GIF or image

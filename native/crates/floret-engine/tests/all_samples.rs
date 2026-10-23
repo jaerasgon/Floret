@@ -38,6 +38,14 @@ const DEVICE_ERRORS: &[(&str, &str)] = &[
 /// Samples that draw only once a device feeds them: (sample, why).
 const DRAWS_WITH_DEVICE: &[(&str, &str)] = &[
     ("body-tracking", "draws the landmarks the camera finds"),
+    (
+        "pose-ribbons",
+        "draws ribbons behind the body the camera finds",
+    ),
+    (
+        "face-constellation",
+        "draws stars on the face the camera finds",
+    ),
     ("video-pixelate", "draws the video's frames"),
     ("tut-49-fft", "draws the microphone's spectrum"),
     ("fft-bloom", "draws the spectrum the audio engine analyses"),

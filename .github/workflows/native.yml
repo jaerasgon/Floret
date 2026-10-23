@@ -1,9 +1,9 @@
 name: native
 
-# Manual only (Actions tab → native → Run workflow), to stay inside the
-# free Actions minutes. macOS minutes count 10× and Windows 2× on private
-# repos, so those only run when picked. Day to day, test locally with
-# ./floret.sh and `cargo test --workspace`.
+# Manual only (Actions tab → native → Run workflow), so nothing runs by
+# itself. macOS and Windows runners cost more than Linux ones, so those only
+# run when picked. Day to day, test locally with ./floret.sh and
+# `cargo test --workspace`.
 on:
   workflow_dispatch:
     inputs:

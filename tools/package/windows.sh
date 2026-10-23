@@ -8,6 +8,7 @@
 # release binary and writes
 #
 #   dist/Floret-<version>-windows-x86_64.zip
+#   dist/Floret-windows-x86_64.zip             (the same file, no version in the name)
 #   dist/SHA256SUMS                            (a line per file)
 #
 # The zip holds one folder, Floret-<version>/, with floret.exe, the licence
@@ -93,5 +94,7 @@ make_zip "$ARCHIVE"
 
 echo "→ Checksums"
 add_checksum "$ARCHIVE"
+add_stable_copy "$ARCHIVE"
 
 echo "✓ $ARCHIVE"
+echo "✓ $DIST/$(stable_name "$ARCHIVE")"

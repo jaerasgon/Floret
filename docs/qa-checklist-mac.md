@@ -204,7 +204,7 @@ from the repo folder.
 
 ## Library and files
 
-- [ ] File → Samples Library (Cmd+Shift+O) shows every sample by category in the list, icon and column views. Search filters across them.
+- [ ] File → Library (Cmd+Shift+O) shows every sample by category in the list, icon and column views. Search filters across them.
 - [ ] Save to library stores the open patch in "My patches", and it reopens from there.
 - [ ] **Library zoom:** in the Library, switch to the Tiles (icon) view. The − and + buttons and the slider beside them make the tiles smaller and larger. Hold Cmd and scroll over the tiles, or pinch on the trackpad: the tiles resize smoothly between a small and a large size, and the titles scale with them. Quit and reopen Floret: the tile size is the same.
 - [ ] **Covers:** every sample tile shows its cover picture within a few seconds (scroll through all categories). None is blank, black or stretched, and they stay sharp at the largest size. A tile with no picture yet shows a muted colour swatch.

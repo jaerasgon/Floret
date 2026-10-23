@@ -10,6 +10,7 @@
 #
 #   dist/Floret-<version>-macos-<arch>.zip   (made with ditto, bundle intact)
 #   dist/Floret-<version>-macos-<arch>.dmg   (with an /Applications shortcut)
+#   dist/Floret-macos-<arch>.zip / .dmg      (the same two files, no version in the name)
 #   dist/SHA256SUMS                          (a line per file)
 #
 # Both contain a "READ ME FIRST.txt" about opening an unsigned app. <arch> is
@@ -64,7 +65,7 @@ before it opens Floret the first time. This is normal for an unsigned app.
 1. Drag Floret.app into your Applications folder.
 2. Try to open it. macOS will say it can't be opened, or that it can't
    check it for malicious software. Click Done (or Cancel).
-3. Open System Settings > Privacy & Security, scroll down to the message
+3. Open System Settings → Privacy & Security, scroll down to the message
    about "Floret", and click "Open Anyway". Confirm, and Floret opens.
    (On macOS 14 and earlier you can instead right-click Floret.app, choose
    Open, then Open again.)
@@ -78,7 +79,7 @@ You only have to do this once for each downloaded copy.
 
 Needs macOS 11 or later. Licences: LICENSE, NOTICE and
 THIRD_PARTY_NOTICES.md are inside the app (Contents/Resources) and under
-Help > Licenses.
+Help → Licenses.
 EOF
 }
 
@@ -110,6 +111,10 @@ done
 echo "→ Checksums"
 add_checksum "$DIST/$NAME.zip"
 add_checksum "$DIST/$NAME.dmg"
+add_stable_copy "$DIST/$NAME.zip"
+add_stable_copy "$DIST/$NAME.dmg"
 
 echo "✓ $DIST/$NAME.zip"
 echo "✓ $DIST/$NAME.dmg"
+echo "✓ $DIST/$(stable_name "$NAME.zip")"
+echo "✓ $DIST/$(stable_name "$NAME.dmg")"

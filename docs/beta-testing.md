@@ -13,73 +13,51 @@ loops. Patches are plain `.flora` files.
 
 ## What a beta tester does
 
-Use Floret the way you would for real, try to break it, and tell us what
+Use Floret the way you would for real, try to break it, and tell me what
 you find. You don't need to read any code. The most useful reports come
 from things that feel wrong, confusing or slow, as well as from outright
 errors.
 
 ## Install
 
-Pick whichever suits you. All three builds are beta; the Mac build is the
-most tested.
-
-### Download (Mac, Windows, Linux)
+Floret is in beta on every system. The Mac build is the most tested.
 
 Get the build for your computer from the
-[Releases page](https://github.com/jaerasgon/Floret/releases).
+[Releases page](https://github.com/jaerasgon/Floret/releases). The apps
+aren't signed, so each system asks you to confirm the first launch:
 
-- **macOS:** the app isn't signed by Apple, so the first launch needs
-  right-click → **Open** (then Open again), or in Terminal:
-  `xattr -dr com.apple.quarantine /Applications/Floret.app`.
-- **Windows (experimental):** the app isn't signed, so SmartScreen may
-  warn. Choose **More info** → **Run anyway**.
-- **Linux (experimental):** needs ALSA (`libasound2`). Make the file
-  executable (`chmod +x floret`) and run it.
+- **Mac** (macOS 11 or later, Apple silicon or Intel): open the `.dmg` and
+  drag Floret into Applications (or unzip the `.zip`). When you open it,
+  macOS says it can't verify the app. Click Done, then open
+  **System Settings → Privacy & Security**, scroll down and click
+  **Open Anyway** next to Floret. (On macOS 14 and earlier, right-click
+  Floret, choose Open, then Open again.) If you'd rather use Terminal, this
+  removes the download mark instead:
+  `xattr -dr com.apple.quarantine /Applications/Floret.app`
+- **Windows** (experimental): unzip the whole folder and run `floret.exe`.
+  If a blue "Windows protected your PC" window appears, choose
+  **More info** → **Run anyway**.
+- **Linux** (experimental): unpack the archive and run `./floret`. You need
+  the ALSA sound library (on Ubuntu: `sudo apt install libasound2`) and a
+  graphics driver with Vulkan or OpenGL.
 
-The Windows and Linux builds are less tested than the Mac one.
+The Windows and Linux builds are less tested than the Mac one. If you'd
+rather build Floret from its source code, see [building.md](building.md).
 
-### Build on your Mac
+### On Windows and Linux
 
-You need a Mac with **macOS 11 or later** (Apple Silicon or Intel). Floret
-builds on your Mac from its source code. Open Terminal and paste this one
-line:
-
-```
-F=$(find ~ -maxdepth 4 -name floret.sh -path "*Floret*" 2>/dev/null | head -1); if [ -z "$F" ]; then mkdir -p ~/github && git clone https://github.com/jaerasgon/Floret.git ~/github/Floret && F=~/github/Floret/floret.sh; fi; cd "$(dirname "$F")" && git fetch origin && git checkout main && git pull && ./floret.sh install
-```
-
-It finds your copy of Floret (or downloads one into `~/github/Floret`),
-updates it and installs.
-
-- If Apple's **command line tools** aren't installed yet, macOS shows a
-  dialog offering them. Install them, then paste the line again.
-- The **first run takes several minutes**: it installs Rust (for your user
-  only) and builds Floret. Later runs only rebuild what changed.
-- When it finishes, **Floret.app** is in your Applications folder and
-  opens.
-
-To update to the newest version, paste the same line again.
-
-### Build from source (any system)
-
-Install the stable [Rust](https://rustup.rs) toolchain (on Linux also
-`libasound2-dev`), then:
-
-```
-cd native
-cargo build --release -p floret-app
-```
-
-The app is `native/target/release/floret`.
+The shortcuts in this guide use the Mac keys. On Windows and Linux, use
+**Ctrl** where it says Cmd and **Alt** where it says Option. The Help menu
+(with About Floret) is in the menu bar at the top of the window.
 
 ## What to try
 
 Work through this list, and add anything else you think of:
 
-- [ ] Open the Library (File → Samples Library, Cmd+Shift+O). Browse the
+- [ ] Open the Library (File → Library, Cmd+Shift+O). Browse the
       categories and open a few samples. Try the tile zoom (Cmd + scroll,
       or pinch).
-- [ ] Play with the first ten **Tutorial** samples ("01 · Hello Rect"
+- [ ] Play with the **Tutorial** samples, in order ("01 · Hello Rect"
       onward). Each introduces one idea, with a note on the canvas. Drag
       the values, change the wiring, see if the notes make sense.
 - [ ] Build a small patch of your own: press **Tab** over the canvas to
@@ -89,11 +67,12 @@ Work through this list, and add anything else you think of:
       Recent) and check that it's exactly as you left it.
 - [ ] Export a still: **Cmd+E** (PNG). Export a loop: **File → Export
       Video / GIF…** (Cmd+Shift+E) as an MP4, and play the file in
-      QuickTime.
+      any video player.
 - [ ] If you have a **camera**, open **Webcam Mosaic** or **Body
-      Tracking** and click the toggle. macOS asks for camera permission.
+      Tracking** and click the toggle. Your system may ask for camera
+      permission.
 - [ ] If you have a **microphone**, open **28 · Audio-Reactive Visual**.
-      macOS asks for microphone permission.
+      Your system may ask for microphone permission.
 - [ ] Dock and float panels: drag a panel's tab to another place and watch
       where it will land; hold **⌥ (Option)** as you let go to float it as
       a window. View → Reset Layout puts everything back.
@@ -102,15 +81,21 @@ Work through this list, and add anything else you think of:
 - [ ] Quit without saving some changes (or force-quit), then open Floret
       again: it should offer to restore your work.
 
-The longer checklist the developers use is in
+The longer checklist I use is in
 [qa-checklist-mac.md](qa-checklist-mac.md) if you want to go deeper.
 
 ## Where your files and settings live
 
-Floret keeps its own files in
-`~/Library/Application Support/Floret`
-(in Finder: Go → Go to Folder…, then paste that path). Your patches are
-wherever you saved them. Inside that folder:
+Your patches are wherever you saved them. Floret keeps its own files in
+these folders:
+
+| System | Folder |
+|---|---|
+| Mac | `~/Library/Application Support/Floret` (in Finder: Go → Go to Folder…, then paste that path) |
+| Windows | `%APPDATA%\Floret` for settings, layout, favourites, recent files and your Library, and `%LOCALAPPDATA%\Floret` for recovery copies and thumbnails (paste either into the File Explorer address bar) |
+| Linux | `~/.config/floret` for settings, layout, favourites, recent files and your Library, and `~/.local/share/floret` for recovery copies and thumbnails |
+
+On a Mac everything is in the one folder. What is in them:
 
 | What | Where |
 |---|---|
@@ -129,26 +114,15 @@ Floret first.
 
 ## How to report a problem
 
-Open an issue with the
+Use the
 [bug report form](https://github.com/jaerasgon/Floret/issues/new?template=bug_report.yml)
 (or the
 [feedback form](https://github.com/jaerasgon/Floret/issues/new?template=feedback.yml)
 for ideas and how it felt to use), or email
 [Floret.make@gmail.com](mailto:Floret.make@gmail.com) if you'd rather not
-use GitHub. Please send ideas, bugs and requests there rather than
-forking, so Floret improves for everyone. See
+use GitHub. The form asks for what I need, in plain words. Ideas and bug
+reports help most when they come to the project rather than to a fork; see
 [CONTRIBUTING.md](../CONTRIBUTING.md) for more.
-
-Please include:
-
-1. **Which sample or patch** you were using (its name in the Library, or
-   the `.flora` file if it's your own: attach it if you can).
-2. **What you did**, step by step, as exactly as you can.
-3. **What happened**, and what you expected instead.
-4. **A screenshot** (Cmd+Shift+4, or Cmd+Shift+5 to record the screen).
-5. **The Floret version**, shown in the About panel (Floret → About
-   Floret) and in the bottom bar of the window (for example `v0.2.0`). It
-   also helps to mention your Mac model and macOS version.
 
 If Floret shows a "Something went wrong" window, press **Copy details**
 and paste it into your report; **Save patch as…** keeps a copy of your
@@ -157,14 +131,14 @@ work.
 ## Known limitations
 
 - The app is **not signed or notarised** by Apple. A build you make
-  yourself runs on your Mac; a downloaded copy needs the right-click →
-  Open step above. macOS may ask for camera or microphone permission again
+  yourself runs on your Mac; a downloaded copy needs the Open Anyway step
+  above. macOS may ask for camera or microphone permission again
   after an update.
 - The **Windows and Linux builds are experimental**: less tested than the
   Mac build, and MP4 export with sound is Mac-only for now.
-- Patches from the earlier web version open as they were, except that a
-  Save SVG node is left out (a notice says so). Use Export PNG to save
-  pictures.
+- Older Floret patches (from the earlier web version) open as they were,
+  except that a Save SVG node is left out (a notice says so). Use Export
+  PNG to save pictures.
 - A few samples (the image tutorials such as 37 to 40, Photo Mosaic,
   Kaleidoscope, Pixel Sort, Datamosh and Palette From Image) load a photo
   from the internet. Offline they have no picture to work with.
@@ -172,4 +146,4 @@ work.
   itself sees (the mouse coordinates, for example) comes from the first
   one.
 - Heavy samples (lots of particles, shaders, large images) run slower on
-  older Macs. Say which sample and which Mac when you report it.
+  older computers. Say which sample and which computer when you report it.

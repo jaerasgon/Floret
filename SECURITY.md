@@ -2,11 +2,11 @@
 
 If you find a security problem in Floret, please report it **privately by
 email** to [Floret.make@gmail.com](mailto:Floret.make@gmail.com), not as a
-public issue. That gives us time to fix it before it is widely known.
+public issue. That gives me time to fix it before it is widely known.
 
 Include what you found, how to reproduce it (a patch file helps), the
 Floret version, and your operating system. You will get a reply as soon as
-we can manage; Floret is a small project, so please be patient.
+I can manage; Floret is a one-person project, so please be patient.
 
 ## What is in scope
 
@@ -21,14 +21,14 @@ we can manage; Floret is a small project, so please be patient.
 - **Camera, microphone and tracking.** Anything that sends video or sound
   off your computer. Floret processes these on-device and should never
   upload them.
-- **The build.** Problems in `floret.sh` or the dependencies we ship.
+- **The build.** Problems in `floret.sh` or the dependencies Floret ships.
 
 ## What is not
 
 - Ordinary bugs, crashes on bad input that do no harm, and slow patches:
   please use the [bug report form](https://github.com/jaerasgon/Floret/issues/new?template=bug_report.yml).
-- Problems in the old TypeScript web version under `src/`, which is kept
-  for reference only.
+- Problems in the earlier web version, which is kept in `web-legacy/` for
+  reference only.
 - Vulnerabilities in a dependency that do not affect Floret.
 
 ## Supported versions

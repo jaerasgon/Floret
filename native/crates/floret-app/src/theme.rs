@@ -398,6 +398,14 @@ pub fn paint_empty_state(ui: &egui::Ui, rect: egui::Rect, title: &str, hint: &st
     painter.galley(egui::pos2(x, hint_top), h, *FG_2);
 }
 
+/// What an empty canvas says (title, hint): the same words on the Canvas
+/// and in the Preview.
+pub const EMPTY_CANVAS: (&str, &str) = (
+    "Empty canvas",
+    "Double-click or press Tab to add a node, or drag one in from the Nodes panel. \
+     Open the Library for samples.",
+);
+
 fn empty_state_galleys(
     ui: &egui::Ui,
     title: &str,

@@ -6,9 +6,16 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time. The more of this you fill in, the
-        faster it can be fixed. Please do not report security problems here:
-        email Floret.make@gmail.com instead (see SECURITY.md).
+        Thank you for taking the time. You don't need to know how to code:
+        plain words are perfect, and the more you can tell me, the faster it
+        can be fixed.
+
+        **Attaching a patch?** GitHub won't accept a `.flora` file as it is.
+        Zip it first (right-click the file, then Compress on a Mac, or Send
+        to, Compressed folder on Windows) and drag the zip into the last box.
+
+        Please don't report security problems here: email
+        Floret.make@gmail.com instead (see SECURITY.md).
   - type: textarea
     id: what-happened
     attributes:
@@ -20,40 +27,41 @@ body:
   - type: textarea
     id: steps
     attributes:
-      label: Steps to reproduce
-      description: What you did, in order, as exactly as you can.
+      label: What did you do just before it went wrong?
+      description: The steps, in order, as well as you remember them.
       placeholder: |
         1. Open the sample ...
         2. Drag the ... value
         3. ...
-    validations:
-      required: true
   - type: input
     id: sample
     attributes:
       label: Sample or patch name
-      description: The sample's name in the Library, or attach your .flora file below.
+      description: The sample's name in the Library, or attach your patch below (zipped).
       placeholder: "Slime Mould, or my-patch.flora"
   - type: input
     id: version
     attributes:
       label: Floret version
-      description: Shown in the About window and in the bottom bar of the window.
+      description: |
+        On a Mac, choose Floret → About Floret. On Windows and Linux, choose
+        Help → About Floret. It is also in the bottom right corner of the window.
       placeholder: "v0.2.0"
     validations:
       required: true
   - type: input
     id: system
     attributes:
-      label: Operating system and GPU
-      description: For example "macOS 14.5, MacBook Air M2" or "Windows 11, NVIDIA RTX 3060".
+      label: Your computer
+      description: The kind of computer and its system. The graphics card is a nice extra if you know it, but you can leave it out.
+      placeholder: "MacBook Air M2, macOS 14"
     validations:
       required: true
   - type: textarea
     id: extra
     attributes:
-      label: Screenshot, patch file or error details
+      label: Screenshot, recording or patch
       description: |
-        Drag a screenshot, screen recording or .flora file (zip it first if
-        GitHub refuses it) into this box. If Floret showed a "Something went
-        wrong" window, press Copy details and paste it here.
+        Drag a screenshot, a screen recording or your zipped patch into this
+        box. If Floret showed a "Something went wrong" window, press Copy
+        details and paste it here.

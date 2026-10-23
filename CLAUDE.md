@@ -19,7 +19,7 @@ prompt you write must tell the agent to read this file first.
    Library sample, subpatch or region. Patches are built from visual nodes.
    If a visual node is missing, build a general-purpose node or mode (as few
    nodes as possible, mode dropdowns) and log it in
-   `docs/new-nodes-log.md`. The only exception: the GLSL Shader showcase
+   `docs/archive/new-nodes-log.md`. The only exception: the GLSL Shader showcase
    samples. Never move logic into GLSL to dodge this rule. (The Expression
    node stays available for users' own patches.)
 

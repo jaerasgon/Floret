@@ -147,6 +147,8 @@ from the repo folder.
 
 - [ ] Open `webcam-mosaic` and click its toggle. macOS asks for camera access the first time. Allow it, and the mosaic follows the camera.
 - [ ] Open `body-tracking` and click its toggle. Dots and lines follow your body or hands, each person or hand in its own colour.
+- [ ] Open `hand-sparks` and click its toggle. Your hands show as faint dots; waving them throws sparks, faster waving throws more, and a hand held still throws almost none.
+- [ ] Open `camera-embers` and click its toggle. Without a camera a swaying glow sheds embers; with one, the bright parts of the picture (you, a lit wall) glow with embers that rise and burn out. Turn the toggle off and the glow returns.
 - [ ] The camera light turns off when you turn the toggle off or open another patch.
 - [ ] With an external webcam plugged in, the Camera node's device dropdown lists it, and picking it works.
 

@@ -1,0 +1,960 @@
+{
+  "kind": "floret.patch",
+  "version": 4,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Hand Sparks",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "hs_note",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -420
+      },
+      "params": {
+        "text": "HAND SPARKS\n\nHold your hands up to the camera and wave them: they throw sparks. The faster you move, the more sparks fly; hold still and the glow dies away.\n\nFlip the switch on the left and let Floret use your camera. Your hands show as faint dots, so you can see what the sparks follow.\n\nHow it works: each frame the patch measures how far the dots have travelled since the frame before (it remembers them in a Write / Read pair), averages that into one speed, and turns the speed into how many sparks to release. A tiny amount of movement is ignored so a resting hand stays quiet.\n\nTry: change the Emitter's colours, the World's gravity (negative lifts the sparks up) or the Turbulence strength for wilder drift.",
+        "width": 600,
+        "height": 330
+      },
+      "portValues": {
+        "text": "HAND SPARKS\n\nHold your hands up to the camera and wave them: they throw sparks. The faster you move, the more sparks fly; hold still and the glow dies away.\n\nFlip the switch on the left and let Floret use your camera. Your hands show as faint dots, so you can see what the sparks follow.\n\nHow it works: each frame the patch measures how far the dots have travelled since the frame before (it remembers them in a Write / Read pair), averages that into one speed, and turns the speed into how many sparks to release. A tiny amount of movement is ignored so a resting hand stays quiet.\n\nTry: change the Emitter's colours, the World's gravity (negative lifts the sparks up) or the Turbulence strength for wilder drift.",
+        "width": 600,
+        "height": 330
+      }
+    },
+    {
+      "id": "hs_on",
+      "defType": "io/toggle",
+      "position": {
+        "x": 0,
+        "y": 40
+      },
+      "params": {
+        "value": true
+      }
+    },
+    {
+      "id": "hs_cam",
+      "defType": "input/camera",
+      "position": {
+        "x": 300,
+        "y": 40
+      },
+      "params": {
+        "device": "",
+        "mirror": true
+      }
+    },
+    {
+      "id": "hs_lm",
+      "defType": "input/landmarks",
+      "position": {
+        "x": 620,
+        "y": 0
+      },
+      "params": {
+        "tracker": "hands",
+        "mirror": true,
+        "count": 2,
+        "person": 0,
+        "size": 600,
+        "guides": false
+      },
+      "portValues": {
+        "size": 600,
+        "guides": false
+      }
+    },
+    {
+      "id": "hs_read",
+      "defType": "state/read-spread",
+      "position": {
+        "x": 0,
+        "y": 600
+      },
+      "params": {
+        "slot": 1,
+        "name": "last hand points"
+      }
+    },
+    {
+      "id": "hs_dist",
+      "defType": "vec2/math",
+      "position": {
+        "x": 950,
+        "y": 520
+      },
+      "params": {
+        "op": "distance"
+      }
+    },
+    {
+      "id": "hs_cnt_now",
+      "defType": "spread/count",
+      "position": {
+        "x": 950,
+        "y": 720
+      },
+      "params": {}
+    },
+    {
+      "id": "hs_cnt_before",
+      "defType": "spread/count",
+      "position": {
+        "x": 950,
+        "y": 840
+      },
+      "params": {}
+    },
+    {
+      "id": "hs_mean",
+      "defType": "math/statistics",
+      "position": {
+        "x": 1250,
+        "y": 520
+      },
+      "params": {
+        "op": "mean"
+      }
+    },
+    {
+      "id": "hs_same",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1250,
+        "y": 780
+      },
+      "params": {
+        "op": "equal"
+      }
+    },
+    {
+      "id": "hs_gate",
+      "defType": "logic/select",
+      "position": {
+        "x": 1550,
+        "y": 600
+      },
+      "params": {
+        "b": 0
+      },
+      "portValues": {
+        "b": 0
+      }
+    },
+    {
+      "id": "hs_smooth",
+      "defType": "motion/smooth",
+      "position": {
+        "x": 1850,
+        "y": 600
+      },
+      "params": {
+        "valueType": "number",
+        "rate": 7
+      },
+      "portValues": {
+        "rate": 7
+      }
+    },
+    {
+      "id": "hs_map",
+      "defType": "math/map",
+      "position": {
+        "x": 2150,
+        "y": 600
+      },
+      "params": {
+        "valueType": "number",
+        "inMin": 2.5,
+        "inMax": 22,
+        "outMin": 0,
+        "outMax": 360
+      },
+      "portValues": {
+        "inMin": 2.5,
+        "inMax": 22,
+        "outMin": 0,
+        "outMax": 360
+      }
+    },
+    {
+      "id": "hs_cap",
+      "defType": "math/clamp",
+      "position": {
+        "x": 2450,
+        "y": 600
+      },
+      "params": {
+        "valueType": "number",
+        "min": 0,
+        "max": 360
+      },
+      "portValues": {
+        "min": 0,
+        "max": 360
+      }
+    },
+    {
+      "id": "hs_dots",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1250,
+        "y": -360
+      },
+      "params": {
+        "width": 521,
+        "height": 246,
+        "label": "ForEach point"
+      },
+      "ports": [
+        {
+          "id": "p",
+          "name": "p",
+          "type": "vec2",
+          "direction": "input",
+          "y": 77
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 77
+        }
+      ],
+      "width": 521,
+      "height": 246
+    },
+    {
+      "id": "hs_dfill",
+      "defType": "style/fill",
+      "position": {
+        "x": 128,
+        "y": 128
+      },
+      "params": {
+        "mode": "color",
+        "color": {
+          "r": 1.0,
+          "g": 0.72,
+          "b": 0.42,
+          "a": 0.65
+        }
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.72,
+          "b": 0.42,
+          "a": 0.65
+        }
+      },
+      "parentId": "hs_dots"
+    },
+    {
+      "id": "hs_dot",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 310,
+        "y": 40
+      },
+      "params": {
+        "w": 10,
+        "h": 10
+      },
+      "portValues": {
+        "w": 10,
+        "h": 10
+      },
+      "parentId": "hs_dots"
+    },
+    {
+      "id": "hs_lines",
+      "defType": "region/foreach",
+      "position": {
+        "x": 1250,
+        "y": -60
+      },
+      "params": {
+        "width": 512,
+        "height": 294,
+        "label": "ForEach edge"
+      },
+      "ports": [
+        {
+          "id": "a",
+          "name": "a",
+          "type": "vec2",
+          "direction": "input",
+          "y": 76
+        },
+        {
+          "id": "b",
+          "name": "b",
+          "type": "vec2",
+          "direction": "input",
+          "y": 108
+        },
+        {
+          "id": "layer",
+          "name": "layer",
+          "type": "layer",
+          "direction": "output",
+          "y": 90
+        }
+      ],
+      "width": 512,
+      "height": 294
+    },
+    {
+      "id": "hs_lstroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 128,
+        "y": 132
+      },
+      "params": {
+        "color": {
+          "r": 1.0,
+          "g": 0.72,
+          "b": 0.42,
+          "a": 0.4
+        },
+        "width": 2.5
+      },
+      "portValues": {
+        "color": {
+          "r": 1.0,
+          "g": 0.72,
+          "b": 0.42,
+          "a": 0.4
+        },
+        "width": 2.5
+      },
+      "parentId": "hs_lines"
+    },
+    {
+      "id": "hs_line",
+      "defType": "draw/line",
+      "position": {
+        "x": 316,
+        "y": 53
+      },
+      "params": {},
+      "parentId": "hs_lines"
+    },
+    {
+      "id": "hs_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 2150,
+        "y": 330
+      },
+      "params": {}
+    },
+    {
+      "id": "hs_turb",
+      "defType": "force/turbulence",
+      "position": {
+        "x": 2150,
+        "y": -120
+      },
+      "params": {
+        "scale": 0.012,
+        "speed": 0.5,
+        "strength": 130,
+        "seed": 3
+      },
+      "portValues": {
+        "scale": 0.012,
+        "speed": 0.5,
+        "strength": 130,
+        "seed": 3
+      }
+    },
+    {
+      "id": "hs_world",
+      "defType": "physics/world",
+      "position": {
+        "x": 2450,
+        "y": -120
+      },
+      "params": {
+        "integrator": "euler",
+        "gravity": {
+          "x": 0,
+          "y": -45
+        },
+        "drag": 0.6,
+        "timeScale": 1
+      },
+      "portValues": {
+        "gravity": {
+          "x": 0,
+          "y": -45
+        },
+        "drag": 0.6,
+        "timeScale": 1
+      }
+    },
+    {
+      "id": "hs_emit",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 2750,
+        "y": -60
+      },
+      "params": {
+        "overflowMode": "replace-oldest",
+        "lifetime": 1.7,
+        "initialVel": {
+          "x": 0,
+          "y": -20
+        },
+        "velSpread": 0.55,
+        "color": {
+          "r": 1.0,
+          "g": 0.46,
+          "b": 0.13,
+          "a": 1.0
+        },
+        "size": 2.8,
+        "maxCount": 2500,
+        "seed": 11
+      },
+      "portValues": {
+        "lifetime": 1.7,
+        "initialVel": {
+          "x": 0,
+          "y": -20
+        },
+        "velSpread": 0.55,
+        "color": {
+          "r": 1.0,
+          "g": 0.46,
+          "b": 0.13,
+          "a": 1.0
+        },
+        "size": 2.8,
+        "maxCount": 2500,
+        "overflowMode": "replace-oldest",
+        "seed": 11
+      }
+    },
+    {
+      "id": "hs_emit2",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 2750,
+        "y": 470
+      },
+      "params": {
+        "overflowMode": "replace-oldest",
+        "lifetime": 0.8,
+        "initialVel": {
+          "x": 0,
+          "y": -40
+        },
+        "velSpread": 1.2,
+        "color": {
+          "r": 1.0,
+          "g": 0.86,
+          "b": 0.52,
+          "a": 1.0
+        },
+        "size": 1.5,
+        "maxCount": 2000,
+        "seed": 5
+      },
+      "portValues": {
+        "lifetime": 0.8,
+        "initialVel": {
+          "x": 0,
+          "y": -40
+        },
+        "velSpread": 1.2,
+        "color": {
+          "r": 1.0,
+          "g": 0.86,
+          "b": 0.52,
+          "a": 1.0
+        },
+        "size": 1.5,
+        "maxCount": 2000,
+        "overflowMode": "replace-oldest",
+        "seed": 5
+      }
+    },
+    {
+      "id": "hs_tstroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 2750,
+        "y": 920
+      },
+      "params": {
+        "color": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1.0
+        },
+        "width": 1.8
+      },
+      "portValues": {
+        "color": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1.0
+        },
+        "width": 1.8
+      }
+    },
+    {
+      "id": "hs_shapes",
+      "defType": "particles/render-as",
+      "position": {
+        "x": 3050,
+        "y": -20
+      },
+      "params": {
+        "template": "circle",
+        "useBufferColor": true
+      },
+      "portValues": {
+        "template": "circle",
+        "useBufferColor": true
+      }
+    },
+    {
+      "id": "hs_trail",
+      "defType": "particles/trail",
+      "position": {
+        "x": 3050,
+        "y": 500
+      },
+      "params": {
+        "segments": 9,
+        "fadeOut": true,
+        "tapered": true,
+        "tailWidth": 0.1
+      },
+      "portValues": {
+        "segments": 9,
+        "fadeOut": true,
+        "tapered": true,
+        "tailWidth": 0.1
+      }
+    },
+    {
+      "id": "hs_merge1",
+      "defType": "spread/merge",
+      "position": {
+        "x": 3350,
+        "y": 180
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "hs_bloom",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 3650,
+        "y": 150
+      },
+      "params": {
+        "mode": "bloom",
+        "threshold": 0.2,
+        "radius": 26,
+        "intensity": 1.9
+      },
+      "portValues": {
+        "threshold": 0.2,
+        "radius": 26,
+        "intensity": 1.9
+      }
+    },
+    {
+      "id": "hs_merge2",
+      "defType": "spread/merge",
+      "position": {
+        "x": 3950,
+        "y": 100
+      },
+      "params": {
+        "slotCount": 3
+      },
+      "portValues": {
+        "slotCount": 3
+      }
+    },
+    {
+      "id": "hs_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 4250,
+        "y": 100
+      },
+      "params": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.035,
+          "g": 0.024,
+          "b": 0.03,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 600,
+        "height": 600,
+        "background": {
+          "r": 0.035,
+          "g": 0.024,
+          "b": 0.03,
+          "a": 1.0
+        }
+      }
+    },
+    {
+      "id": "hs_write",
+      "defType": "state/write-spread",
+      "position": {
+        "x": 4250,
+        "y": 620
+      },
+      "params": {
+        "slot": 1,
+        "name": "last hand points"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "hs_on",
+      "target": "hs_cam",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_2",
+      "source": "hs_on",
+      "target": "hs_lm",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_3",
+      "source": "hs_cam",
+      "target": "hs_lm",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_4",
+      "source": "hs_lm",
+      "target": "hs_dist",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_5",
+      "source": "hs_read",
+      "target": "hs_dist",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_6",
+      "source": "hs_dist",
+      "target": "hs_mean",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_7",
+      "source": "hs_lm",
+      "target": "hs_cnt_now",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_8",
+      "source": "hs_read",
+      "target": "hs_cnt_before",
+      "sourceHandle": "out-current",
+      "targetHandle": "in-spread"
+    },
+    {
+      "id": "e_9",
+      "source": "hs_cnt_now",
+      "target": "hs_same",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_10",
+      "source": "hs_cnt_before",
+      "target": "hs_same",
+      "sourceHandle": "out-count",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_11",
+      "source": "hs_same",
+      "target": "hs_gate",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_12",
+      "source": "hs_mean",
+      "target": "hs_gate",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_13",
+      "source": "hs_gate",
+      "target": "hs_smooth",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-value"
+    },
+    {
+      "id": "e_14",
+      "source": "hs_smooth",
+      "target": "hs_map",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_15",
+      "source": "hs_map",
+      "target": "hs_cap",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_16",
+      "source": "hs_lm",
+      "target": "hs_write",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-next"
+    },
+    {
+      "id": "e_17",
+      "source": "hs_lm",
+      "target": "hs_dots",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-p"
+    },
+    {
+      "id": "e_18",
+      "source": "hs_dots",
+      "target": "hs_dot",
+      "sourceHandle": "out-p",
+      "targetHandle": "in-pos"
+    },
+    {
+      "id": "e_19",
+      "source": "hs_dfill",
+      "target": "hs_dot",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_20",
+      "source": "hs_dot",
+      "target": "hs_dots",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_21",
+      "source": "hs_turb",
+      "target": "hs_world",
+      "sourceHandle": "out-force",
+      "targetHandle": "in-forces"
+    },
+    {
+      "id": "e_22",
+      "source": "hs_world",
+      "target": "hs_emit",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_23",
+      "source": "hs_world",
+      "target": "hs_emit2",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_24",
+      "source": "hs_time",
+      "target": "hs_emit",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_25",
+      "source": "hs_time",
+      "target": "hs_emit2",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_26",
+      "source": "hs_lm",
+      "target": "hs_emit",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_27",
+      "source": "hs_lm",
+      "target": "hs_emit2",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_28",
+      "source": "hs_cap",
+      "target": "hs_emit",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_29",
+      "source": "hs_cap",
+      "target": "hs_emit2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_30",
+      "source": "hs_emit",
+      "target": "hs_shapes",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_31",
+      "source": "hs_emit2",
+      "target": "hs_trail",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_32",
+      "source": "hs_tstroke",
+      "target": "hs_trail",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_33",
+      "source": "hs_shapes",
+      "target": "hs_merge1",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_34",
+      "source": "hs_trail",
+      "target": "hs_merge1",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_35",
+      "source": "hs_merge1",
+      "target": "hs_bloom",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_36",
+      "source": "hs_lm",
+      "target": "hs_lines",
+      "sourceHandle": "out-connA",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_37",
+      "source": "hs_lm",
+      "target": "hs_lines",
+      "sourceHandle": "out-connB",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_38",
+      "source": "hs_lines",
+      "target": "hs_line",
+      "sourceHandle": "out-a",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_39",
+      "source": "hs_lines",
+      "target": "hs_line",
+      "sourceHandle": "out-b",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_40",
+      "source": "hs_lstroke",
+      "target": "hs_line",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_41",
+      "source": "hs_line",
+      "target": "hs_lines",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_42",
+      "source": "hs_lines",
+      "target": "hs_merge2",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_43",
+      "source": "hs_dots",
+      "target": "hs_merge2",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_44",
+      "source": "hs_bloom",
+      "target": "hs_merge2",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-s3"
+    },
+    {
+      "id": "e_45",
+      "source": "hs_merge2",
+      "target": "hs_renderer",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

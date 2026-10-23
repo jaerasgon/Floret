@@ -1,0 +1,890 @@
+{
+  "kind": "floret.patch",
+  "version": 4,
+  "appVersion": "0.0.1",
+  "meta": {
+    "name": "Camera Embers",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "modifiedAt": "2026-01-01T00:00:00.000Z"
+  },
+  "nodes": [
+    {
+      "id": "ce_note",
+      "defType": "meta/comment",
+      "position": {
+        "x": 0,
+        "y": -420
+      },
+      "params": {
+        "text": "CAMERA EMBERS\n\nStep in front of the camera and you are made of embers. The bright parts of the picture (your face, a lit wall, a white shirt) glow with the most sparks; the dark parts stay empty. The embers rise, drift on a gentle breeze and burn out.\n\nFlip the switch on the left and let Floret use your camera. Until then (or if there is no camera) a swaying glow stands in for you, so the sample always shows something.\n\nThe slider sets how many embers appear every second. Light yourself from the front for the clearest outline; for a different look, switch the room light off and wave a torch.\n\nTry: make the Scatter's gamma higher so only the very brightest spots glow, or turn its invert off to make embers from the dark parts instead.",
+        "width": 640,
+        "height": 330
+      },
+      "portValues": {
+        "text": "CAMERA EMBERS\n\nStep in front of the camera and you are made of embers. The bright parts of the picture (your face, a lit wall, a white shirt) glow with the most sparks; the dark parts stay empty. The embers rise, drift on a gentle breeze and burn out.\n\nFlip the switch on the left and let Floret use your camera. Until then (or if there is no camera) a swaying glow stands in for you, so the sample always shows something.\n\nThe slider sets how many embers appear every second. Light yourself from the front for the clearest outline; for a different look, switch the room light off and wave a torch.\n\nTry: make the Scatter's gamma higher so only the very brightest spots glow, or turn its invert off to make embers from the dark parts instead.",
+        "width": 640,
+        "height": 330
+      }
+    },
+    {
+      "id": "ce_on",
+      "defType": "io/toggle",
+      "position": {
+        "x": 0,
+        "y": 60
+      },
+      "params": {
+        "value": true
+      }
+    },
+    {
+      "id": "ce_cam",
+      "defType": "input/camera",
+      "position": {
+        "x": 300,
+        "y": 60
+      },
+      "params": {
+        "device": "",
+        "mirror": true
+      }
+    },
+    {
+      "id": "ce_dims",
+      "defType": "image/dims",
+      "position": {
+        "x": 620,
+        "y": 300
+      },
+      "params": {}
+    },
+    {
+      "id": "ce_h",
+      "defType": "math/math",
+      "position": {
+        "x": 950,
+        "y": 300
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number",
+        "a": 720
+      },
+      "portValues": {
+        "a": 720
+      }
+    },
+    {
+      "id": "ce_hs",
+      "defType": "math/math",
+      "position": {
+        "x": 950,
+        "y": 460
+      },
+      "params": {
+        "op": "divide",
+        "valueType": "number",
+        "a": 96
+      },
+      "portValues": {
+        "a": 96
+      }
+    },
+    {
+      "id": "ce_size",
+      "defType": "vec2/make",
+      "position": {
+        "x": 1250,
+        "y": 300
+      },
+      "params": {
+        "x": 720
+      },
+      "portValues": {
+        "x": 720
+      }
+    },
+    {
+      "id": "ce_small",
+      "defType": "image/resize",
+      "position": {
+        "x": 1250,
+        "y": 480
+      },
+      "params": {
+        "w": 96
+      },
+      "portValues": {
+        "w": 96
+      }
+    },
+    {
+      "id": "ce_frame",
+      "defType": "time/frame",
+      "position": {
+        "x": 1250,
+        "y": 740
+      },
+      "params": {}
+    },
+    {
+      "id": "ce_scatter",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 1550,
+        "y": 200
+      },
+      "params": {
+        "mode": "stipple",
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "count": 600,
+        "gamma": 3.5,
+        "invert": true,
+        "relax": 0
+      },
+      "portValues": {
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "count": 600,
+        "gamma": 3.5,
+        "invert": true,
+        "relax": 0
+      }
+    },
+    {
+      "id": "ce_lfox",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 620,
+        "y": 760
+      },
+      "params": {
+        "shape": "sine",
+        "sync": "free",
+        "rate": 0.18,
+        "min": -90,
+        "max": 90
+      },
+      "portValues": {
+        "rate": 0.18,
+        "min": -90,
+        "max": 90
+      }
+    },
+    {
+      "id": "ce_lfoy",
+      "defType": "motion/lfo",
+      "position": {
+        "x": 620,
+        "y": 1160
+      },
+      "params": {
+        "shape": "sine",
+        "sync": "free",
+        "rate": 0.31,
+        "min": -14,
+        "max": 14
+      },
+      "portValues": {
+        "rate": 0.31,
+        "min": -14,
+        "max": 14
+      }
+    },
+    {
+      "id": "ce_sway",
+      "defType": "vec2/make",
+      "position": {
+        "x": 950,
+        "y": 900
+      },
+      "params": {}
+    },
+    {
+      "id": "ce_head",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 950,
+        "y": 1100
+      },
+      "params": {
+        "pos": {
+          "x": 0,
+          "y": -105
+        },
+        "w": 170,
+        "h": 210
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": -105
+        },
+        "w": 170,
+        "h": 210
+      }
+    },
+    {
+      "id": "ce_body",
+      "defType": "draw/ellipse",
+      "position": {
+        "x": 950,
+        "y": 1300
+      },
+      "params": {
+        "pos": {
+          "x": 0,
+          "y": 150
+        },
+        "w": 420,
+        "h": 260
+      },
+      "portValues": {
+        "pos": {
+          "x": 0,
+          "y": 150
+        },
+        "w": 420,
+        "h": 260
+      }
+    },
+    {
+      "id": "ce_blob",
+      "defType": "transform/group",
+      "position": {
+        "x": 1250,
+        "y": 1180
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "ce_move",
+      "defType": "transform/translate",
+      "position": {
+        "x": 1550,
+        "y": 980
+      },
+      "params": {}
+    },
+    {
+      "id": "ce_scatter2",
+      "defType": "geometry/scatter",
+      "position": {
+        "x": 1850,
+        "y": 900
+      },
+      "params": {
+        "mode": "random",
+        "count": 600,
+        "relax": 0
+      },
+      "portValues": {
+        "count": 600,
+        "relax": 0
+      }
+    },
+    {
+      "id": "ce_has",
+      "defType": "logic/compare",
+      "position": {
+        "x": 1850,
+        "y": 560
+      },
+      "params": {
+        "op": "equal",
+        "b": true
+      },
+      "portValues": {
+        "b": true
+      }
+    },
+    {
+      "id": "ce_pick",
+      "defType": "logic/select",
+      "position": {
+        "x": 2150,
+        "y": 400
+      },
+      "params": {}
+    },
+    {
+      "id": "ce_amount",
+      "defType": "io/slider",
+      "position": {
+        "x": 2450,
+        "y": 640
+      },
+      "params": {
+        "value": 700,
+        "min": 100,
+        "max": 1400
+      }
+    },
+    {
+      "id": "ce_half",
+      "defType": "math/math",
+      "position": {
+        "x": 2750,
+        "y": 760
+      },
+      "params": {
+        "op": "multiply",
+        "valueType": "number",
+        "b": 0.45
+      },
+      "portValues": {
+        "b": 0.45
+      }
+    },
+    {
+      "id": "ce_time",
+      "defType": "time/seconds",
+      "position": {
+        "x": 2450,
+        "y": 440
+      },
+      "params": {}
+    },
+    {
+      "id": "ce_turb",
+      "defType": "force/turbulence",
+      "position": {
+        "x": 2450,
+        "y": -140
+      },
+      "params": {
+        "scale": 0.009,
+        "speed": 0.45,
+        "strength": 130,
+        "seed": 7
+      },
+      "portValues": {
+        "scale": 0.009,
+        "speed": 0.45,
+        "strength": 130,
+        "seed": 7
+      }
+    },
+    {
+      "id": "ce_world",
+      "defType": "physics/world",
+      "position": {
+        "x": 2750,
+        "y": -140
+      },
+      "params": {
+        "integrator": "euler",
+        "gravity": {
+          "x": 0,
+          "y": -70
+        },
+        "drag": 0.7,
+        "timeScale": 1
+      },
+      "portValues": {
+        "gravity": {
+          "x": 0,
+          "y": -70
+        },
+        "drag": 0.7,
+        "timeScale": 1
+      }
+    },
+    {
+      "id": "ce_emit",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 3050,
+        "y": -40
+      },
+      "params": {
+        "overflowMode": "replace-oldest",
+        "lifetime": 1.6,
+        "initialVel": {
+          "x": 0,
+          "y": -12
+        },
+        "velSpread": 0.4,
+        "color": {
+          "r": 1.0,
+          "g": 0.45,
+          "b": 0.12,
+          "a": 1.0
+        },
+        "size": 2.6,
+        "maxCount": 3600,
+        "seed": 21
+      },
+      "portValues": {
+        "lifetime": 1.6,
+        "initialVel": {
+          "x": 0,
+          "y": -12
+        },
+        "velSpread": 0.4,
+        "color": {
+          "r": 1.0,
+          "g": 0.45,
+          "b": 0.12,
+          "a": 1.0
+        },
+        "size": 2.6,
+        "maxCount": 3600,
+        "overflowMode": "replace-oldest",
+        "seed": 21
+      }
+    },
+    {
+      "id": "ce_emit2",
+      "defType": "particles/emitter",
+      "position": {
+        "x": 3050,
+        "y": 500
+      },
+      "params": {
+        "overflowMode": "replace-oldest",
+        "lifetime": 0.8,
+        "initialVel": {
+          "x": 0,
+          "y": -30
+        },
+        "velSpread": 1.0,
+        "color": {
+          "r": 1.0,
+          "g": 0.84,
+          "b": 0.5,
+          "a": 1.0
+        },
+        "size": 1.4,
+        "maxCount": 2400,
+        "seed": 9
+      },
+      "portValues": {
+        "lifetime": 0.8,
+        "initialVel": {
+          "x": 0,
+          "y": -30
+        },
+        "velSpread": 1.0,
+        "color": {
+          "r": 1.0,
+          "g": 0.84,
+          "b": 0.5,
+          "a": 1.0
+        },
+        "size": 1.4,
+        "maxCount": 2400,
+        "overflowMode": "replace-oldest",
+        "seed": 9
+      }
+    },
+    {
+      "id": "ce_tstroke",
+      "defType": "style/stroke",
+      "position": {
+        "x": 3050,
+        "y": 960
+      },
+      "params": {
+        "color": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1.0
+        },
+        "width": 1.6
+      },
+      "portValues": {
+        "color": {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1.0
+        },
+        "width": 1.6
+      }
+    },
+    {
+      "id": "ce_shapes",
+      "defType": "particles/render-as",
+      "position": {
+        "x": 3350,
+        "y": -20
+      },
+      "params": {
+        "template": "circle",
+        "useBufferColor": true
+      },
+      "portValues": {
+        "template": "circle",
+        "useBufferColor": true
+      }
+    },
+    {
+      "id": "ce_trail",
+      "defType": "particles/trail",
+      "position": {
+        "x": 3350,
+        "y": 520
+      },
+      "params": {
+        "segments": 8,
+        "fadeOut": true,
+        "tapered": true,
+        "tailWidth": 0.1
+      },
+      "portValues": {
+        "segments": 8,
+        "fadeOut": true,
+        "tapered": true,
+        "tailWidth": 0.1
+      }
+    },
+    {
+      "id": "ce_merge",
+      "defType": "spread/merge",
+      "position": {
+        "x": 3650,
+        "y": 200
+      },
+      "params": {
+        "slotCount": 2
+      },
+      "portValues": {
+        "slotCount": 2
+      }
+    },
+    {
+      "id": "ce_bloom",
+      "defType": "gpu/effect",
+      "position": {
+        "x": 3950,
+        "y": 170
+      },
+      "params": {
+        "mode": "bloom",
+        "threshold": 0.2,
+        "radius": 28,
+        "intensity": 1.9
+      },
+      "portValues": {
+        "threshold": 0.2,
+        "radius": 28,
+        "intensity": 1.9
+      }
+    },
+    {
+      "id": "ce_renderer",
+      "defType": "render/renderer",
+      "position": {
+        "x": 4250,
+        "y": 150
+      },
+      "params": {
+        "width": 720,
+        "height": 540,
+        "background": {
+          "r": 0.03,
+          "g": 0.02,
+          "b": 0.026,
+          "a": 1.0
+        }
+      },
+      "portValues": {
+        "width": 720,
+        "height": 540,
+        "background": {
+          "r": 0.03,
+          "g": 0.02,
+          "b": 0.026,
+          "a": 1.0
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_1",
+      "source": "ce_on",
+      "target": "ce_cam",
+      "sourceHandle": "out-bool",
+      "targetHandle": "in-start"
+    },
+    {
+      "id": "e_2",
+      "source": "ce_cam",
+      "target": "ce_dims",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_3",
+      "source": "ce_dims",
+      "target": "ce_h",
+      "sourceHandle": "out-aspect",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_4",
+      "source": "ce_dims",
+      "target": "ce_hs",
+      "sourceHandle": "out-aspect",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_5",
+      "source": "ce_h",
+      "target": "ce_size",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_6",
+      "source": "ce_cam",
+      "target": "ce_small",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-image"
+    },
+    {
+      "id": "e_7",
+      "source": "ce_hs",
+      "target": "ce_small",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-h"
+    },
+    {
+      "id": "e_8",
+      "source": "ce_size",
+      "target": "ce_scatter",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-size"
+    },
+    {
+      "id": "e_9",
+      "source": "ce_small",
+      "target": "ce_scatter",
+      "sourceHandle": "out-image",
+      "targetHandle": "in-density"
+    },
+    {
+      "id": "e_10",
+      "source": "ce_frame",
+      "target": "ce_scatter",
+      "sourceHandle": "out-frame",
+      "targetHandle": "in-seed"
+    },
+    {
+      "id": "e_11",
+      "source": "ce_lfox",
+      "target": "ce_sway",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-x"
+    },
+    {
+      "id": "e_12",
+      "source": "ce_lfoy",
+      "target": "ce_sway",
+      "sourceHandle": "out-value",
+      "targetHandle": "in-y"
+    },
+    {
+      "id": "e_13",
+      "source": "ce_head",
+      "target": "ce_blob",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_14",
+      "source": "ce_body",
+      "target": "ce_blob",
+      "sourceHandle": "out-shape",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_15",
+      "source": "ce_blob",
+      "target": "ce_move",
+      "sourceHandle": "out-grouped",
+      "targetHandle": "in-layer"
+    },
+    {
+      "id": "e_16",
+      "source": "ce_sway",
+      "target": "ce_move",
+      "sourceHandle": "out-vector",
+      "targetHandle": "in-by"
+    },
+    {
+      "id": "e_17",
+      "source": "ce_move",
+      "target": "ce_scatter2",
+      "sourceHandle": "out-translated",
+      "targetHandle": "in-shape"
+    },
+    {
+      "id": "e_18",
+      "source": "ce_frame",
+      "target": "ce_scatter2",
+      "sourceHandle": "out-frame",
+      "targetHandle": "in-seed"
+    },
+    {
+      "id": "e_19",
+      "source": "ce_cam",
+      "target": "ce_has",
+      "sourceHandle": "out-ready",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_20",
+      "source": "ce_has",
+      "target": "ce_pick",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-cond"
+    },
+    {
+      "id": "e_21",
+      "source": "ce_scatter",
+      "target": "ce_pick",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_22",
+      "source": "ce_scatter2",
+      "target": "ce_pick",
+      "sourceHandle": "out-points",
+      "targetHandle": "in-b"
+    },
+    {
+      "id": "e_23",
+      "source": "ce_amount",
+      "target": "ce_half",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-a"
+    },
+    {
+      "id": "e_24",
+      "source": "ce_turb",
+      "target": "ce_world",
+      "sourceHandle": "out-force",
+      "targetHandle": "in-forces"
+    },
+    {
+      "id": "e_25",
+      "source": "ce_world",
+      "target": "ce_emit",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_26",
+      "source": "ce_world",
+      "target": "ce_emit2",
+      "sourceHandle": "out-world",
+      "targetHandle": "in-world"
+    },
+    {
+      "id": "e_27",
+      "source": "ce_time",
+      "target": "ce_emit",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_28",
+      "source": "ce_time",
+      "target": "ce_emit2",
+      "sourceHandle": "out-t",
+      "targetHandle": "in-time"
+    },
+    {
+      "id": "e_29",
+      "source": "ce_pick",
+      "target": "ce_emit",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_30",
+      "source": "ce_pick",
+      "target": "ce_emit2",
+      "sourceHandle": "out-selected",
+      "targetHandle": "in-positions"
+    },
+    {
+      "id": "e_31",
+      "source": "ce_amount",
+      "target": "ce_emit",
+      "sourceHandle": "out-number",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_32",
+      "source": "ce_half",
+      "target": "ce_emit2",
+      "sourceHandle": "out-result",
+      "targetHandle": "in-rate"
+    },
+    {
+      "id": "e_33",
+      "source": "ce_emit",
+      "target": "ce_shapes",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_34",
+      "source": "ce_emit2",
+      "target": "ce_trail",
+      "sourceHandle": "out-particles",
+      "targetHandle": "in-particles"
+    },
+    {
+      "id": "e_35",
+      "source": "ce_tstroke",
+      "target": "ce_trail",
+      "sourceHandle": "out-style",
+      "targetHandle": "in-style"
+    },
+    {
+      "id": "e_36",
+      "source": "ce_shapes",
+      "target": "ce_merge",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s1"
+    },
+    {
+      "id": "e_37",
+      "source": "ce_trail",
+      "target": "ce_merge",
+      "sourceHandle": "out-layer",
+      "targetHandle": "in-s2"
+    },
+    {
+      "id": "e_38",
+      "source": "ce_merge",
+      "target": "ce_bloom",
+      "sourceHandle": "out-merged",
+      "targetHandle": "in-input"
+    },
+    {
+      "id": "e_39",
+      "source": "ce_bloom",
+      "target": "ce_renderer",
+      "sourceHandle": "out-out",
+      "targetHandle": "in-layers"
+    }
+  ]
+}

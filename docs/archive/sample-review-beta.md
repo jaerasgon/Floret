@@ -1,6 +1,6 @@
 # Sample review sheet (beta)
 
-All 175 Library samples, by category, to tick off by hand before the beta. Generated from `native/samples/catalogue.json`: open each one from File → Samples Library (Cmd+Shift+O) and fill in the columns.
+All 177 Library samples, by category, to tick off by hand before the beta. Generated from `native/samples/catalogue.json`: open each one from File → Samples Library (Cmd+Shift+O) and fill in the columns.
 
 - **Opens**: the sample opens with no error or warning.
 - **Runs and looks right**: it animates smoothly and the picture matches its description.
@@ -193,6 +193,8 @@ Mark a column with `x` when it is fine.
 | `point-tracker` | Point Tracker | Image | Point Tracker follows three points across a drifting field of dots, frame by frame (pyramidal Lucas–Kanade), from the picture alone; each marker's colour is its confidence, and Echo trails show the paths. |  |  |  |  |
 | `camera-slit-scan` | Camera Slit-Scan | Image | The webcam through Echo's slit-scan: each row of the picture comes from a moment further back, so anything that moves stretches and bends. Without a camera, a swinging stand-in shows the effect. |  |  |  |  |
 | `ascii-cells` | ASCII Cells | Image | The Effect node's ascii mode: reaction–diffusion fingerprint ridges redrawn as coloured characters picked by brightness. |  |  |  |  |
+| `hand-sparks` | Hand Sparks | Image | Wave your hands at the camera and they throw sparks: the faster they move, the more fly. A Write/Read pair remembers last frame's hand points, so the patch can measure how far each moved and turn that speed into an emit rate. One Toggle starts the camera and the hand tracker. |  |  |  |  |
+| `camera-embers` | Camera Embers | Image | You, made of rising embers: the live camera's bright areas gather points (Scatter in stipple mode), and each point sheds glowing sparks that drift up on turbulence. No camera or permission yet? A swaying stand-in glow sheds embers instead. |  |  |  |  |
 
 ## Pixel
 

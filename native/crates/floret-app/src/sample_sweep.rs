@@ -339,6 +339,14 @@ const BUNDLED_COVERS: &[(&str, &str)] = &[
         "a stand-in camera frame: a figure against a bright wall",
     ),
     ("tut-49-fft", "a chord on a stand-in microphone"),
+    (
+        "hand-sparks",
+        "two stand-in hands waving, sparks flying off them",
+    ),
+    (
+        "camera-embers",
+        "a stand-in camera frame: a lit figure in a dark room",
+    ),
 ];
 
 #[test]
@@ -467,6 +475,75 @@ impl floret_engine::devices::Devices for CoverDevices {
     }
 }
 
+/// [`CoverDevices`] whose hands wave about: each call of the tracker moves
+/// them on, so a sample that reacts to hand speed has something to react to.
+struct WavingHands {
+    inner: CoverDevices,
+    calls: std::sync::atomic::AtomicU32,
+}
+
+impl floret_engine::devices::Devices for WavingHands {
+    fn camera(
+        &self,
+        node: &str,
+        req: &floret_engine::devices::CameraRequest,
+    ) -> Result<floret_engine::devices::CameraFrame, String> {
+        floret_engine::devices::Devices::camera(&self.inner, node, req)
+    }
+
+    fn landmarks(
+        &self,
+        _: &str,
+        req: &floret_engine::devices::LandmarksRequest,
+    ) -> Result<Option<Vec<floret_engine::devices::LandmarkLayer>>, String> {
+        use floret_engine::landmarks::Tracker;
+        if !req.start || !req.trackers.contains(&Tracker::Hands) {
+            return Ok(None);
+        }
+        let t = self
+            .calls
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed) as f32;
+        // Out of step with each other, sweeping a third of the picture.
+        let (a, b) = ((t * 0.22).sin(), (t * 0.18 + 1.3).sin());
+        Ok(Some(vec![floret_engine::devices::LandmarkLayer {
+            tracker: Tracker::Hands,
+            dets: vec![
+                open_hand(0.3 + 0.11 * a, 0.78 + 0.06 * (t * 0.33).cos(), 0.26, -1.0),
+                open_hand(0.7 + 0.11 * b, 0.74 + 0.06 * (t * 0.29).cos(), 0.26, 1.0),
+            ],
+            ids: vec![0, 1],
+        }]))
+    }
+}
+
+/// [`CoverDevices`]' camera with its light and dark swapped: a lit figure
+/// in a dark room.
+struct LitFigure(CoverDevices);
+
+impl floret_engine::devices::Devices for LitFigure {
+    fn camera(
+        &self,
+        node: &str,
+        req: &floret_engine::devices::CameraRequest,
+    ) -> Result<floret_engine::devices::CameraFrame, String> {
+        let mut frame = floret_engine::devices::Devices::camera(&self.0, node, req)?;
+        if frame.ready {
+            let src = frame.image.clone();
+            let px: Vec<u8> = src
+                .rgba()
+                .chunks(4)
+                .flat_map(|p| [255 - p[0], 255 - p[1], 255 - p[2], 255])
+                .collect();
+            frame.image = std::sync::Arc::new(floret_engine::image::Image::new(
+                src.width(),
+                src.height(),
+                px,
+            ));
+        }
+        Ok(frame)
+    }
+}
+
 /// `FLORET_UPDATE_COVERS=1 cargo test -p floret-app -- --ignored
 /// update_covers`: renders the [`BUNDLED_COVERS`] to
 /// `samples/covers/<id>.png` as the Library would at their cover frame,
@@ -487,9 +564,18 @@ fn update_covers() {
     };
     let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../samples/covers");
     std::fs::create_dir_all(&dir).expect("covers dir");
-    floret_engine::devices::install(Some(std::sync::Arc::new(CoverDevices::new())));
     const RATE: f32 = 48_000.0;
     for (id, _) in BUNDLED_COVERS {
+        // Fresh stand-in devices for each (the waving hands start over).
+        let devices: std::sync::Arc<dyn floret_engine::devices::Devices> = match *id {
+            "hand-sparks" => std::sync::Arc::new(WavingHands {
+                inner: CoverDevices::new(),
+                calls: Default::default(),
+            }),
+            "camera-embers" => std::sync::Arc::new(LitFigure(CoverDevices::new())),
+            _ => std::sync::Arc::new(CoverDevices::new()),
+        };
+        floret_engine::devices::install(Some(devices));
         let s = SAMPLES
             .iter()
             .find(|s| s.id == *id)

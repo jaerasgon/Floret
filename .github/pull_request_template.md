@@ -10,11 +10,12 @@ see CONTRIBUTING.md. -->
 ## How it was tested
 
 <!-- Which of these did you run, from `native/`? Describe any hand-testing too,
-for example the sample you opened. -->
+for example the sample you opened. The cargo checks aren't needed for
+text-only changes (docs, wording). -->
 
-- [ ] `cargo fmt --all --check`
-- [ ] `cargo clippy --workspace --all-targets -- -D warnings`
-- [ ] `cargo test --workspace --no-fail-fast`
+- [ ] `cargo fmt --all --check` (not needed for text-only changes)
+- [ ] `cargo clippy --workspace --all-targets -- -D warnings` (not needed for text-only changes)
+- [ ] `cargo test --workspace --no-fail-fast` (not needed for text-only changes)
 
 ## Checklist
 

@@ -46,8 +46,8 @@ root builds and runs it in one step, on a Mac or on Linux.
 | `native/crates/floret-open-files` | Opening `.flora` files from Finder (macOS). |
 | `native/samples/` | The built-in samples and their catalogue. |
 | `floret.sh` | Build, run and install script. |
-| `docs/` | The beta tester guide, the Mac QA checklist, the release notes draft, the log of new nodes and `docs/archive/` (old planning notes, kept for history). |
-| `src/`, `package.json`, … | The earlier TypeScript web version, kept for reference only. It isn't the app anymore. |
+| `docs/` | The beta tester guide, the Mac QA checklist, how releases are made ([releasing.md](releasing.md)), the release notes and `docs/archive/` (old planning notes and logs, kept for history). |
+| `web-legacy/` | The earlier web version of Floret, kept for reference only. It isn't the app anymore. |
 
 ## Checking your changes
 
